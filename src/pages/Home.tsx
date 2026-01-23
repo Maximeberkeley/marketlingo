@@ -222,13 +222,22 @@ export default function HomePage() {
   const handleAddNote = async (slideNum: number) => {
     if (!user || !activeStack) return;
 
-    const slide = activeStack.slides[slideNum - 1];
-    await supabase.from("notes").insert({
+    // Find slide by slide_number, not array index
+    const slide = activeStack.slides.find(s => s.slide_number === slideNum) || activeStack.slides[slideNum - 1];
+    const noteContent = slide?.body || `Note from ${activeStack.title}`;
+    
+    const { error } = await supabase.from("notes").insert({
       user_id: user.id,
-      content: slide?.body || "",
-      linked_label: `${activeStack.stack_type} · Day · Slide ${slideNum}`,
+      content: noteContent,
+      linked_label: `${activeStack.stack_type} · Slide ${slideNum}`,
       stack_id: activeStack.id,
     });
+
+    if (error) {
+      console.error("Error saving note:", error);
+      toast.error("Failed to save note");
+      return;
+    }
 
     toast.success(`Note added for slide ${slideNum}`);
   };
@@ -250,7 +259,7 @@ export default function HomePage() {
 
   return (
     <AppLayout>
-      <div className="screen-padding pt-12 safe-bottom pb-24">
+      <div className="screen-padding pt-12 pb-28">
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
