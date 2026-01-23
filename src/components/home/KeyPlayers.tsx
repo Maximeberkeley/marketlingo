@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Building2, Users, TrendingUp, Globe, Calendar, ChevronRight } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { motion } from "framer-motion";
+import { Building2, ChevronRight } from "lucide-react";
 import { Company, marketCompanies, defaultCompanies } from "./keyPlayersData";
+import { CompanyDetailSheet } from "./CompanyDetailSheet";
 import { cn } from "@/lib/utils";
 
 interface KeyPlayersProps {
