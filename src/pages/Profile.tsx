@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Cpu, ChevronRight, Download, LogOut, AlertTriangle, Trophy, Target, Flame } from "lucide-react";
+import { Cpu, ChevronRight, Download, LogOut, AlertTriangle, Trophy, Target, Flame, Settings, Bell } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -158,7 +158,7 @@ export default function ProfilePage() {
                 <Target size={20} className="text-emerald-400" />
               </div>
               <p className="text-h2 text-text-primary">Day {progress.current_day}</p>
-              <p className="text-caption text-text-muted">of 365</p>
+              <p className="text-caption text-text-muted">of 180</p>
             </div>
           </motion.div>
         )}
@@ -181,7 +181,7 @@ export default function ProfilePage() {
               </div>
               <div className="text-left">
                 <p className="text-h3 text-text-primary">{marketName}</p>
-                <p className="text-caption text-text-muted">1-year journey</p>
+                <p className="text-caption text-text-muted">6-month journey</p>
               </div>
             </div>
             <ChevronRight size={18} className="text-text-muted group-hover:text-text-secondary transition-colors" />
@@ -213,13 +213,31 @@ export default function ProfilePage() {
           </button>
         </motion.div>
 
-        {/* Account */}
+        {/* Settings & Account */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          className="space-y-3"
         >
           <h3 className="text-caption text-text-muted mb-3 uppercase tracking-wider">Account</h3>
+          
+          <button
+            onClick={() => navigate("/settings")}
+            className="w-full card-elevated flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-button bg-accent/20 flex items-center justify-center">
+                <Settings size={20} className="text-accent" />
+              </div>
+              <div className="text-left">
+                <p className="text-h3 text-text-primary">Settings</p>
+                <p className="text-caption text-text-muted">Notifications & preferences</p>
+              </div>
+            </div>
+            <ChevronRight size={18} className="text-text-muted group-hover:text-text-secondary transition-colors" />
+          </button>
+
           <button
             onClick={handleLogout}
             className="w-full card-elevated flex items-center justify-between group"

@@ -86,13 +86,13 @@ export default function RoadmapPage() {
       const day = progress?.current_day || 1;
       setCurrentDay(day);
 
-      // Build seasons based on curriculum
+      // Build seasons based on 6-month curriculum (180 days = 36 weeks = 6 seasons)
       const currentWeek = getDayWeek(day);
       
       const buildSeasons: Season[] = [
         {
           seasonNumber: 1,
-          title: "Foundations",
+          title: "Month 1: Foundations",
           weeks: [
             buildWeek(1, currentWeek, "Market Structure", [1, 2, 3, 4, 5]),
             buildWeek(2, currentWeek, "Certification Reality", [6, 7, 8, 9, 10]),
@@ -102,7 +102,7 @@ export default function RoadmapPage() {
         },
         {
           seasonNumber: 2,
-          title: "Forces & Cycles",
+          title: "Month 2: Forces & Cycles",
           weeks: [
             buildWeek(5, currentWeek, "Regulation Deep Dive", [21, 22, 23, 24, 25]),
             buildWeek(6, currentWeek, "Capital Flows", [26, 27, 28, 29, 30]),
@@ -112,22 +112,54 @@ export default function RoadmapPage() {
         },
         {
           seasonNumber: 3,
-          title: "Startup Patterns",
+          title: "Month 3: Startup Patterns",
           weeks: [
             buildWeek(9, currentWeek, "Moat Building", [41, 42, 43, 44, 45]),
             buildWeek(10, currentWeek, "GTM Strategies", [46, 47, 48, 49, 50]),
             buildWeek(11, currentWeek, "Failure Modes", [51, 52, 53, 54, 55]),
-            buildWeek(12, currentWeek, "Success Patterns", [56, 57, 58, 59, 60]),
+            buildWeek(12, currentWeek, "Success Stories", [56, 57, 58, 59, 60]),
           ],
         },
         {
           seasonNumber: 4,
-          title: "Builder Mode",
+          title: "Month 4: Key Players",
           weeks: [
-            buildWeek(13, currentWeek, "Thesis Building", [61, 62, 63, 64, 65]),
-            buildWeek(14, currentWeek, "Analysis Project", [66, 67, 68, 69, 70]),
-            buildWeek(15, currentWeek, "Future Scenarios", [71, 72, 73, 74, 75]),
-            buildWeek(16, currentWeek, "Synthesis", [76, 77, 78, 79, 80]),
+            buildWeek(13, currentWeek, "Commercial Giants", [61, 62, 63, 64, 65]),
+            buildWeek(14, currentWeek, "Defense Primes", [66, 67, 68, 69, 70]),
+            buildWeek(15, currentWeek, "Space Innovators", [71, 72, 73, 74, 75]),
+            buildWeek(16, currentWeek, "Supply Chain", [76, 77, 78, 79, 80]),
+          ],
+        },
+        {
+          seasonNumber: 5,
+          title: "Month 5: Investment Lens",
+          weeks: [
+            buildWeek(17, currentWeek, "Public Markets", [81, 82, 83, 84, 85]),
+            buildWeek(18, currentWeek, "Private Markets", [86, 87, 88, 89, 90]),
+            buildWeek(19, currentWeek, "Due Diligence", [91, 92, 93, 94, 95]),
+            buildWeek(20, currentWeek, "Portfolio Strategy", [96, 97, 98, 99, 100]),
+            buildWeek(21, currentWeek, "Valuation Models", [101, 102, 103, 104, 105]),
+            buildWeek(22, currentWeek, "Risk Assessment", [106, 107, 108, 109, 110]),
+          ],
+        },
+        {
+          seasonNumber: 6,
+          title: "Month 6: Builder Mode",
+          weeks: [
+            buildWeek(23, currentWeek, "Thesis Building", [111, 112, 113, 114, 115]),
+            buildWeek(24, currentWeek, "Analysis Project", [116, 117, 118, 119, 120]),
+            buildWeek(25, currentWeek, "Future Scenarios", [121, 122, 123, 124, 125]),
+            buildWeek(26, currentWeek, "Company Deep Dive", [126, 127, 128, 129, 130]),
+            buildWeek(27, currentWeek, "Trend Analysis", [131, 132, 133, 134, 135]),
+            buildWeek(28, currentWeek, "Final Synthesis", [136, 137, 138, 139, 140]),
+            buildWeek(29, currentWeek, "Capstone Week 1", [141, 142, 143, 144, 145]),
+            buildWeek(30, currentWeek, "Capstone Week 2", [146, 147, 148, 149, 150]),
+            buildWeek(31, currentWeek, "Advanced Topics", [151, 152, 153, 154, 155]),
+            buildWeek(32, currentWeek, "Industry Connections", [156, 157, 158, 159, 160]),
+            buildWeek(33, currentWeek, "Career Pathways", [161, 162, 163, 164, 165]),
+            buildWeek(34, currentWeek, "Expert Insights", [166, 167, 168, 169, 170]),
+            buildWeek(35, currentWeek, "Final Review", [171, 172, 173, 174, 175]),
+            buildWeek(36, currentWeek, "Graduation", [176, 177, 178, 179, 180]),
           ],
         },
       ];

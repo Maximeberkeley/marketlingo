@@ -235,6 +235,8 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           id: string
+          notification_preferences: Json | null
+          push_token: string | null
           selected_market: string | null
           updated_at: string
           username: string | null
@@ -243,6 +245,8 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           id: string
+          notification_preferences?: Json | null
+          push_token?: string | null
           selected_market?: string | null
           updated_at?: string
           username?: string | null
@@ -251,6 +255,8 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           id?: string
+          notification_preferences?: Json | null
+          push_token?: string | null
           selected_market?: string | null
           updated_at?: string
           username?: string | null
