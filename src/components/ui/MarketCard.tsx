@@ -1,35 +1,75 @@
 import { motion } from "framer-motion";
-import { LucideIcon } from "lucide-react";
+import { 
+  Cpu, Building2, Car, Pill, Zap, Smartphone, 
+  Wheat, Plane, Palette, ShoppingBag, Gamepad2, LucideIcon 
+} from "lucide-react";
+
+const iconMap: Record<string, LucideIcon> = {
+  cpu: Cpu,
+  banknote: Building2,
+  zap: Zap,
+  pill: Pill,
+  sun: Zap,
+  smartphone: Smartphone,
+  leaf: Wheat,
+  rocket: Plane,
+  palette: Palette,
+  "shopping-cart": ShoppingBag,
+  "gamepad-2": Gamepad2,
+};
 
 interface MarketCardProps {
   id: string;
   name: string;
-  icon: LucideIcon;
-  selected: boolean;
-  onSelect: (id: string) => void;
+  icon: string | LucideIcon;
+  isSelected?: boolean;
+  selected?: boolean;
+  onClick?: () => void;
+  onSelect?: (id: string) => void;
 }
 
-export function MarketCard({ id, name, icon: Icon, selected, onSelect }: MarketCardProps) {
+export function MarketCard({ 
+  id, 
+  name, 
+  icon, 
+  isSelected, 
+  selected,
+  onClick,
+  onSelect 
+}: MarketCardProps) {
+  const isActive = isSelected ?? selected ?? false;
+  
+  // Handle both string icons and LucideIcon components
+  const IconComponent = typeof icon === "string" ? iconMap[icon] || Cpu : icon;
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else if (onSelect) {
+      onSelect(id);
+    }
+  };
+
   return (
     <motion.button
       whileTap={{ scale: 0.98 }}
-      onClick={() => onSelect(id)}
-      className={`relative flex flex-col items-start justify-between h-[120px] p-4 rounded-card transition-all duration-200 no-select ${
-        selected
+      onClick={handleClick}
+      className={`relative flex flex-col items-start justify-between h-[120px] w-full p-4 rounded-card transition-all duration-200 no-select ${
+        isActive
           ? "selected-ring bg-bg-2"
           : "bg-bg-2 border border-border hover:border-text-muted"
       }`}
     >
       <div
         className={`w-10 h-10 rounded-button flex items-center justify-center transition-colors ${
-          selected ? "bg-primary/20 text-primary" : "bg-bg-1 text-text-muted"
+          isActive ? "bg-primary/20 text-primary" : "bg-bg-1 text-text-muted"
         }`}
       >
-        <Icon size={20} />
+        <IconComponent size={20} />
       </div>
       <span className="text-h3 text-text-primary">{name}</span>
       
-      {selected && (
+      {isActive && (
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
