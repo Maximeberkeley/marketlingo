@@ -132,6 +132,56 @@ export type Database = {
         }
         Relationships: []
       }
+      news_items: {
+        Row: {
+          category_tag: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          market_id: string
+          published_at: string
+          source_name: string
+          source_url: string
+          stack_id: string | null
+          summary: string | null
+          title: string
+        }
+        Insert: {
+          category_tag?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          market_id: string
+          published_at?: string
+          source_name: string
+          source_url: string
+          stack_id?: string | null
+          summary?: string | null
+          title: string
+        }
+        Update: {
+          category_tag?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          market_id?: string
+          published_at?: string
+          source_name?: string
+          source_url?: string
+          stack_id?: string | null
+          summary?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_items_stack_id_fkey"
+            columns: ["stack_id"]
+            isOneToOne: false
+            referencedRelation: "stacks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notes: {
         Row: {
           content: string
