@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, ChevronRight, BookOpen, Newspaper, Brain, Loader2, Trash2 } from "lucide-react";
+import { Search, BookOpen, Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { SwipeableNoteCard } from "@/components/notebook/SwipeableNoteCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -15,37 +16,12 @@ interface NoteEntry {
   slide_id: string | null;
 }
 
-const typeIcons: Record<string, React.ReactNode> = {
-  news: <Newspaper size={14} className="text-blue-400" />,
-  lesson: <BookOpen size={14} className="text-green-400" />,
-  trainer: <Brain size={14} className="text-amber-400" />,
-};
-
-const typeColors: Record<string, string> = {
-  news: "bg-blue-500/20 text-blue-400",
-  lesson: "bg-green-500/20 text-green-400",
-  trainer: "bg-amber-500/20 text-amber-400",
-};
-
 function getLinkedType(label: string | null): "news" | "lesson" | "trainer" {
   if (!label) return "lesson";
   const lower = label.toLowerCase();
   if (lower.includes("news") || lower.includes("daily")) return "news";
   if (lower.includes("trainer")) return "trainer";
   return "lesson";
-}
-
-function formatTimestamp(dateStr: string): string {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffHours < 1) return "Just now";
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays} days ago`;
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 export default function NotebookPage() {
@@ -116,7 +92,7 @@ export default function NotebookPage() {
 
   return (
     <AppLayout>
-      <div className="screen-padding pt-12">
+      <div className="screen-padding pt-12 pb-28">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -168,46 +144,28 @@ export default function NotebookPage() {
           ))}
         </motion.div>
 
+        {/* Swipe hint */}
+        {filteredNotes.length > 0 && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-caption text-text-muted mb-3 text-center"
+          >
+            Swipe left to delete
+          </motion.p>
+        )}
+
         {/* Notes List */}
         <div className="space-y-3 pb-8">
-          {filteredNotes.map((note, index) => {
-            const linkedType = getLinkedType(note.linked_label);
-            
-            return (
-              <motion.div
-                key={note.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + index * 0.05 }}
-                className="w-full card-elevated text-left group"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-body text-text-primary line-clamp-2 mb-3">
-                      {note.content}
-                    </p>
-                    
-                    <div className="flex items-center gap-2">
-                      <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-pill text-caption ${typeColors[linkedType]}`}>
-                        {typeIcons[linkedType]}
-                        {note.linked_label || "Note"}
-                      </span>
-                      <span className="text-caption text-text-muted">
-                        {formatTimestamp(note.created_at)}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <button
-                    onClick={() => handleDeleteNote(note.id)}
-                    className="p-2 text-text-muted hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </motion.div>
-            );
-          })}
+          {filteredNotes.map((note, index) => (
+            <SwipeableNoteCard
+              key={note.id}
+              note={note}
+              onDelete={handleDeleteNote}
+              index={index}
+            />
+          ))}
         </div>
 
         {/* Empty State */}
