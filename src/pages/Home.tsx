@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { StackCard } from "@/components/ui/StackCard";
 import { SlideReader } from "@/components/slides/SlideReader";
+import { KeyPlayers } from "@/components/home/KeyPlayers";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProgress } from "@/hooks/useUserProgress";
@@ -403,6 +404,9 @@ export default function HomePage() {
             )}
           </div>
         </motion.div>
+
+        {/* Key Players Section */}
+        {selectedMarket && <KeyPlayers marketId={selectedMarket} />}
       </div>
 
       {/* Slide Reader Modal */}
