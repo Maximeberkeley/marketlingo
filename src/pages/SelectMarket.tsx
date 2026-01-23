@@ -1,89 +1,129 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Search, Cpu, Building2, Car, Pill, Zap, Smartphone, Wheat, Plane, Palette, ShoppingBag, Gamepad2 } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { MarketCard } from "@/components/ui/MarketCard";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const markets = [
-  { id: "ai", name: "AI Industry", icon: Cpu },
-  { id: "fintech", name: "Fintech", icon: Building2 },
-  { id: "ev", name: "Electric Vehicles", icon: Car },
-  { id: "biotech", name: "Biotech", icon: Pill },
-  { id: "energy", name: "Clean Energy", icon: Zap },
-  { id: "mobile", name: "Mobile Tech", icon: Smartphone },
-  { id: "agtech", name: "AgTech", icon: Wheat },
-  { id: "aerospace", name: "Aerospace", icon: Plane },
-  { id: "creator", name: "Creator Economy", icon: Palette },
-  { id: "ecommerce", name: "E-commerce", icon: ShoppingBag },
-  { id: "gaming", name: "Gaming", icon: Gamepad2 },
+  { id: "ai", name: "AI Industry", icon: "cpu" },
+  { id: "fintech", name: "Fintech", icon: "banknote" },
+  { id: "ev", name: "Electric Vehicles", icon: "zap" },
+  { id: "biotech", name: "Biotech", icon: "pill" },
+  { id: "energy", name: "Clean Energy", icon: "sun" },
+  { id: "mobile", name: "Mobile Tech", icon: "smartphone" },
+  { id: "agtech", name: "AgTech", icon: "leaf" },
+  { id: "aerospace", name: "Aerospace", icon: "rocket" },
+  { id: "creator", name: "Creator Economy", icon: "palette" },
+  { id: "ecommerce", name: "E-commerce", icon: "shopping-cart" },
+  { id: "gaming", name: "Gaming", icon: "gamepad-2" },
 ];
 
 export default function SelectMarketPage() {
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/");
+    }
+  }, [user, loading, navigate]);
 
   const filteredMarkets = markets.filter((market) =>
     market.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleStart = () => {
-    if (selectedMarket) {
-      // Store selected market and navigate to home
+  const handleContinue = async () => {
+    if (!selectedMarket || !user) return;
+
+    setIsSubmitting(true);
+
+    try {
+      // Update profile with selected market
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({ selected_market: selectedMarket })
+        .eq("id", user.id);
+
+      if (profileError) {
+        console.error("Profile update error:", profileError);
+      }
+
+      // Create initial progress
+      const { error: progressError } = await supabase
+        .from("user_progress")
+        .upsert({
+          user_id: user.id,
+          market_id: selectedMarket,
+          current_day: 1,
+          current_streak: 0,
+          longest_streak: 0,
+          completed_stacks: [],
+        }, {
+          onConflict: "user_id,market_id"
+        });
+
+      if (progressError) {
+        console.error("Progress creation error:", progressError);
+      }
+
+      // Also store in localStorage as backup
       localStorage.setItem("selectedMarket", selectedMarket);
+
       navigate("/home");
+    } catch (error) {
+      console.error("Error saving market selection:", error);
+      toast.error("Failed to save selection. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-bg-0 to-bg-1">
       {/* Header */}
-      <div className="px-4 pt-12 pb-6">
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-h1 text-text-primary mb-2"
-        >
-          Choose your market
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="caption text-text-muted"
-        >
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="screen-padding pt-12 pb-6"
+      >
+        <h1 className="text-h1 text-text-primary mb-2">Choose your market</h1>
+        <p className="text-body text-text-secondary">
           Pick one. We'll guide you for 12 months.
-        </motion.p>
-      </div>
+        </p>
+      </motion.div>
 
       {/* Search */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="px-4 mb-6"
+        transition={{ delay: 0.1 }}
+        className="screen-padding pb-4"
       >
         <div className="relative">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
-          <input
-            type="text"
+          <Search
+            size={18}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"
+          />
+          <Input
             placeholder="Search markets…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-12 pl-11 pr-4 bg-bg-2 border border-border rounded-[16px] text-body text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
+            className="pl-11 bg-bg-1 border-border rounded-[16px] h-12 text-text-primary placeholder:text-text-muted"
           />
         </div>
       </motion.div>
 
-      {/* Market Grid */}
-      <div className="flex-1 px-4 pb-32 overflow-auto">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="grid grid-cols-2 gap-3"
-        >
+      {/* Grid */}
+      <div className="flex-1 screen-padding overflow-auto pb-32">
+        <div className="grid grid-cols-2 gap-3">
           {filteredMarkets.map((market, index) => (
             <motion.div
               key={market.id}
@@ -95,26 +135,29 @@ export default function SelectMarketPage() {
                 id={market.id}
                 name={market.name}
                 icon={market.icon}
-                selected={selectedMarket === market.id}
-                onSelect={setSelectedMarket}
+                isSelected={selectedMarket === market.id}
+                onClick={() => setSelectedMarket(market.id)}
               />
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
 
-      {/* Fixed Footer CTA */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-bg-0 via-bg-0 to-transparent pt-8">
+      {/* Footer CTA */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="fixed bottom-0 left-0 right-0 screen-padding pb-8 pt-4 bg-gradient-to-t from-bg-0 via-bg-0 to-transparent"
+      >
         <Button
-          variant="cta"
           size="full"
-          disabled={!selectedMarket}
-          onClick={handleStart}
-          className={!selectedMarket ? "opacity-50 cursor-not-allowed" : ""}
+          disabled={!selectedMarket || isSubmitting}
+          onClick={handleContinue}
         >
-          Start my 1-year journey
+          {isSubmitting ? "Starting..." : "Start my 1-year journey"}
         </Button>
-      </div>
+      </motion.div>
     </div>
   );
 }
