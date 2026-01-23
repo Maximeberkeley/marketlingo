@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SeasonSection } from "@/components/roadmap/SeasonSection";
@@ -6,6 +6,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { NodeStatus } from "@/components/roadmap/RoadmapNode";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { Loader2 } from "lucide-react";
 
 interface Week {
   weekNumber: number;
@@ -13,6 +16,7 @@ interface Week {
   title: string;
   objective?: string;
   learnings?: string[];
+  dayRange: string;
 }
 
 interface Season {
@@ -21,54 +25,147 @@ interface Season {
   weeks: Week[];
 }
 
-// Mock data
-const seasons: Season[] = [
-  {
-    seasonNumber: 1,
-    title: "Foundations",
-    weeks: [
-      { weekNumber: 1, status: "completed", title: "Market Overview", objective: "Understand the AI market landscape", learnings: ["Key players", "Market size", "Growth drivers"] },
-      { weekNumber: 2, status: "completed", title: "Key Players", objective: "Identify major companies and their strategies", learnings: ["OpenAI", "Google DeepMind", "Anthropic"] },
-      { weekNumber: 3, status: "current", title: "Value Chain", objective: "Map the AI value chain from chips to applications", learnings: ["Hardware layer", "Foundation models", "Application layer"] },
-      { weekNumber: 4, status: "available", title: "Business Models", objective: "Analyze AI business models and revenue streams", learnings: ["SaaS", "API pricing", "Enterprise contracts"] },
-    ],
-  },
-  {
-    seasonNumber: 2,
-    title: "Forces & Cycles",
-    weeks: [
-      { weekNumber: 5, status: "locked", title: "Hype Cycles", objective: "Understand technology adoption patterns", learnings: ["Gartner curve", "Crossing the chasm", "Market timing"] },
-      { weekNumber: 6, status: "locked", title: "Regulation", objective: "Navigate AI regulation landscape", learnings: ["EU AI Act", "US policy", "China approach"] },
-      { weekNumber: 7, status: "locked", title: "Talent Wars", objective: "Understand the AI talent market", learnings: ["Key researchers", "Talent flows", "Compensation trends"] },
-      { weekNumber: 8, status: "locked", title: "Capital Flows", objective: "Track AI investment patterns", learnings: ["VC trends", "Corporate M&A", "Valuation dynamics"] },
-    ],
-  },
-  {
-    seasonNumber: 3,
-    title: "Startup Patterns",
-    weeks: [
-      { weekNumber: 9, status: "locked", title: "Moat Building", objective: "Identify sustainable competitive advantages", learnings: ["Data moats", "Network effects", "Distribution advantages"] },
-      { weekNumber: 10, status: "locked", title: "GTM Strategies", objective: "Analyze go-to-market approaches", learnings: ["PLG vs sales-led", "Vertical vs horizontal", "Pricing strategies"] },
-      { weekNumber: 11, status: "locked", title: "Failure Modes", objective: "Learn from AI startup failures", learnings: ["Common pitfalls", "Pivoting strategies", "Timing issues"] },
-      { weekNumber: 12, status: "locked", title: "Success Patterns", objective: "Study what winning looks like", learnings: ["Case studies", "Growth patterns", "Exit strategies"] },
-    ],
-  },
-  {
-    seasonNumber: 4,
-    title: "Builder Mode",
-    weeks: [
-      { weekNumber: 13, status: "locked", title: "Thesis Building", objective: "Develop your market thesis", learnings: ["Framework building", "Contrarian views", "Conviction building"] },
-      { weekNumber: 14, status: "locked", title: "Analysis Project", objective: "Deep-dive analysis exercise", learnings: ["Company analysis", "Market mapping", "Investment memo"] },
-      { weekNumber: 15, status: "locked", title: "Future Scenarios", objective: "Scenario planning for AI futures", learnings: ["Bull case", "Bear case", "Black swans"] },
-      { weekNumber: 16, status: "locked", title: "Synthesis", objective: "Complete your market mastery", learnings: ["Framework review", "Knowledge test", "Next steps"] },
-    ],
-  },
-];
+// Map day numbers to weeks (5 days per week, 4 weeks per month)
+function getDayWeek(day: number): number {
+  return Math.ceil(day / 5);
+}
+
+// Aerospace Month 1 curriculum patterns organized by day
+const aerospacePatterns: Record<number, { title: string; pattern: string }> = {
+  1: { title: "Buyer ≠ User", pattern: "Understanding who signs the check" },
+  2: { title: "OEM Gatekeeping", pattern: "Risk beats performance" },
+  3: { title: "Tiered Supply Chain", pattern: "Tier ladder navigation" },
+  4: { title: "Approval Chain", pattern: "Who must approve changes" },
+  5: { title: "Authority & Speed", pattern: "Governance unlocks velocity" },
+  6: { title: "Type Certification", pattern: "Certification is the product" },
+  7: { title: "TC vs STC", pattern: "Change = certification work" },
+  8: { title: "Change Friction", pattern: "Minimize certification surface" },
+  9: { title: "Why Aerospace is Slow", pattern: "Incentives reward caution" },
+  10: { title: "Conservative System", pattern: "Rules encode past failures" },
+  11: { title: "Cost-Plus Incentives", pattern: "Contract type matters" },
+  12: { title: "Contract Types", pattern: "Contract is the business model" },
+  13: { title: "Timeline Mismatch", pattern: "Match customers to runway" },
+  14: { title: "Startup Killers", pattern: "Cash timing vs cycles" },
+  15: { title: "Requirement Creep", pattern: "Guard scope early" },
+  16: { title: "Hardware-First Trap", pattern: "Start with pathway" },
+  17: { title: "Trust Economy", pattern: "Design evidence into product" },
+  18: { title: "Supply Chain Control", pattern: "Control follows risk" },
+  19: { title: "First Customer", pattern: "Sell into the chain" },
+  20: { title: "Month Review", pattern: "Fix pathway first" },
+};
 
 export default function RoadmapPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [currentDay, setCurrentDay] = useState(1);
   const [selectedWeek, setSelectedWeek] = useState<Week | null>(null);
-  const currentDay = 21; // Mock current day
+  const [seasons, setSeasons] = useState<Season[]>([]);
+
+  useEffect(() => {
+    const fetchProgress = async () => {
+      if (!user) return;
+
+      // Get user's selected market
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("selected_market")
+        .eq("id", user.id)
+        .single();
+
+      const market = profile?.selected_market || "aerospace";
+
+      // Get user progress
+      const { data: progress } = await supabase
+        .from("user_progress")
+        .select("current_day")
+        .eq("user_id", user.id)
+        .eq("market_id", market)
+        .single();
+
+      const day = progress?.current_day || 1;
+      setCurrentDay(day);
+
+      // Build seasons based on curriculum
+      const currentWeek = getDayWeek(day);
+      
+      const buildSeasons: Season[] = [
+        {
+          seasonNumber: 1,
+          title: "Foundations",
+          weeks: [
+            buildWeek(1, currentWeek, "Market Structure", [1, 2, 3, 4, 5]),
+            buildWeek(2, currentWeek, "Certification Reality", [6, 7, 8, 9, 10]),
+            buildWeek(3, currentWeek, "Business Dynamics", [11, 12, 13, 14, 15]),
+            buildWeek(4, currentWeek, "Execution Patterns", [16, 17, 18, 19, 20]),
+          ],
+        },
+        {
+          seasonNumber: 2,
+          title: "Forces & Cycles",
+          weeks: [
+            buildWeek(5, currentWeek, "Regulation Deep Dive", [21, 22, 23, 24, 25]),
+            buildWeek(6, currentWeek, "Capital Flows", [26, 27, 28, 29, 30]),
+            buildWeek(7, currentWeek, "Talent Dynamics", [31, 32, 33, 34, 35]),
+            buildWeek(8, currentWeek, "Technology Waves", [36, 37, 38, 39, 40]),
+          ],
+        },
+        {
+          seasonNumber: 3,
+          title: "Startup Patterns",
+          weeks: [
+            buildWeek(9, currentWeek, "Moat Building", [41, 42, 43, 44, 45]),
+            buildWeek(10, currentWeek, "GTM Strategies", [46, 47, 48, 49, 50]),
+            buildWeek(11, currentWeek, "Failure Modes", [51, 52, 53, 54, 55]),
+            buildWeek(12, currentWeek, "Success Patterns", [56, 57, 58, 59, 60]),
+          ],
+        },
+        {
+          seasonNumber: 4,
+          title: "Builder Mode",
+          weeks: [
+            buildWeek(13, currentWeek, "Thesis Building", [61, 62, 63, 64, 65]),
+            buildWeek(14, currentWeek, "Analysis Project", [66, 67, 68, 69, 70]),
+            buildWeek(15, currentWeek, "Future Scenarios", [71, 72, 73, 74, 75]),
+            buildWeek(16, currentWeek, "Synthesis", [76, 77, 78, 79, 80]),
+          ],
+        },
+      ];
+
+      setSeasons(buildSeasons);
+      setLoading(false);
+    };
+
+    fetchProgress();
+  }, [user]);
+
+  function buildWeek(weekNum: number, currentWeek: number, title: string, days: number[]): Week {
+    let status: NodeStatus = "locked";
+    if (weekNum < currentWeek) status = "completed";
+    else if (weekNum === currentWeek) status = "current";
+    else if (weekNum === currentWeek + 1) status = "available";
+
+    // Build learnings from actual curriculum patterns
+    const learnings = days
+      .filter(d => aerospacePatterns[d])
+      .map(d => aerospacePatterns[d].title)
+      .slice(0, 3);
+
+    // Build objective from patterns
+    const patterns = days
+      .filter(d => aerospacePatterns[d])
+      .map(d => aerospacePatterns[d].pattern);
+    const objective = patterns[0] || `Master ${title.toLowerCase()} concepts`;
+
+    return {
+      weekNumber: weekNum,
+      status,
+      title,
+      objective,
+      learnings: learnings.length > 0 ? learnings : ["Coming soon"],
+      dayRange: `Days ${days[0]}-${days[days.length - 1]}`,
+    };
+  }
 
   const handleWeekClick = (weekNumber: number) => {
     for (const season of seasons) {
@@ -85,6 +182,16 @@ export default function RoadmapPage() {
     navigate("/home");
   };
 
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
       <div className="screen-padding pt-12 pb-8">
@@ -94,9 +201,23 @@ export default function RoadmapPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-h1 text-text-primary mb-1">Your 1-year path</h1>
-          <p className="caption text-text-muted">Day {currentDay} of 365</p>
+          <h1 className="text-h1 text-text-primary mb-1">Your Learning Path</h1>
+          <p className="caption text-text-muted">Day {currentDay} of 365 • Week {getDayWeek(currentDay)}</p>
         </motion.div>
+
+        {/* Current Pattern */}
+        {aerospacePatterns[currentDay] && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="card-elevated mb-6"
+          >
+            <p className="text-caption text-primary mb-1">Today's Pattern</p>
+            <h3 className="text-h3 text-text-primary">{aerospacePatterns[currentDay].title}</h3>
+            <p className="text-body text-text-secondary mt-1">{aerospacePatterns[currentDay].pattern}</p>
+          </motion.div>
+        )}
 
         {/* Seasons */}
         <motion.div
@@ -134,6 +255,7 @@ export default function RoadmapPage() {
 
           <div className="space-y-4 pt-2">
             <div>
+              <p className="text-caption text-text-muted mb-1">{selectedWeek?.dayRange}</p>
               <h4 className="text-caption text-primary mb-1">This week's objective</h4>
               <p className="text-body text-text-secondary">{selectedWeek?.objective}</p>
             </div>
@@ -151,7 +273,7 @@ export default function RoadmapPage() {
             </div>
 
             <Button variant="cta" size="full" onClick={handleStartWeek}>
-              Start Week
+              {selectedWeek?.status === "current" ? "Continue Learning" : "Start Week"}
             </Button>
           </div>
         </DialogContent>

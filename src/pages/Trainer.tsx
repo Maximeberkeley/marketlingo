@@ -1,38 +1,149 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2, Brain } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TrainerCard } from "@/components/trainer/TrainerCard";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
-const mockScenario = {
-  scenario:
-    "A well-funded AI startup has built a successful code completion tool with 100K developers using it daily. OpenAI just announced a competing feature that integrates directly into VS Code. The startup has 18 months of runway and 50 employees.",
-  question: "What should the startup prioritize in the next 90 days?",
-  options: [
-    { label: "Double down on marketing to acquire users before OpenAI's feature launches", isCorrect: false },
-    { label: "Pivot to enterprise sales where integration depth matters more than brand", isCorrect: true },
-    { label: "Raise an emergency bridge round to extend runway and weather the storm", isCorrect: false },
-    { label: "Open-source the product to build community moat against closed alternatives", isCorrect: false },
-  ],
-  feedbackProReasoning:
-    "Enterprise deals provide revenue stability and switching costs that consumer products lack. When a platform player enters your market, the race to commoditization accelerates for consumer products. Enterprise customers value integration depth, compliance, and support—areas where startups can differentiate.",
-  feedbackCommonMistake: "Trying to out-market a platform player with 100x your resources.",
-  feedbackMentalModel: "Distribution beats product when platforms compete. Find defensible niches.",
-  followUpQuestion: "What specific enterprise verticals would be most defensible against OpenAI?",
-};
+interface TrainerScenario {
+  id: string;
+  scenario: string;
+  question: string;
+  options: { label: string; isCorrect: boolean }[];
+  feedback_pro_reasoning: string | null;
+  feedback_common_mistake: string | null;
+  feedback_mental_model: string | null;
+  follow_up_question: string | null;
+  correct_option_index: number;
+}
 
 export default function TrainerPage() {
   const navigate = useNavigate();
-  const [currentScenario, setCurrentScenario] = useState(mockScenario);
+  const { user } = useAuth();
+  const [scenarios, setScenarios] = useState<TrainerScenario[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
 
-  const handleSaveToNotebook = () => {
+  useEffect(() => {
+    const fetchScenarios = async () => {
+      if (!user) return;
+
+      // Get user's selected market
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("selected_market")
+        .eq("id", user.id)
+        .single();
+
+      const market = profile?.selected_market || "aerospace";
+      setSelectedMarket(market);
+
+      // Fetch trainer scenarios for this market
+      const { data, error } = await supabase
+        .from("trainer_scenarios")
+        .select("*")
+        .eq("market_id", market)
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching scenarios:", error);
+      } else {
+        const formattedScenarios = (data || []).map((s) => ({
+          ...s,
+          options: Array.isArray(s.options) 
+            ? (s.options as { label: string; isCorrect: boolean }[])
+            : [],
+        }));
+        setScenarios(formattedScenarios);
+      }
+      setLoading(false);
+    };
+
+    fetchScenarios();
+  }, [user]);
+
+  const currentScenario = scenarios[currentIndex];
+
+  const handleSaveToNotebook = async () => {
+    if (!user || !currentScenario) return;
+
+    await supabase.from("notes").insert({
+      user_id: user.id,
+      content: `Trainer insight: ${currentScenario.feedback_mental_model || currentScenario.scenario}`,
+      linked_label: `Trainer · ${currentScenario.question.substring(0, 30)}...`,
+    });
+
     toast.success("Saved to notebook!");
   };
 
   const handleNext = () => {
-    toast.success("Loading next scenario...");
-    // In real app, fetch next scenario
+    if (currentIndex < scenarios.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    } else {
+      toast.success("All scenarios completed! 🎉");
+      setCurrentIndex(0);
+    }
+  };
+
+  const handleAttemptComplete = async (isCorrect: boolean, selectedOption: number) => {
+    if (!user || !currentScenario) return;
+
+    await supabase.from("trainer_attempts").insert({
+      user_id: user.id,
+      scenario_id: currentScenario.id,
+      selected_option: selectedOption,
+      is_correct: isCorrect,
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (scenarios.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+        >
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+            <ArrowLeft size={24} className="text-text-secondary" />
+          </button>
+          <h1 className="text-h2 text-text-primary">Trainer</h1>
+        </motion.div>
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center">
+            <Brain size={48} className="mx-auto mb-4 text-text-muted" />
+            <h2 className="text-h2 text-text-primary mb-2">No scenarios available</h2>
+            <p className="text-body text-text-secondary">Complete more lessons to unlock trainer scenarios!</p>
+            <Button className="mt-4" onClick={() => navigate("/home")}>
+              Back to Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Transform to TrainerCard expected format
+  const cardScenario = {
+    scenario: currentScenario.scenario,
+    question: currentScenario.question,
+    options: currentScenario.options,
+    feedbackProReasoning: currentScenario.feedback_pro_reasoning || "",
+    feedbackCommonMistake: currentScenario.feedback_common_mistake || "",
+    feedbackMentalModel: currentScenario.feedback_mental_model || "",
+    followUpQuestion: currentScenario.follow_up_question || "",
   };
 
   return (
@@ -46,7 +157,12 @@ export default function TrainerPage() {
         <button onClick={() => navigate(-1)} className="p-2 -ml-2">
           <ArrowLeft size={24} className="text-text-secondary" />
         </button>
-        <h1 className="text-h2 text-text-primary">Trainer</h1>
+        <div className="flex-1">
+          <h1 className="text-h2 text-text-primary">Trainer</h1>
+          <p className="text-caption text-text-muted">
+            Scenario {currentIndex + 1} of {scenarios.length}
+          </p>
+        </div>
       </motion.div>
 
       {/* Content */}
@@ -57,7 +173,7 @@ export default function TrainerPage() {
         className="flex-1 screen-padding py-6 overflow-auto"
       >
         <TrainerCard
-          scenario={currentScenario}
+          scenario={cardScenario}
           onSaveToNotebook={handleSaveToNotebook}
           onNext={handleNext}
         />

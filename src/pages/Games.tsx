@@ -1,60 +1,115 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Gamepad2, Trophy, Target, Zap, CheckCircle } from "lucide-react";
+import { ArrowLeft, Gamepad2, Trophy, Target, Zap, CheckCircle, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface GameQuestion {
-  id: number;
+  id: string;
   type: "match" | "timeline" | "predict";
   question: string;
   options: string[];
   correctAnswer: number;
   explanation: string;
+  pattern: string;
 }
-
-const mockGameQuestions: GameQuestion[] = [
-  {
-    id: 1,
-    type: "match",
-    question: "Match the company to its main AI product:",
-    options: ["ChatGPT", "Claude", "Gemini", "Llama"],
-    correctAnswer: 0,
-    explanation: "ChatGPT is OpenAI's flagship conversational AI product.",
-  },
-  {
-    id: 2,
-    type: "timeline",
-    question: "Which came first in the AI timeline?",
-    options: ["GPT-3 Launch", "ChatGPT Launch", "GPT-4 Launch", "Claude 3 Launch"],
-    correctAnswer: 0,
-    explanation: "GPT-3 was launched in June 2020, starting the LLM revolution.",
-  },
-  {
-    id: 3,
-    type: "predict",
-    question: "What's the most likely next move for AI chip startups?",
-    options: [
-      "Focus on inference-only chips",
-      "Compete directly with NVIDIA",
-      "Target edge computing",
-      "Exit to hyperscalers",
-    ],
-    correctAnswer: 2,
-    explanation: "Edge computing offers differentiation without direct competition with NVIDIA.",
-  },
-];
 
 export default function GamesPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [questions, setQuestions] = useState<GameQuestion[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
+  const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
 
-  const question = mockGameQuestions[currentQuestion];
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user) return;
+
+      // Get user's selected market
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("selected_market")
+        .eq("id", user.id)
+        .single();
+
+      const market = profile?.selected_market || "aerospace";
+      setSelectedMarket(market);
+
+      // Fetch stacks with DAILY_GAME tag for this market
+      const { data: stacks, error } = await supabase
+        .from("stacks")
+        .select(`
+          id,
+          title,
+          tags,
+          slides (
+            id,
+            slide_number,
+            title,
+            body
+          )
+        `)
+        .eq("market_id", market)
+        .contains("tags", ["DAILY_GAME"])
+        .not("published_at", "is", null)
+        .order("created_at", { ascending: true })
+        .limit(5);
+
+      if (error) {
+        console.error("Error fetching games:", error);
+        setLoading(false);
+        return;
+      }
+
+      // Transform stacks into game questions
+      const gameQuestions: GameQuestion[] = (stacks || []).map((stack, index) => {
+        const slides = (stack.slides as any[]) || [];
+        const sortedSlides = slides.sort((a, b) => a.slide_number - b.slide_number);
+        
+        // Create question from stack content
+        const questionSlide = sortedSlides[0]?.body || stack.title;
+        const patternSlide = sortedSlides.find(s => s.body?.toLowerCase().includes("pattern:"));
+        const pattern = patternSlide?.body?.replace(/pattern:\s*/i, "") || stack.title;
+
+        // Generate options from slides
+        const options = sortedSlides.slice(1, 5).map(s => s.body?.substring(0, 60) + "..." || s.title);
+        
+        // Determine question type based on position
+        const types: Array<"match" | "timeline" | "predict"> = ["match", "timeline", "predict"];
+        const type = types[index % 3];
+
+        return {
+          id: stack.id,
+          type,
+          question: `${stack.title}: ${questionSlide.substring(0, 100)}`,
+          options: options.length >= 4 ? options : [
+            options[0] || "Option A",
+            options[1] || "Option B", 
+            options[2] || "Option C",
+            options[3] || "Option D"
+          ],
+          correctAnswer: 0,
+          explanation: sortedSlides[sortedSlides.length - 1]?.body || pattern,
+          pattern,
+        };
+      });
+
+      setQuestions(gameQuestions.length > 0 ? gameQuestions : []);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [user]);
+
+  const question = questions[currentQuestion];
   const isCorrect = selectedAnswer === question?.correctAnswer;
 
   const handleAnswer = (index: number) => {
@@ -67,14 +122,28 @@ export default function GamesPage() {
     }
   };
 
-  const handleNext = () => {
-    if (currentQuestion < mockGameQuestions.length - 1) {
+  const handleNext = async () => {
+    if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
       setSelectedAnswer(null);
       setShowResult(false);
     } else {
       setGameComplete(true);
-      toast.success(`Game complete! Score: ${score + (isCorrect ? 1 : 0)}/${mockGameQuestions.length}`);
+      const finalScore = score + (isCorrect ? 1 : 0);
+      
+      // Save progress to database
+      if (user && selectedMarket) {
+        await supabase.from("games_progress").upsert({
+          user_id: user.id,
+          market_id: selectedMarket,
+          game_type: "pattern_match",
+          score: finalScore,
+          level: 1,
+          completed_at: new Date().toISOString(),
+        }, { onConflict: "user_id,market_id,game_type" });
+      }
+      
+      toast.success(`Game complete! Score: ${finalScore}/${questions.length}`);
     }
   };
 
@@ -90,6 +159,41 @@ export default function GamesPage() {
         return <Gamepad2 size={16} />;
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+        >
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+            <ArrowLeft size={24} className="text-text-secondary" />
+          </button>
+          <h1 className="text-h2 text-text-primary">Games</h1>
+        </motion.div>
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center">
+            <Gamepad2 size={48} className="mx-auto mb-4 text-text-muted" />
+            <h2 className="text-h2 text-text-primary mb-2">No games available</h2>
+            <p className="text-body text-text-secondary">Complete more lessons to unlock games!</p>
+            <Button className="mt-4" onClick={() => navigate("/home")}>
+              Back to Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (gameComplete) {
     return (
@@ -116,7 +220,7 @@ export default function GamesPage() {
             </div>
             <h2 className="text-h2 text-text-primary mb-2">Game Complete!</h2>
             <p className="text-body text-text-secondary mb-6">
-              You scored {score}/{mockGameQuestions.length}
+              You scored {score}/{questions.length}
             </p>
             <div className="flex gap-3">
               <Button variant="secondary" className="flex-1" onClick={() => navigate("/home")}>
@@ -155,7 +259,7 @@ export default function GamesPage() {
         <div className="flex-1">
           <h1 className="text-h2 text-text-primary">Games</h1>
           <p className="text-caption text-text-muted">
-            Question {currentQuestion + 1} of {mockGameQuestions.length}
+            Question {currentQuestion + 1} of {questions.length}
           </p>
         </div>
         <div className="chip-accent flex items-center gap-1">
@@ -170,7 +274,7 @@ export default function GamesPage() {
           <motion.div
             className="progress-thin-fill"
             initial={{ width: 0 }}
-            animate={{ width: `${((currentQuestion + 1) / mockGameQuestions.length) * 100}%` }}
+            animate={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
           />
         </div>
       </div>
@@ -189,6 +293,7 @@ export default function GamesPage() {
                 {getGameIcon(question.type)}
                 {question.type.toUpperCase()}
               </span>
+              <span className="chip">{question.pattern}</span>
             </div>
 
             <h2 className="text-h2 text-text-primary mb-6">{question.question}</h2>
@@ -264,7 +369,7 @@ export default function GamesPage() {
                   </div>
 
                   <Button className="w-full mt-4" onClick={handleNext}>
-                    {currentQuestion < mockGameQuestions.length - 1 ? "Next Question" : "See Results"}
+                    {currentQuestion < questions.length - 1 ? "Next Question" : "See Results"}
                   </Button>
                 </motion.div>
               )}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Cpu, ChevronRight, Gamepad2, Target, FileText, Sparkles } from "lucide-react";
+import { Cpu, ChevronRight, Gamepad2, Target, FileText, Sparkles, Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { StackCard } from "@/components/ui/StackCard";
@@ -11,56 +11,19 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserProgress } from "@/hooks/useUserProgress";
 import { supabase } from "@/integrations/supabase/client";
 
-// Mock data for demo
-const mockDailyBrief = {
-  title: "Today's Market Brief",
-  subtitle: "5 minutes • 6 slides",
-  headline: "OpenAI launches GPT-5, reshaping enterprise AI adoption",
-  slides: [
-    {
-      slideNumber: 1,
-      title: "What happened",
-      body: "OpenAI announced GPT-5 with significantly improved reasoning capabilities and a 200K context window. Enterprise customers get early access, while consumer rollout follows in 30 days.",
-      sources: [{ label: "Reuters", url: "#" }, { label: "OpenAI Blog", url: "#" }],
-    },
-    {
-      slideNumber: 2,
-      title: "Why it matters for AI",
-      body: "This release intensifies the foundation model race. Microsoft's $10B investment now shows clear ROI. Competing labs must accelerate or specialize to maintain relevance.",
-      sources: [{ label: "The Information", url: "#" }],
-    },
-    {
-      slideNumber: 3,
-      title: "Historical parallel",
-      body: "Mirrors AWS's 2006 EC2 launch—when cloud became inevitable. Companies that hesitated on cloud migration lost 3-5 years. Similar timeline pressure emerges for AI adoption.",
-      sources: [{ label: "HBR Archive", url: "#" }],
-    },
-    {
-      slideNumber: 4,
-      title: "Pro POV",
-      body: "Interpretation: Enterprise AI budgets will consolidate around fewer vendors. The 'best-of-breed' approach yields to platform plays. Watch for acquisition of specialized AI startups.",
-      sources: [{ label: "a16z", url: "#" }],
-    },
-    {
-      slideNumber: 5,
-      title: "Startup implication",
-      body: "Startups building on GPT-4 need migration plans. Those with proprietary data moats gain leverage. Pure wrapper plays face existential pressure within 12 months.",
-      sources: [{ label: "Crunchbase", url: "#" }],
-    },
-    {
-      slideNumber: 6,
-      title: "Reflection",
-      body: "Consider: How would your portfolio companies be affected? Which bets become stronger, which weaker?",
-      sources: [],
-    },
-  ],
-};
-
-const savedInsights = [
-  "AI chip shortage timeline",
-  "NVIDIA moat analysis",
-  "Enterprise AI spend",
-];
+interface StackWithSlides {
+  id: string;
+  title: string;
+  stack_type: string;
+  tags: string[];
+  duration_minutes: number;
+  slides: {
+    slide_number: number;
+    title: string;
+    body: string;
+    sources: { label: string; url: string }[];
+  }[];
+}
 
 const marketIcons: Record<string, React.ReactNode> = {
   ai: <Cpu size={20} className="text-primary" />,
@@ -96,7 +59,11 @@ export default function HomePage() {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const { progress, completeStack } = useUserProgress(selectedMarket || undefined);
   const [showReader, setShowReader] = useState(false);
-  const [lessonProgress, setLessonProgress] = useState(40);
+  const [loading, setLoading] = useState(true);
+  const [todayStack, setTodayStack] = useState<StackWithSlides | null>(null);
+  const [lessonStack, setLessonStack] = useState<StackWithSlides | null>(null);
+  const [savedInsights, setSavedInsights] = useState<string[]>([]);
+  const [activeStack, setActiveStack] = useState<StackWithSlides | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -104,7 +71,7 @@ export default function HomePage() {
       return;
     }
 
-    const fetchMarket = async () => {
+    const fetchData = async () => {
       if (!user) return;
 
       // Check profile for selected market
@@ -117,35 +84,165 @@ export default function HomePage() {
       if (profile?.selected_market) {
         setSelectedMarket(profile.selected_market);
       } else {
-        // Check localStorage as fallback
         const stored = localStorage.getItem("selectedMarket");
         if (stored) {
           setSelectedMarket(stored);
-          // Sync to profile
           await supabase
             .from("profiles")
             .update({ selected_market: stored })
             .eq("id", user.id);
         } else {
           navigate("/select-market");
+          return;
         }
       }
+
+      const market = profile?.selected_market || localStorage.getItem("selectedMarket") || "aerospace";
+
+      // Fetch today's daily stack (DAILY_GAME type)
+      const { data: dailyStacks } = await supabase
+        .from("stacks")
+        .select(`
+          id,
+          title,
+          stack_type,
+          tags,
+          duration_minutes,
+          slides (
+            slide_number,
+            title,
+            body,
+            sources
+          )
+        `)
+        .eq("market_id", market)
+        .contains("tags", ["DAILY_GAME"])
+        .not("published_at", "is", null)
+        .order("created_at", { ascending: true })
+        .limit(1);
+
+      if (dailyStacks && dailyStacks.length > 0) {
+        const stack = dailyStacks[0];
+        setTodayStack({
+          ...stack,
+          tags: stack.tags || [],
+          slides: ((stack.slides as any[]) || [])
+            .sort((a, b) => a.slide_number - b.slide_number)
+            .map(s => ({
+              ...s,
+              sources: Array.isArray(s.sources) ? s.sources : [],
+            })),
+        });
+      }
+
+      // Fetch lesson stack (MICRO_LESSON type)
+      const { data: lessonStacks } = await supabase
+        .from("stacks")
+        .select(`
+          id,
+          title,
+          stack_type,
+          tags,
+          duration_minutes,
+          slides (
+            slide_number,
+            title,
+            body,
+            sources
+          )
+        `)
+        .eq("market_id", market)
+        .contains("tags", ["MICRO_LESSON"])
+        .not("published_at", "is", null)
+        .order("created_at", { ascending: true })
+        .limit(1);
+
+      if (lessonStacks && lessonStacks.length > 0) {
+        const stack = lessonStacks[0];
+        setLessonStack({
+          ...stack,
+          tags: stack.tags || [],
+          slides: ((stack.slides as any[]) || [])
+            .sort((a, b) => a.slide_number - b.slide_number)
+            .map(s => ({
+              ...s,
+              sources: Array.isArray(s.sources) ? s.sources : [],
+            })),
+        });
+      }
+
+      // Fetch saved insights
+      const { data: insights } = await supabase
+        .from("saved_insights")
+        .select("title")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+      if (insights) {
+        setSavedInsights(insights.map(i => i.title));
+      }
+
+      setLoading(false);
     };
 
-    fetchMarket();
+    fetchData();
   }, [user, authLoading, navigate]);
 
   const handleStackComplete = async () => {
     setShowReader(false);
-    if (progress) {
-      await completeStack("mock-stack-id");
+    if (progress && activeStack) {
+      await completeStack(activeStack.id);
     }
     toast.success("Stack completed! Streak updated 🔥");
+  };
+
+  const handleOpenStack = (stack: StackWithSlides) => {
+    setActiveStack(stack);
+    setShowReader(true);
+  };
+
+  const handleSaveInsight = async (slideNum: number) => {
+    if (!user || !activeStack) return;
+
+    const slide = activeStack.slides[slideNum - 1];
+    await supabase.from("saved_insights").insert({
+      user_id: user.id,
+      title: slide?.title || `Insight from ${activeStack.title}`,
+      content: slide?.body,
+      stack_id: activeStack.id,
+    });
+
+    toast.success(`Insight saved from slide ${slideNum}`);
+  };
+
+  const handleAddNote = async (slideNum: number) => {
+    if (!user || !activeStack) return;
+
+    const slide = activeStack.slides[slideNum - 1];
+    await supabase.from("notes").insert({
+      user_id: user.id,
+      content: slide?.body || "",
+      linked_label: `${activeStack.stack_type} · Day · Slide ${slideNum}`,
+      stack_id: activeStack.id,
+    });
+
+    toast.success(`Note added for slide ${slideNum}`);
   };
 
   const streak = progress?.current_streak || 0;
   const marketName = selectedMarket ? marketNames[selectedMarket] || "AI Industry" : "AI Industry";
   const marketIcon = selectedMarket ? marketIcons[selectedMarket] : marketIcons.ai;
+
+  if (loading || authLoading) {
+    return (
+      <AppLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -172,12 +269,21 @@ export default function HomePage() {
           transition={{ delay: 0.1 }}
           className="mb-4"
         >
-          <StackCard
-            title={mockDailyBrief.title}
-            subtitle={mockDailyBrief.subtitle}
-            headline={mockDailyBrief.headline}
-            onClick={() => setShowReader(true)}
-          />
+          {todayStack ? (
+            <StackCard
+              title="Today's Pattern"
+              subtitle={`${todayStack.duration_minutes || 5} minutes • ${todayStack.slides.length} slides`}
+              headline={todayStack.title}
+              onClick={() => handleOpenStack(todayStack)}
+            />
+          ) : (
+            <StackCard
+              title="Today's Pattern"
+              subtitle="Loading..."
+              headline="Fetching your daily content"
+              onClick={() => {}}
+            />
+          )}
         </motion.div>
 
         {/* Lesson of the Week */}
@@ -187,13 +293,22 @@ export default function HomePage() {
           transition={{ delay: 0.15 }}
           className="mb-4"
         >
-          <StackCard
-            title="Lesson of the Week"
-            subtitle="7 minutes • 1 stack"
-            progress={lessonProgress}
-            ctaText="Continue"
-            onClick={() => setShowReader(true)}
-          />
+          {lessonStack ? (
+            <StackCard
+              title="Micro Lesson"
+              subtitle={`${lessonStack.duration_minutes || 7} minutes • ${lessonStack.slides.length} slides`}
+              headline={lessonStack.title}
+              ctaText="Start"
+              onClick={() => handleOpenStack(lessonStack)}
+            />
+          ) : (
+            <StackCard
+              title="Micro Lesson"
+              subtitle="Coming soon"
+              ctaText="Locked"
+              onClick={() => {}}
+            />
+          )}
         </motion.div>
 
         {/* Feature Cards Grid */}
@@ -269,31 +384,42 @@ export default function HomePage() {
             </button>
           </div>
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
-            {savedInsights.map((insight, index) => (
-              <motion.span
-                key={insight}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 + index * 0.05 }}
-                className="chip whitespace-nowrap"
-              >
-                {insight}
-              </motion.span>
-            ))}
+            {savedInsights.length > 0 ? (
+              savedInsights.map((insight, index) => (
+                <motion.span
+                  key={insight}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 + index * 0.05 }}
+                  className="chip whitespace-nowrap"
+                >
+                  {insight}
+                </motion.span>
+              ))
+            ) : (
+              <span className="text-caption text-text-muted">
+                Complete stacks to save insights
+              </span>
+            )}
           </div>
         </motion.div>
       </div>
 
       {/* Slide Reader Modal */}
-      {showReader && (
+      {showReader && activeStack && (
         <SlideReader
-          stackTitle={mockDailyBrief.headline}
-          stackType="NEWS"
-          slides={mockDailyBrief.slides}
+          stackTitle={activeStack.title}
+          stackType={activeStack.stack_type as "NEWS" | "HISTORY" | "LESSON"}
+          slides={activeStack.slides.map(s => ({
+            slideNumber: s.slide_number,
+            title: s.title,
+            body: s.body,
+            sources: s.sources,
+          }))}
           onClose={() => setShowReader(false)}
           onComplete={handleStackComplete}
-          onSaveInsight={(slideNum) => toast.success(`Insight saved from slide ${slideNum}`)}
-          onAddNote={(slideNum) => toast.success(`Note added for slide ${slideNum}`)}
+          onSaveInsight={handleSaveInsight}
+          onAddNote={handleAddNote}
         />
       )}
     </AppLayout>
