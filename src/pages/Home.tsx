@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Cpu, ChevronRight } from "lucide-react";
+import { Cpu, ChevronRight, Gamepad2, Target, FileText, Sparkles } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { StackCard } from "@/components/ui/StackCard";
 import { SlideReader } from "@/components/slides/SlideReader";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
+import { useUserProgress } from "@/hooks/useUserProgress";
+import { supabase } from "@/integrations/supabase/client";
 
 // Mock data for demo
 const mockDailyBrief = {
@@ -59,45 +62,94 @@ const savedInsights = [
   "Enterprise AI spend",
 ];
 
+const marketIcons: Record<string, React.ReactNode> = {
+  ai: <Cpu size={20} className="text-primary" />,
+  fintech: <span className="text-primary">💳</span>,
+  ev: <span className="text-primary">⚡</span>,
+  biotech: <span className="text-primary">🧬</span>,
+  energy: <span className="text-primary">☀️</span>,
+  mobile: <span className="text-primary">📱</span>,
+  agtech: <span className="text-primary">🌱</span>,
+  aerospace: <span className="text-primary">🚀</span>,
+  creator: <span className="text-primary">🎨</span>,
+  ecommerce: <span className="text-primary">🛒</span>,
+  gaming: <span className="text-primary">🎮</span>,
+};
+
+const marketNames: Record<string, string> = {
+  ai: "AI Industry",
+  fintech: "Fintech",
+  ev: "Electric Vehicles",
+  biotech: "Biotech",
+  energy: "Clean Energy",
+  mobile: "Mobile Tech",
+  agtech: "AgTech",
+  aerospace: "Aerospace",
+  creator: "Creator Economy",
+  ecommerce: "E-commerce",
+  gaming: "Gaming",
+};
+
 export default function HomePage() {
   const navigate = useNavigate();
-  const [marketName, setMarketName] = useState("AI Industry");
-  const [streak, setStreak] = useState(7);
+  const { user, loading: authLoading } = useAuth();
+  const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
+  const { progress, completeStack } = useUserProgress(selectedMarket || undefined);
   const [showReader, setShowReader] = useState(false);
   const [lessonProgress, setLessonProgress] = useState(40);
 
   useEffect(() => {
-    const stored = localStorage.getItem("selectedMarket");
-    if (!stored) {
+    if (!authLoading && !user) {
       navigate("/");
       return;
     }
-    // Map market ID to display name
-    const marketNames: Record<string, string> = {
-      ai: "AI Industry",
-      fintech: "Fintech",
-      ev: "Electric Vehicles",
-      biotech: "Biotech",
-      energy: "Clean Energy",
-      mobile: "Mobile Tech",
-      agtech: "AgTech",
-      aerospace: "Aerospace",
-      creator: "Creator Economy",
-      ecommerce: "E-commerce",
-      gaming: "Gaming",
-    };
-    setMarketName(marketNames[stored] || "AI Industry");
-  }, [navigate]);
 
-  const handleStackComplete = () => {
+    const fetchMarket = async () => {
+      if (!user) return;
+
+      // Check profile for selected market
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("selected_market")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.selected_market) {
+        setSelectedMarket(profile.selected_market);
+      } else {
+        // Check localStorage as fallback
+        const stored = localStorage.getItem("selectedMarket");
+        if (stored) {
+          setSelectedMarket(stored);
+          // Sync to profile
+          await supabase
+            .from("profiles")
+            .update({ selected_market: stored })
+            .eq("id", user.id);
+        } else {
+          navigate("/select-market");
+        }
+      }
+    };
+
+    fetchMarket();
+  }, [user, authLoading, navigate]);
+
+  const handleStackComplete = async () => {
     setShowReader(false);
-    setStreak((prev) => prev + 1);
+    if (progress) {
+      await completeStack("mock-stack-id");
+    }
     toast.success("Stack completed! Streak updated 🔥");
   };
 
+  const streak = progress?.current_streak || 0;
+  const marketName = selectedMarket ? marketNames[selectedMarket] || "AI Industry" : "AI Industry";
+  const marketIcon = selectedMarket ? marketIcons[selectedMarket] : marketIcons.ai;
+
   return (
     <AppLayout>
-      <div className="screen-padding pt-12">
+      <div className="screen-padding pt-12 safe-bottom">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -106,7 +158,7 @@ export default function HomePage() {
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-button bg-primary/20 flex items-center justify-center">
-              <Cpu size={20} className="text-primary" />
+              {marketIcon}
             </div>
             <span className="text-h3 text-text-primary">{marketName}</span>
           </div>
@@ -144,19 +196,60 @@ export default function HomePage() {
           />
         </motion.div>
 
-        {/* Trainer Card */}
+        {/* Feature Cards Grid */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mb-8"
+          className="grid grid-cols-2 gap-3 mb-6"
         >
-          <StackCard
-            title="Trainer"
-            subtitle="2 minutes • Reasoning drill"
-            ctaText="Test myself"
+          {/* Games */}
+          <button
+            onClick={() => navigate("/games")}
+            className="card-interactive flex flex-col items-start"
+          >
+            <div className="w-10 h-10 rounded-button bg-amber-500/20 flex items-center justify-center mb-3">
+              <Gamepad2 size={20} className="text-amber-400" />
+            </div>
+            <h3 className="text-h3 text-text-primary mb-1">Games</h3>
+            <p className="text-caption text-text-muted">Test your knowledge</p>
+          </button>
+
+          {/* Drills */}
+          <button
+            onClick={() => navigate("/drills")}
+            className="card-interactive flex flex-col items-start"
+          >
+            <div className="w-10 h-10 rounded-button bg-emerald-500/20 flex items-center justify-center mb-3">
+              <Target size={20} className="text-emerald-400" />
+            </div>
+            <h3 className="text-h3 text-text-primary mb-1">Drills</h3>
+            <p className="text-caption text-text-muted">Quick fact checks</p>
+          </button>
+
+          {/* Summaries */}
+          <button
+            onClick={() => navigate("/summaries")}
+            className="card-interactive flex flex-col items-start"
+          >
+            <div className="w-10 h-10 rounded-button bg-blue-500/20 flex items-center justify-center mb-3">
+              <FileText size={20} className="text-blue-400" />
+            </div>
+            <h3 className="text-h3 text-text-primary mb-1">Summaries</h3>
+            <p className="text-caption text-text-muted">Daily/Weekly recaps</p>
+          </button>
+
+          {/* Trainer */}
+          <button
             onClick={() => navigate("/trainer")}
-          />
+            className="card-interactive flex flex-col items-start"
+          >
+            <div className="w-10 h-10 rounded-button bg-purple-500/20 flex items-center justify-center mb-3">
+              <Sparkles size={20} className="text-purple-400" />
+            </div>
+            <h3 className="text-h3 text-text-primary mb-1">Trainer</h3>
+            <p className="text-caption text-text-muted">Reasoning drills</p>
+          </button>
         </motion.div>
 
         {/* Saved Insights */}
@@ -167,7 +260,10 @@ export default function HomePage() {
         >
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-h3 text-text-primary">Saved Insights</h2>
-            <button className="flex items-center gap-1 text-caption text-primary">
+            <button 
+              className="flex items-center gap-1 text-caption text-primary"
+              onClick={() => navigate("/notebook")}
+            >
               View all
               <ChevronRight size={14} />
             </button>
