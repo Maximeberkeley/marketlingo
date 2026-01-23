@@ -183,9 +183,21 @@ export function CompanyDetailSheet({ company, onClose }: CompanyDetailSheetProps
                   <div className="flex flex-col h-full justify-center">
                     <div className="space-y-6">
                       <div className="flex items-center gap-2">
-                        <Briefcase size={16} className="text-accent" />
-                        <p className="text-caption text-accent uppercase tracking-wider">
-                          Insight {currentSlide} of {company.slides.length}
+                        {company.slides[currentSlide - 1].type === "competitive" ? (
+                          <Target size={16} className="text-amber-400" />
+                        ) : company.slides[currentSlide - 1].type === "investment" ? (
+                          <TrendingUp size={16} className="text-emerald-400" />
+                        ) : (
+                          <Briefcase size={16} className="text-accent" />
+                        )}
+                        <p className={cn(
+                          "text-caption uppercase tracking-wider",
+                          company.slides[currentSlide - 1].type === "competitive" ? "text-amber-400" :
+                          company.slides[currentSlide - 1].type === "investment" ? "text-emerald-400" : "text-accent"
+                        )}>
+                          {company.slides[currentSlide - 1].type === "competitive" ? "Competitive Analysis" :
+                           company.slides[currentSlide - 1].type === "investment" ? "Investment Thesis" :
+                           `Insight ${currentSlide} of ${company.slides.length}`}
                         </p>
                       </div>
                       

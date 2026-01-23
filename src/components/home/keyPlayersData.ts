@@ -2,6 +2,7 @@ export interface CompanySlide {
   title: string;
   content: string;
   highlight?: string;
+  type?: "insight" | "competitive" | "investment";
 }
 
 export interface Company {
@@ -17,7 +18,6 @@ export interface Company {
   marketCap?: string;
   keyProducts: string[];
   recentNews?: string;
-  // New fields for deeper understanding
   segment: "commercial" | "defense" | "space" | "propulsion" | "suppliers" | "services";
   industryRole: string;
   slides: CompanySlide[];
@@ -51,10 +51,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["737 MAX", "787 Dreamliner", "777X", "Defense & Space"],
       recentNews: "Focus on safety improvements and production ramp-up of 737 MAX",
       slides: [
-        { title: "Industry Giant", content: "Boeing commands ~40% of the global commercial aircraft market, delivering 500+ aircraft annually. Their backlog exceeds $500B.", highlight: "$500B+ backlog" },
-        { title: "Vertical Integration", content: "Unlike Airbus, Boeing owns more of its supply chain, from fuselages to avionics. This gives them control but also concentration risk.", highlight: "Vertically integrated" },
-        { title: "Defense Pillar", content: "Boeing's defense segment generates ~40% of revenue, providing stability during commercial downturns. Key programs include F-15EX and KC-46 tanker.", highlight: "40% defense revenue" },
-        { title: "Space Ambitions", content: "Through Starliner and Space Launch System (SLS), Boeing is NASA's primary commercial crew partner alongside SpaceX.", highlight: "NASA partner" },
+        { title: "Industry Giant", content: "Boeing commands ~40% of the global commercial aircraft market, delivering 500+ aircraft annually. Their backlog exceeds $500B.", highlight: "$500B+ backlog", type: "insight" },
+        { title: "Vertical Integration", content: "Unlike Airbus, Boeing owns more of its supply chain, from fuselages to avionics. This gives them control but also concentration risk.", highlight: "Vertically integrated", type: "insight" },
+        { title: "Defense Pillar", content: "Boeing's defense segment generates ~40% of revenue, providing stability during commercial downturns. Key programs include F-15EX and KC-46 tanker.", highlight: "40% defense revenue", type: "insight" },
+        { title: "Space Ambitions", content: "Through Starliner and Space Launch System (SLS), Boeing is NASA's primary commercial crew partner alongside SpaceX.", highlight: "NASA partner", type: "insight" },
+        { title: "Competitive Position", content: "Boeing trails Airbus in orders but dominates wide-body with 787/777. Quality issues have eroded trust. Main threats: Airbus execution, COMAC long-term.", highlight: "Wide-body leader", type: "competitive" },
+        { title: "Investment Thesis", content: "Turnaround play with new CEO. Massive backlog provides visibility. Key risks: quality execution, MAX reputation, defense cost overruns. Buy on stabilization.", highlight: "Turnaround story", type: "investment" },
       ],
       keyStats: [
         { label: "Aircraft Delivered (2024)", value: "528" },
@@ -79,10 +81,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["A320neo", "A350", "A380", "Helicopters"],
       recentNews: "Record deliveries and strong order backlog exceeding 8,000 aircraft",
       slides: [
-        { title: "Market Leader", content: "Airbus delivered 735 aircraft in 2023, outselling Boeing. Their A320neo family dominates the single-aisle segment with 60%+ market share.", highlight: "735 deliveries in 2023" },
-        { title: "European Champion", content: "Backed by France, Germany, Spain, and UK governments, Airbus represents European aerospace sovereignty and employs 130,000+ across the continent.", highlight: "Pan-European" },
-        { title: "Innovation Focus", content: "Leading the ZEROe hydrogen aircraft initiative, targeting zero-emission commercial flight by 2035. Also investing heavily in sustainable aviation fuels.", highlight: "Hydrogen by 2035" },
-        { title: "Helicopter Dominance", content: "Airbus Helicopters is the world's largest civil and parapublic helicopter manufacturer with 50%+ market share.", highlight: "#1 in helicopters" },
+        { title: "Market Leader", content: "Airbus delivered 735 aircraft in 2023, outselling Boeing. Their A320neo family dominates the single-aisle segment with 60%+ market share.", highlight: "735 deliveries in 2023", type: "insight" },
+        { title: "European Champion", content: "Backed by France, Germany, Spain, and UK governments, Airbus represents European aerospace sovereignty and employs 130,000+ across the continent.", highlight: "Pan-European", type: "insight" },
+        { title: "Innovation Focus", content: "Leading the ZEROe hydrogen aircraft initiative, targeting zero-emission commercial flight by 2035. Also investing heavily in sustainable aviation fuels.", highlight: "Hydrogen by 2035", type: "insight" },
+        { title: "Helicopter Dominance", content: "Airbus Helicopters is the world's largest civil and parapublic helicopter manufacturer with 50%+ market share.", highlight: "#1 in helicopters", type: "insight" },
+        { title: "Competitive Position", content: "Winning the single-aisle war with A320neo. Boeing's troubles gift market share. Risks: supply chain constraints, engine availability limiting production ramp.", highlight: "Single-aisle winner", type: "competitive" },
+        { title: "Investment Thesis", content: "Premium aerospace franchise with pricing power. Decade of deliveries locked in. Trade at premium to Boeing for good reason. Best pure-play on aviation recovery.", highlight: "Quality compounder", type: "investment" },
       ],
       keyStats: [
         { label: "Aircraft Delivered (2023)", value: "735" },
@@ -107,10 +111,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["E-Jet E2", "Phenom", "Praetor", "KC-390"],
       recentNews: "E2 family gaining orders as airlines seek right-sized aircraft",
       slides: [
-        { title: "Regional King", content: "Embraer controls ~60% of the regional jet market with its E-Jet family. Airlines choose them when 737/A320 capacity is too large.", highlight: "60% regional market" },
-        { title: "Executive Jets", content: "Their Phenom and Praetor lines compete with Bombardier and Gulfstream in the lucrative business jet segment.", highlight: "Business aviation" },
-        { title: "Defense Export", content: "The KC-390 military transport is gaining traction as a C-130 alternative, with orders from Portugal, Hungary, and Netherlands.", highlight: "KC-390 exports" },
-        { title: "Failed Boeing Deal", content: "A 2020 merger with Boeing's commercial division collapsed, leaving Embraer independent but stronger, now exploring partnerships.", highlight: "Independent survivor" },
+        { title: "Regional King", content: "Embraer controls ~60% of the regional jet market with its E-Jet family. Airlines choose them when 737/A320 capacity is too large.", highlight: "60% regional market", type: "insight" },
+        { title: "Executive Jets", content: "Their Phenom and Praetor lines compete with Bombardier and Gulfstream in the lucrative business jet segment.", highlight: "Business aviation", type: "insight" },
+        { title: "Defense Export", content: "The KC-390 military transport is gaining traction as a C-130 alternative, with orders from Portugal, Hungary, and Netherlands.", highlight: "KC-390 exports", type: "insight" },
+        { title: "Failed Boeing Deal", content: "A 2020 merger with Boeing's commercial division collapsed, leaving Embraer independent but stronger, now exploring partnerships.", highlight: "Independent survivor", type: "insight" },
+        { title: "Competitive Position", content: "Owns the regional niche Boeing/Airbus abandoned. Bombardier exit strengthens position. Threat: airlines up-gauging to A220/MAX.", highlight: "Niche dominance", type: "competitive" },
+        { title: "Investment Thesis", content: "Undervalued relative to peers. E2 cycle ramping. Defense exports diversify. Potential M&A target. Brazilian currency adds volatility.", highlight: "Undervalued niche", type: "investment" },
       ],
       keyStats: [
         { label: "Aircraft Delivered (2023)", value: "181" },
@@ -136,10 +142,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["F-35 Lightning II", "C-130 Hercules", "Missiles & Fire Control", "Sikorsky Helicopters"],
       recentNews: "F-35 production ramping to 156 jets/year, massive international demand",
       slides: [
-        { title: "Defense Titan", content: "Lockheed receives more U.S. defense dollars than any other company—$75B+ annually. The F-35 alone is a $1.7 trillion lifetime program.", highlight: "$1.7T F-35 program" },
-        { title: "F-35 Dominance", content: "The F-35 is the backbone of Western air power, with 900+ delivered to 18 nations. It's the most expensive weapon system in history.", highlight: "900+ F-35s delivered" },
-        { title: "Space Systems", content: "Lockheed builds GPS satellites, missile warning systems, and the Orion spacecraft for NASA's Artemis moon missions.", highlight: "Artemis partner" },
-        { title: "Hypersonic Race", content: "Leading U.S. hypersonic weapons development with programs like ARRW and Dark Eagle, competing with China and Russia.", highlight: "Hypersonic leader" },
+        { title: "Defense Titan", content: "Lockheed receives more U.S. defense dollars than any other company—$75B+ annually. The F-35 alone is a $1.7 trillion lifetime program.", highlight: "$1.7T F-35 program", type: "insight" },
+        { title: "F-35 Dominance", content: "The F-35 is the backbone of Western air power, with 900+ delivered to 18 nations. It's the most expensive weapon system in history.", highlight: "900+ F-35s delivered", type: "insight" },
+        { title: "Space Systems", content: "Lockheed builds GPS satellites, missile warning systems, and the Orion spacecraft for NASA's Artemis moon missions.", highlight: "Artemis partner", type: "insight" },
+        { title: "Hypersonic Race", content: "Leading U.S. hypersonic weapons development with programs like ARRW and Dark Eagle, competing with China and Russia.", highlight: "Hypersonic leader", type: "insight" },
+        { title: "Competitive Position", content: "Unassailable in 5th-gen fighters. F-35 lock-in creates 50+ year revenue stream. Northrop and RTX compete in missiles/space but not aircraft.", highlight: "Fighter monopoly", type: "competitive" },
+        { title: "Investment Thesis", content: "Defense budget tailwinds for decade. F-35 annuity business. 3% dividend yield. Low beta hedge. Limited upside but sleep-well-at-night defense.", highlight: "Defense bond", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$67.6B" },
@@ -164,10 +172,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["B-21 Raider", "James Webb Telescope", "Global Hawk", "Sentinel ICBM"],
       recentNews: "B-21 Raider stealth bomber unveiled, production ramping up",
       slides: [
-        { title: "Stealth Pioneer", content: "Northrop built the B-2 Spirit and now the B-21 Raider—the world's most advanced stealth bombers. Only they have this capability.", highlight: "Only B-21 maker" },
-        { title: "Nuclear Triad", content: "Building the Sentinel ICBM to replace Minuteman III, a $100B+ program ensuring U.S. nuclear deterrence for decades.", highlight: "$100B Sentinel" },
-        { title: "Space Excellence", content: "Built the James Webb Space Telescope and key components for national security satellites. Space revenue is ~25% of total.", highlight: "James Webb builder" },
-        { title: "Autonomous Systems", content: "Global Hawk drones have flown 500,000+ hours. MQ-4C Triton expands Navy surveillance capabilities globally.", highlight: "500K+ drone hours" },
+        { title: "Stealth Pioneer", content: "Northrop built the B-2 Spirit and now the B-21 Raider—the world's most advanced stealth bombers. Only they have this capability.", highlight: "Only B-21 maker", type: "insight" },
+        { title: "Nuclear Triad", content: "Building the Sentinel ICBM to replace Minuteman III, a $100B+ program ensuring U.S. nuclear deterrence for decades.", highlight: "$100B Sentinel", type: "insight" },
+        { title: "Space Excellence", content: "Built the James Webb Space Telescope and key components for national security satellites. Space revenue is ~25% of total.", highlight: "James Webb builder", type: "insight" },
+        { title: "Autonomous Systems", content: "Global Hawk drones have flown 500,000+ hours. MQ-4C Triton expands Navy surveillance capabilities globally.", highlight: "500K+ drone hours", type: "insight" },
+        { title: "Competitive Position", content: "Sole-source on B-21 and Sentinel—crown jewels. Competes with Lockheed on space, RTX on missiles. Moat in stealth unmatched.", highlight: "Stealth monopoly", type: "competitive" },
+        { title: "Investment Thesis", content: "Highest-quality defense franchise. B-21 and Sentinel provide 30+ year visibility. Premium valuation deserved. Add on pullbacks.", highlight: "Premium defense", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$39.3B" },
@@ -192,10 +202,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Patriot Missiles", "Stinger", "Pratt & Whitney Engines", "Collins Aerospace"],
       recentNews: "Massive demand for Patriot systems and Stinger missiles due to Ukraine conflict",
       slides: [
-        { title: "Merged Giant", content: "2020 merger of Raytheon (missiles) and United Technologies (Pratt engines, Collins avionics) created a $70B+ revenue powerhouse.", highlight: "$70B+ revenue" },
-        { title: "Missile Monopoly", content: "Raytheon makes Patriot, Stinger, Tomahawk, and AMRAAM missiles. Ukraine conflict depleted inventories, creating years of backlog.", highlight: "Ukraine surge" },
-        { title: "Engine Empire", content: "Pratt & Whitney powers 25% of commercial aircraft (A320neo, 787) and 100% of F-35s. A critical strategic asset.", highlight: "25% of aircraft" },
-        { title: "Avionics Leader", content: "Collins Aerospace supplies cockpits, sensors, and systems to virtually every major aircraft program globally.", highlight: "Universal supplier" },
+        { title: "Merged Giant", content: "2020 merger of Raytheon (missiles) and United Technologies (Pratt engines, Collins avionics) created a $70B+ revenue powerhouse.", highlight: "$70B+ revenue", type: "insight" },
+        { title: "Missile Monopoly", content: "Raytheon makes Patriot, Stinger, Tomahawk, and AMRAAM missiles. Ukraine conflict depleted inventories, creating years of backlog.", highlight: "Ukraine surge", type: "insight" },
+        { title: "Engine Empire", content: "Pratt & Whitney powers 25% of commercial aircraft (A320neo, 787) and 100% of F-35s. A critical strategic asset.", highlight: "25% of aircraft", type: "insight" },
+        { title: "Avionics Leader", content: "Collins Aerospace supplies cockpits, sensors, and systems to virtually every major aircraft program globally.", highlight: "Universal supplier", type: "insight" },
+        { title: "Competitive Position", content: "Only Lockheed competes broadly. Pratt duopoly with GE. Collins near-monopoly on avionics. GTF engine issues temporary headwind.", highlight: "Diversified leader", type: "competitive" },
+        { title: "Investment Thesis", content: "Best balance of defense + commercial. Ukraine restocking drives missiles. Pratt issues priced in. Dividend aristocrat. Core holding.", highlight: "Balanced exposure", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$68.9B" },
@@ -220,10 +232,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Virginia-class Submarines", "Abrams Tank", "Gulfstream Jets", "IT Services"],
       recentNews: "Columbia-class submarine program critical to nuclear deterrence",
       slides: [
-        { title: "Submarine Maker", content: "Electric Boat division is one of only two U.S. submarine builders. Columbia-class boomers are a $130B program for nuclear deterrence.", highlight: "$130B submarine program" },
-        { title: "Ground Combat", content: "The M1 Abrams tank remains the West's premier main battle tank. Stryker vehicles provide Army mobility globally.", highlight: "Abrams dominance" },
-        { title: "Gulfstream Luxury", content: "Gulfstream business jets ($50M-$75M each) generate high margins and consistent cash flow, insulating from defense cycles.", highlight: "High-margin jets" },
-        { title: "IT Giant", content: "GDIT provides cloud, cyber, and AI services to U.S. government agencies—a stable, growing $10B+ business.", highlight: "$10B+ IT services" },
+        { title: "Submarine Maker", content: "Electric Boat division is one of only two U.S. submarine builders. Columbia-class boomers are a $130B program for nuclear deterrence.", highlight: "$130B submarine program", type: "insight" },
+        { title: "Ground Combat", content: "The M1 Abrams tank remains the West's premier main battle tank. Stryker vehicles provide Army mobility globally.", highlight: "Abrams dominance", type: "insight" },
+        { title: "Gulfstream Luxury", content: "Gulfstream business jets ($50M-$75M each) generate high margins and consistent cash flow, insulating from defense cycles.", highlight: "High-margin jets", type: "insight" },
+        { title: "IT Giant", content: "GDIT provides cloud, cyber, and AI services to U.S. government agencies—a stable, growing $10B+ business.", highlight: "$10B+ IT services", type: "insight" },
+        { title: "Competitive Position", content: "Duopoly in subs with Huntington Ingalls. Only Abrams maker. Gulfstream competes with Bombardier/Dassault at top end.", highlight: "Irreplaceable assets", type: "competitive" },
+        { title: "Investment Thesis", content: "Most diversified defense name. Gulfstream cycle turning up. Submarine demand locked in. Consistent capital returns. Steady compounder.", highlight: "Diversified compounder", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$42.3B" },
@@ -248,10 +262,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Tactical Radios", "Electronic Warfare", "ISR Systems", "Space & Airborne"],
       recentNews: "Acquiring Aerojet Rocketdyne to add propulsion capabilities",
       slides: [
-        { title: "Comms Backbone", content: "L3Harris radios connect U.S. and allied forces worldwide. Their AN/PRC-163 is the next-gen soldier radio.", highlight: "Next-gen radios" },
-        { title: "Electronic Warfare", content: "Critical for jamming enemy radar and communications. EW capabilities are essential in modern peer conflicts.", highlight: "EW specialist" },
-        { title: "Aerojet Acquisition", content: "Acquiring Aerojet Rocketdyne for $4.7B adds missile propulsion, creating a more vertically integrated defense prime.", highlight: "$4.7B acquisition" },
-        { title: "Space Focus", content: "Building resilient space systems for missile tracking and communications that can survive adversary attacks.", highlight: "Resilient space" },
+        { title: "Comms Backbone", content: "L3Harris radios connect U.S. and allied forces worldwide. Their AN/PRC-163 is the next-gen soldier radio.", highlight: "Next-gen radios", type: "insight" },
+        { title: "Electronic Warfare", content: "Critical for jamming enemy radar and communications. EW capabilities are essential in modern peer conflicts.", highlight: "EW specialist", type: "insight" },
+        { title: "Aerojet Acquisition", content: "Acquiring Aerojet Rocketdyne for $4.7B adds missile propulsion, creating a more vertically integrated defense prime.", highlight: "$4.7B acquisition", type: "insight" },
+        { title: "Space Focus", content: "Building resilient space systems for missile tracking and communications that can survive adversary attacks.", highlight: "Resilient space", type: "insight" },
+        { title: "Competitive Position", content: "Competes with RTX on sensors, Northrop on space. Radio franchise unmatched. Aerojet deal adds propulsion moat.", highlight: "Radio leader", type: "competitive" },
+        { title: "Investment Thesis", content: "Growth-ier defense name. EW and space are hot areas. Aerojet integration risk. Smaller scale than mega-primes. Higher beta.", highlight: "Growth defense", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$19.4B" },
@@ -276,10 +292,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Typhoon Fighter", "Astute Submarines", "Electronic Systems", "M777 Howitzer"],
       recentNews: "Major beneficiary of European defense spending surge post-Ukraine",
       slides: [
-        { title: "Transatlantic Power", content: "45% of BAE revenue comes from the U.S., where they're a major defense contractor. True Five Eyes integration.", highlight: "45% U.S. revenue" },
-        { title: "Typhoon Program", content: "Lead partner on Eurofighter Typhoon, competing with F-35 for European orders. 600+ delivered.", highlight: "Typhoon leader" },
-        { title: "AUKUS Partner", content: "Central to AUKUS submarine deal, helping Australia build nuclear-powered subs—a generational $368B program.", highlight: "AUKUS critical" },
-        { title: "Land Systems", content: "Major artillery and armored vehicle provider to U.S. Army and allies. M777 howitzer used extensively in Ukraine.", highlight: "M777 in Ukraine" },
+        { title: "Transatlantic Power", content: "45% of BAE revenue comes from the U.S., where they're a major defense contractor. True Five Eyes integration.", highlight: "45% U.S. revenue", type: "insight" },
+        { title: "Typhoon Program", content: "Lead partner on Eurofighter Typhoon, competing with F-35 for European orders. 600+ delivered.", highlight: "Typhoon leader", type: "insight" },
+        { title: "AUKUS Partner", content: "Central to AUKUS submarine deal, helping Australia build nuclear-powered subs—a generational $368B program.", highlight: "AUKUS critical", type: "insight" },
+        { title: "Land Systems", content: "Major artillery and armored vehicle provider to U.S. Army and allies. M777 howitzer used extensively in Ukraine.", highlight: "M777 in Ukraine", type: "insight" },
+        { title: "Competitive Position", content: "UK national champion with transatlantic reach. Competes with U.S. primes but often partners. AUKUS is unique advantage.", highlight: "UK champion", type: "competitive" },
+        { title: "Investment Thesis", content: "Best European defense play. GBP-denominated. European rearmament tailwind for decade. AUKUS optionality. Value vs U.S. peers.", highlight: "Europe defense play", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "£25.3B" },
@@ -304,10 +322,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Falcon 9", "Starship", "Starlink", "Dragon"],
       recentNews: "Starship development accelerating, Starlink approaching 6,000 satellites",
       slides: [
-        { title: "Launch Dominance", content: "SpaceX launched 96 rockets in 2023—more than the rest of the world combined. Falcon 9 is the most reliable rocket in history.", highlight: "96 launches in 2023" },
-        { title: "Reusability Revolution", content: "Falcon 9 boosters have landed 250+ times and flown 20+ missions each. This slashed launch costs from $200M to under $70M.", highlight: "250+ landings" },
-        { title: "Starlink Empire", content: "5,500+ satellites provide global internet. $6B+ annual revenue, profitable, and funding Starship development.", highlight: "$6B+ Starlink revenue" },
-        { title: "Starship Vision", content: "Fully reusable Starship aims for $10M per launch—enabling Mars colonization and point-to-point Earth travel.", highlight: "$10M per launch goal" },
+        { title: "Launch Dominance", content: "SpaceX launched 96 rockets in 2023—more than the rest of the world combined. Falcon 9 is the most reliable rocket in history.", highlight: "96 launches in 2023", type: "insight" },
+        { title: "Reusability Revolution", content: "Falcon 9 boosters have landed 250+ times and flown 20+ missions each. This slashed launch costs from $200M to under $70M.", highlight: "250+ landings", type: "insight" },
+        { title: "Starlink Empire", content: "5,500+ satellites provide global internet. $6B+ annual revenue, profitable, and funding Starship development.", highlight: "$6B+ Starlink revenue", type: "insight" },
+        { title: "Starship Vision", content: "Fully reusable Starship aims for $10M per launch—enabling Mars colonization and point-to-point Earth travel.", highlight: "$10M per launch goal", type: "insight" },
+        { title: "Competitive Position", content: "No true competitor in launch tempo or cost. ULA, Ariane, China are years behind. Starlink faces Amazon Kuiper. Key-man risk with Musk.", highlight: "Unmatched lead", type: "competitive" },
+        { title: "Investment Thesis", content: "Private. Secondary shares at $200B+ valuation. Starlink could IPO separately. Transformational company but rich valuation and Musk risk.", highlight: "Private, pricey", type: "investment" },
       ],
       keyStats: [
         { label: "Launches (2024)", value: "130+" },
@@ -331,10 +351,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["New Shepard", "New Glenn", "Blue Moon Lander", "BE-4 Engine"],
       recentNews: "New Glenn first launch imminent, BE-4 engines powering Vulcan",
       slides: [
-        { title: "Gradatim Ferociter", content: "Blue Origin's motto means 'Step by Step, Ferociously.' Unlike SpaceX's move-fast approach, they prioritize methodical development.", highlight: "Methodical approach" },
-        { title: "New Glenn Coming", content: "New Glenn is a heavy-lift rocket with reusable first stage, targeting Falcon Heavy competition. First launch expected 2024.", highlight: "Heavy-lift competitor" },
-        { title: "Artemis Partner", content: "Blue Origin leads the National Team for Artemis lunar landers—a $3.4B contract competing with SpaceX's Starship.", highlight: "$3.4B lunar contract" },
-        { title: "BE-4 Milestone", content: "BE-4 engines power both New Glenn and ULA's Vulcan rocket, making Blue Origin a critical propulsion supplier.", highlight: "Engine supplier" },
+        { title: "Gradatim Ferociter", content: "Blue Origin's motto means 'Step by Step, Ferociously.' Unlike SpaceX's move-fast approach, they prioritize methodical development.", highlight: "Methodical approach", type: "insight" },
+        { title: "New Glenn Coming", content: "New Glenn is a heavy-lift rocket with reusable first stage, targeting Falcon Heavy competition. First launch expected 2024.", highlight: "Heavy-lift competitor", type: "insight" },
+        { title: "Artemis Partner", content: "Blue Origin leads the National Team for Artemis lunar landers—a $3.4B contract competing with SpaceX's Starship.", highlight: "$3.4B lunar contract", type: "insight" },
+        { title: "BE-4 Milestone", content: "BE-4 engines power both New Glenn and ULA's Vulcan rocket, making Blue Origin a critical propulsion supplier.", highlight: "Engine supplier", type: "insight" },
+        { title: "Competitive Position", content: "Years behind SpaceX in launch cadence. Bezos funding removes capital constraints. Execution track record is main question mark.", highlight: "Funded but slow", type: "competitive" },
+        { title: "Investment Thesis", content: "Private. Bezos personal project—unclear if ever public. BE-4 engine sales provide some revenue. Speculative long-term play.", highlight: "Bezos project", type: "investment" },
       ],
       keyStats: [
         { label: "Bezos Investment", value: "$10B+" },
@@ -359,10 +381,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Electron Rocket", "Neutron Rocket", "Photon Spacecraft", "Space Systems"],
       recentNews: "Neutron medium-lift rocket development progressing, targeting 2025 launch",
       slides: [
-        { title: "Small Sat Leader", content: "Electron is the second most frequently launched U.S. rocket after Falcon 9. 50+ successful missions at ~$7.5M each.", highlight: "50+ Electron launches" },
-        { title: "Neutron Ambitions", content: "Neutron is an 8-ton reusable rocket targeting rideshare and constellation markets—directly competing with Falcon 9.", highlight: "Falcon 9 competitor" },
-        { title: "Vertical Integration", content: "Rocket Lab builds its own engines, structures, avionics, and spacecraft. This control enables faster iteration.", highlight: "Fully integrated" },
-        { title: "Space Systems Growth", content: "Photon spacecraft and components business growing faster than launch. Building satellites for NASA and commercial customers.", highlight: "Beyond launch" },
+        { title: "Small Sat Leader", content: "Electron is the second most frequently launched U.S. rocket after Falcon 9. 50+ successful missions at ~$7.5M each.", highlight: "50+ Electron launches", type: "insight" },
+        { title: "Neutron Ambitions", content: "Neutron is an 8-ton reusable rocket targeting rideshare and constellation markets—directly competing with Falcon 9.", highlight: "Falcon 9 competitor", type: "insight" },
+        { title: "Vertical Integration", content: "Rocket Lab builds its own engines, structures, avionics, and spacecraft. This control enables faster iteration.", highlight: "Fully integrated", type: "insight" },
+        { title: "Space Systems Growth", content: "Photon spacecraft and components business growing faster than launch. Building satellites for NASA and commercial customers.", highlight: "Beyond launch", type: "insight" },
+        { title: "Competitive Position", content: "Electron unmatched for dedicated small-sat. Neutron vs Falcon 9 is uphill battle. Space systems is differentiation.", highlight: "Unique positioning", type: "competitive" },
+        { title: "Investment Thesis", content: "Only pure-play public space company of scale. Neutron is make-or-break. Peter Beck is exceptional founder. High risk, high reward.", highlight: "High beta space", type: "investment" },
       ],
       keyStats: [
         { label: "Electron Launches", value: "55+" },
@@ -386,10 +410,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Vulcan Centaur", "Atlas V", "Delta IV Heavy"],
       recentNews: "Vulcan Centaur certified for national security missions after successful debut",
       slides: [
-        { title: "100% Success", content: "ULA has never lost a primary payload in 150+ missions. This perfect record makes them essential for irreplaceable national security satellites.", highlight: "150+ perfect missions" },
-        { title: "Vulcan Transition", content: "Vulcan Centaur replaces Atlas V (Russian engines) and Delta IV (expensive). Uses Blue Origin BE-4 engines, 50% cost reduction.", highlight: "50% cost reduction" },
-        { title: "National Security", content: "50% of revenue from national security launches—GPS, missile warning, and spy satellites that can't risk failure.", highlight: "Critical NatSec role" },
-        { title: "Amazon Kuiper", content: "Largest commercial contract ever: 38 Vulcan launches for Amazon's Kuiper constellation, valued at $2B+.", highlight: "$2B+ Kuiper deal" },
+        { title: "100% Success", content: "ULA has never lost a primary payload in 150+ missions. This perfect record makes them essential for irreplaceable national security satellites.", highlight: "150+ perfect missions", type: "insight" },
+        { title: "Vulcan Transition", content: "Vulcan Centaur replaces Atlas V (Russian engines) and Delta IV (expensive). Uses Blue Origin BE-4 engines, 50% cost reduction.", highlight: "50% cost reduction", type: "insight" },
+        { title: "National Security", content: "50% of revenue from national security launches—GPS, missile warning, and spy satellites that can't risk failure.", highlight: "Critical NatSec role", type: "insight" },
+        { title: "Amazon Kuiper", content: "Largest commercial contract ever: 38 Vulcan launches for Amazon's Kuiper constellation, valued at $2B+.", highlight: "$2B+ Kuiper deal", type: "insight" },
+        { title: "Competitive Position", content: "SpaceX is cheaper but ULA has unblemished record for NatSec. Vulcan must prove reliability to maintain share. Captive to parents.", highlight: "Reliability moat", type: "competitive" },
+        { title: "Investment Thesis", content: "Private JV—no direct investment. Boeing and Lockheed Martin exposure. Could be acquired or spun out if parents need cash.", highlight: "Parent exposure only", type: "investment" },
       ],
       keyStats: [
         { label: "Consecutive Successes", value: "150+" },
@@ -415,10 +441,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["LEAP", "GE9X", "CF6", "GE90"],
       recentNews: "Spun off as standalone company in 2024, record engine orders",
       slides: [
-        { title: "Engine Duopoly", content: "GE and Pratt & Whitney control virtually all large commercial jet engines. CFM (GE-Safran JV) powers 75% of single-aisle jets.", highlight: "75% of single-aisle" },
-        { title: "LEAP Dominance", content: "LEAP engine powers A320neo and 737 MAX—25,000+ engines on order. Most successful engine launch ever.", highlight: "25,000+ LEAP orders" },
-        { title: "Services Goldmine", content: "Engine maintenance contracts generate 60% of profits. Airlines are locked in for 20+ years per engine type.", highlight: "60% profit from services" },
-        { title: "GE9X Record", content: "GE9X is the world's largest and most powerful commercial jet engine, exclusively powering the Boeing 777X.", highlight: "Largest engine ever" },
+        { title: "Engine Duopoly", content: "GE and Pratt & Whitney control virtually all large commercial jet engines. CFM (GE-Safran JV) powers 75% of single-aisle jets.", highlight: "75% of single-aisle", type: "insight" },
+        { title: "LEAP Dominance", content: "LEAP engine powers A320neo and 737 MAX—25,000+ engines on order. Most successful engine launch ever.", highlight: "25,000+ LEAP orders", type: "insight" },
+        { title: "Services Goldmine", content: "Engine maintenance contracts generate 60% of profits. Airlines are locked in for 20+ years per engine type.", highlight: "60% profit from services", type: "insight" },
+        { title: "GE9X Record", content: "GE9X is the world's largest and most powerful commercial jet engine, exclusively powering the Boeing 777X.", highlight: "Largest engine ever", type: "insight" },
+        { title: "Competitive Position", content: "Duopoly with Pratt on large engines. GE has 60%+ commercial share. Pratt GTF issues helping GE win more. Rolls-Royce distant third.", highlight: "60%+ share leader", type: "competitive" },
+        { title: "Investment Thesis", content: "Best aerospace pure-play post spin-off. Aftermarket razor/blade model is exceptional. Trade travel recovery. Premium deserved.", highlight: "Quality franchise", type: "investment" },
       ],
       keyStats: [
         { label: "Engines in Service", value: "44,000+" },
@@ -443,10 +471,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["CFM LEAP (with GE)", "Landing Gear", "Aircraft Interiors", "Nacelles"],
       recentNews: "LEAP production ramping to meet Airbus and Boeing demand",
       slides: [
-        { title: "CFM Partnership", content: "The CFM 50/50 joint venture with GE is the most successful engine partnership in history. LEAP has 25,000+ orders.", highlight: "50/50 with GE" },
-        { title: "Beyond Engines", content: "Safran also leads in landing gear (40% global share), nacelles, and aircraft interiors—diversified aerospace exposure.", highlight: "40% landing gear share" },
-        { title: "French Champion", content: "Strategic importance to France means government support for R&D. Leading RISE open-fan engine development for 2035.", highlight: "RISE engine development" },
-        { title: "Defense Segment", content: "Guidance systems, drones, and optronics for military applications. M88 engine powers Rafale fighter jets.", highlight: "Rafale engines" },
+        { title: "CFM Partnership", content: "The CFM 50/50 joint venture with GE is the most successful engine partnership in history. LEAP has 25,000+ orders.", highlight: "50/50 with GE", type: "insight" },
+        { title: "Beyond Engines", content: "Safran also leads in landing gear (40% global share), nacelles, and aircraft interiors—diversified aerospace exposure.", highlight: "40% landing gear share", type: "insight" },
+        { title: "French Champion", content: "Strategic importance to France means government support for R&D. Leading RISE open-fan engine development for 2035.", highlight: "RISE engine development", type: "insight" },
+        { title: "Defense Segment", content: "Guidance systems, drones, and optronics for military applications. M88 engine powers Rafale fighter jets.", highlight: "Rafale engines", type: "insight" },
+        { title: "Competitive Position", content: "Tied at hip with GE on CFM. Landing gear duopoly with Collins. Interiors fragmented. Strong across segments.", highlight: "Multi-segment leader", type: "competitive" },
+        { title: "Investment Thesis", content: "European aerospace champion. CFM cash flows excellent. EUR-denominated diversification. Trades at premium but quality deserves it.", highlight: "Euro aerospace", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "€23.2B" },
@@ -471,10 +501,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Trent XWB", "Trent 1000", "Pearl Engines", "Nuclear Submarines"],
       recentNews: "Turnaround succeeding, wide-body engine demand recovering strongly",
       slides: [
-        { title: "Wide-Body Focus", content: "Trent engines exclusively power Airbus A350 and compete on Boeing 787. Recovery in long-haul flying boosting demand.", highlight: "A350 exclusive" },
-        { title: "Business Jets", content: "Pearl engine family powers Gulfstream and Bombardier business jets—the fastest-growing segment.", highlight: "Biz jet growth" },
-        { title: "Nuclear Power", content: "Powers all Royal Navy nuclear submarines. Developing small modular reactors (SMRs) for civil power generation.", highlight: "SMR development" },
-        { title: "Turnaround Story", content: "New CEO driving cultural transformation. Margins improving, free cash flow returning. Stock up 200%+ from 2022 lows.", highlight: "200%+ stock gain" },
+        { title: "Wide-Body Focus", content: "Trent engines exclusively power Airbus A350 and compete on Boeing 787. Recovery in long-haul flying boosting demand.", highlight: "A350 exclusive", type: "insight" },
+        { title: "Business Jets", content: "Pearl engine family powers Gulfstream and Bombardier business jets—the fastest-growing segment.", highlight: "Biz jet growth", type: "insight" },
+        { title: "Nuclear Power", content: "Powers all Royal Navy nuclear submarines. Developing small modular reactors (SMRs) for civil power generation.", highlight: "SMR development", type: "insight" },
+        { title: "Turnaround Story", content: "New CEO driving cultural transformation. Margins improving, free cash flow returning. Stock up 200%+ from 2022 lows.", highlight: "200%+ stock gain", type: "insight" },
+        { title: "Competitive Position", content: "Weak vs GE/Pratt in narrow-body. Captive on A350 but loses 787 share to GE. Biz jets and defense are hedges.", highlight: "Wide-body niche", type: "competitive" },
+        { title: "Investment Thesis", content: "Turnaround in progress. Long-haul recovery helps. SMR optionality undervalued. High operating leverage cuts both ways.", highlight: "Turnaround play", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "£15.4B" },
@@ -500,10 +532,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["737 Fuselages", "A350 Wing Components", "787 Structures", "Defense"],
       recentNews: "Being reacquired by Boeing following quality issues",
       slides: [
-        { title: "Fuselage Maker", content: "Spirit builds 70% of every 737 structure—nose, fuselage, engine pylons. No 737 flies without Spirit.", highlight: "70% of 737 structure" },
-        { title: "Quality Crisis", content: "2024 door plug incident on 737 MAX traced to Spirit quality issues. Boeing now reacquiring the company.", highlight: "Quality turnaround" },
-        { title: "Airbus Work", content: "Also supplies A350 wing components and A220 structures. Diversification beyond Boeing reduces concentration risk.", highlight: "Airbus diversification" },
-        { title: "Strategic Importance", content: "Only company that can build 737 fuselages at scale. Critical national security asset for commercial aviation supply chain.", highlight: "Irreplaceable supplier" },
+        { title: "Fuselage Maker", content: "Spirit builds 70% of every 737 structure—nose, fuselage, engine pylons. No 737 flies without Spirit.", highlight: "70% of 737 structure", type: "insight" },
+        { title: "Quality Crisis", content: "2024 door plug incident on 737 MAX traced to Spirit quality issues. Boeing now reacquiring the company.", highlight: "Quality turnaround", type: "insight" },
+        { title: "Airbus Work", content: "Also supplies A350 wing components and A220 structures. Diversification beyond Boeing reduces concentration risk.", highlight: "Airbus diversification", type: "insight" },
+        { title: "Strategic Importance", content: "Only company that can build 737 fuselages at scale. Critical national security asset for commercial aviation supply chain.", highlight: "Irreplaceable supplier", type: "insight" },
+        { title: "Competitive Position", content: "Sole-source on 737 fuselages. Competes with Tier 1 suppliers on other work. Boeing reacquisition removes independence.", highlight: "Boeing captive", type: "competitive" },
+        { title: "Investment Thesis", content: "Being acquired by Boeing—limited upside. If deal fails, distressed asset. Quality issues persist. Avoid for new positions.", highlight: "M&A situation", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$6.0B" },
@@ -528,10 +562,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Turbine Blades", "Fasteners", "Titanium Structures", "Forged Wheels"],
       recentNews: "Engine aftermarket demand driving record margins",
       slides: [
-        { title: "Engine Guts", content: "Howmet's single-crystal turbine blades and superalloy components are in every LEAP and Trent engine. Decades of metallurgy expertise.", highlight: "In every engine" },
-        { title: "Fastener Monopoly", content: "80% market share in aerospace fasteners. Billions of fasteners hold aircraft together—specification lock-in prevents switching.", highlight: "80% fastener share" },
-        { title: "Margin Expansion", content: "Engine aftermarket growing 15%+ annually as flying hours increase. High-margin spare parts and repairs.", highlight: "15%+ aftermarket growth" },
-        { title: "Defense Hedge", content: "30% of revenue from defense applications—F-35, missile systems, helicopter engines. Stable government spending.", highlight: "30% defense" },
+        { title: "Engine Guts", content: "Howmet's single-crystal turbine blades and superalloy components are in every LEAP and Trent engine. Decades of metallurgy expertise.", highlight: "In every engine", type: "insight" },
+        { title: "Fastener Monopoly", content: "80% market share in aerospace fasteners. Billions of fasteners hold aircraft together—specification lock-in prevents switching.", highlight: "80% fastener share", type: "insight" },
+        { title: "Margin Expansion", content: "Engine aftermarket growing 15%+ annually as flying hours increase. High-margin spare parts and repairs.", highlight: "15%+ aftermarket growth", type: "insight" },
+        { title: "Defense Hedge", content: "30% of revenue from defense applications—F-35, missile systems, helicopter engines. Stable government spending.", highlight: "30% defense", type: "insight" },
+        { title: "Competitive Position", content: "Near-monopoly in key engine components. Precision Castparts (Berkshire) is main competitor. Switching costs astronomical.", highlight: "Component monopoly", type: "competitive" },
+        { title: "Investment Thesis", content: "Best aerospace supplier. Hidden compounder. Engine aftermarket is perpetual royalty. Valuation stretched but quality premium.", highlight: "Hidden champion", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$6.0B" },
@@ -556,10 +592,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Actuators", "Ignition Systems", "Connectors", "Lighting"],
       recentNews: "Continuing acquisition spree, 50% EBITDA margins maintained",
       slides: [
-        { title: "Moat Master", content: "TransDigm only buys sole-source, proprietary parts businesses. Once on an aircraft, parts are specified for 30+ years.", highlight: "30+ year lock-in" },
-        { title: "Pricing Power", content: "Known for aggressive aftermarket pricing—parts inflation far exceeds general inflation. Pentagon has criticized practices.", highlight: "Pricing controversy" },
-        { title: "50% Margins", content: "Highest EBITDA margins in aerospace at 50%+. Private equity DNA focuses relentlessly on profitability.", highlight: "50%+ EBITDA margin" },
-        { title: "Acquisition Machine", content: "90+ acquisitions since IPO. Playbook: buy proprietary parts business, raise prices, expand margins, repeat.", highlight: "90+ acquisitions" },
+        { title: "Moat Master", content: "TransDigm only buys sole-source, proprietary parts businesses. Once on an aircraft, parts are specified for 30+ years.", highlight: "30+ year lock-in", type: "insight" },
+        { title: "Pricing Power", content: "Known for aggressive aftermarket pricing—parts inflation far exceeds general inflation. Pentagon has criticized practices.", highlight: "Pricing controversy", type: "insight" },
+        { title: "50% Margins", content: "Highest EBITDA margins in aerospace at 50%+. Private equity DNA focuses relentlessly on profitability.", highlight: "50%+ EBITDA margin", type: "insight" },
+        { title: "Acquisition Machine", content: "90+ acquisitions since IPO. Playbook: buy proprietary parts business, raise prices, expand margins, repeat.", highlight: "90+ acquisitions", type: "insight" },
+        { title: "Competitive Position", content: "HEICO is only real competitor with different strategy (cheaper PMA parts). Moat from sole-source is unbreakable.", highlight: "Sole-source fortress", type: "competitive" },
+        { title: "Investment Thesis", content: "Best business model in aerospace. Controversial but legal. Levered balance sheet is choice. Special dividends. Own for long term.", highlight: "Cash machine", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$6.6B" },
@@ -584,10 +622,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["PMA Parts", "Electronic Components", "Flight Support", "Defense Electronics"],
       recentNews: "Continuous market share gains as airlines seek cost savings",
       slides: [
-        { title: "PMA Pioneer", content: "HEICO makes Parts Manufacturer Approval (PMA) parts—FAA-certified alternatives to OEM at 30-50% lower cost.", highlight: "30-50% savings" },
-        { title: "Airline Favorite", content: "Airlines love HEICO for MRO cost reduction without compromising safety. Growing share in aftermarket.", highlight: "Airlines' choice" },
-        { title: "Family Business", content: "Mendelson family has run HEICO for 30+ years. Long-term thinking, conservative balance sheet, employee ownership.", highlight: "Family-controlled" },
-        { title: "Electronics Growth", content: "40% of revenue from electronic technologies serving defense, space, and medical markets. Diversification beyond parts.", highlight: "40% electronics" },
+        { title: "PMA Pioneer", content: "HEICO makes Parts Manufacturer Approval (PMA) parts—FAA-certified alternatives to OEM at 30-50% lower cost.", highlight: "30-50% savings", type: "insight" },
+        { title: "Airline Favorite", content: "Airlines love HEICO for MRO cost reduction without compromising safety. Growing share in aftermarket.", highlight: "Airlines' choice", type: "insight" },
+        { title: "Family Business", content: "Mendelson family has run HEICO for 30+ years. Long-term thinking, conservative balance sheet, employee ownership.", highlight: "Family-controlled", type: "insight" },
+        { title: "Electronics Growth", content: "40% of revenue from electronic technologies serving defense, space, and medical markets. Diversification beyond parts.", highlight: "40% electronics", type: "insight" },
+        { title: "Competitive Position", content: "Alternative to TransDigm model. Wins on value not pricing power. OEMs hate them. Airlines love them.", highlight: "Value alternative", type: "competitive" },
+        { title: "Investment Thesis", content: "Family compounder. 15%+ CAGR for 20+ years. Premium valuation but quality culture. Better risk/reward than TDG for some.", highlight: "Family compounder", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$2.8B" },
@@ -612,10 +652,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Flight Controls", "Actuation Systems", "Space Components", "Defense Systems"],
       recentNews: "Winning content on next-gen aircraft programs",
       slides: [
-        { title: "Flight Controls", content: "Moog actuators move ailerons, elevators, and rudders on most commercial and military aircraft. 70%+ market share.", highlight: "70%+ actuator share" },
-        { title: "Space Heritage", content: "Components on every NASA Mars mission, James Webb, and commercial satellites. 60+ years of space experience.", highlight: "Every Mars mission" },
-        { title: "Defense Growth", content: "Missile guidance, naval weapons handling, and military rotorcraft systems. 40% of revenue from defense.", highlight: "40% defense revenue" },
-        { title: "Industrial Hedge", content: "Medical devices, energy, and industrial automation provide diversification beyond aerospace cycles.", highlight: "Industrial diversity" },
+        { title: "Flight Controls", content: "Moog actuators move ailerons, elevators, and rudders on most commercial and military aircraft. 70%+ market share.", highlight: "70%+ actuator share", type: "insight" },
+        { title: "Space Heritage", content: "Components on every NASA Mars mission, James Webb, and commercial satellites. 60+ years of space experience.", highlight: "Every Mars mission", type: "insight" },
+        { title: "Defense Growth", content: "Missile guidance, naval weapons handling, and military rotorcraft systems. 40% of revenue from defense.", highlight: "40% defense revenue", type: "insight" },
+        { title: "Industrial Hedge", content: "Medical devices, energy, and industrial automation provide diversification beyond aerospace cycles.", highlight: "Industrial diversity", type: "insight" },
+        { title: "Competitive Position", content: "Leader in actuation with Parker Hannifin second. Switching costs high due to certification requirements.", highlight: "Actuation leader", type: "competitive" },
+        { title: "Investment Thesis", content: "Under-followed mid-cap. Next-gen aircraft content growing. Valuation reasonable. Industrial diversification is hedge.", highlight: "Under-followed", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$3.4B" },
@@ -640,10 +682,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Carbon Fiber", "Prepregs", "Honeycomb", "Composite Structures"],
       recentNews: "Benefiting from wide-body production ramp and composite content growth",
       slides: [
-        { title: "Composites Leader", content: "Hexcel supplies carbon fiber and advanced materials for 787, A350, and most military aircraft. 50% content on wide-bodies.", highlight: "50% of wide-body content" },
-        { title: "Weight Saver", content: "Composites reduce aircraft weight 20-30% vs aluminum, improving fuel efficiency. Critical for sustainability.", highlight: "20-30% weight savings" },
-        { title: "Qualified Supplier", content: "10+ year qualification cycles mean once specified, Hexcel content is locked in for aircraft production life.", highlight: "Locked-in supplier" },
-        { title: "Wind Energy", content: "Wind turbine blades use same composite technology. Growing revenue diversification beyond aerospace.", highlight: "Wind turbine blades" },
+        { title: "Composites Leader", content: "Hexcel supplies carbon fiber and advanced materials for 787, A350, and most military aircraft. 50% content on wide-bodies.", highlight: "50% of wide-body content", type: "insight" },
+        { title: "Weight Saver", content: "Composites reduce aircraft weight 20-30% vs aluminum, improving fuel efficiency. Critical for sustainability.", highlight: "20-30% weight savings", type: "insight" },
+        { title: "Qualified Supplier", content: "10+ year qualification cycles mean once specified, Hexcel content is locked in for aircraft production life.", highlight: "Locked-in supplier", type: "insight" },
+        { title: "Wind Energy", content: "Wind turbine blades use same composite technology. Growing revenue diversification beyond aerospace.", highlight: "Wind turbine blades", type: "insight" },
+        { title: "Competitive Position", content: "Duopoly with Toray (Japan) in aerospace composites. High barriers from qualification and IP.", highlight: "Duopoly with Toray", type: "competitive" },
+        { title: "Investment Thesis", content: "Wide-body recovery play. Composite content only grows. Cyclical with production rates. Reasonable valuation.", highlight: "Wide-body leverage", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$1.8B" },
@@ -669,10 +713,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Cessna", "Beechcraft", "Bell Helicopter", "Textron Systems"],
       recentNews: "Bell V-280 Valor selected for U.S. Army Future Long-Range Assault Aircraft",
       slides: [
-        { title: "General Aviation King", content: "Cessna Citation is the world's best-selling business jet family. Beechcraft King Air dominates turboprop market.", highlight: "#1 in business jets" },
-        { title: "Bell Rotorcraft", content: "Bell V-22 Osprey and new V-280 Valor tiltrotor aircraft. $7B FLRAA contract for 280+ Army helicopters.", highlight: "$7B FLRAA win" },
-        { title: "Diverse Portfolio", content: "Also makes unmanned systems, armored vehicles (TAPV), and simulation systems. Defense 25% of revenue.", highlight: "Diversified defense" },
-        { title: "Pilot Training", content: "Cessna trainers and piston aircraft remain essential for pilot training worldwide. Gateway to aviation careers.", highlight: "Training aircraft" },
+        { title: "General Aviation King", content: "Cessna Citation is the world's best-selling business jet family. Beechcraft King Air dominates turboprop market.", highlight: "#1 in business jets", type: "insight" },
+        { title: "Bell Rotorcraft", content: "Bell V-22 Osprey and new V-280 Valor tiltrotor aircraft. $7B FLRAA contract for 280+ Army helicopters.", highlight: "$7B FLRAA win", type: "insight" },
+        { title: "Diverse Portfolio", content: "Also makes unmanned systems, armored vehicles (TAPV), and simulation systems. Defense 25% of revenue.", highlight: "Diversified defense", type: "insight" },
+        { title: "Pilot Training", content: "Cessna trainers and piston aircraft remain essential for pilot training worldwide. Gateway to aviation careers.", highlight: "Training aircraft", type: "insight" },
+        { title: "Competitive Position", content: "Competes with Gulfstream (larger jets), Bombardier (Challenger), Dassault (Falcon). Bell vs Sikorsky/Airbus Helicopters.", highlight: "Multi-segment player", type: "competitive" },
+        { title: "Investment Thesis", content: "Sum-of-parts discount. FLRAA win undervalued. Biz jet cycle turning. Conservative balance sheet. Reasonable entry.", highlight: "Sum-of-parts value", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$13.7B" },
@@ -697,10 +743,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Defense IT", "Intelligence Services", "Health IT", "Civil Engineering"],
       recentNews: "Winning large-scale IT modernization contracts across government",
       slides: [
-        { title: "Government IT", content: "Leidos is a top provider of IT services to DOD, intelligence community, and federal agencies. $15B+ annual revenue.", highlight: "$15B+ revenue" },
-        { title: "Defense Engineering", content: "Supports aircraft maintenance, missile defense, and C4ISR systems. Engineering backbone for military operations.", highlight: "Defense engineering" },
-        { title: "Health IT", content: "Major contracts with VA and military health systems. Critical for veteran and military healthcare delivery.", highlight: "VA healthcare IT" },
-        { title: "Security Clearances", content: "47,000+ employees with security clearances create massive barrier to entry. Trusted by intelligence community.", highlight: "47K+ cleared" },
+        { title: "Government IT", content: "Leidos is a top provider of IT services to DOD, intelligence community, and federal agencies. $15B+ annual revenue.", highlight: "$15B+ revenue", type: "insight" },
+        { title: "Defense Engineering", content: "Supports aircraft maintenance, missile defense, and C4ISR systems. Engineering backbone for military operations.", highlight: "Defense engineering", type: "insight" },
+        { title: "Health IT", content: "Major contracts with VA and military health systems. Critical for veteran and military healthcare delivery.", highlight: "VA healthcare IT", type: "insight" },
+        { title: "Security Clearances", content: "47,000+ employees with security clearances create massive barrier to entry. Trusted by intelligence community.", highlight: "47K+ cleared", type: "insight" },
+        { title: "Competitive Position", content: "Competes with SAIC, Booz Allen, GDIT. Cleared workforce is moat. Contract re-competes are risk.", highlight: "Cleared workforce", type: "competitive" },
+        { title: "Investment Thesis", content: "Defense services compounder. Less exciting than hardware but steady. AI/cloud modernization tailwind. Reasonable value.", highlight: "Steady services", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$15.4B" },
@@ -725,10 +773,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["AW139 Helicopter", "M-346 Trainer", "Defense Electronics", "Cyber Security"],
       recentNews: "Increasing European defense spending driving order growth",
       slides: [
-        { title: "Helicopter Leader", content: "AgustaWestland helicopters (AW139, AW101) are best-sellers globally. 50%+ of revenue from helicopters.", highlight: "50%+ helicopter revenue" },
-        { title: "Trainer Aircraft", content: "M-346 is the world's most advanced jet trainer, selected by Italy, Poland, Israel, and others.", highlight: "M-346 trainer leader" },
-        { title: "Defense Electronics", content: "Radars, sensors, and electronic warfare systems for European and NATO programs.", highlight: "NATO electronics" },
-        { title: "European Consolidation", content: "Potential combination with other European defense firms as continent ramps spending post-Ukraine.", highlight: "Consolidation target" },
+        { title: "Helicopter Leader", content: "AgustaWestland helicopters (AW139, AW101) are best-sellers globally. 50%+ of revenue from helicopters.", highlight: "50%+ helicopter revenue", type: "insight" },
+        { title: "Trainer Aircraft", content: "M-346 is the world's most advanced jet trainer, selected by Italy, Poland, Israel, and others.", highlight: "M-346 trainer leader", type: "insight" },
+        { title: "Defense Electronics", content: "Radars, sensors, and electronic warfare systems for European and NATO programs.", highlight: "NATO electronics", type: "insight" },
+        { title: "European Consolidation", content: "Potential combination with other European defense firms as continent ramps spending post-Ukraine.", highlight: "Consolidation target", type: "insight" },
+        { title: "Competitive Position", content: "Competes with Airbus Helicopters, BAE, Thales. Smaller scale than U.S. primes. European focus.", highlight: "European niche", type: "competitive" },
+        { title: "Investment Thesis", content: "Cheapest European defense name. Italy discount may be unwarranted. Helicopter franchise undervalued. EUR exposure.", highlight: "Value European", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "€15.3B" },
@@ -753,10 +803,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["IT Services", "Systems Integration", "Engineering", "Training"],
       recentNews: "Focus on AI, cloud, and digital transformation for government",
       slides: [
-        { title: "Government Focus", content: "95% of revenue from U.S. government contracts. Deep relationships across DOD, intelligence, and civilian agencies.", highlight: "95% government" },
-        { title: "NASA Heritage", content: "Long history supporting NASA missions. Key contractor for space exploration and science programs.", highlight: "NASA partner" },
-        { title: "IT Modernization", content: "Helping agencies migrate to cloud, implement AI, and modernize legacy systems. Growing addressable market.", highlight: "Cloud migration" },
-        { title: "Smaller Scale", content: "Positioned between mega-primes and small contractors. Agile enough to innovate, large enough to scale.", highlight: "Right-sized integrator" },
+        { title: "Government Focus", content: "95% of revenue from U.S. government contracts. Deep relationships across DOD, intelligence, and civilian agencies.", highlight: "95% government", type: "insight" },
+        { title: "NASA Heritage", content: "Long history supporting NASA missions. Key contractor for space exploration and science programs.", highlight: "NASA partner", type: "insight" },
+        { title: "IT Modernization", content: "Helping agencies migrate to cloud, implement AI, and modernize legacy systems. Growing addressable market.", highlight: "Cloud migration", type: "insight" },
+        { title: "Smaller Scale", content: "Positioned between mega-primes and small contractors. Agile enough to innovate, large enough to scale.", highlight: "Right-sized integrator", type: "insight" },
+        { title: "Competitive Position", content: "Competes with Leidos, Booz Allen, GDIT. Smaller scale limits prime contractor wins. Subcontracting common.", highlight: "Mid-tier integrator", type: "competitive" },
+        { title: "Investment Thesis", content: "Cheapest defense services name. New CEO driving change. IT modernization tailwind. Value but show-me story.", highlight: "Value services", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$7.4B" },
@@ -781,10 +833,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Flight Actuators", "Naval Components", "Nuclear Instruments", "Sensors"],
       recentNews: "Defense and nuclear power markets driving growth",
       slides: [
-        { title: "Historic Name", content: "Formed from merger of Wright brothers' and Glenn Curtiss' companies—aviation pioneer heritage.", highlight: "Wright brothers legacy" },
-        { title: "Naval Systems", content: "Critical components on every U.S. Navy ship and submarine. Virginia-class subs drive recurring revenue.", highlight: "On every Navy ship" },
-        { title: "Nuclear Power", content: "Reactor coolant pumps and instrumentation for commercial and Navy nuclear programs.", highlight: "Nuclear expertise" },
-        { title: "Defense Tailwinds", content: "Bookings growing 20%+ as defense budgets increase. Positioned across all major platforms.", highlight: "20%+ booking growth" },
+        { title: "Historic Name", content: "Formed from merger of Wright brothers' and Glenn Curtiss' companies—aviation pioneer heritage.", highlight: "Wright brothers legacy", type: "insight" },
+        { title: "Naval Systems", content: "Critical components on every U.S. Navy ship and submarine. Virginia-class subs drive recurring revenue.", highlight: "On every Navy ship", type: "insight" },
+        { title: "Nuclear Power", content: "Reactor coolant pumps and instrumentation for commercial and Navy nuclear programs.", highlight: "Nuclear expertise", type: "insight" },
+        { title: "Defense Tailwinds", content: "Bookings growing 20%+ as defense budgets increase. Positioned across all major platforms.", highlight: "20%+ booking growth", type: "insight" },
+        { title: "Competitive Position", content: "Competes with Moog, Parker, Woodward in actuation. Nuclear is specialized niche with few competitors.", highlight: "Multi-niche player", type: "competitive" },
+        { title: "Investment Thesis", content: "Quality small-cap. Defense + nuclear + aerospace combo unique. Under-followed by Wall Street. Compounding quietly.", highlight: "Quality small-cap", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$2.9B" },
@@ -809,10 +863,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["XQ-58 Valkyrie", "Target Drones", "Satellite Systems", "Hypersonic Components"],
       recentNews: "Autonomous collaborative combat aircraft gaining Pentagon attention",
       slides: [
-        { title: "Drone Pioneer", content: "Kratos pioneered affordable jet-powered drones. XQ-58 Valkyrie concept proved attritable autonomy is possible.", highlight: "Valkyrie pioneer" },
-        { title: "Attritable Vision", content: "$2-3M drones vs $100M fighters changes combat math. Swarms of low-cost platforms may dominate future warfare.", highlight: "$2-3M per drone" },
-        { title: "Target Drones", content: "World's largest provider of aerial target drones for military training. Stable, recurring revenue base.", highlight: "#1 target drones" },
-        { title: "Hypersonic Tech", content: "Making components and subsystems for classified hypersonic programs. High-growth defense priority.", highlight: "Hypersonic exposure" },
+        { title: "Drone Pioneer", content: "Kratos pioneered affordable jet-powered drones. XQ-58 Valkyrie concept proved attritable autonomy is possible.", highlight: "Valkyrie pioneer", type: "insight" },
+        { title: "Attritable Vision", content: "$2-3M drones vs $100M fighters changes combat math. Swarms of low-cost platforms may dominate future warfare.", highlight: "$2-3M per drone", type: "insight" },
+        { title: "Target Drones", content: "World's largest provider of aerial target drones for military training. Stable, recurring revenue base.", highlight: "#1 target drones", type: "insight" },
+        { title: "Hypersonic Tech", content: "Making components and subsystems for classified hypersonic programs. High-growth defense priority.", highlight: "Hypersonic exposure", type: "insight" },
+        { title: "Competitive Position", content: "Competes with General Atomics (large drones), Anduril (autonomous). First-mover in attritable segment.", highlight: "First-mover attritable", type: "competitive" },
+        { title: "Investment Thesis", content: "High-growth defense disruptor. Unprofitable but revenue growing 20%+. Binary outcomes on big programs. Speculative.", highlight: "Speculative growth", type: "investment" },
       ],
       keyStats: [
         { label: "Revenue (2023)", value: "$1.0B" },
@@ -836,10 +892,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Lattice OS", "Ghost Drones", "Sentry Towers", "Dive Submarines"],
       recentNews: "Explosive growth, $8B+ in DoD contracts, major ICBM pursuits",
       slides: [
-        { title: "Defense Disruptor", content: "Founded by Oculus VR's Palmer Luckey, Anduril is challenging traditional primes with software-first approach.", highlight: "Software-first defense" },
-        { title: "Lattice Platform", content: "Their AI operating system, Lattice, fuses sensors and enables autonomous decision-making across all products.", highlight: "AI backbone" },
-        { title: "Hypergrowth", content: "Revenue reportedly 3x in 2023. Won $1B+ contract to build anti-drone systems at scale.", highlight: "3x revenue growth" },
-        { title: "Prime Ambitions", content: "Now competing for major programs like Sentinel ICBM. Wants to become a new generation defense prime.", highlight: "Next-gen prime" },
+        { title: "Defense Disruptor", content: "Founded by Oculus VR's Palmer Luckey, Anduril is challenging traditional primes with software-first approach.", highlight: "Software-first defense", type: "insight" },
+        { title: "Lattice Platform", content: "Their AI operating system, Lattice, fuses sensors and enables autonomous decision-making across all products.", highlight: "AI backbone", type: "insight" },
+        { title: "Hypergrowth", content: "Revenue reportedly 3x in 2023. Won $1B+ contract to build anti-drone systems at scale.", highlight: "3x revenue growth", type: "insight" },
+        { title: "Prime Ambitions", content: "Now competing for major programs like Sentinel ICBM. Wants to become a new generation defense prime.", highlight: "Next-gen prime", type: "insight" },
+        { title: "Competitive Position", content: "Competes with Palantir (software), traditional primes (hardware). Unique combo of both. Execution is proving out.", highlight: "Unique position", type: "competitive" },
+        { title: "Investment Thesis", content: "Private at $14B valuation. Could IPO within 2-3 years. Transformational if execution continues. High risk, high reward.", highlight: "Private, exciting", type: "investment" },
       ],
       keyStats: [
         { label: "Valuation", value: "$14B+" },
@@ -863,10 +921,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["RS-25 (SLS)", "RL-10", "Missile Motors", "Hypersonic Propulsion"],
       recentNews: "Acquired by L3Harris for $4.7B in 2023",
       slides: [
-        { title: "Sole Source", content: "Only U.S. producer for many critical rocket motors including RS-25 (Space Launch System) and various missile propulsion.", highlight: "Only U.S. producer" },
-        { title: "Heritage Engines", content: "RS-25 powered every Space Shuttle mission and now SLS. RL-10 upper stage engine has 500+ mission heritage.", highlight: "500+ mission heritage" },
-        { title: "Missile Backbone", content: "Solid and liquid propulsion for Patriot, THAAD, SM-3, and most U.S. missile systems.", highlight: "Powers U.S. missiles" },
-        { title: "L3Harris Synergy", content: "Now part of L3Harris, creating vertical integration from propulsion to complete weapon systems.", highlight: "L3Harris integration" },
+        { title: "Sole Source", content: "Only U.S. producer for many critical rocket motors including RS-25 (Space Launch System) and various missile propulsion.", highlight: "Only U.S. producer", type: "insight" },
+        { title: "Heritage Engines", content: "RS-25 powered every Space Shuttle mission and now SLS. RL-10 upper stage engine has 500+ mission heritage.", highlight: "500+ mission heritage", type: "insight" },
+        { title: "Missile Backbone", content: "Solid and liquid propulsion for Patriot, THAAD, SM-3, and most U.S. missile systems.", highlight: "Powers U.S. missiles", type: "insight" },
+        { title: "L3Harris Synergy", content: "Now part of L3Harris, creating vertical integration from propulsion to complete weapon systems.", highlight: "L3Harris integration", type: "insight" },
+        { title: "Competitive Position", content: "Northrop competes in solid motors. SpaceX/Blue Origin in launch. But Aerojet has heritage and sole-source positions.", highlight: "Heritage sole-source", type: "competitive" },
+        { title: "Investment Thesis", content: "Acquired—invest via L3Harris (LHX). Propulsion capability strengthens L3Harris competitive position.", highlight: "L3Harris exposure", type: "investment" },
       ],
       keyStats: [
         { label: "Acquisition Price", value: "$4.7B" },
@@ -890,10 +950,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Dream Chaser", "LIFE Habitat", "In-Space Manufacturing"],
       recentNews: "Dream Chaser first mission to ISS expected 2024",
       slides: [
-        { title: "Spaceplane Return", content: "Dream Chaser is the only winged, runway-landing spacecraft since Space Shuttle. Enables gentle cargo return.", highlight: "Runway landing" },
-        { title: "NASA Cargo", content: "NASA Commercial Resupply contract worth $2B+ for 7 cargo missions to ISS through 2028.", highlight: "$2B+ NASA contract" },
-        { title: "Orbital Habitats", content: "LIFE inflatable habitats designed for commercial space stations as ISS retires in 2030.", highlight: "Post-ISS leader" },
-        { title: "In-Space Economy", content: "Vision for manufacturing, tourism, and research in orbit. Partnered with Blue Origin's Orbital Reef.", highlight: "Orbital Reef partner" },
+        { title: "Spaceplane Return", content: "Dream Chaser is the only winged, runway-landing spacecraft since Space Shuttle. Enables gentle cargo return.", highlight: "Runway landing", type: "insight" },
+        { title: "NASA Cargo", content: "NASA Commercial Resupply contract worth $2B+ for 7 cargo missions to ISS through 2028.", highlight: "$2B+ NASA contract", type: "insight" },
+        { title: "Orbital Habitats", content: "LIFE inflatable habitats designed for commercial space stations as ISS retires in 2030.", highlight: "Post-ISS leader", type: "insight" },
+        { title: "In-Space Economy", content: "Vision for manufacturing, tourism, and research in orbit. Partnered with Blue Origin's Orbital Reef.", highlight: "Orbital Reef partner", type: "insight" },
+        { title: "Competitive Position", content: "SpaceX Dragon dominates cargo. Dream Chaser differentiated by runway landing. Habitats vs Axiom.", highlight: "Differentiated capability", type: "competitive" },
+        { title: "Investment Thesis", content: "Private. IPO possible within 2-3 years. Early-stage space infrastructure. High risk but post-ISS opportunity is real.", highlight: "Post-ISS bet", type: "investment" },
       ],
       keyStats: [
         { label: "NASA Missions", value: "7 contracted" },
@@ -917,10 +979,12 @@ export const marketCompanies: MarketCompanies = {
       keyProducts: ["Axiom Station Modules", "Private Astronaut Missions", "Space Suits"],
       recentNews: "Axiom Station modules attaching to ISS, then separating as standalone station",
       slides: [
-        { title: "ISS Successor", content: "NASA selected Axiom to build first commercial station modules, initially attached to ISS, then separating in 2028+.", highlight: "ISS successor" },
-        { title: "Private Astronauts", content: "Operating private astronaut missions to ISS—Ax-1, Ax-2, Ax-3. Gateway to space for private citizens and nations.", highlight: "Private missions" },
-        { title: "AxEMU Suits", content: "Developing next-generation spacesuits for NASA Artemis moonwalks. $228M contract for lunar exploration suits.", highlight: "Artemis spacesuits" },
-        { title: "Sovereign Access", content: "Offering countries without space programs their own national astronaut access and research capabilities.", highlight: "National access" },
+        { title: "ISS Successor", content: "NASA selected Axiom to build first commercial station modules, initially attached to ISS, then separating in 2028+.", highlight: "ISS successor", type: "insight" },
+        { title: "Private Astronauts", content: "Operating private astronaut missions to ISS—Ax-1, Ax-2, Ax-3. Gateway to space for private citizens and nations.", highlight: "Private missions", type: "insight" },
+        { title: "AxEMU Suits", content: "Developing next-generation spacesuits for NASA Artemis moonwalks. $228M contract for lunar exploration suits.", highlight: "Artemis spacesuits", type: "insight" },
+        { title: "Sovereign Access", content: "Offering countries without space programs their own national astronaut access and research capabilities.", highlight: "National access", type: "insight" },
+        { title: "Competitive Position", content: "Lead in commercial stations. Sierra Space is partner not competitor. Blue Origin Orbital Reef is main rival.", highlight: "Station leader", type: "competitive" },
+        { title: "Investment Thesis", content: "Private at $2B+. Essential post-ISS infrastructure. NASA backing reduces risk. Early but transformational opportunity.", highlight: "Essential infrastructure", type: "investment" },
       ],
       keyStats: [
         { label: "Missions Completed", value: "3" },
