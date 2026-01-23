@@ -10,17 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const markets = [
-  { id: "ai", name: "AI Industry", icon: "cpu" },
-  { id: "fintech", name: "Fintech", icon: "banknote" },
-  { id: "ev", name: "Electric Vehicles", icon: "zap" },
-  { id: "biotech", name: "Biotech", icon: "pill" },
-  { id: "energy", name: "Clean Energy", icon: "sun" },
-  { id: "mobile", name: "Mobile Tech", icon: "smartphone" },
-  { id: "agtech", name: "AgTech", icon: "leaf" },
   { id: "aerospace", name: "Aerospace", icon: "rocket" },
-  { id: "creator", name: "Creator Economy", icon: "palette" },
-  { id: "ecommerce", name: "E-commerce", icon: "shopping-cart" },
-  { id: "gaming", name: "Gaming", icon: "gamepad-2" },
 ];
 
 export default function SelectMarketPage() {
