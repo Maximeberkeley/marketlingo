@@ -31,3 +31,6 @@ enable_confirmations = false
 
 [functions.generate-content]
 verify_jwt = false
+
+[functions.import-curriculum]
+verify_jwt = false
