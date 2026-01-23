@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Timer, CheckCircle, XCircle, RotateCcw } from "lucide-react";
+import { ArrowLeft, Timer, CheckCircle, XCircle, RotateCcw, Loader2, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface DrillQuestion {
-  id: number;
+  id: string;
   category: string;
   statement: string;
   isTrue: boolean;
@@ -14,51 +16,11 @@ interface DrillQuestion {
   source: string;
 }
 
-const mockDrillQuestions: DrillQuestion[] = [
-  {
-    id: 1,
-    category: "Funding",
-    statement: "OpenAI has raised over $10 billion in total funding.",
-    isTrue: true,
-    explanation: "OpenAI has raised approximately $11.3B, with Microsoft being the primary investor.",
-    source: "Crunchbase",
-  },
-  {
-    id: 2,
-    category: "Market",
-    statement: "The global AI market is expected to reach $500B by 2030.",
-    isTrue: false,
-    explanation: "Current projections estimate the global AI market to reach $1.8T+ by 2030.",
-    source: "McKinsey",
-  },
-  {
-    id: 3,
-    category: "Competition",
-    statement: "Google's Gemini Ultra outperformed GPT-4 on all benchmarks at launch.",
-    isTrue: false,
-    explanation: "While Gemini Ultra matched or exceeded GPT-4 on some benchmarks, it didn't outperform on all.",
-    source: "Google Research",
-  },
-  {
-    id: 4,
-    category: "Hardware",
-    statement: "NVIDIA controls over 80% of the AI chip market.",
-    isTrue: true,
-    explanation: "NVIDIA's data center GPUs dominate the AI training market with 80-90% share.",
-    source: "Reuters",
-  },
-  {
-    id: 5,
-    category: "Enterprise",
-    statement: "Less than 20% of enterprises have deployed AI in production.",
-    isTrue: false,
-    explanation: "As of 2024, over 50% of enterprises report having AI in production.",
-    source: "Gartner",
-  },
-];
-
 export default function DrillsPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [questions, setQuestions] = useState<DrillQuestion[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -66,13 +28,98 @@ export default function DrillsPage() {
   const [drillComplete, setDrillComplete] = useState(false);
   const [timeLeft, setTimeLeft] = useState(15);
   const [isTimerActive, setIsTimerActive] = useState(true);
+  const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
 
-  const question = mockDrillQuestions[currentQuestion];
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user) return;
+
+      // Get user's selected market
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("selected_market")
+        .eq("id", user.id)
+        .single();
+
+      const market = profile?.selected_market || "aerospace";
+      setSelectedMarket(market);
+
+      // Fetch slides from stacks for this market to create drill questions
+      const { data: stacks, error } = await supabase
+        .from("stacks")
+        .select(`
+          id,
+          title,
+          tags,
+          slides (
+            id,
+            slide_number,
+            title,
+            body,
+            sources
+          )
+        `)
+        .eq("market_id", market)
+        .not("published_at", "is", null)
+        .order("created_at", { ascending: true })
+        .limit(10);
+
+      if (error) {
+        console.error("Error fetching drills:", error);
+        setLoading(false);
+        return;
+      }
+
+      // Transform slides into True/False drill questions
+      const drillQuestions: DrillQuestion[] = [];
+      
+      (stacks || []).forEach((stack) => {
+        const slides = (stack.slides as any[]) || [];
+        const tags = (stack.tags as string[]) || [];
+        const category = tags[0] || "Market Insight";
+        
+        slides.forEach((slide, index) => {
+          if (slide.body && slide.body.length > 20 && drillQuestions.length < 10) {
+            // Create a true statement from the slide content
+            const isTrue = index % 2 === 0; // Alternate true/false
+            let statement = slide.body;
+            
+            // For false statements, slightly modify the content
+            if (!isTrue) {
+              statement = statement
+                .replace(/always/gi, "never")
+                .replace(/important/gi, "irrelevant")
+                .replace(/key/gi, "minor");
+            }
+
+            const sources = slide.sources as any[] || [];
+            const sourceLabel = sources[0]?.label || "Industry Analysis";
+
+            drillQuestions.push({
+              id: slide.id,
+              category,
+              statement: statement.substring(0, 200),
+              isTrue,
+              explanation: slide.body,
+              source: sourceLabel,
+            });
+          }
+        });
+      });
+
+      setQuestions(drillQuestions.slice(0, 5));
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [user]);
+
+  const question = questions[currentQuestion];
   const isCorrect = selectedAnswer === question?.isTrue;
 
   // Timer
   useEffect(() => {
-    if (!isTimerActive || showResult) return;
+    if (!isTimerActive || showResult || loading || questions.length === 0) return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -86,7 +133,7 @@ export default function DrillsPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isTimerActive, showResult, currentQuestion]);
+  }, [isTimerActive, showResult, currentQuestion, loading, questions.length]);
 
   const handleAnswer = (answer: boolean) => {
     if (showResult) return;
@@ -99,8 +146,8 @@ export default function DrillsPage() {
     }
   };
 
-  const handleNext = () => {
-    if (currentQuestion < mockDrillQuestions.length - 1) {
+  const handleNext = async () => {
+    if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
       setSelectedAnswer(null);
       setShowResult(false);
@@ -109,7 +156,20 @@ export default function DrillsPage() {
     } else {
       setDrillComplete(true);
       const finalScore = score + (isCorrect ? 1 : 0);
-      toast.success(`Drill complete! Score: ${finalScore}/${mockDrillQuestions.length}`);
+
+      // Save progress to database
+      if (user && selectedMarket) {
+        await supabase.from("drills_progress").upsert({
+          user_id: user.id,
+          market_id: selectedMarket,
+          drill_type: "true_false",
+          completed_count: 1,
+          correct_count: finalScore,
+          last_completed_at: new Date().toISOString(),
+        }, { onConflict: "user_id,market_id,drill_type" });
+      }
+
+      toast.success(`Drill complete! Score: ${finalScore}/${questions.length}`);
     }
   };
 
@@ -123,9 +183,44 @@ export default function DrillsPage() {
     setIsTimerActive(true);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+        >
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+            <ArrowLeft size={24} className="text-text-secondary" />
+          </button>
+          <h1 className="text-h2 text-text-primary">Drills</h1>
+        </motion.div>
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center">
+            <Target size={48} className="mx-auto mb-4 text-text-muted" />
+            <h2 className="text-h2 text-text-primary mb-2">No drills available</h2>
+            <p className="text-body text-text-secondary">Complete more lessons to unlock drills!</p>
+            <Button className="mt-4" onClick={() => navigate("/home")}>
+              Back to Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (drillComplete) {
     const finalScore = score;
-    const percentage = Math.round((finalScore / mockDrillQuestions.length) * 100);
+    const percentage = Math.round((finalScore / questions.length) * 100);
 
     return (
       <div className="min-h-screen bg-background flex flex-col">
@@ -169,7 +264,7 @@ export default function DrillsPage() {
             </div>
             <h2 className="text-h2 text-text-primary mb-2">Drill Complete!</h2>
             <p className="text-body text-text-secondary mb-2">
-              {finalScore}/{mockDrillQuestions.length} correct
+              {finalScore}/{questions.length} correct
             </p>
             <p className="text-caption text-text-muted mb-6">
               {percentage >= 80
@@ -207,7 +302,7 @@ export default function DrillsPage() {
         <div className="flex-1">
           <h1 className="text-h2 text-text-primary">True or False</h1>
           <p className="text-caption text-text-muted">
-            {currentQuestion + 1} of {mockDrillQuestions.length}
+            {currentQuestion + 1} of {questions.length}
           </p>
         </div>
         <div
@@ -225,7 +320,7 @@ export default function DrillsPage() {
         <div className="progress-thin">
           <motion.div
             className="progress-thin-fill"
-            animate={{ width: `${((currentQuestion + 1) / mockDrillQuestions.length) * 100}%` }}
+            animate={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
           />
         </div>
       </div>
@@ -301,7 +396,7 @@ export default function DrillsPage() {
                   </div>
 
                   <Button className="w-full" onClick={handleNext}>
-                    {currentQuestion < mockDrillQuestions.length - 1 ? "Next" : "See Results"}
+                    {currentQuestion < questions.length - 1 ? "Next" : "See Results"}
                   </Button>
                 </motion.div>
               )}

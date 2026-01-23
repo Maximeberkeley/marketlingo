@@ -1,51 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, ChevronRight, BookOpen, Newspaper, Brain } from "lucide-react";
+import { Search, ChevronRight, BookOpen, Newspaper, Brain, Loader2, Trash2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface NoteEntry {
   id: string;
-  preview: string;
-  linkedType: "news" | "lesson" | "trainer";
-  linkedLabel: string;
-  timestamp: string;
-  tags: string[];
+  content: string;
+  linked_label: string | null;
+  created_at: string;
+  stack_id: string | null;
+  slide_id: string | null;
 }
-
-const mockNotes: NoteEntry[] = [
-  {
-    id: "1",
-    preview: "OpenAI's enterprise strategy mirrors Salesforce's early playbook—land with dev tools, expand to enterprise...",
-    linkedType: "news",
-    linkedLabel: "News · Day 37 · Slide 4",
-    timestamp: "2h ago",
-    tags: ["competition", "enterprise"],
-  },
-  {
-    id: "2",
-    preview: "The 'wrapper' vs 'platform' distinction is key. Wrappers have 12-18 month windows before commoditization.",
-    linkedType: "lesson",
-    linkedLabel: "Lesson · Week 3 · Slide 2",
-    timestamp: "Yesterday",
-    tags: ["distribution", "platform_shift"],
-  },
-  {
-    id: "3",
-    preview: "Historical parallel: Netscape vs IE. The browser wars show how distribution beats product in platform shifts.",
-    linkedType: "trainer",
-    linkedLabel: "Trainer · Day 35",
-    timestamp: "2 days ago",
-    tags: ["competition"],
-  },
-  {
-    id: "4",
-    preview: "NVIDIA's moat is deeper than just hardware—CUDA ecosystem lock-in takes 3-5 years to replicate.",
-    linkedType: "news",
-    linkedLabel: "News · Day 33 · Slide 5",
-    timestamp: "3 days ago",
-    tags: ["hardware", "infrastructure"],
-  },
-];
 
 const typeIcons: Record<string, React.ReactNode> = {
   news: <Newspaper size={14} className="text-blue-400" />,
@@ -59,7 +27,31 @@ const typeColors: Record<string, string> = {
   trainer: "bg-amber-500/20 text-amber-400",
 };
 
+function getLinkedType(label: string | null): "news" | "lesson" | "trainer" {
+  if (!label) return "lesson";
+  const lower = label.toLowerCase();
+  if (lower.includes("news") || lower.includes("daily")) return "news";
+  if (lower.includes("trainer")) return "trainer";
+  return "lesson";
+}
+
+function formatTimestamp(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffHours < 1) return "Just now";
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays} days ago`;
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
 export default function NotebookPage() {
+  const { user } = useAuth();
+  const [notes, setNotes] = useState<NoteEntry[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
 
@@ -70,11 +62,57 @@ export default function NotebookPage() {
     { id: "trainer", label: "Trainer" },
   ];
 
-  const filteredNotes = mockNotes.filter((note) => {
-    const matchesSearch = note.preview.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = !selectedFilter || note.linkedType === selectedFilter;
+  useEffect(() => {
+    const fetchNotes = async () => {
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("notes")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching notes:", error);
+      } else {
+        setNotes(data || []);
+      }
+      setLoading(false);
+    };
+
+    fetchNotes();
+  }, [user]);
+
+  const handleDeleteNote = async (noteId: string) => {
+    const { error } = await supabase
+      .from("notes")
+      .delete()
+      .eq("id", noteId);
+
+    if (error) {
+      toast.error("Failed to delete note");
+    } else {
+      setNotes((prev) => prev.filter((n) => n.id !== noteId));
+      toast.success("Note deleted");
+    }
+  };
+
+  const filteredNotes = notes.filter((note) => {
+    const matchesSearch = note.content.toLowerCase().includes(searchQuery.toLowerCase());
+    const linkedType = getLinkedType(note.linked_label);
+    const matchesFilter = !selectedFilter || linkedType === selectedFilter;
     return matchesSearch && matchesFilter;
   });
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -86,7 +124,7 @@ export default function NotebookPage() {
           className="mb-6"
         >
           <h1 className="text-h1 text-text-primary mb-1">Notebook</h1>
-          <p className="caption text-text-muted">{mockNotes.length} linked notes</p>
+          <p className="caption text-text-muted">{notes.length} linked notes</p>
         </motion.div>
 
         {/* Search */}
@@ -132,34 +170,44 @@ export default function NotebookPage() {
 
         {/* Notes List */}
         <div className="space-y-3 pb-8">
-          {filteredNotes.map((note, index) => (
-            <motion.button
-              key={note.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + index * 0.05 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full card-elevated text-left group"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <p className="text-body text-text-primary line-clamp-2 mb-3">
-                    {note.preview}
-                  </p>
-                  
-                  <div className="flex items-center gap-2">
-                    <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-pill text-caption ${typeColors[note.linkedType]}`}>
-                      {typeIcons[note.linkedType]}
-                      {note.linkedLabel}
-                    </span>
-                    <span className="text-caption text-text-muted">{note.timestamp}</span>
+          {filteredNotes.map((note, index) => {
+            const linkedType = getLinkedType(note.linked_label);
+            
+            return (
+              <motion.div
+                key={note.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + index * 0.05 }}
+                className="w-full card-elevated text-left group"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-body text-text-primary line-clamp-2 mb-3">
+                      {note.content}
+                    </p>
+                    
+                    <div className="flex items-center gap-2">
+                      <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-pill text-caption ${typeColors[linkedType]}`}>
+                        {typeIcons[linkedType]}
+                        {note.linked_label || "Note"}
+                      </span>
+                      <span className="text-caption text-text-muted">
+                        {formatTimestamp(note.created_at)}
+                      </span>
+                    </div>
                   </div>
+                  
+                  <button
+                    onClick={() => handleDeleteNote(note.id)}
+                    className="p-2 text-text-muted hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
-                
-                <ChevronRight size={18} className="text-text-muted group-hover:text-text-secondary transition-colors mt-1" />
-              </div>
-            </motion.button>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Empty State */}
