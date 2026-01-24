@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../ui/button";
-import { Bookmark, ArrowRight, MessageCircle } from "lucide-react";
+import { Bookmark, ArrowRight, MessageCircle, Lightbulb, AlertTriangle, Brain, TrendingUp, Briefcase } from "lucide-react";
 
 interface TrainerOption {
   label: string;
@@ -22,11 +22,12 @@ interface TrainerCardProps {
   scenario: TrainerScenario;
   onSaveToNotebook: () => void;
   onNext: () => void;
+  onAskMentor?: (question: string) => void;
 }
 
 type EvaluationLevel = "strong" | "needs-work" | "off-track";
 
-export function TrainerCard({ scenario, onSaveToNotebook, onNext }: TrainerCardProps) {
+export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor }: TrainerCardProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [evaluation, setEvaluation] = useState<EvaluationLevel | null>(null);
@@ -111,39 +112,66 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext }: TrainerCardP
             
             {/* Feedback Card */}
             <div className="card-elevated space-y-4">
-              <div>
-                <h4 className="text-caption text-primary mb-1">Pro Reasoning</h4>
-                <p className="text-body text-text-secondary">{scenario.feedbackProReasoning}</p>
-              </div>
-              
-              <div>
-                <h4 className="text-caption text-amber-400 mb-1">Common Mistake</h4>
-                <p className="text-body text-text-secondary">{scenario.feedbackCommonMistake}</p>
-              </div>
-              
-              <div>
-                <h4 className="text-caption text-blue-400 mb-1">Mental Model</h4>
-                <p className="text-body text-text-secondary">{scenario.feedbackMentalModel}</p>
-              </div>
-              
-              <div className="pt-3 border-t border-border">
-                <div className="flex items-start gap-2">
-                  <MessageCircle size={16} className="text-text-muted mt-0.5" />
-                  <p className="text-body text-text-muted italic">{scenario.followUpQuestion}</p>
+              {/* Pro Reasoning - What experts do */}
+              <div className="p-3 rounded-lg bg-green-500/5 border border-green-500/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <TrendingUp size={16} className="text-green-400" />
+                  <h4 className="text-caption font-semibold text-green-400">Pro Reasoning</h4>
                 </div>
+                <p className="text-body text-text-secondary leading-relaxed">{scenario.feedbackProReasoning}</p>
+              </div>
+              
+              {/* Common Mistake - What to avoid */}
+              <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangle size={16} className="text-amber-400" />
+                  <h4 className="text-caption font-semibold text-amber-400">Common Mistake</h4>
+                </div>
+                <p className="text-body text-text-secondary leading-relaxed">{scenario.feedbackCommonMistake}</p>
+              </div>
+              
+              {/* Mental Model - Framework for thinking */}
+              <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <Brain size={16} className="text-blue-400" />
+                  <h4 className="text-caption font-semibold text-blue-400">Mental Model</h4>
+                </div>
+                <p className="text-body text-text-secondary leading-relaxed">{scenario.feedbackMentalModel}</p>
+              </div>
+              
+              {/* Startup Application - How to apply this */}
+              <div className="p-3 rounded-lg bg-accent/5 border border-accent/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <Briefcase size={16} className="text-accent" />
+                  <h4 className="text-caption font-semibold text-accent">For Your Startup</h4>
+                </div>
+                <p className="text-body text-text-muted italic leading-relaxed">{scenario.followUpQuestion}</p>
               </div>
             </div>
             
             {/* Actions */}
-            <div className="flex gap-3 mt-4">
-              <Button variant="secondary" size="default" className="flex-1" onClick={onSaveToNotebook}>
-                <Bookmark size={18} />
-                Save to notebook
-              </Button>
-              <Button variant="cta" size="default" className="flex-1" onClick={onNext}>
-                Next scenario
-                <ArrowRight size={18} />
-              </Button>
+            <div className="flex flex-col gap-2 mt-4">
+              <div className="flex gap-3">
+                <Button variant="secondary" size="default" className="flex-1" onClick={onSaveToNotebook}>
+                  <Bookmark size={18} />
+                  Save
+                </Button>
+                <Button variant="cta" size="default" className="flex-1" onClick={onNext}>
+                  Next
+                  <ArrowRight size={18} />
+                </Button>
+              </div>
+              {onAskMentor && (
+                <Button 
+                  variant="ghost" 
+                  size="default" 
+                  className="w-full text-text-muted hover:text-accent"
+                  onClick={() => onAskMentor(scenario.followUpQuestion)}
+                >
+                  <MessageCircle size={18} />
+                  Discuss with mentor
+                </Button>
+              )}
             </div>
           </motion.div>
         )}

@@ -4,6 +4,9 @@ import { ArrowLeft, Loader2, Brain } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TrainerCard } from "@/components/trainer/TrainerCard";
 import { Button } from "@/components/ui/button";
+import { MentorAvatar } from "@/components/ai/MentorAvatar";
+import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
+import { mentors, Mentor } from "@/data/mentors";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -27,6 +30,7 @@ export default function TrainerPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
+  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
 
   useEffect(() => {
     const fetchScenarios = async () => {
@@ -163,6 +167,14 @@ export default function TrainerPage() {
             Scenario {currentIndex + 1} of {scenarios.length}
           </p>
         </div>
+        
+        {/* Mentor Helper */}
+        <MentorAvatar
+          mentor={mentors[0]}
+          size="sm"
+          showPulse={false}
+          onClick={() => setActiveMentor(mentors[0])}
+        />
       </motion.div>
 
       {/* Content */}
@@ -176,8 +188,18 @@ export default function TrainerPage() {
           scenario={cardScenario}
           onSaveToNotebook={handleSaveToNotebook}
           onNext={handleNext}
+          onAskMentor={(question) => {
+            setActiveMentor(mentors[0]);
+          }}
         />
       </motion.div>
+
+      {/* Mentor Chat Overlay */}
+      <MentorChatOverlay
+        mentor={activeMentor}
+        onClose={() => setActiveMentor(null)}
+        context={`Trainer scenario: ${currentScenario.scenario} - Question: ${currentScenario.question}`}
+      />
     </div>
   );
 }
