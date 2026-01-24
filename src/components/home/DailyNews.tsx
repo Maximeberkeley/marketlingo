@@ -111,7 +111,7 @@ export function DailyNews({ marketId }: DailyNewsProps) {
           <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <Zap size={16} className="text-accent" />
           </div>
-          <h2 className="text-h3 text-text-primary">Daily News</h2>
+          <h2 className="text-h3 text-text-primary">Daily Patterns</h2>
           <span className="relative flex h-2 w-2 ml-1">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
