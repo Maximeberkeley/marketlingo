@@ -8,9 +8,11 @@ import { StackCard } from "@/components/ui/StackCard";
 import { SlideReader } from "@/components/slides/SlideReader";
 import { KeyPlayers } from "@/components/home/KeyPlayers";
 import { DailyNews } from "@/components/home/DailyNews";
+import { NotificationOnboarding } from "@/components/onboarding/NotificationOnboarding";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProgress } from "@/hooks/useUserProgress";
+import { useNotifications } from "@/hooks/useNotifications";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -67,6 +69,9 @@ export default function HomePage() {
   const [lessonStack, setLessonStack] = useState<StackWithSlides | null>(null);
   const [savedInsights, setSavedInsights] = useState<string[]>([]);
   const [activeStack, setActiveStack] = useState<StackWithSlides | null>(null);
+  const [showNotificationOnboarding, setShowNotificationOnboarding] = useState(false);
+  
+  const { isSupported, isRegistered } = useNotifications();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -187,10 +192,17 @@ export default function HomePage() {
       }
 
       setLoading(false);
+      
+      // Check if we should show notification onboarding (only on native, not registered, not dismissed)
+      const notifOnboardingDismissed = localStorage.getItem('notification_onboarding_dismissed');
+      if (isSupported && !isRegistered && !notifOnboardingDismissed) {
+        // Show after a brief delay so the user can see the home screen first
+        setTimeout(() => setShowNotificationOnboarding(true), 1500);
+      }
     };
 
     fetchData();
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, navigate, isSupported, isRegistered]);
 
   const handleStackComplete = async () => {
     setShowReader(false);
@@ -499,6 +511,18 @@ export default function HomePage() {
           onAddNote={handleAddNote}
         />
       )}
+
+      {/* Notification Onboarding */}
+      <NotificationOnboarding
+        open={showNotificationOnboarding}
+        onComplete={(enabled) => {
+          setShowNotificationOnboarding(false);
+          localStorage.setItem('notification_onboarding_dismissed', 'true');
+          if (enabled) {
+            toast.success("Notifications enabled! 🔔");
+          }
+        }}
+      />
     </AppLayout>
   );
 }

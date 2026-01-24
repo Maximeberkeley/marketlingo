@@ -10,7 +10,69 @@ interface NotificationPayload {
   title: string;
   body: string;
   data?: Record<string, unknown>;
-  userId?: string; // If provided, send only to this user
+  userId?: string;
+}
+
+interface FCMMessage {
+  to: string;
+  notification: {
+    title: string;
+    body: string;
+    sound: string;
+  };
+  data?: Record<string, unknown>;
+}
+
+async function sendToFCM(token: string, title: string, body: string, data?: Record<string, unknown>): Promise<boolean> {
+  const fcmServerKey = Deno.env.get('FCM_SERVER_KEY');
+  
+  if (!fcmServerKey) {
+    console.error('FCM_SERVER_KEY not configured');
+    return false;
+  }
+
+  const message: FCMMessage = {
+    to: token,
+    notification: {
+      title,
+      body,
+      sound: 'default',
+    },
+    data: data || {},
+  };
+
+  try {
+    const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `key=${fcmServerKey}`,
+      },
+      body: JSON.stringify(message),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('FCM error:', errorText);
+      return false;
+    }
+
+    const result = await response.json();
+    console.log('FCM response:', result);
+    
+    // Check if the message was sent successfully
+    if (result.success === 1) {
+      return true;
+    } else if (result.failure === 1) {
+      console.error('FCM delivery failed:', result.results);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('FCM request failed:', error);
+    return false;
+  }
 }
 
 Deno.serve(async (req) => {
@@ -24,15 +86,14 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const payload: NotificationPayload = await req.json();
-    console.log('Sending notification:', payload);
+    console.log('Processing notification:', payload.type, 'for user:', payload.userId || 'all');
 
-    // Get push tokens
+    // Get push tokens from profiles
     let query = supabase
       .from('profiles')
       .select('id, push_token, notification_preferences')
       .not('push_token', 'is', null);
 
-    // If userId is provided, only send to that user
     if (payload.userId) {
       query = query.eq('id', payload.userId);
     }
@@ -55,7 +116,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Filter users based on their notification preferences
+    // Filter users based on notification preferences
     const eligibleUsers = users.filter((user) => {
       const prefs = user.notification_preferences || {};
       
@@ -71,36 +132,39 @@ Deno.serve(async (req) => {
       }
     });
 
-    console.log(`Eligible users: ${eligibleUsers.length} of ${users.length}`);
+    console.log(`Sending to ${eligibleUsers.length} of ${users.length} users`);
 
-    // Note: In a production app, you would integrate with:
-    // - Firebase Cloud Messaging (FCM) for Android
-    // - Apple Push Notification Service (APNs) for iOS
-    // 
-    // For now, we'll log the notification details and store them
-    // The actual push would be sent via FCM/APNs SDK
-    
-    const notifications = eligibleUsers.map((user) => ({
-      user_id: user.id,
-      type: payload.type,
-      title: payload.title,
-      body: payload.body,
-      data: payload.data,
-      sent_at: new Date().toISOString(),
-      push_token: user.push_token,
-    }));
+    // Send notifications via FCM
+    let successCount = 0;
+    let failCount = 0;
 
-    console.log(`Would send ${notifications.length} push notifications`);
+    for (const user of eligibleUsers) {
+      if (!user.push_token) continue;
+      
+      const success = await sendToFCM(
+        user.push_token,
+        payload.title,
+        payload.body,
+        { ...payload.data, route: payload.data?.route || '/home' }
+      );
 
-    // In production, you would call FCM/APNs here:
-    // await sendToFCM(notifications);
-    // await sendToAPNs(notifications);
+      if (success) {
+        successCount++;
+      } else {
+        failCount++;
+        // If token is invalid, we could remove it from the database
+        // This is optional but helps keep the database clean
+      }
+    }
+
+    console.log(`FCM results: ${successCount} sent, ${failCount} failed`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        sent: notifications.length,
-        message: `Notification queued for ${notifications.length} users`
+        sent: successCount,
+        failed: failCount,
+        message: `Notification sent to ${successCount} users`
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
