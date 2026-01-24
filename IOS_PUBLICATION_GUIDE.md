@@ -1,5 +1,23 @@
 # iOS Publication Checklist for MarketLingo
 
+## ✅ Generated Assets
+
+All assets are in the `public/appstore/` folder:
+
+| Asset | File | Size | Purpose |
+|-------|------|------|---------|
+| App Icon | `app-icon-1024.png` | 1024x1024 | App Store icon |
+| Feature Graphic | `feature-graphic.png` | 1920x1080 | Marketing banner |
+| Screenshot 1 | `screenshot-1-home.png` | 1080x1920 | Home screen |
+| Screenshot 2 | `screenshot-2-trainer.png` | 1080x1920 | Quiz/Trainer |
+| Screenshot 3 | `screenshot-3-roadmap.png` | 1080x1920 | Learning path |
+| Screenshot 4 | `screenshot-4-news.png` | 1080x1920 | News feed |
+| Screenshot 5 | `screenshot-5-progress.png` | 1080x1920 | Profile stats |
+| OG Image | `og-image.png` | 1200x630 | Social sharing |
+| Apple Touch Icon | `apple-touch-icon.png` | 512x512 | iOS home screen |
+
+**Note:** The AI-generated screenshots have placeholder text. For App Store submission, you should capture real screenshots from the app running on a device.
+
 ## 1. Firebase Cloud Messaging Setup
 
 ### A. Create Firebase Project
@@ -20,21 +38,6 @@
 In Xcode, enable:
 - Push Notifications
 - Background Modes → Remote notifications
-
-## 2. Required App Assets
-
-### App Icons (place in ios/App/App/Assets.xcassets/AppIcon.appiconset/)
-- 20x20 @1x, @2x, @3x (Notification icons)
-- 29x29 @1x, @2x, @3x (Settings icons)
-- 40x40 @1x, @2x, @3x (Spotlight icons)
-- 60x60 @2x, @3x (App icons)
-- 76x76 @1x, @2x (iPad icons)
-- 83.5x83.5 @2x (iPad Pro icon)
-- 1024x1024 (App Store icon)
-
-### Launch Screen
-- Configured in ios/App/App/Base.lproj/LaunchScreen.storyboard
-- Uses app name and logo
 
 ## 3. Capacitor iOS Setup
 
