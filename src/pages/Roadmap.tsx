@@ -30,28 +30,32 @@ function getDayWeek(day: number): number {
   return Math.ceil(day / 5);
 }
 
-// Aerospace Month 1 curriculum patterns organized by day
+// Aerospace Month 1 curriculum patterns organized by day (upgraded with startup-ready depth)
 const aerospacePatterns: Record<number, { title: string; pattern: string }> = {
-  1: { title: "Buyer ≠ User", pattern: "Understanding who signs the check" },
-  2: { title: "OEM Gatekeeping", pattern: "Risk beats performance" },
-  3: { title: "Tiered Supply Chain", pattern: "Tier ladder navigation" },
-  4: { title: "Approval Chain", pattern: "Who must approve changes" },
-  5: { title: "Authority & Speed", pattern: "Governance unlocks velocity" },
-  6: { title: "Type Certification", pattern: "Certification is the product" },
-  7: { title: "TC vs STC", pattern: "Change = certification work" },
-  8: { title: "Change Friction", pattern: "Minimize certification surface" },
-  9: { title: "Why Aerospace is Slow", pattern: "Incentives reward caution" },
-  10: { title: "Conservative System", pattern: "Rules encode past failures" },
-  11: { title: "Cost-Plus Incentives", pattern: "Contract type matters" },
-  12: { title: "Contract Types", pattern: "Contract is the business model" },
-  13: { title: "Timeline Mismatch", pattern: "Match customers to runway" },
-  14: { title: "Startup Killers", pattern: "Cash timing vs cycles" },
-  15: { title: "Requirement Creep", pattern: "Guard scope early" },
-  16: { title: "Hardware-First Trap", pattern: "Start with pathway" },
-  17: { title: "Trust Economy", pattern: "Design evidence into product" },
-  18: { title: "Supply Chain Control", pattern: "Control follows risk" },
-  19: { title: "First Customer", pattern: "Sell into the chain" },
-  20: { title: "Month Review", pattern: "Fix pathway first" },
+  // Week 1: Market Structure
+  1: { title: "Buyer ≠ User", pattern: "Map the buying committee—user love ≠ purchase authority" },
+  2: { title: "OEM Gatekeeping", pattern: "Risk beats performance; partner with Tier-1s first" },
+  3: { title: "Supply Chain Architecture", pattern: "Enter at Tier-2/3, become indispensable upstream" },
+  4: { title: "The Approval Maze", pattern: "Change = approval chain; build DER relationships" },
+  5: { title: "Governance = Velocity", pattern: "Regulatory strategy is product strategy" },
+  // Week 2: Certification Reality
+  6: { title: "Type Certification Deep Dive", pattern: "TC is the product; Part 23 vs Part 25 defines viability" },
+  7: { title: "STC: The Modification Path", pattern: "Modify existing aircraft—realistic startup entry" },
+  8: { title: "Change Friction Economics", pattern: "Minimize certification surface area in design" },
+  9: { title: "Why Aerospace Moves Slowly", pattern: "Incentives reward caution; adapt or fail" },
+  10: { title: "Conservative by Design", pattern: "Heritage wins; dual-source everything critical" },
+  // Week 3: Business Dynamics
+  11: { title: "Cost-Plus: The Defense Model", pattern: "Contract type = risk profile and profitability" },
+  12: { title: "Contract Types Decoded", pattern: "Power by the Hour, risk-sharing, data ownership" },
+  13: { title: "Timeline Mismatch Trap", pattern: "VC timelines don't match aerospace; find patient capital" },
+  14: { title: "Startup Killers", pattern: "Cash timing, cert pivots, key person risk" },
+  15: { title: "Cash Flow Cycles", pattern: "9-month working capital cycles; structure advances" },
+  // Week 4: Execution Patterns
+  16: { title: "Requirement Creep Danger", pattern: "Formal change control from day one" },
+  17: { title: "Hardware-First Trap", pattern: "Paper airplane phase before metal" },
+  18: { title: "The Trust Economy", pattern: "AS9100, track record, evidence culture" },
+  19: { title: "Supply Chain Control", pattern: "Vertical integration vs. supplier management" },
+  20: { title: "First Customer Strategy", pattern: "Tier-1 partners, defense R&D, MRO channels" },
 };
 
 export default function RoadmapPage() {
