@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Timer, CheckCircle, XCircle, RotateCcw, Loader2, Target } from "lucide-react";
+import { ArrowLeft, Timer, CheckCircle, XCircle, RotateCcw, Loader2, Target, Lightbulb, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { MentorAvatar } from "@/components/ai/MentorAvatar";
+import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
+import { mentors, Mentor } from "@/data/mentors";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,6 +32,7 @@ export default function DrillsPage() {
   const [timeLeft, setTimeLeft] = useState(15);
   const [isTimerActive, setIsTimerActive] = useState(true);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
+  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -305,13 +309,21 @@ export default function DrillsPage() {
             {currentQuestion + 1} of {questions.length}
           </p>
         </div>
-        <div
-          className={`chip flex items-center gap-1 ${
-            timeLeft <= 5 ? "bg-destructive/20 text-destructive" : ""
-          }`}
-        >
-          <Timer size={14} />
-          {timeLeft}s
+        <div className="flex items-center gap-2">
+          <MentorAvatar
+            mentor={mentors[1]}
+            size="sm"
+            showPulse={false}
+            onClick={() => setActiveMentor(mentors[1])}
+          />
+          <div
+            className={`chip flex items-center gap-1 ${
+              timeLeft <= 5 ? "bg-destructive/20 text-destructive" : ""
+            }`}
+          >
+            <Timer size={14} />
+            {timeLeft}s
+          </div>
         </div>
       </motion.div>
 
@@ -392,7 +404,18 @@ export default function DrillsPage() {
                       )}
                     </div>
                     <p className="text-body text-text-secondary mb-2">{question.explanation}</p>
-                    <p className="text-caption text-text-muted">Source: {question.source}</p>
+                    <p className="text-caption text-text-muted mb-3">Source: {question.source}</p>
+                    
+                    {/* Startup Application Tip */}
+                    <div className="p-2 rounded-lg bg-accent/5 border border-accent/20">
+                      <div className="flex items-center gap-2 text-caption text-accent">
+                        <TrendingUp size={12} />
+                        <span className="font-medium">Startup Insight</span>
+                      </div>
+                      <p className="text-[11px] text-text-muted mt-1">
+                        Understanding this helps you evaluate market dynamics when building in aerospace.
+                      </p>
+                    </div>
                   </div>
 
                   <Button className="w-full" onClick={handleNext}>
@@ -404,6 +427,13 @@ export default function DrillsPage() {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* Mentor Chat Overlay */}
+      <MentorChatOverlay
+        mentor={activeMentor}
+        onClose={() => setActiveMentor(null)}
+        context={`Drill question: ${question?.statement || "Market drill"}`}
+      />
     </div>
   );
 }

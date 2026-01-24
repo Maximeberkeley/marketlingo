@@ -9,6 +9,9 @@ import { SlideReader } from "@/components/slides/SlideReader";
 import { KeyPlayers } from "@/components/home/KeyPlayers";
 import { DailyNews } from "@/components/home/DailyNews";
 import { NotificationOnboarding } from "@/components/onboarding/NotificationOnboarding";
+import { MentorAvatar } from "@/components/ai/MentorAvatar";
+import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
+import { mentors, Mentor } from "@/data/mentors";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProgress } from "@/hooks/useUserProgress";
@@ -70,6 +73,7 @@ export default function HomePage() {
   const [savedInsights, setSavedInsights] = useState<string[]>([]);
   const [activeStack, setActiveStack] = useState<StackWithSlides | null>(null);
   const [showNotificationOnboarding, setShowNotificationOnboarding] = useState(false);
+  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   
   const { isSupported, isRegistered } = useNotifications();
 
@@ -316,6 +320,35 @@ export default function HomePage() {
           </div>
         </motion.div>
 
+        {/* AI Mentors Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="mb-6"
+        >
+          <h2 className="text-[11px] font-medium uppercase tracking-wider text-text-muted mb-3">
+            Your Mentors
+          </h2>
+          <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4">
+            {mentors.map((mentor, index) => (
+              <motion.div
+                key={mentor.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 + index * 0.08 }}
+              >
+                <MentorAvatar
+                  mentor={mentor}
+                  onClick={() => setActiveMentor(mentor)}
+                  showName
+                  size="lg"
+                />
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
         {/* Today's Learning Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -522,6 +555,13 @@ export default function HomePage() {
             toast.success("Notifications enabled! 🔔");
           }
         }}
+      />
+
+      {/* Mentor Chat Overlay */}
+      <MentorChatOverlay
+        mentor={activeMentor}
+        onClose={() => setActiveMentor(null)}
+        context={activeStack?.title || selectedMarket || "aerospace"}
       />
     </AppLayout>
   );

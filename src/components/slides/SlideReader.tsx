@@ -1,7 +1,10 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, ExternalLink } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, ExternalLink, MessageCircle } from "lucide-react";
 import { Button } from "../ui/button";
+import { MentorAvatar } from "../ai/MentorAvatar";
+import { MentorChatOverlay } from "../ai/MentorChatOverlay";
+import { mentors, Mentor, getMentorForContext } from "@/data/mentors";
 
 interface Source {
   label: string;
@@ -40,9 +43,11 @@ export function SlideReader({
 }: SlideReaderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   
   const currentSlide = slides[currentIndex];
   const isLastSlide = currentIndex === slides.length - 1;
+  const contextMentor = getMentorForContext(stackTitle);
   
   const goToNext = useCallback(() => {
     if (currentIndex < slides.length - 1) {
@@ -104,7 +109,13 @@ export function SlideReader({
           </span>
         </div>
         
-        <div className="w-10" /> {/* Spacer for centering */}
+        {/* Mentor Helper Button */}
+        <MentorAvatar
+          mentor={contextMentor}
+          size="sm"
+          showPulse={false}
+          onClick={() => setActiveMentor(contextMentor)}
+        />
       </div>
       
       {/* Progress */}
@@ -220,6 +231,13 @@ export function SlideReader({
           </div>
         )}
       </div>
+
+      {/* Mentor Chat Overlay */}
+      <MentorChatOverlay
+        mentor={activeMentor}
+        onClose={() => setActiveMentor(null)}
+        context={`${stackTitle}: ${currentSlide.title} - ${currentSlide.body}`}
+      />
     </div>
   );
 }

@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Gamepad2, Trophy, Target, Zap, CheckCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, Gamepad2, Trophy, Target, Zap, CheckCircle, Loader2, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { MentorAvatar } from "@/components/ai/MentorAvatar";
+import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
+import { mentors, Mentor } from "@/data/mentors";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -28,6 +31,7 @@ export default function GamesPage() {
   const [score, setScore] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
+  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -262,9 +266,17 @@ export default function GamesPage() {
             Question {currentQuestion + 1} of {questions.length}
           </p>
         </div>
-        <div className="chip-accent flex items-center gap-1">
-          <Trophy size={14} />
-          {score}
+        <div className="flex items-center gap-2">
+          <MentorAvatar
+            mentor={mentors[2]}
+            size="sm"
+            showPulse={false}
+            onClick={() => setActiveMentor(mentors[2])}
+          />
+          <div className="chip-accent flex items-center gap-1">
+            <Trophy size={14} />
+            {score}
+          </div>
         </div>
       </motion.div>
 
@@ -365,7 +377,18 @@ export default function GamesPage() {
                     >
                       {isCorrect ? "Correct!" : "Not quite"}
                     </p>
-                    <p className="text-body text-text-secondary">{question.explanation}</p>
+                    <p className="text-body text-text-secondary mb-3">{question.explanation}</p>
+                    
+                    {/* Startup Application */}
+                    <div className="p-2 rounded-lg bg-accent/5 border border-accent/20">
+                      <div className="flex items-center gap-2 text-caption text-accent">
+                        <Briefcase size={12} />
+                        <span className="font-medium">Apply This</span>
+                      </div>
+                      <p className="text-[11px] text-text-muted mt-1">
+                        This pattern matters when pitching to investors or analyzing competitors.
+                      </p>
+                    </div>
                   </div>
 
                   <Button className="w-full mt-4" onClick={handleNext}>
@@ -377,6 +400,13 @@ export default function GamesPage() {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* Mentor Chat Overlay */}
+      <MentorChatOverlay
+        mentor={activeMentor}
+        onClose={() => setActiveMentor(null)}
+        context={`Game question: ${question?.question || "Pattern matching game"}`}
+      />
     </div>
   );
 }
