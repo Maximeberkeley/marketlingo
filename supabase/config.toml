@@ -34,3 +34,12 @@ verify_jwt = false
 
 [functions.import-curriculum]
 verify_jwt = false
+
+[functions.generate-curriculum]
+verify_jwt = false
+
+[functions.send-push-notification]
+verify_jwt = false
+
+[functions.fetch-aerospace-news]
+verify_jwt = false
