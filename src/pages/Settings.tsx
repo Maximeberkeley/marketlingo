@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, User, Bell, Info, LogOut, ChevronRight, Shield, Rocket } from "lucide-react";
+import { ArrowLeft, User, Bell, Info, LogOut, ChevronRight, Shield, Rocket, Wrench } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { useAuth } from "@/hooks/useAuth";
@@ -154,6 +154,24 @@ export default function Settings() {
                   <div className="text-left">
                     <p className="text-body font-medium text-text-primary">About</p>
                     <p className="text-caption text-text-muted">Version & program info</p>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="text-text-muted" />
+              </button>
+
+              <button
+                onClick={() => navigate("/admin/content")}
+                className={cn(
+                  "w-full flex items-center justify-between p-4 rounded-card",
+                  "bg-bg-2 border border-border hover:border-amber-500/30",
+                  "transition-all"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <Wrench size={20} className="text-amber-400" />
+                  <div className="text-left">
+                    <p className="text-body font-medium text-text-primary">Content Manager</p>
+                    <p className="text-caption text-text-muted">Generate curriculum</p>
                   </div>
                 </div>
                 <ChevronRight size={18} className="text-text-muted" />

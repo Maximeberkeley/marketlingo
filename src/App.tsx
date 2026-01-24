@@ -15,6 +15,7 @@ import Games from "./pages/Games";
 import Drills from "./pages/Drills";
 import Summaries from "./pages/Summaries";
 import Settings from "./pages/Settings";
+import AdminContent from "./pages/AdminContent";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/drills" element={<Drills />} />
             <Route path="/summaries" element={<Summaries />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/admin/content" element={<AdminContent />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
