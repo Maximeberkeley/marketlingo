@@ -1,10 +1,12 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, ExternalLink, MessageCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { MentorAvatar } from "../ai/MentorAvatar";
 import { MentorChatOverlay } from "../ai/MentorChatOverlay";
+import { MentorTipBubble } from "../ai/MentorTipBubble";
 import { mentors, Mentor, getMentorForContext } from "@/data/mentors";
+import { getTipForSlide, MentorTip } from "@/data/mentorTips";
 
 interface Source {
   label: string;
@@ -44,10 +46,32 @@ export function SlideReader({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
+  const [currentTip, setCurrentTip] = useState<MentorTip | null>(null);
+  const [shownTipIds] = useState<Set<string>>(new Set());
   
   const currentSlide = slides[currentIndex];
   const isLastSlide = currentIndex === slides.length - 1;
   const contextMentor = getMentorForContext(stackTitle);
+
+  // Proactive tip system
+  useEffect(() => {
+    // Don't show tips if chat is open
+    if (activeMentor) {
+      setCurrentTip(null);
+      return;
+    }
+
+    // Check for tip after a short delay on each slide
+    const timer = setTimeout(() => {
+      const tip = getTipForSlide(currentIndex, slides.length, shownTipIds);
+      if (tip) {
+        shownTipIds.add(tip.id);
+        setCurrentTip(tip);
+      }
+    }, 2000); // Show tip 2s after landing on slide
+
+    return () => clearTimeout(timer);
+  }, [currentIndex, slides.length, activeMentor, shownTipIds]);
   
   const goToNext = useCallback(() => {
     if (currentIndex < slides.length - 1) {
@@ -231,6 +255,24 @@ export function SlideReader({
           </div>
         )}
       </div>
+
+      {/* Proactive Mentor Tip Bubble */}
+      {currentTip && (
+        <MentorTipBubble
+          mentor={mentors.find((m) => m.id === currentTip.mentorId)!}
+          tip={currentTip.tip}
+          onDismiss={() => setCurrentTip(null)}
+          onTap={() => {
+            const tipMentor = mentors.find((m) => m.id === currentTip.mentorId);
+            if (tipMentor) {
+              setCurrentTip(null);
+              setActiveMentor(tipMentor);
+            }
+          }}
+          position="bottom-left"
+          delay={300}
+        />
+      )}
 
       {/* Mentor Chat Overlay */}
       <MentorChatOverlay
