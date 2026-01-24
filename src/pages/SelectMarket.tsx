@@ -86,7 +86,7 @@ export default function SelectMarketPage() {
       >
         <h1 className="text-h1 text-text-primary mb-2">Choose your market</h1>
         <p className="text-body text-text-secondary">
-          Pick one. We'll guide you for 12 months.
+          Pick one. We'll guide you for 6 months.
         </p>
       </motion.div>
 
@@ -145,7 +145,7 @@ export default function SelectMarketPage() {
           disabled={!selectedMarket || isSubmitting}
           onClick={handleContinue}
         >
-          {isSubmitting ? "Starting..." : "Start my 1-year journey"}
+          {isSubmitting ? "Starting..." : "Start my 6-month journey"}
         </Button>
       </motion.div>
     </div>
