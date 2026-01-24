@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Newspaper, ExternalLink, Clock, TrendingUp, Zap, ChevronRight, RefreshCw, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { MentorAvatar } from "@/components/ai/MentorAvatar";
+import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
+import { mentors, Mentor } from "@/data/mentors";
 
 interface NewsItem {
   id: string;
@@ -37,6 +40,8 @@ export function DailyNews({ marketId }: DailyNewsProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
+  const kaiMentor = mentors.find(m => m.id === "kai")!;
 
   const fetchNews = async () => {
     setIsLoading(true);
@@ -112,14 +117,22 @@ export function DailyNews({ marketId }: DailyNewsProps) {
             <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
           </span>
         </div>
-        <button 
-          onClick={fetchNews}
-          disabled={isLoading}
-          className="flex items-center gap-1 text-caption text-text-muted hover:text-accent transition-colors disabled:opacity-50"
-        >
-          <RefreshCw size={14} className={cn(isLoading && "animate-spin")} />
-          <span>Refresh</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <MentorAvatar
+            mentor={kaiMentor}
+            onClick={() => setActiveMentor(kaiMentor)}
+            size="sm"
+            showPulse
+          />
+          <button 
+            onClick={fetchNews}
+            disabled={isLoading}
+            className="flex items-center gap-1 text-caption text-text-muted hover:text-accent transition-colors disabled:opacity-50"
+          >
+            <RefreshCw size={14} className={cn(isLoading && "animate-spin")} />
+            <span>Refresh</span>
+          </button>
+        </div>
       </div>
 
       {/* Loading State */}
@@ -245,6 +258,13 @@ export function DailyNews({ marketId }: DailyNewsProps) {
           Last updated: {lastFetched.toLocaleTimeString()}
         </motion.p>
       )}
+
+      {/* Mentor Chat Overlay */}
+      <MentorChatOverlay
+        mentor={activeMentor}
+        onClose={() => setActiveMentor(null)}
+        context={`Daily aerospace news. Recent headlines: ${news.slice(0, 3).map(n => n.title).join('; ')}`}
+      />
     </motion.div>
   );
 }
