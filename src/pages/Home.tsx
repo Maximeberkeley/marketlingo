@@ -320,35 +320,6 @@ export default function HomePage() {
           </div>
         </motion.div>
 
-        {/* AI Mentors Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.08 }}
-          className="mb-6"
-        >
-          <h2 className="text-[11px] font-medium uppercase tracking-wider text-text-muted mb-3">
-            Your Mentors
-          </h2>
-          <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4">
-            {mentors.map((mentor, index) => (
-              <motion.div
-                key={mentor.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 + index * 0.08 }}
-              >
-                <MentorAvatar
-                  mentor={mentor}
-                  onClick={() => setActiveMentor(mentor)}
-                  showName
-                  size="lg"
-                />
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
         {/* Today's Learning Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -356,9 +327,17 @@ export default function HomePage() {
           transition={{ delay: 0.1 }}
           className="mb-6"
         >
-          <h2 className="text-[11px] font-medium uppercase tracking-wider text-text-muted mb-3">
-            Today's Learning
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-[11px] font-medium uppercase tracking-wider text-text-muted">
+              Today's Learning
+            </h2>
+            <MentorAvatar
+              mentor={mentors.find(m => m.id === "alex")!}
+              onClick={() => setActiveMentor(mentors.find(m => m.id === "alex")!)}
+              size="sm"
+              showPulse
+            />
+          </div>
           <div className="space-y-3">
             {todayStack ? (
               <StackCard

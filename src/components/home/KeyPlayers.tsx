@@ -3,6 +3,9 @@ import { motion } from "framer-motion";
 import { Building2, ChevronRight } from "lucide-react";
 import { Company, marketCompanies, defaultCompanies } from "./keyPlayersData";
 import { CompanyDetailSheet } from "./CompanyDetailSheet";
+import { MentorAvatar } from "@/components/ai/MentorAvatar";
+import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
+import { mentors, Mentor } from "@/data/mentors";
 import { cn } from "@/lib/utils";
 
 interface KeyPlayersProps {
@@ -12,7 +15,9 @@ interface KeyPlayersProps {
 export function KeyPlayers({ marketId }: KeyPlayersProps) {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [showAll, setShowAll] = useState(false);
+  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const companies = marketCompanies[marketId] || defaultCompanies;
+  const mayaMentor = mentors.find(m => m.id === "maya")!;
   
   const displayedCompanies = showAll ? companies : companies.slice(0, 8);
 
@@ -42,13 +47,21 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
             <h2 className="text-h3 text-text-primary">Key Players</h2>
             <span className="chip text-[10px]">{companies.length}</span>
           </div>
-          <button 
-            onClick={() => setShowAll(!showAll)}
-            className="flex items-center gap-1 text-caption text-text-muted hover:text-accent transition-colors"
-          >
-            <span>{showAll ? "Show less" : "See all"}</span>
-            <ChevronRight size={14} className={cn("transition-transform", showAll && "rotate-90")} />
-          </button>
+          <div className="flex items-center gap-3">
+            <MentorAvatar
+              mentor={mayaMentor}
+              onClick={() => setActiveMentor(mayaMentor)}
+              size="sm"
+              showPulse
+            />
+            <button 
+              onClick={() => setShowAll(!showAll)}
+              className="flex items-center gap-1 text-caption text-text-muted hover:text-accent transition-colors"
+            >
+              <span>{showAll ? "Show less" : "See all"}</span>
+              <ChevronRight size={14} className={cn("transition-transform", showAll && "rotate-90")} />
+            </button>
+          </div>
         </div>
 
         {/* Company Cards - Horizontal Scroll or Grid */}
@@ -161,6 +174,13 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
       <CompanyDetailSheet 
         company={selectedCompany} 
         onClose={() => setSelectedCompany(null)} 
+      />
+
+      {/* Mentor Chat Overlay */}
+      <MentorChatOverlay
+        mentor={activeMentor}
+        onClose={() => setActiveMentor(null)}
+        context={`Key Players in ${marketId} market. Companies include: ${companies.slice(0, 5).map(c => c.name).join(', ')}`}
       />
     </>
   );
