@@ -43,8 +43,12 @@ export function CompanyDetailSheet({ company, onClose }: CompanyDetailSheetProps
           {/* Header */}
           <SheetHeader className="p-4 pb-2 border-b border-border">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-bg-2 border border-border flex items-center justify-center">
-                <span className="text-3xl">{company.logo}</span>
+              <div className="w-14 h-14 rounded-2xl bg-white border border-border flex items-center justify-center overflow-hidden">
+                {company.logoUrl ? (
+                  <img src={company.logoUrl} alt={company.name} className="w-10 h-10 object-contain" />
+                ) : (
+                  <span className="text-3xl">{company.logo}</span>
+                )}
               </div>
               <div className="flex-1">
                 <SheetTitle className="text-h2 text-text-primary text-left">

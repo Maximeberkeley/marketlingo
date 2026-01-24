@@ -75,8 +75,12 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
                 )}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-10 h-10 rounded-xl bg-bg-1 border border-border flex items-center justify-center group-hover:border-accent/30 transition-colors">
-                    <span className="text-xl">{company.logo}</span>
+                  <div className="w-10 h-10 rounded-xl bg-white border border-border flex items-center justify-center group-hover:border-accent/30 transition-colors overflow-hidden">
+                    {company.logoUrl ? (
+                      <img src={company.logoUrl} alt={company.name} className="w-7 h-7 object-contain" />
+                    ) : (
+                      <span className="text-xl">{company.logo}</span>
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-body font-medium text-text-primary truncate">
@@ -115,8 +119,12 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
                 )}
               >
                 {/* Logo */}
-                <div className="w-12 h-12 rounded-xl bg-bg-1 border border-border flex items-center justify-center mb-3 group-hover:border-accent/30 transition-colors">
-                  <span className="text-2xl">{company.logo}</span>
+                <div className="w-12 h-12 rounded-xl bg-white border border-border flex items-center justify-center mb-3 group-hover:border-accent/30 transition-colors overflow-hidden">
+                  {company.logoUrl ? (
+                    <img src={company.logoUrl} alt={company.name} className="w-8 h-8 object-contain" />
+                  ) : (
+                    <span className="text-2xl">{company.logo}</span>
+                  )}
                 </div>
                 
                 {/* Company Name */}

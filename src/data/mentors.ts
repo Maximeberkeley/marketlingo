@@ -1,0 +1,61 @@
+import mentorMaya from "@/assets/mentors/mentor-maya.png";
+import mentorAlex from "@/assets/mentors/mentor-alex.png";
+import mentorKai from "@/assets/mentors/mentor-kai.png";
+
+export interface Mentor {
+  id: string;
+  name: string;
+  title: string;
+  expertise: string[];
+  personality: string;
+  avatar: string;
+  greeting: string;
+  specialties: string[];
+}
+
+export const mentors: Mentor[] = [
+  {
+    id: "maya",
+    name: "Maya Chen",
+    title: "Industry Strategist",
+    expertise: ["Market Analysis", "Competitive Intelligence", "Business Strategy"],
+    personality: "Sharp, analytical, and direct. Maya cuts through noise to deliver actionable insights. She challenges your assumptions and pushes you to think deeper about market dynamics.",
+    avatar: mentorMaya,
+    greeting: "Ready to dive into market dynamics? I love a good strategic challenge.",
+    specialties: ["Market structure", "Competitive positioning", "Investment thesis"],
+  },
+  {
+    id: "alex",
+    name: "Dr. Alex Rivera",
+    title: "Technical Expert",
+    expertise: ["Engineering", "Certification", "Supply Chain"],
+    personality: "Patient, thorough, and incredibly knowledgeable. Alex has 30+ years of aerospace experience and explains complex technical concepts in accessible ways.",
+    avatar: mentorAlex,
+    greeting: "Let's talk aerospace. What technical questions are on your mind?",
+    specialties: ["Certification processes", "Engineering challenges", "Supply chain dynamics"],
+  },
+  {
+    id: "kai",
+    name: "Kai Johnson",
+    title: "Startup Coach",
+    expertise: ["Fundraising", "GTM Strategy", "Product-Market Fit"],
+    personality: "Energetic, encouraging, and practical. Kai has founded two aerospace startups and knows the unique challenges of building in this space.",
+    avatar: mentorKai,
+    greeting: "Building something in aerospace? Let's figure out your path to success.",
+    specialties: ["Startup strategy", "Fundraising", "Go-to-market"],
+  },
+];
+
+export function getMentorForContext(context: string): Mentor {
+  const contextLower = context.toLowerCase();
+  
+  if (contextLower.includes("startup") || contextLower.includes("fundrais") || contextLower.includes("gtm")) {
+    return mentors.find(m => m.id === "kai")!;
+  }
+  
+  if (contextLower.includes("technical") || contextLower.includes("certif") || contextLower.includes("engineer")) {
+    return mentors.find(m => m.id === "alex")!;
+  }
+  
+  return mentors.find(m => m.id === "maya")!;
+}

@@ -234,7 +234,7 @@ export default function RoadmapPage() {
           className="mb-8"
         >
           <h1 className="text-h1 text-text-primary mb-1">Your Learning Path</h1>
-          <p className="caption text-text-muted">Day {currentDay} of 365 • Week {getDayWeek(currentDay)}</p>
+          <p className="caption text-text-muted">Day {currentDay} of 180 • Week {getDayWeek(currentDay)}</p>
         </motion.div>
 
         {/* Current Pattern */}
