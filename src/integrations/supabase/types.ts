@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_completions: {
+        Row: {
+          completed_stack_id: string | null
+          completion_date: string
+          created_at: string
+          drills_completed: number
+          games_completed: number
+          id: string
+          lesson_completed: boolean
+          market_id: string
+          updated_at: string
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          completed_stack_id?: string | null
+          completion_date?: string
+          created_at?: string
+          drills_completed?: number
+          games_completed?: number
+          id?: string
+          lesson_completed?: boolean
+          market_id: string
+          updated_at?: string
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          completed_stack_id?: string | null
+          completion_date?: string
+          created_at?: string
+          drills_completed?: number
+          games_completed?: number
+          id?: string
+          lesson_completed?: boolean
+          market_id?: string
+          updated_at?: string
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_completions_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       drills_progress: {
         Row: {
           average_time_seconds: number | null
@@ -580,12 +630,98 @@ export type Database = {
           },
         ]
       }
+      user_xp: {
+        Row: {
+          created_at: string
+          current_level: number
+          id: string
+          market_id: string
+          startup_stage: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+          xp_to_next_level: number
+        }
+        Insert: {
+          created_at?: string
+          current_level?: number
+          id?: string
+          market_id: string
+          startup_stage?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+          xp_to_next_level?: number
+        }
+        Update: {
+          created_at?: string
+          current_level?: number
+          id?: string
+          market_id?: string
+          startup_stage?: number
+          total_xp?: number
+          updated_at?: string
+          user_id?: string
+          xp_to_next_level?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_xp_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      xp_transactions: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          market_id: string
+          source_id: string | null
+          source_type: string
+          user_id: string
+          xp_amount: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          market_id: string
+          source_id?: string | null
+          source_type: string
+          user_id: string
+          xp_amount: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          market_id?: string
+          source_id?: string | null
+          source_type?: string
+          user_id?: string
+          xp_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "xp_transactions_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_level: { Args: { xp: number }; Returns: number }
+      calculate_startup_stage: { Args: { xp: number }; Returns: number }
     }
     Enums: {
       [_ in never]: never
