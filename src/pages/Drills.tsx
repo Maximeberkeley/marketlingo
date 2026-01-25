@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Timer, CheckCircle, XCircle, RotateCcw, Loader2, Target, Lightbulb, TrendingUp } from "lucide-react";
+import { ArrowLeft, Timer, CheckCircle, XCircle, RotateCcw, Loader2, Target, Lightbulb, TrendingUp, Zap, Sparkles, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
@@ -30,9 +30,10 @@ export default function DrillsPage() {
   const [score, setScore] = useState(0);
   const [drillComplete, setDrillComplete] = useState(false);
   const [timeLeft, setTimeLeft] = useState(15);
-  const [isTimerActive, setIsTimerActive] = useState(true);
+  const [isTimerActive, setIsTimerActive] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
+  const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -191,6 +192,80 @@ export default function DrillsPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Intro screen
+  if (showIntro && questions.length > 0) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+        >
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+            <ArrowLeft size={24} className="text-text-secondary" />
+          </button>
+          <h1 className="text-h2 text-text-primary">Drills</h1>
+        </motion.div>
+
+        <div className="flex-1 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="w-full max-w-md"
+          >
+            {/* Gradient Header Card */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-orange-400 p-6 mb-6">
+              <div className="absolute top-4 right-4 opacity-30">
+                <Sparkles size={48} />
+              </div>
+              <div className="relative z-10">
+                <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
+                  <Zap size={28} className="text-white" />
+                </div>
+                <p className="text-white/80 text-caption font-medium mb-1">Speed Drills</p>
+                <h2 className="text-2xl font-bold text-white mb-2">15-Second Challenges</h2>
+                <p className="text-white/90 text-body">
+                  Rapid-fire True/False questions to build your aerospace pattern recognition.
+                </p>
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="card-elevated mb-6">
+              <h3 className="text-h3 text-text-primary mb-3">How it works</h3>
+              <ul className="space-y-2">
+                {[
+                  "15 seconds per question",
+                  "True or False answers",
+                  "Based on real industry facts",
+                  "Build intuition fast"
+                ].map((feature, i) => (
+                  <li key={i} className="flex items-center gap-2 text-body text-text-secondary">
+                    <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* CTA */}
+            <Button 
+              className="w-full bg-gradient-to-r from-amber-500 to-orange-400 hover:opacity-90" 
+              size="lg"
+              onClick={() => {
+                setShowIntro(false);
+                setIsTimerActive(true);
+              }}
+            >
+              Start Drill
+              <ChevronRight size={18} className="ml-2" />
+            </Button>
+          </motion.div>
+        </div>
       </div>
     );
   }

@@ -1,12 +1,13 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, ExternalLink, MessageCircle } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, ExternalLink, MessageCircle, BookOpen, TrendingUp, Sparkles } from "lucide-react";
 import { Button } from "../ui/button";
 import { MentorAvatar } from "../ai/MentorAvatar";
 import { MentorChatOverlay } from "../ai/MentorChatOverlay";
 import { MentorTipBubble } from "../ai/MentorTipBubble";
 import { mentors, Mentor, getMentorForContext } from "@/data/mentors";
 import { getTipForSlide, MentorTip } from "@/data/mentorTips";
+import { cn } from "@/lib/utils";
 
 interface Source {
   label: string;
@@ -21,6 +22,25 @@ interface Slide {
 }
 
 type StackType = "NEWS" | "HISTORY" | "LESSON";
+
+// Intro slide data for each type
+const introContent: Record<StackType, { icon: React.ReactNode; tagline: string; color: string }> = {
+  NEWS: { 
+    icon: <TrendingUp className="w-6 h-6" />, 
+    tagline: "Recognize recurring market forces",
+    color: "from-blue-500 to-cyan-400"
+  },
+  LESSON: { 
+    icon: <BookOpen className="w-6 h-6" />, 
+    tagline: "5-minute concept deep dive",
+    color: "from-emerald-500 to-teal-400"
+  },
+  HISTORY: { 
+    icon: <Sparkles className="w-6 h-6" />, 
+    tagline: "Key moments that shaped the industry",
+    color: "from-amber-500 to-orange-400"
+  }
+};
 
 interface SlideReaderProps {
   stackTitle: string;
@@ -43,20 +63,22 @@ export function SlideReader({
   onSaveInsight,
   onAddNote,
 }: SlideReaderProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(-1); // Start at -1 for intro slide
   const [direction, setDirection] = useState(0);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [currentTip, setCurrentTip] = useState<MentorTip | null>(null);
   const [shownTipIds] = useState<Set<string>>(new Set());
   
-  const currentSlide = slides[currentIndex];
+  const isIntroSlide = currentIndex === -1;
+  const currentSlide = isIntroSlide ? null : slides[currentIndex];
   const isLastSlide = currentIndex === slides.length - 1;
   const contextMentor = getMentorForContext(stackTitle);
+  const intro = introContent[stackType];
 
   // Proactive tip system
   useEffect(() => {
-    // Don't show tips if chat is open
-    if (activeMentor) {
+    // Don't show tips on intro or if chat is open
+    if (activeMentor || isIntroSlide) {
       setCurrentTip(null);
       return;
     }
@@ -71,7 +93,7 @@ export function SlideReader({
     }, 2000); // Show tip 2s after landing on slide
 
     return () => clearTimeout(timer);
-  }, [currentIndex, slides.length, activeMentor, shownTipIds]);
+  }, [currentIndex, slides.length, activeMentor, shownTipIds, isIntroSlide]);
   
   const goToNext = useCallback(() => {
     if (currentIndex < slides.length - 1) {
@@ -81,7 +103,7 @@ export function SlideReader({
   }, [currentIndex, slides.length]);
   
   const goToPrev = useCallback(() => {
-    if (currentIndex > 0) {
+    if (currentIndex > -1) { // Can go back to intro
       setDirection(-1);
       setCurrentIndex(currentIndex - 1);
     }
@@ -142,8 +164,14 @@ export function SlideReader({
         />
       </div>
       
-      {/* Progress */}
+      {/* Progress - shows intro + all slides */}
       <div className="flex gap-1 px-4 py-3">
+        {/* Intro dot */}
+        <div
+          className={`h-1 w-4 rounded-full transition-colors ${
+            currentIndex >= -1 ? "bg-primary" : "bg-bg-1"
+          }`}
+        />
         {slides.map((_, index) => (
           <div
             key={index}
@@ -174,32 +202,60 @@ export function SlideReader({
             onDragEnd={handleDragEnd}
             className="absolute inset-0 flex flex-col"
           >
-            <div className="card-elevated flex-1 flex flex-col">
-              <h3 className="text-h3 text-text-primary mb-3">{currentSlide.title}</h3>
-              <p className="text-body text-text-secondary flex-1 leading-relaxed">
-                {currentSlide.body}
-              </p>
-              
-              {/* Sources */}
-              {currentSlide.sources.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-border">
-                  <div className="flex flex-wrap gap-2">
-                    {currentSlide.sources.map((source, idx) => (
-                      <a
-                        key={idx}
-                        href={source.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="chip inline-flex items-center gap-1.5 hover:border-primary transition-colors"
-                      >
-                        <span>{source.label}</span>
-                        <ExternalLink size={10} />
-                      </a>
-                    ))}
-                  </div>
+            {isIntroSlide ? (
+              /* Intro Slide */
+              <div className={cn(
+                "card-elevated flex-1 flex flex-col items-center justify-center text-center",
+                "bg-gradient-to-br",
+                intro.color,
+                "border-0"
+              )}>
+                <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4 text-white">
+                  {intro.icon}
                 </div>
-              )}
-            </div>
+                <p className="text-white/80 text-caption font-medium mb-2">{stackType}</p>
+                <h3 className="text-h2 text-white mb-2">{stackTitle}</h3>
+                <p className="text-white/90 text-body max-w-xs">{intro.tagline}</p>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="mt-8 flex items-center gap-2 text-white/70 text-caption"
+                >
+                  <span>Swipe to start</span>
+                  <ChevronRight className="w-4 h-4 animate-pulse" />
+                </motion.div>
+              </div>
+            ) : (
+              /* Regular Slide */
+              <div className="card-elevated flex-1 flex flex-col">
+                <h3 className="text-h3 text-text-primary mb-3">{currentSlide?.title}</h3>
+                <p className="text-body text-text-secondary flex-1 leading-relaxed">
+                  {currentSlide?.body}
+                </p>
+                
+                {/* Sources */}
+                {currentSlide && currentSlide.sources.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <div className="flex flex-wrap gap-2">
+                      {currentSlide.sources.map((source, idx) => (
+                        <a
+                          key={idx}
+                          href={source.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="chip inline-flex items-center gap-1.5 hover:border-primary transition-colors"
+                        >
+                          <span>{source.label}</span>
+                          <ExternalLink size={10} />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -208,9 +264,9 @@ export function SlideReader({
       <div className="absolute left-4 right-4 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none">
         <button
           onClick={goToPrev}
-          disabled={currentIndex === 0}
+          disabled={currentIndex === -1}
           className={`p-2 rounded-full bg-bg-1/80 backdrop-blur-sm pointer-events-auto transition-opacity ${
-            currentIndex === 0 ? "opacity-0" : "opacity-100"
+            currentIndex === -1 ? "opacity-0" : "opacity-100"
           }`}
         >
           <ChevronLeft size={20} className="text-text-secondary" />
@@ -228,7 +284,11 @@ export function SlideReader({
 
       {/* Bottom Actions */}
       <div className="px-4 py-4 border-t border-border bg-bg-0">
-        {isLastSlide ? (
+        {isIntroSlide ? (
+          <Button variant="cta" size="full" onClick={goToNext}>
+            Begin
+          </Button>
+        ) : isLastSlide ? (
           <Button variant="cta" size="full" onClick={onComplete}>
             Complete Stack
           </Button>
@@ -238,7 +298,7 @@ export function SlideReader({
               variant="secondary"
               size="default"
               className="flex-1"
-              onClick={() => onAddNote(currentSlide.slideNumber)}
+              onClick={() => currentSlide && onAddNote(currentSlide.slideNumber)}
             >
               <PenLine size={18} />
               Add note
@@ -247,7 +307,7 @@ export function SlideReader({
               variant="secondary"
               size="default"
               className="flex-1"
-              onClick={() => onSaveInsight(currentSlide.slideNumber)}
+              onClick={() => currentSlide && onSaveInsight(currentSlide.slideNumber)}
             >
               <Bookmark size={18} />
               Save insight
@@ -278,7 +338,7 @@ export function SlideReader({
       <MentorChatOverlay
         mentor={activeMentor}
         onClose={() => setActiveMentor(null)}
-        context={`${stackTitle}: ${currentSlide.title} - ${currentSlide.body}`}
+        context={`${stackTitle}: ${currentSlide?.title || 'Introduction'} - ${currentSlide?.body || 'Getting started'}`}
       />
     </div>
   );
