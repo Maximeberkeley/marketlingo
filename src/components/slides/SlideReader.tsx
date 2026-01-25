@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, ExternalLink, MessageCircle, BookOpen, TrendingUp, Sparkles } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, ExternalLink, BookOpen, TrendingUp, Sparkles, Flame, Target, CheckCircle2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { MentorAvatar } from "../ai/MentorAvatar";
 import { MentorChatOverlay } from "../ai/MentorChatOverlay";
@@ -67,13 +67,21 @@ export function SlideReader({
   const [direction, setDirection] = useState(0);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [currentTip, setCurrentTip] = useState<MentorTip | null>(null);
+  const [tipDismissed, setTipDismissed] = useState(false);
   const [shownTipIds] = useState<Set<string>>(new Set());
+  const [showArrows, setShowArrows] = useState(true);
+  const [showCompletion, setShowCompletion] = useState(false);
   
   const isIntroSlide = currentIndex === -1;
   const currentSlide = isIntroSlide ? null : slides[currentIndex];
   const isLastSlide = currentIndex === slides.length - 1;
   const contextMentor = getMentorForContext(stackTitle);
   const intro = introContent[stackType];
+
+  // Hide arrows when AI mentor or tip is visible
+  useEffect(() => {
+    setShowArrows(!activeMentor && !currentTip);
+  }, [activeMentor, currentTip]);
 
   // Proactive tip system
   useEffect(() => {
@@ -260,68 +268,151 @@ export function SlideReader({
         </AnimatePresence>
       </div>
 
-      {/* Navigation Arrows */}
-      <div className="absolute left-4 right-4 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none">
-        <button
-          onClick={goToPrev}
-          disabled={currentIndex === -1}
-          className={`p-2 rounded-full bg-bg-1/80 backdrop-blur-sm pointer-events-auto transition-opacity ${
-            currentIndex === -1 ? "opacity-0" : "opacity-100"
-          }`}
-        >
-          <ChevronLeft size={20} className="text-text-secondary" />
-        </button>
-        <button
-          onClick={goToNext}
-          disabled={isLastSlide}
-          className={`p-2 rounded-full bg-bg-1/80 backdrop-blur-sm pointer-events-auto transition-opacity ${
-            isLastSlide ? "opacity-0" : "opacity-100"
-          }`}
-        >
-          <ChevronRight size={20} className="text-text-secondary" />
-        </button>
-      </div>
+      {/* Navigation Arrows - Hide when AI is active */}
+      <AnimatePresence>
+        {showArrows && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute left-2 right-2 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none z-20"
+          >
+            <button
+              onClick={goToPrev}
+              disabled={currentIndex === -1}
+              className={cn(
+                "p-2.5 rounded-full bg-bg-1/90 backdrop-blur-sm pointer-events-auto transition-all",
+                "border border-border shadow-lg",
+                currentIndex === -1 ? "opacity-0 pointer-events-none" : "opacity-100 hover:bg-bg-2"
+              )}
+            >
+              <ChevronLeft size={18} className="text-text-secondary" />
+            </button>
+            <button
+              onClick={goToNext}
+              disabled={isLastSlide}
+              className={cn(
+                "p-2.5 rounded-full bg-bg-1/90 backdrop-blur-sm pointer-events-auto transition-all",
+                "border border-border shadow-lg",
+                isLastSlide ? "opacity-0 pointer-events-none" : "opacity-100 hover:bg-bg-2"
+              )}
+            >
+              <ChevronRight size={18} className="text-text-secondary" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Bottom Actions */}
-      <div className="px-4 pt-4 pb-8 border-t border-border bg-bg-0 safe-area-bottom">
+      <div className="px-4 pt-3 pb-6 border-t border-border bg-bg-0" style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}>
         {isIntroSlide ? (
           <Button variant="cta" size="full" onClick={goToNext}>
             Begin
           </Button>
         ) : isLastSlide ? (
-          <Button variant="cta" size="full" onClick={onComplete}>
+          <Button variant="cta" size="full" onClick={() => setShowCompletion(true)}>
+            <CheckCircle2 size={18} />
             Complete Stack
           </Button>
         ) : (
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <Button
               variant="secondary"
               size="default"
-              className="flex-1"
+              className="flex-1 h-11"
               onClick={() => currentSlide && onAddNote(currentSlide.slideNumber)}
             >
-              <PenLine size={18} />
-              Add note
+              <PenLine size={16} />
+              <span className="text-sm">Note</span>
             </Button>
             <Button
               variant="secondary"
               size="default"
-              className="flex-1"
+              className="flex-1 h-11"
               onClick={() => currentSlide && onSaveInsight(currentSlide.slideNumber)}
             >
-              <Bookmark size={18} />
-              Save insight
+              <Bookmark size={16} />
+              <span className="text-sm">Save</span>
             </Button>
           </div>
         )}
       </div>
 
-      {/* Proactive Mentor Tip Bubble */}
-      {currentTip && (
+      {/* Completion Celebration Modal */}
+      <AnimatePresence>
+        {showCompletion && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-background/95 backdrop-blur-sm flex items-center justify-center p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
+              className="w-full max-w-sm bg-bg-2 rounded-2xl p-6 border border-border text-center"
+            >
+              {/* Flame animation */}
+              <motion.div 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 400 }}
+                className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-500/20 to-red-500/20 flex items-center justify-center"
+              >
+                <Flame size={40} className="text-orange-500 streak-flame" />
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <h2 className="text-h2 text-text-primary mb-2">You're on fire! 🔥</h2>
+                <p className="text-body text-text-secondary mb-1">
+                  Lesson complete! Your streak is building.
+                </p>
+                <p className="text-caption text-text-muted mb-6">
+                  Done learning for the day? Try some drills to reinforce what you've learned.
+                </p>
+              </motion.div>
+              
+              <div className="space-y-3">
+                <Button 
+                  variant="cta" 
+                  size="full"
+                  onClick={onComplete}
+                >
+                  <Flame size={18} />
+                  Continue
+                </Button>
+                <Button 
+                  variant="secondary" 
+                  size="full"
+                  onClick={() => {
+                    onComplete();
+                  }}
+                  className="gap-2"
+                >
+                  <Target size={18} />
+                  Practice with Drills
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Proactive Mentor Tip Bubble - With minimize option */}
+      {currentTip && !tipDismissed && (
         <MentorTipBubble
           mentor={mentors.find((m) => m.id === currentTip.mentorId)!}
           tip={currentTip.tip}
-          onDismiss={() => setCurrentTip(null)}
+          onDismiss={() => {
+            setTipDismissed(true);
+            setCurrentTip(null);
+          }}
           onTap={() => {
             const tipMentor = mentors.find((m) => m.id === currentTip.mentorId);
             if (tipMentor) {

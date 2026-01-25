@@ -27,9 +27,10 @@ export function MentorTipBubble({
     return () => clearTimeout(timer);
   }, [delay]);
 
+  // Position classes - adjusted for iPhone safe areas
   const positionClasses = {
-    "bottom-left": "bottom-24 left-4",
-    "bottom-right": "bottom-24 right-4",
+    "bottom-left": "bottom-28 left-4",
+    "bottom-right": "bottom-28 right-4",
     "top-right": "top-20 right-4",
   };
 
