@@ -211,6 +211,11 @@
   .safe-bottom {
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
+
+  /* Safe Area Bottom for buttons */
+  .safe-area-bottom {
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  }
   
   /* Streak Flame */
   .streak-flame {
