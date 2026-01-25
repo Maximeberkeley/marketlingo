@@ -10,6 +10,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 
+interface Lesson {
+  day: number;
+  title: string;
+  pattern: string;
+  completed: boolean;
+}
+
 interface Week {
   weekNumber: number;
   status: NodeStatus;
@@ -17,6 +24,7 @@ interface Week {
   objective?: string;
   learnings?: string[];
   dayRange: string;
+  lessons?: Lesson[];
 }
 
 interface Season {
@@ -193,6 +201,16 @@ export default function RoadmapPage() {
       .map(d => aerospacePatterns[d].pattern);
     const objective = patterns[0] || `Master ${title.toLowerCase()} concepts`;
 
+    // Build lessons for the week
+    const lessons: Lesson[] = days
+      .filter(d => aerospacePatterns[d])
+      .map(d => ({
+        day: d,
+        title: aerospacePatterns[d].title,
+        pattern: aerospacePatterns[d].pattern,
+        completed: d < currentDay,
+      }));
+
     return {
       weekNumber: weekNum,
       status,
@@ -200,6 +218,7 @@ export default function RoadmapPage() {
       objective,
       learnings: learnings.length > 0 ? learnings : ["Coming soon"],
       dayRange: `Days ${days[0]}-${days[days.length - 1]}`,
+      lessons,
     };
   }
 
@@ -211,6 +230,11 @@ export default function RoadmapPage() {
         break;
       }
     }
+  };
+
+  const handleLessonClick = (day: number) => {
+    // Navigate to home to start that specific day's lesson
+    navigate("/home", { state: { targetDay: day } });
   };
 
   const handleStartWeek = () => {
@@ -273,6 +297,7 @@ export default function RoadmapPage() {
                 title={season.title}
                 weeks={season.weeks}
                 onWeekClick={handleWeekClick}
+                onLessonClick={handleLessonClick}
                 defaultExpanded={season.seasonNumber === 1}
               />
             </motion.div>

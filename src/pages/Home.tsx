@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Cpu, ChevronRight, Gamepad2, Target, FileText, Sparkles, Loader2, TrendingUp, Calendar, Settings } from "lucide-react";
+import { Cpu, ChevronRight, Gamepad2, Target, FileText, Sparkles, Loader2, TrendingUp, Calendar, Settings, CheckCircle2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
+import { XPBadge } from "@/components/ui/XPBadge";
+import { StartupProgress } from "@/components/ui/StartupProgress";
 import { StackCard } from "@/components/ui/StackCard";
 import { SlideReader } from "@/components/slides/SlideReader";
 import { KeyPlayers } from "@/components/home/KeyPlayers";
@@ -15,6 +17,7 @@ import { mentors, Mentor } from "@/data/mentors";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProgress } from "@/hooks/useUserProgress";
+import { useUserXP, XP_REWARDS } from "@/hooks/useUserXP";
 import { useNotifications } from "@/hooks/useNotifications";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -65,7 +68,16 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
-  const { progress, completeStack } = useUserProgress(selectedMarket || undefined);
+  const { progress, completeStack, updateStreak } = useUserProgress(selectedMarket || undefined);
+  const { 
+    xpData, 
+    dailyCompletion, 
+    completeLessonForToday, 
+    getCurrentStage, 
+    getProgressToNextStage,
+    isLessonCompletedToday,
+    addXP 
+  } = useUserXP(selectedMarket || undefined);
   const [showReader, setShowReader] = useState(false);
   const [loading, setLoading] = useState(true);
   const [todayStack, setTodayStack] = useState<StackWithSlides | null>(null);
@@ -76,6 +88,9 @@ export default function HomePage() {
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   
   const { isSupported, isRegistered } = useNotifications();
+  const lessonCompletedToday = isLessonCompletedToday();
+  const currentStage = getCurrentStage();
+  const stageProgress = getProgressToNextStage();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -212,8 +227,23 @@ export default function HomePage() {
     setShowReader(false);
     if (progress && activeStack) {
       await completeStack(activeStack.id);
+      await updateStreak();
+      
+      // Track daily completion and add XP
+      await completeLessonForToday(activeStack.id);
+      
+      // Add streak bonus if applicable
+      if ((progress.current_streak || 0) > 0) {
+        await addXP(
+          XP_REWARDS.STREAK_BONUS * (progress.current_streak || 1),
+          "streak_bonus",
+          undefined,
+          `Streak bonus (${progress.current_streak} days)`
+        );
+      }
     }
-    toast.success("Stack completed! Streak updated 🔥");
+    toast.success("Lesson complete! 🔥 XP earned!");
+    navigate("/drills"); // Navigate to drills after completion
   };
 
   const handleOpenStack = (stack: StackWithSlides) => {
@@ -290,10 +320,13 @@ export default function HomePage() {
               </div>
               <div>
                 <h1 className="text-h2 text-text-primary">{marketName}</h1>
-                <p className="text-caption text-text-muted">Day {currentDay} of your journey</p>
+                <p className="text-caption text-text-muted">Day {currentDay} of 180</p>
               </div>
             </div>
-            <StreakBadge count={streak} />
+            <div className="flex items-center gap-2">
+              <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} />
+              <StreakBadge count={streak} />
+            </div>
           </div>
 
           {/* Quick Stats Row */}
@@ -320,11 +353,27 @@ export default function HomePage() {
           </div>
         </motion.div>
 
-        {/* Today's Learning Section */}
+        {/* Startup Progress Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+          className="mb-6"
+        >
+          <StartupProgress
+            stage={currentStage.stage}
+            stageName={currentStage.name}
+            stageDescription={currentStage.description}
+            progress={stageProgress}
+            totalXP={xpData?.total_xp || 0}
+          />
+        </motion.div>
+
+        {/* Today's Learning Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
           className="mb-6"
         >
           <div className="flex items-center justify-between mb-3">
@@ -338,40 +387,75 @@ export default function HomePage() {
               showPulse
             />
           </div>
-          <div className="space-y-3">
-            {todayStack ? (
-              <StackCard
-                title="Daily Pattern"
-                subtitle={`${todayStack.duration_minutes || 5} min • ${todayStack.slides.length} slides`}
-                headline={todayStack.title}
-                onClick={() => handleOpenStack(todayStack)}
-              />
-            ) : (
-              <StackCard
-                title="Daily Pattern"
-                subtitle="Loading..."
-                headline="Fetching your daily content"
-                onClick={() => {}}
-              />
-            )}
+          
+          {lessonCompletedToday ? (
+            /* Completed state - Show review option */
+            <div className="card-elevated border-success/30 bg-success/5">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center">
+                  <CheckCircle2 size={24} className="text-success" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-body font-semibold text-text-primary">
+                    Great job! You're done for today 🎉
+                  </h3>
+                  <p className="text-caption text-text-muted">
+                    +{XP_REWARDS.LESSON_COMPLETE} XP earned • Come back tomorrow for new content
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2 mt-3">
+                <button
+                  onClick={() => lessonStack && handleOpenStack(lessonStack)}
+                  className="flex-1 py-2 px-3 rounded-lg bg-bg-1 border border-border text-caption text-text-secondary hover:bg-bg-2 transition-colors"
+                >
+                  Review Lesson
+                </button>
+                <button
+                  onClick={() => navigate("/drills")}
+                  className="flex-1 py-2 px-3 rounded-lg bg-accent/10 border border-accent/30 text-caption text-accent font-medium hover:bg-accent/20 transition-colors"
+                >
+                  Practice Drills
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* Active learning state */
+            <div className="space-y-3">
+              {todayStack ? (
+                <StackCard
+                  title="Daily Pattern"
+                  subtitle={`${todayStack.duration_minutes || 5} min • ${todayStack.slides.length} slides • +${XP_REWARDS.LESSON_COMPLETE} XP`}
+                  headline={todayStack.title}
+                  onClick={() => handleOpenStack(todayStack)}
+                />
+              ) : (
+                <StackCard
+                  title="Daily Pattern"
+                  subtitle="Loading..."
+                  headline="Fetching your daily content"
+                  onClick={() => {}}
+                />
+              )}
 
-            {lessonStack ? (
-              <StackCard
-                title="Micro Lesson"
-                subtitle={`${lessonStack.duration_minutes || 7} min • ${lessonStack.slides.length} slides`}
-                headline={lessonStack.title}
-                ctaText="Start"
-                onClick={() => handleOpenStack(lessonStack)}
-              />
-            ) : (
-              <StackCard
-                title="Micro Lesson"
-                subtitle="Coming soon"
-                ctaText="Locked"
-                onClick={() => {}}
-              />
-            )}
-          </div>
+              {lessonStack ? (
+                <StackCard
+                  title="Micro Lesson"
+                  subtitle={`${lessonStack.duration_minutes || 7} min • ${lessonStack.slides.length} slides • +${XP_REWARDS.LESSON_COMPLETE} XP`}
+                  headline={lessonStack.title}
+                  ctaText="Start"
+                  onClick={() => handleOpenStack(lessonStack)}
+                />
+              ) : (
+                <StackCard
+                  title="Micro Lesson"
+                  subtitle="Coming soon"
+                  ctaText="Locked"
+                  onClick={() => {}}
+                />
+              )}
+            </div>
+          )}
         </motion.div>
 
         {/* Feature Cards Grid */}
