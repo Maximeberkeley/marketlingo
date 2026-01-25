@@ -200,12 +200,12 @@ export function SlideReader({
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.1}
             onDragEnd={handleDragEnd}
-            className="absolute inset-0 flex flex-col"
+            className="absolute inset-0 flex flex-col overflow-y-auto"
           >
             {isIntroSlide ? (
               /* Intro Slide */
               <div className={cn(
-                "card-elevated flex-1 flex flex-col items-center justify-center text-center",
+                "card-elevated flex-1 flex flex-col items-center justify-center text-center min-h-full",
                 "bg-gradient-to-br",
                 intro.color,
                 "border-0"
@@ -229,9 +229,9 @@ export function SlideReader({
               </div>
             ) : (
               /* Regular Slide */
-              <div className="card-elevated flex-1 flex flex-col">
+              <div className="card-elevated flex flex-col pb-4">
                 <h3 className="text-h3 text-text-primary mb-3">{currentSlide?.title}</h3>
-                <p className="text-body text-text-secondary flex-1 leading-relaxed">
+                <p className="text-body text-text-secondary leading-relaxed whitespace-pre-wrap">
                   {currentSlide?.body}
                 </p>
                 
