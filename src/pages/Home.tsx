@@ -1,23 +1,21 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Cpu, ChevronRight, Gamepad2, Target, FileText, Sparkles, Loader2, TrendingUp, Calendar, Settings, CheckCircle2 } from "lucide-react";
+import { ChevronRight, Gamepad2, Target, Sparkles, Loader2, Trophy, Award, CheckCircle2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { XPBadge } from "@/components/ui/XPBadge";
-import { StartupProgress } from "@/components/ui/StartupProgress";
 import { StackCard } from "@/components/ui/StackCard";
 import { SlideReader } from "@/components/slides/SlideReader";
 import { KeyPlayers } from "@/components/home/KeyPlayers";
 import { DailyNews } from "@/components/home/DailyNews";
 import { NotificationOnboarding } from "@/components/onboarding/NotificationOnboarding";
-import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
-import { mentors, Mentor } from "@/data/mentors";
+import { Mentor } from "@/data/mentors";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProgress } from "@/hooks/useUserProgress";
-import { useUserXP, XP_REWARDS } from "@/hooks/useUserXP";
+import { useUserXP, XP_REWARDS, STARTUP_STAGES } from "@/hooks/useUserXP";
 import { useNotifications } from "@/hooks/useNotifications";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -36,32 +34,22 @@ interface StackWithSlides {
   }[];
 }
 
-const marketIcons: Record<string, React.ReactNode> = {
-  ai: <Cpu size={20} className="text-accent" />,
-  fintech: <span className="text-xl">💳</span>,
-  ev: <span className="text-xl">⚡</span>,
-  biotech: <span className="text-xl">🧬</span>,
-  energy: <span className="text-xl">☀️</span>,
-  mobile: <span className="text-xl">📱</span>,
-  agtech: <span className="text-xl">🌱</span>,
-  aerospace: <span className="text-xl">🚀</span>,
-  creator: <span className="text-xl">🎨</span>,
-  ecommerce: <span className="text-xl">🛒</span>,
-  gaming: <span className="text-xl">🎮</span>,
+const marketIcons: Record<string, string> = {
+  aerospace: "🚀",
+  ai: "🤖",
+  fintech: "💳",
+  ev: "⚡",
+  biotech: "🧬",
+  energy: "☀️",
 };
 
 const marketNames: Record<string, string> = {
+  aerospace: "Aerospace",
   ai: "AI Industry",
   fintech: "Fintech",
   ev: "Electric Vehicles",
   biotech: "Biotech",
   energy: "Clean Energy",
-  mobile: "Mobile Tech",
-  agtech: "AgTech",
-  aerospace: "Aerospace",
-  creator: "Creator Economy",
-  ecommerce: "E-commerce",
-  gaming: "Gaming",
 };
 
 export default function HomePage() {
@@ -71,7 +59,6 @@ export default function HomePage() {
   const { progress, completeStack, updateStreak } = useUserProgress(selectedMarket || undefined);
   const { 
     xpData, 
-    dailyCompletion, 
     completeLessonForToday, 
     getCurrentStage, 
     getProgressToNextStage,
@@ -80,9 +67,7 @@ export default function HomePage() {
   } = useUserXP(selectedMarket || undefined);
   const [showReader, setShowReader] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [todayStack, setTodayStack] = useState<StackWithSlides | null>(null);
   const [lessonStack, setLessonStack] = useState<StackWithSlides | null>(null);
-  const [savedInsights, setSavedInsights] = useState<string[]>([]);
   const [activeStack, setActiveStack] = useState<StackWithSlides | null>(null);
   const [showNotificationOnboarding, setShowNotificationOnboarding] = useState(false);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
@@ -101,7 +86,6 @@ export default function HomePage() {
     const fetchData = async () => {
       if (!user) return;
 
-      // Check profile for selected market
       const { data: profile } = await supabase
         .from("profiles")
         .select("selected_market")
@@ -111,111 +95,37 @@ export default function HomePage() {
       if (profile?.selected_market) {
         setSelectedMarket(profile.selected_market);
       } else {
-        const stored = localStorage.getItem("selectedMarket");
-        if (stored) {
-          setSelectedMarket(stored);
-          await supabase
-            .from("profiles")
-            .update({ selected_market: stored })
-            .eq("id", user.id);
-        } else {
-          navigate("/select-market");
-          return;
-        }
+        navigate("/select-market");
+        return;
       }
 
-      const market = profile?.selected_market || localStorage.getItem("selectedMarket") || "aerospace";
+      const market = profile.selected_market;
 
-      // Fetch today's daily stack (DAILY_GAME type)
-      const { data: dailyStacks } = await supabase
-        .from("stacks")
-        .select(`
-          id,
-          title,
-          stack_type,
-          tags,
-          duration_minutes,
-          slides (
-            slide_number,
-            title,
-            body,
-            sources
-          )
-        `)
-        .eq("market_id", market)
-        .contains("tags", ["DAILY_GAME"])
-        .not("published_at", "is", null)
-        .order("created_at", { ascending: true })
-        .limit(1);
-
-      if (dailyStacks && dailyStacks.length > 0) {
-        const stack = dailyStacks[0];
-        setTodayStack({
-          ...stack,
-          tags: stack.tags || [],
-          slides: ((stack.slides as any[]) || [])
-            .sort((a, b) => a.slide_number - b.slide_number)
-            .map(s => ({
-              ...s,
-              sources: Array.isArray(s.sources) ? s.sources : [],
-            })),
-        });
-      }
-
-      // Fetch lesson stack (MICRO_LESSON type)
+      // Fetch lesson stack
       const { data: lessonStacks } = await supabase
         .from("stacks")
-        .select(`
-          id,
-          title,
-          stack_type,
-          tags,
-          duration_minutes,
-          slides (
-            slide_number,
-            title,
-            body,
-            sources
-          )
-        `)
+        .select(`id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)`)
         .eq("market_id", market)
         .contains("tags", ["MICRO_LESSON"])
         .not("published_at", "is", null)
         .order("created_at", { ascending: true })
         .limit(1);
 
-      if (lessonStacks && lessonStacks.length > 0) {
+      if (lessonStacks?.[0]) {
         const stack = lessonStacks[0];
         setLessonStack({
           ...stack,
           tags: stack.tags || [],
           slides: ((stack.slides as any[]) || [])
             .sort((a, b) => a.slide_number - b.slide_number)
-            .map(s => ({
-              ...s,
-              sources: Array.isArray(s.sources) ? s.sources : [],
-            })),
+            .map(s => ({ ...s, sources: Array.isArray(s.sources) ? s.sources : [] })),
         });
-      }
-
-      // Fetch saved insights
-      const { data: insights } = await supabase
-        .from("saved_insights")
-        .select("title")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(5);
-
-      if (insights) {
-        setSavedInsights(insights.map(i => i.title));
       }
 
       setLoading(false);
       
-      // Check if we should show notification onboarding (only on native, not registered, not dismissed)
-      const notifOnboardingDismissed = localStorage.getItem('notification_onboarding_dismissed');
-      if (isSupported && !isRegistered && !notifOnboardingDismissed) {
-        // Show after a brief delay so the user can see the home screen first
+      const notifDismissed = localStorage.getItem('notification_onboarding_dismissed');
+      if (isSupported && !isRegistered && !notifDismissed) {
         setTimeout(() => setShowNotificationOnboarding(true), 1500);
       }
     };
@@ -228,22 +138,14 @@ export default function HomePage() {
     if (progress && activeStack) {
       await completeStack(activeStack.id);
       await updateStreak();
-      
-      // Track daily completion and add XP
       await completeLessonForToday(activeStack.id);
       
-      // Add streak bonus if applicable
       if ((progress.current_streak || 0) > 0) {
-        await addXP(
-          XP_REWARDS.STREAK_BONUS * (progress.current_streak || 1),
-          "streak_bonus",
-          undefined,
-          `Streak bonus (${progress.current_streak} days)`
-        );
+        await addXP(XP_REWARDS.STREAK_BONUS * (progress.current_streak || 1), "streak_bonus");
       }
     }
-    toast.success("Lesson complete! 🔥 XP earned!");
-    navigate("/drills"); // Navigate to drills after completion
+    toast.success("Lesson complete! 🔥");
+    navigate("/drills");
   };
 
   const handleOpenStack = (stack: StackWithSlides) => {
@@ -253,45 +155,30 @@ export default function HomePage() {
 
   const handleSaveInsight = async (slideNum: number) => {
     if (!user || !activeStack) return;
-
     const slide = activeStack.slides[slideNum - 1];
     await supabase.from("saved_insights").insert({
       user_id: user.id,
-      title: slide?.title || `Insight from ${activeStack.title}`,
+      title: slide?.title || `Insight`,
       content: slide?.body,
       stack_id: activeStack.id,
     });
-
-    toast.success(`Insight saved from slide ${slideNum}`);
+    toast.success("Insight saved!");
   };
 
   const handleAddNote = async (slideNum: number) => {
     if (!user || !activeStack) return;
-
-    // Find slide by slide_number, not array index
-    const slide = activeStack.slides.find(s => s.slide_number === slideNum) || activeStack.slides[slideNum - 1];
-    const noteContent = slide?.body || `Note from ${activeStack.title}`;
-    
-    const { error } = await supabase.from("notes").insert({
+    const slide = activeStack.slides.find(s => s.slide_number === slideNum);
+    await supabase.from("notes").insert({
       user_id: user.id,
-      content: noteContent,
-      linked_label: `${activeStack.stack_type} · Slide ${slideNum}`,
+      content: slide?.body || "",
+      linked_label: `Slide ${slideNum}`,
       stack_id: activeStack.id,
     });
-
-    if (error) {
-      console.error("Error saving note:", error);
-      toast.error("Failed to save note");
-      return;
-    }
-
-    toast.success(`Note added for slide ${slideNum}`);
+    toast.success("Note added!");
   };
 
   const streak = progress?.current_streak || 0;
   const currentDay = progress?.current_day || 1;
-  const marketName = selectedMarket ? marketNames[selectedMarket] || "AI Industry" : "AI Industry";
-  const marketIcon = selectedMarket ? marketIcons[selectedMarket] : marketIcons.ai;
 
   if (loading || authLoading) {
     return (
@@ -305,292 +192,166 @@ export default function HomePage() {
 
   return (
     <AppLayout>
-      <div className="screen-padding pt-12 pb-28">
-        {/* Header Section */}
+      <div className="screen-padding pt-safe pb-28">
+        {/* Compact Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
+          className="flex items-center justify-between py-4"
         >
-          {/* Top Bar */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/20 flex items-center justify-center">
-                {marketIcon}
-              </div>
-              <div>
-                <h1 className="text-h2 text-text-primary">{marketName}</h1>
-                <p className="text-caption text-text-muted">Day {currentDay} of 180</p>
-              </div>
+          <div className="flex items-center gap-2.5">
+            <span className="text-2xl">{marketIcons[selectedMarket || "aerospace"]}</span>
+            <div>
+              <h1 className="text-lg font-semibold text-text-primary">
+                {marketNames[selectedMarket || "aerospace"]}
+              </h1>
+              <p className="text-[11px] text-text-muted">Day {currentDay} of 180</p>
             </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} showLevel={false} />
+            <StreakBadge count={streak} />
+          </div>
+        </motion.div>
+
+        {/* Startup Progress - Compact */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="mb-5"
+        >
+          <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} />
-              <StreakBadge count={streak} />
-            </div>
-          </div>
-
-          {/* Quick Stats Row */}
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
-            <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg bg-bg-2/50 border border-border">
-              <Calendar size={14} className="text-text-muted" />
-              <span className="text-caption text-text-secondary whitespace-nowrap">
-                {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+              <span className="text-caption font-medium text-text-primary">
+                Stage {currentStage.stage}: {currentStage.name}
               </span>
             </div>
-            <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg bg-bg-2/50 border border-border">
-              <TrendingUp size={14} className="text-accent" />
-              <span className="text-caption text-text-secondary whitespace-nowrap">
-                {progress?.completed_stacks?.length || 0} stacks completed
-              </span>
-            </div>
-            <button 
-              onClick={() => navigate("/select-market")}
-              className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg bg-bg-2/50 border border-border hover:border-accent/50 transition-colors"
-            >
-              <Settings size={14} className="text-text-muted" />
-              <span className="text-caption text-text-secondary whitespace-nowrap">Switch Market</span>
-            </button>
+            <span className="text-[11px] text-accent">{Math.round(stageProgress)}%</span>
           </div>
-        </motion.div>
-
-        {/* Startup Progress Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-6"
-        >
-          <StartupProgress
-            stage={currentStage.stage}
-            stageName={currentStage.name}
-            stageDescription={currentStage.description}
-            progress={stageProgress}
-            totalXP={xpData?.total_xp || 0}
-          />
-        </motion.div>
-
-        {/* Today's Learning Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="mb-6"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[11px] font-medium uppercase tracking-wider text-text-muted">
-              Today's Learning
-            </h2>
-            <MentorAvatar
-              mentor={mentors.find(m => m.id === "alex")!}
-              onClick={() => setActiveMentor(mentors.find(m => m.id === "alex")!)}
-              size="sm"
-              showPulse
+          <div className="h-1.5 rounded-full bg-bg-1 overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${stageProgress}%` }}
+              transition={{ duration: 0.6 }}
+              className="h-full rounded-full bg-gradient-to-r from-accent to-accent/60"
             />
           </div>
-          
+        </motion.div>
+
+        {/* Today's Lesson Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-5"
+        >
           {lessonCompletedToday ? (
-            /* Completed state - Show review option */
-            <div className="card-elevated border-success/30 bg-success/5">
+            <div className="p-4 rounded-xl bg-success/10 border border-success/20">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center">
-                  <CheckCircle2 size={24} className="text-success" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-body font-semibold text-text-primary">
-                    Great job! You're done for today 🎉
-                  </h3>
+                <CheckCircle2 size={24} className="text-success" />
+                <div>
+                  <p className="text-body font-medium text-text-primary">Done for today! 🎉</p>
                   <p className="text-caption text-text-muted">
-                    +{XP_REWARDS.LESSON_COMPLETE} XP earned • Come back tomorrow for new content
+                    +{XP_REWARDS.LESSON_COMPLETE} XP • Practice drills to reinforce
                   </p>
                 </div>
               </div>
               <div className="flex gap-2 mt-3">
                 <button
                   onClick={() => lessonStack && handleOpenStack(lessonStack)}
-                  className="flex-1 py-2 px-3 rounded-lg bg-bg-1 border border-border text-caption text-text-secondary hover:bg-bg-2 transition-colors"
+                  className="flex-1 py-2 rounded-lg bg-bg-1 border border-border text-caption text-text-secondary"
                 >
-                  Review Lesson
+                  Review
                 </button>
                 <button
                   onClick={() => navigate("/drills")}
-                  className="flex-1 py-2 px-3 rounded-lg bg-accent/10 border border-accent/30 text-caption text-accent font-medium hover:bg-accent/20 transition-colors"
+                  className="flex-1 py-2 rounded-lg bg-accent/10 border border-accent/30 text-caption text-accent font-medium"
                 >
-                  Practice Drills
+                  Practice
                 </button>
               </div>
             </div>
+          ) : lessonStack ? (
+            <StackCard
+              title="Today's Lesson"
+              subtitle={`${lessonStack.duration_minutes || 5} min • +${XP_REWARDS.LESSON_COMPLETE} XP`}
+              headline={lessonStack.title}
+              ctaText="Start"
+              onClick={() => handleOpenStack(lessonStack)}
+            />
           ) : (
-            /* Active learning state */
-            <div className="space-y-3">
-              {todayStack ? (
-                <StackCard
-                  title="Daily Pattern"
-                  subtitle={`${todayStack.duration_minutes || 5} min • ${todayStack.slides.length} slides • +${XP_REWARDS.LESSON_COMPLETE} XP`}
-                  headline={todayStack.title}
-                  onClick={() => handleOpenStack(todayStack)}
-                />
-              ) : (
-                <StackCard
-                  title="Daily Pattern"
-                  subtitle="Loading..."
-                  headline="Fetching your daily content"
-                  onClick={() => {}}
-                />
-              )}
-
-              {lessonStack ? (
-                <StackCard
-                  title="Micro Lesson"
-                  subtitle={`${lessonStack.duration_minutes || 7} min • ${lessonStack.slides.length} slides • +${XP_REWARDS.LESSON_COMPLETE} XP`}
-                  headline={lessonStack.title}
-                  ctaText="Start"
-                  onClick={() => handleOpenStack(lessonStack)}
-                />
-              ) : (
-                <StackCard
-                  title="Micro Lesson"
-                  subtitle="Coming soon"
-                  ctaText="Locked"
-                  onClick={() => {}}
-                />
-              )}
+            <div className="p-4 rounded-xl bg-bg-2 border border-border">
+              <p className="text-body text-text-muted">Loading lesson...</p>
             </div>
           )}
         </motion.div>
 
-        {/* Feature Cards Grid */}
+        {/* Quick Actions Grid - 2x2 compact */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="mb-6"
+          className="grid grid-cols-4 gap-2 mb-5"
         >
-          <h2 className="text-[11px] font-medium uppercase tracking-wider text-text-muted mb-3">
-            Practice & Review
-          </h2>
-          <div className="grid grid-cols-2 gap-3">
-            {/* Games */}
+          {[
+            { icon: Gamepad2, label: "Games", path: "/games", color: "text-amber-400", bg: "bg-amber-500/10" },
+            { icon: Target, label: "Drills", path: "/drills", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+            { icon: Trophy, label: "Rank", path: "/leaderboard", color: "text-blue-400", bg: "bg-blue-500/10" },
+            { icon: Award, label: "Badges", path: "/achievements", color: "text-purple-400", bg: "bg-purple-500/10" },
+          ].map((item) => (
             <button
-              onClick={() => navigate("/games")}
-              className={cn(
-                "group relative overflow-hidden",
-                "p-4 rounded-card bg-bg-2 border border-border",
-                "hover:border-amber-500/50 transition-all duration-200",
-                "flex flex-col items-start text-left"
-              )}
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-bg-2/50 border border-border"
             >
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-3">
-                <Gamepad2 size={18} className="text-amber-400" />
+              <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center", item.bg)}>
+                <item.icon size={18} className={item.color} />
               </div>
-              <h3 className="text-body font-medium text-text-primary mb-0.5">Games</h3>
-              <p className="text-caption text-text-muted">Test your knowledge</p>
-              <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-amber-500 to-amber-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <span className="text-[11px] text-text-secondary">{item.label}</span>
             </button>
-
-            {/* Drills */}
-            <button
-              onClick={() => navigate("/drills")}
-              className={cn(
-                "group relative overflow-hidden",
-                "p-4 rounded-card bg-bg-2 border border-border",
-                "hover:border-emerald-500/50 transition-all duration-200",
-                "flex flex-col items-start text-left"
-              )}
-            >
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-3">
-                <Target size={18} className="text-emerald-400" />
-              </div>
-              <h3 className="text-body font-medium text-text-primary mb-0.5">Drills</h3>
-              <p className="text-caption text-text-muted">Quick fact checks</p>
-              <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-emerald-500 to-emerald-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </button>
-
-            {/* Summaries */}
-            <button
-              onClick={() => navigate("/summaries")}
-              className={cn(
-                "group relative overflow-hidden",
-                "p-4 rounded-card bg-bg-2 border border-border",
-                "hover:border-blue-500/50 transition-all duration-200",
-                "flex flex-col items-start text-left"
-              )}
-            >
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-3">
-                <FileText size={18} className="text-blue-400" />
-              </div>
-              <h3 className="text-body font-medium text-text-primary mb-0.5">Summaries</h3>
-              <p className="text-caption text-text-muted">Daily/Weekly recaps</p>
-              <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </button>
-
-            {/* Trainer */}
-            <button
-              onClick={() => navigate("/trainer")}
-              className={cn(
-                "group relative overflow-hidden",
-                "p-4 rounded-card bg-bg-2 border border-border",
-                "hover:border-accent/50 transition-all duration-200",
-                "flex flex-col items-start text-left"
-              )}
-            >
-              <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center mb-3">
-                <Sparkles size={18} className="text-accent" />
-              </div>
-              <h3 className="text-body font-medium text-text-primary mb-0.5">Trainer</h3>
-              <p className="text-caption text-text-muted">Reasoning drills</p>
-              <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-accent to-accent/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </button>
-          </div>
+          ))}
         </motion.div>
 
-        {/* Saved Insights */}
+        {/* More Activities */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mb-2"
+          className="mb-5"
         >
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[11px] font-medium uppercase tracking-wider text-text-muted">
-              Saved Insights
+            <h2 className="text-caption font-medium uppercase tracking-wider text-text-muted">
+              Explore
             </h2>
-            <button 
-              className="flex items-center gap-1 text-caption text-accent hover:text-accent/80 transition-colors"
-              onClick={() => navigate("/notebook")}
-            >
-              View all
-              <ChevronRight size={14} />
-            </button>
           </div>
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4">
-            {savedInsights.length > 0 ? (
-              savedInsights.map((insight, index) => (
-                <motion.span
-                  key={insight}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.25 + index * 0.05 }}
-                  className="chip whitespace-nowrap"
-                >
-                  {insight}
-                </motion.span>
-              ))
-            ) : (
-              <span className="text-caption text-text-muted">
-                Complete stacks to save insights
-              </span>
-            )}
+          <div className="space-y-2">
+            <button
+              onClick={() => navigate("/trainer")}
+              className="w-full flex items-center gap-3 p-3 rounded-xl bg-bg-2/50 border border-border"
+            >
+              <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                <Sparkles size={18} className="text-accent" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-body font-medium text-text-primary">Strategy Trainer</p>
+                <p className="text-caption text-text-muted">Reasoning scenarios</p>
+              </div>
+              <ChevronRight size={16} className="text-text-muted" />
+            </button>
           </div>
         </motion.div>
 
-        {/* Key Players Section */}
-        {selectedMarket && <KeyPlayers marketId={selectedMarket} />}
-
-        {/* Daily News Section */}
-        {selectedMarket && <DailyNews marketId={selectedMarket} />}
+        {/* Key Players & News */}
+        {selectedMarket && (
+          <>
+            <KeyPlayers marketId={selectedMarket} />
+            <DailyNews marketId={selectedMarket} />
+          </>
+        )}
       </div>
 
-      {/* Slide Reader Modal */}
+      {/* Slide Reader */}
       {showReader && activeStack && (
         <SlideReader
           stackTitle={activeStack.title}
@@ -614,17 +375,15 @@ export default function HomePage() {
         onComplete={(enabled) => {
           setShowNotificationOnboarding(false);
           localStorage.setItem('notification_onboarding_dismissed', 'true');
-          if (enabled) {
-            toast.success("Notifications enabled! 🔔");
-          }
+          if (enabled) toast.success("Notifications enabled! 🔔");
         }}
       />
 
-      {/* Mentor Chat Overlay */}
+      {/* Mentor Chat */}
       <MentorChatOverlay
         mentor={activeMentor}
         onClose={() => setActiveMentor(null)}
-        context={activeStack?.title || selectedMarket || "aerospace"}
+        context={selectedMarket || "aerospace"}
       />
     </AppLayout>
   );

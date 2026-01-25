@@ -207,6 +207,11 @@
     @apply px-4;
   }
   
+  /* Top safe area */
+  .pt-safe {
+    padding-top: max(12px, env(safe-area-inset-top, 12px));
+  }
+  
   /* Safe Area for Bottom Nav */
   .safe-bottom {
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
