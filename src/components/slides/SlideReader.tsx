@@ -283,7 +283,7 @@ export function SlideReader({
       </div>
 
       {/* Bottom Actions */}
-      <div className="px-4 py-4 border-t border-border bg-bg-0">
+      <div className="px-4 pt-4 pb-8 border-t border-border bg-bg-0 safe-area-bottom">
         {isIntroSlide ? (
           <Button variant="cta" size="full" onClick={goToNext}>
             Begin
