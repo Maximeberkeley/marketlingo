@@ -9,6 +9,7 @@ import { mentors, Mentor } from "@/data/mentors";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import speedDrillHero from "@/assets/drills/speed-drill.jpg";
 
 interface DrillQuestion {
   id: string;
@@ -217,19 +218,19 @@ export default function DrillsPage() {
             animate={{ scale: 1, opacity: 1 }}
             className="w-full max-w-md"
           >
-            {/* Gradient Header Card */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-orange-400 p-6 mb-6">
-              <div className="absolute top-4 right-4 opacity-30">
-                <Sparkles size={48} />
-              </div>
-              <div className="relative z-10">
-                <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
-                  <Zap size={28} className="text-white" />
-                </div>
+            {/* Hero Image Card */}
+            <div className="relative overflow-hidden rounded-2xl mb-6">
+              <img 
+                src={speedDrillHero} 
+                alt="Speed Drills" 
+                className="w-full h-48 object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6">
                 <p className="text-white/80 text-caption font-medium mb-1">Speed Drills</p>
                 <h2 className="text-2xl font-bold text-white mb-2">15-Second Challenges</h2>
                 <p className="text-white/90 text-body">
-                  Rapid-fire True/False questions to build your aerospace pattern recognition.
+                  Rapid-fire True/False to build pattern recognition.
                 </p>
               </div>
             </div>
