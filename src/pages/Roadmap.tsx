@@ -1,84 +1,78 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { SeasonSection } from "@/components/roadmap/SeasonSection";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { NodeStatus } from "@/components/roadmap/RoadmapNode";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronDown, ChevronRight, Check, Lock, Play, BookOpen, Star } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Lesson {
   day: number;
   title: string;
   pattern: string;
   completed: boolean;
+  current: boolean;
 }
 
 interface Week {
   weekNumber: number;
-  status: NodeStatus;
   title: string;
-  objective?: string;
-  learnings?: string[];
-  dayRange: string;
-  lessons?: Lesson[];
+  lessons: Lesson[];
+  status: "completed" | "current" | "locked";
+  completedCount: number;
 }
 
 interface Season {
   seasonNumber: number;
   title: string;
+  subtitle: string;
   weeks: Week[];
+  isExpanded: boolean;
 }
 
-// Map day numbers to weeks (5 days per week, 4 weeks per month)
+// Aerospace patterns organized by day
+const aerospacePatterns: Record<number, { title: string; pattern: string }> = {
+  1: { title: "Buyer ≠ User", pattern: "Map the buying committee" },
+  2: { title: "OEM Gatekeeping", pattern: "Risk beats performance" },
+  3: { title: "Supply Chain Architecture", pattern: "Enter at Tier-2/3" },
+  4: { title: "The Approval Maze", pattern: "Build DER relationships" },
+  5: { title: "Governance = Velocity", pattern: "Regulatory strategy" },
+  6: { title: "Type Certification", pattern: "TC is the product" },
+  7: { title: "STC Path", pattern: "Modify existing aircraft" },
+  8: { title: "Change Friction", pattern: "Minimize cert surface" },
+  9: { title: "Why Slow", pattern: "Incentives reward caution" },
+  10: { title: "Conservative Design", pattern: "Heritage wins" },
+  11: { title: "Cost-Plus Model", pattern: "Contract = risk profile" },
+  12: { title: "Contract Types", pattern: "Power by the Hour" },
+  13: { title: "Timeline Mismatch", pattern: "Find patient capital" },
+  14: { title: "Startup Killers", pattern: "Cash timing risks" },
+  15: { title: "Cash Flow Cycles", pattern: "9-month working capital" },
+  16: { title: "Requirement Creep", pattern: "Formal change control" },
+  17: { title: "Hardware-First Trap", pattern: "Paper airplane phase" },
+  18: { title: "Trust Economy", pattern: "AS9100, track record" },
+  19: { title: "Supply Control", pattern: "Vertical vs suppliers" },
+  20: { title: "First Customer", pattern: "Tier-1 partners, MRO" },
+};
+
 function getDayWeek(day: number): number {
   return Math.ceil(day / 5);
 }
-
-// Aerospace Month 1 curriculum patterns organized by day (upgraded with startup-ready depth)
-const aerospacePatterns: Record<number, { title: string; pattern: string }> = {
-  // Week 1: Market Structure
-  1: { title: "Buyer ≠ User", pattern: "Map the buying committee—user love ≠ purchase authority" },
-  2: { title: "OEM Gatekeeping", pattern: "Risk beats performance; partner with Tier-1s first" },
-  3: { title: "Supply Chain Architecture", pattern: "Enter at Tier-2/3, become indispensable upstream" },
-  4: { title: "The Approval Maze", pattern: "Change = approval chain; build DER relationships" },
-  5: { title: "Governance = Velocity", pattern: "Regulatory strategy is product strategy" },
-  // Week 2: Certification Reality
-  6: { title: "Type Certification Deep Dive", pattern: "TC is the product; Part 23 vs Part 25 defines viability" },
-  7: { title: "STC: The Modification Path", pattern: "Modify existing aircraft—realistic startup entry" },
-  8: { title: "Change Friction Economics", pattern: "Minimize certification surface area in design" },
-  9: { title: "Why Aerospace Moves Slowly", pattern: "Incentives reward caution; adapt or fail" },
-  10: { title: "Conservative by Design", pattern: "Heritage wins; dual-source everything critical" },
-  // Week 3: Business Dynamics
-  11: { title: "Cost-Plus: The Defense Model", pattern: "Contract type = risk profile and profitability" },
-  12: { title: "Contract Types Decoded", pattern: "Power by the Hour, risk-sharing, data ownership" },
-  13: { title: "Timeline Mismatch Trap", pattern: "VC timelines don't match aerospace; find patient capital" },
-  14: { title: "Startup Killers", pattern: "Cash timing, cert pivots, key person risk" },
-  15: { title: "Cash Flow Cycles", pattern: "9-month working capital cycles; structure advances" },
-  // Week 4: Execution Patterns
-  16: { title: "Requirement Creep Danger", pattern: "Formal change control from day one" },
-  17: { title: "Hardware-First Trap", pattern: "Paper airplane phase before metal" },
-  18: { title: "The Trust Economy", pattern: "AS9100, track record, evidence culture" },
-  19: { title: "Supply Chain Control", pattern: "Vertical integration vs. supplier management" },
-  20: { title: "First Customer Strategy", pattern: "Tier-1 partners, defense R&D, MRO channels" },
-};
 
 export default function RoadmapPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [currentDay, setCurrentDay] = useState(1);
-  const [selectedWeek, setSelectedWeek] = useState<Week | null>(null);
   const [seasons, setSeasons] = useState<Season[]>([]);
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
   useEffect(() => {
     const fetchProgress = async () => {
       if (!user) return;
 
-      // Get user's selected market
       const { data: profile } = await supabase
         .from("profiles")
         .select("selected_market")
@@ -87,7 +81,6 @@ export default function RoadmapPage() {
 
       const market = profile?.selected_market || "aerospace";
 
-      // Get user progress
       const { data: progress } = await supabase
         .from("user_progress")
         .select("current_day")
@@ -98,81 +91,80 @@ export default function RoadmapPage() {
       const day = progress?.current_day || 1;
       setCurrentDay(day);
 
-      // Build seasons based on 6-month curriculum (180 days = 36 weeks = 6 seasons)
       const currentWeek = getDayWeek(day);
       
       const buildSeasons: Season[] = [
         {
           seasonNumber: 1,
-          title: "Month 1: Foundations",
+          title: "Foundations",
+          subtitle: "Month 1 • Core aerospace fundamentals",
           weeks: [
-            buildWeek(1, currentWeek, "Market Structure", [1, 2, 3, 4, 5]),
-            buildWeek(2, currentWeek, "Certification Reality", [6, 7, 8, 9, 10]),
-            buildWeek(3, currentWeek, "Business Dynamics", [11, 12, 13, 14, 15]),
-            buildWeek(4, currentWeek, "Execution Patterns", [16, 17, 18, 19, 20]),
+            buildWeek(1, currentWeek, day, "Market Structure", [1, 2, 3, 4, 5]),
+            buildWeek(2, currentWeek, day, "Certification Reality", [6, 7, 8, 9, 10]),
+            buildWeek(3, currentWeek, day, "Business Dynamics", [11, 12, 13, 14, 15]),
+            buildWeek(4, currentWeek, day, "Execution Patterns", [16, 17, 18, 19, 20]),
           ],
+          isExpanded: true,
         },
         {
           seasonNumber: 2,
-          title: "Month 2: Forces & Cycles",
+          title: "Forces & Cycles",
+          subtitle: "Month 2 • Market forces and timing",
           weeks: [
-            buildWeek(5, currentWeek, "Regulation Deep Dive", [21, 22, 23, 24, 25]),
-            buildWeek(6, currentWeek, "Capital Flows", [26, 27, 28, 29, 30]),
-            buildWeek(7, currentWeek, "Talent Dynamics", [31, 32, 33, 34, 35]),
-            buildWeek(8, currentWeek, "Technology Waves", [36, 37, 38, 39, 40]),
+            buildWeek(5, currentWeek, day, "Regulation Deep Dive", [21, 22, 23, 24, 25]),
+            buildWeek(6, currentWeek, day, "Capital Flows", [26, 27, 28, 29, 30]),
+            buildWeek(7, currentWeek, day, "Talent Dynamics", [31, 32, 33, 34, 35]),
+            buildWeek(8, currentWeek, day, "Technology Waves", [36, 37, 38, 39, 40]),
           ],
+          isExpanded: false,
         },
         {
           seasonNumber: 3,
-          title: "Month 3: Startup Patterns",
+          title: "Startup Patterns",
+          subtitle: "Month 3 • Building in aerospace",
           weeks: [
-            buildWeek(9, currentWeek, "Moat Building", [41, 42, 43, 44, 45]),
-            buildWeek(10, currentWeek, "GTM Strategies", [46, 47, 48, 49, 50]),
-            buildWeek(11, currentWeek, "Failure Modes", [51, 52, 53, 54, 55]),
-            buildWeek(12, currentWeek, "Success Stories", [56, 57, 58, 59, 60]),
+            buildWeek(9, currentWeek, day, "Moat Building", [41, 42, 43, 44, 45]),
+            buildWeek(10, currentWeek, day, "GTM Strategies", [46, 47, 48, 49, 50]),
+            buildWeek(11, currentWeek, day, "Failure Modes", [51, 52, 53, 54, 55]),
+            buildWeek(12, currentWeek, day, "Success Stories", [56, 57, 58, 59, 60]),
           ],
+          isExpanded: false,
         },
         {
           seasonNumber: 4,
-          title: "Month 4: Key Players",
+          title: "Key Players",
+          subtitle: "Month 4 • Industry deep dives",
           weeks: [
-            buildWeek(13, currentWeek, "Commercial Giants", [61, 62, 63, 64, 65]),
-            buildWeek(14, currentWeek, "Defense Primes", [66, 67, 68, 69, 70]),
-            buildWeek(15, currentWeek, "Space Innovators", [71, 72, 73, 74, 75]),
-            buildWeek(16, currentWeek, "Supply Chain", [76, 77, 78, 79, 80]),
+            buildWeek(13, currentWeek, day, "Commercial Giants", [61, 62, 63, 64, 65]),
+            buildWeek(14, currentWeek, day, "Defense Primes", [66, 67, 68, 69, 70]),
+            buildWeek(15, currentWeek, day, "Space Innovators", [71, 72, 73, 74, 75]),
+            buildWeek(16, currentWeek, day, "Supply Chain", [76, 77, 78, 79, 80]),
           ],
+          isExpanded: false,
         },
         {
           seasonNumber: 5,
-          title: "Month 5: Investment Lens",
+          title: "Investment Lens",
+          subtitle: "Month 5 • Investor perspective",
           weeks: [
-            buildWeek(17, currentWeek, "Public Markets", [81, 82, 83, 84, 85]),
-            buildWeek(18, currentWeek, "Private Markets", [86, 87, 88, 89, 90]),
-            buildWeek(19, currentWeek, "Due Diligence", [91, 92, 93, 94, 95]),
-            buildWeek(20, currentWeek, "Portfolio Strategy", [96, 97, 98, 99, 100]),
-            buildWeek(21, currentWeek, "Valuation Models", [101, 102, 103, 104, 105]),
-            buildWeek(22, currentWeek, "Risk Assessment", [106, 107, 108, 109, 110]),
+            buildWeek(17, currentWeek, day, "Public Markets", [81, 82, 83, 84, 85]),
+            buildWeek(18, currentWeek, day, "Private Markets", [86, 87, 88, 89, 90]),
+            buildWeek(19, currentWeek, day, "Due Diligence", [91, 92, 93, 94, 95]),
+            buildWeek(20, currentWeek, day, "Portfolio Strategy", [96, 97, 98, 99, 100]),
           ],
+          isExpanded: false,
         },
         {
           seasonNumber: 6,
-          title: "Month 6: Builder Mode",
+          title: "Builder Mode",
+          subtitle: "Month 6 • Apply everything",
           weeks: [
-            buildWeek(23, currentWeek, "Thesis Building", [111, 112, 113, 114, 115]),
-            buildWeek(24, currentWeek, "Analysis Project", [116, 117, 118, 119, 120]),
-            buildWeek(25, currentWeek, "Future Scenarios", [121, 122, 123, 124, 125]),
-            buildWeek(26, currentWeek, "Company Deep Dive", [126, 127, 128, 129, 130]),
-            buildWeek(27, currentWeek, "Trend Analysis", [131, 132, 133, 134, 135]),
-            buildWeek(28, currentWeek, "Final Synthesis", [136, 137, 138, 139, 140]),
-            buildWeek(29, currentWeek, "Capstone Week 1", [141, 142, 143, 144, 145]),
-            buildWeek(30, currentWeek, "Capstone Week 2", [146, 147, 148, 149, 150]),
-            buildWeek(31, currentWeek, "Advanced Topics", [151, 152, 153, 154, 155]),
-            buildWeek(32, currentWeek, "Industry Connections", [156, 157, 158, 159, 160]),
-            buildWeek(33, currentWeek, "Career Pathways", [161, 162, 163, 164, 165]),
-            buildWeek(34, currentWeek, "Expert Insights", [166, 167, 168, 169, 170]),
-            buildWeek(35, currentWeek, "Final Review", [171, 172, 173, 174, 175]),
-            buildWeek(36, currentWeek, "Graduation", [176, 177, 178, 179, 180]),
+            buildWeek(21, currentWeek, day, "Thesis Building", [101, 102, 103, 104, 105]),
+            buildWeek(22, currentWeek, day, "Analysis Project", [106, 107, 108, 109, 110]),
+            buildWeek(23, currentWeek, day, "Future Scenarios", [111, 112, 113, 114, 115]),
+            buildWeek(24, currentWeek, day, "Graduation", [116, 117, 118, 119, 120]),
           ],
+          isExpanded: false,
         },
       ];
 
@@ -183,62 +175,44 @@ export default function RoadmapPage() {
     fetchProgress();
   }, [user]);
 
-  function buildWeek(weekNum: number, currentWeek: number, title: string, days: number[]): Week {
-    let status: NodeStatus = "locked";
+  function buildWeek(weekNum: number, currentWeek: number, currentDay: number, title: string, days: number[]): Week {
+    let status: "completed" | "current" | "locked" = "locked";
     if (weekNum < currentWeek) status = "completed";
     else if (weekNum === currentWeek) status = "current";
-    else if (weekNum === currentWeek + 1) status = "available";
 
-    // Build learnings from actual curriculum patterns
-    const learnings = days
-      .filter(d => aerospacePatterns[d])
-      .map(d => aerospacePatterns[d].title)
-      .slice(0, 3);
-
-    // Build objective from patterns
-    const patterns = days
-      .filter(d => aerospacePatterns[d])
-      .map(d => aerospacePatterns[d].pattern);
-    const objective = patterns[0] || `Master ${title.toLowerCase()} concepts`;
-
-    // Build lessons for the week
-    const lessons: Lesson[] = days
-      .filter(d => aerospacePatterns[d])
-      .map(d => ({
-        day: d,
-        title: aerospacePatterns[d].title,
-        pattern: aerospacePatterns[d].pattern,
-        completed: d < currentDay,
-      }));
+    const lessons: Lesson[] = days.map(d => ({
+      day: d,
+      title: aerospacePatterns[d]?.title || `Day ${d}`,
+      pattern: aerospacePatterns[d]?.pattern || "Coming soon",
+      completed: d < currentDay,
+      current: d === currentDay,
+    }));
 
     return {
       weekNumber: weekNum,
-      status,
       title,
-      objective,
-      learnings: learnings.length > 0 ? learnings : ["Coming soon"],
-      dayRange: `Days ${days[0]}-${days[days.length - 1]}`,
       lessons,
+      status,
+      completedCount: lessons.filter(l => l.completed).length,
     };
   }
 
-  const handleWeekClick = (weekNumber: number) => {
-    for (const season of seasons) {
-      const week = season.weeks.find((w) => w.weekNumber === weekNumber);
-      if (week && week.status !== "locked") {
-        setSelectedWeek(week);
-        break;
-      }
+  const toggleSeason = (seasonNumber: number) => {
+    setSeasons(prev =>
+      prev.map(s =>
+        s.seasonNumber === seasonNumber ? { ...s, isExpanded: !s.isExpanded } : s
+      )
+    );
+  };
+
+  const handleLessonClick = (lesson: Lesson) => {
+    if (lesson.completed || lesson.current) {
+      setSelectedLesson(lesson);
     }
   };
 
-  const handleLessonClick = (day: number) => {
-    // Navigate to home to start that specific day's lesson
-    navigate("/home", { state: { targetDay: day } });
-  };
-
-  const handleStartWeek = () => {
-    setSelectedWeek(null);
+  const startLesson = () => {
+    setSelectedLesson(null);
     navigate("/home");
   };
 
@@ -246,7 +220,7 @@ export default function RoadmapPage() {
     return (
       <AppLayout>
         <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
         </div>
       </AppLayout>
     );
@@ -254,87 +228,197 @@ export default function RoadmapPage() {
 
   return (
     <AppLayout>
-      <div className="screen-padding pt-12 pb-8">
+      <div className="screen-padding pt-safe pb-28">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6"
         >
-          <h1 className="text-h1 text-text-primary mb-1">Your Learning Path</h1>
-          <p className="caption text-text-muted">Day {currentDay} of 180 • Week {getDayWeek(currentDay)}</p>
+          <h1 className="text-h1 text-text-primary mb-1">Your Journey</h1>
+          <p className="text-caption text-text-muted">
+            Day {currentDay} of 180 • Week {getDayWeek(currentDay)}
+          </p>
         </motion.div>
 
-        {/* Current Pattern */}
+        {/* Current Lesson Card */}
         {aerospacePatterns[currentDay] && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="card-elevated mb-6"
+            className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/30"
           >
-            <p className="text-caption text-primary mb-1">Today's Pattern</p>
-            <h3 className="text-h3 text-text-primary">{aerospacePatterns[currentDay].title}</h3>
-            <p className="text-body text-text-secondary mt-1">{aerospacePatterns[currentDay].pattern}</p>
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[11px] font-medium text-accent mb-1">CONTINUE LEARNING</p>
+                <h3 className="text-body font-semibold text-text-primary">
+                  {aerospacePatterns[currentDay].title}
+                </h3>
+                <p className="text-caption text-text-muted mt-1">
+                  {aerospacePatterns[currentDay].pattern}
+                </p>
+              </div>
+              <Button
+                size="sm"
+                className="bg-accent hover:bg-accent/90"
+                onClick={() => navigate("/home")}
+              >
+                <Play size={14} className="mr-1" />
+                Start
+              </Button>
+            </div>
           </motion.div>
         )}
 
         {/* Seasons */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-        >
-          {seasons.map((season, index) => (
+        <div className="space-y-3">
+          {seasons.map((season, sIdx) => (
             <motion.div
               key={season.seasonNumber}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + index * 0.1 }}
+              transition={{ delay: sIdx * 0.05 }}
+              className="rounded-2xl bg-bg-2/50 border border-border overflow-hidden"
             >
-              <SeasonSection
-                seasonNumber={season.seasonNumber}
-                title={season.title}
-                weeks={season.weeks}
-                onWeekClick={handleWeekClick}
-                onLessonClick={handleLessonClick}
-                defaultExpanded={season.seasonNumber === 1}
-              />
+              {/* Season Header */}
+              <button
+                onClick={() => toggleSeason(season.seasonNumber)}
+                className="w-full flex items-center justify-between p-4"
+              >
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    "w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold",
+                    season.weeks.some(w => w.status === "current")
+                      ? "bg-accent/20 text-accent"
+                      : season.weeks.every(w => w.status === "completed")
+                      ? "bg-success/20 text-success"
+                      : "bg-bg-1 text-text-muted"
+                  )}>
+                    {season.seasonNumber}
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-body font-semibold text-text-primary">{season.title}</h3>
+                    <p className="text-[11px] text-text-muted">{season.subtitle}</p>
+                  </div>
+                </div>
+                <motion.div
+                  animate={{ rotate: season.isExpanded ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronDown size={20} className="text-text-muted" />
+                </motion.div>
+              </button>
+
+              {/* Weeks */}
+              <AnimatePresence>
+                {season.isExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-4 pb-4 space-y-2">
+                      {season.weeks.map((week) => (
+                        <div
+                          key={week.weekNumber}
+                          className={cn(
+                            "rounded-xl border p-3",
+                            week.status === "current"
+                              ? "bg-accent/5 border-accent/30"
+                              : week.status === "completed"
+                              ? "bg-success/5 border-success/20"
+                              : "bg-bg-1/50 border-border"
+                          )}
+                        >
+                          {/* Week Header */}
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              {week.status === "completed" ? (
+                                <Check size={14} className="text-success" />
+                              ) : week.status === "current" ? (
+                                <Star size={14} className="text-accent" />
+                              ) : (
+                                <Lock size={14} className="text-text-muted" />
+                              )}
+                              <span className="text-caption font-medium text-text-primary">
+                                Week {week.weekNumber}: {week.title}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-text-muted">
+                              {week.completedCount}/{week.lessons.length}
+                            </span>
+                          </div>
+
+                          {/* Lessons */}
+                          <div className="flex gap-1.5">
+                            {week.lessons.map((lesson) => (
+                              <button
+                                key={lesson.day}
+                                onClick={() => handleLessonClick(lesson)}
+                                disabled={!lesson.completed && !lesson.current}
+                                className={cn(
+                                  "flex-1 h-8 rounded-lg flex items-center justify-center text-[10px] font-medium transition-all",
+                                  lesson.completed
+                                    ? "bg-success/20 text-success border border-success/30"
+                                    : lesson.current
+                                    ? "bg-accent/20 text-accent border border-accent/30 animate-pulse"
+                                    : "bg-bg-1 text-text-muted border border-border"
+                                )}
+                              >
+                                {lesson.completed ? (
+                                  <Check size={12} />
+                                ) : lesson.current ? (
+                                  <Play size={12} />
+                                ) : (
+                                  <Lock size={10} />
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
 
-      {/* Week Detail Modal */}
-      <Dialog open={!!selectedWeek} onOpenChange={() => setSelectedWeek(null)}>
+      {/* Lesson Detail Modal */}
+      <Dialog open={!!selectedLesson} onOpenChange={() => setSelectedLesson(null)}>
         <DialogContent className="bg-bg-2 border-border max-w-sm mx-auto">
           <DialogHeader>
             <DialogTitle className="text-h2 text-text-primary">
-              Week {selectedWeek?.weekNumber}: {selectedWeek?.title}
+              Day {selectedLesson?.day}: {selectedLesson?.title}
             </DialogTitle>
           </DialogHeader>
-
           <div className="space-y-4 pt-2">
-            <div>
-              <p className="text-caption text-text-muted mb-1">{selectedWeek?.dayRange}</p>
-              <h4 className="text-caption text-primary mb-1">This week's objective</h4>
-              <p className="text-body text-text-secondary">{selectedWeek?.objective}</p>
+            <div className="p-3 rounded-xl bg-accent/5 border border-accent/20">
+              <p className="text-caption text-accent font-medium mb-1">Pattern</p>
+              <p className="text-body text-text-secondary">{selectedLesson?.pattern}</p>
             </div>
 
-            <div>
-              <h4 className="text-caption text-primary mb-2">What you'll learn</h4>
-              <ul className="space-y-1.5">
-                {selectedWeek?.learnings?.map((learning) => (
-                  <li key={learning} className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <span className="text-body text-text-secondary">{learning}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="flex items-center gap-2">
+              {selectedLesson?.completed ? (
+                <span className="flex items-center gap-1 text-caption text-success">
+                  <Check size={14} />
+                  Completed
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-caption text-accent">
+                  <Star size={14} />
+                  Current lesson
+                </span>
+              )}
             </div>
 
-            <Button variant="cta" size="full" onClick={handleStartWeek}>
-              {selectedWeek?.status === "current" ? "Continue Learning" : "Start Week"}
+            <Button variant="cta" size="full" onClick={startLesson}>
+              <BookOpen size={16} className="mr-2" />
+              {selectedLesson?.completed ? "Review Lesson" : "Start Lesson"}
             </Button>
           </div>
         </DialogContent>
