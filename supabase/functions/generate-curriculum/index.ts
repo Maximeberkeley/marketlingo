@@ -5,7 +5,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// 6-month aerospace curriculum structure
+// 6-month aerospace curriculum structure with detailed topics
 const CURRICULUM_STRUCTURE = {
   months: [
     {
@@ -13,65 +13,65 @@ const CURRICULUM_STRUCTURE = {
       theme: "Foundations",
       topics: [
         "Industry structure (OEMs, Tier 1-3 suppliers)",
-        "Certification process (FAA/EASA)",
+        "Certification process (FAA/EASA, DO-178C, DO-160)",
         "Cost-plus vs fixed-price contracts",
-        "Dual-use technology",
-        "Supply chain dependencies",
+        "Dual-use technology and ITAR regulations",
+        "Supply chain dependencies and single-source risks",
       ],
     },
     {
       month: 2,
       theme: "Commercial Aviation",
       topics: [
-        "Airbus vs Boeing duopoly",
-        "Narrow-body vs wide-body economics",
-        "MRO (Maintenance, Repair, Overhaul)",
-        "Airline fleet decisions",
-        "Leasing companies (AerCap, GECAS)",
+        "Airbus vs Boeing duopoly dynamics and market share battles",
+        "Narrow-body vs wide-body economics and fleet planning",
+        "MRO (Maintenance, Repair, Overhaul) market and aftermarket revenue",
+        "Airline fleet decisions and aircraft lifecycle management",
+        "Aircraft leasing companies (AerCap, SMBC, Avolon) and financing structures",
       ],
     },
     {
       month: 3,
       theme: "Defense & Government",
       topics: [
-        "Major defense primes (Lockheed, RTX, Northrop)",
-        "Procurement process",
-        "ITAR and export controls",
-        "Black programs and classified work",
-        "Allied vs adversary capabilities",
+        "Major defense primes (Lockheed Martin, RTX, Northrop Grumman, General Dynamics)",
+        "DoD procurement process and SBIR/STTR programs",
+        "ITAR compliance and export controls for startups",
+        "Classified programs and security clearance requirements",
+        "Allied interoperability and Five Eyes partnerships",
       ],
     },
     {
       month: 4,
       theme: "Space Economy",
       topics: [
-        "Launch economics (SpaceX, ULA, Rocket Lab)",
-        "Satellite constellations (Starlink, OneWeb)",
-        "Space tourism and commercialization",
-        "NASA partnerships and contracts",
-        "Orbital debris and sustainability",
+        "Launch economics and reusability (SpaceX, Rocket Lab, Blue Origin)",
+        "Satellite constellations (Starlink, OneWeb, Kuiper) and spectrum management",
+        "Space tourism and commercial space stations (Axiom, Vast)",
+        "NASA partnerships (Commercial Crew, Artemis) and cost-plus vs fixed-price",
+        "Orbital debris mitigation and space sustainability regulations",
       ],
     },
     {
       month: 5,
       theme: "Emerging Technologies",
       topics: [
-        "eVTOL and urban air mobility",
-        "Autonomous flight systems",
-        "Sustainable aviation fuel (SAF)",
-        "Hydrogen propulsion",
-        "Advanced materials (composites, titanium)",
+        "eVTOL development and urban air mobility certification challenges",
+        "Autonomous flight systems and Part 135/Part 91 operations",
+        "Sustainable aviation fuel (SAF) production and adoption curves",
+        "Hydrogen propulsion infrastructure and storage challenges",
+        "Advanced materials (carbon composites, titanium alloys, CMCs)",
       ],
     },
     {
       month: 6,
       theme: "Business & Strategy",
       topics: [
-        "Aerospace M&A patterns",
-        "Startup survival strategies",
-        "Talent and workforce issues",
-        "Geopolitical supply chain risks",
-        "Future of aerospace investment",
+        "Aerospace M&A patterns and valuation multiples",
+        "Startup survival strategies in long sales cycles",
+        "Talent acquisition and workforce development",
+        "Geopolitical supply chain risks (China rare earths, Russia titanium)",
+        "Venture capital and strategic investor dynamics",
       ],
     },
   ],
@@ -80,7 +80,7 @@ const CURRICULUM_STRUCTURE = {
 // Day types pattern for each week (7 days)
 const WEEK_PATTERN = [
   "DAILY_GAME",
-  "DAILY_GAME",
+  "DAILY_GAME", 
   "MICRO_LESSON",
   "TRAINER",
   "BOOK_SNAPSHOT",
@@ -89,10 +89,11 @@ const WEEK_PATTERN = [
 ];
 
 interface GenerateRequest {
-  month?: number; // 1-6, generate specific month
-  week?: number; // 1-30, generate specific week
-  day?: number; // 1-180, generate specific day
-  dryRun?: boolean; // If true, return curriculum plan without generating
+  month?: number;
+  week?: number;
+  day?: number;
+  dryRun?: boolean;
+  generateSummaries?: boolean;
 }
 
 Deno.serve(async (req) => {
@@ -101,7 +102,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { month, week, day, dryRun = false } = await req.json() as GenerateRequest;
+    const { month, week, day, dryRun = false, generateSummaries = false } = await req.json() as GenerateRequest;
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -111,6 +112,14 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Generate summaries if requested
+    if (generateSummaries && month) {
+      const summaryResults = await generateMonthSummaries(supabase, LOVABLE_API_KEY, month);
+      return new Response(JSON.stringify(summaryResults), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Calculate which days to generate
     let daysToGenerate: number[] = [];
@@ -124,7 +133,6 @@ Deno.serve(async (req) => {
       const startDay = (month - 1) * 30 + 1;
       daysToGenerate = Array.from({ length: 30 }, (_, i) => startDay + i).filter(d => d <= 180);
     } else {
-      // Return curriculum structure overview
       return new Response(JSON.stringify({
         structure: CURRICULUM_STRUCTURE,
         weekPattern: WEEK_PATTERN,
@@ -170,7 +178,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Generate content for each day
     const results = {
       generated: [] as number[],
       skipped: [] as number[],
@@ -185,7 +192,6 @@ Deno.serve(async (req) => {
         const topicIndex = Math.floor((dayNum - 1) % 30 / 6) % monthInfo.topics.length;
         const topic = monthInfo.topics[topicIndex];
 
-        // Generate content using AI
         const content = await generateDayContent(
           LOVABLE_API_KEY,
           dayNum,
@@ -196,13 +202,11 @@ Deno.serve(async (req) => {
         );
 
         if (content) {
-          // Save to database
           await saveContent(supabase, content, dayNum, monthInfo.month, dayType);
           results.generated.push(dayNum);
         }
 
-        // Rate limiting - wait between API calls
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 800));
 
       } catch (error) {
         console.error(`Error generating day ${dayNum}:`, error);
@@ -237,88 +241,126 @@ async function generateDayContent(
   dayType: string
 ) {
   const typePrompts: Record<string, string> = {
-    DAILY_GAME: `Create a NEWS stack about a real current event or development in aerospace related to "${topic}". 
-      Structure:
-      1. What happened (specific event/announcement)
-      2. Why it matters for the industry
-      3. Historical parallel or precedent
-      4. Expert perspective (label as "Interpretation:")
-      5. Implication for companies/startups
-      6. Reflection question for the reader`,
+    DAILY_GAME: `Create a NEWS stack about a REAL, SPECIFIC, VERIFIABLE current event or development in aerospace related to "${topic}".
+      
+      CRITICAL REQUIREMENTS:
+      - Reference REAL companies, executives, contracts, and dollar amounts
+      - Include actual dates, flight numbers, or announcement details
+      - Cite real sources (Reuters, Aviation Week, SpaceNews, FlightGlobal)
+      - Explain the strategic implications for the industry
+      - Include a "Startup Insight" on how founders can leverage this
+      
+      Structure (6 slides, each body UNDER 280 characters):
+      1. What happened - specific event with real details (who, what, when, dollar amounts)
+      2. Why it matters - industry implications and market impact
+      3. Historical parallel - similar past events and what happened
+      4. Expert perspective - "Interpretation:" label required, strategic analysis
+      5. Startup opportunity - how founders can act on this trend
+      6. Reflection - thought-provoking question for deeper thinking`,
     
     MICRO_LESSON: `Create a LESSON stack teaching a core concept about "${topic}" in aerospace.
-      Structure:
-      1. Core idea explained simply
-      2. Mental model or framework
-      3. Real-world example
-      4. Common failure mode or mistake
-      5. When this doesn't apply (edge case)
-      6. Apply to your work prompt`,
+      
+      CRITICAL REQUIREMENTS:
+      - Teach like a McKinsey consultant explaining to a smart outsider
+      - Use REAL numbers, percentages, and timelines from industry
+      - Reference actual companies as examples
+      - Include common startup mistakes specific to this topic
+      - End with actionable advice for founders
+      
+      Structure (6 slides, each body UNDER 280 characters):
+      1. Core concept - explained clearly with a memorable mental model
+      2. How it works - the mechanism or process in practice
+      3. Real example - specific company/case with actual details
+      4. Common mistake - what newcomers get wrong and why
+      5. Edge cases - when the rules don't apply
+      6. Apply this - concrete next step for startup founders`,
     
     TRAINER: `Create a decision-making SCENARIO about "${topic}" in aerospace.
-      The scenario should present a realistic business/technical dilemma.
-      Provide 4 options where only one is clearly best.
-      Include feedback explaining the pro reasoning.`,
+      
+      CRITICAL REQUIREMENTS:
+      - Base on REAL situations aerospace professionals face
+      - Include realistic numbers, timelines, and trade-offs
+      - Make the correct answer subtle but clearly best upon analysis
+      - Provide expert-level reasoning in feedback
+      - Include a mental model that applies broadly
+      
+      The scenario should be 400-600 characters, presenting a genuine dilemma.
+      All 4 options should seem plausible to a novice.
+      Only one option should be clearly best to an expert.`,
     
     BOOK_SNAPSHOT: `Create a HISTORY stack about a pivotal past event related to "${topic}" in aerospace.
-      Structure:
-      1. What happened (historical event)
-      2. What people believed at the time
-      3. What actually unfolded
-      4. What people learned too late
-      5. Why it matters today
-      6. Reflection question`,
+      
+      CRITICAL REQUIREMENTS:
+      - Reference REAL historical events with specific dates
+      - Name actual people, companies, and decisions
+      - Include original dollar amounts (adjust for inflation if helpful)
+      - Connect history to current industry dynamics
+      - Extract timeless lessons for today's founders
+      
+      Structure (6 slides, each body UNDER 280 characters):
+      1. What happened - specific historical event with date and actors
+      2. Context - what people believed at the time
+      3. The twist - what actually unfolded vs expectations
+      4. Lessons - what the industry learned too late
+      5. Today's echo - how this pattern repeats today
+      6. Your move - reflection question for founders`,
   };
 
   const isTrainer = dayType === 'TRAINER';
   
   const systemPrompt = isTrainer
-    ? `You are an aerospace industry expert creating training scenarios. 
-       Create challenging scenarios that test strategic thinking about the aerospace industry.
-       Focus on real decisions that professionals face.
-       Each scenario should have one clearly best answer with nuanced reasoning.`
-    : `You are an aerospace industry expert creating educational content.
-       Create concise, insightful content for professionals learning about aerospace.
-       Each slide body MUST be under 280 characters.
-       Each slide title MUST be under 6 words.
-       Include 1-2 credible sources per slide.
-       Month ${month} theme: ${theme}`;
+    ? `You are a senior aerospace industry strategist with 25+ years at companies like Boeing, Lockheed Martin, and McKinsey.
+       You create challenging training scenarios that test strategic thinking.
+       Your scenarios are based on REAL situations you've encountered or studied.
+       You speak with authority but make content accessible to intelligent newcomers.
+       Every scenario teaches a valuable lesson that applies beyond the specific situation.`
+    : `You are a senior aerospace industry analyst creating educational content for startup founders.
+       You have deep expertise across commercial aviation, defense, and space.
+       You reference REAL companies, contracts, regulations, and market dynamics.
+       Your content is precise, data-driven, and actionable.
+       Each slide body MUST be UNDER 280 characters - be concise and impactful.
+       Each slide title MUST be 6 words or fewer.
+       Month ${month} theme: ${theme}
+       
+       Style: Professional, direct, insight-dense. No fluff. Real examples only.`;
 
   const userPrompt = isTrainer
     ? `${typePrompts[dayType]}
        
        Return valid JSON:
        {
-         "scenario": "Scenario description (max 600 chars)",
-         "question": "What should...?",
+         "scenario": "Detailed scenario description (400-600 chars) with real context",
+         "question": "Clear decision question starting with 'What should...' or 'How would you...'",
          "options": [
-           {"label": "Option A text", "isCorrect": false},
-           {"label": "Option B text", "isCorrect": true},
-           {"label": "Option C text", "isCorrect": false},
-           {"label": "Option D text", "isCorrect": false}
+           {"label": "Option A - specific action (40-80 chars)", "isCorrect": false},
+           {"label": "Option B - specific action (40-80 chars)", "isCorrect": true},
+           {"label": "Option C - specific action (40-80 chars)", "isCorrect": false},
+           {"label": "Option D - specific action (40-80 chars)", "isCorrect": false}
          ],
-         "feedback_pro_reasoning": "Why the correct answer is best (max 500 chars)",
-         "feedback_common_mistake": "One line about common mistake",
-         "feedback_mental_model": "Key mental model to remember",
-         "follow_up_question": "A follow-up question to ponder",
-         "sources": [{"label": "Source Name", "url": "https://example.com"}],
-         "tags": ["relevant", "topic", "tags"]
+         "feedback_pro_reasoning": "Expert explanation of why the correct answer is best. Reference industry norms, typical outcomes, and strategic principles. (300-500 chars)",
+         "feedback_common_mistake": "The most common error newcomers make and why (100-150 chars)",
+         "feedback_mental_model": "A reusable mental model or framework this teaches (50-100 chars)",
+         "follow_up_question": "A deeper question to consider for self-reflection",
+         "sources": [{"label": "Industry Source", "url": "https://example.com"}],
+         "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "strategy"]
        }`
     : `${typePrompts[dayType]}
        
        Return valid JSON:
        {
-         "title": "Stack title (max 6 words)",
+         "title": "Compelling stack title (max 6 words)",
          "slides": [
            {
              "slide_number": 1,
              "title": "Slide title (max 6 words)",
-             "body": "Content under 280 characters",
+             "body": "Insight-dense content under 280 characters with real data",
              "sources": [{"label": "Source Name", "url": "https://example.com"}]
            }
          ],
-         "tags": ["relevant", "topic", "tags"]
-       }`;
+         "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "${theme.toLowerCase()}"]
+       }
+       
+       IMPORTANT: Create exactly 6 slides. Each body MUST be under 280 characters.`;
 
   const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
@@ -381,7 +423,6 @@ async function saveContent(
       });
   }
 
-  // Create stack for all types
   const stackTypeMap: Record<string, string> = {
     DAILY_GAME: 'NEWS',
     MICRO_LESSON: 'LESSON',
@@ -405,7 +446,6 @@ async function saveContent(
     throw stackError;
   }
 
-  // Create slides if present
   if (content.slides && Array.isArray(content.slides)) {
     const slideInserts = content.slides.map((slide: any, index: number) => ({
       stack_id: stack.id,
@@ -417,4 +457,145 @@ async function saveContent(
 
     await supabase.from('slides').insert(slideInserts);
   }
+}
+
+async function generateMonthSummaries(
+  supabase: any,
+  apiKey: string,
+  month: number
+) {
+  const monthInfo = CURRICULUM_STRUCTURE.months[month - 1];
+  if (!monthInfo) {
+    throw new Error(`Invalid month: ${month}`);
+  }
+
+  const results = { weekly: [] as any[], monthly: null as any };
+  
+  // Generate 4 weekly summaries
+  for (let week = 1; week <= 4; week++) {
+    const weekNum = (month - 1) * 4 + week;
+    const weeklyContent = await generateSummary(
+      apiKey,
+      'WEEKLY',
+      monthInfo.theme,
+      monthInfo.topics,
+      weekNum,
+      month
+    );
+    
+    const forDate = new Date();
+    forDate.setDate(forDate.getDate() - (4 - week) * 7);
+    
+    const { data, error } = await supabase
+      .from('summaries')
+      .insert({
+        market_id: 'aerospace',
+        summary_type: 'WEEKLY',
+        title: weeklyContent.title,
+        content: weeklyContent.content,
+        key_takeaways: weeklyContent.key_takeaways,
+        for_date: forDate.toISOString().split('T')[0],
+      })
+      .select()
+      .single();
+    
+    if (!error) results.weekly.push(data);
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+
+  // Generate monthly summary
+  const monthlyContent = await generateSummary(
+    apiKey,
+    'MONTHLY',
+    monthInfo.theme,
+    monthInfo.topics,
+    0,
+    month
+  );
+  
+  const { data: monthlyData, error: monthlyError } = await supabase
+    .from('summaries')
+    .insert({
+      market_id: 'aerospace',
+      summary_type: 'MONTHLY',
+      title: monthlyContent.title,
+      content: monthlyContent.content,
+      key_takeaways: monthlyContent.key_takeaways,
+      for_date: new Date().toISOString().split('T')[0],
+    })
+    .select()
+    .single();
+  
+  if (!monthlyError) results.monthly = monthlyData;
+
+  return results;
+}
+
+async function generateSummary(
+  apiKey: string,
+  type: 'WEEKLY' | 'MONTHLY',
+  theme: string,
+  topics: string[],
+  weekNum: number,
+  month: number
+) {
+  const prompt = type === 'WEEKLY'
+    ? `Create a WEEKLY summary for Week ${weekNum} of the "${theme}" module in aerospace education.
+       
+       Topics covered: ${topics.slice(0, 2).join(', ')}
+       
+       Create an executive-style summary that:
+       - Synthesizes the week's key learnings
+       - Highlights strategic implications for startups
+       - Includes 3-4 actionable takeaways
+       - References real industry dynamics
+       
+       Return JSON:
+       {
+         "title": "Week ${weekNum}: [Compelling title about theme]",
+         "content": "3-4 paragraph summary (600-800 words) that reads like a McKinsey brief",
+         "key_takeaways": ["Takeaway 1", "Takeaway 2", "Takeaway 3", "Takeaway 4"]
+       }`
+    : `Create a MONTHLY summary for Month ${month}: "${theme}" in aerospace education.
+       
+       Topics covered: ${topics.join(', ')}
+       
+       Create a comprehensive month-end review that:
+       - Synthesizes all major concepts from the month
+       - Connects themes to real industry dynamics
+       - Provides strategic framework for startup founders
+       - Includes 5-6 key takeaways
+       
+       Return JSON:
+       {
+         "title": "Month ${month} Complete: Mastering ${theme}",
+         "content": "4-5 paragraph summary (800-1000 words) that reads like a Harvard Business Review article",
+         "key_takeaways": ["Takeaway 1", "Takeaway 2", "Takeaway 3", "Takeaway 4", "Takeaway 5"]
+       }`;
+
+  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'google/gemini-2.5-flash',
+      messages: [
+        { 
+          role: 'system', 
+          content: 'You are a senior aerospace industry analyst creating executive summaries for startup founders. Write with authority, reference real industry dynamics, and provide actionable insights.' 
+        },
+        { role: 'user', content: prompt },
+      ],
+      response_format: { type: 'json_object' },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`AI API error: ${response.status}`);
+  }
+
+  const aiResponse = await response.json();
+  return JSON.parse(aiResponse.choices?.[0]?.message?.content || '{}');
 }
