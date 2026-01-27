@@ -26,23 +26,36 @@ import certification from "@/assets/slides/certification.jpg";
 import supplyChain from "@/assets/slides/supply-chain.jpg";
 import startupMeeting from "@/assets/slides/startup-meeting.jpg";
 import investorPitch from "@/assets/slides/investor-pitch.jpg";
+// New Month 5-6 illustrations
+import evtolBoarding from "@/assets/slides/evtol-boarding.jpg";
+import safProduction from "@/assets/slides/saf-production.jpg";
+import hydrogenPropulsion from "@/assets/slides/hydrogen-propulsion.jpg";
+import boardroomPitch from "@/assets/slides/boardroom-pitch.jpg";
+import fundingSuccess from "@/assets/slides/funding-success.jpg";
+import itarCompliance from "@/assets/slides/itar-compliance.jpg";
 
 // Map themes to illustrations
 const themeIllustrations: { keywords: string[]; image: string }[] = [
+  // Month 5-6 emerging tech & business themes (prioritized)
+  { keywords: ["evtol", "air taxi", "vtol", "vertiport", "urban air"], image: evtolBoarding },
+  { keywords: ["saf", "sustainable fuel", "biofuel", "carbon neutral"], image: safProduction },
+  { keywords: ["hydrogen", "fuel cell", "h2", "green propulsion"], image: hydrogenPropulsion },
+  { keywords: ["boardroom", "board meeting", "investor", "vc", "fundrais"], image: boardroomPitch },
+  { keywords: ["sbir", "sttr", "grant", "funding", "series a", "series b"], image: fundingSuccess },
+  { keywords: ["itar", "export", "compliance", "regulation", "dod"], image: itarCompliance },
+  // Existing themes
   { keywords: ["launch", "rocket", "spacex", "falcon"], image: rocketLaunch },
   { keywords: ["satellite", "orbit", "constellation", "starlink"], image: satelliteOps },
-  { keywords: ["space", "lunar", "moon", "habitat", "station"], image: lunarHabitat },
-  { keywords: ["evtol", "urban", "air mobility", "vtol", "vertiport"], image: evtolVertiport },
-  { keywords: ["pharma", "manufacturing", "microgravity", "biolab"], image: spacePharma },
-  { keywords: ["saf", "fuel", "sustainable", "carbon"], image: safRefinery },
-  { keywords: ["vc", "investor", "fundrais", "series"], image: vcPitch },
+  { keywords: ["lunar", "moon", "habitat", "station", "iss"], image: lunarHabitat },
+  { keywords: ["space pharma", "microgravity", "biolab", "manufacturing"], image: spacePharma },
   { keywords: ["control", "tower", "atc", "traffic"], image: controlTower },
-  { keywords: ["defense", "military", "dod", "government"], image: defenseFacility },
-  { keywords: ["faa", "certification", "type certificate", "compliance"], image: certification },
-  { keywords: ["supply", "chain", "oem", "tier"], image: supplyChain },
-  { keywords: ["startup", "meeting", "team", "founding"], image: startupMeeting },
-  { keywords: ["pitch", "m&a", "acquisition", "exit"], image: investorPitch },
+  { keywords: ["defense", "military", "government", "prime"], image: defenseFacility },
+  { keywords: ["faa", "certification", "type certificate", "tc"], image: certification },
+  { keywords: ["supply", "chain", "oem", "tier", "supplier"], image: supplyChain },
+  { keywords: ["startup", "team", "founding", "co-founder"], image: startupMeeting },
+  { keywords: ["pitch", "m&a", "acquisition", "exit", "ipo"], image: investorPitch },
   { keywords: ["foundation", "basic", "intro", "overview"], image: aerospaceFoundations },
+  { keywords: ["space", "center", "nasa", "esa"], image: spaceCenter },
 ];
 
 // Get illustration based on stack title/content
