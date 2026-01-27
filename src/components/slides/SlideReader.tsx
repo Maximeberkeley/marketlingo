@@ -1,10 +1,12 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, ExternalLink, BookOpen, TrendingUp, Sparkles, Flame, Target, CheckCircle2 } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, Flame, Target, CheckCircle2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { MentorAvatar } from "../ai/MentorAvatar";
 import { MentorChatOverlay } from "../ai/MentorChatOverlay";
 import { MentorTipBubble } from "../ai/MentorTipBubble";
+import { SlideIntroCard } from "./SlideIntroCard";
+import { SlideContentCard } from "./SlideContentCard";
 import { mentors, Mentor, getMentorForContext } from "@/data/mentors";
 import { getTipForSlide, MentorTip } from "@/data/mentorTips";
 import { cn } from "@/lib/utils";
@@ -33,33 +35,37 @@ import hydrogenPropulsion from "@/assets/slides/hydrogen-propulsion.jpg";
 import boardroomPitch from "@/assets/slides/boardroom-pitch.jpg";
 import fundingSuccess from "@/assets/slides/funding-success.jpg";
 import itarCompliance from "@/assets/slides/itar-compliance.jpg";
+import urbanAir from "@/assets/slides/urban-air.jpg";
+import cockpitTech from "@/assets/slides/cockpit-tech.jpg";
 
-// Map themes to illustrations
+// Map themes to illustrations with broader keyword matching
 const themeIllustrations: { keywords: string[]; image: string }[] = [
   // Month 5-6 emerging tech & business themes (prioritized)
-  { keywords: ["evtol", "air taxi", "vtol", "vertiport", "urban air"], image: evtolBoarding },
-  { keywords: ["saf", "sustainable fuel", "biofuel", "carbon neutral"], image: safProduction },
-  { keywords: ["hydrogen", "fuel cell", "h2", "green propulsion"], image: hydrogenPropulsion },
-  { keywords: ["boardroom", "board meeting", "investor", "vc", "fundrais"], image: boardroomPitch },
-  { keywords: ["sbir", "sttr", "grant", "funding", "series a", "series b"], image: fundingSuccess },
-  { keywords: ["itar", "export", "compliance", "regulation", "dod"], image: itarCompliance },
+  { keywords: ["evtol", "air taxi", "vtol", "vertiport", "urban air", "uam"], image: evtolBoarding },
+  { keywords: ["saf", "sustainable fuel", "biofuel", "carbon neutral", "green fuel"], image: safProduction },
+  { keywords: ["hydrogen", "fuel cell", "h2", "green propulsion", "electric"], image: hydrogenPropulsion },
+  { keywords: ["boardroom", "board meeting", "investor", "vc", "fundrais", "venture"], image: boardroomPitch },
+  { keywords: ["sbir", "sttr", "grant", "funding", "series a", "series b", "seed"], image: fundingSuccess },
+  { keywords: ["itar", "export", "compliance", "regulation", "dod", "ear"], image: itarCompliance },
   // Existing themes
-  { keywords: ["launch", "rocket", "spacex", "falcon"], image: rocketLaunch },
-  { keywords: ["satellite", "orbit", "constellation", "starlink"], image: satelliteOps },
-  { keywords: ["lunar", "moon", "habitat", "station", "iss"], image: lunarHabitat },
-  { keywords: ["space pharma", "microgravity", "biolab", "manufacturing"], image: spacePharma },
-  { keywords: ["control", "tower", "atc", "traffic"], image: controlTower },
-  { keywords: ["defense", "military", "government", "prime"], image: defenseFacility },
-  { keywords: ["faa", "certification", "type certificate", "tc"], image: certification },
-  { keywords: ["supply", "chain", "oem", "tier", "supplier"], image: supplyChain },
-  { keywords: ["startup", "team", "founding", "co-founder"], image: startupMeeting },
-  { keywords: ["pitch", "m&a", "acquisition", "exit", "ipo"], image: investorPitch },
-  { keywords: ["foundation", "basic", "intro", "overview"], image: aerospaceFoundations },
-  { keywords: ["space", "center", "nasa", "esa"], image: spaceCenter },
+  { keywords: ["launch", "rocket", "spacex", "falcon", "propulsion"], image: rocketLaunch },
+  { keywords: ["satellite", "orbit", "constellation", "starlink", "leo"], image: satelliteOps },
+  { keywords: ["lunar", "moon", "habitat", "station", "iss", "artemis"], image: lunarHabitat },
+  { keywords: ["space pharma", "microgravity", "biolab", "manufacturing", "ispece"], image: spacePharma },
+  { keywords: ["control", "tower", "atc", "traffic", "airspace"], image: controlTower },
+  { keywords: ["defense", "military", "government", "prime", "dod", "contract"], image: defenseFacility },
+  { keywords: ["faa", "certification", "type certificate", "tc", "easa", "part 25"], image: certification },
+  { keywords: ["supply", "chain", "oem", "tier", "supplier", "tiered"], image: supplyChain },
+  { keywords: ["startup", "team", "founding", "co-founder", "entrepreneur"], image: startupMeeting },
+  { keywords: ["pitch", "m&a", "acquisition", "exit", "ipo", "deal"], image: investorPitch },
+  { keywords: ["foundation", "basic", "intro", "overview", "fundamentals"], image: aerospaceFoundations },
+  { keywords: ["space", "center", "nasa", "esa", "agency"], image: spaceCenter },
+  { keywords: ["cockpit", "avionics", "flight deck", "pilot"], image: cockpitTech },
+  { keywords: ["urban", "city", "mobility", "vertiport"], image: urbanAir },
 ];
 
-// Get illustration based on stack title/content
-function getThemeIllustration(stackTitle: string, stackType: string): string | null {
+// Get illustration based on stack title/content - always returns an image
+function getThemeIllustration(stackTitle: string, stackType: string): string {
   const searchText = `${stackTitle} ${stackType}`.toLowerCase();
   
   for (const theme of themeIllustrations) {
@@ -68,7 +74,7 @@ function getThemeIllustration(stackTitle: string, stackType: string): string | n
     }
   }
   
-  // Default images based on stack type
+  // Default images based on stack type - always return something
   if (stackType === "LESSON") return aerospaceFoundations;
   if (stackType === "NEWS") return controlTower;
   if (stackType === "HISTORY") return spaceCenter;
@@ -89,25 +95,6 @@ interface Slide {
 }
 
 type StackType = "NEWS" | "HISTORY" | "LESSON";
-
-// Intro slide data for each type
-const introContent: Record<StackType, { icon: React.ReactNode; tagline: string; color: string }> = {
-  NEWS: { 
-    icon: <TrendingUp className="w-6 h-6" />, 
-    tagline: "Recognize recurring market forces",
-    color: "from-blue-500 to-cyan-400"
-  },
-  LESSON: { 
-    icon: <BookOpen className="w-6 h-6" />, 
-    tagline: "5-minute concept deep dive",
-    color: "from-emerald-500 to-teal-400"
-  },
-  HISTORY: { 
-    icon: <Sparkles className="w-6 h-6" />, 
-    tagline: "Key moments that shaped the industry",
-    color: "from-amber-500 to-orange-400"
-  }
-};
 
 interface SlideReaderProps {
   stackTitle: string;
@@ -143,9 +130,8 @@ export function SlideReader({
   const currentSlide = isIntroSlide ? null : slides[currentIndex];
   const isLastSlide = currentIndex === slides.length - 1;
   const contextMentor = getMentorForContext(stackTitle);
-  const intro = introContent[stackType];
   
-  // Get themed illustration based on stack content
+  // Get themed illustration based on stack content - always returns an image
   const themeImage = useMemo(() => getThemeIllustration(stackTitle, stackType), [stackTitle, stackType]);
 
   // Hide arrows when AI mentor or tip is visible
@@ -263,8 +249,8 @@ export function SlideReader({
       {/* Stack Title */}
       <h2 className="text-h2 text-text-primary px-4 mb-4">{stackTitle}</h2>
 
-      {/* Slide Content - Added horizontal padding to avoid arrow overlap */}
-      <div className="flex-1 overflow-hidden relative">
+      {/* Slide Content - Scrollable area with proper padding */}
+      <div className="flex-1 min-h-0 overflow-hidden relative">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={currentIndex}
@@ -278,79 +264,26 @@ export function SlideReader({
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.1}
             onDragEnd={handleDragEnd}
-            className="absolute inset-0 flex flex-col overflow-y-auto px-4"
+            className="absolute inset-0 flex flex-col overflow-y-auto px-4 pb-8"
           >
             {isIntroSlide ? (
-              /* Intro Slide with Themed Illustration */
-              <div className="card-elevated flex-1 flex flex-col min-h-full overflow-hidden border-0 p-0">
-                {/* Hero Image */}
-                {themeImage && (
-                  <div className="relative h-56 w-full overflow-hidden rounded-t-card">
-                    <img 
-                      src={themeImage} 
-                      alt={stackTitle}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-bg-1 via-bg-1/30 to-transparent" />
-                  </div>
-                )}
-                
-                {/* Content */}
-                <div className={cn(
-                  "flex-1 flex flex-col items-center justify-center text-center p-6",
-                  "bg-gradient-to-br",
-                  intro.color.replace("from-", "from-").replace(" to-", "/10 to-") + "/5"
-                )}>
-                  <div className={cn(
-                    "w-14 h-14 rounded-2xl flex items-center justify-center mb-4",
-                    "bg-gradient-to-br",
-                    intro.color
-                  )}>
-                    <div className="text-white">{intro.icon}</div>
-                  </div>
-                  <p className="text-accent text-caption font-medium mb-1">{stackType}</p>
-                  <h3 className="text-h2 text-text-primary mb-2">{stackTitle}</h3>
-                  <p className="text-text-secondary text-body max-w-xs">{intro.tagline}</p>
-                  
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="mt-6 flex items-center gap-2 text-text-muted text-caption"
-                  >
-                    <span>Swipe to start</span>
-                    <ChevronRight className="w-4 h-4 animate-pulse" />
-                  </motion.div>
-                </div>
-              </div>
+              /* Intro Slide with Mascot & Hero Image */
+              <SlideIntroCard
+                stackTitle={stackTitle}
+                stackType={stackType}
+                themeImage={themeImage}
+                totalSlides={slides.length}
+              />
             ) : (
-              /* Regular Slide - Full width content */
-              <div className="card-elevated flex flex-col pb-4">
-                <h3 className="text-h3 text-text-primary mb-3">{currentSlide?.title}</h3>
-                <p className="text-body text-text-secondary leading-relaxed whitespace-pre-wrap">
-                  {currentSlide?.body}
-                </p>
-                
-                {/* Sources */}
-                {currentSlide && currentSlide.sources.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <div className="flex flex-wrap gap-2">
-                      {currentSlide.sources.map((source, idx) => (
-                        <a
-                          key={idx}
-                          href={source.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="chip inline-flex items-center gap-1.5 hover:border-primary transition-colors"
-                        >
-                          <span>{source.label}</span>
-                          <ExternalLink size={10} />
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+              /* Regular Slide with Mascot Guide */
+              <SlideContentCard
+                title={currentSlide?.title || ""}
+                body={currentSlide?.body || ""}
+                sources={currentSlide?.sources || []}
+                slideIndex={currentIndex}
+                totalSlides={slides.length}
+                stackTitle={stackTitle}
+              />
             )}
           </motion.div>
         </AnimatePresence>
@@ -391,8 +324,8 @@ export function SlideReader({
         )}
       </AnimatePresence>
 
-      {/* Bottom Actions */}
-      <div className="px-4 pt-3 pb-6 border-t border-border bg-bg-0" style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}>
+      {/* Bottom Actions - Fixed with proper safe area padding */}
+      <div className="flex-shrink-0 px-4 pt-3 border-t border-border bg-bg-0 pb-safe" style={{ paddingBottom: 'max(32px, calc(env(safe-area-inset-bottom) + 16px))' }}>
         {isIntroSlide ? (
           <Button variant="cta" size="full" onClick={goToNext}>
             Begin
