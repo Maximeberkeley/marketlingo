@@ -263,8 +263,8 @@ export function SlideReader({
       {/* Stack Title */}
       <h2 className="text-h2 text-text-primary px-4 mb-4">{stackTitle}</h2>
 
-      {/* Slide Content */}
-      <div className="flex-1 overflow-hidden relative px-4">
+      {/* Slide Content - Added horizontal padding to avoid arrow overlap */}
+      <div className="flex-1 overflow-hidden relative">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={currentIndex}
@@ -278,20 +278,20 @@ export function SlideReader({
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.1}
             onDragEnd={handleDragEnd}
-            className="absolute inset-0 flex flex-col overflow-y-auto"
+            className="absolute inset-0 flex flex-col overflow-y-auto px-4"
           >
             {isIntroSlide ? (
               /* Intro Slide with Themed Illustration */
               <div className="card-elevated flex-1 flex flex-col min-h-full overflow-hidden border-0 p-0">
                 {/* Hero Image */}
                 {themeImage && (
-                  <div className="relative h-48 w-full overflow-hidden">
+                  <div className="relative h-56 w-full overflow-hidden rounded-t-card">
                     <img 
                       src={themeImage} 
                       alt={stackTitle}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-bg-1 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-bg-1 via-bg-1/30 to-transparent" />
                   </div>
                 )}
                 
@@ -324,7 +324,7 @@ export function SlideReader({
                 </div>
               </div>
             ) : (
-              /* Regular Slide */
+              /* Regular Slide - Full width content */
               <div className="card-elevated flex flex-col pb-4">
                 <h3 className="text-h3 text-text-primary mb-3">{currentSlide?.title}</h3>
                 <p className="text-body text-text-secondary leading-relaxed whitespace-pre-wrap">
@@ -356,36 +356,36 @@ export function SlideReader({
         </AnimatePresence>
       </div>
 
-      {/* Navigation Arrows - Hide when AI is active */}
+      {/* Navigation Arrows - Positioned at bottom corners, smaller and less intrusive */}
       <AnimatePresence>
-        {showArrows && (
+        {showArrows && !isIntroSlide && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute left-2 right-2 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none z-20"
+            className="absolute bottom-32 left-4 right-4 flex justify-between pointer-events-none z-20"
           >
             <button
               onClick={goToPrev}
-              disabled={currentIndex === -1}
+              disabled={currentIndex <= 0}
               className={cn(
-                "p-2.5 rounded-full bg-bg-1/90 backdrop-blur-sm pointer-events-auto transition-all",
-                "border border-border shadow-lg",
-                currentIndex === -1 ? "opacity-0 pointer-events-none" : "opacity-100 hover:bg-bg-2"
+                "p-2 rounded-full bg-bg-2/80 backdrop-blur-sm pointer-events-auto transition-all",
+                "border border-border/50 shadow-md",
+                currentIndex <= 0 ? "opacity-0 pointer-events-none" : "opacity-70 hover:opacity-100 hover:bg-bg-1"
               )}
             >
-              <ChevronLeft size={18} className="text-text-secondary" />
+              <ChevronLeft size={16} className="text-text-muted" />
             </button>
             <button
               onClick={goToNext}
               disabled={isLastSlide}
               className={cn(
-                "p-2.5 rounded-full bg-bg-1/90 backdrop-blur-sm pointer-events-auto transition-all",
-                "border border-border shadow-lg",
-                isLastSlide ? "opacity-0 pointer-events-none" : "opacity-100 hover:bg-bg-2"
+                "p-2 rounded-full bg-bg-2/80 backdrop-blur-sm pointer-events-auto transition-all",
+                "border border-border/50 shadow-md",
+                isLastSlide ? "opacity-0 pointer-events-none" : "opacity-70 hover:opacity-100 hover:bg-bg-1"
               )}
             >
-              <ChevronRight size={18} className="text-text-secondary" />
+              <ChevronRight size={16} className="text-text-muted" />
             </button>
           </motion.div>
         )}
