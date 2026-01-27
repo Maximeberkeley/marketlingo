@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Cpu, ChevronRight, Download, LogOut, AlertTriangle, Trophy, Target, Flame, Settings, Bell } from "lucide-react";
+import { Cpu, ChevronRight, Download, LogOut, AlertTriangle, Trophy, Target, Flame, Settings, Award, Lock } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProgress } from "@/hooks/useUserProgress";
+import { useCertificate } from "@/hooks/useCertificate";
+import { CompletionCertificate } from "@/components/certificate/CompletionCertificate";
 import { supabase } from "@/integrations/supabase/client";
 
 const marketNames: Record<string, string> = {
@@ -29,7 +32,9 @@ export default function ProfilePage() {
   const { user, signOut, loading } = useAuth();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showChangeWarning, setShowChangeWarning] = useState(false);
+  const [showCertificate, setShowCertificate] = useState(false);
   const { progress } = useUserProgress(selectedMarket || undefined);
+  const { certificateData, isEligible, progress: certProgress } = useCertificate(selectedMarket || undefined);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -113,6 +118,7 @@ export default function ProfilePage() {
   };
 
   const marketName = selectedMarket ? marketNames[selectedMarket] || "AI Industry" : "AI Industry";
+  const progressPercentage = (certProgress.current / certProgress.total) * 100;
 
   return (
     <AppLayout>
@@ -162,6 +168,60 @@ export default function ProfilePage() {
             </div>
           </motion.div>
         )}
+
+        {/* Certificate Progress */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="mb-6"
+        >
+          <h3 className="text-caption text-text-muted mb-3 uppercase tracking-wider">Certification</h3>
+          <div className="card-elevated">
+            <div className="flex items-center gap-4 mb-4">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                isEligible ? 'bg-accent/20' : 'bg-bg-1'
+              }`}>
+                {isEligible ? (
+                  <Award size={24} className="text-accent" />
+                ) : (
+                  <Lock size={24} className="text-text-muted" />
+                )}
+              </div>
+              <div className="flex-1">
+                <p className="text-h3 text-text-primary">
+                  {isEligible ? 'Certificate Unlocked!' : 'Industry Mastery Certificate'}
+                </p>
+                <p className="text-caption text-text-muted">
+                  {isEligible 
+                    ? 'Download and share your achievement' 
+                    : `Complete all 180 days to unlock`}
+                </p>
+              </div>
+            </div>
+            
+            {!isEligible && (
+              <div className="mb-4">
+                <div className="flex justify-between text-caption text-text-muted mb-1">
+                  <span>Progress</span>
+                  <span>{certProgress.current} / {certProgress.total} days</span>
+                </div>
+                <Progress value={progressPercentage} className="h-2" />
+              </div>
+            )}
+            
+            <Button
+              variant={isEligible ? "default" : "secondary"}
+              size="default"
+              className="w-full gap-2"
+              disabled={!isEligible}
+              onClick={() => setShowCertificate(true)}
+            >
+              <Award size={18} />
+              {isEligible ? 'View Certificate' : `${Math.round(progressPercentage)}% Complete`}
+            </Button>
+          </div>
+        </motion.div>
 
         {/* Market Selection */}
         <motion.div
@@ -298,6 +358,16 @@ export default function ProfilePage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Completion Certificate Modal */}
+      <AnimatePresence>
+        {showCertificate && certificateData && (
+          <CompletionCertificate
+            data={certificateData}
+            onClose={() => setShowCertificate(false)}
+          />
+        )}
+      </AnimatePresence>
     </AppLayout>
   );
 }

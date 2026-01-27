@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Newspaper, ExternalLink, Clock, TrendingUp, Zap, ChevronRight, RefreshCw, AlertCircle } from "lucide-react";
+import { ExternalLink, Clock, Zap, RefreshCw, AlertCircle, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { mentors, Mentor } from "@/data/mentors";
+import { Badge } from "@/components/ui/badge";
 
 interface NewsItem {
   id: string;
@@ -17,12 +18,20 @@ interface NewsItem {
   summary?: string;
 }
 
+// Premium source badges
+const sourceStyles: Record<string, { bg: string; text: string; icon: string }> = {
+  "Aviation Week": { bg: "bg-blue-600/20", text: "text-blue-400", icon: "✈️" },
+  "SpaceNews": { bg: "bg-purple-600/20", text: "text-purple-400", icon: "🚀" },
+  "FlightGlobal": { bg: "bg-cyan-600/20", text: "text-cyan-400", icon: "🌐" },
+};
+
 const categoryColors: Record<string, string> = {
   Space: "bg-purple-500/20 text-purple-400",
   Aviation: "bg-blue-500/20 text-blue-400",
   Defense: "bg-red-500/20 text-red-400",
   Deals: "bg-amber-500/20 text-amber-400",
   Industry: "bg-emerald-500/20 text-emerald-400",
+  Innovation: "bg-accent/20 text-accent",
   Launch: "bg-accent/20 text-accent",
   Production: "bg-emerald-500/20 text-emerald-400",
   Models: "bg-violet-500/20 text-violet-400",
@@ -88,8 +97,8 @@ export function DailyNews({ marketId }: DailyNewsProps) {
         className="mt-6"
       >
         <div className="flex items-center gap-2 mb-4">
-          <Newspaper size={18} className="text-accent" />
-          <h2 className="text-h3 text-text-primary">Daily News</h2>
+          <Zap size={18} className="text-accent" />
+          <h2 className="text-h3 text-text-primary">Industry Intel</h2>
         </div>
         <div className="p-6 rounded-card bg-bg-2/50 border border-border text-center">
           <p className="text-body text-text-muted">News feed coming soon for this market</p>
@@ -111,7 +120,13 @@ export function DailyNews({ marketId }: DailyNewsProps) {
           <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <Zap size={16} className="text-accent" />
           </div>
-          <h2 className="text-h3 text-text-primary">Daily Patterns</h2>
+          <div>
+            <h2 className="text-h3 text-text-primary">Industry Intel</h2>
+            <p className="text-[10px] text-text-muted flex items-center gap-1">
+              <Sparkles size={10} className="text-accent" />
+              AI-analyzed insights
+            </p>
+          </div>
           <span className="relative flex h-2 w-2 ml-1">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
@@ -181,14 +196,29 @@ export function DailyNews({ marketId }: DailyNewsProps) {
               )}
               onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
             >
-              {/* Category & Time */}
+              {/* Source & Category Header */}
               <div className="flex items-center justify-between mb-2">
-                <span className={cn(
-                  "px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider",
-                  categoryColors[item.categoryTag] || categoryColors.default
-                )}>
-                  {item.categoryTag}
-                </span>
+                <div className="flex items-center gap-2">
+                  {/* Premium source badge */}
+                  {sourceStyles[item.sourceName] ? (
+                    <span className={cn(
+                      "px-2 py-0.5 rounded-full text-[10px] font-medium flex items-center gap-1",
+                      sourceStyles[item.sourceName].bg,
+                      sourceStyles[item.sourceName].text
+                    )}>
+                      <span>{sourceStyles[item.sourceName].icon}</span>
+                      {item.sourceName}
+                    </span>
+                  ) : (
+                    <span className="text-caption text-text-muted">{item.sourceName}</span>
+                  )}
+                  <span className={cn(
+                    "px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider",
+                    categoryColors[item.categoryTag] || categoryColors.default
+                  )}>
+                    {item.categoryTag}
+                  </span>
+                </div>
                 <div className="flex items-center gap-1 text-caption text-text-muted">
                   <Clock size={12} />
                   <span>{item.publishedAt}</span>
@@ -200,27 +230,20 @@ export function DailyNews({ marketId }: DailyNewsProps) {
                 {item.title}
               </h3>
 
-              {/* Expanded Content */}
-              <AnimatePresence>
-                {expandedId === item.id && item.summary && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <p className="text-caption text-text-secondary mb-3">
+              {/* AI Summary - Always visible */}
+              {item.summary && (
+                <div className="mb-3 p-2 rounded-lg bg-accent/5 border border-accent/10">
+                  <div className="flex items-start gap-2">
+                    <Sparkles size={12} className="text-accent mt-0.5 shrink-0" />
+                    <p className="text-caption text-text-secondary leading-relaxed">
                       {item.summary}
                     </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  </div>
+                </div>
+              )}
 
               {/* Source Footer */}
-              <div className="flex items-center justify-between">
-                <span className="text-caption text-text-muted">
-                  via <span className="text-text-secondary">{item.sourceName}</span>
-                </span>
+              <div className="flex items-center justify-end">
                 <a
                   href={item.sourceUrl}
                   target="_blank"
