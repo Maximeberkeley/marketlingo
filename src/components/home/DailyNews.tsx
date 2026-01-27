@@ -50,6 +50,7 @@ export function DailyNews({ marketId }: DailyNewsProps) {
   const [error, setError] = useState<string | null>(null);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
+  const [showAiInsights, setShowAiInsights] = useState(true);
   const kaiMentor = mentors.find(m => m.id === "kai")!;
 
   const fetchNews = async () => {
@@ -132,7 +133,20 @@ export function DailyNews({ marketId }: DailyNewsProps) {
             <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
           </span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* AI Insights Toggle */}
+          <button
+            onClick={() => setShowAiInsights(!showAiInsights)}
+            className={cn(
+              "flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium transition-all",
+              showAiInsights 
+                ? "bg-accent/20 text-accent" 
+                : "bg-bg-1 text-text-muted hover:text-text-secondary"
+            )}
+          >
+            <Sparkles size={10} />
+            <span>AI</span>
+          </button>
           <MentorAvatar
             mentor={kaiMentor}
             onClick={() => setActiveMentor(kaiMentor)}
@@ -230,8 +244,8 @@ export function DailyNews({ marketId }: DailyNewsProps) {
                 {item.title}
               </h3>
 
-              {/* AI Summary - Always visible */}
-              {item.summary && (
+              {/* AI Summary - Togglable */}
+              {showAiInsights && item.summary && (
                 <div className="mb-3 p-2 rounded-lg bg-accent/5 border border-accent/10">
                   <div className="flex items-start gap-2">
                     <Sparkles size={12} className="text-accent mt-0.5 shrink-0" />
