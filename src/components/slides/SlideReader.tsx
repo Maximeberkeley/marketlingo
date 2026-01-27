@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, ExternalLink, BookOpen, TrendingUp, Sparkles, Flame, Target, CheckCircle2 } from "lucide-react";
 import { Button } from "../ui/button";
@@ -8,6 +8,60 @@ import { MentorTipBubble } from "../ai/MentorTipBubble";
 import { mentors, Mentor, getMentorForContext } from "@/data/mentors";
 import { getTipForSlide, MentorTip } from "@/data/mentorTips";
 import { cn } from "@/lib/utils";
+
+// Themed mascot illustrations based on content keywords
+import rocketLaunch from "@/assets/slides/rocket-launch.jpg";
+import satelliteOps from "@/assets/slides/satellite-ops.jpg";
+import spaceStartup from "@/assets/slides/space-startup.jpg";
+import lunarHabitat from "@/assets/slides/lunar-habitat.jpg";
+import evtolVertiport from "@/assets/slides/evtol-vertiport.jpg";
+import spacePharma from "@/assets/slides/space-pharma.jpg";
+import safRefinery from "@/assets/slides/saf-refinery.jpg";
+import vcPitch from "@/assets/slides/vc-pitch.jpg";
+import controlTower from "@/assets/slides/control-tower.jpg";
+import spaceCenter from "@/assets/slides/space-center.jpg";
+import defenseFacility from "@/assets/slides/defense-facility.jpg";
+import aerospaceFoundations from "@/assets/slides/aerospace-foundations.jpg";
+import certification from "@/assets/slides/certification.jpg";
+import supplyChain from "@/assets/slides/supply-chain.jpg";
+import startupMeeting from "@/assets/slides/startup-meeting.jpg";
+import investorPitch from "@/assets/slides/investor-pitch.jpg";
+
+// Map themes to illustrations
+const themeIllustrations: { keywords: string[]; image: string }[] = [
+  { keywords: ["launch", "rocket", "spacex", "falcon"], image: rocketLaunch },
+  { keywords: ["satellite", "orbit", "constellation", "starlink"], image: satelliteOps },
+  { keywords: ["space", "lunar", "moon", "habitat", "station"], image: lunarHabitat },
+  { keywords: ["evtol", "urban", "air mobility", "vtol", "vertiport"], image: evtolVertiport },
+  { keywords: ["pharma", "manufacturing", "microgravity", "biolab"], image: spacePharma },
+  { keywords: ["saf", "fuel", "sustainable", "carbon"], image: safRefinery },
+  { keywords: ["vc", "investor", "fundrais", "series"], image: vcPitch },
+  { keywords: ["control", "tower", "atc", "traffic"], image: controlTower },
+  { keywords: ["defense", "military", "dod", "government"], image: defenseFacility },
+  { keywords: ["faa", "certification", "type certificate", "compliance"], image: certification },
+  { keywords: ["supply", "chain", "oem", "tier"], image: supplyChain },
+  { keywords: ["startup", "meeting", "team", "founding"], image: startupMeeting },
+  { keywords: ["pitch", "m&a", "acquisition", "exit"], image: investorPitch },
+  { keywords: ["foundation", "basic", "intro", "overview"], image: aerospaceFoundations },
+];
+
+// Get illustration based on stack title/content
+function getThemeIllustration(stackTitle: string, stackType: string): string | null {
+  const searchText = `${stackTitle} ${stackType}`.toLowerCase();
+  
+  for (const theme of themeIllustrations) {
+    if (theme.keywords.some(keyword => searchText.includes(keyword))) {
+      return theme.image;
+    }
+  }
+  
+  // Default images based on stack type
+  if (stackType === "LESSON") return aerospaceFoundations;
+  if (stackType === "NEWS") return controlTower;
+  if (stackType === "HISTORY") return spaceCenter;
+  
+  return spaceStartup;
+}
 
 interface Source {
   label: string;
@@ -77,6 +131,9 @@ export function SlideReader({
   const isLastSlide = currentIndex === slides.length - 1;
   const contextMentor = getMentorForContext(stackTitle);
   const intro = introContent[stackType];
+  
+  // Get themed illustration based on stack content
+  const themeImage = useMemo(() => getThemeIllustration(stackTitle, stackType), [stackTitle, stackType]);
 
   // Hide arrows when AI mentor or tip is visible
   useEffect(() => {
@@ -211,29 +268,47 @@ export function SlideReader({
             className="absolute inset-0 flex flex-col overflow-y-auto"
           >
             {isIntroSlide ? (
-              /* Intro Slide */
-              <div className={cn(
-                "card-elevated flex-1 flex flex-col items-center justify-center text-center min-h-full",
-                "bg-gradient-to-br",
-                intro.color,
-                "border-0"
-              )}>
-                <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4 text-white">
-                  {intro.icon}
-                </div>
-                <p className="text-white/80 text-caption font-medium mb-2">{stackType}</p>
-                <h3 className="text-h2 text-white mb-2">{stackTitle}</h3>
-                <p className="text-white/90 text-body max-w-xs">{intro.tagline}</p>
+              /* Intro Slide with Themed Illustration */
+              <div className="card-elevated flex-1 flex flex-col min-h-full overflow-hidden border-0 p-0">
+                {/* Hero Image */}
+                {themeImage && (
+                  <div className="relative h-48 w-full overflow-hidden">
+                    <img 
+                      src={themeImage} 
+                      alt={stackTitle}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-bg-1 via-transparent to-transparent" />
+                  </div>
+                )}
                 
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="mt-8 flex items-center gap-2 text-white/70 text-caption"
-                >
-                  <span>Swipe to start</span>
-                  <ChevronRight className="w-4 h-4 animate-pulse" />
-                </motion.div>
+                {/* Content */}
+                <div className={cn(
+                  "flex-1 flex flex-col items-center justify-center text-center p-6",
+                  "bg-gradient-to-br",
+                  intro.color.replace("from-", "from-").replace(" to-", "/10 to-") + "/5"
+                )}>
+                  <div className={cn(
+                    "w-14 h-14 rounded-2xl flex items-center justify-center mb-4",
+                    "bg-gradient-to-br",
+                    intro.color
+                  )}>
+                    <div className="text-white">{intro.icon}</div>
+                  </div>
+                  <p className="text-accent text-caption font-medium mb-1">{stackType}</p>
+                  <h3 className="text-h2 text-text-primary mb-2">{stackTitle}</h3>
+                  <p className="text-text-secondary text-body max-w-xs">{intro.tagline}</p>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-6 flex items-center gap-2 text-text-muted text-caption"
+                  >
+                    <span>Swipe to start</span>
+                    <ChevronRight className="w-4 h-4 animate-pulse" />
+                  </motion.div>
+                </div>
               </div>
             ) : (
               /* Regular Slide */
