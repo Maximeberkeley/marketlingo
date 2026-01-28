@@ -1,11 +1,29 @@
 // Market-specific configuration for 100% original content per industry
-// Each market has its own primary mentor, colors, and content theming
+// Each market has its own primary mentor, colors, hero image, and content theming
+
+// Import unique hero images for each market
+import aerospaceHero from "@/assets/markets/aerospace-hero.jpg";
+import neuroscienceHero from "@/assets/markets/neuroscience-hero.jpg";
+import aiHero from "@/assets/markets/ai-hero.jpg";
+import fintechHero from "@/assets/markets/fintech-hero.jpg";
+import evHero from "@/assets/markets/ev-hero.jpg";
+import biotechHero from "@/assets/markets/biotech-hero.jpg";
+import cybersecurityHero from "@/assets/markets/cybersecurity-hero.jpg";
+import spacetechHero from "@/assets/markets/spacetech-hero.jpg";
+import healthtechHero from "@/assets/markets/healthtech-hero.jpg";
+import roboticsHero from "@/assets/markets/robotics-hero.jpg";
+import cleanenergyHero from "@/assets/markets/cleanenergy-hero.jpg";
+import climatetechHero from "@/assets/markets/climatetech-hero.jpg";
+import agtechHero from "@/assets/markets/agtech-hero.jpg";
+import logisticsHero from "@/assets/markets/logistics-hero.jpg";
+import web3Hero from "@/assets/markets/web3-hero.jpg";
 
 export interface MarketConfig {
   id: string;
   name: string;
-  primaryMentorId: string; // Randomly assigned mentor per industry
-  heroGradient: string; // CSS gradient for hero sections
+  primaryMentorId: string; // Assigned mentor per industry
+  heroGradient: string; // CSS gradient for fallback
+  heroImage: string; // Unique hero image per market
   accentColor: string;
   gameDescription: string;
   drillDescription: string;
@@ -14,13 +32,14 @@ export interface MarketConfig {
   industryTerms: string[];
 }
 
-// Assign primary mentors randomly but consistently to each market
+// Assign primary mentors and unique assets to each market
 export const marketConfigs: Record<string, MarketConfig> = {
   aerospace: {
     id: "aerospace",
     name: "Aerospace",
     primaryMentorId: "alex",
     heroGradient: "from-blue-600 via-indigo-700 to-slate-900",
+    heroImage: aerospaceHero,
     accentColor: "blue",
     gameDescription: "Test your knowledge with aerospace industry challenges",
     drillDescription: "Rapid-fire True/False on aviation and space facts",
@@ -33,6 +52,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "Neuroscience",
     primaryMentorId: "sophia",
     heroGradient: "from-violet-600 via-purple-700 to-fuchsia-900",
+    heroImage: neuroscienceHero,
     accentColor: "purple",
     gameDescription: "Challenge your brain science knowledge with real scenarios",
     drillDescription: "Quick neural pathway and BCI fact-checking",
@@ -45,6 +65,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "AI Industry",
     primaryMentorId: "maya",
     heroGradient: "from-emerald-600 via-teal-700 to-cyan-900",
+    heroImage: aiHero,
     accentColor: "emerald",
     gameDescription: "Master AI fundamentals through interactive challenges",
     drillDescription: "Rapid ML and deep learning fact verification",
@@ -57,6 +78,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "Fintech",
     primaryMentorId: "kai",
     heroGradient: "from-green-600 via-emerald-700 to-teal-900",
+    heroImage: fintechHero,
     accentColor: "green",
     gameDescription: "Test your financial technology and payments knowledge",
     drillDescription: "Quick banking and payments fact-checking",
@@ -69,6 +91,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "Electric Vehicles",
     primaryMentorId: "alex",
     heroGradient: "from-lime-600 via-green-700 to-emerald-900",
+    heroImage: evHero,
     accentColor: "lime",
     gameDescription: "Electric mobility and battery technology challenges",
     drillDescription: "EV industry facts and manufacturing insights",
@@ -81,6 +104,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "Biotech",
     primaryMentorId: "sophia",
     heroGradient: "from-pink-600 via-rose-700 to-red-900",
+    heroImage: biotechHero,
     accentColor: "pink",
     gameDescription: "Biotechnology and life sciences knowledge challenges",
     drillDescription: "Drug development and clinical trial facts",
@@ -93,6 +117,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "Cybersecurity",
     primaryMentorId: "kai",
     heroGradient: "from-red-600 via-rose-700 to-pink-900",
+    heroImage: cybersecurityHero,
     accentColor: "red",
     gameDescription: "Security concepts and threat landscape challenges",
     drillDescription: "Rapid security and compliance fact verification",
@@ -105,6 +130,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "Space Tech",
     primaryMentorId: "alex",
     heroGradient: "from-slate-600 via-gray-800 to-black",
+    heroImage: spacetechHero,
     accentColor: "slate",
     gameDescription: "Space exploration and satellite technology challenges",
     drillDescription: "Launch, orbital, and space economics facts",
@@ -117,6 +143,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "HealthTech",
     primaryMentorId: "sophia",
     heroGradient: "from-cyan-600 via-blue-700 to-indigo-900",
+    heroImage: healthtechHero,
     accentColor: "cyan",
     gameDescription: "Digital health and healthcare technology challenges",
     drillDescription: "HIPAA, telehealth, and healthtech facts",
@@ -129,6 +156,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "Robotics",
     primaryMentorId: "alex",
     heroGradient: "from-orange-600 via-amber-700 to-yellow-900",
+    heroImage: roboticsHero,
     accentColor: "orange",
     gameDescription: "Industrial automation and robotics challenges",
     drillDescription: "Robot kinematics and automation facts",
@@ -141,6 +169,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "Clean Energy",
     primaryMentorId: "maya",
     heroGradient: "from-yellow-600 via-amber-700 to-orange-900",
+    heroImage: cleanenergyHero,
     accentColor: "yellow",
     gameDescription: "Renewable energy and grid technology challenges",
     drillDescription: "Solar, wind, and storage facts verification",
@@ -153,6 +182,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "Climate Tech",
     primaryMentorId: "maya",
     heroGradient: "from-teal-600 via-green-700 to-emerald-900",
+    heroImage: climatetechHero,
     accentColor: "teal",
     gameDescription: "Carbon removal and climate solution challenges",
     drillDescription: "DAC, carbon credits, and climate policy facts",
@@ -165,6 +195,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "AgTech",
     primaryMentorId: "kai",
     heroGradient: "from-green-700 via-lime-700 to-yellow-900",
+    heroImage: agtechHero,
     accentColor: "green",
     gameDescription: "Precision agriculture and food tech challenges",
     drillDescription: "Farm technology and agricultural facts",
@@ -177,6 +208,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "Logistics Tech",
     primaryMentorId: "kai",
     heroGradient: "from-blue-700 via-indigo-700 to-purple-900",
+    heroImage: logisticsHero,
     accentColor: "blue",
     gameDescription: "Supply chain and freight technology challenges",
     drillDescription: "Trucking, warehousing, and delivery facts",
@@ -189,6 +221,7 @@ export const marketConfigs: Record<string, MarketConfig> = {
     name: "Web3 & Crypto",
     primaryMentorId: "maya",
     heroGradient: "from-purple-600 via-violet-700 to-indigo-900",
+    heroImage: web3Hero,
     accentColor: "purple",
     gameDescription: "Blockchain and decentralized technology challenges",
     drillDescription: "Crypto, DeFi, and smart contract facts",
