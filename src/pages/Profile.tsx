@@ -19,12 +19,21 @@ const marketNames: Record<string, string> = {
   ev: "Electric Vehicles",
   biotech: "Biotech",
   energy: "Clean Energy",
+  cleanenergy: "Clean Energy",
   mobile: "Mobile Tech",
   agtech: "AgTech",
   aerospace: "Aerospace",
   creator: "Creator Economy",
   ecommerce: "E-commerce",
   gaming: "Gaming",
+  neuroscience: "Neuroscience",
+  cybersecurity: "Cybersecurity",
+  spacetech: "Space Tech",
+  healthtech: "HealthTech",
+  robotics: "Robotics",
+  climatetech: "Climate Tech",
+  logistics: "Logistics Tech",
+  web3: "Web3 & Crypto",
 };
 
 export default function ProfilePage() {

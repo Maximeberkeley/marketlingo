@@ -69,6 +69,7 @@ export default function NotebookPage() {
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [showAddNote, setShowAddNote] = useState(false);
   const [newNoteContent, setNewNoteContent] = useState("");
+  const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
 
   const filters = [
     { id: null, label: "All", icon: BookOpen },
@@ -77,10 +78,42 @@ export default function NotebookPage() {
     { id: "trainer", label: "Trainer", icon: Tag },
   ];
 
+  // Fetch user's selected market first
+  useEffect(() => {
+    const fetchMarket = async () => {
+      if (!user) return;
+      
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("selected_market")
+        .eq("id", user.id)
+        .maybeSingle();
+      
+      if (profile?.selected_market) {
+        setSelectedMarket(profile.selected_market);
+      } else {
+        const stored = localStorage.getItem("selectedMarket");
+        if (stored) setSelectedMarket(stored);
+      }
+    };
+    
+    fetchMarket();
+  }, [user]);
+
+  // Fetch notes filtered by market
   useEffect(() => {
     const fetchNotes = async () => {
-      if (!user) return;
+      if (!user || !selectedMarket) return;
 
+      // Fetch notes that are linked to stacks in this market
+      const { data: marketStacks } = await supabase
+        .from("stacks")
+        .select("id")
+        .eq("market_id", selectedMarket);
+      
+      const stackIds = marketStacks?.map(s => s.id) || [];
+      
+      // Fetch notes: either linked to market stacks OR personal notes (no stack_id)
       const { data, error } = await supabase
         .from("notes")
         .select("*")
@@ -90,13 +123,19 @@ export default function NotebookPage() {
       if (error) {
         console.error("Error fetching notes:", error);
       } else {
-        setNotes(data || []);
+        // Filter to market-specific notes or personal notes
+        const filtered = (data || []).filter(note => 
+          !note.stack_id || stackIds.includes(note.stack_id)
+        );
+        setNotes(filtered);
       }
       setLoading(false);
     };
 
-    fetchNotes();
-  }, [user]);
+    if (selectedMarket) {
+      fetchNotes();
+    }
+  }, [user, selectedMarket]);
 
   const handleDeleteNote = async (noteId: string) => {
     const { error } = await supabase
