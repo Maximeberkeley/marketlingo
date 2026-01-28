@@ -11,16 +11,21 @@ interface MentorGuideProps {
   marketId?: string;
 }
 
-// Contextual messages based on slide position
-function getMentorMessage(slideIndex: number, totalSlides: number, isIntro: boolean, mentorId: string): string {
+// Contextual messages based on slide position with enhanced Sophia expressions
+function getMentorMessage(slideIndex: number, totalSlides: number, isIntro: boolean, mentorId: string, marketId?: string): string {
+  // Use Sophia's enhanced expressions for Neuroscience
+  const isSophiaNeuro = mentorId === "sophia" && marketId === "neuroscience";
+  
   if (isIntro) {
     const introMessages: Record<string, string[]> = {
       maya: ["Let's decode this together!", "Ready for some market insights?", "Time to think strategically!"],
       alex: ["Let me break this down for you.", "Technical concepts ahead!", "Let's dive into the details."],
       kai: ["This is startup gold!", "Ready to build something?", "Let's think like founders!"],
-      sophia: ["You're going to love this!", "Ready to grow together?", "Let's unlock your potential!"],
+      sophia: isSophiaNeuro 
+        ? ["Brain science awaits! 🧠", "This is going to be fascinating!", "Ready to explore the mind?", "Let's unlock some insights!"]
+        : ["You're going to love this!", "Ready to grow together?", "Let's unlock your potential!"],
     };
-    return introMessages[mentorId]?.[Math.floor(Math.random() * 3)] || "Let's learn!";
+    return introMessages[mentorId]?.[Math.floor(Math.random() * (introMessages[mentorId]?.length || 3))] || "Let's learn!";
   }
   
   if (slideIndex === 0) {
@@ -28,9 +33,11 @@ function getMentorMessage(slideIndex: number, totalSlides: number, isIntro: bool
       maya: ["Here's the big picture...", "Pay attention to this!", "Market insight incoming!"],
       alex: ["Fundamental concept here.", "This is key to understand.", "Core principle ahead!"],
       kai: ["Founders take note!", "This could be your edge.", "Opportunity alert!"],
-      sophia: ["This is exciting!", "Key growth insight!", "You'll want to remember this!"],
+      sophia: isSophiaNeuro
+        ? ["This is exciting! 🎉", "Key insight ahead!", "You'll love this one!", "Neural magic incoming!"]
+        : ["This is exciting!", "Key growth insight!", "You'll want to remember this!"],
     };
-    return firstMessages[mentorId]?.[Math.floor(Math.random() * 3)] || "Starting strong!";
+    return firstMessages[mentorId]?.[Math.floor(Math.random() * (firstMessages[mentorId]?.length || 3))] || "Starting strong!";
   }
   
   if (slideIndex === totalSlides - 1) {
@@ -38,9 +45,11 @@ function getMentorMessage(slideIndex: number, totalSlides: number, isIntro: bool
       maya: ["Now you see the full picture!", "Connect these dots!", "Strategy unlocked!"],
       alex: ["You've got this!", "Technical mastery!", "Key takeaway here!"],
       kai: ["Go build something!", "Action time!", "Your move now!"],
-      sophia: ["Amazing progress!", "You're doing great!", "Proud of you!"],
+      sophia: isSophiaNeuro
+        ? ["You crushed it! 🏆", "So proud of you!", "Look at you go!", "Amazing progress! 💪"]
+        : ["Amazing progress!", "You're doing great!", "Proud of you!"],
     };
-    return lastMessages[mentorId]?.[Math.floor(Math.random() * 3)] || "Great job!";
+    return lastMessages[mentorId]?.[Math.floor(Math.random() * (lastMessages[mentorId]?.length || 3))] || "Great job!";
   }
   
   // Mid-lesson messages
@@ -48,9 +57,11 @@ function getMentorMessage(slideIndex: number, totalSlides: number, isIntro: bool
     maya: ["Interesting, right?", "Think about this...", "Note this pattern!", "Strategic insight!"],
     alex: ["Technical detail!", "Important nuance.", "Remember this!", "Key point!"],
     kai: ["Startup tip!", "Founder insight!", "Good to know!", "Take action!"],
-    sophia: ["Love this part!", "So valuable!", "You're learning fast!", "Keep going!"],
+    sophia: isSophiaNeuro
+      ? ["I love this part! 💡", "Keep going!", "You're learning fast!", "This is so cool!", "Trust the process!"]
+      : ["Love this part!", "So valuable!", "You're learning fast!", "Keep going!"],
   };
-  return midMessages[mentorId]?.[slideIndex % 4] || "Keep going!";
+  return midMessages[mentorId]?.[slideIndex % (midMessages[mentorId]?.length || 4)] || "Keep going!";
 }
 
 // Different poses/expressions based on slide content
@@ -63,7 +74,7 @@ function getMentorMood(slideIndex: number, totalSlides: number, isIntro: boolean
 
 export function MentorGuide({ context, slideIndex, totalSlides, isIntro = false, className, marketId }: MentorGuideProps) {
   const mentor = getMentorForContext(context, marketId);
-  const message = getMentorMessage(slideIndex, totalSlides, isIntro, mentor.id);
+  const message = getMentorMessage(slideIndex, totalSlides, isIntro, mentor.id, marketId);
   const mood = getMentorMood(slideIndex, totalSlides, isIntro);
   
   // Animation variants based on mood
