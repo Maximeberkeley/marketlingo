@@ -58,19 +58,34 @@ export function DailyNews({ marketId }: DailyNewsProps) {
     setError(null);
     
     try {
-      const { data, error: fnError } = await supabase.functions.invoke('fetch-aerospace-news');
+      // Fetch news from database for the current market
+      const { data, error: dbError } = await supabase
+        .from('news_items')
+        .select('*')
+        .eq('market_id', marketId)
+        .order('published_at', { ascending: false })
+        .limit(10);
       
-      if (fnError) {
-        console.error('Error fetching news:', fnError);
+      if (dbError) {
+        console.error('Error fetching news:', dbError);
         setError('Unable to load news');
         return;
       }
       
-      if (data?.success && data?.data) {
-        setNews(data.data);
+      if (data && data.length > 0) {
+        const formattedNews: NewsItem[] = data.map(item => ({
+          id: item.id,
+          title: item.title,
+          sourceName: item.source_name,
+          sourceUrl: item.source_url,
+          publishedAt: new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          categoryTag: item.category_tag || 'Industry',
+          summary: item.summary || undefined,
+        }));
+        setNews(formattedNews);
         setLastFetched(new Date());
       } else {
-        setError(data?.error || 'No news available');
+        setNews([]);
       }
     } catch (err) {
       console.error('Error fetching news:', err);
@@ -81,32 +96,8 @@ export function DailyNews({ marketId }: DailyNewsProps) {
   };
 
   useEffect(() => {
-    if (marketId === 'aerospace') {
-      fetchNews();
-    } else {
-      setIsLoading(false);
-      setNews([]);
-    }
+    fetchNews();
   }, [marketId]);
-
-  if (marketId !== 'aerospace') {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="mt-6"
-      >
-        <div className="flex items-center gap-2 mb-4">
-          <Zap size={18} className="text-accent" />
-          <h2 className="text-h3 text-text-primary">Industry Intel</h2>
-        </div>
-        <div className="p-6 rounded-card bg-bg-2/50 border border-border text-center">
-          <p className="text-body text-text-muted">News feed coming soon for this market</p>
-        </div>
-      </motion.div>
-    );
-  }
 
   return (
     <motion.div
