@@ -5,11 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
+import { MentorCelebration } from "@/components/mascot/MentorCelebration";
 import { mentors, Mentor } from "@/data/mentors";
+import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import triviaHero from "@/assets/games/trivia-hero.jpg";
 
 interface GameQuestion {
   id: string;
@@ -34,6 +35,12 @@ export default function GamesPage() {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const [showCelebration, setShowCelebration] = useState(false);
+  
+  // Get market config for theming
+  const marketConfig = selectedMarket ? getMarketConfig(selectedMarket) : null;
+  const primaryMentorId = selectedMarket ? getPrimaryMentorForMarket(selectedMarket) : "maya";
+  const primaryMentor = mentors.find(m => m.id === primaryMentorId) || mentors[0];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,7 +141,6 @@ export default function GamesPage() {
       setSelectedAnswer(null);
       setShowResult(false);
     } else {
-      setGameComplete(true);
       const finalScore = score + (isCorrect ? 1 : 0);
       
       // Save progress to database
@@ -149,7 +155,13 @@ export default function GamesPage() {
         }, { onConflict: "user_id,market_id,game_type" });
       }
       
-      toast.success(`Game complete! Score: ${finalScore}/${questions.length}`);
+      // Show celebration randomly (70% of the time)
+      if (Math.random() < 0.7) {
+        setShowCelebration(true);
+      } else {
+        setGameComplete(true);
+        toast.success(`Game complete! Score: ${finalScore}/${questions.length}`);
+      }
     }
   };
 
@@ -195,19 +207,22 @@ export default function GamesPage() {
             animate={{ scale: 1, opacity: 1 }}
             className="w-full max-w-md"
           >
-            {/* Hero Image Card */}
-            <div className="relative overflow-hidden rounded-2xl mb-6">
-              <img 
-                src={triviaHero} 
-                alt="Aerospace Trivia" 
-                className="w-full h-48 object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <p className="text-white/80 text-caption font-medium mb-1">Pattern Games</p>
+            {/* Hero Card with Market-Specific Gradient */}
+            <div className={`relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-purple-600 via-violet-700 to-indigo-900'}`}>
+              <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5" />
+              <div className="relative p-6 h-48 flex flex-col justify-end">
+                {/* Mentor avatar */}
+                <div className="absolute top-4 right-4">
+                  <img 
+                    src={primaryMentor.avatar} 
+                    alt={primaryMentor.name}
+                    className="w-16 h-16 rounded-full border-2 border-white/30 object-cover object-[50%_30%]"
+                  />
+                </div>
+                <p className="text-white/80 text-caption font-medium mb-1">{marketConfig?.name || 'Industry'} Games</p>
                 <h2 className="text-2xl font-bold text-white mb-2">Test Your Knowledge</h2>
                 <p className="text-white/90 text-body">
-                  Quick MCQ challenges based on real aerospace patterns.
+                  {marketConfig?.gameDescription || 'Quick MCQ challenges based on real industry patterns.'}
                 </p>
               </div>
             </div>
@@ -480,6 +495,17 @@ export default function GamesPage() {
         onClose={() => setActiveMentor(null)}
         context={`Game question: ${question?.question || "Pattern matching game"}`}
         marketId={selectedMarket || undefined}
+      />
+
+      {/* Celebration on completion */}
+      <MentorCelebration
+        isVisible={showCelebration}
+        marketId={selectedMarket || "aerospace"}
+        type="game"
+        onComplete={() => {
+          setShowCelebration(false);
+          setGameComplete(true);
+        }}
       />
     </div>
   );

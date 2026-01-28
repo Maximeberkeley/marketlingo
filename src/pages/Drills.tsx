@@ -5,11 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
+import { MentorCelebration } from "@/components/mascot/MentorCelebration";
 import { mentors, Mentor } from "@/data/mentors";
+import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import speedDrillHero from "@/assets/drills/speed-drill.jpg";
 
 interface DrillQuestion {
   id: string;
@@ -35,6 +36,12 @@ export default function DrillsPage() {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const [showCelebration, setShowCelebration] = useState(false);
+  
+  // Get market config for theming
+  const marketConfig = selectedMarket ? getMarketConfig(selectedMarket) : null;
+  const primaryMentorId = selectedMarket ? getPrimaryMentorForMarket(selectedMarket) : "alex";
+  const primaryMentor = mentors.find(m => m.id === primaryMentorId) || mentors[1];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -175,7 +182,13 @@ export default function DrillsPage() {
         }, { onConflict: "user_id,market_id,drill_type" });
       }
 
-      toast.success(`Drill complete! Score: ${finalScore}/${questions.length}`);
+      // Show celebration randomly (60% of the time)
+      if (Math.random() < 0.6) {
+        setShowCelebration(true);
+      } else {
+        setDrillComplete(true);
+        toast.success(`Drill complete! Score: ${finalScore}/${questions.length}`);
+      }
     }
   };
 
@@ -218,19 +231,22 @@ export default function DrillsPage() {
             animate={{ scale: 1, opacity: 1 }}
             className="w-full max-w-md"
           >
-            {/* Hero Image Card */}
-            <div className="relative overflow-hidden rounded-2xl mb-6">
-              <img 
-                src={speedDrillHero} 
-                alt="Speed Drills" 
-                className="w-full h-48 object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <p className="text-white/80 text-caption font-medium mb-1">Speed Drills</p>
+            {/* Hero Card with Market-Specific Gradient */}
+            <div className={`relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-amber-600 via-orange-700 to-red-900'}`}>
+              <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5" />
+              <div className="relative p-6 h-48 flex flex-col justify-end">
+                {/* Mentor avatar */}
+                <div className="absolute top-4 right-4">
+                  <img 
+                    src={primaryMentor.avatar} 
+                    alt={primaryMentor.name}
+                    className="w-16 h-16 rounded-full border-2 border-white/30 object-cover object-[50%_30%]"
+                  />
+                </div>
+                <p className="text-white/80 text-caption font-medium mb-1">{marketConfig?.name || 'Industry'} Drills</p>
                 <h2 className="text-2xl font-bold text-white mb-2">15-Second Challenges</h2>
                 <p className="text-white/90 text-body">
-                  Rapid-fire True/False to build pattern recognition.
+                  {marketConfig?.drillDescription || 'Rapid-fire True/False to build pattern recognition.'}
                 </p>
               </div>
             </div>
@@ -510,6 +526,17 @@ export default function DrillsPage() {
         onClose={() => setActiveMentor(null)}
         context={`Drill question: ${question?.statement || "Market drill"}`}
         marketId={selectedMarket || undefined}
+      />
+
+      {/* Celebration on completion */}
+      <MentorCelebration
+        isVisible={showCelebration}
+        marketId={selectedMarket || "aerospace"}
+        type="drill"
+        onComplete={() => {
+          setShowCelebration(false);
+          setDrillComplete(true);
+        }}
       />
     </div>
   );
