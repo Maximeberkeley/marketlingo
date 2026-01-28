@@ -12,6 +12,13 @@ export interface Mentor {
   avatar: string;
   greeting: string;
   specialties: string[];
+  expressions?: {
+    thinking?: string[];
+    cheering?: string[];
+    celebrating?: string[];
+    encouraging?: string[];
+    curious?: string[];
+  };
 }
 
 export const mentors: Mentor[] = [
@@ -49,11 +56,18 @@ export const mentors: Mentor[] = [
     id: "sophia",
     name: "Sophia Martinez",
     title: "Growth Advisor",
-    expertise: ["Customer Success", "Partnerships", "Scaling Operations"],
-    personality: "Warm, inspiring, and incredibly supportive. Sophia has helped scale multiple aerospace ventures from seed to series B. She believes in you and helps you see your full potential.",
+    expertise: ["Customer Success", "Partnerships", "Scaling Operations", "Neuroscience", "Mental Health"],
+    personality: "Warm, inspiring, and incredibly supportive. Sophia has helped scale multiple neurotech and healthcare ventures from seed to series B. She believes in you and helps you see your full potential. She cheers on achievements, celebrates completions enthusiastically, and shows genuine excitement when you grasp complex concepts.",
     avatar: mentorSophia,
     greeting: "Hey there! Ready to unlock your next level of growth? I'm here to help you shine.",
-    specialties: ["Customer relationships", "Strategic partnerships", "Team building"],
+    specialties: ["Customer relationships", "Strategic partnerships", "Team building", "Neurotech", "Regulatory navigation"],
+    expressions: {
+      thinking: ["Hmm, let me think...", "That's a deep one!", "Interesting angle..."],
+      cheering: ["You're crushing it! 🎉", "Amazing work!", "Yes! Nailed it! 💪", "I knew you could do it!"],
+      celebrating: ["Huge milestone! 🏆", "Look at you go!", "That's what I'm talking about!", "So proud of you!"],
+      encouraging: ["You've got this!", "Keep pushing!", "Almost there!", "Trust the process!"],
+      curious: ["Tell me more!", "What led you there?", "I love that thinking!", "Ooh, that's exciting!"],
+    },
   },
 ];
 

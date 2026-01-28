@@ -28,6 +28,10 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
     propulsion: "bg-orange-500/20 text-orange-400",
     suppliers: "bg-emerald-500/20 text-emerald-400",
     services: "bg-cyan-500/20 text-cyan-400",
+    // Neuroscience segments
+    devices: "bg-violet-500/20 text-violet-400",
+    therapeutics: "bg-pink-500/20 text-pink-400",
+    pharma: "bg-indigo-500/20 text-indigo-400",
   };
 
   return (
