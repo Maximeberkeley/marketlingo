@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { ChevronRight, BookOpen, TrendingUp, Sparkles } from "lucide-react";
+import { ChevronRight, BookOpen, TrendingUp, Sparkles, Brain, Cpu, Zap, Leaf, Shield, Rocket, Heart, Bot, Sun, Wind, Tractor, Truck, Coins, Car, FlaskConical, Lock } from "lucide-react";
 import { MentorGuide } from "./MentorGuide";
+import { getMarketConfig } from "@/data/marketConfig";
 import { cn } from "@/lib/utils";
 
 type StackType = "NEWS" | "HISTORY" | "LESSON";
@@ -8,8 +9,8 @@ type StackType = "NEWS" | "HISTORY" | "LESSON";
 interface SlideIntroCardProps {
   stackTitle: string;
   stackType: StackType;
-  themeImage: string | null;
   totalSlides: number;
+  marketId?: string;
 }
 
 const introContent: Record<StackType, { icon: React.ReactNode; tagline: string; color: string }> = {
@@ -30,28 +31,46 @@ const introContent: Record<StackType, { icon: React.ReactNode; tagline: string; 
   }
 };
 
-export function SlideIntroCard({ stackTitle, stackType, themeImage, totalSlides }: SlideIntroCardProps) {
+// Market-specific icons for visual variety
+const marketIcons: Record<string, React.ReactNode> = {
+  aerospace: <Rocket className="w-16 h-16 text-white/20" />,
+  neuroscience: <Brain className="w-16 h-16 text-white/20" />,
+  ai: <Cpu className="w-16 h-16 text-white/20" />,
+  fintech: <Coins className="w-16 h-16 text-white/20" />,
+  ev: <Zap className="w-16 h-16 text-white/20" />,
+  biotech: <FlaskConical className="w-16 h-16 text-white/20" />,
+  cybersecurity: <Shield className="w-16 h-16 text-white/20" />,
+  spacetech: <Rocket className="w-16 h-16 text-white/20" />,
+  healthtech: <Heart className="w-16 h-16 text-white/20" />,
+  robotics: <Bot className="w-16 h-16 text-white/20" />,
+  cleanenergy: <Sun className="w-16 h-16 text-white/20" />,
+  climatetech: <Leaf className="w-16 h-16 text-white/20" />,
+  agtech: <Tractor className="w-16 h-16 text-white/20" />,
+  logistics: <Truck className="w-16 h-16 text-white/20" />,
+  web3: <Lock className="w-16 h-16 text-white/20" />,
+};
+
+export function SlideIntroCard({ stackTitle, stackType, totalSlides, marketId }: SlideIntroCardProps) {
   const intro = introContent[stackType];
+  const marketConfig = getMarketConfig(marketId || "aerospace");
+  const MarketIcon = marketIcons[marketId || "aerospace"] || <BookOpen className="w-16 h-16 text-white/20" />;
 
   return (
-    <div className="flex flex-col"  >
-      {/* Hero Image with Mascot Overlay */}
-      <div className="relative h-64 w-full overflow-hidden rounded-t-2xl bg-gradient-to-br from-bg-2 to-bg-1">
-        {themeImage ? (
-          <>
-            <img 
-              src={themeImage} 
-              alt={stackTitle}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-bg-0 via-bg-0/50 to-transparent" />
-          </>
-        ) : (
-          <div className={cn(
-            "w-full h-full bg-gradient-to-br",
-            intro.color
-          )} />
-        )}
+    <div className="flex flex-col">
+      {/* Hero Gradient with Market-Specific Styling */}
+      <div className={cn(
+        "relative h-64 w-full overflow-hidden rounded-t-2xl",
+        "bg-gradient-to-br",
+        marketConfig.heroGradient
+      )}>
+        {/* Abstract Pattern Overlay */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-4 right-4">{MarketIcon}</div>
+          <div className="absolute bottom-8 left-8 w-24 h-24 rounded-full bg-white/10 blur-2xl" />
+          <div className="absolute top-12 left-1/2 w-16 h-16 rounded-full bg-white/5 blur-xl" />
+        </div>
+        
+        <div className="absolute inset-0 bg-gradient-to-t from-bg-0 via-bg-0/30 to-transparent" />
         
         {/* Mentor Guide positioned on the hero */}
         <div className="absolute bottom-4 left-4 right-4">
@@ -60,6 +79,7 @@ export function SlideIntroCard({ stackTitle, stackType, themeImage, totalSlides 
             slideIndex={0}
             totalSlides={totalSlides}
             isIntro={true}
+            marketId={marketId}
           />
         </div>
       </div>
