@@ -5,14 +5,11 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MarketCard } from "@/components/ui/MarketCard";
+import { LeoMascot, getRandomLeoMessage } from "@/components/mascot/LeoMascot";
+import { markets } from "@/data/markets";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-const markets = [
-  { id: "aerospace", name: "Aerospace", icon: "rocket" },
-  { id: "neuroscience", name: "Neuroscience", icon: "brain" },
-];
 
 export default function SelectMarketPage() {
   const navigate = useNavigate();
@@ -20,6 +17,7 @@ export default function SelectMarketPage() {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [leoMessage] = useState(() => getRandomLeoMessage("marketSelect"));
 
   useEffect(() => {
     if (!loading && !user) {
@@ -28,7 +26,8 @@ export default function SelectMarketPage() {
   }, [user, loading, navigate]);
 
   const filteredMarkets = markets.filter((market) =>
-    market.name.toLowerCase().includes(searchQuery.toLowerCase())
+    market.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    market.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleContinue = async () => {
@@ -77,15 +76,24 @@ export default function SelectMarketPage() {
     }
   };
 
+  const selectedMarketData = markets.find(m => m.id === selectedMarket);
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-bg-0 to-bg-1">
-      {/* Header */}
+      {/* Header with Leo */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="screen-padding pt-12 pb-6"
+        className="screen-padding pt-8 pb-4"
       >
-        <h1 className="text-h1 text-text-primary mb-2">Choose your market</h1>
+        <LeoMascot 
+          size="lg" 
+          message={leoMessage}
+          mood="waving"
+          className="mb-4"
+        />
+        
+        <h1 className="text-h1 text-text-primary mb-2">Choose your industry</h1>
         <p className="text-body text-text-secondary">
           Pick one. We'll guide you for 6 months.
         </p>
@@ -104,7 +112,7 @@ export default function SelectMarketPage() {
             className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"
           />
           <Input
-            placeholder="Search markets…"
+            placeholder="Search industries…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-11 bg-bg-1 border-border rounded-[16px] h-12 text-text-primary placeholder:text-text-muted"
@@ -113,14 +121,17 @@ export default function SelectMarketPage() {
       </motion.div>
 
       {/* Grid */}
-      <div className="flex-1 screen-padding overflow-auto pb-32">
+      <div className="flex-1 screen-padding overflow-auto pb-40">
+        <p className="text-caption text-text-muted mb-3">
+          {filteredMarkets.length} industries available
+        </p>
         <div className="grid grid-cols-2 gap-3">
           {filteredMarkets.map((market, index) => (
             <motion.div
               key={market.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + index * 0.03 }}
+              transition={{ delay: 0.05 + index * 0.02 }}
             >
               <MarketCard
                 id={market.id}
@@ -141,6 +152,20 @@ export default function SelectMarketPage() {
         transition={{ delay: 0.4 }}
         className="fixed bottom-0 left-0 right-0 screen-padding pb-8 pt-4 bg-gradient-to-t from-bg-0 via-bg-0 to-transparent"
       >
+        {selectedMarketData && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-3 p-3 rounded-xl bg-bg-2 border border-border"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-lg">{selectedMarketData.emoji}</span>
+              <span className="text-body font-medium text-text-primary">{selectedMarketData.name}</span>
+            </div>
+            <p className="text-caption text-text-secondary">{selectedMarketData.description}</p>
+          </motion.div>
+        )}
+        
         <Button
           size="full"
           disabled={!selectedMarket || isSubmitting}

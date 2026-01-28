@@ -10,6 +10,7 @@ import { useUserProgress } from "@/hooks/useUserProgress";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { LeoMascot } from "@/components/mascot/LeoMascot";
 
 export default function AchievementsPage() {
   const navigate = useNavigate();
@@ -65,6 +66,16 @@ export default function AchievementsPage() {
         </div>
 
         <div className="px-4 py-6 pb-28 space-y-6">
+          {/* Leo encouragement for achievements */}
+          <LeoMascot 
+            size="md" 
+            message={getUnlockedCount() > 0 
+              ? `${getUnlockedCount()} badges earned! Keep going! 🏆` 
+              : "Start unlocking badges! 💪"
+            }
+            mood={getUnlockedCount() > 5 ? "celebrating" : "encouraging"}
+            className="mb-4"
+          />
           {tierOrder.map((tier) => {
             const achievements = groupedAchievements[tier] || [];
             if (achievements.length === 0) return null;
