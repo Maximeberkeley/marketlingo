@@ -156,11 +156,18 @@ export function SwipeableNoteCard({ note, onDelete, index }: SwipeableNoteCardPr
                 </span>
               </div>
             </div>
-          </div>
-          
-          {/* Swipe hint indicator */}
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none">
-            <div className="w-1 h-8 rounded-full bg-text-muted" />
+            
+            {/* Delete button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowConfirm(true);
+              }}
+              className="p-2 rounded-lg hover:bg-destructive/10 transition-colors flex-shrink-0"
+              title="Delete note"
+            >
+              <Trash2 size={16} className="text-text-muted hover:text-destructive" />
+            </button>
           </div>
         </motion.div>
       </motion.div>

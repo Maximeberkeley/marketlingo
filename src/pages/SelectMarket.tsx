@@ -11,6 +11,7 @@ import { toast } from "sonner";
 
 const markets = [
   { id: "aerospace", name: "Aerospace", icon: "rocket" },
+  { id: "neuroscience", name: "Neuroscience", icon: "brain" },
 ];
 
 export default function SelectMarketPage() {
