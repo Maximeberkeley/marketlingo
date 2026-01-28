@@ -13,6 +13,7 @@ interface SlideContentCardProps {
   slideIndex: number;
   totalSlides: number;
   stackTitle: string;
+  marketId?: string;
 }
 
 export function SlideContentCard({ 
@@ -21,7 +22,8 @@ export function SlideContentCard({
   sources, 
   slideIndex, 
   totalSlides,
-  stackTitle 
+  stackTitle,
+  marketId
 }: SlideContentCardProps) {
   return (
     <div className="flex flex-col gap-4 pb-4">
@@ -30,6 +32,7 @@ export function SlideContentCard({
         context={stackTitle}
         slideIndex={slideIndex}
         totalSlides={totalSlides}
+        marketId={marketId}
       />
       
       {/* Content Card */}
