@@ -104,6 +104,7 @@ interface SlideReaderProps {
   onComplete: () => void;
   onSaveInsight: (slideNumber: number) => void;
   onAddNote: (slideNumber: number) => void;
+  marketId?: string;
 }
 
 const SWIPE_THRESHOLD = 50;
@@ -116,6 +117,7 @@ export function SlideReader({
   onComplete,
   onSaveInsight,
   onAddNote,
+  marketId,
 }: SlideReaderProps) {
   const [currentIndex, setCurrentIndex] = useState(-1); // Start at -1 for intro slide
   const [direction, setDirection] = useState(0);
@@ -451,6 +453,7 @@ export function SlideReader({
         mentor={activeMentor}
         onClose={() => setActiveMentor(null)}
         context={`${stackTitle}: ${currentSlide?.title || 'Introduction'} - ${currentSlide?.body || 'Getting started'}`}
+        marketId={marketId}
       />
     </div>
   );

@@ -199,6 +199,7 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
         mentor={activeMentor}
         onClose={() => setActiveMentor(null)}
         context={`Key Players in ${marketId} market. Companies include: ${companies.slice(0, 5).map(c => c.name).join(', ')}`}
+        marketId={marketId}
       />
     </>
   );

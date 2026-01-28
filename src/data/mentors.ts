@@ -54,7 +54,7 @@ export const mentors: Mentor[] = [
   },
   {
     id: "sophia",
-    name: "Sophia Martinez",
+    name: "Sophia Hernández",
     title: "Growth Advisor",
     expertise: ["Customer Success", "Partnerships", "Scaling Operations", "Neuroscience", "Mental Health"],
     personality: "Warm, inspiring, and incredibly supportive. Sophia has helped scale multiple neurotech and healthcare ventures from seed to series B. She believes in you and helps you see your full potential. She cheers on achievements, celebrates completions enthusiastically, and shows genuine excitement when you grasp complex concepts.",
