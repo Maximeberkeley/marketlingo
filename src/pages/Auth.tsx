@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { z } from "zod";
+import { LeoMascot, getRandomLeoMessage } from "@/components/mascot/LeoMascot";
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
 type AuthMode = "options" | "email-login" | "email-signup";
@@ -109,20 +110,19 @@ export default function AuthPage() {
       }} transition={{
         duration: 0.3
       }} className="w-full max-w-sm flex flex-col items-center">
-            {/* Logo */}
-            <motion.div initial={{
-          scale: 0.9,
-          opacity: 0
-        }} animate={{
-          scale: 1,
-          opacity: 1
-        }} transition={{
-          delay: 0.1,
-          duration: 0.4
-        }} className="mb-8">
-              <div className="w-20 h-20 rounded-card bg-gradient-to-br from-primary to-[hsl(280,100%,60%)] flex items-center justify-center shadow-elevated">
-                <span className="text-4xl font-bold text-primary-foreground">M</span>
-              </div>
+            {/* Leo Mascot */}
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }} 
+              animate={{ scale: 1, opacity: 1 }} 
+              transition={{ delay: 0.1, duration: 0.4 }}
+              className="mb-6"
+            >
+              <LeoMascot 
+                size="xl" 
+                message={getRandomLeoMessage("welcome")}
+                mood="waving"
+                showBubble={true}
+              />
             </motion.div>
 
             {/* Title */}
