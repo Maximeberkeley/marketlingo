@@ -42,7 +42,7 @@ export default function TrainerPage() {
   const primaryMentor = mentors.find(m => m.id === primaryMentorId) || mentors[2];
 
   useEffect(() => {
-    const fetchScenarios = async () => {
+    const fetchScenariosAndProgress = async () => {
       if (!user) return;
 
       // Get user's selected market
@@ -56,27 +56,54 @@ export default function TrainerPage() {
       setSelectedMarket(market);
 
       // Fetch trainer scenarios for this market
-      const { data, error } = await supabase
+      const { data: scenarioData, error: scenarioError } = await supabase
         .from("trainer_scenarios")
         .select("*")
         .eq("market_id", market)
         .order("created_at", { ascending: true });
 
-      if (error) {
-        console.error("Error fetching scenarios:", error);
-      } else {
-        const formattedScenarios = (data || []).map((s) => ({
-          ...s,
-          options: Array.isArray(s.options) 
-            ? (s.options as { label: string; isCorrect: boolean }[])
-            : [],
-        }));
-        setScenarios(formattedScenarios);
+      if (scenarioError) {
+        console.error("Error fetching scenarios:", scenarioError);
+        setLoading(false);
+        return;
       }
+
+      const formattedScenarios = (scenarioData || []).map((s) => ({
+        ...s,
+        options: Array.isArray(s.options) 
+          ? (s.options as { label: string; isCorrect: boolean }[])
+          : [],
+      }));
+      setScenarios(formattedScenarios);
+
+      // Fetch user's completed attempts to restore progress
+      const { data: attemptData } = await supabase
+        .from("trainer_attempts")
+        .select("scenario_id")
+        .eq("user_id", user.id);
+
+      if (attemptData && attemptData.length > 0 && formattedScenarios.length > 0) {
+        // Get set of completed scenario IDs
+        const completedIds = new Set(attemptData.map(a => a.scenario_id));
+        
+        // Find the first uncompleted scenario
+        const firstUncompletedIndex = formattedScenarios.findIndex(
+          s => !completedIds.has(s.id)
+        );
+        
+        if (firstUncompletedIndex !== -1) {
+          // Resume from first uncompleted
+          setCurrentIndex(firstUncompletedIndex);
+        } else {
+          // All completed - start from beginning (user can review)
+          setCurrentIndex(0);
+        }
+      }
+
       setLoading(false);
     };
 
-    fetchScenarios();
+    fetchScenariosAndProgress();
   }, [user]);
 
   const currentScenario = scenarios[currentIndex];
