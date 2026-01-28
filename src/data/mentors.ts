@@ -57,10 +57,15 @@ export const mentors: Mentor[] = [
   },
 ];
 
-export function getMentorForContext(context: string): Mentor {
+export function getMentorForContext(context: string, marketId?: string): Mentor {
   const contextLower = context.toLowerCase();
   
-  // Sophia appears for growth, partnerships, customer, scaling, and general encouragement
+  // Sophia is the PRIMARY mentor for Neuroscience market
+  if (marketId === "neuroscience" || contextLower.includes("neuro") || contextLower.includes("brain") || contextLower.includes("cognit") || contextLower.includes("mental health") || contextLower.includes("bci") || contextLower.includes("neural")) {
+    return mentors.find(m => m.id === "sophia")!;
+  }
+  
+  // Sophia also appears for growth, partnerships, customer, scaling
   if (contextLower.includes("growth") || contextLower.includes("customer") || contextLower.includes("partner") || contextLower.includes("scale") || contextLower.includes("team") || contextLower.includes("network")) {
     return mentors.find(m => m.id === "sophia")!;
   }

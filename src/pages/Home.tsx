@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronRight, Gamepad2, Target, Sparkles, Loader2, Trophy, Award, CheckCircle2, BookOpen, Newspaper } from "lucide-react";
+import { ChevronRight, Gamepad2, Target, Sparkles, Loader2, Trophy, Award, CheckCircle2, BookOpen, Newspaper, FlaskConical } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { XPBadge } from "@/components/ui/XPBadge";
@@ -409,7 +409,10 @@ export default function HomePage() {
             { icon: BookOpen, label: "Notes", path: "/notebook", color: "text-rose-400", bg: "bg-rose-500/10" },
             { icon: Trophy, label: "Rank", path: "/leaderboard", color: "text-blue-400", bg: "bg-blue-500/10" },
             { icon: Award, label: "Badges", path: "/achievements", color: "text-purple-400", bg: "bg-purple-500/10" },
-            { icon: Newspaper, label: "News", path: "/summaries", color: "text-cyan-400", bg: "bg-cyan-500/10" },
+            ...(selectedMarket === "neuroscience" 
+              ? [{ icon: FlaskConical, label: "FDA/IRB", path: "/regulatory-hub", color: "text-emerald-400", bg: "bg-emerald-500/10" }]
+              : [{ icon: Newspaper, label: "News", path: "/summaries", color: "text-cyan-400", bg: "bg-cyan-500/10" }]
+            ),
           ].map((item) => (
             <button
               key={item.path}

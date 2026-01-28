@@ -8,6 +8,7 @@ interface MentorGuideProps {
   totalSlides: number;
   isIntro?: boolean;
   className?: string;
+  marketId?: string;
 }
 
 // Contextual messages based on slide position
@@ -60,8 +61,8 @@ function getMentorMood(slideIndex: number, totalSlides: number, isIntro: boolean
   return "encouraging";
 }
 
-export function MentorGuide({ context, slideIndex, totalSlides, isIntro = false, className }: MentorGuideProps) {
-  const mentor = getMentorForContext(context);
+export function MentorGuide({ context, slideIndex, totalSlides, isIntro = false, className, marketId }: MentorGuideProps) {
+  const mentor = getMentorForContext(context, marketId);
   const message = getMentorMessage(slideIndex, totalSlides, isIntro, mentor.id);
   const mood = getMentorMood(slideIndex, totalSlides, isIntro);
   
