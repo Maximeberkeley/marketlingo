@@ -72,11 +72,11 @@ export function LessonCard({
     >
       {/* Image Section */}
       {imageSrc && (
-        <div className="relative h-28 overflow-hidden">
+        <div className="relative h-32 overflow-hidden">
           <img
             src={imageSrc}
             alt={title}
-            className="w-full h-full object-cover object-top"
+            className="w-full h-full object-cover object-[50%_30%]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-bg-0/90 via-bg-0/40 to-transparent" />
           

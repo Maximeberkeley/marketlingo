@@ -54,7 +54,7 @@ export function LeoMascot({
       >
         <img 
           src={leoMascot} 
-          alt="Leo the mascot" 
+          alt="Leo the fox mascot" 
           className="w-full h-full object-contain"
         />
       </motion.div>
