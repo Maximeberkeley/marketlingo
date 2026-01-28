@@ -324,8 +324,8 @@ export function SlideReader({
         )}
       </AnimatePresence>
 
-      {/* Bottom Actions - Fixed with proper safe area padding */}
-      <div className="flex-shrink-0 px-4 pt-3 border-t border-border bg-bg-0 pb-safe" style={{ paddingBottom: 'max(32px, calc(env(safe-area-inset-bottom) + 16px))' }}>
+      {/* Bottom Actions - Fixed with generous padding for mobile */}
+      <div className="flex-shrink-0 px-4 py-4 border-t border-border bg-bg-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 24px) + 24px)' }}>
         {isIntroSlide ? (
           <Button variant="cta" size="full" onClick={goToNext}>
             Begin
