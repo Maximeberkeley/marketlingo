@@ -269,7 +269,7 @@ export default function HomePage() {
               <div className="flex items-center gap-3">
                 <CheckCircle2 size={24} className="text-success" />
                 <div>
-                  <p className="text-body font-medium text-text-primary">Done for today! 🎉</p>
+                  <p className="text-body font-medium text-text-primary">Lesson done for today! 🎉</p>
                   <p className="text-caption text-text-muted">
                     +{XP_REWARDS.LESSON_COMPLETE} XP • Practice drills to reinforce
                   </p>
@@ -280,7 +280,7 @@ export default function HomePage() {
                   onClick={() => lessonStack && handleOpenStack(lessonStack)}
                   className="flex-1 py-2 rounded-lg bg-bg-1 border border-border text-caption text-text-secondary"
                 >
-                  Review
+                  Review Lesson
                 </button>
                 <button
                   onClick={() => navigate("/drills")}
@@ -291,35 +291,33 @@ export default function HomePage() {
               </div>
             </div>
           ) : (
-            <div className="space-y-3">
-              {/* Micro Lesson Card */}
-              {lessonStack && (
-                <LessonCard
-                  title="Micro Lesson"
-                  subtitle="Today's Lesson"
-                  headline={lessonStack.title}
-                  xp={XP_REWARDS.LESSON_COMPLETE}
-                  duration={lessonStack.duration_minutes || 5}
-                  imageSrc={lessonHero}
-                  colorScheme="purple"
-                  onClick={() => handleOpenStack(lessonStack)}
-                />
-              )}
-              
-              {/* Daily Pattern Card */}
-              {newsStack && (
-                <LessonCard
-                  title="Daily Pattern"
-                  subtitle="Industry Insight"
-                  headline={newsStack.title}
-                  xp={25}
-                  duration={newsStack.duration_minutes || 3}
-                  imageSrc={newsHero}
-                  colorScheme="blue"
-                  onClick={() => handleOpenStack(newsStack)}
-                />
-              )}
-            </div>
+            /* Micro Lesson Card - only shown if not completed */
+            lessonStack && (
+              <LessonCard
+                title="Micro Lesson"
+                subtitle="Today's Lesson"
+                headline={lessonStack.title}
+                xp={XP_REWARDS.LESSON_COMPLETE}
+                duration={lessonStack.duration_minutes || 5}
+                imageSrc={lessonHero}
+                colorScheme="purple"
+                onClick={() => handleOpenStack(lessonStack)}
+              />
+            )
+          )}
+          
+          {/* Daily Pattern (Industry Insight) Card - Always visible */}
+          {newsStack && (
+            <LessonCard
+              title="Daily Pattern"
+              subtitle="Industry Insight"
+              headline={newsStack.title}
+              xp={25}
+              duration={newsStack.duration_minutes || 3}
+              imageSrc={newsHero}
+              colorScheme="blue"
+              onClick={() => handleOpenStack(newsStack)}
+            />
           )}
         </motion.div>
 
