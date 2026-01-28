@@ -6,10 +6,11 @@ import { TrainerCard } from "@/components/trainer/TrainerCard";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
+import { MentorCelebration } from "@/components/mascot/MentorCelebration";
 import { mentors, Mentor } from "@/data/mentors";
+import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import strategyBrain from "@/assets/trainer/strategy-brain.jpg";
 import { useAuth } from "@/hooks/useAuth";
 
 interface TrainerScenario {
@@ -33,6 +34,12 @@ export default function TrainerPage() {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const [showCelebration, setShowCelebration] = useState(false);
+  
+  // Get market config for theming
+  const marketConfig = selectedMarket ? getMarketConfig(selectedMarket) : null;
+  const primaryMentorId = selectedMarket ? getPrimaryMentorForMarket(selectedMarket) : "kai";
+  const primaryMentor = mentors.find(m => m.id === primaryMentorId) || mentors[2];
 
   useEffect(() => {
     const fetchScenarios = async () => {
@@ -90,8 +97,13 @@ export default function TrainerPage() {
     if (currentIndex < scenarios.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      toast.success("All scenarios completed! 🎉");
-      setCurrentIndex(0);
+      // Show celebration on completing all scenarios (50% of the time)
+      if (Math.random() < 0.5) {
+        setShowCelebration(true);
+      } else {
+        toast.success("All scenarios completed! 🎉");
+        setCurrentIndex(0);
+      }
     }
   };
 
@@ -135,19 +147,22 @@ export default function TrainerPage() {
             animate={{ scale: 1, opacity: 1 }}
             className="w-full max-w-md"
           >
-            {/* Hero Image Card */}
-            <div className="relative overflow-hidden rounded-2xl mb-6">
-              <img 
-                src={strategyBrain} 
-                alt="Strategic Thinking" 
-                className="w-full h-48 object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <p className="text-white/80 text-caption font-medium mb-1">Pro Reasoning</p>
+            {/* Hero Card with Market-Specific Gradient */}
+            <div className={`relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-red-600 via-rose-700 to-pink-900'}`}>
+              <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5" />
+              <div className="relative p-6 h-48 flex flex-col justify-end">
+                {/* Mentor avatar */}
+                <div className="absolute top-4 right-4">
+                  <img 
+                    src={primaryMentor.avatar} 
+                    alt={primaryMentor.name}
+                    className="w-16 h-16 rounded-full border-2 border-white/30 object-cover object-[50%_30%]"
+                  />
+                </div>
+                <p className="text-white/80 text-caption font-medium mb-1">{marketConfig?.name || 'Industry'} Trainer</p>
                 <h2 className="text-2xl font-bold text-white mb-2">Think Like an Expert</h2>
                 <p className="text-white/90 text-body">
-                  Complex scenarios with deep professional feedback.
+                  {marketConfig?.trainerDescription || 'Complex scenarios with deep professional feedback.'}
                 </p>
               </div>
             </div>
@@ -273,6 +288,18 @@ export default function TrainerPage() {
         onClose={() => setActiveMentor(null)}
         context={`Trainer scenario: ${currentScenario.scenario} - Question: ${currentScenario.question}`}
         marketId={selectedMarket || undefined}
+      />
+
+      {/* Celebration on completion */}
+      <MentorCelebration
+        isVisible={showCelebration}
+        marketId={selectedMarket || "aerospace"}
+        type="lesson"
+        onComplete={() => {
+          setShowCelebration(false);
+          setCurrentIndex(0);
+          toast.success("All scenarios completed! 🎉");
+        }}
       />
     </div>
   );
