@@ -339,7 +339,7 @@ export default function HomePage() {
               onClick={() => navigate("/games")}
               className="relative overflow-hidden rounded-xl text-left"
             >
-              <img src={gamesHero} alt="Games" className="w-full h-24 object-cover object-top" />
+              <img src={gamesHero} alt="Games" className="w-full h-28 object-cover object-[50%_30%]" />
               <div className="absolute inset-0 bg-gradient-to-t from-purple-900/90 via-purple-900/40 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-3">
                 <p className="text-[10px] text-purple-300 font-medium">TRIVIA</p>
@@ -353,7 +353,7 @@ export default function HomePage() {
               onClick={() => navigate("/drills")}
               className="relative overflow-hidden rounded-xl text-left"
             >
-              <img src={drillsHero} alt="Drills" className="w-full h-24 object-cover object-top" />
+              <img src={drillsHero} alt="Drills" className="w-full h-28 object-cover object-[50%_30%]" />
               <div className="absolute inset-0 bg-gradient-to-t from-amber-900/90 via-amber-900/40 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-3">
                 <p className="text-[10px] text-amber-300 font-medium">SPEED</p>
@@ -367,7 +367,7 @@ export default function HomePage() {
               onClick={() => navigate("/trainer")}
               className="relative overflow-hidden rounded-xl text-left col-span-2"
             >
-              <img src={trainerHero} alt="Trainer" className="w-full h-20 object-cover object-top" />
+              <img src={trainerHero} alt="Trainer" className="w-full h-24 object-cover object-[50%_30%]" />
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/90 via-emerald-900/40 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-3 flex items-center justify-between">
                 <div>
