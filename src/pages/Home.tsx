@@ -179,13 +179,14 @@ export default function HomePage() {
   };
 
   const handleAddNote = async (slideNum: number) => {
-    if (!user || !activeStack) return;
+    if (!user || !activeStack || !selectedMarket) return;
     const slide = activeStack.slides.find(s => s.slide_number === slideNum);
     await supabase.from("notes").insert({
       user_id: user.id,
       content: slide?.body || "",
       linked_label: `Slide ${slideNum}`,
       stack_id: activeStack.id,
+      market_id: selectedMarket,
     });
     toast.success("Note added!");
   };

@@ -238,6 +238,7 @@ export type Database = {
           created_at: string
           id: string
           linked_label: string | null
+          market_id: string | null
           slide_id: string | null
           stack_id: string | null
           updated_at: string
@@ -248,6 +249,7 @@ export type Database = {
           created_at?: string
           id?: string
           linked_label?: string | null
+          market_id?: string | null
           slide_id?: string | null
           stack_id?: string | null
           updated_at?: string
@@ -258,12 +260,20 @@ export type Database = {
           created_at?: string
           id?: string
           linked_label?: string | null
+          market_id?: string | null
           slide_id?: string | null
           stack_id?: string | null
           updated_at?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "notes_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "notes_slide_id_fkey"
             columns: ["slide_id"]
