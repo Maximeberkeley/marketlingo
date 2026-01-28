@@ -43,6 +43,7 @@ interface StackWithSlides {
 
 const marketIcons: Record<string, string> = {
   aerospace: "🚀",
+  neuroscience: "🧠",
   ai: "🤖",
   fintech: "💳",
   ev: "⚡",
@@ -52,6 +53,7 @@ const marketIcons: Record<string, string> = {
 
 const marketNames: Record<string, string> = {
   aerospace: "Aerospace",
+  neuroscience: "Neuroscience",
   ai: "AI Industry",
   fintech: "Fintech",
   ev: "Electric Vehicles",

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../ui/button";
-import { Bookmark, ArrowRight, MessageCircle, Lightbulb, AlertTriangle, Brain, TrendingUp, Briefcase } from "lucide-react";
+import { Bookmark, ArrowRight, MessageCircle, AlertTriangle, Brain, TrendingUp, Briefcase, HelpCircle, X } from "lucide-react";
 
 interface TrainerOption {
   label: string;
@@ -16,6 +16,7 @@ interface TrainerScenario {
   feedbackCommonMistake: string;
   feedbackMentalModel: string;
   followUpQuestion: string;
+  whyThisScenario?: string;
 }
 
 interface TrainerCardProps {
@@ -27,10 +28,39 @@ interface TrainerCardProps {
 
 type EvaluationLevel = "strong" | "needs-work" | "off-track";
 
+// Generate contextual "why this scenario" explanations
+function getWhyThisScenario(scenario: string, question: string): string {
+  const text = `${scenario} ${question}`.toLowerCase();
+  
+  if (text.includes("buyer") || text.includes("procurement") || text.includes("purchase")) {
+    return "Understanding buyer psychology is crucial for aerospace sales. This scenario teaches you to navigate complex purchasing committees where technical champions rarely control budgets.";
+  }
+  if (text.includes("certification") || text.includes("faa") || text.includes("do-178")) {
+    return "Certification is the #1 barrier to aerospace market entry. Founders who master regulatory strategy save years of delays and millions in development costs.";
+  }
+  if (text.includes("supply") || text.includes("tier") || text.includes("oem")) {
+    return "Supply chain positioning determines your pricing power, sales cycles, and growth trajectory. Choosing the wrong tier can trap startups for years.";
+  }
+  if (text.includes("vc") || text.includes("investor") || text.includes("fundrais") || text.includes("funding")) {
+    return "Aerospace investors evaluate differently than tech VCs. Understanding their criteria—regulatory risk, certification timelines, market size—is essential for successful fundraising.";
+  }
+  if (text.includes("defense") || text.includes("government") || text.includes("contract")) {
+    return "Government contracts can provide stable revenue but come with unique compliance requirements. This scenario prepares you for navigating the defense market.";
+  }
+  if (text.includes("partner") || text.includes("integration") || text.includes("pilot program")) {
+    return "Strategic partnerships accelerate market entry but require careful negotiation. Learning to structure pilot programs protects your IP while proving value.";
+  }
+  
+  return "This scenario develops pattern recognition for common industry situations. The mental models here transfer across many aerospace business contexts.";
+}
+
 export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor }: TrainerCardProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [evaluation, setEvaluation] = useState<EvaluationLevel | null>(null);
+  const [showWhyPopup, setShowWhyPopup] = useState(false);
+  
+  const whyExplanation = scenario.whyThisScenario || getWhyThisScenario(scenario.scenario, scenario.question);
   
   const handleOptionSelect = (index: number) => {
     if (showFeedback) return;
@@ -39,7 +69,6 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor }:
     const isCorrect = scenario.options[index].isCorrect;
     setEvaluation(isCorrect ? "strong" : "needs-work");
     
-    // Slight delay before showing feedback
     setTimeout(() => {
       setShowFeedback(true);
     }, 300);
@@ -52,9 +81,18 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor }:
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full relative">
+      {/* Why This Scenario Button - Top Right */}
+      <button
+        onClick={() => setShowWhyPopup(true)}
+        className="absolute -top-2 right-0 w-8 h-8 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center hover:bg-accent/20 transition-colors z-10"
+        title="Why this scenario?"
+      >
+        <HelpCircle size={16} className="text-accent" />
+      </button>
+      
       {/* Scenario */}
-      <div className="card-elevated mb-4">
+      <div className="card-elevated mb-4 pr-10">
         <p className="text-body text-text-secondary leading-relaxed">
           {scenario.scenario}
         </p>
@@ -112,7 +150,7 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor }:
             
             {/* Feedback Card */}
             <div className="card-elevated space-y-4">
-              {/* Pro Reasoning - What experts do */}
+              {/* Pro Reasoning */}
               <div className="p-3 rounded-lg bg-green-500/5 border border-green-500/20">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp size={16} className="text-green-400" />
@@ -121,7 +159,7 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor }:
                 <p className="text-body text-text-secondary leading-relaxed">{scenario.feedbackProReasoning}</p>
               </div>
               
-              {/* Common Mistake - What to avoid */}
+              {/* Common Mistake */}
               <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
                 <div className="flex items-center gap-2 mb-2">
                   <AlertTriangle size={16} className="text-amber-400" />
@@ -130,7 +168,7 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor }:
                 <p className="text-body text-text-secondary leading-relaxed">{scenario.feedbackCommonMistake}</p>
               </div>
               
-              {/* Mental Model - Framework for thinking */}
+              {/* Mental Model */}
               <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
                 <div className="flex items-center gap-2 mb-2">
                   <Brain size={16} className="text-blue-400" />
@@ -139,7 +177,7 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor }:
                 <p className="text-body text-text-secondary leading-relaxed">{scenario.feedbackMentalModel}</p>
               </div>
               
-              {/* Startup Application - How to apply this */}
+              {/* Startup Application */}
               <div className="p-3 rounded-lg bg-accent/5 border border-accent/20">
                 <div className="flex items-center gap-2 mb-2">
                   <Briefcase size={16} className="text-accent" />
@@ -169,10 +207,57 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor }:
                   onClick={() => onAskMentor(scenario.followUpQuestion)}
                 >
                   <MessageCircle size={18} />
-                  Discuss with mentor
+                  Discuss with Sophia
                 </Button>
               )}
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {/* Why This Scenario Popup */}
+      <AnimatePresence>
+        {showWhyPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6"
+            onClick={() => setShowWhyPopup(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm bg-bg-1 rounded-2xl p-5 border border-border"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
+                    <HelpCircle size={16} className="text-accent" />
+                  </div>
+                  <h3 className="text-h3 text-text-primary">Why This Scenario?</h3>
+                </div>
+                <button
+                  onClick={() => setShowWhyPopup(false)}
+                  className="p-1 rounded-lg hover:bg-bg-2"
+                >
+                  <X size={18} className="text-text-muted" />
+                </button>
+              </div>
+              
+              <p className="text-body text-text-secondary leading-relaxed mb-4">
+                {whyExplanation}
+              </p>
+              
+              <div className="p-3 rounded-lg bg-accent/5 border border-accent/20">
+                <p className="text-caption text-accent font-medium mb-1">💡 Learning Objective</p>
+                <p className="text-caption text-text-muted">
+                  Build pattern recognition for industry-specific situations that separate successful founders from those who struggle.
+                </p>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

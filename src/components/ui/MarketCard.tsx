@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { 
   Cpu, Building2, Car, Pill, Zap, Smartphone, 
-  Wheat, Plane, Palette, ShoppingBag, Gamepad2, LucideIcon 
+  Wheat, Plane, Palette, ShoppingBag, Gamepad2, Brain, LucideIcon 
 } from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -16,6 +16,7 @@ const iconMap: Record<string, LucideIcon> = {
   palette: Palette,
   "shopping-cart": ShoppingBag,
   "gamepad-2": Gamepad2,
+  brain: Brain,
 };
 
 interface MarketCardProps {

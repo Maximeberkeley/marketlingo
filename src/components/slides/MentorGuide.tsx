@@ -17,6 +17,7 @@ function getMentorMessage(slideIndex: number, totalSlides: number, isIntro: bool
       maya: ["Let's decode this together!", "Ready for some market insights?", "Time to think strategically!"],
       alex: ["Let me break this down for you.", "Technical concepts ahead!", "Let's dive into the details."],
       kai: ["This is startup gold!", "Ready to build something?", "Let's think like founders!"],
+      sophia: ["You're going to love this!", "Ready to grow together?", "Let's unlock your potential!"],
     };
     return introMessages[mentorId]?.[Math.floor(Math.random() * 3)] || "Let's learn!";
   }
@@ -26,6 +27,7 @@ function getMentorMessage(slideIndex: number, totalSlides: number, isIntro: bool
       maya: ["Here's the big picture...", "Pay attention to this!", "Market insight incoming!"],
       alex: ["Fundamental concept here.", "This is key to understand.", "Core principle ahead!"],
       kai: ["Founders take note!", "This could be your edge.", "Opportunity alert!"],
+      sophia: ["This is exciting!", "Key growth insight!", "You'll want to remember this!"],
     };
     return firstMessages[mentorId]?.[Math.floor(Math.random() * 3)] || "Starting strong!";
   }
@@ -35,6 +37,7 @@ function getMentorMessage(slideIndex: number, totalSlides: number, isIntro: bool
       maya: ["Now you see the full picture!", "Connect these dots!", "Strategy unlocked!"],
       alex: ["You've got this!", "Technical mastery!", "Key takeaway here!"],
       kai: ["Go build something!", "Action time!", "Your move now!"],
+      sophia: ["Amazing progress!", "You're doing great!", "Proud of you!"],
     };
     return lastMessages[mentorId]?.[Math.floor(Math.random() * 3)] || "Great job!";
   }
@@ -44,6 +47,7 @@ function getMentorMessage(slideIndex: number, totalSlides: number, isIntro: bool
     maya: ["Interesting, right?", "Think about this...", "Note this pattern!", "Strategic insight!"],
     alex: ["Technical detail!", "Important nuance.", "Remember this!", "Key point!"],
     kai: ["Startup tip!", "Founder insight!", "Good to know!", "Take action!"],
+    sophia: ["Love this part!", "So valuable!", "You're learning fast!", "Keep going!"],
   };
   return midMessages[mentorId]?.[slideIndex % 4] || "Keep going!";
 }

@@ -241,12 +241,12 @@ export default function TrainerPage() {
           </p>
         </div>
         
-        {/* Mentor Helper */}
+        {/* Mentor Helper - Use Sophia for Trainer */}
         <MentorAvatar
-          mentor={mentors[0]}
+          mentor={mentors.find(m => m.id === "sophia") || mentors[0]}
           size="sm"
           showPulse={false}
-          onClick={() => setActiveMentor(mentors[0])}
+          onClick={() => setActiveMentor(mentors.find(m => m.id === "sophia") || mentors[0])}
         />
       </motion.div>
 
@@ -262,7 +262,7 @@ export default function TrainerPage() {
           onSaveToNotebook={handleSaveToNotebook}
           onNext={handleNext}
           onAskMentor={(question) => {
-            setActiveMentor(mentors[0]);
+            setActiveMentor(mentors.find(m => m.id === "sophia") || mentors[0]);
           }}
         />
       </motion.div>

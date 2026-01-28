@@ -60,15 +60,22 @@ export const mentors: Mentor[] = [
 export function getMentorForContext(context: string): Mentor {
   const contextLower = context.toLowerCase();
   
-  if (contextLower.includes("startup") || contextLower.includes("fundrais") || contextLower.includes("gtm")) {
+  // Sophia appears for growth, partnerships, customer, scaling, and general encouragement
+  if (contextLower.includes("growth") || contextLower.includes("customer") || contextLower.includes("partner") || contextLower.includes("scale") || contextLower.includes("team") || contextLower.includes("network")) {
+    return mentors.find(m => m.id === "sophia")!;
+  }
+  
+  if (contextLower.includes("startup") || contextLower.includes("fundrais") || contextLower.includes("gtm") || contextLower.includes("pitch")) {
     return mentors.find(m => m.id === "kai")!;
   }
   
-  if (contextLower.includes("technical") || contextLower.includes("certif") || contextLower.includes("engineer")) {
+  if (contextLower.includes("technical") || contextLower.includes("certif") || contextLower.includes("engineer") || contextLower.includes("faa") || contextLower.includes("do-178")) {
     return mentors.find(m => m.id === "alex")!;
   }
   
-  if (contextLower.includes("growth") || contextLower.includes("customer") || contextLower.includes("partner") || contextLower.includes("scale")) {
+  // Alternate between Maya and Sophia for general content
+  const hash = context.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+  if (hash % 3 === 0) {
     return mentors.find(m => m.id === "sophia")!;
   }
   
