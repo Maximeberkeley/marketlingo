@@ -1,3 +1,5 @@
+import { roboticsPlayers, healthtechPlayers, cleanEnergyPlayers, aiPlayers, fintechPlayers } from "@/data/keyPlayersExpanded";
+
 export interface CompanySlide {
   title: string;
   content: string;
@@ -10,7 +12,7 @@ export interface Company {
   name: string;
   ticker?: string;
   logo: string;
-  logoUrl?: string; // Real company logo URL
+  logoUrl?: string;
   description: string;
   ceo: string;
   founded: string;
@@ -22,10 +24,7 @@ export interface Company {
   segment: "commercial" | "defense" | "space" | "propulsion" | "suppliers" | "services" | "devices" | "therapeutics" | "pharma";
   industryRole: string;
   slides: CompanySlide[];
-  keyStats?: {
-    label: string;
-    value: string;
-  }[];
+  keyStats?: { label: string; value: string }[];
   competitors?: string[];
 }
 
@@ -33,8 +32,6 @@ export interface MarketCompanies {
   [marketId: string]: Company[];
 }
 
-// Company logo URLs (using reliable sources with fallbacks)
-// Using img.logo.dev which is more reliable than clearbit
 const getLogoUrl = (domain: string) => `https://img.logo.dev/${domain}?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ`;
 
 const LOGOS = {
@@ -1717,6 +1714,12 @@ export const marketCompanies: MarketCompanies = {
       competitors: ["Arbitrum", "Optimism", "zkSync"],
     },
   ],
+  // Import expanded players for markets with 15+ companies
+  robotics: roboticsPlayers,
+  healthtech: healthtechPlayers,
+  cleanenergy: cleanEnergyPlayers,
+  ai: aiPlayers,
+  fintech: fintechPlayers,
 };
 
 export const defaultCompanies: Company[] = [
