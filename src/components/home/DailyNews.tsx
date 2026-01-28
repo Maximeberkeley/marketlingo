@@ -53,39 +53,107 @@ export function DailyNews({ marketId }: DailyNewsProps) {
   const [showAiInsights, setShowAiInsights] = useState(true);
   const kaiMentor = mentors.find(m => m.id === "kai")!;
 
-  const fetchNews = async () => {
+  const fetchNews = async (forceRefresh = false) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // Fetch news from database for the current market
-      const { data, error: dbError } = await supabase
-        .from('news_items')
-        .select('*')
-        .eq('market_id', marketId)
-        .order('published_at', { ascending: false })
-        .limit(10);
-      
-      if (dbError) {
-        console.error('Error fetching news:', dbError);
-        setError('Unable to load news');
+      // First try to get cached news from database
+      if (!forceRefresh) {
+        const { data, error: dbError } = await supabase
+          .from('news_items')
+          .select('*')
+          .eq('market_id', marketId)
+          .order('published_at', { ascending: false })
+          .limit(10);
+        
+        if (!dbError && data && data.length > 0) {
+          const formattedNews: NewsItem[] = data.map(item => ({
+            id: item.id,
+            title: item.title,
+            sourceName: item.source_name,
+            sourceUrl: item.source_url,
+            publishedAt: new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            categoryTag: item.category_tag || 'Industry',
+            summary: item.summary || undefined,
+          }));
+          setNews(formattedNews);
+          setLastFetched(new Date());
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Try real-time fetch via edge function
+      console.log(`Fetching real-time news for ${marketId}...`);
+      const { data: liveData, error: fnError } = await supabase.functions.invoke('fetch-market-news', {
+        body: { marketId },
+      });
+
+      if (fnError) {
+        console.error('Edge function error:', fnError);
+        // Fall back to cached data
+        const { data: fallbackData } = await supabase
+          .from('news_items')
+          .select('*')
+          .eq('market_id', marketId)
+          .order('published_at', { ascending: false })
+          .limit(10);
+        
+        if (fallbackData && fallbackData.length > 0) {
+          const formattedNews: NewsItem[] = fallbackData.map(item => ({
+            id: item.id,
+            title: item.title,
+            sourceName: item.source_name,
+            sourceUrl: item.source_url,
+            publishedAt: new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            categoryTag: item.category_tag || 'Industry',
+            summary: item.summary || undefined,
+          }));
+          setNews(formattedNews);
+          setLastFetched(new Date());
+        } else {
+          setError('Unable to load news');
+        }
         return;
       }
-      
-      if (data && data.length > 0) {
-        const formattedNews: NewsItem[] = data.map(item => ({
+
+      if (liveData?.success && liveData.data?.length > 0) {
+        const formattedNews: NewsItem[] = liveData.data.map((item: any) => ({
           id: item.id,
           title: item.title,
-          sourceName: item.source_name,
-          sourceUrl: item.source_url,
-          publishedAt: new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-          categoryTag: item.category_tag || 'Industry',
+          sourceName: item.sourceName,
+          sourceUrl: item.sourceUrl,
+          publishedAt: item.publishedAt,
+          categoryTag: item.categoryTag || 'Industry',
           summary: item.summary || undefined,
         }));
         setNews(formattedNews);
         setLastFetched(new Date());
       } else {
-        setNews([]);
+        // Fall back to cached data
+        const { data: fallbackData } = await supabase
+          .from('news_items')
+          .select('*')
+          .eq('market_id', marketId)
+          .order('published_at', { ascending: false })
+          .limit(10);
+        
+        if (fallbackData && fallbackData.length > 0) {
+          const formattedNews: NewsItem[] = fallbackData.map(item => ({
+            id: item.id,
+            title: item.title,
+            sourceName: item.source_name,
+            sourceUrl: item.source_url,
+            publishedAt: new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            categoryTag: item.category_tag || 'Industry',
+            summary: item.summary || undefined,
+          }));
+          setNews(formattedNews);
+          setLastFetched(new Date());
+        } else {
+          setNews([]);
+        }
       }
     } catch (err) {
       console.error('Error fetching news:', err);
@@ -145,7 +213,7 @@ export function DailyNews({ marketId }: DailyNewsProps) {
             showPulse
           />
           <button 
-            onClick={fetchNews}
+            onClick={() => fetchNews(true)}
             disabled={isLoading}
             className="flex items-center gap-1 text-caption text-text-muted hover:text-accent transition-colors disabled:opacity-50"
           >
@@ -177,7 +245,7 @@ export function DailyNews({ marketId }: DailyNewsProps) {
           <AlertCircle size={24} className="text-text-muted mx-auto mb-2" />
           <p className="text-body text-text-muted mb-3">{error}</p>
           <button
-            onClick={fetchNews}
+            onClick={() => fetchNews(true)}
             className="text-accent text-caption hover:underline"
           >
             Try again

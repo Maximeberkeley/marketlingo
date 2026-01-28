@@ -49,3 +49,6 @@ verify_jwt = false
 
 [functions.seed-month1-content]
 verify_jwt = false
+
+[functions.fetch-market-news]
+verify_jwt = false
