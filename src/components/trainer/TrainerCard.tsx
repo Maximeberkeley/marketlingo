@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../ui/button";
-import { Bookmark, ArrowRight, MessageCircle, AlertTriangle, Brain, TrendingUp, Briefcase, HelpCircle, X } from "lucide-react";
+import { Bookmark, ArrowRight, MessageCircle, AlertTriangle, Brain, TrendingUp, Briefcase, HelpCircle, X, Sparkles } from "lucide-react";
 
 interface TrainerOption {
   label: string;
@@ -59,6 +59,13 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor }:
   const [showFeedback, setShowFeedback] = useState(false);
   const [evaluation, setEvaluation] = useState<EvaluationLevel | null>(null);
   const [showWhyPopup, setShowWhyPopup] = useState(false);
+  
+  // Reset state when scenario changes
+  useEffect(() => {
+    setSelectedIndex(null);
+    setShowFeedback(false);
+    setEvaluation(null);
+  }, [scenario.question]); // Use question as key since it's unique per scenario
   
   const whyExplanation = scenario.whyThisScenario || getWhyThisScenario(scenario.scenario, scenario.question);
   
@@ -187,29 +194,47 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor }:
               </div>
             </div>
             
-            {/* Actions */}
-            <div className="flex flex-col gap-2 mt-4">
-              <div className="flex gap-3">
-                <Button variant="secondary" size="default" className="flex-1" onClick={onSaveToNotebook}>
-                  <Bookmark size={18} />
-                  Save
-                </Button>
-                <Button variant="cta" size="default" className="flex-1" onClick={onNext}>
-                  Next
-                  <ArrowRight size={18} />
-                </Button>
-              </div>
-              {onAskMentor && (
+            {/* AI Mentor Chat - Emphasized */}
+            {onAskMentor && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="mt-4 p-4 rounded-xl bg-gradient-to-br from-accent/20 via-accent/10 to-transparent border border-accent/30"
+              >
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-accent/30 flex items-center justify-center flex-shrink-0">
+                    <Sparkles size={18} className="text-accent" />
+                  </div>
+                  <div>
+                    <p className="text-caption font-semibold text-accent mb-1">Want to understand why?</p>
+                    <p className="text-caption text-text-secondary leading-relaxed">
+                      Chat with Sophia to explore the reasoning behind this scenario and how it applies to your startup journey.
+                    </p>
+                  </div>
+                </div>
                 <Button 
-                  variant="ghost" 
+                  variant="default" 
                   size="default" 
-                  className="w-full text-text-muted hover:text-accent"
+                  className="w-full bg-accent hover:bg-accent/90 text-white"
                   onClick={() => onAskMentor(scenario.followUpQuestion)}
                 >
                   <MessageCircle size={18} />
-                  Discuss with Sophia
+                  Chat with Sophia
                 </Button>
-              )}
+              </motion.div>
+            )}
+            
+            {/* Actions */}
+            <div className="flex gap-3 mt-4">
+              <Button variant="secondary" size="default" className="flex-1" onClick={onSaveToNotebook}>
+                <Bookmark size={18} />
+                Save
+              </Button>
+              <Button variant="cta" size="default" className="flex-1" onClick={onNext}>
+                Next
+                <ArrowRight size={18} />
+              </Button>
             </div>
           </motion.div>
         )}
