@@ -5,76 +5,148 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// 6-month aerospace curriculum structure with detailed topics
-const CURRICULUM_STRUCTURE = {
-  months: [
-    {
-      month: 1,
-      theme: "Foundations",
-      topics: [
-        "Industry structure (OEMs, Tier 1-3 suppliers)",
-        "Certification process (FAA/EASA, DO-178C, DO-160)",
-        "Cost-plus vs fixed-price contracts",
-        "Dual-use technology and ITAR regulations",
-        "Supply chain dependencies and single-source risks",
-      ],
-    },
-    {
-      month: 2,
-      theme: "Commercial Aviation",
-      topics: [
-        "Airbus vs Boeing duopoly dynamics and market share battles",
-        "Narrow-body vs wide-body economics and fleet planning",
-        "MRO (Maintenance, Repair, Overhaul) market and aftermarket revenue",
-        "Airline fleet decisions and aircraft lifecycle management",
-        "Aircraft leasing companies (AerCap, SMBC, Avolon) and financing structures",
-      ],
-    },
-    {
-      month: 3,
-      theme: "Defense & Government",
-      topics: [
-        "Major defense primes (Lockheed Martin, RTX, Northrop Grumman, General Dynamics)",
-        "DoD procurement process and SBIR/STTR programs",
-        "ITAR compliance and export controls for startups",
-        "Classified programs and security clearance requirements",
-        "Allied interoperability and Five Eyes partnerships",
-      ],
-    },
-    {
-      month: 4,
-      theme: "Space Economy",
-      topics: [
-        "Launch economics and reusability (SpaceX, Rocket Lab, Blue Origin)",
-        "Satellite constellations (Starlink, OneWeb, Kuiper) and spectrum management",
-        "Space tourism and commercial space stations (Axiom, Vast)",
-        "NASA partnerships (Commercial Crew, Artemis) and cost-plus vs fixed-price",
-        "Orbital debris mitigation and space sustainability regulations",
-      ],
-    },
-    {
-      month: 5,
-      theme: "Emerging Technologies",
-      topics: [
-        "eVTOL development and urban air mobility certification challenges",
-        "Autonomous flight systems and Part 135/Part 91 operations",
-        "Sustainable aviation fuel (SAF) production and adoption curves",
-        "Hydrogen propulsion infrastructure and storage challenges",
-        "Advanced materials (carbon composites, titanium alloys, CMCs)",
-      ],
-    },
-    {
-      month: 6,
-      theme: "Business & Strategy",
-      topics: [
-        "Aerospace M&A patterns and valuation multiples",
-        "Startup survival strategies in long sales cycles",
-        "Talent acquisition and workforce development",
-        "Geopolitical supply chain risks (China rare earths, Russia titanium)",
-        "Venture capital and strategic investor dynamics",
-      ],
-    },
-  ],
+// Multi-market curriculum structures
+const CURRICULUM_STRUCTURES: Record<string, { months: { month: number; theme: string; topics: string[] }[] }> = {
+  aerospace: {
+    months: [
+      {
+        month: 1,
+        theme: "Foundations",
+        topics: [
+          "Industry structure (OEMs, Tier 1-3 suppliers)",
+          "Certification process (FAA/EASA, DO-178C, DO-160)",
+          "Cost-plus vs fixed-price contracts",
+          "Dual-use technology and ITAR regulations",
+          "Supply chain dependencies and single-source risks",
+        ],
+      },
+      {
+        month: 2,
+        theme: "Commercial Aviation",
+        topics: [
+          "Airbus vs Boeing duopoly dynamics and market share battles",
+          "Narrow-body vs wide-body economics and fleet planning",
+          "MRO (Maintenance, Repair, Overhaul) market and aftermarket revenue",
+          "Airline fleet decisions and aircraft lifecycle management",
+          "Aircraft leasing companies (AerCap, SMBC, Avolon) and financing structures",
+        ],
+      },
+      {
+        month: 3,
+        theme: "Defense & Government",
+        topics: [
+          "Major defense primes (Lockheed Martin, RTX, Northrop Grumman, General Dynamics)",
+          "DoD procurement process and SBIR/STTR programs",
+          "ITAR compliance and export controls for startups",
+          "Classified programs and security clearance requirements",
+          "Allied interoperability and Five Eyes partnerships",
+        ],
+      },
+      {
+        month: 4,
+        theme: "Space Economy",
+        topics: [
+          "Launch economics and reusability (SpaceX, Rocket Lab, Blue Origin)",
+          "Satellite constellations (Starlink, OneWeb, Kuiper) and spectrum management",
+          "Space tourism and commercial space stations (Axiom, Vast)",
+          "NASA partnerships (Commercial Crew, Artemis) and cost-plus vs fixed-price",
+          "Orbital debris mitigation and space sustainability regulations",
+        ],
+      },
+      {
+        month: 5,
+        theme: "Emerging Technologies",
+        topics: [
+          "eVTOL development and urban air mobility certification challenges",
+          "Autonomous flight systems and Part 135/Part 91 operations",
+          "Sustainable aviation fuel (SAF) production and adoption curves",
+          "Hydrogen propulsion infrastructure and storage challenges",
+          "Advanced materials (carbon composites, titanium alloys, CMCs)",
+        ],
+      },
+      {
+        month: 6,
+        theme: "Business & Strategy",
+        topics: [
+          "Aerospace M&A patterns and valuation multiples",
+          "Startup survival strategies in long sales cycles",
+          "Talent acquisition and workforce development",
+          "Geopolitical supply chain risks (China rare earths, Russia titanium)",
+          "Venture capital and strategic investor dynamics",
+        ],
+      },
+    ],
+  },
+  neuroscience: {
+    months: [
+      {
+        month: 1,
+        theme: "Brain Science Foundations",
+        topics: [
+          "Neuroanatomy essentials (cortex, limbic system, brainstem)",
+          "Neurotransmitters and synaptic signaling (dopamine, serotonin, GABA)",
+          "Brain imaging technologies (fMRI, EEG, MEG, PET)",
+          "Neural plasticity and learning mechanisms",
+          "Blood-brain barrier and drug delivery challenges",
+        ],
+      },
+      {
+        month: 2,
+        theme: "Neurotechnology & Devices",
+        topics: [
+          "Brain-computer interfaces (Neuralink, Synchron, Blackrock Neurotech)",
+          "Non-invasive neurostimulation (TMS, tDCS, ultrasound)",
+          "Neuroprosthetics and sensory restoration",
+          "Wearable EEG and consumer neurotechnology",
+          "FDA regulatory pathways for neurodevices (510k, PMA, De Novo)",
+        ],
+      },
+      {
+        month: 3,
+        theme: "Mental Health Innovation",
+        topics: [
+          "Digital therapeutics for depression and anxiety (Pear, Akili)",
+          "Psychedelic-assisted therapy (psilocybin, MDMA, ketamine)",
+          "AI-powered mental health apps and chatbots",
+          "Precision psychiatry and biomarker development",
+          "Telepsychiatry platforms and reimbursement models",
+        ],
+      },
+      {
+        month: 4,
+        theme: "Neurological Disease & Therapeutics",
+        topics: [
+          "Alzheimer's disease drug development (Lecanemab, Donanemab)",
+          "Parkinson's and deep brain stimulation advances",
+          "Epilepsy management and responsive neurostimulation",
+          "Gene therapy for neurological conditions (Zolgensma, Luxturna)",
+          "ALS and rare disease orphan drug strategies",
+        ],
+      },
+      {
+        month: 5,
+        theme: "Cognitive Enhancement & AI",
+        topics: [
+          "Nootropics and cognitive enhancement supplements",
+          "AI for brain mapping and connectome analysis",
+          "Sleep optimization technology and circadian science",
+          "Neurofeedback training and peak performance",
+          "Memory enhancement and cognitive rehabilitation",
+        ],
+      },
+      {
+        month: 6,
+        theme: "Neuro Business & Ethics",
+        topics: [
+          "Neurotech startup fundraising and investor landscape",
+          "Clinical trial design for CNS therapeutics",
+          "Neuroethics: privacy, consent, and cognitive liberty",
+          "Healthcare system integration and payer negotiations",
+          "Building neurotech teams: scientists, engineers, clinicians",
+        ],
+      },
+    ],
+  },
 };
 
 // Day types pattern for each week (7 days)
@@ -89,6 +161,7 @@ const WEEK_PATTERN = [
 ];
 
 interface GenerateRequest {
+  marketId?: string;
   month?: number;
   week?: number;
   day?: number;
@@ -102,7 +175,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { month, week, day, dryRun = false, generateSummaries = false } = await req.json() as GenerateRequest;
+    const { marketId = 'aerospace', month, week, day, dryRun = false, generateSummaries = false } = await req.json() as GenerateRequest;
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -113,9 +186,20 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    const CURRICULUM_STRUCTURE = CURRICULUM_STRUCTURES[marketId];
+    if (!CURRICULUM_STRUCTURE) {
+      return new Response(JSON.stringify({
+        error: `Unknown market: ${marketId}`,
+        availableMarkets: Object.keys(CURRICULUM_STRUCTURES),
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Generate summaries if requested
     if (generateSummaries && month) {
-      const summaryResults = await generateMonthSummaries(supabase, LOVABLE_API_KEY, month);
+      const summaryResults = await generateMonthSummaries(supabase, LOVABLE_API_KEY, month, marketId, CURRICULUM_STRUCTURE);
       return new Response(JSON.stringify(summaryResults), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -134,6 +218,7 @@ Deno.serve(async (req) => {
       daysToGenerate = Array.from({ length: 30 }, (_, i) => startDay + i).filter(d => d <= 180);
     } else {
       return new Response(JSON.stringify({
+        market: marketId,
         structure: CURRICULUM_STRUCTURE,
         weekPattern: WEEK_PATTERN,
         totalDays: 180,
@@ -147,7 +232,7 @@ Deno.serve(async (req) => {
     const { data: existingStacks } = await supabase
       .from('stacks')
       .select('tags')
-      .eq('market_id', 'aerospace');
+      .eq('market_id', marketId);
     
     const existingDays = new Set<number>();
     existingStacks?.forEach(stack => {
@@ -169,16 +254,18 @@ Deno.serve(async (req) => {
       }));
       
       return new Response(JSON.stringify({
+        market: marketId,
         daysToGenerate: newDays,
         existingDays: Array.from(existingDays).sort((a, b) => a - b),
         plan,
-        message: `Would generate ${newDays.length} days of content`,
+        message: `Would generate ${newDays.length} days of content for ${marketId}`,
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     const results = {
+      market: marketId,
       generated: [] as number[],
       skipped: [] as number[],
       errors: [] as { day: number; error: string }[],
@@ -198,11 +285,12 @@ Deno.serve(async (req) => {
           monthInfo.month,
           monthInfo.theme,
           topic,
-          dayType
+          dayType,
+          marketId
         );
 
         if (content) {
-          await saveContent(supabase, content, dayNum, monthInfo.month, dayType);
+          await saveContent(supabase, content, dayNum, monthInfo.month, dayType, marketId);
           results.generated.push(dayNum);
         }
 
@@ -238,15 +326,20 @@ async function generateDayContent(
   month: number,
   theme: string,
   topic: string,
-  dayType: string
+  dayType: string,
+  marketId: string
 ) {
+  const marketContext = marketId === 'neuroscience' 
+    ? 'neuroscience, neurotech, mental health, and brain science' 
+    : 'aerospace, aviation, defense, and space';
+
   const typePrompts: Record<string, string> = {
-    DAILY_GAME: `Create a NEWS stack about a REAL, SPECIFIC, VERIFIABLE current event or development in aerospace related to "${topic}".
+    DAILY_GAME: `Create a NEWS stack about a REAL, SPECIFIC, VERIFIABLE current event or development in ${marketContext} related to "${topic}".
       
       CRITICAL REQUIREMENTS:
-      - Reference REAL companies, executives, contracts, and dollar amounts
-      - Include actual dates, flight numbers, or announcement details
-      - Cite real sources (Reuters, Aviation Week, SpaceNews, FlightGlobal)
+      - Reference REAL companies, executives, clinical trials, and dollar amounts
+      - Include actual dates, trial phases, or announcement details
+      - Cite real sources (Nature Neuroscience, STAT News, Endpoints News, FDA announcements)
       - Explain the strategic implications for the industry
       - Include a "Startup Insight" on how founders can leverage this
       
@@ -258,12 +351,12 @@ async function generateDayContent(
       5. Startup opportunity - how founders can act on this trend
       6. Reflection - thought-provoking question for deeper thinking`,
     
-    MICRO_LESSON: `Create a LESSON stack teaching a core concept about "${topic}" in aerospace.
+    MICRO_LESSON: `Create a LESSON stack teaching a core concept about "${topic}" in ${marketContext}.
       
       CRITICAL REQUIREMENTS:
-      - Teach like a McKinsey consultant explaining to a smart outsider
+      - Teach like a Stanford professor explaining to a smart outsider
       - Use REAL numbers, percentages, and timelines from industry
-      - Reference actual companies as examples
+      - Reference actual companies, clinical trials, and research as examples
       - Include common startup mistakes specific to this topic
       - End with actionable advice for founders
       
@@ -275,10 +368,10 @@ async function generateDayContent(
       5. Edge cases - when the rules don't apply
       6. Apply this - concrete next step for startup founders`,
     
-    TRAINER: `Create a decision-making SCENARIO about "${topic}" in aerospace.
+    TRAINER: `Create a decision-making SCENARIO about "${topic}" in ${marketContext}.
       
       CRITICAL REQUIREMENTS:
-      - Base on REAL situations aerospace professionals face
+      - Base on REAL situations professionals in this field face
       - Include realistic numbers, timelines, and trade-offs
       - Make the correct answer subtle but clearly best upon analysis
       - Provide expert-level reasoning in feedback
@@ -288,12 +381,12 @@ async function generateDayContent(
       All 4 options should seem plausible to a novice.
       Only one option should be clearly best to an expert.`,
     
-    BOOK_SNAPSHOT: `Create a HISTORY stack about a pivotal past event related to "${topic}" in aerospace.
+    BOOK_SNAPSHOT: `Create a HISTORY stack about a pivotal past event related to "${topic}" in ${marketContext}.
       
       CRITICAL REQUIREMENTS:
       - Reference REAL historical events with specific dates
-      - Name actual people, companies, and decisions
-      - Include original dollar amounts (adjust for inflation if helpful)
+      - Name actual researchers, companies, and breakthrough decisions
+      - Include original dollar amounts and patient numbers where relevant
       - Connect history to current industry dynamics
       - Extract timeless lessons for today's founders
       
@@ -309,14 +402,14 @@ async function generateDayContent(
   const isTrainer = dayType === 'TRAINER';
   
   const systemPrompt = isTrainer
-    ? `You are a senior aerospace industry strategist with 25+ years at companies like Boeing, Lockheed Martin, and McKinsey.
+    ? `You are a senior ${marketId === 'neuroscience' ? 'neuroscience and neurotech' : 'aerospace'} industry strategist with 25+ years experience.
        You create challenging training scenarios that test strategic thinking.
        Your scenarios are based on REAL situations you've encountered or studied.
        You speak with authority but make content accessible to intelligent newcomers.
        Every scenario teaches a valuable lesson that applies beyond the specific situation.`
-    : `You are a senior aerospace industry analyst creating educational content for startup founders.
-       You have deep expertise across commercial aviation, defense, and space.
-       You reference REAL companies, contracts, regulations, and market dynamics.
+    : `You are a senior ${marketId === 'neuroscience' ? 'neuroscience and neurotech' : 'aerospace'} industry analyst creating educational content for startup founders.
+       You have deep expertise across ${marketContext}.
+       You reference REAL companies, clinical trials, regulations, and market dynamics.
        Your content is precise, data-driven, and actionable.
        Each slide body MUST be UNDER 280 characters - be concise and impactful.
        Each slide title MUST be 6 words or fewer.
@@ -398,9 +491,9 @@ async function saveContent(
   content: any,
   day: number,
   month: number,
-  dayType: string
+  dayType: string,
+  marketId: string
 ) {
-  const marketId = 'aerospace';
   const baseTags = [dayType, `day-${day}`, `month-${month}`];
 
   if (dayType === 'TRAINER') {
@@ -462,9 +555,11 @@ async function saveContent(
 async function generateMonthSummaries(
   supabase: any,
   apiKey: string,
-  month: number
+  month: number,
+  marketId: string,
+  curriculumStructure: { months: { month: number; theme: string; topics: string[] }[] }
 ) {
-  const monthInfo = CURRICULUM_STRUCTURE.months[month - 1];
+  const monthInfo = curriculumStructure.months[month - 1];
   if (!monthInfo) {
     throw new Error(`Invalid month: ${month}`);
   }
@@ -480,7 +575,8 @@ async function generateMonthSummaries(
       monthInfo.theme,
       monthInfo.topics,
       weekNum,
-      month
+      month,
+      marketId
     );
     
     const forDate = new Date();
@@ -489,7 +585,7 @@ async function generateMonthSummaries(
     const { data, error } = await supabase
       .from('summaries')
       .insert({
-        market_id: 'aerospace',
+        market_id: marketId,
         summary_type: 'WEEKLY',
         title: weeklyContent.title,
         content: weeklyContent.content,
@@ -510,13 +606,14 @@ async function generateMonthSummaries(
     monthInfo.theme,
     monthInfo.topics,
     0,
-    month
+    month,
+    marketId
   );
   
   const { data: monthlyData, error: monthlyError } = await supabase
     .from('summaries')
     .insert({
-      market_id: 'aerospace',
+      market_id: marketId,
       summary_type: 'MONTHLY',
       title: monthlyContent.title,
       content: monthlyContent.content,
@@ -537,10 +634,15 @@ async function generateSummary(
   theme: string,
   topics: string[],
   weekNum: number,
-  month: number
+  month: number,
+  marketId: string
 ) {
+  const marketContext = marketId === 'neuroscience' 
+    ? 'neuroscience, neurotech, and brain science' 
+    : 'aerospace';
+
   const prompt = type === 'WEEKLY'
-    ? `Create a WEEKLY summary for Week ${weekNum} of the "${theme}" module in aerospace education.
+    ? `Create a WEEKLY summary for Week ${weekNum} of the "${theme}" module in ${marketContext} education.
        
        Topics covered: ${topics.slice(0, 2).join(', ')}
        
@@ -556,7 +658,7 @@ async function generateSummary(
          "content": "3-4 paragraph summary (600-800 words) that reads like a McKinsey brief",
          "key_takeaways": ["Takeaway 1", "Takeaway 2", "Takeaway 3", "Takeaway 4"]
        }`
-    : `Create a MONTHLY summary for Month ${month}: "${theme}" in aerospace education.
+    : `Create a MONTHLY summary for Month ${month}: "${theme}" in ${marketContext} education.
        
        Topics covered: ${topics.join(', ')}
        
@@ -584,7 +686,7 @@ async function generateSummary(
       messages: [
         { 
           role: 'system', 
-          content: 'You are a senior aerospace industry analyst creating executive summaries for startup founders. Write with authority, reference real industry dynamics, and provide actionable insights.' 
+          content: `You are a senior ${marketContext} industry analyst creating executive summaries for startup founders. Write with authority, reference real industry dynamics, and provide actionable insights.` 
         },
         { role: 'user', content: prompt },
       ],
