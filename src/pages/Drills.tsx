@@ -489,7 +489,7 @@ export default function DrillsPage() {
                         <span className="font-medium">Startup Insight</span>
                       </div>
                       <p className="text-[11px] text-text-muted mt-1">
-                        Understanding this helps you evaluate market dynamics when building in aerospace.
+                        Understanding this helps you evaluate market dynamics when building in {selectedMarket ? selectedMarket.replace(/-/g, ' ') : 'your industry'}.
                       </p>
                     </div>
                   </div>
@@ -509,6 +509,7 @@ export default function DrillsPage() {
         mentor={activeMentor}
         onClose={() => setActiveMentor(null)}
         context={`Drill question: ${question?.statement || "Market drill"}`}
+        marketId={selectedMarket || undefined}
       />
     </div>
   );

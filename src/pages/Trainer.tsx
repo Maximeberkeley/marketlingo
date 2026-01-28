@@ -272,6 +272,7 @@ export default function TrainerPage() {
         mentor={activeMentor}
         onClose={() => setActiveMentor(null)}
         context={`Trainer scenario: ${currentScenario.scenario} - Question: ${currentScenario.question}`}
+        marketId={selectedMarket || undefined}
       />
     </div>
   );

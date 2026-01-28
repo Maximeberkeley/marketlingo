@@ -459,7 +459,7 @@ export default function GamesPage() {
                         <span className="font-medium">Apply This</span>
                       </div>
                       <p className="text-[11px] text-text-muted mt-1">
-                        This pattern matters when pitching to investors or analyzing competitors.
+                        This pattern matters when pitching to investors or analyzing competitors in {selectedMarket ? selectedMarket.replace(/-/g, ' ') : 'your industry'}.
                       </p>
                     </div>
                   </div>
@@ -479,6 +479,7 @@ export default function GamesPage() {
         mentor={activeMentor}
         onClose={() => setActiveMentor(null)}
         context={`Game question: ${question?.question || "Pattern matching game"}`}
+        marketId={selectedMarket || undefined}
       />
     </div>
   );

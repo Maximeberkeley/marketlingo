@@ -7,9 +7,10 @@ import { MentorChatOverlay } from "./MentorChatOverlay";
 
 interface MentorBannerProps {
   context?: string;
+  marketId?: string;
 }
 
-export function MentorBanner({ context }: MentorBannerProps) {
+export function MentorBanner({ context, marketId }: MentorBannerProps) {
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
 
   return (
@@ -60,6 +61,7 @@ export function MentorBanner({ context }: MentorBannerProps) {
         mentor={selectedMentor}
         onClose={() => setSelectedMentor(null)}
         context={context}
+        marketId={marketId}
       />
     </>
   );

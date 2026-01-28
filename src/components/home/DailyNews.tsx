@@ -300,7 +300,8 @@ export function DailyNews({ marketId }: DailyNewsProps) {
       <MentorChatOverlay
         mentor={activeMentor}
         onClose={() => setActiveMentor(null)}
-        context={`Daily aerospace news. Recent headlines: ${news.slice(0, 3).map(n => n.title).join('; ')}`}
+        context={`Daily ${marketId} news. Recent headlines: ${news.slice(0, 3).map(n => n.title).join('; ')}`}
+        marketId={marketId}
       />
     </motion.div>
   );

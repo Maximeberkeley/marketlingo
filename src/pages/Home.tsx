@@ -433,6 +433,7 @@ export default function HomePage() {
           onComplete={handleStackComplete}
           onSaveInsight={handleSaveInsight}
           onAddNote={handleAddNote}
+          marketId={selectedMarket || undefined}
         />
       )}
 
@@ -451,6 +452,7 @@ export default function HomePage() {
         mentor={activeMentor}
         onClose={() => setActiveMentor(null)}
         context={selectedMarket || "aerospace"}
+        marketId={selectedMarket || undefined}
       />
     </AppLayout>
   );

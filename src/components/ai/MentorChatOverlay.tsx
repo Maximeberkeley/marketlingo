@@ -15,9 +15,10 @@ interface MentorChatOverlayProps {
   mentor: Mentor | null;
   onClose: () => void;
   context?: string;
+  marketId?: string;
 }
 
-export function MentorChatOverlay({ mentor, onClose, context }: MentorChatOverlayProps) {
+export function MentorChatOverlay({ mentor, onClose, context, marketId }: MentorChatOverlayProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -43,11 +44,12 @@ export function MentorChatOverlay({ mentor, onClose, context }: MentorChatOverla
     setIsLoading(true);
 
     try {
+      const industryName = marketId ? marketId.charAt(0).toUpperCase() + marketId.slice(1).replace(/-/g, ' ') : "the selected industry";
       const systemPrompt = `You are ${mentor.name}, ${mentor.title}. ${mentor.personality}
       
 Your specialties include: ${mentor.specialties.join(", ")}.
 
-You're helping a user learn about the aerospace industry to prepare them to build a startup or invest in this space. 
+You're helping a user learn about the ${industryName} industry to prepare them to build a startup or invest in this space. 
 Be conversational, helpful, and draw from deep industry knowledge. Keep responses concise but insightful (2-3 paragraphs max).
 
 ${context ? `Current lesson context: ${context}` : ""}`;
