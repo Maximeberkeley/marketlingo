@@ -100,34 +100,24 @@ export default function NotebookPage() {
     fetchMarket();
   }, [user]);
 
-  // Fetch notes filtered by market
+  // Fetch notes filtered by market_id directly
   useEffect(() => {
     const fetchNotes = async () => {
       if (!user || !selectedMarket) return;
 
-      // Fetch notes that are linked to stacks in this market
-      const { data: marketStacks } = await supabase
-        .from("stacks")
-        .select("id")
-        .eq("market_id", selectedMarket);
-      
-      const stackIds = marketStacks?.map(s => s.id) || [];
-      
-      // Fetch notes: either linked to market stacks OR personal notes (no stack_id)
+      // Query notes that belong to this specific market
       const { data, error } = await supabase
         .from("notes")
         .select("*")
         .eq("user_id", user.id)
+        .eq("market_id", selectedMarket)
         .order("created_at", { ascending: false });
 
       if (error) {
         console.error("Error fetching notes:", error);
+        setNotes([]);
       } else {
-        // Filter to market-specific notes or personal notes
-        const filtered = (data || []).filter(note => 
-          !note.stack_id || stackIds.includes(note.stack_id)
-        );
-        setNotes(filtered);
+        setNotes(data || []);
       }
       setLoading(false);
     };
@@ -152,7 +142,7 @@ export default function NotebookPage() {
   };
 
   const handleAddNote = async () => {
-    if (!user || !newNoteContent.trim()) return;
+    if (!user || !newNoteContent.trim() || !selectedMarket) return;
 
     const { data, error } = await supabase
       .from("notes")
@@ -160,6 +150,7 @@ export default function NotebookPage() {
         user_id: user.id,
         content: newNoteContent.trim(),
         linked_label: "Personal Note",
+        market_id: selectedMarket,
       })
       .select()
       .single();

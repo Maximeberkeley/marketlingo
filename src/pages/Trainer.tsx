@@ -82,12 +82,13 @@ export default function TrainerPage() {
   const currentScenario = scenarios[currentIndex];
 
   const handleSaveToNotebook = async () => {
-    if (!user || !currentScenario) return;
+    if (!user || !currentScenario || !selectedMarket) return;
 
     await supabase.from("notes").insert({
       user_id: user.id,
       content: `Trainer insight: ${currentScenario.feedback_mental_model || currentScenario.scenario}`,
       linked_label: `Trainer · ${currentScenario.question.substring(0, 30)}...`,
+      market_id: selectedMarket,
     });
 
     toast.success("Saved to notebook!");
