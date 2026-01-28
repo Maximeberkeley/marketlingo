@@ -68,12 +68,29 @@ export default function TrainerPage() {
         return;
       }
 
-      const formattedScenarios = (scenarioData || []).map((s) => ({
-        ...s,
-        options: Array.isArray(s.options) 
-          ? (s.options as { label: string; isCorrect: boolean }[])
-          : [],
-      }));
+      const formattedScenarios = (scenarioData || []).map((s) => {
+        // Handle both formats: objects with {label, isCorrect} or plain strings
+        let options: { label: string; isCorrect: boolean }[] = [];
+        
+        if (Array.isArray(s.options)) {
+          options = (s.options as unknown[]).map((opt, idx) => {
+            if (typeof opt === 'string') {
+              // Plain string format - use correct_option_index to determine correctness
+              return { label: opt, isCorrect: idx === s.correct_option_index };
+            } else if (typeof opt === 'object' && opt !== null && 'label' in opt) {
+              // Object format with label
+              const optObj = opt as { label: string; isCorrect?: boolean };
+              return { 
+                label: optObj.label, 
+                isCorrect: optObj.isCorrect ?? (idx === s.correct_option_index)
+              };
+            }
+            return { label: String(opt), isCorrect: idx === s.correct_option_index };
+          });
+        }
+        
+        return { ...s, options };
+      });
       setScenarios(formattedScenarios);
 
       // Fetch user's completed attempts to restore progress
