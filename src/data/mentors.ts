@@ -1,6 +1,7 @@
 import mentorMaya from "@/assets/mentors/mentor-maya.png";
 import mentorAlex from "@/assets/mentors/mentor-alex.png";
 import mentorKai from "@/assets/mentors/mentor-kai.png";
+import mentorSophia from "@/assets/mentors/mentor-sophia.png";
 
 export interface Mentor {
   id: string;
@@ -44,6 +45,16 @@ export const mentors: Mentor[] = [
     greeting: "Building something in aerospace? Let's figure out your path to success.",
     specialties: ["Startup strategy", "Fundraising", "Go-to-market"],
   },
+  {
+    id: "sophia",
+    name: "Sophia Martinez",
+    title: "Growth Advisor",
+    expertise: ["Customer Success", "Partnerships", "Scaling Operations"],
+    personality: "Warm, inspiring, and incredibly supportive. Sophia has helped scale multiple aerospace ventures from seed to series B. She believes in you and helps you see your full potential.",
+    avatar: mentorSophia,
+    greeting: "Hey there! Ready to unlock your next level of growth? I'm here to help you shine.",
+    specialties: ["Customer relationships", "Strategic partnerships", "Team building"],
+  },
 ];
 
 export function getMentorForContext(context: string): Mentor {
@@ -55,6 +66,10 @@ export function getMentorForContext(context: string): Mentor {
   
   if (contextLower.includes("technical") || contextLower.includes("certif") || contextLower.includes("engineer")) {
     return mentors.find(m => m.id === "alex")!;
+  }
+  
+  if (contextLower.includes("growth") || contextLower.includes("customer") || contextLower.includes("partner") || contextLower.includes("scale")) {
+    return mentors.find(m => m.id === "sophia")!;
   }
   
   return mentors.find(m => m.id === "maya")!;
