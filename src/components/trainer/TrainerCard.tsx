@@ -24,6 +24,7 @@ interface TrainerCardProps {
   onSaveToNotebook: () => void;
   onNext: () => void;
   onAskMentor?: (question: string) => void;
+  onAttemptComplete?: (isCorrect: boolean, selectedOption: number) => void;
 }
 
 type EvaluationLevel = "strong" | "needs-work" | "off-track";
@@ -54,7 +55,7 @@ function getWhyThisScenario(scenario: string, question: string): string {
   return "This scenario develops pattern recognition for common industry situations. The mental models here transfer across many aerospace business contexts.";
 }
 
-export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor }: TrainerCardProps) {
+export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, onAttemptComplete }: TrainerCardProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [evaluation, setEvaluation] = useState<EvaluationLevel | null>(null);
@@ -75,6 +76,9 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor }:
     setSelectedIndex(index);
     const isCorrect = scenario.options[index].isCorrect;
     setEvaluation(isCorrect ? "strong" : "needs-work");
+    
+    // Track the attempt for progress persistence
+    onAttemptComplete?.(isCorrect, index);
     
     setTimeout(() => {
       setShowFeedback(true);

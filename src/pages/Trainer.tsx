@@ -324,6 +324,7 @@ export default function TrainerPage() {
           onAskMentor={(question) => {
             setActiveMentor(mentors.find(m => m.id === "sophia") || mentors[0]);
           }}
+          onAttemptComplete={handleAttemptComplete}
         />
       </motion.div>
 
