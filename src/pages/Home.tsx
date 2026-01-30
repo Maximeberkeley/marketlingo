@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserProgress } from "@/hooks/useUserProgress";
 import { useUserXP, XP_REWARDS } from "@/hooks/useUserXP";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useProPromotionContext } from "@/components/subscription/ProPromotionProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -65,6 +66,7 @@ export default function HomePage() {
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   
   const { isSupported, isRegistered } = useNotifications();
+  const { triggerAfterLesson, isProUser } = useProPromotionContext();
   const lessonCompletedToday = isLessonCompletedToday();
   const currentStage = getCurrentStage();
   const stageProgress = getProgressToNextStage();
@@ -155,6 +157,11 @@ export default function HomePage() {
       
       if ((progress.current_streak || 0) > 0) {
         await addXP(XP_REWARDS.STREAK_BONUS * (progress.current_streak || 1), "streak_bonus");
+      }
+      
+      // Trigger Pro promotion after lesson (checks internally if should show)
+      if (!isProUser) {
+        triggerAfterLesson(progress.current_day || 1);
       }
     }
     toast.success("Lesson complete! 🔥");
