@@ -85,7 +85,7 @@ export default function InvestmentModule() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [startTime, setStartTime] = useState<number>(Date.now());
-
+  const [progressRestored, setProgressRestored] = useState(false);
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/");
@@ -125,17 +125,24 @@ export default function InvestmentModule() {
     s => s.scenario_type === moduleConfig?.scenarioType
   );
 
-  // Find first uncompleted scenario
+  // Restore progress: find first uncompleted scenario (only once when data loads)
   useEffect(() => {
-    if (moduleScenarios.length > 0 && completedScenarioIds.length > 0) {
-      const firstIncomplete = moduleScenarios.findIndex(
-        s => !completedScenarioIds.includes(s.id)
-      );
-      if (firstIncomplete !== -1) {
-        setCurrentScenarioIndex(firstIncomplete);
-      }
+    if (progressRestored || labLoading || moduleScenarios.length === 0) return;
+    
+    // Find the first scenario not yet completed correctly
+    const firstIncomplete = moduleScenarios.findIndex(
+      s => !completedScenarioIds.includes(s.id)
+    );
+    
+    if (firstIncomplete !== -1) {
+      setCurrentScenarioIndex(firstIncomplete);
+    } else if (completedScenarioIds.length > 0) {
+      // All completed - start from beginning for review
+      setCurrentScenarioIndex(0);
     }
-  }, [moduleScenarios, completedScenarioIds]);
+    
+    setProgressRestored(true);
+  }, [moduleScenarios, completedScenarioIds, labLoading, progressRestored]);
 
   if (loading || authLoading || labLoading || !moduleConfig) {
     return (
