@@ -158,6 +158,152 @@ export type Database = {
           },
         ]
       }
+      investment_attempts: {
+        Row: {
+          created_at: string
+          id: string
+          is_correct: boolean
+          scenario_id: string
+          selected_option: number
+          time_spent_seconds: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_correct: boolean
+          scenario_id: string
+          selected_option: number
+          time_spent_seconds?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          scenario_id?: string
+          selected_option?: number
+          time_spent_seconds?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investment_attempts_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "investment_scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      investment_lab_progress: {
+        Row: {
+          certified_at: string | null
+          created_at: string
+          due_diligence_score: number | null
+          id: string
+          investment_certified: boolean | null
+          investment_xp: number | null
+          market_id: string
+          paper_trades_completed: number | null
+          portfolio_construction_score: number | null
+          risk_assessment_score: number | null
+          simulation_accuracy: number | null
+          thesis_submissions: number | null
+          updated_at: string
+          user_id: string
+          valuation_score: number | null
+          watchlist_companies: Json | null
+        }
+        Insert: {
+          certified_at?: string | null
+          created_at?: string
+          due_diligence_score?: number | null
+          id?: string
+          investment_certified?: boolean | null
+          investment_xp?: number | null
+          market_id: string
+          paper_trades_completed?: number | null
+          portfolio_construction_score?: number | null
+          risk_assessment_score?: number | null
+          simulation_accuracy?: number | null
+          thesis_submissions?: number | null
+          updated_at?: string
+          user_id: string
+          valuation_score?: number | null
+          watchlist_companies?: Json | null
+        }
+        Update: {
+          certified_at?: string | null
+          created_at?: string
+          due_diligence_score?: number | null
+          id?: string
+          investment_certified?: boolean | null
+          investment_xp?: number | null
+          market_id?: string
+          paper_trades_completed?: number | null
+          portfolio_construction_score?: number | null
+          risk_assessment_score?: number | null
+          simulation_accuracy?: number | null
+          thesis_submissions?: number | null
+          updated_at?: string
+          user_id?: string
+          valuation_score?: number | null
+          watchlist_companies?: Json | null
+        }
+        Relationships: []
+      }
+      investment_scenarios: {
+        Row: {
+          correct_option_index: number
+          created_at: string
+          difficulty: string | null
+          explanation: string | null
+          id: string
+          market_id: string
+          options: Json
+          question: string
+          real_world_example: string | null
+          scenario: string
+          scenario_type: string
+          tags: string[] | null
+          title: string
+          valuation_model: string | null
+        }
+        Insert: {
+          correct_option_index: number
+          created_at?: string
+          difficulty?: string | null
+          explanation?: string | null
+          id?: string
+          market_id: string
+          options?: Json
+          question: string
+          real_world_example?: string | null
+          scenario: string
+          scenario_type: string
+          tags?: string[] | null
+          title: string
+          valuation_model?: string | null
+        }
+        Update: {
+          correct_option_index?: number
+          created_at?: string
+          difficulty?: string | null
+          explanation?: string | null
+          id?: string
+          market_id?: string
+          options?: Json
+          question?: string
+          real_world_example?: string | null
+          scenario?: string
+          scenario_type?: string
+          tags?: string[] | null
+          title?: string
+          valuation_model?: string | null
+        }
+        Relationships: []
+      }
       markets: {
         Row: {
           created_at: string
