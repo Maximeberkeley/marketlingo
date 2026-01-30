@@ -215,7 +215,7 @@ export default function AuthPage() {
               {mode === "email-login" ? "Welcome back" : "Create account"}
             </h1>
             <p className="text-body text-text-secondary mb-8">
-              {mode === "email-login" ? "Sign in to continue your journey" : "Start your 12-month market mastery"}
+              {mode === "email-login" ? "Sign in to continue your journey" : "Start your 6-month market mastery"}
             </p>
 
             {/* Form */}
