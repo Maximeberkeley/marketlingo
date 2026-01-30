@@ -33,19 +33,19 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
-        <ProPromotionProvider>
-          <Toaster />
-          <Sonner 
-            position="top-center" 
-            toastOptions={{
-              style: {
-                background: 'hsl(218 52% 13%)',
-                border: '1px solid hsl(220 25% 18%)',
-                color: 'hsl(220 20% 97%)',
-              },
-            }}
-          />
-          <BrowserRouter>
+        <Toaster />
+        <Sonner 
+          position="top-center" 
+          toastOptions={{
+            style: {
+              background: 'hsl(218 52% 13%)',
+              border: '1px solid hsl(220 25% 18%)',
+              color: 'hsl(220 20% 97%)',
+            },
+          }}
+        />
+        <BrowserRouter>
+          <ProPromotionProvider>
             <Routes>
               <Route path="/" element={<Auth />} />
               <Route path="/select-market" element={<SelectMarket />} />
@@ -70,8 +70,8 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </BrowserRouter>
-        </ProPromotionProvider>
+          </ProPromotionProvider>
+        </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
