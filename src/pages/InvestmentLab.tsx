@@ -15,12 +15,14 @@ import {
   Sparkles,
   BookOpen,
   Eye,
-  Target
+  Target,
+  Crown
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/hooks/useAuth";
 import { useInvestmentLab, CERTIFICATION_THRESHOLDS } from "@/hooks/useInvestmentLab";
+import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { getMarketName, getMarketEmoji } from "@/data/markets";
 import { cn } from "@/lib/utils";
@@ -82,6 +84,7 @@ const INVESTMENT_MODULES: InvestmentModule[] = [
 export default function InvestmentLab() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const { isProUser, isLoading: subscriptionLoading } = useSubscription();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -118,11 +121,83 @@ export default function InvestmentLab() {
     getOverallProgress,
   } = useInvestmentLab(selectedMarket || undefined);
 
-  if (loading || authLoading || labLoading) {
+  if (loading || authLoading || labLoading || subscriptionLoading) {
     return (
       <AppLayout showNav={false}>
         <div className="min-h-screen flex items-center justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-accent" />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Pro gate - show upgrade prompt if not Pro user
+  if (!isProUser) {
+    return (
+      <AppLayout showNav={false}>
+        <div className="min-h-screen bg-bg-0">
+          {/* Header */}
+          <div className="bg-bg-1 border-b border-border px-4 py-4 pt-safe">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate(-1)}
+                className="w-10 h-10 rounded-xl bg-bg-2 border border-border flex items-center justify-center"
+              >
+                <ArrowLeft size={20} className="text-text-primary" />
+              </button>
+              <div>
+                <h1 className="text-h2 text-text-primary">Investment Lab</h1>
+                <p className="text-caption text-text-muted">Pro Feature</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Pro Upgrade Prompt */}
+          <div className="p-6 flex flex-col items-center justify-center min-h-[60vh]">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="w-20 h-20 rounded-2xl bg-gradient-to-br from-accent/20 to-purple-600/20 border border-accent/30 flex items-center justify-center mb-6"
+            >
+              <Crown size={32} className="text-accent" />
+            </motion.div>
+            
+            <h2 className="text-h2 text-text-primary text-center mb-2">
+              Pro Feature
+            </h2>
+            <p className="text-body text-text-secondary text-center max-w-xs mb-6">
+              Investment Lab is available exclusively for Pro members. Get expert-level scenarios and earn your Investment Certification.
+            </p>
+
+            <div className="w-full max-w-xs space-y-3 mb-6">
+              {[
+                "20+ expert-level investment scenarios",
+                "Valuation, Due Diligence, Risk & Portfolio modules",
+                "Earn Investment Certification",
+                "Track companies in your Watchlist"
+              ].map((feature, i) => (
+                <div key={i} className="flex items-center gap-2 text-sm text-text-secondary">
+                  <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                  {feature}
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => navigate("/subscription")}
+              className="px-8 py-4 rounded-xl bg-gradient-to-r from-accent via-purple-600 to-pink-500 text-white font-semibold flex items-center gap-2"
+            >
+              <Crown size={18} />
+              Upgrade to Pro
+            </button>
+
+            <button
+              onClick={() => navigate("/home")}
+              className="mt-4 text-text-muted text-sm"
+            >
+              Maybe later
+            </button>
+          </div>
         </div>
       </AppLayout>
     );

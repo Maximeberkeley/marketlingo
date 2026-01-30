@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Loader2, Brain, Sparkles, ChevronRight } from "lucide-react";
+import { ArrowLeft, Loader2, Brain, Sparkles, ChevronRight, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TrainerCard } from "@/components/trainer/TrainerCard";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { MentorCelebration } from "@/components/mascot/MentorCelebration";
+import { ProUpsellModal } from "@/components/subscription/ProUpsellModal";
 import { mentors, Mentor } from "@/data/mentors";
 import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface TrainerScenario {
   id: string;
@@ -28,6 +30,7 @@ interface TrainerScenario {
 export default function TrainerPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isProUser } = useSubscription();
   const [scenarios, setScenarios] = useState<TrainerScenario[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -35,6 +38,7 @@ export default function TrainerPage() {
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [showIntro, setShowIntro] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showProModal, setShowProModal] = useState(false);
   
   // Get market config for theming
   const marketConfig = selectedMarket ? getMarketConfig(selectedMarket) : null;
@@ -301,13 +305,26 @@ export default function TrainerPage() {
           </p>
         </div>
         
-        {/* Mentor Helper - Use Sophia for Trainer */}
-        <MentorAvatar
-          mentor={mentors.find(m => m.id === "sophia") || mentors[0]}
-          size="sm"
-          showPulse={false}
-          onClick={() => setActiveMentor(mentors.find(m => m.id === "sophia") || mentors[0])}
-        />
+        {/* Mentor Helper - Pro badge for non-pro users */}
+        <div className="relative">
+          <MentorAvatar
+            mentor={mentors.find(m => m.id === "sophia") || mentors[0]}
+            size="sm"
+            showPulse={false}
+            onClick={() => {
+              if (isProUser) {
+                setActiveMentor(mentors.find(m => m.id === "sophia") || mentors[0]);
+              } else {
+                setShowProModal(true);
+              }
+            }}
+          />
+          {!isProUser && (
+            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-r from-accent to-purple-600 flex items-center justify-center">
+              <Crown size={8} className="text-white" />
+            </div>
+          )}
+        </div>
       </motion.div>
 
       {/* Content */}
@@ -322,18 +339,32 @@ export default function TrainerPage() {
           onSaveToNotebook={handleSaveToNotebook}
           onNext={handleNext}
           onAskMentor={(question) => {
-            setActiveMentor(mentors.find(m => m.id === "sophia") || mentors[0]);
+            if (isProUser) {
+              setActiveMentor(mentors.find(m => m.id === "sophia") || mentors[0]);
+            } else {
+              setShowProModal(true);
+            }
           }}
           onAttemptComplete={handleAttemptComplete}
         />
       </motion.div>
 
-      {/* Mentor Chat Overlay */}
-      <MentorChatOverlay
-        mentor={activeMentor}
-        onClose={() => setActiveMentor(null)}
-        context={`Trainer scenario: ${currentScenario.scenario} - Question: ${currentScenario.question}`}
-        marketId={selectedMarket || undefined}
+      {/* Mentor Chat Overlay - Only available for Pro users */}
+      {isProUser && (
+        <MentorChatOverlay
+          mentor={activeMentor}
+          onClose={() => setActiveMentor(null)}
+          context={`Trainer scenario: ${currentScenario.scenario} - Question: ${currentScenario.question}`}
+          marketId={selectedMarket || undefined}
+        />
+      )}
+
+      {/* Pro Upsell Modal */}
+      <ProUpsellModal
+        isOpen={showProModal}
+        onClose={() => setShowProModal(false)}
+        trigger="feature_gate"
+        featureName="AI Mentor"
       />
 
       {/* Celebration on completion */}
