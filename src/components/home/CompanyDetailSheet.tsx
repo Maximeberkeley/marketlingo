@@ -1,19 +1,40 @@
 import { useState } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Building2, Users, Calendar, Globe, TrendingUp, ChevronLeft, ChevronRight, Briefcase, Target } from "lucide-react";
+import { Building2, Users, Calendar, Globe, TrendingUp, ChevronLeft, ChevronRight, Briefcase, Target, PlusCircle, CheckCircle2 } from "lucide-react";
 import { Company } from "./keyPlayersData";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface CompanyDetailSheetProps {
   company: Company | null;
   onClose: () => void;
+  onAddToWatchlist?: (company: { id: string; name: string; ticker?: string }) => Promise<void>;
+  isInWatchlist?: boolean;
 }
 
-export function CompanyDetailSheet({ company, onClose }: CompanyDetailSheetProps) {
+export function CompanyDetailSheet({ company, onClose, onAddToWatchlist, isInWatchlist }: CompanyDetailSheetProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [addingToWatchlist, setAddingToWatchlist] = useState(false);
   
   if (!company) return null;
+
+  const handleAddToWatchlist = async () => {
+    if (!onAddToWatchlist || isInWatchlist) return;
+    setAddingToWatchlist(true);
+    try {
+      await onAddToWatchlist({
+        id: company.id,
+        name: company.name,
+        ticker: company.ticker,
+      });
+      toast.success(`${company.name} added to watchlist!`);
+    } catch (error) {
+      toast.error("Failed to add to watchlist");
+    } finally {
+      setAddingToWatchlist(false);
+    }
+  };
   
   const totalSlides = company.slides.length + 1; // +1 for overview slide
   
@@ -63,6 +84,31 @@ export function CompanyDetailSheet({ company, onClose }: CompanyDetailSheetProps
                   </span>
                 </div>
               </div>
+              {/* Add to Watchlist Button */}
+              {onAddToWatchlist && (
+                <button
+                  onClick={handleAddToWatchlist}
+                  disabled={addingToWatchlist || isInWatchlist}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption font-medium transition-all",
+                    isInWatchlist
+                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                      : "bg-accent/10 text-accent border border-accent/30 hover:bg-accent/20"
+                  )}
+                >
+                  {isInWatchlist ? (
+                    <>
+                      <CheckCircle2 size={14} />
+                      <span>Watching</span>
+                    </>
+                  ) : (
+                    <>
+                      <PlusCircle size={14} />
+                      <span>Watch</span>
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </SheetHeader>
 

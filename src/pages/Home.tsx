@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronRight, Gamepad2, Target, Sparkles, Loader2, Trophy, Award, CheckCircle2, BookOpen, Newspaper, FlaskConical } from "lucide-react";
+import { ChevronRight, Gamepad2, Target, Sparkles, Loader2, Trophy, Award, CheckCircle2, BookOpen, Newspaper, FlaskConical, TrendingUp } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { XPBadge } from "@/components/ui/XPBadge";
@@ -378,6 +378,30 @@ export default function HomePage() {
             </motion.button>
           </div>
         </motion.div>
+
+        {/* Investment Lab Teaser - Optional Bonus Feature */}
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18 }}
+          onClick={() => navigate("/investment-lab")}
+          whileTap={{ scale: 0.98 }}
+          className="w-full p-3 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 mb-5"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+              <TrendingUp size={20} className="text-emerald-400" />
+            </div>
+            <div className="flex-1 text-left">
+              <div className="flex items-center gap-2">
+                <span className="text-body font-medium text-text-primary">Investment Lab</span>
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-emerald-500/20 text-emerald-400">BONUS</span>
+              </div>
+              <p className="text-[11px] text-text-muted">Become investment-ready • Optional extra XP</p>
+            </div>
+            <ChevronRight size={18} className="text-emerald-400/50" />
+          </div>
+        </motion.button>
 
         {/* Quick Links */}
         <motion.div

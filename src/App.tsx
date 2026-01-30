@@ -19,6 +19,9 @@ import Achievements from "./pages/Achievements";
 import Leaderboard from "./pages/Leaderboard";
 import AdminContent from "./pages/AdminContent";
 import RegulatoryHub from "./pages/RegulatoryHub";
+import InvestmentLab from "./pages/InvestmentLab";
+import InvestmentModule from "./pages/InvestmentModule";
+import InvestmentCertificatePage from "./pages/InvestmentCertificatePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,6 +58,9 @@ const App = () => (
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/admin/content" element={<AdminContent />} />
             <Route path="/regulatory-hub" element={<RegulatoryHub />} />
+            <Route path="/investment-lab" element={<InvestmentLab />} />
+            <Route path="/investment-lab/:moduleId" element={<InvestmentModule />} />
+            <Route path="/investment-lab/certificate" element={<InvestmentCertificatePage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
