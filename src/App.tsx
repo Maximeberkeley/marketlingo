@@ -22,6 +22,7 @@ import RegulatoryHub from "./pages/RegulatoryHub";
 import InvestmentLab from "./pages/InvestmentLab";
 import InvestmentModule from "./pages/InvestmentModule";
 import InvestmentCertificatePage from "./pages/InvestmentCertificatePage";
+import Subscription from "./pages/Subscription";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -61,6 +62,7 @@ const App = () => (
             <Route path="/investment-lab" element={<InvestmentLab />} />
             <Route path="/investment-lab/:moduleId" element={<InvestmentModule />} />
             <Route path="/investment-lab/certificate" element={<InvestmentCertificatePage />} />
+            <Route path="/subscription" element={<Subscription />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
