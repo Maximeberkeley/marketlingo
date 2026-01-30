@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { ProPromotionProvider } from "@/components/subscription/ProPromotionProvider";
 import Auth from "./pages/Auth";
 import SelectMarket from "./pages/SelectMarket";
 import Home from "./pages/Home";
@@ -32,43 +33,45 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
-        <Toaster />
-        <Sonner 
-          position="top-center" 
-          toastOptions={{
-            style: {
-              background: 'hsl(218 52% 13%)',
-              border: '1px solid hsl(220 25% 18%)',
-              color: 'hsl(220 20% 97%)',
-            },
-          }}
-        />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Auth />} />
-            <Route path="/select-market" element={<SelectMarket />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/roadmap" element={<Roadmap />} />
-            <Route path="/notebook" element={<Notebook />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/trainer" element={<Trainer />} />
-            <Route path="/games" element={<Games />} />
-            <Route path="/drills" element={<Drills />} />
-            <Route path="/summaries" element={<Summaries />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/achievements" element={<Achievements />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/admin/content" element={<AdminContent />} />
-            <Route path="/regulatory-hub" element={<RegulatoryHub />} />
-            <Route path="/investment-lab" element={<InvestmentLab />} />
-            <Route path="/investment-lab/watchlist" element={<InvestmentWatchlist />} />
-            <Route path="/investment-lab/certificate" element={<InvestmentCertificatePage />} />
-            <Route path="/investment-lab/:moduleId" element={<InvestmentModule />} />
-            <Route path="/subscription" element={<Subscription />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <ProPromotionProvider>
+          <Toaster />
+          <Sonner 
+            position="top-center" 
+            toastOptions={{
+              style: {
+                background: 'hsl(218 52% 13%)',
+                border: '1px solid hsl(220 25% 18%)',
+                color: 'hsl(220 20% 97%)',
+              },
+            }}
+          />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Auth />} />
+              <Route path="/select-market" element={<SelectMarket />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/roadmap" element={<Roadmap />} />
+              <Route path="/notebook" element={<Notebook />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/trainer" element={<Trainer />} />
+              <Route path="/games" element={<Games />} />
+              <Route path="/drills" element={<Drills />} />
+              <Route path="/summaries" element={<Summaries />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/achievements" element={<Achievements />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/admin/content" element={<AdminContent />} />
+              <Route path="/regulatory-hub" element={<RegulatoryHub />} />
+              <Route path="/investment-lab" element={<InvestmentLab />} />
+              <Route path="/investment-lab/watchlist" element={<InvestmentWatchlist />} />
+              <Route path="/investment-lab/certificate" element={<InvestmentCertificatePage />} />
+              <Route path="/investment-lab/:moduleId" element={<InvestmentModule />} />
+              <Route path="/subscription" element={<Subscription />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </ProPromotionProvider>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
