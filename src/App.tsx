@@ -22,6 +22,7 @@ import RegulatoryHub from "./pages/RegulatoryHub";
 import InvestmentLab from "./pages/InvestmentLab";
 import InvestmentModule from "./pages/InvestmentModule";
 import InvestmentCertificatePage from "./pages/InvestmentCertificatePage";
+import InvestmentWatchlist from "./pages/InvestmentWatchlist";
 import Subscription from "./pages/Subscription";
 import NotFound from "./pages/NotFound";
 
@@ -60,8 +61,9 @@ const App = () => (
             <Route path="/admin/content" element={<AdminContent />} />
             <Route path="/regulatory-hub" element={<RegulatoryHub />} />
             <Route path="/investment-lab" element={<InvestmentLab />} />
-            <Route path="/investment-lab/:moduleId" element={<InvestmentModule />} />
+            <Route path="/investment-lab/watchlist" element={<InvestmentWatchlist />} />
             <Route path="/investment-lab/certificate" element={<InvestmentCertificatePage />} />
+            <Route path="/investment-lab/:moduleId" element={<InvestmentModule />} />
             <Route path="/subscription" element={<Subscription />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

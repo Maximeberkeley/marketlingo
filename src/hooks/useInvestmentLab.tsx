@@ -82,9 +82,8 @@ export function useInvestmentLab(marketId?: string) {
         .eq("market_id", marketId)
         .maybeSingle();
 
-      // TEMPORARY: Always unlock for testing during development
-      // TODO: Change back to (userProgress?.current_day || 0) >= 30 for production
-      const unlocked = true; // Always unlocked for now
+      // Unlock Investment Lab after Day 30 of curriculum
+      const unlocked = (userProgress?.current_day || 0) >= 30;
       setIsUnlocked(unlocked);
 
       if (!unlocked) {
