@@ -86,7 +86,7 @@ ${context ? `Current lesson context: ${context}` : ""}`;
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm overflow-hidden"
         onClick={onClose}
       >
         <motion.div
@@ -95,7 +95,7 @@ ${context ? `Current lesson context: ${context}` : ""}`;
           exit={{ y: "100%" }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
           onClick={e => e.stopPropagation()}
-          className="absolute bottom-0 left-0 right-0 h-[85vh] bg-bg-1 rounded-t-3xl flex flex-col overflow-hidden"
+          className="absolute bottom-0 left-0 right-0 h-[70vh] bg-bg-1 rounded-t-3xl flex flex-col overflow-hidden"
         >
           {/* Header */}
           <div className="flex items-center gap-3 p-4 border-b border-border">
