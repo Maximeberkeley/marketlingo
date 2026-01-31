@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Star, Sparkles, Flame } from "lucide-react";
 import leoMascot from "@/assets/mascot/leo-mascot.png";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 
 interface LeoCelebrationProps {
   isVisible: boolean;
@@ -10,14 +12,21 @@ interface LeoCelebrationProps {
 }
 
 export function LeoCelebration({ isVisible, type, message, onComplete }: LeoCelebrationProps) {
+  const { play } = useSoundEffects();
   const messages = {
     lesson: ["You're on fire! 🔥", "Lesson complete!", "Knowledge unlocked!", "You crushed it!"],
     game: ["Game champion! 🏆", "Brain power!", "You nailed it!", "Winning streak!"],
     drill: ["Speed demon! ⚡", "Quick thinking!", "Sharp mind!", "Lightning fast!"],
     achievement: ["Achievement unlocked! 🌟", "New badge earned!", "You're growing!", "Milestone reached!"],
   };
-
   const randomMessage = message || messages[type][Math.floor(Math.random() * messages[type].length)];
+
+  // Play celebration sound when visible
+  useEffect(() => {
+    if (isVisible) {
+      play("celebration");
+    }
+  }, [isVisible, play]);
 
   return (
     <AnimatePresence>

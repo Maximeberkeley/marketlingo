@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { MentorCelebration } from "@/components/mascot/MentorCelebration";
+import { LeoMascot, getRandomLeoMessage } from "@/components/mascot/LeoMascot";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { mentors, Mentor } from "@/data/mentors";
 import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
 import { toast } from "sonner";
@@ -36,6 +38,8 @@ export default function GamesPage() {
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [showIntro, setShowIntro] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [leoMessage, setLeoMessage] = useState<string | null>(null);
+  const { play } = useSoundEffects();
   
   // Get market config for theming
   const marketConfig = selectedMarket ? getMarketConfig(selectedMarket) : null;
@@ -132,6 +136,11 @@ export default function GamesPage() {
 
     if (index === question.correctAnswer) {
       setScore((prev) => prev + 1);
+      play("correct");
+      setLeoMessage(getRandomLeoMessage("correct"));
+    } else {
+      play("incorrect");
+      setLeoMessage(getRandomLeoMessage("incorrect"));
     }
   };
 
@@ -189,7 +198,7 @@ export default function GamesPage() {
   // Intro screen
   if (showIntro && questions.length > 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden max-w-full">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -262,7 +271,7 @@ export default function GamesPage() {
 
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden max-w-full">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -289,7 +298,7 @@ export default function GamesPage() {
 
   if (gameComplete) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden max-w-full">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -337,8 +346,8 @@ export default function GamesPage() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background flex flex-col">
+    return (
+      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden max-w-full">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}

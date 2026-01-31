@@ -131,7 +131,7 @@ export default function ProfilePage() {
 
   return (
     <AppLayout>
-      <div className="screen-padding pt-12 safe-bottom">
+      <div className="screen-padding pt-12 safe-bottom overflow-x-hidden max-w-full">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
