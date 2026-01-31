@@ -4,10 +4,6 @@ const config: CapacitorConfig = {
   appId: 'app.marketlingo.aerospace',
   appName: 'MarketLingo',
   webDir: 'dist',
-  server: {
-    url: 'https://94df7a76-87ec-4521-8c73-86e5aa46d211.lovableproject.com?forceHideBadge=true',
-    cleartext: true,
-  },
   ios: {
     contentInset: 'automatic',
     preferredContentMode: 'mobile',
