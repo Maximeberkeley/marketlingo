@@ -194,6 +194,13 @@ export type Database = {
             referencedRelation: "investment_scenarios"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "investment_attempts_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "investment_scenarios_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       investment_lab_progress: {
@@ -678,6 +685,13 @@ export type Database = {
             referencedRelation: "trainer_scenarios"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "trainer_attempts_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "trainer_scenarios_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       trainer_scenarios: {
@@ -807,6 +821,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_xp: {
         Row: {
           created_at: string
@@ -894,14 +929,119 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      investment_scenarios_public: {
+        Row: {
+          created_at: string | null
+          difficulty: string | null
+          id: string | null
+          market_id: string | null
+          options: Json | null
+          question: string | null
+          scenario: string | null
+          scenario_type: string | null
+          tags: string[] | null
+          title: string | null
+          valuation_model: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          difficulty?: string | null
+          id?: string | null
+          market_id?: string | null
+          options?: Json | null
+          question?: string | null
+          scenario?: string | null
+          scenario_type?: string | null
+          tags?: string[] | null
+          title?: string | null
+          valuation_model?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          difficulty?: string | null
+          id?: string | null
+          market_id?: string | null
+          options?: Json | null
+          question?: string | null
+          scenario?: string | null
+          scenario_type?: string | null
+          tags?: string[] | null
+          title?: string | null
+          valuation_model?: string | null
+        }
+        Relationships: []
+      }
+      trainer_scenarios_public: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          market_id: string | null
+          options: Json | null
+          question: string | null
+          scenario: string | null
+          sources: Json | null
+          tags: string[] | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          market_id?: string | null
+          options?: Json | null
+          question?: string | null
+          scenario?: string | null
+          sources?: Json | null
+          tags?: string[] | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          market_id?: string | null
+          options?: Json | null
+          question?: string | null
+          scenario?: string | null
+          sources?: Json | null
+          tags?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trainer_scenarios_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       calculate_level: { Args: { xp: number }; Returns: number }
       calculate_startup_stage: { Args: { xp: number }; Returns: number }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      submit_investment_answer: {
+        Args: {
+          p_scenario_id: string
+          p_selected_option: number
+          p_time_spent?: number
+        }
+        Returns: Json
+      }
+      submit_trainer_answer: {
+        Args: {
+          p_scenario_id: string
+          p_selected_option: number
+          p_time_spent?: number
+        }
+        Returns: Json
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1028,6 +1168,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
