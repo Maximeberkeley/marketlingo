@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProPromotionProvider } from "@/components/subscription/ProPromotionProvider";
+import { AdminGuard } from "@/components/admin/AdminGuard";
 import Auth from "./pages/Auth";
 import SelectMarket from "./pages/SelectMarket";
 import Home from "./pages/Home";
@@ -60,7 +61,7 @@ const App = () => (
               <Route path="/settings" element={<Settings />} />
               <Route path="/achievements" element={<Achievements />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
-              <Route path="/admin/content" element={<AdminContent />} />
+              <Route path="/admin/content" element={<AdminGuard><AdminContent /></AdminGuard>} />
               <Route path="/regulatory-hub" element={<RegulatoryHub />} />
               <Route path="/investment-lab" element={<InvestmentLab />} />
               <Route path="/investment-lab/watchlist" element={<InvestmentWatchlist />} />

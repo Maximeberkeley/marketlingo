@@ -60,7 +60,6 @@ async function sendToFCM(token: string, title: string, body: string, data?: Reco
     const result = await response.json();
     console.log('FCM response:', result);
     
-    // Check if the message was sent successfully
     if (result.success === 1) {
       return true;
     } else if (result.failure === 1) {
@@ -81,12 +80,58 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Authentication check
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - no auth token provided' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    
+    // Verify user with anon key first
+    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getClaims(token);
+    
+    if (claimsError || !claimsData?.claims) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - invalid token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const userId = claimsData.claims.sub as string;
+    console.log('Authenticated user for push notification:', userId);
+
+    // Use service role for database operations
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const payload: NotificationPayload = await req.json();
     console.log('Processing notification:', payload.type, 'for user:', payload.userId || 'all');
+
+    // Security: Users can only send notifications to themselves unless they're admin
+    if (payload.userId && payload.userId !== userId) {
+      // Check if user is admin
+      const { data: isAdmin } = await supabase.rpc('has_role', {
+        _user_id: userId,
+        _role: 'admin',
+      });
+      
+      if (!isAdmin) {
+        return new Response(
+          JSON.stringify({ error: 'Forbidden - cannot send notifications to other users' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
 
     // Get push tokens from profiles
     let query = supabase
@@ -94,8 +139,21 @@ Deno.serve(async (req) => {
       .select('id, push_token, notification_preferences')
       .not('push_token', 'is', null);
 
+    // If userId specified, only target that user
+    // Otherwise, only admins can send to all
     if (payload.userId) {
       query = query.eq('id', payload.userId);
+    } else {
+      // For broadcast, require admin
+      const { data: isAdmin } = await supabase.rpc('has_role', {
+        _user_id: userId,
+        _role: 'admin',
+      });
+      
+      if (!isAdmin) {
+        // Non-admin can only send to themselves
+        query = query.eq('id', userId);
+      }
     }
 
     const { data: users, error } = await query;
@@ -152,8 +210,6 @@ Deno.serve(async (req) => {
         successCount++;
       } else {
         failCount++;
-        // If token is invalid, we could remove it from the database
-        // This is optional but helps keep the database clean
       }
     }
 

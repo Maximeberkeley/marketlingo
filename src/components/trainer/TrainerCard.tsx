@@ -24,7 +24,16 @@ interface TrainerCardProps {
   onSaveToNotebook: () => void;
   onNext: () => void;
   onAskMentor?: (question: string) => void;
-  onAttemptComplete?: (isCorrect: boolean, selectedOption: number) => void;
+  onAttemptComplete?: (isCorrect: boolean, selectedOption: number) => Promise<ServerFeedback | undefined>;
+}
+
+interface ServerFeedback {
+  isCorrect: boolean;
+  correctIndex: number;
+  feedback_pro_reasoning: string | null;
+  feedback_common_mistake: string | null;
+  feedback_mental_model: string | null;
+  follow_up_question: string | null;
 }
 
 type EvaluationLevel = "strong" | "needs-work" | "off-track";
@@ -60,29 +69,53 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
   const [showFeedback, setShowFeedback] = useState(false);
   const [evaluation, setEvaluation] = useState<EvaluationLevel | null>(null);
   const [showWhyPopup, setShowWhyPopup] = useState(false);
+  const [serverFeedback, setServerFeedback] = useState<ServerFeedback | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Reset state when scenario changes
   useEffect(() => {
     setSelectedIndex(null);
     setShowFeedback(false);
     setEvaluation(null);
+    setServerFeedback(null);
+    setIsSubmitting(false);
   }, [scenario.question]); // Use question as key since it's unique per scenario
   
   const whyExplanation = scenario.whyThisScenario || getWhyThisScenario(scenario.scenario, scenario.question);
   
-  const handleOptionSelect = (index: number) => {
-    if (showFeedback) return;
+  const handleOptionSelect = async (index: number) => {
+    if (showFeedback || isSubmitting) return;
     
     setSelectedIndex(index);
-    const isCorrect = scenario.options[index].isCorrect;
-    setEvaluation(isCorrect ? "strong" : "needs-work");
+    setIsSubmitting(true);
     
-    // Track the attempt for progress persistence
-    onAttemptComplete?.(isCorrect, index);
-    
-    setTimeout(() => {
+    try {
+      // Submit to server and get feedback
+      const feedback = await onAttemptComplete?.(false, index); // isCorrect is determined by server
+      
+      if (feedback) {
+        setServerFeedback(feedback);
+        setEvaluation(feedback.isCorrect ? "strong" : "needs-work");
+        
+        // Update the options with correct answer from server
+        scenario.options.forEach((opt, i) => {
+          opt.isCorrect = i === feedback.correctIndex;
+        });
+      } else {
+        // Fallback if no server response (shouldn't happen)
+        setEvaluation("needs-work");
+      }
+      
+      setTimeout(() => {
+        setShowFeedback(true);
+      }, 300);
+    } catch (error) {
+      console.error("Error submitting answer:", error);
+      setEvaluation("off-track");
       setShowFeedback(true);
-    }, 300);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   const evaluationStyles: Record<EvaluationLevel, { bg: string; text: string; label: string }> = {
@@ -116,23 +149,25 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
       <div className="space-y-3 mb-6">
         {scenario.options.map((option, index) => {
           const isSelected = selectedIndex === index;
-          const isCorrect = option.isCorrect;
+          const isCorrectOption = serverFeedback ? index === serverFeedback.correctIndex : false;
           
           let optionStyle = "";
           if (showFeedback && isSelected) {
-            optionStyle = isCorrect ? "border-green-500 bg-green-500/10" : "border-amber-500 bg-amber-500/10";
-          } else if (showFeedback && isCorrect) {
+            optionStyle = isCorrectOption ? "border-green-500 bg-green-500/10" : "border-amber-500 bg-amber-500/10";
+          } else if (showFeedback && isCorrectOption) {
             optionStyle = "border-green-500/50";
           } else if (isSelected) {
             optionStyle = "border-primary";
+          } else if (isSubmitting) {
+            optionStyle = "opacity-50";
           }
           
           return (
             <motion.button
               key={index}
-              whileTap={!showFeedback ? { scale: 0.98 } : undefined}
-              onClick={() => handleOptionSelect(index)}
-              disabled={showFeedback}
+            whileTap={!showFeedback && !isSubmitting ? { scale: 0.98 } : undefined}
+            onClick={() => handleOptionSelect(index)}
+            disabled={showFeedback || isSubmitting}
               className={`w-full p-4 rounded-card border text-left transition-all no-select ${
                 optionStyle || "border-border bg-bg-2 hover:border-text-muted"
               }`}
@@ -167,7 +202,9 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
                   <TrendingUp size={16} className="text-green-400" />
                   <h4 className="text-caption font-semibold text-green-400">Pro Reasoning</h4>
                 </div>
-                <p className="text-body text-text-secondary leading-relaxed">{scenario.feedbackProReasoning}</p>
+                <p className="text-body text-text-secondary leading-relaxed">
+                  {serverFeedback?.feedback_pro_reasoning || scenario.feedbackProReasoning || "No feedback available."}
+                </p>
               </div>
               
               {/* Common Mistake */}
@@ -176,7 +213,9 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
                   <AlertTriangle size={16} className="text-amber-400" />
                   <h4 className="text-caption font-semibold text-amber-400">Common Mistake</h4>
                 </div>
-                <p className="text-body text-text-secondary leading-relaxed">{scenario.feedbackCommonMistake}</p>
+                <p className="text-body text-text-secondary leading-relaxed">
+                  {serverFeedback?.feedback_common_mistake || scenario.feedbackCommonMistake || "No feedback available."}
+                </p>
               </div>
               
               {/* Mental Model */}
@@ -185,7 +224,9 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
                   <Brain size={16} className="text-blue-400" />
                   <h4 className="text-caption font-semibold text-blue-400">Mental Model</h4>
                 </div>
-                <p className="text-body text-text-secondary leading-relaxed">{scenario.feedbackMentalModel}</p>
+                <p className="text-body text-text-secondary leading-relaxed">
+                  {serverFeedback?.feedback_mental_model || scenario.feedbackMentalModel || "No feedback available."}
+                </p>
               </div>
               
               {/* Startup Application */}
@@ -194,7 +235,9 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
                   <Briefcase size={16} className="text-accent" />
                   <h4 className="text-caption font-semibold text-accent">For Your Startup</h4>
                 </div>
-                <p className="text-body text-text-muted italic leading-relaxed">{scenario.followUpQuestion}</p>
+                <p className="text-body text-text-muted italic leading-relaxed">
+                  {serverFeedback?.follow_up_question || scenario.followUpQuestion || "Consider how this applies to your startup."}
+                </p>
               </div>
             </div>
             
@@ -221,7 +264,7 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
                   variant="default" 
                   size="default" 
                   className="w-full bg-accent hover:bg-accent/90 text-white"
-                  onClick={() => onAskMentor(scenario.followUpQuestion)}
+                  onClick={() => onAskMentor(serverFeedback?.follow_up_question || scenario.followUpQuestion)}
                 >
                   <MessageCircle size={18} />
                   Chat with Sophia

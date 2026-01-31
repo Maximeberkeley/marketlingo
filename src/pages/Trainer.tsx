@@ -15,6 +15,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 
+interface TrainerScenarioPublic {
+  id: string;
+  market_id: string;
+  scenario: string;
+  question: string;
+  options: unknown[];
+  tags: string[] | null;
+  sources: unknown[] | null;
+  created_at: string;
+}
+
 interface TrainerScenario {
   id: string;
   scenario: string;
@@ -59,10 +70,13 @@ export default function TrainerPage() {
       const market = profile?.selected_market || "aerospace";
       setSelectedMarket(market);
 
-      // Fetch trainer scenarios for this market
+      // Fetch trainer scenarios using direct table query
+      // Note: The view trainer_scenarios_public would be used in production
+      // but since types aren't generated for views, we query the table directly
+      // The RLS policy restricts access appropriately
       const { data: scenarioData, error: scenarioError } = await supabase
         .from("trainer_scenarios")
-        .select("*")
+        .select("id, market_id, scenario, question, options, tags, sources, created_at")
         .eq("market_id", market)
         .order("created_at", { ascending: true });
 
@@ -72,6 +86,8 @@ export default function TrainerPage() {
         return;
       }
 
+      // Transform scenarios - we don't have correct_option_index on client side anymore
+      // The isCorrect will be determined by the server when submitting
       const formattedScenarios = (scenarioData || []).map((s) => {
         // Handle both formats: objects with {label, isCorrect} or plain strings
         let options: { label: string; isCorrect: boolean }[] = [];
@@ -79,21 +95,31 @@ export default function TrainerPage() {
         if (Array.isArray(s.options)) {
           options = (s.options as unknown[]).map((opt, idx) => {
             if (typeof opt === 'string') {
-              // Plain string format - use correct_option_index to determine correctness
-              return { label: opt, isCorrect: idx === s.correct_option_index };
+              // Plain string format - isCorrect is unknown on client, will be verified by server
+              return { label: opt, isCorrect: false };
             } else if (typeof opt === 'object' && opt !== null && 'label' in opt) {
-              // Object format with label
+              // Object format with label - strip isCorrect as server validates
               const optObj = opt as { label: string; isCorrect?: boolean };
               return { 
                 label: optObj.label, 
-                isCorrect: optObj.isCorrect ?? (idx === s.correct_option_index)
+                isCorrect: false // Client doesn't know correct answer
               };
             }
-            return { label: String(opt), isCorrect: idx === s.correct_option_index };
+            return { label: String(opt), isCorrect: false };
           });
         }
         
-        return { ...s, options };
+        return { 
+          id: s.id,
+          scenario: s.scenario,
+          question: s.question,
+          options,
+          feedback_pro_reasoning: null,
+          feedback_common_mistake: null,
+          feedback_mental_model: null,
+          follow_up_question: null,
+          correct_option_index: -1 // Unknown on client side
+        } as TrainerScenario;
       });
       setScenarios(formattedScenarios);
 
@@ -156,15 +182,32 @@ export default function TrainerPage() {
     }
   };
 
-  const handleAttemptComplete = async (isCorrect: boolean, selectedOption: number) => {
-    if (!user || !currentScenario) return;
+  const handleAttemptComplete = async (_isCorrect: boolean, selectedOption: number) => {
+    if (!user || !currentScenario) return undefined;
 
-    await supabase.from("trainer_attempts").insert({
-      user_id: user.id,
-      scenario_id: currentScenario.id,
-      selected_option: selectedOption,
-      is_correct: isCorrect,
+    // Use secure RPC function to submit answer (prevents cheating)
+    const { data, error } = await supabase.rpc("submit_trainer_answer", {
+      p_scenario_id: currentScenario.id,
+      p_selected_option: selectedOption,
+      p_time_spent: null,
     });
+
+    if (error) {
+      console.error("Error submitting answer:", error);
+      return undefined;
+    }
+
+    // Cast the JSON response to the expected format
+    const result = data as {
+      isCorrect: boolean;
+      correctIndex: number;
+      feedback_pro_reasoning: string | null;
+      feedback_common_mistake: string | null;
+      feedback_mental_model: string | null;
+      follow_up_question: string | null;
+    } | null;
+
+    return result || undefined;
   };
 
   if (loading) {
