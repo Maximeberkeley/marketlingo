@@ -221,7 +221,7 @@ export default function TrainerPage() {
   // Intro screen
   if (showIntro && scenarios.length > 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -294,7 +294,7 @@ export default function TrainerPage() {
 
   if (scenarios.length === 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -331,7 +331,7 @@ export default function TrainerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}

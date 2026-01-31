@@ -345,25 +345,24 @@ export default function NotebookPage() {
         )}
       </div>
 
-      {/* Add Note Modal */}
+      {/* Add Note Modal - keyboard aware */}
       <AnimatePresence>
         {showAddNote && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/60 flex items-end justify-center"
+            className="fixed inset-0 z-50 bg-black/60 flex items-start justify-center pt-16 overflow-y-auto"
             onClick={() => setShowAddNote(false)}
           >
             <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 50, opacity: 0 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg bg-bg-1 rounded-t-3xl p-6 pb-8"
+              className="w-[calc(100%-32px)] max-w-lg bg-bg-1 rounded-2xl p-5 mb-8 mx-4"
             >
-              <div className="w-10 h-1 rounded-full bg-text-muted/30 mx-auto mb-4" />
               <h2 className="text-h2 text-text-primary mb-4">New Note</h2>
               
               <textarea

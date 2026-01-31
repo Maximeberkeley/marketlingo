@@ -95,6 +95,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
   }
 
   body {
@@ -103,6 +104,9 @@
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     background: var(--gradient-bg);
     min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
   }
   
   /* Typography Scale - Strict adherence */
