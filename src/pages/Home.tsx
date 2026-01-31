@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronRight, Gamepad2, Target, Sparkles, Loader2, Trophy, Award, CheckCircle2, BookOpen, Newspaper, FlaskConical, TrendingUp, Crown, Lock } from "lucide-react";
@@ -20,8 +20,14 @@ import { useUserProgress } from "@/hooks/useUserProgress";
 import { useUserXP, XP_REWARDS } from "@/hooks/useUserXP";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useProPromotionContext } from "@/components/subscription/ProPromotionProvider";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+
+// Lazy load 3D component for performance
+const Leo3DInteractive = lazy(() => 
+  import("@/components/mascot/Leo3D").then(mod => ({ default: mod.Leo3DInteractive }))
+);
 
 // Import warm Duolingo-style images
 import lessonHero from "@/assets/cards/lesson-hero.jpg";
@@ -64,12 +70,37 @@ export default function HomePage() {
   const [activeStack, setActiveStack] = useState<StackWithSlides | null>(null);
   const [showNotificationOnboarding, setShowNotificationOnboarding] = useState(false);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
+  const [leoMessage, setLeoMessage] = useState<string>("");
   
   const { isSupported, isRegistered } = useNotifications();
   const { triggerAfterLesson, isProUser } = useProPromotionContext();
+  const { play } = useSoundEffects();
   const lessonCompletedToday = isLessonCompletedToday();
   const currentStage = getCurrentStage();
   const stageProgress = getProgressToNextStage();
+
+  // Set Leo's greeting based on time of day and streak
+  useEffect(() => {
+    const currentStreak = progress?.current_streak || 0;
+    const hour = new Date().getHours();
+    let greeting = "";
+    
+    if (hour < 12) {
+      greeting = "Good morning! Ready to learn? ☀️";
+    } else if (hour < 17) {
+      greeting = "Good afternoon! Let's keep going! 🚀";
+    } else {
+      greeting = "Evening study session! 🌙";
+    }
+    
+    if (currentStreak >= 7) {
+      greeting = `${currentStreak} day streak! You're on fire! 🔥`;
+    } else if (lessonCompletedToday) {
+      greeting = "Lesson done! Try a game? 🎮";
+    }
+    
+    setLeoMessage(greeting);
+  }, [progress?.current_streak, lessonCompletedToday]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -235,11 +266,31 @@ export default function HomePage() {
           </div>
         </motion.div>
 
+        {/* Leo 3D Greeting */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.05, type: "spring" }}
+          className="flex items-center justify-center mb-4"
+        >
+          <Suspense fallback={
+            <div className="w-[100px] h-[100px] flex items-center justify-center">
+              <LeoMascot size="lg" message={leoMessage} mood="happy" />
+            </div>
+          }>
+            <Leo3DInteractive 
+              size={100} 
+              initialMessage={leoMessage}
+              onTap={() => play("tap")}
+            />
+          </Suspense>
+        </motion.div>
+
         {/* Startup Progress - Compact */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
+          transition={{ delay: 0.1 }}
           className="mb-5"
         >
           <div className="flex items-center justify-between mb-2">

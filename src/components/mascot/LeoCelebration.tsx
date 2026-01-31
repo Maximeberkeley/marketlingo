@@ -1,17 +1,23 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Star, Sparkles, Flame } from "lucide-react";
 import leoMascot from "@/assets/mascot/leo-mascot.png";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+
+// Lazy load 3D celebration for performance
+const Leo3DCelebration = lazy(() => 
+  import("./Leo3DCelebration").then(mod => ({ default: mod.Leo3DCelebration }))
+);
 
 interface LeoCelebrationProps {
   isVisible: boolean;
   type: "lesson" | "game" | "drill" | "achievement";
   message?: string;
   onComplete?: () => void;
+  use3D?: boolean;
 }
 
-export function LeoCelebration({ isVisible, type, message, onComplete }: LeoCelebrationProps) {
+export function LeoCelebration({ isVisible, type, message, onComplete, use3D = false }: LeoCelebrationProps) {
   const { play } = useSoundEffects();
   const messages = {
     lesson: ["You're on fire! 🔥", "Lesson complete!", "Knowledge unlocked!", "You crushed it!"],
@@ -27,6 +33,20 @@ export function LeoCelebration({ isVisible, type, message, onComplete }: LeoCele
       play("celebration");
     }
   }, [isVisible, play]);
+
+  // Use 3D celebration if requested
+  if (use3D) {
+    return (
+      <Suspense fallback={null}>
+        <Leo3DCelebration 
+          isVisible={isVisible} 
+          type={type} 
+          message={message} 
+          onComplete={onComplete} 
+        />
+      </Suspense>
+    );
+  }
 
   return (
     <AnimatePresence>
