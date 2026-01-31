@@ -389,6 +389,7 @@ export default function TrainerPage() {
             }
           }}
           onAttemptComplete={handleAttemptComplete}
+          marketId={selectedMarket || undefined}
         />
       </motion.div>
 
