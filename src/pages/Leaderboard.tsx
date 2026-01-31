@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Trophy, Zap, Flame, Medal, Crown } from "lucide-react";
+import { ArrowLeft, Trophy, Zap, Flame, Medal, Crown, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { markets } from "@/data/markets";
 
 interface LeaderboardEntry {
   rank: number;
@@ -24,6 +25,9 @@ export default function LeaderboardPage() {
   const [loading, setLoading] = useState(true);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
+
+  const marketData = markets.find(m => m.id === selectedMarket);
+  const marketName = marketData?.name || selectedMarket?.charAt(0).toUpperCase() + selectedMarket?.slice(1) || "Loading";
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -95,15 +99,15 @@ export default function LeaderboardPage() {
   }, [user]);
 
   const getRankIcon = (rank: number) => {
-    if (rank === 1) return <Crown size={18} className="text-amber-400" />;
-    if (rank === 2) return <Medal size={18} className="text-slate-300" />;
-    if (rank === 3) return <Medal size={18} className="text-orange-400" />;
-    return <span className="text-caption font-medium text-text-muted">#{rank}</span>;
+    if (rank === 1) return <Crown size={20} className="text-amber-400" />;
+    if (rank === 2) return <Medal size={20} className="text-slate-300" />;
+    if (rank === 3) return <Medal size={20} className="text-orange-400" />;
+    return <span className="text-body font-semibold text-text-muted">#{rank}</span>;
   };
 
   return (
     <AppLayout showNav={false}>
-      <div className="min-h-screen bg-background overflow-x-hidden">
+      <div className="min-h-screen bg-background overflow-x-hidden max-w-full">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border">
           <div className="flex items-center gap-3 px-4 py-4">
@@ -111,9 +115,12 @@ export default function LeaderboardPage() {
               <ArrowLeft size={24} className="text-text-secondary" />
             </button>
             <div className="flex-1">
-              <h1 className="text-h2 text-text-primary">Leaderboard</h1>
+              <h1 className="text-h2 text-text-primary flex items-center gap-2">
+                <Trophy size={22} className="text-amber-400" />
+                Leaderboard
+              </h1>
               <p className="text-caption text-text-muted">
-                {selectedMarket ? `${selectedMarket.charAt(0).toUpperCase() + selectedMarket.slice(1)} Market` : "Loading..."}
+                {marketName} Industry
               </p>
             </div>
             {currentUserRank && (
@@ -125,7 +132,37 @@ export default function LeaderboardPage() {
           </div>
         </div>
 
-        <div className="px-4 py-4 pb-28">
+        {/* Prize Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mx-4 mt-4 p-4 rounded-xl bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-orange-500/20 border border-amber-500/30"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+              <Sparkles size={20} className="text-amber-400" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-body font-semibold text-text-primary mb-1">
+                Become the Industry Master
+              </h3>
+              <p className="text-caption text-text-secondary leading-relaxed">
+                The <span className="text-amber-400 font-medium">#1 ranked user</span> in each industry every 6 months wins{" "}
+                <span className="text-amber-400 font-semibold">1 Full Year of MarketLingo Premium!</span>
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Industry indicator */}
+        <div className="px-4 pt-4 pb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bg-2 border border-border">
+            {marketData?.emoji && <span className="text-sm">{marketData.emoji}</span>}
+            <span className="text-caption font-medium text-text-primary">{marketName} Rankings</span>
+          </div>
+        </div>
+
+        <div className="px-4 py-2 pb-28">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
@@ -148,11 +185,13 @@ export default function LeaderboardPage() {
                     "flex items-center gap-3 p-3 rounded-xl border transition-all",
                     entry.isCurrentUser
                       ? "bg-accent/10 border-accent/30"
-                      : "bg-bg-2/50 border-border"
+                      : entry.rank <= 3
+                        ? "bg-gradient-to-r from-amber-500/5 to-transparent border-amber-500/20"
+                        : "bg-bg-2/50 border-border"
                   )}
                 >
                   {/* Rank */}
-                  <div className="w-8 flex items-center justify-center">
+                  <div className="w-10 flex items-center justify-center">
                     {getRankIcon(entry.rank)}
                   </div>
 
@@ -179,9 +218,9 @@ export default function LeaderboardPage() {
                   </div>
 
                   {/* XP */}
-                  <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-bg-1">
-                    <Zap size={12} className="text-accent" />
-                    <span className="text-caption font-medium text-text-primary">
+                  <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-bg-1">
+                    <Zap size={14} className="text-accent" />
+                    <span className="text-caption font-semibold text-text-primary">
                       {entry.total_xp.toLocaleString()}
                     </span>
                   </div>

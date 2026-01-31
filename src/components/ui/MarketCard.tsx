@@ -55,7 +55,7 @@ export function MarketCard({
     <motion.button
       whileTap={{ scale: 0.98 }}
       onClick={handleClick}
-      className={`relative flex flex-col items-start justify-between h-[120px] w-full p-4 rounded-card transition-all duration-200 no-select ${
+      className={`relative flex flex-col items-center justify-between h-[120px] w-full p-4 rounded-card transition-all duration-200 no-select ${
         isActive
           ? "selected-ring bg-bg-2"
           : "bg-bg-2 border border-border hover:border-text-muted"
@@ -68,7 +68,7 @@ export function MarketCard({
       >
         <IconComponent size={20} />
       </div>
-      <span className="text-h3 text-text-primary">{name}</span>
+      <span className="text-h3 text-text-primary text-center">{name}</span>
       
       {isActive && (
         <motion.div
