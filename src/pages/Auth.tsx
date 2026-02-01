@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,9 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { z } from "zod";
-
-// Lazy load 3D Leo for performance
-const Leo3D = lazy(() => import("@/components/mascot/Leo3D").then(m => ({ default: m.Leo3D })));
+import { Leo2D } from "@/components/mascot/Leo2D";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
@@ -113,22 +111,19 @@ export default function AuthPage() {
       }} transition={{
         duration: 0.3
       }} className="w-full max-w-sm flex flex-col items-center">
-            {/* 3D Leo Mascot */}
+            {/* 2D Disney-style Leo Mascot */}
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }} 
               animate={{ scale: 1, opacity: 1 }} 
               transition={{ delay: 0.1, duration: 0.4 }}
-              className="mb-6"
+              className="mb-6 flex flex-col items-center"
             >
-              <Suspense fallback={<div className="w-32 h-32 rounded-full bg-bg-2 animate-pulse" />}>
-                <Leo3D 
-                  animation="idle"
-                  size={140}
-                />
-              </Suspense>
-              <p className="text-center text-caption text-text-secondary mt-2">
-                Welcome to MarketLingo! 👋
-              </p>
+              <Leo2D 
+                size="xl"
+                animation="idle"
+                message="Welcome to MarketLingo! 👋"
+                showMessage={true}
+              />
             </motion.div>
 
             {/* Title */}

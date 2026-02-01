@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProPromotionProvider } from "@/components/subscription/ProPromotionProvider";
 import { AdminGuard } from "@/components/admin/AdminGuard";
+import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import Auth from "./pages/Auth";
 import SelectMarket from "./pages/SelectMarket";
 import Home from "./pages/Home";
@@ -46,6 +47,7 @@ const App = () => (
           }}
         />
         <BrowserRouter>
+          <ScrollToTop />
           <ProPromotionProvider>
             <Routes>
               <Route path="/" element={<Auth />} />
