@@ -12,7 +12,7 @@ import { DailyNews } from "@/components/home/DailyNews";
 import { NotificationOnboarding } from "@/components/onboarding/NotificationOnboarding";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { LeoMascot, getRandomLeoMessage } from "@/components/mascot/LeoMascot";
-import { Leo2DInteractive } from "@/components/mascot/Leo2D";
+import { LeoInteractive } from "@/components/mascot/LeoStateMachine";
 import { Mentor } from "@/data/mentors";
 import { getMarketEmoji, getMarketName, getMarketById } from "@/data/markets";
 import { toast } from "sonner";
@@ -269,7 +269,7 @@ export default function HomePage() {
           transition={{ delay: 0.05, type: "spring" }}
           className="flex items-center justify-center mb-4"
         >
-          <Leo2DInteractive 
+          <LeoInteractive 
             size="lg" 
             initialMessage={leoMessage}
             onTap={() => play("tap")}

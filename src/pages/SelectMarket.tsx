@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MarketCard } from "@/components/ui/MarketCard";
-import { LeoMascot, getRandomLeoMessage } from "@/components/mascot/LeoMascot";
+import { LeoInteractive } from "@/components/mascot/LeoStateMachine";
 import { markets } from "@/data/markets";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,7 +17,6 @@ export default function SelectMarketPage() {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [leoMessage] = useState(() => getRandomLeoMessage("marketSelect"));
 
   useEffect(() => {
     if (!loading && !user) {
@@ -86,13 +85,11 @@ export default function SelectMarketPage() {
         animate={{ opacity: 1, y: 0 }}
         className="screen-padding pt-8 pb-4 flex flex-col items-center"
       >
-        {/* Leo centered above text - using thinking animation for industry selection */}
+        {/* Leo centered above text - thinking animation for industry selection */}
         <div className="flex justify-center mb-6">
-          <LeoMascot 
+          <LeoInteractive 
             size="xl" 
-            message={leoMessage}
-            mood="thinking"
-            showBubble={true}
+            initialMessage="Pick one, master it! 🗺️"
           />
         </div>
         

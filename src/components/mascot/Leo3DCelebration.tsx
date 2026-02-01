@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { useEffect } from "react";
-import { Leo2D } from "./Leo2D";
+import { LeoCharacter } from "./LeoStateMachine";
 
 interface Leo3DCelebrationProps {
   isVisible: boolean;
@@ -145,14 +145,14 @@ export function Leo3DCelebration({
           <div className="relative">
             <Sparkles />
             
-            {/* Leo 2D Character - Celebrating */}
+            {/* Leo Character - Celebrating */}
             <motion.div
               initial={{ scale: 0.5, y: 50 }}
               animate={{ scale: 1, y: 0 }}
               transition={{ type: "spring", damping: 12, stiffness: 100 }}
               className="relative z-10 flex flex-col items-center"
             >
-              <Leo2D 
+              <LeoCharacter 
                 size="xl"
                 animation="celebrating"
               />
