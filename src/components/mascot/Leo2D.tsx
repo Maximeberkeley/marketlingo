@@ -145,195 +145,195 @@ export function Leo2D({
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        {/* White sticker outline effect */}
+        {/* Soft drop shadow under character */}
         <div 
-          className="absolute inset-0 rounded-full"
-          style={{
-            background: "white",
-            transform: "scale(1.06)",
-            filter: "blur(1px)",
-            zIndex: 0,
-          }}
-        />
-        
-        {/* Soft drop shadow */}
-        <div 
-          className="absolute left-1/2 -translate-x-1/2 bottom-0 w-4/5 h-6 rounded-full bg-black/20 blur-lg"
+          className="absolute left-1/2 -translate-x-1/2 bottom-0 w-3/5 h-4 rounded-full bg-black/25 blur-md"
           style={{ 
-            transform: "translateX(-50%) translateY(50%) scaleY(0.3)",
+            transform: "translateX(-50%) translateY(60%) scaleY(0.25)",
             zIndex: 0,
           }}
         />
 
-        {/* SVG Fox Character - Classic 2D Disney Style */}
+        {/* SVG Fox Character - Soft 3D Style like reference image */}
         <motion.svg
           viewBox="0 0 200 200"
           className="relative z-10 w-full h-full"
           animate={bodyVariants[animation]}
-          style={{ filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.15))" }}
+          style={{ filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.25))" }}
         >
           <defs>
-            {/* Gradients for cell-shading effect */}
-            <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#FF8C42" />
+            {/* Soft 3D gradients for rounded look */}
+            <radialGradient id="bodyGradient3D" cx="35%" cy="30%" r="70%">
+              <stop offset="0%" stopColor="#FF9B57" />
               <stop offset="50%" stopColor="#F97316" />
-              <stop offset="100%" stopColor="#EA580C" />
-            </linearGradient>
-            <linearGradient id="bellyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#FFF7ED" />
-              <stop offset="100%" stopColor="#FDBA74" />
-            </linearGradient>
-            <linearGradient id="hatGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#2D4A6F" />
-              <stop offset="100%" stopColor="#1E3A5F" />
-            </linearGradient>
-            <linearGradient id="tasselGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#FCD34D" />
-              <stop offset="100%" stopColor="#EAB308" />
-            </linearGradient>
-            <radialGradient id="cheekBlush" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#FCA5A5" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#FCA5A5" stopOpacity="0" />
+              <stop offset="100%" stopColor="#E56510" />
+            </radialGradient>
+            <radialGradient id="bellyGradient3D" cx="50%" cy="25%" r="80%">
+              <stop offset="0%" stopColor="#FFF5E8" />
+              <stop offset="70%" stopColor="#FFDDB8" />
+              <stop offset="100%" stopColor="#F5C896" />
+            </radialGradient>
+            <radialGradient id="hatGradient3D" cx="30%" cy="20%" r="80%">
+              <stop offset="0%" stopColor="#3B5F8C" />
+              <stop offset="100%" stopColor="#1A365D" />
+            </radialGradient>
+            <radialGradient id="tasselGradient3D" cx="40%" cy="30%" r="70%">
+              <stop offset="0%" stopColor="#FFE066" />
+              <stop offset="100%" stopColor="#D4A20F" />
+            </radialGradient>
+            <radialGradient id="cheekBlush3D" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#FF9E9E" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#FF9E9E" stopOpacity="0" />
+            </radialGradient>
+            <radialGradient id="eyeWhite3D" cx="45%" cy="40%" r="60%">
+              <stop offset="0%" stopColor="#FFFFFF" />
+              <stop offset="100%" stopColor="#F0F0F0" />
             </radialGradient>
           </defs>
 
-          {/* Tail */}
+          {/* Tail - soft round */}
           <motion.g 
             animate={tailVariants[animation]} 
-            style={{ originX: "160px", originY: "140px" }}
+            style={{ originX: "158px", originY: "135px" }}
           >
-            <ellipse cx="165" cy="140" rx="18" ry="35" fill="url(#bodyGradient)" stroke="#D97706" strokeWidth="2.5" transform="rotate(35, 165, 140)" />
-            <ellipse cx="175" cy="115" rx="10" ry="15" fill="#FFF7ED" stroke="#FDBA74" strokeWidth="1.5" transform="rotate(35, 175, 115)" />
+            <ellipse cx="162" cy="135" rx="20" ry="32" fill="url(#bodyGradient3D)" transform="rotate(30, 162, 135)" />
+            <ellipse cx="170" cy="112" rx="12" ry="16" fill="url(#bellyGradient3D)" transform="rotate(30, 170, 112)" />
           </motion.g>
 
-          {/* Body */}
-          <ellipse cx="100" cy="145" rx="45" ry="40" fill="url(#bodyGradient)" stroke="#D97706" strokeWidth="3" />
+          {/* Body - rounder, softer */}
+          <ellipse cx="100" cy="148" rx="50" ry="42" fill="url(#bodyGradient3D)" />
           
-          {/* Belly */}
-          <ellipse cx="100" cy="155" rx="28" ry="25" fill="url(#bellyGradient)" stroke="#FDBA74" strokeWidth="2" />
+          {/* Belly - cream colored, prominent */}
+          <ellipse cx="100" cy="155" rx="35" ry="30" fill="url(#bellyGradient3D)" />
 
-          {/* Left Paw */}
-          <ellipse cx="70" cy="178" rx="14" ry="10" fill="url(#bodyGradient)" stroke="#D97706" strokeWidth="2" />
+          {/* Left Arm/Paw */}
+          <ellipse cx="55" cy="145" rx="15" ry="12" fill="url(#bodyGradient3D)" />
           
-          {/* Right Paw */}
-          <ellipse cx="130" cy="178" rx="14" ry="10" fill="url(#bodyGradient)" stroke="#D97706" strokeWidth="2" />
+          {/* Right Arm/Paw - slightly waving position */}
+          <motion.ellipse 
+            cx="145" 
+            cy="142" 
+            rx="15" 
+            ry="12" 
+            fill="url(#bodyGradient3D)"
+            animate={animation === "waving" ? { 
+              cx: [145, 150, 145],
+              cy: [142, 135, 142]
+            } : {}}
+            transition={{ duration: 0.6, repeat: animation === "waving" ? Infinity : 0 }}
+          />
 
-          {/* Head */}
-          <circle cx="100" cy="85" r="48" fill="url(#bodyGradient)" stroke="#D97706" strokeWidth="3" />
-
-          {/* Left cheek fluff */}
-          <ellipse cx="55" cy="95" rx="15" ry="12" fill="url(#bodyGradient)" stroke="#D97706" strokeWidth="2" />
+          {/* Left Foot */}
+          <ellipse cx="72" cy="182" rx="16" ry="10" fill="url(#bodyGradient3D)" />
           
-          {/* Right cheek fluff */}
-          <ellipse cx="145" cy="95" rx="15" ry="12" fill="url(#bodyGradient)" stroke="#D97706" strokeWidth="2" />
+          {/* Right Foot */}
+          <ellipse cx="128" cy="182" rx="16" ry="10" fill="url(#bodyGradient3D)" />
 
-          {/* Snout/muzzle */}
-          <ellipse cx="100" cy="105" rx="22" ry="18" fill="url(#bellyGradient)" stroke="#FDBA74" strokeWidth="2" />
+          {/* Head - larger, rounder for cute look */}
+          <circle cx="100" cy="82" r="52" fill="url(#bodyGradient3D)" />
+
+          {/* Cheek fluffs - softer */}
+          <ellipse cx="52" cy="90" rx="14" ry="11" fill="url(#bodyGradient3D)" />
+          <ellipse cx="148" cy="90" rx="14" ry="11" fill="url(#bodyGradient3D)" />
+
+          {/* Snout/muzzle - cream, soft */}
+          <ellipse cx="100" cy="100" rx="26" ry="20" fill="url(#bellyGradient3D)" />
 
           {/* Left Ear */}
-          <motion.g animate={earVariants[animation]} style={{ originX: "68px", originY: "55px" }}>
-            <polygon points="55,55 68,10 81,55" fill="url(#bodyGradient)" stroke="#D97706" strokeWidth="2.5" strokeLinejoin="round" />
-            <polygon points="60,52 68,22 76,52" fill="#FECACA" stroke="#FECACA" strokeWidth="1" strokeLinejoin="round" />
+          <motion.g animate={earVariants[animation]} style={{ originX: "70px", originY: "52px" }}>
+            <ellipse cx="70" cy="35" rx="14" ry="28" fill="url(#bodyGradient3D)" transform="rotate(-15, 70, 35)" />
+            <ellipse cx="70" cy="38" rx="8" ry="18" fill="#FFB8B8" transform="rotate(-15, 70, 38)" opacity="0.7" />
           </motion.g>
 
           {/* Right Ear */}
-          <motion.g animate={earVariants[animation]} style={{ originX: "132px", originY: "55px" }}>
-            <polygon points="119,55 132,10 145,55" fill="url(#bodyGradient)" stroke="#D97706" strokeWidth="2.5" strokeLinejoin="round" />
-            <polygon points="124,52 132,22 140,52" fill="#FECACA" stroke="#FECACA" strokeWidth="1" strokeLinejoin="round" />
+          <motion.g animate={earVariants[animation]} style={{ originX: "130px", originY: "52px" }}>
+            <ellipse cx="130" cy="35" rx="14" ry="28" fill="url(#bodyGradient3D)" transform="rotate(15, 130, 35)" />
+            <ellipse cx="130" cy="38" rx="8" ry="18" fill="#FFB8B8" transform="rotate(15, 130, 38)" opacity="0.7" />
           </motion.g>
 
-          {/* Forehead tuft */}
-          <path d="M95,45 Q100,30 105,45" fill="url(#bodyGradient)" stroke="#D97706" strokeWidth="2" />
-
-          {/* Left Eye White */}
-          <ellipse cx="78" cy="78" rx="14" ry={isBlinking ? 2 : 12} fill="white" stroke="#374151" strokeWidth="1.5" />
-          
-          {/* Left Pupil */}
+          {/* Left Eye - large, expressive */}
+          <ellipse cx="78" cy="78" rx="16" ry={isBlinking ? 2 : 14} fill="url(#eyeWhite3D)" />
           {!isBlinking && (
             <>
-              <circle cx="80" cy="80" r="7" fill="#1F2937" />
-              <circle cx="83" cy="77" r="2.5" fill="white" />
+              <circle cx="81" cy="80" r="9" fill="#1A1A2E" />
+              <circle cx="84" cy="76" r="4" fill="white" />
+              <circle cx="78" cy="84" r="2" fill="white" opacity="0.6" />
             </>
           )}
 
-          {/* Right Eye White */}
-          <ellipse cx="122" cy="78" rx="14" ry={isBlinking ? 2 : 12} fill="white" stroke="#374151" strokeWidth="1.5" />
-          
-          {/* Right Pupil */}
+          {/* Right Eye - large, expressive */}
+          <ellipse cx="122" cy="78" rx="16" ry={isBlinking ? 2 : 14} fill="url(#eyeWhite3D)" />
           {!isBlinking && (
             <>
-              <circle cx="124" cy="80" r="7" fill="#1F2937" />
-              <circle cx="127" cy="77" r="2.5" fill="white" />
+              <circle cx="125" cy="80" r="9" fill="#1A1A2E" />
+              <circle cx="128" cy="76" r="4" fill="white" />
+              <circle cx="122" cy="84" r="2" fill="white" opacity="0.6" />
             </>
           )}
 
-          {/* Eyebrows for expression */}
+          {/* Eyebrows for thinking expression */}
           {animation === "thinking" && (
             <>
-              <path d="M65,65 Q78,60 90,68" stroke="#8B4513" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-              <path d="M110,68 Q122,60 135,65" stroke="#8B4513" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+              <ellipse cx="78" cy="62" rx="12" ry="4" fill="#E56510" transform="rotate(-10, 78, 62)" />
+              <ellipse cx="122" cy="62" rx="12" ry="4" fill="#E56510" transform="rotate(10, 122, 62)" />
             </>
           )}
 
-          {/* Left Cheek Blush */}
-          <ellipse cx="60" cy="95" rx="10" ry="7" fill="url(#cheekBlush)" />
-          
-          {/* Right Cheek Blush */}
-          <ellipse cx="140" cy="95" rx="10" ry="7" fill="url(#cheekBlush)" />
+          {/* Cheek blushes */}
+          <ellipse cx="55" cy="94" rx="12" ry="8" fill="url(#cheekBlush3D)" />
+          <ellipse cx="145" cy="94" rx="12" ry="8" fill="url(#cheekBlush3D)" />
 
-          {/* Nose */}
-          <ellipse cx="100" cy="100" rx="8" ry="6" fill="#1F2937" />
-          <ellipse cx="102" cy="98" rx="2" ry="1.5" fill="white" opacity="0.5" />
+          {/* Nose - rounded, shiny */}
+          <ellipse cx="100" cy="98" rx="10" ry="7" fill="#1A1A2E" />
+          <ellipse cx="97" cy="95" rx="4" ry="3" fill="white" opacity="0.4" />
 
-          {/* Mouth - friendly smile */}
+          {/* Mouth - cute smile */}
           <path 
             d={animation === "celebrating" || animation === "jumping" 
-              ? "M88,112 Q100,125 112,112" 
-              : "M90,110 Q100,118 110,110"
+              ? "M88,110 Q100,122 112,110" 
+              : "M90,108 Q100,116 110,108"
             } 
             stroke="#8B4513" 
-            strokeWidth="2.5" 
+            strokeWidth="2" 
             fill="none" 
             strokeLinecap="round" 
           />
 
           {/* === GRADUATION HAT === */}
           <g>
-            {/* Hat base/mortarboard */}
-            <polygon 
-              points="55,38 100,25 145,38 100,50" 
-              fill="url(#hatGradient)" 
-              stroke="#1E3A5F" 
-              strokeWidth="2"
+            {/* Hat base/mortarboard - softer look */}
+            <path 
+              d="M50,38 L100,22 L150,38 L100,52 Z" 
+              fill="url(#hatGradient3D)" 
             />
             
             {/* Hat cap (skull part) */}
-            <ellipse cx="100" cy="42" rx="22" ry="12" fill="#0F2744" stroke="#1E3A5F" strokeWidth="1.5" />
+            <ellipse cx="100" cy="40" rx="24" ry="14" fill="#1A365D" />
             
             {/* Button on top */}
-            <circle cx="100" cy="35" r="4" fill="#EAB308" stroke="#D97706" strokeWidth="1" />
+            <circle cx="100" cy="32" r="5" fill="url(#tasselGradient3D)" />
             
             {/* Tassel cord */}
             <motion.g
               animate={{
-                rotate: animation === "jumping" || animation === "celebrating" ? [-15, 15] : [-5, 5],
+                rotate: animation === "jumping" || animation === "celebrating" ? [-18, 18] : [-6, 6],
               }}
               transition={{
-                duration: animation === "jumping" || animation === "celebrating" ? 0.3 : 1.5,
+                duration: animation === "jumping" || animation === "celebrating" ? 0.25 : 1.8,
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              style={{ originX: "100px", originY: "35px" }}
+              style={{ originX: "100px", originY: "32px" }}
             >
-              <path d="M100,35 Q115,45 125,55" stroke="url(#tasselGradient)" strokeWidth="3" fill="none" strokeLinecap="round" />
+              <path d="M100,32 Q118,45 128,58" stroke="url(#tasselGradient3D)" strokeWidth="4" fill="none" strokeLinecap="round" />
               
               {/* Tassel end */}
-              <ellipse cx="125" cy="58" rx="5" ry="8" fill="url(#tasselGradient)" stroke="#D97706" strokeWidth="1" />
+              <ellipse cx="128" cy="62" rx="6" ry="10" fill="url(#tasselGradient3D)" />
               
               {/* Tassel fringe */}
-              <line x1="122" y1="66" x2="121" y2="75" stroke="#EAB308" strokeWidth="1.5" strokeLinecap="round" />
-              <line x1="125" y1="66" x2="125" y2="76" stroke="#EAB308" strokeWidth="1.5" strokeLinecap="round" />
-              <line x1="128" y1="66" x2="129" y2="75" stroke="#EAB308" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="124" y1="72" x2="122" y2="82" stroke="#D4A20F" strokeWidth="2" strokeLinecap="round" />
+              <line x1="128" y1="72" x2="128" y2="84" stroke="#D4A20F" strokeWidth="2" strokeLinecap="round" />
+              <line x1="132" y1="72" x2="134" y2="82" stroke="#D4A20F" strokeWidth="2" strokeLinecap="round" />
             </motion.g>
           </g>
         </motion.svg>

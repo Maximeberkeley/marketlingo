@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronRight, Gamepad2, Target, Sparkles, Loader2, Trophy, Award, CheckCircle2, BookOpen, Newspaper, FlaskConical, TrendingUp, Crown, Lock } from "lucide-react";
@@ -12,6 +12,7 @@ import { DailyNews } from "@/components/home/DailyNews";
 import { NotificationOnboarding } from "@/components/onboarding/NotificationOnboarding";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { LeoMascot, getRandomLeoMessage } from "@/components/mascot/LeoMascot";
+import { Leo2DInteractive } from "@/components/mascot/Leo2D";
 import { Mentor } from "@/data/mentors";
 import { getMarketEmoji, getMarketName, getMarketById } from "@/data/markets";
 import { toast } from "sonner";
@@ -23,11 +24,6 @@ import { useProPromotionContext } from "@/components/subscription/ProPromotionPr
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
-
-// Lazy load 3D component for performance
-const Leo3DInteractive = lazy(() => 
-  import("@/components/mascot/Leo3D").then(mod => ({ default: mod.Leo3DInteractive }))
-);
 
 // Import warm Duolingo-style images
 import lessonHero from "@/assets/cards/lesson-hero.jpg";
@@ -266,24 +262,18 @@ export default function HomePage() {
           </div>
         </motion.div>
 
-        {/* Leo 3D Greeting */}
+        {/* Leo 2D Greeting */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.05, type: "spring" }}
           className="flex items-center justify-center mb-4"
         >
-          <Suspense fallback={
-            <div className="w-[100px] h-[100px] flex items-center justify-center">
-              <LeoMascot size="lg" message={leoMessage} mood="happy" />
-            </div>
-          }>
-            <Leo3DInteractive 
-              size={100} 
-              initialMessage={leoMessage}
-              onTap={() => play("tap")}
-            />
-          </Suspense>
+          <Leo2DInteractive 
+            size="lg" 
+            initialMessage={leoMessage}
+            onTap={() => play("tap")}
+          />
         </motion.div>
 
         {/* Startup Progress - Compact */}
