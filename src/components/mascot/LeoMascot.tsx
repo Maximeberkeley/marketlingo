@@ -1,41 +1,33 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import leoMascot from "@/assets/mascot/leo-mascot.png";
 import { cn } from "@/lib/utils";
+import { Leo2D } from "./Leo2D";
+
+// Animation state types that map to Leo2D states
+type LeoMood = "happy" | "thinking" | "celebrating" | "encouraging" | "waving" | "jumping" | "spinning";
 
 interface LeoMascotProps {
   size?: "sm" | "md" | "lg" | "xl";
   message?: string;
-  mood?: "happy" | "thinking" | "celebrating" | "encouraging" | "waving" | "jumping" | "spinning";
+  mood?: LeoMood;
   showBubble?: boolean;
   className?: string;
   onClick?: () => void;
-  animate3D?: boolean;
+  animate3D?: boolean; // Kept for backwards compatibility, but uses 2D
 }
 
-const sizeClasses = {
-  sm: "w-12 h-12",
-  md: "w-16 h-16",
-  lg: "w-24 h-24",
-  xl: "w-32 h-32",
-};
-
-const moodAnimations = {
-  happy: { y: [0, -3, 0], transition: { duration: 1.5, repeat: Infinity } },
-  thinking: { rotate: [0, 3, -3, 0], transition: { duration: 2, repeat: Infinity } },
-  celebrating: { scale: [1, 1.1, 1], rotate: [0, -5, 5, 0], transition: { duration: 0.8, repeat: Infinity } },
-  encouraging: { y: [0, -5, 0], transition: { duration: 1, repeat: Infinity } },
-  waving: { rotate: [0, 10, -10, 10, 0], transition: { duration: 1.2, repeat: Infinity } },
-  jumping: { 
-    y: [0, -15, 0], 
-    scale: [1, 1.1, 0.95, 1],
-    transition: { duration: 0.6, repeat: Infinity, repeatDelay: 0.8 } 
-  },
-  spinning: { 
-    rotateY: [0, 180, 360], 
-    scale: [1, 1.1, 1],
-    transition: { duration: 1.2, repeat: Infinity, ease: "easeInOut" } 
-  },
+// Map mood to Leo2D animation state
+const moodToAnimation = (mood: LeoMood) => {
+  switch (mood) {
+    case "happy": return "idle";
+    case "thinking": return "thinking";
+    case "celebrating": 
+    case "spinning": return "celebrating";
+    case "encouraging": 
+    case "waving": return "waving";
+    case "jumping": return "jumping";
+    default: return "idle";
+  }
 };
 
 export function LeoMascot({ 
@@ -45,61 +37,21 @@ export function LeoMascot({
   showBubble = true, 
   className,
   onClick,
-  animate3D = false
 }: LeoMascotProps) {
   return (
     <motion.div 
-      className={cn("flex items-end gap-2", className)}
-      initial={{ opacity: 0, scale: 0.8 }}
+      className={cn("flex flex-col items-center justify-center", className)}
+      initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.4 }}
     >
-      {/* Leo Avatar with 3D-like effect */}
-      <motion.div
-        animate={moodAnimations[mood]}
-        className={cn(
-          "relative rounded-full overflow-hidden flex-shrink-0 cursor-pointer",
-          sizeClasses[size],
-          animate3D && "preserve-3d"
-        )}
+      <Leo2D
+        size={size}
+        animation={moodToAnimation(mood) as "idle" | "waving" | "jumping" | "celebrating" | "thinking"}
+        message={showBubble ? message : undefined}
+        showMessage={showBubble && !!message}
         onClick={onClick}
-        whileHover={{ scale: 1.1, rotateY: animate3D ? 15 : 0 }}
-        whileTap={{ scale: 0.95 }}
-        style={animate3D ? { transformStyle: "preserve-3d", perspective: 1000 } : undefined}
-      >
-        {/* Glow effect behind Leo */}
-        <motion.div 
-          className="absolute inset-0 rounded-full bg-accent/20 blur-md"
-          animate={{ 
-            scale: [1, 1.2, 1], 
-            opacity: [0.3, 0.5, 0.3] 
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-        <img 
-          src={leoMascot} 
-          alt="Leo the fox mascot" 
-          className="w-full h-full object-contain relative z-10"
-        />
-      </motion.div>
-      
-      {/* Speech Bubble */}
-      {showBubble && message && (
-        <motion.div
-          initial={{ opacity: 0, x: -10, scale: 0.9 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
-          className="relative bg-bg-2 rounded-2xl rounded-bl-md px-3 py-2 border border-border shadow-lg max-w-[180px]"
-        >
-          {/* Bubble pointer */}
-          <div className="absolute left-0 bottom-2 w-2.5 h-2.5 bg-bg-2 border-l border-b border-border transform -translate-x-1 rotate-45" />
-          
-          <p className="text-xs text-text-primary font-medium leading-tight">
-            {message}
-          </p>
-          <p className="text-[10px] text-accent mt-0.5">— Leo</p>
-        </motion.div>
-      )}
+      />
     </motion.div>
   );
 }
@@ -118,13 +70,13 @@ export function LeoInteractive({
 }) {
   const [message, setMessage] = useState(initialMessage);
   const [tapCount, setTapCount] = useState(0);
-  const [mood, setMood] = useState<"happy" | "jumping" | "spinning" | "celebrating">("happy");
+  const [mood, setMood] = useState<LeoMood>("happy");
 
   const handleTap = () => {
     setTapCount(prev => prev + 1);
     
     // Cycle through moods
-    const moods: Array<"happy" | "jumping" | "spinning" | "celebrating"> = ["jumping", "spinning", "celebrating"];
+    const moods: LeoMood[] = ["jumping", "celebrating", "waving"];
     setMood(moods[tapCount % moods.length]);
     
     // Show tap message
@@ -133,7 +85,7 @@ export function LeoInteractive({
     }
     
     // Reset mood after animation
-    setTimeout(() => setMood("happy"), 1500);
+    setTimeout(() => setMood("happy"), 2000);
     
     onTap?.();
   };
@@ -144,7 +96,6 @@ export function LeoInteractive({
       mood={mood} 
       message={message}
       onClick={handleTap}
-      animate3D
     />
   );
 }
