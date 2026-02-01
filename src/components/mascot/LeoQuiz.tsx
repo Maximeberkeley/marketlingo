@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Leo2D } from "./Leo2D";
+import { LeoCharacter } from "./LeoStateMachine";
 import { leoMessages, getRandomLeoMessage } from "./LeoMascot";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { Button } from "@/components/ui/button";
@@ -58,9 +58,9 @@ export function LeoQuiz({ question, options, onComplete, onDismiss }: LeoQuizPro
     >
       {/* Leo with message - centered */}
       <div className="flex flex-col items-center gap-4 mb-4">
-        <Leo2D 
+        <LeoCharacter 
           size="md" 
-          animation={leoAnimation}
+          animation={leoAnimation === "thinking" ? "thinking" : leoAnimation === "celebrating" ? "success" : "waving"}
           message={leoMessage}
           showMessage={true}
         />

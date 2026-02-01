@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Leo2D } from "./Leo2D";
+import { LeoCharacter } from "./LeoStateMachine";
 
-// Animation state types that map to Leo2D states
+// Animation state types that map to LeoCharacter states
 type LeoMood = "happy" | "thinking" | "celebrating" | "encouraging" | "waving" | "jumping" | "spinning";
 
 interface LeoMascotProps {
@@ -13,10 +13,10 @@ interface LeoMascotProps {
   showBubble?: boolean;
   className?: string;
   onClick?: () => void;
-  animate3D?: boolean; // Kept for backwards compatibility, but uses 2D
+  animate3D?: boolean; // Kept for backwards compatibility
 }
 
-// Map mood to Leo2D animation state
+// Map mood to LeoCharacter animation state
 const moodToAnimation = (mood: LeoMood) => {
   switch (mood) {
     case "happy": return "idle";
@@ -25,7 +25,7 @@ const moodToAnimation = (mood: LeoMood) => {
     case "spinning": return "celebrating";
     case "encouraging": 
     case "waving": return "waving";
-    case "jumping": return "jumping";
+    case "jumping": return "success";
     default: return "idle";
   }
 };
@@ -45,9 +45,9 @@ export function LeoMascot({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4 }}
     >
-      <Leo2D
+      <LeoCharacter
         size={size}
-        animation={moodToAnimation(mood) as "idle" | "waving" | "jumping" | "celebrating" | "thinking"}
+        animation={moodToAnimation(mood) as "idle" | "waving" | "success" | "celebrating" | "thinking"}
         message={showBubble ? message : undefined}
         showMessage={showBubble && !!message}
         onClick={onClick}

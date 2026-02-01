@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { z } from "zod";
-import { Leo2D } from "@/components/mascot/Leo2D";
+import { LeoInteractive } from "@/components/mascot/LeoStateMachine";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
@@ -111,18 +111,16 @@ export default function AuthPage() {
       }} transition={{
         duration: 0.3
       }} className="w-full max-w-sm flex flex-col items-center">
-            {/* 2D Disney-style Leo Mascot - Waving to welcome users */}
+            {/* Leo Mascot - Waving to welcome users */}
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }} 
               animate={{ scale: 1, opacity: 1 }} 
               transition={{ delay: 0.1, duration: 0.4 }}
               className="mb-6 flex flex-col items-center justify-center"
             >
-              <Leo2D 
+              <LeoInteractive 
                 size="xl"
-                animation="waving"
-                message="Welcome to MarketLingo! 👋"
-                showMessage={true}
+                initialMessage="Welcome to MarketLingo! 👋"
               />
             </motion.div>
 
