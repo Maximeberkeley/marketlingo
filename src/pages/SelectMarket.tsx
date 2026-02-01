@@ -80,21 +80,24 @@ export default function SelectMarketPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-bg-0 to-bg-1">
-      {/* Header with Leo */}
+      {/* Header with Leo - perfectly centered */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="screen-padding pt-8 pb-4"
+        className="screen-padding pt-8 pb-4 flex flex-col items-center"
       >
-        <LeoMascot 
-          size="lg" 
-          message={leoMessage}
-          mood="waving"
-          className="mb-4"
-        />
+        {/* Leo centered above text - using thinking animation for industry selection */}
+        <div className="flex justify-center mb-6">
+          <LeoMascot 
+            size="xl" 
+            message={leoMessage}
+            mood="thinking"
+            showBubble={true}
+          />
+        </div>
         
-        <h1 className="text-h1 text-text-primary mb-2">Choose your industry</h1>
-        <p className="text-body text-text-secondary">
+        <h1 className="text-h1 text-text-primary mb-2 text-center">Choose your industry</h1>
+        <p className="text-body text-text-secondary text-center">
           Pick one. We'll guide you for 6 months.
         </p>
       </motion.div>

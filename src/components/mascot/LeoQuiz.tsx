@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LeoMascot, getRandomLeoMessage } from "./LeoMascot";
+import { Leo2D } from "./Leo2D";
+import { leoMessages, getRandomLeoMessage } from "./LeoMascot";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle } from "lucide-react";
@@ -21,7 +22,7 @@ export function LeoQuiz({ question, options, onComplete, onDismiss }: LeoQuizPro
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [leoMessage, setLeoMessage] = useState(getRandomLeoMessage("quiz"));
-  const [leoMood, setLeoMood] = useState<"thinking" | "celebrating" | "encouraging">("thinking");
+  const [leoAnimation, setLeoAnimation] = useState<"thinking" | "celebrating" | "waving">("thinking");
   const { play } = useSoundEffects();
 
   const handleSelect = (index: number) => {
@@ -33,11 +34,11 @@ export function LeoQuiz({ question, options, onComplete, onDismiss }: LeoQuizPro
     if (isCorrect) {
       play("correct");
       setLeoMessage(getRandomLeoMessage("correct"));
-      setLeoMood("celebrating");
+      setLeoAnimation("celebrating");
     } else {
       play("incorrect");
       setLeoMessage(getRandomLeoMessage("incorrect"));
-      setLeoMood("encouraging");
+      setLeoAnimation("waving");
     }
     
     setShowResult(true);
@@ -55,25 +56,15 @@ export function LeoQuiz({ question, options, onComplete, onDismiss }: LeoQuizPro
       exit={{ opacity: 0, y: -20 }}
       className="bg-bg-2 rounded-2xl border border-accent/30 p-4 shadow-lg overflow-hidden"
     >
-      {/* Leo with message */}
-      <div className="flex items-start gap-3 mb-4">
-        <LeoMascot 
+      {/* Leo with message - centered */}
+      <div className="flex flex-col items-center gap-4 mb-4">
+        <Leo2D 
           size="md" 
-          mood={leoMood}
-          showBubble={false}
-          animate3D
+          animation={leoAnimation}
+          message={leoMessage}
+          showMessage={true}
         />
-        <div className="flex-1">
-          <motion.p 
-            key={leoMessage}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-caption text-accent font-medium mb-1"
-          >
-            {leoMessage}
-          </motion.p>
-          <p className="text-body text-text-primary font-medium">{question}</p>
-        </div>
+        <p className="text-body text-text-primary font-medium text-center">{question}</p>
       </div>
 
       {/* Options */}
