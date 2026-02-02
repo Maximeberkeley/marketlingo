@@ -98,16 +98,16 @@ export function SectionIntroSlide({ type, dayNumber, monthTheme }: SectionIntroS
         )}
         
         {/* Icon and title */}
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-4 mb-4">
           <div className={cn(
-            "w-12 h-12 rounded-xl flex items-center justify-center",
+            "w-14 h-14 rounded-xl flex items-center justify-center",
             "bg-bg-1/50 backdrop-blur-sm",
             info.color
           )}>
             {info.icon}
           </div>
           <div>
-            <h3 className="text-h3 text-text-primary">{info.title}</h3>
+            <h3 className="text-h3 text-text-primary mb-1">{info.title}</h3>
             <p className="text-caption text-text-muted">{info.tagline}</p>
           </div>
         </div>

@@ -231,35 +231,35 @@ export default function GamesPage() {
             {/* Hero Card with Market-Specific Gradient */}
             <div className={`relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-purple-600 via-violet-700 to-indigo-900'}`}>
               <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5" />
-              <div className="relative p-6 h-48 flex flex-col justify-end">
-                {/* Mentor avatar */}
-                <div className="absolute top-4 right-4">
+              <div className="relative p-6 pt-8 pb-6 min-h-[200px] flex flex-col justify-end">
+                {/* Mentor avatar - positioned with more breathing room */}
+                <div className="absolute top-5 right-5">
                   <img 
                     src={primaryMentor.avatar} 
                     alt={primaryMentor.name}
-                    className="w-16 h-16 rounded-full border-2 border-white/30 object-cover object-[50%_30%]"
+                    className="w-14 h-14 rounded-full border-2 border-white/30 object-cover object-[50%_30%]"
                   />
                 </div>
-                <p className="text-white/80 text-caption font-medium mb-1">{marketConfig?.name || 'Industry'} Games</p>
-                <h2 className="text-2xl font-bold text-white mb-2">Test Your Knowledge</h2>
-                <p className="text-white/90 text-body">
+                <p className="text-white/80 text-caption font-medium mb-2">{marketConfig?.name || 'Industry'} Games</p>
+                <h2 className="text-2xl font-bold text-white mb-3 pr-20">Test Your Knowledge</h2>
+                <p className="text-white/90 text-body leading-relaxed">
                   {marketConfig?.gameDescription || 'Quick MCQ challenges based on real industry patterns.'}
                 </p>
               </div>
             </div>
 
             {/* Features */}
-            <div className="card-elevated mb-6">
-              <h3 className="text-h3 text-text-primary mb-3">What to expect</h3>
-              <ul className="space-y-2">
+            <div className="card-elevated mb-6 p-5">
+              <h3 className="text-h3 text-text-primary mb-4">What to expect</h3>
+              <ul className="space-y-3">
                 {[
                   "Multiple choice questions",
                   "Instant feedback with explanations",
                   "Startup application tips",
                   "Track your score"
                 ].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-2 text-body text-text-secondary">
-                    <div className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                  <li key={i} className="flex items-center gap-3 text-body text-text-secondary">
+                    <div className="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0" />
                     {feature}
                   </li>
                 ))}

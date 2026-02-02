@@ -148,23 +148,23 @@ export function LessonCard({
       )}
 
       {/* Content */}
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-3">
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <p className={cn(
-              "text-[11px] font-semibold uppercase tracking-wider mb-1",
+              "text-[11px] font-semibold uppercase tracking-wider mb-1.5",
               colors.accent
             )}>
               {subtitle}
             </p>
-            <h3 className="text-body font-semibold text-text-primary line-clamp-2">
+            <h3 className="text-body font-semibold text-text-primary line-clamp-2 leading-snug">
               {headline || title}
             </h3>
           </div>
           
           <motion.div 
             className={cn(
-              "flex items-center justify-center w-9 h-9 rounded-full transition-all",
+              "flex items-center justify-center w-10 h-10 rounded-full transition-all flex-shrink-0",
               colors.bg,
             )}
             whileHover={{ scale: 1.1, x: 2 }}
