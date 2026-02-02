@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
 
-// Simple subscription hook without RevenueCat for now
-// RevenueCat integration can be added later with production API key
+// Simple subscription hook using localStorage for development/testing
+// For production, this would connect to native StoreKit via Capacitor plugin
 
 export const PRODUCT_IDS = {
   MONTHLY: 'MarketLingo.pro.monthly',
@@ -42,7 +42,7 @@ export function useSubscription() {
     setIsProUser(newValue === 'true');
   }, []);
 
-  // Placeholder functions - these would connect to RevenueCat when ready
+  // Placeholder functions - for production, connect to native StoreKit
   const purchasePackage = useCallback(async (_pkg: any) => {
     // For now, just toggle pro status
     localStorage.setItem('marketlingo_pro', 'true');
@@ -82,11 +82,11 @@ export function useSubscription() {
   }, []);
 
   const loginUser = useCallback(async (_userId: string) => {
-    // Placeholder for RevenueCat user login
+    // Placeholder for user login sync
   }, []);
 
   const logoutUser = useCallback(async () => {
-    // Placeholder for RevenueCat user logout
+    // Placeholder for user logout sync
   }, []);
 
   return {
