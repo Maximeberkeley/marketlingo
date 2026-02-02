@@ -217,11 +217,11 @@ export default function DrillsPage() {
   // Intro screen
   if (showIntro && questions.length > 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
+      <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+          className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
         >
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft size={24} className="text-text-secondary" />
@@ -229,7 +229,7 @@ export default function DrillsPage() {
           <h1 className="text-h2 text-text-primary">Drills</h1>
         </motion.div>
 
-        <div className="flex-1 flex items-center justify-center p-4">
+        <div className="flex-1 flex items-center justify-center screen-padding py-6">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -293,18 +293,18 @@ export default function DrillsPage() {
 
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
+      <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+          className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
         >
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft size={24} className="text-text-secondary" />
           </button>
           <h1 className="text-h2 text-text-primary">Drills</h1>
         </motion.div>
-        <div className="flex-1 flex items-center justify-center p-4">
+        <div className="flex-1 flex items-center justify-center screen-padding py-6">
           <div className="text-center">
             <Target size={48} className="mx-auto mb-4 text-text-muted" />
             <h2 className="text-h2 text-text-primary mb-2">No drills available</h2>
@@ -323,11 +323,11 @@ export default function DrillsPage() {
     const percentage = Math.round((finalScore / questions.length) * 100);
 
     return (
-      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
+      <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+          className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
         >
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft size={24} className="text-text-secondary" />
@@ -335,11 +335,11 @@ export default function DrillsPage() {
           <h1 className="text-h2 text-text-primary">Drills</h1>
         </motion.div>
 
-        <div className="flex-1 flex items-center justify-center p-4">
+        <div className="flex-1 flex items-center justify-center screen-padding py-6">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="card-elevated text-center max-w-sm w-full"
+            className="card-elevated text-center w-full"
           >
             <div
               className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 ${
@@ -373,11 +373,11 @@ export default function DrillsPage() {
                 ? "Good progress. Keep practicing!"
                 : "Review and try again."}
             </p>
-            <div className="flex gap-3">
-              <Button variant="secondary" className="flex-1" onClick={() => navigate("/home")}>
+            <div className="grid grid-cols-2 gap-3">
+              <Button variant="secondary" onClick={() => navigate("/home")}>
                 Home
               </Button>
-              <Button className="flex-1" onClick={restartDrill}>
+              <Button onClick={restartDrill}>
                 <RotateCcw size={16} className="mr-2" />
                 Retry
               </Button>
@@ -389,12 +389,12 @@ export default function DrillsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
+    <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+        className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
       >
         <button onClick={() => navigate(-1)} className="p-2 -ml-2">
           <ArrowLeft size={24} className="text-text-secondary" />
@@ -451,16 +451,16 @@ export default function DrillsPage() {
 
             {/* Answer Buttons */}
             {!showResult && (
-              <div className="flex gap-3 mt-6">
+              <div className="grid grid-cols-2 gap-3 mt-6">
                 <Button
                   variant="secondary"
-                  className="flex-1 h-14"
+                  className="h-14"
                   onClick={() => handleAnswer(false)}
                 >
                   <XCircle size={20} className="mr-2 text-destructive" />
                   False
                 </Button>
-                <Button className="flex-1 h-14" onClick={() => handleAnswer(true)}>
+                <Button className="h-14" onClick={() => handleAnswer(true)}>
                   <CheckCircle size={20} className="mr-2" />
                   True
                 </Button>
