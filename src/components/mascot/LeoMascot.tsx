@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { LeoCharacter } from "./LeoStateMachine";
+import { LeoRig, LeoEmotion } from "./LeoRig";
 
-// Animation state types that map to LeoCharacter states
+// Animation state types that map to LeoRig emotions
 type LeoMood = "happy" | "thinking" | "celebrating" | "encouraging" | "waving" | "jumping" | "spinning";
 
 interface LeoMascotProps {
@@ -16,16 +16,16 @@ interface LeoMascotProps {
   animate3D?: boolean; // Kept for backwards compatibility
 }
 
-// Map mood to LeoCharacter animation state
-const moodToAnimation = (mood: LeoMood) => {
+// Map mood to LeoRig emotion
+const moodToEmotion = (mood: LeoMood): LeoEmotion => {
   switch (mood) {
-    case "happy": return "idle";
+    case "happy": return "happy";
     case "thinking": return "thinking";
     case "celebrating": 
-    case "spinning": return "celebrating";
+    case "spinning": return "celebrate";
     case "encouraging": 
     case "waving": return "waving";
-    case "jumping": return "success";
+    case "jumping": return "celebrate";
     default: return "idle";
   }
 };
@@ -45,9 +45,9 @@ export function LeoMascot({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4 }}
     >
-      <LeoCharacter
+      <LeoRig
         size={size}
-        animation={moodToAnimation(mood) as "idle" | "waving" | "success" | "celebrating" | "thinking"}
+        emotion={moodToEmotion(mood)}
         message={showBubble ? message : undefined}
         showMessage={showBubble && !!message}
         onClick={onClick}

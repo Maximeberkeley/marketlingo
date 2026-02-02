@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MarketCard } from "@/components/ui/MarketCard";
-import { LeoInteractive } from "@/components/mascot/LeoStateMachine";
+import { LeoInteractive } from "@/components/mascot/LeoRig";
 import { markets } from "@/data/markets";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
