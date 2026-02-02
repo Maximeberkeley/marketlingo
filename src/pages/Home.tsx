@@ -353,39 +353,39 @@ export default function HomePage() {
               animate={{ scale: 1 }}
               className="p-5 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-teal-500/10 border border-emerald-500/30 shadow-lg shadow-emerald-500/10"
             >
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-4 mb-5">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
                   transition={{ delay: 0.2 }}
-                  className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg"
+                  className="w-14 h-14 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg flex-shrink-0"
                 >
-                  <CheckCircle2 size={24} className="text-white" />
+                  <CheckCircle2 size={28} className="text-white" />
                 </motion.div>
                 <div>
-                  <p className="text-body font-bold text-text-primary">Lesson Complete! 🎉</p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <Zap size={12} className="text-yellow-400 fill-yellow-400" />
-                    <span className="text-caption text-emerald-400 font-semibold">+{XP_REWARDS.LESSON_COMPLETE} XP earned</span>
+                  <p className="text-lg font-bold text-text-primary">Lesson Complete! 🎉</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Zap size={14} className="text-yellow-400 fill-yellow-400" />
+                    <span className="text-body text-emerald-400 font-semibold">+{XP_REWARDS.LESSON_COMPLETE} XP earned</span>
                   </div>
                 </div>
               </div>
-              <div className="flex gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <DuoButton
                   variant="secondary"
-                  size="sm"
+                  size="md"
                   onClick={() => lessonStack && handleOpenStack(lessonStack)}
-                  className="flex-1"
+                  fullWidth
                 >
                   Review
                 </DuoButton>
                 <DuoButton
                   variant="success"
-                  size="sm"
+                  size="md"
                   onClick={() => navigate("/drills")}
-                  className="flex-1"
+                  fullWidth
                 >
-                  <Zap size={14} /> Practice
+                  <Zap size={16} /> Practice
                 </DuoButton>
               </div>
             </motion.div>
