@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { z } from "zod";
-import { LeoInteractive } from "@/components/mascot/LeoRig";
+import { LeoCharacter, LeoAnim } from "@/components/mascot/LeoStateMachine";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
@@ -26,6 +26,16 @@ export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [leoAnimation, setLeoAnimation] = useState<LeoAnim>("waving");
+  const [tapCount, setTapCount] = useState(0);
+
+  // Handle Leo taps - cycle through fun animations
+  const handleLeoTap = () => {
+    setTapCount(prev => prev + 1);
+    const animations: LeoAnim[] = ["celebrating", "success", "waving", "thinking"];
+    setLeoAnimation(animations[tapCount % animations.length]);
+    setTimeout(() => setLeoAnimation("idle"), 2000);
+  };
   useEffect(() => {
     if (!loading && user) {
       navigate("/select-market");
@@ -118,10 +128,19 @@ export default function AuthPage() {
               transition={{ delay: 0.1, duration: 0.4 }}
               className="mb-6 flex flex-col items-center justify-center"
             >
-              <LeoInteractive 
+              <LeoCharacter 
                 size="xl"
-                initialMessage="Welcome to MarketLingo! 👋"
+                animation={leoAnimation}
+                onClick={handleLeoTap}
               />
+              <motion.p
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-sm text-text-secondary mt-3 text-center"
+              >
+                {tapCount === 0 ? "Tap Leo to say hi! 👋" : "Keep tapping! 🎉"}
+              </motion.p>
             </motion.div>
 
             {/* Title */}

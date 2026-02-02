@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MarketCard } from "@/components/ui/MarketCard";
-import { LeoInteractive } from "@/components/mascot/LeoRig";
+import { LeoCharacter } from "@/components/mascot/LeoStateMachine";
 import { markets } from "@/data/markets";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -86,11 +86,19 @@ export default function SelectMarketPage() {
         className="screen-padding pt-8 pb-4 flex flex-col items-center"
       >
         {/* Leo centered above text - thinking animation for industry selection */}
-        <div className="flex justify-center mb-6">
-          <LeoInteractive 
+        <div className="flex flex-col items-center justify-center mb-6">
+          <LeoCharacter 
             size="xl" 
-            initialMessage="Pick one, master it! 🗺️"
+            animation="thinking"
           />
+          <motion.p
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-sm text-text-secondary mt-3 text-center"
+          >
+            Pick one, master it! 🗺️
+          </motion.p>
         </div>
         
         <h1 className="text-h1 text-text-primary mb-2 text-center">Choose your industry</h1>

@@ -11,8 +11,7 @@ import { KeyPlayers } from "@/components/home/KeyPlayers";
 import { DailyNews } from "@/components/home/DailyNews";
 import { NotificationOnboarding } from "@/components/onboarding/NotificationOnboarding";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
-import { LeoMascot, getRandomLeoMessage } from "@/components/mascot/LeoMascot";
-import { LeoInteractive } from "@/components/mascot/LeoRig";
+import { LeoCharacter, LeoAnim } from "@/components/mascot/LeoStateMachine";
 import { Mentor } from "@/data/mentors";
 import { getMarketEmoji, getMarketName, getMarketById } from "@/data/markets";
 import { toast } from "sonner";
@@ -67,6 +66,7 @@ export default function HomePage() {
   const [showNotificationOnboarding, setShowNotificationOnboarding] = useState(false);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [leoMessage, setLeoMessage] = useState<string>("");
+  const [leoAnimation, setLeoAnimation] = useState<LeoAnim>("idle");
   
   const { isSupported, isRegistered } = useNotifications();
   const { triggerAfterLesson, isProUser } = useProPromotionContext();
@@ -80,22 +80,29 @@ export default function HomePage() {
     const currentStreak = progress?.current_streak || 0;
     const hour = new Date().getHours();
     let greeting = "";
+    let anim: LeoAnim = "idle";
     
     if (hour < 12) {
       greeting = "Good morning! Ready to learn? ☀️";
+      anim = "waving";
     } else if (hour < 17) {
       greeting = "Good afternoon! Let's keep going! 🚀";
+      anim = "idle";
     } else {
       greeting = "Evening study session! 🌙";
+      anim = "idle";
     }
     
     if (currentStreak >= 7) {
       greeting = `${currentStreak} day streak! You're on fire! 🔥`;
+      anim = "celebrating";
     } else if (lessonCompletedToday) {
       greeting = "Lesson done! Try a game? 🎮";
+      anim = "success";
     }
     
     setLeoMessage(greeting);
+    setLeoAnimation(anim);
   }, [progress?.current_streak, lessonCompletedToday]);
 
   useEffect(() => {
@@ -267,13 +274,25 @@ export default function HomePage() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.05, type: "spring" }}
-          className="flex items-center justify-center mb-4"
+          className="flex flex-col items-center justify-center mb-4"
         >
-          <LeoInteractive 
+          <LeoCharacter 
             size="lg" 
-            initialMessage={leoMessage}
-            onTap={() => play("tap")}
+            animation={leoAnimation}
+            onClick={() => {
+              play("tap");
+              setLeoAnimation("celebrating");
+              setTimeout(() => setLeoAnimation("idle"), 2000);
+            }}
           />
+          <motion.p
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="text-sm text-text-secondary mt-2 text-center"
+          >
+            {leoMessage}
+          </motion.p>
         </motion.div>
 
         {/* Startup Progress - Compact */}
