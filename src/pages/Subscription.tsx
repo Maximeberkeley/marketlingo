@@ -17,7 +17,7 @@ const PRO_FEATURES = [
   { icon: Shield, title: "Priority Support", description: "Get help when you need it most" },
 ];
 
-type PlanType = 'monthly' | 'annual' | 'lifetime';
+type PlanType = 'monthly' | 'annual';
 
 export default function Subscription() {
   const navigate = useNavigate();
@@ -41,7 +41,6 @@ export default function Subscription() {
   // Get packages
   const monthlyPkg = getPackage('monthly');
   const annualPkg = getPackage('annual');
-  const lifetimePkg = getPackage('lifetime');
 
   const handlePurchase = async () => {
     const pkg = getPackage(selectedPlan);
@@ -104,7 +103,6 @@ export default function Subscription() {
     switch (type) {
       case 'monthly': return '$9.99';
       case 'annual': return '$79.99';
-      case 'lifetime': return '$199.99';
     }
   };
 
@@ -260,37 +258,6 @@ export default function Subscription() {
                   </div>
                 </Card>
               </motion.div>
-
-              {/* Lifetime */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-                className="relative"
-              >
-                <Badge className="absolute -top-2 left-4 z-10 bg-purple-500 text-white text-xs px-2 py-0.5">
-                  Best Value
-                </Badge>
-                <Card 
-                  className={`p-4 cursor-pointer transition-all ${
-                    selectedPlan === 'lifetime' 
-                      ? 'border-primary ring-2 ring-primary/20 bg-primary/5' 
-                      : 'border-border hover:border-primary/50'
-                  }`}
-                  onClick={() => setSelectedPlan('lifetime')}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-lg">Lifetime</p>
-                      <p className="text-sm text-muted-foreground">One-time payment, forever access</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold">{getPriceDisplay('lifetime')}</p>
-                      <p className="text-xs text-muted-foreground">one-time</p>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
             </div>
 
             {/* Subscribe Button */}
@@ -304,7 +271,7 @@ export default function Subscription() {
               ) : (
                 <Crown className="w-5 h-5 mr-2" />
               )}
-              {isPurchasing ? 'Processing...' : selectedPlan === 'lifetime' ? 'Get Lifetime Access' : 'Subscribe Now'}
+              {isPurchasing ? 'Processing...' : 'Subscribe Now'}
             </Button>
 
             {/* Restore */}
@@ -354,10 +321,7 @@ export default function Subscription() {
 
         {/* Legal */}
         <p className="text-xs text-center text-muted-foreground px-4 pt-4">
-          {selectedPlan === 'lifetime' 
-            ? 'One-time purchase. Lifetime access to all Pro features.'
-            : 'Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage subscriptions in your Apple ID settings.'
-          }
+          Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage subscriptions in your Apple ID settings.
         </p>
 
         {/* Web Testing Toggle */}
