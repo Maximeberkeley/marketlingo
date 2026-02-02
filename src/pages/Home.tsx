@@ -264,7 +264,7 @@ export default function HomePage() {
 
   return (
     <AppLayout>
-      <div className="screen-padding pt-safe pb-28 overflow-x-hidden max-w-full">
+      <div className="screen-padding pt-safe pb-28 overflow-x-hidden w-full">
         {/* Compact Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
