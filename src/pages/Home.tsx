@@ -185,8 +185,22 @@ export default function HomePage() {
     fetchData();
   }, [user, authLoading, navigate, isSupported, isRegistered]);
 
-  const handleStackComplete = async () => {
+  const handleStackComplete = async (isReviewMode: boolean, timeSpentSeconds: number) => {
     setShowReader(false);
+    
+    // Don't award XP or update progress if it's a review
+    if (isReviewMode) {
+      toast.success("Great review! 📖");
+      return;
+    }
+    
+    // Check if minimum time was met (3 minutes = 180 seconds)
+    const MINIMUM_TIME = 180;
+    if (timeSpentSeconds < MINIMUM_TIME) {
+      toast.info("Keep learning! Spend at least 3 minutes to complete the lesson.");
+      return;
+    }
+    
     if (progress && activeStack) {
       await completeStack(activeStack.id);
       await updateStreak();
@@ -615,6 +629,7 @@ export default function HomePage() {
           onSaveInsight={handleSaveInsight}
           onAddNote={handleAddNote}
           marketId={selectedMarket || undefined}
+          isReview={lessonCompletedToday && activeStack.stack_type === "LESSON"}
         />
       )}
 
