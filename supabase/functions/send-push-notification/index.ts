@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import * as jose from 'https://deno.land/x/jose@v5.2.0/index.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -6,39 +7,141 @@ const corsHeaders = {
 };
 
 interface NotificationPayload {
-  type: 'news' | 'streak_warning' | 'daily_reminder';
+  type: 'news' | 'streak_warning' | 'daily_reminder' | 'leaderboard';
   title: string;
   body: string;
   data?: Record<string, unknown>;
   userId?: string;
 }
 
-interface FCMMessage {
-  to: string;
-  notification: {
-    title: string;
-    body: string;
+interface APNsPayload {
+  aps: {
+    alert: {
+      title: string;
+      body: string;
+    };
     sound: string;
+    badge?: number;
   };
+  route?: string;
   data?: Record<string, unknown>;
 }
 
-async function sendToFCM(token: string, title: string, body: string, data?: Record<string, unknown>): Promise<boolean> {
+// Generate JWT for APNs authentication
+async function generateAPNsJWT(): Promise<string> {
+  const keyId = Deno.env.get('APNS_KEY_ID');
+  const teamId = Deno.env.get('APNS_TEAM_ID');
+  const authKey = Deno.env.get('APNS_AUTH_KEY');
+
+  if (!keyId || !teamId || !authKey) {
+    throw new Error('APNs credentials not configured');
+  }
+
+  // Clean up the key - remove any extra whitespace/newlines
+  const cleanKey = authKey.trim();
+  
+  const privateKey = await jose.importPKCS8(cleanKey, 'ES256');
+
+  const jwt = await new jose.SignJWT({})
+    .setProtectedHeader({ alg: 'ES256', kid: keyId })
+    .setIssuer(teamId)
+    .setIssuedAt()
+    .sign(privateKey);
+
+  return jwt;
+}
+
+// Send notification via APNs
+async function sendToAPNs(
+  token: string, 
+  title: string, 
+  body: string, 
+  data?: Record<string, unknown>
+): Promise<boolean> {
+  try {
+    const jwt = await generateAPNsJWT();
+    const bundleId = 'app.lovable.94df7a7687ec45218c7386e5aa46d211'; // Your app bundle ID
+
+    const payload: APNsPayload = {
+      aps: {
+        alert: {
+          title,
+          body,
+        },
+        sound: 'default',
+      },
+      route: (data?.route as string) || '/home',
+      data: data || {},
+    };
+
+    // Use production APNs endpoint
+    const isProduction = true; // Set to false for sandbox/development
+    const apnsHost = isProduction 
+      ? 'api.push.apple.com' 
+      : 'api.sandbox.push.apple.com';
+
+    const response = await fetch(
+      `https://${apnsHost}/3/device/${token}`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `bearer ${jwt}`,
+          'apns-topic': bundleId,
+          'apns-push-type': 'alert',
+          'apns-priority': '10',
+          'apns-expiration': '0',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('APNs error:', response.status, errorText);
+      
+      // Handle specific APNs errors
+      if (response.status === 410) {
+        console.log('Device token is no longer active');
+        return false;
+      }
+      if (response.status === 400) {
+        console.error('Bad request to APNs:', errorText);
+        return false;
+      }
+      return false;
+    }
+
+    console.log('APNs notification sent successfully');
+    return true;
+  } catch (error) {
+    console.error('APNs request failed:', error);
+    return false;
+  }
+}
+
+// Fallback: Send via FCM (for Android support)
+async function sendToFCM(
+  token: string, 
+  title: string, 
+  body: string, 
+  data?: Record<string, unknown>
+): Promise<boolean> {
   const fcmServerKey = Deno.env.get('FCM_SERVER_KEY');
   
   if (!fcmServerKey) {
-    console.error('FCM_SERVER_KEY not configured');
+    console.log('FCM_SERVER_KEY not configured, skipping FCM');
     return false;
   }
 
-  const message: FCMMessage = {
+  const message = {
     to: token,
     notification: {
       title,
       body,
       sound: 'default',
     },
-    data: data || {},
+    data: { ...data, route: data?.route || '/home' },
   };
 
   try {
@@ -58,19 +161,28 @@ async function sendToFCM(token: string, title: string, body: string, data?: Reco
     }
 
     const result = await response.json();
-    console.log('FCM response:', result);
-    
-    if (result.success === 1) {
-      return true;
-    } else if (result.failure === 1) {
-      console.error('FCM delivery failed:', result.results);
-      return false;
-    }
-    
-    return true;
+    return result.success === 1;
   } catch (error) {
     console.error('FCM request failed:', error);
     return false;
+  }
+}
+
+// Determine token type and send accordingly
+async function sendNotification(
+  token: string,
+  title: string,
+  body: string,
+  data?: Record<string, unknown>
+): Promise<boolean> {
+  // APNs tokens are typically 64 hex characters
+  // FCM tokens are longer and contain different characters
+  const isAPNsToken = /^[a-f0-9]{64}$/i.test(token);
+  
+  if (isAPNsToken) {
+    return await sendToAPNs(token, title, body, data);
+  } else {
+    return await sendToFCM(token, title, body, data);
   }
 }
 
@@ -80,7 +192,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Authentication check
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(
@@ -93,7 +204,6 @@ Deno.serve(async (req) => {
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     
-    // Verify user with anon key first
     const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -111,15 +221,13 @@ Deno.serve(async (req) => {
     const userId = claimsData.claims.sub as string;
     console.log('Authenticated user for push notification:', userId);
 
-    // Use service role for database operations
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const payload: NotificationPayload = await req.json();
     console.log('Processing notification:', payload.type, 'for user:', payload.userId || 'all');
 
-    // Security: Users can only send notifications to themselves unless they're admin
+    // Security: Users can only send notifications to themselves unless admin
     if (payload.userId && payload.userId !== userId) {
-      // Check if user is admin
       const { data: isAdmin } = await supabase.rpc('has_role', {
         _user_id: userId,
         _role: 'admin',
@@ -139,19 +247,15 @@ Deno.serve(async (req) => {
       .select('id, push_token, notification_preferences')
       .not('push_token', 'is', null);
 
-    // If userId specified, only target that user
-    // Otherwise, only admins can send to all
     if (payload.userId) {
       query = query.eq('id', payload.userId);
     } else {
-      // For broadcast, require admin
       const { data: isAdmin } = await supabase.rpc('has_role', {
         _user_id: userId,
         _role: 'admin',
       });
       
       if (!isAdmin) {
-        // Non-admin can only send to themselves
         query = query.eq('id', userId);
       }
     }
@@ -185,6 +289,8 @@ Deno.serve(async (req) => {
           return prefs.streakReminders !== false;
         case 'daily_reminder':
           return prefs.dailyReminder !== false;
+        case 'leaderboard':
+          return prefs.newsAlerts !== false; // Group with news for now
         default:
           return true;
       }
@@ -192,14 +298,14 @@ Deno.serve(async (req) => {
 
     console.log(`Sending to ${eligibleUsers.length} of ${users.length} users`);
 
-    // Send notifications via FCM
     let successCount = 0;
     let failCount = 0;
+    const tokensToRemove: string[] = [];
 
     for (const user of eligibleUsers) {
       if (!user.push_token) continue;
       
-      const success = await sendToFCM(
+      const success = await sendNotification(
         user.push_token,
         payload.title,
         payload.body,
@@ -210,10 +316,20 @@ Deno.serve(async (req) => {
         successCount++;
       } else {
         failCount++;
+        // Mark token for potential cleanup if it failed
+        tokensToRemove.push(user.id);
       }
     }
 
-    console.log(`FCM results: ${successCount} sent, ${failCount} failed`);
+    // Optional: Clean up invalid tokens (commented out for safety)
+    // if (tokensToRemove.length > 0) {
+    //   await supabase
+    //     .from('profiles')
+    //     .update({ push_token: null })
+    //     .in('id', tokensToRemove);
+    // }
+
+    console.log(`Notification results: ${successCount} sent, ${failCount} failed`);
 
     return new Response(
       JSON.stringify({ 
