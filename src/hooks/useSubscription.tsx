@@ -2,12 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
 
 // Simple subscription hook using localStorage for development/testing
-// For production, this would connect to native StoreKit via Capacitor plugin
+// For production, connect to native StoreKit via Capacitor plugin
 
 export const PRODUCT_IDS = {
   MONTHLY: 'MarketLingo.pro.monthly',
-  ANNUAL: 'MarketLingo.pro.yearly', 
-  LIFETIME: 'MarketLingo.pro.lifetime',
+  ANNUAL: 'MarketLingo.pro.yearly',
 } as const;
 
 export const ENTITLEMENT_ID = 'MarketLingo Pro';
@@ -64,12 +63,11 @@ export function useSubscription() {
     return false;
   }, []);
 
-  const getPackage = useCallback((type: 'monthly' | 'annual' | 'lifetime') => {
+  const getPackage = useCallback((type: 'monthly' | 'annual') => {
     // Return mock package data for display purposes
     const prices = {
       monthly: { priceString: '$9.99', price: 9.99 },
       annual: { priceString: '$79.99', price: 79.99 },
-      lifetime: { priceString: '$199.99', price: 199.99 },
     };
     
     return {
