@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, Flame, Target, CheckCircle2 } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, Flame, Target, CheckCircle2, Clock, Zap } from "lucide-react";
 import { Button } from "../ui/button";
 import { MentorAvatar } from "../ai/MentorAvatar";
 import { MentorChatOverlay } from "../ai/MentorChatOverlay";
@@ -10,6 +10,7 @@ import { SlideContentCard } from "./SlideContentCard";
 import { mentors, Mentor, getMentorForContext } from "@/data/mentors";
 import { getTipForSlide, MentorTip } from "@/data/mentorTips";
 import { cn } from "@/lib/utils";
+import { XP_REWARDS } from "@/hooks/useUserXP";
 
 interface Source {
   label: string;
@@ -25,15 +26,19 @@ interface Slide {
 
 type StackType = "NEWS" | "HISTORY" | "LESSON";
 
+// Minimum time required (in seconds) to complete a lesson for XP
+const MINIMUM_LESSON_TIME_SECONDS = 180; // 3 minutes
+
 interface SlideReaderProps {
   stackTitle: string;
   stackType: StackType;
   slides: Slide[];
   onClose: () => void;
-  onComplete: () => void;
+  onComplete: (isReview: boolean, timeSpentSeconds: number) => void;
   onSaveInsight: (slideNumber: number) => void;
   onAddNote: (slideNumber: number) => void;
   marketId?: string;
+  isReview?: boolean; // If true, user is reviewing a completed lesson
 }
 
 const SWIPE_THRESHOLD = 50;
@@ -47,6 +52,7 @@ export function SlideReader({
   onSaveInsight,
   onAddNote,
   marketId,
+  isReview = false,
 }: SlideReaderProps) {
   const [currentIndex, setCurrentIndex] = useState(-1); // Start at -1 for intro slide
   const [direction, setDirection] = useState(0);
@@ -56,6 +62,24 @@ export function SlideReader({
   const [shownTipIds] = useState<Set<string>>(new Set());
   const [showArrows, setShowArrows] = useState(true);
   const [showCompletion, setShowCompletion] = useState(false);
+  
+  // Time tracking
+  const [startTime] = useState(() => Date.now());
+  const [timeSpentSeconds, setTimeSpentSeconds] = useState(0);
+  
+  // Update time spent every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeSpentSeconds(Math.floor((Date.now() - startTime) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [startTime]);
+  
+  // Check if minimum time reached for lesson completion
+  const hasMetMinimumTime = timeSpentSeconds >= MINIMUM_LESSON_TIME_SECONDS;
+  const remainingSeconds = Math.max(0, MINIMUM_LESSON_TIME_SECONDS - timeSpentSeconds);
+  const remainingMinutes = Math.floor(remainingSeconds / 60);
+  const remainingSecondsDisplay = remainingSeconds % 60;
   
   const isIntroSlide = currentIndex === -1;
   const currentSlide = isIntroSlide ? null : slides[currentIndex];
@@ -402,37 +426,84 @@ export function SlideReader({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <h2 className="text-h2 text-text-primary mb-2">
-                  {contextMentor.expressions?.celebrating?.[Math.floor(Math.random() * (contextMentor.expressions.celebrating.length))] || "You're on fire! 🔥"}
-                </h2>
-                <p className="text-body text-text-secondary mb-1">
-                  Lesson complete! Your streak is building.
-                </p>
-                <p className="text-caption text-text-muted mb-6">
-                  Done learning for the day? Try some drills to reinforce what you've learned.
-                </p>
+                {isReview ? (
+                  <>
+                    <h2 className="text-h2 text-text-primary mb-2">
+                      Great review session! 📖
+                    </h2>
+                    <p className="text-body text-text-secondary mb-1">
+                      Reviewing helps solidify your knowledge.
+                    </p>
+                    <p className="text-caption text-text-muted mb-6">
+                      No XP on review, but you're reinforcing what you learned!
+                    </p>
+                  </>
+                ) : !hasMetMinimumTime ? (
+                  <>
+                    <h2 className="text-h2 text-text-primary mb-2">
+                      Take your time! ⏱️
+                    </h2>
+                    <p className="text-body text-text-secondary mb-1">
+                      Spend at least 3 minutes to complete this lesson.
+                    </p>
+                    <div className="flex items-center justify-center gap-2 mb-6">
+                      <Clock size={16} className="text-amber-400" />
+                      <span className="text-body font-bold text-amber-400">
+                        {remainingMinutes}:{remainingSecondsDisplay.toString().padStart(2, '0')} remaining
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="text-h2 text-text-primary mb-2">
+                      {contextMentor.expressions?.celebrating?.[Math.floor(Math.random() * (contextMentor.expressions.celebrating.length))] || "You're on fire! 🔥"}
+                    </h2>
+                    <p className="text-body text-text-secondary mb-1">
+                      Lesson complete! Your streak is building.
+                    </p>
+                    <div className="flex items-center justify-center gap-1.5 mb-1">
+                      <Zap size={14} className="text-yellow-400 fill-yellow-400" />
+                      <span className="text-caption text-emerald-400 font-semibold">+{XP_REWARDS.LESSON_COMPLETE} XP earned</span>
+                    </div>
+                    <p className="text-caption text-text-muted mb-6">
+                      Done learning for the day? Try some drills to reinforce what you've learned.
+                    </p>
+                  </>
+                )}
               </motion.div>
               
               <div className="space-y-3">
-                <Button 
-                  variant="cta" 
-                  size="full"
-                  onClick={onComplete}
-                >
-                  <Flame size={18} />
-                  Continue
-                </Button>
-                <Button 
-                  variant="secondary" 
-                  size="full"
-                  onClick={() => {
-                    onComplete();
-                  }}
-                  className="gap-2"
-                >
-                  <Target size={18} />
-                  Practice with Drills
-                </Button>
+                {/* If minimum time not met and not review, show "Keep Reading" to go back */}
+                {!isReview && !hasMetMinimumTime ? (
+                  <Button 
+                    variant="secondary" 
+                    size="full"
+                    onClick={() => setShowCompletion(false)}
+                  >
+                    <Clock size={18} />
+                    Keep Reading
+                  </Button>
+                ) : (
+                  <>
+                    <Button 
+                      variant="cta" 
+                      size="full"
+                      onClick={() => onComplete(isReview, timeSpentSeconds)}
+                    >
+                      <Flame size={18} />
+                      Continue
+                    </Button>
+                    <Button 
+                      variant="secondary" 
+                      size="full"
+                      onClick={() => onComplete(isReview, timeSpentSeconds)}
+                      className="gap-2"
+                    >
+                      <Target size={18} />
+                      Practice with Drills
+                    </Button>
+                  </>
+                )}
               </div>
             </motion.div>
           </motion.div>
