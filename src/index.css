@@ -14,14 +14,14 @@
     --bg-1: 222 41% 11%;       /* #0F172A - Elevated surfaces */
     --bg-2: 218 52% 13%;       /* #111C33 - Cards */
     
-    /* Brand Accent - Single accent, used sparingly */
-    --accent: 252 100% 68%;    /* #7C5CFF - Primary accent */
-    --accent-glow: 252 100% 68% / 0.25;
+    /* Brand Accent - Vibrant Duolingo-style purple */
+    --accent: 258 90% 66%;     /* #8B5CF6 - More vibrant purple */
+    --accent-glow: 258 90% 66% / 0.3;
     
-    /* Text Hierarchy */
-    --text-primary: 220 20% 97%;     /* Near white, not pure */
-    --text-secondary: 220 15% 70%;   /* Muted text */
-    --text-muted: 220 12% 50%;       /* Very muted */
+    /* Text Hierarchy - Slightly brighter for better contrast */
+    --text-primary: 220 25% 98%;     /* Near white */
+    --text-secondary: 220 18% 75%;   /* Muted text */
+    --text-muted: 220 15% 55%;       /* Very muted */
     
     /* Semantic Colors */
     --background: var(--bg-0);
@@ -42,37 +42,37 @@
     --muted: var(--bg-1);
     --muted-foreground: var(--text-muted);
     
-    --accent: 252 100% 68%;
+    --accent: 258 90% 66%;
     --accent-foreground: 0 0% 100%;
     
-    --destructive: 0 70% 50%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 220 25% 18%;
-    --input: 220 25% 18%;
+    --border: 220 28% 20%;
+    --input: 220 28% 20%;
     --ring: var(--accent);
     
-    --radius: 14px;
+    --radius: 16px;
     
-    /* Streak colors */
-    --streak-flame: 25 95% 55%;
-    --streak-glow: 25 95% 55% / 0.3;
+    /* Streak colors - More vibrant orange/red */
+    --streak-flame: 25 100% 55%;
+    --streak-glow: 25 100% 55% / 0.4;
     
-    /* Success/Progress */
-    --success: 145 65% 45%;
+    /* Success/Progress - Duolingo green */
+    --success: 158 72% 48%;
     --success-foreground: 0 0% 100%;
     
     /* Locked/Disabled */
-    --locked: 220 15% 35%;
+    --locked: 220 18% 38%;
     
-    /* Shadows - Subtle only */
-    --shadow-card: 0 4px 24px -4px hsl(222 47% 4% / 0.6);
-    --shadow-elevated: 0 8px 32px -8px hsl(222 47% 4% / 0.8);
+    /* Shadows - Deeper for more depth */
+    --shadow-card: 0 6px 28px -6px hsl(222 47% 4% / 0.7);
+    --shadow-elevated: 0 12px 40px -12px hsl(222 47% 4% / 0.85);
     
-    /* Gradients */
+    /* Gradients - More colorful */
     --gradient-bg: linear-gradient(180deg, hsl(var(--bg-0)) 0%, hsl(var(--bg-1)) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(var(--bg-2)) 0%, hsl(218 52% 11%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(252 100% 68%) 0%, hsl(280 100% 60%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(var(--bg-2)) 0%, hsl(218 52% 10%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(258 90% 66%) 0%, hsl(280 95% 55%) 100%);
     
     /* Sidebar - matching dark theme */
     --sidebar-background: var(--bg-1);
