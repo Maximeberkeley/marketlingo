@@ -73,9 +73,9 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
     navigate('/subscription');
   };
 
-  // Get pricing from RevenueCat offerings or show defaults
-  const monthlyPrice = offerings?.availablePackages?.find(p => p.identifier === '$rc_monthly')?.product?.priceString || '$9.99/mo';
-  const annualPrice = offerings?.availablePackages?.find(p => p.identifier === '$rc_annual')?.product?.priceString || '$79.99/yr';
+  // Get pricing from offerings or show defaults
+  const monthlyPrice = offerings?.availablePackages?.find(p => p.identifier === 'monthly')?.product?.priceString || '$9.99/mo';
+  const annualPrice = offerings?.availablePackages?.find(p => p.identifier === 'annual')?.product?.priceString || '$79.99/yr';
 
   return (
     <AnimatePresence>

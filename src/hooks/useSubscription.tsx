@@ -71,7 +71,7 @@ export function useSubscription() {
     };
     
     return {
-      identifier: `$rc_${type}`,
+      identifier: type,
       product: {
         identifier: PRODUCT_IDS[type.toUpperCase() as keyof typeof PRODUCT_IDS],
         ...prices[type],
