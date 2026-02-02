@@ -242,35 +242,35 @@ export default function TrainerPage() {
             {/* Hero Card with Market-Specific Gradient */}
             <div className={`relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-red-600 via-rose-700 to-pink-900'}`}>
               <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5" />
-              <div className="relative p-6 h-48 flex flex-col justify-end">
-                {/* Mentor avatar */}
-                <div className="absolute top-4 right-4">
+              <div className="relative p-6 pt-8 pb-6 min-h-[200px] flex flex-col justify-end">
+                {/* Mentor avatar - positioned with breathing room */}
+                <div className="absolute top-5 right-5">
                   <img 
                     src={primaryMentor.avatar} 
                     alt={primaryMentor.name}
-                    className="w-16 h-16 rounded-full border-2 border-white/30 object-cover object-[50%_30%]"
+                    className="w-14 h-14 rounded-full border-2 border-white/30 object-cover object-[50%_30%]"
                   />
                 </div>
-                <p className="text-white/80 text-caption font-medium mb-1">{marketConfig?.name || 'Industry'} Trainer</p>
-                <h2 className="text-2xl font-bold text-white mb-2">Think Like an Expert</h2>
-                <p className="text-white/90 text-body">
+                <p className="text-white/80 text-caption font-medium mb-2">{marketConfig?.name || 'Industry'} Trainer</p>
+                <h2 className="text-2xl font-bold text-white mb-3 pr-20">Think Like an Expert</h2>
+                <p className="text-white/90 text-body leading-relaxed">
                   {marketConfig?.trainerDescription || 'Complex scenarios with deep professional feedback.'}
                 </p>
               </div>
             </div>
 
             {/* Features */}
-            <div className="card-elevated mb-6">
-              <h3 className="text-h3 text-text-primary mb-3">What you'll learn</h3>
-              <ul className="space-y-2">
+            <div className="card-elevated mb-6 p-5">
+              <h3 className="text-h3 text-text-primary mb-4">What you'll learn</h3>
+              <ul className="space-y-3">
                 {[
                   "Real-world decision scenarios",
                   "Pro reasoning breakdowns",
                   "Common mistake analysis",
                   "Mental models for founders"
                 ].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-2 text-body text-text-secondary">
-                    <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                  <li key={i} className="flex items-center gap-3 text-body text-text-secondary">
+                    <div className="w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
                     {feature}
                   </li>
                 ))}

@@ -133,9 +133,9 @@ export function IntroductionCard({ type, onStart, onDismiss }: IntroductionCardP
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <p className="text-caption text-accent font-medium mb-1">{content.subtitle}</p>
-            <h2 className="text-h2 text-text-primary mb-2">{content.title}</h2>
-            <p className="text-body text-text-secondary mb-4">{content.description}</p>
+            <p className="text-caption text-accent font-medium mb-2">{content.subtitle}</p>
+            <h2 className="text-h2 text-text-primary mb-3">{content.title}</h2>
+            <p className="text-body text-text-secondary mb-5 leading-relaxed">{content.description}</p>
           </motion.div>
 
           {/* Features */}
@@ -143,7 +143,7 @@ export function IntroductionCard({ type, onStart, onDismiss }: IntroductionCardP
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="space-y-2 mb-6"
+            className="space-y-3 mb-6"
           >
             {content.features.map((feature, i) => (
               <motion.li
@@ -151,10 +151,10 @@ export function IntroductionCard({ type, onStart, onDismiss }: IntroductionCardP
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.25 + i * 0.05 }}
-                className="flex items-center gap-2 text-caption text-text-secondary"
+                className="flex items-center gap-3 text-body text-text-secondary"
               >
                 <div className={cn(
-                  "w-1.5 h-1.5 rounded-full",
+                  "w-2 h-2 rounded-full flex-shrink-0",
                   `bg-gradient-to-r ${content.gradient}`
                 )} />
                 {feature}

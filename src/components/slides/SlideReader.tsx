@@ -377,7 +377,7 @@ export function SlideReader({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className="w-full max-w-sm bg-bg-2 rounded-2xl p-6 border border-border text-center relative"
+              className="w-full mx-4 bg-bg-2 rounded-2xl p-8 border border-border text-center relative"
             >
               {/* Mentor Avatar with jump animation */}
               <motion.div

@@ -269,9 +269,9 @@ export default function HomePage() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between py-4"
+          className="flex items-center justify-between py-5"
         >
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             <span className="text-2xl">{getMarketEmoji(selectedMarket || "aerospace")}</span>
             <div>
               <h1 className="text-lg font-semibold text-text-primary">
@@ -280,7 +280,7 @@ export default function HomePage() {
               <p className="text-[11px] text-text-muted">Day {currentDay} of 180</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} showLevel={false} />
             <StreakBadge count={streak} />
           </div>
