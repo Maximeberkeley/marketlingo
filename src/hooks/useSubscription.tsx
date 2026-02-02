@@ -4,9 +4,9 @@ import type { CustomerInfo, PurchasesOffering, PurchasesPackage } from '@revenue
 
 // Product IDs - must match App Store Connect and RevenueCat
 export const PRODUCT_IDS = {
-  MONTHLY: 'monthly',
-  ANNUAL: 'yearly', 
-  LIFETIME: 'lifetime',
+  MONTHLY: 'MarketLingo.pro.monthly',
+  ANNUAL: 'MarketLingo.pro.yearly', 
+  LIFETIME: 'MarketLingo.pro.lifetime',
 } as const;
 
 // Entitlement ID - the "pro" access level (must match RevenueCat dashboard)

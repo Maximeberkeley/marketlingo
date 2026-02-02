@@ -4,6 +4,7 @@ import { PushNotifications, Token, PushNotificationSchema, ActionPerformed } fro
 import { LocalNotifications, ScheduleOptions } from '@capacitor/local-notifications';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { useSubscription } from './useSubscription';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,6 +24,7 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
 
 export function useNotifications() {
   const { user } = useAuth();
+  const { isProUser, isLoading: isSubscriptionLoading } = useSubscription();
   const [isSupported, setIsSupported] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [pushToken, setPushToken] = useState<string | null>(null);
@@ -133,10 +135,15 @@ export function useNotifications() {
     }
   }, [user]);
 
-  // Register for push notifications
+  // Register for push notifications (Pro only)
   const registerPushNotifications = useCallback(async () => {
     if (!isSupported) {
       console.log('Push notifications not supported on this platform');
+      return false;
+    }
+
+    if (!isProUser) {
+      console.log('Push notifications are a Pro feature');
       return false;
     }
 
@@ -195,7 +202,7 @@ export function useNotifications() {
       console.error('Error registering push notifications:', error);
       return false;
     }
-  }, [isSupported, savePushToken, showForegroundNotification, handleNotificationAction]);
+  }, [isSupported, isProUser, savePushToken, showForegroundNotification, handleNotificationAction]);
 
   // Schedule local notification reminders (Duolingo-style)
   const scheduleDailyReminder = useCallback(async () => {
@@ -344,9 +351,9 @@ export function useNotifications() {
     }
   }, [isRegistered, preferences.dailyReminder, scheduleDailyReminder]);
 
-  // Auto-register when user is available and on native platform
+  // Auto-register when Pro user is available and on native platform
   useEffect(() => {
-    if (user && isSupported && !isRegistered) {
+    if (user && isSupported && !isRegistered && isProUser && !isSubscriptionLoading) {
       // Check if we already have a token stored
       const checkExistingToken = async () => {
         const { data } = await supabase
@@ -363,7 +370,7 @@ export function useNotifications() {
       
       checkExistingToken();
     }
-  }, [user, isSupported, isRegistered]);
+  }, [user, isSupported, isRegistered, isProUser, isSubscriptionLoading]);
 
   // Clean up listeners on unmount
   useEffect(() => {
@@ -380,6 +387,8 @@ export function useNotifications() {
     isRegistered,
     pushToken,
     preferences,
+    isProRequired: true, // Push notifications require Pro
+    isProUser,
     registerPushNotifications,
     scheduleDailyReminder,
     scheduleStreakReminder,
