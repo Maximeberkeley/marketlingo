@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2, ChevronDown, ChevronRight, Check, Lock, Play, BookOpen, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LeoRig, LeoCompanion } from "@/components/mascot/LeoRig";
 
 interface Lesson {
   day: number;
@@ -229,27 +230,36 @@ export default function RoadmapPage() {
   return (
     <AppLayout>
       <div className="screen-padding pt-safe pb-28">
-        {/* Header */}
+        {/* Header with Leo */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <h1 className="text-h1 text-text-primary mb-1">Your Journey</h1>
-          <p className="text-caption text-text-muted">
-            Day {currentDay} of 180 • Week {getDayWeek(currentDay)}
-          </p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-h1 text-text-primary mb-1">Your Journey</h1>
+              <p className="text-caption text-text-muted">
+                Day {currentDay} of 180 • Week {getDayWeek(currentDay)}
+              </p>
+            </div>
+            {/* Leo companion in header */}
+            <LeoRig 
+              size="sm" 
+              emotion={currentDay > 1 ? "happy" : "idle"} 
+            />
+          </div>
         </motion.div>
 
-        {/* Current Lesson Card */}
+        {/* Current Lesson Card with Leo */}
         {aerospacePatterns[currentDay] && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/30"
           >
-            <div className="flex items-start justify-between">
-              <div>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1">
                 <p className="text-[11px] font-medium text-accent mb-1">CONTINUE LEARNING</p>
                 <h3 className="text-body font-semibold text-text-primary">
                   {aerospacePatterns[currentDay].title}

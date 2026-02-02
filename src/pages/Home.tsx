@@ -12,7 +12,7 @@ import { DailyNews } from "@/components/home/DailyNews";
 import { NotificationOnboarding } from "@/components/onboarding/NotificationOnboarding";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { LeoMascot, getRandomLeoMessage } from "@/components/mascot/LeoMascot";
-import { LeoInteractive } from "@/components/mascot/LeoStateMachine";
+import { LeoInteractive } from "@/components/mascot/LeoRig";
 import { Mentor } from "@/data/mentors";
 import { getMarketEmoji, getMarketName, getMarketById } from "@/data/markets";
 import { toast } from "sonner";

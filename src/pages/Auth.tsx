@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { z } from "zod";
-import { LeoInteractive } from "@/components/mascot/LeoStateMachine";
+import { LeoInteractive } from "@/components/mascot/LeoRig";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
