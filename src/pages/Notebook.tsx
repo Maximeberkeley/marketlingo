@@ -128,12 +128,19 @@ export default function NotebookPage() {
   }, [user, selectedMarket]);
 
   const handleDeleteNote = async (noteId: string) => {
+    if (!user) {
+      toast.error("You must be logged in to delete notes");
+      return;
+    }
+    
     const { error } = await supabase
       .from("notes")
       .delete()
-      .eq("id", noteId);
+      .eq("id", noteId)
+      .eq("user_id", user.id);
 
     if (error) {
+      console.error("Delete error:", error);
       toast.error("Failed to delete note");
     } else {
       setNotes((prev) => prev.filter((n) => n.id !== noteId));
