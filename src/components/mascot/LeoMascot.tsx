@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { LeoRig, LeoEmotion } from "./LeoRig";
+import { LeoCharacter, LeoAnim, LeoPuppet } from "./LeoStateMachine";
 
-// Animation state types that map to LeoRig emotions
+// Animation state types that map to LeoAnim
 type LeoMood = "happy" | "thinking" | "celebrating" | "encouraging" | "waving" | "jumping" | "spinning";
 
 interface LeoMascotProps {
@@ -13,22 +13,23 @@ interface LeoMascotProps {
   showBubble?: boolean;
   className?: string;
   onClick?: () => void;
-  animate3D?: boolean; // Kept for backwards compatibility
 }
 
-// Map mood to LeoRig emotion
-const moodToEmotion = (mood: LeoMood): LeoEmotion => {
+// Map mood to LeoAnim
+const moodToAnimation = (mood: LeoMood): LeoAnim => {
   switch (mood) {
-    case "happy": return "happy";
+    case "happy": return "success";
     case "thinking": return "thinking";
     case "celebrating": 
-    case "spinning": return "celebrate";
+    case "spinning": 
+    case "jumping": return "celebrating";
     case "encouraging": 
     case "waving": return "waving";
-    case "jumping": return "celebrate";
     default: return "idle";
   }
 };
+
+const sizeMap = { sm: 80, md: 120, lg: 160, xl: 200 };
 
 export function LeoMascot({ 
   size = "md", 
@@ -45,13 +46,21 @@ export function LeoMascot({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4 }}
     >
-      <LeoRig
-        size={size}
-        emotion={moodToEmotion(mood)}
-        message={showBubble ? message : undefined}
-        showMessage={showBubble && !!message}
+      <LeoPuppet
+        size={sizeMap[size]}
+        animation={moodToAnimation(mood)}
         onClick={onClick}
       />
+      {showBubble && message && (
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mt-3 px-4 py-2 bg-bg-2 rounded-xl border border-border max-w-[180px]"
+        >
+          <p className="text-sm text-text-primary text-center">{message}</p>
+        </motion.div>
+      )}
     </motion.div>
   );
 }
@@ -70,33 +79,43 @@ export function LeoInteractive({
 }) {
   const [message, setMessage] = useState(initialMessage);
   const [tapCount, setTapCount] = useState(0);
-  const [mood, setMood] = useState<LeoMood>("happy");
+  const [animation, setAnimation] = useState<LeoAnim>("idle");
 
   const handleTap = () => {
     setTapCount(prev => prev + 1);
     
-    // Cycle through moods
-    const moods: LeoMood[] = ["jumping", "celebrating", "waving"];
-    setMood(moods[tapCount % moods.length]);
+    // Cycle through animations
+    const animations: LeoAnim[] = ["celebrating", "success", "waving"];
+    setAnimation(animations[tapCount % animations.length]);
     
     // Show tap message
     if (tapMessages.length > 0) {
       setMessage(tapMessages[tapCount % tapMessages.length]);
     }
     
-    // Reset mood after animation
-    setTimeout(() => setMood("happy"), 2000);
+    // Reset animation after a delay
+    setTimeout(() => setAnimation("idle"), 2000);
     
     onTap?.();
   };
 
   return (
-    <LeoMascot 
-      size={size} 
-      mood={mood} 
-      message={message}
-      onClick={handleTap}
-    />
+    <div className="flex flex-col items-center">
+      <LeoPuppet 
+        size={sizeMap[size]} 
+        animation={animation}
+        onClick={handleTap}
+      />
+      {message && (
+        <motion.p
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-sm text-text-secondary mt-3 text-center"
+        >
+          {message}
+        </motion.p>
+      )}
+    </div>
   );
 }
 

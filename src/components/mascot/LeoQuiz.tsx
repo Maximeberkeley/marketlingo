@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LeoRig, LeoEmotion } from "./LeoRig";
+import { LeoPuppet, LeoAnim } from "./LeoStateMachine";
 import { leoMessages, getRandomLeoMessage } from "./LeoMascot";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ export function LeoQuiz({ question, options, onComplete, onDismiss }: LeoQuizPro
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [leoMessage, setLeoMessage] = useState(getRandomLeoMessage("quiz"));
-  const [leoEmotion, setLeoEmotion] = useState<LeoEmotion>("thinking");
+  const [leoAnimation, setLeoAnimation] = useState<LeoAnim>("thinking");
   const { play } = useSoundEffects();
 
   const handleSelect = (index: number) => {
@@ -34,11 +34,11 @@ export function LeoQuiz({ question, options, onComplete, onDismiss }: LeoQuizPro
     if (isCorrect) {
       play("correct");
       setLeoMessage(getRandomLeoMessage("correct"));
-      setLeoEmotion("celebrate");
+      setLeoAnimation("success");
     } else {
       play("incorrect");
       setLeoMessage(getRandomLeoMessage("incorrect"));
-      setLeoEmotion("sad");
+      setLeoAnimation("failure");
     }
     
     setShowResult(true);
@@ -58,12 +58,11 @@ export function LeoQuiz({ question, options, onComplete, onDismiss }: LeoQuizPro
     >
       {/* Leo with message - centered */}
       <div className="flex flex-col items-center gap-4 mb-4">
-        <LeoRig 
-          size="md" 
-          emotion={leoEmotion}
-          message={leoMessage}
-          showMessage={true}
+        <LeoPuppet 
+          size={100} 
+          animation={leoAnimation}
         />
+        <p className="text-sm text-text-secondary text-center">{leoMessage}</p>
         <p className="text-body text-text-primary font-medium text-center">{question}</p>
       </div>
 

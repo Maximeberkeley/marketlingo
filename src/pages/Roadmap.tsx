@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2, ChevronDown, ChevronRight, Check, Lock, Play, BookOpen, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LeoRig, LeoCompanion } from "@/components/mascot/LeoRig";
+import { LeoCharacter } from "@/components/mascot/LeoStateMachine";
 
 interface Lesson {
   day: number;
@@ -244,9 +244,9 @@ export default function RoadmapPage() {
               </p>
             </div>
             {/* Leo companion in header */}
-            <LeoRig 
+            <LeoCharacter 
               size="sm" 
-              emotion={currentDay > 1 ? "happy" : "idle"} 
+              animation={currentDay > 1 ? "success" : "idle"} 
             />
           </div>
         </motion.div>

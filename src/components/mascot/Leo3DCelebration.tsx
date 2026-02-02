@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { useEffect } from "react";
-import { LeoCharacter } from "./LeoStateMachine";
+import { LeoCharacter, LeoAnim } from "./LeoStateMachine";
 
 interface Leo3DCelebrationProps {
   isVisible: boolean;
