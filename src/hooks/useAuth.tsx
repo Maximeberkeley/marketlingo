@@ -1,7 +1,8 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from "react";
+import { useState, useEffect, createContext, useContext, ReactNode, useCallback } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { CapacitorStorage } from "@/lib/capacitor-storage";
 
 interface AuthContextType {
   user: User | null;
@@ -21,25 +22,94 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Persist session to Capacitor storage for native apps
+  const persistSession = useCallback(async (session: Session | null) => {
+    if (session) {
+      await CapacitorStorage.setSession({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+        expires_at: session.expires_at,
+        expires_in: session.expires_in,
+        token_type: session.token_type,
+        user: session.user,
+      });
+    } else {
+      await CapacitorStorage.clearSession();
+    }
+  }, []);
+
+  // Restore session from Capacitor storage on native platforms
+  const restoreNativeSession = useCallback(async () => {
+    if (!CapacitorStorage.isNative()) return null;
+    
+    const storedSession = await CapacitorStorage.getSession() as {
+      refresh_token?: string;
+    } | null;
+    
+    if (storedSession?.refresh_token) {
+      try {
+        // Use the stored refresh token to get a new session
+        const { data, error } = await supabase.auth.setSession({
+          access_token: (storedSession as any).access_token,
+          refresh_token: storedSession.refresh_token,
+        });
+        
+        if (!error && data.session) {
+          return data.session;
+        }
+      } catch (err) {
+        console.error('Failed to restore native session:', err);
+        await CapacitorStorage.clearSession();
+      }
+    }
+    return null;
+  }, []);
+
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+    let mounted = true;
+
+    // Initialize auth
+    const initAuth = async () => {
+      // First try to restore from Capacitor storage (for native apps)
+      const nativeSession = await restoreNativeSession();
+      
+      if (nativeSession && mounted) {
+        setSession(nativeSession);
+        setUser(nativeSession.user);
+        setLoading(false);
+        return;
+      }
+
+      // Fallback to checking Supabase's built-in session (for web)
+      const { data: { session } } = await supabase.auth.getSession();
+      if (mounted) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
       }
+    };
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+          
+          // Persist session changes to Capacitor storage
+          persistSession(session);
+        }
+      }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    initAuth();
 
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [restoreNativeSession, persistSession]);
 
   const signUp = async (email: string, password: string) => {
     const redirectUrl = `${window.location.origin}/`;
@@ -77,6 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    await CapacitorStorage.clearSession();
     setUser(null);
     setSession(null);
   };
