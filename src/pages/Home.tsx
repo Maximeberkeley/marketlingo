@@ -541,33 +541,53 @@ export default function HomePage() {
           </div>
         </motion.button>
 
-        {/* Quick Links */}
+        {/* Quick Links - Enhanced Duolingo Style */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="grid grid-cols-4 gap-2 mb-5"
+          className="mb-5"
         >
-          {[
-            { icon: BookOpen, label: "Notes", path: "/notebook", color: "text-rose-400", bg: "bg-rose-500/10" },
-            { icon: Trophy, label: "Rank", path: "/leaderboard", color: "text-blue-400", bg: "bg-blue-500/10" },
-            { icon: Award, label: "Badges", path: "/achievements", color: "text-purple-400", bg: "bg-purple-500/10" },
-            ...(selectedMarket === "neuroscience" 
-              ? [{ icon: FlaskConical, label: "FDA/IRB", path: "/regulatory-hub", color: "text-emerald-400", bg: "bg-emerald-500/10" }]
-              : [{ icon: Newspaper, label: "News", path: "/summaries", color: "text-cyan-400", bg: "bg-cyan-500/10" }]
-            ),
-          ].map((item) => (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-bg-2/50 border border-border"
-            >
-              <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", item.bg)}>
-                <item.icon size={16} className={item.color} />
-              </div>
-              <span className="text-[10px] text-text-secondary">{item.label}</span>
-            </button>
-          ))}
+          <h2 className="text-caption font-medium uppercase tracking-wider text-text-muted mb-3">
+            Quick Access
+          </h2>
+          <div className="grid grid-cols-4 gap-2.5">
+            {[
+              { icon: BookOpen, label: "Notes", path: "/notebook", color: "text-rose-400", iconBg: "bg-rose-500/20", borderColor: "border-rose-500/20" },
+              { icon: Trophy, label: "Rank", path: "/leaderboard", color: "text-blue-400", iconBg: "bg-blue-500/15", borderColor: "border-blue-500/20" },
+              { icon: Award, label: "Badges", path: "/achievements", color: "text-purple-400", iconBg: "bg-purple-500/15", borderColor: "border-purple-500/20" },
+              ...(selectedMarket === "neuroscience" 
+                ? [{ icon: FlaskConical, label: "FDA/IRB", path: "/regulatory-hub", color: "text-emerald-400", iconBg: "bg-emerald-500/15", borderColor: "border-emerald-500/20" }]
+                : [{ icon: Newspaper, label: "News", path: "/summaries", color: "text-cyan-400", iconBg: "bg-cyan-500/15", borderColor: "border-cyan-500/20" }]
+              ),
+            ].map((item, index) => (
+              <motion.button
+                key={item.path}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.22 + index * 0.04 }}
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => {
+                  hapticFeedback("light");
+                  navigate(item.path);
+                }}
+                className={cn(
+                  "flex flex-col items-center gap-2.5 py-4 rounded-[18px] bg-bg-2/60 border transition-all duration-200",
+                  item.borderColor
+                )}
+              >
+                {/* Icon Container - Centered with colored background */}
+                <div className={cn(
+                  "w-12 h-12 rounded-xl flex items-center justify-center transition-transform",
+                  item.iconBg
+                )}>
+                  <item.icon size={22} className={item.color} />
+                </div>
+                <span className="text-caption text-text-secondary font-medium">{item.label}</span>
+              </motion.button>
+            ))}
+          </div>
         </motion.div>
 
         {/* Key Players & News */}
