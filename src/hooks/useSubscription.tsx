@@ -16,12 +16,21 @@ export function useSubscription() {
   const [isProUser, setIsProUser] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const isNative = Capacitor.isNativePlatform();
+  let isNative = false;
+  try {
+    isNative = Capacitor.isNativePlatform();
+  } catch (error) {
+    console.warn('Capacitor not available:', error);
+  }
 
   // Initialize - check localStorage for pro status
   useEffect(() => {
-    const proStatus = localStorage.getItem('marketlingo_pro');
-    setIsProUser(proStatus === 'true');
+    try {
+      const proStatus = localStorage.getItem('marketlingo_pro');
+      setIsProUser(proStatus === 'true');
+    } catch (error) {
+      console.warn('Error reading pro status:', error);
+    }
     setIsLoading(false);
   }, []);
 
