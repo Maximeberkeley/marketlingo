@@ -49,7 +49,6 @@ export function LeoMascot({
       <LeoPuppet
         size={sizeMap[size]}
         animation={moodToAnimation(mood)}
-        onClick={onClick}
       />
       {showBubble && message && (
         <motion.div
@@ -104,7 +103,6 @@ export function LeoInteractive({
       <LeoPuppet 
         size={sizeMap[size]} 
         animation={animation}
-        onClick={handleTap}
       />
       {message && (
         <motion.p

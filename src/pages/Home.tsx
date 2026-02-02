@@ -282,11 +282,6 @@ export default function HomePage() {
           <LeoCharacter 
             size="lg" 
             animation={leoAnimation}
-            onClick={() => {
-              play("tap");
-              setLeoAnimation("celebrating");
-              setTimeout(() => setLeoAnimation("idle"), 2000);
-            }}
           />
           <motion.p
             initial={{ opacity: 0, y: 5 }}
