@@ -5,6 +5,7 @@ import { leoMessages, getRandomLeoMessage } from "./LeoMascot";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle } from "lucide-react";
+import { truncateOption } from "@/lib/text-utils";
 
 interface QuizOption {
   label: string;
@@ -102,7 +103,7 @@ export function LeoQuiz({ question, options, onComplete, onDismiss }: LeoQuizPro
                   )}
                 </motion.div>
               )}
-              <span className="text-caption text-text-primary">{option.label}</span>
+              <span className="text-caption text-text-primary">{truncateOption(option.label, 80)}</span>
             </motion.button>
           );
         })}

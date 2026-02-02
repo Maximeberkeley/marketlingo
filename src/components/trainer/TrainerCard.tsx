@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../ui/button";
 import { Bookmark, ArrowRight, MessageCircle, AlertTriangle, Brain, TrendingUp, Briefcase, HelpCircle, X, Sparkles } from "lucide-react";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+import { truncateOption } from "@/lib/text-utils";
 
 interface TrainerOption {
   label: string;
@@ -202,7 +203,7 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
                 optionStyle || "border-border bg-bg-2 hover:border-text-muted"
               }`}
             >
-              <span className="text-body text-text-primary">{option.label}</span>
+              <span className="text-body text-text-primary">{truncateOption(option.label, 120)}</span>
             </motion.button>
           );
         })}

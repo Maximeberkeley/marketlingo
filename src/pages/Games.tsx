@@ -12,6 +12,7 @@ import { mentors, Mentor } from "@/data/mentors";
 import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { smartTruncate, shuffleOptions } from "@/lib/text-utils";
 import { useAuth } from "@/hooks/useAuth";
 
 interface GameQuestion {
@@ -96,8 +97,24 @@ export default function GamesPage() {
         const patternSlide = sortedSlides.find(s => s.body?.toLowerCase().includes("pattern:"));
         const pattern = patternSlide?.body?.replace(/pattern:\s*/i, "") || stack.title;
 
-        // Generate options from slides
-        const options = sortedSlides.slice(1, 5).map(s => s.body?.substring(0, 60) + "..." || s.title);
+        // Generate options from slides with smart truncation
+        const rawOptions = sortedSlides.slice(1, 5).map(s => 
+          smartTruncate(s.body || s.title, 80)
+        );
+        
+        // Ensure we have 4 options
+        const baseOptions = rawOptions.length >= 4 ? rawOptions : [
+          rawOptions[0] || "First key insight",
+          rawOptions[1] || "Second consideration", 
+          rawOptions[2] || "Alternative perspective",
+          rawOptions[3] || "Industry best practice"
+        ];
+        
+        // The correct answer is the first option (index 0) before shuffling
+        const originalCorrectIndex = 0;
+        
+        // Shuffle options and get new correct index
+        const { shuffledOptions, newCorrectIndex } = shuffleOptions(baseOptions, originalCorrectIndex);
         
         // Determine question type based on position
         const types: Array<"match" | "timeline" | "predict"> = ["match", "timeline", "predict"];
@@ -106,16 +123,11 @@ export default function GamesPage() {
         return {
           id: stack.id,
           type,
-          question: `${stack.title}: ${questionSlide.substring(0, 100)}`,
-          options: options.length >= 4 ? options : [
-            options[0] || "Option A",
-            options[1] || "Option B", 
-            options[2] || "Option C",
-            options[3] || "Option D"
-          ],
-          correctAnswer: 0,
-          explanation: sortedSlides[sortedSlides.length - 1]?.body || pattern,
-          pattern,
+          question: smartTruncate(`${stack.title}: ${questionSlide}`, 150),
+          options: shuffledOptions,
+          correctAnswer: newCorrectIndex,
+          explanation: smartTruncate(sortedSlides[sortedSlides.length - 1]?.body || pattern, 280),
+          pattern: smartTruncate(pattern, 60),
         };
       });
 
