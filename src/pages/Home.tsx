@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronRight, Gamepad2, Target, Sparkles, Loader2, Trophy, Award, CheckCircle2, BookOpen, Newspaper, FlaskConical, TrendingUp, Crown, Lock } from "lucide-react";
+import { ChevronRight, Gamepad2, Target, Sparkles, Loader2, Trophy, Award, CheckCircle2, BookOpen, Newspaper, FlaskConical, TrendingUp, Crown, Lock, Zap } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { XPBadge } from "@/components/ui/XPBadge";
 import { LessonCard } from "@/components/ui/LessonCard";
+import { DuoProgressBar } from "@/components/ui/DuoProgressBar";
+import { DuoButton } from "@/components/ui/DuoButton";
 import { SlideReader } from "@/components/slides/SlideReader";
 import { KeyPlayers } from "@/components/home/KeyPlayers";
 import { DailyNews } from "@/components/home/DailyNews";
@@ -21,6 +23,7 @@ import { useUserXP, XP_REWARDS } from "@/hooks/useUserXP";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useProPromotionContext } from "@/components/subscription/ProPromotionProvider";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+import { hapticFeedback } from "@/lib/ios-utils";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -295,29 +298,33 @@ export default function HomePage() {
           </motion.p>
         </motion.div>
 
-        {/* Startup Progress - Compact */}
+        {/* Startup Progress - Enhanced Duolingo Style */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-5"
+          className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-bg-2 to-bg-1 border border-border"
         >
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <span className="text-caption font-medium text-text-primary">
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <Crown size={18} className="text-yellow-400" />
+              </motion.div>
+              <span className="text-body font-semibold text-text-primary">
                 Stage {currentStage.stage}: {currentStage.name}
               </span>
             </div>
-            <span className="text-[11px] text-accent">{Math.round(stageProgress)}%</span>
+            <span className="text-caption font-bold text-accent">{Math.round(stageProgress)}%</span>
           </div>
-          <div className="h-1.5 rounded-full bg-bg-1 overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${stageProgress}%` }}
-              transition={{ duration: 0.6 }}
-              className="h-full rounded-full bg-gradient-to-r from-accent to-accent/60"
-            />
-          </div>
+          <DuoProgressBar 
+            progress={stageProgress} 
+            size="md" 
+            colorScheme="accent"
+            animated
+          />
         </motion.div>
 
         {/* Today's Learning Cards */}
@@ -332,31 +339,47 @@ export default function HomePage() {
           </h2>
           
           {lessonCompletedToday ? (
-            <div className="p-4 rounded-xl bg-success/10 border border-success/20">
-              <div className="flex items-center gap-3">
-                <CheckCircle2 size={24} className="text-success" />
+            <motion.div 
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              className="p-5 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-teal-500/10 border border-emerald-500/30 shadow-lg shadow-emerald-500/10"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
+                  transition={{ delay: 0.2 }}
+                  className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg"
+                >
+                  <CheckCircle2 size={24} className="text-white" />
+                </motion.div>
                 <div>
-                  <p className="text-body font-medium text-text-primary">Lesson done for today! 🎉</p>
-                  <p className="text-caption text-text-muted">
-                    +{XP_REWARDS.LESSON_COMPLETE} XP • Practice drills to reinforce
-                  </p>
+                  <p className="text-body font-bold text-text-primary">Lesson Complete! 🎉</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <Zap size={12} className="text-yellow-400 fill-yellow-400" />
+                    <span className="text-caption text-emerald-400 font-semibold">+{XP_REWARDS.LESSON_COMPLETE} XP earned</span>
+                  </div>
                 </div>
               </div>
-              <div className="flex gap-2 mt-3">
-                <button
+              <div className="flex gap-3">
+                <DuoButton
+                  variant="secondary"
+                  size="sm"
                   onClick={() => lessonStack && handleOpenStack(lessonStack)}
-                  className="flex-1 py-2 rounded-lg bg-bg-1 border border-border text-caption text-text-secondary"
+                  className="flex-1"
                 >
-                  Review Lesson
-                </button>
-                <button
+                  Review
+                </DuoButton>
+                <DuoButton
+                  variant="success"
+                  size="sm"
                   onClick={() => navigate("/drills")}
-                  className="flex-1 py-2 rounded-lg bg-accent/10 border border-accent/30 text-caption text-accent font-medium"
+                  className="flex-1"
                 >
-                  Practice
-                </button>
+                  <Zap size={14} /> Practice
+                </DuoButton>
               </div>
-            </div>
+            </motion.div>
           ) : (
             /* Micro Lesson Card - only shown if not completed */
             lessonStack && (
@@ -399,48 +422,80 @@ export default function HomePage() {
             Practice & Play
           </h2>
           <div className="grid grid-cols-2 gap-3">
-            {/* Games Card */}
+            {/* Games Card - Enhanced */}
             <motion.button
+              whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/games")}
-              className="relative overflow-hidden rounded-xl text-left"
+              onClick={() => {
+                hapticFeedback("light");
+                navigate("/games");
+              }}
+              className="relative overflow-hidden rounded-2xl text-left shadow-lg shadow-purple-500/10 border border-purple-500/30"
             >
-              <img src={gamesHero} alt="Games" className="w-full h-28 object-cover object-[50%_30%]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-purple-900/90 via-purple-900/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-3">
-                <p className="text-[10px] text-purple-300 font-medium">TRIVIA</p>
-                <p className="text-sm font-semibold text-white">Games</p>
+              <img src={gamesHero} alt="Games" className="w-full h-32 object-cover object-[50%_30%]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-purple-900/95 via-purple-900/50 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-3.5">
+                <p className="text-[10px] text-purple-300 font-bold tracking-wide">TRIVIA</p>
+                <p className="text-base font-bold text-white">Games</p>
               </div>
+              <motion.div
+                className="absolute top-2 right-2 w-6 h-6 rounded-full bg-purple-500/80 flex items-center justify-center"
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <Gamepad2 size={12} className="text-white" />
+              </motion.div>
             </motion.button>
 
-            {/* Drills Card */}
+            {/* Drills Card - Enhanced */}
             <motion.button
+              whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/drills")}
-              className="relative overflow-hidden rounded-xl text-left"
+              onClick={() => {
+                hapticFeedback("light");
+                navigate("/drills");
+              }}
+              className="relative overflow-hidden rounded-2xl text-left shadow-lg shadow-amber-500/10 border border-amber-500/30"
             >
-              <img src={drillsHero} alt="Drills" className="w-full h-28 object-cover object-[50%_30%]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-amber-900/90 via-amber-900/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-3">
-                <p className="text-[10px] text-amber-300 font-medium">SPEED</p>
-                <p className="text-sm font-semibold text-white">Drills</p>
+              <img src={drillsHero} alt="Drills" className="w-full h-32 object-cover object-[50%_30%]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-amber-900/95 via-amber-900/50 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-3.5">
+                <p className="text-[10px] text-amber-300 font-bold tracking-wide">SPEED</p>
+                <p className="text-base font-bold text-white">Drills</p>
               </div>
+              <motion.div
+                className="absolute top-2 right-2 w-6 h-6 rounded-full bg-amber-500/80 flex items-center justify-center"
+                animate={{ rotate: [0, 15, -15, 0] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                <Zap size={12} className="text-white" />
+              </motion.div>
             </motion.button>
 
-            {/* Trainer Card */}
+            {/* Trainer Card - Enhanced Full Width */}
             <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/trainer")}
-              className="relative overflow-hidden rounded-xl text-left col-span-2"
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => {
+                hapticFeedback("light");
+                navigate("/trainer");
+              }}
+              className="relative overflow-hidden rounded-2xl text-left col-span-2 shadow-lg shadow-emerald-500/10 border border-emerald-500/30"
             >
-              <img src={trainerHero} alt="Trainer" className="w-full h-24 object-cover object-[50%_30%]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/90 via-emerald-900/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-3 flex items-center justify-between">
+              <img src={trainerHero} alt="Trainer" className="w-full h-28 object-cover object-[50%_30%]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/95 via-emerald-900/50 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-3.5 flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] text-emerald-300 font-medium">STRATEGY</p>
-                  <p className="text-sm font-semibold text-white">Trainer Scenarios</p>
+                  <p className="text-[10px] text-emerald-300 font-bold tracking-wide">STRATEGY</p>
+                  <p className="text-base font-bold text-white">Trainer Scenarios</p>
                 </div>
-                <ChevronRight size={18} className="text-white/70" />
+                <motion.div
+                  className="w-8 h-8 rounded-full bg-emerald-500/80 flex items-center justify-center"
+                  animate={{ x: [0, 3, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <ChevronRight size={16} className="text-white" />
+                </motion.div>
               </div>
             </motion.button>
           </div>
