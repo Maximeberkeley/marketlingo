@@ -131,7 +131,6 @@ export default function AuthPage() {
               <LeoCharacter 
                 size="xl"
                 animation={leoAnimation}
-                onClick={handleLeoTap}
               />
               <motion.p
                 initial={{ opacity: 0, y: 5 }}

@@ -218,7 +218,6 @@ export function LeoRiveWithFallback({
         size={size}
         animation={riveToFallbackMap[state]}
         className={className}
-        onClick={onClick}
       />
     );
   }
