@@ -2,14 +2,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
 import type { CustomerInfo, PurchasesOffering, PurchasesPackage } from '@revenuecat/purchases-capacitor';
 
-// Product IDs - must match App Store Connect
+// Product IDs - must match App Store Connect and RevenueCat
 export const PRODUCT_IDS = {
-  MONTHLY: 'marketlingo_pro_monthly', // $9.99/month
-  ANNUAL: 'marketlingo_pro_annual',   // $79.99/year (33% savings)
+  MONTHLY: 'monthly',
+  ANNUAL: 'yearly', 
+  LIFETIME: 'lifetime',
 } as const;
 
-// Entitlement ID - the "pro" access level
-export const ENTITLEMENT_ID = 'pro';
+// Entitlement ID - the "pro" access level (must match RevenueCat dashboard)
+export const ENTITLEMENT_ID = 'MarketLingo Pro';
+
+// RevenueCat API Key
+const REVENUECAT_API_KEY = 'test_mGwqlvGwZYUnyBsIYtCcWDYcLbS';
 
 export function useSubscription() {
   const [isProUser, setIsProUser] = useState(false);
@@ -34,25 +38,18 @@ export function useSubscription() {
       try {
         const { Purchases, LOG_LEVEL } = await import('@revenuecat/purchases-capacitor');
         
-        // Configure RevenueCat with your API key
-        // You'll get this from RevenueCat dashboard after setup
-        const apiKey = import.meta.env.VITE_REVENUECAT_API_KEY;
-        
-        if (!apiKey) {
-          console.log('RevenueCat API key not configured');
-          setIsLoading(false);
-          return;
-        }
-
+        // Enable debug logging in development
         await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
-        await Purchases.configure({ apiKey });
+        
+        // Configure RevenueCat with API key
+        await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
 
         // Get customer info to check current subscription status
         const customerInfoResult = await Purchases.getCustomerInfo();
         const info = customerInfoResult.customerInfo;
         setCustomerInfo(info);
         
-        // Check if user has active "pro" entitlement
+        // Check if user has active "MarketLingo Pro" entitlement
         const hasProAccess = info.entitlements.active[ENTITLEMENT_ID] !== undefined;
         setIsProUser(hasProAccess);
 
@@ -62,7 +59,7 @@ export function useSubscription() {
           setOfferings(offeringsResult.current);
         }
 
-        // Listen for customer info updates
+        // Listen for customer info updates (e.g., subscription changes)
         Purchases.addCustomerInfoUpdateListener((updatedInfo: CustomerInfo) => {
           setCustomerInfo(updatedInfo);
           const hasAccess = updatedInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
@@ -80,7 +77,7 @@ export function useSubscription() {
     initializePurchases();
   }, [isNative]);
 
-  // Purchase a subscription
+  // Purchase a subscription package
   const purchasePackage = useCallback(async (pkg: PurchasesPackage) => {
     if (!isNative) {
       // Web fallback for testing
@@ -105,7 +102,7 @@ export function useSubscription() {
       return { success: true };
     } catch (err: any) {
       // User cancelled is not an error
-      if (err.code === 'PURCHASE_CANCELLED') {
+      if (err.code === 'PURCHASE_CANCELLED' || err.userCancelled) {
         return { success: false, cancelled: true };
       }
       console.error('Purchase failed:', err);
@@ -161,6 +158,28 @@ export function useSubscription() {
     return proEntitlement?.willRenew ?? false;
   }, [customerInfo, isProUser]);
 
+  // Get specific package by type
+  const getPackage = useCallback((type: 'monthly' | 'annual' | 'lifetime') => {
+    if (!offerings) return null;
+    
+    switch (type) {
+      case 'monthly':
+        return offerings.monthly || offerings.availablePackages?.find(
+          p => p.identifier === '$rc_monthly' || p.product?.identifier === PRODUCT_IDS.MONTHLY
+        );
+      case 'annual':
+        return offerings.annual || offerings.availablePackages?.find(
+          p => p.identifier === '$rc_annual' || p.product?.identifier === PRODUCT_IDS.ANNUAL
+        );
+      case 'lifetime':
+        return offerings.lifetime || offerings.availablePackages?.find(
+          p => p.identifier === '$rc_lifetime' || p.product?.identifier === PRODUCT_IDS.LIFETIME
+        );
+      default:
+        return null;
+    }
+  }, [offerings]);
+
   // For testing on web - toggle pro status
   const toggleProForTesting = useCallback(() => {
     if (!isNative) {
@@ -168,6 +187,36 @@ export function useSubscription() {
       const newValue = current === 'true' ? 'false' : 'true';
       localStorage.setItem('marketlingo_pro', newValue);
       setIsProUser(newValue === 'true');
+    }
+  }, [isNative]);
+
+  // Login with user ID (for linking purchases to your user system)
+  const loginUser = useCallback(async (userId: string) => {
+    if (!isNative) return;
+    
+    try {
+      const { Purchases } = await import('@revenuecat/purchases-capacitor');
+      const result = await Purchases.logIn({ appUserID: userId });
+      setCustomerInfo(result.customerInfo);
+      const hasProAccess = result.customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
+      setIsProUser(hasProAccess);
+    } catch (err) {
+      console.error('Failed to login user to RevenueCat:', err);
+    }
+  }, [isNative]);
+
+  // Logout user
+  const logoutUser = useCallback(async () => {
+    if (!isNative) return;
+    
+    try {
+      const { Purchases } = await import('@revenuecat/purchases-capacitor');
+      const result = await Purchases.logOut();
+      setCustomerInfo(result.customerInfo);
+      const hasProAccess = result.customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
+      setIsProUser(hasProAccess);
+    } catch (err) {
+      console.error('Failed to logout user from RevenueCat:', err);
     }
   }, [isNative]);
 
@@ -181,7 +230,10 @@ export function useSubscription() {
     restorePurchases,
     getExpirationDate,
     willRenew,
+    getPackage,
     toggleProForTesting,
+    loginUser,
+    logoutUser,
     isNative,
   };
 }
