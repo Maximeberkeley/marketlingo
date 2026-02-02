@@ -64,55 +64,21 @@ export function LeoMascot({
   );
 }
 
-// Leo with tap-to-interact behavior
+// Leo static display (no interaction)
 export function LeoInteractive({ 
-  onTap, 
   size = "md",
-  initialMessage,
-  tapMessages = [],
 }: {
   onTap?: () => void;
   size?: "sm" | "md" | "lg" | "xl";
   initialMessage?: string;
   tapMessages?: string[];
 }) {
-  const [message, setMessage] = useState(initialMessage);
-  const [tapCount, setTapCount] = useState(0);
-  const [animation, setAnimation] = useState<LeoAnim>("idle");
-
-  const handleTap = () => {
-    setTapCount(prev => prev + 1);
-    
-    // Cycle through animations
-    const animations: LeoAnim[] = ["celebrating", "success", "waving"];
-    setAnimation(animations[tapCount % animations.length]);
-    
-    // Show tap message
-    if (tapMessages.length > 0) {
-      setMessage(tapMessages[tapCount % tapMessages.length]);
-    }
-    
-    // Reset animation after a delay
-    setTimeout(() => setAnimation("idle"), 2000);
-    
-    onTap?.();
-  };
-
   return (
     <div className="flex flex-col items-center">
       <LeoPuppet 
         size={sizeMap[size]} 
-        animation={animation}
+        animation="idle"
       />
-      {message && (
-        <motion.p
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-sm text-text-secondary mt-3 text-center"
-        >
-          {message}
-        </motion.p>
-      )}
     </div>
   );
 }

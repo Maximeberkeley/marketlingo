@@ -26,16 +26,6 @@ export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [leoAnimation, setLeoAnimation] = useState<LeoAnim>("waving");
-  const [tapCount, setTapCount] = useState(0);
-
-  // Handle Leo taps - cycle through fun animations
-  const handleLeoTap = () => {
-    setTapCount(prev => prev + 1);
-    const animations: LeoAnim[] = ["celebrating", "success", "waving", "thinking"];
-    setLeoAnimation(animations[tapCount % animations.length]);
-    setTimeout(() => setLeoAnimation("idle"), 2000);
-  };
   useEffect(() => {
     if (!loading && user) {
       navigate("/select-market");
@@ -130,16 +120,8 @@ export default function AuthPage() {
             >
               <LeoCharacter 
                 size="xl"
-                animation={leoAnimation}
+                animation="idle"
               />
-              <motion.p
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-sm text-text-secondary mt-3 text-center"
-              >
-                {tapCount === 0 ? "Tap Leo to say hi! 👋" : "Keep tapping! 🎉"}
-              </motion.p>
             </motion.div>
 
             {/* Title */}
