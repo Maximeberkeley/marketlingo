@@ -1,21 +1,23 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Crown, Check, Sparkles, Zap, BookOpen, Trophy, Shield, Loader2 } from "lucide-react";
+import { ArrowLeft, Crown, Check, Sparkles, Zap, BookOpen, Trophy, Shield, Loader2, Infinity, Brain, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
-import type { PurchasesPackage } from "@revenuecat/purchases-capacitor";
 
 const PRO_FEATURES = [
-  { icon: BookOpen, title: "Investment Lab", description: "Full access to advanced investment scenarios" },
-  { icon: Trophy, title: "Premium Certificates", description: "Shareable LinkedIn-ready credentials" },
-  { icon: Zap, title: "Unlimited Trainer", description: "No daily limits on scenario practice" },
+  { icon: Infinity, title: "Unlimited Access", description: "No daily limits on lessons, games & drills" },
+  { icon: BookOpen, title: "Investment Lab", description: "Expert-level scenarios & certification" },
+  { icon: Brain, title: "AI Mentor", description: "Unlimited conversations with mentors" },
+  { icon: Sparkles, title: "Premium Content", description: "Priority content & exclusive insights" },
+  { icon: Trophy, title: "Pro Certificates", description: "Shareable LinkedIn-ready credentials" },
   { icon: Shield, title: "Priority Support", description: "Get help when you need it most" },
-  { icon: Sparkles, title: "Early Access", description: "New markets & features before anyone else" },
 ];
+
+type PlanType = 'monthly' | 'annual' | 'lifetime';
 
 export default function Subscription() {
   const navigate = useNavigate();
@@ -23,7 +25,8 @@ export default function Subscription() {
     isProUser, 
     isLoading, 
     offerings, 
-    purchasePackage, 
+    purchasePackage,
+    getPackage,
     restorePurchases,
     getExpirationDate,
     willRenew,
@@ -31,12 +34,17 @@ export default function Subscription() {
     isNative 
   } = useSubscription();
   
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('monthly');
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
 
+  // Get packages
+  const monthlyPkg = getPackage('monthly');
+  const annualPkg = getPackage('annual');
+  const lifetimePkg = getPackage('lifetime');
+
   const handlePurchase = async () => {
-    const pkg = selectedPlan === 'monthly' ? offerings?.monthly : offerings?.annual;
+    const pkg = getPackage(selectedPlan);
     
     if (!pkg) {
       // Web fallback or no package available
@@ -77,8 +85,38 @@ export default function Subscription() {
     }
   };
 
+  const handleManageSubscription = () => {
+    // Open subscription management in App Store
+    if (isNative) {
+      window.open('https://apps.apple.com/account/subscriptions', '_blank');
+    }
+  };
+
   const expirationDate = getExpirationDate();
   const renewStatus = willRenew();
+
+  // Helper to get price display
+  const getPriceDisplay = (type: PlanType) => {
+    const pkg = getPackage(type);
+    if (pkg?.product?.priceString) return pkg.product.priceString;
+    
+    // Fallback prices
+    switch (type) {
+      case 'monthly': return '$9.99';
+      case 'annual': return '$79.99';
+      case 'lifetime': return '$199.99';
+    }
+  };
+
+  // Calculate monthly equivalent for annual
+  const getMonthlyEquivalent = () => {
+    const pkg = getPackage('annual');
+    if (pkg?.product?.price) {
+      const monthlyPrice = pkg.product.price / 12;
+      return `$${monthlyPrice.toFixed(2)}`;
+    }
+    return '$6.67';
+  };
 
   if (isLoading) {
     return (
@@ -125,9 +163,21 @@ export default function Subscription() {
                   </p>
                 </div>
               </div>
-              <p className="text-foreground/80">
+              <p className="text-foreground/80 mb-4">
                 Thank you for supporting MarketLingo! You have full access to all Pro features.
               </p>
+              
+              {/* Manage Subscription Button */}
+              {isNative && expirationDate && (
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={handleManageSubscription}
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Manage Subscription
+                </Button>
+              )}
             </Card>
           </motion.div>
         )}
@@ -149,56 +199,95 @@ export default function Subscription() {
               </p>
             </motion.div>
 
-            {/* Pricing Cards */}
-            <div className="grid grid-cols-2 gap-3">
-              {/* Monthly */}
+            {/* Pricing Cards - 3 Options */}
+            <div className="space-y-3">
+              {/* Annual - Best Value */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
-              >
-                <Card 
-                  className={`p-4 cursor-pointer transition-all ${
-                    selectedPlan === 'monthly' 
-                      ? 'border-primary ring-2 ring-primary/20' 
-                      : 'border-border hover:border-primary/50'
-                  }`}
-                  onClick={() => setSelectedPlan('monthly')}
-                >
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground mb-1">Monthly</p>
-                    <p className="text-2xl font-bold">
-                      {offerings?.monthly?.product.priceString || '$9.99'}
-                    </p>
-                    <p className="text-xs text-muted-foreground">/month</p>
-                  </div>
-                </Card>
-              </motion.div>
-
-              {/* Annual */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.15 }}
                 className="relative"
               >
-                <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 z-10 bg-green-500 text-white text-xs">
-                  Save 33%
+                <Badge className="absolute -top-2 left-4 z-10 bg-green-500 text-white text-xs px-2 py-0.5">
+                  Most Popular - Save 33%
                 </Badge>
                 <Card 
                   className={`p-4 cursor-pointer transition-all ${
                     selectedPlan === 'annual' 
-                      ? 'border-primary ring-2 ring-primary/20' 
+                      ? 'border-primary ring-2 ring-primary/20 bg-primary/5' 
                       : 'border-border hover:border-primary/50'
                   }`}
                   onClick={() => setSelectedPlan('annual')}
                 >
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground mb-1">Annual</p>
-                    <p className="text-2xl font-bold">
-                      {offerings?.annual?.product.priceString || '$79.99'}
-                    </p>
-                    <p className="text-xs text-muted-foreground">/year</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold text-lg">Yearly</p>
+                      <p className="text-sm text-muted-foreground">
+                        {getMonthlyEquivalent()}/month, billed annually
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold">{getPriceDisplay('annual')}</p>
+                      <p className="text-xs text-muted-foreground">/year</p>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+
+              {/* Monthly */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.15 }}
+              >
+                <Card 
+                  className={`p-4 cursor-pointer transition-all ${
+                    selectedPlan === 'monthly' 
+                      ? 'border-primary ring-2 ring-primary/20 bg-primary/5' 
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                  onClick={() => setSelectedPlan('monthly')}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold text-lg">Monthly</p>
+                      <p className="text-sm text-muted-foreground">Flexible, cancel anytime</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold">{getPriceDisplay('monthly')}</p>
+                      <p className="text-xs text-muted-foreground">/month</p>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+
+              {/* Lifetime */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                className="relative"
+              >
+                <Badge className="absolute -top-2 left-4 z-10 bg-purple-500 text-white text-xs px-2 py-0.5">
+                  Best Value
+                </Badge>
+                <Card 
+                  className={`p-4 cursor-pointer transition-all ${
+                    selectedPlan === 'lifetime' 
+                      ? 'border-primary ring-2 ring-primary/20 bg-primary/5' 
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                  onClick={() => setSelectedPlan('lifetime')}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold text-lg">Lifetime</p>
+                      <p className="text-sm text-muted-foreground">One-time payment, forever access</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold">{getPriceDisplay('lifetime')}</p>
+                      <p className="text-xs text-muted-foreground">one-time</p>
+                    </div>
                   </div>
                 </Card>
               </motion.div>
@@ -215,7 +304,7 @@ export default function Subscription() {
               ) : (
                 <Crown className="w-5 h-5 mr-2" />
               )}
-              {isPurchasing ? 'Processing...' : 'Subscribe Now'}
+              {isPurchasing ? 'Processing...' : selectedPlan === 'lifetime' ? 'Get Lifetime Access' : 'Subscribe Now'}
             </Button>
 
             {/* Restore */}
@@ -265,8 +354,10 @@ export default function Subscription() {
 
         {/* Legal */}
         <p className="text-xs text-center text-muted-foreground px-4 pt-4">
-          Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. 
-          Manage subscriptions in your Apple ID settings.
+          {selectedPlan === 'lifetime' 
+            ? 'One-time purchase. Lifetime access to all Pro features.'
+            : 'Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage subscriptions in your Apple ID settings.'
+          }
         </p>
 
         {/* Web Testing Toggle */}
