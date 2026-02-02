@@ -11,6 +11,7 @@ import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig"
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { smartTruncate } from "@/lib/text-utils";
 
 interface DrillQuestion {
   id: string;
@@ -105,28 +106,8 @@ export default function DrillsPage() {
                 .replace(/key/gi, "minor");
             }
 
-            // Truncate at word boundary to avoid cut-off words
-            const maxLength = 280;
-            let truncatedStatement = statement;
-            if (statement.length > maxLength) {
-              // Find the last complete sentence within limit, or last word boundary
-              const truncated = statement.substring(0, maxLength);
-              const lastPeriod = truncated.lastIndexOf('.');
-              const lastExclaim = truncated.lastIndexOf('!');
-              const lastQuestion = truncated.lastIndexOf('?');
-              const lastSentenceEnd = Math.max(lastPeriod, lastExclaim, lastQuestion);
-              
-              if (lastSentenceEnd > maxLength * 0.5) {
-                // Use complete sentence if it's at least half the max length
-                truncatedStatement = truncated.substring(0, lastSentenceEnd + 1);
-              } else {
-                // Fall back to last word boundary
-                const lastSpace = truncated.lastIndexOf(' ');
-                truncatedStatement = lastSpace > 0 
-                  ? truncated.substring(0, lastSpace) + '...'
-                  : truncated + '...';
-              }
-            }
+            // Use smart truncation to avoid mid-word/mid-sentence cuts
+            const truncatedStatement = smartTruncate(statement, 280);
 
             const sources = slide.sources as any[] || [];
             const sourceLabel = sources[0]?.label || "Industry Analysis";
@@ -136,7 +117,7 @@ export default function DrillsPage() {
               category,
               statement: truncatedStatement,
               isTrue,
-              explanation: slide.body,
+              explanation: smartTruncate(slide.body, 280),
               source: sourceLabel,
             });
           }
