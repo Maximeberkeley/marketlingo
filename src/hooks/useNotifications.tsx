@@ -1,9 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications, Token, PushNotificationSchema, ActionPerformed } from '@capacitor/push-notifications';
 import { LocalNotifications, ScheduleOptions } from '@capacitor/local-notifications';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 export interface NotificationPreferences {
   dailyReminder: boolean;
@@ -25,77 +27,73 @@ export function useNotifications() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [preferences, setPreferences] = useState<NotificationPreferences>(DEFAULT_PREFERENCES);
+  const listenersRegistered = useRef(false);
+  
+  // Get navigate function - will be null if not in Router context
+  let navigate: ((path: string) => void) | null = null;
+  try {
+    navigate = useNavigate();
+  } catch {
+    // Not in Router context, navigation will use window.location
+  }
 
   // Check if we're on a native platform
   useEffect(() => {
-    const checkPlatform = () => {
-      const platform = Capacitor.getPlatform();
-      setIsSupported(platform === 'ios' || platform === 'android');
-    };
-    checkPlatform();
+    const platform = Capacitor.getPlatform();
+    setIsSupported(platform === 'ios' || platform === 'android');
   }, []);
 
-  // Register for push notifications
-  const registerPushNotifications = useCallback(async () => {
-    if (!isSupported) return false;
-
-    try {
-      // Request permission
-      let permStatus = await PushNotifications.checkPermissions();
-      
-      if (permStatus.receive === 'prompt') {
-        permStatus = await PushNotifications.requestPermissions();
-      }
-
-      if (permStatus.receive !== 'granted') {
-        console.log('Push notification permission denied');
-        return false;
-      }
-
-      // Register with Apple/Google
-      await PushNotifications.register();
-      
-      // Listen for registration
-      PushNotifications.addListener('registration', async (token: Token) => {
-        console.log('Push registration success, token:', token.value);
-        setPushToken(token.value);
-        setIsRegistered(true);
-        
-        // Save token to database
-        if (user) {
-          await savePushToken(token.value);
-        }
-      });
-
-      PushNotifications.addListener('registrationError', (error) => {
-        console.error('Push registration error:', error);
-        setIsRegistered(false);
-      });
-
-      // Listen for notifications received
-      PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
-        console.log('Push notification received:', notification);
-      });
-
-      // Listen for notification actions
-      PushNotifications.addListener('pushNotificationActionPerformed', (action: ActionPerformed) => {
-        console.log('Push notification action performed:', action);
-        handleNotificationAction(action);
-      });
-
-      return true;
-    } catch (error) {
-      console.error('Error registering push notifications:', error);
-      return false;
+  // Handle deep link navigation from notification
+  const handleDeepLink = useCallback((route: string) => {
+    console.log('Navigating to:', route);
+    if (navigate) {
+      navigate(route);
+    } else {
+      window.location.href = route;
     }
-  }, [isSupported, user]);
+  }, [navigate]);
+
+  // Handle notification action (when user taps)
+  const handleNotificationAction = useCallback((action: ActionPerformed) => {
+    console.log('Push notification action performed:', action);
+    const data = action.notification.data;
+    
+    // Handle deep linking based on payload
+    if (data?.route) {
+      handleDeepLink(data.route as string);
+    } else if (data?.marketId) {
+      // Navigate to specific market
+      handleDeepLink(`/home?market=${data.marketId}`);
+    } else if (data?.type === 'leaderboard') {
+      handleDeepLink('/leaderboard');
+    } else if (data?.type === 'streak_warning') {
+      handleDeepLink('/home');
+    }
+  }, [handleDeepLink]);
+
+  // Show foreground notification as toast
+  const showForegroundNotification = useCallback((notification: PushNotificationSchema) => {
+    const { title, body, data } = notification;
+    
+    toast(title || 'New Notification', {
+      description: body,
+      duration: 5000,
+      action: data?.route ? {
+        label: 'View',
+        onClick: () => handleDeepLink(data.route as string),
+      } : undefined,
+    });
+  }, [handleDeepLink]);
 
   // Save push token to database
-  const savePushToken = async (token: string) => {
-    if (!user) return;
+  const savePushToken = useCallback(async (token: string) => {
+    if (!user) {
+      console.log('No user, skipping token save');
+      return;
+    }
     
     try {
-      // We'll store this in user_progress or a dedicated table
+      console.log('Saving push token for user:', user.id);
       const { error } = await supabase
         .from('profiles')
         .update({ 
@@ -106,21 +104,98 @@ export function useNotifications() {
       
       if (error) {
         console.error('Error saving push token:', error);
+      } else {
+        console.log('Push token saved successfully');
       }
     } catch (error) {
       console.error('Error saving push token:', error);
     }
-  };
+  }, [user]);
 
-  // Handle notification action (when user taps)
-  const handleNotificationAction = (action: ActionPerformed) => {
-    const data = action.notification.data;
+  // Save notification preferences to database
+  const saveNotificationPreferences = useCallback(async (prefs: NotificationPreferences) => {
+    if (!user) return;
     
-    if (data?.route) {
-      // Navigate to the specified route
-      window.location.href = data.route;
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          notification_preferences: JSON.parse(JSON.stringify(prefs)),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+      
+      if (error) {
+        console.error('Error saving notification preferences:', error);
+      }
+    } catch (error) {
+      console.error('Error saving notification preferences:', error);
     }
-  };
+  }, [user]);
+
+  // Register for push notifications
+  const registerPushNotifications = useCallback(async () => {
+    if (!isSupported) {
+      console.log('Push notifications not supported on this platform');
+      return false;
+    }
+
+    try {
+      // Request permission
+      let permStatus = await PushNotifications.checkPermissions();
+      console.log('Current permission status:', permStatus.receive);
+      
+      if (permStatus.receive === 'prompt') {
+        permStatus = await PushNotifications.requestPermissions();
+      }
+
+      if (permStatus.receive !== 'granted') {
+        console.log('Push notification permission denied');
+        return false;
+      }
+
+      // Register listeners only once
+      if (!listenersRegistered.current) {
+        listenersRegistered.current = true;
+
+        // Listen for registration success
+        await PushNotifications.addListener('registration', async (token: Token) => {
+          console.log('Push registration success, token:', token.value);
+          setPushToken(token.value);
+          setIsRegistered(true);
+          
+          // Save token to database
+          await savePushToken(token.value);
+        });
+
+        // Listen for registration error
+        await PushNotifications.addListener('registrationError', (error) => {
+          console.error('Push registration error:', error);
+          setIsRegistered(false);
+        });
+
+        // Listen for notifications received while app is open (foreground)
+        await PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
+          console.log('Push notification received (foreground):', notification);
+          showForegroundNotification(notification);
+        });
+
+        // Listen for notification actions (user tapped notification)
+        await PushNotifications.addListener('pushNotificationActionPerformed', (action: ActionPerformed) => {
+          handleNotificationAction(action);
+        });
+      }
+
+      // Register with Apple/Google
+      await PushNotifications.register();
+      console.log('Push notification registration initiated');
+      
+      return true;
+    } catch (error) {
+      console.error('Error registering push notifications:', error);
+      return false;
+    }
+  }, [isSupported, savePushToken, showForegroundNotification, handleNotificationAction]);
 
   // Schedule local notification reminders (Duolingo-style)
   const scheduleDailyReminder = useCallback(async () => {
@@ -145,13 +220,13 @@ export function useNotifications() {
       // Parse reminder time
       const [hours, minutes] = preferences.reminderTime.split(':').map(Number);
       
-      // Schedule daily reminder
+      // Schedule daily reminder with Leo's voice
       const scheduleOptions: ScheduleOptions = {
         notifications: [
           {
             id: 1,
-            title: "Time to learn! 📚",
-            body: "Your daily aerospace lesson is waiting. Keep your streak alive!",
+            title: "🦁 Leo: Markets are moving!",
+            body: "Time for your daily brief? 5 mins is all I ask...",
             schedule: {
               on: {
                 hour: hours,
@@ -164,6 +239,7 @@ export function useNotifications() {
             actionTypeId: 'OPEN_APP',
             extra: {
               route: '/home',
+              type: 'daily_reminder',
             },
           },
         ],
@@ -185,27 +261,33 @@ export function useNotifications() {
         notifications: [
           {
             id: 2,
-            title: "🔥 Your streak is at risk!",
-            body: "Complete a lesson now to keep your learning streak alive!",
+            title: "🦁 Leo: Don't let your streak end!",
+            body: "5 mins is all I ask... Your streak is at risk!",
             schedule: {
               at: new Date(Date.now() + hoursUntilExpiry * 60 * 60 * 1000),
             },
             sound: 'notification.wav',
             extra: {
               route: '/home',
+              type: 'streak_warning',
             },
           },
         ],
       };
 
       await LocalNotifications.schedule(scheduleOptions);
+      console.log('Streak reminder scheduled for', hoursUntilExpiry, 'hours from now');
     } catch (error) {
       console.error('Error scheduling streak reminder:', error);
     }
   }, [isSupported, preferences.streakReminders]);
 
   // Send immediate local notification (for news alerts, etc.)
-  const sendLocalNotification = useCallback(async (title: string, body: string, data?: Record<string, unknown>) => {
+  const sendLocalNotification = useCallback(async (
+    title: string, 
+    body: string, 
+    data?: Record<string, unknown>
+  ) => {
     if (!isSupported) return;
 
     try {
@@ -215,7 +297,7 @@ export function useNotifications() {
             id: Math.floor(Math.random() * 100000),
             title,
             body,
-            schedule: { at: new Date(Date.now() + 1000) }, // 1 second from now
+            schedule: { at: new Date(Date.now() + 1000) },
             sound: 'notification.wav',
             extra: data,
           },
@@ -238,7 +320,10 @@ export function useNotifications() {
     
     // Save to local storage
     localStorage.setItem('notification_preferences', JSON.stringify(updated));
-  }, [preferences, scheduleDailyReminder]);
+    
+    // Also save to database for server-side filtering
+    await saveNotificationPreferences(updated);
+  }, [preferences, scheduleDailyReminder, saveNotificationPreferences]);
 
   // Load preferences from storage
   useEffect(() => {
@@ -258,6 +343,37 @@ export function useNotifications() {
       scheduleDailyReminder();
     }
   }, [isRegistered, preferences.dailyReminder, scheduleDailyReminder]);
+
+  // Auto-register when user is available and on native platform
+  useEffect(() => {
+    if (user && isSupported && !isRegistered) {
+      // Check if we already have a token stored
+      const checkExistingToken = async () => {
+        const { data } = await supabase
+          .from('profiles')
+          .select('push_token')
+          .eq('id', user.id)
+          .single();
+        
+        if (data?.push_token) {
+          setPushToken(data.push_token);
+          setIsRegistered(true);
+        }
+      };
+      
+      checkExistingToken();
+    }
+  }, [user, isSupported, isRegistered]);
+
+  // Clean up listeners on unmount
+  useEffect(() => {
+    return () => {
+      if (listenersRegistered.current) {
+        PushNotifications.removeAllListeners();
+        listenersRegistered.current = false;
+      }
+    };
+  }, []);
 
   return {
     isSupported,
