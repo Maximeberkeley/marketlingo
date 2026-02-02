@@ -138,7 +138,7 @@ export function SwipeableNoteCard({ note, onDelete, index }: SwipeableNoteCardPr
           dragElastic={{ left: 0.1, right: 0 }}
           onDragEnd={handleDragEnd}
           style={{ x, opacity: cardOpacity }}
-          className="card-elevated cursor-grab active:cursor-grabbing"
+          className="card-elevated cursor-grab active:cursor-grabbing relative"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
@@ -157,17 +157,21 @@ export function SwipeableNoteCard({ note, onDelete, index }: SwipeableNoteCardPr
               </div>
             </div>
             
-            {/* Delete button */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowConfirm(true);
-              }}
-              className="p-2 rounded-lg hover:bg-destructive/10 transition-colors flex-shrink-0"
-              title="Delete note"
+            {/* Delete button - prevent drag from interfering */}
+            <div
+              onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              className="flex-shrink-0"
             >
-              <Trash2 size={16} className="text-text-muted hover:text-destructive" />
-            </button>
+              <button
+                type="button"
+                onClick={() => setShowConfirm(true)}
+                className="p-2.5 rounded-lg bg-destructive/10 hover:bg-destructive/20 active:bg-destructive/30 transition-colors touch-manipulation"
+                title="Delete note"
+              >
+                <Trash2 size={18} className="text-destructive" />
+              </button>
+            </div>
           </div>
         </motion.div>
       </motion.div>
