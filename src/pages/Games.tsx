@@ -210,11 +210,11 @@ export default function GamesPage() {
   // Intro screen
   if (showIntro && questions.length > 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden max-w-full">
+      <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden max-w-full">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+          className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
         >
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft size={24} className="text-text-secondary" />
@@ -222,11 +222,11 @@ export default function GamesPage() {
           <h1 className="text-h2 text-text-primary">Games</h1>
         </motion.div>
 
-        <div className="flex-1 flex items-center justify-center p-4">
+        <div className="flex-1 flex items-center justify-center screen-padding py-6">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="w-full max-w-md"
+            className="w-full"
           >
             {/* Hero Card with Market-Specific Gradient */}
             <div className={`relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-purple-600 via-violet-700 to-indigo-900'}`}>
@@ -283,18 +283,18 @@ export default function GamesPage() {
 
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden max-w-full">
+      <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden max-w-full">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+          className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
         >
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft size={24} className="text-text-secondary" />
           </button>
           <h1 className="text-h2 text-text-primary">Games</h1>
         </motion.div>
-        <div className="flex-1 flex items-center justify-center p-4">
+        <div className="flex-1 flex items-center justify-center screen-padding py-6">
           <div className="text-center">
             <Gamepad2 size={48} className="mx-auto mb-4 text-text-muted" />
             <h2 className="text-h2 text-text-primary mb-2">No games available</h2>
@@ -310,11 +310,11 @@ export default function GamesPage() {
 
   if (gameComplete) {
     return (
-      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden max-w-full">
+      <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden max-w-full">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+          className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
         >
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft size={24} className="text-text-secondary" />
@@ -322,11 +322,11 @@ export default function GamesPage() {
           <h1 className="text-h2 text-text-primary">Games</h1>
         </motion.div>
 
-        <div className="flex-1 flex items-center justify-center p-4">
+        <div className="flex-1 flex items-center justify-center screen-padding py-6">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="card-elevated text-center max-w-sm w-full"
+            className="card-elevated text-center w-full"
           >
             <div className="w-16 h-16 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
               <Trophy size={32} className="text-success" />
@@ -335,12 +335,11 @@ export default function GamesPage() {
             <p className="text-body text-text-secondary mb-6">
               You scored {score}/{questions.length}
             </p>
-            <div className="flex gap-3">
-              <Button variant="secondary" className="flex-1" onClick={() => navigate("/home")}>
+            <div className="grid grid-cols-2 gap-3">
+              <Button variant="secondary" onClick={() => navigate("/home")}>
                 Home
               </Button>
               <Button
-                className="flex-1"
                 onClick={() => {
                   setCurrentQuestion(0);
                   setScore(0);
@@ -359,12 +358,12 @@ export default function GamesPage() {
   }
 
     return (
-      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden max-w-full">
+      <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden max-w-full">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+        className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
       >
         <button onClick={() => navigate(-1)} className="p-2 -ml-2">
           <ArrowLeft size={24} className="text-text-secondary" />

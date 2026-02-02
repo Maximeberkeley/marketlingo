@@ -212,7 +212,7 @@ export default function TrainerPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
@@ -221,11 +221,11 @@ export default function TrainerPage() {
   // Intro screen
   if (showIntro && scenarios.length > 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
+      <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+          className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
         >
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft size={24} className="text-text-secondary" />
@@ -233,11 +233,11 @@ export default function TrainerPage() {
           <h1 className="text-h2 text-text-primary">Trainer</h1>
         </motion.div>
 
-        <div className="flex-1 flex items-center justify-center p-4">
+        <div className="flex-1 flex items-center justify-center screen-padding py-6">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="w-full max-w-md"
+            className="w-full"
           >
             {/* Hero Card with Market-Specific Gradient */}
             <div className={`relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-red-600 via-rose-700 to-pink-900'}`}>
@@ -294,18 +294,18 @@ export default function TrainerPage() {
 
   if (scenarios.length === 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
+      <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+          className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
         >
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft size={24} className="text-text-secondary" />
           </button>
           <h1 className="text-h2 text-text-primary">Trainer</h1>
         </motion.div>
-        <div className="flex-1 flex items-center justify-center p-4">
+        <div className="flex-1 flex items-center justify-center screen-padding py-6">
           <div className="text-center">
             <Brain size={48} className="mx-auto mb-4 text-text-muted" />
             <h2 className="text-h2 text-text-primary mb-2">No scenarios available</h2>
@@ -331,12 +331,12 @@ export default function TrainerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
+    <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="screen-padding pt-4 pb-4 flex items-center gap-4 border-b border-border"
+        className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
       >
         <button onClick={() => navigate(-1)} className="p-2 -ml-2">
           <ArrowLeft size={24} className="text-text-secondary" />

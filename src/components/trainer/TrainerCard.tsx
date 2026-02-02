@@ -304,12 +304,12 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
             )}
             
             {/* Actions */}
-            <div className="flex gap-3 mt-4">
-              <Button variant="secondary" size="default" className="flex-1" onClick={onSaveToNotebook}>
+            <div className="grid grid-cols-2 gap-3 mt-4">
+              <Button variant="secondary" size="default" onClick={onSaveToNotebook}>
                 <Bookmark size={18} />
                 Save
               </Button>
-              <Button variant="cta" size="default" className="flex-1" onClick={onNext}>
+              <Button variant="cta" size="default" onClick={onNext}>
                 Next
                 <ArrowRight size={18} />
               </Button>

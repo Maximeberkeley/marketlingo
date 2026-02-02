@@ -347,11 +347,10 @@ export default function ProfilePage() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex gap-3 mt-4">
+          <div className="grid grid-cols-2 gap-3 mt-4">
             <Button
               variant="secondary"
               size="default"
-              className="flex-1"
               onClick={() => setShowChangeWarning(false)}
             >
               Cancel
@@ -359,7 +358,6 @@ export default function ProfilePage() {
             <Button
               variant="destructive"
               size="default"
-              className="flex-1"
               onClick={handleChangeMarket}
             >
               Change Market
