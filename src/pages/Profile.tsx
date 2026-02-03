@@ -5,6 +5,7 @@ import { Cpu, ChevronRight, Download, LogOut, AlertTriangle, Trophy, Target, Fla
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProgress } from "@/hooks/useUserProgress";
@@ -73,6 +74,7 @@ export default function ProfilePage() {
   const handleChangeMarket = async () => {
     if (!user) return;
 
+    // Reset progress for current market
     if (selectedMarket) {
       await supabase
         .from("user_progress")
@@ -115,7 +117,7 @@ export default function ProfilePage() {
     a.click();
     URL.revokeObjectURL(url);
 
-    toast.success("Notebook exported!");
+    toast.success("Notebook exported as Markdown!");
   };
 
   const handleLogout = async () => {
@@ -129,54 +131,62 @@ export default function ProfilePage() {
 
   return (
     <AppLayout>
-      <div className="px-5 pt-safe pb-28 w-full">
+      <div className="screen-padding pt-12 safe-bottom overflow-x-hidden max-w-full">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="py-4 mb-4"
+          className="mb-8"
         >
-          <h1 className="text-2xl font-bold text-text-primary">Profile</h1>
+          <h1 className="text-h1 text-text-primary">Profile</h1>
           {user && (
-            <p className="text-sm text-text-secondary mt-1">{user.email}</p>
+            <p className="text-body text-text-secondary mt-1">{user.email}</p>
           )}
         </motion.div>
 
-        {/* Stats Row */}
+        {/* Stats Cards */}
         {progress && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
             className="grid grid-cols-3 gap-3 mb-6"
           >
-            <div className="p-4 rounded-2xl bg-bg-2 border border-border text-center">
-              <Flame size={20} className="text-amber-400 mx-auto mb-2" />
-              <p className="text-xl font-bold text-text-primary">{progress.current_streak}</p>
-              <p className="text-xs text-text-muted">Streak</p>
+            <div className="card-elevated text-center">
+              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-2">
+                <Flame size={20} className="text-primary" />
+              </div>
+              <p className="text-h2 text-text-primary">{progress.current_streak}</p>
+              <p className="text-caption text-text-muted">Current Streak</p>
             </div>
-            <div className="p-4 rounded-2xl bg-bg-2 border border-border text-center">
-              <Trophy size={20} className="text-amber-400 mx-auto mb-2" />
-              <p className="text-xl font-bold text-text-primary">{progress.longest_streak}</p>
-              <p className="text-xs text-text-muted">Best</p>
+
+            <div className="card-elevated text-center">
+              <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-2">
+                <Trophy size={20} className="text-amber-400" />
+              </div>
+              <p className="text-h2 text-text-primary">{progress.longest_streak}</p>
+              <p className="text-caption text-text-muted">Best Streak</p>
             </div>
-            <div className="p-4 rounded-2xl bg-bg-2 border border-border text-center">
-              <Target size={20} className="text-emerald-400 mx-auto mb-2" />
-              <p className="text-xl font-bold text-text-primary">{progress.current_day}</p>
-              <p className="text-xs text-text-muted">of 180</p>
+
+            <div className="card-elevated text-center">
+              <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-2">
+                <Target size={20} className="text-emerald-400" />
+              </div>
+              <p className="text-h2 text-text-primary">Day {progress.current_day}</p>
+              <p className="text-caption text-text-muted">of 180</p>
             </div>
           </motion.div>
         )}
 
-        {/* Certificate Section */}
+        {/* Certificate Progress */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
           className="mb-6"
         >
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-3">Certification</h3>
-          <div className="p-4 rounded-2xl bg-bg-2 border border-border">
+          <h3 className="text-caption text-text-muted mb-3 uppercase tracking-wider">Certification</h3>
+          <div className="card-elevated">
             <div className="flex items-center gap-4 mb-4">
               <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                 isEligible ? 'bg-accent/20' : 'bg-bg-1'
@@ -188,136 +198,175 @@ export default function ProfilePage() {
                 )}
               </div>
               <div className="flex-1">
-                <p className="text-base font-semibold text-text-primary">
-                  {isEligible ? 'Certificate Ready!' : 'Mastery Certificate'}
+                <p className="text-h3 text-text-primary">
+                  {isEligible ? 'Certificate Unlocked!' : 'Industry Mastery Certificate'}
                 </p>
-                <p className="text-xs text-text-muted">
-                  {isEligible ? 'Download your achievement' : `Complete 180 days to unlock`}
+                <p className="text-caption text-text-muted">
+                  {isEligible 
+                    ? 'Download and share your achievement' 
+                    : `Complete all 180 days to unlock`}
                 </p>
               </div>
             </div>
             
             {!isEligible && (
               <div className="mb-4">
-                <div className="flex justify-between text-xs text-text-muted mb-1.5">
+                <div className="flex justify-between text-caption text-text-muted mb-1">
                   <span>Progress</span>
                   <span>{certProgress.current} / {certProgress.total} days</span>
                 </div>
-                <div className="h-2 bg-bg-1 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-accent rounded-full transition-all"
-                    style={{ width: `${progressPercentage}%` }}
-                  />
-                </div>
+                <Progress value={progressPercentage} className="h-2" />
               </div>
             )}
             
             <Button
               variant={isEligible ? "default" : "secondary"}
-              className="w-full"
+              size="default"
+              className="w-full gap-2"
               disabled={!isEligible}
               onClick={() => setShowCertificate(true)}
             >
-              <Award size={16} className="mr-2" />
+              <Award size={18} />
               {isEligible ? 'View Certificate' : `${Math.round(progressPercentage)}% Complete`}
             </Button>
           </div>
         </motion.div>
 
-        {/* Menu Items */}
+        {/* Market Selection */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="space-y-2 mb-6"
+          className="mb-6"
         >
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-3">Settings</h3>
-          
+          <h3 className="text-caption text-text-muted mb-3 uppercase tracking-wider">Current Market</h3>
           <button
             onClick={() => setShowChangeWarning(true)}
-            className="w-full p-4 rounded-2xl bg-bg-2 border border-border flex items-center gap-4 active:scale-[0.98] transition-transform"
+            className="w-full card-elevated flex items-center justify-between group"
           >
-            <Cpu size={20} className="text-accent" />
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-text-primary">{marketName}</p>
-              <p className="text-xs text-text-muted">Current market</p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-button bg-primary/20 flex items-center justify-center">
+                <Cpu size={20} className="text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="text-h3 text-text-primary">{marketName}</p>
+                <p className="text-caption text-text-muted">6-month journey</p>
+              </div>
             </div>
-            <ChevronRight size={18} className="text-text-muted" />
-          </button>
-
-          <button
-            onClick={() => navigate("/settings")}
-            className="w-full p-4 rounded-2xl bg-bg-2 border border-border flex items-center gap-4 active:scale-[0.98] transition-transform"
-          >
-            <Settings size={20} className="text-text-secondary" />
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-text-primary">Settings</p>
-              <p className="text-xs text-text-muted">Notifications & preferences</p>
-            </div>
-            <ChevronRight size={18} className="text-text-muted" />
-          </button>
-
-          <button
-            onClick={handleExportNotebook}
-            className="w-full p-4 rounded-2xl bg-bg-2 border border-border flex items-center gap-4 active:scale-[0.98] transition-transform"
-          >
-            <Download size={20} className="text-text-secondary" />
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-text-primary">Export Notebook</p>
-              <p className="text-xs text-text-muted">Download as Markdown</p>
-            </div>
-            <ChevronRight size={18} className="text-text-muted" />
+            <ChevronRight size={18} className="text-text-muted group-hover:text-text-secondary transition-colors" />
           </button>
         </motion.div>
 
-        {/* Logout */}
+        {/* Export */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
+          className="mb-6"
         >
+          <h3 className="text-caption text-text-muted mb-3 uppercase tracking-wider">Data</h3>
           <button
-            onClick={handleLogout}
-            className="w-full p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center gap-2 text-red-400 active:scale-[0.98] transition-transform"
+            onClick={handleExportNotebook}
+            className="w-full card-elevated flex items-center justify-between group"
           >
-            <LogOut size={18} />
-            <span className="font-medium">Log out</span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-button bg-bg-1 flex items-center justify-center">
+                <Download size={20} className="text-text-secondary" />
+              </div>
+              <div className="text-left">
+                <p className="text-h3 text-text-primary">Export Notebook</p>
+                <p className="text-caption text-text-muted">Download as Markdown</p>
+              </div>
+            </div>
+            <ChevronRight size={18} className="text-text-muted group-hover:text-text-secondary transition-colors" />
           </button>
         </motion.div>
 
-        {/* Version */}
-        <p className="text-center text-xs text-text-muted mt-8">
+        {/* Settings & Account */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="space-y-3"
+        >
+          <h3 className="text-caption text-text-muted mb-3 uppercase tracking-wider">Account</h3>
+          
+          <button
+            onClick={() => navigate("/settings")}
+            className="w-full card-elevated flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-button bg-accent/20 flex items-center justify-center">
+                <Settings size={20} className="text-accent" />
+              </div>
+              <div className="text-left">
+                <p className="text-h3 text-text-primary">Settings</p>
+                <p className="text-caption text-text-muted">Notifications & preferences</p>
+              </div>
+            </div>
+            <ChevronRight size={18} className="text-text-muted group-hover:text-text-secondary transition-colors" />
+          </button>
+
+          <button
+            onClick={handleLogout}
+            className="w-full card-elevated flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-button bg-destructive/20 flex items-center justify-center">
+                <LogOut size={20} className="text-destructive" />
+              </div>
+              <p className="text-h3 text-text-primary">Log out</p>
+            </div>
+            <ChevronRight size={18} className="text-text-muted group-hover:text-text-secondary transition-colors" />
+          </button>
+        </motion.div>
+
+        {/* App Version */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-center text-caption text-text-muted mt-12"
+        >
           MarketLingo v1.0.0
-        </p>
+        </motion.p>
       </div>
 
-      {/* Change Market Dialog */}
+      {/* Change Market Warning */}
       <Dialog open={showChangeWarning} onOpenChange={setShowChangeWarning}>
-        <DialogContent className="bg-bg-2 border-border mx-4">
+        <DialogContent className="bg-bg-2 border-border max-w-sm mx-auto">
           <DialogHeader>
             <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-4">
               <AlertTriangle size={24} className="text-amber-400" />
             </div>
-            <DialogTitle className="text-lg font-bold text-text-primary text-center">
+            <DialogTitle className="text-h2 text-text-primary text-center">
               Change Market?
             </DialogTitle>
-            <DialogDescription className="text-sm text-text-secondary text-center">
-              This will reset your progress and streak.
+            <DialogDescription className="text-body text-text-secondary text-center">
+              Changing your market will reset your path and streak. This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid grid-cols-2 gap-3 mt-4">
-            <Button variant="secondary" onClick={() => setShowChangeWarning(false)}>
+            <Button
+              variant="secondary"
+              size="default"
+              onClick={() => setShowChangeWarning(false)}
+            >
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleChangeMarket}>
-              Change
+            <Button
+              variant="destructive"
+              size="default"
+              onClick={handleChangeMarket}
+            >
+              Change Market
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Certificate Modal */}
+      {/* Completion Certificate Modal */}
       <AnimatePresence>
         {showCertificate && certificateData && (
           <CompletionCertificate

@@ -6,13 +6,14 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { cn } from "@/lib/utils";
 
 type SettingsSection = "main" | "notifications" | "about";
 
 export default function Settings() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { isProUser, toggleProForTesting, isNative } = useSubscription();
+  const { isProUser, isLoading: subscriptionLoading, toggleProForTesting, isNative } = useSubscription();
   const [activeSection, setActiveSection] = useState<SettingsSection>("main");
 
   const handleSignOut = async () => {
@@ -20,210 +21,256 @@ export default function Settings() {
     navigate("/auth");
   };
 
-  if (activeSection === "notifications") {
-    return (
-      <AppLayout>
-        <div className="px-5 pt-safe pb-28 w-full">
-          <div className="flex items-center gap-3 py-4 mb-4">
+  const renderContent = () => {
+    switch (activeSection) {
+      case "notifications":
+        return (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-4"
+          >
             <button
               onClick={() => setActiveSection("main")}
-              className="w-10 h-10 rounded-xl bg-bg-2 border border-border flex items-center justify-center active:scale-95 transition-transform"
+              className="flex items-center gap-2 text-text-muted hover:text-accent transition-colors mb-4"
             >
-              <ArrowLeft size={20} className="text-text-primary" />
+              <ArrowLeft size={18} />
+              <span className="text-caption">Back to Settings</span>
             </button>
-            <h1 className="text-lg font-bold text-text-primary">Notifications</h1>
-          </div>
-          <NotificationSettings />
-        </div>
-      </AppLayout>
-    );
-  }
-
-  if (activeSection === "about") {
-    return (
-      <AppLayout>
-        <div className="px-5 pt-safe pb-28 w-full">
-          <div className="flex items-center gap-3 py-4 mb-4">
+            <NotificationSettings />
+          </motion.div>
+        );
+      
+      case "about":
+        return (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-4"
+          >
             <button
               onClick={() => setActiveSection("main")}
-              className="w-10 h-10 rounded-xl bg-bg-2 border border-border flex items-center justify-center active:scale-95 transition-transform"
+              className="flex items-center gap-2 text-text-muted hover:text-accent transition-colors mb-4"
             >
-              <ArrowLeft size={20} className="text-text-primary" />
+              <ArrowLeft size={18} />
+              <span className="text-caption">Back to Settings</span>
             </button>
-            <h1 className="text-lg font-bold text-text-primary">About</h1>
-          </div>
-          
-          <div className="text-center py-8">
-            <div className="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center mx-auto mb-4">
-              <Rocket size={32} className="text-accent" />
-            </div>
-            <h2 className="text-xl font-bold text-text-primary mb-1">MarketLingo</h2>
-            <p className="text-sm text-text-muted mb-8">Learn industries in 6 months</p>
             
-            <div className="space-y-3 text-left">
-              <div className="p-4 rounded-2xl bg-bg-2 border border-border">
-                <p className="text-xs text-text-muted mb-1">Duration</p>
-                <p className="text-sm font-medium text-text-primary">180 days</p>
+            <div className="text-center py-8">
+              <div className="w-20 h-20 rounded-2xl bg-accent/20 flex items-center justify-center mx-auto mb-4">
+                <Rocket size={40} className="text-accent" />
               </div>
-              <div className="p-4 rounded-2xl bg-bg-2 border border-border">
-                <p className="text-xs text-text-muted mb-1">Version</p>
-                <p className="text-sm font-medium text-text-primary">1.0.0</p>
+              <h2 className="text-h2 text-text-primary mb-2">MarketLingo</h2>
+              <p className="text-body text-text-muted mb-6">Aerospace Edition</p>
+              
+              <div className="space-y-3 text-left max-w-sm mx-auto">
+                <div className="p-4 rounded-card bg-bg-2 border border-border">
+                  <p className="text-caption text-text-muted mb-1">Program Duration</p>
+                  <p className="text-body text-text-primary font-medium">6 Months (180 days)</p>
+                </div>
+                <div className="p-4 rounded-card bg-bg-2 border border-border">
+                  <p className="text-caption text-text-muted mb-1">Version</p>
+                  <p className="text-body text-text-primary font-medium">1.0.0</p>
+                </div>
+                <div className="p-4 rounded-card bg-bg-2 border border-border">
+                  <p className="text-caption text-text-muted mb-1">Industry Focus</p>
+                  <p className="text-body text-text-primary font-medium">Aerospace & Defense</p>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </AppLayout>
-    );
-  }
+          </motion.div>
+        );
+      
+      default:
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-4"
+          >
+            {/* Profile Section */}
+            <div className="p-4 rounded-card bg-bg-2 border border-border">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
+                  <User size={24} className="text-accent" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-body font-medium text-text-primary">
+                      {user?.email || "User"}
+                    </p>
+                    {isProUser && (
+                      <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-accent to-purple-600 text-white text-[10px] font-medium">
+                        <Crown size={10} />
+                        PRO
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-caption text-text-muted">
+                    {isProUser ? "Pro Member" : "Free Plan"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Subscription Section */}
+            <button
+              onClick={() => navigate("/subscription")}
+              className={cn(
+                "w-full flex items-center justify-between p-4 rounded-card",
+                isProUser 
+                  ? "bg-gradient-to-r from-accent/10 to-purple-600/10 border border-accent/30"
+                  : "bg-bg-2 border border-border hover:border-accent/30",
+                "transition-all"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                {isProUser ? (
+                  <Sparkles size={20} className="text-accent" />
+                ) : (
+                  <Crown size={20} className="text-amber-400" />
+                )}
+                <div className="text-left">
+                  <p className="text-body font-medium text-text-primary">
+                    {isProUser ? "Manage Subscription" : "Upgrade to Pro"}
+                  </p>
+                  <p className="text-caption text-text-muted">
+                    {isProUser ? "View plan & billing" : "Unlock all features"}
+                  </p>
+                </div>
+              </div>
+              <ChevronRight size={18} className="text-text-muted" />
+            </button>
+
+            {/* Settings Options */}
+            <div className="space-y-2">
+              <button
+                onClick={() => setActiveSection("notifications")}
+                className={cn(
+                  "w-full flex items-center justify-between p-4 rounded-card",
+                  "bg-bg-2 border border-border hover:border-accent/30",
+                  "transition-all"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <Bell size={20} className="text-accent" />
+                  <div className="text-left">
+                    <p className="text-body font-medium text-text-primary">Notifications</p>
+                    <p className="text-caption text-text-muted">Daily reminders & news alerts</p>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="text-text-muted" />
+              </button>
+
+              <button
+                onClick={() => navigate("/select-market")}
+                className={cn(
+                  "w-full flex items-center justify-between p-4 rounded-card",
+                  "bg-bg-2 border border-border hover:border-accent/30",
+                  "transition-all"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <Rocket size={20} className="text-accent" />
+                  <div className="text-left">
+                    <p className="text-body font-medium text-text-primary">Change Industry</p>
+                    <p className="text-caption text-text-muted">Currently: Aerospace</p>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="text-text-muted" />
+              </button>
+
+              <button
+                onClick={() => setActiveSection("about")}
+                className={cn(
+                  "w-full flex items-center justify-between p-4 rounded-card",
+                  "bg-bg-2 border border-border hover:border-accent/30",
+                  "transition-all"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <Info size={20} className="text-accent" />
+                  <div className="text-left">
+                    <p className="text-body font-medium text-text-primary">About</p>
+                    <p className="text-caption text-text-muted">Version & program info</p>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="text-text-muted" />
+              </button>
+
+              <button
+                onClick={() => navigate("/admin/content")}
+                className={cn(
+                  "w-full flex items-center justify-between p-4 rounded-card",
+                  "bg-bg-2 border border-border hover:border-amber-500/30",
+                  "transition-all"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <Wrench size={20} className="text-amber-400" />
+                  <div className="text-left">
+                    <p className="text-body font-medium text-text-primary">Content Manager</p>
+                    <p className="text-caption text-text-muted">Generate curriculum</p>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="text-text-muted" />
+              </button>
+            </div>
+
+            {/* Privacy & Security */}
+            <div className="p-4 rounded-card bg-bg-2 border border-border">
+              <div className="flex items-center gap-3">
+                <Shield size={18} className="text-text-muted" />
+                <p className="text-caption text-text-muted">
+                  Your data is encrypted and never sold to third parties
+                </p>
+              </div>
+            </div>
+
+            {/* Web Testing Toggle (only on web) */}
+            {!isNative && (
+              <button
+                onClick={toggleProForTesting}
+                className="w-full p-3 rounded-card bg-amber-500/10 border border-amber-500/20 text-center"
+              >
+                <p className="text-caption text-amber-400">
+                  🧪 Web Testing: Tap to toggle Pro status ({isProUser ? "ON" : "OFF"})
+                </p>
+              </button>
+            )}
+
+            {/* Sign Out */}
+            <button
+              onClick={handleSignOut}
+              className={cn(
+                "w-full flex items-center justify-center gap-2 p-4 rounded-card",
+                "bg-red-500/10 border border-red-500/20 text-red-400",
+                "hover:bg-red-500/20 transition-all"
+              )}
+            >
+              <LogOut size={18} />
+              <span className="font-medium">Sign Out</span>
+            </button>
+          </motion.div>
+        );
+    }
+  };
 
   return (
     <AppLayout>
-      <div className="px-5 pt-safe pb-28 w-full">
+      <div className="min-h-screen pb-28">
         {/* Header */}
-        <div className="flex items-center gap-3 py-4 mb-4">
+        <div className="flex items-center gap-3 mb-6">
           <button
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-xl bg-bg-2 border border-border flex items-center justify-center active:scale-95 transition-transform"
+            onClick={() => activeSection === "main" ? navigate(-1) : setActiveSection("main")}
+            className="w-10 h-10 rounded-xl bg-bg-2 border border-border flex items-center justify-center hover:border-accent/30 transition-colors"
           >
             <ArrowLeft size={20} className="text-text-primary" />
           </button>
-          <h1 className="text-lg font-bold text-text-primary">Settings</h1>
+          <h1 className="text-h2 text-text-primary">Settings</h1>
         </div>
 
-        {/* Profile Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 rounded-2xl bg-bg-2 border border-border mb-6"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
-              <User size={24} className="text-accent" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-medium text-text-primary">
-                  {user?.email || "User"}
-                </p>
-                {isProUser && (
-                  <span className="px-1.5 py-0.5 rounded bg-accent text-white text-[10px] font-medium">
-                    PRO
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-text-muted">
-                {isProUser ? "Pro Member" : "Free Plan"}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Subscription */}
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          onClick={() => navigate("/subscription")}
-          className="w-full p-4 rounded-2xl bg-bg-2 border border-border flex items-center gap-4 mb-6 active:scale-[0.98] transition-transform"
-        >
-          {isProUser ? (
-            <Sparkles size={20} className="text-accent" />
-          ) : (
-            <Crown size={20} className="text-amber-400" />
-          )}
-          <div className="flex-1 text-left">
-            <p className="text-sm font-medium text-text-primary">
-              {isProUser ? "Manage Subscription" : "Upgrade to Pro"}
-            </p>
-            <p className="text-xs text-text-muted">
-              {isProUser ? "View plan & billing" : "Unlock all features"}
-            </p>
-          </div>
-          <ChevronRight size={18} className="text-text-muted" />
-        </motion.button>
-
-        {/* Menu Items */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="space-y-2 mb-6"
-        >
-          <button
-            onClick={() => setActiveSection("notifications")}
-            className="w-full p-4 rounded-2xl bg-bg-2 border border-border flex items-center gap-4 active:scale-[0.98] transition-transform"
-          >
-            <Bell size={20} className="text-text-secondary" />
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-text-primary">Notifications</p>
-              <p className="text-xs text-text-muted">Reminders & alerts</p>
-            </div>
-            <ChevronRight size={18} className="text-text-muted" />
-          </button>
-
-          <button
-            onClick={() => navigate("/select-market")}
-            className="w-full p-4 rounded-2xl bg-bg-2 border border-border flex items-center gap-4 active:scale-[0.98] transition-transform"
-          >
-            <Rocket size={20} className="text-text-secondary" />
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-text-primary">Change Industry</p>
-              <p className="text-xs text-text-muted">Switch market focus</p>
-            </div>
-            <ChevronRight size={18} className="text-text-muted" />
-          </button>
-
-          <button
-            onClick={() => setActiveSection("about")}
-            className="w-full p-4 rounded-2xl bg-bg-2 border border-border flex items-center gap-4 active:scale-[0.98] transition-transform"
-          >
-            <Info size={20} className="text-text-secondary" />
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-text-primary">About</p>
-              <p className="text-xs text-text-muted">Version & info</p>
-            </div>
-            <ChevronRight size={18} className="text-text-muted" />
-          </button>
-
-          <button
-            onClick={() => navigate("/admin/content")}
-            className="w-full p-4 rounded-2xl bg-bg-2 border border-border flex items-center gap-4 active:scale-[0.98] transition-transform"
-          >
-            <Wrench size={20} className="text-amber-400" />
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-text-primary">Content Manager</p>
-              <p className="text-xs text-text-muted">Admin tools</p>
-            </div>
-            <ChevronRight size={18} className="text-text-muted" />
-          </button>
-        </motion.div>
-
-        {/* Privacy Note */}
-        <div className="p-4 rounded-2xl bg-bg-2 border border-border flex items-center gap-3 mb-6">
-          <Shield size={16} className="text-text-muted flex-shrink-0" />
-          <p className="text-xs text-text-muted">Your data is encrypted and never sold</p>
-        </div>
-
-        {/* Web Testing Toggle */}
-        {!isNative && (
-          <button
-            onClick={toggleProForTesting}
-            className="w-full p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-center mb-6"
-          >
-            <p className="text-xs text-amber-400">
-              🧪 Toggle Pro ({isProUser ? "ON" : "OFF"})
-            </p>
-          </button>
-        )}
-
-        {/* Sign Out */}
-        <button
-          onClick={handleSignOut}
-          className="w-full p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center gap-2 text-red-400 active:scale-[0.98] transition-transform"
-        >
-          <LogOut size={18} />
-          <span className="font-medium">Sign Out</span>
-        </button>
+        {renderContent()}
       </div>
     </AppLayout>
   );
