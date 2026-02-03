@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronRight, Gamepad2, Target, Sparkles, Loader2, Trophy, Award, CheckCircle2, BookOpen, Newspaper, FlaskConical, TrendingUp, Crown, Lock, Zap } from "lucide-react";
+import { ChevronRight, Gamepad2, Target, Loader2, Trophy, Award, CheckCircle2, BookOpen, Newspaper, FlaskConical, TrendingUp, Crown, Lock, Zap, Play } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { XPBadge } from "@/components/ui/XPBadge";
-import { LessonCard } from "@/components/ui/LessonCard";
-import { DuoProgressBar } from "@/components/ui/DuoProgressBar";
 import { DuoButton } from "@/components/ui/DuoButton";
 import { SlideReader } from "@/components/slides/SlideReader";
 import { KeyPlayers } from "@/components/home/KeyPlayers";
@@ -15,7 +13,7 @@ import { NotificationOnboarding } from "@/components/onboarding/NotificationOnbo
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { LeoCharacter, LeoAnim } from "@/components/mascot/LeoStateMachine";
 import { Mentor } from "@/data/mentors";
-import { getMarketEmoji, getMarketName, getMarketById } from "@/data/markets";
+import { getMarketEmoji, getMarketName } from "@/data/markets";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProgress } from "@/hooks/useUserProgress";
@@ -27,7 +25,7 @@ import { hapticFeedback } from "@/lib/ios-utils";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
-// Import warm Duolingo-style images
+// Import hero images
 import lessonHero from "@/assets/cards/lesson-hero.jpg";
 import newsHero from "@/assets/cards/news-hero.jpg";
 import gamesHero from "@/assets/cards/games-hero.jpg";
@@ -188,13 +186,11 @@ export default function HomePage() {
   const handleStackComplete = async (isReviewMode: boolean, timeSpentSeconds: number) => {
     setShowReader(false);
     
-    // Don't award XP or update progress if it's a review
     if (isReviewMode) {
       toast.success("Great review! 📖");
       return;
     }
     
-    // Check if minimum time was met (3 minutes = 180 seconds)
     const MINIMUM_TIME = 180;
     if (timeSpentSeconds < MINIMUM_TIME) {
       toast.info("Keep learning! Spend at least 3 minutes to complete the lesson.");
@@ -210,7 +206,6 @@ export default function HomePage() {
         await addXP(XP_REWARDS.STREAK_BONUS * (progress.current_streak || 1), "streak_bonus");
       }
       
-      // Trigger Pro promotion after lesson (checks internally if should show)
       if (!isProUser) {
         triggerAfterLesson(progress.current_day || 1);
       }
@@ -264,12 +259,12 @@ export default function HomePage() {
 
   return (
     <AppLayout>
-      <div className="screen-padding pt-safe pb-28 overflow-x-hidden w-full">
-        {/* Compact Header */}
+      <div className="px-5 pt-safe pb-28 w-full">
+        {/* Header - Clean & Simple */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between py-5"
+          className="flex items-center justify-between py-4"
         >
           <div className="flex items-center gap-3">
             <span className="text-2xl">{getMarketEmoji(selectedMarket || "aerospace")}</span>
@@ -277,100 +272,75 @@ export default function HomePage() {
               <h1 className="text-lg font-semibold text-text-primary">
                 {getMarketName(selectedMarket || "aerospace")}
               </h1>
-              <p className="text-[11px] text-text-muted">Day {currentDay} of 180</p>
+              <p className="text-xs text-text-muted">Day {currentDay} of 180</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} showLevel={false} />
             <StreakBadge count={streak} />
           </div>
         </motion.div>
 
-        {/* Leo 2D Greeting */}
+        {/* Leo Greeting - Compact */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.05, type: "spring" }}
-          className="flex flex-col items-center justify-center mb-4"
+          transition={{ delay: 0.05 }}
+          className="flex flex-col items-center py-4"
         >
-          <LeoCharacter 
-            size="lg" 
-            animation={leoAnimation}
-          />
-          <motion.p
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="text-sm text-text-secondary mt-2 text-center"
-          >
-            {leoMessage}
-          </motion.p>
+          <LeoCharacter size="lg" animation={leoAnimation} />
+          <p className="text-sm text-text-secondary mt-2 text-center">{leoMessage}</p>
         </motion.div>
 
-        {/* Startup Progress - Enhanced Duolingo Style */}
+        {/* Progress Bar - Simple & Clean */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-bg-2 to-bg-1 border border-border"
+          className="mb-6 p-4 rounded-2xl bg-bg-2 border border-border"
         >
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <motion.div
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <Crown size={18} className="text-yellow-400" />
-              </motion.div>
-              <span className="text-body font-semibold text-text-primary">
-                Stage {currentStage.stage}: {currentStage.name}
-              </span>
-            </div>
-            <span className="text-caption font-bold text-accent">{Math.round(stageProgress)}%</span>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-text-primary">
+              Stage {currentStage.stage}: {currentStage.name}
+            </span>
+            <span className="text-sm font-bold text-accent">{Math.round(stageProgress)}%</span>
           </div>
-          <DuoProgressBar 
-            progress={stageProgress} 
-            size="md" 
-            colorScheme="accent"
-            animated
-          />
+          <div className="h-2 bg-bg-1 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${stageProgress}%` }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="h-full bg-accent rounded-full"
+            />
+          </div>
         </motion.div>
 
-        {/* Today's Learning Cards */}
+        {/* Today's Learning */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="space-y-3 mb-5"
+          transition={{ delay: 0.12 }}
+          className="space-y-3 mb-6"
         >
-          <h2 className="text-caption font-medium uppercase tracking-wider text-text-muted">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted">
             Today's Learning
           </h2>
           
           {lessonCompletedToday ? (
-            <motion.div 
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              className="p-5 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-teal-500/10 border border-emerald-500/30 shadow-lg shadow-emerald-500/10"
-            >
-              <div className="flex items-center gap-4 mb-5">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
-                  transition={{ delay: 0.2 }}
-                  className="w-14 h-14 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg flex-shrink-0"
-                >
-                  <CheckCircle2 size={28} className="text-white" />
-                </motion.div>
+            <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center">
+                  <CheckCircle2 size={24} className="text-white" />
+                </div>
                 <div>
-                  <p className="text-lg font-bold text-text-primary">Lesson Complete! 🎉</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Zap size={14} className="text-yellow-400 fill-yellow-400" />
-                    <span className="text-body text-emerald-400 font-semibold">+{XP_REWARDS.LESSON_COMPLETE} XP earned</span>
+                  <p className="text-base font-bold text-text-primary">Lesson Complete! 🎉</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <Zap size={12} className="text-amber-400 fill-amber-400" />
+                    <span className="text-sm text-emerald-400 font-medium">+{XP_REWARDS.LESSON_COMPLETE} XP</span>
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <DuoButton
                   variant="secondary"
                   size="md"
@@ -385,221 +355,169 @@ export default function HomePage() {
                   onClick={() => navigate("/drills")}
                   fullWidth
                 >
-                  <Zap size={16} /> Practice
+                  Practice
                 </DuoButton>
               </div>
-            </motion.div>
+            </div>
           ) : (
-            /* Micro Lesson Card - only shown if not completed */
             lessonStack && (
-              <LessonCard
-                title="Micro Lesson"
-                subtitle="Today's Lesson"
-                headline={lessonStack.title}
-                xp={XP_REWARDS.LESSON_COMPLETE}
-                duration={lessonStack.duration_minutes || 5}
-                imageSrc={lessonHero}
-                colorScheme="purple"
+              <button
                 onClick={() => handleOpenStack(lessonStack)}
-              />
+                className="w-full rounded-2xl overflow-hidden bg-bg-2 border border-border active:scale-[0.98] transition-transform"
+              >
+                <div className="relative h-28">
+                  <img src={lessonHero} alt="" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-bg-2 via-bg-2/60 to-transparent" />
+                </div>
+                <div className="p-4 -mt-8 relative">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-2 py-0.5 rounded-full bg-accent/20 text-accent text-xs font-medium">
+                      +{XP_REWARDS.LESSON_COMPLETE} XP
+                    </span>
+                    <span className="text-xs text-text-muted">{lessonStack.duration_minutes || 5} min</span>
+                  </div>
+                  <h3 className="text-base font-bold text-text-primary mb-1">Micro Lesson</h3>
+                  <p className="text-sm text-text-secondary line-clamp-1">{lessonStack.title}</p>
+                </div>
+              </button>
             )
           )}
           
-          {/* Daily Pattern (Industry Insight) Card - Always visible */}
           {newsStack && (
-            <LessonCard
-              title="Daily Pattern"
-              subtitle="Industry Insight"
-              headline={newsStack.title}
-              xp={25}
-              duration={newsStack.duration_minutes || 3}
-              imageSrc={newsHero}
-              colorScheme="blue"
+            <button
               onClick={() => handleOpenStack(newsStack)}
-            />
+              className="w-full p-4 rounded-2xl bg-bg-2 border border-border flex items-center gap-4 active:scale-[0.98] transition-transform"
+            >
+              <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
+                <img src={newsHero} alt="" className="w-full h-full object-cover" />
+              </div>
+              <div className="flex-1 text-left">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-xs font-medium text-blue-400">Daily Pattern</span>
+                  <span className="text-xs text-text-muted">• {newsStack.duration_minutes || 3} min</span>
+                </div>
+                <p className="text-sm font-medium text-text-primary line-clamp-1">{newsStack.title}</p>
+              </div>
+              <ChevronRight size={18} className="text-text-muted" />
+            </button>
           )}
         </motion.div>
 
-        {/* Activities Grid */}
+        {/* Practice Grid - Clean Cards */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="mb-5"
+          className="mb-6"
         >
-          <h2 className="text-caption font-medium uppercase tracking-wider text-text-muted mb-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-3">
             Practice & Play
           </h2>
           <div className="grid grid-cols-2 gap-3">
-            {/* Games Card - Enhanced */}
-            <motion.button
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => {
-                hapticFeedback("light");
-                navigate("/games");
-              }}
-              className="relative overflow-hidden rounded-2xl text-left shadow-lg shadow-purple-500/10 border border-purple-500/30"
+            {/* Games */}
+            <button
+              onClick={() => { hapticFeedback("light"); navigate("/games"); }}
+              className="relative overflow-hidden rounded-2xl bg-bg-2 border border-border active:scale-[0.97] transition-transform"
             >
-              <img src={gamesHero} alt="Games" className="w-full h-32 object-cover object-[50%_30%]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-purple-900/95 via-purple-900/50 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-3.5">
-                <p className="text-[10px] text-purple-300 font-bold tracking-wide">TRIVIA</p>
-                <p className="text-base font-bold text-white">Games</p>
+              <img src={gamesHero} alt="" className="w-full h-24 object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-bg-2 via-bg-2/50 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-3">
+                <p className="text-[10px] text-purple-400 font-semibold uppercase">Trivia</p>
+                <p className="text-sm font-bold text-text-primary">Games</p>
               </div>
-              <motion.div
-                className="absolute top-2 right-2 w-6 h-6 rounded-full bg-purple-500/80 flex items-center justify-center"
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <Gamepad2 size={12} className="text-white" />
-              </motion.div>
-            </motion.button>
+            </button>
 
-            {/* Drills Card - Enhanced */}
-            <motion.button
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => {
-                hapticFeedback("light");
-                navigate("/drills");
-              }}
-              className="relative overflow-hidden rounded-2xl text-left shadow-lg shadow-amber-500/10 border border-amber-500/30"
+            {/* Drills */}
+            <button
+              onClick={() => { hapticFeedback("light"); navigate("/drills"); }}
+              className="relative overflow-hidden rounded-2xl bg-bg-2 border border-border active:scale-[0.97] transition-transform"
             >
-              <img src={drillsHero} alt="Drills" className="w-full h-32 object-cover object-[50%_30%]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-amber-900/95 via-amber-900/50 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-3.5">
-                <p className="text-[10px] text-amber-300 font-bold tracking-wide">SPEED</p>
-                <p className="text-base font-bold text-white">Drills</p>
+              <img src={drillsHero} alt="" className="w-full h-24 object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-bg-2 via-bg-2/50 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-3">
+                <p className="text-[10px] text-amber-400 font-semibold uppercase">Speed</p>
+                <p className="text-sm font-bold text-text-primary">Drills</p>
               </div>
-              <motion.div
-                className="absolute top-2 right-2 w-6 h-6 rounded-full bg-amber-500/80 flex items-center justify-center"
-                animate={{ rotate: [0, 15, -15, 0] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              >
-                <Zap size={12} className="text-white" />
-              </motion.div>
-            </motion.button>
+            </button>
 
-            {/* Trainer Card - Enhanced Full Width */}
-            <motion.button
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => {
-                hapticFeedback("light");
-                navigate("/trainer");
-              }}
-              className="relative overflow-hidden rounded-2xl text-left col-span-2 shadow-lg shadow-emerald-500/10 border border-emerald-500/30"
+            {/* Trainer - Full Width */}
+            <button
+              onClick={() => { hapticFeedback("light"); navigate("/trainer"); }}
+              className="col-span-2 relative overflow-hidden rounded-2xl bg-bg-2 border border-border active:scale-[0.98] transition-transform"
             >
-              <img src={trainerHero} alt="Trainer" className="w-full h-28 object-cover object-[50%_30%]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/95 via-emerald-900/50 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-3.5 flex items-center justify-between">
+              <img src={trainerHero} alt="" className="w-full h-20 object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-bg-2 via-bg-2/50 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-3 flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] text-emerald-300 font-bold tracking-wide">STRATEGY</p>
-                  <p className="text-base font-bold text-white">Trainer Scenarios</p>
+                  <p className="text-[10px] text-emerald-400 font-semibold uppercase">Strategy</p>
+                  <p className="text-sm font-bold text-text-primary">Trainer Scenarios</p>
                 </div>
-                <motion.div
-                  className="w-8 h-8 rounded-full bg-emerald-500/80 flex items-center justify-center"
-                  animate={{ x: [0, 3, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  <ChevronRight size={16} className="text-white" />
-                </motion.div>
+                <ChevronRight size={18} className="text-text-muted" />
               </div>
-            </motion.button>
+            </button>
           </div>
         </motion.div>
 
-        {/* Investment Lab Teaser - Pro Feature */}
+        {/* Investment Lab - Simple Banner */}
         <motion.button
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.18 }}
           onClick={() => navigate("/investment-lab")}
-          whileTap={{ scale: 0.98 }}
-          className={cn(
-            "w-full p-3 rounded-xl mb-5",
-            isProUser 
-              ? "bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20"
-              : "bg-gradient-to-r from-accent/5 to-purple-600/5 border border-accent/20"
-          )}
+          className="w-full p-4 rounded-2xl bg-bg-2 border border-border flex items-center gap-3 mb-6 active:scale-[0.98] transition-transform"
         >
-          <div className="flex items-center gap-3">
-            <div className={cn(
-              "w-10 h-10 rounded-lg flex items-center justify-center",
-              isProUser ? "bg-emerald-500/20" : "bg-accent/20"
-            )}>
-              {isProUser ? (
-                <TrendingUp size={20} className="text-emerald-400" />
-              ) : (
-                <Lock size={20} className="text-accent" />
+          <div className={cn(
+            "w-10 h-10 rounded-xl flex items-center justify-center",
+            isProUser ? "bg-emerald-500/20" : "bg-accent/20"
+          )}>
+            {isProUser ? (
+              <TrendingUp size={20} className="text-emerald-400" />
+            ) : (
+              <Lock size={18} className="text-accent" />
+            )}
+          </div>
+          <div className="flex-1 text-left">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-text-primary">Investment Lab</span>
+              {!isProUser && (
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-accent text-white">PRO</span>
               )}
             </div>
-            <div className="flex-1 text-left">
-              <div className="flex items-center gap-2">
-                <span className="text-body font-medium text-text-primary">Investment Lab</span>
-                {isProUser ? (
-                  <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-emerald-500/20 text-emerald-400">BONUS</span>
-                ) : (
-                  <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium bg-gradient-to-r from-accent to-purple-600 text-white">
-                    <Crown size={8} />
-                    PRO
-                  </span>
-                )}
-              </div>
-              <p className="text-[11px] text-text-muted">
-                {isProUser ? "Become investment-ready • Optional extra XP" : "Unlock with Pro • Expert-level scenarios"}
-              </p>
-            </div>
-            <ChevronRight size={18} className={isProUser ? "text-emerald-400/50" : "text-accent/50"} />
+            <p className="text-xs text-text-muted">
+              {isProUser ? "Practice real scenarios" : "Unlock with Pro"}
+            </p>
           </div>
+          <ChevronRight size={18} className="text-text-muted" />
         </motion.button>
 
-        {/* Quick Links - Enhanced Duolingo Style */}
+        {/* Quick Access - Simple Grid */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mb-5"
+          className="mb-6"
         >
-          <h2 className="text-caption font-medium uppercase tracking-wider text-text-muted mb-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-3">
             Quick Access
           </h2>
-          <div className="grid grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-4 gap-3">
             {[
-              { icon: BookOpen, label: "Notes", path: "/notebook", color: "text-rose-400", iconBg: "bg-rose-500/20", borderColor: "border-rose-500/20" },
-              { icon: Trophy, label: "Rank", path: "/leaderboard", color: "text-blue-400", iconBg: "bg-blue-500/15", borderColor: "border-blue-500/20" },
-              { icon: Award, label: "Badges", path: "/achievements", color: "text-purple-400", iconBg: "bg-purple-500/15", borderColor: "border-purple-500/20" },
+              { icon: BookOpen, label: "Notes", path: "/notebook", color: "text-rose-400" },
+              { icon: Trophy, label: "Rank", path: "/leaderboard", color: "text-blue-400" },
+              { icon: Award, label: "Badges", path: "/achievements", color: "text-purple-400" },
               ...(selectedMarket === "neuroscience" 
-                ? [{ icon: FlaskConical, label: "FDA/IRB", path: "/regulatory-hub", color: "text-emerald-400", iconBg: "bg-emerald-500/15", borderColor: "border-emerald-500/20" }]
-                : [{ icon: Newspaper, label: "News", path: "/summaries", color: "text-cyan-400", iconBg: "bg-cyan-500/15", borderColor: "border-cyan-500/20" }]
+                ? [{ icon: FlaskConical, label: "FDA/IRB", path: "/regulatory-hub", color: "text-emerald-400" }]
+                : [{ icon: Newspaper, label: "News", path: "/summaries", color: "text-cyan-400" }]
               ),
-            ].map((item, index) => (
-              <motion.button
+            ].map((item) => (
+              <button
                 key={item.path}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.22 + index * 0.04 }}
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={() => {
-                  hapticFeedback("light");
-                  navigate(item.path);
-                }}
-                className={cn(
-                  "flex flex-col items-center gap-2.5 py-4 rounded-[18px] bg-bg-2/60 border transition-all duration-200",
-                  item.borderColor
-                )}
+                onClick={() => { hapticFeedback("light"); navigate(item.path); }}
+                className="flex flex-col items-center gap-2 py-4 rounded-2xl bg-bg-2 border border-border active:scale-95 transition-transform"
               >
-                {/* Icon Container - Centered with colored background */}
-                <div className={cn(
-                  "w-12 h-12 rounded-xl flex items-center justify-center transition-transform",
-                  item.iconBg
-                )}>
-                  <item.icon size={22} className={item.color} />
-                </div>
-                <span className="text-caption text-text-secondary font-medium">{item.label}</span>
-              </motion.button>
+                <item.icon size={22} className={item.color} />
+                <span className="text-xs text-text-secondary">{item.label}</span>
+              </button>
             ))}
           </div>
         </motion.div>
