@@ -98,7 +98,11 @@
     overflow-x: hidden;
     overflow-y: auto;
     /* Prevent iOS overscroll white band */
+    background: #0B1020;
     background: hsl(var(--bg-0));
+    /* iOS bounce/overscroll prevention */
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   body {

@@ -8,8 +8,8 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, showNav = true }: AppLayoutProps) {
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden max-w-full">
-      <main className={`overflow-x-hidden ${showNav ? "safe-bottom" : ""}`}>
+    <div className="min-h-screen min-h-[100dvh] bg-background overflow-x-hidden w-full max-w-full">
+      <main className={`overflow-x-hidden w-full ${showNav ? "safe-bottom" : ""}`}>
         {children}
       </main>
       {showNav && <BottomNav />}
