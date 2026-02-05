@@ -42,7 +42,7 @@ export default function ProfilePage() {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showChangeWarning, setShowChangeWarning] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
-  const { progress } = useUserProgress(selectedMarket || undefined);
+  const { progress, availableDay } = useUserProgress(selectedMarket || undefined);
   const { certificateData, isEligible, progress: certProgress } = useCertificate(selectedMarket || undefined);
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export default function ProfilePage() {
 
   return (
     <AppLayout>
-      <div className="screen-padding pt-12 safe-bottom overflow-x-hidden w-full box-border">
+      <div className="screen-padding pt-safe safe-bottom overflow-x-hidden w-full box-border">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -172,7 +172,7 @@ export default function ProfilePage() {
               <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-2">
                 <Target size={20} className="text-emerald-400" />
               </div>
-              <p className="text-h2 text-text-primary">Day {progress.current_day}</p>
+              <p className="text-h2 text-text-primary">Day {availableDay}</p>
               <p className="text-caption text-text-muted">of 180</p>
             </div>
           </motion.div>

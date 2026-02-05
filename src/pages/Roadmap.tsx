@@ -84,12 +84,21 @@ export default function RoadmapPage() {
 
       const { data: progress } = await supabase
         .from("user_progress")
-        .select("current_day")
+        .select("start_date, completed_stacks")
         .eq("user_id", user.id)
         .eq("market_id", market)
         .single();
 
-      const day = progress?.current_day || 1;
+      // Calculate available day from start_date (calendar-based)
+      let day = 1;
+      if (progress?.start_date) {
+        const start = new Date(progress.start_date);
+        const today = new Date();
+        start.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+        const diffDays = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+        day = Math.min(180, Math.max(1, diffDays + 1));
+      }
       setCurrentDay(day);
 
       const currentWeek = getDayWeek(day);
