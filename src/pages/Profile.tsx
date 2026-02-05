@@ -172,7 +172,7 @@ export default function ProfilePage() {
               <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-2">
                 <Target size={20} className="text-emerald-400" />
               </div>
-              <p className="text-h2 text-text-primary">Day {progress.current_day}</p>
+              <p className="text-h2 text-text-primary">Day {availableDay}</p>
               <p className="text-caption text-text-muted">of 180</p>
             </div>
           </motion.div>
