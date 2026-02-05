@@ -781,6 +781,7 @@ export type Database = {
           last_activity_at: string | null
           longest_streak: number | null
           market_id: string
+          start_date: string
           streak_expires_at: string | null
           updated_at: string
           user_id: string
@@ -794,6 +795,7 @@ export type Database = {
           last_activity_at?: string | null
           longest_streak?: number | null
           market_id: string
+          start_date?: string
           streak_expires_at?: string | null
           updated_at?: string
           user_id: string
@@ -807,6 +809,7 @@ export type Database = {
           last_activity_at?: string | null
           longest_streak?: number | null
           market_id?: string
+          start_date?: string
           streak_expires_at?: string | null
           updated_at?: string
           user_id?: string
@@ -1016,6 +1019,7 @@ export type Database = {
     Functions: {
       calculate_level: { Args: { xp: number }; Returns: number }
       calculate_startup_stage: { Args: { xp: number }; Returns: number }
+      get_available_day: { Args: { p_start_date: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
