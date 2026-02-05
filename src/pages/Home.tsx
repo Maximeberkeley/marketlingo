@@ -291,7 +291,7 @@ export default function HomePage() {
   };
 
   const streak = progress?.current_streak || 0;
-  const currentDay = progress?.current_day || 1;
+  const currentDay = availableDay;
 
   if (loading || authLoading) {
     return (
