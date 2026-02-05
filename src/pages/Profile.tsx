@@ -42,7 +42,7 @@ export default function ProfilePage() {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showChangeWarning, setShowChangeWarning] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
-  const { progress } = useUserProgress(selectedMarket || undefined);
+  const { progress, availableDay } = useUserProgress(selectedMarket || undefined);
   const { certificateData, isEligible, progress: certProgress } = useCertificate(selectedMarket || undefined);
 
   useEffect(() => {
