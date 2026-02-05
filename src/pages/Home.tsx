@@ -153,7 +153,7 @@ export default function HomePage() {
       const dayTag = `day-${currentDay}`;
 
       // Fetch lesson stack for the user's current day (MICRO_LESSON with day-X tag)
-      const { data: lessonStacks } = await supabase
+      let { data: lessonStacks } = await supabase
         .from("stacks")
         .select(`id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)`)
         .eq("market_id", market)
@@ -161,7 +161,33 @@ export default function HomePage() {
         .not("published_at", "is", null)
         .limit(1);
 
-      // If no lesson found for current day, fall back to any available lesson
+      // If no exact day match, find the closest available lesson <= current day
+      if (!lessonStacks?.[0]) {
+        const { data: allLessons } = await supabase
+          .from("stacks")
+          .select(`id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)`)
+          .eq("market_id", market)
+          .contains("tags", ["MICRO_LESSON"])
+          .not("published_at", "is", null);
+
+        if (allLessons?.length) {
+          // Parse day from tags and find closest lesson <= currentDay
+          const lessonsWithDays = allLessons.map(stack => {
+            const dayMatch = (stack.tags as string[])?.find(t => t.startsWith('day-'));
+            const dayNum = dayMatch ? parseInt(dayMatch.replace('day-', ''), 10) : 999;
+            return { ...stack, dayNum };
+          });
+
+          // Find the highest day <= currentDay, or fallback to lowest available
+          const validLessons = lessonsWithDays.filter(l => l.dayNum <= currentDay);
+          const selectedLesson = validLessons.length > 0
+            ? validLessons.reduce((max, l) => l.dayNum > max.dayNum ? l : max)
+            : lessonsWithDays.reduce((min, l) => l.dayNum < min.dayNum ? l : min);
+
+          lessonStacks = [selectedLesson];
+        }
+      }
+
       if (lessonStacks?.[0]) {
         const stack = lessonStacks[0];
         setLessonStack({
@@ -171,27 +197,6 @@ export default function HomePage() {
             .sort((a, b) => a.slide_number - b.slide_number)
             .map(s => ({ ...s, sources: Array.isArray(s.sources) ? s.sources : [] })),
         });
-      } else {
-        // Fallback: get next available lesson if specific day not found
-        const { data: fallbackStacks } = await supabase
-          .from("stacks")
-          .select(`id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)`)
-          .eq("market_id", market)
-          .contains("tags", ["MICRO_LESSON"])
-          .not("published_at", "is", null)
-          .order("created_at", { ascending: true })
-          .limit(1);
-
-        if (fallbackStacks?.[0]) {
-          const stack = fallbackStacks[0];
-          setLessonStack({
-            ...stack,
-            tags: stack.tags || [],
-            slides: ((stack.slides as any[]) || [])
-              .sort((a, b) => a.slide_number - b.slide_number)
-              .map(s => ({ ...s, sources: Array.isArray(s.sources) ? s.sources : [] })),
-          });
-        }
       }
 
       // Fetch news stack (DAILY_GAME for news-like content)
