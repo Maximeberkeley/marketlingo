@@ -132,15 +132,24 @@ export default function HomePage() {
 
       const market = profile.selected_market;
 
-      // Get user's current day from progress
+      // Get user's available day from progress (calendar-based)
       const { data: userProgress } = await supabase
         .from("user_progress")
-        .select("current_day")
+        .select("start_date")
         .eq("user_id", user.id)
         .eq("market_id", market)
         .single();
 
-      const currentDay = userProgress?.current_day || 1;
+      // Calculate available day from start_date
+      let currentDay = 1;
+      if (userProgress?.start_date) {
+        const start = new Date(userProgress.start_date);
+        const today = new Date();
+        start.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+        const diffDays = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+        currentDay = Math.min(180, Math.max(1, diffDays + 1));
+      }
       const dayTag = `day-${currentDay}`;
 
       // Fetch lesson stack for the user's current day (MICRO_LESSON with day-X tag)
