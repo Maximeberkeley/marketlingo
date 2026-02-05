@@ -132,16 +132,27 @@ export default function HomePage() {
 
       const market = profile.selected_market;
 
-      // Fetch lesson stack (MICRO_LESSON)
+      // Get user's current day from progress
+      const { data: userProgress } = await supabase
+        .from("user_progress")
+        .select("current_day")
+        .eq("user_id", user.id)
+        .eq("market_id", market)
+        .single();
+
+      const currentDay = userProgress?.current_day || 1;
+      const dayTag = `day-${currentDay}`;
+
+      // Fetch lesson stack for the user's current day (MICRO_LESSON with day-X tag)
       const { data: lessonStacks } = await supabase
         .from("stacks")
         .select(`id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)`)
         .eq("market_id", market)
-        .contains("tags", ["MICRO_LESSON"])
+        .contains("tags", ["MICRO_LESSON", dayTag])
         .not("published_at", "is", null)
-        .order("created_at", { ascending: true })
         .limit(1);
 
+      // If no lesson found for current day, fall back to any available lesson
       if (lessonStacks?.[0]) {
         const stack = lessonStacks[0];
         setLessonStack({
@@ -151,6 +162,27 @@ export default function HomePage() {
             .sort((a, b) => a.slide_number - b.slide_number)
             .map(s => ({ ...s, sources: Array.isArray(s.sources) ? s.sources : [] })),
         });
+      } else {
+        // Fallback: get next available lesson if specific day not found
+        const { data: fallbackStacks } = await supabase
+          .from("stacks")
+          .select(`id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)`)
+          .eq("market_id", market)
+          .contains("tags", ["MICRO_LESSON"])
+          .not("published_at", "is", null)
+          .order("created_at", { ascending: true })
+          .limit(1);
+
+        if (fallbackStacks?.[0]) {
+          const stack = fallbackStacks[0];
+          setLessonStack({
+            ...stack,
+            tags: stack.tags || [],
+            slides: ((stack.slides as any[]) || [])
+              .sort((a, b) => a.slide_number - b.slide_number)
+              .map(s => ({ ...s, sources: Array.isArray(s.sources) ? s.sources : [] })),
+          });
+        }
       }
 
       // Fetch news stack (DAILY_GAME for news-like content)
