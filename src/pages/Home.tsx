@@ -52,7 +52,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
-  const { progress, completeStack, updateStreak } = useUserProgress(selectedMarket || undefined);
+  const { progress, availableDay, completeStack, updateStreak } = useUserProgress(selectedMarket || undefined);
   const { 
     xpData, 
     completeLessonForToday, 
