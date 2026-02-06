@@ -141,8 +141,8 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
               </motion.div>
             </div>
 
-            {/* Content */}
-            <div className="p-6">
+            {/* Content with bottom safe area for CTA buttons */}
+            <div className="p-6 modal-bottom-safe">
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
