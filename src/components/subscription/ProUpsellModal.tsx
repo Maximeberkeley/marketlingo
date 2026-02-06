@@ -84,7 +84,8 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-background/80 backdrop-blur-sm"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
           onClick={onClose}
         >
           <motion.div
@@ -94,7 +95,8 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className={cn(
               "relative w-full max-w-md overflow-hidden rounded-t-[24px] sm:rounded-[24px]",
-              "bg-bg-1 border border-border shadow-2xl"
+              "bg-bg-1 border border-border shadow-2xl",
+              "max-h-[85vh] overflow-y-auto"
             )}
             onClick={(e) => e.stopPropagation()}
           >
