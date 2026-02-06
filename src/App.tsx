@@ -11,6 +11,7 @@ import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import Auth from "./pages/Auth";
 import SelectMarket from "./pages/SelectMarket";
 import Home from "./pages/Home";
+import SelectFamiliarity from "./pages/SelectFamiliarity";
 import Roadmap from "./pages/Roadmap";
 import Notebook from "./pages/Notebook";
 import Profile from "./pages/Profile";
