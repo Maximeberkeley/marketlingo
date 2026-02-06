@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { LeoCharacter, LeoAnim } from "@/components/mascot/LeoStateMachine";
+import { scrollInputIntoView } from "@/hooks/useKeyboardAware";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
