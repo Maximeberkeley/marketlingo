@@ -47,7 +47,7 @@ const triggerContent: Record<PromoTrigger, {
 };
 
 const compactBenefits = [
-  { Icon: Infinity, text: "Unlimited lessons & games" },
+  { Icon: InfinityIcon, text: "Unlimited lessons & games" },
   { Icon: TrendingUp, text: "Investment Lab access" },
   { Icon: Brain, text: "AI mentors on-demand" },
   { Icon: Target, text: "Pro Trainer scenarios" },
