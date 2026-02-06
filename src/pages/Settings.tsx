@@ -258,7 +258,8 @@ export default function Settings() {
 
   return (
     <AppLayout>
-      <div className="min-h-screen pb-28">
+      {/* Remove duplicate padding - AppLayout handles safe-bottom */}
+      <div className="min-h-screen screen-padding pt-4 pb-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <button

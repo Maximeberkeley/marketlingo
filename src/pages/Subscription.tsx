@@ -125,10 +125,13 @@ export default function Subscription() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-background pb-safe">
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border">
-        <div className="flex items-center gap-4 p-4 pt-safe">
+    <div className="min-h-[100dvh] bg-background flex flex-col">
+      {/* Header - with landscape-aware safe area */}
+      <div 
+        className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border"
+        style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+      >
+        <div className="flex items-center gap-4 p-4">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
@@ -139,7 +142,11 @@ export default function Subscription() {
         </div>
       </div>
 
-      <div className="p-4 space-y-6 max-w-lg mx-auto">
+      {/* Scrollable content with bottom safe area */}
+      <div 
+        className="flex-1 overflow-y-auto p-4 space-y-6 max-w-lg mx-auto w-full"
+        style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom, 24px))' }}
+      >
         {/* Already Pro */}
         {isProUser && (
           <motion.div
