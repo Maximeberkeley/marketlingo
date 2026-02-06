@@ -8,7 +8,7 @@ import { MentorTipBubble } from "../ai/MentorTipBubble";
 import { SlideIntroCard } from "./SlideIntroCard";
 import { SlideContentCard } from "./SlideContentCard";
 import { mentors, Mentor, getMentorForContext } from "@/data/mentors";
-import { getTipForSlide, MentorTip } from "@/data/mentorTips";
+import { getTipForSlide, MentorTip, resetTipSession } from "@/data/mentorTips";
 import { cn } from "@/lib/utils";
 import { XP_REWARDS } from "@/hooks/useUserXP";
 
