@@ -10,6 +10,24 @@ interface UserAchievement {
   unlocked_at: string;
 }
 
+// Send milestone notification via Edge Function
+async function sendMilestoneNotification(
+  userId: string,
+  milestoneType: 'streak' | 'level' | 'achievement' | 'certificate' | 'week_complete',
+  milestoneData?: Record<string, any>
+) {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return;
+
+    await supabase.functions.invoke('send-milestone-notification', {
+      body: { userId, milestoneType, milestoneData },
+    });
+  } catch (error) {
+    console.error('Failed to send milestone notification:', error);
+  }
+}
+
 interface AchievementProgress {
   streak: number;
   xp: number;
