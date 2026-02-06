@@ -218,16 +218,33 @@ export default function AuthPage() {
               {mode === "email-login" ? "Sign in to continue your journey" : "Start your 6-month market mastery"}
             </p>
 
-            {/* Form */}
+            {/* Form - inputs scroll into view on focus for keyboard */}
             <form onSubmit={handleEmailAuth} className="space-y-4">
               <div>
                 <label className="text-caption text-text-muted block mb-2">Email</label>
-                <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" className="bg-bg-1 border-border text-text-primary placeholder:text-text-muted" required />
+                <Input 
+                  type="email" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)} 
+                  placeholder="you@example.com" 
+                  className="bg-bg-1 border-border text-text-primary placeholder:text-text-muted" 
+                  required 
+                  onFocus={(e) => scrollInputIntoView(e.target)}
+                />
               </div>
 
               <div>
                 <label className="text-caption text-text-muted block mb-2">Password</label>
-                <Input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="bg-bg-1 border-border text-text-primary placeholder:text-text-muted" required minLength={6} />
+                <Input 
+                  type="password" 
+                  value={password} 
+                  onChange={e => setPassword(e.target.value)} 
+                  placeholder="••••••••" 
+                  className="bg-bg-1 border-border text-text-primary placeholder:text-text-muted" 
+                  required 
+                  minLength={6}
+                  onFocus={(e) => scrollInputIntoView(e.target)}
+                />
               </div>
 
               <Button type="submit" size="full" disabled={isSubmitting}>
