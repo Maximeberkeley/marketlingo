@@ -31,29 +31,11 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
-    const checkUserState = async () => {
-      if (!loading && user) {
-        // Check if user has already selected a market
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("selected_market, familiarity_level")
-          .eq("id", user.id)
-          .single();
-
-        if (profile?.selected_market && profile?.familiarity_level) {
-          // User has completed onboarding, go to home
-          navigate("/home");
-        } else if (profile?.selected_market) {
-          // Market selected but no familiarity level, go to familiarity selection
-          navigate("/select-familiarity");
-        } else {
-          // New user or no market selected
-          navigate("/select-market");
-        }
-      }
-    };
-    checkUserState();
-  }, [user, loading, navigate]);
+    if (!loading && user) {
+      // Use centralized routing logic to determine next screen
+      routeToCorrectScreen(user.id);
+    }
+  }, [user, loading, routeToCorrectScreen]);
   const handleGoogleSignIn = async () => {
     const {
       error
