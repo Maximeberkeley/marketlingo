@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { MentorCelebration } from "@/components/mascot/MentorCelebration";
+import { DailyLimitGate, RemainingCount } from "@/components/subscription/DailyLimitGate";
 import { mentors, Mentor } from "@/data/mentors";
 import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useContentAccess } from "@/hooks/useContentAccess";
 import { smartTruncate } from "@/lib/text-utils";
 
 interface DrillQuestion {
@@ -25,6 +27,7 @@ interface DrillQuestion {
 export default function DrillsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { checkDailyLimit, incrementUsage, isProUser } = useContentAccess();
   const [questions, setQuestions] = useState<DrillQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -38,6 +41,7 @@ export default function DrillsPage() {
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [showIntro, setShowIntro] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showLimitGate, setShowLimitGate] = useState(false);
   
   // Get market config for theming
   const marketConfig = selectedMarket ? getMarketConfig(selectedMarket) : null;
@@ -214,6 +218,33 @@ export default function DrillsPage() {
     );
   }
 
+  // Check daily limit
+  const drillsLimit = checkDailyLimit('drills');
+
+  // Daily limit gate
+  if (!isProUser && showLimitGate) {
+    return (
+      <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
+        >
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+            <ArrowLeft size={24} className="text-text-secondary" />
+          </button>
+          <h1 className="text-h2 text-text-primary">Drills</h1>
+        </motion.div>
+        <div className="flex-1 flex items-center justify-center screen-padding py-6">
+          <DailyLimitGate 
+            type="drills" 
+            onContinue={() => setShowLimitGate(false)} 
+          />
+        </div>
+      </div>
+    );
+  }
+
   // Intro screen
   if (showIntro && questions.length > 0) {
     return (
@@ -227,6 +258,9 @@ export default function DrillsPage() {
             <ArrowLeft size={24} className="text-text-secondary" />
           </button>
           <h1 className="text-h2 text-text-primary">Drills</h1>
+          {!isProUser && (
+            <RemainingCount type="drills" className="ml-auto" />
+          )}
         </motion.div>
 
         <div className="flex-1 flex items-center justify-center screen-padding py-6">
@@ -266,7 +300,7 @@ export default function DrillsPage() {
                   "Build intuition fast"
                 ].map((feature, i) => (
                   <li key={i} className="flex items-center gap-3 text-body text-text-secondary">
-                    <div className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+                    <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
                     {feature}
                   </li>
                 ))}
@@ -275,9 +309,15 @@ export default function DrillsPage() {
 
             {/* CTA */}
             <Button 
-              className="w-full bg-gradient-to-r from-amber-500 to-orange-400 hover:opacity-90" 
+              className="w-full" 
               size="lg"
               onClick={() => {
+                // Check limit before starting
+                if (!drillsLimit.canAccess) {
+                  setShowLimitGate(true);
+                  return;
+                }
+                incrementUsage('drills');
                 setShowIntro(false);
                 setIsTimerActive(true);
               }}

@@ -109,36 +109,50 @@ export const lessonTips: MentorTip[] = [
   },
 ];
 
+// Session-based tip tracker to limit tips per session
+let sessionTipsShown = 0;
+const MAX_TIPS_PER_SESSION = 1; // Maximum 1 tip per lesson session
+const TIP_COOLDOWN_SLIDES = 4; // Minimum slides between tips
+let lastTipSlide = -999;
+
+/**
+ * Reset tip tracking for a new lesson session
+ */
+export function resetTipSession() {
+  sessionTipsShown = 0;
+  lastTipSlide = -999;
+}
+
 export function getTipForSlide(
   slideIndex: number,
   totalSlides: number,
   shownTipIds: Set<string>
 ): MentorTip | null {
+  // Strict limit: max 1 tip per lesson session
+  if (sessionTipsShown >= MAX_TIPS_PER_SESSION) return null;
+  
+  // Cooldown: don't show tips too close together
+  if (slideIndex - lastTipSlide < TIP_COOLDOWN_SLIDES) return null;
+  
   let candidates: MentorTip[] = [];
+  let shouldShowTip = false;
 
-  if (slideIndex === 0) {
-    // First slide
-    candidates = lessonTips.filter(
-      (t) => t.trigger === "first_slide" && !shownTipIds.has(t.id)
-    );
-  } else if (slideIndex === 2 || slideIndex === 3) {
-    // Mid lesson
-    candidates = lessonTips.filter(
-      (t) => t.trigger === "mid_lesson" && !shownTipIds.has(t.id)
-    );
-  } else if (slideIndex >= totalSlides - 2 && slideIndex < totalSlides - 1) {
-    // Near end
-    candidates = lessonTips.filter(
-      (t) => t.trigger === "near_end" && !shownTipIds.has(t.id)
-    );
-  } else if (Math.random() < 0.15) {
-    // 15% chance of random tip on other slides
-    candidates = lessonTips.filter(
-      (t) => t.trigger === "random" && !shownTipIds.has(t.id)
-    );
+  // Only show tip on slide 3 (midpoint) - single strategic moment
+  if (slideIndex === 3 && shownTipIds.size === 0) {
+    // 40% chance to show a mid-lesson tip
+    if (Math.random() < 0.4) {
+      candidates = lessonTips.filter(
+        (t) => t.trigger === "mid_lesson" && !shownTipIds.has(t.id)
+      );
+      shouldShowTip = true;
+    }
   }
 
-  if (candidates.length === 0) return null;
+  if (!shouldShowTip || candidates.length === 0) return null;
+
+  // Track this tip
+  sessionTipsShown++;
+  lastTipSlide = slideIndex;
 
   // Pick a random tip from candidates
   return candidates[Math.floor(Math.random() * candidates.length)];
