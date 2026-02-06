@@ -1,20 +1,68 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { ArrowLeft, Crown, Check, Sparkles, Zap, BookOpen, Trophy, Shield, Loader2, Infinity, Brain, Settings } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Crown, Check, Sparkles, Zap, BookOpen, Trophy, Shield, Loader2, Infinity, Brain, Settings, Gift, Clock, TrendingUp, Target, Star, Rocket } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription, TRIAL_DURATION_DAYS } from "@/hooks/useSubscription";
 import { toast } from "sonner";
 
 const PRO_FEATURES = [
-  { icon: Infinity, title: "Unlimited Access", description: "No daily limits on lessons, games & drills" },
-  { icon: BookOpen, title: "Investment Lab", description: "Expert-level scenarios & certification" },
-  { icon: Brain, title: "AI Mentor", description: "Unlimited conversations with mentors" },
-  { icon: Sparkles, title: "Premium Content", description: "Priority content & exclusive insights" },
-  { icon: Trophy, title: "Pro Certificates", description: "Shareable LinkedIn-ready credentials" },
-  { icon: Shield, title: "Priority Support", description: "Get help when you need it most" },
+  { 
+    icon: Infinity, 
+    title: "Unlimited Learning", 
+    description: "No daily caps on lessons, games & drills",
+    highlight: "Most Popular"
+  },
+  { 
+    icon: TrendingUp, 
+    title: "Investment Lab", 
+    description: "Expert scenarios, portfolio simulations, and real valuation models",
+    highlight: "Pro Exclusive"
+  },
+  { 
+    icon: Brain, 
+    title: "AI Mentors On-Demand", 
+    description: "Unlimited conversations with industry-specific AI mentors",
+    highlight: null
+  },
+  { 
+    icon: Target, 
+    title: "Advanced Trainer", 
+    description: "Pro Reasoning, Mental Models & Common Mistakes analysis",
+    highlight: null
+  },
+  { 
+    icon: Trophy, 
+    title: "LinkedIn Certificates", 
+    description: "Shareable credentials that prove your industry expertise",
+    highlight: null
+  },
+  { 
+    icon: Rocket, 
+    title: "Priority Content", 
+    description: "First access to new industries and premium insights",
+    highlight: null
+  },
+];
+
+const TESTIMONIALS = [
+  {
+    quote: "Finally understood aerospace supply chains after years of confusion. Worth every penny.",
+    author: "Sarah K., VC Associate",
+    avatar: "👩‍💼"
+  },
+  {
+    quote: "The Investment Lab scenarios are exactly what I needed before my LP meetings.",
+    author: "Marcus T., Fund Manager",
+    avatar: "👨‍💼"
+  },
+  {
+    quote: "Went from zero to pitching aerospace founders confidently in 3 months.",
+    author: "Diana L., Angel Investor",
+    avatar: "👩‍🚀"
+  }
 ];
 
 type PlanType = 'monthly' | 'annual';
@@ -24,29 +72,40 @@ export default function Subscription() {
   const { 
     isProUser, 
     isLoading, 
-    offerings, 
     purchasePackage,
     getPackage,
     restorePurchases,
     getExpirationDate,
     willRenew,
     toggleProForTesting,
-    isNative 
+    isNative,
+    trialStatus,
+    canStartTrial,
+    startFreeTrial,
+    planType,
   } = useSubscription();
   
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
+  const [showTestimonials, setShowTestimonials] = useState(false);
 
-  // Get packages
-  const monthlyPkg = getPackage('monthly');
-  const annualPkg = getPackage('annual');
+  const handleStartTrial = () => {
+    const success = startFreeTrial();
+    if (success) {
+      toast.success("🎉 Your 7-day Pro trial has started!", {
+        description: "Explore all Pro features - no credit card required"
+      });
+      navigate(-1);
+    } else {
+      toast.error("Trial not available");
+    }
+  };
 
   const handlePurchase = async () => {
     const pkg = getPackage(selectedPlan);
     
     if (!pkg) {
-      // Web fallback or no package available
       if (!isNative) {
         toggleProForTesting();
         toast.success("Pro activated for testing!");
@@ -85,7 +144,6 @@ export default function Subscription() {
   };
 
   const handleManageSubscription = () => {
-    // Open subscription management in App Store
     if (isNative) {
       window.open('https://apps.apple.com/account/subscriptions', '_blank');
     }
@@ -94,19 +152,15 @@ export default function Subscription() {
   const expirationDate = getExpirationDate();
   const renewStatus = willRenew();
 
-  // Helper to get price display
   const getPriceDisplay = (type: PlanType) => {
     const pkg = getPackage(type);
     if (pkg?.product?.priceString) return pkg.product.priceString;
-    
-    // Fallback prices
     switch (type) {
       case 'monthly': return '$9.99';
       case 'annual': return '$79.99';
     }
   };
 
-  // Calculate monthly equivalent for annual
   const getMonthlyEquivalent = () => {
     const pkg = getPackage('annual');
     if (pkg?.product?.price) {
@@ -126,7 +180,7 @@ export default function Subscription() {
 
   return (
     <div className="min-h-[100dvh] bg-background flex flex-col">
-      {/* Header - with landscape-aware safe area */}
+      {/* Header */}
       <div 
         className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border"
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
@@ -136,85 +190,164 @@ export default function Subscription() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-xl font-bold">MarketLingo Pro</h1>
-            <p className="text-sm text-muted-foreground">Unlock your full potential</p>
+            <h1 className="text-xl font-bold flex items-center gap-2">
+              MarketLingo Pro
+              <Crown className="w-5 h-5 text-amber-400" />
+            </h1>
+            <p className="text-sm text-muted-foreground">Become investment-ready</p>
           </div>
         </div>
       </div>
 
-      {/* Scrollable content with bottom safe area */}
+      {/* Scrollable content */}
       <div 
         className="flex-1 overflow-y-auto p-4 space-y-6 max-w-lg mx-auto w-full"
         style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom, 24px))' }}
       >
-        {/* Already Pro */}
+        {/* Already Pro / In Trial */}
         {isProUser && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <Card className="p-6 bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-amber-500/30">
+            <Card className={`p-6 ${planType === 'trial' 
+              ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500/30' 
+              : 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-amber-500/30'}`}
+            >
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                  <Crown className="w-6 h-6 text-white" />
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                  planType === 'trial' 
+                    ? 'bg-gradient-to-br from-purple-400 to-pink-500' 
+                    : 'bg-gradient-to-br from-amber-400 to-orange-500'
+                }`}>
+                  {planType === 'trial' ? <Gift className="w-6 h-6 text-white" /> : <Crown className="w-6 h-6 text-white" />}
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-amber-400">You're a Pro!</h2>
+                  <h2 className="text-xl font-bold text-amber-400">
+                    {planType === 'trial' ? `Trial: ${trialStatus.daysRemaining} days left` : "You're a Pro!"}
+                  </h2>
                   <p className="text-sm text-muted-foreground">
                     {expirationDate 
-                      ? `${renewStatus ? 'Renews' : 'Expires'} ${expirationDate.toLocaleDateString()}`
-                      : 'Lifetime access'
+                      ? `${planType === 'trial' ? 'Ends' : (renewStatus ? 'Renews' : 'Expires')} ${expirationDate.toLocaleDateString()}`
+                      : 'Full access activated'
                     }
                   </p>
                 </div>
               </div>
-              <p className="text-foreground/80 mb-4">
-                Thank you for supporting MarketLingo! You have full access to all Pro features.
-              </p>
               
-              {/* Manage Subscription Button */}
-              {isNative && expirationDate && (
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={handleManageSubscription}
-                >
-                  <Settings className="w-4 h-4 mr-2" />
-                  Manage Subscription
-                </Button>
+              {planType === 'trial' && (
+                <div className="space-y-3">
+                  <p className="text-foreground/80">
+                    Enjoying Pro features? Subscribe now to keep access after your trial ends.
+                  </p>
+                  <div className="flex gap-2">
+                    <Button 
+                      className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500"
+                      onClick={handlePurchase}
+                    >
+                      <Crown className="w-4 h-4 mr-2" />
+                      Subscribe - {getPriceDisplay('annual')}/year
+                    </Button>
+                  </div>
+                </div>
+              )}
+              
+              {planType !== 'trial' && (
+                <>
+                  <p className="text-foreground/80 mb-4">
+                    Thank you for supporting MarketLingo! You have full access to all Pro features.
+                  </p>
+                  {isNative && expirationDate && (
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={handleManageSubscription}
+                    >
+                      <Settings className="w-4 h-4 mr-2" />
+                      Manage Subscription
+                    </Button>
+                  )}
+                </>
               )}
             </Card>
           </motion.div>
         )}
 
-        {/* Hero Section */}
+        {/* Not Pro - Show Upgrade Options */}
         {!isProUser && (
           <>
+            {/* Hero Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center py-6"
+              className="text-center py-4"
             >
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-amber-500/30">
                 <Crown className="w-10 h-10 text-white" />
               </div>
               <h2 className="text-2xl font-bold mb-2">Become Investment-Ready</h2>
               <p className="text-muted-foreground">
-                Master industries like a professional with advanced training
+                Master industries like a VC in 6 months
               </p>
             </motion.div>
 
-            {/* Pricing Cards - 3 Options */}
+            {/* Trial CTA - Most Prominent */}
+            {canStartTrial && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 }}
+              >
+                <Card className="p-5 bg-gradient-to-br from-purple-500/20 via-pink-500/10 to-orange-500/20 border-purple-500/40 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-400/20 to-transparent rounded-full blur-2xl" />
+                  
+                  <div className="relative">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Gift className="w-5 h-5 text-purple-400" />
+                      <span className="text-sm font-medium text-purple-400">Limited Time</span>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold mb-2">Try Pro Free for {TRIAL_DURATION_DAYS} Days</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Full access to all Pro features. No credit card required. Cancel anytime.
+                    </p>
+                    
+                    <Button 
+                      className="w-full h-12 text-base font-semibold bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg"
+                      onClick={handleStartTrial}
+                    >
+                      <Sparkles className="w-5 h-5 mr-2" />
+                      Start Free Trial
+                    </Button>
+                    
+                    <p className="text-xs text-center text-muted-foreground mt-3">
+                      Then {getPriceDisplay('annual')}/year or {getPriceDisplay('monthly')}/month
+                    </p>
+                  </div>
+                </Card>
+              </motion.div>
+            )}
+
+            {/* Divider */}
+            {canStartTrial && (
+              <div className="flex items-center gap-4 py-2">
+                <div className="flex-1 h-px bg-border" />
+                <span className="text-xs text-muted-foreground">or subscribe now</span>
+                <div className="flex-1 h-px bg-border" />
+              </div>
+            )}
+
+            {/* Pricing Cards */}
             <div className="space-y-3">
               {/* Annual - Best Value */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
+                transition={{ delay: 0.15 }}
                 className="relative"
               >
                 <Badge className="absolute -top-2 left-4 z-10 bg-green-500 text-white text-xs px-2 py-0.5">
-                  Most Popular - Save 33%
+                  Save 33% - Best Value
                 </Badge>
                 <Card 
                   className={`p-4 cursor-pointer transition-all ${
@@ -243,7 +376,7 @@ export default function Subscription() {
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.15 }}
+                transition={{ delay: 0.2 }}
               >
                 <Card 
                   className={`p-4 cursor-pointer transition-all ${
@@ -278,7 +411,7 @@ export default function Subscription() {
               ) : (
                 <Crown className="w-5 h-5 mr-2" />
               )}
-              {isPurchasing ? 'Processing...' : 'Subscribe Now'}
+              {isPurchasing ? 'Processing...' : `Subscribe - ${getPriceDisplay(selectedPlan)}${selectedPlan === 'monthly' ? '/mo' : '/yr'}`}
             </Button>
 
             {/* Restore */}
@@ -288,9 +421,7 @@ export default function Subscription() {
               onClick={handleRestore}
               disabled={isRestoring}
             >
-              {isRestoring ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : null}
+              {isRestoring && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Restore Purchases
             </Button>
           </>
@@ -300,7 +431,7 @@ export default function Subscription() {
         <div className="space-y-3 pt-4">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-amber-400" />
-            Pro Features
+            What's Included in Pro
           </h3>
           
           {PRO_FEATURES.map((feature, index) => (
@@ -308,22 +439,63 @@ export default function Subscription() {
               key={feature.title}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 + index * 0.05 }}
+              transition={{ delay: 0.25 + index * 0.05 }}
             >
               <Card className="p-4 flex items-start gap-4">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <feature.icon className="w-5 h-5 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h4 className="font-medium">{feature.title}</h4>
-                    <Check className="w-4 h-4 text-green-500" />
+                    {feature.highlight && (
+                      <Badge variant="secondary" className="text-xs">{feature.highlight}</Badge>
+                    )}
                   </div>
                   <p className="text-sm text-muted-foreground">{feature.description}</p>
                 </div>
+                <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-1" />
               </Card>
             </motion.div>
           ))}
+        </div>
+
+        {/* Testimonials */}
+        <div className="space-y-3 pt-4">
+          <button 
+            onClick={() => setShowTestimonials(!showTestimonials)}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Star className="w-4 h-4 text-amber-400" />
+            What Pro members say
+            <motion.span
+              animate={{ rotate: showTestimonials ? 180 : 0 }}
+              className="ml-1"
+            >
+              ▼
+            </motion.span>
+          </button>
+          
+          <AnimatePresence>
+            {showTestimonials && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="space-y-3 overflow-hidden"
+              >
+                {TESTIMONIALS.map((testimonial, index) => (
+                  <Card key={index} className="p-4 bg-bg-2/50">
+                    <p className="text-sm italic mb-2">"{testimonial.quote}"</p>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>{testimonial.avatar}</span>
+                      <span>{testimonial.author}</span>
+                    </div>
+                  </Card>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Legal */}
