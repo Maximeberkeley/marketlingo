@@ -94,7 +94,7 @@ export default function AuthPage() {
     }
   };
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-bg-0 to-bg-1">
+    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-bg-0 to-bg-1 state-container">
         <Loader2 className="animate-spin text-primary" size={32} />
       </div>;
   }
