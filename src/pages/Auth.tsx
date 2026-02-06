@@ -66,7 +66,7 @@ export default function AuthPage() {
     setIsSubmitting(true);
     try {
       if (mode === "email-signup") {
-        const { error, data } = await signUp(email, password);
+        const { error } = await signUp(email, password);
         if (error) {
           if (error.message.includes("already registered")) {
             toast.error("This email is already registered. Please sign in instead.");
@@ -75,21 +75,18 @@ export default function AuthPage() {
           }
         } else {
           toast.success("Account created! Redirecting...");
-          // New user always goes to market selection
-          navigate("/select-market");
+          // useEffect will catch user state change and route appropriately
         }
       } else {
-        const { error, data } = await signIn(email, password);
+        const { error } = await signIn(email, password);
         if (error) {
           if (error.message.includes("Invalid login credentials")) {
             toast.error("Invalid email or password. Please try again.");
           } else {
             toast.error(error.message);
           }
-        } else if (data?.user) {
-          // Existing user - route based on their profile state
-          await routeToCorrectScreen(data.user.id);
         }
+        // useEffect will catch user state change and route appropriately
       }
     } finally {
       setIsSubmitting(false);
