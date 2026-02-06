@@ -184,7 +184,7 @@ export default function NotebookPage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center state-container">
           <Loader2 className="w-8 h-8 animate-spin text-accent" />
         </div>
       </AppLayout>
