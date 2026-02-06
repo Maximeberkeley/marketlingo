@@ -353,49 +353,56 @@ export default function NotebookPage() {
         )}
       </div>
 
-      {/* Add Note Modal - keyboard-aware positioning (top-aligned, not bottom sheet) */}
+      {/* Add Note Modal - bottom sheet style with keyboard awareness */}
       <AnimatePresence>
         {showAddNote && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/60 flex items-start justify-center overflow-y-auto"
-            style={{ paddingTop: 'max(60px, env(safe-area-inset-top, 60px))' }}
+            className="fixed inset-0 z-50 bg-black/60 flex items-end justify-center"
             onClick={() => setShowAddNote(false)}
           >
             <motion.div
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -20, opacity: 0 }}
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-[calc(100%-32px)] max-w-lg bg-bg-1 rounded-2xl p-5 mb-8 mx-4"
+              className="w-full bg-bg-1 rounded-t-[24px] modal-bottom-safe"
             >
-              <h2 className="text-h2 text-text-primary mb-4">New Note</h2>
+              {/* Handle bar */}
+              <div className="flex justify-center pt-3 pb-2">
+                <div className="w-10 h-1 rounded-full bg-text-muted/30" />
+              </div>
               
-              <textarea
-                value={newNoteContent}
-                onChange={(e) => setNewNoteContent(e.target.value)}
-                placeholder="What insight do you want to remember?"
-                className="w-full h-32 p-4 bg-bg-2 border border-border rounded-xl text-body text-text-primary placeholder:text-text-muted resize-none focus:outline-none focus:border-accent"
-                autoFocus
-              />
-              
-              <div className="flex gap-3 mt-4">
-                <button
-                  onClick={() => setShowAddNote(false)}
-                  className="flex-1 py-3 rounded-xl bg-bg-2 border border-border text-caption text-text-secondary"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleAddNote}
-                  disabled={!newNoteContent.trim()}
-                  className="flex-1 py-3 rounded-xl bg-accent text-white text-caption font-medium disabled:opacity-50"
-                >
-                  Save Note
-                </button>
+              <div className="px-5 pb-4">
+                <h2 className="text-h2 text-text-primary mb-4">New Note</h2>
+                
+                <textarea
+                  value={newNoteContent}
+                  onChange={(e) => setNewNoteContent(e.target.value)}
+                  placeholder="What insight do you want to remember?"
+                  className="w-full h-32 p-4 bg-bg-2 border border-border rounded-xl text-body text-text-primary placeholder:text-text-muted resize-none focus:outline-none focus:border-accent"
+                  autoFocus
+                  onFocus={(e) => scrollInputIntoView(e.target, 200)}
+                />
+                
+                <div className="flex gap-3 mt-4">
+                  <button
+                    onClick={() => setShowAddNote(false)}
+                    className="flex-1 py-3 rounded-xl bg-bg-2 border border-border text-caption text-text-secondary"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleAddNote}
+                    disabled={!newNoteContent.trim()}
+                    className="flex-1 py-3 rounded-xl bg-accent text-white text-caption font-medium disabled:opacity-50"
+                  >
+                    Save Note
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
