@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { LeoCharacter, LeoAnim } from "@/components/mascot/LeoStateMachine";
+import { scrollInputIntoView } from "@/hooks/useKeyboardAware";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
@@ -93,7 +94,7 @@ export default function AuthPage() {
     }
   };
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-bg-0 to-bg-1">
+    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-bg-0 to-bg-1 state-container">
         <Loader2 className="animate-spin text-primary" size={32} />
       </div>;
   }
@@ -217,16 +218,33 @@ export default function AuthPage() {
               {mode === "email-login" ? "Sign in to continue your journey" : "Start your 6-month market mastery"}
             </p>
 
-            {/* Form */}
+            {/* Form - inputs scroll into view on focus for keyboard */}
             <form onSubmit={handleEmailAuth} className="space-y-4">
               <div>
                 <label className="text-caption text-text-muted block mb-2">Email</label>
-                <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" className="bg-bg-1 border-border text-text-primary placeholder:text-text-muted" required />
+                <Input 
+                  type="email" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)} 
+                  placeholder="you@example.com" 
+                  className="bg-bg-1 border-border text-text-primary placeholder:text-text-muted" 
+                  required 
+                  onFocus={(e) => scrollInputIntoView(e.target)}
+                />
               </div>
 
               <div>
                 <label className="text-caption text-text-muted block mb-2">Password</label>
-                <Input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="bg-bg-1 border-border text-text-primary placeholder:text-text-muted" required minLength={6} />
+                <Input 
+                  type="password" 
+                  value={password} 
+                  onChange={e => setPassword(e.target.value)} 
+                  placeholder="••••••••" 
+                  className="bg-bg-1 border-border text-text-primary placeholder:text-text-muted" 
+                  required 
+                  minLength={6}
+                  onFocus={(e) => scrollInputIntoView(e.target)}
+                />
               </div>
 
               <Button type="submit" size="full" disabled={isSubmitting}>

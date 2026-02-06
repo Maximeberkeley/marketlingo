@@ -218,7 +218,7 @@
   
   /* Screen Padding */
   .screen-padding {
-    @apply px-4;
+    @apply px-5;
   }
   
   /* Top safe area - ONLY use on outermost containers, not nested */
@@ -226,12 +226,23 @@
     padding-top: max(12px, env(safe-area-inset-top, 12px));
   }
 
-  /* Landscape-aware top safe area */
+  /* Landscape-aware safe areas - handles notch/Dynamic Island on left/right */
   @media (orientation: landscape) {
     .pt-safe {
+      /* Reduce top padding in landscape since notch moves to side */
       padding-top: max(8px, env(safe-area-inset-top, 8px));
+    }
+    
+    /* Add left/right safe areas for notched devices in landscape */
+    .landscape-safe {
       padding-left: max(12px, env(safe-area-inset-left, 12px));
       padding-right: max(12px, env(safe-area-inset-right, 12px));
+    }
+    
+    /* Auto-apply landscape safety to screen-padding in landscape */
+    .screen-padding {
+      padding-left: max(20px, calc(env(safe-area-inset-left, 0px) + 12px));
+      padding-right: max(20px, calc(env(safe-area-inset-right, 0px) + 12px));
     }
   }
   
@@ -250,22 +261,21 @@
     padding-bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 16px));
   }
   
-  /* Content spacer for pages with sticky bottom elements */
+  /* Content spacer for pages with sticky bottom elements - generous space */
   .sticky-bottom-spacer {
-    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
-  }
-  
-  /* Keyboard-aware container - use on form containers */
-  .keyboard-aware {
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
+    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
   }
   
   /* Prevent double safe area when using SafeAreaView wrapper */
   .no-safe-padding {
     padding-top: 0 !important;
     padding-bottom: 0 !important;
+  }
+  
+  /* Loading/error state container - inherits safe areas properly */
+  .state-container {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
   
   /* Streak Flame */

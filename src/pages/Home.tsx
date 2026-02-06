@@ -301,7 +301,8 @@ export default function HomePage() {
   if (loading || authLoading) {
     return (
       <AppLayout>
-        <div className="min-h-screen flex items-center justify-center">
+        {/* Loading state within AppLayout inherits safe areas */}
+        <div className="min-h-screen flex items-center justify-center state-container">
           <Loader2 className="w-8 h-8 animate-spin text-accent" />
         </div>
       </AppLayout>
