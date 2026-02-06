@@ -12,6 +12,21 @@ export const XP_REWARDS = {
   STREAK_BONUS: 15, // per day of streak
 } as const;
 
+// Send milestone notification for level ups and streaks
+async function sendMilestoneNotification(
+  userId: string,
+  milestoneType: 'streak' | 'level' | 'achievement' | 'certificate' | 'week_complete',
+  milestoneData?: Record<string, any>
+) {
+  try {
+    await supabase.functions.invoke('send-milestone-notification', {
+      body: { userId, milestoneType, milestoneData },
+    });
+  } catch (error) {
+    console.error('Failed to send milestone notification:', error);
+  }
+}
+
 // Startup stage names
 export const STARTUP_STAGES = [
   { stage: 1, name: "Ideation", description: "Exploring your market thesis", xpRequired: 0 },
@@ -139,6 +154,17 @@ export function useUserXP(marketId?: string) {
       .single();
 
     if (!error && updatedXP) {
+      // Check if user leveled up
+      const previousLevel = xpData.current_level;
+      const newLevel = updatedXP.current_level;
+      
+      if (newLevel > previousLevel) {
+        // Send level-up notification
+        sendMilestoneNotification(user.id, 'level', {
+          levelNumber: newLevel,
+        });
+      }
+      
       setXpData(updatedXP);
     }
 
