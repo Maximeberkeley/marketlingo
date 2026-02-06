@@ -40,10 +40,24 @@
         --sab: env(safe-area-inset-bottom);
         --sal: env(safe-area-inset-left);
       }
+      /* Prevent overscroll white bands - force dark background everywhere */
+      html, body, #root {
+        background-color: #0B1020 !important;
+        overscroll-behavior: none;
+        overscroll-behavior-y: none;
+      }
+      /* iOS-specific overscroll prevention */
+      @supports (-webkit-touch-callout: none) {
+        html, body {
+          height: 100%;
+          overflow: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+      }
     </style>
   </head>
 
-  <body style="background-color: #0B1020; margin: 0; padding: 0;">
+  <body style="background-color: #0B1020; margin: 0; padding: 0; overscroll-behavior: none;">
     <div id="root" style="background-color: #0B1020; min-height: 100vh; min-height: 100dvh;"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

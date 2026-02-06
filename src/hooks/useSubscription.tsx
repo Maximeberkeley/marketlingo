@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
+import { useAuth } from './useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 // Subscription hook with 7-day free trial support
-// For production, connect to native StoreKit via Capacitor plugin
+// Pro status is now stored in the database per-user
 
 export const PRODUCT_IDS = {
   MONTHLY: 'MarketLingo.pro.monthly',
@@ -30,50 +32,17 @@ interface SubscriptionInfo {
   planType: 'monthly' | 'annual' | 'trial' | null;
 }
 
-const TRIAL_STORAGE_KEY = 'marketlingo_trial';
-const PRO_STORAGE_KEY = 'marketlingo_pro';
-
-function getTrialStatus(): TrialStatus {
-  try {
-    const stored = localStorage.getItem(TRIAL_STORAGE_KEY);
-    if (!stored) {
-      return {
-        isInTrial: false,
-        trialStartDate: null,
-        trialEndDate: null,
-        daysRemaining: 0,
-        hasUsedTrial: false,
-      };
-    }
-    
-    const data = JSON.parse(stored);
-    const endDate = new Date(data.trialEndDate);
-    const now = new Date();
-    const daysRemaining = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
-    const isInTrial = daysRemaining > 0;
-    
-    return {
-      isInTrial,
-      trialStartDate: data.trialStartDate,
-      trialEndDate: data.trialEndDate,
-      daysRemaining,
-      hasUsedTrial: true,
-    };
-  } catch {
-    return {
-      isInTrial: false,
-      trialStartDate: null,
-      trialEndDate: null,
-      daysRemaining: 0,
-      hasUsedTrial: false,
-    };
-  }
-}
-
 export function useSubscription() {
+  const { user } = useAuth();
   const [isProUser, setIsProUser] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [trialStatus, setTrialStatus] = useState<TrialStatus>(getTrialStatus);
+  const [trialStatus, setTrialStatus] = useState<TrialStatus>({
+    isInTrial: false,
+    trialStartDate: null,
+    trialEndDate: null,
+    daysRemaining: 0,
+    hasUsedTrial: false,
+  });
   const [planType, setPlanType] = useState<'monthly' | 'annual' | 'trial' | null>(null);
 
   let isNative = false;
@@ -83,101 +52,190 @@ export function useSubscription() {
     console.warn('Capacitor not available:', error);
   }
 
-  // Initialize - check localStorage for pro status and trial
-  useEffect(() => {
+  // Fetch subscription status from database
+  const fetchSubscriptionStatus = useCallback(async () => {
+    if (!user) {
+      setIsProUser(false);
+      setTrialStatus({
+        isInTrial: false,
+        trialStartDate: null,
+        trialEndDate: null,
+        daysRemaining: 0,
+        hasUsedTrial: false,
+      });
+      setPlanType(null);
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const proStatus = localStorage.getItem(PRO_STORAGE_KEY);
-      const trial = getTrialStatus();
-      setTrialStatus(trial);
-      
-      if (proStatus === 'true') {
-        setIsProUser(true);
-        // Check if it's a paid plan or trial
-        const storedPlanType = localStorage.getItem('marketlingo_plan_type');
-        setPlanType(storedPlanType as any || 'monthly');
-      } else if (trial.isInTrial) {
-        setIsProUser(true);
-        setPlanType('trial');
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('is_pro_user, pro_plan_type, pro_trial_start_date, pro_trial_end_date')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching subscription status:', error);
+        setIsLoading(false);
+        return;
+      }
+
+      if (profile) {
+        // Check if trial is still active
+        let effectiveIsProUser = profile.is_pro_user;
+        let effectivePlanType = profile.pro_plan_type as 'monthly' | 'annual' | 'trial' | null;
+        let trialDaysRemaining = 0;
+        let isInTrial = false;
+
+        if (profile.pro_trial_end_date) {
+          const endDate = new Date(profile.pro_trial_end_date);
+          const now = new Date();
+          trialDaysRemaining = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+          isInTrial = trialDaysRemaining > 0 && effectivePlanType === 'trial';
+          
+          // If trial expired, update status
+          if (effectivePlanType === 'trial' && trialDaysRemaining <= 0) {
+            effectiveIsProUser = false;
+            effectivePlanType = null;
+            // Update database to reflect expired trial
+            await supabase
+              .from('profiles')
+              .update({ is_pro_user: false, pro_plan_type: null })
+              .eq('id', user.id);
+          }
+        }
+
+        setIsProUser(effectiveIsProUser);
+        setPlanType(effectivePlanType);
+        setTrialStatus({
+          isInTrial,
+          trialStartDate: profile.pro_trial_start_date,
+          trialEndDate: profile.pro_trial_end_date,
+          daysRemaining: trialDaysRemaining,
+          hasUsedTrial: !!profile.pro_trial_start_date,
+        });
       }
     } catch (error) {
-      console.warn('Error reading subscription status:', error);
+      console.error('Error in fetchSubscriptionStatus:', error);
     }
+    
     setIsLoading(false);
-  }, []);
+  }, [user]);
+
+  // Fetch on mount and when user changes
+  useEffect(() => {
+    fetchSubscriptionStatus();
+  }, [fetchSubscriptionStatus]);
 
   // Check if user can start a trial
   const canStartTrial = useCallback(() => {
     return !trialStatus.hasUsedTrial && !isProUser;
   }, [trialStatus.hasUsedTrial, isProUser]);
 
-  // Start 7-day free trial
-  const startFreeTrial = useCallback(() => {
-    if (!canStartTrial()) return false;
+  // Start 7-day free trial (saves to database)
+  const startFreeTrial = useCallback(async () => {
+    if (!user || !canStartTrial()) return false;
     
     const now = new Date();
     const endDate = new Date(now.getTime() + TRIAL_DURATION_DAYS * 24 * 60 * 60 * 1000);
     
-    const trialData = {
-      trialStartDate: now.toISOString(),
-      trialEndDate: endDate.toISOString(),
-    };
-    
-    localStorage.setItem(TRIAL_STORAGE_KEY, JSON.stringify(trialData));
-    localStorage.setItem(PRO_STORAGE_KEY, 'true');
-    localStorage.setItem('marketlingo_plan_type', 'trial');
-    
-    setTrialStatus({
-      isInTrial: true,
-      trialStartDate: trialData.trialStartDate,
-      trialEndDate: trialData.trialEndDate,
-      daysRemaining: TRIAL_DURATION_DAYS,
-      hasUsedTrial: true,
-    });
-    setIsProUser(true);
-    setPlanType('trial');
-    
-    return true;
-  }, [canStartTrial]);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          is_pro_user: true,
+          pro_plan_type: 'trial',
+          pro_trial_start_date: now.toISOString(),
+          pro_trial_end_date: endDate.toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Error starting trial:', error);
+        return false;
+      }
+
+      setTrialStatus({
+        isInTrial: true,
+        trialStartDate: now.toISOString(),
+        trialEndDate: endDate.toISOString(),
+        daysRemaining: TRIAL_DURATION_DAYS,
+        hasUsedTrial: true,
+      });
+      setIsProUser(true);
+      setPlanType('trial');
+      
+      return true;
+    } catch (error) {
+      console.error('Error starting trial:', error);
+      return false;
+    }
+  }, [user, canStartTrial]);
 
   // Toggle pro status (for testing/development)
-  const toggleProForTesting = useCallback(() => {
-    const current = localStorage.getItem(PRO_STORAGE_KEY);
-    const newValue = current === 'true' ? 'false' : 'true';
-    localStorage.setItem(PRO_STORAGE_KEY, newValue);
-    setIsProUser(newValue === 'true');
-    if (newValue === 'true') {
-      setPlanType('monthly');
-      localStorage.setItem('marketlingo_plan_type', 'monthly');
-    } else {
-      setPlanType(null);
-      localStorage.removeItem('marketlingo_plan_type');
-    }
-  }, []);
+  const toggleProForTesting = useCallback(async () => {
+    if (!user) return;
+    
+    const newValue = !isProUser;
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          is_pro_user: newValue,
+          pro_plan_type: newValue ? 'monthly' : null,
+        })
+        .eq('id', user.id);
 
-  // Purchase package
+      if (error) {
+        console.error('Error toggling pro status:', error);
+        return;
+      }
+
+      setIsProUser(newValue);
+      setPlanType(newValue ? 'monthly' : null);
+    } catch (error) {
+      console.error('Error toggling pro status:', error);
+    }
+  }, [user, isProUser]);
+
+  // Purchase package (saves to database)
   const purchasePackage = useCallback(async (pkg: any) => {
+    if (!user) return { success: false, cancelled: false, error: 'Not logged in' };
+    
     const type = pkg.identifier as 'monthly' | 'annual';
     
-    localStorage.setItem(PRO_STORAGE_KEY, 'true');
-    localStorage.setItem('marketlingo_plan_type', type);
-    
-    // If converting from trial, clear trial status
-    if (trialStatus.isInTrial) {
-      const trialData = JSON.parse(localStorage.getItem(TRIAL_STORAGE_KEY) || '{}');
-      trialData.convertedToPaid = true;
-      localStorage.setItem(TRIAL_STORAGE_KEY, JSON.stringify(trialData));
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          is_pro_user: true,
+          pro_plan_type: type,
+          pro_subscription_date: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Error purchasing package:', error);
+        return { success: false, cancelled: false, error: error.message };
+      }
+
+      setIsProUser(true);
+      setPlanType(type);
+      
+      return { success: true, cancelled: false, error: null };
+    } catch (error) {
+      console.error('Error purchasing package:', error);
+      return { success: false, cancelled: false, error: 'Purchase failed' };
     }
-    
-    setIsProUser(true);
-    setPlanType(type);
-    
-    return { success: true, cancelled: false, error: null };
-  }, [trialStatus.isInTrial]);
+  }, [user]);
 
   const restorePurchases = useCallback(async () => {
-    const hasProAccess = localStorage.getItem(PRO_STORAGE_KEY) === 'true';
-    return { success: true, restored: hasProAccess, error: null };
-  }, []);
+    // Re-fetch from database
+    await fetchSubscriptionStatus();
+    return { success: true, restored: isProUser, error: null };
+  }, [fetchSubscriptionStatus, isProUser]);
 
   const getExpirationDate = useCallback(() => {
     if (trialStatus.isInTrial && trialStatus.trialEndDate) {
@@ -208,11 +266,20 @@ export function useSubscription() {
   }, []);
 
   const loginUser = useCallback(async (_userId: string) => {
-    // Placeholder for user login sync
-  }, []);
+    // Refresh subscription status when user logs in
+    await fetchSubscriptionStatus();
+  }, [fetchSubscriptionStatus]);
 
   const logoutUser = useCallback(async () => {
-    // Placeholder for user logout sync
+    setIsProUser(false);
+    setPlanType(null);
+    setTrialStatus({
+      isInTrial: false,
+      trialStartDate: null,
+      trialEndDate: null,
+      daysRemaining: 0,
+      hasUsedTrial: false,
+    });
   }, []);
 
   // Get subscription info summary
@@ -248,5 +315,7 @@ export function useSubscription() {
     startFreeTrial,
     planType,
     getSubscriptionInfo,
+    // Refresh function
+    refreshStatus: fetchSubscriptionStatus,
   };
 }
