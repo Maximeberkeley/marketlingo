@@ -173,7 +173,7 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.25 + i * 0.05 }}
-                    className="flex items-center gap-2 p-2 rounded-lg bg-bg-2/50"
+                    className="flex items-center gap-2 p-2 rounded-lg bg-secondary/50"
                   >
                     <benefit.icon className="w-4 h-4 text-accent flex-shrink-0" />
                     <span className="text-xs text-text-secondary">{benefit.text}</span>
