@@ -353,7 +353,7 @@ export default function NotebookPage() {
         )}
       </div>
 
-      {/* Add Note Modal - bottom sheet style with keyboard awareness */}
+      {/* Add Note Modal - bottom sheet style with keyboard awareness + home indicator safety */}
       <AnimatePresence>
         {showAddNote && (
           <motion.div
@@ -369,14 +369,22 @@ export default function NotebookPage() {
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full bg-bg-1 rounded-t-[24px] modal-bottom-safe"
+              className="w-full bg-bg-1 rounded-t-[24px] max-h-[85vh] overflow-hidden flex flex-col"
+              style={{
+                // Always respect home indicator, even when keyboard is closed
+                paddingBottom: 'max(24px, calc(env(safe-area-inset-bottom, 0px) + 16px))',
+              }}
             >
-              {/* Handle bar */}
-              <div className="flex justify-center pt-3 pb-2">
+              {/* Handle bar - for interactive dismissal hint */}
+              <div className="flex justify-center pt-3 pb-2 flex-shrink-0">
                 <div className="w-10 h-1 rounded-full bg-text-muted/30" />
               </div>
               
-              <div className="px-5 pb-4">
+              {/* Scrollable content area with overscroll containment */}
+              <div 
+                className="px-5 pb-4 overflow-y-auto flex-1"
+                style={{ overscrollBehavior: 'contain' }}
+              >
                 <h2 className="text-h2 text-text-primary mb-4">New Note</h2>
                 
                 <textarea
