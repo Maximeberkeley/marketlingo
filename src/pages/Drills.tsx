@@ -433,8 +433,8 @@ export default function DrillsPage() {
         </div>
       </div>
 
-      {/* Question */}
-      <div className="flex-1 screen-padding py-6 flex flex-col">
+      {/* Question - with bottom safe area for scroll content */}
+      <div className="flex-1 screen-padding py-6 flex flex-col overflow-y-auto modal-bottom-safe">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestion}
