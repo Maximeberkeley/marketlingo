@@ -111,6 +111,11 @@ export function useAchievements(progress?: AchievementProgress) {
 
         if (!error) {
           newlyUnlocked.push(achievement);
+          
+          // Send push notification for the achievement
+          sendMilestoneNotification(user.id, 'achievement', {
+            achievementName: achievement.title,
+          });
         }
       }
     }
