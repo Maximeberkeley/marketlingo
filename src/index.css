@@ -97,26 +97,40 @@
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
     overflow-y: auto;
-    /* Prevent iOS overscroll white band */
-    background: #0B1020;
-    background: hsl(var(--bg-0));
-    /* iOS bounce/overscroll prevention */
+    /* Prevent iOS overscroll white band - use exact hex */
+    background-color: #0B1020 !important;
+    /* iOS bounce/overscroll prevention - complete lockdown */
     overscroll-behavior: none;
+    overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
+    /* Ensure no white flash during scroll bounce */
+    height: 100%;
   }
 
   body {
     @apply bg-background text-foreground;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Segoe UI', sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-    background: hsl(var(--bg-0));
+    /* Force dark background everywhere */
+    background-color: #0B1020 !important;
     min-height: 100vh;
-    min-height: 100dvh; /* Use dynamic viewport height for iOS */
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
     overflow-x: hidden;
+    overflow-y: auto;
     position: relative;
     width: 100%;
-    /* iOS overscroll fix - match background color */
+    /* iOS overscroll fix - aggressive prevention */
+    overscroll-behavior: none;
     overscroll-behavior-y: none;
+  }
+  
+  /* Prevent white bands on #root */
+  #root {
+    background-color: #0B1020 !important;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
   
   /* Typography Scale - Strict adherence */

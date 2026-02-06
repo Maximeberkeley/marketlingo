@@ -76,16 +76,36 @@ export default function SelectFamiliarityPage() {
     // Fetch the selected market to show context
     const fetchMarket = async () => {
       if (!user) return;
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("selected_market")
-        .eq("id", user.id)
-        .single();
       
-      if (profile?.selected_market) {
+      try {
+        const { data: profile, error } = await supabase
+          .from("profiles")
+          .select("selected_market, familiarity_level")
+          .eq("id", user.id)
+          .single();
+        
+        if (error) {
+          console.error("Error fetching profile:", error);
+          // On error, redirect to market selection as safe default
+          navigate("/select-market");
+          return;
+        }
+        
+        // CRITICAL: If no market selected, redirect to market selection first
+        if (!profile?.selected_market) {
+          navigate("/select-market");
+          return;
+        }
+        
+        // If familiarity already set, go to home
+        if (profile?.familiarity_level) {
+          navigate("/home");
+          return;
+        }
+        
         setSelectedMarket(profile.selected_market);
-      } else {
-        // No market selected, go back to select-market
+      } catch (err) {
+        console.error("Error in fetchMarket:", err);
         navigate("/select-market");
       }
     };

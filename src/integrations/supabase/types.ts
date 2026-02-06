@@ -494,7 +494,12 @@ export type Database = {
           created_at: string
           familiarity_level: string | null
           id: string
+          is_pro_user: boolean
           notification_preferences: Json | null
+          pro_plan_type: string | null
+          pro_subscription_date: string | null
+          pro_trial_end_date: string | null
+          pro_trial_start_date: string | null
           push_token: string | null
           selected_market: string | null
           updated_at: string
@@ -505,7 +510,12 @@ export type Database = {
           created_at?: string
           familiarity_level?: string | null
           id: string
+          is_pro_user?: boolean
           notification_preferences?: Json | null
+          pro_plan_type?: string | null
+          pro_subscription_date?: string | null
+          pro_trial_end_date?: string | null
+          pro_trial_start_date?: string | null
           push_token?: string | null
           selected_market?: string | null
           updated_at?: string
@@ -516,7 +526,12 @@ export type Database = {
           created_at?: string
           familiarity_level?: string | null
           id?: string
+          is_pro_user?: boolean
           notification_preferences?: Json | null
+          pro_plan_type?: string | null
+          pro_subscription_date?: string | null
+          pro_trial_end_date?: string | null
+          pro_trial_start_date?: string | null
           push_token?: string | null
           selected_market?: string | null
           updated_at?: string
