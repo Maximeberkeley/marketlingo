@@ -385,7 +385,7 @@ export default function NotebookPage() {
                   placeholder="What insight do you want to remember?"
                   className="w-full h-32 p-4 bg-bg-2 border border-border rounded-xl text-body text-text-primary placeholder:text-text-muted resize-none focus:outline-none focus:border-accent"
                   autoFocus
-                  onFocus={(e) => scrollInputIntoView(e.target, 200)}
+                  onFocus={(e) => scrollInputIntoView(e.target, true)}
                 />
                 
                 <div className="flex gap-3 mt-4">
