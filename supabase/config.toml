@@ -52,3 +52,6 @@ verify_jwt = false
 
 [functions.fetch-market-news]
 verify_jwt = false
+
+[functions.bulk-generate]
+verify_jwt = false

@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      curriculum_generation_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          current_day: number | null
+          days_completed: number
+          days_failed: number
+          days_target: number
+          error_log: Json | null
+          id: string
+          market_id: string
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          current_day?: number | null
+          days_completed?: number
+          days_failed?: number
+          days_target?: number
+          error_log?: Json | null
+          id?: string
+          market_id: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          current_day?: number | null
+          days_completed?: number
+          days_failed?: number
+          days_target?: number
+          error_log?: Json | null
+          id?: string
+          market_id?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       daily_completions: {
         Row: {
           completed_stack_id: string | null
