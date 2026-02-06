@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Crown, Check, Sparkles, Zap, BookOpen, Trophy, Shield, Loader2, Infinity, Brain, Settings, Gift, Clock, TrendingUp, Target, Star, Rocket } from "lucide-react";
+import { ArrowLeft, Crown, Check, Sparkles, Zap, BookOpen, Trophy, Shield, Loader2, Infinity as InfinityIcon, Brain, Settings, Gift, Clock, TrendingUp, Target, Star, Rocket } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
