@@ -211,6 +211,33 @@ export default function GamesPage() {
     );
   }
 
+  // Check daily limit before showing intro
+  const gamesLimit = checkDailyLimit('games');
+
+  // Daily limit gate
+  if (!isProUser && showLimitGate) {
+    return (
+      <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden max-w-full">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
+        >
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+            <ArrowLeft size={24} className="text-text-secondary" />
+          </button>
+          <h1 className="text-h2 text-text-primary">Games</h1>
+        </motion.div>
+        <div className="flex-1 flex items-center justify-center screen-padding py-6">
+          <DailyLimitGate 
+            type="games" 
+            onContinue={() => setShowLimitGate(false)} 
+          />
+        </div>
+      </div>
+    );
+  }
+
   // Intro screen
   if (showIntro && questions.length > 0) {
     return (
@@ -224,6 +251,9 @@ export default function GamesPage() {
             <ArrowLeft size={24} className="text-text-secondary" />
           </button>
           <h1 className="text-h2 text-text-primary">Games</h1>
+          {!isProUser && (
+            <RemainingCount type="games" className="ml-auto" />
+          )}
         </motion.div>
 
         <div className="flex-1 flex items-center justify-center screen-padding py-6">
@@ -263,7 +293,7 @@ export default function GamesPage() {
                   "Track your score"
                 ].map((feature, i) => (
                   <li key={i} className="flex items-center gap-3 text-body text-text-secondary">
-                    <div className="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0" />
+                    <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
                     {feature}
                   </li>
                 ))}
@@ -272,9 +302,17 @@ export default function GamesPage() {
 
             {/* CTA */}
             <Button 
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-400 hover:opacity-90" 
+              className="w-full" 
               size="lg"
-              onClick={() => setShowIntro(false)}
+              onClick={() => {
+                // Check limit before starting
+                if (!gamesLimit.canAccess) {
+                  setShowLimitGate(true);
+                  return;
+                }
+                incrementUsage('games');
+                setShowIntro(false);
+              }}
             >
               Start Game
               <ChevronRight size={18} className="ml-2" />

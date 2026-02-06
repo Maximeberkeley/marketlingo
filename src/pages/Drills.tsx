@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { MentorCelebration } from "@/components/mascot/MentorCelebration";
+import { DailyLimitGate, RemainingCount } from "@/components/subscription/DailyLimitGate";
 import { mentors, Mentor } from "@/data/mentors";
 import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useContentAccess } from "@/hooks/useContentAccess";
 import { smartTruncate } from "@/lib/text-utils";
 
 interface DrillQuestion {
