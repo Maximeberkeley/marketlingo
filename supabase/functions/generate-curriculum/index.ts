@@ -1,164 +1,15 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { 
+  CURRICULUM_STRUCTURES, 
+  WEEK_PATTERN, 
+  getMarketContext,
+  type CurriculumStructure 
+} from '../_shared/curriculum-structures.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-// Multi-market curriculum structures
-const CURRICULUM_STRUCTURES: Record<string, { months: { month: number; theme: string; topics: string[] }[] }> = {
-  aerospace: {
-    months: [
-      {
-        month: 1,
-        theme: "Foundations",
-        topics: [
-          "Industry structure (OEMs, Tier 1-3 suppliers)",
-          "Certification process (FAA/EASA, DO-178C, DO-160)",
-          "Cost-plus vs fixed-price contracts",
-          "Dual-use technology and ITAR regulations",
-          "Supply chain dependencies and single-source risks",
-        ],
-      },
-      {
-        month: 2,
-        theme: "Commercial Aviation",
-        topics: [
-          "Airbus vs Boeing duopoly dynamics and market share battles",
-          "Narrow-body vs wide-body economics and fleet planning",
-          "MRO (Maintenance, Repair, Overhaul) market and aftermarket revenue",
-          "Airline fleet decisions and aircraft lifecycle management",
-          "Aircraft leasing companies (AerCap, SMBC, Avolon) and financing structures",
-        ],
-      },
-      {
-        month: 3,
-        theme: "Defense & Government",
-        topics: [
-          "Major defense primes (Lockheed Martin, RTX, Northrop Grumman, General Dynamics)",
-          "DoD procurement process and SBIR/STTR programs",
-          "ITAR compliance and export controls for startups",
-          "Classified programs and security clearance requirements",
-          "Allied interoperability and Five Eyes partnerships",
-        ],
-      },
-      {
-        month: 4,
-        theme: "Space Economy",
-        topics: [
-          "Launch economics and reusability (SpaceX, Rocket Lab, Blue Origin)",
-          "Satellite constellations (Starlink, OneWeb, Kuiper) and spectrum management",
-          "Space tourism and commercial space stations (Axiom, Vast)",
-          "NASA partnerships (Commercial Crew, Artemis) and cost-plus vs fixed-price",
-          "Orbital debris mitigation and space sustainability regulations",
-        ],
-      },
-      {
-        month: 5,
-        theme: "Emerging Technologies",
-        topics: [
-          "eVTOL development and urban air mobility certification challenges",
-          "Autonomous flight systems and Part 135/Part 91 operations",
-          "Sustainable aviation fuel (SAF) production and adoption curves",
-          "Hydrogen propulsion infrastructure and storage challenges",
-          "Advanced materials (carbon composites, titanium alloys, CMCs)",
-        ],
-      },
-      {
-        month: 6,
-        theme: "Business & Strategy",
-        topics: [
-          "Aerospace M&A patterns and valuation multiples",
-          "Startup survival strategies in long sales cycles",
-          "Talent acquisition and workforce development",
-          "Geopolitical supply chain risks (China rare earths, Russia titanium)",
-          "Venture capital and strategic investor dynamics",
-        ],
-      },
-    ],
-  },
-  neuroscience: {
-    months: [
-      {
-        month: 1,
-        theme: "Brain Science Foundations",
-        topics: [
-          "Neuroanatomy essentials (cortex, limbic system, brainstem)",
-          "Neurotransmitters and synaptic signaling (dopamine, serotonin, GABA)",
-          "Brain imaging technologies (fMRI, EEG, MEG, PET)",
-          "Neural plasticity and learning mechanisms",
-          "Blood-brain barrier and drug delivery challenges",
-        ],
-      },
-      {
-        month: 2,
-        theme: "Neurotechnology & Devices",
-        topics: [
-          "Brain-computer interfaces (Neuralink, Synchron, Blackrock Neurotech)",
-          "Non-invasive neurostimulation (TMS, tDCS, ultrasound)",
-          "Neuroprosthetics and sensory restoration",
-          "Wearable EEG and consumer neurotechnology",
-          "FDA regulatory pathways for neurodevices (510k, PMA, De Novo)",
-        ],
-      },
-      {
-        month: 3,
-        theme: "Mental Health Innovation",
-        topics: [
-          "Digital therapeutics for depression and anxiety (Pear, Akili)",
-          "Psychedelic-assisted therapy (psilocybin, MDMA, ketamine)",
-          "AI-powered mental health apps and chatbots",
-          "Precision psychiatry and biomarker development",
-          "Telepsychiatry platforms and reimbursement models",
-        ],
-      },
-      {
-        month: 4,
-        theme: "Neurological Disease & Therapeutics",
-        topics: [
-          "Alzheimer's disease drug development (Lecanemab, Donanemab)",
-          "Parkinson's and deep brain stimulation advances",
-          "Epilepsy management and responsive neurostimulation",
-          "Gene therapy for neurological conditions (Zolgensma, Luxturna)",
-          "ALS and rare disease orphan drug strategies",
-        ],
-      },
-      {
-        month: 5,
-        theme: "Cognitive Enhancement & AI",
-        topics: [
-          "Nootropics and cognitive enhancement supplements",
-          "AI for brain mapping and connectome analysis",
-          "Sleep optimization technology and circadian science",
-          "Neurofeedback training and peak performance",
-          "Memory enhancement and cognitive rehabilitation",
-        ],
-      },
-      {
-        month: 6,
-        theme: "Neuro Business & Ethics",
-        topics: [
-          "Neurotech startup fundraising and investor landscape",
-          "Clinical trial design for CNS therapeutics",
-          "Neuroethics: privacy, consent, and cognitive liberty",
-          "Healthcare system integration and payer negotiations",
-          "Building neurotech teams: scientists, engineers, clinicians",
-        ],
-      },
-    ],
-  },
-};
-
-// Day types pattern for each week (7 days)
-const WEEK_PATTERN = [
-  "DAILY_GAME",
-  "DAILY_GAME", 
-  "MICRO_LESSON",
-  "TRAINER",
-  "BOOK_SNAPSHOT",
-  "DAILY_GAME",
-  "MICRO_LESSON",
-];
 
 interface GenerateRequest {
   marketId?: string;
@@ -167,6 +18,7 @@ interface GenerateRequest {
   day?: number;
   dryRun?: boolean;
   generateSummaries?: boolean;
+  batchSize?: number; // For large generation jobs
 }
 
 Deno.serve(async (req) => {
@@ -206,7 +58,7 @@ Deno.serve(async (req) => {
     const userId = claimsData.claims.sub as string;
     console.log('Authenticated user for generate-curriculum:', userId);
 
-    // Check if user is admin (only admins can generate curriculum)
+    // Check if user is admin
     const supabase = createClient(supabaseUrl, supabaseKey);
     
     const { data: isAdmin } = await supabase.rpc('has_role', {
@@ -216,12 +68,20 @@ Deno.serve(async (req) => {
     
     if (!isAdmin) {
       return new Response(
-        JSON.stringify({ error: 'Forbidden - admin access required for this operation' }),
+        JSON.stringify({ error: 'Forbidden - admin access required' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const { marketId = 'aerospace', month, week, day, dryRun = false, generateSummaries = false } = await req.json() as GenerateRequest;
+    const { 
+      marketId = 'aerospace', 
+      month, 
+      week, 
+      day, 
+      dryRun = false, 
+      generateSummaries = false,
+      batchSize = 5 
+    } = await req.json() as GenerateRequest;
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -259,11 +119,29 @@ Deno.serve(async (req) => {
       const startDay = (month - 1) * 30 + 1;
       daysToGenerate = Array.from({ length: 30 }, (_, i) => startDay + i).filter(d => d <= 180);
     } else {
+      // Return status/structure info
+      const { data: existingContent } = await supabase
+        .from('stacks')
+        .select('tags')
+        .eq('market_id', marketId);
+      
+      const existingDays = new Set<number>();
+      existingContent?.forEach(stack => {
+        const dayTag = (stack.tags as string[])?.find(t => t.startsWith('day-'));
+        if (dayTag) existingDays.add(parseInt(dayTag.replace('day-', '')));
+      });
+
+      const missingDays = Array.from({ length: 180 }, (_, i) => i + 1)
+        .filter(d => !existingDays.has(d));
+
       return new Response(JSON.stringify({
         market: marketId,
         structure: CURRICULUM_STRUCTURE,
         weekPattern: WEEK_PATTERN,
         totalDays: 180,
+        existingDays: existingDays.size,
+        missingDays: missingDays.length,
+        missingDaysList: missingDays.slice(0, 50), // First 50 for display
         message: "Specify month (1-6), week (1-26), or day (1-180) to generate content",
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -279,9 +157,7 @@ Deno.serve(async (req) => {
     const existingDays = new Set<number>();
     existingStacks?.forEach(stack => {
       const dayTag = (stack.tags as string[])?.find(t => t.startsWith('day-'));
-      if (dayTag) {
-        existingDays.add(parseInt(dayTag.replace('day-', '')));
-      }
+      if (dayTag) existingDays.add(parseInt(dayTag.replace('day-', '')));
     });
 
     const newDays = daysToGenerate.filter(d => !existingDays.has(d));
@@ -293,6 +169,7 @@ Deno.serve(async (req) => {
         week: Math.ceil(d / 7),
         type: WEEK_PATTERN[(d - 1) % 7],
         theme: CURRICULUM_STRUCTURE.months[Math.ceil(d / 30) - 1]?.theme,
+        topic: getTopic(d, CURRICULUM_STRUCTURE),
       }));
       
       return new Response(JSON.stringify({
@@ -300,6 +177,7 @@ Deno.serve(async (req) => {
         daysToGenerate: newDays,
         existingDays: Array.from(existingDays).sort((a, b) => a - b),
         plan,
+        estimatedMinutes: Math.ceil(newDays.length * 1.5),
         message: `Would generate ${newDays.length} days of content for ${marketId}`,
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -311,45 +189,61 @@ Deno.serve(async (req) => {
       generated: [] as number[],
       skipped: [] as number[],
       errors: [] as { day: number; error: string }[],
+      startedAt: new Date().toISOString(),
     };
 
-    for (const dayNum of newDays) {
-      try {
-        const monthIndex = Math.ceil(dayNum / 30) - 1;
-        const monthInfo = CURRICULUM_STRUCTURE.months[monthIndex];
-        const dayType = WEEK_PATTERN[(dayNum - 1) % 7];
-        const topicIndex = Math.floor((dayNum - 1) % 30 / 6) % monthInfo.topics.length;
-        const topic = monthInfo.topics[topicIndex];
+    // Process in batches to avoid timeout
+    const batches = [];
+    for (let i = 0; i < newDays.length; i += batchSize) {
+      batches.push(newDays.slice(i, i + batchSize));
+    }
 
-        const content = await generateDayContent(
-          LOVABLE_API_KEY,
-          dayNum,
-          monthInfo.month,
-          monthInfo.theme,
-          topic,
-          dayType,
-          marketId
-        );
+    for (const batch of batches) {
+      const batchPromises = batch.map(async (dayNum) => {
+        try {
+          const monthIndex = Math.ceil(dayNum / 30) - 1;
+          const monthInfo = CURRICULUM_STRUCTURE.months[monthIndex];
+          const dayType = WEEK_PATTERN[(dayNum - 1) % 7];
+          const topic = getTopic(dayNum, CURRICULUM_STRUCTURE);
 
-        if (content) {
-          await saveContent(supabase, content, dayNum, monthInfo.month, dayType, marketId);
-          results.generated.push(dayNum);
+          const content = await generateDayContent(
+            LOVABLE_API_KEY,
+            dayNum,
+            monthInfo.month,
+            monthInfo.theme,
+            topic,
+            dayType,
+            marketId
+          );
+
+          if (content) {
+            await saveContent(supabase, content, dayNum, monthInfo.month, dayType, marketId);
+            results.generated.push(dayNum);
+          }
+        } catch (error) {
+          console.error(`Error generating day ${dayNum}:`, error);
+          results.errors.push({ 
+            day: dayNum, 
+            error: error instanceof Error ? error.message : 'Unknown error' 
+          });
         }
+      });
 
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-      } catch (error) {
-        console.error(`Error generating day ${dayNum}:`, error);
-        results.errors.push({ 
-          day: dayNum, 
-          error: error instanceof Error ? error.message : 'Unknown error' 
-        });
+      await Promise.all(batchPromises);
+      
+      // Small delay between batches
+      if (batches.indexOf(batch) < batches.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
 
     results.skipped = daysToGenerate.filter(d => existingDays.has(d));
 
-    return new Response(JSON.stringify(results), {
+    return new Response(JSON.stringify({
+      ...results,
+      completedAt: new Date().toISOString(),
+      summary: `Generated ${results.generated.length} days, skipped ${results.skipped.length}, ${results.errors.length} errors`,
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
@@ -362,6 +256,17 @@ Deno.serve(async (req) => {
   }
 });
 
+function getTopic(day: number, curriculum: CurriculumStructure): string {
+  const monthIndex = Math.ceil(day / 30) - 1;
+  const monthInfo = curriculum.months[monthIndex];
+  if (!monthInfo) return "Industry fundamentals";
+  
+  // Rotate through topics within the month
+  const dayInMonth = ((day - 1) % 30) + 1;
+  const topicIndex = Math.floor((dayInMonth - 1) / 6) % monthInfo.topics.length;
+  return monthInfo.topics[topicIndex];
+}
+
 async function generateDayContent(
   apiKey: string,
   day: number,
@@ -371,87 +276,98 @@ async function generateDayContent(
   dayType: string,
   marketId: string
 ) {
-  const marketContext = marketId === 'neuroscience' 
-    ? 'neuroscience, neurotech, mental health, and brain science' 
-    : 'aerospace, aviation, defense, and space';
+  const marketContext = getMarketContext(marketId);
 
+  // Enhanced prompts for professional depth
   const typePrompts: Record<string, string> = {
     DAILY_GAME: `Create a NEWS stack about a REAL, SPECIFIC, VERIFIABLE current event or development in ${marketContext} related to "${topic}".
       
-      CRITICAL REQUIREMENTS:
-      - Reference REAL companies, executives, clinical trials, and dollar amounts
-      - Include actual dates, trial phases, or announcement details
-      - Cite real sources (Nature Neuroscience, STAT News, Endpoints News, FDA announcements)
-      - Explain the strategic implications for the industry
-      - Include a "Startup Insight" on how founders can leverage this
+      CRITICAL REQUIREMENTS FOR INDUSTRY MASTERY:
+      - Reference REAL companies, executives, deals, and dollar amounts
+      - Include actual dates, announcement details, or market data
+      - Cite credible sources (industry publications, company filings, news outlets)
+      - Explain strategic implications that entrepreneurs and job seekers need to understand
+      - Include a "Startup Insight" or "Career Insight" for actionable takeaways
       
       Structure (6 slides, each body UNDER 280 characters):
-      1. What happened - specific event with real details (who, what, when, dollar amounts)
-      2. Why it matters - industry implications and market impact
-      3. Historical parallel - similar past events and what happened
+      1. What happened - specific event with real details (who, what, when, how much)
+      2. Why it matters - industry implications for founders and professionals
+      3. Historical parallel - similar past events and their outcomes
       4. Expert perspective - "Interpretation:" label required, strategic analysis
-      5. Startup opportunity - how founders can act on this trend
-      6. Reflection - thought-provoking question for deeper thinking`,
+      5. Opportunity signal - how entrepreneurs can act on this trend
+      6. Reflection - thought-provoking question for deeper industry understanding`,
     
     MICRO_LESSON: `Create a LESSON stack teaching a core concept about "${topic}" in ${marketContext}.
       
-      CRITICAL REQUIREMENTS:
-      - Teach like a Stanford professor explaining to a smart outsider
-      - Use REAL numbers, percentages, and timelines from industry
-      - Reference actual companies, clinical trials, and research as examples
-      - Include common startup mistakes specific to this topic
-      - End with actionable advice for founders
+      CRITICAL REQUIREMENTS FOR INDUSTRY MASTERY:
+      - Teach like an industry veteran explaining to a smart new hire
+      - Use REAL numbers, percentages, timelines, and benchmarks from the industry
+      - Reference actual companies, deals, and case studies as examples
+      - Include common mistakes that newcomers and job applicants make
+      - End with actionable advice for entrepreneurs or career seekers
+      
+      Target audience: New entrepreneurs entering this industry, professionals seeking to switch careers, and curious learners wanting deep understanding.
       
       Structure (6 slides, each body UNDER 280 characters):
       1. Core concept - explained clearly with a memorable mental model
-      2. How it works - the mechanism or process in practice
-      3. Real example - specific company/case with actual details
-      4. Common mistake - what newcomers get wrong and why
-      5. Edge cases - when the rules don't apply
-      6. Apply this - concrete next step for startup founders`,
+      2. How it works - the mechanism or process in practice with real examples
+      3. Real example - specific company/case with actual numbers and outcomes
+      4. Common mistake - what newcomers get wrong and why it matters
+      5. Edge cases - when the rules don't apply and expert nuances
+      6. Apply this - concrete next step for founders or job seekers`,
     
     TRAINER: `Create a decision-making SCENARIO about "${topic}" in ${marketContext}.
       
-      CRITICAL REQUIREMENTS:
-      - Base on REAL situations professionals in this field face
-      - Include realistic numbers, timelines, and trade-offs
-      - Make the correct answer subtle but clearly best upon analysis
-      - Provide expert-level reasoning in feedback
-      - Include a mental model that applies broadly
+      CRITICAL REQUIREMENTS FOR INDUSTRY MASTERY:
+      - Base on REAL situations that professionals in this field actually face
+      - Include realistic numbers, timelines, and trade-offs from the industry
+      - Make the correct answer subtle but clearly best upon expert analysis
+      - Provide reasoning that builds transferable industry judgment
+      - Include a mental model that applies broadly across the sector
       
       The scenario should be 400-600 characters, presenting a genuine dilemma.
-      All 4 options should seem plausible to a novice.
-      Only one option should be clearly best to an expert.`,
+      All 4 options should seem plausible to someone new to the industry.
+      Only one option should be clearly best to an experienced professional.`,
     
     BOOK_SNAPSHOT: `Create a HISTORY stack about a pivotal past event related to "${topic}" in ${marketContext}.
       
-      CRITICAL REQUIREMENTS:
-      - Reference REAL historical events with specific dates
-      - Name actual researchers, companies, and breakthrough decisions
-      - Include original dollar amounts and patient numbers where relevant
-      - Connect history to current industry dynamics
-      - Extract timeless lessons for today's founders
+      CRITICAL REQUIREMENTS FOR INDUSTRY MASTERY:
+      - Reference REAL historical events with specific dates and actors
+      - Name actual companies, executives, and breakthrough decisions
+      - Include original dollar amounts, market sizes, or outcome metrics
+      - Connect history to current industry dynamics that professionals must understand
+      - Extract timeless lessons applicable to today's entrepreneurs and career builders
       
       Structure (6 slides, each body UNDER 280 characters):
-      1. What happened - specific historical event with date and actors
-      2. Context - what people believed at the time
+      1. What happened - specific historical event with date and key players
+      2. Context - what people believed at the time, prevailing wisdom
       3. The twist - what actually unfolded vs expectations
-      4. Lessons - what the industry learned too late
-      5. Today's echo - how this pattern repeats today
-      6. Your move - reflection question for founders`,
+      4. Lessons - what the industry learned (often too late)
+      5. Today's echo - how this pattern repeats in current dynamics
+      6. Your move - reflection question for aspiring industry participants`,
   };
 
   const isTrainer = dayType === 'TRAINER';
   
   const systemPrompt = isTrainer
-    ? `You are a senior ${marketId === 'neuroscience' ? 'neuroscience and neurotech' : 'aerospace'} industry strategist with 25+ years experience.
-       You create challenging training scenarios that test strategic thinking.
-       Your scenarios are based on REAL situations you've encountered or studied.
-       You speak with authority but make content accessible to intelligent newcomers.
-       Every scenario teaches a valuable lesson that applies beyond the specific situation.`
-    : `You are a senior ${marketId === 'neuroscience' ? 'neuroscience and neurotech' : 'aerospace'} industry analyst creating educational content for startup founders.
-       You have deep expertise across ${marketContext}.
-       You reference REAL companies, clinical trials, regulations, and market dynamics.
+    ? `You are a senior ${marketContext} industry strategist with 25+ years of experience advising startups and training new hires.
+       You create challenging scenarios that test strategic thinking and build real industry judgment.
+       Your scenarios are based on REAL situations - the kind that separate successful founders from failed ones.
+       
+       Your goal: Help users BECOME MASTERS of this industry, whether they're:
+       - Entrepreneurs building companies in this space
+       - Professionals seeking to join or advance in this industry  
+       - Researchers and curious learners seeking deep understanding
+       
+       Every scenario teaches a valuable lesson that transfers across the industry.`
+    : `You are a senior ${marketContext} industry analyst creating educational content that builds true industry mastery.
+       You have deep expertise and reference REAL companies, deals, regulations, and market dynamics.
+       
+       Your content serves users who want to BECOME MASTERS of this industry:
+       - New entrepreneurs learning the landscape before building
+       - Career changers preparing to join this industry
+       - Curious learners seeking genuine expert-level understanding
+       
        Your content is precise, data-driven, and actionable.
        Each slide body MUST be UNDER 280 characters - be concise and impactful.
        Each slide title MUST be 6 words or fewer.
@@ -464,7 +380,7 @@ async function generateDayContent(
        
        Return valid JSON:
        {
-         "scenario": "Detailed scenario description (400-600 chars) with real context",
+         "scenario": "Detailed scenario description (400-600 chars) with real industry context",
          "question": "Clear decision question starting with 'What should...' or 'How would you...'",
          "options": [
            {"label": "Option A - specific action (40-80 chars)", "isCorrect": false},
@@ -473,9 +389,9 @@ async function generateDayContent(
            {"label": "Option D - specific action (40-80 chars)", "isCorrect": false}
          ],
          "feedback_pro_reasoning": "Expert explanation of why the correct answer is best. Reference industry norms, typical outcomes, and strategic principles. (300-500 chars)",
-         "feedback_common_mistake": "The most common error newcomers make and why (100-150 chars)",
+         "feedback_common_mistake": "The most common error newcomers make and why it fails (100-150 chars)",
          "feedback_mental_model": "A reusable mental model or framework this teaches (50-100 chars)",
-         "follow_up_question": "A deeper question to consider for self-reflection",
+         "follow_up_question": "A deeper question to consider for continued learning",
          "sources": [{"label": "Industry Source", "url": "https://example.com"}],
          "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "strategy"]
        }`
@@ -492,7 +408,7 @@ async function generateDayContent(
              "sources": [{"label": "Source Name", "url": "https://example.com"}]
            }
          ],
-         "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "${theme.toLowerCase()}"]
+         "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "${theme.toLowerCase().replace(/\s+/g, '-')}"]
        }
        
        IMPORTANT: Create exactly 6 slides. Each body MUST be under 280 characters.`;
@@ -536,7 +452,7 @@ async function saveContent(
   dayType: string,
   marketId: string
 ) {
-  const baseTags = [dayType, `day-${day}`, `month-${month}`];
+  const baseTags = [dayType, `day-${day}`, `month-${month}`, 'MICRO_LESSON'];
 
   if (dayType === 'TRAINER') {
     const correctIndex = content.options?.findIndex((o: any) => o.isCorrect) ?? 1;
@@ -599,7 +515,7 @@ async function generateMonthSummaries(
   apiKey: string,
   month: number,
   marketId: string,
-  curriculumStructure: { months: { month: number; theme: string; topics: string[] }[] }
+  curriculumStructure: CurriculumStructure
 ) {
   const monthInfo = curriculumStructure.months[month - 1];
   if (!monthInfo) {
@@ -607,6 +523,7 @@ async function generateMonthSummaries(
   }
 
   const results = { weekly: [] as any[], monthly: null as any };
+  const marketContext = getMarketContext(marketId);
   
   // Generate 4 weekly summaries
   for (let week = 1; week <= 4; week++) {
@@ -618,7 +535,7 @@ async function generateMonthSummaries(
       monthInfo.topics,
       weekNum,
       month,
-      marketId
+      marketContext
     );
     
     const forDate = new Date();
@@ -649,7 +566,7 @@ async function generateMonthSummaries(
     monthInfo.topics,
     0,
     month,
-    marketId
+    marketContext
   );
   
   const { data: monthlyData, error: monthlyError } = await supabase
@@ -677,38 +594,38 @@ async function generateSummary(
   topics: string[],
   weekNum: number,
   month: number,
-  marketId: string
+  marketContext: string
 ) {
-  const marketContext = marketId === 'neuroscience' 
-    ? 'neuroscience, neurotech, and brain science' 
-    : 'aerospace';
-
   const prompt = type === 'WEEKLY'
-    ? `Create a WEEKLY summary for Week ${weekNum} of the "${theme}" module in ${marketContext} education.
+    ? `Create a WEEKLY summary for Week ${weekNum} of the "${theme}" module for professionals learning ${marketContext}.
        
        Topics covered: ${topics.slice(0, 2).join(', ')}
        
+       Target audience: Entrepreneurs entering this industry, career changers, and serious learners seeking mastery.
+       
        Create an executive-style summary that:
-       - Synthesizes the week's key learnings
-       - Highlights strategic implications for startups
-       - Includes 3-4 actionable takeaways
-       - References real industry dynamics
+       - Synthesizes the week's key learnings into actionable knowledge
+       - Highlights strategic implications for startups and career decisions
+       - Includes 3-4 actionable takeaways with specific next steps
+       - References real industry dynamics and benchmarks
        
        Return JSON:
        {
-         "title": "Week ${weekNum}: [Compelling title about theme]",
+         "title": "Week ${weekNum}: [Compelling title about key insight]",
          "content": "3-4 paragraph summary (600-800 words) that reads like a McKinsey brief",
-         "key_takeaways": ["Takeaway 1", "Takeaway 2", "Takeaway 3", "Takeaway 4"]
+         "key_takeaways": ["Takeaway 1 with specific action", "Takeaway 2", "Takeaway 3", "Takeaway 4"]
        }`
-    : `Create a MONTHLY summary for Month ${month}: "${theme}" in ${marketContext} education.
+    : `Create a MONTHLY summary for Month ${month}: "${theme}" for professionals mastering ${marketContext}.
        
        Topics covered: ${topics.join(', ')}
        
+       Target audience: Aspiring industry experts who want deep understanding for entrepreneurship or career advancement.
+       
        Create a comprehensive month-end review that:
-       - Synthesizes all major concepts from the month
-       - Connects themes to real industry dynamics
-       - Provides strategic framework for startup founders
-       - Includes 5-6 key takeaways
+       - Synthesizes all major concepts into a coherent mental framework
+       - Connects themes to real industry dynamics professionals must understand
+       - Provides strategic framework for startup founders and career builders
+       - Includes 5-6 key takeaways with specific applications
        
        Return JSON:
        {
@@ -728,7 +645,7 @@ async function generateSummary(
       messages: [
         { 
           role: 'system', 
-          content: `You are a senior ${marketContext} industry analyst creating executive summaries for startup founders. Write with authority, reference real industry dynamics, and provide actionable insights.` 
+          content: `You are a senior ${marketContext} industry analyst creating executive summaries for professionals seeking industry mastery. Write with authority, reference real industry dynamics, and provide actionable insights.` 
         },
         { role: 'user', content: prompt },
       ],

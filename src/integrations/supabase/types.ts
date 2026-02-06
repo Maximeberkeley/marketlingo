@@ -1017,6 +1017,10 @@ export type Database = {
       }
     }
     Functions: {
+      assign_day_tags_to_market: {
+        Args: { p_market_id: string }
+        Returns: number
+      }
       calculate_level: { Args: { xp: number }; Returns: number }
       calculate_startup_stage: { Args: { xp: number }; Returns: number }
       get_available_day: { Args: { p_start_date: string }; Returns: number }
