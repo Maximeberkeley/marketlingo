@@ -30,6 +30,7 @@ interface GameQuestion {
 export default function GamesPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { checkDailyLimit, incrementUsage, isProUser } = useContentAccess();
   const [questions, setQuestions] = useState<GameQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -42,6 +43,7 @@ export default function GamesPage() {
   const [showIntro, setShowIntro] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
   const [leoMessage, setLeoMessage] = useState<string | null>(null);
+  const [showLimitGate, setShowLimitGate] = useState(false);
   const { play } = useSoundEffects();
   
   // Get market config for theming
