@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useKeyboardAware, scrollInputIntoView } from "@/hooks/useKeyboardAware";
 
 // Import warm illustration
 import notebookHero from "@/assets/cards/notebook-hero.jpg";
