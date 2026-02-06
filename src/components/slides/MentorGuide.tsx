@@ -1,5 +1,6 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { Mentor, getMentorForContext } from "@/data/mentors";
+import { getMentorForContext } from "@/data/mentors";
 import { cn } from "@/lib/utils";
 
 interface MentorGuideProps {
@@ -11,79 +12,58 @@ interface MentorGuideProps {
   marketId?: string;
 }
 
-// Contextual messages based on slide position with enhanced Sophia expressions
-function getMentorMessage(slideIndex: number, totalSlides: number, isIntro: boolean, mentorId: string, marketId?: string): string {
-  // Use Sophia's enhanced expressions for Neuroscience
+// Static messages for each position - no randomization to prevent re-render chaos
+const getMentorMessage = (slideIndex: number, totalSlides: number, isIntro: boolean, mentorId: string, marketId?: string): string => {
   const isSophiaNeuro = mentorId === "sophia" && marketId === "neuroscience";
   
-  if (isIntro) {
-    const introMessages: Record<string, string[]> = {
-      maya: ["Let's decode this together!", "Ready for some market insights?", "Time to think strategically!"],
-      alex: ["Let me break this down for you.", "Technical concepts ahead!", "Let's dive into the details."],
-      kai: ["This is startup gold!", "Ready to build something?", "Let's think like founders!"],
-      sophia: isSophiaNeuro 
-        ? ["Brain science awaits! 🧠", "This is going to be fascinating!", "Ready to explore the mind?", "Let's unlock some insights!"]
-        : ["You're going to love this!", "Ready to grow together?", "Let's unlock your potential!"],
-    };
-    return introMessages[mentorId]?.[Math.floor(Math.random() * (introMessages[mentorId]?.length || 3))] || "Let's learn!";
-  }
-  
-  if (slideIndex === 0) {
-    const firstMessages: Record<string, string[]> = {
-      maya: ["Here's the big picture...", "Pay attention to this!", "Market insight incoming!"],
-      alex: ["Fundamental concept here.", "This is key to understand.", "Core principle ahead!"],
-      kai: ["Founders take note!", "This could be your edge.", "Opportunity alert!"],
-      sophia: isSophiaNeuro
-        ? ["This is exciting! 🎉", "Key insight ahead!", "You'll love this one!", "Neural magic incoming!"]
-        : ["This is exciting!", "Key growth insight!", "You'll want to remember this!"],
-    };
-    return firstMessages[mentorId]?.[Math.floor(Math.random() * (firstMessages[mentorId]?.length || 3))] || "Starting strong!";
-  }
-  
-  if (slideIndex === totalSlides - 1) {
-    const lastMessages: Record<string, string[]> = {
-      maya: ["Now you see the full picture!", "Connect these dots!", "Strategy unlocked!"],
-      alex: ["You've got this!", "Technical mastery!", "Key takeaway here!"],
-      kai: ["Go build something!", "Action time!", "Your move now!"],
-      sophia: isSophiaNeuro
-        ? ["You crushed it! 🏆", "So proud of you!", "Look at you go!", "Amazing progress! 💪"]
-        : ["Amazing progress!", "You're doing great!", "Proud of you!"],
-    };
-    return lastMessages[mentorId]?.[Math.floor(Math.random() * (lastMessages[mentorId]?.length || 3))] || "Great job!";
-  }
-  
-  // Mid-lesson messages
-  const midMessages: Record<string, string[]> = {
-    maya: ["Interesting, right?", "Think about this...", "Note this pattern!", "Strategic insight!"],
-    alex: ["Technical detail!", "Important nuance.", "Remember this!", "Key point!"],
-    kai: ["Startup tip!", "Founder insight!", "Good to know!", "Take action!"],
+  // Use fixed messages based on mentorId to prevent random re-renders
+  const messages: Record<string, { intro: string; first: string; last: string }> = {
+    maya: {
+      intro: "Let's decode this together!",
+      first: "Here's the big picture...",
+      last: "Now you see the full picture!",
+    },
+    alex: {
+      intro: "Let me break this down for you.",
+      first: "Fundamental concept here.",
+      last: "You've got this!",
+    },
+    kai: {
+      intro: "This is startup gold!",
+      first: "Founders take note!",
+      last: "Go build something!",
+    },
     sophia: isSophiaNeuro
-      ? ["I love this part! 💡", "Keep going!", "You're learning fast!", "This is so cool!", "Trust the process!"]
-      : ["Love this part!", "So valuable!", "You're learning fast!", "Keep going!"],
+      ? {
+          intro: "Brain science awaits! 🧠",
+          first: "This is exciting! 🎉",
+          last: "You crushed it! 🏆",
+        }
+      : {
+          intro: "You're going to love this!",
+          first: "This is exciting!",
+          last: "Amazing progress!",
+        },
   };
-  return midMessages[mentorId]?.[slideIndex % (midMessages[mentorId]?.length || 4)] || "Keep going!";
-}
 
-// Different poses/expressions based on slide content
-function getMentorMood(slideIndex: number, totalSlides: number, isIntro: boolean): "excited" | "thinking" | "encouraging" | "celebrating" {
-  if (isIntro) return "excited";
-  if (slideIndex === totalSlides - 1) return "celebrating";
-  if (slideIndex % 3 === 0) return "thinking";
-  return "encouraging";
-}
+  const mentorMessages = messages[mentorId] || messages.maya;
+
+  if (isIntro) return mentorMessages.intro;
+  if (slideIndex === 0) return mentorMessages.first;
+  if (slideIndex === totalSlides - 1) return mentorMessages.last;
+  
+  // This shouldn't happen since we only show on first/last slides
+  return mentorMessages.first;
+};
 
 export function MentorGuide({ context, slideIndex, totalSlides, isIntro = false, className, marketId }: MentorGuideProps) {
   const mentor = getMentorForContext(context, marketId);
-  const message = getMentorMessage(slideIndex, totalSlides, isIntro, mentor.id, marketId);
-  const mood = getMentorMood(slideIndex, totalSlides, isIntro);
   
-  // Animation variants based on mood
-  const moodAnimations = {
-    excited: { rotate: [0, -5, 5, 0], scale: [1, 1.05, 1] },
-    thinking: { rotate: [0, 3, 0], y: [0, -2, 0] },
-    encouraging: { scale: [1, 1.02, 1], y: [0, -3, 0] },
-    celebrating: { rotate: [0, -8, 8, -8, 0], scale: [1, 1.1, 1] },
-  };
+  // Memoize the message to prevent changes during re-renders
+  const message = useMemo(
+    () => getMentorMessage(slideIndex, totalSlides, isIntro, mentor.id, marketId),
+    [slideIndex, totalSlides, isIntro, mentor.id, marketId]
+  );
 
   return (
     <motion.div
@@ -92,12 +72,8 @@ export function MentorGuide({ context, slideIndex, totalSlides, isIntro = false,
       transition={{ delay: 0.3, duration: 0.4 }}
       className={cn("flex items-end gap-3", className)}
     >
-      {/* Mentor Avatar */}
-      <motion.div
-        animate={moodAnimations[mood]}
-        transition={{ duration: 0.6, repeat: Infinity, repeatDelay: 2 }}
-        className="relative flex-shrink-0"
-      >
+      {/* Mentor Avatar - Static, no looping animations */}
+      <div className="relative flex-shrink-0">
         <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-accent/50 shadow-lg shadow-accent/20">
           <img
             src={mentor.avatar}
@@ -106,15 +82,11 @@ export function MentorGuide({ context, slideIndex, totalSlides, isIntro = false,
           />
         </div>
         
-        {/* Status indicator */}
-        <motion.div
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-bg-1"
-        />
-      </motion.div>
+        {/* Status indicator - static green dot */}
+        <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-bg-1" />
+      </div>
       
-      {/* Speech Bubble */}
+      {/* Speech Bubble - Static after initial animation */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
