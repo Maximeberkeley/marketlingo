@@ -135,8 +135,11 @@ ${context ? `Current lesson context: ${context}` : ""}`;
             ))}
           </div>
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* Messages - with overscroll containment */}
+          <div 
+            className="flex-1 overflow-y-auto p-4 space-y-4"
+            style={{ overscrollBehavior: 'contain' }}
+          >
             {messages.map((message, index) => (
               <motion.div
                 key={index}
