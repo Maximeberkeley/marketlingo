@@ -56,6 +56,11 @@ export function SlideReader({
 }: SlideReaderProps) {
   const [currentIndex, setCurrentIndex] = useState(-1); // Start at -1 for intro slide
   const [direction, setDirection] = useState(0);
+  
+  // Reset tip session when component mounts (new lesson)
+  useEffect(() => {
+    resetTipSession();
+  }, []);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [currentTip, setCurrentTip] = useState<MentorTip | null>(null);
   const [tipDismissed, setTipDismissed] = useState(false);
