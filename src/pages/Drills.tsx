@@ -27,6 +27,7 @@ interface DrillQuestion {
 export default function DrillsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { checkDailyLimit, incrementUsage, isProUser } = useContentAccess();
   const [questions, setQuestions] = useState<DrillQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -40,6 +41,7 @@ export default function DrillsPage() {
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [showIntro, setShowIntro] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showLimitGate, setShowLimitGate] = useState(false);
   
   // Get market config for theming
   const marketConfig = selectedMarket ? getMarketConfig(selectedMarket) : null;
