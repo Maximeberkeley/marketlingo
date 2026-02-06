@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { LeoCharacter, LeoAnim } from "@/components/mascot/LeoStateMachine";
