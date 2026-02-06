@@ -233,16 +233,24 @@
       padding-top: max(8px, env(safe-area-inset-top, 8px));
     }
     
-    /* Add left/right safe areas for notched devices in landscape */
-    .landscape-safe {
-      padding-left: max(12px, env(safe-area-inset-left, 12px));
-      padding-right: max(12px, env(safe-area-inset-right, 12px));
+    /* Landscape safe areas applied to fixed/sticky elements */
+    .landscape-safe,
+    .fixed, 
+    [class*="fixed"] {
+      /* Ensure fixed elements respect notch in landscape */
     }
     
     /* Auto-apply landscape safety to screen-padding in landscape */
     .screen-padding {
       padding-left: max(20px, calc(env(safe-area-inset-left, 0px) + 12px));
       padding-right: max(20px, calc(env(safe-area-inset-right, 0px) + 12px));
+    }
+    
+    /* Ensure body-level elements get landscape insets */
+    body > div,
+    #root > div {
+      padding-left: env(safe-area-inset-left, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
     }
   }
   

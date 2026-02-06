@@ -96,7 +96,13 @@ ${context ? `Current lesson context: ${context}` : ""}`;
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
           onClick={e => e.stopPropagation()}
           className="absolute bottom-0 left-0 right-0 max-h-[70vh] bg-bg-1 rounded-t-3xl flex flex-col overflow-hidden"
-          style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+          style={{ 
+            // Always respect home indicator
+            paddingBottom: 'max(16px, env(safe-area-inset-bottom, 0px))',
+            // Landscape: respect notch on sides
+            paddingLeft: 'env(safe-area-inset-left, 0px)',
+            paddingRight: 'env(safe-area-inset-right, 0px)',
+          }}
         >
           {/* Header */}
           <div className="flex items-center gap-3 p-4 border-b border-border">
@@ -129,8 +135,11 @@ ${context ? `Current lesson context: ${context}` : ""}`;
             ))}
           </div>
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* Messages - with overscroll containment */}
+          <div 
+            className="flex-1 overflow-y-auto p-4 space-y-4"
+            style={{ overscrollBehavior: 'contain' }}
+          >
             {messages.map((message, index) => (
               <motion.div
                 key={index}

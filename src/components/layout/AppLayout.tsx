@@ -1,5 +1,6 @@
 import { ReactNode, Suspense } from "react";
 import { BottomNav } from "./BottomNav";
+import { LayoutProvider } from "@/contexts/LayoutContext";
 import { Loader2 } from "lucide-react";
 
 interface AppLayoutProps {
@@ -13,17 +14,20 @@ interface AppLayoutProps {
  * IMPORTANT: This handles bottom nav safe area via `safe-bottom` class.
  * - Do NOT add pt-safe to children if they're wrapped in AppLayout
  * - Loading/error states within children will still get proper safe areas
+ * - Provides layout context for StickyBottomCTA components
  */
 export function AppLayout({ children, showNav = true }: AppLayoutProps) {
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-background overflow-x-hidden w-full max-w-full">
-      <Suspense fallback={<AppLayoutFallback showNav={showNav} />}>
-        <main className={`overflow-x-hidden w-full ${showNav ? "safe-bottom" : ""}`}>
-          {children}
-        </main>
-      </Suspense>
-      {showNav && <BottomNav />}
-    </div>
+    <LayoutProvider hasBottomNav={showNav} isInModal={false}>
+      <div className="min-h-screen min-h-[100dvh] bg-background overflow-x-hidden w-full max-w-full">
+        <Suspense fallback={<AppLayoutFallback showNav={showNav} />}>
+          <main className={`overflow-x-hidden w-full ${showNav ? "safe-bottom" : ""}`}>
+            {children}
+          </main>
+        </Suspense>
+        {showNav && <BottomNav />}
+      </div>
+    </LayoutProvider>
   );
 }
 
