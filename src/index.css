@@ -221,19 +221,51 @@
     @apply px-4;
   }
   
-  /* Top safe area */
+  /* Top safe area - ONLY use on outermost containers, not nested */
   .pt-safe {
     padding-top: max(12px, env(safe-area-inset-top, 12px));
   }
+
+  /* Landscape-aware top safe area */
+  @media (orientation: landscape) {
+    .pt-safe {
+      padding-top: max(8px, env(safe-area-inset-top, 8px));
+      padding-left: max(12px, env(safe-area-inset-left, 12px));
+      padding-right: max(12px, env(safe-area-inset-right, 12px));
+    }
+  }
   
-  /* Safe Area for Bottom Nav */
+  /* Safe Area for Bottom Nav - use on scrollable content above nav */
   .safe-bottom {
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 
-  /* Safe Area Bottom for buttons */
+  /* Safe Area Bottom for modals/sheets with CTAs */
   .safe-area-bottom {
     padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  }
+  
+  /* Modal-specific bottom padding - for sheets/overlays with bottom CTAs */
+  .modal-bottom-safe {
+    padding-bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 16px));
+  }
+  
+  /* Content spacer for pages with sticky bottom elements */
+  .sticky-bottom-spacer {
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+  }
+  
+  /* Keyboard-aware container - use on form containers */
+  .keyboard-aware {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Prevent double safe area when using SafeAreaView wrapper */
+  .no-safe-padding {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
   
   /* Streak Flame */

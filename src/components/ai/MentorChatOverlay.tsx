@@ -163,8 +163,8 @@ ${context ? `Current lesson context: ${context}` : ""}`;
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
-          <div className="p-4 pb-8 border-t border-border bg-bg-1 safe-area-bottom">
+          {/* Input - keyboard-aware with proper bottom inset */}
+          <div className="flex-shrink-0 p-4 border-t border-border bg-bg-1 modal-bottom-safe">
             <div className="flex gap-2">
               <Input
                 value={input}
