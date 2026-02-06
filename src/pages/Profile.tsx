@@ -131,7 +131,8 @@ export default function ProfilePage() {
 
   return (
     <AppLayout>
-      <div className="screen-padding pt-safe safe-bottom overflow-x-hidden w-full box-border">
+      {/* Remove duplicate pt-safe since AppLayout already handles safe areas */}
+      <div className="screen-padding pt-4 pb-6 overflow-x-hidden w-full box-border">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}

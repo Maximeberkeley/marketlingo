@@ -95,7 +95,8 @@ ${context ? `Current lesson context: ${context}` : ""}`;
           exit={{ y: "100%" }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
           onClick={e => e.stopPropagation()}
-          className="absolute bottom-0 left-0 right-0 h-[70vh] bg-bg-1 rounded-t-3xl flex flex-col overflow-hidden"
+          className="absolute bottom-0 left-0 right-0 max-h-[70vh] bg-bg-1 rounded-t-3xl flex flex-col overflow-hidden"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
         >
           {/* Header */}
           <div className="flex items-center gap-3 p-4 border-b border-border">
@@ -162,8 +163,8 @@ ${context ? `Current lesson context: ${context}` : ""}`;
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
-          <div className="p-4 pb-8 border-t border-border bg-bg-1 safe-area-bottom">
+          {/* Input - keyboard-aware with proper bottom inset */}
+          <div className="flex-shrink-0 p-4 border-t border-border bg-bg-1 modal-bottom-safe">
             <div className="flex gap-2">
               <Input
                 value={input}

@@ -97,7 +97,7 @@ export default function AuthPage() {
         <Loader2 className="animate-spin text-primary" size={32} />
       </div>;
   }
-  return <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gradient-to-b from-bg-0 to-bg-1 overflow-x-hidden">
+  return <div className="min-h-[100dvh] flex flex-col items-center justify-center px-4 bg-gradient-to-b from-bg-0 to-bg-1 overflow-x-hidden overflow-y-auto keyboard-aware">
       <AnimatePresence mode="wait">
         {mode === "options" ? <motion.div key="options" initial={{
         opacity: 0,

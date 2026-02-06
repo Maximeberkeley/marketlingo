@@ -310,7 +310,8 @@ export default function HomePage() {
 
   return (
     <AppLayout>
-      <div className="screen-padding pt-safe pb-28 overflow-x-hidden w-full">
+        {/* Scrollable content with sticky-bottom-spacer to avoid CTA overlap */}
+        <div className="screen-padding pt-4 pb-6 overflow-x-hidden w-full">
         {/* Compact Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}

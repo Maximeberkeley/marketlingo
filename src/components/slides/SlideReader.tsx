@@ -277,8 +277,8 @@ export function SlideReader({
         )}
       </AnimatePresence>
 
-      {/* Bottom Actions - Fixed with generous padding for mobile */}
-      <div className="flex-shrink-0 px-4 py-4 border-t border-border bg-bg-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 24px) + 24px)' }}>
+      {/* Bottom Actions - Fixed with modal-safe padding for iOS */}
+      <div className="flex-shrink-0 px-4 py-4 border-t border-border bg-bg-0 modal-bottom-safe">
         {isIntroSlide ? (
           <Button variant="cta" size="full" onClick={goToNext}>
             Begin
