@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Crown, Infinity, Brain, Sparkles, TrendingUp, Check, Gift, Zap, Target } from "lucide-react";
+import { X, Crown, Infinity as InfinityIcon, Brain, Sparkles, TrendingUp, Check, Gift, Zap, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSubscription, TRIAL_DURATION_DAYS } from "@/hooks/useSubscription";
 import { useNavigate } from "react-router-dom";
