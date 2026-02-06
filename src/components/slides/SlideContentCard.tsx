@@ -25,15 +25,20 @@ export function SlideContentCard({
   stackTitle,
   marketId
 }: SlideContentCardProps) {
+  // Only show mentor guide on first and last slides to avoid spam
+  const showMentorGuide = slideIndex === 0 || slideIndex === totalSlides - 1;
+  
   return (
     <div className="flex flex-col gap-4 pb-4">
-      {/* Mentor Guide at top of each slide */}
-      <MentorGuide 
-        context={stackTitle}
-        slideIndex={slideIndex}
-        totalSlides={totalSlides}
-        marketId={marketId}
-      />
+      {/* Mentor Guide only on strategic slides (first & last) */}
+      {showMentorGuide && (
+        <MentorGuide 
+          context={stackTitle}
+          slideIndex={slideIndex}
+          totalSlides={totalSlides}
+          marketId={marketId}
+        />
+      )}
       
       {/* Content Card */}
       <div className="card-elevated flex flex-col">
