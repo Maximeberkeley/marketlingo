@@ -47,10 +47,10 @@ const triggerContent: Record<PromoTrigger, {
 };
 
 const compactBenefits = [
-  { icon: Infinity, text: "Unlimited lessons & games" },
-  { icon: TrendingUp, text: "Investment Lab access" },
-  { icon: Brain, text: "AI mentors on-demand" },
-  { icon: Target, text: "Pro Trainer scenarios" },
+  { Icon: Infinity, text: "Unlimited lessons & games" },
+  { Icon: TrendingUp, text: "Investment Lab access" },
+  { Icon: Brain, text: "AI mentors on-demand" },
+  { Icon: Target, text: "Pro Trainer scenarios" },
 ];
 
 export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureName }: ProUpsellModalProps) {
