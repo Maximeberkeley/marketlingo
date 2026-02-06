@@ -154,6 +154,17 @@ export function useUserXP(marketId?: string) {
       .single();
 
     if (!error && updatedXP) {
+      // Check if user leveled up
+      const previousLevel = xpData.current_level;
+      const newLevel = updatedXP.current_level;
+      
+      if (newLevel > previousLevel) {
+        // Send level-up notification
+        sendMilestoneNotification(user.id, 'level', {
+          levelNumber: newLevel,
+        });
+      }
+      
       setXpData(updatedXP);
     }
 
