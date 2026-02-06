@@ -12,6 +12,21 @@ export const XP_REWARDS = {
   STREAK_BONUS: 15, // per day of streak
 } as const;
 
+// Send milestone notification for level ups and streaks
+async function sendMilestoneNotification(
+  userId: string,
+  milestoneType: 'streak' | 'level' | 'achievement' | 'certificate' | 'week_complete',
+  milestoneData?: Record<string, any>
+) {
+  try {
+    await supabase.functions.invoke('send-milestone-notification', {
+      body: { userId, milestoneType, milestoneData },
+    });
+  } catch (error) {
+    console.error('Failed to send milestone notification:', error);
+  }
+}
+
 // Startup stage names
 export const STARTUP_STAGES = [
   { stage: 1, name: "Ideation", description: "Exploring your market thesis", xpRequired: 0 },

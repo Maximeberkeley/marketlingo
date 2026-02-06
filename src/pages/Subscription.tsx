@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 const PRO_FEATURES = [
   { 
-    icon: Infinity, 
+    icon: InfinityIcon, 
     title: "Unlimited Learning", 
     description: "No daily caps on lessons, games & drills",
     highlight: "Most Popular"
