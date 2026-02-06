@@ -114,7 +114,7 @@ export function useAchievements(progress?: AchievementProgress) {
           
           // Send push notification for the achievement
           sendMilestoneNotification(user.id, 'achievement', {
-            achievementName: achievement.title,
+            achievementName: achievement.name,
           });
         }
       }
