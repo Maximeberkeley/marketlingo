@@ -370,12 +370,12 @@ export default function TrainerPage() {
         </div>
       </motion.div>
 
-      {/* Content */}
+      {/* Content - scrollable with safe bottom area */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1 }}
-        className="flex-1 screen-padding py-6 overflow-auto"
+        className="flex-1 screen-padding py-6 overflow-auto modal-bottom-safe"
       >
         <TrainerCard
           scenario={cardScenario}
