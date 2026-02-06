@@ -111,8 +111,8 @@ export const lessonTips: MentorTip[] = [
 
 // Session-based tip tracker to limit tips per session
 let sessionTipsShown = 0;
-const MAX_TIPS_PER_SESSION = 1; // Maximum 1 tip per lesson session
-const TIP_COOLDOWN_SLIDES = 4; // Minimum slides between tips
+const MAX_TIPS_PER_SESSION = 0; // DISABLED - MentorGuide already provides encouragement on first/last slides
+const TIP_COOLDOWN_SLIDES = 999; // Effectively disable cooldown logic
 let lastTipSlide = -999;
 
 /**
@@ -123,37 +123,16 @@ export function resetTipSession() {
   lastTipSlide = -999;
 }
 
+/**
+ * Get a tip for the current slide - CURRENTLY DISABLED
+ * MentorGuide now only appears on first/last slides, removing the need for proactive tips
+ */
 export function getTipForSlide(
   slideIndex: number,
   totalSlides: number,
   shownTipIds: Set<string>
 ): MentorTip | null {
-  // Strict limit: max 1 tip per lesson session
-  if (sessionTipsShown >= MAX_TIPS_PER_SESSION) return null;
-  
-  // Cooldown: don't show tips too close together
-  if (slideIndex - lastTipSlide < TIP_COOLDOWN_SLIDES) return null;
-  
-  let candidates: MentorTip[] = [];
-  let shouldShowTip = false;
-
-  // Only show tip on slide 3 (midpoint) - single strategic moment
-  if (slideIndex === 3 && shownTipIds.size === 0) {
-    // 40% chance to show a mid-lesson tip
-    if (Math.random() < 0.4) {
-      candidates = lessonTips.filter(
-        (t) => t.trigger === "mid_lesson" && !shownTipIds.has(t.id)
-      );
-      shouldShowTip = true;
-    }
-  }
-
-  if (!shouldShowTip || candidates.length === 0) return null;
-
-  // Track this tip
-  sessionTipsShown++;
-  lastTipSlide = slideIndex;
-
-  // Pick a random tip from candidates
-  return candidates[Math.floor(Math.random() * candidates.length)];
+  // Tips are disabled - MentorGuide provides enough guidance on first/last slides
+  // This prevents mentor spam during lessons
+  return null;
 }
