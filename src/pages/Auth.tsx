@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useOnboardingRouter } from "@/hooks/useOnboardingRouter";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { LeoCharacter, LeoAnim } from "@/components/mascot/LeoStateMachine";
@@ -23,15 +25,17 @@ export default function AuthPage() {
     signInWithGoogle,
     signInWithApple
   } = useAuth();
+  const { routeToCorrectScreen } = useOnboardingRouter();
   const [mode, setMode] = useState<AuthMode>("options");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     if (!loading && user) {
-      navigate("/select-market");
+      // Use centralized routing logic to determine next screen
+      routeToCorrectScreen(user.id);
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, routeToCorrectScreen]);
   const handleGoogleSignIn = async () => {
     const {
       error
@@ -62,9 +66,7 @@ export default function AuthPage() {
     setIsSubmitting(true);
     try {
       if (mode === "email-signup") {
-        const {
-          error
-        } = await signUp(email, password);
+        const { error } = await signUp(email, password);
         if (error) {
           if (error.message.includes("already registered")) {
             toast.error("This email is already registered. Please sign in instead.");
@@ -73,21 +75,18 @@ export default function AuthPage() {
           }
         } else {
           toast.success("Account created! Redirecting...");
-          navigate("/select-market");
+          // useEffect will catch user state change and route appropriately
         }
       } else {
-        const {
-          error
-        } = await signIn(email, password);
+        const { error } = await signIn(email, password);
         if (error) {
           if (error.message.includes("Invalid login credentials")) {
             toast.error("Invalid email or password. Please try again.");
           } else {
             toast.error(error.message);
           }
-        } else {
-          navigate("/select-market");
         }
+        // useEffect will catch user state change and route appropriately
       }
     } finally {
       setIsSubmitting(false);

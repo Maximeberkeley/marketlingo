@@ -11,6 +11,7 @@ import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import Auth from "./pages/Auth";
 import SelectMarket from "./pages/SelectMarket";
 import Home from "./pages/Home";
+import SelectFamiliarity from "./pages/SelectFamiliarity";
 import Roadmap from "./pages/Roadmap";
 import Notebook from "./pages/Notebook";
 import Profile from "./pages/Profile";
@@ -75,6 +76,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Auth />} />
               <Route path="/select-market" element={<SelectMarket />} />
+              <Route path="/select-familiarity" element={<SelectFamiliarity />} />
               <Route path="/home" element={<Home />} />
               <Route path="/roadmap" element={<Roadmap />} />
               <Route path="/notebook" element={<Notebook />} />

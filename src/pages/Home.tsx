@@ -119,16 +119,21 @@ export default function HomePage() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("selected_market")
+        .select("selected_market, familiarity_level")
         .eq("id", user.id)
         .single();
 
-      if (profile?.selected_market) {
-        setSelectedMarket(profile.selected_market);
-      } else {
+      if (!profile?.selected_market) {
         navigate("/select-market");
         return;
       }
+      
+      if (!profile?.familiarity_level) {
+        navigate("/select-familiarity");
+        return;
+      }
+      
+      setSelectedMarket(profile.selected_market);
 
       const market = profile.selected_market;
 

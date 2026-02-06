@@ -492,6 +492,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          familiarity_level: string | null
           id: string
           notification_preferences: Json | null
           push_token: string | null
@@ -502,6 +503,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          familiarity_level?: string | null
           id: string
           notification_preferences?: Json | null
           push_token?: string | null
@@ -512,6 +514,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          familiarity_level?: string | null
           id?: string
           notification_preferences?: Json | null
           push_token?: string | null
