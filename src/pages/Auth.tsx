@@ -25,6 +25,7 @@ export default function AuthPage() {
     signInWithGoogle,
     signInWithApple
   } = useAuth();
+  const { routeToCorrectScreen } = useOnboardingRouter();
   const [mode, setMode] = useState<AuthMode>("options");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
