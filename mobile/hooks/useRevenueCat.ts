@@ -10,6 +10,9 @@ import { storage } from '../lib/storage';
 const REVENUECAT_API_KEY_IOS = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || '';
 const REVENUECAT_API_KEY_ANDROID = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || '';
 
+// IMPORTANT: This must match the entitlement ID in RevenueCat dashboard
+const ENTITLEMENT_ID = 'MarketLingo Pro';
+
 export function useRevenueCat() {
   const [isProUser, setIsProUser] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,8 +39,8 @@ export function useRevenueCat() {
       const info = await Purchases.getCustomerInfo();
       setCustomerInfo(info);
       
-      // Check if user has active entitlement
-      const isPro = info.entitlements.active['pro'] !== undefined;
+      // Check if user has active entitlement (uses correct entitlement ID)
+      const isPro = info.entitlements.active[ENTITLEMENT_ID] !== undefined;
       setIsProUser(isPro);
       await storage.setUserTier(isPro ? 'pro' : 'free');
 
@@ -56,7 +59,7 @@ export function useRevenueCat() {
   const purchasePackage = async (pkg: PurchasesPackage): Promise<boolean> => {
     try {
       const { customerInfo } = await Purchases.purchasePackage(pkg);
-      const isPro = customerInfo.entitlements.active['pro'] !== undefined;
+      const isPro = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
       setIsProUser(isPro);
       setCustomerInfo(customerInfo);
       await storage.setUserTier(isPro ? 'pro' : 'free');
@@ -72,7 +75,7 @@ export function useRevenueCat() {
   const restorePurchases = async (): Promise<boolean> => {
     try {
       const customerInfo = await Purchases.restorePurchases();
-      const isPro = customerInfo.entitlements.active['pro'] !== undefined;
+      const isPro = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
       setIsProUser(isPro);
       setCustomerInfo(customerInfo);
       await storage.setUserTier(isPro ? 'pro' : 'free');
