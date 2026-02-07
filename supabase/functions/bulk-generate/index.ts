@@ -532,8 +532,8 @@ Deno.serve(async (req) => {
     if (action === 'start') {
       console.log('Starting bulk generation in background...');
       
-      // Use background task for long-running generation
-      EdgeRuntime.waitUntil(runBulkGeneration(supabase, apiKey, markets));
+      // Start generation (runs synchronously in edge function context)
+      runBulkGeneration(supabase, apiKey, markets).catch(console.error);
 
       return new Response(JSON.stringify({
         message: 'Bulk generation started in background',
