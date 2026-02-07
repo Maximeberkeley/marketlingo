@@ -58,15 +58,17 @@ export function useContent() {
 
     setIsLoading(true);
     try {
-      // Fetch lesson stacks for the given day
+      // Fetch stacks for the given day and market
+      // The stacks table uses tags array with 'day:X' format for day-based content
       const { data: stacks, error } = await supabase
-        .from('lesson_stacks')
+        .from('stacks')
         .select(`
           id,
           title,
           stack_type,
           duration_minutes,
-          xp_reward,
+          market_id,
+          tags,
           slides (
             slide_number,
             title,
@@ -74,7 +76,8 @@ export function useContent() {
             sources
           )
         `)
-        .eq('day_number', day)
+        .eq('market_id', filters.industry)
+        .contains('tags', [`day:${day}`])
         .order('created_at', { ascending: true });
 
       if (error) {
@@ -82,12 +85,23 @@ export function useContent() {
         return;
       }
 
+      // XP rewards based on stack type (matches web app logic)
+      const getXpReward = (stackType: string) => {
+        switch (stackType) {
+          case 'lesson': return 50;
+          case 'news': return 25;
+          case 'game': return 25;
+          case 'drill': return 25;
+          default: return 50;
+        }
+      };
+
       const formattedLessons: Lesson[] = (stacks || []).map((stack: any) => ({
         id: stack.id,
         title: stack.title,
         type: getStackType(stack.stack_type),
         duration: stack.duration_minutes || 5,
-        xpReward: stack.xp_reward || 50,
+        xpReward: getXpReward(stack.stack_type),
         stackType: stack.stack_type,
         slides: (stack.slides || []).sort((a: any, b: any) => a.slide_number - b.slide_number),
         requiresPro: stack.stack_type === 'game' || stack.stack_type === 'drill',

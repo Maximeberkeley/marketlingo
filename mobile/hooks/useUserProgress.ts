@@ -32,27 +32,38 @@ export function useUserProgress() {
         return;
       }
 
-      const { data, error } = await supabase
+      // Fetch user progress
+      const { data: progressData, error: progressError } = await supabase
         .from('user_progress')
         .select('*')
         .eq('user_id', userId)
-        .eq('selected_market', industry)
+        .eq('market_id', industry)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error loading progress:', error);
+      if (progressError && progressError.code !== 'PGRST116') {
+        console.error('Error loading progress:', progressError);
       }
 
-      if (data) {
-        setProgress({
-          currentDay: data.current_day || 1,
-          currentStreak: data.current_streak || 0,
-          longestStreak: data.longest_streak || 0,
-          totalXp: data.total_xp || 0,
-          completedLessons: data.completed_stacks || [],
-          lastCompletedAt: data.last_completed_at ? new Date(data.last_completed_at) : null,
-        });
+      // Fetch XP from user_xp table
+      const { data: xpData, error: xpError } = await supabase
+        .from('user_xp')
+        .select('total_xp, current_level, startup_stage')
+        .eq('user_id', userId)
+        .eq('market_id', industry)
+        .single();
+
+      if (xpError && xpError.code !== 'PGRST116') {
+        console.error('Error loading XP:', xpError);
       }
+
+      setProgress({
+        currentDay: progressData?.current_day || 1,
+        currentStreak: progressData?.current_streak || 0,
+        longestStreak: progressData?.longest_streak || 0,
+        totalXp: xpData?.total_xp || 0,
+        completedLessons: progressData?.completed_stacks || [],
+        lastCompletedAt: progressData?.last_activity_at ? new Date(progressData.last_activity_at) : null,
+      });
     } catch (error) {
       console.error('Error in loadProgress:', error);
     } finally {
