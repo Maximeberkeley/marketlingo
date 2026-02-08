@@ -840,6 +840,7 @@ export type Database = {
           created_at: string
           current_day: number | null
           current_streak: number | null
+          familiarity_level: string | null
           id: string
           last_activity_at: string | null
           longest_streak: number | null
@@ -854,6 +855,7 @@ export type Database = {
           created_at?: string
           current_day?: number | null
           current_streak?: number | null
+          familiarity_level?: string | null
           id?: string
           last_activity_at?: string | null
           longest_streak?: number | null
@@ -868,6 +870,7 @@ export type Database = {
           created_at?: string
           current_day?: number | null
           current_streak?: number | null
+          familiarity_level?: string | null
           id?: string
           last_activity_at?: string | null
           longest_streak?: number | null

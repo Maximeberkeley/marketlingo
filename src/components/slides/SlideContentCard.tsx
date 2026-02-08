@@ -1,6 +1,5 @@
 import { ExternalLink } from "lucide-react";
-import { InlineMascot, shouldShowMascotBreak } from "@/components/mascot";
-import { useMemo } from "react";
+import { SlideMascotCard, getSlidePosition } from "@/components/mascot/SlideMascotCard";
 
 interface Source {
   label: string;
@@ -17,28 +16,6 @@ interface SlideContentCardProps {
   marketId?: string;
 }
 
-// Get an encouraging message based on position
-const getPositionalMessage = (slideIndex: number, totalSlides: number): string | undefined => {
-  const midpoint = Math.floor(totalSlides / 2);
-  
-  if (slideIndex === 0) {
-    const messages = ["Let's dive in!", "Here we go!", "Ready? Let's learn!"];
-    return messages[Math.floor(Math.random() * messages.length)];
-  }
-  
-  if (slideIndex === midpoint && totalSlides > 4) {
-    const messages = ["Halfway there! 💪", "Great progress!", "Keep it up!"];
-    return messages[Math.floor(Math.random() * messages.length)];
-  }
-  
-  if (slideIndex === totalSlides - 1) {
-    const messages = ["Almost done! 🎉", "Final insights!", "You got this!"];
-    return messages[Math.floor(Math.random() * messages.length)];
-  }
-  
-  return undefined;
-};
-
 export function SlideContentCard({ 
   title, 
   body, 
@@ -49,27 +26,18 @@ export function SlideContentCard({
   marketId
 }: SlideContentCardProps) {
   // Determine if this slide should have a mascot
-  const mascotBreakType = shouldShowMascotBreak(slideIndex, totalSlides, false);
-  const showMascot = mascotBreakType !== null;
-  
-  // Memoize the message so it doesn't change on re-renders
-  const mascotMessage = useMemo(
-    () => showMascot ? getPositionalMessage(slideIndex, totalSlides) : undefined,
-    [slideIndex, totalSlides, showMascot]
-  );
-  
-  // Position alternates based on slide
-  const mascotPosition = slideIndex % 2 === 0 ? "left" : "right";
+  const slidePosition = getSlidePosition(slideIndex, totalSlides);
+  const showMascot = slidePosition !== null;
   
   return (
     <div className="flex flex-col gap-4 pb-4">
-      {/* Inline Mascot on strategic slides (first, middle, last) */}
-      {showMascot && (
-        <InlineMascot 
+      {/* Premium Mascot Card on strategic slides (first, middle, last) */}
+      {showMascot && slidePosition && (
+        <SlideMascotCard
+          position={slidePosition}
+          slideIndex={slideIndex}
+          totalSlides={totalSlides}
           marketId={marketId}
-          message={mascotMessage}
-          position={mascotPosition as "left" | "right"}
-          size="md"
         />
       )}
       

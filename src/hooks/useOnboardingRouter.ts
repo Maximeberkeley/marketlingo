@@ -6,8 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
  * 
  * Flow:
  * 1. No market selected -> /select-market
- * 2. Market selected but no familiarity level -> /select-familiarity
+ * 2. Market selected but no familiarity level FOR THAT MARKET -> /select-familiarity
  * 3. Both set -> /home
+ * 
+ * IMPORTANT: Familiarity is stored per-market in user_progress, not globally.
  */
 export function useOnboardingRouter() {
   const navigate = useNavigate();
@@ -17,24 +19,35 @@ export function useOnboardingRouter() {
    */
   const routeToCorrectScreen = async (userId: string) => {
     try {
+      // First get the selected market
       const { data: profile } = await supabase
         .from("profiles")
-        .select("selected_market, familiarity_level")
+        .select("selected_market")
         .eq("id", userId)
         .single();
 
-      if (profile?.selected_market && profile?.familiarity_level) {
-        // User has completed onboarding
-        navigate("/home");
-        return "home";
-      } else if (profile?.selected_market) {
-        // Market selected but no familiarity level
-        navigate("/select-familiarity");
-        return "familiarity";
-      } else {
+      if (!profile?.selected_market) {
         // New user or no market selected
         navigate("/select-market");
         return "market";
+      }
+
+      // Check if user has familiarity set for THIS market
+      const { data: progress } = await supabase
+        .from("user_progress")
+        .select("familiarity_level")
+        .eq("user_id", userId)
+        .eq("market_id", profile.selected_market)
+        .single();
+
+      if (progress?.familiarity_level) {
+        // User has completed onboarding for this market
+        navigate("/home");
+        return "home";
+      } else {
+        // Market selected but no familiarity level for this market
+        navigate("/select-familiarity");
+        return "familiarity";
       }
     } catch (error) {
       console.error("Error checking user state:", error);
