@@ -73,20 +73,19 @@ export default function SelectFamiliarityPage() {
       return;
     }
 
-    // Fetch the selected market to show context
+    // Fetch the selected market and check for existing familiarity
     const fetchMarket = async () => {
       if (!user) return;
       
       try {
         const { data: profile, error } = await supabase
           .from("profiles")
-          .select("selected_market, familiarity_level")
+          .select("selected_market")
           .eq("id", user.id)
           .single();
         
         if (error) {
           console.error("Error fetching profile:", error);
-          // On error, redirect to market selection as safe default
           navigate("/select-market");
           return;
         }
@@ -97,13 +96,21 @@ export default function SelectFamiliarityPage() {
           return;
         }
         
-        // If familiarity already set, go to home
-        if (profile?.familiarity_level) {
+        setSelectedMarket(profile.selected_market);
+        
+        // Check if user already has familiarity for THIS market
+        const { data: progress } = await supabase
+          .from("user_progress")
+          .select("familiarity_level")
+          .eq("user_id", user.id)
+          .eq("market_id", profile.selected_market)
+          .single();
+        
+        // If familiarity already set for this market, go to home
+        if (progress?.familiarity_level) {
           navigate("/home");
           return;
         }
-        
-        setSelectedMarket(profile.selected_market);
       } catch (err) {
         console.error("Error in fetchMarket:", err);
         navigate("/select-market");
@@ -114,21 +121,31 @@ export default function SelectFamiliarityPage() {
   }, [user, authLoading, navigate]);
 
   const handleContinue = async () => {
-    if (!selectedLevel || !user) return;
+    if (!selectedLevel || !user || !selectedMarket) return;
 
     setIsSubmitting(true);
     try {
-      // Update profile with familiarity level
+      // Upsert user_progress with familiarity level for this market
       const { error } = await supabase
-        .from("profiles")
-        .update({ familiarity_level: selectedLevel })
-        .eq("id", user.id);
+        .from("user_progress")
+        .upsert({
+          user_id: user.id,
+          market_id: selectedMarket,
+          familiarity_level: selectedLevel,
+          start_date: new Date().toISOString().split('T')[0], // Today
+        }, { onConflict: "user_id,market_id" });
 
       if (error) {
         console.error("Error updating familiarity level:", error);
         toast.error("Failed to save. Please try again.");
         return;
       }
+
+      // Also update the legacy profiles field for backwards compatibility
+      await supabase
+        .from("profiles")
+        .update({ familiarity_level: selectedLevel })
+        .eq("id", user.id);
 
       // Navigate to home
       navigate("/home");

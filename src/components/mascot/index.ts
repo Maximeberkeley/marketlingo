@@ -13,6 +13,9 @@ export type { LeoRiveState } from "./LeoRive";
 export { MascotBreak, InlineMascot, shouldShowMascotBreak, getRandomCharacter } from "./MascotBreak";
 export type { MascotBreakType, MascotCharacter } from "./MascotBreak";
 
+// Premium Slide Mascot Card
+export { SlideMascotCard, getSlidePosition } from "./SlideMascotCard";
+
 // State management hook (re-export from hooks for convenience)
 export { useMascotState } from "@/hooks/useMascotState";
 
