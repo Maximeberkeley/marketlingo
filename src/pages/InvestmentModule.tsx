@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Progress } from "@/components/ui/progress";
+import { MascotReaction } from "@/components/mascot";
+import { useMascotState } from "@/hooks/useMascotState";
 import { useAuth } from "@/hooks/useAuth";
 import { useInvestmentLab, InvestmentScenario } from "@/hooks/useInvestmentLab";
 import { supabase } from "@/integrations/supabase/client";
@@ -86,6 +88,8 @@ export default function InvestmentModule() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [startTime, setStartTime] = useState<number>(Date.now());
   const [progressRestored, setProgressRestored] = useState(false);
+  const { state: mascotState, handleAnswer: triggerMascotReaction, setIdle } = useMascotState();
+  
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/");
@@ -167,6 +171,9 @@ export default function InvestmentModule() {
     const isCorrect = currentScenario.options[index]?.isCorrect || index === currentScenario.correct_option_index;
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
 
+    // Trigger mascot reaction
+    triggerMascotReaction(isCorrect);
+
     await recordAttempt(currentScenario.id, index, isCorrect, timeSpent);
 
     // Update module score
@@ -190,6 +197,7 @@ export default function InvestmentModule() {
       setSelectedOption(null);
       setShowFeedback(false);
       setStartTime(Date.now());
+      setIdle(); // Reset mascot
     } else {
       // Module complete
       toast.success("Module round complete!");
@@ -268,7 +276,15 @@ export default function InvestmentModule() {
 
         {/* Scenario Content */}
         {currentScenario && (
-          <div className="p-4 space-y-4">
+          <div className="p-4 space-y-4 relative">
+            {/* Reactive Mascot */}
+            <MascotReaction
+              state={mascotState}
+              size="md"
+              position="bottom-right"
+              showMessage={mascotState !== "idle"}
+              className="!bottom-32"
+            />
             {/* Difficulty & Tags */}
             <div className="flex items-center gap-2">
               <span className={cn(

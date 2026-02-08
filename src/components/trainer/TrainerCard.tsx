@@ -4,6 +4,8 @@ import { Button } from "../ui/button";
 import { Bookmark, ArrowRight, MessageCircle, AlertTriangle, Brain, TrendingUp, Briefcase, HelpCircle, X, Sparkles } from "lucide-react";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { truncateOption } from "@/lib/text-utils";
+import { MascotReaction } from "@/components/mascot";
+import { useMascotState } from "@/hooks/useMascotState";
 
 interface TrainerOption {
   label: string;
@@ -98,6 +100,7 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
   const [serverFeedback, setServerFeedback] = useState<ServerFeedback | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { play } = useSoundEffects();
+  const { state: mascotState, setThinking, handleAnswer: triggerMascotReaction, setIdle } = useMascotState();
   
   // Reset state when scenario changes
   useEffect(() => {
@@ -106,7 +109,8 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
     setEvaluation(null);
     setServerFeedback(null);
     setIsSubmitting(false);
-  }, [scenario.question]); // Use question as key since it's unique per scenario
+    setIdle();
+  }, [scenario.question, setIdle]); // Use question as key since it's unique per scenario
   
   const whyExplanation = scenario.whyThisScenario || getWhyThisScenario(scenario.scenario, scenario.question, marketId);
   
@@ -115,6 +119,7 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
     
     setSelectedIndex(index);
     setIsSubmitting(true);
+    setThinking(); // Mascot enters thinking state
     
     try {
       // Submit to server and get feedback
@@ -124,7 +129,8 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
         setServerFeedback(feedback);
         setEvaluation(feedback.isCorrect ? "strong" : "needs-work");
         
-        // Play sound based on result
+        // Trigger mascot and sound based on result
+        triggerMascotReaction(feedback.isCorrect);
         play(feedback.isCorrect ? "correct" : "incorrect");
         
         // Update the options with correct answer from server
@@ -157,6 +163,15 @@ export function TrainerCard({ scenario, onSaveToNotebook, onNext, onAskMentor, o
 
   return (
     <div className="flex flex-col h-full relative">
+      {/* Reactive Mascot - Bottom Right */}
+      <MascotReaction
+        state={mascotState}
+        size="md"
+        position="bottom-right"
+        showMessage={mascotState !== "idle"}
+        className="!bottom-32"
+      />
+      
       {/* Why This Scenario Button - Top Right */}
       <button
         onClick={() => setShowWhyPopup(true)}
