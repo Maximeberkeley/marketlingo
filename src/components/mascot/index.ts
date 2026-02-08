@@ -9,6 +9,10 @@ export { LessonMascot } from "./LessonMascot";
 export { LeoRive, LeoRiveWithFallback, useLeoRiveControls } from "./LeoRive";
 export type { LeoRiveState } from "./LeoRive";
 
+// Mental Break System - Full-body interstitials
+export { MascotBreak, InlineMascot, shouldShowMascotBreak, getRandomCharacter } from "./MascotBreak";
+export type { MascotBreakType, MascotCharacter } from "./MascotBreak";
+
 // Legacy components (for backwards compatibility)
 export { Leo2D } from "./Leo2D";
 export { LeoCelebration } from "./LeoCelebration";

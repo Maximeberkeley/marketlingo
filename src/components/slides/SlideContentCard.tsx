@@ -1,5 +1,6 @@
 import { ExternalLink } from "lucide-react";
-import { MentorGuide } from "./MentorGuide";
+import { InlineMascot, shouldShowMascotBreak } from "@/components/mascot";
+import { useMemo } from "react";
 
 interface Source {
   label: string;
@@ -16,6 +17,28 @@ interface SlideContentCardProps {
   marketId?: string;
 }
 
+// Get an encouraging message based on position
+const getPositionalMessage = (slideIndex: number, totalSlides: number): string | undefined => {
+  const midpoint = Math.floor(totalSlides / 2);
+  
+  if (slideIndex === 0) {
+    const messages = ["Let's dive in!", "Here we go!", "Ready? Let's learn!"];
+    return messages[Math.floor(Math.random() * messages.length)];
+  }
+  
+  if (slideIndex === midpoint && totalSlides > 4) {
+    const messages = ["Halfway there! 💪", "Great progress!", "Keep it up!"];
+    return messages[Math.floor(Math.random() * messages.length)];
+  }
+  
+  if (slideIndex === totalSlides - 1) {
+    const messages = ["Almost done! 🎉", "Final insights!", "You got this!"];
+    return messages[Math.floor(Math.random() * messages.length)];
+  }
+  
+  return undefined;
+};
+
 export function SlideContentCard({ 
   title, 
   body, 
@@ -25,18 +48,28 @@ export function SlideContentCard({
   stackTitle,
   marketId
 }: SlideContentCardProps) {
-  // Only show mentor guide on first and last slides to avoid spam
-  const showMentorGuide = slideIndex === 0 || slideIndex === totalSlides - 1;
+  // Determine if this slide should have a mascot
+  const mascotBreakType = shouldShowMascotBreak(slideIndex, totalSlides, false);
+  const showMascot = mascotBreakType !== null;
+  
+  // Memoize the message so it doesn't change on re-renders
+  const mascotMessage = useMemo(
+    () => showMascot ? getPositionalMessage(slideIndex, totalSlides) : undefined,
+    [slideIndex, totalSlides, showMascot]
+  );
+  
+  // Position alternates based on slide
+  const mascotPosition = slideIndex % 2 === 0 ? "left" : "right";
   
   return (
     <div className="flex flex-col gap-4 pb-4">
-      {/* Mentor Guide only on strategic slides (first & last) */}
-      {showMentorGuide && (
-        <MentorGuide 
-          context={stackTitle}
-          slideIndex={slideIndex}
-          totalSlides={totalSlides}
+      {/* Inline Mascot on strategic slides (first, middle, last) */}
+      {showMascot && (
+        <InlineMascot 
           marketId={marketId}
+          message={mascotMessage}
+          position={mascotPosition as "left" | "right"}
+          size="md"
         />
       )}
       
