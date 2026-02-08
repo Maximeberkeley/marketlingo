@@ -12,6 +12,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { storage, FamiliarityLevel, UserTier } from '../../lib/storage';
 import { COLORS, INDUSTRIES } from '../../lib/constants';
+import { MascotCard, MascotAvatar } from '../../components/mascot';
+import { LEO } from '../../lib/mascots';
 
 interface LessonCard {
   id: string;
@@ -119,13 +121,14 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Greeting */}
-        <View style={styles.greetingSection}>
-          <Text style={styles.greetingEmoji}>🦊</Text>
-          <Text style={styles.greetingText}>
-            {getGreeting()}, let's keep going! 🚀
-          </Text>
-        </View>
+        {/* Mascot Greeting Card */}
+        <MascotCard
+          type="intro"
+          characterEmoji={LEO.emoji}
+          characterName={LEO.name}
+          characterColor={LEO.color}
+          message={`${getGreeting()}! Let's keep going! 🚀`}
+        />
 
         {/* Progress Card */}
         <View style={styles.progressCard}>
@@ -272,19 +275,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: COLORS.textPrimary,
-  },
-  greetingSection: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  greetingEmoji: {
-    fontSize: 80,
-    marginBottom: 8,
-  },
-  greetingText: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
   },
   progressCard: {
     backgroundColor: COLORS.bg2,
