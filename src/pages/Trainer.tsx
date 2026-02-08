@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Loader2, Brain, Sparkles, ChevronRight, Crown } from "lucide-react";
+import { ArrowLeft, Loader2, Brain, ChevronRight, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TrainerCard } from "@/components/trainer/TrainerCard";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { MentorCelebration } from "@/components/mascot/MentorCelebration";
+import { MascotBreak, InlineMascot } from "@/components/mascot";
 import { ProUpsellModal } from "@/components/subscription/ProUpsellModal";
 import { mentors, Mentor } from "@/data/mentors";
 import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
@@ -239,21 +240,21 @@ export default function TrainerPage() {
             animate={{ scale: 1, opacity: 1 }}
             className="w-full"
           >
+            {/* Full-body Mascot Welcome */}
+            <MascotBreak
+              type="intro"
+              marketId={selectedMarket || undefined}
+              message="Time to level up! These scenarios will teach you to think like a pro 🧠"
+              className="mb-6"
+            />
+
             {/* Hero Card with Market-Specific Gradient */}
             <div className={`relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-red-600 via-rose-700 to-pink-900'}`}>
               <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5" />
-              <div className="relative p-6 pt-8 pb-6 min-h-[200px] flex flex-col justify-end">
-                {/* Mentor avatar - positioned with breathing room */}
-                <div className="absolute top-5 right-5">
-                  <img 
-                    src={primaryMentor.avatar} 
-                    alt={primaryMentor.name}
-                    className="w-14 h-14 rounded-full border-2 border-white/30 object-cover object-[50%_30%]"
-                  />
-                </div>
-                <p className="text-white/80 text-caption font-medium mb-2">{marketConfig?.name || 'Industry'} Trainer</p>
-                <h2 className="text-2xl font-bold text-white mb-3 pr-20">Think Like an Expert</h2>
-                <p className="text-white/90 text-body leading-relaxed">
+              <div className="relative p-6 pt-6 pb-5 flex flex-col justify-end">
+                <p className="text-white/80 text-caption font-medium mb-1">{marketConfig?.name || 'Industry'} Trainer</p>
+                <h2 className="text-xl font-bold text-white mb-2">Think Like an Expert</h2>
+                <p className="text-white/80 text-body leading-relaxed">
                   {marketConfig?.trainerDescription || 'Complex scenarios with deep professional feedback.'}
                 </p>
               </div>

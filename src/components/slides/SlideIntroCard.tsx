@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { ChevronRight, BookOpen, TrendingUp, Sparkles, Brain, Cpu, Zap, Leaf, Shield, Rocket, Heart, Bot, Sun, Wind, Tractor, Truck, Coins, Car, FlaskConical, Lock } from "lucide-react";
-import { MentorGuide } from "./MentorGuide";
+import { ChevronRight, BookOpen, TrendingUp, Sparkles, Brain, Cpu, Zap, Leaf, Shield, Rocket, Heart, Bot, Sun, Tractor, Truck, Coins, FlaskConical, Lock } from "lucide-react";
+import { MascotBreak } from "@/components/mascot";
 import { getMarketConfig } from "@/data/marketConfig";
 import { cn } from "@/lib/utils";
 
@@ -59,7 +59,7 @@ export function SlideIntroCard({ stackTitle, stackType, totalSlides, marketId }:
     <div className="flex flex-col">
       {/* Hero Gradient with Market-Specific Styling */}
       <div className={cn(
-        "relative h-64 w-full overflow-hidden rounded-t-2xl",
+        "relative h-48 w-full overflow-hidden rounded-t-2xl",
         "bg-gradient-to-br",
         marketConfig.heroGradient
       )}>
@@ -71,21 +71,18 @@ export function SlideIntroCard({ stackTitle, stackType, totalSlides, marketId }:
         </div>
         
         <div className="absolute inset-0 bg-gradient-to-t from-bg-0 via-bg-0/30 to-transparent" />
-        
-        {/* Mentor Guide positioned on the hero */}
-        <div className="absolute bottom-4 left-4 right-4">
-          <MentorGuide 
-            context={stackTitle} 
-            slideIndex={0}
-            totalSlides={totalSlides}
-            isIntro={true}
-            marketId={marketId}
-          />
-        </div>
       </div>
       
+      {/* Full-body Mascot Break - Random character greets user */}
+      <MascotBreak
+        type="intro"
+        marketId={marketId}
+        message={`Welcome! Let's learn about ${stackTitle}.`}
+        className="-mt-12 mx-4 relative z-10"
+      />
+      
       {/* Content Section */}
-      <div className="flex flex-col items-center justify-center text-center p-6 bg-bg-1 rounded-b-2xl -mt-4 pt-8">
+      <div className="flex flex-col items-center justify-center text-center p-6 bg-bg-1 rounded-b-2xl mt-4">
         <div className={cn(
           "w-14 h-14 rounded-2xl flex items-center justify-center mb-4",
           "bg-gradient-to-br shadow-lg",

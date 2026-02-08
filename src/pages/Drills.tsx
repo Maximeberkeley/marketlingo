@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Timer, CheckCircle, XCircle, RotateCcw, Loader2, Target, Lightbulb, TrendingUp, Zap, Sparkles, ChevronRight } from "lucide-react";
+import { ArrowLeft, Timer, CheckCircle, XCircle, RotateCcw, Loader2, Target, TrendingUp, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { MentorCelebration } from "@/components/mascot/MentorCelebration";
+import { MascotBreak, InlineMascot, getRandomCharacter } from "@/components/mascot";
 import { DailyLimitGate, RemainingCount } from "@/components/subscription/DailyLimitGate";
 import { mentors, Mentor } from "@/data/mentors";
 import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
@@ -269,21 +270,21 @@ export default function DrillsPage() {
             animate={{ scale: 1, opacity: 1 }}
             className="w-full max-w-md"
           >
+            {/* Full-body Mascot Welcome */}
+            <MascotBreak
+              type="intro"
+              marketId={selectedMarket || undefined}
+              message="Let's test your instincts! 15 seconds per question — trust your gut! 🎯"
+              className="mb-6"
+            />
+
             {/* Hero Card with Market-Specific Gradient */}
             <div className={`relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-amber-600 via-orange-700 to-red-900'}`}>
               <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5" />
-              <div className="relative p-6 pt-8 pb-6 min-h-[200px] flex flex-col justify-end">
-                {/* Mentor avatar - positioned with breathing room */}
-                <div className="absolute top-5 right-5">
-                  <img 
-                    src={primaryMentor.avatar} 
-                    alt={primaryMentor.name}
-                    className="w-14 h-14 rounded-full border-2 border-white/30 object-cover object-[50%_30%]"
-                  />
-                </div>
-                <p className="text-white/80 text-caption font-medium mb-2">{marketConfig?.name || 'Industry'} Drills</p>
-                <h2 className="text-2xl font-bold text-white mb-3 pr-20">15-Second Challenges</h2>
-                <p className="text-white/90 text-body leading-relaxed">
+              <div className="relative p-6 pt-6 pb-5 flex flex-col justify-end">
+                <p className="text-white/80 text-caption font-medium mb-1">{marketConfig?.name || 'Industry'} Drills</p>
+                <h2 className="text-xl font-bold text-white mb-2">15-Second Challenges</h2>
+                <p className="text-white/80 text-body leading-relaxed">
                   {marketConfig?.drillDescription || 'Rapid-fire True/False to build pattern recognition.'}
                 </p>
               </div>
@@ -483,6 +484,17 @@ export default function DrillsPage() {
             exit={{ opacity: 0, x: -20 }}
             className="flex-1 flex flex-col"
           >
+            {/* Show mascot on first and last question */}
+            {(currentQuestion === 0 || currentQuestion === questions.length - 1) && (
+              <InlineMascot
+                marketId={selectedMarket || undefined}
+                message={currentQuestion === 0 ? "You got this! 💪" : "Almost there!"}
+                position={currentQuestion === 0 ? "left" : "right"}
+                size="sm"
+                className="mb-3"
+              />
+            )}
+            
             <span className="chip-accent w-fit mb-4">{question.category}</span>
 
             <div className="flex-1 flex items-center">
