@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { MentorCelebration } from "@/components/mascot/MentorCelebration";
-import { MascotBreak, InlineMascot, getRandomCharacter } from "@/components/mascot";
+import { MascotBreak, InlineMascot, MascotReaction, getRandomCharacter } from "@/components/mascot";
 import { DailyLimitGate, RemainingCount } from "@/components/subscription/DailyLimitGate";
 import { mentors, Mentor } from "@/data/mentors";
 import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useContentAccess } from "@/hooks/useContentAccess";
 import { smartTruncate } from "@/lib/text-utils";
+import { useMascotState } from "@/hooks/useMascotState";
 
 interface DrillQuestion {
   id: string;
@@ -43,6 +44,7 @@ export default function DrillsPage() {
   const [showIntro, setShowIntro] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showLimitGate, setShowLimitGate] = useState(false);
+  const { state: mascotState, handleAnswer: triggerMascotReaction, setIdle } = useMascotState();
   
   // Get market config for theming
   const marketConfig = selectedMarket ? getMarketConfig(selectedMarket) : null;
@@ -163,7 +165,10 @@ export default function DrillsPage() {
     setShowResult(true);
     setIsTimerActive(false);
 
-    if (answer === question.isTrue) {
+    const isCorrect = answer === question.isTrue;
+    triggerMascotReaction(isCorrect);
+
+    if (isCorrect) {
       setScore((prev) => prev + 1);
     }
   };
@@ -175,6 +180,7 @@ export default function DrillsPage() {
       setShowResult(false);
       setTimeLeft(15);
       setIsTimerActive(true);
+      setIdle(); // Reset mascot
     } else {
       setDrillComplete(true);
       const finalScore = score + (isCorrect ? 1 : 0);
@@ -475,7 +481,16 @@ export default function DrillsPage() {
       </div>
 
       {/* Question - with bottom safe area for scroll content */}
-      <div className="flex-1 screen-padding py-6 flex flex-col overflow-y-auto modal-bottom-safe">
+      <div className="flex-1 screen-padding py-6 flex flex-col overflow-y-auto modal-bottom-safe relative">
+        {/* Reactive Mascot - floats at bottom right */}
+        <MascotReaction
+          state={mascotState}
+          size="md"
+          position="bottom-right"
+          showMessage={mascotState !== "idle"}
+          className="!bottom-32"
+        />
+        
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestion}

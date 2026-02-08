@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { MentorCelebration } from "@/components/mascot/MentorCelebration";
-import { MascotBreak, InlineMascot, getRandomCharacter } from "@/components/mascot";
+import { MascotBreak, InlineMascot, MascotReaction, getRandomCharacter } from "@/components/mascot";
 import { LeoMascot, getRandomLeoMessage } from "@/components/mascot/LeoMascot";
 import { DailyLimitGate, RemainingCount } from "@/components/subscription/DailyLimitGate";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+import { useMascotState } from "@/hooks/useMascotState";
 import { useContentAccess } from "@/hooks/useContentAccess";
 import { mentors, Mentor } from "@/data/mentors";
 import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
@@ -46,6 +47,7 @@ export default function GamesPage() {
   const [leoMessage, setLeoMessage] = useState<string | null>(null);
   const [showLimitGate, setShowLimitGate] = useState(false);
   const { play } = useSoundEffects();
+  const { state: mascotState, handleAnswer: triggerMascotReaction, setIdle } = useMascotState();
   
   // Get market config for theming
   const marketConfig = selectedMarket ? getMarketConfig(selectedMarket) : null;
@@ -151,7 +153,10 @@ export default function GamesPage() {
     setSelectedAnswer(index);
     setShowResult(true);
 
-    if (index === question.correctAnswer) {
+    const isCorrect = index === question.correctAnswer;
+    triggerMascotReaction(isCorrect);
+    
+    if (isCorrect) {
       setScore((prev) => prev + 1);
       play("correct");
       setLeoMessage(getRandomLeoMessage("correct"));
@@ -166,6 +171,7 @@ export default function GamesPage() {
       setCurrentQuestion((prev) => prev + 1);
       setSelectedAnswer(null);
       setShowResult(false);
+      setIdle(); // Reset mascot
     } else {
       const finalScore = score + (isCorrect ? 1 : 0);
       
@@ -443,7 +449,16 @@ export default function GamesPage() {
       </div>
 
       {/* Question - with bottom safe area for scroll content */}
-      <div className="flex-1 screen-padding py-6 overflow-y-auto modal-bottom-safe">
+      <div className="flex-1 screen-padding py-6 overflow-y-auto modal-bottom-safe relative">
+        {/* Reactive Mascot - floats at bottom right during questions */}
+        <MascotReaction
+          state={mascotState}
+          size="md"
+          position="bottom-right"
+          showMessage={mascotState !== "idle"}
+          className="!bottom-32"
+        />
+        
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestion}

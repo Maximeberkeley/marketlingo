@@ -13,6 +13,9 @@ export type { LeoRiveState } from "./LeoRive";
 export { MascotBreak, InlineMascot, shouldShowMascotBreak, getRandomCharacter } from "./MascotBreak";
 export type { MascotBreakType, MascotCharacter } from "./MascotBreak";
 
+// State management hook (re-export from hooks for convenience)
+export { useMascotState } from "@/hooks/useMascotState";
+
 // Legacy components (for backwards compatibility)
 export { Leo2D } from "./Leo2D";
 export { LeoCelebration } from "./LeoCelebration";
