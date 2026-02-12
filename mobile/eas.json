@@ -30,9 +30,9 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "",
-        "ascAppId": "",
-        "appleTeamId": ""
+        "appleId": "maximelucas@berkeley.edu",
+        "ascAppId": "6758534066",
+        "appleTeamId": "PM32G4952G"
       }
     }
   }
