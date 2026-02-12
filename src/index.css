@@ -335,3 +335,9 @@
     -webkit-touch-callout: none;
   }
 }
+
+/* Leo breathing animation - GPU accelerated CSS */
+@keyframes leo-breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-1.5px) scale(1.005); }
+}

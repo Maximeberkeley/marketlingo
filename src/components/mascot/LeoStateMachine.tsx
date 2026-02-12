@@ -1,5 +1,4 @@
-import { useEffect, useState, createContext, useContext, ReactNode, useCallback } from "react";
-import { motion, useAnimation } from "framer-motion";
+import { useState, createContext, useContext, ReactNode, useCallback } from "react";
 import leoSticker from "@/assets/leo-sticker.png";
 
 // ============================================
@@ -93,8 +92,6 @@ export function LeoPuppet({
   variant = "normal",
   className,
 }: LeoPuppetProps) {
-  const bodyCtrl = useAnimation();
-
   // Mood filter
   const filter =
     variant === "sick"
@@ -104,15 +101,6 @@ export function LeoPuppet({
       : variant === "happy"
       ? "saturate(1.1) brightness(1.03)"
       : "none";
-
-  // Very subtle breathing animation only
-  useEffect(() => {
-    bodyCtrl.start({
-      y: [0, -1.5, 0],
-      scale: [1, 1.005, 1],
-      transition: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-    });
-  }, [bodyCtrl]);
 
   return (
     <div
@@ -139,15 +127,15 @@ export function LeoPuppet({
         }}
       />
 
-      {/* Leo image with subtle breathing */}
-      <motion.div
-        animate={bodyCtrl}
+      {/* Leo image with CSS breathing animation */}
+      <div
         style={{
           position: "absolute",
           width: "100%",
           height: "100%",
           transformOrigin: "50% 75%",
           filter: `drop-shadow(0 4px 8px rgba(0,0,0,0.15)) ${filter}`,
+          animation: "leo-breathe 4s ease-in-out infinite",
         }}
       >
         <img
@@ -162,7 +150,7 @@ export function LeoPuppet({
             pointerEvents: "none",
           }}
         />
-      </motion.div>
+      </div>
     </div>
   );
 }
