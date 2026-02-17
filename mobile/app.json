@@ -17,7 +17,8 @@
       "supportsTablet": false,
       "bundleIdentifier": "app.marketlingo.aerospace",
       "infoPlist": {
-        "UIUserInterfaceStyle": "Dark"
+        "UIUserInterfaceStyle": "Dark",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -34,7 +35,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": ""
+        "projectId": "d71827be-8e4e-4959-baa8-94a363c4ff4f"
       },
       "router": {
         "origin": false
@@ -55,6 +56,7 @@
           }
         }
       ]
-    ]
+    ],
+    "owner": "maxime020707"
   }
 }
