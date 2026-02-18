@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Image,
+  ImageBackground,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -15,6 +17,43 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProgressBar } from '../components/ui/ProgressBar';
+
+// Market-specific hero images
+const MARKET_HERO_IMAGES: Record<string, any> = {
+  aerospace: require('../assets/markets/aerospace-hero.jpg'),
+  neuroscience: require('../assets/markets/neuroscience-hero.jpg'),
+  ai: require('../assets/markets/ai-hero.jpg'),
+  fintech: require('../assets/markets/fintech-hero.jpg'),
+  ev: require('../assets/markets/ev-hero.jpg'),
+  biotech: require('../assets/markets/biotech-hero.jpg'),
+  cleanenergy: require('../assets/markets/cleanenergy-hero.jpg'),
+  agtech: require('../assets/markets/agtech-hero.jpg'),
+  climatetech: require('../assets/markets/climatetech-hero.jpg'),
+  cybersecurity: require('../assets/markets/cybersecurity-hero.jpg'),
+  spacetech: require('../assets/markets/spacetech-hero.jpg'),
+  robotics: require('../assets/markets/robotics-hero.jpg'),
+  healthtech: require('../assets/markets/healthtech-hero.jpg'),
+  logistics: require('../assets/markets/logistics-hero.jpg'),
+  web3: require('../assets/markets/web3-hero.jpg'),
+};
+
+const MARKET_ACCENT_COLORS: Record<string, string> = {
+  aerospace: '#8B5CF6',
+  neuroscience: '#F43F5E',
+  ai: '#3B82F6',
+  fintech: '#10B981',
+  ev: '#06B6D4',
+  biotech: '#EC4899',
+  cleanenergy: '#F59E0B',
+  agtech: '#22C55E',
+  climatetech: '#14B8A6',
+  cybersecurity: '#EF4444',
+  spacetech: '#6366F1',
+  robotics: '#64748B',
+  healthtech: '#0EA5E9',
+  logistics: '#F97316',
+  web3: '#7C3AED',
+};
 
 interface TrainerScenario {
   id: string;
@@ -148,42 +187,78 @@ export default function TrainerScreen() {
     );
   }
 
+  const accentColor = MARKET_ACCENT_COLORS[selectedMarket || 'aerospace'] || '#8B5CF6';
+  const heroImage = MARKET_HERO_IMAGES[selectedMarket || 'aerospace'];
+
   // Intro screen
   if (showIntro && scenarios.length > 0) {
     return (
       <View style={styles.container}>
         <ScrollView
-          contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
+          contentContainerStyle={[styles.scrollContent, { paddingTop: 0, paddingBottom: insets.bottom + 40 }]}
           showsVerticalScrollIndicator={false}
         >
-          <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-            <Text style={styles.backText}>← Back</Text>
-          </TouchableOpacity>
-
-          <View style={styles.introCenter}>
-            <LeoCharacter size="xl" animation="waving" />
-            <Text style={styles.introMsg}>Time to level up! These scenarios will teach you to think like a pro 🧠</Text>
-          </View>
-
-          <View style={styles.heroCard}>
-            <Text style={styles.heroLabel}>Industry Trainer</Text>
-            <Text style={styles.heroTitle}>Think Like an Expert</Text>
-            <Text style={styles.heroDesc}>Complex scenarios with deep professional feedback.</Text>
-          </View>
-
-          <View style={styles.featuresCard}>
-            <Text style={styles.featuresTitle}>What you'll learn</Text>
-            {['Real-world decision scenarios', 'Pro reasoning breakdowns', 'Common mistake analysis', 'Mental models for founders'].map((f, i) => (
-              <View key={i} style={styles.featureRow}>
-                <View style={styles.featureDot} />
-                <Text style={styles.featureText}>{f}</Text>
+          {/* Hero Image Banner */}
+          <ImageBackground
+            source={heroImage}
+            style={[styles.heroBanner, { paddingTop: insets.top + 16 }]}
+            imageStyle={{ borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}
+          >
+            <View style={styles.heroBannerOverlay}>
+              <TouchableOpacity style={styles.backBtnOverlay} onPress={() => router.back()}>
+                <Text style={styles.backTextLight}>← Back</Text>
+              </TouchableOpacity>
+              <View style={styles.heroBannerContent}>
+                <View style={[styles.heroBadge, { backgroundColor: accentColor + 'CC' }]}>
+                  <Text style={styles.heroBadgeText}>🧠 INDUSTRY TRAINER</Text>
+                </View>
+                <Text style={styles.heroBannerTitle}>Think Like an Expert</Text>
+                <Text style={styles.heroBannerSubtitle}>Complex scenarios with deep professional feedback</Text>
+                <View style={styles.heroBannerStats}>
+                  <View style={styles.heroBannerStat}>
+                    <Text style={styles.heroBannerStatNum}>{scenarios.length}</Text>
+                    <Text style={styles.heroBannerStatLabel}>Scenarios</Text>
+                  </View>
+                  <View style={styles.heroBannerDivider} />
+                  <View style={styles.heroBannerStat}>
+                    <Text style={styles.heroBannerStatNum}>+50</Text>
+                    <Text style={styles.heroBannerStatLabel}>XP each</Text>
+                  </View>
+                  <View style={styles.heroBannerDivider} />
+                  <View style={styles.heroBannerStat}>
+                    <Text style={styles.heroBannerStatNum}>PRO</Text>
+                    <Text style={styles.heroBannerStatLabel}>Feedback</Text>
+                  </View>
+                </View>
               </View>
-            ))}
-          </View>
+            </View>
+          </ImageBackground>
 
-          <TouchableOpacity style={styles.ctaButton} onPress={() => setShowIntro(false)}>
-            <Text style={styles.ctaText}>Start Training →</Text>
-          </TouchableOpacity>
+          <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
+            <View style={styles.introCenter}>
+              <LeoCharacter size="lg" animation="waving" />
+              <Text style={styles.introMsg}>Time to level up! These scenarios will teach you to think like a pro 🧠</Text>
+            </View>
+
+            <View style={styles.featuresCard}>
+              <Text style={styles.featuresTitle}>What you'll master</Text>
+              {[
+                { icon: '🎯', text: 'Real-world decision scenarios' },
+                { icon: '💡', text: 'Pro reasoning breakdowns' },
+                { icon: '⚠️', text: 'Common mistake analysis' },
+                { icon: '🧩', text: 'Mental models for founders' },
+              ].map((f, i) => (
+                <View key={i} style={styles.featureRow}>
+                  <Text style={styles.featureIcon}>{f.icon}</Text>
+                  <Text style={styles.featureText}>{f.text}</Text>
+                </View>
+              ))}
+            </View>
+
+            <TouchableOpacity style={[styles.ctaButton, { backgroundColor: accentColor }]} onPress={() => setShowIntro(false)}>
+              <Text style={styles.ctaText}>Start Training →</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </View>
     );
@@ -294,6 +369,30 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: 'center', justifyContent: 'center', padding: 24 },
   scrollContent: { paddingHorizontal: 16 },
+  // Hero banner styles
+  heroBanner: { height: 280, width: '100%' },
+  heroBannerOverlay: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.55)',
+    borderBottomLeftRadius: 24, borderBottomRightRadius: 24,
+    paddingHorizontal: 20, paddingBottom: 24,
+    justifyContent: 'space-between',
+  },
+  backBtnOverlay: { alignSelf: 'flex-start', marginBottom: 12 },
+  backTextLight: { fontSize: 15, color: 'rgba(255,255,255,0.85)' },
+  heroBannerContent: { gap: 10 },
+  heroBadge: {
+    alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 5,
+    borderRadius: 10,
+  },
+  heroBadgeText: { fontSize: 11, fontWeight: '700', color: '#FFFFFF', letterSpacing: 0.5 },
+  heroBannerTitle: { fontSize: 26, fontWeight: '800', color: '#FFFFFF', lineHeight: 32 },
+  heroBannerSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 18 },
+  heroBannerStats: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
+  heroBannerStat: { flex: 1, alignItems: 'center' },
+  heroBannerDivider: { width: 1, height: 28, backgroundColor: 'rgba(255,255,255,0.3)' },
+  heroBannerStatNum: { fontSize: 18, fontWeight: '700', color: '#FFFFFF' },
+  heroBannerStatLabel: { fontSize: 10, color: 'rgba(255,255,255,0.65)', marginTop: 2 },
+  // Legacy / active
   backBtn: { marginBottom: 12 },
   backText: { fontSize: 15, color: COLORS.textSecondary },
   header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
@@ -301,21 +400,15 @@ const styles = StyleSheet.create({
   headerSub: { fontSize: 12, color: COLORS.textMuted },
   introCenter: { alignItems: 'center', marginBottom: 20 },
   introMsg: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginTop: 12, lineHeight: 20 },
-  heroCard: {
-    padding: 20, borderRadius: 16, marginBottom: 16,
-    backgroundColor: 'rgba(239, 68, 68, 0.15)', borderWidth: 1, borderColor: 'rgba(239, 68, 68, 0.3)',
-  },
-  heroLabel: { fontSize: 12, color: 'rgba(239, 68, 68, 0.8)', fontWeight: '500', marginBottom: 4 },
-  heroTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 6 },
-  heroDesc: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19 },
   featuresCard: {
     backgroundColor: COLORS.bg2, borderRadius: 16, padding: 16, marginBottom: 16,
     borderWidth: 1, borderColor: COLORS.border,
   },
   featuresTitle: { fontSize: 16, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 12 },
-  featureRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 },
+  featureRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
+  featureIcon: { fontSize: 18, width: 28 },
   featureDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#EF4444' },
-  featureText: { fontSize: 14, color: COLORS.textSecondary },
+  featureText: { fontSize: 14, color: COLORS.textSecondary, flex: 1 },
   ctaButton: {
     backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center',
   },
