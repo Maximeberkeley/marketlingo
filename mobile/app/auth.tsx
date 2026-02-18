@@ -10,12 +10,12 @@ import {
   Platform,
   ScrollView,
   Alert,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
-import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { supabase } from '../lib/supabase';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri } from 'expo-auth-session';
@@ -97,9 +97,13 @@ export default function AuthScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Leo */}
+        {/* Leo Graduation Mascot */}
         <View style={styles.leoSection}>
-          <LeoCharacter size="xl" animation="waving" />
+          <Image
+            source={require('../assets/leo-graduation.png')}
+            style={styles.leoImage}
+            resizeMode="contain"
+          />
           <Text style={styles.appName}>MarketLingo</Text>
           <Text style={styles.tagline}>Master any industry in 6 months</Text>
         </View>
@@ -192,7 +196,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   scrollContent: { paddingHorizontal: 24, flexGrow: 1 },
   leoSection: { alignItems: 'center', marginBottom: 32 },
-  appName: { fontSize: 28, fontWeight: '700', color: COLORS.textPrimary, marginTop: 12 },
+  leoImage: { width: 160, height: 160 },
+  appName: { fontSize: 28, fontWeight: '700', color: COLORS.textPrimary, marginTop: 8 },
   tagline: { fontSize: 14, color: COLORS.textMuted, marginTop: 4 },
   form: { flex: 1 },
   formTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 24 },

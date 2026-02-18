@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { router } from 'expo-router';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, Image, Text } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 
@@ -35,7 +35,14 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color="#8B5CF6" />
+      <Image
+        source={require('../assets/leo-graduation.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+      <Text style={styles.appName}>MarketLingo</Text>
+      <Text style={styles.tagline}>Master any industry in 6 months</Text>
+      <ActivityIndicator size="large" color="#8B5CF6" style={{ marginTop: 40 }} />
     </View>
   );
 }
@@ -46,5 +53,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#0B1020',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  logo: {
+    width: 140,
+    height: 140,
+    marginBottom: 12,
+  },
+  appName: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  tagline: {
+    fontSize: 14,
+    color: '#64748B',
   },
 });
