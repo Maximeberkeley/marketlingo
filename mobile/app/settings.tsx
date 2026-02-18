@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,18 +7,186 @@ import {
   TouchableOpacity,
   Switch,
   Alert,
+  Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../lib/supabase';
+
+// Configure foreground notification behavior
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
+async function registerForPushNotifications(): Promise<string | null> {
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+    });
+  }
+
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+
+  if (existingStatus !== 'granted') {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+
+  if (finalStatus !== 'granted') {
+    return null;
+  }
+
+  try {
+    const projectId =
+      Constants?.expoConfig?.extra?.eas?.projectId ??
+      Constants?.easConfig?.projectId;
+
+    const tokenData = projectId
+      ? await Notifications.getExpoPushTokenAsync({ projectId })
+      : await Notifications.getExpoPushTokenAsync();
+
+    return tokenData.data;
+  } catch (e) {
+    console.warn('Could not get push token:', e);
+    return null;
+  }
+}
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const { user, resetPassword } = useAuth();
-  const [pushEnabled, setPushEnabled] = useState(true);
+  const [pushEnabled, setPushEnabled] = useState(false);
   const [dailyReminder, setDailyReminder] = useState(true);
   const [streakAlerts, setStreakAlerts] = useState(true);
+  const [pushToken, setPushToken] = useState<string | null>(null);
+  const [registering, setRegistering] = useState(false);
+  const [prefsLoaded, setPrefsLoaded] = useState(false);
+  const notificationListener = useRef<any>(null);
+
+  // Load saved preferences from profile
+  useEffect(() => {
+    const loadPrefs = async () => {
+      if (!user) return;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('push_token, notification_preferences')
+        .eq('id', user.id)
+        .single();
+
+      if (profile) {
+        const hasToken = !!profile.push_token;
+        setPushToken(profile.push_token || null);
+        setPushEnabled(hasToken);
+
+        const prefs = profile.notification_preferences as any;
+        if (prefs) {
+          setDailyReminder(prefs.dailyReminder ?? true);
+          setStreakAlerts(prefs.streakReminders ?? true);
+        }
+      }
+      setPrefsLoaded(true);
+    };
+    loadPrefs();
+  }, [user]);
+
+  // Listen for incoming notifications while app is open
+  useEffect(() => {
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      Alert.alert(
+        notification.request.content.title || 'Notification',
+        notification.request.content.body || ''
+      );
+    });
+    return () => {
+      if (notificationListener.current) {
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      }
+    };
+  }, []);
+
+  const handleTogglePush = async (value: boolean) => {
+    if (value) {
+      // Enable: register for push notifications
+      setRegistering(true);
+      try {
+        const token = await registerForPushNotifications();
+        if (!token) {
+          Alert.alert(
+            'Permission Required',
+            'Please enable notifications in your device Settings to receive alerts.',
+            [{ text: 'OK' }]
+          );
+          setPushEnabled(false);
+          return;
+        }
+
+        setPushToken(token);
+        setPushEnabled(true);
+
+        // Save token to profile
+        await supabase
+          .from('profiles')
+          .update({ push_token: token })
+          .eq('id', user!.id);
+
+        Alert.alert('Notifications Enabled! 🔔', 'You\'ll receive daily reminders and streak alerts.');
+      } catch (e) {
+        console.error('Push registration error:', e);
+        setPushEnabled(false);
+      } finally {
+        setRegistering(false);
+      }
+    } else {
+      // Disable: remove token from profile
+      setPushEnabled(false);
+      setPushToken(null);
+      await supabase
+        .from('profiles')
+        .update({ push_token: null })
+        .eq('id', user!.id);
+
+      Alert.alert('Notifications Disabled', 'You won\'t receive push notifications.');
+    }
+  };
+
+  const handleTogglePref = async (key: 'dailyReminder' | 'streakAlerts', value: boolean) => {
+    if (key === 'dailyReminder') setDailyReminder(value);
+    if (key === 'streakAlerts') setStreakAlerts(value);
+
+    if (!user) return;
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('notification_preferences')
+      .eq('id', user.id)
+      .single();
+
+    const currentPrefs = (profile?.notification_preferences as any) || {};
+    const updated = {
+      ...currentPrefs,
+      dailyReminder: key === 'dailyReminder' ? value : dailyReminder,
+      streakReminders: key === 'streakAlerts' ? value : streakAlerts,
+    };
+
+    await supabase
+      .from('profiles')
+      .update({ notification_preferences: updated })
+      .eq('id', user.id);
+  };
 
   const handleResetPassword = async () => {
     if (!user?.email) return;
@@ -75,44 +243,63 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>NOTIFICATIONS</Text>
 
+          {/* Push toggle */}
           <View style={styles.settingRow}>
             <View style={{ flex: 1 }}>
               <Text style={styles.settingLabel}>Push Notifications</Text>
-              <Text style={styles.settingDesc}>Receive updates and reminders</Text>
+              <Text style={styles.settingDesc}>
+                {pushEnabled && pushToken
+                  ? '✅ Registered — you\'ll receive alerts'
+                  : 'Enable to receive reminders and alerts'}
+              </Text>
             </View>
-            <Switch
-              value={pushEnabled}
-              onValueChange={setPushEnabled}
-              trackColor={{ false: COLORS.bg1, true: COLORS.accent }}
-              thumbColor="#FFFFFF"
-            />
+            {registering ? (
+              <ActivityIndicator size="small" color={COLORS.accent} />
+            ) : (
+              <Switch
+                value={pushEnabled}
+                onValueChange={handleTogglePush}
+                trackColor={{ false: COLORS.bg1, true: COLORS.accent }}
+                thumbColor="#FFFFFF"
+                disabled={!prefsLoaded}
+              />
+            )}
           </View>
 
-          <View style={styles.settingRow}>
+          <View style={[styles.settingRow, !pushEnabled && { opacity: 0.45 }]}>
             <View style={{ flex: 1 }}>
               <Text style={styles.settingLabel}>Daily Reminder</Text>
               <Text style={styles.settingDesc}>Get reminded to complete your lesson</Text>
             </View>
             <Switch
               value={dailyReminder}
-              onValueChange={setDailyReminder}
+              onValueChange={(v) => handleTogglePref('dailyReminder', v)}
               trackColor={{ false: COLORS.bg1, true: COLORS.accent }}
               thumbColor="#FFFFFF"
+              disabled={!pushEnabled}
             />
           </View>
 
-          <View style={styles.settingRow}>
+          <View style={[styles.settingRow, !pushEnabled && { opacity: 0.45 }]}>
             <View style={{ flex: 1 }}>
               <Text style={styles.settingLabel}>Streak Alerts</Text>
               <Text style={styles.settingDesc}>Warning when streak is at risk</Text>
             </View>
             <Switch
               value={streakAlerts}
-              onValueChange={setStreakAlerts}
+              onValueChange={(v) => handleTogglePref('streakAlerts', v)}
               trackColor={{ false: COLORS.bg1, true: COLORS.accent }}
               thumbColor="#FFFFFF"
+              disabled={!pushEnabled}
             />
           </View>
+
+          {/* Token debug info (subtle) */}
+          {pushEnabled && pushToken && (
+            <View style={styles.tokenCard}>
+              <Text style={styles.tokenLabel}>📱 Device registered for push</Text>
+            </View>
+          )}
         </View>
 
         {/* Account */}
@@ -189,6 +376,11 @@ const styles = StyleSheet.create({
   },
   settingLabel: { fontSize: 15, fontWeight: '500', color: COLORS.textPrimary },
   settingDesc: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
+  tokenCard: {
+    backgroundColor: 'rgba(34,197,94,0.08)', borderRadius: 10, padding: 10,
+    borderWidth: 1, borderColor: 'rgba(34,197,94,0.2)', marginTop: 4,
+  },
+  tokenLabel: { fontSize: 12, color: '#22C55E', fontWeight: '500' },
   infoRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, marginBottom: 8,

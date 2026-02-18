@@ -17,6 +17,10 @@ import { useAuth } from '../hooks/useAuth';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { useInvestmentLab, CERTIFICATION_THRESHOLDS } from '../hooks/useInvestmentLab';
 import { useSubscription } from '../hooks/useSubscription';
+import { MentorChatOverlay } from '../components/ai/MentorChatOverlay';
+import { getMentorForContext } from '../data/mentors';
+import type { Mentor } from '../data/mentors';
+
 
 // Market-specific hero images
 const MARKET_HERO_IMAGES: Record<string, any> = {
@@ -68,6 +72,9 @@ export default function InvestmentLabScreen() {
   const { isProUser } = useSubscription();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [marketLoading, setMarketLoading] = useState(true);
+  const [mentorChatVisible, setMentorChatVisible] = useState(false);
+  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
+
 
   useEffect(() => {
     const fetchMarket = async () => {
@@ -84,6 +91,12 @@ export default function InvestmentLabScreen() {
   const loading = marketLoading || labLoading;
   const overallProgress = getOverallProgress();
 
+  const handleOpenMentorChat = () => {
+    const mentor = getMentorForContext('growth', selectedMarket || 'aerospace');
+    setActiveMentor(mentor);
+    setMentorChatVisible(true);
+  };
+
   const handleModulePress = (moduleId: string) => {
     if (!isProUser) {
       Alert.alert('Pro Feature', 'Investment Lab requires Pro. Upgrade to access.', [
@@ -98,6 +111,7 @@ export default function InvestmentLabScreen() {
     }
     router.push({ pathname: '/investment-module', params: { moduleId } });
   };
+
 
   const heroImage = MARKET_HERO_IMAGES[selectedMarket || 'aerospace'];
   const accentColor = MARKET_ACCENT_COLORS[selectedMarket || 'aerospace'] || '#8B5CF6';
@@ -281,8 +295,29 @@ export default function InvestmentLabScreen() {
             </View>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
+
+          {/* Chat with Mentor */}
+          <TouchableOpacity style={styles.mentorChatCard} onPress={handleOpenMentorChat}>
+            <Text style={{ fontSize: 24 }}>💬</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.watchlistTitle}>Ask Your Investment Mentor</Text>
+              <Text style={styles.watchlistDesc}>Get AI-powered investment guidance</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Mentor Chat Overlay */}
+      {activeMentor && (
+        <MentorChatOverlay
+          visible={mentorChatVisible}
+          mentor={activeMentor}
+          onClose={() => setMentorChatVisible(false)}
+          marketId={selectedMarket || undefined}
+          context={`Investment Lab for the ${selectedMarket || 'industry'} market. Overall progress: ${overallProgress}%. Modules: Valuation ${progress?.valuation_score || 0}%, Due Diligence ${progress?.due_diligence_score || 0}%, Risk Assessment ${progress?.risk_assessment_score || 0}%, Portfolio ${progress?.portfolio_construction_score || 0}%. Certified: ${progress?.investment_certified ? 'Yes' : 'No'}.`}
+        />
+      )}
     </View>
   );
 }
@@ -357,4 +392,9 @@ const styles = StyleSheet.create({
   watchlistTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
   watchlistDesc: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
   chevron: { fontSize: 22, color: COLORS.textMuted },
+  mentorChatCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: 'rgba(139, 92, 246, 0.08)', borderRadius: 14, padding: 16, marginTop: 10,
+    borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.2)',
+  },
 });
