@@ -25,6 +25,16 @@ import { ProgressBar } from '../../components/ui/ProgressBar';
 import { LessonCard } from '../../components/ui/LessonCard';
 import { SlideReader } from '../../components/slides/SlideReader';
 
+interface NewsItem {
+  id: string;
+  title: string;
+  summary: string | null;
+  source_name: string;
+  source_url: string;
+  published_at: string;
+  category_tag: string | null;
+}
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { user, loading: authLoading } = useAuth();
@@ -48,6 +58,7 @@ export default function HomeScreen() {
   const [showReader, setShowReader] = useState(false);
   const [leoMessage, setLeoMessage] = useState('');
   const [leoAnimation, setLeoAnimation] = useState<'idle' | 'waving' | 'success' | 'celebrating'>('idle');
+  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
 
   const lessonCompletedToday = isLessonCompletedToday();
   const currentStage = getCurrentStage();
@@ -183,6 +194,18 @@ export default function HomeScreen() {
           .sort((a: any, b: any) => a.slide_number - b.slide_number)
           .map((s: any) => ({ ...s, sources: Array.isArray(s.sources) ? s.sources : [] })),
       });
+    }
+
+    // Fetch news items (daily news feed)
+    const { data: fetchedNews } = await supabase
+      .from('news_items')
+      .select('id, title, summary, source_name, source_url, published_at, category_tag')
+      .eq('market_id', market)
+      .order('published_at', { ascending: false })
+      .limit(5);
+
+    if (fetchedNews) {
+      setNewsItems(fetchedNews);
     }
 
     setLoading(false);
@@ -445,6 +468,39 @@ export default function HomeScreen() {
             ))}
           </View>
         </View>
+
+        {/* Daily News Feed */}
+        {newsItems.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>INDUSTRY INTEL</Text>
+            <View style={{ gap: 8 }}>
+              {newsItems.map((item) => (
+                <TouchableOpacity
+                  key={item.id}
+                  style={styles.newsCard}
+                  activeOpacity={0.7}
+                  onPress={() => router.push('/summaries' as any)}
+                >
+                  <View style={styles.newsContent}>
+                    {item.category_tag && (
+                      <View style={styles.newsCategoryChip}>
+                        <Text style={styles.newsCategoryText}>{item.category_tag}</Text>
+                      </View>
+                    )}
+                    <Text style={styles.newsTitle} numberOfLines={2}>{item.title}</Text>
+                    {item.summary && (
+                      <Text style={styles.newsSummary} numberOfLines={2}>{item.summary}</Text>
+                    )}
+                    <Text style={styles.newsSource}>
+                      {item.source_name} · {new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </Text>
+                  </View>
+                  <Text style={styles.chevron}>›</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        )}
       </ScrollView>
 
       {/* Slide Reader */}
@@ -745,6 +801,50 @@ const styles = StyleSheet.create({
   },
   chevron: {
     fontSize: 18,
+    color: COLORS.textMuted,
+  },
+  newsCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.bg2,
+    borderRadius: 14,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    gap: 10,
+  },
+  newsContent: {
+    flex: 1,
+  },
+  newsCategoryChip: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    marginBottom: 6,
+  },
+  newsCategoryText: {
+    fontSize: 9,
+    fontWeight: '600',
+    color: '#60A5FA',
+    letterSpacing: 0.5,
+  },
+  newsTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+    lineHeight: 18,
+    marginBottom: 4,
+  },
+  newsSummary: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+    lineHeight: 16,
+    marginBottom: 6,
+  },
+  newsSource: {
+    fontSize: 10,
     color: COLORS.textMuted,
   },
 });

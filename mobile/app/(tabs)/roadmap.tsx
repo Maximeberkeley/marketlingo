@@ -39,27 +39,28 @@ interface Season {
   isExpanded: boolean;
 }
 
-const aerospacePatterns: Record<number, { title: string; pattern: string }> = {
-  1: { title: 'Buyer ≠ User', pattern: 'Map the buying committee' },
-  2: { title: 'OEM Gatekeeping', pattern: 'Risk beats performance' },
-  3: { title: 'Supply Chain Architecture', pattern: 'Enter at Tier-2/3' },
-  4: { title: 'The Approval Maze', pattern: 'Build DER relationships' },
-  5: { title: 'Governance = Velocity', pattern: 'Regulatory strategy' },
-  6: { title: 'Type Certification', pattern: 'TC is the product' },
-  7: { title: 'STC Path', pattern: 'Modify existing aircraft' },
-  8: { title: 'Change Friction', pattern: 'Minimize cert surface' },
-  9: { title: 'Why Slow', pattern: 'Incentives reward caution' },
-  10: { title: 'Conservative Design', pattern: 'Heritage wins' },
-  11: { title: 'Cost-Plus Model', pattern: 'Contract = risk profile' },
-  12: { title: 'Contract Types', pattern: 'Power by the Hour' },
-  13: { title: 'Timeline Mismatch', pattern: 'Find patient capital' },
+// Generic patterns that work across all markets
+const genericPatterns: Record<number, { title: string; pattern: string }> = {
+  1: { title: 'Market Structure', pattern: 'Map the key players' },
+  2: { title: 'Regulatory Landscape', pattern: 'Rules shape strategy' },
+  3: { title: 'Supply Chain', pattern: 'Understand dependencies' },
+  4: { title: 'Customer Discovery', pattern: 'Buyer ≠ User' },
+  5: { title: 'Market Dynamics', pattern: 'Forces drive change' },
+  6: { title: 'Business Models', pattern: 'How value flows' },
+  7: { title: 'Competitive Moats', pattern: 'Sustainable advantage' },
+  8: { title: 'Technology Cycles', pattern: 'Timing matters' },
+  9: { title: 'Capital Structure', pattern: 'Who funds growth' },
+  10: { title: 'GTM Strategy', pattern: 'Enter at the right level' },
+  11: { title: 'Unit Economics', pattern: 'Track margins closely' },
+  12: { title: 'Contract Types', pattern: 'Risk profile determines returns' },
+  13: { title: 'Funding Timeline', pattern: 'Find patient capital' },
   14: { title: 'Startup Killers', pattern: 'Cash timing risks' },
-  15: { title: 'Cash Flow Cycles', pattern: '9-month working capital' },
-  16: { title: 'Requirement Creep', pattern: 'Formal change control' },
-  17: { title: 'Hardware-First Trap', pattern: 'Paper airplane phase' },
-  18: { title: 'Trust Economy', pattern: 'AS9100, track record' },
-  19: { title: 'Supply Control', pattern: 'Vertical vs suppliers' },
-  20: { title: 'First Customer', pattern: 'Tier-1 partners, MRO' },
+  15: { title: 'Working Capital', pattern: '9-month liquidity buffer' },
+  16: { title: 'Change Management', pattern: 'Formal change control' },
+  17: { title: 'Product Market Fit', pattern: 'Validate before building' },
+  18: { title: 'Trust & Credibility', pattern: 'Track records matter' },
+  19: { title: 'Supply Control', pattern: 'Vertical vs. outsource' },
+  20: { title: 'First Customer', pattern: 'Land early adopters' },
 };
 
 function getDayWeek(day: number): number {
@@ -73,8 +74,8 @@ function buildWeek(weekNum: number, currentWeek: number, currentDay: number, tit
 
   const lessons: Lesson[] = days.map((d) => ({
     day: d,
-    title: aerospacePatterns[d]?.title || `Day ${d}`,
-    pattern: aerospacePatterns[d]?.pattern || 'Coming soon',
+    title: genericPatterns[d]?.title || `Day ${d}`,
+    pattern: genericPatterns[d]?.pattern || 'Coming soon',
     completed: d < currentDay,
     current: d === currentDay,
   }));
@@ -239,7 +240,7 @@ export default function RoadmapScreen() {
         </View>
 
         {/* Current Lesson Card */}
-        {aerospacePatterns[currentDay] && (
+        {genericPatterns[currentDay] && (
           <TouchableOpacity
             style={styles.currentLessonCard}
             onPress={() => router.push('/(tabs)/home')}
@@ -247,8 +248,8 @@ export default function RoadmapScreen() {
           >
             <View style={{ flex: 1 }}>
               <Text style={styles.continueLabel}>CONTINUE LEARNING</Text>
-              <Text style={styles.currentLessonTitle}>{aerospacePatterns[currentDay].title}</Text>
-              <Text style={styles.currentLessonPattern}>{aerospacePatterns[currentDay].pattern}</Text>
+              <Text style={styles.currentLessonTitle}>{genericPatterns[currentDay].title}</Text>
+              <Text style={styles.currentLessonPattern}>{genericPatterns[currentDay].pattern}</Text>
             </View>
             <View style={styles.startButton}>
               <Text style={styles.startButtonText}>▶ Start</Text>
