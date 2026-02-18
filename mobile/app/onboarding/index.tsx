@@ -5,12 +5,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { storage } from '../../lib/storage';
-import { INDUSTRIES, COLORS } from '../../lib/constants';
+import { COLORS } from '../../lib/constants';
+import { markets } from '../../lib/markets';
 import { StickyBottomCTA } from '../../components/StickyBottomCTA';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
@@ -48,35 +48,26 @@ export default function OnboardingScreen() {
           </Text>
         </View>
 
-        {/* Industry Cards */}
+        {/* Market Cards */}
         <View style={styles.cardsContainer}>
-          {INDUSTRIES.map((industry) => (
+          {markets.map((market) => (
             <TouchableOpacity
-              key={industry.id}
+              key={market.id}
               style={[
                 styles.card,
-                selectedIndustry === industry.id && styles.cardSelected,
-                industry.comingSoon && styles.cardDisabled,
+                selectedIndustry === market.id && styles.cardSelected,
               ]}
-              onPress={() => !industry.comingSoon && setSelectedIndustry(industry.id)}
-              activeOpacity={industry.comingSoon ? 1 : 0.7}
-              disabled={industry.comingSoon}
+              onPress={() => setSelectedIndustry(market.id)}
+              activeOpacity={0.7}
             >
               <View style={styles.cardContent}>
-                <Text style={styles.cardEmoji}>{industry.emoji}</Text>
+                <Text style={styles.cardEmoji}>{market.emoji}</Text>
                 <View style={styles.cardText}>
-                  <View style={styles.cardTitleRow}>
-                    <Text style={styles.cardTitle}>{industry.name}</Text>
-                    {industry.comingSoon && (
-                      <View style={styles.comingSoonBadge}>
-                        <Text style={styles.comingSoonText}>Soon</Text>
-                      </View>
-                    )}
-                  </View>
-                  <Text style={styles.cardDescription}>{industry.description}</Text>
+                  <Text style={styles.cardTitle}>{market.name}</Text>
+                  <Text style={styles.cardDescription}>{market.description}</Text>
                 </View>
               </View>
-              {selectedIndustry === industry.id && (
+              {selectedIndustry === market.id && (
                 <View style={styles.checkmark}>
                   <Text style={styles.checkmarkText}>✓</Text>
                 </View>
@@ -143,47 +134,28 @@ const styles = StyleSheet.create({
     borderColor: COLORS.accent,
     backgroundColor: `${COLORS.accent}15`,
   },
-  cardDisabled: {
-    opacity: 0.5,
-  },
   cardContent: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
   },
   cardEmoji: {
-    fontSize: 40,
-    marginRight: 16,
+    fontSize: 32,
+    marginRight: 14,
   },
   cardText: {
     flex: 1,
   },
-  cardTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: COLORS.textPrimary,
-    marginBottom: 4,
+    marginBottom: 3,
   },
   cardDescription: {
-    fontSize: 14,
+    fontSize: 13,
     color: COLORS.textMuted,
-    lineHeight: 20,
-  },
-  comingSoonBadge: {
-    backgroundColor: COLORS.bg1,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  comingSoonText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: COLORS.textMuted,
+    lineHeight: 18,
   },
   checkmark: {
     width: 28,
