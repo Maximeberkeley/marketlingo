@@ -17,6 +17,10 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProgressBar } from '../components/ui/ProgressBar';
+import { MentorChatOverlay } from '../components/ai/MentorChatOverlay';
+import { getMentorForContext } from '../data/mentors';
+import type { Mentor } from '../data/mentors';
+
 
 // Market-specific hero images
 const MARKET_HERO_IMAGES: Record<string, any> = {
@@ -78,6 +82,9 @@ export default function TrainerScreen() {
     feedback_common_mistake: string | null;
     feedback_mental_model: string | null;
   } | null>(null);
+  const [mentorChatVisible, setMentorChatVisible] = useState(false);
+  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -138,6 +145,12 @@ export default function TrainerScreen() {
 
   const current = scenarios[currentIndex];
 
+  const handleOpenMentorChat = () => {
+    const mentor = getMentorForContext('strategy', selectedMarket || 'aerospace');
+    setActiveMentor(mentor);
+    setMentorChatVisible(true);
+  };
+
   const handleSelectOption = async (optionIdx: number) => {
     if (feedback || !user || !current) return;
     setSelectedOption(optionIdx);
@@ -178,6 +191,7 @@ export default function TrainerScreen() {
       setCurrentIndex(0);
     }
   };
+
 
   if (loading) {
     return (
@@ -348,7 +362,12 @@ export default function TrainerScreen() {
               </View>
             )}
 
-            <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
+            {/* Chat with Mentor CTA */}
+            <TouchableOpacity style={styles.mentorChatCTA} onPress={handleOpenMentorChat}>
+              <Text style={styles.mentorChatCTAText}>💬 Discuss with AI Mentor</Text>
+            </TouchableOpacity>
+
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
               <TouchableOpacity style={styles.saveBtn} onPress={handleSaveToNotebook}>
                 <Text style={styles.saveBtnText}>📝 Save</Text>
               </TouchableOpacity>
@@ -361,9 +380,23 @@ export default function TrainerScreen() {
           </View>
         )}
       </ScrollView>
+
+      {/* Mentor Chat Overlay */}
+      {activeMentor && (
+        <MentorChatOverlay
+          visible={mentorChatVisible}
+          mentor={activeMentor}
+          onClose={() => setMentorChatVisible(false)}
+          marketId={selectedMarket || undefined}
+          context={current
+            ? `Trainer scenario: "${current.scenario}" — Question: "${current.question}". ${feedback ? `The user answered ${feedback.isCorrect ? 'correctly' : 'incorrectly'}. Pro reasoning: ${feedback.feedback_pro_reasoning || ''}` : 'The user is thinking through their answer.'}`
+            : `${selectedMarket} industry trainer scenarios`}
+        />
+      )}
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
@@ -454,4 +487,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center',
   },
   saveBtnText: { fontSize: 14, color: COLORS.textSecondary },
+  mentorChatCTA: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(139, 92, 246, 0.12)', borderRadius: 12, paddingVertical: 12,
+    borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.25)', marginTop: 12,
+  },
+  mentorChatCTAText: { fontSize: 14, fontWeight: '600', color: COLORS.accent },
 });
