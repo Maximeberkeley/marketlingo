@@ -26,6 +26,27 @@ import { XPBadge } from '../../components/ui/XPBadge';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { LessonCard } from '../../components/ui/LessonCard';
 import { SlideReader } from '../../components/slides/SlideReader';
+import { MentorChatOverlay } from '../../components/ai/MentorChatOverlay';
+import { getMentorForContext, Mentor } from '../../data/mentors';
+
+// Market-to-mentor mapping
+const MARKET_PRIMARY_MENTOR: Record<string, string> = {
+  aerospace: 'maya',
+  neuroscience: 'sophia',
+  ai: 'alex',
+  fintech: 'kai',
+  ev: 'alex',
+  biotech: 'sophia',
+  cleanenergy: 'maya',
+  agtech: 'kai',
+  climatetech: 'maya',
+  cybersecurity: 'alex',
+  spacetech: 'alex',
+  robotics: 'alex',
+  healthtech: 'sophia',
+  logistics: 'kai',
+  web3: 'kai',
+};
 
 // Market-specific hero images mapped by market ID
 const marketHeroImages: Record<string, any> = {
@@ -232,12 +253,21 @@ export default function HomeScreen() {
   const [leoAnimation, setLeoAnimation] = useState<'idle' | 'waving' | 'success' | 'celebrating'>('idle');
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [keyPlayers, setKeyPlayers] = useState<KeyPlayer[]>([]);
+  const [mentorChatVisible, setMentorChatVisible] = useState(false);
+  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
 
   const lessonCompletedToday = isLessonCompletedToday();
   const currentStage = getCurrentStage();
   const stageProgress = getProgressToNextStage();
   const streak = progress?.current_streak || 0;
   const currentDay = availableDay;
+
+  const handleOpenMentorChat = () => {
+    const mentorId = MARKET_PRIMARY_MENTOR[selectedMarket || 'aerospace'] || 'maya';
+    const mentor = getMentorForContext('strategy', selectedMarket || 'aerospace');
+    setActiveMentor(mentor);
+    setMentorChatVisible(true);
+  };
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -468,7 +498,8 @@ export default function HomeScreen() {
           isReview={lessonCompletedToday && activeStack.stack_type === 'LESSON'}
         />
       ) : (
-        <ScrollView
+        <>
+          <ScrollView
           contentContainerStyle={[
             styles.scrollContent,
             { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 },
@@ -493,9 +524,24 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {/* Leo Greeting */}
+          {/* Leo + Mentor Greeting */}
           <View style={styles.leoSection}>
-            <LeoCharacter size="lg" animation={leoAnimation} />
+            <View style={styles.leoRow}>
+              <LeoCharacter size="lg" animation={leoAnimation} />
+              {/* Mentor avatar — tap to chat */}
+              <TouchableOpacity style={styles.mentorAvatarBtn} onPress={handleOpenMentorChat}>
+                <View style={styles.mentorAvatarCircle}>
+                  <Text style={styles.mentorAvatarEmoji}>
+                    {activeMentor?.emoji || (MARKET_PRIMARY_MENTOR[selectedMarket || ''] === 'sophia' ? '✨' :
+                      MARKET_PRIMARY_MENTOR[selectedMarket || ''] === 'kai' ? '🚀' :
+                      MARKET_PRIMARY_MENTOR[selectedMarket || ''] === 'alex' ? '👨‍🔬' : '👩‍💼')}
+                  </Text>
+                </View>
+                <View style={styles.mentorChatBubble}>
+                  <Text style={styles.mentorChatBubbleText}>Ask me anything →</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
             <Text style={styles.leoMessage}>{leoMessage}</Text>
           </View>
 
@@ -738,6 +784,16 @@ export default function HomeScreen() {
             </View>
           )}
         </ScrollView>
+          {/* Mentor Chat Overlay */}
+          {activeMentor && (
+            <MentorChatOverlay
+              visible={mentorChatVisible}
+              mentor={activeMentor}
+              onClose={() => setMentorChatVisible(false)}
+              context={`${getMarketName(selectedMarket || 'aerospace')} industry learning`}
+            />
+          )}
+        </>
       )}
     </View>
   );
@@ -756,7 +812,22 @@ const styles = StyleSheet.create({
   dayText: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   leoSection: { alignItems: 'center', marginBottom: 16 },
+  leoRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 16, marginBottom: 4 },
   leoMessage: { fontSize: 13, color: COLORS.textSecondary, textAlign: 'center', marginTop: 6 },
+  mentorAvatarBtn: { alignItems: 'center', gap: 6 },
+  mentorAvatarCircle: {
+    width: 52, height: 52, borderRadius: 26,
+    backgroundColor: 'rgba(139,92,246,0.15)',
+    borderWidth: 2, borderColor: 'rgba(139,92,246,0.4)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  mentorAvatarEmoji: { fontSize: 24 },
+  mentorChatBubble: {
+    backgroundColor: COLORS.accent,
+    paddingHorizontal: 10, paddingVertical: 5,
+    borderRadius: 10,
+  },
+  mentorChatBubbleText: { fontSize: 10, fontWeight: '600', color: '#FFFFFF' },
   progressCard: {
     backgroundColor: COLORS.bg2, borderRadius: 16, padding: 14, marginBottom: 20,
     borderWidth: 1, borderColor: COLORS.border,
