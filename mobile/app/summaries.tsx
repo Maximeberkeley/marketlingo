@@ -18,8 +18,16 @@ interface Summary {
   title: string;
   content: string;
   created_at: string;
-  tags: string[];
+  summary_type: string;
+  for_date: string;
+  key_takeaways: string[] | null;
 }
+
+const typeColors: Record<string, { bg: string; text: string; label: string }> = {
+  weekly: { bg: 'rgba(139, 92, 246, 0.15)', text: '#A78BFA', label: 'Weekly Recap' },
+  daily: { bg: 'rgba(59, 130, 246, 0.15)', text: '#60A5FA', label: 'Daily Insight' },
+  market: { bg: 'rgba(16, 185, 129, 0.15)', text: '#34D399', label: 'Market Update' },
+};
 
 export default function SummariesScreen() {
   const insets = useSafeAreaInsets();
@@ -47,7 +55,12 @@ export default function SummariesScreen() {
         .order('created_at', { ascending: false })
         .limit(20);
 
-      if (!error) setSummaries(data || []);
+      if (!error && data) {
+        setSummaries(data.map(s => ({
+          ...s,
+          key_takeaways: Array.isArray(s.key_takeaways) ? s.key_takeaways as string[] : null,
+        })));
+      }
       setLoading(false);
     };
     fetchData();
@@ -82,31 +95,50 @@ export default function SummariesScreen() {
           </View>
         ) : (
           <View style={{ gap: 10, marginTop: 16 }}>
-            {summaries.map((s) => (
-              <TouchableOpacity
-                key={s.id}
-                style={styles.card}
-                activeOpacity={0.7}
-                onPress={() => setExpandedId(expandedId === s.id ? null : s.id)}
-              >
-                <Text style={styles.cardTitle}>{s.title}</Text>
-                <Text style={styles.cardDate}>
-                  {new Date(s.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                </Text>
-                {expandedId === s.id && (
-                  <Text style={styles.cardContent}>{s.content}</Text>
-                )}
-                {s.tags && s.tags.length > 0 && (
-                  <View style={styles.tagsRow}>
-                    {s.tags.slice(0, 3).map((tag, i) => (
-                      <View key={i} style={styles.tag}>
-                        <Text style={styles.tagText}>{tag}</Text>
-                      </View>
-                    ))}
+            {summaries.map((s) => {
+              const tc = typeColors[s.summary_type] || typeColors.daily;
+              const isExpanded = expandedId === s.id;
+              return (
+                <TouchableOpacity
+                  key={s.id}
+                  style={[styles.card, isExpanded && { borderColor: tc.text + '40' }]}
+                  activeOpacity={0.7}
+                  onPress={() => setExpandedId(isExpanded ? null : s.id)}
+                >
+                  {/* Header row */}
+                  <View style={styles.cardHeader}>
+                    <View style={[styles.typeBadge, { backgroundColor: tc.bg }]}>
+                      <Text style={[styles.typeBadgeText, { color: tc.text }]}>{tc.label}</Text>
+                    </View>
+                    <Text style={styles.cardDate}>
+                      {new Date(s.for_date || s.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </Text>
+                    <Text style={[styles.expandChevron, { color: COLORS.textMuted }]}>{isExpanded ? '▾' : '▸'}</Text>
                   </View>
-                )}
-              </TouchableOpacity>
-            ))}
+
+                  <Text style={styles.cardTitle}>{s.title}</Text>
+
+                  {isExpanded && (
+                    <View style={{ marginTop: 8 }}>
+                      <Text style={styles.cardContent}>{s.content}</Text>
+
+                      {/* Key Takeaways */}
+                      {s.key_takeaways && s.key_takeaways.length > 0 && (
+                        <View style={styles.takeawaysCard}>
+                          <Text style={styles.takeawaysTitle}>💡 Key Takeaways</Text>
+                          {s.key_takeaways.map((takeaway, i) => (
+                            <View key={i} style={styles.takeawayRow}>
+                              <View style={[styles.takeawayDot, { backgroundColor: tc.text }]} />
+                              <Text style={styles.takeawayText}>{takeaway}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
           </View>
         )}
       </ScrollView>
@@ -125,13 +157,22 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 18, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 8 },
   emptySubtitle: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center' },
   card: {
-    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 16,
+    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14,
     borderWidth: 1, borderColor: COLORS.border,
   },
-  cardTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 4 },
-  cardDate: { fontSize: 11, color: COLORS.textMuted, marginBottom: 8 },
-  cardContent: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20, marginBottom: 8 },
-  tagsRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
-  tag: { backgroundColor: 'rgba(139, 92, 246, 0.1)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  tagText: { fontSize: 10, fontWeight: '500', color: COLORS.accent },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  typeBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  typeBadgeText: { fontSize: 9, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
+  cardDate: { fontSize: 11, color: COLORS.textMuted, flex: 1 },
+  expandChevron: { fontSize: 14 },
+  cardTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary, lineHeight: 21 },
+  cardContent: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20, marginBottom: 10 },
+  takeawaysCard: {
+    backgroundColor: 'rgba(139,92,246,0.05)', borderRadius: 10, padding: 12,
+    borderWidth: 1, borderColor: 'rgba(139,92,246,0.15)',
+  },
+  takeawaysTitle: { fontSize: 12, fontWeight: '600', color: COLORS.accent, marginBottom: 8 },
+  takeawayRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 6 },
+  takeawayDot: { width: 5, height: 5, borderRadius: 3, marginTop: 5, flexShrink: 0 },
+  takeawayText: { fontSize: 12, color: COLORS.textSecondary, lineHeight: 18, flex: 1 },
 });
