@@ -252,6 +252,7 @@ export default function HomeScreen() {
   const [leoMessage, setLeoMessage] = useState('');
   const [leoAnimation, setLeoAnimation] = useState<'idle' | 'waving' | 'success' | 'celebrating'>('idle');
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
+  const [newsRefreshing, setNewsRefreshing] = useState(false);
   const [keyPlayers, setKeyPlayers] = useState<KeyPlayer[]>([]);
   const [mentorChatVisible, setMentorChatVisible] = useState(false);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
@@ -397,14 +398,36 @@ export default function HomeScreen() {
       });
     }
 
-    const { data: fetchedNews } = await supabase
+    // Fetch news — try DB first, then call edge function if empty
+    const { data: cachedNews } = await supabase
       .from('news_items')
       .select('id, title, summary, source_name, source_url, published_at, category_tag')
       .eq('market_id', market)
       .order('published_at', { ascending: false })
-      .limit(5);
+      .limit(10);
 
-    if (fetchedNews) setNewsItems(fetchedNews);
+    if (cachedNews && cachedNews.length > 0) {
+      setNewsItems(cachedNews);
+    } else {
+      // No cached news — trigger live fetch via edge function
+      try {
+        const { data: liveData } = await supabase.functions.invoke('fetch-market-news', {
+          body: { marketId: market },
+        });
+        if (liveData?.data && liveData.data.length > 0) {
+          // Re-query DB after edge function populates it
+          const { data: freshNews } = await supabase
+            .from('news_items')
+            .select('id, title, summary, source_name, source_url, published_at, category_tag')
+            .eq('market_id', market)
+            .order('published_at', { ascending: false })
+            .limit(10);
+          if (freshNews) setNewsItems(freshNews);
+        }
+      } catch (e) {
+        console.warn('Live news fetch failed:', e);
+      }
+    }
 
     setLoading(false);
   };
@@ -413,6 +436,27 @@ export default function HomeScreen() {
     setRefreshing(true);
     await fetchData();
     setRefreshing(false);
+  };
+
+  const refreshNews = async () => {
+    if (!selectedMarket || newsRefreshing) return;
+    setNewsRefreshing(true);
+    try {
+      const { data: liveData } = await supabase.functions.invoke('fetch-market-news', {
+        body: { marketId: selectedMarket },
+      });
+      const { data: freshNews } = await supabase
+        .from('news_items')
+        .select('id, title, summary, source_name, source_url, published_at, category_tag')
+        .eq('market_id', selectedMarket)
+        .order('published_at', { ascending: false })
+        .limit(10);
+      if (freshNews) setNewsItems(freshNews);
+    } catch (e) {
+      console.warn('News refresh failed:', e);
+    } finally {
+      setNewsRefreshing(false);
+    }
   };
 
   const handleStackComplete = async (isReviewMode: boolean, timeSpentSeconds: number) => {
@@ -735,20 +779,32 @@ export default function HomeScreen() {
           )}
 
           {/* INDUSTRY INTEL (News Feed) */}
-          {newsItems.length > 0 && (
-            <View style={styles.section}>
-              <View style={styles.sectionHeaderRow}>
-                <View style={styles.sectionHeaderLeft}>
-                  <View style={styles.liveDot} />
-                  <Text style={styles.sectionHeaderTitle}>Industry Intel</Text>
-                  <View style={[styles.countBadge, { backgroundColor: 'rgba(139,92,246,0.15)' }]}>
-                    <Text style={[styles.countBadgeText, { color: COLORS.accent }]}>LIVE</Text>
-                  </View>
+          <View style={styles.section}>
+            <View style={styles.sectionHeaderRow}>
+              <View style={styles.sectionHeaderLeft}>
+                <View style={styles.liveDot} />
+                <Text style={styles.sectionHeaderTitle}>Industry Intel</Text>
+                <View style={[styles.countBadge, { backgroundColor: 'rgba(139,92,246,0.15)' }]}>
+                  <Text style={[styles.countBadgeText, { color: COLORS.accent }]}>LIVE</Text>
                 </View>
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <TouchableOpacity onPress={refreshNews} disabled={newsRefreshing} style={{ opacity: newsRefreshing ? 0.5 : 1 }}>
+                  <Text style={styles.seeAllText}>{newsRefreshing ? '⏳' : '↺'} Refresh</Text>
+                </TouchableOpacity>
                 <TouchableOpacity onPress={() => router.push('/summaries' as any)}>
                   <Text style={styles.seeAllText}>See all →</Text>
                 </TouchableOpacity>
               </View>
+            </View>
+            {newsItems.length === 0 ? (
+              <View style={styles.emptyNewsCard}>
+                <Text style={styles.emptyNewsText}>No news yet — tap Refresh to fetch live stories</Text>
+                <TouchableOpacity style={styles.fetchNewsBtn} onPress={refreshNews} disabled={newsRefreshing}>
+                  <Text style={styles.fetchNewsBtnText}>{newsRefreshing ? 'Fetching…' : '⚡ Fetch News'}</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
               <View style={{ gap: 8 }}>
                 {newsItems.map((item) => (
                   <TouchableOpacity
@@ -781,8 +837,8 @@ export default function HomeScreen() {
                   </TouchableOpacity>
                 ))}
               </View>
-            </View>
-          )}
+            )}
+          </View>
         </ScrollView>
           {/* Mentor Chat Overlay */}
           {activeMentor && (
@@ -790,7 +846,8 @@ export default function HomeScreen() {
               visible={mentorChatVisible}
               mentor={activeMentor}
               onClose={() => setMentorChatVisible(false)}
-              context={`${getMarketName(selectedMarket || 'aerospace')} industry learning`}
+              marketId={selectedMarket || undefined}
+              context={`${getMarketName(selectedMarket || 'aerospace')} industry learning. Recent news: ${newsItems.slice(0, 3).map(n => n.title).join('; ')}`}
             />
           )}
         </>
@@ -958,4 +1015,14 @@ const styles = StyleSheet.create({
   },
   newsSummaryLabel: { fontSize: 10, fontWeight: '600', color: COLORS.accent, marginBottom: 4 },
   newsSummary: { fontSize: 11, color: COLORS.textSecondary, lineHeight: 16 },
+  emptyNewsCard: {
+    padding: 24, borderRadius: 16, backgroundColor: COLORS.bg2,
+    borderWidth: 1, borderColor: COLORS.border, alignItems: 'center', gap: 12,
+  },
+  emptyNewsText: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center' },
+  fetchNewsBtn: {
+    backgroundColor: COLORS.accent, paddingHorizontal: 20, paddingVertical: 10,
+    borderRadius: 20,
+  },
+  fetchNewsBtnText: { fontSize: 13, fontWeight: '600', color: '#FFFFFF' },
 });
