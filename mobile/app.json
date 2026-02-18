@@ -55,7 +55,8 @@
             "newArchEnabled": false
           }
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "owner": "maxime020707"
   }

@@ -1,108 +1,129 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-import { storage } from '../lib/storage';
+import { useAuth } from './useAuth';
+import { UserProgress } from '../lib/types';
 
-interface UserProgress {
-  currentDay: number;
-  currentStreak: number;
-  longestStreak: number;
-  totalXp: number;
-  completedLessons: string[];
-  lastCompletedAt: Date | null;
+function calculateAvailableDay(startDate: string): number {
+  const start = new Date(startDate);
+  const today = new Date();
+  start.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  const diffTime = today.getTime() - start.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const availableDay = diffDays + 1;
+  return Math.min(180, Math.max(1, availableDay));
 }
 
-export function useUserProgress() {
-  const [progress, setProgress] = useState<UserProgress>({
-    currentDay: 1,
-    currentStreak: 0,
-    longestStreak: 0,
-    totalXp: 0,
-    completedLessons: [],
-    lastCompletedAt: null,
-  });
-  const [isLoading, setIsLoading] = useState(true);
+export function useUserProgress(marketId?: string) {
+  const { user } = useAuth();
+  const [progress, setProgress] = useState<UserProgress | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [availableDay, setAvailableDay] = useState(1);
 
-  const loadProgress = useCallback(async () => {
-    try {
-      const userId = await storage.getUserId();
-      const industry = await storage.getIndustry();
-
-      if (!userId || !industry) {
-        setIsLoading(false);
-        return;
-      }
-
-      // Fetch user progress
-      const { data: progressData, error: progressError } = await supabase
-        .from('user_progress')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('market_id', industry)
-        .single();
-
-      if (progressError && progressError.code !== 'PGRST116') {
-        console.error('Error loading progress:', progressError);
-      }
-
-      // Fetch XP from user_xp table
-      const { data: xpData, error: xpError } = await supabase
-        .from('user_xp')
-        .select('total_xp, current_level, startup_stage')
-        .eq('user_id', userId)
-        .eq('market_id', industry)
-        .single();
-
-      if (xpError && xpError.code !== 'PGRST116') {
-        console.error('Error loading XP:', xpError);
-      }
-
-      setProgress({
-        currentDay: progressData?.current_day || 1,
-        currentStreak: progressData?.current_streak || 0,
-        longestStreak: progressData?.longest_streak || 0,
-        totalXp: xpData?.total_xp || 0,
-        completedLessons: progressData?.completed_stacks || [],
-        lastCompletedAt: progressData?.last_activity_at ? new Date(progressData.last_activity_at) : null,
-      });
-    } catch (error) {
-      console.error('Error in loadProgress:', error);
-    } finally {
-      setIsLoading(false);
+  const fetchProgress = useCallback(async () => {
+    if (!user || !marketId) {
+      setLoading(false);
+      return;
     }
-  }, []);
+
+    const { data, error } = await supabase
+      .from('user_progress')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('market_id', marketId)
+      .single();
+
+    if (error && error.code === 'PGRST116') {
+      const today = new Date().toISOString().split('T')[0];
+      const { data: newProgress, error: createError } = await supabase
+        .from('user_progress')
+        .insert({
+          user_id: user.id,
+          market_id: marketId,
+          current_day: 1,
+          current_streak: 0,
+          longest_streak: 0,
+          completed_stacks: [],
+          start_date: today,
+        })
+        .select()
+        .single();
+
+      if (!createError && newProgress) {
+        setProgress(newProgress as UserProgress);
+        setAvailableDay(1);
+      }
+    } else if (data) {
+      const progressData = data as UserProgress;
+      setProgress(progressData);
+      const calcDay = calculateAvailableDay(progressData.start_date);
+      setAvailableDay(calcDay);
+    }
+
+    setLoading(false);
+  }, [user, marketId]);
 
   useEffect(() => {
-    loadProgress();
-  }, [loadProgress]);
+    fetchProgress();
+  }, [fetchProgress]);
 
-  const addXp = async (amount: number) => {
-    setProgress((prev) => ({
-      ...prev,
-      totalXp: prev.totalXp + amount,
-    }));
-    // TODO: Sync with Supabase
+  const updateStreak = async () => {
+    if (!progress) return;
+    const { data, error } = await supabase
+      .from('user_progress')
+      .update({ last_activity_at: new Date().toISOString() })
+      .eq('id', progress.id)
+      .select()
+      .single();
+
+    if (!error && data) {
+      setProgress(data as UserProgress);
+    }
+    return data;
   };
 
-  const completeLesson = async (lessonId: string) => {
-    setProgress((prev) => ({
-      ...prev,
-      completedLessons: [...prev.completedLessons, lessonId],
-      currentStreak: prev.currentStreak + 1,
-      longestStreak: Math.max(prev.longestStreak, prev.currentStreak + 1),
-    }));
-    // TODO: Sync with Supabase
+  const completeStack = async (stackId: string) => {
+    if (!progress) return;
+    if (progress.completed_stacks?.includes(stackId)) return progress;
+
+    const completedStacks = [...(progress.completed_stacks || []), stackId];
+    const { data, error } = await supabase
+      .from('user_progress')
+      .update({
+        completed_stacks: completedStacks,
+        last_activity_at: new Date().toISOString(),
+      })
+      .eq('id', progress.id)
+      .select()
+      .single();
+
+    if (!error && data) {
+      setProgress(data as UserProgress);
+    }
+    return data;
   };
 
-  const refreshProgress = () => {
-    setIsLoading(true);
-    loadProgress();
+  const isTodayLessonCompleted = useCallback(
+    (todayStackId?: string) => {
+      if (!progress || !todayStackId) return false;
+      return progress.completed_stacks?.includes(todayStackId) || false;
+    },
+    [progress]
+  );
+
+  const isStreakActive = () => {
+    if (!progress?.streak_expires_at) return false;
+    return new Date(progress.streak_expires_at) > new Date();
   };
 
   return {
     progress,
-    isLoading,
-    addXp,
-    completeLesson,
-    refreshProgress,
+    loading,
+    availableDay,
+    updateStreak,
+    completeStack,
+    isTodayLessonCompleted,
+    isStreakActive,
+    refetch: fetchProgress,
   };
 }

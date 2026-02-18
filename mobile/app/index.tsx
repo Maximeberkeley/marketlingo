@@ -1,29 +1,50 @@
 import { useEffect } from 'react';
 import { router } from 'expo-router';
-import { View, ActivityIndicator } from 'react-native';
-import { storage } from '../lib/storage';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../lib/supabase';
 
 export default function Index() {
-  useEffect(() => {
-    async function redirect() {
-      const industry = await storage.getIndustry();
-      const familiarity = await storage.getFamiliarity();
+  const { user, loading } = useAuth();
 
-      if (industry && familiarity) {
+  useEffect(() => {
+    if (loading) return;
+
+    async function redirect() {
+      if (!user) {
+        router.replace('/auth');
+        return;
+      }
+
+      // Check if user has selected a market
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('selected_market')
+        .eq('id', user.id)
+        .single();
+
+      if (profile?.selected_market) {
         router.replace('/(tabs)/home');
-      } else if (industry) {
-        router.replace('/onboarding/familiarity');
       } else {
-        router.replace('/onboarding');
+        router.replace('/onboarding' as any);
       }
     }
 
     redirect();
-  }, []);
+  }, [user, loading]);
 
   return (
-    <View className="flex-1 bg-bg-0 items-center justify-center">
+    <View style={styles.container}>
       <ActivityIndicator size="large" color="#8B5CF6" />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0B1020',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

@@ -11,15 +11,25 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { storage, FamiliarityLevel } from '../../lib/storage';
 import { FAMILIARITY_LEVELS, COLORS } from '../../lib/constants';
 import { StickyBottomCTA } from '../../components/StickyBottomCTA';
+import { useAuth } from '../../hooks/useAuth';
+import { supabase } from '../../lib/supabase';
 
 export default function FamiliarityScreen() {
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
   const [selectedLevel, setSelectedLevel] = useState<FamiliarityLevel | null>(null);
 
   const handleContinue = async () => {
     if (selectedLevel) {
       await storage.setFamiliarity(selectedLevel);
       await storage.setOnboardingComplete(true);
+      // Write familiarity to Supabase
+      if (user) {
+        await supabase
+          .from('profiles')
+          .update({ familiarity_level: selectedLevel })
+          .eq('id', user.id);
+      }
       router.replace('/(tabs)/home');
     }
   };

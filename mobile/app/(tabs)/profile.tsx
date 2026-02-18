@@ -6,52 +6,103 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { storage, UserTier } from '../../lib/storage';
-import { COLORS, INDUSTRIES } from '../../lib/constants';
+import { storage } from '../../lib/storage';
+import { COLORS } from '../../lib/constants';
+import { getMarketEmoji, getMarketName } from '../../lib/markets';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../hooks/useAuth';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { useUserXP, STARTUP_STAGES } from '../../hooks/useUserXP';
+import { ProgressBar } from '../../components/ui/ProgressBar';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
-  const [industry, setIndustry] = useState<string | null>(null);
-  const [userTier, setUserTier] = useState<UserTier>('free');
-  const [streak, setStreak] = useState(5);
-  const [longestStreak, setLongestStreak] = useState(12);
-  const [currentDay, setCurrentDay] = useState(12);
+  const { user, signOut, loading: authLoading } = useAuth();
+  const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
+  const [isProUser, setIsProUser] = useState(false);
+  const [showChangeWarning, setShowChangeWarning] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const { progress, availableDay } = useUserProgress(selectedMarket || undefined);
+  const { xpData, getCurrentStage, getProgressToNextStage } = useUserXP(selectedMarket || undefined);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    const fetchProfile = async () => {
+      if (!user) return;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('selected_market, is_pro_user')
+        .eq('id', user.id)
+        .single();
 
-  const loadData = async () => {
-    const [ind, tier] = await Promise.all([
-      storage.getIndustry(),
-      storage.getUserTier(),
-    ]);
-    setIndustry(ind);
-    setUserTier(tier);
+      if (profile) {
+        setSelectedMarket(profile.selected_market);
+        setIsProUser(profile.is_pro_user || false);
+      }
+      setLoading(false);
+    };
+    fetchProfile();
+  }, [user]);
+
+  const currentStage = getCurrentStage();
+  const stageProgress = getProgressToNextStage();
+  const certProgress = availableDay;
+  const certPercentage = Math.round((certProgress / 180) * 100);
+  const isCertEligible = certProgress >= 180;
+
+  const handleChangeMarket = async () => {
+    if (!user || !selectedMarket) return;
+    await supabase
+      .from('user_progress')
+      .update({ current_streak: 0, current_day: 1, completed_stacks: [] })
+      .eq('user_id', user.id)
+      .eq('market_id', selectedMarket);
+    setShowChangeWarning(false);
+    router.replace('/onboarding' as any);
+  };
+
+  const handleExportNotebook = async () => {
+    if (!user) return;
+    const { data: notes } = await supabase
+      .from('notes')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (!notes || notes.length === 0) {
+      Alert.alert('No Notes', 'No notes to export yet.');
+      return;
+    }
+    Alert.alert('Export', `${notes.length} notes ready. Share feature coming soon!`);
   };
 
   const handleSignOut = () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: async () => {
-            await storage.clearAll();
-            router.replace('/onboarding');
-          },
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: async () => {
+          await signOut();
+          await storage.clearAll();
+          router.replace('/');
         },
-      ]
-    );
+      },
+    ]);
   };
 
-  const industryData = INDUSTRIES.find((i) => i.id === industry);
+  if (loading || authLoading) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color={COLORS.accent} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -64,8 +115,11 @@ export default function ProfileScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Profile</Text>
-          {userTier === 'pro' && (
+          <View>
+            <Text style={styles.title}>Profile</Text>
+            {user && <Text style={styles.email}>{user.email}</Text>}
+          </View>
+          {isProUser && (
             <View style={styles.proBadge}>
               <Text style={styles.proBadgeText}>👑 PRO</Text>
             </View>
@@ -73,324 +127,234 @@ export default function ProfileScreen() {
         </View>
 
         {/* Stats Grid */}
-        <View style={styles.statsGrid}>
-          <View style={styles.statCard}>
-            <View style={[styles.statIcon, { backgroundColor: COLORS.accent + '20' }]}>
-              <Text style={styles.statEmoji}>🔥</Text>
+        {progress && (
+          <View style={styles.statsGrid}>
+            <View style={styles.statCard}>
+              <View style={[styles.statIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
+                <Text style={styles.statEmoji}>🔥</Text>
+              </View>
+              <Text style={styles.statValue}>{progress.current_streak || 0}</Text>
+              <Text style={styles.statLabel}>Current Streak</Text>
             </View>
-            <Text style={styles.statValue}>{streak}</Text>
-            <Text style={styles.statLabel}>Current Streak</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <View style={[styles.statIcon, { backgroundColor: '#F59E0B20' }]}>
-              <Text style={styles.statEmoji}>🏆</Text>
+            <View style={styles.statCard}>
+              <View style={[styles.statIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
+                <Text style={styles.statEmoji}>🏆</Text>
+              </View>
+              <Text style={styles.statValue}>{progress.longest_streak || 0}</Text>
+              <Text style={styles.statLabel}>Best Streak</Text>
             </View>
-            <Text style={styles.statValue}>{longestStreak}</Text>
-            <Text style={styles.statLabel}>Best Streak</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <View style={[styles.statIcon, { backgroundColor: '#10B98120' }]}>
-              <Text style={styles.statEmoji}>🎯</Text>
+            <View style={styles.statCard}>
+              <View style={[styles.statIcon, { backgroundColor: 'rgba(16, 185, 129, 0.2)' }]}>
+                <Text style={styles.statEmoji}>🎯</Text>
+              </View>
+              <Text style={styles.statValue}>Day {availableDay}</Text>
+              <Text style={styles.statLabel}>of 180</Text>
             </View>
-            <Text style={styles.statValue}>Day {currentDay}</Text>
-            <Text style={styles.statLabel}>of 180</Text>
           </View>
-        </View>
+        )}
 
-        {/* Certificate Progress */}
+        {/* XP & Stage */}
+        {xpData && (
+          <View style={styles.stageCard}>
+            <View style={styles.stageHeader}>
+              <Text style={styles.stageEmoji}>👑</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.stageTitle}>Stage {currentStage.stage}: {currentStage.name}</Text>
+                <Text style={styles.stageDesc}>{currentStage.description}</Text>
+              </View>
+              <Text style={styles.xpText}>⚡ {xpData.total_xp.toLocaleString()} XP</Text>
+            </View>
+            <ProgressBar progress={stageProgress} />
+          </View>
+        )}
+
+        {/* Certificate */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>CERTIFICATION</Text>
-          <View style={styles.certificateCard}>
-            <View style={styles.certificateIcon}>
-              <Text style={styles.certificateEmoji}>🔒</Text>
-            </View>
-            <View style={styles.certificateInfo}>
-              <Text style={styles.certificateName}>Industry Mastery Certificate</Text>
-              <Text style={styles.certificateSubtitle}>
-                Complete all 180 days to unlock
-              </Text>
-              <View style={styles.certificateProgress}>
-                <View style={styles.progressBar}>
-                  <View style={[styles.progressFill, { width: `${(currentDay / 180) * 100}%` }]} />
-                </View>
-                <Text style={styles.progressText}>{Math.round((currentDay / 180) * 100)}%</Text>
+          <View style={styles.certCard}>
+            <View style={styles.certRow}>
+              <View style={[styles.certIcon, isCertEligible && { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
+                <Text style={{ fontSize: 24 }}>{isCertEligible ? '🏅' : '🔒'}</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.certTitle}>
+                  {isCertEligible ? 'Certificate Unlocked!' : 'Industry Mastery Certificate'}
+                </Text>
+                <Text style={styles.certSubtitle}>
+                  {isCertEligible ? 'Download and share your achievement' : 'Complete all 180 days to unlock'}
+                </Text>
               </View>
             </View>
+            {!isCertEligible && (
+              <View style={{ marginTop: 12 }}>
+                <View style={styles.certProgressRow}>
+                  <Text style={styles.certProgressLabel}>Progress</Text>
+                  <Text style={styles.certProgressLabel}>{certProgress} / 180 days</Text>
+                </View>
+                <ProgressBar progress={certPercentage} height={6} />
+              </View>
+            )}
+            <TouchableOpacity
+              style={[styles.certButton, !isCertEligible && { opacity: 0.5 }]}
+              disabled={!isCertEligible}
+            >
+              <Text style={styles.certButtonText}>
+                🏅 {isCertEligible ? 'View Certificate' : `${certPercentage}% Complete`}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 
         {/* Current Market */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>CURRENT MARKET</Text>
-          <TouchableOpacity style={styles.marketCard}>
-            <Text style={styles.marketEmoji}>{industryData?.emoji || '🚀'}</Text>
-            <View style={styles.marketInfo}>
-              <Text style={styles.marketName}>{industryData?.name || 'Aerospace'}</Text>
-              <Text style={styles.marketSubtitle}>Tap to change</Text>
+          <TouchableOpacity style={styles.menuItem} onPress={() => setShowChangeWarning(true)}>
+            <View style={[styles.menuIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
+              <Text style={{ fontSize: 20 }}>{getMarketEmoji(selectedMarket || 'aerospace')}</Text>
             </View>
-            <Text style={styles.chevron}>→</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>{getMarketName(selectedMarket || 'aerospace')}</Text>
+              <Text style={styles.menuSubtitle}>6-month journey</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Pro Upgrade */}
-        {userTier === 'free' && (
-          <TouchableOpacity
-            style={styles.proCard}
-            onPress={() => router.push('/subscription')}
-          >
-            <Text style={styles.proEmoji}>👑</Text>
-            <View style={styles.proContent}>
-              <Text style={styles.proTitle}>Upgrade to Pro</Text>
-              <Text style={styles.proSubtitle}>Unlock all features</Text>
-            </View>
-            <Text style={styles.chevron}>→</Text>
-          </TouchableOpacity>
-        )}
-
-        {/* Settings */}
+        {/* Data */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>SETTINGS</Text>
-          
-          <TouchableOpacity style={styles.settingItem}>
-            <Text style={styles.settingIcon}>🔔</Text>
-            <Text style={styles.settingText}>Notifications</Text>
-            <Text style={styles.chevron}>→</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.settingItem}>
-            <Text style={styles.settingIcon}>📊</Text>
-            <Text style={styles.settingText}>Change Difficulty</Text>
-            <Text style={styles.chevron}>→</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.settingItem}>
-            <Text style={styles.settingIcon}>ℹ️</Text>
-            <Text style={styles.settingText}>About</Text>
-            <Text style={styles.chevron}>→</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.settingItem, styles.signOutItem]} onPress={handleSignOut}>
-            <Text style={styles.settingIcon}>🚪</Text>
-            <Text style={[styles.settingText, styles.signOutText]}>Sign Out</Text>
+          <Text style={styles.sectionTitle}>DATA</Text>
+          <TouchableOpacity style={styles.menuItem} onPress={handleExportNotebook}>
+            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
+              <Text style={{ fontSize: 20 }}>📥</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Export Notebook</Text>
+              <Text style={styles.menuSubtitle}>Download as Markdown</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Account */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>ACCOUNT</Text>
+
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/settings' as any)}>
+            <View style={[styles.menuIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
+              <Text style={{ fontSize: 20 }}>⚙️</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Settings</Text>
+              <Text style={styles.menuSubtitle}>Notifications & preferences</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/achievements' as any)}>
+            <View style={[styles.menuIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
+              <Text style={{ fontSize: 20 }}>🏅</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Achievements</Text>
+              <Text style={styles.menuSubtitle}>Badges & milestones</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.menuItem, { backgroundColor: 'rgba(239, 68, 68, 0.08)', borderColor: 'rgba(239, 68, 68, 0.2)' }]}
+            onPress={handleSignOut}
+          >
+            <View style={[styles.menuIcon, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
+              <Text style={{ fontSize: 20 }}>🚪</Text>
+            </View>
+            <Text style={[styles.menuTitle, { color: '#EF4444' }]}>Log out</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.versionText}>MarketLingo v1.0.0</Text>
       </ScrollView>
+
+      {/* Change Market Warning */}
+      <Modal visible={showChangeWarning} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={{ fontSize: 32, textAlign: 'center', marginBottom: 12 }}>⚠️</Text>
+            <Text style={styles.modalTitle}>Change Market?</Text>
+            <Text style={styles.modalSubtitle}>
+              Changing your market will reset your path and streak. This action cannot be undone.
+            </Text>
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.modalCancel} onPress={() => setShowChangeWarning(false)}>
+                <Text style={styles.modalCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalDestructive} onPress={handleChangeMarket}>
+                <Text style={styles.modalDestructiveText}>Change Market</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.bg0,
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-  },
-  proBadge: {
-    backgroundColor: COLORS.accent + '20',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  proBadgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.accent,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 24,
-  },
+  container: { flex: 1, backgroundColor: COLORS.bg0 },
+  centered: { alignItems: 'center', justifyContent: 'center' },
+  scrollContent: { paddingHorizontal: 16 },
+  header: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 },
+  title: { fontSize: 28, fontWeight: '700', color: COLORS.textPrimary },
+  email: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2 },
+  proBadge: { backgroundColor: 'rgba(139, 92, 246, 0.2)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 },
+  proBadgeText: { fontSize: 12, fontWeight: '600', color: COLORS.accent },
+  statsGrid: { flexDirection: 'row', gap: 8, marginBottom: 16 },
   statCard: {
-    flex: 1,
-    backgroundColor: COLORS.bg2,
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    flex: 1, backgroundColor: COLORS.bg2, borderRadius: 16, padding: 14, alignItems: 'center',
+    borderWidth: 1, borderColor: COLORS.border,
   },
-  statIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
+  statIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
+  statEmoji: { fontSize: 20 },
+  statValue: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary },
+  statLabel: { fontSize: 10, color: COLORS.textMuted, marginTop: 2 },
+  stageCard: {
+    backgroundColor: COLORS.bg2, borderRadius: 16, padding: 14, marginBottom: 20,
+    borderWidth: 1, borderColor: COLORS.border,
   },
-  statEmoji: {
-    fontSize: 20,
+  stageHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
+  stageEmoji: { fontSize: 16 },
+  stageTitle: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary },
+  stageDesc: { fontSize: 11, color: COLORS.textMuted },
+  xpText: { fontSize: 12, fontWeight: '700', color: '#EAB308' },
+  section: { marginBottom: 20 },
+  sectionTitle: { fontSize: 11, fontWeight: '600', color: COLORS.textMuted, letterSpacing: 1, marginBottom: 10 },
+  certCard: { backgroundColor: COLORS.bg2, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: COLORS.border },
+  certRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  certIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
+  certTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
+  certSubtitle: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
+  certProgressRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
+  certProgressLabel: { fontSize: 11, color: COLORS.textMuted },
+  certButton: {
+    backgroundColor: COLORS.accent, borderRadius: 12, paddingVertical: 12, alignItems: 'center', marginTop: 14,
   },
-  statValue: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
+  certButtonText: { color: '#FFFFFF', fontWeight: '600', fontSize: 14 },
+  menuItem: {
+    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, flexDirection: 'row', alignItems: 'center',
+    borderWidth: 1, borderColor: COLORS.border, marginBottom: 8, gap: 12,
   },
-  statLabel: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    marginTop: 2,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.textMuted,
-    letterSpacing: 1,
-    marginBottom: 12,
-  },
-  certificateCard: {
-    backgroundColor: COLORS.bg2,
-    borderRadius: 16,
-    padding: 16,
-    flexDirection: 'row',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  certificateIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.bg1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  certificateEmoji: {
-    fontSize: 24,
-  },
-  certificateInfo: {
-    flex: 1,
-  },
-  certificateName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginBottom: 4,
-  },
-  certificateSubtitle: {
-    fontSize: 13,
-    color: COLORS.textMuted,
-    marginBottom: 8,
-  },
-  certificateProgress: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  progressBar: {
-    flex: 1,
-    height: 6,
-    backgroundColor: COLORS.bg1,
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: COLORS.accent,
-    borderRadius: 3,
-  },
-  progressText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.accent,
-  },
-  marketCard: {
-    backgroundColor: COLORS.bg2,
-    borderRadius: 16,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  marketEmoji: {
-    fontSize: 32,
-    marginRight: 12,
-  },
-  marketInfo: {
-    flex: 1,
-  },
-  marketName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-  },
-  marketSubtitle: {
-    fontSize: 13,
-    color: COLORS.textMuted,
-  },
-  chevron: {
-    fontSize: 18,
-    color: COLORS.textMuted,
-  },
-  proCard: {
-    backgroundColor: COLORS.accent + '15',
-    borderRadius: 16,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.accent + '30',
-    marginBottom: 24,
-  },
-  proEmoji: {
-    fontSize: 28,
-    marginRight: 12,
-  },
-  proContent: {
-    flex: 1,
-  },
-  proTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.accent,
-  },
-  proSubtitle: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
-  },
-  settingItem: {
-    backgroundColor: COLORS.bg2,
-    borderRadius: 12,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  settingIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  settingText: {
-    flex: 1,
-    fontSize: 15,
-    color: COLORS.textPrimary,
-  },
-  signOutItem: {
-    backgroundColor: '#EF444420',
-    borderColor: '#EF444430',
-  },
-  signOutText: {
-    color: '#EF4444',
-  },
+  menuIcon: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  menuTitle: { fontSize: 15, fontWeight: '500', color: COLORS.textPrimary },
+  menuSubtitle: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
+  chevron: { fontSize: 22, color: COLORS.textMuted },
+  versionText: { textAlign: 'center', fontSize: 12, color: COLORS.textMuted, marginTop: 20, marginBottom: 10 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(11, 16, 32, 0.9)', justifyContent: 'center', alignItems: 'center', padding: 24 },
+  modalCard: { backgroundColor: COLORS.bg2, borderRadius: 20, padding: 24, borderWidth: 1, borderColor: COLORS.border, width: '100%' },
+  modalTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary, textAlign: 'center', marginBottom: 8 },
+  modalSubtitle: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginBottom: 20, lineHeight: 20 },
+  modalActions: { flexDirection: 'row', gap: 12 },
+  modalCancel: { flex: 1, paddingVertical: 14, borderRadius: 12, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center' },
+  modalCancelText: { color: COLORS.textSecondary, fontSize: 14 },
+  modalDestructive: { flex: 1, paddingVertical: 14, borderRadius: 12, backgroundColor: '#EF4444', alignItems: 'center' },
+  modalDestructiveText: { color: '#FFFFFF', fontWeight: '600', fontSize: 14 },
 });

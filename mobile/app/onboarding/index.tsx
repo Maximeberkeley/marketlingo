@@ -12,14 +12,23 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { storage } from '../../lib/storage';
 import { INDUSTRIES, COLORS } from '../../lib/constants';
 import { StickyBottomCTA } from '../../components/StickyBottomCTA';
+import { useAuth } from '../../hooks/useAuth';
+import { supabase } from '../../lib/supabase';
 
 export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
   const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
 
   const handleContinue = async () => {
     if (selectedIndustry) {
       await storage.setIndustry(selectedIndustry);
+      // Write to Supabase profiles
+      if (user) {
+        await supabase
+          .from('profiles')
+          .upsert({ id: user.id, selected_market: selectedIndustry }, { onConflict: 'id' });
+      }
       router.push('/onboarding/familiarity');
     }
   };
