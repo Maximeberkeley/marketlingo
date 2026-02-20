@@ -15,8 +15,11 @@ const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
 type AuthMode = "options" | "email-login" | "email-signup";
 
+const DEMO_SEEN_KEY = "ml_demo_seen";
+
 export default function AuthPage() {
   const [showDemo, setShowDemo] = useState(false);
+  const hasSeenDemo = typeof window !== "undefined" && localStorage.getItem(DEMO_SEEN_KEY) === "true";
   const { user, loading, signIn, signUp, signInWithGoogle, signInWithApple } = useAuth();
   const { routeToCorrectScreen } = useOnboardingRouter();
   const [mode, setMode] = useState<AuthMode>("options");
@@ -141,35 +144,37 @@ export default function AuthPage() {
               Become fluent in one market in 6 months.
             </motion.p>
 
-            {/* ── "Try a Free Lesson" shimmer CTA ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.4 }}
-              className="w-full mb-5"
-            >
-              <button
-                onClick={() => setShowDemo(true)}
-                className="w-full relative overflow-hidden rounded-2xl border-2 border-accent/40 bg-gradient-to-r from-accent/15 to-purple-600/10 p-4 text-left transition-all hover:border-accent/60 active:scale-[0.98]"
+            {/* ── "Try a Free Lesson" shimmer CTA — only shown once ── */}
+            {!hasSeenDemo && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35, duration: 0.4 }}
+                className="w-full mb-5"
               >
-                {/* Shimmer sweep */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"
-                  animate={{ x: ["-100%", "200%"] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: "linear", repeatDelay: 1.2 }}
-                />
-                <div className="flex items-center gap-3 relative z-10">
-                  <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0">
-                    <Zap size={20} className="text-accent" />
+                <button
+                  onClick={() => setShowDemo(true)}
+                  className="w-full relative overflow-hidden rounded-2xl border-2 border-accent/40 bg-gradient-to-r from-accent/15 to-purple-600/10 p-4 text-left transition-all hover:border-accent/60 active:scale-[0.98]"
+                >
+                  {/* Shimmer sweep */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"
+                    animate={{ x: ["-100%", "200%"] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "linear", repeatDelay: 1.2 }}
+                  />
+                  <div className="flex items-center gap-3 relative z-10">
+                    <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0">
+                      <Zap size={20} className="text-accent" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-body font-semibold text-text-primary">Try a free lesson now</p>
+                      <p className="text-caption text-text-muted">AI market · 4 min · No signup needed</p>
+                    </div>
+                    <span className="chip bg-accent/20 text-accent border-accent/30 text-[10px] px-2 py-0.5 flex-shrink-0">FREE</span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-body font-semibold text-text-primary">Try a free lesson now</p>
-                    <p className="text-caption text-text-muted">AI market · 4 min · No signup needed</p>
-                  </div>
-                  <span className="chip bg-accent/20 text-accent border-accent/30 text-[10px] px-2 py-0.5 flex-shrink-0">FREE</span>
-                </div>
-              </button>
-            </motion.div>
+                </button>
+              </motion.div>
+            )}
 
             {/* Divider */}
             <motion.div
