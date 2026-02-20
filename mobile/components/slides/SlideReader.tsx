@@ -45,6 +45,10 @@ interface SlideReaderProps {
   onAddNote: (slideNumber: number) => void;
   marketId?: string;
   isReview?: boolean;
+  /** If false, free users hit paywall at slide 3→4 boundary */
+  isProUser?: boolean;
+  /** Called when free user hits the slide 3 paywall */
+  onPaywallTrigger?: () => void;
 }
 
 const MINIMUM_LESSON_TIME_SECONDS = 180;
@@ -377,6 +381,8 @@ export function SlideReader({
   onAddNote,
   isReview = false,
   marketId,
+  isProUser = true,
+  onPaywallTrigger,
 }: SlideReaderProps) {
   const [currentIndex, setCurrentIndex]     = useState(-1);
   const [showCompletion, setShowCompletion] = useState(false);
@@ -423,8 +429,13 @@ export function SlideReader({
   }, [slideAnim]);
 
   const goToNext = useCallback(() => {
+    // Emotional paywall: free users hit a gate at slide 3→4 boundary
+    if (!isProUser && !isReview && currentIndex === 2 && slides.length > 3) {
+      onPaywallTrigger?.();
+      return;
+    }
     if (currentIndex < slides.length - 1) animateSlide(1, () => setCurrentIndex((prev) => prev + 1));
-  }, [currentIndex, slides.length, animateSlide]);
+  }, [currentIndex, slides.length, animateSlide, isProUser, isReview, onPaywallTrigger]);
 
   const goToPrev = useCallback(() => {
     if (currentIndex > -1) animateSlide(-1, () => setCurrentIndex((prev) => prev - 1));

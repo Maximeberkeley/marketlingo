@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,6 +15,7 @@ import { StickyBottomCTA } from '../../components/StickyBottomCTA';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { NotificationOnboarding } from '../../components/onboarding/NotificationOnboarding';
+import { applyDemoXP } from '../../lib/demoXPBridge';
 
 export default function FamiliarityScreen() {
   const insets = useSafeAreaInsets();
@@ -37,8 +39,32 @@ export default function FamiliarityScreen() {
     }
   };
 
-  const handleNotifComplete = (_enabled: boolean) => {
+  const handleNotifComplete = async (_enabled: boolean) => {
     setShowNotifOnboarding(false);
+
+    // Bridge demo XP — credit any XP earned during the pre-auth demo
+    if (user) {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('selected_market')
+          .eq('id', user.id)
+          .single();
+
+        if (profile?.selected_market) {
+          const demoXP = await applyDemoXP(user.id, profile.selected_market);
+          if (demoXP > 0) {
+            Alert.alert(
+              'Welcome bonus! 🎉',
+              `Your ${demoXP} XP from the demo lesson has been credited to your account. Keep that momentum going!`,
+            );
+          }
+        }
+      } catch (e) {
+        // Non-critical — don't block onboarding
+      }
+    }
+
     router.replace('/(tabs)/home');
   };
 

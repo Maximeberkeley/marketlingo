@@ -38,27 +38,27 @@ export default function TabLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Home',
+          title: 'Learn',
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon emoji="🏠" focused={focused} />
+            <TabBarIcon emoji="📖" focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="practice"
+        options={{
+          title: 'Practice',
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon emoji="⚡" focused={focused} />
           ),
         }}
       />
       <Tabs.Screen
         name="roadmap"
         options={{
-          title: 'Roadmap',
+          title: 'Progress',
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon emoji="🗺️" focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="notebook"
-        options={{
-          title: 'Notebook',
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon emoji="📓" focused={focused} />
+            <TabBarIcon emoji="�️" focused={focused} />
           ),
         }}
       />
@@ -69,6 +69,13 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <TabBarIcon emoji="👤" focused={focused} />
           ),
+        }}
+      />
+      {/* Notebook still accessible via direct navigation, hidden from tab bar */}
+      <Tabs.Screen
+        name="notebook"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

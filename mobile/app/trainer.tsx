@@ -84,6 +84,9 @@ export default function TrainerScreen() {
   } | null>(null);
   const [mentorChatVisible, setMentorChatVisible] = useState(false);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
+  const [isProUser, setIsProUser] = useState(false);
+  const [showPaywallNudge, setShowPaywallNudge] = useState(false);
+  const [correctCount, setCorrectCount] = useState(0);
 
 
   useEffect(() => {
@@ -92,12 +95,13 @@ export default function TrainerScreen() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('selected_market')
+        .select('selected_market, is_pro_user')
         .eq('id', user.id)
         .single();
 
       const market = profile?.selected_market || 'aerospace';
       setSelectedMarket(market);
+      setIsProUser(profile?.is_pro_user || false);
 
       const { data: scenarioData, error } = await supabase
         .from('trainer_scenarios')
@@ -168,6 +172,16 @@ export default function TrainerScreen() {
 
     const result = data as any;
     setFeedback(result || { isCorrect: false, correctIndex: 0, feedback_pro_reasoning: null, feedback_common_mistake: null, feedback_mental_model: null });
+
+    // Emotional paywall: after a correct answer, free users see a Pro nudge
+    if (result?.isCorrect && !isProUser) {
+      const newCount = correctCount + 1;
+      setCorrectCount(newCount);
+      // Show paywall after 2nd correct answer — peak confidence moment
+      if (newCount === 2) {
+        setTimeout(() => setShowPaywallNudge(true), 1500);
+      }
+    }
   };
 
   const handleSaveToNotebook = async () => {
@@ -340,6 +354,36 @@ export default function TrainerScreen() {
         </View>
       </ScrollView>
 
+      {/* Emotional Paywall Nudge — appears after correct answer for free users */}
+      {showPaywallNudge && (
+        <View style={styles.paywallOverlay}>
+          <View style={styles.paywallCard}>
+            <Text style={styles.paywallEmoji}>🔥</Text>
+            <Text style={styles.paywallTitle}>You're on fire!</Text>
+            <Text style={styles.paywallBody}>
+              {correctCount} correct in a row — you clearly have the instincts.{'\n\n'}
+              Pro unlocks unlimited scenarios, expert mental models, and AI mentor feedback.
+            </Text>
+            <TouchableOpacity
+              style={styles.paywallCTA}
+              onPress={() => {
+                setShowPaywallNudge(false);
+                router.push('/subscription' as any);
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.paywallCTAText}>Unlock Pro →</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.paywallDismiss}
+              onPress={() => setShowPaywallNudge(false)}
+            >
+              <Text style={styles.paywallDismissText}>Maybe later</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
       {/* Mentor Chat Overlay */}
       {activeMentor && (
         <MentorChatOverlay
@@ -452,4 +496,37 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.25)', marginTop: 12,
   },
   mentorChatCTAText: { fontSize: 14, fontWeight: '600', color: COLORS.accent },
+  // Emotional paywall nudge
+  paywallOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    zIndex: 100,
+  },
+  paywallCard: {
+    width: '100%',
+    maxWidth: 340,
+    backgroundColor: COLORS.bg2,
+    borderRadius: 20,
+    padding: 28,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.3)',
+  },
+  paywallEmoji: { fontSize: 48, marginBottom: 12 },
+  paywallTitle: { fontSize: 22, fontWeight: '800', color: COLORS.textPrimary, marginBottom: 8 },
+  paywallBody: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 20, marginBottom: 20 },
+  paywallCTA: {
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 14,
+    backgroundColor: COLORS.accent,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  paywallCTAText: { fontSize: 16, fontWeight: '700', color: '#FFFFFF' },
+  paywallDismiss: { paddingVertical: 8 },
+  paywallDismissText: { fontSize: 13, color: COLORS.textMuted },
 });

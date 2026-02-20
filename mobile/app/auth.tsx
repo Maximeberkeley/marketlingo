@@ -17,6 +17,7 @@ import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
+import { DemoLesson } from '../components/demo/DemoLesson';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri } from 'expo-auth-session';
 
@@ -27,6 +28,7 @@ export default function AuthScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showDemo, setShowDemo] = useState(false);
 
   const handleGoogleAuth = async () => {
     try {
@@ -84,6 +86,17 @@ export default function AuthScreen() {
     }
   };
 
+  if (showDemo) {
+    return (
+      <View style={{ flex: 1, paddingTop: insets.top }}>
+        <DemoLesson
+          onSignUp={() => { setShowDemo(false); setMode('signup'); }}
+          onClose={() => setShowDemo(false)}
+        />
+      </View>
+    );
+  }
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -107,6 +120,11 @@ export default function AuthScreen() {
           <Text style={styles.appName}>MarketLingo</Text>
           <Text style={styles.tagline}>Master any industry in 6 months</Text>
         </View>
+
+        {/* Demo Lesson CTA */}
+        <TouchableOpacity style={styles.demoBtn} onPress={() => setShowDemo(true)} activeOpacity={0.8}>
+          <Text style={styles.demoBtnText}>Try a free lesson first →</Text>
+        </TouchableOpacity>
 
         {/* Form */}
         <View style={styles.form}>
@@ -226,4 +244,14 @@ const styles = StyleSheet.create({
   },
   oauthEmoji: { fontSize: 18, fontWeight: '700', color: COLORS.textPrimary },
   oauthLabel: { fontSize: 14, fontWeight: '500', color: COLORS.textPrimary },
+  demoBtn: {
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.3)',
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  demoBtnText: { fontSize: 15, fontWeight: '600', color: COLORS.accent },
 });

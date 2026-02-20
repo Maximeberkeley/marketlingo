@@ -9,7 +9,6 @@ import {
   RefreshControl,
   Alert,
   Image,
-  ImageBackground,
 } from 'react-native';
 import { KeyPlayers } from '../../components/home/KeyPlayers';
 import { DailyNews } from '../../components/home/DailyNews';
@@ -31,12 +30,11 @@ import { SlideReader } from '../../components/slides/SlideReader';
 import { MentorChatOverlay } from '../../components/ai/MentorChatOverlay';
 import { getMentorForContext, Mentor } from '../../data/mentors';
 import { getPrimaryMentorForMarket } from '../../data/marketConfig';
-
-const CARD_IMAGES: Record<string, any> = {
-  games: require('../../assets/cards/games-hero.jpg'),
-  drills: require('../../assets/cards/drills-hero.jpg'),
-  trainer: require('../../assets/cards/trainer-hero.jpg'),
-};
+import { TodaysMission } from '../../components/home/TodaysMission';
+import { StreakAtRisk, getStreakRiskHours } from '../../components/home/StreakAtRisk';
+import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
+import { SocialNudge } from '../../components/home/SocialNudge';
+import { scheduleStreakNotifications } from '../../lib/streakNotifications';
 
 
 const MENTOR_IMAGES: Record<string, any> = {
@@ -293,6 +291,13 @@ export default function HomeScreen() {
   const [keyPlayers, setKeyPlayers] = useState<KeyPlayer[]>([]);
   const [mentorChatVisible, setMentorChatVisible] = useState(false);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
+  // Retention feature state
+  const [showSessionComplete, setShowSessionComplete] = useState(false);
+  const [sessionXPEarned, setSessionXPEarned] = useState(0);
+  const [streakRiskHours, setStreakRiskHours] = useState<number | null>(null);
+  const [showStreakWarning, setShowStreakWarning] = useState(true);
+  const [socialNudge, setSocialNudge] = useState<{ name: string; xp: number } | null>(null);
+  const [showSocialNudge, setShowSocialNudge] = useState(true);
 
   const lessonCompletedToday = isLessonCompletedToday();
   const currentStage = getCurrentStage();
@@ -466,6 +471,41 @@ export default function HomeScreen() {
       }
     }
 
+    // Check streak risk
+    const riskHours = getStreakRiskHours(
+      progress?.streak_expires_at || null,
+      progress?.current_streak || 0,
+      lessonCompletedToday,
+    );
+    setStreakRiskHours(riskHours);
+
+    // Schedule streak-at-risk push notifications
+    scheduleStreakNotifications(
+      progress?.current_streak || 0,
+      lessonCompletedToday,
+    );
+
+    // Fetch a rival for social nudge (person just above user on leaderboard)
+    if (xpData?.total_xp && market) {
+      try {
+        const { data: rivals } = await supabase
+          .from('user_xp')
+          .select('total_xp, user_id, profiles!inner(username)')
+          .eq('market_id', market)
+          .gt('total_xp', xpData.total_xp)
+          .order('total_xp', { ascending: true })
+          .limit(1);
+
+        if (rivals?.[0]) {
+          const rival = rivals[0] as any;
+          const rivalName = rival.profiles?.username || 'Someone';
+          setSocialNudge({ name: rivalName, xp: rival.total_xp });
+        }
+      } catch (e) {
+        // Silent — social nudge is non-critical
+      }
+    }
+
     setLoading(false);
   };
 
@@ -506,16 +546,20 @@ export default function HomeScreen() {
       Alert.alert('Keep learning!', 'Spend at least 3 minutes to complete the lesson.');
       return;
     }
+    let earnedXP = XP_REWARDS.LESSON_COMPLETE;
     if (progress && activeStack) {
       await completeStack(activeStack.id);
       await updateStreak();
       await completeLessonForToday(activeStack.id);
       if ((progress.current_streak || 0) > 0) {
-        await addXP(XP_REWARDS.STREAK_BONUS * (progress.current_streak || 1), 'streak_bonus');
+        const streakBonus = XP_REWARDS.STREAK_BONUS * (progress.current_streak || 1);
+        await addXP(streakBonus, 'streak_bonus');
+        earnedXP += streakBonus;
       }
     }
-    Alert.alert('Lesson complete! 🔥', 'Great job! Try some drills to practice.');
-    router.push('/(tabs)/home');
+    // Show gorgeous completion card instead of plain Alert
+    setSessionXPEarned(earnedXP);
+    setShowSessionComplete(true);
   };
 
   const handleOpenStack = (stack: StackWithSlides) => {
@@ -577,6 +621,30 @@ export default function HomeScreen() {
           onAddNote={handleAddNote}
           marketId={selectedMarket || undefined}
           isReview={lessonCompletedToday && activeStack.stack_type === 'LESSON'}
+          isProUser={isProUser}
+          onPaywallTrigger={() => {
+            setShowReader(false);
+            router.push('/subscription' as any);
+          }}
+        />
+      ) : showSessionComplete ? (
+        <SessionCompleteCard
+          dayNumber={currentDay}
+          marketName={getMarketName(selectedMarket || 'aerospace')}
+          marketEmoji={getMarketEmoji(selectedMarket || 'aerospace')}
+          xpEarned={sessionXPEarned}
+          streak={streak}
+          lessonTitle={activeStack?.title || lessonStack?.title || 'Lesson'}
+          totalXP={xpData?.total_xp || 0}
+          stageName={currentStage.name}
+          onContinue={() => {
+            setShowSessionComplete(false);
+            fetchData();
+          }}
+          onDismiss={() => {
+            setShowSessionComplete(false);
+            fetchData();
+          }}
         />
       ) : (
         <>
@@ -649,52 +717,49 @@ export default function HomeScreen() {
             <ProgressBar progress={stageProgress} />
           </View>
 
-          {/* TODAY'S LEARNING */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>TODAY'S LEARNING</Text>
+          {/* ═══ STREAK AT RISK WARNING ═══ */}
+          {streakRiskHours !== null && showStreakWarning && !lessonCompletedToday && (
+            <StreakAtRisk
+              streak={streak}
+              hoursLeft={streakRiskHours}
+              onStartLesson={() => lessonStack && handleOpenStack(lessonStack)}
+              onDismiss={() => setShowStreakWarning(false)}
+            />
+          )}
 
-            {lessonCompletedToday ? (
-              <View style={styles.completedCard}>
-                <View style={styles.completedHeader}>
-                  <View style={styles.completedIcon}>
-                    <Text style={styles.completedCheckmark}>✓</Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.completedTitle}>Lesson Complete! 🎉</Text>
-                    <Text style={styles.completedXP}>⚡ +{XP_REWARDS.LESSON_COMPLETE} XP earned</Text>
-                  </View>
-                </View>
-                <View style={styles.completedActions}>
-                  <TouchableOpacity
-                    style={styles.reviewButton}
-                    onPress={() => lessonStack && handleOpenStack(lessonStack)}
-                  >
-                    <Text style={styles.reviewButtonText}>Review</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.practiceButton}
-                    onPress={() => router.push('/drills' as any)}
-                  >
-                    <Text style={styles.practiceButtonText}>⚡ Practice</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ) : (
-              lessonStack && (
-                <LessonCard
-                  title="Micro Lesson"
-                  subtitle="Today's Lesson"
-                  headline={lessonStack.title}
-                  xp={XP_REWARDS.LESSON_COMPLETE}
-                  duration={lessonStack.duration_minutes || 5}
-                  colorScheme={colorScheme}
-                  imageSrc={heroImage}
-                  onClick={() => handleOpenStack(lessonStack)}
-                />
-              )
-            )}
+          {/* ═══ TODAY'S MISSION — the ONE thing to do ═══ */}
+          {lessonStack && (
+            <TodaysMission
+              dayNumber={currentDay}
+              lessonTitle={lessonStack.title}
+              marketEmoji={getMarketEmoji(selectedMarket || 'aerospace')}
+              marketName={getMarketName(selectedMarket || 'aerospace')}
+              xpReward={XP_REWARDS.LESSON_COMPLETE}
+              duration={lessonStack.duration_minutes || 5}
+              progress={lessonCompletedToday ? 1 : (currentDay / 180)}
+              isCompleted={lessonCompletedToday}
+              streak={streak}
+              onStart={() => handleOpenStack(lessonStack)}
+              onReview={() => handleOpenStack(lessonStack)}
+              onPractice={() => router.push('/(tabs)/practice' as any)}
+            />
+          )}
 
-            {newsStack && (
+          {/* ═══ SOCIAL NUDGE — competitive motivation ═══ */}
+          {socialNudge && showSocialNudge && !lessonCompletedToday && (
+            <SocialNudge
+              rivalName={socialNudge.name}
+              rivalXP={socialNudge.xp}
+              userXP={xpData?.total_xp || 0}
+              marketName={getMarketName(selectedMarket || 'aerospace')}
+              onViewLeaderboard={() => router.push('/leaderboard' as any)}
+              onDismiss={() => setShowSocialNudge(false)}
+            />
+          )}
+
+          {/* Daily Pattern (secondary content) */}
+          {newsStack && !lessonCompletedToday && (
+            <View style={styles.section}>
               <LessonCard
                 title="Daily Pattern"
                 subtitle="Industry Insight"
@@ -704,54 +769,8 @@ export default function HomeScreen() {
                 colorScheme="blue"
                 onClick={() => handleOpenStack(newsStack)}
               />
-            )}
-          </View>
-
-          {/* PRACTICE & PLAY — image hero cards matching web */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>PRACTICE & PLAY</Text>
-            <View style={styles.activityGrid}>
-              {/* Games */}
-              <TouchableOpacity
-                style={styles.imageCard}
-                onPress={() => router.push('/games' as any)}
-                activeOpacity={0.85}
-              >
-                <ImageBackground source={CARD_IMAGES.games} style={styles.imageCardBg} imageStyle={{ borderRadius: 14 }}>
-                  <View style={[styles.imageCardOverlay, { backgroundColor: 'rgba(88,28,135,0.85)' }]}>
-                    <Text style={[styles.activityTag, { color: '#C4B5FD', marginBottom: 2 }]}>TRIVIA</Text>
-                    <Text style={styles.imageCardTitle}>Games</Text>
-                  </View>
-                </ImageBackground>
-              </TouchableOpacity>
-              {/* Drills */}
-              <TouchableOpacity
-                style={styles.imageCard}
-                onPress={() => router.push('/drills' as any)}
-                activeOpacity={0.85}
-              >
-                <ImageBackground source={CARD_IMAGES.drills} style={styles.imageCardBg} imageStyle={{ borderRadius: 14 }}>
-                  <View style={[styles.imageCardOverlay, { backgroundColor: 'rgba(120,53,15,0.85)' }]}>
-                    <Text style={[styles.activityTag, { color: '#FDE68A', marginBottom: 2 }]}>SPEED</Text>
-                    <Text style={styles.imageCardTitle}>Drills</Text>
-                  </View>
-                </ImageBackground>
-              </TouchableOpacity>
             </View>
-            {/* Trainer — full width image card */}
-            <TouchableOpacity
-              style={[styles.imageCardFull, { marginTop: 10 }]}
-              onPress={() => router.push('/trainer' as any)}
-              activeOpacity={0.85}
-            >
-              <ImageBackground source={CARD_IMAGES.trainer} style={styles.imageCardFullBg} imageStyle={{ borderRadius: 14 }}>
-                <View style={[styles.imageCardOverlay, { backgroundColor: 'rgba(6,78,59,0.85)', borderRadius: 14 }]}>
-                  <Text style={[styles.activityTag, { color: '#6EE7B7', marginBottom: 2 }]}>STRATEGY</Text>
-                  <Text style={styles.imageCardTitle}>Trainer Scenarios</Text>
-                </View>
-              </ImageBackground>
-            </TouchableOpacity>
-          </View>
+          )}
 
           {/* Investment Lab Teaser */}
           <TouchableOpacity
@@ -781,30 +800,6 @@ export default function HomeScreen() {
             </View>
             <Text style={styles.chevron}>→</Text>
           </TouchableOpacity>
-
-          {/* QUICK ACCESS — neuroscience-aware (matches web) */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>QUICK ACCESS</Text>
-            <View style={styles.quickGrid}>
-              {[
-                { emoji: '📓', label: 'Notes', route: '/(tabs)/notebook' },
-                { emoji: '🏆', label: 'Rank', route: '/leaderboard' },
-                { emoji: '🏅', label: 'Badges', route: '/achievements' },
-                selectedMarket === 'neuroscience'
-                  ? { emoji: '⚗️', label: 'FDA/IRB', route: '/regulatory-hub' }
-                  : { emoji: '📰', label: 'News', route: '/summaries' },
-              ].map((item) => (
-                <TouchableOpacity
-                  key={item.label}
-                  style={styles.quickCard}
-                  onPress={() => router.push(item.route as any)}
-                >
-                  <Text style={styles.quickEmoji}>{item.emoji}</Text>
-                  <Text style={styles.quickLabel}>{item.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
 
           {/* KEY PLAYERS */}
           {selectedMarket && (
@@ -900,53 +895,6 @@ const styles = StyleSheet.create({
     width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.accent,
   },
   seeAllText: { fontSize: 12, color: COLORS.accent },
-  completedCard: {
-    backgroundColor: 'rgba(16, 185, 129, 0.08)', borderRadius: 16, padding: 16,
-    borderWidth: 1, borderColor: 'rgba(16, 185, 129, 0.25)',
-  },
-  completedHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
-  completedIcon: {
-    width: 48, height: 48, borderRadius: 24, backgroundColor: '#22C55E',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  completedCheckmark: { fontSize: 22, color: '#FFFFFF', fontWeight: '700' },
-  completedTitle: { fontSize: 17, fontWeight: '700', color: COLORS.textPrimary },
-  completedXP: { fontSize: 13, color: '#34D399', marginTop: 2 },
-  completedActions: { flexDirection: 'row', gap: 10 },
-  reviewButton: {
-    flex: 1, paddingVertical: 12, borderRadius: 12,
-    backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center',
-  },
-  reviewButtonText: { fontSize: 14, color: COLORS.textSecondary, fontWeight: '500' },
-  practiceButton: {
-    flex: 1, paddingVertical: 12, borderRadius: 12,
-    backgroundColor: COLORS.accent, alignItems: 'center',
-  },
-  practiceButtonText: { fontSize: 14, color: '#FFFFFF', fontWeight: '700' },
-  activityGrid: { flexDirection: 'row', gap: 10, marginBottom: 0 },
-  activityCard: {
-    flex: 1, backgroundColor: COLORS.bg2, borderRadius: 14, padding: 16,
-    alignItems: 'center', borderWidth: 1,
-  },
-  activityEmoji: { fontSize: 28, marginBottom: 6 },
-  activityTag: { fontSize: 9, fontWeight: '700', letterSpacing: 0.5 },
-  activityTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary, marginTop: 2 },
-  // Image hero cards (matches web)
-  imageCard: {
-    flex: 1, height: 120, borderRadius: 14, overflow: 'hidden',
-  },
-  imageCardBg: { flex: 1, justifyContent: 'flex-end' },
-  imageCardOverlay: {
-    flex: 1, justifyContent: 'flex-end', padding: 12, borderRadius: 14,
-  },
-  imageCardTitle: { fontSize: 16, fontWeight: '700', color: '#FFFFFF' },
-  imageCardFull: { height: 100, borderRadius: 14, overflow: 'hidden' },
-  imageCardFullBg: { flex: 1, justifyContent: 'flex-end' },
-  trainerCard: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: COLORS.bg2, borderRadius: 16, padding: 16,
-    borderWidth: 1, borderColor: 'rgba(74, 222, 128, 0.3)',
-  },
   investmentLabCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     borderRadius: 16, padding: 14, marginBottom: 20,
@@ -966,13 +914,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(139, 92, 246, 0.2)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6,
   },
   proBadgeText: { fontSize: 8, fontWeight: '700', color: COLORS.accent },
-  quickGrid: { flexDirection: 'row', gap: 8 },
-  quickCard: {
-    flex: 1, backgroundColor: COLORS.bg2, borderRadius: 16, paddingVertical: 16,
-    alignItems: 'center', borderWidth: 1, borderColor: COLORS.border, gap: 6,
-  },
-  quickEmoji: { fontSize: 22 },
-  quickLabel: { fontSize: 11, fontWeight: '500', color: COLORS.textSecondary },
   chevron: { fontSize: 20, color: COLORS.textMuted },
   // Key Players
   playerCard: {
