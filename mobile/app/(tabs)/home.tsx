@@ -9,6 +9,7 @@ import {
   RefreshControl,
   Alert,
   Image,
+  ImageBackground,
 } from 'react-native';
 import { KeyPlayers } from '../../components/home/KeyPlayers';
 import { DailyNews } from '../../components/home/DailyNews';
@@ -30,6 +31,13 @@ import { SlideReader } from '../../components/slides/SlideReader';
 import { MentorChatOverlay } from '../../components/ai/MentorChatOverlay';
 import { getMentorForContext, Mentor } from '../../data/mentors';
 import { getPrimaryMentorForMarket } from '../../data/marketConfig';
+
+const CARD_IMAGES: Record<string, any> = {
+  games: require('../../assets/cards/games-hero.jpg'),
+  drills: require('../../assets/cards/drills-hero.jpg'),
+  trainer: require('../../assets/cards/trainer-hero.jpg'),
+};
+
 
 const MENTOR_IMAGES: Record<string, any> = {
   maya: require('../../assets/mentors/mentor-maya.png'),
@@ -679,36 +687,49 @@ export default function HomeScreen() {
             )}
           </View>
 
-          {/* PRACTICE & PLAY */}
+          {/* PRACTICE & PLAY — image hero cards matching web */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>PRACTICE & PLAY</Text>
             <View style={styles.activityGrid}>
+              {/* Games */}
               <TouchableOpacity
-                style={[styles.activityCard, { borderColor: 'rgba(139, 92, 246, 0.3)' }]}
+                style={styles.imageCard}
                 onPress={() => router.push('/games' as any)}
+                activeOpacity={0.85}
               >
-                <Text style={styles.activityEmoji}>🎮</Text>
-                <Text style={[styles.activityTag, { color: '#A78BFA' }]}>TRIVIA</Text>
-                <Text style={styles.activityTitle}>Games</Text>
+                <ImageBackground source={CARD_IMAGES.games} style={styles.imageCardBg} imageStyle={{ borderRadius: 14 }}>
+                  <View style={[styles.imageCardOverlay, { backgroundColor: 'rgba(88,28,135,0.85)' }]}>
+                    <Text style={[styles.activityTag, { color: '#C4B5FD', marginBottom: 2 }]}>TRIVIA</Text>
+                    <Text style={styles.imageCardTitle}>Games</Text>
+                  </View>
+                </ImageBackground>
               </TouchableOpacity>
+              {/* Drills */}
               <TouchableOpacity
-                style={[styles.activityCard, { borderColor: 'rgba(245, 158, 11, 0.3)' }]}
+                style={styles.imageCard}
                 onPress={() => router.push('/drills' as any)}
+                activeOpacity={0.85}
               >
-                <Text style={styles.activityEmoji}>⚡</Text>
-                <Text style={[styles.activityTag, { color: '#FBBF24' }]}>SPEED</Text>
-                <Text style={styles.activityTitle}>Drills</Text>
+                <ImageBackground source={CARD_IMAGES.drills} style={styles.imageCardBg} imageStyle={{ borderRadius: 14 }}>
+                  <View style={[styles.imageCardOverlay, { backgroundColor: 'rgba(120,53,15,0.85)' }]}>
+                    <Text style={[styles.activityTag, { color: '#FDE68A', marginBottom: 2 }]}>SPEED</Text>
+                    <Text style={styles.imageCardTitle}>Drills</Text>
+                  </View>
+                </ImageBackground>
               </TouchableOpacity>
             </View>
+            {/* Trainer — full width image card */}
             <TouchableOpacity
-              style={styles.trainerCard}
+              style={[styles.imageCardFull, { marginTop: 10 }]}
               onPress={() => router.push('/trainer' as any)}
+              activeOpacity={0.85}
             >
-              <View>
-                <Text style={[styles.activityTag, { color: '#4ADE80' }]}>STRATEGY</Text>
-                <Text style={styles.activityTitle}>Trainer Scenarios</Text>
-              </View>
-              <Text style={styles.chevron}>→</Text>
+              <ImageBackground source={CARD_IMAGES.trainer} style={styles.imageCardFullBg} imageStyle={{ borderRadius: 14 }}>
+                <View style={[styles.imageCardOverlay, { backgroundColor: 'rgba(6,78,59,0.85)', borderRadius: 14 }]}>
+                  <Text style={[styles.activityTag, { color: '#6EE7B7', marginBottom: 2 }]}>STRATEGY</Text>
+                  <Text style={styles.imageCardTitle}>Trainer Scenarios</Text>
+                </View>
+              </ImageBackground>
             </TouchableOpacity>
           </View>
 
@@ -735,13 +756,13 @@ export default function HomeScreen() {
                 )}
               </View>
               <Text style={styles.investmentLabSubtitle}>
-                {isProUser ? 'Become investment-ready' : 'Unlock with Pro'}
+                {isProUser ? 'Become investment-ready • Optional extra XP' : 'Unlock with Pro • Expert-level scenarios'}
               </Text>
             </View>
             <Text style={styles.chevron}>→</Text>
           </TouchableOpacity>
 
-          {/* QUICK ACCESS */}
+          {/* QUICK ACCESS — neuroscience-aware (matches web) */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>QUICK ACCESS</Text>
             <View style={styles.quickGrid}>
@@ -749,7 +770,9 @@ export default function HomeScreen() {
                 { emoji: '📓', label: 'Notes', route: '/(tabs)/notebook' },
                 { emoji: '🏆', label: 'Rank', route: '/leaderboard' },
                 { emoji: '🏅', label: 'Badges', route: '/achievements' },
-                { emoji: '📰', label: 'News', route: '/summaries' },
+                selectedMarket === 'neuroscience'
+                  ? { emoji: '⚗️', label: 'FDA/IRB', route: '/regulatory-hub' }
+                  : { emoji: '📰', label: 'News', route: '/summaries' },
               ].map((item) => (
                 <TouchableOpacity
                   key={item.label}
@@ -880,14 +903,25 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accent, alignItems: 'center',
   },
   practiceButtonText: { fontSize: 14, color: '#FFFFFF', fontWeight: '700' },
-  activityGrid: { flexDirection: 'row', gap: 10, marginBottom: 10 },
+  activityGrid: { flexDirection: 'row', gap: 10, marginBottom: 0 },
   activityCard: {
-    flex: 1, backgroundColor: COLORS.bg2, borderRadius: 16, padding: 16,
+    flex: 1, backgroundColor: COLORS.bg2, borderRadius: 14, padding: 16,
     alignItems: 'center', borderWidth: 1,
   },
   activityEmoji: { fontSize: 28, marginBottom: 6 },
   activityTag: { fontSize: 9, fontWeight: '700', letterSpacing: 0.5 },
   activityTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary, marginTop: 2 },
+  // Image hero cards (matches web)
+  imageCard: {
+    flex: 1, height: 120, borderRadius: 14, overflow: 'hidden',
+  },
+  imageCardBg: { flex: 1, justifyContent: 'flex-end' },
+  imageCardOverlay: {
+    flex: 1, justifyContent: 'flex-end', padding: 12, borderRadius: 14,
+  },
+  imageCardTitle: { fontSize: 16, fontWeight: '700', color: '#FFFFFF' },
+  imageCardFull: { height: 100, borderRadius: 14, overflow: 'hidden' },
+  imageCardFullBg: { flex: 1, justifyContent: 'flex-end' },
   trainerCard: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     backgroundColor: COLORS.bg2, borderRadius: 16, padding: 16,

@@ -110,6 +110,8 @@ export default function RoadmapScreen() {
   const [currentDay, setCurrentDay] = useState(1);
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [currentLessonTitle, setCurrentLessonTitle] = useState<string | null>(null);
+  const [currentLessonPattern, setCurrentLessonPattern] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -140,6 +142,53 @@ export default function RoadmapScreen() {
         day = Math.min(180, Math.max(1, diffDays + 1));
       }
       setCurrentDay(day);
+
+      // Fetch the actual lesson for today from DB (match web behavior)
+      const dayTag = `day-${day}`;
+      let lessonTitle: string | null = null;
+      let lessonPattern: string | null = null;
+
+      const { data: todayLesson } = await supabase
+        .from('stacks')
+        .select('title, tags')
+        .eq('market_id', market)
+        .contains('tags', ['MICRO_LESSON', dayTag])
+        .not('published_at', 'is', null)
+        .limit(1)
+        .single();
+
+      if (todayLesson) {
+        lessonTitle = todayLesson.title;
+      } else {
+        // Fallback: find closest lesson <= today
+        const { data: allLessons } = await supabase
+          .from('stacks')
+          .select('title, tags')
+          .eq('market_id', market)
+          .contains('tags', ['MICRO_LESSON'])
+          .not('published_at', 'is', null);
+
+        if (allLessons?.length) {
+          const withDays = allLessons.map((s: any) => {
+            const dm = (s.tags as string[])?.find((t: string) => t.startsWith('day-'));
+            return { title: s.title, dayNum: dm ? parseInt(dm.replace('day-', ''), 10) : 999 };
+          });
+          const valid = withDays.filter((l) => l.dayNum <= day);
+          const best = valid.length > 0
+            ? valid.reduce((a, b) => (a.dayNum > b.dayNum ? a : b))
+            : withDays.reduce((a, b) => (a.dayNum < b.dayNum ? a : b));
+          lessonTitle = best.title;
+        }
+      }
+
+      // Fall back to static pattern if DB has no content yet
+      if (!lessonTitle && genericPatterns[day]) {
+        lessonTitle = genericPatterns[day].title;
+        lessonPattern = genericPatterns[day].pattern;
+      }
+
+      setCurrentLessonTitle(lessonTitle);
+      setCurrentLessonPattern(lessonPattern || genericPatterns[day]?.pattern || '');
 
       const currentWeek = getDayWeek(day);
 
@@ -263,8 +312,8 @@ export default function RoadmapScreen() {
           <LeoCharacter size="sm" animation={currentDay > 1 ? 'success' : 'idle'} />
         </View>
 
-        {/* Current lesson quick-start card */}
-        {genericPatterns[currentDay] && (
+        {/* Current lesson quick-start card — uses real DB title */}
+        {(currentLessonTitle || genericPatterns[currentDay]) && (
           <TouchableOpacity
             style={styles.currentCard}
             onPress={() => router.push('/(tabs)/home')}
@@ -272,8 +321,10 @@ export default function RoadmapScreen() {
           >
             <View style={{ flex: 1 }}>
               <Text style={styles.continueLabel}>CONTINUE LEARNING</Text>
-              <Text style={styles.currentTitle}>{genericPatterns[currentDay].title}</Text>
-              <Text style={styles.currentPattern}>{genericPatterns[currentDay].pattern}</Text>
+              <Text style={styles.currentTitle}>{currentLessonTitle || genericPatterns[currentDay]?.title}</Text>
+              {currentLessonPattern || genericPatterns[currentDay]?.pattern ? (
+                <Text style={styles.currentPattern}>{currentLessonPattern || genericPatterns[currentDay]?.pattern}</Text>
+              ) : null}
             </View>
             <View style={styles.startBtn}>
               <Text style={styles.startBtnText}>▶ Start</Text>
