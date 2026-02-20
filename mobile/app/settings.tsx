@@ -17,6 +17,7 @@ import Constants from 'expo-constants';
 import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
+import { NotificationOnboarding } from '../components/onboarding/NotificationOnboarding';
 
 // Deep-link route map (mirrors _layout.tsx)
 const NOTIFICATION_ROUTES: Record<string, string> = {
@@ -82,9 +83,11 @@ export default function SettingsScreen() {
   const [pushEnabled, setPushEnabled] = useState(false);
   const [dailyReminder, setDailyReminder] = useState(true);
   const [streakAlerts, setStreakAlerts] = useState(true);
+  const [newsAlerts, setNewsAlerts] = useState(true);
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [registering, setRegistering] = useState(false);
   const [prefsLoaded, setPrefsLoaded] = useState(false);
+  const [showNotifOnboarding, setShowNotifOnboarding] = useState(false);
   const notificationListener = useRef<any>(null);
 
   // Load saved preferences from profile
@@ -106,6 +109,7 @@ export default function SettingsScreen() {
         if (prefs) {
           setDailyReminder(prefs.dailyReminder ?? true);
           setStreakAlerts(prefs.streakReminders ?? true);
+          setNewsAlerts(prefs.newsAlerts ?? true);
         }
       }
       setPrefsLoaded(true);
@@ -179,9 +183,10 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleTogglePref = async (key: 'dailyReminder' | 'streakAlerts', value: boolean) => {
+  const handleTogglePref = async (key: 'dailyReminder' | 'streakAlerts' | 'newsAlerts', value: boolean) => {
     if (key === 'dailyReminder') setDailyReminder(value);
     if (key === 'streakAlerts') setStreakAlerts(value);
+    if (key === 'newsAlerts') setNewsAlerts(value);
 
     if (!user) return;
 
@@ -196,6 +201,7 @@ export default function SettingsScreen() {
       ...currentPrefs,
       dailyReminder: key === 'dailyReminder' ? value : dailyReminder,
       streakReminders: key === 'streakAlerts' ? value : streakAlerts,
+      newsAlerts: key === 'newsAlerts' ? value : newsAlerts,
     };
 
     await supabase
@@ -330,6 +336,37 @@ export default function SettingsScreen() {
             />
           </View>
 
+          {/* News Alerts toggle */}
+          <View style={[styles.settingRow, !pushEnabled && { opacity: 0.45 }]}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.settingLabel}>Industry News Alerts</Text>
+              <Text style={styles.settingDesc}>Breaking industry news 2× daily</Text>
+            </View>
+            <Switch
+              value={newsAlerts}
+              onValueChange={(v) => handleTogglePref('newsAlerts', v)}
+              trackColor={{ false: COLORS.bg1, true: COLORS.accent }}
+              thumbColor="#FFFFFF"
+              disabled={!pushEnabled}
+            />
+          </View>
+
+          {/* Set up notifications CTA — shown when push not yet enabled */}
+          {!pushEnabled && !registering && (
+            <TouchableOpacity
+              style={styles.notifSetupBtn}
+              onPress={() => setShowNotifOnboarding(true)}
+              activeOpacity={0.85}
+            >
+              <Text style={{ fontSize: 18 }}>🔔</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.notifSetupLabel}>Set Up Notifications</Text>
+                <Text style={styles.notifSetupDesc}>Daily reminders, streaks & industry news</Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </TouchableOpacity>
+          )}
+
           {/* Token debug info (subtle) */}
           {pushEnabled && pushToken && (
             <View style={styles.tokenCard}>
@@ -406,6 +443,12 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Notification onboarding modal */}
+      <NotificationOnboarding
+        visible={showNotifOnboarding}
+        onComplete={(_enabled) => setShowNotifOnboarding(false)}
+      />
     </View>
   );
 }
@@ -424,6 +467,13 @@ const styles = StyleSheet.create({
   },
   settingLabel: { fontSize: 15, fontWeight: '500', color: COLORS.textPrimary },
   settingDesc: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
+  notifSetupBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: 'rgba(139,92,246,0.10)', borderRadius: 14, padding: 14, marginBottom: 8,
+    borderWidth: 1, borderColor: 'rgba(139,92,246,0.3)',
+  },
+  notifSetupLabel: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
+  notifSetupDesc: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
   tokenCard: {
     backgroundColor: 'rgba(34,197,94,0.08)', borderRadius: 10, padding: 10,
     borderWidth: 1, borderColor: 'rgba(34,197,94,0.2)', marginTop: 4,

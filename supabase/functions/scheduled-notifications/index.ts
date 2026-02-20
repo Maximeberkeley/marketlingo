@@ -13,7 +13,7 @@ const corsHeaders = {
 };
 
 interface NotificationJob {
-  type: 'daily_reminder' | 'streak_warning' | 're_engagement' | 'milestone';
+  type: 'daily_reminder' | 'streak_warning' | 're_engagement' | 'milestone' | 'news_update';
 }
 
 // Notification templates with Leo's personality
@@ -38,6 +38,12 @@ const NOTIFICATION_TEMPLATES = {
     { title: "🎉 Achievement Unlocked!", body: "You've hit a new milestone. Come see what you've earned!" },
     { title: "🏆 Congrats, champion!", body: "Your hard work is paying off. Check your new achievement!" },
     { title: "⭐ Level up!", body: "You've reached a new level. The next challenge awaits!" },
+  ],
+  news_update: [
+    { title: "📰 Industry Intel just dropped!", body: "Fresh market insights are ready for you. Stay ahead of the curve." },
+    { title: "⚡ Breaking: New market moves", body: "Today's top stories in your industry. Tap to read the highlights." },
+    { title: "🚀 What's happening in your market?", body: "New stories just in — stay sharp with the latest intel." },
+    { title: "🦁 Leo's news roundup!", body: "I've curated today's top industry headlines. Worth a quick look!" },
   ],
 };
 
@@ -233,6 +239,17 @@ Deno.serve(async (req) => {
           id: u.user_id,
           push_token: (u.profiles as any).push_token,
         }));
+    } else if (job.type === 'news_update') {
+      // Send to all users with push tokens who have newsAlerts enabled (default: true)
+      const { data: allUsers } = await supabase
+        .from('profiles')
+        .select('id, push_token, notification_preferences')
+        .not('push_token', 'is', null);
+
+      usersToNotify = (allUsers || []).filter(u => {
+        const prefs = (u.notification_preferences as any) || {};
+        return prefs.newsAlerts !== false && u.push_token;
+      }).map(u => ({ id: u.id, push_token: u.push_token }));
     }
 
     console.log(`Found ${usersToNotify.length} users to notify for ${job.type}`);
