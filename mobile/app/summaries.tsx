@@ -23,10 +23,12 @@ interface Summary {
   key_takeaways: string[] | null;
 }
 
+type TabType = 'DAILY' | 'WEEKLY' | 'MONTHLY';
+
 const typeColors: Record<string, { bg: string; text: string; label: string }> = {
-  weekly: { bg: 'rgba(139, 92, 246, 0.15)', text: '#A78BFA', label: 'Weekly Recap' },
-  daily: { bg: 'rgba(59, 130, 246, 0.15)', text: '#60A5FA', label: 'Daily Insight' },
-  market: { bg: 'rgba(16, 185, 129, 0.15)', text: '#34D399', label: 'Market Update' },
+  DAILY: { bg: 'rgba(59,130,246,0.15)', text: '#60A5FA', label: 'Daily' },
+  WEEKLY: { bg: 'rgba(139,92,246,0.15)', text: '#A78BFA', label: 'Weekly' },
+  MONTHLY: { bg: 'rgba(16,185,129,0.15)', text: '#34D399', label: 'Monthly' },
 };
 
 export default function SummariesScreen() {
@@ -34,145 +36,152 @@ export default function SummariesScreen() {
   const { user } = useAuth();
   const [summaries, setSummaries] = useState<Summary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<TabType>('DAILY');
+  const [selectedSummary, setSelectedSummary] = useState<Summary | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('selected_market')
-        .eq('id', user.id)
-        .single();
-
+      const { data: profile } = await supabase.from('profiles').select('selected_market').eq('id', user.id).single();
       const market = profile?.selected_market || 'aerospace';
-
-      const { data, error } = await supabase
-        .from('summaries')
-        .select('*')
-        .eq('market_id', market)
-        .order('created_at', { ascending: false })
-        .limit(20);
-
-      if (!error && data) {
-        setSummaries(data.map(s => ({
-          ...s,
-          key_takeaways: Array.isArray(s.key_takeaways) ? s.key_takeaways as string[] : null,
-        })));
-      }
+      const { data } = await supabase.from('summaries').select('*').eq('market_id', market).order('for_date', { ascending: false }).limit(20);
+      setSummaries((data || []).map((s) => ({ ...s, key_takeaways: Array.isArray(s.key_takeaways) ? s.key_takeaways as string[] : null })));
       setLoading(false);
     };
     fetchData();
   }, [user]);
 
-  if (loading) {
+  const filtered = summaries.filter((s) => s.summary_type === activeTab);
+
+  const formatDate = (d: string) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const formatShort = (d: string) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const readTime = (c: string) => Math.max(2, Math.ceil(c.length / 1000));
+
+  // Detail view
+  if (selectedSummary) {
+    const tc = typeColors[selectedSummary.summary_type] || typeColors.DAILY;
     return (
-      <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color={COLORS.accent} />
+      <View style={styles.container}>
+        <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+          <TouchableOpacity style={styles.backBtn} onPress={() => setSelectedSummary(null)}>
+            <Text style={styles.backBtnText}>←</Text>
+          </TouchableOpacity>
+          <View style={[styles.typePill, { backgroundColor: tc.bg }]}>
+            <Text style={[styles.typePillText, { color: tc.text }]}>{tc.label}</Text>
+          </View>
+        </View>
+        <ScrollView contentContainerStyle={[styles.detailContent, { paddingBottom: insets.bottom + 40 }]} showsVerticalScrollIndicator={false}>
+          <Text style={styles.detailTitle}>{selectedSummary.title}</Text>
+          <View style={styles.detailMeta}>
+            <Text style={styles.detailMetaText}>📅 {formatDate(selectedSummary.for_date)}</Text>
+            <Text style={styles.detailMetaText}>🕐 {readTime(selectedSummary.content)} min read</Text>
+          </View>
+          {selectedSummary.key_takeaways && selectedSummary.key_takeaways.length > 0 && (
+            <View style={styles.takeawaysCard}>
+              <Text style={styles.takeawaysTitle}>Key Takeaways</Text>
+              {selectedSummary.key_takeaways.map((t, i) => (
+                <View key={i} style={styles.takeawayRow}>
+                  <View style={[styles.takeawayNum, { backgroundColor: tc.bg }]}>
+                    <Text style={[styles.takeawayNumText, { color: tc.text }]}>{i + 1}</Text>
+                  </View>
+                  <Text style={styles.takeawayText}>{t}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+          <Text style={styles.detailBody}>{selectedSummary.content}</Text>
+        </ScrollView>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
-        showsVerticalScrollIndicator={false}
-      >
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backText}>← Back</Text>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+          <Text style={styles.backBtnText}>←</Text>
         </TouchableOpacity>
+        <Text style={styles.headerTitle}>Summaries</Text>
+      </View>
 
-        <Text style={styles.title}>Summaries</Text>
-        <Text style={styles.subtitle}>Key takeaways from your learning journey</Text>
+      {/* Tabs */}
+      <View style={styles.tabs}>
+        {(['DAILY', 'WEEKLY', 'MONTHLY'] as TabType[]).map((tab) => (
+          <TouchableOpacity key={tab} style={[styles.tab, activeTab === tab && styles.tabActive]} onPress={() => setActiveTab(tab)}>
+            <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
+              {tab.charAt(0) + tab.slice(1).toLowerCase()}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
-        {summaries.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={{ fontSize: 48, marginBottom: 12 }}>📋</Text>
-            <Text style={styles.emptyTitle}>No summaries yet</Text>
-            <Text style={styles.emptySubtitle}>Complete lessons to unlock weekly summaries</Text>
-          </View>
-        ) : (
-          <View style={{ gap: 10, marginTop: 16 }}>
-            {summaries.map((s) => {
-              const tc = typeColors[s.summary_type] || typeColors.daily;
-              const isExpanded = expandedId === s.id;
-              return (
-                <TouchableOpacity
-                  key={s.id}
-                  style={[styles.card, isExpanded && { borderColor: tc.text + '40' }]}
-                  activeOpacity={0.7}
-                  onPress={() => setExpandedId(isExpanded ? null : s.id)}
-                >
-                  {/* Header row */}
-                  <View style={styles.cardHeader}>
-                    <View style={[styles.typeBadge, { backgroundColor: tc.bg }]}>
-                      <Text style={[styles.typeBadgeText, { color: tc.text }]}>{tc.label}</Text>
-                    </View>
-                    <Text style={styles.cardDate}>
-                      {new Date(s.for_date || s.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    </Text>
-                    <Text style={[styles.expandChevron, { color: COLORS.textMuted }]}>{isExpanded ? '▾' : '▸'}</Text>
+      {loading ? (
+        <View style={styles.centered}><ActivityIndicator color={COLORS.accent} size="large" /></View>
+      ) : filtered.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={{ fontSize: 40, marginBottom: 12 }}>📖</Text>
+          <Text style={styles.emptyTitle}>No {activeTab.toLowerCase()} summaries yet</Text>
+          <Text style={styles.emptySub}>Check back soon!</Text>
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 80 }]} showsVerticalScrollIndicator={false}>
+          {filtered.map((summary) => {
+            const tc = typeColors[summary.summary_type] || typeColors.DAILY;
+            return (
+              <TouchableOpacity key={summary.id} style={styles.summaryCard} onPress={() => setSelectedSummary(summary)} activeOpacity={0.8}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.summaryTitle} numberOfLines={2}>{summary.title}</Text>
+                  <View style={styles.summaryMeta}>
+                    <Text style={styles.summaryMetaText}>{formatShort(summary.for_date)}</Text>
+                    <Text style={styles.summaryMetaDot}>·</Text>
+                    <Text style={styles.summaryMetaText}>{readTime(summary.content)} min</Text>
+                    {summary.key_takeaways && summary.key_takeaways.length > 0 && (
+                      <><Text style={styles.summaryMetaDot}>·</Text><Text style={styles.summaryMetaText}>{summary.key_takeaways.length} takeaways</Text></>
+                    )}
                   </View>
-
-                  <Text style={styles.cardTitle}>{s.title}</Text>
-
-                  {isExpanded && (
-                    <View style={{ marginTop: 8 }}>
-                      <Text style={styles.cardContent}>{s.content}</Text>
-
-                      {/* Key Takeaways */}
-                      {s.key_takeaways && s.key_takeaways.length > 0 && (
-                        <View style={styles.takeawaysCard}>
-                          <Text style={styles.takeawaysTitle}>💡 Key Takeaways</Text>
-                          {s.key_takeaways.map((takeaway, i) => (
-                            <View key={i} style={styles.takeawayRow}>
-                              <View style={[styles.takeawayDot, { backgroundColor: tc.text }]} />
-                              <Text style={styles.takeawayText}>{takeaway}</Text>
-                            </View>
-                          ))}
-                        </View>
-                      )}
-                    </View>
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        )}
-      </ScrollView>
+                </View>
+                <Text style={{ fontSize: 16, color: COLORS.textMuted }}>›</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
-  centered: { alignItems: 'center', justifyContent: 'center' },
-  scrollContent: { paddingHorizontal: 16 },
-  backText: { fontSize: 15, color: COLORS.textSecondary, marginBottom: 12 },
-  title: { fontSize: 28, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 4 },
-  subtitle: { fontSize: 13, color: COLORS.textMuted },
-  emptyState: { alignItems: 'center', paddingVertical: 60 },
-  emptyTitle: { fontSize: 18, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 8 },
-  emptySubtitle: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center' },
-  card: {
-    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14,
-    borderWidth: 1, borderColor: COLORS.border,
-  },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
-  typeBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  typeBadgeText: { fontSize: 9, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
-  cardDate: { fontSize: 11, color: COLORS.textMuted, flex: 1 },
-  expandChevron: { fontSize: 14 },
-  cardTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary, lineHeight: 21 },
-  cardContent: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20, marginBottom: 10 },
-  takeawaysCard: {
-    backgroundColor: 'rgba(139,92,246,0.05)', borderRadius: 10, padding: 12,
-    borderWidth: 1, borderColor: 'rgba(139,92,246,0.15)',
-  },
-  takeawaysTitle: { fontSize: 12, fontWeight: '600', color: COLORS.accent, marginBottom: 8 },
-  takeawayRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 6 },
-  takeawayDot: { width: 5, height: 5, borderRadius: 3, marginTop: 5, flexShrink: 0 },
-  takeawayText: { fontSize: 12, color: COLORS.textSecondary, lineHeight: 18, flex: 1 },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingBottom: 12, backgroundColor: COLORS.bg0, borderBottomWidth: 1, borderBottomColor: COLORS.border },
+  backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
+  backBtnText: { fontSize: 18, color: COLORS.textPrimary },
+  headerTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary },
+  typePill: { borderRadius: 20, paddingHorizontal: 12, paddingVertical: 5 },
+  typePillText: { fontSize: 11, fontWeight: '600', textTransform: 'uppercase' },
+  tabs: { flexDirection: 'row', margin: 16, padding: 4, backgroundColor: COLORS.bg1, borderRadius: 12 },
+  tab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 10 },
+  tabActive: { backgroundColor: COLORS.accent },
+  tabText: { fontSize: 13, color: COLORS.textMuted, fontWeight: '500' },
+  tabTextActive: { color: '#fff', fontWeight: '700' },
+  listContent: { paddingHorizontal: 16, paddingTop: 4 },
+  summaryCard: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 14, marginBottom: 8, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border },
+  summaryTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 6 },
+  summaryMeta: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 4 },
+  summaryMetaText: { fontSize: 11, color: COLORS.textMuted },
+  summaryMetaDot: { fontSize: 11, color: COLORS.textMuted },
+  emptyState: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  emptyTitle: { fontSize: 16, color: COLORS.textPrimary, fontWeight: '500', marginBottom: 6 },
+  emptySub: { fontSize: 13, color: COLORS.textMuted },
+  detailContent: { paddingHorizontal: 16, paddingTop: 20 },
+  detailTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 10, lineHeight: 30 },
+  detailMeta: { flexDirection: 'row', gap: 16, marginBottom: 20 },
+  detailMetaText: { fontSize: 12, color: COLORS.textMuted },
+  takeawaysCard: { backgroundColor: COLORS.bg2, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: COLORS.border, marginBottom: 20 },
+  takeawaysTitle: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 12 },
+  takeawayRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 },
+  takeawayNum: { width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  takeawayNumText: { fontSize: 10, fontWeight: '700' },
+  takeawayText: { fontSize: 13, color: COLORS.textPrimary, flex: 1, lineHeight: 18 },
+  detailBody: { fontSize: 14, color: COLORS.textPrimary, lineHeight: 22, opacity: 0.85 },
 });

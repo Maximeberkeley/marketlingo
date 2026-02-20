@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -14,134 +9,146 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 
 interface LeaderboardEntry {
-  user_id: string;
-  email: string;
-  total_xp: number;
   rank: number;
+  user_id: string;
+  username: string;
+  total_xp: number;
+  current_level: number;
+  current_streak: number;
+  isCurrentUser: boolean;
+}
+
+function getRankDisplay(rank: number) {
+  if (rank === 1) return { emoji: '👑', color: '#FBBF24' };
+  if (rank === 2) return { emoji: '🥈', color: '#CBD5E1' };
+  if (rank === 3) return { emoji: '🥉', color: '#F97316' };
+  return { emoji: `#${rank}`, color: COLORS.textMuted };
 }
 
 export default function LeaderboardScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userRank, setUserRank] = useState<number | null>(null);
+  const [marketName, setMarketName] = useState('');
+  const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchLeaderboard = async () => {
       if (!user) return;
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('selected_market')
-        .eq('id', user.id)
-        .single();
-
+      const { data: profile } = await supabase.from('profiles').select('selected_market').eq('id', user.id).single();
       const market = profile?.selected_market || 'aerospace';
+      setMarketName(market.charAt(0).toUpperCase() + market.slice(1));
 
-      // Fetch top XP users for this market
-      const { data: xpData, error } = await supabase
-        .from('user_xp')
-        .select('user_id, total_xp')
-        .eq('market_id', market)
-        .order('total_xp', { ascending: false })
-        .limit(50);
+      const { data: xpData } = await supabase
+        .from('user_xp').select('user_id, total_xp, current_level')
+        .eq('market_id', market).order('total_xp', { ascending: false }).limit(50);
 
-      if (error) {
-        console.error('Error fetching leaderboard:', error);
-        setLoading(false);
-        return;
-      }
+      if (!xpData) { setLoading(false); return; }
+      const userIds = xpData.map((x) => x.user_id);
 
-      // Get emails for display (anonymized)
-      const ranked = (xpData || []).map((entry, index) => ({
-        user_id: entry.user_id,
-        email: entry.user_id === user.id ? (user.email || 'You') : `Player ${index + 1}`,
-        total_xp: entry.total_xp,
-        rank: index + 1,
-      }));
+      const [{ data: profiles }, { data: progressData }] = await Promise.all([
+        supabase.from('profiles').select('id, username').in('id', userIds),
+        supabase.from('user_progress').select('user_id, current_streak').eq('market_id', market).in('user_id', userIds),
+      ]);
 
-      const myRank = ranked.find((e) => e.user_id === user.id);
-      if (myRank) setUserRank(myRank.rank);
+      const entries: LeaderboardEntry[] = xpData.map((xp, index) => {
+        const p = profiles?.find((pr) => pr.id === xp.user_id);
+        const s = progressData?.find((pr) => pr.user_id === xp.user_id);
+        return {
+          rank: index + 1,
+          user_id: xp.user_id,
+          username: p?.username?.split('@')[0] || `User ${index + 1}`,
+          total_xp: xp.total_xp,
+          current_level: xp.current_level,
+          current_streak: s?.current_streak || 0,
+          isCurrentUser: xp.user_id === user.id,
+        };
+      });
 
-      setEntries(ranked);
+      setLeaderboard(entries);
+      const me = entries.find((e) => e.isCurrentUser);
+      if (me) setCurrentUserRank(me.rank);
       setLoading(false);
     };
-    fetchData();
+    fetchLeaderboard();
   }, [user]);
-
-  const medalEmoji = (rank: number) => {
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    return `#${rank}`;
-  };
-
-  if (loading) {
-    return (
-      <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color={COLORS.accent} />
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+          <Text style={styles.backBtnText}>←</Text>
+        </TouchableOpacity>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.headerTitle}>🏆 Leaderboard</Text>
+          <Text style={styles.headerSub}>{marketName} Industry</Text>
+        </View>
+        {currentUserRank && (
+          <View style={styles.rankChip}>
+            <Text style={styles.rankChipText}>#{currentUserRank}</Text>
+          </View>
+        )}
+      </View>
+
       <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 80 }]}
         showsVerticalScrollIndicator={false}
       >
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backText}>← Back</Text>
-        </TouchableOpacity>
+        {/* Prize banner */}
+        <View style={styles.prizeBanner}>
+          <View style={styles.prizeIconWrap}><Text style={{ fontSize: 24 }}>✨</Text></View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.prizeTitle}>Become the Industry Master</Text>
+            <Text style={styles.prizeDesc}>
+              The <Text style={styles.prizeHighlight}>#1 ranked user</Text> in each industry every 6 months wins{' '}
+              <Text style={styles.prizeHighlight}>1 Full Year of MarketLingo Premium!</Text>
+            </Text>
+          </View>
+        </View>
 
-        <Text style={styles.title}>Leaderboard</Text>
-        <Text style={styles.subtitle}>
-          {userRank ? `You're ranked #${userRank}` : 'Start earning XP to join!'}
-        </Text>
+        <View style={styles.marketPill}>
+          <Text style={styles.marketPillText}>🏭 {marketName} Rankings</Text>
+        </View>
 
-        {/* Top 3 podium */}
-        {entries.length >= 3 && (
-          <View style={styles.podium}>
-            {[entries[1], entries[0], entries[2]].map((entry, i) => {
-              const isMe = entry.user_id === user?.id;
-              const heights = [100, 130, 80];
+        {loading ? (
+          <View style={styles.centered}><ActivityIndicator color={COLORS.accent} size="large" /></View>
+        ) : leaderboard.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={{ fontSize: 48, marginBottom: 12 }}>🏆</Text>
+            <Text style={styles.emptyTitle}>No one on the leaderboard yet!</Text>
+            <Text style={styles.emptySub}>Complete lessons to earn XP</Text>
+          </View>
+        ) : (
+          <View style={styles.entriesContainer}>
+            {leaderboard.map((entry) => {
+              const rank = getRankDisplay(entry.rank);
+              const isTop3 = entry.rank <= 3;
               return (
-                <View key={entry.user_id} style={[styles.podiumCol, { height: heights[i] }]}>
-                  <Text style={{ fontSize: i === 1 ? 28 : 22 }}>{medalEmoji(entry.rank)}</Text>
-                  <Text style={[styles.podiumName, isMe && { color: COLORS.accent }]} numberOfLines={1}>
-                    {isMe ? 'You' : entry.email}
-                  </Text>
-                  <Text style={styles.podiumXP}>⚡ {entry.total_xp.toLocaleString()}</Text>
+                <View key={entry.user_id} style={[
+                  styles.entry,
+                  entry.isCurrentUser && styles.entryMe,
+                  isTop3 && !entry.isCurrentUser && styles.entryTop3,
+                ]}>
+                  <View style={styles.rankWrap}>
+                    <Text style={[styles.rankText, { color: rank.color }]}>{rank.emoji}</Text>
+                  </View>
+                  <View style={{ flex: 1, minWidth: 0 }}>
+                    <Text style={[styles.username, entry.isCurrentUser && { color: COLORS.accent }]} numberOfLines={1}>
+                      {entry.username}{entry.isCurrentUser ? ' (You)' : ''}
+                    </Text>
+                    <View style={styles.userMeta}>
+                      <Text style={styles.levelText}>Lv. {entry.current_level}</Text>
+                      {entry.current_streak > 0 && <Text style={styles.streakText}>🔥 {entry.current_streak}</Text>}
+                    </View>
+                  </View>
+                  <View style={styles.xpChip}>
+                    <Text style={{ fontSize: 12 }}>⚡</Text>
+                    <Text style={styles.xpValue}>{entry.total_xp.toLocaleString()}</Text>
+                  </View>
                 </View>
               );
             })}
-          </View>
-        )}
-
-        {/* Full list */}
-        <View style={{ gap: 6, marginTop: 16 }}>
-          {entries.map((entry) => {
-            const isMe = entry.user_id === user?.id;
-            return (
-              <View key={entry.user_id} style={[styles.row, isMe && styles.rowMe]}>
-                <Text style={styles.rankText}>
-                  {entry.rank <= 3 ? medalEmoji(entry.rank) : `#${entry.rank}`}
-                </Text>
-                <Text style={[styles.nameText, isMe && { color: COLORS.accent, fontWeight: '600' }]} numberOfLines={1}>
-                  {isMe ? 'You' : entry.email}
-                </Text>
-                <Text style={styles.xpText}>⚡ {entry.total_xp.toLocaleString()}</Text>
-              </View>
-            );
-          })}
-        </View>
-
-        {entries.length === 0 && (
-          <View style={styles.emptyState}>
-            <Text style={{ fontSize: 48, marginBottom: 12 }}>🏆</Text>
-            <Text style={styles.emptyTitle}>No rankings yet</Text>
-            <Text style={styles.emptySubtitle}>Complete lessons to earn XP and climb the leaderboard!</Text>
           </View>
         )}
       </ScrollView>
@@ -151,29 +158,42 @@ export default function LeaderboardScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
-  centered: { alignItems: 'center', justifyContent: 'center' },
-  scrollContent: { paddingHorizontal: 16 },
-  backText: { fontSize: 15, color: COLORS.textSecondary, marginBottom: 12 },
-  title: { fontSize: 28, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 4 },
-  subtitle: { fontSize: 13, color: COLORS.textMuted },
-  podium: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 8, marginTop: 24, marginBottom: 8 },
-  podiumCol: {
-    flex: 1, backgroundColor: COLORS.bg2, borderRadius: 14, padding: 12,
-    alignItems: 'center', justifyContent: 'flex-end',
-    borderWidth: 1, borderColor: COLORS.border,
+  centered: { alignItems: 'center', justifyContent: 'center', paddingTop: 60 },
+  header: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    paddingHorizontal: 16, paddingBottom: 12,
+    backgroundColor: COLORS.bg0, borderBottomWidth: 1, borderBottomColor: COLORS.border,
   },
-  podiumName: { fontSize: 11, color: COLORS.textSecondary, marginTop: 4, textAlign: 'center' },
-  podiumXP: { fontSize: 12, fontWeight: '700', color: '#EAB308', marginTop: 2 },
-  row: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.bg2, borderRadius: 12, padding: 12,
-    borderWidth: 1, borderColor: COLORS.border,
+  backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
+  backBtnText: { fontSize: 18, color: COLORS.textPrimary },
+  headerTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary },
+  headerSub: { fontSize: 12, color: COLORS.textMuted },
+  rankChip: { backgroundColor: 'rgba(139,92,246,0.15)', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: 'rgba(139,92,246,0.3)' },
+  rankChipText: { fontSize: 12, color: COLORS.accent, fontWeight: '700' },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
+  prizeBanner: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: 12, padding: 16, borderRadius: 16, marginBottom: 16,
+    backgroundColor: 'rgba(245,158,11,0.1)', borderWidth: 1, borderColor: 'rgba(245,158,11,0.3)',
   },
-  rowMe: { borderColor: 'rgba(139, 92, 246, 0.4)', backgroundColor: 'rgba(139, 92, 246, 0.05)' },
-  rankText: { fontSize: 14, fontWeight: '600', color: COLORS.textSecondary, width: 36 },
-  nameText: { flex: 1, fontSize: 14, color: COLORS.textPrimary },
-  xpText: { fontSize: 13, fontWeight: '600', color: '#EAB308' },
-  emptyState: { alignItems: 'center', paddingVertical: 60 },
-  emptyTitle: { fontSize: 18, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 8 },
-  emptySubtitle: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center' },
+  prizeIconWrap: { width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(245,158,11,0.2)', alignItems: 'center', justifyContent: 'center' },
+  prizeTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 4 },
+  prizeDesc: { fontSize: 12, color: COLORS.textMuted, lineHeight: 17 },
+  prizeHighlight: { color: '#FBBF24', fontWeight: '600' },
+  marketPill: { alignSelf: 'flex-start', backgroundColor: COLORS.bg2, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: COLORS.border, marginBottom: 12 },
+  marketPillText: { fontSize: 12, color: COLORS.textPrimary, fontWeight: '500' },
+  entriesContainer: { gap: 6 },
+  entry: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 14, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border },
+  entryMe: { backgroundColor: 'rgba(139,92,246,0.08)', borderColor: 'rgba(139,92,246,0.3)' },
+  entryTop3: { backgroundColor: 'rgba(245,158,11,0.05)', borderColor: 'rgba(245,158,11,0.2)' },
+  rankWrap: { width: 40, alignItems: 'center' },
+  rankText: { fontSize: 18, fontWeight: '700' },
+  username: { fontSize: 14, fontWeight: '500', color: COLORS.textPrimary },
+  userMeta: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
+  levelText: { fontSize: 11, color: COLORS.textMuted },
+  streakText: { fontSize: 11, color: '#FB923C' },
+  xpChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, backgroundColor: COLORS.bg1 },
+  xpValue: { fontSize: 12, fontWeight: '700', color: COLORS.textPrimary },
+  emptyState: { alignItems: 'center', paddingTop: 60 },
+  emptyTitle: { fontSize: 16, color: COLORS.textPrimary, fontWeight: '500', marginBottom: 6 },
+  emptySub: { fontSize: 13, color: COLORS.textMuted },
 });
