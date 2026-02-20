@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronRight, Gamepad2, Target, Sparkles, Loader2, Trophy, Award, CheckCircle2, BookOpen, Newspaper, FlaskConical, TrendingUp, Crown, Lock, Zap } from "lucide-react";
+import { ChevronRight, Gamepad2, Target, Sparkles, Loader2, Trophy, Award, CheckCircle2, BookOpen, Newspaper, FlaskConical, TrendingUp, Crown, Lock, Zap, MapPin } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { XPBadge } from "@/components/ui/XPBadge";
@@ -379,33 +379,60 @@ export default function HomePage() {
           </motion.p>
         </motion.div>
 
-        {/* Startup Progress - Enhanced Duolingo Style */}
+        {/* Journey + Stage Progress */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-bg-2 to-bg-1 border border-border"
+          className="mb-6 space-y-2"
         >
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <motion.div
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <Crown size={18} className="text-yellow-400" />
-              </motion.div>
-              <span className="text-body font-semibold text-text-primary">
-                Stage {currentStage.stage}: {currentStage.name}
-              </span>
+          {/* 180-day Journey Bar */}
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-bg-2 to-bg-1 border border-border">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <MapPin size={13} className="text-accent" />
+                <span className="text-caption font-semibold text-text-primary">
+                  Day {currentDay} of 180 &nbsp;·&nbsp; Month {Math.ceil(currentDay / 30)} of 6
+                </span>
+              </div>
+              <span className="text-[10px] text-text-muted font-medium">{Math.round((currentDay / 180) * 100)}% complete</span>
             </div>
-            <span className="text-caption font-bold text-accent">{Math.round(stageProgress)}%</span>
+            <DuoProgressBar 
+              progress={(currentDay / 180) * 100}
+              size="sm" 
+              colorScheme="accent"
+              animated
+            />
+            <p className="text-[10px] text-text-muted mt-1.5">
+              {currentDay === 1 
+                ? "Your 6-month journey to investor-ready knowledge starts today" 
+                : `${180 - currentDay} days left in your 6-month program`}
+            </p>
           </div>
-          <DuoProgressBar 
-            progress={stageProgress} 
-            size="md" 
-            colorScheme="accent"
-            animated
-          />
+
+          {/* Startup Stage */}
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-bg-2 to-bg-1 border border-border">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Crown size={14} className="text-yellow-400" />
+                </motion.div>
+                <span className="text-caption font-semibold text-text-primary">
+                  Stage {currentStage.stage}: {currentStage.name}
+                </span>
+              </div>
+              <span className="text-[10px] font-bold text-accent">{Math.round(stageProgress)}% to next</span>
+            </div>
+            <DuoProgressBar 
+              progress={stageProgress} 
+              size="sm" 
+              colorScheme="accent"
+              animated
+            />
+          </div>
         </motion.div>
 
         {/* Today's Learning Cards */}
@@ -701,6 +728,8 @@ export default function HomePage() {
           onSaveInsight={handleSaveInsight}
           onAddNote={handleAddNote}
           marketId={selectedMarket || undefined}
+          marketName={getMarketName(selectedMarket || "aerospace")}
+          dayNumber={currentDay}
           isReview={lessonCompletedToday && activeStack.stack_type === "LESSON"}
         />
       )}

@@ -38,6 +38,8 @@ interface SlideReaderProps {
   onSaveInsight: (slideNumber: number) => void;
   onAddNote: (slideNumber: number) => void;
   marketId?: string;
+  marketName?: string;
+  dayNumber?: number;
   isReview?: boolean; // If true, user is reviewing a completed lesson
 }
 
@@ -52,6 +54,8 @@ export function SlideReader({
   onSaveInsight,
   onAddNote,
   marketId,
+  marketName,
+  dayNumber,
   isReview = false,
 }: SlideReaderProps) {
   const [currentIndex, setCurrentIndex] = useState(-1); // Start at -1 for intro slide
@@ -162,18 +166,25 @@ export function SlideReader({
   return (
     <div className="fixed inset-0 z-[100] bg-background flex flex-col overflow-x-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <button onClick={onClose} className="p-2 -ml-2">
           <X size={24} className="text-text-secondary" />
         </button>
         
-        <div className="flex items-center gap-3">
-          <span className={`chip text-caption ${typeColors[stackType]}`}>
-            {stackType}
-          </span>
-          <span className="text-caption text-text-muted">
-            {currentIndex + 1}/{slides.length}
-          </span>
+        <div className="flex flex-col items-center gap-0.5">
+          <div className="flex items-center gap-2">
+            <span className={`chip text-caption ${typeColors[stackType]}`}>
+              {stackType}
+            </span>
+            <span className="text-caption text-text-muted">
+              {Math.max(currentIndex + 1, 0)}/{slides.length}
+            </span>
+          </div>
+          {dayNumber && (
+            <span className="text-[10px] text-text-muted font-medium">
+              Day {dayNumber} of 180
+            </span>
+          )}
         </div>
         
         {/* Mentor Helper Button */}
@@ -230,6 +241,9 @@ export function SlideReader({
                 stackType={stackType}
                 totalSlides={slides.length}
                 marketId={marketId}
+                marketName={marketName}
+                dayNumber={dayNumber}
+                slideTitles={slides.map(s => s.title)}
               />
             ) : (
               /* Regular Slide with Mascot Guide */
