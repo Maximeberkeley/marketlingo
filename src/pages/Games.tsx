@@ -171,10 +171,14 @@ export default function GamesPage() {
       setCurrentQuestion((prev) => prev + 1);
       setSelectedAnswer(null);
       setShowResult(false);
-      setIdle(); // Reset mascot
+      setIdle();
     } else {
-      const finalScore = score + (isCorrect ? 1 : 0);
-      
+      const finalScore = score + (selectedAnswer !== null && selectedAnswer === question?.correctAnswer ? 1 : 0);
+      const percentage = Math.round((finalScore / questions.length) * 100);
+
+      // Adaptive XP: higher accuracy → more XP
+      const xpEarned = percentage >= 80 ? 30 : percentage >= 60 ? 18 : 8;
+
       // Save progress to database
       if (user && selectedMarket) {
         await supabase.from("games_progress").upsert({
@@ -185,14 +189,23 @@ export default function GamesPage() {
           level: 1,
           completed_at: new Date().toISOString(),
         }, { onConflict: "user_id,market_id,game_type" });
+
+        // Award adaptive XP
+        await supabase.from("xp_transactions").insert({
+          user_id: user.id,
+          market_id: selectedMarket,
+          xp_amount: xpEarned,
+          source_type: "game",
+          description: `Game complete — ${percentage}% accuracy → ${xpEarned} XP`,
+        });
       }
-      
+
       // Show celebration randomly (70% of the time)
       if (Math.random() < 0.7) {
         setShowCelebration(true);
       } else {
         setGameComplete(true);
-        toast.success(`Game complete! Score: ${finalScore}/${questions.length}`);
+        toast.success(`Game complete! ${finalScore}/${questions.length} · +${xpEarned} XP`);
       }
     }
   };

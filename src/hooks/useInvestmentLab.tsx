@@ -74,24 +74,11 @@ export function useInvestmentLab(marketId?: string) {
     if (!user || !marketId) return;
 
     try {
-      // Check if user has completed enough of the course to unlock Investment Lab
-      const { data: userProgress } = await supabase
-        .from("user_progress")
-        .select("current_day")
-        .eq("user_id", user.id)
-        .eq("market_id", marketId)
-        .maybeSingle();
-
-      // Unlock Investment Lab after Day 30 of curriculum
-      const unlocked = (userProgress?.current_day || 0) >= 30;
-      setIsUnlocked(unlocked);
-
-      if (!unlocked) {
-        setLoading(false);
-        return;
-      }
+      // Investment Lab is always unlocked — Pro gate is handled at the page level
+      setIsUnlocked(true);
 
       // Fetch investment progress
+
       const { data: investmentData } = await supabase
         .from("investment_lab_progress")
         .select("*")
