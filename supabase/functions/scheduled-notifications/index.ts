@@ -240,16 +240,40 @@ Deno.serve(async (req) => {
           push_token: (u.profiles as any).push_token,
         }));
     } else if (job.type === 'news_update') {
-      // Send to all users with push tokens who have newsAlerts enabled (default: true)
+      // Send to users grouped by their selected_market so each gets their own market's news
       const { data: allUsers } = await supabase
         .from('profiles')
-        .select('id, push_token, notification_preferences')
-        .not('push_token', 'is', null);
+        .select('id, push_token, notification_preferences, selected_market')
+        .not('push_token', 'is', null)
+        .not('selected_market', 'is', null);
 
-      usersToNotify = (allUsers || []).filter(u => {
+      // Build per-market notification queue
+      const marketUserMap: Record<string, { id: string; push_token: string; market: string }[]> = {};
+      for (const u of allUsers || []) {
         const prefs = (u.notification_preferences as any) || {};
-        return prefs.newsAlerts !== false && u.push_token;
-      }).map(u => ({ id: u.id, push_token: u.push_token }));
+        if (prefs.newsAlerts === false || !u.push_token || !u.selected_market) continue;
+        const m = u.selected_market as string;
+        if (!marketUserMap[m]) marketUserMap[m] = [];
+        marketUserMap[m].push({ id: u.id, push_token: u.push_token, market: m });
+      }
+
+      // Check which markets actually have fresh news today, then enqueue users
+      const today = new Date().toISOString().split('T')[0];
+      for (const [marketId, users] of Object.entries(marketUserMap)) {
+        const { data: latestNews } = await supabase
+          .from('news_items')
+          .select('title')
+          .eq('market_id', marketId)
+          .gte('published_at', today)
+          .limit(1)
+          .single();
+
+        if (latestNews) {
+          for (const u of users) {
+            usersToNotify.push({ ...u, latestHeadline: latestNews.title });
+          }
+        }
+      }
     }
 
     console.log(`Found ${usersToNotify.length} users to notify for ${job.type}`);
@@ -261,14 +285,29 @@ Deno.serve(async (req) => {
       if (!user.push_token) continue;
 
       const template = getRandomTemplate(job.type);
+
+      // For news_update, personalise body with the actual headline if available
+      let notifTitle = template.title;
+      let notifBody = template.body;
+      if (job.type === 'news_update' && user.latestHeadline) {
+        const marketLabel = user.market
+          ? user.market.charAt(0).toUpperCase() + user.market.slice(1)
+          : 'Your industry';
+        notifTitle = `📰 ${marketLabel} Intel just dropped!`;
+        notifBody = user.latestHeadline.length > 80
+          ? user.latestHeadline.substring(0, 80) + '…'
+          : user.latestHeadline;
+      }
+
       const success = await sendNotification(
         user.push_token,
-        template.title,
-        template.body,
+        notifTitle,
+        notifBody,
         { 
           route: '/home', 
           type: job.type,
           streak: user.streak,
+          market: user.market,
         }
       );
 
