@@ -183,6 +183,19 @@ export default function TrainerPage() {
     }
   };
 
+  // Award adaptive XP after a trainer answer is submitted
+  const awardTrainerXP = async (isCorrect: boolean) => {
+    if (!user || !selectedMarket) return;
+    const xpEarned = isCorrect ? 35 : 8;
+    await supabase.from("xp_transactions").insert({
+      user_id: user.id,
+      market_id: selectedMarket,
+      xp_amount: xpEarned,
+      source_type: "trainer",
+      description: `Trainer scenario ${isCorrect ? "correct" : "attempted"} → ${xpEarned} XP`,
+    });
+  };
+
   const handleAttemptComplete = async (_isCorrect: boolean, selectedOption: number) => {
     if (!user || !currentScenario) return undefined;
 
@@ -207,6 +220,11 @@ export default function TrainerPage() {
       feedback_mental_model: string | null;
       follow_up_question: string | null;
     } | null;
+
+    // Award adaptive XP based on correctness
+    if (result) {
+      await awardTrainerXP(result.isCorrect);
+    }
 
     return result || undefined;
   };

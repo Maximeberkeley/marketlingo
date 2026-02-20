@@ -175,17 +175,22 @@ export default function DrillsPage() {
 
   const handleNext = async () => {
     if (currentQuestion < questions.length - 1) {
+      // Advance to next question
       setCurrentQuestion((prev) => prev + 1);
       setSelectedAnswer(null);
       setShowResult(false);
       setTimeLeft(15);
       setIsTimerActive(true);
-      setIdle(); // Reset mascot
+      setIdle();
     } else {
-      setDrillComplete(true);
-      const finalScore = score + (isCorrect ? 1 : 0);
+      // Last question done — compute final score using current state
+      const finalScore = score + (selectedAnswer !== null && selectedAnswer === question?.isTrue ? 1 : 0);
+      const percentage = Math.round((finalScore / questions.length) * 100);
 
-      // Save progress to database
+      // Adaptive XP: more XP for higher accuracy
+      const xpEarned = percentage >= 80 ? 20 : percentage >= 60 ? 12 : 5;
+
+      // Save progress
       if (user && selectedMarket) {
         await supabase.from("drills_progress").upsert({
           user_id: user.id,
@@ -195,14 +200,23 @@ export default function DrillsPage() {
           correct_count: finalScore,
           last_completed_at: new Date().toISOString(),
         }, { onConflict: "user_id,market_id,drill_type" });
+
+        // Award adaptive XP
+        await supabase.from("xp_transactions").insert({
+          user_id: user.id,
+          market_id: selectedMarket,
+          xp_amount: xpEarned,
+          source_type: "drill",
+          description: `Drill complete — ${percentage}% accuracy → ${xpEarned} XP`,
+        });
       }
 
-      // Show celebration randomly (60% of the time)
+      // Show celebration or complete screen
       if (Math.random() < 0.6) {
         setShowCelebration(true);
       } else {
         setDrillComplete(true);
-        toast.success(`Drill complete! Score: ${finalScore}/${questions.length}`);
+        toast.success(`Drill complete! ${finalScore}/${questions.length} correct · +${xpEarned} XP`);
       }
     }
   };

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, 
-  Lock, 
   TrendingUp, 
   BarChart3, 
   Shield, 
@@ -201,63 +200,6 @@ export default function InvestmentLab() {
               className="mt-4 text-text-muted text-sm"
             >
               Maybe later
-            </button>
-          </div>
-        </div>
-      </AppLayout>
-    );
-  }
-
-  if (!isUnlocked) {
-    return (
-      <AppLayout showNav={false}>
-        <div className="min-h-screen bg-bg-0">
-          {/* Header */}
-          <div className="bg-bg-1 border-b border-border px-4 py-4 pt-safe">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => navigate(-1)}
-                className="w-10 h-10 rounded-xl bg-bg-2 border border-border flex items-center justify-center"
-              >
-                <ArrowLeft size={20} className="text-text-primary" />
-              </button>
-              <div>
-                <h1 className="text-h2 text-text-primary">Investment Lab</h1>
-                <p className="text-caption text-text-muted">Bonus module for serious learners</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Locked State */}
-          <div className="p-6 flex flex-col items-center justify-center min-h-[60vh]">
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="w-20 h-20 rounded-2xl bg-bg-2 border border-border flex items-center justify-center mb-6"
-            >
-              <Lock size={32} className="text-text-muted" />
-            </motion.div>
-            
-            <h2 className="text-h2 text-text-primary text-center mb-2">
-              Unlocks at Day 30
-            </h2>
-            <p className="text-body text-text-secondary text-center max-w-xs mb-6">
-              Complete Month 1 of the curriculum to access Investment Lab
-            </p>
-
-            <div className="w-full max-w-xs">
-              <div className="flex justify-between text-caption text-text-muted mb-2">
-                <span>Your progress</span>
-                <span>Day 30 required</span>
-              </div>
-              <Progress value={0} className="h-2" />
-            </div>
-
-            <button
-              onClick={() => navigate("/home")}
-              className="mt-8 px-6 py-3 rounded-xl bg-accent text-bg-0 font-medium"
-            >
-              Continue Learning
             </button>
           </div>
         </div>
