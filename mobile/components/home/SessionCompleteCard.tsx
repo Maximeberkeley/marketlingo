@@ -22,6 +22,10 @@ interface SessionCompleteCardProps {
   stageName: string;
   onContinue: () => void;
   onDismiss: () => void;
+  /** Open mentor chat with lesson context */
+  onAskMentor?: () => void;
+  /** Mentor first name for CTA label */
+  mentorName?: string;
 }
 
 export function SessionCompleteCard({
@@ -35,6 +39,8 @@ export function SessionCompleteCard({
   stageName,
   onContinue,
   onDismiss,
+  onAskMentor,
+  mentorName,
 }: SessionCompleteCardProps) {
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -190,6 +196,11 @@ export function SessionCompleteCard({
           <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.7}>
             <Text style={styles.shareBtnText}>📤 Share Achievement</Text>
           </TouchableOpacity>
+          {onAskMentor && (
+            <TouchableOpacity style={styles.mentorBtn} onPress={onAskMentor} activeOpacity={0.7}>
+              <Text style={styles.mentorBtnText}>🧠 Discuss with {mentorName || 'Mentor'}</Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity style={styles.continueBtn} onPress={onContinue} activeOpacity={0.8}>
             <Text style={styles.continueBtnText}>Continue</Text>
           </TouchableOpacity>
@@ -316,6 +327,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: COLORS.accent,
+  },
+  mentorBtn: {
+    width: '100%',
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.3)',
+    alignItems: 'center',
+  },
+  mentorBtnText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#34D399',
   },
   continueBtn: {
     width: '100%',

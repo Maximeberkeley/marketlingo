@@ -34,6 +34,8 @@ import { TodaysMission } from '../../components/home/TodaysMission';
 import { StreakAtRisk, getStreakRiskHours } from '../../components/home/StreakAtRisk';
 import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
 import { SocialNudge } from '../../components/home/SocialNudge';
+import { TomorrowPreview } from '../../components/home/TomorrowPreview';
+import { MentorDebrief, getDebriefQuestion } from '../../components/home/MentorDebrief';
 import { scheduleStreakNotifications } from '../../lib/streakNotifications';
 
 
@@ -298,6 +300,9 @@ export default function HomeScreen() {
   const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [socialNudge, setSocialNudge] = useState<{ name: string; xp: number } | null>(null);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
+  const [tomorrowLesson, setTomorrowLesson] = useState<{ title: string; dayNumber: number } | null>(null);
+  const [showMentorDebrief, setShowMentorDebrief] = useState(true);
+  const [mentorChatContext, setMentorChatContext] = useState<string>('');
 
   const lessonCompletedToday = isLessonCompletedToday();
   const currentStage = getCurrentStage();
@@ -305,11 +310,17 @@ export default function HomeScreen() {
   const streak = progress?.current_streak || 0;
   const currentDay = availableDay;
 
-  const handleOpenMentorChat = () => {
-    const mentorId = MARKET_PRIMARY_MENTOR[selectedMarket || 'aerospace'] || 'maya';
+  const handleOpenMentorChat = (context?: string) => {
     const mentor = getMentorForContext('strategy', selectedMarket || 'aerospace');
     setActiveMentor(mentor);
+    if (context) setMentorChatContext(context);
     setMentorChatVisible(true);
+  };
+
+  const handleOpenMentorForLesson = () => {
+    const lessonTitle = activeStack?.title || lessonStack?.title || 'today\'s lesson';
+    const context = `The user just completed the lesson "${lessonTitle}" (Day ${currentDay}) in the ${getMarketName(selectedMarket || 'aerospace')} market. Help them reflect on what they learned, answer questions about the content, and connect it to real-world applications. Be conversational and encouraging.`;
+    handleOpenMentorChat(context);
   };
 
   useEffect(() => {
@@ -506,6 +517,26 @@ export default function HomeScreen() {
       }
     }
 
+    // Fetch tomorrow's lesson for preview teaser
+    const tomorrowDay = calcDay + 1;
+    if (tomorrowDay <= 180) {
+      try {
+        const { data: tomorrowStacks } = await supabase
+          .from('stacks')
+          .select('title')
+          .eq('market_id', market)
+          .contains('tags', ['MICRO_LESSON', `day-${tomorrowDay}`])
+          .not('published_at', 'is', null)
+          .limit(1);
+
+        if (tomorrowStacks?.[0]) {
+          setTomorrowLesson({ title: tomorrowStacks[0].title, dayNumber: tomorrowDay });
+        }
+      } catch (e) {
+        // Non-critical
+      }
+    }
+
     setLoading(false);
   };
 
@@ -626,6 +657,11 @@ export default function HomeScreen() {
             setShowReader(false);
             router.push('/subscription' as any);
           }}
+          onAskMentor={() => {
+            const lessonCtx = `The user is currently reading the lesson "${activeStack?.title}" (Day ${currentDay}) in the ${getMarketName(selectedMarket || 'aerospace')} market. They're on the last slide and want to discuss the content. Help them understand the material deeply.`;
+            handleOpenMentorChat(lessonCtx);
+          }}
+          mentorName={getMentorForContext('strategy', selectedMarket || 'aerospace').name.split(' ')[0]}
         />
       ) : showSessionComplete ? (
         <SessionCompleteCard
@@ -645,6 +681,11 @@ export default function HomeScreen() {
             setShowSessionComplete(false);
             fetchData();
           }}
+          onAskMentor={() => {
+            setShowSessionComplete(false);
+            handleOpenMentorForLesson();
+          }}
+          mentorName={getMentorForContext('strategy', selectedMarket || 'aerospace').name.split(' ')[0]}
         />
       ) : (
         <>
@@ -678,7 +719,7 @@ export default function HomeScreen() {
             <View style={styles.leoRow}>
               <LeoCharacter size="lg" animation={leoAnimation} />
               {/* Mentor avatar — tap to chat */}
-              <TouchableOpacity style={styles.mentorAvatarBtn} onPress={handleOpenMentorChat}>
+              <TouchableOpacity style={styles.mentorAvatarBtn} onPress={() => handleOpenMentorChat()}>
                 {/* Real mentor portrait image */}
                 {(() => {
                   const mentorId = getPrimaryMentorForMarket(selectedMarket || 'aerospace');
@@ -742,6 +783,39 @@ export default function HomeScreen() {
               onStart={() => handleOpenStack(lessonStack)}
               onReview={() => handleOpenStack(lessonStack)}
               onPractice={() => router.push('/(tabs)/practice' as any)}
+            />
+          )}
+
+          {/* ═══ POST-LESSON: Mentor Debrief — proactive AI connection ═══ */}
+          {lessonCompletedToday && showMentorDebrief && lessonStack && (() => {
+            const mentor = getMentorForContext('strategy', selectedMarket || 'aerospace');
+            const mentorId = getPrimaryMentorForMarket(selectedMarket || 'aerospace');
+            const mentorImage = MENTOR_IMAGES[mentorId] || MENTOR_IMAGES.maya;
+            return (
+              <MentorDebrief
+                mentorName={mentor.name}
+                mentorEmoji={mentor.emoji}
+                mentorImage={mentorImage}
+                lessonTitle={lessonStack.title}
+                debriefQuestion={getDebriefQuestion(lessonStack.title)}
+                onOpenChat={handleOpenMentorForLesson}
+                onDismiss={() => setShowMentorDebrief(false)}
+              />
+            );
+          })()}
+
+          {/* ═══ POST-LESSON: Tomorrow's Preview — anticipation hook ═══ */}
+          {lessonCompletedToday && tomorrowLesson && (
+            <TomorrowPreview
+              dayNumber={tomorrowLesson.dayNumber}
+              lessonTitle={tomorrowLesson.title}
+              marketEmoji={getMarketEmoji(selectedMarket || 'aerospace')}
+              hoursUntilUnlock={(() => {
+                const now = new Date();
+                const midnight = new Date();
+                midnight.setHours(24, 0, 0, 0);
+                return (midnight.getTime() - now.getTime()) / (1000 * 60 * 60);
+              })()}
             />
           )}
 
@@ -820,9 +894,9 @@ export default function HomeScreen() {
             <MentorChatOverlay
               visible={mentorChatVisible}
               mentor={activeMentor}
-              onClose={() => setMentorChatVisible(false)}
+              onClose={() => { setMentorChatVisible(false); setMentorChatContext(''); }}
               marketId={selectedMarket || undefined}
-              context={`${getMarketName(selectedMarket || 'aerospace')} industry learning. Recent news: ${newsItems.slice(0, 3).map(n => n.title).join('; ')}`}
+              context={mentorChatContext || `${getMarketName(selectedMarket || 'aerospace')} industry learning. The user is on Day ${currentDay} of 180. Recent news: ${newsItems.slice(0, 3).map(n => n.title).join('; ')}`}
             />
           )}
         </>

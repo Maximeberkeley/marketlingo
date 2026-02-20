@@ -49,6 +49,10 @@ interface SlideReaderProps {
   isProUser?: boolean;
   /** Called when free user hits the slide 3 paywall */
   onPaywallTrigger?: () => void;
+  /** Open mentor chat with lesson context */
+  onAskMentor?: () => void;
+  /** Mentor first name for CTA label */
+  mentorName?: string;
 }
 
 const MINIMUM_LESSON_TIME_SECONDS = 180;
@@ -383,6 +387,8 @@ export function SlideReader({
   marketId,
   isProUser = true,
   onPaywallTrigger,
+  onAskMentor,
+  mentorName,
 }: SlideReaderProps) {
   const [currentIndex, setCurrentIndex]     = useState(-1);
   const [showCompletion, setShowCompletion] = useState(false);
@@ -584,6 +590,11 @@ export function SlideReader({
                 <TouchableOpacity style={styles.secondaryBtn} onPress={() => currentSlide && onSaveInsight(currentSlide.slideNumber)}>
                   <Text style={styles.secondaryBtnText}>🔖 Save</Text>
                 </TouchableOpacity>
+                {onAskMentor && (
+                  <TouchableOpacity style={styles.mentorCTA} onPress={onAskMentor}>
+                    <Text style={styles.mentorCTAText}>🧠 {mentorName || 'Mentor'}</Text>
+                  </TouchableOpacity>
+                )}
               </View>
               <TouchableOpacity style={styles.ctaBtn} onPress={() => setShowCompletion(true)}>
                 <Text style={styles.ctaBtnText}>✅ Complete Stack</Text>
@@ -675,4 +686,6 @@ const styles = StyleSheet.create({
   nextBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
   ctaBtn: { height: 52, backgroundColor: COLORS.accent, borderRadius: 16, alignItems: 'center', justifyContent: 'center', shadowColor: COLORS.accent, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 12 },
   ctaBtnText: { fontSize: 16, fontWeight: '800', color: '#fff' },
+  mentorCTA: { flex: 1, height: 46, backgroundColor: 'rgba(16, 185, 129, 0.1)', borderRadius: 14, borderWidth: 1, borderColor: 'rgba(16, 185, 129, 0.3)', alignItems: 'center', justifyContent: 'center' },
+  mentorCTAText: { fontSize: 13, fontWeight: '600', color: '#34D399' },
 });
