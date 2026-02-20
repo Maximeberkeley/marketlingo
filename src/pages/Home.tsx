@@ -48,6 +48,25 @@ interface StackWithSlides {
   }[];
 }
 
+// Normalize sources — DB has mixed formats: plain URL strings or {label, url} objects
+function normalizeSources(sources: any): { label: string; url: string }[] {
+  if (!Array.isArray(sources)) return [];
+  return sources.map((s: any) => {
+    if (typeof s === 'string') {
+      try {
+        const url = new URL(s);
+        return { label: url.hostname.replace('www.', ''), url: s };
+      } catch {
+        return { label: 'Source', url: s };
+      }
+    }
+    if (s && typeof s === 'object' && s.url) {
+      return { label: s.label || s.url, url: s.url };
+    }
+    return null;
+  }).filter(Boolean) as { label: string; url: string }[];
+}
+
 export default function HomePage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
@@ -200,7 +219,7 @@ export default function HomePage() {
           tags: stack.tags || [],
           slides: ((stack.slides as any[]) || [])
             .sort((a, b) => a.slide_number - b.slide_number)
-            .map(s => ({ ...s, sources: Array.isArray(s.sources) ? s.sources : [] })),
+            .map(s => ({ ...s, sources: normalizeSources(s.sources) })),
         });
       }
 
@@ -221,7 +240,7 @@ export default function HomePage() {
           tags: stack.tags || [],
           slides: ((stack.slides as any[]) || [])
             .sort((a, b) => a.slide_number - b.slide_number)
-            .map(s => ({ ...s, sources: Array.isArray(s.sources) ? s.sources : [] })),
+            .map(s => ({ ...s, sources: normalizeSources(s.sources) })),
         });
       }
 
