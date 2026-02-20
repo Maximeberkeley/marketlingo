@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   Alert,
+  Image,
 } from 'react-native';
 import { KeyPlayers } from '../../components/home/KeyPlayers';
 import { DailyNews } from '../../components/home/DailyNews';
@@ -28,6 +29,14 @@ import { LessonCard } from '../../components/ui/LessonCard';
 import { SlideReader } from '../../components/slides/SlideReader';
 import { MentorChatOverlay } from '../../components/ai/MentorChatOverlay';
 import { getMentorForContext, Mentor } from '../../data/mentors';
+import { getPrimaryMentorForMarket } from '../../data/marketConfig';
+
+const MENTOR_IMAGES: Record<string, any> = {
+  maya: require('../../assets/mentors/mentor-maya.png'),
+  alex: require('../../assets/mentors/mentor-alex.png'),
+  kai: require('../../assets/mentors/mentor-kai.png'),
+  sophia: require('../../assets/mentors/mentor-sophia.png'),
+};
 
 // Market-to-mentor mapping
 const MARKET_PRIMARY_MENTOR: Record<string, string> = {
@@ -574,15 +583,24 @@ export default function HomeScreen() {
               <LeoCharacter size="lg" animation={leoAnimation} />
               {/* Mentor avatar — tap to chat */}
               <TouchableOpacity style={styles.mentorAvatarBtn} onPress={handleOpenMentorChat}>
-                <View style={styles.mentorAvatarCircle}>
-                  <Text style={styles.mentorAvatarEmoji}>
-                    {activeMentor?.emoji || (MARKET_PRIMARY_MENTOR[selectedMarket || ''] === 'sophia' ? '✨' :
-                      MARKET_PRIMARY_MENTOR[selectedMarket || ''] === 'kai' ? '🚀' :
-                      MARKET_PRIMARY_MENTOR[selectedMarket || ''] === 'alex' ? '👨‍🔬' : '👩‍💼')}
-                  </Text>
-                </View>
+                {/* Real mentor portrait image */}
+                {(() => {
+                  const mentorId = getPrimaryMentorForMarket(selectedMarket || 'aerospace');
+                  const avatarSrc = MENTOR_IMAGES[mentorId] || MENTOR_IMAGES.maya;
+                  return (
+                    <View style={styles.mentorAvatarCircle}>
+                      <Image
+                        source={avatarSrc}
+                        style={styles.mentorAvatarImage}
+                        resizeMode="cover"
+                      />
+                      {/* Live pulse indicator */}
+                      <View style={styles.mentorPulse} />
+                    </View>
+                  );
+                })()}
                 <View style={styles.mentorChatBubble}>
-                  <Text style={styles.mentorChatBubbleText}>Ask me anything →</Text>
+                  <Text style={styles.mentorChatBubbleText}>Ask me →</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -792,12 +810,19 @@ const styles = StyleSheet.create({
   leoMessage: { fontSize: 13, color: COLORS.textSecondary, textAlign: 'center', marginTop: 6 },
   mentorAvatarBtn: { alignItems: 'center', gap: 6 },
   mentorAvatarCircle: {
-    width: 52, height: 52, borderRadius: 26,
+    width: 60, height: 60, borderRadius: 30,
     backgroundColor: 'rgba(139,92,246,0.15)',
-    borderWidth: 2, borderColor: 'rgba(139,92,246,0.4)',
-    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 2, borderColor: COLORS.accent,
+    overflow: 'hidden',
+    position: 'relative',
   },
-  mentorAvatarEmoji: { fontSize: 24 },
+  mentorAvatarImage: { width: '100%', height: '100%' },
+  mentorPulse: {
+    position: 'absolute', bottom: 0, right: 0,
+    width: 14, height: 14, borderRadius: 7,
+    backgroundColor: '#22C55E',
+    borderWidth: 2, borderColor: COLORS.bg0,
+  },
   mentorChatBubble: {
     backgroundColor: COLORS.accent,
     paddingHorizontal: 10, paddingVertical: 5,
