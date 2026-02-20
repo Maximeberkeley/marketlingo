@@ -105,10 +105,6 @@ export default function InvestmentLabScreen() {
       ]);
       return;
     }
-    if (!isUnlocked) {
-      Alert.alert('Locked', 'Complete Day 30 of the curriculum to unlock the Investment Lab.');
-      return;
-    }
     router.push({ pathname: '/investment-module', params: { moduleId } });
   };
 
@@ -206,16 +202,7 @@ export default function InvestmentLabScreen() {
             </View>
           )}
 
-          {/* Not unlocked */}
-          {!isUnlocked && isProUser && (
-            <View style={styles.heroCard}>
-              <Text style={{ fontSize: 32, marginBottom: 8 }}>🔒</Text>
-              <Text style={styles.heroTitle}>Unlock at Day 30</Text>
-              <Text style={styles.heroDesc}>
-                Complete 30 days of the curriculum to unlock the Investment Lab and start practicing real investment scenarios.
-              </Text>
-            </View>
-          )}
+          {/* Day gate removed — Pro users get instant access */}
 
           {/* Not Pro */}
           {!isProUser && (
