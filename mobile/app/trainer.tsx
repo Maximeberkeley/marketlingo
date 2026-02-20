@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  Image,
   ImageBackground,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,6 +17,7 @@ import { useAuth } from '../hooks/useAuth';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { MentorChatOverlay } from '../components/ai/MentorChatOverlay';
+import { TrainerCard } from '../components/trainer/TrainerCard';
 import { getMentorForContext } from '../data/mentors';
 import type { Mentor } from '../data/mentors';
 
@@ -310,75 +310,34 @@ export default function TrainerScreen() {
 
         <ProgressBar progress={((currentIndex + 1) / scenarios.length) * 100} height={4} />
 
-        {/* Scenario */}
-        <View style={styles.scenarioCard}>
-          <Text style={styles.scenarioText}>{current.scenario}</Text>
+        {/* TrainerCard — full-featured component with feedback, mascot, mentor CTA */}
+        <View style={{ marginTop: 12 }}>
+          <TrainerCard
+            scenario={{
+              id: current.id,
+              scenario: current.scenario,
+              question: current.question,
+              options: current.options,
+            }}
+            onSaveToNotebook={handleSaveToNotebook}
+            onNext={handleNext}
+            onAskMentor={(question) => {
+              const mentor = getMentorForContext('strategy', selectedMarket || 'aerospace');
+              setActiveMentor(mentor);
+              setMentorChatVisible(true);
+            }}
+            onAttemptComplete={async (_isCorrect, selectedOption) => {
+              const { data, error } = await supabase.rpc('submit_trainer_answer', {
+                p_scenario_id: current.id,
+                p_selected_option: selectedOption,
+                p_time_spent: null,
+              });
+              if (error) { console.error(error); return undefined; }
+              return data as any;
+            }}
+            marketId={selectedMarket || 'aerospace'}
+          />
         </View>
-
-        {/* Question */}
-        <Text style={styles.questionText}>{current.question}</Text>
-
-        {/* Options */}
-        <View style={{ gap: 10 }}>
-          {current.options.map((opt, idx) => {
-            const isSelected = selectedOption === idx;
-            const isCorrectOption = feedback && feedback.correctIndex === idx;
-            const isWrong = feedback && isSelected && !feedback.isCorrect;
-
-            return (
-              <TouchableOpacity
-                key={idx}
-                style={[
-                  styles.optionCard,
-                  isCorrectOption && styles.optionCorrect,
-                  isWrong && styles.optionWrong,
-                  isSelected && !feedback && styles.optionSelected,
-                ]}
-                onPress={() => handleSelectOption(idx)}
-                disabled={!!feedback}
-              >
-                <View style={[styles.optionLetter, isCorrectOption && { backgroundColor: '#22C55E' }, isWrong && { backgroundColor: '#EF4444' }]}>
-                  <Text style={styles.optionLetterText}>{String.fromCharCode(65 + idx)}</Text>
-                </View>
-                <Text style={styles.optionText}>{opt.label}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-        {/* Feedback */}
-        {feedback && (
-          <View style={[styles.feedbackCard, feedback.isCorrect ? styles.feedbackCorrect : styles.feedbackWrong]}>
-            <Text style={[styles.feedbackTitle, { color: feedback.isCorrect ? '#22C55E' : '#F59E0B' }]}>
-              {feedback.isCorrect ? '✅ Correct!' : '⚠️ Not quite'}
-            </Text>
-            {feedback.feedback_pro_reasoning && (
-              <Text style={styles.feedbackBody}>{feedback.feedback_pro_reasoning}</Text>
-            )}
-            {feedback.feedback_mental_model && (
-              <View style={styles.mentalModelBox}>
-                <Text style={styles.mentalModelLabel}>💡 Mental Model</Text>
-                <Text style={styles.mentalModelText}>{feedback.feedback_mental_model}</Text>
-              </View>
-            )}
-
-            {/* Chat with Mentor CTA */}
-            <TouchableOpacity style={styles.mentorChatCTA} onPress={handleOpenMentorChat}>
-              <Text style={styles.mentorChatCTAText}>💬 Discuss with AI Mentor</Text>
-            </TouchableOpacity>
-
-            <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
-              <TouchableOpacity style={styles.saveBtn} onPress={handleSaveToNotebook}>
-                <Text style={styles.saveBtnText}>📝 Save</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.ctaButton, { flex: 1 }]} onPress={handleNext}>
-                <Text style={styles.ctaText}>
-                  {currentIndex < scenarios.length - 1 ? 'Next Scenario →' : 'See Results'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
       </ScrollView>
 
       {/* Mentor Chat Overlay */}
