@@ -13,11 +13,13 @@ import { FAMILIARITY_LEVELS, COLORS } from '../../lib/constants';
 import { StickyBottomCTA } from '../../components/StickyBottomCTA';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
+import { NotificationOnboarding } from '../../components/onboarding/NotificationOnboarding';
 
 export default function FamiliarityScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [selectedLevel, setSelectedLevel] = useState<FamiliarityLevel | null>(null);
+  const [showNotifOnboarding, setShowNotifOnboarding] = useState(false);
 
   const handleContinue = async () => {
     if (selectedLevel) {
@@ -30,8 +32,14 @@ export default function FamiliarityScreen() {
           .update({ familiarity_level: selectedLevel })
           .eq('id', user.id);
       }
-      router.replace('/(tabs)/home');
+      // Show notification onboarding before going to home
+      setShowNotifOnboarding(true);
     }
+  };
+
+  const handleNotifComplete = (_enabled: boolean) => {
+    setShowNotifOnboarding(false);
+    router.replace('/(tabs)/home');
   };
 
   const handleBack = () => {
@@ -98,6 +106,12 @@ export default function FamiliarityScreen() {
         title="Start Learning"
         onPress={handleContinue}
         disabled={!selectedLevel}
+      />
+
+      {/* Notification onboarding modal — shown after familiarity is saved */}
+      <NotificationOnboarding
+        visible={showNotifOnboarding}
+        onComplete={handleNotifComplete}
       />
     </View>
   );
