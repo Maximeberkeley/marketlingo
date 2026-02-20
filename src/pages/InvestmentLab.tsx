@@ -26,6 +26,9 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { getMarketName, getMarketEmoji } from "@/data/markets";
 import { cn } from "@/lib/utils";
+import { MentorAvatar } from "@/components/ai/MentorAvatar";
+import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
+import { mentors, Mentor } from "@/data/mentors";
 
 interface InvestmentModule {
   id: string;
@@ -87,6 +90,8 @@ export default function InvestmentLab() {
   const { isProUser, isLoading: subscriptionLoading } = useSubscription();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
+  const kaiMentor = mentors.find(m => m.id === "kai")!;
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -284,6 +289,13 @@ export default function InvestmentLab() {
                 {getMarketEmoji(selectedMarket || "aerospace")} {getMarketName(selectedMarket || "aerospace")} Focus
               </p>
             </div>
+            {/* Kai — Investment mentor */}
+            <MentorAvatar
+              mentor={kaiMentor}
+              size="sm"
+              showPulse
+              onClick={() => setActiveMentor(kaiMentor)}
+            />
             {isCertified && (
               <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/30">
                 <Award size={14} className="text-amber-400" />
@@ -465,6 +477,14 @@ export default function InvestmentLab() {
           )}
         </div>
       </div>
+
+      {/* Kai — Investment mentor chat */}
+      <MentorChatOverlay
+        mentor={activeMentor}
+        onClose={() => setActiveMentor(null)}
+        context={`Investment Lab — ${getMarketName(selectedMarket || "aerospace")} market. Modules: Valuation, Due Diligence, Risk, Portfolio. Overall progress: ${getOverallProgress()}%.`}
+        marketId={selectedMarket || undefined}
+      />
     </AppLayout>
   );
 }

@@ -14,7 +14,7 @@ import { DailyNews } from "@/components/home/DailyNews";
 import { NotificationOnboarding } from "@/components/onboarding/NotificationOnboarding";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { LeoCharacter, LeoAnim } from "@/components/mascot/LeoStateMachine";
-import { Mentor } from "@/data/mentors";
+import { Mentor, getMentorForContext } from "@/data/mentors";
 import { getMarketEmoji, getMarketName, getMarketById } from "@/data/markets";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
@@ -358,22 +358,40 @@ export default function HomePage() {
           </div>
         </motion.div>
 
-        {/* Leo 2D Greeting */}
+        {/* Leo 2D Greeting — click to open mentor chat */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.05, type: "spring" }}
           className="flex flex-col items-center justify-center mb-4"
         >
-          <LeoCharacter 
-            size="lg" 
-            animation={leoAnimation}
-          />
+          <button
+            onClick={() => {
+              const mentor = getMentorForContext(selectedMarket || "aerospace", selectedMarket || undefined);
+              setActiveMentor(mentor);
+            }}
+            className="relative group focus:outline-none"
+            aria-label="Chat with your mentor"
+          >
+            <LeoCharacter 
+              size="lg" 
+              animation={leoAnimation}
+            />
+            {/* Subtle tap hint */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.5 }}
+              className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-accent/20 border border-accent/30 backdrop-blur-sm"
+            >
+              <span className="text-[9px] font-semibold text-accent tracking-wide">TAP TO CHAT</span>
+            </motion.div>
+          </button>
           <motion.p
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="text-sm text-text-secondary mt-2 text-center"
+            className="text-sm text-text-secondary mt-5 text-center"
           >
             {leoMessage}
           </motion.p>
@@ -744,11 +762,11 @@ export default function HomePage() {
         }}
       />
 
-      {/* Mentor Chat */}
+      {/* Mentor Chat — triggered by tapping Leo */}
       <MentorChatOverlay
         mentor={activeMentor}
         onClose={() => setActiveMentor(null)}
-        context={selectedMarket || "aerospace"}
+        context={`${getMarketName(selectedMarket || "aerospace")} industry learning. Day ${currentDay} of 180.`}
         marketId={selectedMarket || undefined}
       />
     </AppLayout>
