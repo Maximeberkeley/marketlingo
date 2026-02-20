@@ -8,9 +8,9 @@ import {
   ActivityIndicator,
   RefreshControl,
   Alert,
-  Linking,
-  Image,
 } from 'react-native';
+import { KeyPlayers } from '../../components/home/KeyPlayers';
+import { DailyNews } from '../../components/home/DailyNews';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../../lib/constants';
@@ -746,99 +746,18 @@ export default function HomeScreen() {
           </View>
 
           {/* KEY PLAYERS */}
-          {keyPlayers.length > 0 && (
+          {selectedMarket && (
             <View style={styles.section}>
-              <View style={styles.sectionHeaderRow}>
-                <View style={styles.sectionHeaderLeft}>
-                  <Text style={styles.sectionHeaderIcon}>🏢</Text>
-                  <Text style={styles.sectionHeaderTitle}>Key Players</Text>
-                  <View style={styles.countBadge}>
-                    <Text style={styles.countBadgeText}>{keyPlayers.length}</Text>
-                  </View>
-                </View>
-              </View>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: 10, paddingRight: 4 }}
-              >
-                {keyPlayers.map((player) => (
-                  <TouchableOpacity key={player.id} style={styles.playerCard}>
-                    <View style={styles.playerLogoContainer}>
-                      <Text style={styles.playerLogo}>{player.logo}</Text>
-                    </View>
-                    <Text style={styles.playerName} numberOfLines={2}>{player.name}</Text>
-                    {player.ticker && <Text style={styles.playerTicker}>${player.ticker}</Text>}
-                    <View style={styles.playerSegmentBadge}>
-                      <Text style={styles.playerSegmentText}>{player.segment}</Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+              <KeyPlayers marketId={selectedMarket} />
             </View>
           )}
 
-          {/* INDUSTRY INTEL (News Feed) */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeaderRow}>
-              <View style={styles.sectionHeaderLeft}>
-                <View style={styles.liveDot} />
-                <Text style={styles.sectionHeaderTitle}>Industry Intel</Text>
-                <View style={[styles.countBadge, { backgroundColor: 'rgba(139,92,246,0.15)' }]}>
-                  <Text style={[styles.countBadgeText, { color: COLORS.accent }]}>LIVE</Text>
-                </View>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <TouchableOpacity onPress={refreshNews} disabled={newsRefreshing} style={{ opacity: newsRefreshing ? 0.5 : 1 }}>
-                  <Text style={styles.seeAllText}>{newsRefreshing ? '⏳' : '↺'} Refresh</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push('/summaries' as any)}>
-                  <Text style={styles.seeAllText}>See all →</Text>
-                </TouchableOpacity>
-              </View>
+          {/* INDUSTRY INTEL */}
+          {selectedMarket && (
+            <View style={styles.section}>
+              <DailyNews marketId={selectedMarket} />
             </View>
-            {newsItems.length === 0 ? (
-              <View style={styles.emptyNewsCard}>
-                <Text style={styles.emptyNewsText}>No news yet — tap Refresh to fetch live stories</Text>
-                <TouchableOpacity style={styles.fetchNewsBtn} onPress={refreshNews} disabled={newsRefreshing}>
-                  <Text style={styles.fetchNewsBtnText}>{newsRefreshing ? 'Fetching…' : '⚡ Fetch News'}</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={{ gap: 8 }}>
-                {newsItems.map((item) => (
-                  <TouchableOpacity
-                    key={item.id}
-                    style={styles.newsCard}
-                    onPress={() => {
-                      if (item.source_url) Linking.openURL(item.source_url).catch(() => {});
-                    }}
-                  >
-                    <View style={styles.newsCardHeader}>
-                      <View style={styles.newsSourceBadge}>
-                        <Text style={styles.newsSource}>{item.source_name}</Text>
-                      </View>
-                      {item.category_tag && (
-                        <View style={styles.newsCategoryBadge}>
-                          <Text style={styles.newsCategory}>{item.category_tag}</Text>
-                        </View>
-                      )}
-                      <Text style={styles.newsDate}>
-                        {new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      </Text>
-                    </View>
-                    <Text style={styles.newsTitle} numberOfLines={2}>{item.title}</Text>
-                    {item.summary && (
-                      <View style={styles.newsSummaryBox}>
-                        <Text style={styles.newsSummaryLabel}>✨ AI Summary</Text>
-                        <Text style={styles.newsSummary} numberOfLines={2}>{item.summary}</Text>
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
+          )}
         </ScrollView>
           {/* Mentor Chat Overlay */}
           {activeMentor && (
