@@ -100,7 +100,7 @@ export default function AuthScreen() {
         {/* Leo Graduation Mascot */}
         <View style={styles.leoSection}>
           <Image
-            source={require('../assets/leo-graduation.png')}
+            source={require('../assets/mascot/leo-reference.png')}
             style={styles.leoImage}
             resizeMode="contain"
           />

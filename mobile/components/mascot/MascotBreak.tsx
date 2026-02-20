@@ -17,7 +17,7 @@ const MENTOR_IMAGES: Record<string, any> = {
   kai: require('../../assets/mentors/mentor-kai.png'),
   sophia: require('../../assets/mentors/mentor-sophia.png'),
 };
-const LEO_STICKER = require('../../assets/leo-sticker.png');
+const LEO_STICKER = require('../../assets/mascot/leo-reference.png');
 
 // ─────────────────────────────────────────────
 // Types

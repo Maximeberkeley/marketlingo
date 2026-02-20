@@ -7,7 +7,6 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "scheme": "marketlingo",
-    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -26,8 +25,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0B1020"
       },
-      "package": "app.marketlingo.aerospace",
-      "edgeToEdgeEnabled": true
+      "package": "app.marketlingo.aerospace"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -48,11 +46,9 @@
         "expo-build-properties",
         {
           "ios": {
-            "newArchEnabled": false,
             "deploymentTarget": "15.1"
           },
           "android": {
-            "newArchEnabled": false
           }
         }
       ],

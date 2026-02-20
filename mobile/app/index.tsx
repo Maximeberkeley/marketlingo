@@ -36,7 +36,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/leo-graduation.png')}
+        source={require('../assets/mascot/leo-reference.png')}
         style={styles.logo}
         resizeMode="contain"
       />

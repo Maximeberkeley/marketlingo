@@ -10,7 +10,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
 
-const LEO_STICKER = require('../../assets/leo-sticker.png');
+const LEO_STICKER = require('../../assets/mascot/leo-reference.png');
 
 // ─────────────────────────────────────────────
 // Types

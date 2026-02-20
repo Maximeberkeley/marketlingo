@@ -71,7 +71,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUpWithEmail = useCallback(async (email: string, password: string) => {
     try {
       const { data, error } = await supabase.auth.signUp({ email, password });
-      if (error) return { success: false, error: error.message };
+      if (error) {
+        console.error('[Auth] Signup error:', error.message, error.status);
+        return { success: false, error: error.message };
+      }
       if (data.user && !data.session) {
         return { success: true, error: null, message: 'Please check your email to confirm your account' };
       }

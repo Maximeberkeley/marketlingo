@@ -5,31 +5,66 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { storage } from '../../lib/storage';
 import { COLORS } from '../../lib/constants';
 import { markets } from '../../lib/markets';
-import { StickyBottomCTA } from '../../components/StickyBottomCTA';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
+import { MascotAvatar } from '../../components/mascot/MascotAvatar';
 
 export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const filteredMarkets = markets.filter(
+    (market) =>
+      market.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      market.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const selectedMarketData = markets.find((m) => m.id === selectedIndustry);
 
   const handleContinue = async () => {
-    if (selectedIndustry) {
+    if (!selectedIndustry || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
       await storage.setIndustry(selectedIndustry);
-      // Write to Supabase profiles
       if (user) {
+        // Update profile with selected market
         await supabase
           .from('profiles')
-          .upsert({ id: user.id, selected_market: selectedIndustry }, { onConflict: 'id' });
+          .update({ selected_market: selectedIndustry })
+          .eq('id', user.id);
+
+        // Create initial progress
+        await supabase
+          .from('user_progress')
+          .upsert(
+            {
+              user_id: user.id,
+              market_id: selectedIndustry,
+              current_day: 1,
+              current_streak: 0,
+              longest_streak: 0,
+              completed_stacks: [],
+            },
+            { onConflict: 'user_id,market_id' }
+          );
       }
       router.push('/onboarding/familiarity');
+    } catch (error) {
+      console.error('Error saving market selection:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -39,37 +74,51 @@ export default function OnboardingScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* Header with Mascot */}
         <View style={styles.header}>
-          <Text style={styles.emoji}>🚀</Text>
-          <Text style={styles.title}>Choose Your Industry</Text>
+          <MascotAvatar emoji="🦁" size="lg" />
+          <Text style={styles.mascotCaption}>Pick one, master it! �️</Text>
+          <Text style={styles.title}>Choose your industry</Text>
           <Text style={styles.subtitle}>
-            Master one industry at a time. You can always switch later.
+            Pick one. We'll guide you for 6 months.
           </Text>
         </View>
 
-        {/* Market Cards */}
-        <View style={styles.cardsContainer}>
-          {markets.map((market) => (
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <Text style={styles.searchIcon}>🔍</Text>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search industries…"
+            placeholderTextColor={COLORS.textMuted}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
+
+        {/* Count */}
+        <Text style={styles.countText}>
+          {filteredMarkets.length} industries available
+        </Text>
+
+        {/* 2-Column Market Grid */}
+        <View style={styles.gridContainer}>
+          {filteredMarkets.map((market) => (
             <TouchableOpacity
               key={market.id}
               style={[
-                styles.card,
-                selectedIndustry === market.id && styles.cardSelected,
+                styles.gridCard,
+                selectedIndustry === market.id && styles.gridCardSelected,
+                selectedIndustry === market.id && { borderColor: market.color },
               ]}
               onPress={() => setSelectedIndustry(market.id)}
               activeOpacity={0.7}
             >
-              <View style={styles.cardContent}>
-                <Text style={styles.cardEmoji}>{market.emoji}</Text>
-                <View style={styles.cardText}>
-                  <Text style={styles.cardTitle}>{market.name}</Text>
-                  <Text style={styles.cardDescription}>{market.description}</Text>
-                </View>
-              </View>
+              <Text style={styles.gridEmoji}>{market.emoji}</Text>
+              <Text style={styles.gridName}>{market.name}</Text>
               {selectedIndustry === market.id && (
-                <View style={styles.checkmark}>
-                  <Text style={styles.checkmarkText}>✓</Text>
+                <View style={[styles.gridCheck, { backgroundColor: market.color }]}>
+                  <Text style={styles.gridCheckText}>✓</Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -77,11 +126,36 @@ export default function OnboardingScreen() {
         </View>
       </ScrollView>
 
-      <StickyBottomCTA
-        title="Continue"
-        onPress={handleContinue}
-        disabled={!selectedIndustry}
-      />
+      {/* Footer CTA */}
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 20 }]}>
+        {selectedMarketData && (
+          <View style={styles.selectedPreview}>
+            <View style={styles.selectedPreviewRow}>
+              <Text style={{ fontSize: 18 }}>{selectedMarketData.emoji}</Text>
+              <Text style={styles.selectedPreviewName}>{selectedMarketData.name}</Text>
+            </View>
+            <Text style={styles.selectedPreviewDesc}>{selectedMarketData.description}</Text>
+          </View>
+        )}
+
+        <TouchableOpacity
+          style={[
+            styles.ctaButton,
+            (!selectedIndustry || isSubmitting) && styles.ctaButtonDisabled,
+          ]}
+          onPress={handleContinue}
+          disabled={!selectedIndustry || isSubmitting}
+          activeOpacity={0.85}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.ctaButtonText}>
+              {selectedIndustry ? 'Start my 6-month journey' : 'Select an industry'}
+            </Text>
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -93,22 +167,25 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 16,
-    paddingBottom: 120,
+    paddingBottom: 200,
   },
   header: {
     alignItems: 'center',
-    marginTop: 40,
-    marginBottom: 32,
+    marginTop: 24,
+    marginBottom: 20,
   },
-  emoji: {
-    fontSize: 64,
-    marginBottom: 16,
+  mascotCaption: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    marginTop: 10,
+    textAlign: 'center',
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
     color: COLORS.textPrimary,
-    marginBottom: 8,
+    marginTop: 12,
+    marginBottom: 6,
     textAlign: 'center',
   },
   subtitle: {
@@ -117,56 +194,121 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
   },
-  cardsContainer: {
-    gap: 12,
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.bg1,
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    height: 48,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
-  card: {
+  searchIcon: {
+    fontSize: 16,
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    color: COLORS.textPrimary,
+  },
+  countText: {
+    fontSize: 12,
+    color: COLORS.textMuted,
+    marginBottom: 10,
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  gridCard: {
+    width: '48%',
     backgroundColor: COLORS.bg2,
     borderRadius: 16,
     padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 100,
     borderWidth: 2,
     borderColor: 'transparent',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    position: 'relative',
   },
-  cardSelected: {
-    borderColor: COLORS.accent,
-    backgroundColor: `${COLORS.accent}15`,
+  gridCardSelected: {
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
   },
-  cardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  cardEmoji: {
+  gridEmoji: {
     fontSize: 32,
-    marginRight: 14,
+    marginBottom: 8,
   },
-  cardText: {
-    flex: 1,
-  },
-  cardTitle: {
-    fontSize: 16,
+  gridName: {
+    fontSize: 14,
     fontWeight: '600',
     color: COLORS.textPrimary,
-    marginBottom: 3,
+    textAlign: 'center',
   },
-  cardDescription: {
-    fontSize: 13,
-    color: COLORS.textMuted,
-    lineHeight: 18,
-  },
-  checkmark: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: COLORS.accent,
+  gridCheck: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkmarkText: {
-    color: '#FFFFFF',
+  gridCheckText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    backgroundColor: COLORS.bg0,
+  },
+  selectedPreview: {
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: COLORS.bg2,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: 12,
+  },
+  selectedPreviewRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  selectedPreviewName: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+  },
+  selectedPreviewDesc: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    lineHeight: 18,
+  },
+  ctaButton: {
+    backgroundColor: COLORS.accent,
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ctaButtonDisabled: {
+    opacity: 0.4,
+  },
+  ctaButtonText: {
+    color: '#fff',
     fontSize: 16,
     fontWeight: '700',
   },

@@ -131,7 +131,7 @@ export function LeoCharacter({
         }}
       >
         <Image
-          source={require('../../assets/leo-mascot.png')}
+          source={require('../../assets/mascot/leo-reference.png')}
           style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
         />
       </Animated.View>

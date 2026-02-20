@@ -32,6 +32,7 @@ interface SlideReaderProps {
   onComplete: (isReview: boolean, timeSpentSeconds: number) => void;
   onSaveInsight: (slideNumber: number) => void;
   onAddNote: (slideNumber: number) => void;
+  marketId?: string;
   isReview?: boolean;
 }
 
