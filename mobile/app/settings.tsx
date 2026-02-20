@@ -18,6 +18,16 @@ import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 
+// Deep-link route map (mirrors _layout.tsx)
+const NOTIFICATION_ROUTES: Record<string, string> = {
+  streak_warning: '/(tabs)/home',
+  daily_reminder: '/(tabs)/home',
+  leaderboard: '/leaderboard',
+  news: '/(tabs)/home',
+  achievement: '/achievements',
+  investment: '/investment-lab',
+};
+
 // Configure foreground notification behavior
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -103,12 +113,18 @@ export default function SettingsScreen() {
     loadPrefs();
   }, [user]);
 
-  // Listen for incoming notifications while app is open
+  // Listen for incoming notifications while app is open — show toast-style alert
   useEffect(() => {
     notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      const data = (notification.request.content.data || {}) as Record<string, any>;
+      const route = data?.route || (data?.type ? NOTIFICATION_ROUTES[data.type] : null);
       Alert.alert(
-        notification.request.content.title || 'Notification',
-        notification.request.content.body || ''
+        notification.request.content.title || '🔔 Notification',
+        notification.request.content.body || '',
+        [
+          { text: 'Dismiss', style: 'cancel' },
+          ...(route ? [{ text: 'Open', onPress: () => router.push(route as any) }] : []),
+        ]
       );
     });
     return () => {
@@ -188,7 +204,27 @@ export default function SettingsScreen() {
       .eq('id', user.id);
   };
 
+  // Send a local test notification with a deep-link payload
+  const handleTestNotification = async () => {
+    const { status } = await Notifications.getPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission required', 'Enable notifications first.');
+      return;
+    }
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: '🦁 Leo: Your streak is at risk!',
+        body: "5 mins is all I ask… Don't lose your streak today!",
+        data: { type: 'streak_warning', route: '/(tabs)/home' },
+        sound: true,
+      },
+      trigger: { seconds: 3 } as any,
+    });
+    Alert.alert('Test Sent ✅', "You'll receive a notification in 3 seconds. Tap it to test deep-linking!");
+  };
+
   const handleResetPassword = async () => {
+
     if (!user?.email) return;
     Alert.alert(
       'Reset Password',
@@ -300,6 +336,18 @@ export default function SettingsScreen() {
               <Text style={styles.tokenLabel}>📱 Device registered for push</Text>
             </View>
           )}
+
+          {/* Test deep-link notification */}
+          {pushEnabled && (
+            <TouchableOpacity style={styles.testNotifBtn} onPress={handleTestNotification}>
+              <Text style={styles.testNotifIcon}>🔔</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.testNotifLabel}>Send Test Notification</Text>
+                <Text style={styles.testNotifDesc}>Fires in 3s — tap to test deep-linking</Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Account */}
@@ -395,4 +443,12 @@ const styles = StyleSheet.create({
   },
   menuText: { flex: 1, fontSize: 15, fontWeight: '500', color: COLORS.textPrimary },
   chevron: { fontSize: 22, color: COLORS.textMuted },
+  testNotifBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: 'rgba(99,102,241,0.10)', borderRadius: 14, padding: 14, marginTop: 4,
+    borderWidth: 1, borderColor: 'rgba(99,102,241,0.25)',
+  },
+  testNotifIcon: { fontSize: 18 },
+  testNotifLabel: { fontSize: 15, fontWeight: '500', color: COLORS.textPrimary },
+  testNotifDesc: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
 });
