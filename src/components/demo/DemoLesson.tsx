@@ -95,8 +95,15 @@ function DemoProgress({ step }: { step: DemoStep }) {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
+const DEMO_SEEN_KEY = "ml_demo_seen";
+
 export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
   const [step, setStep] = useState<DemoStep>("intro");
+
+  // Mark demo as seen as soon as user opens it
+  useEffect(() => {
+    localStorage.setItem(DEMO_SEEN_KEY, "true");
+  }, []);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [trainerOption, setTrainerOption] = useState<number | null>(null);
   const [xpTotal, setXpTotal] = useState(0);
