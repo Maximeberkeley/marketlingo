@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,9 @@ import { supabase } from '../lib/supabase';
 import { DemoLesson } from '../components/demo/DemoLesson';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri } from 'expo-auth-session';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const DEMO_SEEN_KEY = 'ml_demo_seen';
 
 export default function AuthScreen() {
   const insets = useSafeAreaInsets();
@@ -29,6 +32,19 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
+  const [demoSeen, setDemoSeen] = useState(false);
+
+  useEffect(() => {
+    AsyncStorage.getItem(DEMO_SEEN_KEY).then((val) => {
+      if (val === 'true') setDemoSeen(true);
+    });
+  }, []);
+
+  const handleStartDemo = () => {
+    setShowDemo(true);
+    AsyncStorage.setItem(DEMO_SEEN_KEY, 'true');
+    setDemoSeen(true);
+  };
 
   const handleGoogleAuth = async () => {
     try {
@@ -121,10 +137,12 @@ export default function AuthScreen() {
           <Text style={styles.tagline}>Master any industry in 6 months</Text>
         </View>
 
-        {/* Demo Lesson CTA */}
-        <TouchableOpacity style={styles.demoBtn} onPress={() => setShowDemo(true)} activeOpacity={0.8}>
-          <Text style={styles.demoBtnText}>Try a free lesson first →</Text>
-        </TouchableOpacity>
+        {/* Demo Lesson CTA — only show if not already done */}
+        {!demoSeen && (
+          <TouchableOpacity style={styles.demoBtn} onPress={handleStartDemo} activeOpacity={0.8}>
+            <Text style={styles.demoBtnText}>Try a free lesson first →</Text>
+          </TouchableOpacity>
+        )}
 
         {/* Form */}
         <View style={styles.form}>
