@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { markets } from '../../lib/markets';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { MascotAvatar } from '../../components/mascot/MascotAvatar';
+import { getDemoXP } from '../../lib/demoXPBridge';
 
 export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
@@ -23,6 +24,20 @@ export default function OnboardingScreen() {
   const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [demoMarket, setDemoMarket] = useState<string | null>(null);
+  const [demoXP, setDemoXP] = useState(0);
+
+  // Check if user did the demo — pre-select that market
+  useEffect(() => {
+    (async () => {
+      const { xp, market } = await getDemoXP();
+      if (market && xp > 0) {
+        setDemoMarket(market);
+        setDemoXP(xp);
+        setSelectedIndustry(market);
+      }
+    })();
+  }, []);
 
   const filteredMarkets = markets.filter(
     (market) =>
@@ -83,6 +98,19 @@ export default function OnboardingScreen() {
             Pick one. We'll guide you for 6 months.
           </Text>
         </View>
+
+        {/* Demo bridge banner */}
+        {demoMarket && demoXP > 0 && (
+          <View style={styles.demoBanner}>
+            <Text style={styles.demoBannerEmoji}>⚡</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.demoBannerTitle}>Continue where you left off</Text>
+              <Text style={styles.demoBannerSub}>
+                Your {demoXP} XP from the demo lesson is waiting!
+              </Text>
+            </View>
+          </View>
+        )}
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
@@ -311,5 +339,27 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '700',
+  },
+  demoBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: 'rgba(251, 191, 36, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(251, 191, 36, 0.25)',
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 16,
+  },
+  demoBannerEmoji: { fontSize: 28 },
+  demoBannerTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FBBF24',
+    marginBottom: 2,
+  },
+  demoBannerSub: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
   },
 });
