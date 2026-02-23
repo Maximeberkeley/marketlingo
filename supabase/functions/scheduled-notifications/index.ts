@@ -326,6 +326,12 @@ Deno.serve(async (req) => {
 
       const template = getRandomTemplate(job.type);
 
+      // For weekly_recap, personalise with stats
+      if (job.type === 'weekly_recap' && user.weeklyXP) {
+        notifTitle = `📊 Your Weekly Recap`;
+        notifBody = `You earned ${user.weeklyXP} XP and completed ${user.lessonsCompleted || 0} lessons this week!`;
+      }
+
       // For news_update, personalise body with the actual headline if available
       let notifTitle = template.title;
       let notifBody = template.body;
