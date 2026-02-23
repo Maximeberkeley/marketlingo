@@ -18,6 +18,33 @@ const WEEK_PATTERN = [
   "BOOK_SNAPSHOT", "DAILY_GAME", "MICRO_LESSON"
 ];
 
+// Learning goals — each gets its own curriculum variant
+const LEARNING_GOALS = ['career', 'invest', 'startup', 'curiosity'] as const;
+
+// Goal-specific prompt lenses
+const GOAL_LENS: Record<string, { label: string; focus: string; slideGuidance: string }> = {
+  career: {
+    label: 'Career & Workforce',
+    focus: 'preparing for job interviews, understanding hiring signals, building skills employers value, and navigating career paths in this industry',
+    slideGuidance: `Every slide must help a job seeker. Include: terminology interviewers test, skills gaps employers notice, team structures, career ladders, and "what would impress a hiring manager" angles. Reference real job titles, salary benchmarks, and hiring trends.`,
+  },
+  invest: {
+    label: 'Investor & Analyst',
+    focus: 'evaluating investment opportunities, understanding valuation frameworks, reading financial signals, and building analyst-level market intuition',
+    slideGuidance: `Every slide must serve an investor. Include: valuation multiples, unit economics, TAM/SAM analysis, comparable company frameworks, risk factors, and "what would a VC/analyst ask" angles. Reference real funding rounds, public market data, and deal structures.`,
+  },
+  startup: {
+    label: 'Founder & Builder',
+    focus: 'identifying startup opportunities, understanding business models, avoiding common founder mistakes, and building companies in this industry',
+    slideGuidance: `Every slide must help a founder. Include: business model breakdowns, go-to-market strategies, unit economics, competitive moats, common pitfalls, and "what kills startups here" angles. Reference real startups, their pivots, fundraising journeys, and failure modes.`,
+  },
+  curiosity: {
+    label: 'Curious Learner',
+    focus: 'understanding the fascinating dynamics of this industry, building mental models, discovering surprising truths, and developing transferable knowledge',
+    slideGuidance: `Every slide must captivate a curious mind. Include: counterintuitive insights, historical context, cross-industry parallels, "most people don't know" facts, and transferable mental models. Make complex topics accessible without dumbing them down.`,
+  },
+};
+
 // Market-specific curriculum themes
 const MARKET_THEMES: Record<string, string[]> = {
   aerospace: ["Foundations", "Commercial Aviation", "Defense & Government", "Space Economy", "Emerging Technologies", "Business & Strategy"],
