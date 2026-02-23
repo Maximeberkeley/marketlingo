@@ -90,6 +90,9 @@ export default function HomePage() {
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [leoMessage, setLeoMessage] = useState<string>("");
   const [leoAnimation, setLeoAnimation] = useState<LeoAnim>("idle");
+  const [socialNudge, setSocialNudge] = useState<{ name: string; xp: number } | null>(null);
+  const [showSocialNudge, setShowSocialNudge] = useState(true);
+  const [userGoal, setUserGoal] = useState<string | null>(null);
   
   const { isSupported, isRegistered } = useNotifications();
   const { triggerAfterLesson, isProUser } = useProPromotionContext();
