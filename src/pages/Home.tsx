@@ -505,6 +505,18 @@ export default function HomePage() {
           </div>
         </motion.div>
 
+        {/* Social Nudge */}
+        {socialNudge && showSocialNudge && (
+          <SocialNudge
+            rivalName={socialNudge.name}
+            rivalXP={socialNudge.xp}
+            userXP={xpData?.total_xp || 0}
+            marketName={getMarketName(selectedMarket || "aerospace")}
+            onViewLeaderboard={() => navigate("/leaderboard")}
+            onDismiss={() => setShowSocialNudge(false)}
+          />
+        )}
+
         {/* Today's Learning Cards */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
