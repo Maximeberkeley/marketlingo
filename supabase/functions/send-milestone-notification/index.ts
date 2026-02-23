@@ -186,6 +186,9 @@ Deno.serve(async (req) => {
       if (payload.milestoneData.levelNumber) formattedData.level = payload.milestoneData.levelNumber;
       if (payload.milestoneData.achievementName) formattedData.name = payload.milestoneData.achievementName;
       if (payload.milestoneData.weekNumber) formattedData.week = payload.milestoneData.weekNumber;
+      if (payload.milestoneData.overtakenBy) formattedData.name = payload.milestoneData.overtakenBy;
+      if (payload.milestoneData.weeklyXP) formattedData.xp = payload.milestoneData.weeklyXP;
+      if (payload.milestoneData.lessonsCompleted) formattedData.lessons = payload.milestoneData.lessonsCompleted;
     }
     
     const { title, body } = formatTemplate(template, formattedData);

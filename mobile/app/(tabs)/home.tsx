@@ -929,6 +929,14 @@ export default function HomeScreen() {
           )}
         </>
       )}
+
+      {/* Milestone Share Card */}
+      <MilestoneShareCard
+        visible={milestone.visible}
+        type={milestone.type}
+        data={milestone.data}
+        onDismiss={dismissMilestone}
+      />
     </View>
   );
 }
