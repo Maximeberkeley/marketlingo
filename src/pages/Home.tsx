@@ -27,6 +27,8 @@ import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { hapticFeedback } from "@/lib/ios-utils";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { useMilestoneSharing } from "@/hooks/useMilestoneSharing";
+import { MilestoneShareCard } from "@/components/sharing/MilestoneShareCard";
 
 // Import warm Duolingo-style images
 import lessonHero from "@/assets/cards/lesson-hero.jpg";
