@@ -304,6 +304,7 @@ export default function HomeScreen() {
   const [showMentorDebrief, setShowMentorDebrief] = useState(true);
   const [mentorChatContext, setMentorChatContext] = useState<string>('');
 
+  const { milestone, dismissMilestone, checkStreakMilestone, checkLevelMilestone, showStageUp } = useMilestoneSharing();
   const lessonCompletedToday = isLessonCompletedToday();
   const currentStage = getCurrentStage();
   const stageProgress = getProgressToNextStage();
