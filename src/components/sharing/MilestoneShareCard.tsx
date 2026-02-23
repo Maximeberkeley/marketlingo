@@ -138,12 +138,28 @@ export function MilestoneShareCard({ visible, type, data, onDismiss }: Milestone
                 onClick={handleShare}
               >
                 <Share2 size={14} className="mr-2" />
-                Share on LinkedIn / Instagram
+                Copy Share Text
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full border-accent/30 text-accent hover:bg-accent/10"
+                onClick={() => setShowImageCard(true)}
+              >
+                <ImageIcon size={14} className="mr-2" />
+                Download Share Image
               </Button>
               <Button size="full" onClick={onDismiss}>
                 Continue
               </Button>
             </div>
+
+            {/* Image export overlay */}
+            <MilestoneImageCard
+              visible={showImageCard}
+              type={type}
+              data={data}
+              onDismiss={() => setShowImageCard(false)}
+            />
           </motion.div>
         </motion.div>
       )}

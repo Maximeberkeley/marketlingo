@@ -598,12 +598,27 @@ export default function HomeScreen() {
     let earnedXP = XP_REWARDS.LESSON_COMPLETE;
     if (progress && activeStack) {
       await completeStack(activeStack.id);
-      await updateStreak();
-      await completeLessonForToday(activeStack.id);
+      const updatedProgress = await updateStreak();
+      const updatedXP = await completeLessonForToday(activeStack.id);
       if ((progress.current_streak || 0) > 0) {
         const streakBonus = XP_REWARDS.STREAK_BONUS * (progress.current_streak || 1);
         await addXP(streakBonus, 'streak_bonus');
         earnedXP += streakBonus;
+      }
+      
+      // Check milestones
+      const mktName = getMarketName(selectedMarket || 'aerospace');
+      const mktEmoji = getMarketEmoji(selectedMarket || 'aerospace');
+      const newStreak = (updatedProgress as any)?.current_streak || progress.current_streak || 0;
+      checkStreakMilestone(newStreak, mktName, mktEmoji);
+      
+      if (updatedXP) {
+        checkLevelMilestone(updatedXP.current_level, mktName, mktEmoji);
+        const prevStage = xpData?.startup_stage || 1;
+        if (updatedXP.startup_stage > prevStage) {
+          const stageNames = ['Ideation', 'Validation', 'MVP', 'Traction', 'Scaling', 'Established'];
+          showStageUp(stageNames[updatedXP.startup_stage - 1] || 'New Stage', updatedXP.startup_stage, mktName, mktEmoji);
+        }
       }
     }
     // Show gorgeous completion card instead of plain Alert

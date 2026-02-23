@@ -851,6 +851,14 @@ export default function HomePage() {
         context={`${getMarketName(selectedMarket || "aerospace")} industry learning. Day ${currentDay} of 180.`}
         marketId={selectedMarket || undefined}
       />
+
+      {/* Milestone Share Card */}
+      <MilestoneShareCard
+        visible={milestone.visible}
+        type={milestone.type}
+        data={milestone.data}
+        onDismiss={dismissMilestone}
+      />
     </AppLayout>
   );
 }
