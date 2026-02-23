@@ -264,6 +264,38 @@ export default function HomePage() {
         });
       }
 
+      // Fetch rival for social nudge
+      try {
+        const { data: xpRow } = await supabase
+          .from("user_xp")
+          .select("total_xp")
+          .eq("user_id", user.id)
+          .eq("market_id", market)
+          .single();
+
+        if (xpRow?.total_xp) {
+          const { data: rivals } = await supabase
+            .from("user_xp")
+            .select("total_xp, user_id")
+            .eq("market_id", market)
+            .gt("total_xp", xpRow.total_xp)
+            .order("total_xp", { ascending: true })
+            .limit(1);
+
+          if (rivals?.[0]) {
+            const { data: rivalProfile } = await supabase
+              .from("profiles")
+              .select("username")
+              .eq("id", rivals[0].user_id)
+              .single();
+            setSocialNudge({
+              name: rivalProfile?.username?.split("@")[0] || "Someone",
+              xp: rivals[0].total_xp,
+            });
+          }
+        }
+      } catch {}
+
       setLoading(false);
       
       const notifDismissed = localStorage.getItem('notification_onboarding_dismissed');
