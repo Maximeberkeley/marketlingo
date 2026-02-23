@@ -10,12 +10,15 @@ const corsHeaders = {
 
 interface MilestonePayload {
   userId: string;
-  milestoneType: 'streak' | 'level' | 'achievement' | 'certificate' | 'week_complete';
+  milestoneType: 'streak' | 'level' | 'achievement' | 'certificate' | 'week_complete' | 'leaderboard_overtaken' | 'weekly_recap';
   milestoneData?: {
     streakDays?: number;
     levelNumber?: number;
     achievementName?: string;
     weekNumber?: number;
+    overtakenBy?: string;
+    weeklyXP?: number;
+    lessonsCompleted?: number;
   };
 }
 
@@ -39,6 +42,14 @@ const MILESTONE_TEMPLATES = {
   week_complete: [
     { title: "📚 Week {week} Complete!", body: "Another week of growth. See your summary." },
     { title: "🦁 Weekly Milestone!", body: "Week {week} done! Leo's proud of your progress." },
+  ],
+  leaderboard_overtaken: [
+    { title: "⚔️ You've been overtaken!", body: "{name} just passed you on the leaderboard. Time to reclaim your spot!" },
+    { title: "🏆 Leaderboard alert!", body: "Someone just surpassed your XP. Study today to stay ahead!" },
+  ],
+  weekly_recap: [
+    { title: "📊 Your Weekly Recap is ready!", body: "You earned {xp} XP and completed {lessons} lessons this week." },
+    { title: "🦁 Leo's weekly report!", body: "{xp} XP earned this week. Let's aim higher next week!" },
   ],
 };
 
@@ -175,6 +186,9 @@ Deno.serve(async (req) => {
       if (payload.milestoneData.levelNumber) formattedData.level = payload.milestoneData.levelNumber;
       if (payload.milestoneData.achievementName) formattedData.name = payload.milestoneData.achievementName;
       if (payload.milestoneData.weekNumber) formattedData.week = payload.milestoneData.weekNumber;
+      if (payload.milestoneData.overtakenBy) formattedData.name = payload.milestoneData.overtakenBy;
+      if (payload.milestoneData.weeklyXP) formattedData.xp = payload.milestoneData.weeklyXP;
+      if (payload.milestoneData.lessonsCompleted) formattedData.lessons = payload.milestoneData.lessonsCompleted;
     }
     
     const { title, body } = formatTemplate(template, formattedData);

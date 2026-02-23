@@ -27,6 +27,8 @@ import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { hapticFeedback } from "@/lib/ios-utils";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { useMilestoneSharing } from "@/hooks/useMilestoneSharing";
+import { MilestoneShareCard } from "@/components/sharing/MilestoneShareCard";
 
 // Import warm Duolingo-style images
 import lessonHero from "@/assets/cards/lesson-hero.jpg";
@@ -97,6 +99,7 @@ export default function HomePage() {
   const { isSupported, isRegistered } = useNotifications();
   const { triggerAfterLesson, isProUser } = useProPromotionContext();
   const { play } = useSoundEffects();
+  const { milestone, dismissMilestone, checkStreakMilestone, checkLevelMilestone, showStageUp } = useMilestoneSharing();
   const lessonCompletedToday = isLessonCompletedToday();
   const currentStage = getCurrentStage();
   const stageProgress = getProgressToNextStage();
@@ -325,11 +328,22 @@ export default function HomePage() {
     
     if (progress && activeStack) {
       await completeStack(activeStack.id);
-      await updateStreak();
+      const updatedProgress = await updateStreak();
       await completeLessonForToday(activeStack.id);
       
       if ((progress.current_streak || 0) > 0) {
         await addXP(XP_REWARDS.STREAK_BONUS * (progress.current_streak || 1), "streak_bonus");
+      }
+      
+      // Check milestones after updates
+      const mktName = getMarketName(selectedMarket || "aerospace");
+      const mktEmoji = getMarketEmoji(selectedMarket || "aerospace");
+      const newStreak = (updatedProgress as any)?.current_streak || progress.current_streak || 0;
+      checkStreakMilestone(newStreak, mktName, mktEmoji);
+      
+      // Check level/stage milestones from current xpData (updated via addXP)
+      if (xpData) {
+        checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
       }
       
       // Trigger Pro promotion after lesson (checks internally if should show)
@@ -832,6 +846,14 @@ export default function HomePage() {
         onClose={() => setActiveMentor(null)}
         context={`${getMarketName(selectedMarket || "aerospace")} industry learning. Day ${currentDay} of 180.`}
         marketId={selectedMarket || undefined}
+      />
+
+      {/* Milestone Share Card */}
+      <MilestoneShareCard
+        visible={milestone.visible}
+        type={milestone.type}
+        data={milestone.data}
+        onDismiss={dismissMilestone}
       />
     </AppLayout>
   );

@@ -97,6 +97,7 @@ export default function RootLayout() {
               <Stack.Screen name="investment-watchlist" />
               <Stack.Screen name="regulatory-hub" />
               <Stack.Screen name="subscription" />
+              <Stack.Screen name="passport" />
             </Stack>
           </LeoProvider>
         </AuthProvider>

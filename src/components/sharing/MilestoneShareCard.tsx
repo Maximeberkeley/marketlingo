@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Share2 } from "lucide-react";
+import { X, Share2, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { MilestoneImageCard } from "./MilestoneImageCard";
 
 export type MilestoneType = "streak" | "level_up" | "passport_stamp" | "stage_up";
 
@@ -56,6 +58,7 @@ const config: Record<MilestoneType, {
 
 export function MilestoneShareCard({ visible, type, data, onDismiss }: MilestoneShareCardProps) {
   const c = config[type];
+  const [showImageCard, setShowImageCard] = useState(false);
 
   const handleShare = async () => {
     const marketInfo = data.marketEmoji && data.marketName ? `${data.marketEmoji} ${data.marketName}` : "";
@@ -135,12 +138,28 @@ export function MilestoneShareCard({ visible, type, data, onDismiss }: Milestone
                 onClick={handleShare}
               >
                 <Share2 size={14} className="mr-2" />
-                Share on LinkedIn / Instagram
+                Copy Share Text
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full border-accent/30 text-accent hover:bg-accent/10"
+                onClick={() => setShowImageCard(true)}
+              >
+                <ImageIcon size={14} className="mr-2" />
+                Download Share Image
               </Button>
               <Button size="full" onClick={onDismiss}>
                 Continue
               </Button>
             </div>
+
+            {/* Image export overlay */}
+            <MilestoneImageCard
+              visible={showImageCard}
+              type={type}
+              data={data}
+              onDismiss={() => setShowImageCard(false)}
+            />
           </motion.div>
         </motion.div>
       )}
