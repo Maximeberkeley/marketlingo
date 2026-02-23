@@ -1,6 +1,9 @@
 // Complete 6-month curriculum structures for all 15 industries
 // Each month = 30 days, each week = 7 days, 180 total days per industry
-// Goal: "Discover and become a master of your industry" - for entrepreneurs, job seekers, and curious learners
+// Goal: "Discover and become a master of your industry"
+// Content serves 4 learning goals simultaneously:
+//   - career (join the industry), invest (evaluate/analyze), build (found a startup), curiosity (learn deeply)
+// Slide structure: slides 1-3 universal, slide 4 career/investor lens, slide 5 founder lens, slide 6 actionable
 
 export interface MonthStructure {
   month: number;

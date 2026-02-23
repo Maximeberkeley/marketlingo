@@ -279,51 +279,60 @@ async function generateDayContent(
   const marketContext = getMarketContext(marketId);
 
   // Enhanced prompts for professional depth
+  // Goal-aware multi-perspective lens
+  const goalLensInstruction = `
+CRITICAL MULTI-PERSPECTIVE REQUIREMENT: Your content serves FOUR types of learners simultaneously:
+- CAREER SEEKERS: Skills, terminology, interview-ready insights, hiring signals
+- INVESTORS/ANALYSTS: Metrics, valuations, market signals, due diligence frameworks  
+- FOUNDERS/BUILDERS: Startup opportunities, unit economics, founder mistakes, business models
+- CURIOUS LEARNERS: Fascinating truths, mental models, transferable frameworks
+
+Slides 4-5 MUST explicitly serve different goal perspectives to maximize relevance.`;
+
   const typePrompts: Record<string, string> = {
     DAILY_GAME: `Create a NEWS stack about a REAL, SPECIFIC, VERIFIABLE current event or development in ${marketContext} related to "${topic}".
+      
+      ${goalLensInstruction}
       
       CRITICAL REQUIREMENTS FOR INDUSTRY MASTERY:
       - Reference REAL companies, executives, deals, and dollar amounts
       - Include actual dates, announcement details, or market data
       - Cite credible sources (industry publications, company filings, news outlets)
-      - Explain strategic implications that entrepreneurs and job seekers need to understand
-      - Include a "Startup Insight" or "Career Insight" for actionable takeaways
       
       Structure (6 slides, each body UNDER 280 characters):
       1. What happened - specific event with real details (who, what, when, how much)
-      2. Why it matters - industry implications for founders and professionals
+      2. Why it matters - industry implications with real market data
       3. Historical parallel - similar past events and their outcomes
-      4. Expert perspective - "Interpretation:" label required, strategic analysis
-      5. Opportunity signal - how entrepreneurs can act on this trend
+      4. Career & Investor Lens - what this signals for job seekers OR how investors should evaluate this
+      5. Founder Lens - startup opportunity or competitive insight from this development
       6. Reflection - thought-provoking question for deeper industry understanding`,
     
     MICRO_LESSON: `Create a LESSON stack teaching a core concept about "${topic}" in ${marketContext}.
       
+      ${goalLensInstruction}
+      
       CRITICAL REQUIREMENTS FOR INDUSTRY MASTERY:
       - Teach like an industry veteran explaining to a smart new hire
-      - Use REAL numbers, percentages, timelines, and benchmarks from the industry
-      - Reference actual companies, deals, and case studies as examples
-      - Include common mistakes that newcomers and job applicants make
-      - End with actionable advice for entrepreneurs or career seekers
-      
-      Target audience: New entrepreneurs entering this industry, professionals seeking to switch careers, and curious learners wanting deep understanding.
+      - Use REAL numbers, percentages, timelines, and benchmarks
+      - Reference actual companies, deals, and case studies
       
       Structure (6 slides, each body UNDER 280 characters):
       1. Core concept - explained clearly with a memorable mental model
       2. How it works - the mechanism or process in practice with real examples
       3. Real example - specific company/case with actual numbers and outcomes
-      4. Common mistake - what newcomers get wrong and why it matters
-      5. Edge cases - when the rules don't apply and expert nuances
-      6. Apply this - concrete next step for founders or job seekers`,
+      4. Career & Investor Lens - interview-ready insight, valuation implication, or analyst framework
+      5. Founder Lens - startup angle, business model insight, or common founder mistakes
+      6. Apply this - concrete next step regardless of learning goal`,
     
     TRAINER: `Create a decision-making SCENARIO about "${topic}" in ${marketContext}.
       
-      CRITICAL REQUIREMENTS FOR INDUSTRY MASTERY:
-      - Base on REAL situations that professionals in this field actually face
-      - Include realistic numbers, timelines, and trade-offs from the industry
+      ${goalLensInstruction}
+      
+      CRITICAL REQUIREMENTS:
+      - Base on REAL situations professionals face — relevant to employees, investors, AND founders
+      - Include realistic numbers, timelines, and trade-offs
       - Make the correct answer subtle but clearly best upon expert analysis
-      - Provide reasoning that builds transferable industry judgment
-      - Include a mental model that applies broadly across the sector
+      - Feedback should reference how different perspectives (career, investor, founder) evaluate the decision
       
       The scenario should be 400-600 characters, presenting a genuine dilemma.
       All 4 options should seem plausible to someone new to the industry.
@@ -331,44 +340,46 @@ async function generateDayContent(
     
     BOOK_SNAPSHOT: `Create a HISTORY stack about a pivotal past event related to "${topic}" in ${marketContext}.
       
-      CRITICAL REQUIREMENTS FOR INDUSTRY MASTERY:
+      ${goalLensInstruction}
+      
+      CRITICAL REQUIREMENTS:
       - Reference REAL historical events with specific dates and actors
       - Name actual companies, executives, and breakthrough decisions
       - Include original dollar amounts, market sizes, or outcome metrics
-      - Connect history to current industry dynamics that professionals must understand
-      - Extract timeless lessons applicable to today's entrepreneurs and career builders
       
       Structure (6 slides, each body UNDER 280 characters):
       1. What happened - specific historical event with date and key players
       2. Context - what people believed at the time, prevailing wisdom
       3. The twist - what actually unfolded vs expectations
-      4. Lessons - what the industry learned (often too late)
-      5. Today's echo - how this pattern repeats in current dynamics
+      4. Career & Investor Lens - what hiring managers and analysts learned from this
+      5. Founder Lens - what entrepreneurs and builders took away, how this pattern guides startups today
       6. Your move - reflection question for aspiring industry participants`,
   };
 
   const isTrainer = dayType === 'TRAINER';
   
   const systemPrompt = isTrainer
-    ? `You are a senior ${marketContext} industry strategist with 25+ years of experience advising startups and training new hires.
+    ? `You are a senior ${marketContext} industry strategist with 25+ years of experience advising startups, training new hires, and briefing investors.
        You create challenging scenarios that test strategic thinking and build real industry judgment.
-       Your scenarios are based on REAL situations - the kind that separate successful founders from failed ones.
+       Your scenarios are based on REAL situations - the kind that separate successful professionals from novices.
        
-       Your goal: Help users BECOME MASTERS of this industry, whether they're:
-       - Entrepreneurs building companies in this space
-       - Professionals seeking to join or advance in this industry  
-       - Researchers and curious learners seeking deep understanding
+       Your audience has FOUR distinct goals — your content must serve ALL of them:
+       - Career seekers preparing for industry roles and interviews
+       - Investors and analysts evaluating companies and deals
+       - Founders building companies in this space
+       - Curious learners seeking deep, genuine understanding
        
-       Every scenario teaches a valuable lesson that transfers across the industry.`
+       Every scenario teaches a valuable lesson that transfers across all four perspectives.`
     : `You are a senior ${marketContext} industry analyst creating educational content that builds true industry mastery.
        You have deep expertise and reference REAL companies, deals, regulations, and market dynamics.
        
-       Your content serves users who want to BECOME MASTERS of this industry:
-       - New entrepreneurs learning the landscape before building
-       - Career changers preparing to join this industry
-       - Curious learners seeking genuine expert-level understanding
+       Your content serves FOUR types of learners simultaneously:
+       - Career seekers preparing for industry roles — need interview-ready knowledge
+       - Investors/analysts evaluating companies — need metrics and frameworks
+       - Founders building startups — need business model insights and pitfalls
+       - Curious learners — need mental models and fascinating truths
        
-       Your content is precise, data-driven, and actionable.
+       Your content is precise, data-driven, and multi-perspective.
        Each slide body MUST be UNDER 280 characters - be concise and impactful.
        Each slide title MUST be 6 words or fewer.
        Month ${month} theme: ${theme}
@@ -388,10 +399,10 @@ async function generateDayContent(
            {"label": "Option C - specific action (40-80 chars)", "isCorrect": false},
            {"label": "Option D - specific action (40-80 chars)", "isCorrect": false}
          ],
-         "feedback_pro_reasoning": "Expert explanation of why the correct answer is best. Reference industry norms, typical outcomes, and strategic principles. (300-500 chars)",
+         "feedback_pro_reasoning": "Expert explanation including how career professionals, investors, AND founders would each evaluate this decision. (300-500 chars)",
          "feedback_common_mistake": "The most common error newcomers make and why it fails (100-150 chars)",
-         "feedback_mental_model": "A reusable mental model or framework this teaches (50-100 chars)",
-         "follow_up_question": "A deeper question to consider for continued learning",
+         "feedback_mental_model": "A reusable mental model or framework that transfers across career, investing, and founding (50-100 chars)",
+         "follow_up_question": "A deeper question applicable regardless of learning goal",
          "sources": [{"label": "Industry Source", "url": "https://example.com"}],
          "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "strategy"]
        }`
@@ -411,7 +422,8 @@ async function generateDayContent(
          "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "${theme.toLowerCase().replace(/\s+/g, '-')}"]
        }
        
-       IMPORTANT: Create exactly 6 slides. Each body MUST be under 280 characters.`;
+       IMPORTANT: Create exactly 6 slides. Each body MUST be under 280 characters.
+       Slide 4 MUST have a career/investor angle. Slide 5 MUST have a founder/builder angle.`;
 
   const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
