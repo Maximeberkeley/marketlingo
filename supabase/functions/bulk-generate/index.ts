@@ -314,7 +314,7 @@ async function generateDayContent(
   const content = aiResponse.choices?.[0]?.message?.content;
   if (!content) throw new Error('No content');
   
-  return { ...JSON.parse(content), dayType, day, month };
+  return { ...JSON.parse(content), dayType, day, month, goal };
 }
 
 async function saveContent(supabase: any, content: any, marketId: string) {
