@@ -10,12 +10,15 @@ const corsHeaders = {
 
 interface MilestonePayload {
   userId: string;
-  milestoneType: 'streak' | 'level' | 'achievement' | 'certificate' | 'week_complete';
+  milestoneType: 'streak' | 'level' | 'achievement' | 'certificate' | 'week_complete' | 'leaderboard_overtaken' | 'weekly_recap';
   milestoneData?: {
     streakDays?: number;
     levelNumber?: number;
     achievementName?: string;
     weekNumber?: number;
+    overtakenBy?: string;
+    weeklyXP?: number;
+    lessonsCompleted?: number;
   };
 }
 
