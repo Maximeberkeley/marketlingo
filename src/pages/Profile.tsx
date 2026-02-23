@@ -179,6 +179,28 @@ export default function ProfilePage() {
           </motion.div>
         )}
 
+        {/* Industry Passport */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.07 }}
+          className="mb-6"
+        >
+          <button
+            onClick={() => navigate("/passport")}
+            className="w-full card-elevated flex items-center gap-4 text-left"
+          >
+            <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center text-2xl">
+              🛂
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-body font-semibold text-text-primary">Industry Passport</h3>
+              <p className="text-caption text-text-secondary">Track your stamps and share your progress</p>
+            </div>
+            <ChevronRight size={20} className="text-text-muted" />
+          </button>
+        </motion.div>
+
         {/* Certificate Progress */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
