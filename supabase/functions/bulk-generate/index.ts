@@ -438,26 +438,30 @@ async function runBulkGeneration(supabase: any, apiKey: string, markets: string[
   console.log(`Markets: ${markets.join(', ')}`);
   
   for (const marketId of markets) {
-    // Check existing days
-    const { data: existingStacks } = await supabase
-      .from('stacks')
-      .select('tags')
-      .eq('market_id', marketId)
-      .contains('tags', ['MICRO_LESSON']);
+    // Generate content for each learning goal
+    for (const goal of LEARNING_GOALS) {
+      const goalTag = `goal:${goal}`;
+      
+      // Check existing days for this market + goal combo
+      const { data: existingStacks } = await supabase
+        .from('stacks')
+        .select('tags')
+        .eq('market_id', marketId)
+        .contains('tags', ['MICRO_LESSON', goalTag]);
 
-    const existingDays = new Set<number>();
-    existingStacks?.forEach((stack: any) => {
-      const dayTag = (stack.tags as string[])?.find(t => t.startsWith('day-'));
-      if (dayTag) existingDays.add(parseInt(dayTag.replace('day-', '')));
-    });
+      const existingDays = new Set<number>();
+      existingStacks?.forEach((stack: any) => {
+        const dayTag = (stack.tags as string[])?.find(t => t.startsWith('day-'));
+        if (dayTag) existingDays.add(parseInt(dayTag.replace('day-', '')));
+      });
 
-    const allDays = Array.from({ length: 180 }, (_, i) => i + 1);
-    const missingDays = allDays.filter(d => !existingDays.has(d));
+      const allDays = Array.from({ length: 180 }, (_, i) => i + 1);
+      const missingDays = allDays.filter(d => !existingDays.has(d));
 
-    if (missingDays.length === 0) {
-      console.log(`${marketId}: Already complete (180/180 days)`);
-      continue;
-    }
+      if (missingDays.length === 0) {
+        console.log(`${marketId}/${goal}: Already complete (180/180 days)`);
+        continue;
+      }
 
     // Create or update job
     const { data: existingJob } = await supabase
