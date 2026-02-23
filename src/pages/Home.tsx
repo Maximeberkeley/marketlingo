@@ -161,7 +161,7 @@ export default function HomePage() {
       const market = profile.selected_market;
 
       // Get user's learning goal for content filtering
-      const { data: userProgress: progressData } = await supabase
+      const { data: progressData } = await supabase
         .from("user_progress")
         .select("start_date, learning_goal")
         .eq("user_id", user.id)
