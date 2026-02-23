@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
@@ -7,6 +7,14 @@ import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
+
+type TimeFilter = 'weekly' | 'monthly' | 'all-time';
+
+const TIME_TABS: { key: TimeFilter; label: string }[] = [
+  { key: 'weekly', label: 'This Week' },
+  { key: 'monthly', label: 'This Month' },
+  { key: 'all-time', label: 'All Time' },
+];
 
 interface LeaderboardEntry {
   rank: number;
@@ -32,47 +40,87 @@ export default function LeaderboardScreen() {
   const [loading, setLoading] = useState(true);
   const [marketName, setMarketName] = useState('');
   const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
+  const [timeFilter, setTimeFilter] = useState<TimeFilter>('all-time');
+
+  const buildEntries = useCallback(async (
+    xpData: { user_id: string; total_xp: number; current_level: number }[],
+    market: string,
+  ) => {
+    const userIds = xpData.map((x) => x.user_id);
+    if (userIds.length === 0) {
+      setLeaderboard([]);
+      return;
+    }
+
+    const [{ data: profiles }, { data: progressData }] = await Promise.all([
+      supabase.from('profiles').select('id, username').in('id', userIds),
+      supabase.from('user_progress').select('user_id, current_streak').eq('market_id', market).in('user_id', userIds),
+    ]);
+
+    const entries: LeaderboardEntry[] = xpData.map((xp, index) => {
+      const p = profiles?.find((pr) => pr.id === xp.user_id);
+      const s = progressData?.find((pr) => pr.user_id === xp.user_id);
+      return {
+        rank: index + 1,
+        user_id: xp.user_id,
+        username: p?.username?.split('@')[0] || `User ${index + 1}`,
+        total_xp: xp.total_xp,
+        current_level: xp.current_level,
+        current_streak: s?.current_streak || 0,
+        isCurrentUser: xp.user_id === user?.id,
+      };
+    });
+
+    setLeaderboard(entries);
+    const me = entries.find((e) => e.isCurrentUser);
+    if (me) setCurrentUserRank(me.rank);
+    else setCurrentUserRank(null);
+  }, [user]);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
       if (!user) return;
+      setLoading(true);
+
       const { data: profile } = await supabase.from('profiles').select('selected_market').eq('id', user.id).single();
       const market = profile?.selected_market || 'aerospace';
       setMarketName(market.charAt(0).toUpperCase() + market.slice(1));
 
-      const { data: xpData } = await supabase
-        .from('user_xp').select('user_id, total_xp, current_level')
-        .eq('market_id', market).order('total_xp', { ascending: false }).limit(50);
+      if (timeFilter === 'all-time') {
+        const { data: xpData } = await supabase
+          .from('user_xp').select('user_id, total_xp, current_level')
+          .eq('market_id', market).order('total_xp', { ascending: false }).limit(50);
+        if (xpData) await buildEntries(xpData, market);
+      } else {
+        const now = new Date();
+        const since = new Date(now);
+        since.setDate(since.getDate() - (timeFilter === 'weekly' ? 7 : 30));
 
-      if (!xpData) { setLoading(false); return; }
-      const userIds = xpData.map((x) => x.user_id);
+        const { data: txns } = await supabase
+          .from('xp_transactions')
+          .select('user_id, xp_amount')
+          .eq('market_id', market)
+          .gte('created_at', since.toISOString());
 
-      const [{ data: profiles }, { data: progressData }] = await Promise.all([
-        supabase.from('profiles').select('id, username').in('id', userIds),
-        supabase.from('user_progress').select('user_id, current_streak').eq('market_id', market).in('user_id', userIds),
-      ]);
+        if (txns) {
+          const userXPMap = new Map<string, number>();
+          txns.forEach((t) => {
+            userXPMap.set(t.user_id, (userXPMap.get(t.user_id) || 0) + t.xp_amount);
+          });
 
-      const entries: LeaderboardEntry[] = xpData.map((xp, index) => {
-        const p = profiles?.find((pr) => pr.id === xp.user_id);
-        const s = progressData?.find((pr) => pr.user_id === xp.user_id);
-        return {
-          rank: index + 1,
-          user_id: xp.user_id,
-          username: p?.username?.split('@')[0] || `User ${index + 1}`,
-          total_xp: xp.total_xp,
-          current_level: xp.current_level,
-          current_streak: s?.current_streak || 0,
-          isCurrentUser: xp.user_id === user.id,
-        };
-      });
+          const sorted = Array.from(userXPMap.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 50)
+            .map(([uid, total_xp]) => ({ user_id: uid, total_xp, current_level: 1 }));
 
-      setLeaderboard(entries);
-      const me = entries.find((e) => e.isCurrentUser);
-      if (me) setCurrentUserRank(me.rank);
+          await buildEntries(sorted, market);
+        }
+      }
+
       setLoading(false);
     };
     fetchLeaderboard();
-  }, [user]);
+  }, [user, timeFilter, buildEntries]);
 
   return (
     <View style={styles.container}>
@@ -91,6 +139,22 @@ export default function LeaderboardScreen() {
         )}
       </View>
 
+      {/* Time filter tabs */}
+      <View style={styles.tabRow}>
+        {TIME_TABS.map((tab) => (
+          <TouchableOpacity
+            key={tab.key}
+            style={[styles.tab, timeFilter === tab.key && styles.tabActive]}
+            onPress={() => setTimeFilter(tab.key)}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.tabText, timeFilter === tab.key && styles.tabTextActive]}>
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       <ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 80 }]}
         showsVerticalScrollIndicator={false}
@@ -107,8 +171,16 @@ export default function LeaderboardScreen() {
           </View>
         </View>
 
-        <View style={styles.marketPill}>
-          <Text style={styles.marketPillText}>🏭 {marketName} Rankings</Text>
+        {/* Market + filter chip */}
+        <View style={styles.chipRow}>
+          <View style={styles.marketPill}>
+            <Text style={styles.marketPillText}>🏭 {marketName} Rankings</Text>
+          </View>
+          <View style={styles.filterBadge}>
+            <Text style={styles.filterBadgeText}>
+              {timeFilter === 'all-time' ? 'All Time' : timeFilter === 'weekly' ? 'This Week' : 'This Month'}
+            </Text>
+          </View>
         </View>
 
         {loading ? (
@@ -162,7 +234,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     paddingHorizontal: 16, paddingBottom: 12,
-    backgroundColor: COLORS.bg0, borderBottomWidth: 1, borderBottomColor: COLORS.border,
+    backgroundColor: COLORS.bg0, borderBottomWidth: 0, borderBottomColor: COLORS.border,
   },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
   backBtnText: { fontSize: 18, color: COLORS.textPrimary },
@@ -170,6 +242,19 @@ const styles = StyleSheet.create({
   headerSub: { fontSize: 12, color: COLORS.textMuted },
   rankChip: { backgroundColor: 'rgba(139,92,246,0.15)', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: 'rgba(139,92,246,0.3)' },
   rankChipText: { fontSize: 12, color: COLORS.accent, fontWeight: '700' },
+  tabRow: {
+    flexDirection: 'row', gap: 4, paddingHorizontal: 16, paddingBottom: 12, paddingTop: 4,
+    backgroundColor: COLORS.bg0, borderBottomWidth: 1, borderBottomColor: COLORS.border,
+  },
+  tab: {
+    flex: 1, paddingVertical: 9, borderRadius: 10, alignItems: 'center',
+    backgroundColor: COLORS.bg2,
+  },
+  tabActive: {
+    backgroundColor: COLORS.accent,
+  },
+  tabText: { fontSize: 12, fontWeight: '600', color: COLORS.textMuted },
+  tabTextActive: { color: '#FFFFFF' },
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
   prizeBanner: {
     flexDirection: 'row', alignItems: 'flex-start', gap: 12, padding: 16, borderRadius: 16, marginBottom: 16,
@@ -179,8 +264,11 @@ const styles = StyleSheet.create({
   prizeTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 4 },
   prizeDesc: { fontSize: 12, color: COLORS.textMuted, lineHeight: 17 },
   prizeHighlight: { color: '#FBBF24', fontWeight: '600' },
-  marketPill: { alignSelf: 'flex-start', backgroundColor: COLORS.bg2, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: COLORS.border, marginBottom: 12 },
+  chipRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
+  marketPill: { backgroundColor: COLORS.bg2, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: COLORS.border },
   marketPillText: { fontSize: 12, color: COLORS.textPrimary, fontWeight: '500' },
+  filterBadge: { backgroundColor: 'rgba(139,92,246,0.1)', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
+  filterBadgeText: { fontSize: 10, color: COLORS.accent, fontWeight: '600' },
   entriesContainer: { gap: 6 },
   entry: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 14, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border },
   entryMe: { backgroundColor: 'rgba(139,92,246,0.08)', borderColor: 'rgba(139,92,246,0.3)' },
