@@ -422,7 +422,8 @@ Slides 4-5 MUST explicitly serve different goal perspectives to maximize relevan
          "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "${theme.toLowerCase().replace(/\s+/g, '-')}"]
        }
        
-       IMPORTANT: Create exactly 6 slides. Each body MUST be under 280 characters.`;
+       IMPORTANT: Create exactly 6 slides. Each body MUST be under 280 characters.
+       Slide 4 MUST have a career/investor angle. Slide 5 MUST have a founder/builder angle.`;
 
   const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
