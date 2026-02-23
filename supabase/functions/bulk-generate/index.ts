@@ -463,45 +463,47 @@ async function runBulkGeneration(supabase: any, apiKey: string, markets: string[
         continue;
       }
 
-    // Create or update job
-    const { data: existingJob } = await supabase
-      .from('curriculum_generation_jobs')
-      .select('*')
-      .eq('market_id', marketId)
-      .single();
+      // Create or update job (use market_id as key, goal info in logs)
+      const jobKey = `${marketId}_${goal}`;
+      const { data: existingJob } = await supabase
+        .from('curriculum_generation_jobs')
+        .select('*')
+        .eq('market_id', marketId)
+        .single();
 
-    let job: GenerationJob;
-    
-    if (existingJob) {
-      const { data } = await supabase
-        .from('curriculum_generation_jobs')
-        .update({
-          status: 'pending',
-          days_target: 180,
-          days_completed: 180 - missingDays.length,
-          days_failed: 0,
-          error_log: [],
-        })
-        .eq('id', existingJob.id)
-        .select()
-        .single();
-      job = data;
-    } else {
-      const { data } = await supabase
-        .from('curriculum_generation_jobs')
-        .insert({
-          market_id: marketId,
-          status: 'pending',
-          days_target: 180,
-          days_completed: 180 - missingDays.length,
-        })
-        .select()
-        .single();
-      job = data;
+      let job: GenerationJob;
+      
+      if (existingJob) {
+        const { data } = await supabase
+          .from('curriculum_generation_jobs')
+          .update({
+            status: 'pending',
+            days_target: 180,
+            days_completed: 180 - missingDays.length,
+            days_failed: 0,
+            error_log: [],
+          })
+          .eq('id', existingJob.id)
+          .select()
+          .single();
+        job = data;
+      } else {
+        const { data } = await supabase
+          .from('curriculum_generation_jobs')
+          .insert({
+            market_id: marketId,
+            status: 'pending',
+            days_target: 180,
+            days_completed: 180 - missingDays.length,
+          })
+          .select()
+          .single();
+        job = data;
+      }
+
+      // Process this market + goal combo
+      await processMarket(supabase, apiKey, job, missingDays, goal);
     }
-
-    // Process this market
-    await processMarket(supabase, apiKey, job, missingDays);
   }
 
   console.log(`=== BULK GENERATION COMPLETE ===`);
