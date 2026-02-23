@@ -75,7 +75,7 @@ export default function OnboardingScreen() {
             { onConflict: 'user_id,market_id' }
           );
       }
-      router.push('/onboarding/familiarity');
+      router.push('/onboarding/goal' as any);
     } catch (error) {
       console.error('Error saving market selection:', error);
     } finally {
