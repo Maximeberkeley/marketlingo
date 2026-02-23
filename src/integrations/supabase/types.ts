@@ -843,6 +843,7 @@ export type Database = {
           familiarity_level: string | null
           id: string
           last_activity_at: string | null
+          learning_goal: string | null
           longest_streak: number | null
           market_id: string
           start_date: string
@@ -858,6 +859,7 @@ export type Database = {
           familiarity_level?: string | null
           id?: string
           last_activity_at?: string | null
+          learning_goal?: string | null
           longest_streak?: number | null
           market_id: string
           start_date?: string
@@ -873,6 +875,7 @@ export type Database = {
           familiarity_level?: string | null
           id?: string
           last_activity_at?: string | null
+          learning_goal?: string | null
           longest_streak?: number | null
           market_id?: string
           start_date?: string
