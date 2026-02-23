@@ -172,18 +172,10 @@ export default function HomePage() {
       setUserGoal(learningGoal);
       const goalTag = `goal:${learningGoal}`;
 
-      // Get user's available day from progress (calendar-based)
-      const { data: userProgress } = await supabase
-        .from("user_progress")
-        .select("start_date")
-        .eq("user_id", user.id)
-        .eq("market_id", market)
-        .single();
-
-      // Calculate available day from start_date
+      // Calculate available day from start_date (reuse progressData from above)
       let currentDay = 1;
-      if (userProgress?.start_date) {
-        const start = new Date(userProgress.start_date);
+      if (progressData?.start_date) {
+        const start = new Date(progressData.start_date);
         const today = new Date();
         start.setHours(0, 0, 0, 0);
         today.setHours(0, 0, 0, 0);
@@ -192,14 +184,26 @@ export default function HomePage() {
       }
       const dayTag = `day-${currentDay}`;
 
-      // Fetch lesson stack for the user's current day (MICRO_LESSON with day-X tag)
+      // Fetch lesson stack — try goal-specific first, fallback to any
       let { data: lessonStacks } = await supabase
         .from("stacks")
         .select(`id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)`)
         .eq("market_id", market)
-        .contains("tags", ["MICRO_LESSON", dayTag])
+        .contains("tags", ["MICRO_LESSON", dayTag, goalTag])
         .not("published_at", "is", null)
         .limit(1);
+
+      // Fallback: try without goal tag (for legacy content)
+      if (!lessonStacks?.[0]) {
+        const { data: fallback } = await supabase
+          .from("stacks")
+          .select(`id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)`)
+          .eq("market_id", market)
+          .contains("tags", ["MICRO_LESSON", dayTag])
+          .not("published_at", "is", null)
+          .limit(1);
+        lessonStacks = fallback;
+      }
 
       // If no exact day match, find the closest available lesson <= current day
       if (!lessonStacks?.[0]) {
