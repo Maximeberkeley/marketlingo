@@ -218,28 +218,51 @@ async function generateDayContent(
   const marketContext = getMarketContext(marketId);
 
   const isTrainer = dayType === 'TRAINER';
+
+  // Goal-aware lens instructions baked into every prompt
+  const goalLensInstruction = `
+CRITICAL: Your content must serve FOUR types of learners simultaneously. Each stack should naturally weave in perspectives relevant to all goals:
+- CAREER SEEKERS: What skills, terminology, and dynamics do you need to land a job in this sector?
+- INVESTORS/ANALYSTS: What metrics, valuations, and market signals matter for investment decisions?
+- FOUNDERS/BUILDERS: What startup opportunities exist, what are the unit economics, and what mistakes kill companies?
+- CURIOUS LEARNERS: What makes this fascinating, what are the surprising truths, and what mental models transfer?
+
+Structure your 6 slides to cover multiple lenses:
+1. Core concept (universal)
+2. How it works in practice (universal)
+3. Real example with numbers (universal)
+4. Career & Investor angle — hiring signals, valuation implications, or analyst frameworks
+5. Founder angle — startup opportunities, common founder mistakes, or business model insights
+6. Actionable takeaway — what to do next regardless of goal`;
   
   const systemPrompt = isTrainer
-    ? `You are a senior ${marketContext} industry strategist with 25+ years of experience. Create challenging decision scenarios that build real industry judgment. Target: entrepreneurs, career changers, and serious learners seeking mastery.`
-    : `You are a senior ${marketContext} analyst creating educational content for industry mastery. Reference REAL companies, deals, and dynamics. Each slide body MUST be UNDER 280 characters. Month ${month} theme: ${theme}. Style: Professional, insight-dense, no fluff.`;
+    ? `You are a senior ${marketContext} industry strategist with 25+ years of experience. Create challenging decision scenarios that build real industry judgment.
+       Your audience includes career changers preparing for interviews, investors evaluating deals, founders building companies, and curious learners seeking mastery.
+       Each scenario should test judgment applicable across all four perspectives.`
+    : `You are a senior ${marketContext} analyst creating educational content for industry mastery. Reference REAL companies, deals, and dynamics. Each slide body MUST be UNDER 280 characters. Month ${month} theme: ${theme}. Style: Professional, insight-dense, no fluff.
+       ${goalLensInstruction}`;
 
   const typePrompts: Record<string, string> = {
-    DAILY_GAME: `Create a NEWS stack about a real development in ${marketContext} related to "${topic}". Include real companies, dollar amounts, and dates. Structure: 6 slides, each body under 280 chars. Include source citations.`,
-    MICRO_LESSON: `Create a LESSON teaching "${topic}" in ${marketContext}. Use real examples, numbers, and common mistakes. Structure: 6 slides, each body under 280 chars.`,
-    TRAINER: `Create a decision SCENARIO about "${topic}" in ${marketContext}. 400-600 char scenario, 4 options (one correct), expert feedback including pro_reasoning, common_mistake, and mental_model.`,
-    BOOK_SNAPSHOT: `Create a HISTORY stack about a pivotal event related to "${topic}" in ${marketContext}. Include real dates, actors, and lessons. Structure: 6 slides, each body under 280 chars.`,
+    DAILY_GAME: `Create a NEWS stack about a real development in ${marketContext} related to "${topic}". Include real companies, dollar amounts, and dates. Structure: 6 slides, each body under 280 chars. Include source citations.
+      Slide 4 should highlight what this means for job seekers or investors. Slide 5 should highlight the startup opportunity or founder lesson.`,
+    MICRO_LESSON: `Create a LESSON teaching "${topic}" in ${marketContext}. Use real examples, numbers, and common mistakes. Structure: 6 slides, each body under 280 chars.
+      Slide 4: "Career & Investor Lens" — interview-ready insight or valuation implication. Slide 5: "Founder Lens" — startup angle or business model insight.`,
+    TRAINER: `Create a decision SCENARIO about "${topic}" in ${marketContext}. 400-600 char scenario, 4 options (one correct), expert feedback including pro_reasoning, common_mistake, and mental_model.
+      The scenario should be relevant whether the learner is an aspiring employee, investor, founder, or researcher. Feedback should reference how each perspective would approach it.`,
+    BOOK_SNAPSHOT: `Create a HISTORY stack about a pivotal event related to "${topic}" in ${marketContext}. Include real dates, actors, and lessons. Structure: 6 slides, each body under 280 chars.
+      Slide 4: What career professionals learned. Slide 5: What founders/investors learned from this event.`,
   };
 
   const userPrompt = isTrainer
     ? `${typePrompts[dayType]}
        Return JSON: {
-         "scenario": "400-600 char scenario",
+         "scenario": "400-600 char scenario relevant to career seekers, investors, AND founders",
          "question": "Clear decision question",
          "options": [{"label": "Option (40-80 chars)", "isCorrect": boolean}],
-         "feedback_pro_reasoning": "300-500 chars",
+         "feedback_pro_reasoning": "300-500 chars — include how a career professional, investor, AND founder would each evaluate this",
          "feedback_common_mistake": "100-150 chars",
-         "feedback_mental_model": "50-100 chars",
-         "follow_up_question": "Reflection question",
+         "feedback_mental_model": "50-100 chars — a transferable framework",
+         "follow_up_question": "Reflection question applicable to any learning goal",
          "sources": [{"label": "Source", "url": "https://..."}],
          "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}"]
        }`
@@ -249,7 +272,7 @@ async function generateDayContent(
          "slides": [{"slide_number": 1, "title": "6 words max", "body": "Under 280 chars", "sources": []}],
          "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}"]
        }
-       Create exactly 6 slides.`;
+       Create exactly 6 slides. Slide 4 MUST have a career/investor angle. Slide 5 MUST have a founder/builder angle.`;
 
   const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
