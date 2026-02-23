@@ -37,7 +37,7 @@ import { SocialNudge } from '../../components/home/SocialNudge';
 import { TomorrowPreview } from '../../components/home/TomorrowPreview';
 import { MentorDebrief, getDebriefQuestion } from '../../components/home/MentorDebrief';
 import { scheduleStreakNotifications } from '../../lib/streakNotifications';
-
+import { MilestoneShareCard } from '../../components/sharing/MilestoneShareCard';
 
 const MENTOR_IMAGES: Record<string, any> = {
   maya: require('../../assets/mentors/mentor-maya.png'),
