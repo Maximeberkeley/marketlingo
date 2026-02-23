@@ -318,8 +318,9 @@ async function generateDayContent(
 }
 
 async function saveContent(supabase: any, content: any, marketId: string) {
-  const { day, month, dayType } = content;
-  const baseTags = [dayType, `day-${day}`, `month-${month}`, 'MICRO_LESSON'];
+  const { day, month, dayType, goal } = content;
+  const goalTag = goal ? `goal:${goal}` : 'goal:curiosity';
+  const baseTags = [dayType, `day-${day}`, `month-${month}`, 'MICRO_LESSON', goalTag];
 
   // Save trainer scenario if applicable
   if (dayType === 'TRAINER' && content.options) {
