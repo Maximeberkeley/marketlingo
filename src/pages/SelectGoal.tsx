@@ -173,7 +173,7 @@ export default function SelectGoalPage() {
         </button>
 
         <div className="flex flex-col items-center justify-center mb-6">
-          <LeoCharacter size="lg" animation="excited" />
+          <LeoCharacter size="lg" animation="celebrating" />
           {selectedMarket && (
             <motion.div
               initial={{ opacity: 0, y: 5 }}
