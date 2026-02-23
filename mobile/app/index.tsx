@@ -23,10 +23,25 @@ export default function Index() {
         .eq('id', user.id)
         .single();
 
-      if (profile?.selected_market) {
-        router.replace('/(tabs)/home');
-      } else {
+      if (!profile?.selected_market) {
         router.replace('/onboarding' as any);
+        return;
+      }
+
+      // Check goal + familiarity for selected market
+      const { data: progress } = await supabase
+        .from('user_progress')
+        .select('learning_goal, familiarity_level')
+        .eq('user_id', user.id)
+        .eq('market_id', profile.selected_market)
+        .maybeSingle();
+
+      if (!progress?.learning_goal) {
+        router.replace('/onboarding/goal' as any);
+      } else if (!progress?.familiarity_level) {
+        router.replace('/onboarding/familiarity' as any);
+      } else {
+        router.replace('/(tabs)/home');
       }
     }
 
