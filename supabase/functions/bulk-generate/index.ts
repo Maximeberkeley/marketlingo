@@ -236,7 +236,8 @@ interface GenerationJob {
 async function generateDayContent(
   apiKey: string,
   day: number,
-  marketId: string
+  marketId: string,
+  goal: string = 'curiosity'
 ): Promise<any> {
   const month = Math.ceil(day / 30);
   const theme = getTheme(day, marketId);
