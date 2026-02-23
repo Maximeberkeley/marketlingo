@@ -377,9 +377,10 @@ async function processMarket(
   supabase: any,
   apiKey: string,
   job: GenerationJob,
-  missingDays: number[]
+  missingDays: number[],
+  goal: string = 'curiosity'
 ) {
-  console.log(`Starting ${job.market_id}: ${missingDays.length} days to generate`);
+  console.log(`Starting ${job.market_id}/${goal}: ${missingDays.length} days to generate`);
   
   await supabase.from('curriculum_generation_jobs').update({
     status: 'running',
