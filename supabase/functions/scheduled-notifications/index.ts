@@ -13,7 +13,7 @@ const corsHeaders = {
 };
 
 interface NotificationJob {
-  type: 'daily_reminder' | 'streak_warning' | 're_engagement' | 'milestone' | 'news_update';
+  type: 'daily_reminder' | 'streak_warning' | 're_engagement' | 'milestone' | 'news_update' | 'weekly_recap';
 }
 
 // Notification templates with Leo's personality
