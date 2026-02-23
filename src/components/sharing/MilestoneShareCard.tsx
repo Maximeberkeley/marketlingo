@@ -58,6 +58,7 @@ const config: Record<MilestoneType, {
 
 export function MilestoneShareCard({ visible, type, data, onDismiss }: MilestoneShareCardProps) {
   const c = config[type];
+  const [showImageCard, setShowImageCard] = useState(false);
 
   const handleShare = async () => {
     const marketInfo = data.marketEmoji && data.marketName ? `${data.marketEmoji} ${data.marketName}` : "";
