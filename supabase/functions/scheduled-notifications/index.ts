@@ -274,6 +274,46 @@ Deno.serve(async (req) => {
           }
         }
       }
+    } else if (job.type === 'weekly_recap') {
+      // Send weekly recap every Sunday — summarise week's XP + lessons
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      
+      const { data: activeUsers } = await supabase
+        .from('profiles')
+        .select('id, push_token, notification_preferences, selected_market')
+        .not('push_token', 'is', null);
+
+      for (const u of activeUsers || []) {
+        const prefs = (u.notification_preferences as any) || {};
+        if (prefs.dailyReminder === false || !u.push_token || !u.selected_market) continue;
+
+        // Aggregate weekly XP
+        const { data: weekTxns } = await supabase
+          .from('xp_transactions')
+          .select('xp_amount')
+          .eq('user_id', u.id)
+          .eq('market_id', u.selected_market)
+          .gte('created_at', sevenDaysAgo);
+
+        const weeklyXP = (weekTxns || []).reduce((sum: number, t: any) => sum + t.xp_amount, 0);
+        if (weeklyXP === 0) continue;
+
+        // Count completed lessons
+        const { count: lessonCount } = await supabase
+          .from('daily_completions')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', u.id)
+          .eq('market_id', u.selected_market)
+          .eq('lesson_completed', true)
+          .gte('completion_date', sevenDaysAgo.split('T')[0]);
+
+        usersToNotify.push({
+          id: u.id,
+          push_token: u.push_token,
+          weeklyXP,
+          lessonsCompleted: lessonCount || 0,
+        });
+      }
     }
 
     console.log(`Found ${usersToNotify.length} users to notify for ${job.type}`);
