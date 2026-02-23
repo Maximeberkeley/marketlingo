@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Share2 } from "lucide-react";
+import { X, Share2, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { MilestoneImageCard } from "./MilestoneImageCard";
 
 export type MilestoneType = "streak" | "level_up" | "passport_stamp" | "stage_up";
 
