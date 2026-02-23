@@ -6,10 +6,11 @@ import { supabase } from "@/integrations/supabase/client";
  * 
  * Flow:
  * 1. No market selected -> /select-market
- * 2. Market selected but no familiarity level FOR THAT MARKET -> /select-familiarity
- * 3. Both set -> /home
+ * 2. Market selected but no learning goal -> /select-goal
+ * 3. Goal set but no familiarity level FOR THAT MARKET -> /select-familiarity
+ * 4. All set -> /home
  * 
- * IMPORTANT: Familiarity is stored per-market in user_progress, not globally.
+ * IMPORTANT: Familiarity and learning_goal are stored per-market in user_progress.
  */
 export function useOnboardingRouter() {
   const navigate = useNavigate();
