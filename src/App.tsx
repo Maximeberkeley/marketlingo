@@ -78,7 +78,9 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Auth />} />
               <Route path="/select-market" element={<SelectMarket />} />
+              <Route path="/select-goal" element={<SelectGoal />} />
               <Route path="/select-familiarity" element={<SelectFamiliarity />} />
+              <Route path="/passport" element={<Passport />} />
               <Route path="/home" element={<Home />} />
               <Route path="/roadmap" element={<Roadmap />} />
               <Route path="/notebook" element={<Notebook />} />

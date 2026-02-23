@@ -33,22 +33,23 @@ export function useOnboardingRouter() {
         return "market";
       }
 
-      // Check if user has familiarity set for THIS market
+      // Check if user has goal + familiarity set for THIS market
       const { data: progress } = await supabase
         .from("user_progress")
-        .select("familiarity_level")
+        .select("familiarity_level, learning_goal")
         .eq("user_id", userId)
         .eq("market_id", profile.selected_market)
         .single();
 
-      if (progress?.familiarity_level) {
-        // User has completed onboarding for this market
+      if (progress?.familiarity_level && progress?.learning_goal) {
         navigate("/home");
         return "home";
-      } else {
-        // Market selected but no familiarity level for this market
+      } else if (progress?.learning_goal) {
         navigate("/select-familiarity");
         return "familiarity";
+      } else {
+        navigate("/select-goal");
+        return "goal";
       }
     } catch (error) {
       console.error("Error checking user state:", error);

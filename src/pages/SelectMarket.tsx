@@ -66,7 +66,7 @@ export default function SelectMarketPage() {
       // Also store in localStorage as backup
       localStorage.setItem("selectedMarket", selectedMarket);
 
-      navigate("/select-familiarity");
+      navigate("/select-goal");
     } catch (error) {
       console.error("Error saving market selection:", error);
       toast.error("Failed to save selection. Please try again.");
