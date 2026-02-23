@@ -329,7 +329,7 @@ export default function HomePage() {
     if (progress && activeStack) {
       await completeStack(activeStack.id);
       const updatedProgress = await updateStreak();
-      const updatedXP = await completeLessonForToday(activeStack.id);
+      await completeLessonForToday(activeStack.id);
       
       if ((progress.current_streak || 0) > 0) {
         await addXP(XP_REWARDS.STREAK_BONUS * (progress.current_streak || 1), "streak_bonus");
@@ -341,13 +341,9 @@ export default function HomePage() {
       const newStreak = (updatedProgress as any)?.current_streak || progress.current_streak || 0;
       checkStreakMilestone(newStreak, mktName, mktEmoji);
       
-      if (updatedXP) {
-        checkLevelMilestone(updatedXP.current_level, mktName, mktEmoji);
-        const prevStage = xpData?.startup_stage || 1;
-        if (updatedXP.startup_stage > prevStage) {
-          const stageNames = ["Ideation", "Validation", "MVP", "Traction", "Scaling", "Established"];
-          showStageUp(stageNames[updatedXP.startup_stage - 1] || "New Stage", updatedXP.startup_stage, mktName, mktEmoji);
-        }
+      // Check level/stage milestones from current xpData (updated via addXP)
+      if (xpData) {
+        checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
       }
       
       // Trigger Pro promotion after lesson (checks internally if should show)
