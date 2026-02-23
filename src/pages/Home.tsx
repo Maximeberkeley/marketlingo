@@ -99,6 +99,7 @@ export default function HomePage() {
   const { isSupported, isRegistered } = useNotifications();
   const { triggerAfterLesson, isProUser } = useProPromotionContext();
   const { play } = useSoundEffects();
+  const { milestone, dismissMilestone, checkStreakMilestone, checkLevelMilestone, showStageUp } = useMilestoneSharing();
   const lessonCompletedToday = isLessonCompletedToday();
   const currentStage = getCurrentStage();
   const stageProgress = getProgressToNextStage();
