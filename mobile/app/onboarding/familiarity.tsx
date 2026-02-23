@@ -27,12 +27,31 @@ export default function FamiliarityScreen() {
     if (selectedLevel) {
       await storage.setFamiliarity(selectedLevel);
       await storage.setOnboardingComplete(true);
-      // Write familiarity to Supabase
+      // Write familiarity to Supabase (user_progress per-market + profiles)
       if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('selected_market')
+          .eq('id', user.id)
+          .single();
+
         await supabase
           .from('profiles')
           .update({ familiarity_level: selectedLevel })
           .eq('id', user.id);
+
+        if (profile?.selected_market) {
+          await supabase
+            .from('user_progress')
+            .upsert(
+              {
+                user_id: user.id,
+                market_id: profile.selected_market,
+                familiarity_level: selectedLevel,
+              },
+              { onConflict: 'user_id,market_id' }
+            );
+        }
       }
       // Show notification onboarding before going to home
       setShowNotifOnboarding(true);
