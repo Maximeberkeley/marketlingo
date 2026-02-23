@@ -43,6 +43,14 @@ const MILESTONE_TEMPLATES = {
     { title: "📚 Week {week} Complete!", body: "Another week of growth. See your summary." },
     { title: "🦁 Weekly Milestone!", body: "Week {week} done! Leo's proud of your progress." },
   ],
+  leaderboard_overtaken: [
+    { title: "⚔️ You've been overtaken!", body: "{name} just passed you on the leaderboard. Time to reclaim your spot!" },
+    { title: "🏆 Leaderboard alert!", body: "Someone just surpassed your XP. Study today to stay ahead!" },
+  ],
+  weekly_recap: [
+    { title: "📊 Your Weekly Recap is ready!", body: "You earned {xp} XP and completed {lessons} lessons this week." },
+    { title: "🦁 Leo's weekly report!", body: "{xp} XP earned this week. Let's aim higher next week!" },
+  ],
 };
 
 function formatTemplate(template: { title: string; body: string }, data?: Record<string, any>): { title: string; body: string } {
