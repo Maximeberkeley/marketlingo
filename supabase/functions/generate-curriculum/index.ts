@@ -399,10 +399,10 @@ Slides 4-5 MUST explicitly serve different goal perspectives to maximize relevan
            {"label": "Option C - specific action (40-80 chars)", "isCorrect": false},
            {"label": "Option D - specific action (40-80 chars)", "isCorrect": false}
          ],
-         "feedback_pro_reasoning": "Expert explanation of why the correct answer is best. Reference industry norms, typical outcomes, and strategic principles. (300-500 chars)",
+         "feedback_pro_reasoning": "Expert explanation including how career professionals, investors, AND founders would each evaluate this decision. (300-500 chars)",
          "feedback_common_mistake": "The most common error newcomers make and why it fails (100-150 chars)",
-         "feedback_mental_model": "A reusable mental model or framework this teaches (50-100 chars)",
-         "follow_up_question": "A deeper question to consider for continued learning",
+         "feedback_mental_model": "A reusable mental model or framework that transfers across career, investing, and founding (50-100 chars)",
+         "follow_up_question": "A deeper question applicable regardless of learning goal",
          "sources": [{"label": "Industry Source", "url": "https://example.com"}],
          "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "strategy"]
        }`
