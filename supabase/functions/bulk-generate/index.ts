@@ -400,13 +400,13 @@ async function processMarket(
         days_failed: failed,
       }).eq('id', job.id);
 
-      console.log(`Generating ${job.market_id} day ${day}...`);
+      console.log(`Generating ${job.market_id}/${goal} day ${day}...`);
       
-      const content = await generateDayContent(apiKey, day, job.market_id);
+      const content = await generateDayContent(apiKey, day, job.market_id, goal);
       await saveContent(supabase, content, job.market_id);
       
       completed++;
-      console.log(`✓ ${job.market_id} day ${day} complete (${completed}/${missingDays.length})`);
+      console.log(`✓ ${job.market_id}/${goal} day ${day} complete (${completed}/${missingDays.length})`);
       
       // Rate limit: 500ms between calls
       await new Promise(r => setTimeout(r, 500));
