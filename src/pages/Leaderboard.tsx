@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Trophy, Zap, Flame, Medal, Crown, Sparkles } from "lucide-react";
+import { ArrowLeft, Trophy, Zap, Flame, Medal, Crown, Sparkles, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { markets } from "@/data/markets";
+
+type TimeFilter = "weekly" | "monthly" | "all-time";
 
 interface LeaderboardEntry {
   rank: number;
@@ -25,25 +27,31 @@ export default function LeaderboardPage() {
   const [loading, setLoading] = useState(true);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
+  const [timeFilter, setTimeFilter] = useState<TimeFilter>("all-time");
 
   const marketData = markets.find(m => m.id === selectedMarket);
   const marketName = marketData?.name || selectedMarket?.charAt(0).toUpperCase() + selectedMarket?.slice(1) || "Loading";
 
   useEffect(() => {
-    const fetchLeaderboard = async () => {
-      if (!user) return;
+    fetchLeaderboard();
+  }, [user, timeFilter]);
 
-      // Get user's market
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("selected_market")
-        .eq("id", user.id)
-        .single();
+  const fetchLeaderboard = async () => {
+    if (!user) return;
+    setLoading(true);
 
-      const market = profile?.selected_market || "aerospace";
-      setSelectedMarket(market);
+    // Get user's market
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("selected_market")
+      .eq("id", user.id)
+      .single();
 
-      // Fetch XP data for all users in this market
+    const market = profile?.selected_market || "aerospace";
+    setSelectedMarket(market);
+
+    if (timeFilter === "all-time") {
+      // All-time: use user_xp table
       const { data: xpData } = await supabase
         .from("user_xp")
         .select("user_id, total_xp, current_level")
@@ -51,52 +59,72 @@ export default function LeaderboardPage() {
         .order("total_xp", { ascending: false })
         .limit(50);
 
-      if (!xpData) {
-        setLoading(false);
-        return;
+      if (xpData) {
+        await buildEntries(xpData, market);
+      }
+    } else {
+      // Weekly/Monthly: aggregate xp_transactions
+      const now = new Date();
+      let since: Date;
+      if (timeFilter === "weekly") {
+        since = new Date(now);
+        since.setDate(since.getDate() - 7);
+      } else {
+        since = new Date(now);
+        since.setDate(since.getDate() - 30);
       }
 
-      // Get usernames and streaks
-      const userIds = xpData.map(x => x.user_id);
-      
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("id, username")
-        .in("id", userIds);
-
-      const { data: progressData } = await supabase
-        .from("user_progress")
-        .select("user_id, current_streak")
+      const { data: txns } = await supabase
+        .from("xp_transactions")
+        .select("user_id, xp_amount")
         .eq("market_id", market)
-        .in("user_id", userIds);
+        .gte("created_at", since.toISOString());
 
-      const entries: LeaderboardEntry[] = xpData.map((xp, index) => {
-        const profileData = profiles?.find(p => p.id === xp.user_id);
-        const streakData = progressData?.find(p => p.user_id === xp.user_id);
-        
-        return {
-          rank: index + 1,
-          user_id: xp.user_id,
-          username: profileData?.username?.split("@")[0] || `User ${index + 1}`,
-          total_xp: xp.total_xp,
-          current_level: xp.current_level,
-          current_streak: streakData?.current_streak || 0,
-          isCurrentUser: xp.user_id === user.id,
-        };
-      });
+      if (txns) {
+        // Aggregate XP per user
+        const userXPMap = new Map<string, number>();
+        txns.forEach(t => {
+          userXPMap.set(t.user_id, (userXPMap.get(t.user_id) || 0) + t.xp_amount);
+        });
 
-      setLeaderboard(entries);
-      
-      const userEntry = entries.find(e => e.isCurrentUser);
-      if (userEntry) {
-        setCurrentUserRank(userEntry.rank);
+        const sorted = Array.from(userXPMap.entries())
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 50)
+          .map(([user_id, total_xp]) => ({ user_id, total_xp, current_level: 1 }));
+
+        await buildEntries(sorted, market);
       }
+    }
+    setLoading(false);
+  };
 
-      setLoading(false);
-    };
+  const buildEntries = async (xpData: { user_id: string; total_xp: number; current_level: number }[], market: string) => {
+    const userIds = xpData.map(x => x.user_id);
+    
+    const [{ data: profiles }, { data: progressData }] = await Promise.all([
+      supabase.from("profiles").select("id, username").in("id", userIds),
+      supabase.from("user_progress").select("user_id, current_streak").eq("market_id", market).in("user_id", userIds),
+    ]);
 
-    fetchLeaderboard();
-  }, [user]);
+    const entries: LeaderboardEntry[] = xpData.map((xp, index) => {
+      const profileData = profiles?.find(p => p.id === xp.user_id);
+      const streakData = progressData?.find(p => p.user_id === xp.user_id);
+      
+      return {
+        rank: index + 1,
+        user_id: xp.user_id,
+        username: profileData?.username?.split("@")[0] || `User ${index + 1}`,
+        total_xp: xp.total_xp,
+        current_level: xp.current_level,
+        current_streak: streakData?.current_streak || 0,
+        isCurrentUser: xp.user_id === user!.id,
+      };
+    });
+
+    setLeaderboard(entries);
+    const userEntry = entries.find(e => e.isCurrentUser);
+    if (userEntry) setCurrentUserRank(userEntry.rank);
+  };
 
   const getRankIcon = (rank: number) => {
     if (rank === 1) return <Crown size={20} className="text-amber-400" />;
@@ -104,6 +132,12 @@ export default function LeaderboardPage() {
     if (rank === 3) return <Medal size={20} className="text-orange-400" />;
     return <span className="text-body font-semibold text-text-muted">#{rank}</span>;
   };
+
+  const TIME_TABS: { key: TimeFilter; label: string }[] = [
+    { key: "weekly", label: "This Week" },
+    { key: "monthly", label: "This Month" },
+    { key: "all-time", label: "All Time" },
+  ];
 
   return (
     <AppLayout showNav={false}>
@@ -129,6 +163,24 @@ export default function LeaderboardPage() {
                 <span className="text-caption font-medium text-accent">#{currentUserRank}</span>
               </div>
             )}
+          </div>
+
+          {/* Time filter tabs */}
+          <div className="flex gap-1 px-4 pb-3">
+            {TIME_TABS.map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setTimeFilter(tab.key)}
+                className={cn(
+                  "flex-1 py-2 rounded-lg text-caption font-semibold transition-all",
+                  timeFilter === tab.key
+                    ? "bg-accent text-white"
+                    : "bg-bg-2 text-text-muted"
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -159,6 +211,8 @@ export default function LeaderboardPage() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bg-2 border border-border">
             {marketData?.emoji && <span className="text-sm">{marketData.emoji}</span>}
             <span className="text-caption font-medium text-text-primary">{marketName} Rankings</span>
+            <span className="text-[10px] text-text-muted">·</span>
+            <span className="text-[10px] text-accent font-medium capitalize">{timeFilter.replace("-", " ")}</span>
           </div>
         </div>
 

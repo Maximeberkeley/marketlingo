@@ -11,6 +11,7 @@ import { DuoButton } from "@/components/ui/DuoButton";
 import { SlideReader } from "@/components/slides/SlideReader";
 import { KeyPlayers } from "@/components/home/KeyPlayers";
 import { DailyNews } from "@/components/home/DailyNews";
+import { SocialNudge } from "@/components/home/SocialNudge";
 import { NotificationOnboarding } from "@/components/onboarding/NotificationOnboarding";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { LeoCharacter, LeoAnim } from "@/components/mascot/LeoStateMachine";
@@ -89,6 +90,9 @@ export default function HomePage() {
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [leoMessage, setLeoMessage] = useState<string>("");
   const [leoAnimation, setLeoAnimation] = useState<LeoAnim>("idle");
+  const [socialNudge, setSocialNudge] = useState<{ name: string; xp: number } | null>(null);
+  const [showSocialNudge, setShowSocialNudge] = useState(true);
+  const [userGoal, setUserGoal] = useState<string | null>(null);
   
   const { isSupported, isRegistered } = useNotifications();
   const { triggerAfterLesson, isProUser } = useProPromotionContext();
@@ -156,18 +160,22 @@ export default function HomePage() {
 
       const market = profile.selected_market;
 
-      // Get user's available day from progress (calendar-based)
-      const { data: userProgress } = await supabase
+      // Get user's learning goal for content filtering
+      const { data: progressData } = await supabase
         .from("user_progress")
-        .select("start_date")
+        .select("start_date, learning_goal")
         .eq("user_id", user.id)
         .eq("market_id", market)
         .single();
 
-      // Calculate available day from start_date
+      const learningGoal = progressData?.learning_goal || 'curiosity';
+      setUserGoal(learningGoal);
+      const goalTag = `goal:${learningGoal}`;
+
+      // Calculate available day from start_date (reuse progressData from above)
       let currentDay = 1;
-      if (userProgress?.start_date) {
-        const start = new Date(userProgress.start_date);
+      if (progressData?.start_date) {
+        const start = new Date(progressData.start_date);
         const today = new Date();
         start.setHours(0, 0, 0, 0);
         today.setHours(0, 0, 0, 0);
@@ -176,14 +184,26 @@ export default function HomePage() {
       }
       const dayTag = `day-${currentDay}`;
 
-      // Fetch lesson stack for the user's current day (MICRO_LESSON with day-X tag)
+      // Fetch lesson stack — try goal-specific first, fallback to any
       let { data: lessonStacks } = await supabase
         .from("stacks")
         .select(`id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)`)
         .eq("market_id", market)
-        .contains("tags", ["MICRO_LESSON", dayTag])
+        .contains("tags", ["MICRO_LESSON", dayTag, goalTag])
         .not("published_at", "is", null)
         .limit(1);
+
+      // Fallback: try without goal tag (for legacy content)
+      if (!lessonStacks?.[0]) {
+        const { data: fallback } = await supabase
+          .from("stacks")
+          .select(`id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)`)
+          .eq("market_id", market)
+          .contains("tags", ["MICRO_LESSON", dayTag])
+          .not("published_at", "is", null)
+          .limit(1);
+        lessonStacks = fallback;
+      }
 
       // If no exact day match, find the closest available lesson <= current day
       if (!lessonStacks?.[0]) {
@@ -243,6 +263,38 @@ export default function HomePage() {
             .map(s => ({ ...s, sources: normalizeSources(s.sources) })),
         });
       }
+
+      // Fetch rival for social nudge
+      try {
+        const { data: xpRow } = await supabase
+          .from("user_xp")
+          .select("total_xp")
+          .eq("user_id", user.id)
+          .eq("market_id", market)
+          .single();
+
+        if (xpRow?.total_xp) {
+          const { data: rivals } = await supabase
+            .from("user_xp")
+            .select("total_xp, user_id")
+            .eq("market_id", market)
+            .gt("total_xp", xpRow.total_xp)
+            .order("total_xp", { ascending: true })
+            .limit(1);
+
+          if (rivals?.[0]) {
+            const { data: rivalProfile } = await supabase
+              .from("profiles")
+              .select("username")
+              .eq("id", rivals[0].user_id)
+              .single();
+            setSocialNudge({
+              name: rivalProfile?.username?.split("@")[0] || "Someone",
+              xp: rivals[0].total_xp,
+            });
+          }
+        }
+      } catch {}
 
       setLoading(false);
       
@@ -452,6 +504,18 @@ export default function HomePage() {
             />
           </div>
         </motion.div>
+
+        {/* Social Nudge */}
+        {socialNudge && showSocialNudge && (
+          <SocialNudge
+            rivalName={socialNudge.name}
+            rivalXP={socialNudge.xp}
+            userXP={xpData?.total_xp || 0}
+            marketName={getMarketName(selectedMarket || "aerospace")}
+            onViewLeaderboard={() => navigate("/leaderboard")}
+            onDismiss={() => setShowSocialNudge(false)}
+          />
+        )}
 
         {/* Today's Learning Cards */}
         <motion.div

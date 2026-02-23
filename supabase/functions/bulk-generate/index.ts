@@ -18,6 +18,33 @@ const WEEK_PATTERN = [
   "BOOK_SNAPSHOT", "DAILY_GAME", "MICRO_LESSON"
 ];
 
+// Learning goals — each gets its own curriculum variant
+const LEARNING_GOALS = ['career', 'invest', 'startup', 'curiosity'] as const;
+
+// Goal-specific prompt lenses
+const GOAL_LENS: Record<string, { label: string; focus: string; slideGuidance: string }> = {
+  career: {
+    label: 'Career & Workforce',
+    focus: 'preparing for job interviews, understanding hiring signals, building skills employers value, and navigating career paths in this industry',
+    slideGuidance: `Every slide must help a job seeker. Include: terminology interviewers test, skills gaps employers notice, team structures, career ladders, and "what would impress a hiring manager" angles. Reference real job titles, salary benchmarks, and hiring trends.`,
+  },
+  invest: {
+    label: 'Investor & Analyst',
+    focus: 'evaluating investment opportunities, understanding valuation frameworks, reading financial signals, and building analyst-level market intuition',
+    slideGuidance: `Every slide must serve an investor. Include: valuation multiples, unit economics, TAM/SAM analysis, comparable company frameworks, risk factors, and "what would a VC/analyst ask" angles. Reference real funding rounds, public market data, and deal structures.`,
+  },
+  startup: {
+    label: 'Founder & Builder',
+    focus: 'identifying startup opportunities, understanding business models, avoiding common founder mistakes, and building companies in this industry',
+    slideGuidance: `Every slide must help a founder. Include: business model breakdowns, go-to-market strategies, unit economics, competitive moats, common pitfalls, and "what kills startups here" angles. Reference real startups, their pivots, fundraising journeys, and failure modes.`,
+  },
+  curiosity: {
+    label: 'Curious Learner',
+    focus: 'understanding the fascinating dynamics of this industry, building mental models, discovering surprising truths, and developing transferable knowledge',
+    slideGuidance: `Every slide must captivate a curious mind. Include: counterintuitive insights, historical context, cross-industry parallels, "most people don't know" facts, and transferable mental models. Make complex topics accessible without dumbing them down.`,
+  },
+};
+
 // Market-specific curriculum themes
 const MARKET_THEMES: Record<string, string[]> = {
   aerospace: ["Foundations", "Commercial Aviation", "Defense & Government", "Space Economy", "Emerging Technologies", "Business & Strategy"],
@@ -209,7 +236,8 @@ interface GenerationJob {
 async function generateDayContent(
   apiKey: string,
   day: number,
-  marketId: string
+  marketId: string,
+  goal: string = 'curiosity'
 ): Promise<any> {
   const month = Math.ceil(day / 30);
   const theme = getTheme(day, marketId);
@@ -219,50 +247,38 @@ async function generateDayContent(
 
   const isTrainer = dayType === 'TRAINER';
 
-  // Goal-aware lens instructions baked into every prompt
-  const goalLensInstruction = `
-CRITICAL: Your content must serve FOUR types of learners simultaneously. Each stack should naturally weave in perspectives relevant to all goals:
-- CAREER SEEKERS: What skills, terminology, and dynamics do you need to land a job in this sector?
-- INVESTORS/ANALYSTS: What metrics, valuations, and market signals matter for investment decisions?
-- FOUNDERS/BUILDERS: What startup opportunities exist, what are the unit economics, and what mistakes kill companies?
-- CURIOUS LEARNERS: What makes this fascinating, what are the surprising truths, and what mental models transfer?
+  // Goal-specific lens
+  const goalConfig = GOAL_LENS[goal] || GOAL_LENS.curiosity;
 
-Structure your 6 slides to cover multiple lenses:
-1. Core concept (universal)
-2. How it works in practice (universal)
-3. Real example with numbers (universal)
-4. Career & Investor angle — hiring signals, valuation implications, or analyst frameworks
-5. Founder angle — startup opportunities, common founder mistakes, or business model insights
-6. Actionable takeaway — what to do next regardless of goal`;
-  
   const systemPrompt = isTrainer
     ? `You are a senior ${marketContext} industry strategist with 25+ years of experience. Create challenging decision scenarios that build real industry judgment.
-       Your audience includes career changers preparing for interviews, investors evaluating deals, founders building companies, and curious learners seeking mastery.
-       Each scenario should test judgment applicable across all four perspectives.`
+       Your primary audience: ${goalConfig.label} learners focused on ${goalConfig.focus}.
+       The scenario MUST be framed from this perspective. The feedback should directly address what someone with this goal needs to know.`
     : `You are a senior ${marketContext} analyst creating educational content for industry mastery. Reference REAL companies, deals, and dynamics. Each slide body MUST be UNDER 280 characters. Month ${month} theme: ${theme}. Style: Professional, insight-dense, no fluff.
-       ${goalLensInstruction}`;
+       PRIMARY AUDIENCE: ${goalConfig.label} learners.
+       ${goalConfig.slideGuidance}`;
 
   const typePrompts: Record<string, string> = {
     DAILY_GAME: `Create a NEWS stack about a real development in ${marketContext} related to "${topic}". Include real companies, dollar amounts, and dates. Structure: 6 slides, each body under 280 chars. Include source citations.
-      Slide 4 should highlight what this means for job seekers or investors. Slide 5 should highlight the startup opportunity or founder lesson.`,
+      Frame every slide through the lens of: ${goalConfig.focus}. What does this news mean for someone with this specific goal?`,
     MICRO_LESSON: `Create a LESSON teaching "${topic}" in ${marketContext}. Use real examples, numbers, and common mistakes. Structure: 6 slides, each body under 280 chars.
-      Slide 4: "Career & Investor Lens" — interview-ready insight or valuation implication. Slide 5: "Founder Lens" — startup angle or business model insight.`,
+      ${goalConfig.slideGuidance}`,
     TRAINER: `Create a decision SCENARIO about "${topic}" in ${marketContext}. 400-600 char scenario, 4 options (one correct), expert feedback including pro_reasoning, common_mistake, and mental_model.
-      The scenario should be relevant whether the learner is an aspiring employee, investor, founder, or researcher. Feedback should reference how each perspective would approach it.`,
+      Frame the scenario specifically for someone focused on: ${goalConfig.focus}. The correct answer should reflect what this type of learner needs to understand.`,
     BOOK_SNAPSHOT: `Create a HISTORY stack about a pivotal event related to "${topic}" in ${marketContext}. Include real dates, actors, and lessons. Structure: 6 slides, each body under 280 chars.
-      Slide 4: What career professionals learned. Slide 5: What founders/investors learned from this event.`,
+      Frame the lessons through the lens of: ${goalConfig.focus}.`,
   };
 
   const userPrompt = isTrainer
     ? `${typePrompts[dayType]}
        Return JSON: {
-         "scenario": "400-600 char scenario relevant to career seekers, investors, AND founders",
-         "question": "Clear decision question",
+         "scenario": "400-600 char scenario framed for ${goalConfig.label} learners",
+         "question": "Clear decision question from ${goalConfig.label} perspective",
          "options": [{"label": "Option (40-80 chars)", "isCorrect": boolean}],
-         "feedback_pro_reasoning": "300-500 chars — include how a career professional, investor, AND founder would each evaluate this",
+         "feedback_pro_reasoning": "300-500 chars — explain why this matters for ${goalConfig.label} specifically",
          "feedback_common_mistake": "100-150 chars",
          "feedback_mental_model": "50-100 chars — a transferable framework",
-         "follow_up_question": "Reflection question applicable to any learning goal",
+         "follow_up_question": "Reflection question for ${goalConfig.label} learners",
          "sources": [{"label": "Source", "url": "https://..."}],
          "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}"]
        }`
@@ -272,7 +288,7 @@ Structure your 6 slides to cover multiple lenses:
          "slides": [{"slide_number": 1, "title": "6 words max", "body": "Under 280 chars", "sources": []}],
          "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}"]
        }
-       Create exactly 6 slides. Slide 4 MUST have a career/investor angle. Slide 5 MUST have a founder/builder angle.`;
+       Create exactly 6 slides. Every slide should serve ${goalConfig.label} learners.`;
 
   const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
@@ -298,12 +314,13 @@ Structure your 6 slides to cover multiple lenses:
   const content = aiResponse.choices?.[0]?.message?.content;
   if (!content) throw new Error('No content');
   
-  return { ...JSON.parse(content), dayType, day, month };
+  return { ...JSON.parse(content), dayType, day, month, goal };
 }
 
 async function saveContent(supabase: any, content: any, marketId: string) {
-  const { day, month, dayType } = content;
-  const baseTags = [dayType, `day-${day}`, `month-${month}`, 'MICRO_LESSON'];
+  const { day, month, dayType, goal } = content;
+  const goalTag = goal ? `goal:${goal}` : 'goal:curiosity';
+  const baseTags = [dayType, `day-${day}`, `month-${month}`, 'MICRO_LESSON', goalTag];
 
   // Save trainer scenario if applicable
   if (dayType === 'TRAINER' && content.options) {
@@ -360,9 +377,10 @@ async function processMarket(
   supabase: any,
   apiKey: string,
   job: GenerationJob,
-  missingDays: number[]
+  missingDays: number[],
+  goal: string = 'curiosity'
 ) {
-  console.log(`Starting ${job.market_id}: ${missingDays.length} days to generate`);
+  console.log(`Starting ${job.market_id}/${goal}: ${missingDays.length} days to generate`);
   
   await supabase.from('curriculum_generation_jobs').update({
     status: 'running',
@@ -382,13 +400,13 @@ async function processMarket(
         days_failed: failed,
       }).eq('id', job.id);
 
-      console.log(`Generating ${job.market_id} day ${day}...`);
+      console.log(`Generating ${job.market_id}/${goal} day ${day}...`);
       
-      const content = await generateDayContent(apiKey, day, job.market_id);
+      const content = await generateDayContent(apiKey, day, job.market_id, goal);
       await saveContent(supabase, content, job.market_id);
       
       completed++;
-      console.log(`✓ ${job.market_id} day ${day} complete (${completed}/${missingDays.length})`);
+      console.log(`✓ ${job.market_id}/${goal} day ${day} complete (${completed}/${missingDays.length})`);
       
       // Rate limit: 500ms between calls
       await new Promise(r => setTimeout(r, 500));
@@ -421,66 +439,72 @@ async function runBulkGeneration(supabase: any, apiKey: string, markets: string[
   console.log(`Markets: ${markets.join(', ')}`);
   
   for (const marketId of markets) {
-    // Check existing days
-    const { data: existingStacks } = await supabase
-      .from('stacks')
-      .select('tags')
-      .eq('market_id', marketId)
-      .contains('tags', ['MICRO_LESSON']);
+    // Generate content for each learning goal
+    for (const goal of LEARNING_GOALS) {
+      const goalTag = `goal:${goal}`;
+      
+      // Check existing days for this market + goal combo
+      const { data: existingStacks } = await supabase
+        .from('stacks')
+        .select('tags')
+        .eq('market_id', marketId)
+        .contains('tags', ['MICRO_LESSON', goalTag]);
 
-    const existingDays = new Set<number>();
-    existingStacks?.forEach((stack: any) => {
-      const dayTag = (stack.tags as string[])?.find(t => t.startsWith('day-'));
-      if (dayTag) existingDays.add(parseInt(dayTag.replace('day-', '')));
-    });
+      const existingDays = new Set<number>();
+      existingStacks?.forEach((stack: any) => {
+        const dayTag = (stack.tags as string[])?.find(t => t.startsWith('day-'));
+        if (dayTag) existingDays.add(parseInt(dayTag.replace('day-', '')));
+      });
 
-    const allDays = Array.from({ length: 180 }, (_, i) => i + 1);
-    const missingDays = allDays.filter(d => !existingDays.has(d));
+      const allDays = Array.from({ length: 180 }, (_, i) => i + 1);
+      const missingDays = allDays.filter(d => !existingDays.has(d));
 
-    if (missingDays.length === 0) {
-      console.log(`${marketId}: Already complete (180/180 days)`);
-      continue;
-    }
+      if (missingDays.length === 0) {
+        console.log(`${marketId}/${goal}: Already complete (180/180 days)`);
+        continue;
+      }
 
-    // Create or update job
-    const { data: existingJob } = await supabase
-      .from('curriculum_generation_jobs')
-      .select('*')
-      .eq('market_id', marketId)
-      .single();
-
-    let job: GenerationJob;
-    
-    if (existingJob) {
-      const { data } = await supabase
+      // Create or update job (use market_id as key, goal info in logs)
+      const jobKey = `${marketId}_${goal}`;
+      const { data: existingJob } = await supabase
         .from('curriculum_generation_jobs')
-        .update({
-          status: 'pending',
-          days_target: 180,
-          days_completed: 180 - missingDays.length,
-          days_failed: 0,
-          error_log: [],
-        })
-        .eq('id', existingJob.id)
-        .select()
+        .select('*')
+        .eq('market_id', marketId)
         .single();
-      job = data;
-    } else {
-      const { data } = await supabase
-        .from('curriculum_generation_jobs')
-        .insert({
-          market_id: marketId,
-          status: 'pending',
-          days_target: 180,
-          days_completed: 180 - missingDays.length,
-        })
-        .select()
-        .single();
-      job = data;
-    }
 
-    // Process this market
-    await processMarket(supabase, apiKey, job, missingDays);
+      let job: GenerationJob;
+      
+      if (existingJob) {
+        const { data } = await supabase
+          .from('curriculum_generation_jobs')
+          .update({
+            status: 'pending',
+            days_target: 180,
+            days_completed: 180 - missingDays.length,
+            days_failed: 0,
+            error_log: [],
+          })
+          .eq('id', existingJob.id)
+          .select()
+          .single();
+        job = data;
+      } else {
+        const { data } = await supabase
+          .from('curriculum_generation_jobs')
+          .insert({
+            market_id: marketId,
+            status: 'pending',
+            days_target: 180,
+            days_completed: 180 - missingDays.length,
+          })
+          .select()
+          .single();
+        job = data;
+      }
+
+      // Process this market + goal combo
+      await processMarket(supabase, apiKey, job, missingDays, goal);
+    }
   }
 
   console.log(`=== BULK GENERATION COMPLETE ===`);
