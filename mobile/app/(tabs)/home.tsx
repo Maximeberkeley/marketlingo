@@ -372,12 +372,16 @@ export default function HomeScreen() {
     // Set key players for the market
     setKeyPlayers(MARKET_KEY_PLAYERS[market] || MARKET_KEY_PLAYERS.aerospace);
 
+    // Get learning goal for content filtering
     const { data: userProgress } = await supabase
       .from('user_progress')
-      .select('start_date')
+      .select('start_date, learning_goal')
       .eq('user_id', user.id)
       .eq('market_id', market)
       .single();
+
+    const learningGoal = userProgress?.learning_goal || 'curiosity';
+    const goalTag = `goal:${learningGoal}`;
 
     let calcDay = 1;
     if (userProgress?.start_date) {
@@ -390,13 +394,26 @@ export default function HomeScreen() {
     }
     const dayTag = `day-${calcDay}`;
 
+    // Fetch goal-specific content first, fallback to any
     let { data: lessonStacks } = await supabase
       .from('stacks')
       .select('id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)')
       .eq('market_id', market)
-      .contains('tags', ['MICRO_LESSON', dayTag])
+      .contains('tags', ['MICRO_LESSON', dayTag, goalTag])
       .not('published_at', 'is', null)
       .limit(1);
+
+    // Fallback: without goal tag (legacy content)
+    if (!lessonStacks?.[0]) {
+      const { data: fallback } = await supabase
+        .from('stacks')
+        .select('id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)')
+        .eq('market_id', market)
+        .contains('tags', ['MICRO_LESSON', dayTag])
+        .not('published_at', 'is', null)
+        .limit(1);
+      lessonStacks = fallback;
+    }
 
     if (!lessonStacks?.[0]) {
       const { data: allLessons } = await supabase
