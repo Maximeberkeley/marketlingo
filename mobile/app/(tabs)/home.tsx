@@ -38,6 +38,9 @@ import { TomorrowPreview } from '../../components/home/TomorrowPreview';
 import { MentorDebrief, getDebriefQuestion } from '../../components/home/MentorDebrief';
 import { scheduleStreakNotifications } from '../../lib/streakNotifications';
 import { MilestoneShareCard } from '../../components/sharing/MilestoneShareCard';
+import { DailyQuests } from '../../components/home/DailyQuests';
+import { QuickBiteSelector } from '../../components/home/QuickBiteSelector';
+import { useDailyQuests } from '../../hooks/useDailyQuests';
 
 const MENTOR_IMAGES: Record<string, any> = {
   maya: require('../../assets/mentors/mentor-maya.png'),
@@ -273,6 +276,7 @@ export default function HomeScreen() {
   const { progress, availableDay, completeStack, updateStreak } = useUserProgress(selectedMarket || undefined);
   const {
     xpData,
+    dailyCompletion,
     completeLessonForToday,
     getCurrentStage,
     getProgressToNextStage,
@@ -309,6 +313,16 @@ export default function HomeScreen() {
   const currentStage = getCurrentStage();
   const stageProgress = getProgressToNextStage();
   const streak = progress?.current_streak || 0;
+
+  // Daily Quests
+  const { quests, completedCount, totalBonusXP, allComplete: allQuestsComplete } = useDailyQuests(
+    dailyCompletion ?? null,
+    streak
+  );
+
+  // Quick Bite mode state
+  const [completedBites, setCompletedBites] = useState<number[]>([]);
+  const [activeBiteIndex, setActiveBiteIndex] = useState<number | null>(null);
   const currentDay = availableDay;
 
   const handleOpenMentorChat = (context?: string) => {
@@ -623,7 +637,38 @@ export default function HomeScreen() {
 
   const handleOpenStack = (stack: StackWithSlides) => {
     setActiveStack(stack);
+    setActiveBiteIndex(null);
     setShowReader(true);
+  };
+
+  /** Open a 2-slide quick bite from the lesson stack */
+  const handleOpenBite = (biteIndex: number) => {
+    if (!lessonStack) return;
+    const startIdx = biteIndex * 2;
+    const biteSlides = lessonStack.slides.slice(startIdx, startIdx + 2);
+    if (biteSlides.length === 0) return;
+
+    const biteStack: StackWithSlides = {
+      ...lessonStack,
+      title: `${lessonStack.title} — Bite ${biteIndex + 1}`,
+      slides: biteSlides,
+    };
+    setActiveStack(biteStack);
+    setActiveBiteIndex(biteIndex);
+    setShowReader(true);
+  };
+
+  /** Called when a bite-mode reader completes */
+  const handleBiteComplete = (isReviewMode: boolean, _timeSpentSeconds: number) => {
+    setShowReader(false);
+    if (isReviewMode || activeBiteIndex === null) return;
+    if (!completedBites.includes(activeBiteIndex)) {
+      setCompletedBites((prev) => [...prev, activeBiteIndex!]);
+    }
+    // Award partial XP for bite (10 XP per bite)
+    addXP(10, 'bite', undefined, `Quick Bite ${activeBiteIndex + 1}`);
+    Alert.alert('Bite Complete! ⚡', '+10 XP earned');
+    setActiveBiteIndex(null);
   };
 
   const handleSaveInsight = async (slideNum: number) => {
@@ -674,8 +719,8 @@ export default function HomeScreen() {
             body: s.body,
             sources: s.sources,
           }))}
-          onClose={() => setShowReader(false)}
-          onComplete={handleStackComplete}
+          onClose={() => { setShowReader(false); setActiveBiteIndex(null); }}
+          onComplete={activeBiteIndex !== null ? handleBiteComplete : handleStackComplete}
           onSaveInsight={handleSaveInsight}
           onAddNote={handleAddNote}
           marketId={selectedMarket || undefined}
@@ -814,7 +859,31 @@ export default function HomeScreen() {
             />
           )}
 
-          {/* ═══ POST-LESSON: Mentor Debrief — proactive AI connection ═══ */}
+          {/* ═══ QUICK BITES — micro-lesson mode ═══ */}
+          {lessonStack && !lessonCompletedToday && lessonStack.slides.length >= 4 && (
+            <View style={styles.section}>
+              <QuickBiteSelector
+                totalSlides={lessonStack.slides.length}
+                completedBites={completedBites}
+                onSelectBite={handleOpenBite}
+                onFullLesson={() => handleOpenStack(lessonStack)}
+                lessonTitle={lessonStack.title}
+                isLessonComplete={lessonCompletedToday}
+              />
+            </View>
+          )}
+
+          {/* ═══ DAILY QUESTS — habit engine ═══ */}
+          <View style={styles.section}>
+            <DailyQuests
+              quests={quests}
+              completedCount={completedCount}
+              totalBonusXP={totalBonusXP}
+              allComplete={allQuestsComplete}
+            />
+          </View>
+
+
           {lessonCompletedToday && showMentorDebrief && lessonStack && (() => {
             const mentor = getMentorForContext('strategy', selectedMarket || 'aerospace');
             const mentorId = getPrimaryMentorForMarket(selectedMarket || 'aerospace');
