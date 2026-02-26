@@ -29,6 +29,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { useMilestoneSharing } from "@/hooks/useMilestoneSharing";
 import { MilestoneShareCard } from "@/components/sharing/MilestoneShareCard";
+import { DailyQuests } from "@/components/home/DailyQuests";
+import { QuickBiteSelector } from "@/components/home/QuickBiteSelector";
+import { useDailyQuests } from "@/hooks/useDailyQuests";
 
 // Import warm Duolingo-style images
 import lessonHero from "@/assets/cards/lesson-hero.jpg";
@@ -77,6 +80,7 @@ export default function HomePage() {
   const { progress, availableDay, completeStack, updateStreak } = useUserProgress(selectedMarket || undefined);
   const { 
     xpData, 
+    dailyCompletion,
     completeLessonForToday, 
     getCurrentStage, 
     getProgressToNextStage,
@@ -104,6 +108,15 @@ export default function HomePage() {
   const currentStage = getCurrentStage();
   const stageProgress = getProgressToNextStage();
 
+  // Daily Quests
+  const { quests, completedCount, totalBonusXP, allComplete: allQuestsComplete } = useDailyQuests(
+    dailyCompletion ?? null,
+    progress?.current_streak || 0
+  );
+
+  // Quick Bite mode state
+  const [completedBites, setCompletedBites] = useState<number[]>([]);
+  const [activeBiteIndex, setActiveBiteIndex] = useState<number | null>(null);
   // Set Leo's greeting based on time of day and streak
   useEffect(() => {
     const currentStreak = progress?.current_streak || 0;
@@ -357,7 +370,34 @@ export default function HomePage() {
 
   const handleOpenStack = (stack: StackWithSlides) => {
     setActiveStack(stack);
+    setActiveBiteIndex(null);
     setShowReader(true);
+  };
+
+  const handleOpenBite = (biteIndex: number) => {
+    if (!lessonStack) return;
+    const startIdx = biteIndex * 2;
+    const biteSlides = lessonStack.slides.slice(startIdx, startIdx + 2);
+    if (biteSlides.length === 0) return;
+    const biteStack: StackWithSlides = {
+      ...lessonStack,
+      title: `${lessonStack.title} — Bite ${biteIndex + 1}`,
+      slides: biteSlides,
+    };
+    setActiveStack(biteStack);
+    setActiveBiteIndex(biteIndex);
+    setShowReader(true);
+  };
+
+  const handleBiteComplete = (isReviewMode: boolean, _timeSpentSeconds: number) => {
+    setShowReader(false);
+    if (isReviewMode || activeBiteIndex === null) return;
+    if (!completedBites.includes(activeBiteIndex)) {
+      setCompletedBites(prev => [...prev, activeBiteIndex!]);
+    }
+    addXP(10, "bite", undefined, `Quick Bite ${activeBiteIndex + 1}`);
+    toast.success("Bite Complete! ⚡ +10 XP");
+    setActiveBiteIndex(null);
   };
 
   const handleSaveInsight = async (slideNum: number) => {
@@ -599,6 +639,18 @@ export default function HomePage() {
               />
             )
           )}
+
+          {/* Quick Bites — micro-lesson mode */}
+          {lessonStack && !lessonCompletedToday && lessonStack.slides.length >= 4 && (
+            <QuickBiteSelector
+              totalSlides={lessonStack.slides.length}
+              completedBites={completedBites}
+              onSelectBite={handleOpenBite}
+              onFullLesson={() => handleOpenStack(lessonStack)}
+              lessonTitle={lessonStack.title}
+              isLessonComplete={lessonCompletedToday}
+            />
+          )}
           
           {/* Daily Pattern (Industry Insight) Card - Always visible */}
           {newsStack && (
@@ -613,6 +665,21 @@ export default function HomePage() {
               onClick={() => handleOpenStack(newsStack)}
             />
           )}
+        </motion.div>
+
+        {/* Daily Quests */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="mb-5"
+        >
+          <DailyQuests
+            quests={quests}
+            completedCount={completedCount}
+            totalBonusXP={totalBonusXP}
+            allComplete={allQuestsComplete}
+          />
         </motion.div>
 
         {/* Activities Grid */}
@@ -819,8 +886,8 @@ export default function HomePage() {
             body: s.body,
             sources: s.sources,
           }))}
-          onClose={() => setShowReader(false)}
-          onComplete={handleStackComplete}
+          onClose={() => { setShowReader(false); setActiveBiteIndex(null); }}
+          onComplete={activeBiteIndex !== null ? handleBiteComplete : handleStackComplete}
           onSaveInsight={handleSaveInsight}
           onAddNote={handleAddNote}
           marketId={selectedMarket || undefined}
