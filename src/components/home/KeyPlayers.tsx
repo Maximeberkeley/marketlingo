@@ -32,6 +32,16 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
     devices: "bg-violet-500/20 text-violet-400",
     therapeutics: "bg-pink-500/20 text-pink-400",
     pharma: "bg-indigo-500/20 text-indigo-400",
+    // AI segments
+    models: "bg-sky-500/20 text-sky-400",
+    hardware: "bg-amber-500/20 text-amber-400",
+    enterprise: "bg-teal-500/20 text-teal-400",
+    // Fintech segments
+    payments: "bg-green-500/20 text-green-400",
+    investing: "bg-yellow-500/20 text-yellow-400",
+    infrastructure: "bg-slate-500/20 text-slate-400",
+    lending: "bg-lime-500/20 text-lime-400",
+    neobank: "bg-fuchsia-500/20 text-fuchsia-400",
   };
 
   return (
