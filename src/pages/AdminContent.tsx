@@ -21,10 +21,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+interface GoalStats {
+  existing: number;
+  toGenerate: number;
+}
+
 interface GenerationResult {
-  generated: number[];
+  generated: { day: number; goal: string }[] | number[];
   skipped: number[];
-  errors: { day: number; error: string }[];
+  errors: { day: number; goal?: string; error: string }[];
   summary?: string;
 }
 
@@ -32,8 +37,9 @@ interface CurriculumPlan {
   market: string;
   daysToGenerate: number[];
   existingDays: number[];
+  goalStats?: Record<string, GoalStats>;
   missingDays?: number;
-  plan: { day: number; month: number; week: number; type: string; theme: string; topic?: string }[];
+  plan: { day: number; goal?: string; month: number; week: number; type: string; theme: string; topic?: string }[];
   message: string;
 }
 
@@ -77,8 +83,17 @@ export default function AdminContent() {
   const [results, setResults] = useState<GenerationResult | null>(null);
   const [selectedMarket, setSelectedMarket] = useState<string>("aerospace");
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [selectedGoal, setSelectedGoal] = useState<string>("all");
   const [marketStatuses, setMarketStatuses] = useState<MarketStatus[]>([]);
   const [progress, setProgress] = useState(0);
+
+  const GOALS = [
+    { id: "all", label: "All Goals", icon: "🎯" },
+    { id: "career", label: "Career", icon: "💼" },
+    { id: "invest", label: "Invest", icon: "📊" },
+    { id: "build_startup", label: "Build Startup", icon: "🚀" },
+    { id: "curiosity", label: "Curiosity", icon: "🔍" },
+  ];
 
   // Load market statuses on mount
   useEffect(() => {
@@ -130,9 +145,10 @@ export default function AdminContent() {
   const fetchPlan = async (marketId: string, month?: number) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('generate-curriculum', {
-        body: { marketId, month, dryRun: true }
-      });
+      const body: any = { marketId, month, dryRun: true };
+      if (selectedGoal !== "all") body.goal = selectedGoal;
+      
+      const { data, error } = await supabase.functions.invoke('generate-curriculum', { body });
 
       if (error) throw error;
       setPlan(data);
@@ -151,9 +167,10 @@ export default function AdminContent() {
     setResults(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke('generate-curriculum', {
-        body: { marketId, month, batchSize: 3 }
-      });
+      const body: any = { marketId, month, batchSize: 3 };
+      if (selectedGoal !== "all") body.goal = selectedGoal;
+      
+      const { data, error } = await supabase.functions.invoke('generate-curriculum', { body });
 
       if (error) throw error;
       
@@ -270,6 +287,37 @@ export default function AdminContent() {
           </div>
         </motion.div>
 
+        {/* Goal Selector */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 rounded-card bg-bg-2 border border-border"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Target size={18} className="text-accent" />
+            <h2 className="text-h3 text-text-primary">Learning Goal</h2>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {GOALS.map((g) => (
+              <button
+                key={g.id}
+                onClick={() => {
+                  setSelectedGoal(g.id);
+                  fetchPlan(selectedMarket, selectedMonth ?? undefined);
+                }}
+                className={cn(
+                  "px-3 py-2 rounded-lg border text-caption font-medium transition-all",
+                  selectedGoal === g.id
+                    ? "bg-accent/10 border-accent text-accent"
+                    : "bg-bg-1 border-border text-text-secondary hover:border-accent/50"
+                )}
+              >
+                {g.icon} {g.label}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
         {/* Overview for Selected Market */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -297,6 +345,17 @@ export default function AdminContent() {
 
           {plan && plan.market === selectedMarket && (
             <div className="space-y-3">
+              {/* Per-goal stats */}
+              {plan.goalStats && (
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  {Object.entries(plan.goalStats).map(([goalKey, stats]) => (
+                    <div key={goalKey} className="flex items-center gap-2 text-caption">
+                      <span className="text-text-muted capitalize">{goalKey.replace('_', ' ')}:</span>
+                      <span className="text-text-primary font-medium">{stats.existing}/180</span>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="flex items-center gap-4 text-caption">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-emerald-500" />
@@ -304,7 +363,7 @@ export default function AdminContent() {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-amber-500" />
-                  <span className="text-text-secondary">To Generate: {plan.missingDays || plan.daysToGenerate?.length || 0}</span>
+                  <span className="text-text-secondary">To Generate: {plan.daysToGenerate?.length || 0}</span>
                 </div>
               </div>
               <Progress value={((plan.existingDays?.length || 0) / 180) * 100} className="h-2" />

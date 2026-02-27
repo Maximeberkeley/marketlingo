@@ -3,7 +3,11 @@ import {
   CURRICULUM_STRUCTURES, 
   WEEK_PATTERN, 
   getMarketContext,
-  type CurriculumStructure 
+  LEARNING_GOALS,
+  GOAL_PERSONAS,
+  getGoalTag,
+  type CurriculumStructure,
+  type LearningGoal,
 } from '../_shared/curriculum-structures.ts';
 
 const corsHeaders = {
@@ -16,9 +20,10 @@ interface GenerateRequest {
   month?: number;
   week?: number;
   day?: number;
+  goal?: LearningGoal; // Generate for specific goal, omit for all goals
   dryRun?: boolean;
   generateSummaries?: boolean;
-  batchSize?: number; // For large generation jobs
+  batchSize?: number;
 }
 
 Deno.serve(async (req) => {
@@ -78,10 +83,14 @@ Deno.serve(async (req) => {
       month, 
       week, 
       day, 
+      goal,
       dryRun = false, 
       generateSummaries = false,
       batchSize = 5 
     } = await req.json() as GenerateRequest;
+
+    // Determine which goals to generate for
+    const goalsToGenerate: LearningGoal[] = goal ? [goal] : [...LEARNING_GOALS];
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -125,60 +134,107 @@ Deno.serve(async (req) => {
         .select('tags')
         .eq('market_id', marketId);
       
-      const existingDays = new Set<number>();
+      // Track existing days per goal
+      const existingByGoal: Record<string, Set<number>> = {};
+      for (const g of LEARNING_GOALS) existingByGoal[g] = new Set();
+      
       existingContent?.forEach(stack => {
-        const dayTag = (stack.tags as string[])?.find(t => t.startsWith('day-'));
-        if (dayTag) existingDays.add(parseInt(dayTag.replace('day-', '')));
+        const tags = stack.tags as string[];
+        const dayTag = tags?.find(t => t.startsWith('day-'));
+        if (!dayTag) return;
+        const dayNum = parseInt(dayTag.replace('day-', ''));
+        for (const g of LEARNING_GOALS) {
+          if (tags.includes(getGoalTag(g))) {
+            existingByGoal[g].add(dayNum);
+          }
+        }
+        // Legacy non-goal-tagged content
+        if (!LEARNING_GOALS.some(g => tags.includes(getGoalTag(g)))) {
+          // Count as existing for all goals (legacy)
+          for (const g of LEARNING_GOALS) existingByGoal[g].add(dayNum);
+        }
       });
 
-      const missingDays = Array.from({ length: 180 }, (_, i) => i + 1)
-        .filter(d => !existingDays.has(d));
+      const goalStats = Object.fromEntries(
+        LEARNING_GOALS.map(g => [g, {
+          existing: existingByGoal[g].size,
+          missing: 180 - existingByGoal[g].size,
+        }])
+      );
 
       return new Response(JSON.stringify({
         market: marketId,
         structure: CURRICULUM_STRUCTURE,
         weekPattern: WEEK_PATTERN,
         totalDays: 180,
-        existingDays: existingDays.size,
-        missingDays: missingDays.length,
-        missingDaysList: missingDays.slice(0, 50), // First 50 for display
+        goalStats,
+        existingDays: Array.from(existingByGoal[goalsToGenerate[0]]),
         message: "Specify month (1-6), week (1-26), or day (1-180) to generate content",
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Check what already exists
+    // Check what already exists per goal
     const { data: existingStacks } = await supabase
       .from('stacks')
       .select('tags')
       .eq('market_id', marketId);
     
-    const existingDays = new Set<number>();
+    const existingByGoal: Record<string, Set<number>> = {};
+    for (const g of LEARNING_GOALS) existingByGoal[g] = new Set();
+    
     existingStacks?.forEach(stack => {
-      const dayTag = (stack.tags as string[])?.find(t => t.startsWith('day-'));
-      if (dayTag) existingDays.add(parseInt(dayTag.replace('day-', '')));
+      const tags = stack.tags as string[];
+      const dayTag = tags?.find(t => t.startsWith('day-'));
+      if (!dayTag) return;
+      const dayNum = parseInt(dayTag.replace('day-', ''));
+      for (const g of LEARNING_GOALS) {
+        if (tags.includes(getGoalTag(g))) {
+          existingByGoal[g].add(dayNum);
+        }
+      }
+      if (!LEARNING_GOALS.some(g => tags.includes(getGoalTag(g)))) {
+        for (const g of LEARNING_GOALS) existingByGoal[g].add(dayNum);
+      }
     });
 
-    const newDays = daysToGenerate.filter(d => !existingDays.has(d));
+    // Build list of (day, goal) pairs to generate
+    const toGenerate: { day: number; goal: LearningGoal }[] = [];
+    for (const dayNum of daysToGenerate) {
+      for (const g of goalsToGenerate) {
+        if (!existingByGoal[g].has(dayNum)) {
+          toGenerate.push({ day: dayNum, goal: g });
+        }
+      }
+    }
     
     if (dryRun) {
-      const plan = newDays.map(d => ({
+      const plan = toGenerate.map(({ day: d, goal: g }) => ({
         day: d,
+        goal: g,
         month: Math.ceil(d / 30),
         week: Math.ceil(d / 7),
         type: WEEK_PATTERN[(d - 1) % 7],
         theme: CURRICULUM_STRUCTURE.months[Math.ceil(d / 30) - 1]?.theme,
         topic: getTopic(d, CURRICULUM_STRUCTURE),
       }));
+
+      const goalStats = Object.fromEntries(
+        goalsToGenerate.map(g => [g, {
+          existing: existingByGoal[g].size,
+          toGenerate: daysToGenerate.filter(d => !existingByGoal[g].has(d)).length,
+        }])
+      );
       
       return new Response(JSON.stringify({
         market: marketId,
-        daysToGenerate: newDays,
-        existingDays: Array.from(existingDays).sort((a, b) => a - b),
+        daysToGenerate: toGenerate.map(t => t.day),
+        existingDays: Array.from(existingByGoal[goalsToGenerate[0]]).sort((a, b) => a - b),
+        goalStats,
         plan,
-        estimatedMinutes: Math.ceil(newDays.length * 1.5),
-        message: `Would generate ${newDays.length} days of content for ${marketId}`,
+        estimatedMinutes: Math.ceil(toGenerate.length * 1.5),
+        message: `Would generate ${toGenerate.length} day-goal pairs for ${marketId}`,
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -186,20 +242,20 @@ Deno.serve(async (req) => {
 
     const results = {
       market: marketId,
-      generated: [] as number[],
+      generated: [] as { day: number; goal: string }[],
       skipped: [] as number[],
-      errors: [] as { day: number; error: string }[],
+      errors: [] as { day: number; goal: string; error: string }[],
       startedAt: new Date().toISOString(),
     };
 
     // Process in batches to avoid timeout
-    const batches = [];
-    for (let i = 0; i < newDays.length; i += batchSize) {
-      batches.push(newDays.slice(i, i + batchSize));
+    const batches: { day: number; goal: LearningGoal }[][] = [];
+    for (let i = 0; i < toGenerate.length; i += batchSize) {
+      batches.push(toGenerate.slice(i, i + batchSize));
     }
 
     for (const batch of batches) {
-      const batchPromises = batch.map(async (dayNum) => {
+      const batchPromises = batch.map(async ({ day: dayNum, goal: goalKey }) => {
         try {
           const monthIndex = Math.ceil(dayNum / 30) - 1;
           const monthInfo = CURRICULUM_STRUCTURE.months[monthIndex];
@@ -213,17 +269,19 @@ Deno.serve(async (req) => {
             monthInfo.theme,
             topic,
             dayType,
-            marketId
+            marketId,
+            goalKey
           );
 
           if (content) {
-            await saveContent(supabase, content, dayNum, monthInfo.month, dayType, marketId);
-            results.generated.push(dayNum);
+            await saveContent(supabase, content, dayNum, monthInfo.month, dayType, marketId, goalKey);
+            results.generated.push({ day: dayNum, goal: goalKey });
           }
         } catch (error) {
-          console.error(`Error generating day ${dayNum}:`, error);
+          console.error(`Error generating day ${dayNum} goal ${goalKey}:`, error);
           results.errors.push({ 
-            day: dayNum, 
+            day: dayNum,
+            goal: goalKey,
             error: error instanceof Error ? error.message : 'Unknown error' 
           });
         }
@@ -231,18 +289,15 @@ Deno.serve(async (req) => {
 
       await Promise.all(batchPromises);
       
-      // Small delay between batches
       if (batches.indexOf(batch) < batches.length - 1) {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
 
-    results.skipped = daysToGenerate.filter(d => existingDays.has(d));
-
     return new Response(JSON.stringify({
       ...results,
       completedAt: new Date().toISOString(),
-      summary: `Generated ${results.generated.length} days, skipped ${results.skipped.length}, ${results.errors.length} errors`,
+      summary: `Generated ${results.generated.length} day-goal pairs, ${results.errors.length} errors`,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -274,65 +329,50 @@ async function generateDayContent(
   theme: string,
   topic: string,
   dayType: string,
-  marketId: string
+  marketId: string,
+  goal: LearningGoal
 ) {
   const marketContext = getMarketContext(marketId);
+  const persona = GOAL_PERSONAS[goal];
 
-  // Enhanced prompts for professional depth
-  // Goal-aware multi-perspective lens
-  const goalLensInstruction = `
-CRITICAL MULTI-PERSPECTIVE REQUIREMENT: Your content serves FOUR types of learners simultaneously:
-- CAREER SEEKERS: Skills, terminology, interview-ready insights, hiring signals
-- INVESTORS/ANALYSTS: Metrics, valuations, market signals, due diligence frameworks  
-- FOUNDERS/BUILDERS: Startup opportunities, unit economics, founder mistakes, business models
-- CURIOUS LEARNERS: Fascinating truths, mental models, transferable frameworks
-
-Slides 4-5 MUST explicitly serve different goal perspectives to maximize relevance.`;
-
+  const isTrainer = dayType === 'TRAINER';
+  
+  // Goal-specific slide structure for non-trainer content
   const typePrompts: Record<string, string> = {
     DAILY_GAME: `Create a NEWS stack about a REAL, SPECIFIC, VERIFIABLE current event or development in ${marketContext} related to "${topic}".
       
-      ${goalLensInstruction}
+      YOU ARE WRITING EXCLUSIVELY FOR: ${persona.label.toUpperCase()} learners.
       
-      CRITICAL REQUIREMENTS FOR INDUSTRY MASTERY:
+      CRITICAL REQUIREMENTS:
       - Reference REAL companies, executives, deals, and dollar amounts
       - Include actual dates, announcement details, or market data
-      - Cite credible sources (industry publications, company filings, news outlets)
+      - Every slide must be framed through the ${persona.label} lens
       
-      Structure (6 slides, each body UNDER 280 characters):
-      1. What happened - specific event with real details (who, what, when, how much)
-      2. Why it matters - industry implications with real market data
-      3. Historical parallel - similar past events and their outcomes
-      4. Career & Investor Lens - what this signals for job seekers OR how investors should evaluate this
-      5. Founder Lens - startup opportunity or competitive insight from this development
-      6. Reflection - thought-provoking question for deeper industry understanding`,
+      Slide structure (6 slides, each body UNDER 280 characters):
+      ${persona.slideGuidance}`,
     
     MICRO_LESSON: `Create a LESSON stack teaching a core concept about "${topic}" in ${marketContext}.
       
-      ${goalLensInstruction}
+      YOU ARE WRITING EXCLUSIVELY FOR: ${persona.label.toUpperCase()} learners.
       
-      CRITICAL REQUIREMENTS FOR INDUSTRY MASTERY:
-      - Teach like an industry veteran explaining to a smart new hire
+      CRITICAL REQUIREMENTS:
+      - Teach like an industry veteran speaking to someone with THIS specific goal
       - Use REAL numbers, percentages, timelines, and benchmarks
       - Reference actual companies, deals, and case studies
+      - ALL 6 slides must serve the ${persona.label} perspective — not generic content
       
-      Structure (6 slides, each body UNDER 280 characters):
-      1. Core concept - explained clearly with a memorable mental model
-      2. How it works - the mechanism or process in practice with real examples
-      3. Real example - specific company/case with actual numbers and outcomes
-      4. Career & Investor Lens - interview-ready insight, valuation implication, or analyst framework
-      5. Founder Lens - startup angle, business model insight, or common founder mistakes
-      6. Apply this - concrete next step regardless of learning goal`,
+      Slide structure (6 slides, each body UNDER 280 characters):
+      ${persona.slideGuidance}`,
     
     TRAINER: `Create a decision-making SCENARIO about "${topic}" in ${marketContext}.
       
-      ${goalLensInstruction}
+      Frame this scenario for a ${persona.label.toUpperCase()} learner.
       
       CRITICAL REQUIREMENTS:
-      - Base on REAL situations professionals face — relevant to employees, investors, AND founders
+      - Base on REAL situations a ${persona.label} professional would face
       - Include realistic numbers, timelines, and trade-offs
-      - Make the correct answer subtle but clearly best upon expert analysis
-      - Feedback should reference how different perspectives (career, investor, founder) evaluate the decision
+      - The correct answer should reflect what an expert ${persona.label} professional would choose
+      - Feedback should explain reasoning from the ${persona.label} perspective
       
       The scenario should be 400-600 characters, presenting a genuine dilemma.
       All 4 options should seem plausible to someone new to the industry.
@@ -340,46 +380,25 @@ Slides 4-5 MUST explicitly serve different goal perspectives to maximize relevan
     
     BOOK_SNAPSHOT: `Create a HISTORY stack about a pivotal past event related to "${topic}" in ${marketContext}.
       
-      ${goalLensInstruction}
+      YOU ARE WRITING EXCLUSIVELY FOR: ${persona.label.toUpperCase()} learners.
       
       CRITICAL REQUIREMENTS:
       - Reference REAL historical events with specific dates and actors
-      - Name actual companies, executives, and breakthrough decisions
-      - Include original dollar amounts, market sizes, or outcome metrics
+      - Frame the lessons through the ${persona.label} lens
+      - Every slide should help someone with this specific goal
       
-      Structure (6 slides, each body UNDER 280 characters):
-      1. What happened - specific historical event with date and key players
-      2. Context - what people believed at the time, prevailing wisdom
-      3. The twist - what actually unfolded vs expectations
-      4. Career & Investor Lens - what hiring managers and analysts learned from this
-      5. Founder Lens - what entrepreneurs and builders took away, how this pattern guides startups today
-      6. Your move - reflection question for aspiring industry participants`,
+      Slide structure (6 slides, each body UNDER 280 characters):
+      ${persona.slideGuidance}`,
   };
 
-  const isTrainer = dayType === 'TRAINER';
-  
   const systemPrompt = isTrainer
-    ? `You are a senior ${marketContext} industry strategist with 25+ years of experience advising startups, training new hires, and briefing investors.
-       You create challenging scenarios that test strategic thinking and build real industry judgment.
-       Your scenarios are based on REAL situations - the kind that separate successful professionals from novices.
+    ? `${persona.systemPrompt}
        
-       Your audience has FOUR distinct goals — your content must serve ALL of them:
-       - Career seekers preparing for industry roles and interviews
-       - Investors and analysts evaluating companies and deals
-       - Founders building companies in this space
-       - Curious learners seeking deep, genuine understanding
+       You create challenging decision scenarios for ${marketContext} that test strategic thinking.
+       Your scenarios are based on REAL situations — framed for someone whose goal is: ${persona.label}.`
+    : `${persona.systemPrompt}
        
-       Every scenario teaches a valuable lesson that transfers across all four perspectives.`
-    : `You are a senior ${marketContext} industry analyst creating educational content that builds true industry mastery.
-       You have deep expertise and reference REAL companies, deals, regulations, and market dynamics.
-       
-       Your content serves FOUR types of learners simultaneously:
-       - Career seekers preparing for industry roles — need interview-ready knowledge
-       - Investors/analysts evaluating companies — need metrics and frameworks
-       - Founders building startups — need business model insights and pitfalls
-       - Curious learners — need mental models and fascinating truths
-       
-       Your content is precise, data-driven, and multi-perspective.
+       You are creating educational content about ${marketContext}.
        Each slide body MUST be UNDER 280 characters - be concise and impactful.
        Each slide title MUST be 6 words or fewer.
        Month ${month} theme: ${theme}
@@ -391,7 +410,7 @@ Slides 4-5 MUST explicitly serve different goal perspectives to maximize relevan
        
        Return valid JSON:
        {
-         "scenario": "Detailed scenario description (400-600 chars) with real industry context",
+         "scenario": "Detailed scenario description (400-600 chars) framed for ${persona.label} learners",
          "question": "Clear decision question starting with 'What should...' or 'How would you...'",
          "options": [
            {"label": "Option A - specific action (40-80 chars)", "isCorrect": false},
@@ -399,10 +418,10 @@ Slides 4-5 MUST explicitly serve different goal perspectives to maximize relevan
            {"label": "Option C - specific action (40-80 chars)", "isCorrect": false},
            {"label": "Option D - specific action (40-80 chars)", "isCorrect": false}
          ],
-         "feedback_pro_reasoning": "Expert explanation including how career professionals, investors, AND founders would each evaluate this decision. (300-500 chars)",
-         "feedback_common_mistake": "The most common error newcomers make and why it fails (100-150 chars)",
-         "feedback_mental_model": "A reusable mental model or framework that transfers across career, investing, and founding (50-100 chars)",
-         "follow_up_question": "A deeper question applicable regardless of learning goal",
+         "feedback_pro_reasoning": "Expert explanation from the ${persona.label} perspective (300-500 chars)",
+         "feedback_common_mistake": "Common error a ${persona.label} newcomer would make (100-150 chars)",
+         "feedback_mental_model": "Reusable framework for ${persona.label} professionals (50-100 chars)",
+         "follow_up_question": "A deeper question for ${persona.label} learners",
          "sources": [{"label": "Industry Source", "url": "https://example.com"}],
          "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "strategy"]
        }`
@@ -410,7 +429,7 @@ Slides 4-5 MUST explicitly serve different goal perspectives to maximize relevan
        
        Return valid JSON:
        {
-         "title": "Compelling stack title (max 6 words)",
+         "title": "Compelling stack title for ${persona.label} learners (max 6 words)",
          "slides": [
            {
              "slide_number": 1,
@@ -419,11 +438,11 @@ Slides 4-5 MUST explicitly serve different goal perspectives to maximize relevan
              "sources": [{"label": "Source Name", "url": "https://example.com"}]
            }
          ],
-         "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "${theme.toLowerCase().replace(/\s+/g, '-')}"]
+         "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "${theme.toLowerCase().replace(/\\s+/g, '-')}"]
        }
        
        IMPORTANT: Create exactly 6 slides. Each body MUST be under 280 characters.
-       Slide 4 MUST have a career/investor angle. Slide 5 MUST have a founder/builder angle.`;
+       ALL slides must serve the ${persona.label} perspective — this content is ONLY for ${persona.label} learners.`;
 
   const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
@@ -462,9 +481,11 @@ async function saveContent(
   day: number,
   month: number,
   dayType: string,
-  marketId: string
+  marketId: string,
+  goal: LearningGoal
 ) {
-  const baseTags = [dayType, `day-${day}`, `month-${month}`, 'MICRO_LESSON'];
+  const goalTag = getGoalTag(goal);
+  const baseTags = [dayType, `day-${day}`, `month-${month}`, 'MICRO_LESSON', goalTag];
 
   if (dayType === 'TRAINER') {
     const correctIndex = content.options?.findIndex((o: any) => o.isCorrect) ?? 1;

@@ -54,7 +54,16 @@ export default function AdminContentScreen() {
   const [marketStatuses, setMarketStatuses] = useState<MarketStatus[]>([]);
   const [selectedMarket, setSelectedMarket] = useState('aerospace');
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
-  const [planInfo, setPlanInfo] = useState<{ existingDays: number[]; daysToGenerate: number[] } | null>(null);
+  const [selectedGoal, setSelectedGoal] = useState<string>('all');
+  const [planInfo, setPlanInfo] = useState<{ existingDays: number[]; daysToGenerate: number[]; goalStats?: Record<string, { existing: number; toGenerate: number }> } | null>(null);
+
+  const GOALS = [
+    { id: 'all', label: 'All Goals', icon: '🎯' },
+    { id: 'career', label: 'Career', icon: '💼' },
+    { id: 'invest', label: 'Invest', icon: '📊' },
+    { id: 'build_startup', label: 'Startup', icon: '🚀' },
+    { id: 'curiosity', label: 'Curiosity', icon: '🔍' },
+  ];
 
   useEffect(() => { loadMarketStatuses(); }, []);
 
@@ -78,7 +87,9 @@ export default function AdminContentScreen() {
   const fetchPlan = async (marketId: string, month?: number) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('generate-curriculum', { body: { marketId, month, dryRun: true } });
+      const body: any = { marketId, month, dryRun: true };
+      if (selectedGoal !== 'all') body.goal = selectedGoal;
+      const { data, error } = await supabase.functions.invoke('generate-curriculum', { body });
       if (error) throw error;
       setPlanInfo(data);
     } catch (e) {
@@ -100,7 +111,9 @@ export default function AdminContentScreen() {
           onPress: async () => {
             setLoading(true);
             try {
-              const { data, error } = await supabase.functions.invoke('generate-curriculum', { body: { marketId: selectedMarket, month: selectedMonth, batchSize: 3 } });
+              const body: any = { marketId: selectedMarket, month: selectedMonth, batchSize: 3 };
+              if (selectedGoal !== 'all') body.goal = selectedGoal;
+              const { data, error } = await supabase.functions.invoke('generate-curriculum', { body });
               if (error) throw error;
               Alert.alert('Done', `Generated ${data.generated?.length || 0} days, skipped ${data.skipped?.length || 0}`);
               loadMarketStatuses();
@@ -174,6 +187,34 @@ export default function AdminContentScreen() {
             );
           })}
         </View>
+
+        {/* Goal Selector */}
+        <Text style={styles.sectionTitle}>🎯 Learning Goal</Text>
+        <View style={styles.goalsRow}>
+          {GOALS.map((g) => (
+            <TouchableOpacity
+              key={g.id}
+              style={[styles.goalChip, selectedGoal === g.id && styles.goalChipSelected]}
+              onPress={() => { setSelectedGoal(g.id); fetchPlan(selectedMarket, selectedMonth ?? undefined); }}
+              activeOpacity={0.75}
+            >
+              <Text style={{ fontSize: 12 }}>{g.icon}</Text>
+              <Text style={[styles.goalChipText, selectedGoal === g.id && styles.goalChipTextSelected]}>{g.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Per-goal stats */}
+        {planInfo?.goalStats && (
+          <View style={styles.goalStatsRow}>
+            {Object.entries(planInfo.goalStats).map(([goalKey, stats]) => (
+              <View key={goalKey} style={styles.goalStatItem}>
+                <Text style={styles.goalStatLabel}>{goalKey.replace('_', ' ')}</Text>
+                <Text style={styles.goalStatValue}>{stats.existing}/180</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         {/* Overview */}
         {planInfo && (
@@ -312,4 +353,17 @@ const styles = StyleSheet.create({
   },
   generateBtnText: { fontSize: 13, color: '#fff', fontWeight: '700' },
   btnDisabled: { opacity: 0.4 },
+  goalsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 12 },
+  goalChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8,
+    backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border,
+  },
+  goalChipSelected: { borderColor: COLORS.accent, backgroundColor: 'rgba(139,92,246,0.08)' },
+  goalChipText: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
+  goalChipTextSelected: { color: COLORS.accent },
+  goalStatsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
+  goalStatItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  goalStatLabel: { fontSize: 10, color: COLORS.textMuted, textTransform: 'capitalize' },
+  goalStatValue: { fontSize: 10, color: COLORS.textPrimary, fontWeight: '600' },
 });
