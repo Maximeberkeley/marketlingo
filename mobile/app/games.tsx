@@ -16,8 +16,9 @@ import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { triggerHaptic } from '../lib/haptics';
 import { MascotReaction } from '../components/mascot/MascotReaction';
-import { MascotState } from '../lib/mascots';
 import { playSound } from '../lib/sounds';
+import { ComboCounter } from '../components/ui/ComboCounter';
+import { createComboState, comboCorrect, comboWrong, ComboState } from '../lib/combo';
 
 interface GameQuestion {
   id: string;
@@ -42,6 +43,7 @@ export default function GamesScreen() {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
   const [mascotState, setMascotState] = useState<MascotState>('idle');
+  const [combo, setCombo] = useState<ComboState>(createComboState());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -143,11 +145,15 @@ export default function GamesScreen() {
     setSelectedAnswer(index);
     setShowResult(true);
     if (index === question.correctAnswer) {
+      const { newState, xpEarned } = comboCorrect(combo, 25);
+      setCombo(newState);
       setScore((prev) => prev + 1);
       triggerHaptic('success');
       playSound('correct');
       setMascotState('correct');
     } else {
+      const { newState } = comboWrong(combo, 25);
+      setCombo(newState);
       triggerHaptic('warning');
       playSound('wrong');
       setMascotState('incorrect');
@@ -294,6 +300,8 @@ export default function GamesScreen() {
           <View style={styles.scoreBadge}>
             <Text style={styles.scoreBadgeText}>🏆 {score}</Text>
           </View>
+          {/* Combo Counter */}
+          <ComboCounter combo={combo} show={combo.streak > 0} />
         </View>
 
         <ProgressBar progress={((currentQuestion + 1) / questions.length) * 100} height={4} />

@@ -46,6 +46,8 @@ import { StreakFreezeCard } from '../../components/home/StreakFreezeCard';
 import { MascotReaction } from '../../components/mascot/MascotReaction';
 import { MascotState } from '../../lib/mascots';
 import { playSound } from '../../lib/sounds';
+import { useSpacedRepetition } from '../../hooks/useSpacedRepetition';
+import { useOfflineCache } from '../../hooks/useOfflineCache';
 
 // ─── Static config ───
 const MENTOR_IMAGES: Record<string, any> = {
@@ -93,6 +95,17 @@ export default function HomeScreen() {
   useEffect(() => {
     if (selectedMarket) setSelectedMarketLocal(selectedMarket);
   }, [selectedMarket]);
+
+  // ─── Spaced Repetition ───
+  const { dueCount, dueItems, gradeReview, addLessonConcepts } = useSpacedRepetition(selectedMarketLocal || undefined);
+
+  // ─── Offline Cache ───
+  const { syncLessons, cachedCount } = useOfflineCache(selectedMarketLocal || undefined);
+
+  // Auto-sync lessons for offline when data loads
+  useEffect(() => {
+    if (currentDay && selectedMarket) syncLessons(currentDay);
+  }, [currentDay, selectedMarket]);
 
   // ─── Milestone sharing ───
   const { milestone, dismissMilestone, checkStreakMilestone, checkLevelMilestone } = useMilestoneSharing();
@@ -308,6 +321,33 @@ export default function HomeScreen() {
                 onPractice={() => router.push('/(tabs)/practice' as any)}
               />
             )}
+
+            {/* Spaced Repetition Prompt */}
+            {dueCount > 0 && (
+              <TouchableOpacity
+                style={styles.reviewCard}
+                onPress={() => router.push('/trainer' as any)}
+                activeOpacity={0.8}
+              >
+                <Text style={{ fontSize: 20 }}>🧠</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.reviewTitle}>{dueCount} concept{dueCount !== 1 ? 's' : ''} to review</Text>
+                  <Text style={styles.reviewSub}>Spaced repetition keeps knowledge fresh</Text>
+                </View>
+                <Text style={{ color: COLORS.textMuted, fontSize: 16 }}>→</Text>
+              </TouchableOpacity>
+            )}
+
+            {/* Friends shortcut */}
+            <TouchableOpacity
+              style={styles.friendsCard}
+              onPress={() => { triggerHaptic('light'); router.push('/friends' as any); }}
+              activeOpacity={0.8}
+            >
+              <Text style={{ fontSize: 18 }}>👥</Text>
+              <Text style={styles.friendsText}>Friends</Text>
+              <Text style={{ color: COLORS.textMuted, fontSize: 14 }}>→</Text>
+            </TouchableOpacity>
 
             {/* Quick Bites */}
             {lessonStack && !lessonCompletedToday && lessonStack.slides.length >= 4 && (
@@ -527,4 +567,15 @@ const styles = StyleSheet.create({
   },
   proBadgeText: { fontSize: 8, fontWeight: '700', color: COLORS.accent },
   chevron: { fontSize: 20, color: COLORS.textMuted },
+  reviewCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, marginBottom: 16,
+    backgroundColor: 'rgba(139, 92, 246, 0.06)', borderRadius: 14, borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.2)',
+  },
+  reviewTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
+  reviewSub: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
+  friendsCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, marginBottom: 16,
+    backgroundColor: COLORS.bg2, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border,
+  },
+  friendsText: { flex: 1, fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
 });

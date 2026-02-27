@@ -156,6 +156,33 @@ export type Database = {
           },
         ]
       }
+      friendships: {
+        Row: {
+          created_at: string
+          friend_id: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          friend_id: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          friend_id?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       games_progress: {
         Row: {
           completed_at: string | null
@@ -543,6 +570,69 @@ export type Database = {
             columns: ["selected_market"]
             isOneToOne: false
             referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_queue: {
+        Row: {
+          concept: string
+          created_at: string
+          ease_factor: number
+          id: string
+          interval_days: number
+          last_grade: number | null
+          market_id: string
+          next_review_at: string
+          review_count: number
+          slide_number: number | null
+          stack_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          concept: string
+          created_at?: string
+          ease_factor?: number
+          id?: string
+          interval_days?: number
+          last_grade?: number | null
+          market_id: string
+          next_review_at?: string
+          review_count?: number
+          slide_number?: number | null
+          stack_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          concept?: string
+          created_at?: string
+          ease_factor?: number
+          id?: string
+          interval_days?: number
+          last_grade?: number | null
+          market_id?: string
+          next_review_at?: string
+          review_count?: number
+          slide_number?: number | null
+          stack_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_queue_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_queue_stack_id_fkey"
+            columns: ["stack_id"]
+            isOneToOne: false
+            referencedRelation: "stacks"
             referencedColumns: ["id"]
           },
         ]
