@@ -14,6 +14,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProgressBar } from '../components/ui/ProgressBar';
+import { triggerHaptic } from '../lib/haptics';
 
 interface GameQuestion {
   id: string;
@@ -51,41 +52,76 @@ export default function GamesScreen() {
       const market = profile?.selected_market || 'aerospace';
       setSelectedMarket(market);
 
-      const { data: stacks, error } = await supabase
-        .from('stacks')
-        .select('id, title, tags, slides (id, slide_number, title, body)')
+      // Use trainer_scenarios which have proper correct_option_index
+      const { data: scenarios, error } = await supabase
+        .from('trainer_scenarios')
+        .select('id, scenario, question, options, correct_option_index, feedback_pro_reasoning, tags')
         .eq('market_id', market)
-        .contains('tags', ['DAILY_GAME'])
-        .not('published_at', 'is', null)
-        .order('created_at', { ascending: true })
         .limit(5);
 
-      if (error) {
-        console.error('Error fetching games:', error);
+      if (error || !scenarios?.length) {
+        // Fallback: try game stacks but parse correct answer from content
+        const { data: stacks } = await supabase
+          .from('stacks')
+          .select('id, title, tags, slides (id, slide_number, title, body)')
+          .eq('market_id', market)
+          .contains('tags', ['DAILY_GAME'])
+          .not('published_at', 'is', null)
+          .order('created_at', { ascending: true })
+          .limit(5);
+
+        if (stacks?.length) {
+          const gameQuestions: GameQuestion[] = stacks.map((stack, index) => {
+            const slides = ((stack as any).slides as any[]) || [];
+            const sorted = slides.sort((a: any, b: any) => a.slide_number - b.slide_number);
+            const questionSlide = sorted[0]?.body || stack.title;
+            const rawOptions = sorted.slice(1, 5).map((s: any) => (s.body || s.title || '').substring(0, 80));
+            const baseOptions = rawOptions.length >= 4 ? rawOptions : [
+              rawOptions[0] || 'First key insight',
+              rawOptions[1] || 'Second consideration',
+              rawOptions[2] || 'Alternative perspective',
+              rawOptions[3] || 'Industry best practice',
+            ];
+            
+            // Try to find correct answer tag e.g. "correct:2", default to random
+            const correctTag = (stack.tags as string[])?.find((t: string) => t.startsWith('correct:'));
+            const correctIdx = correctTag ? parseInt(correctTag.split(':')[1], 10) : Math.floor(Math.random() * baseOptions.length);
+
+            const types: Array<'match' | 'timeline' | 'predict'> = ['match', 'timeline', 'predict'];
+            return {
+              id: stack.id,
+              type: types[index % 3],
+              question: `${stack.title}: ${questionSlide}`.substring(0, 150),
+              options: baseOptions,
+              correctAnswer: Math.min(correctIdx, baseOptions.length - 1),
+              explanation: sorted[sorted.length - 1]?.body?.substring(0, 280) || stack.title,
+              pattern: (sorted.find((s: any) => s.body?.toLowerCase().includes('pattern:'))?.body || stack.title).substring(0, 60),
+            };
+          });
+          setQuestions(gameQuestions);
+        }
+
         setLoading(false);
         return;
       }
 
-      const gameQuestions: GameQuestion[] = (stacks || []).map((stack, index) => {
-        const slides = ((stack as any).slides as any[]) || [];
-        const sorted = slides.sort((a: any, b: any) => a.slide_number - b.slide_number);
-        const questionSlide = sorted[0]?.body || stack.title;
-        const rawOptions = sorted.slice(1, 5).map((s: any) => (s.body || s.title || '').substring(0, 80));
-        const baseOptions = rawOptions.length >= 4 ? rawOptions : [
-          rawOptions[0] || 'First key insight',
-          rawOptions[1] || 'Second consideration',
-          rawOptions[2] || 'Alternative perspective',
-          rawOptions[3] || 'Industry best practice',
-        ];
-        const types: Array<'match' | 'timeline' | 'predict'> = ['match', 'timeline', 'predict'];
+      // Map trainer_scenarios to game questions
+      const types: Array<'match' | 'timeline' | 'predict'> = ['match', 'timeline', 'predict'];
+      const gameQuestions: GameQuestion[] = scenarios.map((scenario, index) => {
+        const opts = Array.isArray(scenario.options)
+          ? (scenario.options as string[])
+          : typeof scenario.options === 'object'
+            ? Object.values(scenario.options as Record<string, string>)
+            : ['Option A', 'Option B', 'Option C', 'Option D'];
+
         return {
-          id: stack.id,
+          id: scenario.id,
           type: types[index % 3],
-          question: `${stack.title}: ${questionSlide}`.substring(0, 150),
-          options: baseOptions,
-          correctAnswer: 0,
-          explanation: sorted[sorted.length - 1]?.body?.substring(0, 280) || stack.title,
-          pattern: (sorted.find((s: any) => s.body?.toLowerCase().includes('pattern:'))?.body || stack.title).substring(0, 60),
+          question: scenario.question || scenario.scenario,
+          options: opts.map((o: any) => String(o).substring(0, 120)),
+          correctAnswer: scenario.correct_option_index,
+          explanation: scenario.feedback_pro_reasoning || scenario.scenario,
+          pattern: ((scenario.tags as string[]) || [])[0] || 'Industry Pattern',
         };
       });
 
@@ -104,10 +140,14 @@ export default function GamesScreen() {
     setShowResult(true);
     if (index === question.correctAnswer) {
       setScore((prev) => prev + 1);
+      triggerHaptic('success');
+    } else {
+      triggerHaptic('warning');
     }
   };
 
   const handleNext = async () => {
+    triggerHaptic('light');
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
       setSelectedAnswer(null);
@@ -124,6 +164,7 @@ export default function GamesScreen() {
           completed_at: new Date().toISOString(),
         }, { onConflict: 'user_id,market_id,game_type' });
       }
+      triggerHaptic('success');
       setGameComplete(true);
     }
   };
@@ -166,7 +207,7 @@ export default function GamesScreen() {
               </View>
             ))}
           </View>
-          <TouchableOpacity style={styles.ctaButton} onPress={() => setShowIntro(false)}>
+          <TouchableOpacity style={styles.ctaButton} onPress={() => { triggerHaptic('medium'); setShowIntro(false); }}>
             <Text style={styles.ctaText}>Start Game →</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -188,13 +229,17 @@ export default function GamesScreen() {
   }
 
   if (gameComplete) {
+    const percentage = Math.round((score / questions.length) * 100);
     return (
       <View style={[styles.container, styles.centered]}>
         <View style={styles.completeIcon}>
           <Text style={{ fontSize: 32 }}>🏆</Text>
         </View>
         <Text style={styles.completeTitle}>Game Complete!</Text>
-        <Text style={styles.completeScore}>You scored {score}/{questions.length}</Text>
+        <Text style={styles.completeScore}>You scored {score}/{questions.length} ({percentage}%)</Text>
+        <Text style={styles.completeFeedback}>
+          {percentage >= 80 ? "🔥 Excellent! You're a market pro." : percentage >= 60 ? '👍 Good job! Keep practicing.' : '📚 Review the lessons and try again.'}
+        </Text>
         <View style={{ flexDirection: 'row', gap: 12, marginTop: 20, width: '100%' }}>
           <TouchableOpacity style={[styles.secondaryBtn, { flex: 1 }]} onPress={() => router.back()}>
             <Text style={styles.secondaryBtnText}>Home</Text>
@@ -353,7 +398,8 @@ const styles = StyleSheet.create({
   feedbackBody: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20, marginBottom: 12 },
   completeIcon: { width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(34, 197, 94, 0.2)', alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
   completeTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 8 },
-  completeScore: { fontSize: 16, color: COLORS.textSecondary },
+  completeScore: { fontSize: 16, color: COLORS.textSecondary, marginBottom: 4 },
+  completeFeedback: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center' },
   secondaryBtn: { paddingVertical: 14, borderRadius: 14, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center' },
   secondaryBtnText: { fontSize: 15, color: COLORS.textSecondary },
 });
