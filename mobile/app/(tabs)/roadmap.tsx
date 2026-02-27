@@ -127,10 +127,13 @@ export default function RoadmapScreen() {
 
       const { data: progress } = await supabase
         .from('user_progress')
-        .select('start_date, completed_stacks')
+        .select('start_date, completed_stacks, learning_goal')
         .eq('user_id', user.id)
         .eq('market_id', market)
         .single();
+
+      const learningGoal = progress?.learning_goal || 'curiosity';
+      const goalTag = `goal:${learningGoal}`;
 
       let day = 1;
       if (progress?.start_date) {
@@ -148,14 +151,30 @@ export default function RoadmapScreen() {
       let lessonTitle: string | null = null;
       let lessonPattern: string | null = null;
 
-      const { data: todayLesson } = await supabase
+      // Try goal-specific lesson first, then fall back to non-goal-tagged
+      let todayLesson: any = null;
+      const { data: goalLesson } = await supabase
         .from('stacks')
         .select('title, tags')
         .eq('market_id', market)
-        .contains('tags', ['MICRO_LESSON', dayTag])
+        .contains('tags', ['MICRO_LESSON', dayTag, goalTag])
         .not('published_at', 'is', null)
         .limit(1)
         .single();
+
+      if (goalLesson) {
+        todayLesson = goalLesson;
+      } else {
+        const { data: fallbackLesson } = await supabase
+          .from('stacks')
+          .select('title, tags')
+          .eq('market_id', market)
+          .contains('tags', ['MICRO_LESSON', dayTag])
+          .not('published_at', 'is', null)
+          .limit(1)
+          .single();
+        todayLesson = fallbackLesson;
+      }
 
       if (todayLesson) {
         lessonTitle = todayLesson.title;

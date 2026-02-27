@@ -1,6 +1,5 @@
 
-
-# Goal-Specific Curriculum Generation
+# Goal-Specific Curriculum Generation — IMPLEMENTED ✅
 
 ## The Problem
 

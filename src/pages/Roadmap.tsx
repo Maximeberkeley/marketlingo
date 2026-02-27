@@ -84,10 +84,13 @@ export default function RoadmapPage() {
 
       const { data: progress } = await supabase
         .from("user_progress")
-        .select("start_date, completed_stacks")
+        .select("start_date, completed_stacks, learning_goal")
         .eq("user_id", user.id)
         .eq("market_id", market)
         .single();
+
+      const learningGoal = progress?.learning_goal || 'curiosity';
+      const goalTag = `goal:${learningGoal}`;
 
       // Calculate available day from start_date (calendar-based)
       let day = 1;
