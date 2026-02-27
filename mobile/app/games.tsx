@@ -15,6 +15,9 @@ import { useAuth } from '../hooks/useAuth';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { triggerHaptic } from '../lib/haptics';
+import { MascotReaction } from '../components/mascot/MascotReaction';
+import { MascotState } from '../lib/mascots';
+import { playSound } from '../lib/sounds';
 
 interface GameQuestion {
   id: string;
@@ -38,6 +41,7 @@ export default function GamesScreen() {
   const [gameComplete, setGameComplete] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const [mascotState, setMascotState] = useState<MascotState>('idle');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -141,9 +145,14 @@ export default function GamesScreen() {
     if (index === question.correctAnswer) {
       setScore((prev) => prev + 1);
       triggerHaptic('success');
+      playSound('correct');
+      setMascotState('correct');
     } else {
       triggerHaptic('warning');
+      playSound('wrong');
+      setMascotState('incorrect');
     }
+    setTimeout(() => setMascotState('idle'), 2500);
   };
 
   const handleNext = async () => {
@@ -165,9 +174,16 @@ export default function GamesScreen() {
         }, { onConflict: 'user_id,market_id,game_type' });
       }
       triggerHaptic('success');
+      playSound('levelUp');
+      setMascotState('celebrate');
       setGameComplete(true);
     }
   };
+
+  // Render mascot overlay for all game views
+  const mascotOverlay = mascotState !== 'idle' ? (
+    <MascotReaction state={mascotState} position="bottom-right" size="md" />
+  ) : null;
 
   const typeEmoji: Record<string, string> = { match: '🎯', timeline: '⚡', predict: '🏆' };
 

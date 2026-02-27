@@ -41,6 +41,11 @@ import { useMilestoneSharing } from '../../hooks/useMilestoneSharing';
 import { useHomeData } from '../../hooks/useHomeData';
 import { useSessionFlow } from '../../hooks/useSessionFlow';
 import { triggerHaptic } from '../../lib/haptics';
+import { useStreakFreeze } from '../../hooks/useStreakFreeze';
+import { StreakFreezeCard } from '../../components/home/StreakFreezeCard';
+import { MascotReaction } from '../../components/mascot/MascotReaction';
+import { MascotState } from '../../lib/mascots';
+import { playSound } from '../../lib/sounds';
 
 // ─── Static config ───
 const MENTOR_IMAGES: Record<string, any> = {
@@ -66,6 +71,15 @@ export default function HomeScreen() {
   const currentStage = getCurrentStage();
   const stageProgress = getProgressToNextStage();
   const streak = progress?.current_streak || 0;
+
+  // ─── Streak Freeze ───
+  const { canFreeze, freezesUsedThisWeek, maxFreezes, useFreeze } = useStreakFreeze(
+    selectedMarketLocal || undefined, homeData.isProUser
+  );
+  const [showStreakFreeze, setShowStreakFreeze] = useState(true);
+
+  // ─── Leo mascot state ───
+  const [mascotState, setMascotState] = useState<MascotState>('idle');
 
   // ─── Data hook ───
   const homeData = useHomeData(user?.id, progress, xpData, lessonCompletedToday);
@@ -105,6 +119,16 @@ export default function HomeScreen() {
   const [mentorChatContext, setMentorChatContext] = useState('');
   const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
+
+  // Trigger mascot celebration on lesson complete
+  useEffect(() => {
+    if (lessonCompletedToday) {
+      setMascotState('celebrate');
+      playSound('lessonComplete');
+      const timer = setTimeout(() => setMascotState('idle'), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [lessonCompletedToday]);
   const [showMentorDebrief, setShowMentorDebrief] = useState(true);
 
   // ─── Leo greeting ───
@@ -251,6 +275,19 @@ export default function HomeScreen() {
                 hoursLeft={streakRiskHours}
                 onStartLesson={() => lessonStack && session.handleOpenStack(lessonStack)}
                 onDismiss={() => setShowStreakWarning(false)}
+              />
+            )}
+
+            {/* Streak Freeze */}
+            {streakRiskHours !== null && canFreeze && showStreakFreeze && !lessonCompletedToday && (
+              <StreakFreezeCard
+                streak={streak}
+                canFreeze={canFreeze}
+                freezesUsed={freezesUsedThisWeek}
+                maxFreezes={maxFreezes}
+                isProUser={isProUser}
+                onUseFreeze={useFreeze}
+                onDismiss={() => setShowStreakFreeze(false)}
               />
             )}
 
@@ -409,6 +446,11 @@ export default function HomeScreen() {
               marketId={selectedMarket || undefined}
               context={mentorChatContext || `${getMarketName(selectedMarket || 'aerospace')} industry learning. Day ${currentDay} of 180. Recent: ${newsItems.slice(0, 3).map(n => n.title).join('; ')}`}
             />
+          )}
+
+          {/* Floating Leo Reaction */}
+          {mascotState !== 'idle' && (
+            <MascotReaction state={mascotState} position="bottom-right" size="md" />
           )}
         </>
       )}
