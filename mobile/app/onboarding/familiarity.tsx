@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Animated,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,6 +17,17 @@ import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { NotificationOnboarding } from '../../components/onboarding/NotificationOnboarding';
 import { applyDemoXP } from '../../lib/demoXPBridge';
+import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress';
+import { MascotAvatar } from '../../components/mascot/MascotAvatar';
+import { triggerHaptic } from '../../lib/haptics';
+
+const STEP_LABELS = ['Industry', 'Goal', 'Level'];
+
+const LEO_LEVEL_REACTIONS: Record<string, string> = {
+  beginner: "Perfect — we'll start from scratch! No jargon, I promise 🤝",
+  intermediate: "Nice! I'll skip the basics and go straight to the good stuff 🎯",
+  advanced: "Respect! Expert-mode unlocked. Let's get deep 🧠",
+};
 
 export default function FamiliarityScreen() {
   const insets = useSafeAreaInsets();
@@ -23,45 +35,68 @@ export default function FamiliarityScreen() {
   const [selectedLevel, setSelectedLevel] = useState<FamiliarityLevel | null>(null);
   const [showNotifOnboarding, setShowNotifOnboarding] = useState(false);
 
-  const handleContinue = async () => {
+  // Animations
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+  const reactionOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
+      Animated.spring(slideAnim, { toValue: 0, tension: 50, friction: 8, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  useEffect(() => {
     if (selectedLevel) {
-      await storage.setFamiliarity(selectedLevel);
-      await storage.setOnboardingComplete(true);
-      // Write familiarity to Supabase (user_progress per-market + profiles)
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('selected_market')
-          .eq('id', user.id)
-          .single();
-
-        await supabase
-          .from('profiles')
-          .update({ familiarity_level: selectedLevel })
-          .eq('id', user.id);
-
-        if (profile?.selected_market) {
-          await supabase
-            .from('user_progress')
-            .upsert(
-              {
-                user_id: user.id,
-                market_id: profile.selected_market,
-                familiarity_level: selectedLevel,
-              },
-              { onConflict: 'user_id,market_id' }
-            );
-        }
-      }
-      // Show notification onboarding before going to home
-      setShowNotifOnboarding(true);
+      reactionOpacity.setValue(0);
+      Animated.timing(reactionOpacity, { toValue: 1, duration: 300, useNativeDriver: true }).start();
     }
+  }, [selectedLevel]);
+
+  const handleSelect = (level: FamiliarityLevel) => {
+    triggerHaptic('light');
+    setSelectedLevel(level);
+  };
+
+  const handleContinue = async () => {
+    if (!selectedLevel) return;
+    triggerHaptic('success');
+
+    await storage.setFamiliarity(selectedLevel);
+    await storage.setOnboardingComplete(true);
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('selected_market')
+        .eq('id', user.id)
+        .single();
+
+      await supabase
+        .from('profiles')
+        .update({ familiarity_level: selectedLevel })
+        .eq('id', user.id);
+
+      if (profile?.selected_market) {
+        await supabase
+          .from('user_progress')
+          .upsert(
+            {
+              user_id: user.id,
+              market_id: profile.selected_market,
+              familiarity_level: selectedLevel,
+            },
+            { onConflict: 'user_id,market_id' }
+          );
+      }
+    }
+    setShowNotifOnboarding(true);
   };
 
   const handleNotifComplete = async (_enabled: boolean) => {
     setShowNotifOnboarding(false);
 
-    // Bridge demo XP — credit any XP earned during the pre-auth demo
     if (user) {
       try {
         const { data: profile } = await supabase
@@ -80,7 +115,7 @@ export default function FamiliarityScreen() {
           }
         }
       } catch (e) {
-        // Non-critical — don't block onboarding
+        // Non-critical
       }
     }
 
@@ -93,9 +128,13 @@ export default function FamiliarityScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <ScrollView
+      {/* Progress */}
+      <OnboardingProgress currentStep={2} totalSteps={3} labels={STEP_LABELS} />
+
+      <Animated.ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
       >
         {/* Back Button */}
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
@@ -104,39 +143,67 @@ export default function FamiliarityScreen() {
 
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.emoji}>📊</Text>
+          <MascotAvatar emoji="🦁" size="lg" />
           <Text style={styles.title}>Your Experience Level</Text>
           <Text style={styles.subtitle}>
-            We'll adapt the content depth to match your knowledge.
+            I'll adapt the content depth to match your knowledge
           </Text>
         </View>
 
+        {/* Leo reaction bubble */}
+        {selectedLevel && (
+          <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}>
+            <Text style={styles.reactionEmoji}>🦁</Text>
+            <Text style={styles.reactionText}>{LEO_LEVEL_REACTIONS[selectedLevel]}</Text>
+          </Animated.View>
+        )}
+
         {/* Level Cards */}
         <View style={styles.cardsContainer}>
-          {FAMILIARITY_LEVELS.map((level) => (
-            <TouchableOpacity
+          {FAMILIARITY_LEVELS.map((level, index) => (
+            <Animated.View
               key={level.id}
-              style={[
-                styles.card,
-                selectedLevel === level.id && styles.cardSelected,
-              ]}
-              onPress={() => setSelectedLevel(level.id as FamiliarityLevel)}
-              activeOpacity={0.7}
+              style={{
+                opacity: fadeAnim,
+                transform: [{
+                  translateY: fadeAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [20 + index * 8, 0],
+                  }),
+                }],
+              }}
             >
-              <View style={styles.cardContent}>
-                <Text style={styles.cardEmoji}>{level.icon}</Text>
-                <View style={styles.cardText}>
-                  <Text style={styles.cardTitle}>{level.name}</Text>
-                  <Text style={styles.cardDescription}>{level.description}</Text>
+              <TouchableOpacity
+                style={[
+                  styles.card,
+                  selectedLevel === level.id && styles.cardSelected,
+                ]}
+                onPress={() => handleSelect(level.id as FamiliarityLevel)}
+                activeOpacity={0.7}
+              >
+                <View style={styles.cardContent}>
+                  <Text style={styles.cardEmoji}>{level.icon}</Text>
+                  <View style={styles.cardText}>
+                    <Text style={styles.cardTitle}>{level.name}</Text>
+                    <Text style={styles.cardDescription}>{level.description}</Text>
+                  </View>
                 </View>
-              </View>
-              {selectedLevel === level.id && (
-                <View style={styles.checkmark}>
-                  <Text style={styles.checkmarkText}>✓</Text>
-                </View>
-              )}
-            </TouchableOpacity>
+                {selectedLevel === level.id && (
+                  <View style={styles.checkmark}>
+                    <Text style={styles.checkmarkText}>✓</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </Animated.View>
           ))}
+        </View>
+
+        {/* Almost done indicator */}
+        <View style={styles.almostDone}>
+          <Text style={styles.almostDoneEmoji}>🎉</Text>
+          <Text style={styles.almostDoneText}>
+            Almost done! One more tap and you're in.
+          </Text>
         </View>
 
         {/* Info Box */}
@@ -145,15 +212,14 @@ export default function FamiliarityScreen() {
             💡 You can change this anytime in Settings
           </Text>
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
 
       <StickyBottomCTA
-        title="Start Learning"
+        title="Start Learning 🚀"
         onPress={handleContinue}
         disabled={!selectedLevel}
       />
 
-      {/* Notification onboarding modal — shown after familiarity is saved */}
       <NotificationOnboarding
         visible={showNotifOnboarding}
         onComplete={handleNotifComplete}
@@ -182,16 +248,13 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 32,
-  },
-  emoji: {
-    fontSize: 64,
-    marginBottom: 16,
+    marginBottom: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
     color: COLORS.textPrimary,
+    marginTop: 12,
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -200,6 +263,24 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
+  },
+  reactionBubble: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: COLORS.accent + '15',
+    borderWidth: 1,
+    borderColor: COLORS.accent + '30',
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 16,
+  },
+  reactionEmoji: { fontSize: 24 },
+  reactionText: {
+    flex: 1,
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    lineHeight: 18,
   },
   cardsContainer: {
     gap: 12,
@@ -254,8 +335,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
+  almostDone: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 20,
+    padding: 14,
+    backgroundColor: 'rgba(34, 197, 94, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.2)',
+    borderRadius: 12,
+  },
+  almostDoneEmoji: { fontSize: 20 },
+  almostDoneText: {
+    fontSize: 13,
+    color: COLORS.success,
+    fontWeight: '500',
+  },
   infoBox: {
-    marginTop: 24,
+    marginTop: 12,
     padding: 16,
     backgroundColor: COLORS.bg1,
     borderRadius: 12,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   ScrollView,
   TextInput,
   ActivityIndicator,
+  Animated,
+  Dimensions,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,6 +19,11 @@ import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { MascotAvatar } from '../../components/mascot/MascotAvatar';
 import { getDemoXP } from '../../lib/demoXPBridge';
+import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress';
+import { triggerHaptic } from '../../lib/haptics';
+
+const STEP_LABELS = ['Industry', 'Goal', 'Level'];
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
@@ -27,7 +34,29 @@ export default function OnboardingScreen() {
   const [demoMarket, setDemoMarket] = useState<string | null>(null);
   const [demoXP, setDemoXP] = useState(0);
 
-  // Check if user did the demo — pre-select that market
+  // Animations
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+  const mascotBounce = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Entry animation
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
+      Animated.spring(slideAnim, { toValue: 0, tension: 50, friction: 8, useNativeDriver: true }),
+    ]).start();
+
+    // Mascot idle bounce
+    const bounce = Animated.loop(
+      Animated.sequence([
+        Animated.timing(mascotBounce, { toValue: -6, duration: 1200, useNativeDriver: true }),
+        Animated.timing(mascotBounce, { toValue: 0, duration: 1200, useNativeDriver: true }),
+      ])
+    );
+    bounce.start();
+    return () => bounce.stop();
+  }, []);
+
   useEffect(() => {
     (async () => {
       const { xp, market } = await getDemoXP();
@@ -47,20 +76,24 @@ export default function OnboardingScreen() {
 
   const selectedMarketData = markets.find((m) => m.id === selectedIndustry);
 
+  const handleSelect = (id: string) => {
+    triggerHaptic('light');
+    setSelectedIndustry(id);
+  };
+
   const handleContinue = async () => {
     if (!selectedIndustry || isSubmitting) return;
+    triggerHaptic('medium');
 
     setIsSubmitting(true);
     try {
       await storage.setIndustry(selectedIndustry);
       if (user) {
-        // Update profile with selected market
         await supabase
           .from('profiles')
           .update({ selected_market: selectedIndustry })
           .eq('id', user.id);
 
-        // Create initial progress
         await supabase
           .from('user_progress')
           .upsert(
@@ -85,17 +118,28 @@ export default function OnboardingScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <ScrollView
+      {/* Progress */}
+      <OnboardingProgress currentStep={0} totalSteps={3} labels={STEP_LABELS} />
+
+      <Animated.ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
       >
-        {/* Header with Mascot */}
+        {/* Header with animated Leo */}
         <View style={styles.header}>
-          <MascotAvatar emoji="🦁" size="lg" />
-          <Text style={styles.mascotCaption}>Pick one, master it! �️</Text>
+          <Animated.View style={{ transform: [{ translateY: mascotBounce }] }}>
+            <MascotAvatar emoji="🦁" size="lg" />
+          </Animated.View>
+          <View style={styles.speechBubble}>
+            <Text style={styles.speechText}>
+              Hey! I'm Leo 🦁 Let's pick your first industry to master!
+            </Text>
+            <View style={styles.speechTail} />
+          </View>
           <Text style={styles.title}>Choose your industry</Text>
           <Text style={styles.subtitle}>
-            Pick one. We'll guide you for 6 months.
+            Pick one. I'll guide you for 6 months. 🗓️
           </Text>
         </View>
 
@@ -124,38 +168,55 @@ export default function OnboardingScreen() {
           />
         </View>
 
-        {/* Count */}
         <Text style={styles.countText}>
           {filteredMarkets.length} industries available
         </Text>
 
         {/* 2-Column Market Grid */}
         <View style={styles.gridContainer}>
-          {filteredMarkets.map((market) => (
-            <TouchableOpacity
+          {filteredMarkets.map((market, index) => (
+            <Animated.View
               key={market.id}
-              style={[
-                styles.gridCard,
-                selectedIndustry === market.id && styles.gridCardSelected,
-                selectedIndustry === market.id && { borderColor: market.color },
-              ]}
-              onPress={() => setSelectedIndustry(market.id)}
-              activeOpacity={0.7}
+              style={{
+                width: (SCREEN_WIDTH - 42) / 2,
+                opacity: fadeAnim,
+                transform: [{
+                  translateY: fadeAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [20 + index * 5, 0],
+                  }),
+                }],
+              }}
             >
-              <Text style={styles.gridEmoji}>{market.emoji}</Text>
-              <Text style={styles.gridName}>{market.name}</Text>
-              {selectedIndustry === market.id && (
-                <View style={[styles.gridCheck, { backgroundColor: market.color }]}>
-                  <Text style={styles.gridCheckText}>✓</Text>
-                </View>
-              )}
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.gridCard,
+                  selectedIndustry === market.id && styles.gridCardSelected,
+                  selectedIndustry === market.id && { borderColor: market.color },
+                ]}
+                onPress={() => handleSelect(market.id)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.gridEmoji}>{market.emoji}</Text>
+                <Text style={styles.gridName}>{market.name}</Text>
+                {selectedIndustry === market.id && (
+                  <View style={[styles.gridCheck, { backgroundColor: market.color }]}>
+                    <Text style={styles.gridCheckText}>✓</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </Animated.View>
           ))}
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
 
       {/* Footer CTA */}
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 20 }]}>
+      <Animated.View
+        style={[
+          styles.footer,
+          { paddingBottom: insets.bottom + 20, opacity: fadeAnim },
+        ]}
+      >
         {selectedMarketData && (
           <View style={styles.selectedPreview}>
             <View style={styles.selectedPreviewRow}>
@@ -179,11 +240,11 @@ export default function OnboardingScreen() {
             <ActivityIndicator color="#fff" />
           ) : (
             <Text style={styles.ctaButtonText}>
-              {selectedIndustry ? 'Start my 6-month journey' : 'Select an industry'}
+              {selectedIndustry ? 'Continue →' : 'Select an industry'}
             </Text>
           )}
         </TouchableOpacity>
-      </View>
+      </Animated.View>
     </View>
   );
 }
@@ -195,24 +256,49 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 16,
-    paddingBottom: 200,
+    paddingBottom: 220,
   },
   header: {
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: 16,
     marginBottom: 20,
   },
-  mascotCaption: {
+  speechBubble: {
+    backgroundColor: COLORS.bg2,
+    borderRadius: 16,
+    padding: 14,
+    marginTop: 12,
+    marginHorizontal: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    position: 'relative',
+  },
+  speechText: {
     fontSize: 14,
     color: COLORS.textSecondary,
-    marginTop: 10,
     textAlign: 'center',
+    lineHeight: 20,
+  },
+  speechTail: {
+    position: 'absolute',
+    top: -8,
+    alignSelf: 'center',
+    left: '50%',
+    marginLeft: -8,
+    width: 0,
+    height: 0,
+    borderLeftWidth: 8,
+    borderRightWidth: 8,
+    borderBottomWidth: 8,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: COLORS.bg2,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
     color: COLORS.textPrimary,
-    marginTop: 12,
+    marginTop: 16,
     marginBottom: 6,
     textAlign: 'center',
   },
@@ -253,7 +339,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   gridCard: {
-    width: '48%',
     backgroundColor: COLORS.bg2,
     borderRadius: 16,
     padding: 16,
@@ -300,6 +385,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 16,
     backgroundColor: COLORS.bg0,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
   },
   selectedPreview: {
     padding: 12,
