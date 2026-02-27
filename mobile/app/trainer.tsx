@@ -21,6 +21,7 @@ import { TrainerCard } from '../components/trainer/TrainerCard';
 import { getMentorForContext } from '../data/mentors';
 import type { Mentor } from '../data/mentors';
 import { triggerHaptic } from '../lib/haptics';
+import { playSound } from '../lib/sounds';
 
 
 // Market-specific hero images
@@ -174,6 +175,7 @@ export default function TrainerScreen() {
     const result = data as any;
     setFeedback(result || { isCorrect: false, correctIndex: 0, feedback_pro_reasoning: null, feedback_common_mistake: null, feedback_mental_model: null });
     triggerHaptic(result?.isCorrect ? 'success' : 'warning');
+    playSound(result?.isCorrect ? 'correct' : 'wrong');
 
     // Emotional paywall: after a correct answer, free users see a Pro nudge
     if (result?.isCorrect && !isProUser) {

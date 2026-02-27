@@ -15,6 +15,9 @@ import { useAuth } from '../hooks/useAuth';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { triggerHaptic } from '../lib/haptics';
+import { MascotReaction } from '../components/mascot/MascotReaction';
+import { MascotState } from '../lib/mascots';
+import { playSound } from '../lib/sounds';
 
 interface DrillQuestion {
   id: string;
@@ -98,6 +101,7 @@ export default function DrillsScreen() {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const [mascotState, setMascotState] = useState<MascotState>('idle');
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -204,9 +208,14 @@ export default function DrillsScreen() {
     if (answer === question.isTrue) {
       setScore((prev) => prev + 1);
       triggerHaptic('success');
+      playSound('correct');
+      setMascotState('correct');
     } else {
       triggerHaptic('error');
+      playSound('wrong');
+      setMascotState('incorrect');
     }
+    setTimeout(() => setMascotState('idle'), 2500);
   };
 
   const handleNext = async () => {

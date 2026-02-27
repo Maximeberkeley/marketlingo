@@ -671,6 +671,41 @@ export type Database = {
           },
         ]
       }
+      streak_freezes: {
+        Row: {
+          created_at: string
+          id: string
+          market_id: string
+          used_at: string
+          user_id: string
+          week_of: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          market_id: string
+          used_at?: string
+          user_id: string
+          week_of?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          market_id?: string
+          used_at?: string
+          user_id?: string
+          week_of?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "streak_freezes_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       summaries: {
         Row: {
           content: string
