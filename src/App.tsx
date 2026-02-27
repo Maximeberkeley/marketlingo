@@ -3,7 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProPromotionProvider } from "@/components/subscription/ProPromotionProvider";
 import { AdminGuard } from "@/components/admin/AdminGuard";
@@ -32,8 +33,44 @@ import InvestmentCertificatePage from "./pages/InvestmentCertificatePage";
 import InvestmentWatchlist from "./pages/InvestmentWatchlist";
 import Subscription from "./pages/Subscription";
 import NotFound from "./pages/NotFound";
+import { PageTransition } from "@/components/layout/PageTransition";
 
 const queryClient = new QueryClient();
+
+function AnimatedRoutes() {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PageTransition><Auth /></PageTransition>} />
+        <Route path="/select-market" element={<PageTransition><SelectMarket /></PageTransition>} />
+        <Route path="/select-goal" element={<PageTransition><SelectGoal /></PageTransition>} />
+        <Route path="/select-familiarity" element={<PageTransition><SelectFamiliarity /></PageTransition>} />
+        <Route path="/passport" element={<PageTransition><Passport /></PageTransition>} />
+        <Route path="/home" element={<PageTransition><Home /></PageTransition>} />
+        <Route path="/roadmap" element={<PageTransition><Roadmap /></PageTransition>} />
+        <Route path="/notebook" element={<PageTransition><Notebook /></PageTransition>} />
+        <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
+        <Route path="/trainer" element={<PageTransition><Trainer /></PageTransition>} />
+        <Route path="/games" element={<PageTransition><Games /></PageTransition>} />
+        <Route path="/drills" element={<PageTransition><Drills /></PageTransition>} />
+        <Route path="/summaries" element={<PageTransition><Summaries /></PageTransition>} />
+        <Route path="/settings" element={<PageTransition><Settings /></PageTransition>} />
+        <Route path="/achievements" element={<PageTransition><Achievements /></PageTransition>} />
+        <Route path="/leaderboard" element={<PageTransition><Leaderboard /></PageTransition>} />
+        <Route path="/admin/content" element={<AdminGuard><AdminContent /></AdminGuard>} />
+        <Route path="/regulatory-hub" element={<PageTransition><RegulatoryHub /></PageTransition>} />
+        <Route path="/investment-lab" element={<PageTransition><InvestmentLab /></PageTransition>} />
+        <Route path="/investment-lab/watchlist" element={<PageTransition><InvestmentWatchlist /></PageTransition>} />
+        <Route path="/investment-lab/certificate" element={<PageTransition><InvestmentCertificatePage /></PageTransition>} />
+        <Route path="/investment-lab/:moduleId" element={<PageTransition><InvestmentModule /></PageTransition>} />
+        <Route path="/subscription" element={<PageTransition><Subscription /></PageTransition>} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
 
 const App = () => {
   // Global unhandled rejection handler to prevent app crashes
@@ -74,34 +111,8 @@ const App = () => {
         />
         <BrowserRouter>
           <ScrollToTop />
-          <ProPromotionProvider>
-            <Routes>
-              <Route path="/" element={<Auth />} />
-              <Route path="/select-market" element={<SelectMarket />} />
-              <Route path="/select-goal" element={<SelectGoal />} />
-              <Route path="/select-familiarity" element={<SelectFamiliarity />} />
-              <Route path="/passport" element={<Passport />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/roadmap" element={<Roadmap />} />
-              <Route path="/notebook" element={<Notebook />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/trainer" element={<Trainer />} />
-              <Route path="/games" element={<Games />} />
-              <Route path="/drills" element={<Drills />} />
-              <Route path="/summaries" element={<Summaries />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/achievements" element={<Achievements />} />
-              <Route path="/leaderboard" element={<Leaderboard />} />
-              <Route path="/admin/content" element={<AdminGuard><AdminContent /></AdminGuard>} />
-              <Route path="/regulatory-hub" element={<RegulatoryHub />} />
-              <Route path="/investment-lab" element={<InvestmentLab />} />
-              <Route path="/investment-lab/watchlist" element={<InvestmentWatchlist />} />
-              <Route path="/investment-lab/certificate" element={<InvestmentCertificatePage />} />
-              <Route path="/investment-lab/:moduleId" element={<InvestmentModule />} />
-              <Route path="/subscription" element={<Subscription />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+           <ProPromotionProvider>
+            <AnimatedRoutes />
           </ProPromotionProvider>
         </BrowserRouter>
       </TooltipProvider>
