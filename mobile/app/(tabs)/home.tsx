@@ -605,8 +605,8 @@ export default function HomeScreen() {
       Alert.alert('Great review!', 'Keep up the good work.');
       return;
     }
-    if (timeSpentSeconds < 180) {
-      Alert.alert('Keep learning!', 'Spend at least 3 minutes to complete the lesson.');
+    if (timeSpentSeconds < 10) {
+      Alert.alert('Too fast!', 'Take a moment to read through the slides.');
       return;
     }
     let earnedXP = XP_REWARDS.LESSON_COMPLETE;
@@ -928,6 +928,13 @@ export default function HomeScreen() {
             />
           )}
 
+          {/* ═══ INDUSTRY INTEL — moved up for visibility ═══ */}
+          {selectedMarket && (
+            <View style={styles.section}>
+              <DailyNews marketId={selectedMarket} />
+            </View>
+          )}
+
           {/* Daily Pattern (secondary content) */}
           {newsStack && !lessonCompletedToday && (
             <View style={styles.section}>
@@ -979,12 +986,7 @@ export default function HomeScreen() {
             </View>
           )}
 
-          {/* INDUSTRY INTEL */}
-          {selectedMarket && (
-            <View style={styles.section}>
-              <DailyNews marketId={selectedMarket} />
-            </View>
-          )}
+          {/* KEY PLAYERS already shown above, news moved up */}
         </ScrollView>
           {/* Mentor Chat Overlay */}
           {activeMentor && (

@@ -15,6 +15,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
 import { supabase } from '../../lib/supabase';
 import { getMarketEmoji, getMarketName } from '../../lib/markets';
+import { DailyNews } from '../../components/home/DailyNews';
 
 const CARD_IMAGES: Record<string, any> = {
   games: require('../../assets/cards/games-hero.jpg'),
@@ -216,6 +217,13 @@ export default function PracticeScreen() {
             <Text style={styles.resourceLabel}>Notebook</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Industry Intel — news feed */}
+        {selectedMarket && (
+          <View style={{ marginBottom: 20 }}>
+            <DailyNews marketId={selectedMarket} />
+          </View>
+        )}
       </ScrollView>
     </View>
   );

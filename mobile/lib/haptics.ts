@@ -1,9 +1,9 @@
 /**
  * Haptic feedback utility for MarketLingo mobile app.
- * Uses Capacitor Haptics when available, gracefully degrades to no-op.
+ * Uses expo-haptics, gracefully degrades to no-op on web.
  */
 
-import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
+import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
 
 type HapticType = 'light' | 'medium' | 'heavy' | 'success' | 'warning' | 'error' | 'selection';
@@ -16,25 +16,25 @@ export async function triggerHaptic(type: HapticType = 'light'): Promise<void> {
   try {
     switch (type) {
       case 'light':
-        await Haptics.impact({ style: ImpactStyle.Light });
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         break;
       case 'medium':
-        await Haptics.impact({ style: ImpactStyle.Medium });
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         break;
       case 'heavy':
-        await Haptics.impact({ style: ImpactStyle.Heavy });
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         break;
       case 'success':
-        await Haptics.notification({ type: NotificationType.Success });
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         break;
       case 'warning':
-        await Haptics.notification({ type: NotificationType.Warning });
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         break;
       case 'error':
-        await Haptics.notification({ type: NotificationType.Error });
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         break;
       case 'selection':
-        await Haptics.selectionStart();
+        await Haptics.selectionAsync();
         break;
     }
   } catch {

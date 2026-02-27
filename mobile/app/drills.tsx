@@ -14,6 +14,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProgressBar } from '../components/ui/ProgressBar';
+import { triggerHaptic } from '../lib/haptics';
 
 interface DrillQuestion {
   id: string;
@@ -22,6 +23,65 @@ interface DrillQuestion {
   isTrue: boolean;
   explanation: string;
   source: string;
+}
+
+// Smarter negation patterns — preserves sentence meaning while flipping truth
+const NEGATION_PATTERNS: Array<{ match: RegExp; replace: string }> = [
+  { match: /\bis the largest\b/gi, replace: 'is the smallest' },
+  { match: /\bis the fastest\b/gi, replace: 'is the slowest' },
+  { match: /\bincreased by\b/gi, replace: 'decreased by' },
+  { match: /\bgrew by\b/gi, replace: 'declined by' },
+  { match: /\bmore than\b/gi, replace: 'less than' },
+  { match: /\babove\b/gi, replace: 'below' },
+  { match: /\bhighest\b/gi, replace: 'lowest' },
+  { match: /\bfirst\b/gi, replace: 'last' },
+  { match: /\bleading\b/gi, replace: 'trailing' },
+  { match: /\bincreases\b/gi, replace: 'decreases' },
+  { match: /\brises\b/gi, replace: 'falls' },
+  { match: /\bgains\b/gi, replace: 'loses' },
+  { match: /\bsucceeded\b/gi, replace: 'failed' },
+  { match: /\bprofitable\b/gi, replace: 'unprofitable' },
+  { match: /\bstronger\b/gi, replace: 'weaker' },
+  { match: /\bexpanded\b/gi, replace: 'contracted' },
+  { match: /\bdominated\b/gi, replace: 'struggled in' },
+  { match: /\brequires\b/gi, replace: 'does not require' },
+  { match: /\bis essential\b/gi, replace: 'is optional' },
+  { match: /\bis required\b/gi, replace: 'is not required' },
+  { match: /\bcan\b/gi, replace: 'cannot' },
+  { match: /\benables\b/gi, replace: 'prevents' },
+  { match: /\bsupports\b/gi, replace: 'blocks' },
+  { match: /\balways\b/gi, replace: 'rarely' },
+  { match: /\bnever\b/gi, replace: 'frequently' },
+  { match: /\bimportant\b/gi, replace: 'negligible' },
+  { match: /\bkey\b/gi, replace: 'minor' },
+  { match: /\bcritical\b/gi, replace: 'trivial' },
+];
+
+function generateFalseStatement(original: string): string {
+  // Try each pattern until one matches
+  for (const pattern of NEGATION_PATTERNS) {
+    if (pattern.match.test(original)) {
+      // Reset lastIndex for global regexes
+      pattern.match.lastIndex = 0;
+      return original.replace(pattern.match, pattern.replace);
+    }
+  }
+
+  // Fallback: Swap numbers if present (e.g., "$100B" → "$10B")
+  const numberMatch = original.match(/\$?(\d+[\.\d]*)\s*(billion|million|trillion|B|M|T|%)/i);
+  if (numberMatch) {
+    const num = parseFloat(numberMatch[1]);
+    const fakeNum = num > 10 ? Math.round(num * 0.3) : Math.round(num * 3);
+    return original.replace(numberMatch[0], numberMatch[0].replace(numberMatch[1], String(fakeNum)));
+  }
+
+  // Last resort: prepend negation
+  const firstSentence = original.split('.')[0];
+  if (firstSentence.length > 20) {
+    return 'It is not true that ' + firstSentence.charAt(0).toLowerCase() + firstSentence.slice(1) + '.';
+  }
+  
+  return original.replace(/\b(is|are|was|were)\b/i, '$1 not');
 }
 
 export default function DrillsScreen() {
@@ -74,15 +134,22 @@ export default function DrillsScreen() {
         const category = tags[0] || 'Market Insight';
 
         slides.forEach((slide: any, index: number) => {
-          if (slide.body && slide.body.length > 20 && drillQuestions.length < 10) {
-            const isTrue = index % 2 === 0;
+          if (slide.body && slide.body.length > 30 && drillQuestions.length < 10) {
+            // Use a deterministic but varied pattern for true/false
+            const hash = slide.body.charCodeAt(0) + slide.body.charCodeAt(Math.floor(slide.body.length / 2));
+            const isTrue = hash % 3 !== 0; // ~66% true, ~33% false — more varied
+
             let statement = slide.body;
             if (!isTrue) {
-              statement = statement
-                .replace(/always/gi, 'never')
-                .replace(/important/gi, 'irrelevant')
-                .replace(/key/gi, 'minor');
+              statement = generateFalseStatement(statement);
             }
+
+            // Extract first meaningful sentence if statement is too long
+            if (statement.length > 280) {
+              const sentences = statement.split(/(?<=[.!?])\s+/);
+              statement = sentences.slice(0, 2).join(' ');
+            }
+
             const sources = (slide.sources as any[]) || [];
             drillQuestions.push({
               id: slide.id,
@@ -96,7 +163,9 @@ export default function DrillsScreen() {
         });
       });
 
-      setQuestions(drillQuestions.slice(0, 5));
+      // Shuffle for variety
+      const shuffled = drillQuestions.sort(() => Math.random() - 0.5);
+      setQuestions(shuffled.slice(0, 5));
       setLoading(false);
     };
     fetchData();
@@ -111,8 +180,10 @@ export default function DrillsScreen() {
         if (prev <= 1) {
           setShowResult(true);
           setIsTimerActive(false);
+          triggerHaptic('warning');
           return 0;
         }
+        if (prev === 5) triggerHaptic('light'); // Warn at 5s
         return prev - 1;
       });
     }, 1000);
@@ -130,10 +201,16 @@ export default function DrillsScreen() {
     setSelectedAnswer(answer);
     setShowResult(true);
     setIsTimerActive(false);
-    if (answer === question.isTrue) setScore((prev) => prev + 1);
+    if (answer === question.isTrue) {
+      setScore((prev) => prev + 1);
+      triggerHaptic('success');
+    } else {
+      triggerHaptic('error');
+    }
   };
 
   const handleNext = async () => {
+    triggerHaptic('light');
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
       setSelectedAnswer(null);
@@ -152,6 +229,7 @@ export default function DrillsScreen() {
           last_completed_at: new Date().toISOString(),
         }, { onConflict: 'user_id,market_id,drill_type' });
       }
+      triggerHaptic('success');
       setDrillComplete(true);
     }
   };
@@ -194,7 +272,7 @@ export default function DrillsScreen() {
           </View>
           <TouchableOpacity
             style={styles.ctaButton}
-            onPress={() => { setShowIntro(false); setIsTimerActive(true); }}
+            onPress={() => { triggerHaptic('medium'); setShowIntro(false); setIsTimerActive(true); }}
           >
             <Text style={styles.ctaText}>Start Drill →</Text>
           </TouchableOpacity>
@@ -230,7 +308,7 @@ export default function DrillsScreen() {
         <Text style={styles.completeTitle}>Drill Complete!</Text>
         <Text style={styles.completeScore}>{score}/{questions.length} correct</Text>
         <Text style={styles.completeFeedback}>
-          {percentage >= 80 ? "Excellent! You're market-fluent." : percentage >= 60 ? 'Good progress. Keep practicing!' : 'Review and try again.'}
+          {percentage >= 80 ? "🔥 Excellent! You're market-fluent." : percentage >= 60 ? '👍 Good progress. Keep practicing!' : '📚 Review and try again.'}
         </Text>
         <View style={{ flexDirection: 'row', gap: 12, marginTop: 20, width: '100%' }}>
           <TouchableOpacity style={[styles.secondaryBtn, { flex: 1 }]} onPress={() => router.back()}>
@@ -378,7 +456,7 @@ const styles = StyleSheet.create({
   completePercent: { fontSize: 24, fontWeight: '700' },
   completeTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 8 },
   completeScore: { fontSize: 16, color: COLORS.textSecondary, marginBottom: 4 },
-  completeFeedback: { fontSize: 13, color: COLORS.textMuted },
+  completeFeedback: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center' },
   secondaryBtn: { paddingVertical: 14, borderRadius: 14, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center' },
   secondaryBtnText: { fontSize: 15, color: COLORS.textSecondary },
 });
