@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,28 +7,31 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Animated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { StickyBottomCTA } from '../components/StickyBottomCTA';
 import { useSubscription, TRIAL_DURATION_DAYS } from '../hooks/useSubscription';
+import { LeoCharacter } from '../components/mascot/LeoCharacter';
+import { trackEvent } from '../lib/analytics';
 
 type PlanType = 'monthly' | 'annual';
 
 const PRO_FEATURES = [
   { icon: '♾️', title: 'Unlimited Learning', description: 'No daily caps on lessons, games & drills', highlight: 'Most Popular' },
-  { icon: '�', title: 'Investment Lab', description: 'Expert scenarios, portfolio simulations, and real valuation models', highlight: 'Pro Exclusive' },
+  { icon: '📊', title: 'Investment Lab', description: 'Expert scenarios, portfolio simulations, and real valuation models', highlight: 'Pro Exclusive' },
   { icon: '🧠', title: 'AI Mentors On-Demand', description: 'Unlimited conversations with industry-specific AI mentors', highlight: null },
   { icon: '🎯', title: 'Advanced Trainer', description: 'Pro Reasoning, Mental Models & Common Mistakes analysis', highlight: null },
   { icon: '🏆', title: 'LinkedIn Certificates', description: 'Shareable credentials that prove your industry expertise', highlight: null },
-  { icon: '�', title: 'Priority Content', description: 'First access to new industries and premium insights', highlight: null },
+  { icon: '🔮', title: 'Priority Content', description: 'First access to new industries and premium insights', highlight: null },
 ];
 
 const TESTIMONIALS = [
-  { quote: 'Finally understood aerospace supply chains after years of confusion. Worth every penny.', author: 'Sarah K., VC Associate', avatar: '👩‍💼' },
-  { quote: 'The Investment Lab scenarios are exactly what I needed before my LP meetings.', author: 'Marcus T., Fund Manager', avatar: '👨‍💼' },
-  { quote: 'Went from zero to pitching aerospace founders confidently in 3 months.', author: 'Diana L., Angel Investor', avatar: '👩‍🚀' },
+  { quote: 'Finally understood aerospace supply chains after years of confusion. Worth every penny.', author: 'Sarah K., VC Associate', initials: 'SK', color: '#8B5CF6' },
+  { quote: 'The Investment Lab scenarios are exactly what I needed before my LP meetings.', author: 'Marcus T., Fund Manager', initials: 'MT', color: '#3B82F6' },
+  { quote: 'Went from zero to pitching aerospace founders confidently in 3 months.', author: 'Diana L., Angel Investor', initials: 'DL', color: '#EC4899' },
 ];
 
 export default function SubscriptionScreen() {
@@ -42,6 +45,25 @@ export default function SubscriptionScreen() {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const [showTestimonials, setShowTestimonials] = useState(false);
+
+  // Entrance animations
+  const heroAnim = useRef(new Animated.Value(0)).current;
+  const cardsAnim = useRef(new Animated.Value(0)).current;
+  const featuresAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    trackEvent('subscription_view');
+    Animated.stagger(150, [
+      Animated.spring(heroAnim, { toValue: 1, tension: 60, friction: 12, useNativeDriver: true }),
+      Animated.spring(cardsAnim, { toValue: 1, tension: 60, friction: 12, useNativeDriver: true }),
+      Animated.spring(featuresAnim, { toValue: 1, tension: 60, friction: 12, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  const animStyle = (anim: Animated.Value) => ({
+    opacity: anim,
+    transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
+  });
 
   const handleStartTrial = async () => {
     const success = await startFreeTrial();
@@ -64,6 +86,7 @@ export default function SubscriptionScreen() {
     const result = await purchasePackage(pkg);
     setIsPurchasing(false);
     if (result.success) {
+      trackEvent('subscription_purchase', { plan: selectedPlan });
       Alert.alert('Welcome to MarketLingo Pro! 🎉');
       router.back();
     } else if (!result.cancelled) {
@@ -114,57 +137,63 @@ export default function SubscriptionScreen() {
 
         {/* Already Pro */}
         {isProUser && (
-          <View style={[styles.proCard, planType === 'trial' ? styles.proCardTrial : styles.proCardActive]}>
-            <View style={styles.proCardHeader}>
-              <Text style={{ fontSize: 28 }}>{planType === 'trial' ? '🎁' : '👑'}</Text>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.proCardTitle}>
-                  {planType === 'trial' ? `Trial: ${trialStatus.daysRemaining} days left` : "You're a Pro!"}
-                </Text>
-                <Text style={styles.proCardSub}>
-                  {expirationDate
-                    ? `${planType === 'trial' ? 'Ends' : (willRenew() ? 'Renews' : 'Expires')} ${expirationDate.toLocaleDateString()}`
-                    : 'Full access activated'}
-                </Text>
+          <Animated.View style={[animStyle(heroAnim)]}>
+            <View style={[styles.proCard, planType === 'trial' ? styles.proCardTrial : styles.proCardActive]}>
+              <View style={styles.proCardHeader}>
+                <LeoCharacter size="sm" animation="celebrating" />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.proCardTitle}>
+                    {planType === 'trial' ? `Trial: ${trialStatus.daysRemaining} days left` : "You're a Pro!"}
+                  </Text>
+                  <Text style={styles.proCardSub}>
+                    {expirationDate
+                      ? `${planType === 'trial' ? 'Ends' : (willRenew() ? 'Renews' : 'Expires')} ${expirationDate.toLocaleDateString()}`
+                      : 'Full access activated'}
+                  </Text>
+                </View>
               </View>
+              {planType === 'trial' && (
+                <TouchableOpacity style={styles.trialUpgradeBtn} onPress={handlePurchase}>
+                  <Text style={styles.trialUpgradeBtnText}>👑 Subscribe - {getPriceDisplay('annual')}/year</Text>
+                </TouchableOpacity>
+              )}
+              {planType !== 'trial' && (
+                <Text style={styles.proThankYou}>Thank you for supporting MarketLingo! Full access to all Pro features.</Text>
+              )}
             </View>
-            {planType === 'trial' && (
-              <TouchableOpacity style={styles.trialUpgradeBtn} onPress={handlePurchase}>
-                <Text style={styles.trialUpgradeBtnText}>👑 Subscribe - {getPriceDisplay('annual')}/year</Text>
-              </TouchableOpacity>
-            )}
-            {planType !== 'trial' && (
-              <Text style={styles.proThankYou}>Thank you for supporting MarketLingo! Full access to all Pro features.</Text>
-            )}
-          </View>
+          </Animated.View>
         )}
 
         {/* Not Pro - Show Upgrade */}
         {!isProUser && (
           <>
-            {/* Hero */}
-            <View style={styles.hero}>
-              <View style={styles.crownContainer}>
-                <Text style={styles.crownEmoji}>👑</Text>
+            {/* Hero with Leo */}
+            <Animated.View style={[styles.hero, animStyle(heroAnim)]}>
+              <View style={styles.leoHeroWrap}>
+                <LeoCharacter size="lg" animation="waving" />
               </View>
               <Text style={styles.heroTitle}>Become Investment-Ready</Text>
               <Text style={styles.heroSubtitle}>Master industries like a VC in 6 months</Text>
-            </View>
+            </Animated.View>
 
             {/* Trial CTA */}
             {canStartTrial && (
-              <View style={styles.trialCard}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <Text style={{ fontSize: 16 }}>🎁</Text>
-                  <Text style={styles.trialLabel}>Limited Time</Text>
+              <Animated.View style={[animStyle(cardsAnim)]}>
+                <View style={styles.trialCard}>
+                  <View style={styles.trialHeaderRow}>
+                    <View style={styles.giftIcon}>
+                      <Text style={{ fontSize: 16 }}>🎁</Text>
+                    </View>
+                    <Text style={styles.trialLabel}>Limited Time</Text>
+                  </View>
+                  <Text style={styles.trialTitle}>Try Pro Free for {TRIAL_DURATION_DAYS} Days</Text>
+                  <Text style={styles.trialDesc}>Full access to all Pro features. No credit card required.</Text>
+                  <TouchableOpacity style={styles.trialBtn} onPress={handleStartTrial}>
+                    <Text style={styles.trialBtnText}>Start Free Trial</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.trialAfter}>Then {getPriceDisplay('annual')}/year or {getPriceDisplay('monthly')}/month</Text>
                 </View>
-                <Text style={styles.trialTitle}>Try Pro Free for {TRIAL_DURATION_DAYS} Days</Text>
-                <Text style={styles.trialDesc}>Full access to all Pro features. No credit card required.</Text>
-                <TouchableOpacity style={styles.trialBtn} onPress={handleStartTrial}>
-                  <Text style={styles.trialBtnText}>✨ Start Free Trial</Text>
-                </TouchableOpacity>
-                <Text style={styles.trialAfter}>Then {getPriceDisplay('annual')}/year or {getPriceDisplay('monthly')}/month</Text>
-              </View>
+              </Animated.View>
             )}
 
             {canStartTrial && (
@@ -176,13 +205,14 @@ export default function SubscriptionScreen() {
             )}
 
             {/* Pricing Cards */}
-            <View style={styles.pricingCards}>
+            <Animated.View style={[styles.pricingCards, animStyle(cardsAnim)]}>
               <TouchableOpacity
                 style={[styles.pricingCard, selectedPlan === 'annual' && styles.pricingCardSelected]}
                 onPress={() => setSelectedPlan('annual')}
+                activeOpacity={0.7}
               >
                 <View style={styles.bestValueBadge}>
-                  <Text style={styles.bestValueText}>Save 33% - Best Value</Text>
+                  <Text style={styles.bestValueText}>Save 33% — Best Value</Text>
                 </View>
                 <View style={styles.pricingContent}>
                   <View>
@@ -194,11 +224,13 @@ export default function SubscriptionScreen() {
                     <Text style={styles.pricePeriod}>/year</Text>
                   </View>
                 </View>
+                {selectedPlan === 'annual' && <View style={styles.selectedDot} />}
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={[styles.pricingCard, selectedPlan === 'monthly' && styles.pricingCardSelected]}
                 onPress={() => setSelectedPlan('monthly')}
+                activeOpacity={0.7}
               >
                 <View style={styles.pricingContent}>
                   <View>
@@ -210,14 +242,15 @@ export default function SubscriptionScreen() {
                     <Text style={styles.pricePeriod}>/month</Text>
                   </View>
                 </View>
+                {selectedPlan === 'monthly' && <View style={styles.selectedDot} />}
               </TouchableOpacity>
-            </View>
+            </Animated.View>
           </>
         )}
 
         {/* Features List */}
-        <View style={styles.featuresSection}>
-          <Text style={styles.featuresTitle}>✨ What's Included in Pro</Text>
+        <Animated.View style={[styles.featuresSection, animStyle(featuresAnim)]}>
+          <Text style={styles.featuresTitle}>What's Included in Pro</Text>
           {PRO_FEATURES.map((feature, index) => (
             <View key={index} style={styles.featureItem}>
               <View style={styles.featureIcon}>
@@ -237,7 +270,7 @@ export default function SubscriptionScreen() {
               <Text style={styles.checkmark}>✓</Text>
             </View>
           ))}
-        </View>
+        </Animated.View>
 
         {/* Testimonials */}
         <TouchableOpacity style={styles.testimonialToggle} onPress={() => setShowTestimonials(!showTestimonials)}>
@@ -248,8 +281,10 @@ export default function SubscriptionScreen() {
             {TESTIMONIALS.map((t, i) => (
               <View key={i} style={styles.testimonialCard}>
                 <Text style={styles.testimonialQuote}>"{t.quote}"</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
-                  <Text>{t.avatar}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 }}>
+                  <View style={[styles.testimonialInitials, { backgroundColor: t.color + '20' }]}>
+                    <Text style={[styles.testimonialInitialsText, { color: t.color }]}>{t.initials}</Text>
+                  </View>
                   <Text style={styles.testimonialAuthor}>{t.author}</Text>
                 </View>
               </View>
@@ -270,7 +305,7 @@ export default function SubscriptionScreen() {
 
       {!isProUser && (
         <StickyBottomCTA
-          title={isPurchasing ? 'Processing...' : `Subscribe - ${getPriceDisplay(selectedPlan)}${selectedPlan === 'monthly' ? '/mo' : '/yr'}`}
+          title={isPurchasing ? 'Processing...' : `Subscribe — ${getPriceDisplay(selectedPlan)}${selectedPlan === 'monthly' ? '/mo' : '/yr'}`}
           onPress={handlePurchase}
           loading={isPurchasing}
           disabled={isPurchasing}
@@ -281,319 +316,124 @@ export default function SubscriptionScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.bg0,
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-  },
-  backButton: {
-    marginBottom: 16,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: COLORS.accent,
-    fontWeight: '500',
-  },
-  hero: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  crownContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#F59E0B30',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  crownEmoji: {
-    fontSize: 40,
-  },
-  heroTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  heroSubtitle: {
-    fontSize: 15,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  pricingCards: {
-    gap: 12,
-    marginBottom: 24,
-  },
+  container: { flex: 1, backgroundColor: COLORS.bg0 },
+  scrollContent: { paddingHorizontal: 16 },
+  backButton: { marginBottom: 16 },
+  backButtonText: { fontSize: 16, color: COLORS.accent, fontWeight: '500' },
+  hero: { alignItems: 'center', marginBottom: 24 },
+  leoHeroWrap: { marginBottom: 12 },
+  heroTitle: { fontSize: 26, fontWeight: '800', color: COLORS.textPrimary, marginBottom: 8, textAlign: 'center' },
+  heroSubtitle: { fontSize: 15, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 22 },
+  pricingCards: { gap: 12, marginBottom: 24 },
   pricingCard: {
     backgroundColor: COLORS.bg2,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 18,
+    padding: 18,
     borderWidth: 2,
     borderColor: COLORS.border,
+    position: 'relative',
+    overflow: 'hidden',
   },
-  pricingCardSelected: {
-    borderColor: COLORS.accent,
-    backgroundColor: COLORS.accent + '10',
+  pricingCardSelected: { borderColor: COLORS.accent, backgroundColor: COLORS.accent + '08' },
+  selectedDot: {
+    position: 'absolute',
+    top: 18,
+    right: 18,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: COLORS.accent,
   },
   bestValueBadge: {
     position: 'absolute',
-    top: -10,
-    left: 12,
+    top: -1,
+    left: -1,
     backgroundColor: COLORS.success,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderTopLeftRadius: 16,
+    borderBottomRightRadius: 10,
   },
-  bestValueText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  pricingContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  planName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-  },
-  planDetail: {
-    fontSize: 13,
-    color: COLORS.textMuted,
-    marginTop: 2,
-  },
-  priceContainer: {
-    alignItems: 'flex-end',
-  },
-  price: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-  },
-  pricePeriod: {
-    fontSize: 12,
-    color: COLORS.textMuted,
-  },
-  featuresSection: {
-    marginBottom: 24,
-  },
-  featuresTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginBottom: 16,
-  },
+  bestValueText: { fontSize: 10, fontWeight: '700', color: '#FFFFFF', letterSpacing: 0.3 },
+  pricingContent: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
+  planName: { fontSize: 18, fontWeight: '700', color: COLORS.textPrimary },
+  planDetail: { fontSize: 13, color: COLORS.textMuted, marginTop: 2 },
+  priceContainer: { alignItems: 'flex-end' },
+  price: { fontSize: 24, fontWeight: '800', color: COLORS.textPrimary },
+  pricePeriod: { fontSize: 12, color: COLORS.textMuted },
+  featuresSection: { marginBottom: 24 },
+  featuresTitle: { fontSize: 18, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 16 },
   featureItem: {
     flexDirection: 'row',
     backgroundColor: COLORS.bg2,
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: 14,
+    padding: 14,
     marginBottom: 8,
     borderWidth: 1,
     borderColor: COLORS.border,
+    alignItems: 'center',
   },
   featureIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: COLORS.accent + '15',
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: COLORS.accent + '12',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
-  featureEmoji: {
-    fontSize: 20,
-  },
-  featureContent: {
-    flex: 1,
-  },
-  featureTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  featureName: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: COLORS.textPrimary,
-  },
-  checkmark: {
-    fontSize: 14,
-    color: COLORS.success,
-    fontWeight: '600',
-  },
-  featureDescription: {
-    fontSize: 13,
-    color: COLORS.textMuted,
-    marginTop: 2,
-  },
-  restoreButton: {
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  restoreText: {
-    fontSize: 14,
-    color: COLORS.textMuted,
-  },
-  proCard: {
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
-    borderWidth: 1,
-  },
-  proCardTrial: {
-    backgroundColor: 'rgba(245, 158, 11, 0.08)',
-    borderColor: 'rgba(245, 158, 11, 0.3)',
-  },
-  proCardActive: {
-    backgroundColor: 'rgba(139, 92, 246, 0.08)',
-    borderColor: 'rgba(139, 92, 246, 0.3)',
-  },
-  proCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
-  },
-  proCardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-  },
-  proCardSub: {
-    fontSize: 12,
-    color: COLORS.textMuted,
-    marginTop: 2,
-  },
-  proThankYou: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
-    lineHeight: 20,
-  },
-  trialUpgradeBtn: {
-    backgroundColor: COLORS.accent,
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  trialUpgradeBtnText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-    fontSize: 14,
-  },
+  featureEmoji: { fontSize: 20 },
+  featureContent: { flex: 1 },
+  featureTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  featureName: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
+  checkmark: { fontSize: 14, color: COLORS.success, fontWeight: '700', marginLeft: 8 },
+  featureDescription: { fontSize: 13, color: COLORS.textMuted, marginTop: 2, lineHeight: 18 },
+  restoreButton: { alignItems: 'center', paddingVertical: 12 },
+  restoreText: { fontSize: 14, color: COLORS.textMuted },
+  proCard: { borderRadius: 18, padding: 18, marginBottom: 24, borderWidth: 1 },
+  proCardTrial: { backgroundColor: 'rgba(245, 158, 11, 0.08)', borderColor: 'rgba(245, 158, 11, 0.3)' },
+  proCardActive: { backgroundColor: 'rgba(139, 92, 246, 0.08)', borderColor: 'rgba(139, 92, 246, 0.3)' },
+  proCardHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
+  proCardTitle: { fontSize: 18, fontWeight: '700', color: COLORS.textPrimary },
+  proCardSub: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
+  proThankYou: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20 },
+  trialUpgradeBtn: { backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 14, alignItems: 'center' },
+  trialUpgradeBtnText: { color: '#FFFFFF', fontWeight: '700', fontSize: 15 },
   trialCard: {
     backgroundColor: 'rgba(245, 158, 11, 0.06)',
     borderWidth: 1,
     borderColor: 'rgba(245, 158, 11, 0.2)',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 18,
+    padding: 18,
     alignItems: 'center',
     marginBottom: 16,
   },
-  trialLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#F59E0B',
-    letterSpacing: 0.5,
-  },
-  trialTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginBottom: 6,
-  },
-  trialDesc: {
-    fontSize: 13,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-    marginBottom: 14,
-  },
-  trialBtn: {
-    backgroundColor: '#F59E0B',
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
+  trialHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
+  giftIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
     alignItems: 'center',
-    marginBottom: 8,
+    justifyContent: 'center',
   },
-  trialBtnText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  trialAfter: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 16,
-    gap: 12,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: COLORS.border,
-  },
-  dividerText: {
-    fontSize: 12,
-    color: COLORS.textMuted,
-  },
-  highlightBadge: {
-    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginLeft: 6,
-  },
-  highlightText: {
-    fontSize: 9,
-    fontWeight: '600',
-    color: COLORS.accent,
-  },
-  testimonialToggle: {
-    alignItems: 'center',
-    paddingVertical: 12,
-    marginBottom: 4,
-  },
-  testimonialToggleText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: COLORS.textSecondary,
-  },
-  testimonialCard: {
-    backgroundColor: COLORS.bg2,
-    borderRadius: 12,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  testimonialQuote: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
-    lineHeight: 20,
-    fontStyle: 'italic',
-  },
-  testimonialAuthor: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    fontWeight: '500',
-  },
-  legalText: {
-    fontSize: 10,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-    lineHeight: 16,
-    marginTop: 8,
-    marginBottom: 16,
-    paddingHorizontal: 12,
-  },
+  trialLabel: { fontSize: 11, fontWeight: '700', color: '#F59E0B', letterSpacing: 0.5, textTransform: 'uppercase' },
+  trialTitle: { fontSize: 20, fontWeight: '800', color: COLORS.textPrimary, marginBottom: 6 },
+  trialDesc: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center', marginBottom: 14 },
+  trialBtn: { backgroundColor: '#F59E0B', borderRadius: 14, paddingVertical: 14, paddingHorizontal: 32, alignItems: 'center', marginBottom: 8 },
+  trialBtnText: { color: '#FFFFFF', fontWeight: '700', fontSize: 15 },
+  trialAfter: { fontSize: 11, color: COLORS.textMuted },
+  dividerRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 16, gap: 12 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: COLORS.border },
+  dividerText: { fontSize: 12, color: COLORS.textMuted },
+  highlightBadge: { backgroundColor: 'rgba(139, 92, 246, 0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6, marginLeft: 6 },
+  highlightText: { fontSize: 9, fontWeight: '600', color: COLORS.accent },
+  testimonialToggle: { alignItems: 'center', paddingVertical: 12, marginBottom: 4 },
+  testimonialToggleText: { fontSize: 14, fontWeight: '500', color: COLORS.textSecondary },
+  testimonialCard: { backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.border },
+  testimonialQuote: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20, fontStyle: 'italic' },
+  testimonialInitials: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  testimonialInitialsText: { fontSize: 11, fontWeight: '700' },
+  testimonialAuthor: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
+  legalText: { fontSize: 10, color: COLORS.textMuted, textAlign: 'center', lineHeight: 16, marginTop: 8, marginBottom: 16, paddingHorizontal: 12 },
 });

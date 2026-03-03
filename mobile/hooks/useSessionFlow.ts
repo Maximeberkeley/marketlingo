@@ -9,6 +9,7 @@ import { supabase } from '../lib/supabase';
 import { StackWithSlides } from '../lib/types';
 import { getMarketName, getMarketEmoji } from '../lib/markets';
 import { triggerHaptic } from '../lib/haptics';
+import { trackEvent } from '../lib/analytics';
 
 interface UseSessionFlowParams {
   user: any;
@@ -56,6 +57,7 @@ export function useSessionFlow({
 
   const handleOpenStack = useCallback((stack: StackWithSlides) => {
     triggerHaptic('light');
+    trackEvent('lesson_start', { stackId: stack.id, type: stack.stack_type });
     setActiveStack(stack);
     setActiveBiteIndex(null);
     setShowReader(true);
@@ -112,6 +114,7 @@ export function useSessionFlow({
       }
     }
 
+    trackEvent('lesson_complete', { stackId: activeStack?.id || '', xp: earnedXP, market: selectedMarket || '' });
     setSessionXPEarned(earnedXP);
     setShowSessionComplete(true);
   }, [activeStack, progress, xpData, selectedMarket, completeStack, updateStreak, completeLessonForToday, addXP, checkStreakMilestone, checkLevelMilestone, xpRewardLessonComplete, xpRewardStreakBonus]);
