@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, Image, StyleSheet, Animated } from 'react-native';
 import { COLORS } from '../../lib/constants';
 
 interface MascotAvatarProps {
-  emoji: string;
+  /** Legacy prop — ignored. Always renders Leo image now. */
+  emoji?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   color?: string;
   animated?: boolean;
@@ -16,15 +17,10 @@ const SIZES = {
   xl: 120,
 };
 
-const FONT_SIZES = {
-  sm: 24,
-  md: 36,
-  lg: 56,
-  xl: 80,
-};
-
+/**
+ * Always renders the real Leo mascot image — never an emoji.
+ */
 export function MascotAvatar({
-  emoji,
   size = 'md',
   color = COLORS.accent,
   animated = true,
@@ -36,7 +32,7 @@ export function MascotAvatar({
       Animated.loop(
         Animated.sequence([
           Animated.timing(bounceAnim, {
-            toValue: -8,
+            toValue: -6,
             duration: 1500,
             useNativeDriver: true,
           }),
@@ -51,7 +47,6 @@ export function MascotAvatar({
   }, [animated, bounceAnim]);
 
   const containerSize = SIZES[size];
-  const fontSize = FONT_SIZES[size];
 
   return (
     <Animated.View
@@ -60,13 +55,16 @@ export function MascotAvatar({
         {
           width: containerSize,
           height: containerSize,
-          backgroundColor: color + '20',
-          borderColor: color + '40',
+          backgroundColor: color + '15',
+          borderColor: color + '30',
           transform: [{ translateY: bounceAnim }],
         },
       ]}
     >
-      <Text style={[styles.emoji, { fontSize }]}>{emoji}</Text>
+      <Image
+        source={require('../../assets/mascot/leo-reference.png')}
+        style={{ width: containerSize * 0.75, height: containerSize * 0.75, resizeMode: 'contain' }}
+      />
     </Animated.View>
   );
 }
@@ -77,8 +75,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-  },
-  emoji: {
-    textAlign: 'center',
   },
 });

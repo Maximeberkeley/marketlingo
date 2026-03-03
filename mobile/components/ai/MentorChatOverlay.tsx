@@ -36,7 +36,6 @@ export function MentorChatOverlay({ visible, mentor, onClose, context, marketId 
   const [isLoading, setIsLoading] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  // Reset and set greeting when mentor or visibility changes
   useEffect(() => {
     if (visible && mentor) {
       setMessages([{ id: '0', role: 'mentor', content: mentor.greeting }]);
@@ -72,7 +71,6 @@ Be conversational, helpful, and draw from deep industry knowledge. Keep response
 
 ${context ? `Current context: ${context}` : ''}`;
 
-      // Build history for context (exclude the initial greeting to avoid confusion)
       const history = messages
         .filter((m) => m.id !== '0')
         .map((m) => ({
@@ -112,6 +110,9 @@ ${context ? `Current context: ${context}` : ''}`;
     }
   };
 
+  // Resolve mentor ID for image lookup
+  const mentorId = mentor.id || mentor.name.toLowerCase().split(' ')[0];
+
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <KeyboardAvoidingView
@@ -121,7 +122,7 @@ ${context ? `Current context: ${context}` : ''}`;
       >
         {/* Header */}
         <View style={styles.header}>
-          <MentorAvatar emoji={mentor.emoji} name={mentor.name} size="md" />
+          <MentorAvatar mentorId={mentorId} name={mentor.name} size="md" />
           <View style={{ flex: 1 }}>
             <Text style={styles.mentorName}>{mentor.name}</Text>
             <Text style={styles.mentorTitle}>{mentor.title}</Text>
@@ -148,7 +149,9 @@ ${context ? `Current context: ${context}` : ''}`;
               style={[styles.bubble, msg.role === 'user' ? styles.userBubble : styles.mentorBubble]}
             >
               {msg.role === 'mentor' && (
-                <Text style={styles.bubbleEmoji}>{mentor.emoji}</Text>
+                <View style={styles.bubbleMentorAvatar}>
+                  <MentorAvatar mentorId={mentorId} name={mentor.name} size="sm" />
+                </View>
               )}
               <Text style={[styles.bubbleText, msg.role === 'user' && styles.userBubbleText]}>
                 {msg.content}
@@ -157,7 +160,9 @@ ${context ? `Current context: ${context}` : ''}`;
           ))}
           {isLoading && (
             <View style={[styles.bubble, styles.mentorBubble]}>
-              <Text style={styles.bubbleEmoji}>{mentor.emoji}</Text>
+              <View style={styles.bubbleMentorAvatar}>
+                <MentorAvatar mentorId={mentorId} name={mentor.name} size="sm" />
+              </View>
               <View style={styles.typingDots}>
                 <ActivityIndicator size="small" color={COLORS.textMuted} />
                 <Text style={styles.typingText}>Thinking...</Text>
@@ -166,7 +171,7 @@ ${context ? `Current context: ${context}` : ''}`;
           )}
         </ScrollView>
 
-        {/* Suggested prompts (only on first message) */}
+        {/* Suggested prompts */}
         {messages.length <= 1 && (
           <ScrollView
             horizontal
@@ -183,9 +188,7 @@ ${context ? `Current context: ${context}` : ''}`;
               <TouchableOpacity
                 key={prompt}
                 style={styles.suggestionChip}
-                onPress={() => {
-                  setInput(prompt);
-                }}
+                onPress={() => setInput(prompt)}
               >
                 <Text style={styles.suggestionText}>{prompt}</Text>
               </TouchableOpacity>
@@ -278,7 +281,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accent,
     flexDirection: 'row-reverse',
   },
-  bubbleEmoji: { fontSize: 18, marginTop: 2 },
+  bubbleMentorAvatar: { marginTop: 2 },
   bubbleText: { fontSize: 14, color: COLORS.textPrimary, lineHeight: 21, flex: 1 },
   userBubbleText: { color: '#FFFFFF' },
   typingDots: { flexDirection: 'row', alignItems: 'center', gap: 8 },

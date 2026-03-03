@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { View, ActivityIndicator, StyleSheet, Image, Text } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
+import { trackEvent, identifyUser } from '../lib/analytics';
 
 export default function Index() {
   const { user, loading } = useAuth();
@@ -15,6 +16,9 @@ export default function Index() {
         router.replace('/auth');
         return;
       }
+
+      trackEvent('app_open');
+      identifyUser(user.id, { email: user.email || '' });
 
       // Check if user has selected a market
       const { data: profile } = await supabase
