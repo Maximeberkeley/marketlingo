@@ -1,32 +1,96 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  ImageBackground,
+  Animated,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
 import { supabase } from '../../lib/supabase';
 import { getMarketEmoji, getMarketName } from '../../lib/markets';
-import { DailyNews } from '../../components/home/DailyNews';
+import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 
-const CARD_IMAGES: Record<string, any> = {
-  games: require('../../assets/cards/games-hero.jpg'),
-  drills: require('../../assets/cards/drills-hero.jpg'),
-  trainer: require('../../assets/cards/trainer-hero.jpg'),
-};
+const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 
 interface PracticeStats {
   gamesPlayed: number;
   drillsCompleted: number;
   trainerAttempts: number;
+}
+
+// ── Animated Practice Card ──
+function PracticeCard({
+  emoji,
+  title,
+  subtitle,
+  xpLabel,
+  accentColor,
+  onPress,
+  index,
+}: {
+  emoji: string;
+  title: string;
+  subtitle: string;
+  xpLabel: string;
+  accentColor: string;
+  onPress: () => void;
+  index: number;
+}) {
+  const fadeIn = useRef(new Animated.Value(0)).current;
+  const slideUp = useRef(new Animated.Value(40)).current;
+
+  useEffect(() => {
+    const delay = index * 100;
+    setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(fadeIn, { toValue: 1, duration: 400, useNativeDriver: true }),
+        Animated.spring(slideUp, { toValue: 0, tension: 180, friction: 18, useNativeDriver: true }),
+      ]).start();
+    }, delay);
+  }, [index]);
+
+  return (
+    <Animated.View style={{ opacity: fadeIn, transform: [{ translateY: slideUp }] }}>
+      <TouchableOpacity
+        style={[styles.practiceCard, { borderLeftColor: accentColor, borderLeftWidth: 4 }]}
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          onPress();
+        }}
+        activeOpacity={0.8}
+      >
+        <View style={styles.practiceCardLeft}>
+          <Text style={styles.practiceEmoji}>{emoji}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.practiceTitle}>{title}</Text>
+            <Text style={styles.practiceSub}>{subtitle}</Text>
+          </View>
+        </View>
+        <View style={[styles.xpChip, { backgroundColor: accentColor + '20' }]}>
+          <Text style={[styles.xpChipText, { color: accentColor }]}>{xpLabel}</Text>
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
+
+// ── Stat Pill ──
+function StatPill({ value, label }: { value: number; label: string }) {
+  return (
+    <View style={styles.statPill}>
+      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
+  );
 }
 
 export default function PracticeScreen() {
@@ -52,7 +116,6 @@ export default function PracticeScreen() {
     if (profile?.selected_market) {
       setSelectedMarket(profile.selected_market);
 
-      // Fetch practice stats
       const today = new Date().toISOString().split('T')[0];
       const { data: daily } = await supabase
         .from('daily_completions')
@@ -84,6 +147,8 @@ export default function PracticeScreen() {
     );
   }
 
+  const totalToday = stats.gamesPlayed + stats.drillsCompleted;
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -93,137 +158,92 @@ export default function PracticeScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* ── Header ── */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Practice</Text>
-          <Text style={styles.headerSubtitle}>
-            {selectedMarket ? `${getMarketEmoji(selectedMarket)} ${getMarketName(selectedMarket)}` : 'Select a market'}
-          </Text>
+          <View>
+            <Text style={styles.headerTitle}>Practice</Text>
+            <Text style={styles.headerSub}>
+              {selectedMarket
+                ? `${getMarketEmoji(selectedMarket)} ${getMarketName(selectedMarket)}`
+                : 'Select a market'}
+            </Text>
+          </View>
         </View>
 
-        {/* Today's stats */}
+        {/* ── Leo Encouragement ── */}
+        <View style={styles.leoRow}>
+          <Image source={LEO_IMAGE} style={styles.leoMini} />
+          <View style={styles.leoBubble}>
+            <Text style={styles.leoBubbleText}>
+              {totalToday === 0
+                ? "Let's sharpen your skills! Pick a mode below 👇"
+                : totalToday >= 3
+                  ? "You're on fire today! 🔥 Keep pushing!"
+                  : "Nice start! Try another round? 💪"}
+            </Text>
+          </View>
+        </View>
+
+        {/* ── Today's Stats ── */}
         <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>{stats.gamesPlayed}</Text>
-            <Text style={styles.statLabel}>Games today</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>{stats.drillsCompleted}</Text>
-            <Text style={styles.statLabel}>Drills today</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>{stats.trainerAttempts}</Text>
-            <Text style={styles.statLabel}>Trainer total</Text>
-          </View>
+          <StatPill value={stats.gamesPlayed} label="Games" />
+          <StatPill value={stats.drillsCompleted} label="Drills" />
+          <StatPill value={stats.trainerAttempts} label="Scenarios" />
         </View>
 
-        {/* Game Modes */}
-        <Text style={styles.sectionTitle}>GAME MODES</Text>
+        {/* ── Practice Modes ── */}
+        <Text style={styles.sectionLabel}>PRACTICE MODES</Text>
 
-        {/* Trivia Games — full width hero */}
-        <TouchableOpacity
-          style={styles.heroCard}
+        <PracticeCard
+          index={0}
+          emoji="🎮"
+          title="Trivia Games"
+          subtitle="Test your market knowledge"
+          xpLabel={`+${XP_REWARDS.GAME_COMPLETE} XP`}
+          accentColor="#8B5CF6"
           onPress={() => router.push('/games' as any)}
-          activeOpacity={0.85}
-        >
-          <ImageBackground
-            source={CARD_IMAGES.games}
-            style={styles.heroCardBg}
-            imageStyle={{ borderRadius: 16 }}
-          >
-            <View style={[styles.heroOverlay, { backgroundColor: 'rgba(88,28,135,0.88)' }]}>
-              <View style={styles.heroTagRow}>
-                <View style={[styles.heroTag, { backgroundColor: 'rgba(196,181,253,0.2)' }]}>
-                  <Text style={[styles.heroTagText, { color: '#C4B5FD' }]}>TRIVIA</Text>
-                </View>
-                <Text style={styles.heroXP}>+{XP_REWARDS.GAME_COMPLETE} XP</Text>
-              </View>
-              <Text style={styles.heroTitle}>Games</Text>
-              <Text style={styles.heroDesc}>Test your market knowledge with trivia challenges</Text>
-            </View>
-          </ImageBackground>
-        </TouchableOpacity>
-
-        {/* Speed Drills — full width hero */}
-        <TouchableOpacity
-          style={styles.heroCard}
+        />
+        <PracticeCard
+          index={1}
+          emoji="⚡"
+          title="Speed Drills"
+          subtitle="Race the clock with rapid-fire questions"
+          xpLabel={`+${XP_REWARDS.DRILL_CORRECT} XP/q`}
+          accentColor="#F59E0B"
           onPress={() => router.push('/drills' as any)}
-          activeOpacity={0.85}
-        >
-          <ImageBackground
-            source={CARD_IMAGES.drills}
-            style={styles.heroCardBg}
-            imageStyle={{ borderRadius: 16 }}
-          >
-            <View style={[styles.heroOverlay, { backgroundColor: 'rgba(120,53,15,0.88)' }]}>
-              <View style={styles.heroTagRow}>
-                <View style={[styles.heroTag, { backgroundColor: 'rgba(253,230,138,0.2)' }]}>
-                  <Text style={[styles.heroTagText, { color: '#FDE68A' }]}>SPEED</Text>
-                </View>
-                <Text style={styles.heroXP}>+{XP_REWARDS.DRILL_CORRECT} XP/correct</Text>
-              </View>
-              <Text style={styles.heroTitle}>Speed Drills</Text>
-              <Text style={styles.heroDesc}>Race against the clock with rapid-fire questions</Text>
-            </View>
-          </ImageBackground>
-        </TouchableOpacity>
-
-        {/* Trainer Scenarios — full width hero */}
-        <TouchableOpacity
-          style={styles.heroCard}
+        />
+        <PracticeCard
+          index={2}
+          emoji="🧠"
+          title="Trainer Scenarios"
+          subtitle="Real-world strategy decisions"
+          xpLabel={`+${XP_REWARDS.TRAINER_COMPLETE} XP`}
+          accentColor="#22C55E"
           onPress={() => router.push('/trainer' as any)}
-          activeOpacity={0.85}
-        >
-          <ImageBackground
-            source={CARD_IMAGES.trainer}
-            style={styles.heroCardBg}
-            imageStyle={{ borderRadius: 16 }}
-          >
-            <View style={[styles.heroOverlay, { backgroundColor: 'rgba(6,78,59,0.88)' }]}>
-              <View style={styles.heroTagRow}>
-                <View style={[styles.heroTag, { backgroundColor: 'rgba(110,231,183,0.2)' }]}>
-                  <Text style={[styles.heroTagText, { color: '#6EE7B7' }]}>STRATEGY</Text>
-                </View>
-                <Text style={styles.heroXP}>+{XP_REWARDS.TRAINER_COMPLETE} XP</Text>
-              </View>
-              <Text style={styles.heroTitle}>Trainer Scenarios</Text>
-              <Text style={styles.heroDesc}>Real-world strategy decisions with expert feedback</Text>
-            </View>
-          </ImageBackground>
-        </TouchableOpacity>
+        />
 
-        {/* Quick access to summaries + regulatory */}
-        <Text style={[styles.sectionTitle, { marginTop: 8 }]}>RESOURCES</Text>
-        <View style={styles.resourceRow}>
-          <TouchableOpacity
-            style={styles.resourceCard}
-            onPress={() => router.push('/summaries' as any)}
-          >
-            <Text style={styles.resourceEmoji}>📰</Text>
-            <Text style={styles.resourceLabel}>Summaries</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.resourceCard}
-            onPress={() => router.push('/regulatory-hub' as any)}
-          >
-            <Text style={styles.resourceEmoji}>⚗️</Text>
-            <Text style={styles.resourceLabel}>Regulatory</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.resourceCard}
-            onPress={() => router.push('/(tabs)/notebook' as any)}
-          >
-            <Text style={styles.resourceEmoji}>📓</Text>
-            <Text style={styles.resourceLabel}>Notebook</Text>
-          </TouchableOpacity>
+        {/* ── Resources ── */}
+        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>RESOURCES</Text>
+
+        <View style={styles.resourceGrid}>
+          {[
+            { emoji: '📰', label: 'Summaries', route: '/summaries' },
+            { emoji: '⚗️', label: 'Regulatory', route: '/regulatory-hub' },
+            { emoji: '📓', label: 'Notebook', route: '/(tabs)/notebook' },
+          ].map((item, idx) => (
+            <TouchableOpacity
+              key={idx}
+              style={styles.resourceItem}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.push(item.route as any);
+              }}
+            >
+              <Text style={styles.resourceEmoji}>{item.emoji}</Text>
+              <Text style={styles.resourceLabel}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
-
-        {/* Industry Intel — news feed */}
-        {selectedMarket && (
-          <View style={{ marginBottom: 20 }}>
-            <DailyNews marketId={selectedMarket} />
-          </View>
-        )}
       </ScrollView>
     </View>
   );
@@ -232,68 +252,135 @@ export default function PracticeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: 'center', justifyContent: 'center' },
-  scrollContent: { paddingHorizontal: 16 },
+  scrollContent: { paddingHorizontal: 20 },
+
+  // Header
   header: { marginBottom: 20 },
   headerTitle: { fontSize: 28, fontWeight: '800', color: COLORS.textPrimary },
-  headerSubtitle: { fontSize: 14, color: COLORS.textMuted, marginTop: 4 },
-  statsRow: { flexDirection: 'row', gap: 8, marginBottom: 24 },
-  statCard: {
+  headerSub: { fontSize: 13, color: COLORS.textMuted, marginTop: 4 },
+
+  // Leo row
+  leoRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    marginBottom: 20,
+  },
+  leoMini: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    resizeMode: 'contain',
+  },
+  leoBubble: {
     flex: 1,
     backgroundColor: COLORS.bg2,
-    borderRadius: 14,
+    borderRadius: 16,
+    borderTopLeftRadius: 4,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  leoBubbleText: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    lineHeight: 20,
+  },
+
+  // Stats
+  statsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 28,
+  },
+  statPill: {
+    flex: 1,
+    backgroundColor: COLORS.bg2,
+    borderRadius: 16,
     paddingVertical: 14,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  statNumber: { fontSize: 22, fontWeight: '800', color: COLORS.textPrimary },
-  statLabel: { fontSize: 10, color: COLORS.textMuted, marginTop: 2, fontWeight: '500' },
-  sectionTitle: {
-    fontSize: 11,
-    fontWeight: '600',
+  statValue: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: COLORS.textPrimary,
+  },
+  statLabel: {
+    fontSize: 10,
     color: COLORS.textMuted,
-    letterSpacing: 1,
+    marginTop: 2,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+
+  // Section
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: COLORS.textMuted,
+    letterSpacing: 1.2,
     marginBottom: 12,
   },
-  heroCard: {
-    height: 140,
-    borderRadius: 16,
-    overflow: 'hidden',
+
+  // Practice Cards
+  practiceCard: {
+    backgroundColor: COLORS.bg2,
+    borderRadius: 18,
+    padding: 18,
     marginBottom: 12,
-  },
-  heroCardBg: { flex: 1, justifyContent: 'flex-end' },
-  heroOverlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    padding: 16,
-    borderRadius: 16,
-  },
-  heroTagRow: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 6,
   },
-  heroTag: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+  practiceCardLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    flex: 1,
   },
-  heroTagText: { fontSize: 9, fontWeight: '700', letterSpacing: 0.5 },
-  heroXP: { fontSize: 11, color: 'rgba(255,255,255,0.6)', fontWeight: '500' },
-  heroTitle: { fontSize: 20, fontWeight: '700', color: '#FFFFFF', marginBottom: 4 },
-  heroDesc: { fontSize: 12, color: 'rgba(255,255,255,0.65)', lineHeight: 16 },
-  resourceRow: { flexDirection: 'row', gap: 8, marginBottom: 20 },
-  resourceCard: {
+  practiceEmoji: {
+    fontSize: 28,
+  },
+  practiceTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+    marginBottom: 2,
+  },
+  practiceSub: {
+    fontSize: 12,
+    color: COLORS.textMuted,
+  },
+  xpChip: {
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  xpChipText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+
+  // Resources
+  resourceGrid: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  resourceItem: {
     flex: 1,
     backgroundColor: COLORS.bg2,
-    borderRadius: 14,
-    paddingVertical: 16,
+    borderRadius: 16,
+    paddingVertical: 18,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: COLORS.border,
     gap: 6,
   },
-  resourceEmoji: { fontSize: 22 },
-  resourceLabel: { fontSize: 11, fontWeight: '500', color: COLORS.textSecondary },
+  resourceEmoji: { fontSize: 24 },
+  resourceLabel: { fontSize: 11, fontWeight: '600', color: COLORS.textSecondary },
 });

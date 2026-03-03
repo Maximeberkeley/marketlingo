@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,14 @@ import {
   Modal,
   Alert,
   ActivityIndicator,
+  Animated,
+  Image,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
+import { playSound } from '../../lib/sounds';
+
+const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 
 // ─────────────────────────────────────────────
 // Types
@@ -86,6 +91,98 @@ function getWhyExplanation(scenario: string, question: string, marketId?: string
   return `This scenario builds pattern recognition for ${ctx.name} situations. The mental models transfer across ${ctx.transfer}.`;
 }
 
+// ── Leo Feedback Reaction ──
+function LeoFeedbackReaction({ isCorrect }: { isCorrect: boolean }) {
+  const scaleAnim = useRef(new Animated.Value(0.5)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+  const bounceAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, { toValue: 1, tension: 200, friction: 12, useNativeDriver: true }),
+      Animated.timing(opacityAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
+    ]).start();
+
+    if (isCorrect) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(bounceAnim, { toValue: -6, duration: 400, useNativeDriver: true }),
+          Animated.timing(bounceAnim, { toValue: 0, duration: 400, useNativeDriver: true }),
+        ]),
+        { iterations: 3 }
+      ).start();
+    }
+  }, []);
+
+  const CORRECT_MESSAGES = [
+    "Nailed it! You think like a pro 🧠",
+    "That's the right call! 🎯",
+    "Exactly! Great analysis 💪",
+  ];
+
+  const WRONG_MESSAGES = [
+    "Tricky one! Let's learn from this 📚",
+    "Common trap — here's why 🤔",
+    "Almost! Check the reasoning below 👇",
+  ];
+
+  const messages = isCorrect ? CORRECT_MESSAGES : WRONG_MESSAGES;
+  const message = messages[Math.floor(Math.random() * messages.length)];
+
+  return (
+    <Animated.View
+      style={[
+        leoStyles.container,
+        { opacity: opacityAnim, transform: [{ scale: scaleAnim }] },
+      ]}
+    >
+      <Animated.Image
+        source={LEO_IMAGE}
+        style={[leoStyles.avatar, { transform: [{ translateY: bounceAnim }] }]}
+      />
+      <View style={[leoStyles.bubble, isCorrect ? leoStyles.bubbleCorrect : leoStyles.bubbleWrong]}>
+        <Text style={leoStyles.bubbleText}>{message}</Text>
+      </View>
+    </Animated.View>
+  );
+}
+
+const leoStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 4,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    resizeMode: 'contain',
+  },
+  bubble: {
+    flex: 1,
+    borderRadius: 14,
+    borderTopLeftRadius: 4,
+    padding: 12,
+    borderWidth: 1,
+  },
+  bubbleCorrect: {
+    backgroundColor: 'rgba(34,197,94,0.08)',
+    borderColor: 'rgba(34,197,94,0.2)',
+  },
+  bubbleWrong: {
+    backgroundColor: 'rgba(245,158,11,0.08)',
+    borderColor: 'rgba(245,158,11,0.2)',
+  },
+  bubbleText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+    lineHeight: 20,
+  },
+});
+
 // ─────────────────────────────────────────────
 // TrainerCard Component
 // ─────────────────────────────────────────────
@@ -125,8 +222,10 @@ export function TrainerCard({
         setServerFeedback(feedback);
         if (feedback.isCorrect) {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          playSound('correct');
         } else {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          playSound('wrong');
         }
       }
       setTimeout(() => setShowFeedback(true), 300);
@@ -191,6 +290,9 @@ export function TrainerCard({
       {/* Feedback */}
       {showFeedback && (
         <View style={styles.feedbackSection}>
+          {/* Leo Reaction */}
+          <LeoFeedbackReaction isCorrect={isCorrect} />
+
           {/* Result badge */}
           <View style={[styles.resultBadge, isCorrect ? styles.resultBadgeCorrect : styles.resultBadgeWrong]}>
             <Text style={[styles.resultBadgeText, { color: isCorrect ? '#22C55E' : '#F59E0B' }]}>
