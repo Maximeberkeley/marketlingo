@@ -5,10 +5,10 @@
 
 import { useState, useCallback } from 'react';
 import { Alert } from 'react-native';
-import { supabase } from '../../lib/supabase';
-import { StackWithSlides } from '../../lib/types';
-import { getMarketName, getMarketEmoji } from '../../lib/markets';
-import { triggerHaptic } from '../../lib/haptics';
+import { supabase } from '../lib/supabase';
+import { StackWithSlides } from '../lib/types';
+import { getMarketName, getMarketEmoji } from '../lib/markets';
+import { triggerHaptic } from '../lib/haptics';
 
 interface UseSessionFlowParams {
   user: any;
