@@ -120,10 +120,12 @@ export function SlideReaderV2({
   // Build all cards from all slides, inserting Leo interstitials
   const allCards: CardItem[] = useMemo(() => {
     const items: CardItem[] = [];
-    let globalIdx = 0;
 
     slides.forEach((slide, slideIdx) => {
-      const parsed = parseSlideIntoCards(slide.title, slide.body, slide.sources, slideIdx);
+      // Only include sources on the last slide to reduce card count
+      const isLastSlide = slideIdx === slides.length - 1;
+      const slideSources = isLastSlide ? slide.sources : [];
+      const parsed = parseSlideIntoCards(slide.title, slide.body, slideSources, slideIdx);
       parsed.forEach((card) => {
         items.push({
           type: 'concept',
@@ -134,20 +136,34 @@ export function SlideReaderV2({
           sources: card.sources,
           slideIndex: slideIdx,
         });
-        globalIdx++;
       });
     });
 
+    // Cap at ~18 concept cards max (trim from the middle if needed)
+    const MAX_CONCEPT_CARDS = 18;
+    if (items.length > MAX_CONCEPT_CARDS) {
+      // Keep first 4, last 4, evenly sample middle
+      const head = items.slice(0, 4);
+      const tail = items.slice(-4);
+      const middle = items.slice(4, -4);
+      const middleTarget = MAX_CONCEPT_CARDS - 8;
+      const step = Math.max(1, Math.floor(middle.length / middleTarget));
+      const sampledMiddle: CardItem[] = [];
+      for (let i = 0; i < middle.length && sampledMiddle.length < middleTarget; i += step) {
+        sampledMiddle.push(middle[i]);
+      }
+      items.length = 0;
+      items.push(...head, ...sampledMiddle, ...tail);
+    }
+
     // Insert Leo cards at strategic positions
     const totalItems = items.length;
-    const leoPositions: { index: number; leoType: CardItem extends { type: 'leo' } ? CardItem['leoType'] : never }[] = [];
+    const leoPositions: { index: number; leoType: any }[] = [];
 
     for (let i = 0; i < totalItems; i++) {
       const leoType = shouldShowLeoCard(i, totalItems);
       if (leoType) {
-        const item = items[i];
-        const slideIndex = item.type === 'concept' ? item.slideIndex : 0;
-        leoPositions.push({ index: i, leoType: leoType as any });
+        leoPositions.push({ index: i, leoType });
       }
     }
 
@@ -158,7 +174,7 @@ export function SlideReaderV2({
       const slideIndex = nearbyItem && 'slideIndex' in nearbyItem ? nearbyItem.slideIndex : 0;
       items.splice(index, 0, {
         type: 'leo',
-        leoType: leoType as any,
+        leoType,
         slideIndex,
       });
     }

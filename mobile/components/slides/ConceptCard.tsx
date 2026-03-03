@@ -116,6 +116,7 @@ function BulletItem({ text, index, accentColor }: { text: string; index: number;
 }
 
 // Parse a slide body into concept cards
+// Optimized: keeps cards concise but avoids over-splitting short content
 export function parseSlideIntoCards(
   slideTitle: string,
   body: string,
@@ -159,22 +160,21 @@ export function parseSlideIntoCards(
     if (isBullet) {
       const cleanBullet = trimmed.replace(/^[•\-*]\s*/, '');
       currentBullets.push(cleanBullet);
-      // Flush every 3-4 bullets to keep cards digestible
-      if (currentBullets.length >= 4) {
+      // Flush every 5 bullets to keep cards digestible
+      if (currentBullets.length >= 5) {
         flushBullets();
       }
       continue;
     }
 
-    // Regular paragraph
+    // Regular paragraph — only split if truly long (>350 chars)
     flushBullets();
 
-    // Split long paragraphs (>200 chars) into separate cards
-    if (trimmed.length > 200) {
+    if (trimmed.length > 350) {
       const sentences = trimmed.match(/[^.!?]+[.!?]+/g) || [trimmed];
       let chunk = '';
       for (const sentence of sentences) {
-        if ((chunk + sentence).length > 180 && chunk.length > 0) {
+        if ((chunk + sentence).length > 300 && chunk.length > 0) {
           cards.push({ type: 'concept', title: currentHeader, content: chunk.trim() });
           currentHeader = undefined;
           chunk = sentence;
@@ -194,7 +194,7 @@ export function parseSlideIntoCards(
 
   flushBullets();
 
-  // Sources card at the end
+  // Sources card at the end (only for last slide)
   if (sources && sources.length > 0) {
     cards.push({ type: 'sources', content: '', sources });
   }
