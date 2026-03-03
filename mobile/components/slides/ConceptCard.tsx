@@ -116,7 +116,7 @@ function BulletItem({ text, index, accentColor }: { text: string; index: number;
 }
 
 // Parse a slide body into concept cards
-// Optimized: keeps cards concise but avoids over-splitting short content
+// Optimized: merges aggressively to keep card count low (~2-3 cards per slide)
 export function parseSlideIntoCards(
   slideTitle: string,
   body: string,
@@ -131,9 +131,19 @@ export function parseSlideIntoCards(
   const paragraphs = body.split('\n').filter(p => p.trim());
   let currentBullets: string[] = [];
   let currentHeader: string | undefined;
+  let pendingText = '';
+
+  const flushText = () => {
+    if (pendingText.trim()) {
+      cards.push({ type: 'concept', title: currentHeader, content: pendingText.trim() });
+      currentHeader = undefined;
+      pendingText = '';
+    }
+  };
 
   const flushBullets = () => {
     if (currentBullets.length > 0) {
+      flushText();
       cards.push({
         type: 'bullet-group',
         title: currentHeader,
@@ -152,47 +162,33 @@ export function parseSlideIntoCards(
 
     if (isHeader) {
       flushBullets();
+      flushText();
       const cleanHeader = trimmed.replace(/^#{1,3}\s*/, '').replace(/\*\*/g, '');
       currentHeader = cleanHeader;
       continue;
     }
 
     if (isBullet) {
+      flushText();
       const cleanBullet = trimmed.replace(/^[•\-*]\s*/, '');
       currentBullets.push(cleanBullet);
-      // Flush every 5 bullets to keep cards digestible
-      if (currentBullets.length >= 5) {
+      // Flush every 6 bullets
+      if (currentBullets.length >= 6) {
         flushBullets();
       }
       continue;
     }
 
-    // Regular paragraph — only split if truly long (>350 chars)
+    // Regular paragraph — merge consecutive paragraphs into one card
     flushBullets();
-
-    if (trimmed.length > 350) {
-      const sentences = trimmed.match(/[^.!?]+[.!?]+/g) || [trimmed];
-      let chunk = '';
-      for (const sentence of sentences) {
-        if ((chunk + sentence).length > 300 && chunk.length > 0) {
-          cards.push({ type: 'concept', title: currentHeader, content: chunk.trim() });
-          currentHeader = undefined;
-          chunk = sentence;
-        } else {
-          chunk += sentence;
-        }
-      }
-      if (chunk.trim()) {
-        cards.push({ type: 'concept', title: currentHeader, content: chunk.trim() });
-        currentHeader = undefined;
-      }
-    } else {
-      cards.push({ type: 'concept', title: currentHeader, content: trimmed });
-      currentHeader = undefined;
+    if (pendingText.length > 0 && (pendingText.length + trimmed.length) > 500) {
+      flushText();
     }
+    pendingText += (pendingText ? ' ' : '') + trimmed;
   }
 
   flushBullets();
+  flushText();
 
   // Sources card at the end (only for last slide)
   if (sources && sources.length > 0) {

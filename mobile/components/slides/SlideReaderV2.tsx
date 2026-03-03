@@ -177,14 +177,14 @@ export function SlideReaderV2({
       });
     });
 
-    // Cap at ~18 concept cards max (trim from the middle if needed)
-    const MAX_CONCEPT_CARDS = 18;
+    // Cap at ~12 concept cards max to keep lessons digestible
+    const MAX_CONCEPT_CARDS = 12;
     if (items.length > MAX_CONCEPT_CARDS) {
-      // Keep first 4, last 4, evenly sample middle
-      const head = items.slice(0, 4);
-      const tail = items.slice(-4);
-      const middle = items.slice(4, -4);
-      const middleTarget = MAX_CONCEPT_CARDS - 8;
+      // Keep first 3 (title + intro), last 2 (conclusion), sample middle
+      const head = items.slice(0, 3);
+      const tail = items.slice(-2);
+      const middle = items.slice(3, -2);
+      const middleTarget = MAX_CONCEPT_CARDS - 5;
       const step = Math.max(1, Math.floor(middle.length / middleTarget));
       const sampledMiddle: CardItem[] = [];
       for (let i = 0; i < middle.length && sampledMiddle.length < middleTarget; i += step) {
@@ -280,7 +280,7 @@ export function SlideReaderV2({
     if (currentCardData.type === 'leo') {
       return (
         <LeoInterstitial
-          key={`leo-${cardKey.current}`}
+          key={`leo-${currentCard}`}
           type={currentCardData.leoType}
           progress={progress}
           slideTitle={currentSlide?.title}
@@ -290,7 +290,7 @@ export function SlideReaderV2({
 
     return (
       <ConceptCard
-        key={`card-${cardKey.current}`}
+        key={`card-${currentCard}`}
         type={currentCardData.cardType}
         title={currentCardData.title}
         content={currentCardData.content}
