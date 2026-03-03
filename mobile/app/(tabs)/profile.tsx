@@ -287,6 +287,17 @@ export default function ProfileScreen() {
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/friends' as any)}>
+            <View style={[styles.menuIcon, { backgroundColor: 'rgba(59, 130, 246, 0.2)' }]}>
+              <Text style={{ fontSize: 20 }}>👥</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Friends</Text>
+              <Text style={styles.menuSubtitle}>Activity & leaderboard</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={[styles.menuItem, { backgroundColor: 'rgba(239, 68, 68, 0.08)', borderColor: 'rgba(239, 68, 68, 0.2)' }]}
             onPress={handleSignOut}
