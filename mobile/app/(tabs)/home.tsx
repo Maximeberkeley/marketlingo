@@ -11,6 +11,10 @@ import {
 import { KeyPlayers } from '../../components/home/KeyPlayers';
 import { DailyNews } from '../../components/home/DailyNews';
 import { HomeSkeleton } from '../../components/home/HomeSkeleton';
+import { AnimatedSection } from '../../components/home/AnimatedSection';
+import { LeoBubble } from '../../components/home/LeoBubble';
+import { PulsingCTA } from '../../components/home/PulsingCTA';
+import { QuickActionsGrid } from '../../components/home/QuickActionsGrid';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../../lib/constants';
@@ -247,49 +251,42 @@ export default function HomeScreen() {
             </View>
 
             {/* ── Leo Hero Section ── */}
-            <View style={styles.leoHero}>
-              <LeoCharacter size="xl" animation={leoAnimation} />
-              <Text style={styles.leoGreeting}>{leoMessage}</Text>
-            </View>
+            <AnimatedSection delay={100}>
+              <LeoBubble message={leoMessage} animation={leoAnimation} />
+            </AnimatedSection>
 
             {/* ── TODAY'S LESSON — The One Big CTA ── */}
             {lessonStack && !lessonCompletedToday && (
-              <TouchableOpacity
-                style={styles.mainCTA}
-                onPress={() => session.handleOpenStack(lessonStack)}
-                activeOpacity={0.85}
-              >
-                <View style={styles.mainCTALeft}>
-                  <Text style={styles.mainCTALabel}>Today's Lesson</Text>
-                  <Text style={styles.mainCTATitle} numberOfLines={2}>{lessonStack.title}</Text>
-                  <View style={styles.mainCTAMeta}>
-                    <Text style={styles.mainCTAMetaText}>📖 {lessonStack.slides?.length || 5} slides</Text>
-                    <Text style={styles.mainCTAMetaText}>⚡ +{XP_REWARDS.LESSON_COMPLETE} XP</Text>
-                  </View>
-                </View>
-                <View style={styles.mainCTAArrow}>
-                  <Text style={styles.mainCTAArrowText}>▶</Text>
-                </View>
-              </TouchableOpacity>
+              <AnimatedSection delay={250}>
+                <PulsingCTA
+                  label="Today's Lesson"
+                  title={lessonStack.title}
+                  slideCount={lessonStack.slides?.length || 5}
+                  xpReward={XP_REWARDS.LESSON_COMPLETE}
+                  onPress={() => session.handleOpenStack(lessonStack)}
+                />
+              </AnimatedSection>
             )}
 
             {/* ── Lesson Complete State ── */}
             {lessonCompletedToday && (
-              <View style={styles.completedCard}>
-                <Text style={styles.completedEmoji}>✅</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.completedTitle}>Lesson done!</Text>
-                  <Text style={styles.completedSub}>Come back tomorrow for Day {(currentDay || 0) + 1}</Text>
+              <AnimatedSection delay={250}>
+                <View style={styles.completedCard}>
+                  <Text style={styles.completedEmoji}>✅</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.completedTitle}>Lesson done!</Text>
+                    <Text style={styles.completedSub}>Come back tomorrow for Day {(currentDay || 0) + 1}</Text>
+                  </View>
+                  {lessonStack && (
+                    <TouchableOpacity
+                      style={styles.reviewBtn}
+                      onPress={() => session.handleOpenStack(lessonStack)}
+                    >
+                      <Text style={styles.reviewBtnText}>Review</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
-                {lessonStack && (
-                  <TouchableOpacity
-                    style={styles.reviewBtn}
-                    onPress={() => session.handleOpenStack(lessonStack)}
-                  >
-                    <Text style={styles.reviewBtnText}>Review</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
+              </AnimatedSection>
             )}
 
             {/* ── Streak Warning (only when relevant) ── */}
@@ -302,72 +299,52 @@ export default function HomeScreen() {
               />
             )}
 
-            {/* ── Quick Actions Grid ── */}
-            <View style={styles.quickActions}>
-              <TouchableOpacity
-                style={styles.quickAction}
-                onPress={() => router.push('/(tabs)/practice' as any)}
-              >
-                <Text style={styles.quickActionEmoji}>⚡</Text>
-                <Text style={styles.quickActionText}>Practice</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.quickAction}
-                onPress={() => router.push('/trainer' as any)}
-              >
-                <Text style={styles.quickActionEmoji}>🧠</Text>
-                <Text style={styles.quickActionText}>Trainer</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.quickAction}
-                onPress={() => router.push('/games' as any)}
-              >
-                <Text style={styles.quickActionEmoji}>🎮</Text>
-                <Text style={styles.quickActionText}>Games</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.quickAction}
-                onPress={() => {
-                  triggerHaptic('light');
-                  handleOpenMentorChat();
-                }}
-              >
-                <Text style={styles.quickActionEmoji}>💬</Text>
-                <Text style={styles.quickActionText}>Ask Leo</Text>
-              </TouchableOpacity>
-            </View>
+            <AnimatedSection delay={400}>
+              <QuickActionsGrid actions={[
+                { emoji: '⚡', label: 'Practice', onPress: () => router.push('/(tabs)/practice' as any) },
+                { emoji: '🧠', label: 'Trainer', onPress: () => router.push('/trainer' as any) },
+                { emoji: '🎮', label: 'Games', onPress: () => router.push('/games' as any) },
+                { emoji: '💬', label: 'Ask Leo', onPress: () => { triggerHaptic('light'); handleOpenMentorChat(); } },
+              ]} />
+            </AnimatedSection>
 
             {/* ── Spaced Repetition (when due) ── */}
             {dueCount > 0 && (
-              <TouchableOpacity
-                style={styles.reviewPrompt}
-                onPress={() => router.push('/trainer' as any)}
-                activeOpacity={0.8}
-              >
-                <Text style={{ fontSize: 20 }}>🧠</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.reviewPromptTitle}>{dueCount} concept{dueCount !== 1 ? 's' : ''} to review</Text>
-                  <Text style={styles.reviewPromptSub}>Spaced repetition keeps it fresh</Text>
-                </View>
-                <Text style={{ color: COLORS.textMuted, fontSize: 16 }}>→</Text>
-              </TouchableOpacity>
+              <AnimatedSection delay={500}>
+                <TouchableOpacity
+                  style={styles.reviewPrompt}
+                  onPress={() => router.push('/trainer' as any)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={{ fontSize: 20 }}>🧠</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.reviewPromptTitle}>{dueCount} concept{dueCount !== 1 ? 's' : ''} to review</Text>
+                    <Text style={styles.reviewPromptSub}>Spaced repetition keeps it fresh</Text>
+                  </View>
+                  <Text style={{ color: COLORS.textMuted, fontSize: 16 }}>→</Text>
+                </TouchableOpacity>
+              </AnimatedSection>
             )}
 
             {/* ── Daily Quests (collapsible) ── */}
-            <View style={styles.section}>
-              <DailyQuests
-                quests={quests}
-                completedCount={completedCount}
-                totalBonusXP={totalBonusXP}
-                allComplete={allQuestsComplete}
-              />
-            </View>
+            <AnimatedSection delay={600}>
+              <View style={styles.section}>
+                <DailyQuests
+                  quests={quests}
+                  completedCount={completedCount}
+                  totalBonusXP={totalBonusXP}
+                  allComplete={allQuestsComplete}
+                />
+              </View>
+            </AnimatedSection>
 
             {/* ── News (if available) ── */}
             {selectedMarket && (
-              <View style={styles.section}>
-                <DailyNews marketId={selectedMarket} />
-              </View>
+              <AnimatedSection delay={700}>
+                <View style={styles.section}>
+                  <DailyNews marketId={selectedMarket} />
+                </View>
+              </AnimatedSection>
             )}
           </ScrollView>
 
@@ -412,32 +389,6 @@ const styles = StyleSheet.create({
   dayText: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
 
-  // Leo Hero
-  leoHero: { alignItems: 'center', marginBottom: 20, marginTop: 8 },
-  leoGreeting: {
-    fontSize: 16, color: COLORS.textSecondary, textAlign: 'center',
-    marginTop: 8, fontWeight: '500',
-  },
-
-  // Main CTA
-  mainCTA: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: COLORS.accent, borderRadius: 20, padding: 20, marginBottom: 16,
-    shadowColor: COLORS.accent, shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35, shadowRadius: 16, elevation: 8,
-  },
-  mainCTALeft: { flex: 1 },
-  mainCTALabel: { fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 },
-  mainCTATitle: { fontSize: 20, fontWeight: '800', color: '#fff', lineHeight: 26, marginBottom: 8 },
-  mainCTAMeta: { flexDirection: 'row', gap: 12 },
-  mainCTAMetaText: { fontSize: 12, color: 'rgba(255,255,255,0.8)', fontWeight: '500' },
-  mainCTAArrow: {
-    width: 48, height: 48, borderRadius: 24,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center', justifyContent: 'center', marginLeft: 12,
-  },
-  mainCTAArrowText: { fontSize: 18, color: '#fff' },
-
   // Completed
   completedCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
@@ -452,18 +403,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(34,197,94,0.15)', borderWidth: 1, borderColor: 'rgba(34,197,94,0.3)',
   },
   reviewBtnText: { fontSize: 12, fontWeight: '600', color: '#22C55E' },
-
-  // Quick Actions
-  quickActions: {
-    flexDirection: 'row', gap: 10, marginBottom: 20,
-  },
-  quickAction: {
-    flex: 1, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: COLORS.bg2, borderRadius: 16, paddingVertical: 18,
-    borderWidth: 1, borderColor: COLORS.border,
-  },
-  quickActionEmoji: { fontSize: 24, marginBottom: 6 },
-  quickActionText: { fontSize: 11, fontWeight: '600', color: COLORS.textSecondary },
 
   // Review prompt
   reviewPrompt: {
