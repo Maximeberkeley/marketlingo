@@ -19,8 +19,6 @@ import { supabase } from '../../lib/supabase';
 import { getMarketEmoji, getMarketName } from '../../lib/markets';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 
-const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
-
 interface PracticeStats {
   gamesPlayed: number;
   drillsCompleted: number;
@@ -61,21 +59,25 @@ function PracticeCard({
   return (
     <Animated.View style={{ opacity: fadeIn, transform: [{ translateY: slideUp }] }}>
       <TouchableOpacity
-        style={[styles.practiceCard, { borderLeftColor: accentColor, borderLeftWidth: 4 }]}
+        style={styles.practiceCard}
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           onPress();
         }}
         activeOpacity={0.8}
       >
+        {/* Accent dot */}
+        <View style={[styles.accentDot, { backgroundColor: accentColor }]} />
         <View style={styles.practiceCardLeft}>
-          <Text style={styles.practiceEmoji}>{emoji}</Text>
+          <View style={[styles.practiceIcon, { backgroundColor: accentColor + '15' }]}>
+            <Text style={styles.practiceEmoji}>{emoji}</Text>
+          </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.practiceTitle}>{title}</Text>
             <Text style={styles.practiceSub}>{subtitle}</Text>
           </View>
         </View>
-        <View style={[styles.xpChip, { backgroundColor: accentColor + '20' }]}>
+        <View style={[styles.xpChip, { backgroundColor: accentColor + '18' }]}>
           <Text style={[styles.xpChipText, { color: accentColor }]}>{xpLabel}</Text>
         </View>
       </TouchableOpacity>
@@ -84,9 +86,10 @@ function PracticeCard({
 }
 
 // ── Stat Pill ──
-function StatPill({ value, label }: { value: number; label: string }) {
+function StatPill({ value, label, emoji }: { value: number; label: string; emoji: string }) {
   return (
     <View style={styles.statPill}>
+      <Text style={styles.statEmoji}>{emoji}</Text>
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
@@ -100,9 +103,27 @@ export default function PracticeScreen() {
   const [stats, setStats] = useState<PracticeStats>({ gamesPlayed: 0, drillsCompleted: 0, trainerAttempts: 0 });
   const [loading, setLoading] = useState(true);
 
+  // Entrance animations
+  const headerAnim = useRef(new Animated.Value(0)).current;
+  const bodyAnim = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     fetchData();
   }, [user]);
+
+  useEffect(() => {
+    if (!loading) {
+      Animated.stagger(120, [
+        Animated.spring(headerAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }),
+        Animated.spring(bodyAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }),
+      ]).start();
+    }
+  }, [loading]);
+
+  const animStyle = (anim: Animated.Value) => ({
+    opacity: anim,
+    transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
+  });
 
   const fetchData = async () => {
     if (!user) return;
@@ -159,7 +180,7 @@ export default function PracticeScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* ── Header ── */}
-        <View style={styles.header}>
+        <Animated.View style={[styles.header, animStyle(headerAnim)]}>
           <View>
             <Text style={styles.headerTitle}>Practice</Text>
             <Text style={styles.headerSub}>
@@ -168,82 +189,88 @@ export default function PracticeScreen() {
                 : 'Select a market'}
             </Text>
           </View>
-        </View>
+        </Animated.View>
 
-        {/* ── Leo Encouragement ── */}
-        <View style={styles.leoRow}>
-          <Image source={LEO_IMAGE} style={styles.leoMini} />
+        {/* ── Leo Encouragement — real character, not emoji ── */}
+        <Animated.View style={[styles.leoRow, animStyle(headerAnim)]}>
+          <View style={styles.leoMiniWrap}>
+            <LeoCharacter size="sm" animation={totalToday >= 3 ? 'celebrating' : 'idle'} />
+          </View>
           <View style={styles.leoBubble}>
             <Text style={styles.leoBubbleText}>
               {totalToday === 0
                 ? "Let's sharpen your skills! Pick a mode below 👇"
                 : totalToday >= 3
-                  ? "You're on fire today! 🔥 Keep pushing!"
-                  : "Nice start! Try another round? 💪"}
+                  ? "You're on fire today! Keep pushing! 💪"
+                  : "Nice start! Try another round? 🎯"}
             </Text>
           </View>
-        </View>
+        </Animated.View>
 
         {/* ── Today's Stats ── */}
-        <View style={styles.statsRow}>
-          <StatPill value={stats.gamesPlayed} label="Games" />
-          <StatPill value={stats.drillsCompleted} label="Drills" />
-          <StatPill value={stats.trainerAttempts} label="Scenarios" />
-        </View>
+        <Animated.View style={[styles.statsRow, animStyle(bodyAnim)]}>
+          <StatPill value={stats.gamesPlayed} label="Games" emoji="🎮" />
+          <StatPill value={stats.drillsCompleted} label="Drills" emoji="⚡" />
+          <StatPill value={stats.trainerAttempts} label="Scenarios" emoji="🧠" />
+        </Animated.View>
 
         {/* ── Practice Modes ── */}
-        <Text style={styles.sectionLabel}>PRACTICE MODES</Text>
+        <Animated.View style={animStyle(bodyAnim)}>
+          <Text style={styles.sectionLabel}>PRACTICE MODES</Text>
 
-        <PracticeCard
-          index={0}
-          emoji="🎮"
-          title="Trivia Games"
-          subtitle="Test your market knowledge"
-          xpLabel={`+${XP_REWARDS.GAME_COMPLETE} XP`}
-          accentColor="#8B5CF6"
-          onPress={() => router.push('/games' as any)}
-        />
-        <PracticeCard
-          index={1}
-          emoji="⚡"
-          title="Speed Drills"
-          subtitle="Race the clock with rapid-fire questions"
-          xpLabel={`+${XP_REWARDS.DRILL_CORRECT} XP/q`}
-          accentColor="#F59E0B"
-          onPress={() => router.push('/drills' as any)}
-        />
-        <PracticeCard
-          index={2}
-          emoji="🧠"
-          title="Trainer Scenarios"
-          subtitle="Real-world strategy decisions"
-          xpLabel={`+${XP_REWARDS.TRAINER_COMPLETE} XP`}
-          accentColor="#22C55E"
-          onPress={() => router.push('/trainer' as any)}
-        />
+          <PracticeCard
+            index={0}
+            emoji="🎮"
+            title="Trivia Games"
+            subtitle="Test your market knowledge"
+            xpLabel={`+${XP_REWARDS.GAME_COMPLETE} XP`}
+            accentColor="#8B5CF6"
+            onPress={() => router.push('/games' as any)}
+          />
+          <PracticeCard
+            index={1}
+            emoji="⚡"
+            title="Speed Drills"
+            subtitle="Race the clock with rapid-fire questions"
+            xpLabel={`+${XP_REWARDS.DRILL_CORRECT} XP/q`}
+            accentColor="#F59E0B"
+            onPress={() => router.push('/drills' as any)}
+          />
+          <PracticeCard
+            index={2}
+            emoji="🧠"
+            title="Trainer Scenarios"
+            subtitle="Real-world strategy decisions"
+            xpLabel={`+${XP_REWARDS.TRAINER_COMPLETE} XP`}
+            accentColor="#22C55E"
+            onPress={() => router.push('/trainer' as any)}
+          />
 
-        {/* ── Resources ── */}
-        <Text style={[styles.sectionLabel, { marginTop: 24 }]}>RESOURCES</Text>
+          {/* ── Resources ── */}
+          <Text style={[styles.sectionLabel, { marginTop: 24 }]}>RESOURCES</Text>
 
-        <View style={styles.resourceGrid}>
-          {[
-            { emoji: '📰', label: 'Summaries', route: '/summaries' },
-            { emoji: '⚗️', label: 'Regulatory', route: '/regulatory-hub' },
-            { emoji: '📓', label: 'Notebook', route: '/(tabs)/notebook' },
-          ].map((item, idx) => (
-            <TouchableOpacity
-              key={idx}
-              style={styles.resourceItem}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.push(item.route as any);
-              }}
-            >
-              <Text style={styles.resourceEmoji}>{item.emoji}</Text>
-              <Text style={styles.resourceLabel}>{item.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+          <View style={styles.resourceGrid}>
+            {[
+              { emoji: '📰', label: 'Summaries', route: '/summaries' },
+              { emoji: '⚗️', label: 'Regulatory', route: '/regulatory-hub' },
+              { emoji: '📓', label: 'Notebook', route: '/(tabs)/notebook' },
+            ].map((item, idx) => (
+              <TouchableOpacity
+                key={idx}
+                style={styles.resourceItem}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  router.push(item.route as any);
+                }}
+              >
+                <View style={styles.resourceIcon}>
+                  <Text style={styles.resourceEmoji}>{item.emoji}</Text>
+                </View>
+                <Text style={styles.resourceLabel}>{item.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Animated.View>
       </ScrollView>
     </View>
   );
@@ -254,23 +281,22 @@ const styles = StyleSheet.create({
   centered: { alignItems: 'center', justifyContent: 'center' },
   scrollContent: { paddingHorizontal: 20 },
 
-  // Header
   header: { marginBottom: 20 },
   headerTitle: { fontSize: 28, fontWeight: '800', color: COLORS.textPrimary },
   headerSub: { fontSize: 13, color: COLORS.textMuted, marginTop: 4 },
 
-  // Leo row
+  // Leo row — real character
   leoRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     gap: 12,
     marginBottom: 20,
   },
-  leoMini: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    resizeMode: 'contain',
+  leoMiniWrap: {
+    width: 56,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   leoBubble: {
     flex: 1,
@@ -279,7 +305,12 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 4,
     padding: 14,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: 'rgba(139, 92, 246, 0.12)',
+    shadowColor: COLORS.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
   leoBubbleText: {
     fontSize: 14,
@@ -296,12 +327,13 @@ const styles = StyleSheet.create({
   statPill: {
     flex: 1,
     backgroundColor: COLORS.bg2,
-    borderRadius: 16,
+    borderRadius: 18,
     paddingVertical: 14,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: COLORS.border,
   },
+  statEmoji: { fontSize: 18, marginBottom: 4 },
   statValue: {
     fontSize: 24,
     fontWeight: '800',
@@ -316,7 +348,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 
-  // Section
   sectionLabel: {
     fontSize: 11,
     fontWeight: '700',
@@ -336,6 +367,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    overflow: 'hidden',
+  },
+  accentDot: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 4,
+    borderTopLeftRadius: 18,
+    borderBottomLeftRadius: 18,
   },
   practiceCardLeft: {
     flexDirection: 'row',
@@ -343,9 +384,14 @@ const styles = StyleSheet.create({
     gap: 14,
     flex: 1,
   },
-  practiceEmoji: {
-    fontSize: 28,
+  practiceIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  practiceEmoji: { fontSize: 24 },
   practiceTitle: {
     fontSize: 16,
     fontWeight: '700',
@@ -374,13 +420,21 @@ const styles = StyleSheet.create({
   resourceItem: {
     flex: 1,
     backgroundColor: COLORS.bg2,
-    borderRadius: 16,
+    borderRadius: 18,
     paddingVertical: 18,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: COLORS.border,
-    gap: 6,
+    gap: 8,
   },
-  resourceEmoji: { fontSize: 24 },
+  resourceIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    backgroundColor: 'rgba(139, 92, 246, 0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resourceEmoji: { fontSize: 20 },
   resourceLabel: { fontSize: 11, fontWeight: '600', color: COLORS.textSecondary },
 });

@@ -1,11 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { COLORS } from '../../lib/constants';
+import { LeoCharacter } from '../mascot/LeoCharacter';
 
 interface QuickAction {
   emoji: string;
   label: string;
   onPress: () => void;
+  /** If true, render Leo instead of emoji */
+  isLeo?: boolean;
 }
 
 interface QuickActionsGridProps {
@@ -13,7 +16,7 @@ interface QuickActionsGridProps {
 }
 
 /**
- * Staggered-entrance quick action grid for the home screen.
+ * Staggered-entrance quick action grid. Leo-specific items use the mascot.
  */
 export function QuickActionsGrid({ actions }: QuickActionsGridProps) {
   const anims = useRef(actions.map(() => ({
@@ -42,7 +45,15 @@ export function QuickActionsGrid({ actions }: QuickActionsGridProps) {
           style={[styles.itemWrap, { opacity: anims[i].opacity, transform: [{ scale: anims[i].scale }] }]}
         >
           <TouchableOpacity style={styles.item} onPress={action.onPress} activeOpacity={0.7}>
-            <Text style={styles.emoji}>{action.emoji}</Text>
+            {action.isLeo ? (
+              <View style={styles.leoIcon}>
+                <LeoCharacter size="sm" animation="idle" />
+              </View>
+            ) : (
+              <View style={styles.iconCircle}>
+                <Text style={styles.emoji}>{action.emoji}</Text>
+              </View>
+            )}
             <Text style={styles.label}>{action.label}</Text>
           </TouchableOpacity>
         </Animated.View>
@@ -62,11 +73,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.bg2,
-    borderRadius: 16,
-    paddingVertical: 18,
+    borderRadius: 18,
+    paddingVertical: 16,
+    paddingHorizontal: 4,
     borderWidth: 1,
     borderColor: COLORS.border,
+    minHeight: 88,
   },
-  emoji: { fontSize: 24, marginBottom: 6 },
+  iconCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: 'rgba(139, 92, 246, 0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+  },
+  leoIcon: {
+    width: 42,
+    height: 42,
+    marginBottom: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emoji: { fontSize: 22 },
   label: { fontSize: 11, fontWeight: '600', color: COLORS.textSecondary },
 });

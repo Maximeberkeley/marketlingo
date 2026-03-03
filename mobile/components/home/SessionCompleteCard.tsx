@@ -7,9 +7,9 @@ import {
   Animated,
   Easing,
   Share,
-  Platform,
 } from 'react-native';
 import { COLORS } from '../../lib/constants';
+import { LeoCharacter } from '../mascot/LeoCharacter';
 
 interface SessionCompleteCardProps {
   dayNumber: number;
@@ -22,9 +22,7 @@ interface SessionCompleteCardProps {
   stageName: string;
   onContinue: () => void;
   onDismiss: () => void;
-  /** Open mentor chat with lesson context */
   onAskMentor?: () => void;
-  /** Mentor first name for CTA label */
   mentorName?: string;
 }
 
@@ -54,54 +52,29 @@ export function SessionCompleteCard({
   ).current;
 
   useEffect(() => {
-    // Card entrance
     Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 6,
-        tension: 80,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacityAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
+      Animated.spring(scaleAnim, { toValue: 1, friction: 6, tension: 80, useNativeDriver: true }),
+      Animated.timing(opacityAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
     ]).start();
 
-    // Confetti burst
     confettiAnims.forEach((anim, i) => {
       const angle = (i / confettiAnims.length) * Math.PI * 2;
       const distance = 60 + Math.random() * 40;
-      const delay = i * 50;
-
       Animated.sequence([
-        Animated.delay(delay + 200),
+        Animated.delay(i * 50 + 200),
         Animated.parallel([
-          Animated.timing(anim.scale, {
-            toValue: 1,
-            duration: 200,
-            useNativeDriver: true,
-          }),
+          Animated.timing(anim.scale, { toValue: 1, duration: 200, useNativeDriver: true }),
           Animated.timing(anim.translateX, {
-            toValue: Math.cos(angle) * distance,
-            duration: 600,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: true,
+            toValue: Math.cos(angle) * distance, duration: 600,
+            easing: Easing.out(Easing.cubic), useNativeDriver: true,
           }),
           Animated.timing(anim.translateY, {
-            toValue: Math.sin(angle) * distance - 20,
-            duration: 600,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: true,
+            toValue: Math.sin(angle) * distance - 20, duration: 600,
+            easing: Easing.out(Easing.cubic), useNativeDriver: true,
           }),
           Animated.sequence([
             Animated.delay(400),
-            Animated.timing(anim.opacity, {
-              toValue: 0,
-              duration: 200,
-              useNativeDriver: true,
-            }),
+            Animated.timing(anim.opacity, { toValue: 0, duration: 200, useNativeDriver: true }),
           ]),
         ]),
       ]).start();
@@ -109,68 +82,44 @@ export function SessionCompleteCard({
   }, []);
 
   const handleShare = async () => {
-    const shareText = `Day ${dayNumber} complete in ${marketName}! ${marketEmoji}\n\n📚 "${lessonTitle}"\n⚡ ${xpEarned} XP earned\n🔥 ${streak} day streak\n🚀 Stage: ${stageName}\n\nLearning markets daily with MarketLingo 💜`;
-
     try {
       await Share.share({
-        message: shareText,
+        message: `Day ${dayNumber} complete in ${marketName}! ${marketEmoji}\n\n📚 "${lessonTitle}"\n⚡ ${xpEarned} XP earned\n🔥 ${streak} day streak\n🚀 Stage: ${stageName}\n\nLearning markets daily with MarketLingo 💜`,
         title: `MarketLingo — Day ${dayNumber} Complete`,
       });
-    } catch (error) {
-      // User cancelled
-    }
+    } catch (_) {}
   };
 
   const confettiEmojis = ['✨', '🎉', '⭐', '💜', '🔥', '⚡', '🚀', '💫'];
 
   return (
-    <Animated.View
-      style={[
-        styles.overlay,
-        { opacity: opacityAnim },
-      ]}
-    >
-      <Animated.View
-        style={[
-          styles.card,
-          { transform: [{ scale: scaleAnim }] },
-        ]}
-      >
-        {/* Confetti burst */}
+    <Animated.View style={[styles.overlay, { opacity: opacityAnim }]}>
+      <Animated.View style={[styles.card, { transform: [{ scale: scaleAnim }] }]}>
+        {/* Confetti */}
         <View style={styles.confettiContainer}>
           {confettiAnims.map((anim, i) => (
             <Animated.Text
               key={i}
-              style={[
-                styles.confetti,
-                {
-                  transform: [
-                    { translateX: anim.translateX },
-                    { translateY: anim.translateY },
-                    { scale: anim.scale },
-                  ],
-                  opacity: anim.opacity,
-                },
-              ]}
+              style={[styles.confetti, {
+                transform: [{ translateX: anim.translateX }, { translateY: anim.translateY }, { scale: anim.scale }],
+                opacity: anim.opacity,
+              }]}
             >
               {confettiEmojis[i]}
             </Animated.Text>
           ))}
         </View>
 
-        {/* Trophy */}
-        <View style={styles.trophyCircle}>
-          <Text style={styles.trophyEmoji}>🏆</Text>
+        {/* Leo celebrating instead of trophy emoji */}
+        <View style={styles.leoCircle}>
+          <LeoCharacter size="lg" animation="celebrating" />
         </View>
 
-        {/* Title */}
         <Text style={styles.title}>Day {dayNumber} Complete!</Text>
         <Text style={styles.subtitle}>{marketEmoji} {marketName}</Text>
-
-        {/* Lesson name */}
         <Text style={styles.lessonName} numberOfLines={2}>"{lessonTitle}"</Text>
 
-        {/* Stats grid */}
+        {/* Stats */}
         <View style={styles.statsGrid}>
           <View style={styles.statBox}>
             <Text style={styles.statValue}>⚡ {xpEarned}</Text>
@@ -181,24 +130,23 @@ export function SessionCompleteCard({
             <Text style={styles.statLabel}>Day Streak</Text>
           </View>
           <View style={styles.statBox}>
-            <Text style={styles.statValue}>📊 {totalXP}</Text>
+            <Text style={styles.statValue}>{totalXP}</Text>
             <Text style={styles.statLabel}>Total XP</Text>
           </View>
         </View>
 
-        {/* Stage badge */}
         <View style={styles.stageBadge}>
-          <Text style={styles.stageText}>🚀 {stageName}</Text>
+          <Text style={styles.stageText}>{stageName}</Text>
         </View>
 
         {/* Actions */}
         <View style={styles.actions}>
           <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.7}>
-            <Text style={styles.shareBtnText}>📤 Share Achievement</Text>
+            <Text style={styles.shareBtnText}>Share Achievement</Text>
           </TouchableOpacity>
           {onAskMentor && (
             <TouchableOpacity style={styles.mentorBtn} onPress={onAskMentor} activeOpacity={0.7}>
-              <Text style={styles.mentorBtnText}>🧠 Discuss with {mentorName || 'Mentor'}</Text>
+              <Text style={styles.mentorBtnText}>Discuss with {mentorName || 'Mentor'}</Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity style={styles.continueBtn} onPress={onContinue} activeOpacity={0.8}>
@@ -223,15 +171,20 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 360,
     backgroundColor: COLORS.bg2,
-    borderRadius: 24,
+    borderRadius: 28,
     padding: 28,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.3)',
+    borderColor: 'rgba(139, 92, 246, 0.25)',
+    shadowColor: COLORS.accent,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.15,
+    shadowRadius: 30,
+    elevation: 12,
   },
   confettiContainer: {
     position: 'absolute',
-    top: 60,
+    top: 80,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -239,19 +192,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontSize: 20,
   },
-  trophyCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: 'rgba(251, 191, 36, 0.15)',
+  leoCircle: {
+    marginBottom: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
-    borderWidth: 2,
-    borderColor: 'rgba(251, 191, 36, 0.3)',
-  },
-  trophyEmoji: {
-    fontSize: 36,
   },
   title: {
     fontSize: 24,
@@ -317,10 +261,10 @@ const styles = StyleSheet.create({
   shareBtn: {
     width: '100%',
     paddingVertical: 14,
-    borderRadius: 12,
-    backgroundColor: 'rgba(139, 92, 246, 0.12)',
+    borderRadius: 14,
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
     borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.3)',
+    borderColor: 'rgba(139, 92, 246, 0.25)',
     alignItems: 'center',
   },
   shareBtnText: {
@@ -331,10 +275,10 @@ const styles = StyleSheet.create({
   mentorBtn: {
     width: '100%',
     paddingVertical: 14,
-    borderRadius: 12,
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    borderRadius: 14,
+    backgroundColor: 'rgba(16, 185, 129, 0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.3)',
+    borderColor: 'rgba(16, 185, 129, 0.25)',
     alignItems: 'center',
   },
   mentorBtnText: {
@@ -345,7 +289,7 @@ const styles = StyleSheet.create({
   continueBtn: {
     width: '100%',
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 14,
     backgroundColor: COLORS.accent,
     alignItems: 'center',
   },
