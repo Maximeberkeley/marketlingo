@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Image, StyleSheet, Animated } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
@@ -66,8 +66,12 @@ export function LeoInterstitial({ type, progress, slideTitle, customMessage }: L
   const bounceAnim = useRef(new Animated.Value(0)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
 
-  const messages = MESSAGES[type];
-  const message = customMessage || messages[Math.floor(Math.random() * messages.length)];
+  // Pick ONE random message on mount — stable across re-renders
+  const [message] = useState(() => {
+    if (customMessage) return customMessage;
+    const msgs = MESSAGES[type];
+    return msgs[Math.floor(Math.random() * msgs.length)];
+  });
   const accent = ACCENT_COLORS[type];
 
   useEffect(() => {
@@ -93,7 +97,6 @@ export function LeoInterstitial({ type, progress, slideTitle, customMessage }: L
       useNativeDriver: false,
     }).start();
   }, []);
-
   return (
     <Animated.View style={[styles.container, { opacity: opacityAnim, transform: [{ scale: scaleAnim }] }]}>
       {/* Leo with glow */}
@@ -137,23 +140,24 @@ export function LeoInterstitial({ type, progress, slideTitle, customMessage }: L
 }
 
 /**
- * Determines if a Leo interstitial should appear at this card index
- * Returns the type of interstitial or null
+ * Determines if a Leo interstitial should appear at this card index.
+ * Reduced frequency: only at halfway + every 6th card.
+ * Returns the type of interstitial or null.
  */
 export function shouldShowLeoCard(
   cardIndex: number,
   totalCards: number,
 ): InterstitialType | null {
-  // Don't show on first 2 cards or last card
-  if (cardIndex < 2 || cardIndex >= totalCards - 1) return null;
+  // Don't show on first 3 cards or last 2 cards
+  if (cardIndex < 3 || cardIndex >= totalCards - 2) return null;
 
   const midpoint = Math.floor(totalCards / 2);
 
   // Halfway point
   if (cardIndex === midpoint) return 'halfway';
 
-  // Every 4th card after the 3rd
-  if ((cardIndex - 2) % 4 === 0 && cardIndex !== midpoint) {
+  // Every 6th card after the 4th (much less frequent)
+  if ((cardIndex - 3) % 6 === 0 && cardIndex !== midpoint) {
     const types: InterstitialType[] = ['encouragement', 'fun-fact', 'check-in'];
     return types[Math.floor(Math.random() * types.length)];
   }
