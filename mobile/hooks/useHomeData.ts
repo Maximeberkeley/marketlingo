@@ -4,10 +4,10 @@
  */
 
 import { useState, useCallback } from 'react';
-import { supabase } from '../../lib/supabase';
-import { StackWithSlides } from '../../lib/types';
-import { getStreakRiskHours } from '../../components/home/StreakAtRisk';
-import { scheduleStreakNotifications } from '../../lib/streakNotifications';
+import { supabase } from '../lib/supabase';
+import { StackWithSlides } from '../lib/types';
+import { getStreakRiskHours } from '../components/home/StreakAtRisk';
+import { scheduleStreakNotifications } from '../lib/streakNotifications';
 
 interface NewsItem {
   id: string;
