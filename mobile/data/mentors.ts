@@ -7,6 +7,7 @@ export interface Mentor {
   emoji: string;
   greeting: string;
   specialties: string[];
+  voiceId: string; // ElevenLabs voice ID
   expressions?: {
     thinking?: string[];
     cheering?: string[];
@@ -15,6 +16,15 @@ export interface Mentor {
     curious?: string[];
   };
 }
+
+// Voice assignments:
+// Leo (mascot)  → George (warm friendly narrator): JBFqnCBsd6RMkjVDRZzb
+// Maya Chen     → Alice (sharp, analytical female): Xb7hH8MSUJpSbSDYk0k2
+// Dr. Alex      → Brian (patient, authoritative male): nPczCjzI2devNBz1zQrb
+// Kai Johnson   → Chris (energetic, upbeat male): iP95p4xoKVk53GoZ742B
+// Sophia        → Lily (warm, supportive female): pFZP5JQG7iQjIQuC4Bku
+
+export const LEO_VOICE_ID = 'JBFqnCBsd6RMkjVDRZzb';
 
 export const mentors: Mentor[] = [
   {
@@ -26,6 +36,7 @@ export const mentors: Mentor[] = [
     emoji: '👩‍💼',
     greeting: 'Ready to dive into market dynamics? I love a good strategic challenge.',
     specialties: ['Market structure', 'Competitive positioning', 'Investment thesis'],
+    voiceId: 'Xb7hH8MSUJpSbSDYk0k2', // Alice
   },
   {
     id: 'alex',
@@ -36,6 +47,7 @@ export const mentors: Mentor[] = [
     emoji: '👨‍🔬',
     greeting: "Let's talk aerospace. What technical questions are on your mind?",
     specialties: ['Certification processes', 'Engineering challenges', 'Supply chain dynamics'],
+    voiceId: 'nPczCjzI2devNBz1zQrb', // Brian
   },
   {
     id: 'kai',
@@ -46,6 +58,7 @@ export const mentors: Mentor[] = [
     emoji: '🚀',
     greeting: 'Building something? Let\'s figure out your path to success.',
     specialties: ['Startup strategy', 'Fundraising', 'Go-to-market'],
+    voiceId: 'iP95p4xoKVk53GoZ742B', // Chris
   },
   {
     id: 'sophia',
@@ -56,6 +69,7 @@ export const mentors: Mentor[] = [
     emoji: '✨',
     greeting: "Hey there! Ready to unlock your next level of growth? I'm here to help you shine.",
     specialties: ['Customer relationships', 'Strategic partnerships', 'Neurotech', 'Regulatory navigation'],
+    voiceId: 'pFZP5JQG7iQjIQuC4Bku', // Lily
     expressions: {
       thinking: ['Hmm, let me think...', "That's a deep one!", 'Interesting angle...'],
       cheering: ["You're crushing it! 🎉", 'Amazing work!', 'Yes! Nailed it! 💪', 'I knew you could do it!'],

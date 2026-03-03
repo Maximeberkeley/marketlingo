@@ -12,12 +12,13 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
-import { mentors } from '../../data/mentors';
+import { mentors, LEO_VOICE_ID } from '../../data/mentors';
 import { getPrimaryMentorForMarket } from '../../data/marketConfig';
 import { ConceptCard, parseSlideIntoCards, ConceptCardType } from './ConceptCard';
 import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
 import { AskLeoOverlay } from '../ai/AskLeoOverlay';
 import { playSound } from '../../lib/sounds';
+import { useNarration } from '../../hooks/useNarration';
 
 const MENTOR_IMAGES: Record<string, any> = {
   maya: require('../../assets/mentors/mentor-maya.png'),
@@ -104,6 +105,16 @@ export function SlideReaderV2({
   const [narrationEnabled, setNarrationEnabled] = useState(false);
   const cardKey = useRef(0);
 
+  // Resolve mentor voice for this market
+  const mentorId = marketId ? getPrimaryMentorForMarket(marketId) : 'sophia';
+  const mentor = mentors.find(m => m.id === mentorId) || mentors[0];
+  const mentorVoiceId = mentor.voiceId || LEO_VOICE_ID;
+
+  const { speak, stop: stopNarration, isPlaying, isLoading: narrationLoading } = useNarration({
+    voiceId: mentorVoiceId,
+    enabled: narrationEnabled,
+  });
+
   const accentColor = TYPE_COLORS[stackType] || COLORS.accent;
 
   // Timer
@@ -114,6 +125,33 @@ export function SlideReaderV2({
     );
     return () => clearInterval(interval);
   }, [startTime]);
+
+  // Auto-narrate when card changes and narration is enabled
+  useEffect(() => {
+    if (!narrationEnabled) return;
+    const card = allCards[currentCard];
+    if (!card) return;
+
+    if (card.type === 'concept') {
+      const textToRead = [card.title, card.content, ...(card.bullets || [])]
+        .filter(Boolean)
+        .join('. ');
+      speak(textToRead);
+    } else {
+      // Leo interstitials — don't narrate, just stop
+      stopNarration();
+    }
+  }, [currentCard, narrationEnabled]);
+
+  // Stop narration when toggled off
+  useEffect(() => {
+    if (!narrationEnabled) stopNarration();
+  }, [narrationEnabled]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => { stopNarration(); };
+  }, []);
 
   const hasMetMinimumTime = timeSpentSeconds >= MINIMUM_LESSON_TIME_SECONDS;
 
@@ -288,12 +326,14 @@ export function SlideReaderV2({
             <Text style={styles.askLeoText}>?</Text>
           </TouchableOpacity>
 
-          {/* Narration toggle */}
+          {/* Narration toggle — shows mentor name */}
           <TouchableOpacity
             onPress={() => setNarrationEnabled(!narrationEnabled)}
             style={[styles.narrationBtn, narrationEnabled && styles.narrationBtnActive]}
           >
-            <Text style={styles.narrationIcon}>{narrationEnabled ? '🔊' : '🔇'}</Text>
+            <Text style={styles.narrationIcon}>
+              {narrationLoading ? '⏳' : isPlaying ? '🔊' : '🔇'}
+            </Text>
           </TouchableOpacity>
         </View>
 
