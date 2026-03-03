@@ -24,6 +24,7 @@ interface Lesson {
   pattern: string;
   completed: boolean;
   current?: boolean;
+  stackId?: string;
 }
 
 interface Week {
@@ -43,65 +44,29 @@ interface Season {
   isExpanded: boolean;
 }
 
-// Generic learning patterns that work across all markets
-const genericPatterns: Record<number, { title: string; pattern: string }> = {
-  1: { title: 'Market Structure', pattern: 'Map the key players' },
-  2: { title: 'Regulatory Landscape', pattern: 'Rules shape strategy' },
-  3: { title: 'Supply Chain', pattern: 'Understand dependencies' },
-  4: { title: 'Customer Discovery', pattern: 'Buyer ≠ User' },
-  5: { title: 'Market Dynamics', pattern: 'Forces drive change' },
-  6: { title: 'Business Models', pattern: 'How value flows' },
-  7: { title: 'Competitive Moats', pattern: 'Sustainable advantage' },
-  8: { title: 'Technology Cycles', pattern: 'Timing matters' },
-  9: { title: 'Capital Structure', pattern: 'Who funds growth' },
-  10: { title: 'GTM Strategy', pattern: 'Enter at the right level' },
-  11: { title: 'Unit Economics', pattern: 'Track margins closely' },
-  12: { title: 'Contract Types', pattern: 'Risk profile determines returns' },
-  13: { title: 'Funding Timeline', pattern: 'Find patient capital' },
-  14: { title: 'Startup Killers', pattern: 'Cash timing risks' },
-  15: { title: 'Working Capital', pattern: '9-month liquidity buffer' },
-  16: { title: 'Change Management', pattern: 'Formal change control' },
-  17: { title: 'Product Market Fit', pattern: 'Validate before building' },
-  18: { title: 'Trust & Credibility', pattern: 'Track records matter' },
-  19: { title: 'Supply Control', pattern: 'Vertical vs. outsource' },
-  20: { title: 'First Customer', pattern: 'Land early adopters' },
-};
+const SEASON_META = [
+  { title: 'Foundations', subtitle: 'Month 1 • Core fundamentals' },
+  { title: 'Forces & Cycles', subtitle: 'Month 2 • Market forces and timing' },
+  { title: 'Startup Patterns', subtitle: 'Month 3 • Building in this market' },
+  { title: 'Key Players', subtitle: 'Month 4 • Industry deep dives' },
+  { title: 'Investment Lens', subtitle: 'Month 5 • Investor perspective' },
+  { title: 'Builder Mode', subtitle: 'Month 6 • Apply everything' },
+];
+
+const WEEK_TITLES = [
+  'Market Structure', 'Certification Reality', 'Business Dynamics', 'Execution Patterns',
+  'Regulation Deep Dive', 'Capital Flows', 'Talent Dynamics', 'Technology Waves',
+  'Moat Building', 'GTM Strategies', 'Failure Modes', 'Success Stories',
+  'Commercial Giants', 'Defense Primes', 'Space Innovators', 'Supply Chain',
+  'Public Markets', 'Private Markets', 'Due Diligence', 'Portfolio Strategy',
+  'Thesis Building', 'Analysis Project', 'Future Scenarios', 'Graduation',
+  'Advanced Topics I', 'Advanced Topics II', 'Case Studies I', 'Case Studies II',
+  'Emerging Trends', 'Cross-Market', 'Synthesis I', 'Synthesis II',
+  'Capstone I', 'Capstone II', 'Capstone III', 'Final Review',
+];
 
 function getDayWeek(day: number): number {
   return Math.ceil(day / 5);
-}
-
-function buildWeek(
-  weekNum: number,
-  currentWeek: number,
-  currentDay: number,
-  title: string,
-  days: number[]
-): Week {
-  let status: NodeStatus = 'locked';
-  if (weekNum < currentWeek) status = 'completed';
-  else if (weekNum === currentWeek) status = 'current';
-  else if (weekNum === currentWeek + 1) status = 'available';
-
-  const lessons: Lesson[] = days.map((d) => ({
-    day: d,
-    title: genericPatterns[d]?.title || `Day ${d}`,
-    pattern: genericPatterns[d]?.pattern || 'Coming soon',
-    completed: d < currentDay,
-    current: d === currentDay,
-  }));
-
-  const firstDay = days[0];
-  const lastDay = days[days.length - 1];
-
-  return {
-    weekNumber: weekNum,
-    title,
-    dayRange: `Days ${firstDay}–${lastDay}`,
-    lessons,
-    status,
-    completedCount: lessons.filter((l) => l.completed).length,
-  };
 }
 
 export default function RoadmapScreen() {
@@ -112,7 +77,6 @@ export default function RoadmapScreen() {
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [currentLessonTitle, setCurrentLessonTitle] = useState<string | null>(null);
-  const [currentLessonPattern, setCurrentLessonPattern] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -135,6 +99,7 @@ export default function RoadmapScreen() {
 
       const learningGoal = progress?.learning_goal || 'curiosity';
       const goalTag = `goal:${learningGoal}`;
+      const completed = (progress?.completed_stacks as string[]) || [];
 
       let day = 1;
       if (progress?.start_date) {
@@ -147,145 +112,86 @@ export default function RoadmapScreen() {
       }
       setCurrentDay(day);
 
-      // Fetch the actual lesson for today from DB (match web behavior)
-      const dayTag = `day-${day}`;
-      let lessonTitle: string | null = null;
-      let lessonPattern: string | null = null;
-
-      // Try goal-specific lesson first, then fall back to non-goal-tagged
-      let todayLesson: any = null;
-      const { data: goalLesson } = await supabase
+      // Fetch all lesson stacks for this market
+      const { data: allStacks } = await supabase
         .from('stacks')
-        .select('title, tags')
+        .select('id, title, tags')
         .eq('market_id', market)
-        .contains('tags', ['MICRO_LESSON', dayTag, goalTag])
-        .not('published_at', 'is', null)
-        .limit(1)
-        .single();
+        .contains('tags', ['MICRO_LESSON'])
+        .not('published_at', 'is', null);
 
-      if (goalLesson) {
-        todayLesson = goalLesson;
-      } else {
-        const { data: fallbackLesson } = await supabase
-          .from('stacks')
-          .select('title, tags')
-          .eq('market_id', market)
-          .contains('tags', ['MICRO_LESSON', dayTag])
-          .not('published_at', 'is', null)
-          .limit(1)
-          .single();
-        todayLesson = fallbackLesson;
-      }
-
-      if (todayLesson) {
-        lessonTitle = todayLesson.title;
-      } else {
-        // Fallback: find closest lesson <= today
-        const { data: allLessons } = await supabase
-          .from('stacks')
-          .select('title, tags')
-          .eq('market_id', market)
-          .contains('tags', ['MICRO_LESSON'])
-          .not('published_at', 'is', null);
-
-        if (allLessons?.length) {
-          const withDays = allLessons.map((s: any) => {
-            const dm = (s.tags as string[])?.find((t: string) => t.startsWith('day-'));
-            return { title: s.title, dayNum: dm ? parseInt(dm.replace('day-', ''), 10) : 999 };
-          });
-          const valid = withDays.filter((l) => l.dayNum <= day);
-          const best = valid.length > 0
-            ? valid.reduce((a, b) => (a.dayNum > b.dayNum ? a : b))
-            : withDays.reduce((a, b) => (a.dayNum < b.dayNum ? a : b));
-          lessonTitle = best.title;
+      // Build day -> lesson map, preferring goal-tagged stacks
+      const dayLessonMap = new Map<number, { title: string; stackId: string }>();
+      allStacks?.forEach((stack: any) => {
+        const tags = stack.tags as string[];
+        const dayTag = tags?.find((t: string) => t.startsWith('day-'));
+        if (!dayTag) return;
+        const dayNum = parseInt(dayTag.replace('day-', ''), 10);
+        if (isNaN(dayNum)) return;
+        const hasGoalTag = tags.includes(goalTag);
+        const existing = dayLessonMap.get(dayNum);
+        if (!existing || hasGoalTag) {
+          dayLessonMap.set(dayNum, { title: stack.title, stackId: stack.id });
         }
-      }
+      });
 
-      // Fall back to static pattern if DB has no content yet
-      if (!lessonTitle && genericPatterns[day]) {
-        lessonTitle = genericPatterns[day].title;
-        lessonPattern = genericPatterns[day].pattern;
-      }
-
-      setCurrentLessonTitle(lessonTitle);
-      setCurrentLessonPattern(lessonPattern || genericPatterns[day]?.pattern || '');
+      // Set current lesson title
+      const todayLesson = dayLessonMap.get(day);
+      setCurrentLessonTitle(todayLesson?.title || `Day ${day}`);
 
       const currentWeek = getDayWeek(day);
 
-      const builtSeasons: Season[] = [
-        {
-          seasonNumber: 1,
-          title: 'Foundations',
-          subtitle: 'Month 1 • Core fundamentals',
-          isExpanded: true,
-          weeks: [
-            buildWeek(1, currentWeek, day, 'Market Structure', [1, 2, 3, 4, 5]),
-            buildWeek(2, currentWeek, day, 'Certification Reality', [6, 7, 8, 9, 10]),
-            buildWeek(3, currentWeek, day, 'Business Dynamics', [11, 12, 13, 14, 15]),
-            buildWeek(4, currentWeek, day, 'Execution Patterns', [16, 17, 18, 19, 20]),
-          ],
-        },
-        {
-          seasonNumber: 2,
-          title: 'Forces & Cycles',
-          subtitle: 'Month 2 • Market forces and timing',
-          isExpanded: false,
-          weeks: [
-            buildWeek(5, currentWeek, day, 'Regulation Deep Dive', [21, 22, 23, 24, 25]),
-            buildWeek(6, currentWeek, day, 'Capital Flows', [26, 27, 28, 29, 30]),
-            buildWeek(7, currentWeek, day, 'Talent Dynamics', [31, 32, 33, 34, 35]),
-            buildWeek(8, currentWeek, day, 'Technology Waves', [36, 37, 38, 39, 40]),
-          ],
-        },
-        {
-          seasonNumber: 3,
-          title: 'Startup Patterns',
-          subtitle: 'Month 3 • Building in this market',
-          isExpanded: false,
-          weeks: [
-            buildWeek(9, currentWeek, day, 'Moat Building', [41, 42, 43, 44, 45]),
-            buildWeek(10, currentWeek, day, 'GTM Strategies', [46, 47, 48, 49, 50]),
-            buildWeek(11, currentWeek, day, 'Failure Modes', [51, 52, 53, 54, 55]),
-            buildWeek(12, currentWeek, day, 'Success Stories', [56, 57, 58, 59, 60]),
-          ],
-        },
-        {
-          seasonNumber: 4,
-          title: 'Key Players',
-          subtitle: 'Month 4 • Industry deep dives',
-          isExpanded: false,
-          weeks: [
-            buildWeek(13, currentWeek, day, 'Commercial Giants', [61, 62, 63, 64, 65]),
-            buildWeek(14, currentWeek, day, 'Defense Primes', [66, 67, 68, 69, 70]),
-            buildWeek(15, currentWeek, day, 'Space Innovators', [71, 72, 73, 74, 75]),
-            buildWeek(16, currentWeek, day, 'Supply Chain', [76, 77, 78, 79, 80]),
-          ],
-        },
-        {
-          seasonNumber: 5,
-          title: 'Investment Lens',
-          subtitle: 'Month 5 • Investor perspective',
-          isExpanded: false,
-          weeks: [
-            buildWeek(17, currentWeek, day, 'Public Markets', [81, 82, 83, 84, 85]),
-            buildWeek(18, currentWeek, day, 'Private Markets', [86, 87, 88, 89, 90]),
-            buildWeek(19, currentWeek, day, 'Due Diligence', [91, 92, 93, 94, 95]),
-            buildWeek(20, currentWeek, day, 'Portfolio Strategy', [96, 97, 98, 99, 100]),
-          ],
-        },
-        {
-          seasonNumber: 6,
-          title: 'Builder Mode',
-          subtitle: 'Month 6 • Apply everything',
-          isExpanded: false,
-          weeks: [
-            buildWeek(21, currentWeek, day, 'Thesis Building', [101, 102, 103, 104, 105]),
-            buildWeek(22, currentWeek, day, 'Analysis Project', [106, 107, 108, 109, 110]),
-            buildWeek(23, currentWeek, day, 'Future Scenarios', [111, 112, 113, 114, 115]),
-            buildWeek(24, currentWeek, day, 'Graduation', [116, 117, 118, 119, 120]),
-          ],
-        },
-      ];
+      // Build 6 seasons × 6 weeks × 5 days = 180 days
+      const builtSeasons: Season[] = SEASON_META.map((meta, sIdx) => {
+        const weeksPerMonth = 6;
+        const startWeek = sIdx * weeksPerMonth + 1;
+
+        const weeks: Week[] = [];
+        for (let w = 0; w < weeksPerMonth; w++) {
+          const weekNum = startWeek + w;
+          const startDay = (weekNum - 1) * 5 + 1;
+          const days = [startDay, startDay + 1, startDay + 2, startDay + 3, startDay + 4];
+
+          let status: NodeStatus = 'locked';
+          if (weekNum < currentWeek) status = 'completed';
+          else if (weekNum === currentWeek) status = 'current';
+          else if (weekNum === currentWeek + 1) status = 'available';
+
+          const lessons: Lesson[] = days.map((d) => {
+            const dbLesson = dayLessonMap.get(d);
+            const isCompleted = dbLesson ? completed.includes(dbLesson.stackId) : d < day;
+            return {
+              day: d,
+              title: dbLesson?.title || `Day ${d}`,
+              pattern: '',
+              completed: isCompleted,
+              current: d === day,
+              stackId: dbLesson?.stackId,
+            };
+          });
+
+          const weekTitle = WEEK_TITLES[weekNum - 1] || `Week ${weekNum}`;
+          const firstDay = days[0];
+          const lastDay = days[days.length - 1];
+
+          weeks.push({
+            weekNumber: weekNum,
+            title: weekTitle,
+            dayRange: `Days ${firstDay}–${lastDay}`,
+            lessons,
+            status,
+            completedCount: lessons.filter((l) => l.completed).length,
+          });
+        }
+
+        return {
+          seasonNumber: sIdx + 1,
+          title: meta.title,
+          subtitle: meta.subtitle,
+          weeks,
+          isExpanded: weeks.some((w) => w.status === 'current'),
+        };
+      });
 
       setSeasons(builtSeasons);
       setLoading(false);
@@ -294,11 +200,11 @@ export default function RoadmapScreen() {
     fetchProgress();
   }, [user]);
 
-  const handleLessonClick = (day: number) => {
+  const handleLessonClick = (dayNum: number) => {
     const lesson = seasons
       .flatMap((s) => s.weeks)
       .flatMap((w) => w.lessons)
-      .find((l) => l.day === day);
+      .find((l) => l.day === dayNum);
     if (lesson && (lesson.completed || lesson.current)) {
       setSelectedLesson(lesson);
     }
@@ -353,7 +259,7 @@ export default function RoadmapScreen() {
         </Animated.View>
 
         {/* Current lesson quick-start card */}
-        {(currentLessonTitle || genericPatterns[currentDay]) && (
+        {currentLessonTitle && (
           <Animated.View style={animStyle(cardAnim)}>
             <TouchableOpacity
               style={styles.currentCard}
@@ -362,10 +268,7 @@ export default function RoadmapScreen() {
             >
               <View style={{ flex: 1 }}>
                 <Text style={styles.continueLabel}>CONTINUE LEARNING</Text>
-                <Text style={styles.currentTitle}>{currentLessonTitle || genericPatterns[currentDay]?.title}</Text>
-                {currentLessonPattern || genericPatterns[currentDay]?.pattern ? (
-                  <Text style={styles.currentPattern}>{currentLessonPattern || genericPatterns[currentDay]?.pattern}</Text>
-                ) : null}
+                <Text style={styles.currentTitle}>{currentLessonTitle}</Text>
               </View>
               <View style={styles.startBtn}>
                 <Text style={styles.startBtnText}>▶ Start</Text>
@@ -374,7 +277,7 @@ export default function RoadmapScreen() {
           </Animated.View>
         )}
 
-        {/* Seasons using new SeasonSection component */}
+        {/* Seasons */}
         <Animated.View style={animStyle(seasonsAnim)}>
           {seasons.map((season) => (
             <SeasonSection
@@ -384,9 +287,7 @@ export default function RoadmapScreen() {
               subtitle={season.subtitle}
               weeks={season.weeks}
               defaultExpanded={season.isExpanded}
-              onWeekClick={(weekNum) => {
-                // Navigate to home for current/available weeks
-              }}
+              onWeekClick={() => {}}
               onLessonClick={handleLessonClick}
             />
           ))}
@@ -400,10 +301,6 @@ export default function RoadmapScreen() {
             <Text style={styles.modalTitle}>
               Day {selectedLesson?.day}: {selectedLesson?.title}
             </Text>
-            <View style={styles.modalPatternCard}>
-              <Text style={styles.modalPatternLabel}>PATTERN</Text>
-              <Text style={styles.modalPatternText}>{selectedLesson?.pattern}</Text>
-            </View>
             <View style={styles.modalStatusRow}>
               <Text style={{ fontSize: 13, color: selectedLesson?.completed ? '#22C55E' : COLORS.accent }}>
                 {selectedLesson?.completed ? '✅ Completed' : '⭐ Current lesson'}
@@ -461,7 +358,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   currentTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
-  currentPattern: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
   startBtn: {
     backgroundColor: COLORS.accent,
     paddingHorizontal: 16,
@@ -485,36 +381,20 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     color: COLORS.textPrimary,
-    marginBottom: 16,
-  },
-  modalPatternCard: {
-    backgroundColor: 'rgba(139,92,246,0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(139,92,246,0.2)',
-    borderRadius: 12,
-    padding: 12,
     marginBottom: 12,
   },
-  modalPatternLabel: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: COLORS.accent,
-    marginBottom: 4,
-    letterSpacing: 0.5,
-  },
-  modalPatternText: { fontSize: 14, color: COLORS.textPrimary },
   modalStatusRow: { marginBottom: 16 },
   modalCTA: {
     backgroundColor: COLORS.accent,
-    borderRadius: 14,
     paddingVertical: 14,
+    borderRadius: 14,
     alignItems: 'center',
     marginBottom: 10,
   },
   modalCTAText: { color: '#fff', fontWeight: '700', fontSize: 15 },
-  modalCancel: { alignItems: 'center', paddingVertical: 8 },
+  modalCancel: { alignItems: 'center', paddingVertical: 10 },
   modalCancelText: { color: COLORS.textMuted, fontSize: 14 },
 });

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ChevronDown, ChevronRight, Check, Lock, Play, BookOpen, Star } from "lucide-react";
+import { Loader2, ChevronDown, Check, Lock, Play, BookOpen, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LeoCharacter } from "@/components/mascot/LeoStateMachine";
 
@@ -16,6 +16,7 @@ interface Lesson {
   pattern: string;
   completed: boolean;
   current: boolean;
+  stackId?: string;
 }
 
 interface Week {
@@ -34,29 +35,28 @@ interface Season {
   isExpanded: boolean;
 }
 
-// Aerospace patterns organized by day
-const aerospacePatterns: Record<number, { title: string; pattern: string }> = {
-  1: { title: "Buyer ≠ User", pattern: "Map the buying committee" },
-  2: { title: "OEM Gatekeeping", pattern: "Risk beats performance" },
-  3: { title: "Supply Chain Architecture", pattern: "Enter at Tier-2/3" },
-  4: { title: "The Approval Maze", pattern: "Build DER relationships" },
-  5: { title: "Governance = Velocity", pattern: "Regulatory strategy" },
-  6: { title: "Type Certification", pattern: "TC is the product" },
-  7: { title: "STC Path", pattern: "Modify existing aircraft" },
-  8: { title: "Change Friction", pattern: "Minimize cert surface" },
-  9: { title: "Why Slow", pattern: "Incentives reward caution" },
-  10: { title: "Conservative Design", pattern: "Heritage wins" },
-  11: { title: "Cost-Plus Model", pattern: "Contract = risk profile" },
-  12: { title: "Contract Types", pattern: "Power by the Hour" },
-  13: { title: "Timeline Mismatch", pattern: "Find patient capital" },
-  14: { title: "Startup Killers", pattern: "Cash timing risks" },
-  15: { title: "Cash Flow Cycles", pattern: "9-month working capital" },
-  16: { title: "Requirement Creep", pattern: "Formal change control" },
-  17: { title: "Hardware-First Trap", pattern: "Paper airplane phase" },
-  18: { title: "Trust Economy", pattern: "AS9100, track record" },
-  19: { title: "Supply Control", pattern: "Vertical vs suppliers" },
-  20: { title: "First Customer", pattern: "Tier-1 partners, MRO" },
-};
+// Season themes for all 6 months
+const SEASON_META = [
+  { title: "Foundations", subtitle: "Month 1 • Core fundamentals" },
+  { title: "Forces & Cycles", subtitle: "Month 2 • Market forces and timing" },
+  { title: "Startup Patterns", subtitle: "Month 3 • Building in this market" },
+  { title: "Key Players", subtitle: "Month 4 • Industry deep dives" },
+  { title: "Investment Lens", subtitle: "Month 5 • Investor perspective" },
+  { title: "Builder Mode", subtitle: "Month 6 • Apply everything" },
+];
+
+// Week titles for all 36 weeks
+const WEEK_TITLES = [
+  "Market Structure", "Certification Reality", "Business Dynamics", "Execution Patterns",
+  "Regulation Deep Dive", "Capital Flows", "Talent Dynamics", "Technology Waves",
+  "Moat Building", "GTM Strategies", "Failure Modes", "Success Stories",
+  "Commercial Giants", "Defense Primes", "Space Innovators", "Supply Chain",
+  "Public Markets", "Private Markets", "Due Diligence", "Portfolio Strategy",
+  "Thesis Building", "Analysis Project", "Future Scenarios", "Graduation",
+  "Advanced Topics I", "Advanced Topics II", "Case Studies I", "Case Studies II",
+  "Emerging Trends", "Cross-Market", "Synthesis I", "Synthesis II",
+  "Capstone I", "Capstone II", "Capstone III", "Final Review",
+];
 
 function getDayWeek(day: number): number {
   return Math.ceil(day / 5);
@@ -69,6 +69,7 @@ export default function RoadmapPage() {
   const [currentDay, setCurrentDay] = useState(1);
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [completedStackIds, setCompletedStackIds] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -89,10 +90,12 @@ export default function RoadmapPage() {
         .eq("market_id", market)
         .single();
 
-      const learningGoal = progress?.learning_goal || 'curiosity';
+      const learningGoal = progress?.learning_goal || "curiosity";
       const goalTag = `goal:${learningGoal}`;
+      const completed = (progress?.completed_stacks as string[]) || [];
+      setCompletedStackIds(completed);
 
-      // Calculate available day from start_date (calendar-based)
+      // Calculate available day from start_date
       let day = 1;
       if (progress?.start_date) {
         const start = new Date(progress.start_date);
@@ -104,115 +107,94 @@ export default function RoadmapPage() {
       }
       setCurrentDay(day);
 
-      const currentWeek = getDayWeek(day);
-      
-      const buildSeasons: Season[] = [
-        {
-          seasonNumber: 1,
-          title: "Foundations",
-          subtitle: "Month 1 • Core aerospace fundamentals",
-          weeks: [
-            buildWeek(1, currentWeek, day, "Market Structure", [1, 2, 3, 4, 5]),
-            buildWeek(2, currentWeek, day, "Certification Reality", [6, 7, 8, 9, 10]),
-            buildWeek(3, currentWeek, day, "Business Dynamics", [11, 12, 13, 14, 15]),
-            buildWeek(4, currentWeek, day, "Execution Patterns", [16, 17, 18, 19, 20]),
-          ],
-          isExpanded: true,
-        },
-        {
-          seasonNumber: 2,
-          title: "Forces & Cycles",
-          subtitle: "Month 2 • Market forces and timing",
-          weeks: [
-            buildWeek(5, currentWeek, day, "Regulation Deep Dive", [21, 22, 23, 24, 25]),
-            buildWeek(6, currentWeek, day, "Capital Flows", [26, 27, 28, 29, 30]),
-            buildWeek(7, currentWeek, day, "Talent Dynamics", [31, 32, 33, 34, 35]),
-            buildWeek(8, currentWeek, day, "Technology Waves", [36, 37, 38, 39, 40]),
-          ],
-          isExpanded: false,
-        },
-        {
-          seasonNumber: 3,
-          title: "Startup Patterns",
-          subtitle: "Month 3 • Building in aerospace",
-          weeks: [
-            buildWeek(9, currentWeek, day, "Moat Building", [41, 42, 43, 44, 45]),
-            buildWeek(10, currentWeek, day, "GTM Strategies", [46, 47, 48, 49, 50]),
-            buildWeek(11, currentWeek, day, "Failure Modes", [51, 52, 53, 54, 55]),
-            buildWeek(12, currentWeek, day, "Success Stories", [56, 57, 58, 59, 60]),
-          ],
-          isExpanded: false,
-        },
-        {
-          seasonNumber: 4,
-          title: "Key Players",
-          subtitle: "Month 4 • Industry deep dives",
-          weeks: [
-            buildWeek(13, currentWeek, day, "Commercial Giants", [61, 62, 63, 64, 65]),
-            buildWeek(14, currentWeek, day, "Defense Primes", [66, 67, 68, 69, 70]),
-            buildWeek(15, currentWeek, day, "Space Innovators", [71, 72, 73, 74, 75]),
-            buildWeek(16, currentWeek, day, "Supply Chain", [76, 77, 78, 79, 80]),
-          ],
-          isExpanded: false,
-        },
-        {
-          seasonNumber: 5,
-          title: "Investment Lens",
-          subtitle: "Month 5 • Investor perspective",
-          weeks: [
-            buildWeek(17, currentWeek, day, "Public Markets", [81, 82, 83, 84, 85]),
-            buildWeek(18, currentWeek, day, "Private Markets", [86, 87, 88, 89, 90]),
-            buildWeek(19, currentWeek, day, "Due Diligence", [91, 92, 93, 94, 95]),
-            buildWeek(20, currentWeek, day, "Portfolio Strategy", [96, 97, 98, 99, 100]),
-          ],
-          isExpanded: false,
-        },
-        {
-          seasonNumber: 6,
-          title: "Builder Mode",
-          subtitle: "Month 6 • Apply everything",
-          weeks: [
-            buildWeek(21, currentWeek, day, "Thesis Building", [101, 102, 103, 104, 105]),
-            buildWeek(22, currentWeek, day, "Analysis Project", [106, 107, 108, 109, 110]),
-            buildWeek(23, currentWeek, day, "Future Scenarios", [111, 112, 113, 114, 115]),
-            buildWeek(24, currentWeek, day, "Graduation", [116, 117, 118, 119, 120]),
-          ],
-          isExpanded: false,
-        },
-      ];
+      // Fetch all lesson stacks for this market with goal tag
+      const { data: allStacks } = await supabase
+        .from("stacks")
+        .select("id, title, tags")
+        .eq("market_id", market)
+        .contains("tags", ["MICRO_LESSON"])
+        .not("published_at", "is", null);
 
-      setSeasons(buildSeasons);
+      // Build a map of day -> { title, stackId } preferring goal-tagged stacks
+      const dayLessonMap = new Map<number, { title: string; stackId: string }>();
+      
+      allStacks?.forEach((stack: any) => {
+        const tags = stack.tags as string[];
+        const dayTag = tags?.find((t: string) => t.startsWith("day-"));
+        if (!dayTag) return;
+        const dayNum = parseInt(dayTag.replace("day-", ""), 10);
+        if (isNaN(dayNum)) return;
+
+        const hasGoalTag = tags.includes(goalTag);
+        const existing = dayLessonMap.get(dayNum);
+        
+        // Prefer goal-tagged version, or set if no entry exists
+        if (!existing || hasGoalTag) {
+          dayLessonMap.set(dayNum, { title: stack.title, stackId: stack.id });
+        }
+      });
+
+      const currentWeek = getDayWeek(day);
+
+      // Build 6 seasons × 6 weeks × 5 days = 180 days
+      const builtSeasons: Season[] = SEASON_META.map((meta, sIdx) => {
+        const monthNum = sIdx + 1;
+        const weeksPerMonth = 6; // 6 weeks × 5 days = 30 days per month
+        const startWeek = sIdx * weeksPerMonth + 1;
+
+        const weeks: Week[] = [];
+        for (let w = 0; w < weeksPerMonth; w++) {
+          const weekNum = startWeek + w;
+          const startDay = (weekNum - 1) * 5 + 1;
+          const days = [startDay, startDay + 1, startDay + 2, startDay + 3, startDay + 4];
+
+          let status: "completed" | "current" | "locked" = "locked";
+          if (weekNum < currentWeek) status = "completed";
+          else if (weekNum === currentWeek) status = "current";
+
+          const lessons: Lesson[] = days.map((d) => {
+            const dbLesson = dayLessonMap.get(d);
+            const isCompleted = dbLesson ? completed.includes(dbLesson.stackId) : d < day;
+            return {
+              day: d,
+              title: dbLesson?.title || `Day ${d}`,
+              pattern: "",
+              completed: isCompleted,
+              current: d === day,
+              stackId: dbLesson?.stackId,
+            };
+          });
+
+          const weekTitle = WEEK_TITLES[weekNum - 1] || `Week ${weekNum}`;
+
+          weeks.push({
+            weekNumber: weekNum,
+            title: weekTitle,
+            lessons,
+            status,
+            completedCount: lessons.filter((l) => l.completed).length,
+          });
+        }
+
+        return {
+          seasonNumber: monthNum,
+          title: meta.title,
+          subtitle: meta.subtitle,
+          weeks,
+          isExpanded: weeks.some((w) => w.status === "current"),
+        };
+      });
+
+      setSeasons(builtSeasons);
       setLoading(false);
     };
 
     fetchProgress();
   }, [user]);
 
-  function buildWeek(weekNum: number, currentWeek: number, currentDay: number, title: string, days: number[]): Week {
-    let status: "completed" | "current" | "locked" = "locked";
-    if (weekNum < currentWeek) status = "completed";
-    else if (weekNum === currentWeek) status = "current";
-
-    const lessons: Lesson[] = days.map(d => ({
-      day: d,
-      title: aerospacePatterns[d]?.title || `Day ${d}`,
-      pattern: aerospacePatterns[d]?.pattern || "Coming soon",
-      completed: d < currentDay,
-      current: d === currentDay,
-    }));
-
-    return {
-      weekNumber: weekNum,
-      title,
-      lessons,
-      status,
-      completedCount: lessons.filter(l => l.completed).length,
-    };
-  }
-
   const toggleSeason = (seasonNumber: number) => {
-    setSeasons(prev =>
-      prev.map(s =>
+    setSeasons((prev) =>
+      prev.map((s) =>
         s.seasonNumber === seasonNumber ? { ...s, isExpanded: !s.isExpanded } : s
       )
     );
@@ -239,6 +221,11 @@ export default function RoadmapPage() {
     );
   }
 
+  const currentLessonTitle = seasons
+    .flatMap((s) => s.weeks)
+    .flatMap((w) => w.lessons)
+    .find((l) => l.current)?.title;
+
   return (
     <AppLayout>
       <div className="screen-padding pt-safe pb-28">
@@ -255,16 +242,15 @@ export default function RoadmapPage() {
                 Day {currentDay} of 180 • Week {getDayWeek(currentDay)}
               </p>
             </div>
-            {/* Leo companion in header */}
-            <LeoCharacter 
-              size="sm" 
-              animation={currentDay > 1 ? "success" : "idle"} 
+            <LeoCharacter
+              size="sm"
+              animation={currentDay > 1 ? "success" : "idle"}
             />
           </div>
         </motion.div>
 
-        {/* Current Lesson Card with Leo */}
-        {aerospacePatterns[currentDay] && (
+        {/* Current Lesson Card */}
+        {currentLessonTitle && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -274,11 +260,8 @@ export default function RoadmapPage() {
               <div className="flex-1">
                 <p className="text-[11px] font-medium text-accent mb-1">CONTINUE LEARNING</p>
                 <h3 className="text-body font-semibold text-text-primary">
-                  {aerospacePatterns[currentDay].title}
+                  {currentLessonTitle}
                 </h3>
-                <p className="text-caption text-text-muted mt-1">
-                  {aerospacePatterns[currentDay].pattern}
-                </p>
               </div>
               <Button
                 size="sm"
@@ -308,14 +291,16 @@ export default function RoadmapPage() {
                 className="w-full flex items-center justify-between p-4"
               >
                 <div className="flex items-center gap-3">
-                  <div className={cn(
-                    "w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold",
-                    season.weeks.some(w => w.status === "current")
-                      ? "bg-accent/20 text-accent"
-                      : season.weeks.every(w => w.status === "completed")
-                      ? "bg-success/20 text-success"
-                      : "bg-bg-1 text-text-muted"
-                  )}>
+                  <div
+                    className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold",
+                      season.weeks.some((w) => w.status === "current")
+                        ? "bg-accent/20 text-accent"
+                        : season.weeks.every((w) => w.status === "completed")
+                        ? "bg-success/20 text-success"
+                        : "bg-bg-1 text-text-muted"
+                    )}
+                  >
                     {season.seasonNumber}
                   </div>
                   <div className="text-left">
@@ -354,7 +339,6 @@ export default function RoadmapPage() {
                               : "bg-bg-1/50 border-border"
                           )}
                         >
-                          {/* Week Header */}
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
                               {week.status === "completed" ? (
@@ -373,7 +357,6 @@ export default function RoadmapPage() {
                             </span>
                           </div>
 
-                          {/* Lessons */}
                           <div className="flex gap-1.5">
                             {week.lessons.map((lesson) => (
                               <button
@@ -419,11 +402,6 @@ export default function RoadmapPage() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
-            <div className="p-3 rounded-xl bg-accent/5 border border-accent/20">
-              <p className="text-caption text-accent font-medium mb-1">Pattern</p>
-              <p className="text-body text-text-secondary">{selectedLesson?.pattern}</p>
-            </div>
-
             <div className="flex items-center gap-2">
               {selectedLesson?.completed ? (
                 <span className="flex items-center gap-1 text-caption text-success">
