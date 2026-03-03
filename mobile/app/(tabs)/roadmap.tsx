@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Modal,
+  Animated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -303,6 +304,26 @@ export default function RoadmapScreen() {
     }
   };
 
+  // Entrance animations
+  const headerAnim = useRef(new Animated.Value(0)).current;
+  const cardAnim = useRef(new Animated.Value(0)).current;
+  const seasonsAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!loading) {
+      Animated.stagger(150, [
+        Animated.spring(headerAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }),
+        Animated.spring(cardAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }),
+        Animated.spring(seasonsAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }),
+      ]).start();
+    }
+  }, [loading]);
+
+  const animStyle = (anim: Animated.Value) => ({
+    opacity: anim,
+    transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
+  });
+
   if (loading) {
     return (
       <View style={[styles.container, styles.centered]}>
@@ -321,7 +342,7 @@ export default function RoadmapScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
+        <Animated.View style={[styles.header, animStyle(headerAnim)]}>
           <View style={{ flex: 1 }}>
             <Text style={styles.title}>Your Journey</Text>
             <Text style={styles.subtitle}>
@@ -329,43 +350,47 @@ export default function RoadmapScreen() {
             </Text>
           </View>
           <LeoCharacter size="sm" animation={currentDay > 1 ? 'success' : 'idle'} />
-        </View>
+        </Animated.View>
 
-        {/* Current lesson quick-start card — uses real DB title */}
+        {/* Current lesson quick-start card */}
         {(currentLessonTitle || genericPatterns[currentDay]) && (
-          <TouchableOpacity
-            style={styles.currentCard}
-            onPress={() => router.push('/(tabs)/home')}
-            activeOpacity={0.8}
-          >
-            <View style={{ flex: 1 }}>
-              <Text style={styles.continueLabel}>CONTINUE LEARNING</Text>
-              <Text style={styles.currentTitle}>{currentLessonTitle || genericPatterns[currentDay]?.title}</Text>
-              {currentLessonPattern || genericPatterns[currentDay]?.pattern ? (
-                <Text style={styles.currentPattern}>{currentLessonPattern || genericPatterns[currentDay]?.pattern}</Text>
-              ) : null}
-            </View>
-            <View style={styles.startBtn}>
-              <Text style={styles.startBtnText}>▶ Start</Text>
-            </View>
-          </TouchableOpacity>
+          <Animated.View style={animStyle(cardAnim)}>
+            <TouchableOpacity
+              style={styles.currentCard}
+              onPress={() => router.push('/(tabs)/home')}
+              activeOpacity={0.8}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={styles.continueLabel}>CONTINUE LEARNING</Text>
+                <Text style={styles.currentTitle}>{currentLessonTitle || genericPatterns[currentDay]?.title}</Text>
+                {currentLessonPattern || genericPatterns[currentDay]?.pattern ? (
+                  <Text style={styles.currentPattern}>{currentLessonPattern || genericPatterns[currentDay]?.pattern}</Text>
+                ) : null}
+              </View>
+              <View style={styles.startBtn}>
+                <Text style={styles.startBtnText}>▶ Start</Text>
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
         )}
 
         {/* Seasons using new SeasonSection component */}
-        {seasons.map((season) => (
-          <SeasonSection
-            key={season.seasonNumber}
-            seasonNumber={season.seasonNumber}
-            title={season.title}
-            subtitle={season.subtitle}
-            weeks={season.weeks}
-            defaultExpanded={season.isExpanded}
-            onWeekClick={(weekNum) => {
-              // Navigate to home for current/available weeks
-            }}
-            onLessonClick={handleLessonClick}
-          />
-        ))}
+        <Animated.View style={animStyle(seasonsAnim)}>
+          {seasons.map((season) => (
+            <SeasonSection
+              key={season.seasonNumber}
+              seasonNumber={season.seasonNumber}
+              title={season.title}
+              subtitle={season.subtitle}
+              weeks={season.weeks}
+              defaultExpanded={season.isExpanded}
+              onWeekClick={(weekNum) => {
+                // Navigate to home for current/available weeks
+              }}
+              onLessonClick={handleLessonClick}
+            />
+          ))}
+        </Animated.View>
       </ScrollView>
 
       {/* Lesson detail modal */}
