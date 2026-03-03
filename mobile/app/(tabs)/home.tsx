@@ -304,7 +304,7 @@ export default function HomeScreen() {
                 { emoji: '⚡', label: 'Practice', onPress: () => router.push('/(tabs)/practice' as any) },
                 { emoji: '🧠', label: 'Trainer', onPress: () => router.push('/trainer' as any) },
                 { emoji: '🎮', label: 'Games', onPress: () => router.push('/games' as any) },
-                { emoji: '💬', label: 'Ask Leo', onPress: () => { triggerHaptic('light'); handleOpenMentorChat(); } },
+                { emoji: '👥', label: 'Friends', onPress: () => router.push('/friends' as any) },
               ]} />
             </AnimatedSection>
 
