@@ -42,7 +42,7 @@ export function StreakFreezeCard({
       Alert.alert('Streak Frozen! 🧊', `Your ${streak}-day streak is safe for 24 more hours.`);
       onDismiss();
     } else {
-      Alert.alert('Cannot Freeze', 'You've already used your freeze this week.');
+      Alert.alert('Cannot Freeze', "You've already used your freeze this week.");
     }
   };
 
