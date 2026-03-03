@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Alert,
   ActivityIndicator,
   Modal,
+  Animated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -19,6 +20,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, STARTUP_STAGES } from '../../hooks/useUserXP';
 import { ProgressBar } from '../../components/ui/ProgressBar';
+import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -96,6 +98,26 @@ export default function ProfileScreen() {
     ]);
   };
 
+  // Entrance animations
+  const headerAnim = useRef(new Animated.Value(0)).current;
+  const statsAnim = useRef(new Animated.Value(0)).current;
+  const bodyAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!loading) {
+      Animated.stagger(120, [
+        Animated.spring(headerAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }),
+        Animated.spring(statsAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }),
+        Animated.spring(bodyAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }),
+      ]).start();
+    }
+  }, [loading]);
+
+  const animStyle = (anim: Animated.Value) => ({
+    opacity: anim,
+    transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
+  });
+
   if (loading || authLoading) {
     return (
       <View style={[styles.container, styles.centered]}>
@@ -113,22 +135,25 @@ export default function ProfileScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View style={styles.header}>
+        {/* Header with Leo */}
+        <Animated.View style={[styles.header, animStyle(headerAnim)]}>
           <View>
             <Text style={styles.title}>Profile</Text>
             {user && <Text style={styles.email}>{user.email}</Text>}
           </View>
-          {isProUser && (
-            <View style={styles.proBadge}>
-              <Text style={styles.proBadgeText}>👑 PRO</Text>
-            </View>
-          )}
-        </View>
+          <View style={styles.headerRight}>
+            {isProUser && (
+              <View style={styles.proBadge}>
+                <Text style={styles.proBadgeText}>👑 PRO</Text>
+              </View>
+            )}
+            <LeoCharacter size="sm" animation="idle" />
+          </View>
+        </Animated.View>
 
         {/* Stats Grid */}
         {progress && (
-          <View style={styles.statsGrid}>
+          <Animated.View style={[styles.statsGrid, animStyle(statsAnim)]}>
             <View style={styles.statCard}>
               <View style={[styles.statIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
                 <Text style={styles.statEmoji}>🔥</Text>
@@ -150,10 +175,11 @@ export default function ProfileScreen() {
               <Text style={styles.statValue}>Day {availableDay}</Text>
               <Text style={styles.statLabel}>of 180</Text>
             </View>
-          </View>
+          </Animated.View>
         )}
 
         {/* XP & Stage */}
+        <Animated.View style={animStyle(bodyAnim)}>
         {xpData && (
           <View style={styles.stageCard}>
             <View style={styles.stageHeader}>
@@ -273,6 +299,7 @@ export default function ProfileScreen() {
         </View>
 
         <Text style={styles.versionText}>MarketLingo v1.0.0</Text>
+        </Animated.View>
       </ScrollView>
 
       {/* Change Market Warning */}
@@ -304,6 +331,7 @@ const styles = StyleSheet.create({
   centered: { alignItems: 'center', justifyContent: 'center' },
   scrollContent: { paddingHorizontal: 16 },
   header: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   title: { fontSize: 28, fontWeight: '700', color: COLORS.textPrimary },
   email: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2 },
   proBadge: { backgroundColor: 'rgba(139, 92, 246, 0.2)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 },
