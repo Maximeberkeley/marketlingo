@@ -1,1 +1,55 @@
 project_id = "wahrcgvzarcgmktjleyr"
+
+[functions.elevenlabs-tts]
+verify_jwt = false
+
+[functions.elevenlabs-conversation-token]
+verify_jwt = false
+
+[functions.leo-voice-chat]
+verify_jwt = false
+
+[functions.mentor-chat]
+verify_jwt = false
+
+[functions.generate-content]
+verify_jwt = false
+
+[functions.generate-curriculum]
+verify_jwt = false
+
+[functions.bulk-generate]
+verify_jwt = false
+
+[functions.batch-generate-all]
+verify_jwt = false
+
+[functions.import-curriculum]
+verify_jwt = false
+
+[functions.seed-month1-content]
+verify_jwt = false
+
+[functions.fetch-aerospace-news]
+verify_jwt = false
+
+[functions.fetch-market-news]
+verify_jwt = false
+
+[functions.refresh-market-news]
+verify_jwt = false
+
+[functions.generate-trainer-scenarios]
+verify_jwt = false
+
+[functions.generate-investment-scenarios]
+verify_jwt = false
+
+[functions.scheduled-notifications]
+verify_jwt = false
+
+[functions.send-push-notification]
+verify_jwt = false
+
+[functions.send-milestone-notification]
+verify_jwt = false

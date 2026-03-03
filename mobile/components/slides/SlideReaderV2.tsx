@@ -16,6 +16,7 @@ import { mentors } from '../../data/mentors';
 import { getPrimaryMentorForMarket } from '../../data/marketConfig';
 import { ConceptCard, parseSlideIntoCards, ConceptCardType } from './ConceptCard';
 import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
+import { AskLeoOverlay } from '../ai/AskLeoOverlay';
 import { playSound } from '../../lib/sounds';
 
 const MENTOR_IMAGES: Record<string, any> = {
@@ -99,6 +100,8 @@ export function SlideReaderV2({
   const [startTime] = useState(() => Date.now());
   const [timeSpentSeconds, setTimeSpentSeconds] = useState(0);
   const [showCompletion, setShowCompletion] = useState(false);
+  const [showAskLeo, setShowAskLeo] = useState(false);
+  const [narrationEnabled, setNarrationEnabled] = useState(false);
   const cardKey = useRef(0);
 
   const accentColor = TYPE_COLORS[stackType] || COLORS.accent;
@@ -261,12 +264,21 @@ export function SlideReaderV2({
           </View>
 
           {/* Ask Leo button */}
-          {onAskMentor && (
-            <TouchableOpacity onPress={onAskMentor} style={styles.askLeoBtn}>
-              <Image source={LEO_IMAGE} style={styles.askLeoImage} />
-              <Text style={styles.askLeoText}>?</Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity
+            onPress={() => setShowAskLeo(true)}
+            style={styles.askLeoBtn}
+          >
+            <Image source={LEO_IMAGE} style={styles.askLeoImage} />
+            <Text style={styles.askLeoText}>?</Text>
+          </TouchableOpacity>
+
+          {/* Narration toggle */}
+          <TouchableOpacity
+            onPress={() => setNarrationEnabled(!narrationEnabled)}
+            style={[styles.narrationBtn, narrationEnabled && styles.narrationBtnActive]}
+          >
+            <Text style={styles.narrationIcon}>{narrationEnabled ? '🔊' : '🔇'}</Text>
+          </TouchableOpacity>
         </View>
 
         {/* ── Progress Bar ── */}
@@ -357,6 +369,13 @@ export function SlideReaderV2({
             onKeepReading={() => setShowCompletion(false)}
           />
         </Modal>
+
+        {/* ── Ask Leo Overlay ── */}
+        <AskLeoOverlay
+          visible={showAskLeo}
+          onClose={() => setShowAskLeo(false)}
+          lessonContext={`Lesson: ${stackTitle}\nCurrent slide: ${currentSlide?.title || ''}\nContent: ${currentCardData?.type === 'concept' ? currentCardData.content : ''}`}
+        />
       </View>
     </Modal>
   );
@@ -564,6 +583,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 16,
     overflow: 'hidden',
+  },
+  narrationBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  narrationBtnActive: {
+    backgroundColor: 'rgba(139,92,246,0.15)',
+    borderColor: 'rgba(139,92,246,0.3)',
+  },
+  narrationIcon: {
+    fontSize: 16,
   },
   progressBar: {
     height: 4,
