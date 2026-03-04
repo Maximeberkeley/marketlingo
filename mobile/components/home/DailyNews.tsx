@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator,
+  Animated,
+  Easing,
   Linking,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { COLORS } from '../../lib/constants';
+import { APP_ICONS } from '../../lib/icons';
+import { Image } from 'react-native';
 
 interface NewsItem {
   id: string;
@@ -25,21 +28,66 @@ interface DailyNewsProps {
 }
 
 const categoryColors: Record<string, { bg: string; text: string }> = {
-  Space: { bg: 'rgba(139,92,246,0.2)', text: '#A78BFA' },
-  Aviation: { bg: 'rgba(59,130,246,0.2)', text: '#60A5FA' },
-  Defense: { bg: 'rgba(239,68,68,0.2)', text: '#F87171' },
-  Deals: { bg: 'rgba(251,191,36,0.2)', text: '#FCD34D' },
-  Industry: { bg: 'rgba(16,185,129,0.2)', text: '#34D399' },
-  Innovation: { bg: 'rgba(139,92,246,0.15)', text: '#A78BFA' },
-  Launch: { bg: 'rgba(139,92,246,0.15)', text: '#A78BFA' },
-  Production: { bg: 'rgba(16,185,129,0.2)', text: '#34D399' },
-  Models: { bg: 'rgba(167,139,250,0.2)', text: '#C4B5FD' },
-  Hardware: { bg: 'rgba(6,182,212,0.2)', text: '#22D3EE' },
-  AI: { bg: 'rgba(16,185,129,0.2)', text: '#34D399' },
-  Finance: { bg: 'rgba(251,191,36,0.2)', text: '#FCD34D' },
-  Health: { bg: 'rgba(236,72,153,0.2)', text: '#F472B6' },
-  default: { bg: 'rgba(100,116,139,0.2)', text: '#94A3B8' },
+  Space: { bg: 'rgba(99,102,241,0.1)', text: '#6366F1' },
+  Aviation: { bg: 'rgba(59,130,246,0.1)', text: '#3B82F6' },
+  Defense: { bg: 'rgba(239,68,68,0.1)', text: '#EF4444' },
+  Deals: { bg: 'rgba(245,158,11,0.1)', text: '#D97706' },
+  Industry: { bg: 'rgba(16,185,129,0.1)', text: '#059669' },
+  Innovation: { bg: 'rgba(139,92,246,0.1)', text: '#7C3AED' },
+  Launch: { bg: 'rgba(139,92,246,0.1)', text: '#7C3AED' },
+  Production: { bg: 'rgba(16,185,129,0.1)', text: '#059669' },
+  Models: { bg: 'rgba(124,58,237,0.1)', text: '#7C3AED' },
+  Hardware: { bg: 'rgba(6,182,212,0.1)', text: '#0891B2' },
+  AI: { bg: 'rgba(16,185,129,0.1)', text: '#059669' },
+  Finance: { bg: 'rgba(245,158,11,0.1)', text: '#D97706' },
+  Health: { bg: 'rgba(236,72,153,0.1)', text: '#DB2777' },
+  default: { bg: 'rgba(100,116,139,0.08)', text: '#64748B' },
 };
+
+function NewsCardAnimated({ item, index, showAiInsights }: { item: NewsItem; index: number; showAiInsights: boolean }) {
+  const slideAnim = useRef(new Animated.Value(30)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(slideAnim, { toValue: 0, duration: 350, delay: index * 60, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+      Animated.timing(opacityAnim, { toValue: 1, duration: 300, delay: index * 60, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  const catColor = categoryColors[item.categoryTag] || categoryColors.default;
+
+  return (
+    <Animated.View style={{ transform: [{ translateY: slideAnim }], opacity: opacityAnim }}>
+      <TouchableOpacity
+        style={styles.newsCard}
+        onPress={() => { if (item.sourceUrl) Linking.openURL(item.sourceUrl).catch(() => {}); }}
+        activeOpacity={0.7}
+      >
+        <View style={styles.accentBar} />
+        <View style={{ flex: 1 }}>
+          <View style={styles.newsCardHeader}>
+            <Text style={styles.sourceName}>{item.sourceName}</Text>
+            <View style={[styles.categoryBadge, { backgroundColor: catColor.bg }]}>
+              <Text style={[styles.categoryText, { color: catColor.text }]}>
+                {item.categoryTag.toUpperCase()}
+              </Text>
+            </View>
+            <Text style={styles.dateText}>{item.publishedAt}</Text>
+          </View>
+          <Text style={styles.newsTitle} numberOfLines={3}>{item.title}</Text>
+          {showAiInsights && item.summary && (
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryIcon}>✨</Text>
+              <Text style={styles.summaryText} numberOfLines={3}>{item.summary}</Text>
+            </View>
+          )}
+          <Text style={styles.readLink}>Read article →</Text>
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
 
 export function DailyNews({ marketId }: DailyNewsProps) {
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -55,97 +103,67 @@ export function DailyNews({ marketId }: DailyNewsProps) {
     setError(null);
 
     try {
-      // Try DB cache first
       if (!forceRefresh) {
         const { data, error: dbError } = await supabase
-          .from('news_items')
-          .select('*')
-          .eq('market_id', marketId)
-          .order('published_at', { ascending: false })
-          .limit(10);
+          .from('news_items').select('*').eq('market_id', marketId)
+          .order('published_at', { ascending: false }).limit(10);
 
         if (!dbError && data && data.length > 0) {
           setNews(data.map((item) => ({
-            id: item.id,
-            title: item.title,
-            sourceName: item.source_name,
+            id: item.id, title: item.title, sourceName: item.source_name,
             sourceUrl: item.source_url,
             publishedAt: new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
             categoryTag: item.category_tag || 'Industry',
             summary: item.summary || undefined,
           })));
           setLastFetched(new Date());
-          setIsLoading(false);
-          setIsRefreshing(false);
-          return;
+          setIsLoading(false); setIsRefreshing(false); return;
         }
       }
 
-      // Live fetch via edge function
-      const { data: liveData, error: fnError } = await supabase.functions.invoke('fetch-market-news', {
-        body: { marketId },
-      });
+      const { data: liveData, error: fnError } = await supabase.functions.invoke('fetch-market-news', { body: { marketId } });
 
       if (!fnError && liveData?.success && liveData.data?.length > 0) {
         setNews(liveData.data.map((item: any) => ({
-          id: item.id,
-          title: item.title,
-          sourceName: item.sourceName,
-          sourceUrl: item.sourceUrl,
-          publishedAt: item.publishedAt,
-          categoryTag: item.categoryTag || 'Industry',
-          summary: item.summary || undefined,
+          id: item.id, title: item.title, sourceName: item.sourceName,
+          sourceUrl: item.sourceUrl, publishedAt: item.publishedAt,
+          categoryTag: item.categoryTag || 'Industry', summary: item.summary || undefined,
         })));
         setLastFetched(new Date());
       } else {
-        // Fallback to DB
         const { data: fallback } = await supabase
-          .from('news_items')
-          .select('*')
-          .eq('market_id', marketId)
-          .order('published_at', { ascending: false })
-          .limit(10);
+          .from('news_items').select('*').eq('market_id', marketId)
+          .order('published_at', { ascending: false }).limit(10);
 
         if (fallback && fallback.length > 0) {
           setNews(fallback.map((item) => ({
-            id: item.id,
-            title: item.title,
-            sourceName: item.source_name,
+            id: item.id, title: item.title, sourceName: item.source_name,
             sourceUrl: item.source_url,
             publishedAt: new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-            categoryTag: item.category_tag || 'Industry',
-            summary: item.summary || undefined,
+            categoryTag: item.category_tag || 'Industry', summary: item.summary || undefined,
           })));
           setLastFetched(new Date());
-        } else {
-          setNews([]);
-        }
+        } else { setNews([]); }
       }
     } catch (err) {
       setError('Failed to connect to news service');
     } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
+      setIsLoading(false); setIsRefreshing(false);
     }
   };
 
-  useEffect(() => {
-    fetchNews();
-  }, [marketId]);
+  useEffect(() => { fetchNews(); }, [marketId]);
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <View style={styles.headerIcon}>
-            <Text style={{ fontSize: 14 }}>⚡</Text>
-          </View>
+          <Image source={APP_ICONS.news} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
           <View>
             <Text style={styles.headerTitle}>Industry Intel</Text>
-            <Text style={styles.headerSubtitle}>✨ AI-analyzed insights</Text>
+            <Text style={styles.headerSubtitle}>AI-analyzed insights</Text>
           </View>
-          {/* Live dot */}
           <View style={styles.liveDot} />
         </View>
         <View style={styles.headerActions}>
@@ -167,7 +185,7 @@ export function DailyNews({ marketId }: DailyNewsProps) {
         </View>
       </View>
 
-      {/* Loading */}
+      {/* Loading Skeleton */}
       {isLoading && (
         <View style={styles.loadingContainer}>
           {[1, 2, 3].map((i) => (
@@ -192,50 +210,10 @@ export function DailyNews({ marketId }: DailyNewsProps) {
 
       {/* News Cards */}
       {!isLoading && !error && news.length > 0 && (
-        <View style={{ gap: 8 }}>
-          {news.map((item) => {
-            const catColor = categoryColors[item.categoryTag] || categoryColors.default;
-            return (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.newsCard}
-                onPress={() => {
-                  if (item.sourceUrl) Linking.openURL(item.sourceUrl).catch(() => {});
-                }}
-                activeOpacity={0.8}
-              >
-                {/* Left accent bar */}
-                <View style={styles.accentBar} />
-
-                <View style={{ flex: 1 }}>
-                  {/* Source & Category */}
-                  <View style={styles.newsCardHeader}>
-                    <Text style={styles.sourceName}>{item.sourceName}</Text>
-                    <View style={[styles.categoryBadge, { backgroundColor: catColor.bg }]}>
-                      <Text style={[styles.categoryText, { color: catColor.text }]}>
-                        {item.categoryTag.toUpperCase()}
-                      </Text>
-                    </View>
-                    <Text style={styles.dateText}>{item.publishedAt}</Text>
-                  </View>
-
-                  {/* Title */}
-                  <Text style={styles.newsTitle} numberOfLines={3}>{item.title}</Text>
-
-                  {/* AI Summary */}
-                  {showAiInsights && item.summary && (
-                    <View style={styles.summaryCard}>
-                      <Text style={styles.summaryIcon}>✨</Text>
-                      <Text style={styles.summaryText} numberOfLines={3}>{item.summary}</Text>
-                    </View>
-                  )}
-
-                  {/* Read link */}
-                  <Text style={styles.readLink}>Read article →</Text>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
+        <View style={{ gap: 10 }}>
+          {news.map((item, index) => (
+            <NewsCardAnimated key={item.id} item={item} index={index} showAiInsights={showAiInsights} />
+          ))}
         </View>
       )}
 
@@ -249,7 +227,6 @@ export function DailyNews({ marketId }: DailyNewsProps) {
         </View>
       )}
 
-      {/* Last Updated */}
       {lastFetched && !isLoading && news.length > 0 && (
         <Text style={styles.lastUpdated}>
           Last updated: {lastFetched.toLocaleTimeString()}
@@ -260,185 +237,67 @@ export function DailyNews({ marketId }: DailyNewsProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    gap: 0,
-  },
+  container: { gap: 0 },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12,
   },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  headerIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 8,
-    backgroundColor: 'rgba(139,92,246,0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-  },
-  headerSubtitle: {
-    fontSize: 10,
-    color: COLORS.textMuted,
-  },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
+  headerSubtitle: { fontSize: 10, color: COLORS.textMuted },
   liveDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.accent,
+    width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.success,
   },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   aiToggle: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20,
+    backgroundColor: COLORS.surfaceLight,
   },
-  aiToggleActive: {
-    backgroundColor: 'rgba(139,92,246,0.2)',
-  },
-  aiToggleText: {
-    fontSize: 11,
-    color: '#64748B',
-    fontWeight: '600',
-  },
-  refreshText: {
-    fontSize: 12,
-    color: '#64748B',
-  },
-  loadingContainer: {
-    gap: 8,
-  },
+  aiToggleActive: { backgroundColor: COLORS.accentSoft },
+  aiToggleText: { fontSize: 11, color: COLORS.textMuted, fontWeight: '600' },
+  refreshText: { fontSize: 12, color: COLORS.textMuted },
+  loadingContainer: { gap: 8 },
   skeletonCard: {
-    padding: 14,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.07)',
-    gap: 8,
+    padding: 14, backgroundColor: COLORS.bg1, borderRadius: 14,
+    borderWidth: 1, borderColor: COLORS.borderLight, gap: 8,
   },
   skeletonLine: {
-    height: 14,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderRadius: 7,
-    width: '100%',
+    height: 14, backgroundColor: COLORS.surfaceLight, borderRadius: 7, width: '100%',
   },
   newsCard: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.07)',
-    padding: 14,
-    gap: 10,
-    overflow: 'hidden',
+    flexDirection: 'row', backgroundColor: COLORS.bg2, borderRadius: 14,
+    borderWidth: 1, borderColor: COLORS.border, padding: 14, gap: 10, overflow: 'hidden',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
   },
   accentBar: {
-    width: 3,
-    backgroundColor: COLORS.accent,
-    borderRadius: 2,
-    opacity: 0.6,
-    alignSelf: 'stretch',
+    width: 3, backgroundColor: COLORS.accent, borderRadius: 2, opacity: 0.5, alignSelf: 'stretch',
   },
   newsCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 8,
-    flexWrap: 'wrap',
+    flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8, flexWrap: 'wrap',
   },
-  sourceName: {
-    fontSize: 11,
-    color: '#64748B',
-  },
-  categoryBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 10,
-  },
-  categoryText: {
-    fontSize: 9,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  dateText: {
-    fontSize: 11,
-    color: '#475569',
-    marginLeft: 'auto',
-  },
+  sourceName: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
+  categoryBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 10 },
+  categoryText: { fontSize: 9, fontWeight: '700', letterSpacing: 0.5 },
+  dateText: { fontSize: 11, color: COLORS.textMuted, marginLeft: 'auto' },
   newsTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#E2E8F0',
-    lineHeight: 20,
-    marginBottom: 8,
+    fontSize: 14, fontWeight: '600', color: COLORS.textPrimary, lineHeight: 20, marginBottom: 8,
   },
   summaryCard: {
-    flexDirection: 'row',
-    gap: 6,
-    backgroundColor: 'rgba(139,92,246,0.06)',
-    borderWidth: 1,
-    borderColor: 'rgba(139,92,246,0.12)',
-    borderRadius: 10,
-    padding: 8,
-    marginBottom: 8,
+    flexDirection: 'row', gap: 6, backgroundColor: COLORS.accentSoft,
+    borderWidth: 1, borderColor: 'rgba(139,92,246,0.12)', borderRadius: 10,
+    padding: 8, marginBottom: 8,
   },
   summaryIcon: { fontSize: 12, marginTop: 1 },
-  summaryText: {
-    flex: 1,
-    fontSize: 12,
-    color: '#94A3B8',
-    lineHeight: 18,
-  },
-  readLink: {
-    fontSize: 11,
-    color: COLORS.accent,
-  },
+  summaryText: { flex: 1, fontSize: 12, color: COLORS.textSecondary, lineHeight: 18 },
+  readLink: { fontSize: 11, color: COLORS.accent, fontWeight: '600' },
   emptyCard: {
-    padding: 24,
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.07)',
-    alignItems: 'center',
-    gap: 12,
+    padding: 24, backgroundColor: COLORS.bg1, borderRadius: 14,
+    borderWidth: 1, borderColor: COLORS.borderLight, alignItems: 'center', gap: 12,
   },
-  emptyText: {
-    fontSize: 14,
-    color: '#64748B',
-    textAlign: 'center',
-  },
+  emptyText: { fontSize: 14, color: COLORS.textMuted, textAlign: 'center' },
   retryBtn: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: 'rgba(139,92,246,0.15)',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(139,92,246,0.3)',
+    paddingHorizontal: 20, paddingVertical: 10, backgroundColor: COLORS.accentSoft,
+    borderRadius: 20, borderWidth: 1, borderColor: 'rgba(139,92,246,0.25)',
   },
-  retryText: {
-    fontSize: 13,
-    color: COLORS.accent,
-    fontWeight: '600',
-  },
-  lastUpdated: {
-    fontSize: 11,
-    color: '#475569',
-    textAlign: 'center',
-    marginTop: 8,
-  },
+  retryText: { fontSize: 13, color: COLORS.accent, fontWeight: '600' },
+  lastUpdated: { fontSize: 11, color: COLORS.textMuted, textAlign: 'center', marginTop: 8 },
 });
