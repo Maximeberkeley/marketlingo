@@ -65,25 +65,42 @@ export default function DrillsPage() {
       const market = profile?.selected_market || "aerospace";
       setSelectedMarket(market);
 
-      // Fetch slides from stacks for this market to create drill questions
-      const { data: stacks, error } = await supabase
-        .from("stacks")
-        .select(`
-          id,
-          title,
-          tags,
-          slides (
-            id,
-            slide_number,
-            title,
-            body,
-            sources
-          )
-        `)
+      // Get user's learning goal for goal-specific content
+      const { data: progressData } = await supabase
+        .from("user_progress")
+        .select("learning_goal")
+        .eq("user_id", user.id)
         .eq("market_id", market)
+        .maybeSingle();
+
+      const learningGoal = progressData?.learning_goal || "curiosity";
+      const goalTag = `goal:${learningGoal}`;
+
+      // Try goal-specific stacks first
+      let { data: stacks, error } = await supabase
+        .from("stacks")
+        .select(`id, title, tags, slides (id, slide_number, title, body, sources)`)
+        .eq("market_id", market)
+        .contains("tags", [goalTag])
         .not("published_at", "is", null)
-        .order("created_at", { ascending: true })
-        .limit(10);
+        .limit(20);
+
+      // Fallback: any stacks if no goal-specific ones
+      if (!stacks?.length) {
+        const fallback = await supabase
+          .from("stacks")
+          .select(`id, title, tags, slides (id, slide_number, title, body, sources)`)
+          .eq("market_id", market)
+          .not("published_at", "is", null)
+          .limit(20);
+        stacks = fallback.data;
+        error = fallback.error;
+      }
+
+      // Shuffle for variety
+      if (stacks?.length) {
+        stacks = [...stacks].sort(() => Math.random() - 0.5);
+      }
 
       if (error) {
         console.error("Error fetching drills:", error);

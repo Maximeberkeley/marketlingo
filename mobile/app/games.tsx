@@ -67,7 +67,7 @@ export default function GamesScreen() {
 
       const completedIds = new Set((completedAttempts || []).map(a => a.scenario_id));
 
-      // Also get learning goal for context
+      // Get learning goal for goal-specific content
       const { data: progressData } = await supabase
         .from('user_progress')
         .select('learning_goal')
@@ -77,13 +77,24 @@ export default function GamesScreen() {
 
       const learningGoal = progressData?.learning_goal || 'curiosity';
 
-      // Use trainer_scenarios which have proper correct_option_index
-      // Fetch more than needed, then filter out completed ones
-      const { data: scenarios, error } = await supabase
+      // Try goal-specific trainer scenarios first (tags contain goal:career etc.)
+      let { data: scenarios, error } = await supabase
         .from('trainer_scenarios')
         .select('id, scenario, question, options, correct_option_index, feedback_pro_reasoning, tags')
         .eq('market_id', market)
+        .contains('tags', [`goal:${learningGoal}`])
         .limit(30);
+
+      // Fallback: any trainer scenarios if no goal-specific ones
+      if (!scenarios?.length) {
+        const fallback = await supabase
+          .from('trainer_scenarios')
+          .select('id, scenario, question, options, correct_option_index, feedback_pro_reasoning, tags')
+          .eq('market_id', market)
+          .limit(30);
+        scenarios = fallback.data;
+        error = fallback.error;
+      }
 
       if (error || !scenarios?.length) {
         // Fallback: try game stacks but parse correct answer from content
