@@ -252,7 +252,7 @@ export function CompanyDetailModal({ company, onClose }: CompanyDetailModalProps
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'flex-end',
   },
   sheet: {
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: COLORS.border,
   },
   logoImage: { width: 40, height: 40 },
   logoEmoji: { fontSize: 28 },

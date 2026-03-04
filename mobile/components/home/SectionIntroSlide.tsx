@@ -84,7 +84,7 @@ export function SectionIntroSlide({ type, dayNumber, monthTheme }: SectionIntroS
 
       {/* Icon & Title */}
       <View style={styles.mainRow}>
-        <View style={[styles.iconBox, { backgroundColor: 'rgba(0,0,0,0.3)' }]}>
+        <View style={[styles.iconBox, { backgroundColor: 'rgba(0,0,0,0.08)' }]}>
           <Text style={{ fontSize: 24 }}>{info.icon}</Text>
         </View>
         <View>
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.07)',
+    borderColor: COLORS.border,
     overflow: 'hidden',
   },
   badgesRow: {
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   dayBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: 'rgba(0,0,0,0.06)',
     borderRadius: 20,
   },
   dayBadgeText: { fontSize: 12, color: '#E2E8F0', fontWeight: '600' },

@@ -1,11 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  Easing,
-} from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 import { COLORS } from '../../lib/constants';
 import { DailyQuest } from '../../hooks/useDailyQuests';
 
@@ -23,30 +17,14 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 350,
-        delay: index * 80,
-        easing: Easing.out(Easing.back(1.2)),
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacityAnim, {
-        toValue: 1,
-        duration: 280,
-        delay: index * 80,
-        useNativeDriver: true,
-      }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 350, delay: index * 80, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }),
+      Animated.timing(opacityAnim, { toValue: 1, duration: 280, delay: index * 80, useNativeDriver: true }),
     ]).start();
   }, []);
 
   useEffect(() => {
     if (quest.isCompleted) {
-      Animated.spring(checkScale, {
-        toValue: 1,
-        tension: 200,
-        friction: 8,
-        useNativeDriver: true,
-      }).start();
+      Animated.spring(checkScale, { toValue: 1, tension: 200, friction: 8, useNativeDriver: true }).start();
     }
   }, [quest.isCompleted]);
 
@@ -60,18 +38,12 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
         { transform: [{ translateX: slideAnim }], opacity: opacityAnim },
       ]}
     >
-      {/* Emoji icon */}
       <View style={[styles.questIcon, quest.isCompleted && styles.questIconDone]}>
         <Text style={styles.questEmoji}>{quest.emoji}</Text>
       </View>
-
-      {/* Text + progress */}
       <View style={styles.questContent}>
         <View style={styles.questHeader}>
-          <Text
-            style={[styles.questTitle, quest.isCompleted && styles.questTitleDone]}
-            numberOfLines={1}
-          >
+          <Text style={[styles.questTitle, quest.isCompleted && styles.questTitleDone]} numberOfLines={1}>
             {quest.title}
           </Text>
           <View style={[styles.xpChip, quest.isCompleted && styles.xpChipDone]}>
@@ -80,11 +52,7 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
             </Text>
           </View>
         </View>
-        <Text style={styles.questDesc} numberOfLines={1}>
-          {quest.description}
-        </Text>
-
-        {/* Mini progress bar */}
+        <Text style={styles.questDesc} numberOfLines={1}>{quest.description}</Text>
         <View style={styles.questProgressBg}>
           <View style={[styles.questProgressFill, { width: `${progressPct * 100}%` }]} />
         </View>
@@ -95,8 +63,6 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
           )}
         </Text>
       </View>
-
-      {/* Completion checkmark */}
       {quest.isCompleted && (
         <Animated.View style={[styles.checkCircle, { transform: [{ scale: checkScale }] }]}>
           <Text style={styles.checkText}>✓</Text>
@@ -109,20 +75,16 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
 export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete }: DailyQuestsProps) {
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.headerEmoji}>🎯</Text>
           <Text style={styles.headerTitle}>Daily Quests</Text>
         </View>
         <View style={styles.countBadge}>
-          <Text style={styles.countText}>
-            {completedCount}/{quests.length}
-          </Text>
+          <Text style={styles.countText}>{completedCount}/{quests.length}</Text>
         </View>
       </View>
 
-      {/* All-complete banner */}
       {allComplete && (
         <View style={styles.allCompleteBanner}>
           <Text style={styles.allCompleteEmoji}>🏆</Text>
@@ -133,7 +95,6 @@ export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete 
         </View>
       )}
 
-      {/* Quest rows */}
       {quests.map((quest, idx) => (
         <QuestRow key={quest.id} quest={quest} index={idx} />
       ))}
@@ -143,112 +104,59 @@ export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete 
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.bg2,
-    borderRadius: 18,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    gap: 10,
+    backgroundColor: COLORS.bg2, borderRadius: 18, padding: 16,
+    borderWidth: 1, borderColor: COLORS.border, gap: 10,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 2,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 4,
-  },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   headerEmoji: { fontSize: 18 },
   headerTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
   countBadge: {
-    backgroundColor: 'rgba(139,92,246,0.15)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(139,92,246,0.3)',
+    backgroundColor: COLORS.accentSoft, paddingHorizontal: 10, paddingVertical: 4,
+    borderRadius: 10, borderWidth: 1, borderColor: 'rgba(139,92,246,0.2)',
   },
   countText: { fontSize: 12, fontWeight: '700', color: COLORS.accent },
   allCompleteBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    backgroundColor: 'rgba(34,197,94,0.1)',
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(34,197,94,0.25)',
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    backgroundColor: COLORS.successSoft, borderRadius: 12, padding: 12,
+    borderWidth: 1, borderColor: 'rgba(34,197,94,0.2)',
   },
   allCompleteEmoji: { fontSize: 28 },
-  allCompleteTitle: { fontSize: 14, fontWeight: '700', color: '#22C55E' },
-  allCompleteSubtitle: { fontSize: 11, color: '#86EFAC' },
+  allCompleteTitle: { fontSize: 14, fontWeight: '700', color: COLORS.success },
+  allCompleteSubtitle: { fontSize: 11, color: COLORS.textMuted },
   questRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderRadius: 14,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.04)',
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: COLORS.bg1, borderRadius: 14, padding: 12,
+    borderWidth: 1, borderColor: COLORS.borderLight,
   },
   questRowCompleted: {
-    backgroundColor: 'rgba(34,197,94,0.06)',
-    borderColor: 'rgba(34,197,94,0.15)',
+    backgroundColor: COLORS.successSoft, borderColor: 'rgba(34,197,94,0.15)',
   },
   questIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: 'rgba(139,92,246,0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 40, height: 40, borderRadius: 12,
+    backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center',
   },
-  questIconDone: {
-    backgroundColor: 'rgba(34,197,94,0.15)',
-  },
+  questIconDone: { backgroundColor: 'rgba(34,197,94,0.12)' },
   questEmoji: { fontSize: 20 },
   questContent: { flex: 1 },
-  questHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 2,
-  },
+  questHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 },
   questTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary },
-  questTitleDone: { color: '#22C55E' },
+  questTitleDone: { color: COLORS.success },
   questDesc: { fontSize: 11, color: COLORS.textMuted, marginBottom: 6 },
-  xpChip: {
-    backgroundColor: 'rgba(139,92,246,0.15)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  xpChipDone: {
-    backgroundColor: 'rgba(34,197,94,0.2)',
-  },
+  xpChip: { backgroundColor: COLORS.accentSoft, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
+  xpChipDone: { backgroundColor: 'rgba(34,197,94,0.15)' },
   xpChipText: { fontSize: 10, fontWeight: '700', color: COLORS.accent },
-  xpChipTextDone: { color: '#22C55E' },
+  xpChipTextDone: { color: COLORS.success },
   questProgressBg: {
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    overflow: 'hidden',
-    marginBottom: 3,
+    height: 4, borderRadius: 2, backgroundColor: COLORS.surfaceLight, overflow: 'hidden', marginBottom: 3,
   },
-  questProgressFill: {
-    height: '100%',
-    borderRadius: 2,
-    backgroundColor: COLORS.accent,
-  },
+  questProgressFill: { height: '100%', borderRadius: 2, backgroundColor: COLORS.accent },
   questProgress: { fontSize: 10, color: COLORS.textMuted },
-  multiplierText: { color: '#FBBF24', fontWeight: '600' },
+  multiplierText: { color: COLORS.gold, fontWeight: '600' },
   checkCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#22C55E',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 28, height: 28, borderRadius: 14,
+    backgroundColor: COLORS.success, alignItems: 'center', justifyContent: 'center',
   },
   checkText: { fontSize: 14, fontWeight: '800', color: '#fff' },
 });

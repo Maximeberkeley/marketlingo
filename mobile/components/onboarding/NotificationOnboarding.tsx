@@ -141,7 +141,7 @@ export function NotificationOnboarding({ visible, onComplete }: NotificationOnbo
 
 const styles = StyleSheet.create({
   backdrop: {
-    flex: 1, backgroundColor: 'rgba(0,0,0,0.65)',
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.45)',
     justifyContent: 'center', alignItems: 'center', padding: 24,
   },
   card: {
