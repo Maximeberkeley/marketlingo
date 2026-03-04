@@ -1,14 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, TouchableOpacity, View, Text, Image, StyleSheet } from 'react-native';
 import { COLORS } from '../../lib/constants';
-import { LeoCharacter } from '../mascot/LeoCharacter';
 
 interface QuickAction {
-  emoji?: string;
   icon?: any;
   label: string;
   onPress: () => void;
-  isLeo?: boolean;
 }
 
 interface QuickActionsGridProps {
@@ -42,18 +39,12 @@ export function QuickActionsGrid({ actions }: QuickActionsGridProps) {
           style={[styles.itemWrap, { opacity: anims[i].opacity, transform: [{ scale: anims[i].scale }] }]}
         >
           <TouchableOpacity style={styles.item} onPress={action.onPress} activeOpacity={0.7}>
-            {action.isLeo ? (
-              <View style={styles.leoIcon}>
-                <LeoCharacter size="sm" animation="idle" />
-              </View>
-            ) : action.icon ? (
+            {action.icon ? (
               <View style={styles.iconCircle}>
                 <Image source={action.icon} style={styles.iconImage} />
               </View>
             ) : (
-              <View style={styles.iconCircle}>
-                <Text style={styles.emoji}>{action.emoji}</Text>
-              </View>
+              <View style={styles.iconCircle} />
             )}
             <Text style={styles.label}>{action.label}</Text>
           </TouchableOpacity>

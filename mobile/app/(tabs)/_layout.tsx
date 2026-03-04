@@ -72,7 +72,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="roadmap"
         options={{
-          title: 'Progress',
+          title: 'Courses',
           tabBarIcon: ({ focused }) => (
             <TabBarIcon icon={APP_ICONS.progress} focused={focused} />
           ),
@@ -88,15 +88,21 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="notebook"
         options={{
-          href: null,
+          title: 'Notes',
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon icon={APP_ICONS.notebook} focused={focused} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="notebook"
+        name="profile"
         options={{
-          href: null,
+          title: 'You',
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon icon={APP_ICONS.profile} focused={focused} />
+          ),
         }}
       />
     </Tabs>
