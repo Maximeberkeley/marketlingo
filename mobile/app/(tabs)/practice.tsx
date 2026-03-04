@@ -207,12 +207,7 @@ export default function PracticeScreen() {
           </View>
         </Animated.View>
 
-        {/* ── Today's Stats ── */}
-        <Animated.View style={[styles.statsRow, animStyle(bodyAnim)]}>
-          <StatPill value={stats.gamesPlayed} label="Games" emoji="🎮" />
-          <StatPill value={stats.drillsCompleted} label="Drills" emoji="⚡" />
-          <StatPill value={stats.trainerAttempts} label="Scenarios" emoji="🧠" />
-        </Animated.View>
+        {/* ── Practice Modes ── */}
 
         {/* ── Practice Modes ── */}
         <Animated.View style={animStyle(bodyAnim)}>

@@ -103,6 +103,7 @@ export default function DrillsScreen() {
   const [showIntro, setShowIntro] = useState(true);
   const [mascotState, setMascotState] = useState<MascotState>('idle');
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [fetchKey, setFetchKey] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,13 +118,13 @@ export default function DrillsScreen() {
       const market = profile?.selected_market || 'aerospace';
       setSelectedMarket(market);
 
+      // Fetch varied stacks — use random ordering to avoid repetitive content
       const { data: stacks, error } = await supabase
         .from('stacks')
         .select('id, title, tags, slides (id, slide_number, title, body, sources)')
         .eq('market_id', market)
         .not('published_at', 'is', null)
-        .order('created_at', { ascending: true })
-        .limit(10);
+        .limit(20);
 
       if (error) {
         console.error('Error fetching drills:', error);
@@ -167,13 +168,13 @@ export default function DrillsScreen() {
         });
       });
 
-      // Shuffle for variety
+      // Shuffle and pick 5 — different each session
       const shuffled = drillQuestions.sort(() => Math.random() - 0.5);
-      setQuestions(shuffled.slice(0, 5));
+      setQuestions(shuffled.slice(0, 7));
       setLoading(false);
     };
     fetchData();
-  }, [user]);
+  }, [user, fetchKey]);
 
   // Timer
   useEffect(() => {
@@ -326,13 +327,15 @@ export default function DrillsScreen() {
           <TouchableOpacity
             style={[styles.ctaButton, { flex: 1 }]}
             onPress={() => {
+              setLoading(true);
               setCurrentQuestion(0);
               setScore(0);
               setSelectedAnswer(null);
               setShowResult(false);
               setDrillComplete(false);
               setTimeLeft(15);
-              setIsTimerActive(true);
+              setShowIntro(true);
+              setFetchKey(k => k + 1);
             }}
           >
             <Text style={styles.ctaText}>🔄 Retry</Text>
