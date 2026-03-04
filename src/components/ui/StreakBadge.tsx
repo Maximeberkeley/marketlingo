@@ -1,6 +1,7 @@
 import { Flame } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { AnimatedCounter } from "./AnimatedCounter";
 
 interface StreakBadgeProps {
   count: number;
@@ -22,8 +23,9 @@ export function StreakBadge({ count, size = "md", showLabel = false }: StreakBad
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
+      transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.05 }}
       className={cn(
         "inline-flex items-center rounded-full font-bold no-select",
         sizeClasses[size],
@@ -34,14 +36,16 @@ export function StreakBadge({ count, size = "md", showLabel = false }: StreakBad
             : "bg-bg-1 text-text-muted"
       )}
     >
-      <Flame 
-        size={iconSizes[size]} 
-        className={cn(
-          isOnFire ? "text-orange-500 fill-orange-500" : 
-          isHot ? "text-orange-400" : "text-text-muted"
-        )} 
-      />
-      <span>{count}</span>
+      <motion.div className={isOnFire ? "flame-flicker" : ""}>
+        <Flame 
+          size={iconSizes[size]} 
+          className={cn(
+            isOnFire ? "text-orange-500 fill-orange-500" : 
+            isHot ? "text-orange-400" : "text-text-muted"
+          )} 
+        />
+      </motion.div>
+      <AnimatedCounter value={count} duration={0.4} />
       {showLabel && <span className="font-medium opacity-70">days</span>}
     </motion.div>
   );

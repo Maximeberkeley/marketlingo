@@ -516,16 +516,23 @@ export default function HomePage() {
               { icon: Gamepad2, label: "Games", path: "/games", color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-500/10" },
               { icon: Zap, label: "Drills", path: "/drills", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10" },
               { icon: Target, label: "Trainer", path: "/trainer", color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-500/10" },
-            ].map((item) => (
+            ].map((item, idx) => (
               <motion.button
                 key={item.path}
-                whileTap={{ scale: 0.95 }}
+                whileTap={{ scale: 0.92 }}
+                whileHover={{ y: -3, boxShadow: "var(--shadow-elevated)" }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.16 + idx * 0.06, type: "spring", stiffness: 300, damping: 20 }}
                 onClick={() => { hapticFeedback("light"); navigate(item.path); }}
-                className="flex flex-col items-center gap-2.5 py-5 rounded-2xl border border-border bg-card shadow-card transition-all hover:shadow-elevated"
+                className="flex flex-col items-center gap-2.5 py-5 rounded-2xl border border-border bg-card shadow-card transition-shadow"
               >
-                <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", item.bg)}>
+                <motion.div 
+                  className={cn("w-12 h-12 rounded-xl flex items-center justify-center", item.bg)}
+                  whileHover={{ rotate: [0, -5, 5, 0], transition: { duration: 0.4 } }}
+                >
                   <item.icon size={22} className={item.color} />
-                </div>
+                </motion.div>
                 <span className="text-[13px] font-semibold text-text-primary">{item.label}</span>
               </motion.button>
             ))}
@@ -577,12 +584,16 @@ export default function HomePage() {
               { icon: Trophy, label: "Rank", path: "/leaderboard", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" },
               { icon: Award, label: "Badges", path: "/achievements", color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-500/10" },
               { icon: Newspaper, label: "News", path: "/summaries", color: "text-cyan-600 dark:text-cyan-400", bg: "bg-cyan-50 dark:bg-cyan-500/10" },
-            ].map((item) => (
+            ].map((item, idx) => (
               <motion.button
                 key={item.path}
-                whileTap={{ scale: 0.95 }}
+                whileTap={{ scale: 0.9 }}
+                whileHover={{ y: -2 }}
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 + idx * 0.05, type: "spring", stiffness: 300, damping: 20 }}
                 onClick={() => { hapticFeedback("light"); navigate(item.path); }}
-                className="flex flex-col items-center gap-2 py-3.5 rounded-2xl border border-border bg-card shadow-card"
+                className="flex flex-col items-center gap-2 py-3.5 rounded-2xl border border-border bg-card shadow-card transition-shadow"
               >
                 <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", item.bg)}>
                   <item.icon size={20} className={item.color} />

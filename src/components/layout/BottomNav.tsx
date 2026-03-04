@@ -26,7 +26,6 @@ export function BottomNav() {
       className="fixed bottom-0 left-0 right-0 z-50"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      {/* Clean background — no blur needed on white */}
       <div className="absolute inset-0 bg-background/95 backdrop-blur-lg border-t border-border" />
       
       <div className="relative flex items-center justify-center h-[56px] max-w-md mx-auto px-2">
@@ -46,7 +45,20 @@ export function BottomNav() {
                   "transition-colors duration-150"
                 )}
               >
-                <div className="relative flex items-center justify-center">
+                {/* Active indicator dot */}
+                {isActive && (
+                  <motion.div
+                    layoutId="nav-indicator"
+                    className="absolute -top-0.5 w-5 h-0.5 rounded-full bg-primary"
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                )}
+
+                <motion.div 
+                  className="relative flex items-center justify-center"
+                  animate={isActive ? { y: -1 } : { y: 0 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
                   <Icon
                     size={22}
                     className={cn(
@@ -56,7 +68,7 @@ export function BottomNav() {
                     strokeWidth={isActive ? 2.5 : 1.8}
                     fill={isActive ? "currentColor" : "none"}
                   />
-                </div>
+                </motion.div>
                 
                 <span
                   className={cn(

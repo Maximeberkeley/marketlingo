@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { COLORS } from '../../lib/constants';
 import { LeoCharacter } from '../mascot/LeoCharacter';
+import { ConfettiBurst } from '../ui/ConfettiBurst';
+import { LeoCharacter } from '../mascot/LeoCharacter';
 
 interface SessionCompleteCardProps {
   dayNumber: number;
@@ -94,21 +96,8 @@ export function SessionCompleteCard({
 
   return (
     <Animated.View style={[styles.overlay, { opacity: opacityAnim }]}>
+      <ConfettiBurst show count={24} />
       <Animated.View style={[styles.card, { transform: [{ scale: scaleAnim }] }]}>
-        {/* Confetti */}
-        <View style={styles.confettiContainer}>
-          {confettiAnims.map((anim, i) => (
-            <Animated.Text
-              key={i}
-              style={[styles.confetti, {
-                transform: [{ translateX: anim.translateX }, { translateY: anim.translateY }, { scale: anim.scale }],
-                opacity: anim.opacity,
-              }]}
-            >
-              {confettiEmojis[i]}
-            </Animated.Text>
-          ))}
-        </View>
 
         {/* Leo celebrating instead of trophy emoji */}
         <View style={styles.leoCircle}>
@@ -161,7 +150,7 @@ export function SessionCompleteCard({
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
