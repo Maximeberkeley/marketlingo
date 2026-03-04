@@ -70,11 +70,11 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <AuthProvider>
           <LeoProvider>
-            <StatusBar style="light" />
+            <StatusBar style="dark" />
             <Stack
               screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: '#0B1020' },
+                contentStyle: { backgroundColor: '#FFFFFF' },
                 animation: 'slide_from_right',
               }}
             >

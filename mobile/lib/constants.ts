@@ -53,15 +53,17 @@ export const FAMILIARITY_LEVELS = [
   },
 ] as const;
 
+// Light-first Brilliant-inspired color palette
 export const COLORS = {
-  bg0: '#0B1020',
-  bg1: '#0F172A',
-  bg2: '#111C33',
-  accent: '#8B5CF6',
-  textPrimary: '#F8FAFC',
-  textSecondary: '#CBD5E1',
-  textMuted: '#64748B',
+  bg0: '#FFFFFF',           // Primary background — clean white
+  bg1: '#F3F4F6',           // Elevated surfaces
+  bg2: '#FFFFFF',           // Cards
+  accent: '#8B5CF6',        // Brand purple
+  textPrimary: '#1A1F36',   // Near-black for headings
+  textSecondary: '#6B7280', // Gray-600
+  textMuted: '#9CA3AF',     // Gray-400
   streak: '#F97316',
   success: '#22C55E',
-  border: '#1E293B',
+  border: '#E5E7EB',        // Gray-200
+  cardShadow: 'rgba(0,0,0,0.04)',
 };

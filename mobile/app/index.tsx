@@ -4,6 +4,7 @@ import { View, ActivityIndicator, StyleSheet, Image, Text } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { trackEvent, identifyUser } from '../lib/analytics';
+import { COLORS } from '../lib/constants';
 
 export default function Index() {
   const { user, loading } = useAuth();
@@ -61,7 +62,7 @@ export default function Index() {
       />
       <Text style={styles.appName}>MarketLingo</Text>
       <Text style={styles.tagline}>Master any industry in 6 months</Text>
-      <ActivityIndicator size="large" color="#8B5CF6" style={{ marginTop: 40 }} />
+      <ActivityIndicator size="large" color={COLORS.accent} style={{ marginTop: 40 }} />
     </View>
   );
 }
@@ -69,7 +70,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B1020',
+    backgroundColor: COLORS.bg0,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -81,11 +82,11 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: COLORS.textPrimary,
     marginBottom: 4,
   },
   tagline: {
     fontSize: 14,
-    color: '#64748B',
+    color: COLORS.textMuted,
   },
 });

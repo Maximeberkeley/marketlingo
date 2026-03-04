@@ -44,7 +44,7 @@ export function LessonCard({ title, subtitle, headline, xp, duration, colorSchem
               <Text style={styles.badgeText}>⏱ {duration}m</Text>
             </View>
             <View style={[styles.xpBadge, { backgroundColor: colors.accent }]}>
-              <Text style={[styles.badgeText, { color: '#0B1020' }]}>⚡ +{xp}</Text>
+              <Text style={[styles.badgeText, { color: '#FFFFFF' }]}>⚡ +{xp}</Text>
             </View>
           </View>
           {/* Completed check */}

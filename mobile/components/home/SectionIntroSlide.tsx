@@ -161,10 +161,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: { fontSize: 18, fontWeight: '700', marginBottom: 4 },
-  tagline: { fontSize: 13, color: '#94A3B8' },
+  tagline: { fontSize: 13, color: COLORS.textSecondary },
   swipeHint: {
     fontSize: 12,
-    color: '#64748B',
+    color: COLORS.textMuted,
     marginTop: 4,
   },
   decorSparkle: {
