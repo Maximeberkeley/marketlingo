@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useTheme } from "next-themes";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, User, Bell, Info, LogOut, ChevronRight, Shield, Rocket, Wrench, Crown, Sparkles } from "lucide-react";
+import { ArrowLeft, User, Bell, Info, LogOut, ChevronRight, Shield, Rocket, Wrench, Crown, Sparkles, Moon, Sun } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,6 +16,7 @@ export default function Settings() {
   const { user, signOut } = useAuth();
   const { isProUser, isLoading: subscriptionLoading, toggleProForTesting, isNative } = useSubscription();
   const [activeSection, setActiveSection] = useState<SettingsSection>("main");
+  const { theme, setTheme } = useTheme();
 
   const handleSignOut = async () => {
     await signOut();
@@ -144,6 +146,33 @@ export default function Settings() {
 
             {/* Settings Options */}
             <div className="space-y-2">
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className={cn(
+                  "w-full flex items-center justify-between p-4 rounded-card",
+                  "bg-bg-2 border border-border hover:border-accent/30",
+                  "transition-all"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  {theme === "dark" ? <Moon size={20} className="text-accent" /> : <Sun size={20} className="text-accent" />}
+                  <div className="text-left">
+                    <p className="text-body font-medium text-text-primary">Appearance</p>
+                    <p className="text-caption text-text-muted">{theme === "dark" ? "Dark mode" : "Light mode"}</p>
+                  </div>
+                </div>
+                <div className={cn(
+                  "w-10 h-6 rounded-full relative transition-colors",
+                  theme === "dark" ? "bg-accent" : "bg-border"
+                )}>
+                  <div className={cn(
+                    "absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform",
+                    theme === "dark" ? "translate-x-4" : "translate-x-0.5"
+                  )} />
+                </div>
+              </button>
+
               <button
                 onClick={() => setActiveSection("notifications")}
                 className={cn(

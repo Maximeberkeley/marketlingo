@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProPromotionProvider } from "@/components/subscription/ProPromotionProvider";
 import { AdminGuard } from "@/components/admin/AdminGuard";
@@ -73,21 +74,17 @@ function AnimatedRoutes() {
 }
 
 const App = () => {
-  // Global unhandled rejection handler to prevent app crashes
   useEffect(() => {
     const handleRejection = (event: PromiseRejectionEvent) => {
       console.error("Unhandled promise rejection:", event.reason);
       event.preventDefault();
     };
-
     const handleError = (event: ErrorEvent) => {
       console.error("Unhandled error:", event.error);
       event.preventDefault();
     };
-
     window.addEventListener("unhandledrejection", handleRejection);
     window.addEventListener("error", handleError);
-
     return () => {
       window.removeEventListener("unhandledrejection", handleRejection);
       window.removeEventListener("error", handleError);
@@ -95,29 +92,22 @@ const App = () => {
   }, []);
 
   return (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner 
-          position="top-center" 
-          toastOptions={{
-            style: {
-              background: 'hsl(218 52% 13%)',
-              border: '1px solid hsl(220 25% 18%)',
-              color: 'hsl(220 20% 97%)',
-            },
-          }}
-        />
-        <BrowserRouter>
-          <ScrollToTop />
-           <ProPromotionProvider>
-            <AnimatedRoutes />
-          </ProPromotionProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner position="top-center" />
+            <BrowserRouter>
+              <ScrollToTop />
+              <ProPromotionProvider>
+                <AnimatedRoutes />
+              </ProPromotionProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 

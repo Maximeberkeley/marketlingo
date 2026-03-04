@@ -2,28 +2,102 @@
 @tailwind components;
 @tailwind utilities;
 
-/* MarketLingo Premium Design System v1
-   Dark mode only, Apple-level quality
+/* MarketLingo Design System v2
+   Light-first, Brilliant-inspired, with dark mode support
    All colors in HSL format
 */
 
 @layer base {
   :root {
-    /* Background Layers - Deep blue-black palette */
-    --bg-0: 222 47% 8%;        /* #0B1020 - Primary background */
-    --bg-1: 222 41% 11%;       /* #0F172A - Elevated surfaces */
-    --bg-2: 218 52% 13%;       /* #111C33 - Cards */
+    /* Light Mode — Clean, airy, professional */
+    --bg-0: 0 0% 100%;           /* #FFFFFF - Primary background */
+    --bg-1: 220 14% 96%;         /* #F3F4F6 - Elevated surfaces */
+    --bg-2: 0 0% 100%;           /* #FFFFFF - Cards */
     
-    /* Brand Accent - Vibrant Duolingo-style purple */
-    --accent: 258 90% 66%;     /* #8B5CF6 - More vibrant purple */
-    --accent-glow: 258 90% 66% / 0.3;
+    /* Brand Accent — Vibrant purple */
+    --accent: 258 90% 66%;       /* #8B5CF6 */
+    --accent-glow: 258 90% 66% / 0.15;
     
-    /* Text Hierarchy - Slightly brighter for better contrast */
-    --text-primary: 220 25% 98%;     /* Near white */
-    --text-secondary: 220 18% 75%;   /* Muted text */
-    --text-muted: 220 15% 55%;       /* Very muted */
+    /* Text Hierarchy */
+    --text-primary: 230 25% 12%;      /* Near black */
+    --text-secondary: 220 9% 46%;     /* Gray-600 */
+    --text-muted: 220 9% 64%;         /* Gray-400 */
     
     /* Semantic Colors */
+    --background: var(--bg-0);
+    --foreground: var(--text-primary);
+    
+    --card: var(--bg-2);
+    --card-foreground: var(--text-primary);
+    
+    --popover: var(--bg-0);
+    --popover-foreground: var(--text-primary);
+    
+    --primary: var(--accent);
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: var(--bg-1);
+    --secondary-foreground: var(--text-secondary);
+    
+    --muted: var(--bg-1);
+    --muted-foreground: var(--text-muted);
+    
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 220 13% 91%;        /* #E5E7EB */
+    --input: 220 13% 91%;
+    --ring: var(--accent);
+    
+    --radius: 16px;
+    
+    /* Streak colors */
+    --streak-flame: 25 95% 53%;
+    --streak-glow: 25 95% 53% / 0.2;
+    
+    /* Success/Progress */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    
+    /* Locked/Disabled */
+    --locked: 220 9% 78%;
+    
+    /* Shadows — Subtle, professional */
+    --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+    --shadow-elevated: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    
+    /* Gradients */
+    --gradient-bg: linear-gradient(180deg, hsl(var(--bg-0)) 0%, hsl(var(--bg-1)) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(var(--bg-2)) 0%, hsl(220 14% 98%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(258 90% 66%) 0%, hsl(280 95% 55%) 100%);
+    
+    /* Sidebar */
+    --sidebar-background: var(--bg-0);
+    --sidebar-foreground: var(--text-primary);
+    --sidebar-primary: var(--accent);
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: var(--bg-1);
+    --sidebar-accent-foreground: var(--text-primary);
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--accent);
+  }
+
+  .dark {
+    /* Dark Mode — Premium deep blue */
+    --bg-0: 222 47% 8%;        /* #0B1020 */
+    --bg-1: 222 41% 11%;       /* #0F172A */
+    --bg-2: 218 52% 13%;       /* #111C33 */
+    
+    --accent: 258 90% 66%;
+    --accent-glow: 258 90% 66% / 0.3;
+    
+    --text-primary: 220 25% 98%;
+    --text-secondary: 220 18% 75%;
+    --text-muted: 220 15% 55%;
+    
     --background: var(--bg-0);
     --foreground: var(--text-primary);
     
@@ -42,7 +116,6 @@
     --muted: var(--bg-1);
     --muted-foreground: var(--text-muted);
     
-    --accent: 258 90% 66%;
     --accent-foreground: 0 0% 100%;
     
     --destructive: 0 72% 55%;
@@ -52,29 +125,22 @@
     --input: 220 28% 20%;
     --ring: var(--accent);
     
-    --radius: 16px;
-    
-    /* Streak colors - More vibrant orange/red */
     --streak-flame: 25 100% 55%;
     --streak-glow: 25 100% 55% / 0.4;
     
-    /* Success/Progress - Duolingo green */
     --success: 158 72% 48%;
     --success-foreground: 0 0% 100%;
     
-    /* Locked/Disabled */
     --locked: 220 18% 38%;
     
-    /* Shadows - Deeper for more depth */
     --shadow-card: 0 6px 28px -6px hsl(222 47% 4% / 0.7);
     --shadow-elevated: 0 12px 40px -12px hsl(222 47% 4% / 0.85);
+    --shadow-lg: 0 20px 50px -15px hsl(222 47% 4% / 0.9);
     
-    /* Gradients - More colorful */
     --gradient-bg: linear-gradient(180deg, hsl(var(--bg-0)) 0%, hsl(var(--bg-1)) 100%);
     --gradient-card: linear-gradient(135deg, hsl(var(--bg-2)) 0%, hsl(218 52% 10%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(258 90% 66%) 0%, hsl(280 95% 55%) 100%);
     
-    /* Sidebar - matching dark theme */
     --sidebar-background: var(--bg-1);
     --sidebar-foreground: var(--text-primary);
     --sidebar-primary: var(--accent);
@@ -97,14 +163,8 @@
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
     overflow-y: auto;
-    /* Prevent iOS overscroll white band - use exact hex */
-    background-color: #0B1020 !important;
-    /* iOS bounce/overscroll prevention - complete lockdown */
     overscroll-behavior: none;
-    overscroll-behavior-y: none;
-    overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
-    /* Ensure no white flash during scroll bounce */
     height: 100%;
   }
 
@@ -112,8 +172,6 @@
     @apply bg-background text-foreground;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Segoe UI', sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-    /* Force dark background everywhere */
-    background-color: #0B1020 !important;
     min-height: 100vh;
     min-height: 100dvh;
     min-height: -webkit-fill-available;
@@ -121,31 +179,36 @@
     overflow-y: auto;
     position: relative;
     width: 100%;
-    /* iOS overscroll fix - aggressive prevention */
     overscroll-behavior: none;
-    overscroll-behavior-y: none;
+    /* Dynamic background based on theme */
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
   
-  /* Prevent white bands on #root */
   #root {
-    background-color: #0B1020 !important;
     min-height: 100vh;
     min-height: 100dvh;
   }
+
+  /* Force dark bg in dark mode to prevent white flash */
+  .dark html,
+  .dark body,
+  .dark #root {
+    background-color: #0B1020 !important;
+  }
   
-  /* Typography Scale - Strict adherence */
+  /* Typography Scale */
   h1 {
-    @apply text-[28px] font-semibold leading-[34px] tracking-[-0.3px];
+    @apply text-[28px] font-bold leading-[34px] tracking-[-0.5px];
     color: hsl(var(--text-primary));
   }
   
   h2 {
-    @apply text-[20px] font-semibold leading-[26px] tracking-[-0.3px];
+    @apply text-[22px] font-bold leading-[28px] tracking-[-0.3px];
     color: hsl(var(--text-primary));
   }
   
   h3 {
-    @apply text-[16px] font-semibold leading-[22px];
+    @apply text-[17px] font-semibold leading-[22px];
     color: hsl(var(--text-primary));
   }
   
@@ -161,26 +224,26 @@
 }
 
 @layer components {
-  /* Card Styles */
+  /* Card Styles — Clean, minimal */
   .card-elevated {
-    background: var(--gradient-card);
-    border-radius: 18px;
-    padding: 16px;
+    background: hsl(var(--card));
+    border-radius: 20px;
+    padding: 20px;
     box-shadow: var(--shadow-card);
     border: 1px solid hsl(var(--border));
   }
   
   .card-interactive {
-    @apply card-elevated transition-all duration-150;
+    @apply card-elevated transition-all duration-200;
   }
   
   .card-interactive:active {
     transform: scale(0.98);
   }
   
-  /* Pill/Chip Styles */
+  /* Chip Styles */
   .chip {
-    @apply inline-flex items-center px-3 py-1.5 text-[12px] font-medium rounded-full;
+    @apply inline-flex items-center px-3 py-1.5 text-[12px] font-semibold rounded-full;
     background: hsl(var(--bg-1));
     color: hsl(var(--text-secondary));
     border: 1px solid hsl(var(--border));
@@ -188,14 +251,14 @@
   
   .chip-accent {
     @apply chip;
-    background: hsl(252 100% 68% / 0.15);
+    background: hsl(258 90% 66% / 0.08);
     color: hsl(var(--accent));
-    border-color: hsl(252 100% 68% / 0.3);
+    border-color: hsl(258 90% 66% / 0.2);
   }
   
   /* Progress Bar */
   .progress-thin {
-    @apply h-1 rounded-full overflow-hidden;
+    @apply h-1.5 rounded-full overflow-hidden;
     background: hsl(var(--bg-1));
   }
   
@@ -207,14 +270,14 @@
   /* Node Styles (Roadmap) */
   .node {
     @apply w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200;
-    background: hsl(var(--bg-2));
+    background: hsl(var(--bg-1));
     border: 2px solid hsl(var(--border));
   }
   
   .node-current {
     @apply node;
     border-color: hsl(var(--accent));
-    box-shadow: 0 0 0 4px hsl(252 100% 68% / 0.2);
+    box-shadow: 0 0 0 4px hsl(258 90% 66% / 0.12);
   }
   
   .node-completed {
@@ -235,66 +298,42 @@
     @apply px-5;
   }
   
-  /* Top safe area - ONLY use on outermost containers, not nested */
+  /* Safe areas */
   .pt-safe {
     padding-top: max(12px, env(safe-area-inset-top, 12px));
   }
 
-  /* Landscape-aware safe areas - handles notch/Dynamic Island on left/right */
   @media (orientation: landscape) {
     .pt-safe {
-      /* Reduce top padding in landscape since notch moves to side */
       padding-top: max(8px, env(safe-area-inset-top, 8px));
     }
-    
-    /* Landscape safe areas applied to fixed/sticky elements */
-    .landscape-safe,
-    .fixed, 
-    [class*="fixed"] {
-      /* Ensure fixed elements respect notch in landscape */
-    }
-    
-    /* Auto-apply landscape safety to screen-padding in landscape */
     .screen-padding {
       padding-left: max(20px, calc(env(safe-area-inset-left, 0px) + 12px));
       padding-right: max(20px, calc(env(safe-area-inset-right, 0px) + 12px));
     }
-    
-    /* Ensure body-level elements get landscape insets */
-    body > div,
-    #root > div {
-      padding-left: env(safe-area-inset-left, 0px);
-      padding-right: env(safe-area-inset-right, 0px);
-    }
   }
   
-  /* Safe Area for Bottom Nav - use on scrollable content above nav */
   .safe-bottom {
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 
-  /* Safe Area Bottom for modals/sheets with CTAs */
   .safe-area-bottom {
     padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
   }
   
-  /* Modal-specific bottom padding - for sheets/overlays with bottom CTAs */
   .modal-bottom-safe {
     padding-bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 16px));
   }
   
-  /* Content spacer for pages with sticky bottom elements - generous space */
   .sticky-bottom-spacer {
     padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
   }
   
-  /* Prevent double safe area when using SafeAreaView wrapper */
   .no-safe-padding {
     padding-top: 0 !important;
     padding-bottom: 0 !important;
   }
   
-  /* Loading/error state container - inherits safe areas properly */
   .state-container {
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -303,23 +342,28 @@
   /* Streak Flame */
   .streak-flame {
     color: hsl(var(--streak-flame));
-    filter: drop-shadow(0 0 8px hsl(var(--streak-glow)));
+    filter: drop-shadow(0 0 6px hsl(var(--streak-glow)));
   }
   
   /* Accent Glow Effect */
   .accent-glow {
-    box-shadow: 0 0 20px hsl(var(--accent-glow));
+    box-shadow: 0 0 16px hsl(var(--accent-glow));
   }
   
   /* Selected State */
   .selected-ring {
-    border: 1px solid hsl(var(--accent));
-    box-shadow: 0 0 0 1px hsl(var(--accent)), 0 0 24px -4px hsl(var(--accent-glow));
+    border: 2px solid hsl(var(--accent));
+    box-shadow: 0 0 0 2px hsl(var(--accent) / 0.15);
+  }
+
+  /* Section header style — Brilliant-inspired */
+  .section-header {
+    @apply text-[13px] font-bold uppercase tracking-[0.08em] mb-4;
+    color: hsl(var(--text-muted));
   }
 }
 
 @layer utilities {
-  /* Hide scrollbar but keep functionality */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -328,7 +372,6 @@
     display: none;
   }
   
-  /* Prevent text selection on interactive elements */
   .no-select {
     -webkit-user-select: none;
     user-select: none;
@@ -336,7 +379,7 @@
   }
 }
 
-/* Leo breathing animation - GPU accelerated CSS */
+/* Leo breathing animation */
 @keyframes leo-breathe {
   0%, 100% { transform: translateY(0) scale(1); }
   50% { transform: translateY(-1.5px) scale(1.005); }
