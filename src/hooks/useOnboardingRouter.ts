@@ -25,7 +25,7 @@ export function useOnboardingRouter() {
         .from("profiles")
         .select("selected_market")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
       if (!profile?.selected_market) {
         // New user or no market selected

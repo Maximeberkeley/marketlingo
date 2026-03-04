@@ -73,7 +73,7 @@ export function useSubscription() {
         .from('profiles')
         .select('is_pro_user, pro_plan_type, pro_trial_start_date, pro_trial_end_date')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching subscription status:', error);
