@@ -163,11 +163,11 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     maxWidth: 420,
-    backgroundColor: '#0A0A0F',
+    backgroundColor: COLORS.bg2,
     borderRadius: 24,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: COLORS.border,
   },
   header: {
     height: 120,
@@ -202,13 +202,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#F1F5F9',
+    color: COLORS.textPrimary,
     marginBottom: 10,
     lineHeight: 26,
   },
   description: {
     fontSize: 14,
-    color: '#94A3B8',
+    color: COLORS.textSecondary,
     lineHeight: 22,
     marginBottom: 20,
   },
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
   featureText: {
     fontSize: 14,
-    color: '#94A3B8',
+    color: COLORS.textSecondary,
   },
   actions: {
     flexDirection: 'row',
@@ -240,10 +240,10 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: COLORS.border,
     alignItems: 'center',
   },
-  dismissText: { fontSize: 14, color: '#64748B' },
+  dismissText: { fontSize: 14, color: COLORS.textMuted },
   ctaBtn: {
     paddingVertical: 14,
     paddingHorizontal: 24,

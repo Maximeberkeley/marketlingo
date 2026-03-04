@@ -7,17 +7,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // MarketLingo dark theme
+        // MarketLingo light theme — Brilliant-inspired
         bg: {
-          0: '#0B1020',
-          1: '#0F172A',
-          2: '#111C33',
+          0: '#FFFFFF',
+          1: '#F3F4F6',
+          2: '#FFFFFF',
         },
         accent: '#8B5CF6',
         text: {
-          primary: '#F8FAFC',
-          secondary: '#CBD5E1',
-          muted: '#64748B',
+          primary: '#1A1F36',
+          secondary: '#6B7280',
+          muted: '#9CA3AF',
         },
         streak: '#F97316',
         success: '#22C55E',
