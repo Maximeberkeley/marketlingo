@@ -62,6 +62,25 @@ const MENTOR_IMAGES: Record<string, any> = {
   sophia: require('../../assets/mentors/mentor-sophia.png'),
 };
 
+// Market illustration mapping for mobile
+const MARKET_ILLUSTRATIONS: Record<string, any> = {
+  aerospace: require('../../assets/markets/aerospace-hero.jpg'),
+  ai: require('../../assets/markets/ai-hero.jpg'),
+  biotech: require('../../assets/markets/biotech-hero.jpg'),
+  cleanenergy: require('../../assets/markets/cleanenergy-hero.jpg'),
+  fintech: require('../../assets/markets/fintech-hero.jpg'),
+  ev: require('../../assets/markets/ev-hero.jpg'),
+  cybersecurity: require('../../assets/markets/cybersecurity-hero.jpg'),
+  robotics: require('../../assets/markets/robotics-hero.jpg'),
+  spacetech: require('../../assets/markets/spacetech-hero.jpg'),
+  healthtech: require('../../assets/markets/healthtech-hero.jpg'),
+  web3: require('../../assets/markets/web3-hero.jpg'),
+  agtech: require('../../assets/markets/agtech-hero.jpg'),
+  logistics: require('../../assets/markets/logistics-hero.jpg'),
+  climatetech: require('../../assets/markets/climatetech-hero.jpg'),
+  neuroscience: require('../../assets/markets/neuroscience-hero.jpg'),
+};
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { user, loading: authLoading } = useAuth();
@@ -79,15 +98,6 @@ export default function HomeScreen() {
   const stageProgress = getProgressToNextStage();
   const streak = progress?.current_streak || 0;
 
-  // ─── Streak Freeze ───
-  const { canFreeze, freezesUsedThisWeek, maxFreezes, useFreeze } = useStreakFreeze(
-    selectedMarketLocal || undefined, homeData.isProUser
-  );
-  const [showStreakFreeze, setShowStreakFreeze] = useState(true);
-
-  // ─── Leo mascot state ───
-  const [mascotState, setMascotState] = useState<MascotState>('idle');
-
   // ─── Data hook ───
   const homeData = useHomeData(user?.id, progress, xpData, lessonCompletedToday);
   const {
@@ -95,6 +105,15 @@ export default function HomeScreen() {
     streakRiskHours, socialNudge, tomorrowLesson,
     loading, refreshing, currentDay, fetchData, onRefresh,
   } = homeData;
+
+  // ─── Streak Freeze ───
+  const { canFreeze, freezesUsedThisWeek, maxFreezes, useFreeze } = useStreakFreeze(
+    selectedMarketLocal || undefined, isProUser
+  );
+  const [showStreakFreeze, setShowStreakFreeze] = useState(true);
+
+  // ─── Leo mascot state ───
+  const [mascotState, setMascotState] = useState<MascotState>('idle');
 
   // Sync selectedMarket for dependent hooks
   useEffect(() => {
@@ -107,7 +126,6 @@ export default function HomeScreen() {
   // ─── Offline Cache ───
   const { syncLessons, cachedCount } = useOfflineCache(selectedMarketLocal || undefined);
 
-  // Auto-sync lessons for offline when data loads
   useEffect(() => {
     if (currentDay && selectedMarket) syncLessons(currentDay);
   }, [currentDay, selectedMarket]);
@@ -191,6 +209,9 @@ export default function HomeScreen() {
   // ─── Loading ───
   if (loading || authLoading) return <HomeSkeleton />;
 
+  const marketIllustration = MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace'] || MARKET_ILLUSTRATIONS.aerospace;
+  const journeyProgress = ((currentDay || 1) / 180) * 100;
+
   // ─── Render ───
   return (
     <View style={styles.container}>
@@ -236,61 +257,133 @@ export default function HomeScreen() {
             showsVerticalScrollIndicator={false}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.accent} />}
           >
-            {/* ── Header: Clean & Minimal ── */}
+            {/* ── Header: XP + Streak badges ── */}
             <View style={styles.header}>
               <View style={styles.headerLeft}>
-                <Text style={styles.industryEmoji}>{getMarketEmoji(selectedMarket || 'aerospace')}</Text>
-                <View>
-                  <Text style={styles.industryName}>{getMarketName(selectedMarket || 'aerospace')}</Text>
-                  <Text style={styles.dayText}>Day {currentDay} of 180</Text>
-                </View>
-              </View>
-              <View style={styles.headerRight}>
-                <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} />
                 <StreakBadge count={streak} />
+                <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} />
               </View>
+              <TouchableOpacity onPress={() => handleOpenMentorChat()} activeOpacity={0.7}>
+                <LeoCharacter size="sm" animation={leoAnimation} />
+              </TouchableOpacity>
             </View>
 
-            {/* ── Leo Hero Section ── */}
-            <AnimatedSection delay={100}>
-              <LeoBubble message={leoMessage} animation={leoAnimation} />
+            {/* ── Hero Section: Brilliant-style ── */}
+            <AnimatedSection delay={50}>
+              <View style={styles.heroSection}>
+                {/* Recommended / Completed tag */}
+                <View style={styles.tagRow}>
+                  <View style={[styles.statusTag, lessonCompletedToday && styles.statusTagDone]}>
+                    <Text style={[styles.statusTagText, lessonCompletedToday && styles.statusTagTextDone]}>
+                      {lessonCompletedToday ? 'COMPLETED' : 'RECOMMENDED'}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Title */}
+                <Text style={styles.heroTitle}>
+                  {lessonStack?.title || getMarketName(selectedMarket || 'aerospace')}
+                </Text>
+                <Text style={styles.heroSubtitle}>
+                  Day {currentDay} · Level {xpData?.current_level || 1}
+                </Text>
+
+                {/* Market Illustration */}
+                <View style={styles.illustrationWrap}>
+                  <Image
+                    source={marketIllustration}
+                    style={styles.illustration}
+                    resizeMode="cover"
+                  />
+                </View>
+
+                {/* Dot indicators */}
+                <View style={styles.dotRow}>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <View
+                      key={i}
+                      style={[
+                        styles.dot,
+                        i < Math.ceil((currentDay || 1) / 36) && styles.dotActive,
+                      ]}
+                    />
+                  ))}
+                </View>
+              </View>
             </AnimatedSection>
 
-            {/* ── TODAY'S LESSON — The One Big CTA ── */}
-            {lessonStack && !lessonCompletedToday && (
-              <AnimatedSection delay={250}>
-                <PulsingCTA
-                  label="Today's Lesson"
-                  title={lessonStack.title}
-                  slideCount={lessonStack.slides?.length || 5}
-                  xpReward={XP_REWARDS.LESSON_COMPLETE}
-                  onPress={() => session.handleOpenStack(lessonStack)}
+            {/* ── Lesson Module Card ── */}
+            <AnimatedSection delay={150}>
+              <View style={styles.lessonCard}>
+                {lessonCompletedToday ? (
+                  <View style={styles.lessonCompleteRow}>
+                    <View style={styles.lessonCompleteIcon}>
+                      <Text style={{ fontSize: 18 }}>✅</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.lessonCompleteTitle}>Lesson Complete!</Text>
+                      <Text style={styles.lessonCompleteSub}>+{XP_REWARDS.LESSON_COMPLETE} XP earned</Text>
+                    </View>
+                  </View>
+                ) : lessonStack ? (
+                  <View style={styles.lessonItemRow}>
+                    <View style={styles.lessonItemIcon}>
+                      <Image source={APP_ICONS.learn} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.lessonItemTitle} numberOfLines={2}>{lessonStack.title}</Text>
+                    </View>
+                    <View style={styles.lessonItemCircle} />
+                  </View>
+                ) : null}
+
+                {/* CTA Buttons */}
+                <View style={styles.lessonActions}>
+                  {lessonCompletedToday ? (
+                    <View style={styles.lessonActionsRow}>
+                      <TouchableOpacity
+                        style={styles.secondaryBtn}
+                        onPress={() => lessonStack && session.handleOpenStack(lessonStack)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.secondaryBtnText}>Review</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.successBtn}
+                        onPress={() => router.push('/(tabs)/practice' as any)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.successBtnText}>⚡ Practice</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.startBtn}
+                      onPress={() => lessonStack && session.handleOpenStack(lessonStack)}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.startBtnText}>Start</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            </AnimatedSection>
+
+            {/* ── Quick Bites ── */}
+            {lessonStack && !lessonCompletedToday && (lessonStack.slides?.length || 0) >= 4 && (
+              <AnimatedSection delay={200}>
+                <QuickBiteSelector
+                  totalSlides={lessonStack.slides?.length || 0}
+                  completedBites={session.completedBites || []}
+                  onSelectBite={(idx) => session.handleOpenBite?.(idx)}
+                  onFullLesson={() => session.handleOpenStack(lessonStack)}
+                  lessonTitle={lessonStack.title}
+                  isLessonComplete={lessonCompletedToday}
                 />
               </AnimatedSection>
             )}
 
-            {/* ── Lesson Complete State ── */}
-            {lessonCompletedToday && (
-              <AnimatedSection delay={250}>
-                <View style={styles.completedCard}>
-                  <Text style={styles.completedEmoji}>✅</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.completedTitle}>Lesson done!</Text>
-                    <Text style={styles.completedSub}>Come back tomorrow for Day {(currentDay || 0) + 1}</Text>
-                  </View>
-                  {lessonStack && (
-                    <TouchableOpacity
-                      style={styles.reviewBtn}
-                      onPress={() => session.handleOpenStack(lessonStack)}
-                    >
-                      <Text style={styles.reviewBtnText}>Review</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </AnimatedSection>
-            )}
-
-            {/* ── Streak Warning (only when relevant) ── */}
+            {/* ── Streak Warning ── */}
             {streakRiskHours !== null && showStreakWarning && !lessonCompletedToday && (
               <StreakAtRisk
                 streak={streak}
@@ -300,18 +393,19 @@ export default function HomeScreen() {
               />
             )}
 
-            <AnimatedSection delay={400}>
+            {/* ── Quick Actions Grid ── */}
+            <AnimatedSection delay={300}>
               <QuickActionsGrid actions={[
-                { icon: APP_ICONS.drills, label: 'Practice', onPress: () => router.push('/(tabs)/practice' as any) },
                 { icon: APP_ICONS.passport, label: 'Passport', onPress: () => router.push('/passport' as any) },
                 { icon: APP_ICONS.notebook, label: 'Notebook', onPress: () => router.push('/(tabs)/notebook' as any) },
                 { icon: APP_ICONS.achievements, label: 'Awards', onPress: () => router.push('/achievements' as any) },
+                { label: 'Ask Leo', onPress: () => handleOpenMentorChat(), isLeo: true },
               ]} />
             </AnimatedSection>
 
-            {/* ── Spaced Repetition (when due) ── */}
+            {/* ── Spaced Repetition ── */}
             {dueCount > 0 && (
-              <AnimatedSection delay={500}>
+              <AnimatedSection delay={350}>
                 <TouchableOpacity
                   style={styles.reviewPrompt}
                   onPress={() => router.push('/trainer' as any)}
@@ -327,8 +421,8 @@ export default function HomeScreen() {
               </AnimatedSection>
             )}
 
-            {/* ── Daily Quests (collapsible) ── */}
-            <AnimatedSection delay={600}>
+            {/* ── Daily Quests ── */}
+            <AnimatedSection delay={400}>
               <View style={styles.section}>
                 <DailyQuests
                   quests={quests}
@@ -339,11 +433,61 @@ export default function HomeScreen() {
               </View>
             </AnimatedSection>
 
-            {/* ── News (if available) ── */}
+            {/* ── Investment Lab ── */}
+            <AnimatedSection delay={450}>
+              <TouchableOpacity
+                style={styles.investmentCard}
+                onPress={() => router.push('/investment-lab' as any)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.investIcon, isProUser && styles.investIconPro]}>
+                  <Text style={{ fontSize: 18 }}>{isProUser ? '📈' : '🔒'}</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <View style={styles.investTitleRow}>
+                    <Text style={styles.investTitle}>Investment Lab</Text>
+                    {!isProUser && (
+                      <View style={styles.proBadge}>
+                        <Text style={styles.proBadgeText}>PRO</Text>
+                      </View>
+                    )}
+                  </View>
+                  <Text style={styles.investSub}>
+                    {isProUser ? 'Investment-ready scenarios' : 'Unlock with Pro'}
+                  </Text>
+                </View>
+                <Text style={{ color: COLORS.textMuted, fontSize: 16 }}>→</Text>
+              </TouchableOpacity>
+            </AnimatedSection>
+
+            {/* ── Journey Progress ── */}
+            <AnimatedSection delay={500}>
+              <View style={styles.journeyCard}>
+                <View style={styles.journeyHeader}>
+                  <View style={styles.journeyHeaderLeft}>
+                    <Text style={{ fontSize: 13, color: COLORS.accent }}>📍</Text>
+                    <Text style={styles.journeyTitle}>Day {currentDay} of 180</Text>
+                  </View>
+                  <Text style={styles.journeyPct}>{Math.round(journeyProgress)}%</Text>
+                </View>
+                <ProgressBar progress={journeyProgress} height={6} />
+              </View>
+            </AnimatedSection>
+
+            {/* ── News ── */}
             {selectedMarket && (
-              <AnimatedSection delay={700}>
+              <AnimatedSection delay={550}>
                 <View style={styles.section}>
                   <DailyNews marketId={selectedMarket} />
+                </View>
+              </AnimatedSection>
+            )}
+
+            {/* ── Key Players ── */}
+            {selectedMarket && (
+              <AnimatedSection delay={600}>
+                <View style={styles.section}>
+                  <KeyPlayers marketId={selectedMarket} />
                 </View>
               </AnimatedSection>
             )}
@@ -381,38 +525,130 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   scrollContent: { paddingHorizontal: 16 },
+
+  // Header
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8,
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  industryEmoji: { fontSize: 28 },
-  industryName: { fontSize: 17, fontWeight: '600', color: COLORS.textPrimary },
-  dayText: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
 
-  // Completed
-  completedCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: 'rgba(34,197,94,0.08)', borderRadius: 16, padding: 16, marginBottom: 16,
-    borderWidth: 1, borderColor: 'rgba(34,197,94,0.2)',
+  // Hero Section — Brilliant-style
+  heroSection: { alignItems: 'center', marginBottom: 8 },
+  tagRow: { marginBottom: 10 },
+  statusTag: {
+    paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20,
+    backgroundColor: COLORS.accentSoft,
   },
-  completedEmoji: { fontSize: 28 },
-  completedTitle: { fontSize: 16, fontWeight: '700', color: '#22C55E' },
-  completedSub: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
-  reviewBtn: {
-    paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12,
-    backgroundColor: 'rgba(34,197,94,0.15)', borderWidth: 1, borderColor: 'rgba(34,197,94,0.3)',
+  statusTagDone: { backgroundColor: COLORS.successSoft },
+  statusTagText: {
+    fontSize: 10, fontWeight: '800', color: COLORS.accent,
+    textTransform: 'uppercase', letterSpacing: 1.2,
   },
-  reviewBtnText: { fontSize: 12, fontWeight: '600', color: '#22C55E' },
+  statusTagTextDone: { color: COLORS.success },
+  heroTitle: {
+    fontSize: 24, fontWeight: '800', color: COLORS.textPrimary,
+    textAlign: 'center', lineHeight: 30, marginBottom: 4,
+  },
+  heroSubtitle: {
+    fontSize: 12, fontWeight: '700', color: COLORS.accent,
+    textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16,
+  },
+  illustrationWrap: {
+    width: 160, height: 160, borderRadius: 80, overflow: 'hidden',
+    marginBottom: 16, borderWidth: 3, borderColor: COLORS.accentSoft,
+    shadowColor: COLORS.accent, shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15, shadowRadius: 16, elevation: 6,
+  },
+  illustration: { width: '100%', height: '100%' },
+  dotRow: { flexDirection: 'row', gap: 6, marginBottom: 8 },
+  dot: {
+    width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.borderLight,
+  },
+  dotActive: { backgroundColor: COLORS.accent },
+
+  // Lesson Module Card
+  lessonCard: {
+    backgroundColor: COLORS.bg2, borderRadius: 20, padding: 18, marginBottom: 16,
+    borderWidth: 1, borderColor: COLORS.border,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 2,
+  },
+  lessonCompleteRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
+  lessonCompleteIcon: {
+    width: 40, height: 40, borderRadius: 20,
+    backgroundColor: COLORS.successSoft, alignItems: 'center', justifyContent: 'center',
+  },
+  lessonCompleteTitle: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
+  lessonCompleteSub: { fontSize: 12, color: COLORS.textMuted },
+  lessonItemRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
+  lessonItemIcon: {
+    width: 40, height: 40, borderRadius: 12,
+    backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center',
+  },
+  lessonItemTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
+  lessonItemCircle: {
+    width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: COLORS.border,
+  },
+  lessonActions: {},
+  lessonActionsRow: { flexDirection: 'row', gap: 10 },
+  secondaryBtn: {
+    flex: 1, paddingVertical: 13, borderRadius: 14, alignItems: 'center',
+    backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border,
+  },
+  secondaryBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
+  successBtn: {
+    flex: 1, paddingVertical: 13, borderRadius: 14, alignItems: 'center',
+    backgroundColor: COLORS.success,
+  },
+  successBtnText: { fontSize: 14, fontWeight: '700', color: '#FFFFFF' },
+  startBtn: {
+    paddingVertical: 16, borderRadius: 14, alignItems: 'center',
+    backgroundColor: COLORS.accent,
+  },
+  startBtnText: { fontSize: 17, fontWeight: '700', color: '#FFFFFF' },
 
   // Review prompt
   reviewPrompt: {
     flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, marginBottom: 16,
-    backgroundColor: 'rgba(139,92,246,0.06)', borderRadius: 14,
-    borderWidth: 1, borderColor: 'rgba(139,92,246,0.2)',
+    backgroundColor: COLORS.bg2, borderRadius: 14,
+    borderWidth: 1, borderColor: 'rgba(139,92,246,0.15)',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 4, elevation: 1,
   },
   reviewPromptTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
   reviewPromptSub: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
+
+  // Investment Lab
+  investmentCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: COLORS.bg2, borderRadius: 16, padding: 16, marginBottom: 16,
+    borderWidth: 1, borderColor: COLORS.border,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 4, elevation: 1,
+  },
+  investIcon: {
+    width: 40, height: 40, borderRadius: 12,
+    backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center',
+  },
+  investIconPro: { backgroundColor: COLORS.successSoft },
+  investTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  investTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
+  proBadge: {
+    paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4,
+    backgroundColor: COLORS.accent,
+  },
+  proBadgeText: { fontSize: 9, fontWeight: '800', color: '#FFFFFF' },
+  investSub: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
+
+  // Journey Progress
+  journeyCard: {
+    backgroundColor: COLORS.bg2, borderRadius: 16, padding: 16, marginBottom: 16,
+    borderWidth: 1, borderColor: COLORS.border,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 4, elevation: 1,
+  },
+  journeyHeader: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10,
+  },
+  journeyHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  journeyTitle: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary },
+  journeyPct: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
 
   section: { marginBottom: 20 },
 });
