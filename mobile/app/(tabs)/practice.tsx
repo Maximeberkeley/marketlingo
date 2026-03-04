@@ -18,6 +18,7 @@ import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
 import { supabase } from '../../lib/supabase';
 import { getMarketEmoji, getMarketName } from '../../lib/markets';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { APP_ICONS } from '../../lib/icons';
 
 interface PracticeStats {
   gamesPlayed: number;
@@ -25,9 +26,9 @@ interface PracticeStats {
   trainerAttempts: number;
 }
 
-// ── Animated Practice Card ──
+// ── Animated Practice Card with AI icon ──
 function PracticeCard({
-  emoji,
+  icon,
   title,
   subtitle,
   xpLabel,
@@ -35,7 +36,7 @@ function PracticeCard({
   onPress,
   index,
 }: {
-  emoji: string;
+  icon: any;
   title: string;
   subtitle: string;
   xpLabel: string;
@@ -66,11 +67,10 @@ function PracticeCard({
         }}
         activeOpacity={0.8}
       >
-        {/* Accent dot */}
         <View style={[styles.accentDot, { backgroundColor: accentColor }]} />
         <View style={styles.practiceCardLeft}>
           <View style={[styles.practiceIcon, { backgroundColor: accentColor + '15' }]}>
-            <Text style={styles.practiceEmoji}>{emoji}</Text>
+            <Image source={icon} style={styles.practiceIconImg} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.practiceTitle}>{title}</Text>
@@ -85,17 +85,6 @@ function PracticeCard({
   );
 }
 
-// ── Stat Pill ──
-function StatPill({ value, label, emoji }: { value: number; label: string; emoji: string }) {
-  return (
-    <View style={styles.statPill}>
-      <Text style={styles.statEmoji}>{emoji}</Text>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>
-  );
-}
-
 export default function PracticeScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
@@ -103,13 +92,10 @@ export default function PracticeScreen() {
   const [stats, setStats] = useState<PracticeStats>({ gamesPlayed: 0, drillsCompleted: 0, trainerAttempts: 0 });
   const [loading, setLoading] = useState(true);
 
-  // Entrance animations
   const headerAnim = useRef(new Animated.Value(0)).current;
   const bodyAnim = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    fetchData();
-  }, [user]);
+  useEffect(() => { fetchData(); }, [user]);
 
   useEffect(() => {
     if (!loading) {
@@ -127,30 +113,18 @@ export default function PracticeScreen() {
 
   const fetchData = async () => {
     if (!user) return;
-
     const { data: profile } = await supabase
-      .from('profiles')
-      .select('selected_market')
-      .eq('id', user.id)
-      .single();
-
+      .from('profiles').select('selected_market').eq('id', user.id).single();
     if (profile?.selected_market) {
       setSelectedMarket(profile.selected_market);
-
       const today = new Date().toISOString().split('T')[0];
       const { data: daily } = await supabase
-        .from('daily_completions')
-        .select('games_completed, drills_completed')
-        .eq('user_id', user.id)
-        .eq('market_id', profile.selected_market)
-        .eq('completion_date', today)
-        .maybeSingle();
-
+        .from('daily_completions').select('games_completed, drills_completed')
+        .eq('user_id', user.id).eq('market_id', profile.selected_market)
+        .eq('completion_date', today).maybeSingle();
       const { count: trainerCount } = await supabase
-        .from('trainer_attempts')
-        .select('id', { count: 'exact', head: true })
+        .from('trainer_attempts').select('id', { count: 'exact', head: true })
         .eq('user_id', user.id);
-
       setStats({
         gamesPlayed: daily?.games_completed || 0,
         drillsCompleted: daily?.drills_completed || 0,
@@ -179,7 +153,7 @@ export default function PracticeScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── Header ── */}
+        {/* Header */}
         <Animated.View style={[styles.header, animStyle(headerAnim)]}>
           <View>
             <Text style={styles.headerTitle}>Practice</Text>
@@ -191,7 +165,7 @@ export default function PracticeScreen() {
           </View>
         </Animated.View>
 
-        {/* ── Leo Encouragement — real character, not emoji ── */}
+        {/* Leo Encouragement */}
         <Animated.View style={[styles.leoRow, animStyle(headerAnim)]}>
           <View style={styles.leoMiniWrap}>
             <LeoCharacter size="sm" animation={totalToday >= 3 ? 'celebrating' : 'idle'} />
@@ -207,15 +181,13 @@ export default function PracticeScreen() {
           </View>
         </Animated.View>
 
-        {/* ── Practice Modes ── */}
-
-        {/* ── Practice Modes ── */}
+        {/* Practice Modes */}
         <Animated.View style={animStyle(bodyAnim)}>
           <Text style={styles.sectionLabel}>PRACTICE MODES</Text>
 
           <PracticeCard
             index={0}
-            emoji="🎮"
+            icon={APP_ICONS.games}
             title="Trivia Games"
             subtitle="Test your market knowledge"
             xpLabel={`+${XP_REWARDS.GAME_COMPLETE} XP`}
@@ -224,7 +196,7 @@ export default function PracticeScreen() {
           />
           <PracticeCard
             index={1}
-            emoji="⚡"
+            icon={APP_ICONS.drills}
             title="Speed Drills"
             subtitle="Race the clock with rapid-fire questions"
             xpLabel={`+${XP_REWARDS.DRILL_CORRECT} XP/q`}
@@ -233,7 +205,7 @@ export default function PracticeScreen() {
           />
           <PracticeCard
             index={2}
-            emoji="🧠"
+            icon={APP_ICONS.trainer}
             title="Trainer Scenarios"
             subtitle="Real-world strategy decisions"
             xpLabel={`+${XP_REWARDS.TRAINER_COMPLETE} XP`}
@@ -241,15 +213,15 @@ export default function PracticeScreen() {
             onPress={() => router.push('/trainer' as any)}
           />
 
-          {/* ── Resources ── */}
+          {/* Resources — only unique, non-duplicated items */}
           <Text style={[styles.sectionLabel, { marginTop: 24 }]}>RESOURCES</Text>
 
           <View style={styles.resourceGrid}>
             {[
-              { emoji: '🏢', label: 'Key Players', route: '/friends' },
-              { emoji: '📰', label: 'Summaries', route: '/summaries' },
-              { emoji: '⚗️', label: 'Regulatory', route: '/regulatory-hub' },
-              { emoji: '📓', label: 'Notebook', route: '/(tabs)/notebook' },
+              { icon: APP_ICONS.news, label: 'Summaries', route: '/summaries' },
+              { icon: APP_ICONS.regulatory, label: 'Regulatory', route: '/regulatory-hub' },
+              { icon: APP_ICONS.notebook, label: 'Notebook', route: '/(tabs)/notebook' },
+              { icon: APP_ICONS.passport, label: 'Passport', route: '/passport' },
             ].map((item, idx) => (
               <TouchableOpacity
                 key={idx}
@@ -260,7 +232,7 @@ export default function PracticeScreen() {
                 }}
               >
                 <View style={styles.resourceIcon}>
-                  <Text style={styles.resourceEmoji}>{item.emoji}</Text>
+                  <Image source={item.icon} style={styles.resourceIconImg} />
                 </View>
                 <Text style={styles.resourceLabel}>{item.label}</Text>
               </TouchableOpacity>
@@ -281,156 +253,43 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 28, fontWeight: '800', color: COLORS.textPrimary },
   headerSub: { fontSize: 13, color: COLORS.textMuted, marginTop: 4 },
 
-  // Leo row — real character
-  leoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 20,
-  },
-  leoMiniWrap: {
-    width: 56,
-    height: 56,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  leoRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
+  leoMiniWrap: { width: 56, height: 56, alignItems: 'center', justifyContent: 'center' },
   leoBubble: {
-    flex: 1,
-    backgroundColor: COLORS.bg2,
-    borderRadius: 16,
-    borderTopLeftRadius: 4,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.12)',
-    shadowColor: COLORS.accent,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
+    flex: 1, backgroundColor: COLORS.bg2, borderRadius: 16, borderTopLeftRadius: 4, padding: 14,
+    borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.12)',
+    shadowColor: COLORS.accent, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
-  leoBubbleText: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    lineHeight: 20,
-  },
+  leoBubbleText: { fontSize: 14, color: COLORS.textSecondary, lineHeight: 20 },
 
-  // Stats
-  statsRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 28,
-  },
-  statPill: {
-    flex: 1,
-    backgroundColor: COLORS.bg2,
-    borderRadius: 18,
-    paddingVertical: 14,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  statEmoji: { fontSize: 18, marginBottom: 4 },
-  statValue: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-  },
-  statLabel: {
-    fontSize: 10,
-    color: COLORS.textMuted,
-    marginTop: 2,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
+  sectionLabel: { fontSize: 11, fontWeight: '700', color: COLORS.textMuted, letterSpacing: 1.2, marginBottom: 12 },
 
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: COLORS.textMuted,
-    letterSpacing: 1.2,
-    marginBottom: 12,
-  },
-
-  // Practice Cards
   practiceCard: {
-    backgroundColor: COLORS.bg2,
-    borderRadius: 18,
-    padding: 18,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    overflow: 'hidden',
+    backgroundColor: COLORS.bg2, borderRadius: 18, padding: 18, marginBottom: 12,
+    borderWidth: 1, borderColor: COLORS.border, flexDirection: 'row',
+    alignItems: 'center', justifyContent: 'space-between', overflow: 'hidden',
   },
   accentDot: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: 4,
-    borderTopLeftRadius: 18,
-    borderBottomLeftRadius: 18,
+    position: 'absolute', left: 0, top: 0, bottom: 0, width: 4,
+    borderTopLeftRadius: 18, borderBottomLeftRadius: 18,
   },
-  practiceCardLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    flex: 1,
-  },
-  practiceIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  practiceEmoji: { fontSize: 24 },
-  practiceTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginBottom: 2,
-  },
-  practiceSub: {
-    fontSize: 12,
-    color: COLORS.textMuted,
-  },
-  xpChip: {
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  xpChipText: {
-    fontSize: 11,
-    fontWeight: '700',
-  },
+  practiceCardLeft: { flexDirection: 'row', alignItems: 'center', gap: 14, flex: 1 },
+  practiceIcon: { width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  practiceIconImg: { width: 32, height: 32, resizeMode: 'contain' },
+  practiceTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 2 },
+  practiceSub: { fontSize: 12, color: COLORS.textMuted },
+  xpChip: { borderRadius: 12, paddingHorizontal: 10, paddingVertical: 5 },
+  xpChipText: { fontSize: 11, fontWeight: '700' },
 
-  // Resources
-  resourceGrid: {
-    flexDirection: 'row',
-    gap: 10,
-  },
+  resourceGrid: { flexDirection: 'row', gap: 10 },
   resourceItem: {
-    flex: 1,
-    backgroundColor: COLORS.bg2,
-    borderRadius: 18,
-    paddingVertical: 18,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    gap: 8,
+    flex: 1, backgroundColor: COLORS.bg2, borderRadius: 18, paddingVertical: 18,
+    alignItems: 'center', borderWidth: 1, borderColor: COLORS.border, gap: 8,
   },
   resourceIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 14,
-    backgroundColor: 'rgba(139, 92, 246, 0.08)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 40, height: 40, borderRadius: 14, backgroundColor: 'rgba(139, 92, 246, 0.08)',
+    alignItems: 'center', justifyContent: 'center',
   },
-  resourceEmoji: { fontSize: 20 },
+  resourceIconImg: { width: 28, height: 28, resizeMode: 'contain' },
   resourceLabel: { fontSize: 11, fontWeight: '600', color: COLORS.textSecondary },
 });

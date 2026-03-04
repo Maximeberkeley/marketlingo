@@ -1,13 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { Animated, TouchableOpacity, View, Text, Image, StyleSheet } from 'react-native';
 import { COLORS } from '../../lib/constants';
 import { LeoCharacter } from '../mascot/LeoCharacter';
 
 interface QuickAction {
-  emoji: string;
+  emoji?: string;
+  icon?: any;
   label: string;
   onPress: () => void;
-  /** If true, render Leo instead of emoji */
   isLeo?: boolean;
 }
 
@@ -15,9 +15,6 @@ interface QuickActionsGridProps {
   actions: QuickAction[];
 }
 
-/**
- * Staggered-entrance quick action grid. Leo-specific items use the mascot.
- */
 export function QuickActionsGrid({ actions }: QuickActionsGridProps) {
   const anims = useRef(actions.map(() => ({
     opacity: new Animated.Value(0),
@@ -48,6 +45,10 @@ export function QuickActionsGrid({ actions }: QuickActionsGridProps) {
             {action.isLeo ? (
               <View style={styles.leoIcon}>
                 <LeoCharacter size="sm" animation="idle" />
+              </View>
+            ) : action.icon ? (
+              <View style={styles.iconCircle}>
+                <Image source={action.icon} style={styles.iconImage} />
               </View>
             ) : (
               <View style={styles.iconCircle}>
@@ -88,6 +89,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 6,
+  },
+  iconImage: {
+    width: 32,
+    height: 32,
+    resizeMode: 'contain',
   },
   leoIcon: {
     width: 42,

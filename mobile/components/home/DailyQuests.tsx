@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, Image } from 'react-native';
 import { COLORS } from '../../lib/constants';
+import { APP_ICONS } from '../../lib/icons';
 import { DailyQuest } from '../../hooks/useDailyQuests';
 
 interface DailyQuestsProps {
@@ -77,7 +78,7 @@ export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete 
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.headerEmoji}>🎯</Text>
+          <Image source={APP_ICONS.quests} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
           <Text style={styles.headerTitle}>Daily Quests</Text>
         </View>
         <View style={styles.countBadge}>
