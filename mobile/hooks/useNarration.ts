@@ -7,8 +7,10 @@ import { useState, useCallback, useRef } from 'react';
 import { Audio } from 'expo-av';
 import { supabase } from '../lib/supabase';
 
-const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
+// Edge functions are on Lovable Cloud project
+const EDGE_FUNCTIONS_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
+const EDGE_ANON_KEY = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_ANON_KEY || SUPABASE_ANON_KEY;
 
 interface UseNarrationOptions {
   voiceId: string;
@@ -63,12 +65,12 @@ export function useNarration({ voiceId, enabled }: UseNarrationOptions) {
         : `Bearer ${SUPABASE_ANON_KEY}`;
 
       const response = await fetch(
-        `${SUPABASE_URL}/functions/v1/elevenlabs-tts`,
+        `${EDGE_FUNCTIONS_URL}/functions/v1/elevenlabs-tts`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'apikey': SUPABASE_ANON_KEY,
+            'apikey': EDGE_ANON_KEY,
             'Authorization': authHeader,
           },
           body: JSON.stringify({ text: cleanText, voiceId }),
