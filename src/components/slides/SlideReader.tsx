@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, Flame, Target, CheckCircle2, Clock, Zap } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, Flame, Target, CheckCircle2, Clock, Zap, Volume2, VolumeX, Loader2 as LoaderIcon } from "lucide-react";
 import { ConfettiBurst } from "../ui/ConfettiBurst";
 import { Button } from "../ui/button";
 import { MentorAvatar } from "../ai/MentorAvatar";
@@ -12,6 +12,7 @@ import { mentors, Mentor, getMentorForContext } from "@/data/mentors";
 import { getTipForSlide, MentorTip, resetTipSession } from "@/data/mentorTips";
 import { cn } from "@/lib/utils";
 import { XP_REWARDS } from "@/hooks/useUserXP";
+import { useNarration } from "@/hooks/useNarration";
 
 interface Source {
   label: string;
@@ -61,10 +62,19 @@ export function SlideReader({
 }: SlideReaderProps) {
   const [currentIndex, setCurrentIndex] = useState(-1); // Start at -1 for intro slide
   const [direction, setDirection] = useState(0);
+  const [narrationEnabled, setNarrationEnabled] = useState(false);
   
+  // Narration — uses mentor voice
+  const contextMentor = getMentorForContext(stackTitle, marketId);
+  const { speak, stop: stopNarration, isPlaying, isLoading: narrationLoading } = useNarration({
+    voiceId: contextMentor.voiceId,
+    enabled: narrationEnabled,
+  });
+
   // Reset tip session when component mounts (new lesson)
   useEffect(() => {
     resetTipSession();
+    return () => { stopNarration(); };
   }, []);
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [currentTip, setCurrentTip] = useState<MentorTip | null>(null);
@@ -94,12 +104,23 @@ export function SlideReader({
   const isIntroSlide = currentIndex === -1;
   const currentSlide = isIntroSlide ? null : slides[currentIndex];
   const isLastSlide = currentIndex === slides.length - 1;
-  const contextMentor = getMentorForContext(stackTitle, marketId);
 
   // Hide arrows when AI mentor or tip is visible
   useEffect(() => {
     setShowArrows(!activeMentor && !currentTip);
   }, [activeMentor, currentTip]);
+
+  // Auto-narrate on slide change
+  useEffect(() => {
+    if (!narrationEnabled || isIntroSlide || !currentSlide) return;
+    const textToRead = [currentSlide.title, currentSlide.body].filter(Boolean).join('. ');
+    speak(textToRead);
+  }, [currentIndex, narrationEnabled]);
+
+  // Stop narration when toggled off
+  useEffect(() => {
+    if (!narrationEnabled) stopNarration();
+  }, [narrationEnabled]);
 
   // Proactive tip system
   useEffect(() => {
@@ -188,13 +209,30 @@ export function SlideReader({
           )}
         </div>
         
-        {/* Mentor Helper Button */}
-        <MentorAvatar
-          mentor={contextMentor}
-          size="sm"
-          showPulse={false}
-          onClick={() => setActiveMentor(contextMentor)}
-        />
+        {/* Narration toggle + Mentor Helper */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setNarrationEnabled(!narrationEnabled)}
+            className={cn(
+              "p-2 rounded-full transition-colors",
+              narrationEnabled ? "bg-primary/10 text-primary" : "text-text-muted hover:text-text-secondary"
+            )}
+          >
+            {narrationLoading ? (
+              <LoaderIcon size={18} className="animate-spin" />
+            ) : narrationEnabled ? (
+              <Volume2 size={18} />
+            ) : (
+              <VolumeX size={18} />
+            )}
+          </button>
+          <MentorAvatar
+            mentor={contextMentor}
+            size="sm"
+            showPulse={false}
+            onClick={() => setActiveMentor(contextMentor)}
+          />
+        </div>
       </div>
       
       {/* Progress - shows intro + all slides */}

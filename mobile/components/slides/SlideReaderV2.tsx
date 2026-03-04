@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
-import { mentors } from '../../data/mentors';
+import { mentors, LEO_VOICE_ID } from '../../data/mentors';
 import { getPrimaryMentorForMarket } from '../../data/marketConfig';
 import { ConceptCard, parseSlideIntoCards, ConceptCardType } from './ConceptCard';
 import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
@@ -102,10 +102,18 @@ export function SlideReaderV2({
   const [timeSpentSeconds, setTimeSpentSeconds] = useState(0);
   const [showCompletion, setShowCompletion] = useState(false);
   const [showAskLeo, setShowAskLeo] = useState(false);
+  const [narrationEnabled, setNarrationEnabled] = useState(false);
   const cardKey = useRef(0);
 
-  // ─── Narration (TTS via ElevenLabs) ───
-  const narration = useNarration({ marketId });
+  // Resolve mentor voice for this market
+  const mentorId = marketId ? getPrimaryMentorForMarket(marketId) : 'sophia';
+  const mentor = mentors.find(m => m.id === mentorId) || mentors[0];
+  const mentorVoiceId = mentor.voiceId || LEO_VOICE_ID;
+
+  const { speak, stop: stopNarration, isPlaying, isLoading: narrationLoading } = useNarration({
+    voiceId: mentorVoiceId,
+    enabled: narrationEnabled,
+  });
 
   const accentColor = TYPE_COLORS[stackType] || COLORS.accent;
 
@@ -118,16 +126,44 @@ export function SlideReaderV2({
     return () => clearInterval(interval);
   }, [startTime]);
 
+  // Auto-narrate when card changes and narration is enabled
+  useEffect(() => {
+    if (!narrationEnabled) return;
+    const card = allCards[currentCard];
+    if (!card) return;
+
+    if (card.type === 'concept') {
+      const textToRead = [card.title, card.content, ...(card.bullets || [])]
+        .filter(Boolean)
+        .join('. ');
+      speak(textToRead);
+    } else {
+      // Leo interstitials — don't narrate, just stop
+      stopNarration();
+    }
+  }, [currentCard, narrationEnabled]);
+
+  // Stop narration when toggled off
+  useEffect(() => {
+    if (!narrationEnabled) stopNarration();
+  }, [narrationEnabled]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => { stopNarration(); };
+  }, []);
+
   const hasMetMinimumTime = timeSpentSeconds >= MINIMUM_LESSON_TIME_SECONDS;
 
-  // Build all cards from all slides, inserting Leo interstitials
+  // Build all cards from all slides
   const allCards: CardItem[] = useMemo(() => {
     const items: CardItem[] = [];
-    let globalIdx = 0;
 
     slides.forEach((slide, slideIdx) => {
-      const parsed = parseSlideIntoCards(slide.title, slide.body, slide.sources, slideIdx);
+      const parsed = parseSlideIntoCards(slide.title, slide.body, [], slideIdx);
       parsed.forEach((card) => {
+        // Skip source-only cards — they add no learning value
+        if (card.type === 'sources') return;
         items.push({
           type: 'concept',
           cardType: card.type,
@@ -137,20 +173,99 @@ export function SlideReaderV2({
           sources: card.sources,
           slideIndex: slideIdx,
         });
-        globalIdx++;
       });
     });
 
+    // Append a single sources card at the very end if the last slide has sources
+    const lastSlide = slides[slides.length - 1];
+    if (lastSlide?.sources?.length > 0) {
+      items.push({
+        type: 'concept',
+        cardType: 'sources',
+        content: '',
+        sources: lastSlide.sources,
+        slideIndex: slides.length - 1,
+      });
+    }
+
+    // Cap at ~12 concept cards — but use smart merging instead of sampling
+    const MAX_CONCEPT_CARDS = 12;
+    if (items.length > MAX_CONCEPT_CARDS) {
+      // Keep all headers and bullet groups, merge consecutive concept paragraphs
+      const merged: CardItem[] = [];
+      let pendingContent = '';
+      let pendingTitle: string | undefined;
+      let pendingSlideIdx = 0;
+
+      for (const item of items) {
+        if (item.type !== 'concept') {
+          // Flush any pending
+          if (pendingContent) {
+            merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
+            pendingContent = '';
+            pendingTitle = undefined;
+          }
+          merged.push(item);
+          continue;
+        }
+        const card = item;
+        if (card.cardType === 'header' || card.cardType === 'bullet-group' || card.cardType === 'sources') {
+          if (pendingContent) {
+            merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
+            pendingContent = '';
+            pendingTitle = undefined;
+          }
+          merged.push(card);
+        } else {
+          // Merge consecutive concept cards
+          if (pendingContent.length > 0 && (pendingContent.length + (card.content?.length || 0)) > 600) {
+            merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
+            pendingContent = card.content || '';
+            pendingTitle = card.title;
+            pendingSlideIdx = card.slideIndex;
+          } else {
+            if (!pendingTitle && card.title) pendingTitle = card.title;
+            pendingContent += (pendingContent ? ' ' : '') + (card.content || '');
+            pendingSlideIdx = card.slideIndex;
+          }
+        }
+      }
+      if (pendingContent) {
+        merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
+      }
+
+      // If still too many after merging, remove excess headers (keep first & last)
+      if (merged.length > MAX_CONCEPT_CARDS) {
+        const result: CardItem[] = [];
+        let headerCount = 0;
+        for (const item of merged) {
+          if (item.type === 'concept' && item.cardType === 'header') {
+            headerCount++;
+            // Keep first header, last header, and every 3rd header
+            if (headerCount === 1 || headerCount % 3 === 0) {
+              result.push(item);
+            }
+            // Skip excess headers
+          } else {
+            result.push(item);
+          }
+        }
+        items.length = 0;
+        items.push(...result.slice(0, MAX_CONCEPT_CARDS));
+      } else {
+        items.length = 0;
+        items.push(...merged);
+      }
+    }
+
     // Insert Leo cards at strategic positions
     const totalItems = items.length;
-    const leoPositions: { index: number; leoType: CardItem extends { type: 'leo' } ? CardItem['leoType'] : never }[] = [];
+    const leoPositions: { index: number; leoType: any }[] = [];
 
     for (let i = 0; i < totalItems; i++) {
       const leoType = shouldShowLeoCard(i, totalItems);
       if (leoType) {
-        const item = items[i];
-        const slideIndex = item.type === 'concept' ? item.slideIndex : 0;
-        leoPositions.push({ index: i, leoType: leoType as any });
+        leoPositions.push({ index: i, leoType });
       }
     }
 
@@ -161,7 +276,7 @@ export function SlideReaderV2({
       const slideIndex = nearbyItem && 'slideIndex' in nearbyItem ? nearbyItem.slideIndex : 0;
       items.splice(index, 0, {
         type: 'leo',
-        leoType: leoType as any,
+        leoType,
         slideIndex,
       });
     }
@@ -191,23 +306,11 @@ export function SlideReaderV2({
     return -1;
   }, [allCards, isProUser, isReview]);
 
-  // Auto-narrate when card changes and narration is enabled
-  useEffect(() => {
-    if (!narration.enabled || !currentCardData) return;
-    if (currentCardData.type === 'concept') {
-      const textToRead = [currentCardData.title, currentCardData.content, ...(currentCardData.bullets || [])]
-        .filter(Boolean)
-        .join('. ');
-      if (textToRead.trim()) narration.narrate(textToRead);
-    }
-  }, [currentCard, narration.enabled]);
-
   const goNext = useCallback(() => {
     if (isLastCard) {
       setShowCompletion(true);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       playSound('lessonComplete');
-      narration.stop();
       return;
     }
 
@@ -220,7 +323,7 @@ export function SlideReaderV2({
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     cardKey.current++;
     setCurrentCard(prev => prev + 1);
-  }, [isLastCard, currentCard, paywallCardIndex, onPaywallTrigger, narration]);
+  }, [isLastCard, currentCard, paywallCardIndex, onPaywallTrigger]);
 
   const goPrev = useCallback(() => {
     if (currentCard <= 0) return;
@@ -241,7 +344,7 @@ export function SlideReaderV2({
     if (currentCardData.type === 'leo') {
       return (
         <LeoInterstitial
-          key={`leo-${cardKey.current}`}
+          key={`leo-${currentCard}`}
           type={currentCardData.leoType}
           progress={progress}
           slideTitle={currentSlide?.title}
@@ -251,7 +354,7 @@ export function SlideReaderV2({
 
     return (
       <ConceptCard
-        key={`card-${cardKey.current}`}
+        key={`card-${currentCard}`}
         type={currentCardData.cardType}
         title={currentCardData.title}
         content={currentCardData.content}
@@ -270,7 +373,7 @@ export function SlideReaderV2({
 
         {/* ── Top Bar ── */}
         <View style={styles.topBar}>
-          <TouchableOpacity onPress={() => { narration.stop(); onClose(); }} style={styles.closeBtn}>
+          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
             <Text style={styles.closeIcon}>✕</Text>
           </TouchableOpacity>
 
@@ -287,13 +390,13 @@ export function SlideReaderV2({
             <Text style={styles.askLeoText}>?</Text>
           </TouchableOpacity>
 
-          {/* Narration toggle */}
+          {/* Narration toggle — shows mentor name */}
           <TouchableOpacity
-            onPress={narration.toggle}
-            style={[styles.narrationBtn, narration.enabled && styles.narrationBtnActive]}
+            onPress={() => setNarrationEnabled(!narrationEnabled)}
+            style={[styles.narrationBtn, narrationEnabled && styles.narrationBtnActive]}
           >
             <Text style={styles.narrationIcon}>
-              {narration.status === 'loading' ? '⏳' : narration.enabled ? '🔊' : '🔇'}
+              {narrationLoading ? '⏳' : isPlaying ? '🔊' : '🔇'}
             </Text>
           </TouchableOpacity>
         </View>

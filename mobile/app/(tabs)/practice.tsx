@@ -173,10 +173,10 @@ export default function PracticeScreen() {
           <View style={styles.leoBubble}>
             <Text style={styles.leoBubbleText}>
               {totalToday === 0
-                ? "Let's sharpen your skills! Pick a mode below 👇"
+                ? "Let's sharpen your skills! Pick a mode below."
                 : totalToday >= 3
-                  ? "You're on fire today! Keep pushing! 💪"
-                  : "Nice start! Try another round? 🎯"}
+                  ? "You're on fire today! Keep pushing!"
+                  : "Nice start! Try another round?"}
             </Text>
           </View>
         </Animated.View>

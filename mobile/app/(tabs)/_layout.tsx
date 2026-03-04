@@ -7,18 +7,18 @@ import { APP_ICONS } from '../../lib/icons';
 
 function TabBarIcon({ icon, focused }: { icon: any; focused: boolean }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const opacityAnim = useRef(new Animated.Value(focused ? 1 : 0.45)).current;
+  const opacityAnim = useRef(new Animated.Value(focused ? 1 : 0.4)).current;
 
   useEffect(() => {
     if (focused) {
       Animated.sequence([
-        Animated.timing(scaleAnim, { toValue: 1.15, duration: 120, easing: Easing.out(Easing.ease), useNativeDriver: true }),
+        Animated.timing(scaleAnim, { toValue: 1.18, duration: 100, easing: Easing.out(Easing.ease), useNativeDriver: true }),
         Animated.spring(scaleAnim, { toValue: 1, friction: 4, tension: 200, useNativeDriver: true }),
       ]).start();
     }
     Animated.timing(opacityAnim, {
-      toValue: focused ? 1 : 0.45,
-      duration: 200,
+      toValue: focused ? 1 : 0.4,
+      duration: 180,
       useNativeDriver: true,
     }).start();
   }, [focused]);
@@ -42,27 +42,39 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: COLORS.bg1,
+          backgroundColor: '#FFFFFF',
           borderTopColor: COLORS.border,
-          borderTopWidth: 1,
-          height: 60 + insets.bottom,
+          borderTopWidth: StyleSheet.hairlineWidth,
+          height: 52 + insets.bottom,
           paddingBottom: insets.bottom,
-          paddingTop: 8,
+          paddingTop: 6,
+          elevation: 0,
+          shadowOpacity: 0,
         },
-        tabBarActiveTintColor: COLORS.accent,
+        tabBarActiveTintColor: COLORS.textPrimary,
         tabBarInactiveTintColor: COLORS.textMuted,
         tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
+          fontSize: 10,
+          fontWeight: '600',
+          letterSpacing: 0.2,
         },
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Learn',
+          title: 'Home',
           tabBarIcon: ({ focused }) => (
             <TabBarIcon icon={APP_ICONS.learn} focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="roadmap"
+        options={{
+          title: 'Courses',
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon icon={APP_ICONS.progress} focused={focused} />
           ),
         }}
       />
@@ -76,27 +88,21 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="roadmap"
+        name="notebook"
         options={{
-          title: 'Progress',
+          title: 'Notes',
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon icon={APP_ICONS.progress} focused={focused} />
+            <TabBarIcon icon={APP_ICONS.notebook} focused={focused} />
           ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: 'You',
           tabBarIcon: ({ focused }) => (
             <TabBarIcon icon={APP_ICONS.profile} focused={focused} />
           ),
-        }}
-      />
-      <Tabs.Screen
-        name="notebook"
-        options={{
-          href: null,
         }}
       />
     </Tabs>
@@ -111,16 +117,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconImage: {
-    width: 26,
-    height: 26,
+    width: 24,
+    height: 24,
     resizeMode: 'contain',
   },
   activeIndicator: {
     position: 'absolute',
-    top: -6,
-    width: 20,
-    height: 2,
-    borderRadius: 1,
-    backgroundColor: COLORS.accent,
+    bottom: -4,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: COLORS.textPrimary,
   },
 });

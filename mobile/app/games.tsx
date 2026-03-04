@@ -6,19 +6,19 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
-import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { triggerHaptic } from '../lib/haptics';
-import { MascotReaction } from '../components/mascot/MascotReaction';
 import { playSound } from '../lib/sounds';
 import { ComboCounter } from '../components/ui/ComboCounter';
 import { createComboState, comboCorrect, comboWrong, ComboState } from '../lib/combo';
+import { APP_ICONS } from '../lib/icons';
 
 interface GameQuestion {
   id: string;
@@ -42,7 +42,7 @@ export default function GamesScreen() {
   const [gameComplete, setGameComplete] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
-  const [mascotState, setMascotState] = useState<MascotState>('idle');
+  
   const [combo, setCombo] = useState<ComboState>(createComboState());
   const [fetchKey, setFetchKey] = useState(0);
 
@@ -112,7 +112,15 @@ export default function GamesScreen() {
             const slides = ((stack as any).slides as any[]) || [];
             const sorted = slides.sort((a: any, b: any) => a.slide_number - b.slide_number);
             const questionSlide = sorted[0]?.body || stack.title;
-            const rawOptions = sorted.slice(1, 5).map((s: any) => (s.body || s.title || '').substring(0, 80));
+            const rawOptions = sorted.slice(1, 5).map((s: any) => {
+              const text = (s.body || s.title || '');
+              // Truncate at sentence boundary
+              if (text.length > 100) {
+                const sentences = text.match(/[^.!?]*[.!?]+/g);
+                return sentences?.[0]?.trim() || text.substring(0, 100) + '…';
+              }
+              return text;
+            });
             const baseOptions = rawOptions.length >= 4 ? rawOptions : [
               rawOptions[0] || 'First key insight',
               rawOptions[1] || 'Second consideration',
@@ -124,14 +132,41 @@ export default function GamesScreen() {
             const correctTag = (stack.tags as string[])?.find((t: string) => t.startsWith('correct:'));
             const correctIdx = correctTag ? parseInt(correctTag.split(':')[1], 10) : Math.floor(Math.random() * baseOptions.length);
 
+            // Smart truncate question and explanation at sentence boundaries
+            let questionText = `${stack.title}: ${questionSlide}`;
+            if (questionText.length > 180) {
+              const sentences = questionText.match(/[^.!?]*[.!?]+/g);
+              if (sentences) {
+                let result = stack.title + ': ';
+                for (const s of sentences) {
+                  if ((result + s).length > 200) break;
+                  result += s;
+                }
+                questionText = result.trim();
+              }
+            }
+
+            let explanationText = sorted[sorted.length - 1]?.body || stack.title;
+            if (explanationText.length > 300) {
+              const sentences = explanationText.match(/[^.!?]*[.!?]+/g);
+              if (sentences) {
+                let result = '';
+                for (const s of sentences) {
+                  if ((result + s).length > 350) break;
+                  result += s;
+                }
+                explanationText = result.trim() || sentences.slice(0, 2).join(' ').trim();
+              }
+            }
+
             const types: Array<'match' | 'timeline' | 'predict'> = ['match', 'timeline', 'predict'];
             return {
               id: stack.id,
               type: types[index % 3],
-              question: `${stack.title}: ${questionSlide}`.substring(0, 150),
+              question: questionText,
               options: baseOptions,
               correctAnswer: Math.min(correctIdx, baseOptions.length - 1),
-              explanation: sorted[sorted.length - 1]?.body?.substring(0, 280) || stack.title,
+              explanation: explanationText,
               pattern: (sorted.find((s: any) => s.body?.toLowerCase().includes('pattern:'))?.body || stack.title).substring(0, 60),
             };
           });
@@ -165,7 +200,14 @@ export default function GamesScreen() {
           id: scenario.id,
           type: types[index % 3],
           question: scenario.question || scenario.scenario,
-          options: opts.map((o: string) => o.substring(0, 120)),
+          options: opts.map((o: string) => {
+            // Truncate at sentence boundary, not mid-word
+            if (o.length > 140) {
+              const sentences = o.match(/[^.!?]*[.!?]+/g);
+              return sentences?.[0]?.trim() || o.substring(0, 140) + '…';
+            }
+            return o;
+          }),
           correctAnswer: scenario.correct_option_index,
           explanation: scenario.feedback_pro_reasoning || scenario.scenario,
           pattern: ((scenario.tags as string[]) || [])[0] || 'Industry Pattern',
@@ -191,15 +233,12 @@ export default function GamesScreen() {
       setScore((prev) => prev + 1);
       triggerHaptic('success');
       playSound('correct');
-      setMascotState('correct');
     } else {
       const { newState } = comboWrong(combo, 25);
       setCombo(newState);
       triggerHaptic('warning');
       playSound('wrong');
-      setMascotState('incorrect');
     }
-    setTimeout(() => setMascotState('idle'), 2500);
   };
 
   const handleNext = async () => {
@@ -222,17 +261,11 @@ export default function GamesScreen() {
       }
       triggerHaptic('success');
       playSound('levelUp');
-      setMascotState('celebrate');
       setGameComplete(true);
     }
   };
 
-  // Render mascot overlay for all game views
-  const mascotOverlay = mascotState !== 'idle' ? (
-    <MascotReaction state={mascotState} position="bottom-right" size="md" />
-  ) : null;
-
-  const typeEmoji: Record<string, string> = { match: '🎯', timeline: '⚡', predict: '🏆' };
+  
 
   if (loading) {
     return (
@@ -253,8 +286,8 @@ export default function GamesScreen() {
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           <View style={styles.introCenter}>
-            <LeoCharacter size="xl" animation="celebrating" />
-            <Text style={styles.introMsg}>Game time! Pick the right answers and learn the patterns! 🎮</Text>
+            <Image source={APP_ICONS.games} style={{ width: 64, height: 64, resizeMode: 'contain', marginBottom: 16 }} />
+            <Text style={styles.introMsg}>Pick the right answers and learn the patterns!</Text>
           </View>
           <View style={styles.heroCard}>
             <Text style={styles.heroLabel}>Industry Games</Text>
@@ -281,7 +314,7 @@ export default function GamesScreen() {
   if (questions.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Text style={{ fontSize: 48, marginBottom: 12 }}>🎮</Text>
+        <Image source={APP_ICONS.games} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
         <Text style={styles.emptyTitle}>No games available</Text>
         <Text style={styles.emptySubtitle}>Complete more lessons to unlock games!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
@@ -296,12 +329,12 @@ export default function GamesScreen() {
     return (
       <View style={[styles.container, styles.centered]}>
         <View style={styles.completeIcon}>
-          <Text style={{ fontSize: 32 }}>🏆</Text>
+          <Image source={APP_ICONS.achievements} style={{ width: 32, height: 32, resizeMode: 'contain' }} />
         </View>
         <Text style={styles.completeTitle}>Game Complete!</Text>
         <Text style={styles.completeScore}>You scored {score}/{questions.length} ({percentage}%)</Text>
         <Text style={styles.completeFeedback}>
-          {percentage >= 80 ? "🔥 Excellent! You're a market pro." : percentage >= 60 ? '👍 Good job! Keep practicing.' : '📚 Review the lessons and try again.'}
+          {percentage >= 80 ? "Excellent! You're a market pro." : percentage >= 60 ? 'Good job! Keep practicing.' : 'Review the lessons and try again.'}
         </Text>
         <View style={{ flexDirection: 'row', gap: 12, marginTop: 20, width: '100%' }}>
           <TouchableOpacity style={[styles.secondaryBtn, { flex: 1 }]} onPress={() => router.back()}>
@@ -345,7 +378,7 @@ export default function GamesScreen() {
             <Text style={styles.headerSub}>Question {currentQuestion + 1} of {questions.length}</Text>
           </View>
           <View style={styles.scoreBadge}>
-            <Text style={styles.scoreBadgeText}>🏆 {score}</Text>
+            <Text style={styles.scoreBadgeText}>{score}</Text>
           </View>
           {/* Combo Counter */}
           <ComboCounter combo={combo} show={combo.streak > 0} />
@@ -355,7 +388,7 @@ export default function GamesScreen() {
 
         <View style={styles.chipRow}>
           <View style={styles.chip}>
-            <Text style={styles.chipText}>{typeEmoji[question.type] || '🎮'} {question.type.toUpperCase()}</Text>
+            <Text style={styles.chipText}>{question.type.toUpperCase()}</Text>
           </View>
           <View style={styles.chipSecondary}>
             <Text style={styles.chipSecondaryText}>{question.pattern}</Text>

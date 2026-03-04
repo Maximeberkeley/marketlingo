@@ -6,18 +6,17 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
-import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { triggerHaptic } from '../lib/haptics';
-import { MascotReaction } from '../components/mascot/MascotReaction';
-import { MascotState } from '../lib/mascots';
 import { playSound } from '../lib/sounds';
+import { APP_ICONS } from '../lib/icons';
 
 interface DrillQuestion {
   id: string;
@@ -101,7 +100,7 @@ export default function DrillsScreen() {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
-  const [mascotState, setMascotState] = useState<MascotState>('idle');
+  
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [fetchKey, setFetchKey] = useState(0);
 
@@ -173,19 +172,41 @@ export default function DrillsScreen() {
               statement = generateFalseStatement(statement);
             }
 
-            // Extract first meaningful sentence if statement is too long
+            // Extract first 2 complete sentences if statement is too long
             if (statement.length > 280) {
-              const sentences = statement.split(/(?<=[.!?])\s+/);
-              statement = sentences.slice(0, 2).join(' ');
+              const sentences = statement.match(/[^.!?]*[.!?]+/g);
+              if (sentences && sentences.length > 0) {
+                let result = '';
+                for (const s of sentences) {
+                  if ((result + s).length > 320) break;
+                  result += s;
+                  if (result.length >= 80) break; // At least 1-2 full sentences
+                }
+                statement = result.trim() || sentences[0].trim();
+              }
+            }
+
+            // Extract explanation as complete sentences too
+            let explanation = slide.body;
+            if (explanation.length > 300) {
+              const sentences = explanation.match(/[^.!?]*[.!?]+/g);
+              if (sentences) {
+                let result = '';
+                for (const s of sentences) {
+                  if ((result + s).length > 350) break;
+                  result += s;
+                }
+                explanation = result.trim() || sentences.slice(0, 2).join(' ').trim();
+              }
             }
 
             const sources = (slide.sources as any[]) || [];
             drillQuestions.push({
               id: slide.id,
               category,
-              statement: statement.substring(0, 280),
+              statement,
               isTrue,
-              explanation: slide.body.substring(0, 280),
+              explanation,
               source: sources[0]?.label || 'Industry Analysis',
             });
           }
@@ -234,13 +255,10 @@ export default function DrillsScreen() {
       setScore((prev) => prev + 1);
       triggerHaptic('success');
       playSound('correct');
-      setMascotState('correct');
     } else {
       triggerHaptic('error');
       playSound('wrong');
-      setMascotState('incorrect');
     }
-    setTimeout(() => setMascotState('idle'), 2500);
   };
 
   const handleNext = async () => {
@@ -287,8 +305,8 @@ export default function DrillsScreen() {
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           <View style={styles.introCenter}>
-            <LeoCharacter size="xl" animation="success" />
-            <Text style={styles.introMsg}>Let's test your instincts! 15 seconds per question — trust your gut! 🎯</Text>
+            <Image source={APP_ICONS.drills} style={{ width: 64, height: 64, resizeMode: 'contain', marginBottom: 16 }} />
+            <Text style={styles.introMsg}>15 seconds per question — trust your instincts!</Text>
           </View>
           <View style={styles.heroCard}>
             <Text style={styles.heroLabel}>Industry Drills</Text>
@@ -318,7 +336,7 @@ export default function DrillsScreen() {
   if (questions.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Text style={{ fontSize: 48, marginBottom: 12 }}>🎯</Text>
+        <Image source={APP_ICONS.drills} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
         <Text style={styles.emptyTitle}>No drills available</Text>
         <Text style={styles.emptySubtitle}>Complete more lessons to unlock drills!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
@@ -342,7 +360,7 @@ export default function DrillsScreen() {
         <Text style={styles.completeTitle}>Drill Complete!</Text>
         <Text style={styles.completeScore}>{score}/{questions.length} correct</Text>
         <Text style={styles.completeFeedback}>
-          {percentage >= 80 ? "🔥 Excellent! You're market-fluent." : percentage >= 60 ? '👍 Good progress. Keep practicing!' : '📚 Review and try again.'}
+          {percentage >= 80 ? "Excellent! You're market-fluent." : percentage >= 60 ? 'Good progress. Keep practicing!' : 'Review and try again.'}
         </Text>
         <View style={{ flexDirection: 'row', gap: 12, marginTop: 20, width: '100%' }}>
           <TouchableOpacity style={[styles.secondaryBtn, { flex: 1 }]} onPress={() => router.back()}>
@@ -362,7 +380,7 @@ export default function DrillsScreen() {
               setFetchKey(k => k + 1);
             }}
           >
-            <Text style={styles.ctaText}>🔄 Retry</Text>
+            <Text style={styles.ctaText}>Retry</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -384,7 +402,7 @@ export default function DrillsScreen() {
             <Text style={styles.headerSub}>{currentQuestion + 1} of {questions.length}</Text>
           </View>
           <View style={[styles.timerBadge, timeLeft <= 5 && styles.timerDanger]}>
-            <Text style={[styles.timerText, timeLeft <= 5 && { color: '#EF4444' }]}>⏱ {timeLeft}s</Text>
+            <Text style={[styles.timerText, timeLeft <= 5 && { color: '#EF4444' }]}>{timeLeft}s</Text>
           </View>
         </View>
 
@@ -415,7 +433,7 @@ export default function DrillsScreen() {
             <Text style={[styles.feedbackTitle, {
               color: selectedAnswer === null ? '#F59E0B' : isCorrect ? '#22C55E' : '#EF4444',
             }]}>
-              {selectedAnswer === null ? "⏱ Time's up!" : isCorrect ? '✅ Correct!' : '❌ Incorrect'}
+              {selectedAnswer === null ? "Time's up!" : isCorrect ? 'Correct!' : 'Incorrect'}
             </Text>
             <Text style={styles.feedbackBody}>{question.explanation}</Text>
             <Text style={styles.feedbackSource}>Source: {question.source}</Text>
