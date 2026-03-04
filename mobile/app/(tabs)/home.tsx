@@ -62,23 +62,23 @@ const MENTOR_IMAGES: Record<string, any> = {
   sophia: require('../../assets/mentors/mentor-sophia.png'),
 };
 
-// Market illustration mapping for mobile
+// Market illustrations — flat 3D isometric style (matching web)
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
-  aerospace: require('../../assets/markets/aerospace-hero.jpg'),
-  ai: require('../../assets/markets/ai-hero.jpg'),
-  biotech: require('../../assets/markets/biotech-hero.jpg'),
-  cleanenergy: require('../../assets/markets/cleanenergy-hero.jpg'),
-  fintech: require('../../assets/markets/fintech-hero.jpg'),
-  ev: require('../../assets/markets/ev-hero.jpg'),
-  cybersecurity: require('../../assets/markets/cybersecurity-hero.jpg'),
-  robotics: require('../../assets/markets/robotics-hero.jpg'),
-  spacetech: require('../../assets/markets/spacetech-hero.jpg'),
-  healthtech: require('../../assets/markets/healthtech-hero.jpg'),
-  web3: require('../../assets/markets/web3-hero.jpg'),
-  agtech: require('../../assets/markets/agtech-hero.jpg'),
-  logistics: require('../../assets/markets/logistics-hero.jpg'),
-  climatetech: require('../../assets/markets/climatetech-hero.jpg'),
-  neuroscience: require('../../assets/markets/neuroscience-hero.jpg'),
+  aerospace: require('../../assets/illustrations/aerospace.png'),
+  ai: require('../../assets/illustrations/ai.png'),
+  biotech: require('../../assets/illustrations/biotech.png'),
+  cleanenergy: require('../../assets/illustrations/cleanenergy.png'),
+  fintech: require('../../assets/illustrations/fintech.png'),
+  ev: require('../../assets/illustrations/ev.png'),
+  cybersecurity: require('../../assets/illustrations/cybersecurity.png'),
+  robotics: require('../../assets/illustrations/robotics.png'),
+  spacetech: require('../../assets/illustrations/spacetech.png'),
+  healthtech: require('../../assets/illustrations/healthtech.png'),
+  web3: require('../../assets/illustrations/web3.png'),
+  agtech: require('../../assets/illustrations/agtech.png'),
+  logistics: require('../../assets/illustrations/logistics.png'),
+  climatetech: require('../../assets/illustrations/climatetech.png'),
+  neuroscience: require('../../assets/illustrations/neuroscience.png'),
 };
 
 export default function HomeScreen() {
@@ -288,12 +288,12 @@ export default function HomeScreen() {
                   Day {currentDay} · Level {xpData?.current_level || 1}
                 </Text>
 
-                {/* Market Illustration */}
+                {/* Market Illustration — flat 3D isometric, no crop */}
                 <View style={styles.illustrationWrap}>
                   <Image
                     source={marketIllustration}
                     style={styles.illustration}
-                    resizeMode="cover"
+                    resizeMode="contain"
                   />
                 </View>
 
@@ -554,12 +554,10 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16,
   },
   illustrationWrap: {
-    width: 160, height: 160, borderRadius: 80, overflow: 'hidden',
-    marginBottom: 16, borderWidth: 3, borderColor: COLORS.accentSoft,
-    shadowColor: COLORS.accent, shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15, shadowRadius: 16, elevation: 6,
+    width: 192, height: 192,
+    marginBottom: 20, alignItems: 'center', justifyContent: 'center',
   },
-  illustration: { width: '100%', height: '100%' },
+  illustration: { width: 192, height: 192 },
   dotRow: { flexDirection: 'row', gap: 6, marginBottom: 8 },
   dot: {
     width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.borderLight,
