@@ -1,8 +1,10 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, Image } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, Image, TouchableOpacity } from 'react-native';
+import { router } from 'expo-router';
 import { COLORS } from '../../lib/constants';
 import { APP_ICONS } from '../../lib/icons';
 import { DailyQuest } from '../../hooks/useDailyQuests';
+import { triggerHaptic } from '../../lib/haptics';
 
 interface DailyQuestsProps {
   quests: DailyQuest[];
@@ -10,6 +12,15 @@ interface DailyQuestsProps {
   totalBonusXP: number;
   allComplete: boolean;
 }
+
+// Map quest type → icon + route
+const QUEST_META: Record<string, { icon: any; route: string }> = {
+  lesson: { icon: APP_ICONS.learn, route: '/(tabs)/home' },
+  drill:  { icon: APP_ICONS.drills, route: '/drills' },
+  game:   { icon: APP_ICONS.games, route: '/games' },
+  combo:  { icon: APP_ICONS.trainer, route: '/(tabs)/practice' },
+  streak: { icon: APP_ICONS.streak, route: '/(tabs)/home' },
+};
 
 function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
   const slideAnim = useRef(new Animated.Value(40)).current;
@@ -30,45 +41,58 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
   }, [quest.isCompleted]);
 
   const progressPct = quest.target > 0 ? Math.min(1, quest.current / quest.target) : 0;
+  const meta = QUEST_META[quest.type] || QUEST_META.lesson;
+
+  const handlePress = () => {
+    triggerHaptic('light');
+    if (!quest.isCompleted) {
+      router.push(meta.route as any);
+    }
+  };
 
   return (
     <Animated.View
-      style={[
-        styles.questRow,
-        quest.isCompleted && styles.questRowCompleted,
-        { transform: [{ translateX: slideAnim }], opacity: opacityAnim },
-      ]}
+      style={[{ transform: [{ translateX: slideAnim }], opacity: opacityAnim }]}
     >
-      <View style={[styles.questIcon, quest.isCompleted && styles.questIconDone]}>
-        <Text style={styles.questEmoji}>{quest.emoji}</Text>
-      </View>
-      <View style={styles.questContent}>
-        <View style={styles.questHeader}>
-          <Text style={[styles.questTitle, quest.isCompleted && styles.questTitleDone]} numberOfLines={1}>
-            {quest.title}
-          </Text>
-          <View style={[styles.xpChip, quest.isCompleted && styles.xpChipDone]}>
-            <Text style={[styles.xpChipText, quest.isCompleted && styles.xpChipTextDone]}>
-              {quest.isCompleted ? '✓' : `+${quest.xpBonus} XP`}
+      <TouchableOpacity
+        style={[styles.questRow, quest.isCompleted && styles.questRowCompleted]}
+        onPress={handlePress}
+        activeOpacity={0.7}
+        disabled={quest.isCompleted}
+      >
+        <View style={[styles.questIcon, quest.isCompleted && styles.questIconDone]}>
+          <Image source={meta.icon} style={styles.questIconImg} />
+        </View>
+        <View style={styles.questContent}>
+          <View style={styles.questHeader}>
+            <Text style={[styles.questTitle, quest.isCompleted && styles.questTitleDone]} numberOfLines={1}>
+              {quest.title}
             </Text>
+            <View style={[styles.xpChip, quest.isCompleted && styles.xpChipDone]}>
+              <Text style={[styles.xpChipText, quest.isCompleted && styles.xpChipTextDone]}>
+                {quest.isCompleted ? '✓' : `+${quest.xpBonus}`}
+              </Text>
+            </View>
           </View>
+          <Text style={styles.questDesc} numberOfLines={1}>{quest.description}</Text>
+          <View style={styles.questProgressBg}>
+            <View style={[styles.questProgressFill, quest.isCompleted && styles.questProgressFillDone, { width: `${progressPct * 100}%` }]} />
+          </View>
+          <Text style={styles.questProgress}>
+            {quest.current}/{quest.target}
+            {quest.multiplier > 1 && !quest.isCompleted && (
+              <Text style={styles.multiplierText}> · {quest.multiplier}x</Text>
+            )}
+          </Text>
         </View>
-        <Text style={styles.questDesc} numberOfLines={1}>{quest.description}</Text>
-        <View style={styles.questProgressBg}>
-          <View style={[styles.questProgressFill, { width: `${progressPct * 100}%` }]} />
-        </View>
-        <Text style={styles.questProgress}>
-          {quest.current}/{quest.target}
-          {quest.multiplier > 1 && !quest.isCompleted && (
-            <Text style={styles.multiplierText}> • {quest.multiplier}x XP</Text>
-          )}
-        </Text>
-      </View>
-      {quest.isCompleted && (
-        <Animated.View style={[styles.checkCircle, { transform: [{ scale: checkScale }] }]}>
-          <Text style={styles.checkText}>✓</Text>
-        </Animated.View>
-      )}
+        {quest.isCompleted ? (
+          <Animated.View style={[styles.checkCircle, { transform: [{ scale: checkScale }] }]}>
+            <Text style={styles.checkText}>✓</Text>
+          </Animated.View>
+        ) : (
+          <Text style={styles.chevron}>›</Text>
+        )}
+      </TouchableOpacity>
     </Animated.View>
   );
 }
@@ -78,7 +102,7 @@ export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete 
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Image source={APP_ICONS.quests} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+          <Image source={APP_ICONS.quests} style={styles.headerIcon} />
           <Text style={styles.headerTitle}>Daily Quests</Text>
         </View>
         <View style={styles.countBadge}>
@@ -88,7 +112,7 @@ export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete 
 
       {allComplete && (
         <View style={styles.allCompleteBanner}>
-          <Text style={styles.allCompleteEmoji}>🏆</Text>
+          <Image source={APP_ICONS.achievements} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
           <View>
             <Text style={styles.allCompleteTitle}>All Quests Complete!</Text>
             <Text style={styles.allCompleteSubtitle}>+{totalBonusXP} bonus XP earned</Text>
@@ -106,43 +130,40 @@ export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.bg2, borderRadius: 18, padding: 16,
-    borderWidth: 1, borderColor: COLORS.border, gap: 10,
+    borderWidth: 1, borderColor: COLORS.border, gap: 8,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 2,
   },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  headerEmoji: { fontSize: 18 },
+  headerIcon: { width: 22, height: 22, resizeMode: 'contain' },
   headerTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
   countBadge: {
     backgroundColor: COLORS.accentSoft, paddingHorizontal: 10, paddingVertical: 4,
-    borderRadius: 10, borderWidth: 1, borderColor: 'rgba(139,92,246,0.2)',
+    borderRadius: 10,
   },
   countText: { fontSize: 12, fontWeight: '700', color: COLORS.accent },
   allCompleteBanner: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     backgroundColor: COLORS.successSoft, borderRadius: 12, padding: 12,
-    borderWidth: 1, borderColor: 'rgba(34,197,94,0.2)',
   },
-  allCompleteEmoji: { fontSize: 28 },
   allCompleteTitle: { fontSize: 14, fontWeight: '700', color: COLORS.success },
   allCompleteSubtitle: { fontSize: 11, color: COLORS.textMuted },
   questRow: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     backgroundColor: COLORS.bg1, borderRadius: 14, padding: 12,
-    borderWidth: 1, borderColor: COLORS.borderLight,
   },
   questRowCompleted: {
-    backgroundColor: COLORS.successSoft, borderColor: 'rgba(34,197,94,0.15)',
+    backgroundColor: COLORS.successSoft,
   },
   questIcon: {
     width: 40, height: 40, borderRadius: 12,
     backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center',
   },
   questIconDone: { backgroundColor: 'rgba(34,197,94,0.12)' },
-  questEmoji: { fontSize: 20 },
+  questIconImg: { width: 24, height: 24, resizeMode: 'contain' },
   questContent: { flex: 1 },
   questHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 },
-  questTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary },
+  questTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, flex: 1 },
   questTitleDone: { color: COLORS.success },
   questDesc: { fontSize: 11, color: COLORS.textMuted, marginBottom: 6 },
   xpChip: { backgroundColor: COLORS.accentSoft, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
@@ -153,6 +174,7 @@ const styles = StyleSheet.create({
     height: 4, borderRadius: 2, backgroundColor: COLORS.surfaceLight, overflow: 'hidden', marginBottom: 3,
   },
   questProgressFill: { height: '100%', borderRadius: 2, backgroundColor: COLORS.accent },
+  questProgressFillDone: { backgroundColor: COLORS.success },
   questProgress: { fontSize: 10, color: COLORS.textMuted },
   multiplierText: { color: COLORS.gold, fontWeight: '600' },
   checkCircle: {
@@ -160,4 +182,5 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.success, alignItems: 'center', justifyContent: 'center',
   },
   checkText: { fontSize: 14, fontWeight: '800', color: '#fff' },
+  chevron: { fontSize: 20, color: COLORS.textMuted, marginLeft: 4 },
 });

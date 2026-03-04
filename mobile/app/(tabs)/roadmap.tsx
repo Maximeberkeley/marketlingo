@@ -271,7 +271,7 @@ export default function RoadmapScreen() {
                 <Text style={styles.currentTitle}>{currentLessonTitle}</Text>
               </View>
               <View style={styles.startBtn}>
-                <Text style={styles.startBtnText}>▶ Start</Text>
+                <Text style={styles.startBtnText}>Start</Text>
               </View>
             </TouchableOpacity>
           </Animated.View>
@@ -303,7 +303,7 @@ export default function RoadmapScreen() {
             </Text>
             <View style={styles.modalStatusRow}>
               <Text style={{ fontSize: 13, color: selectedLesson?.completed ? '#22C55E' : COLORS.accent }}>
-                {selectedLesson?.completed ? '✅ Completed' : '⭐ Current lesson'}
+                {selectedLesson?.completed ? 'Completed' : 'Current lesson'}
               </Text>
             </View>
             <TouchableOpacity
@@ -315,7 +315,7 @@ export default function RoadmapScreen() {
               activeOpacity={0.85}
             >
               <Text style={styles.modalCTAText}>
-                📖 {selectedLesson?.completed ? 'Review Lesson' : 'Start Lesson'}
+                {selectedLesson?.completed ? 'Review Lesson' : 'Start Lesson'}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.modalCancel} onPress={() => setSelectedLesson(null)}>
