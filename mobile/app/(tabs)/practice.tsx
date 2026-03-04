@@ -246,6 +246,7 @@ export default function PracticeScreen() {
 
           <View style={styles.resourceGrid}>
             {[
+              { emoji: '🏢', label: 'Key Players', route: '/friends' },
               { emoji: '📰', label: 'Summaries', route: '/summaries' },
               { emoji: '⚗️', label: 'Regulatory', route: '/regulatory-hub' },
               { emoji: '📓', label: 'Notebook', route: '/(tabs)/notebook' },
