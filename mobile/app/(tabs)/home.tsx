@@ -12,9 +12,6 @@ import { KeyPlayers } from '../../components/home/KeyPlayers';
 import { DailyNews } from '../../components/home/DailyNews';
 import { HomeSkeleton } from '../../components/home/HomeSkeleton';
 import { AnimatedSection } from '../../components/home/AnimatedSection';
-import { LeoBubble } from '../../components/home/LeoBubble';
-import { PulsingCTA } from '../../components/home/PulsingCTA';
-import { QuickActionsGrid } from '../../components/home/QuickActionsGrid';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../../lib/constants';
@@ -22,15 +19,11 @@ import { getMarketEmoji, getMarketName } from '../../lib/markets';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
-import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { StreakBadge } from '../../components/ui/StreakBadge';
 import { XPBadge } from '../../components/ui/XPBadge';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { LessonCard } from '../../components/ui/LessonCard';
 import { SlideReaderV2 as SlideReader } from '../../components/slides/SlideReaderV2';
-import { MentorChatOverlay } from '../../components/ai/MentorChatOverlay';
-import { getMentorForContext, Mentor } from '../../data/mentors';
-import { getPrimaryMentorForMarket } from '../../data/marketConfig';
 import { TodaysMission } from '../../components/home/TodaysMission';
 import { StreakAtRisk } from '../../components/home/StreakAtRisk';
 import { APP_ICONS } from '../../lib/icons';
@@ -48,20 +41,11 @@ import { useSessionFlow } from '../../hooks/useSessionFlow';
 import { triggerHaptic } from '../../lib/haptics';
 import { useStreakFreeze } from '../../hooks/useStreakFreeze';
 import { StreakFreezeCard } from '../../components/home/StreakFreezeCard';
-import { MascotReaction } from '../../components/mascot/MascotReaction';
-import { MascotState } from '../../lib/mascots';
 import { playSound } from '../../lib/sounds';
 import { useSpacedRepetition } from '../../hooks/useSpacedRepetition';
 import { useOfflineCache } from '../../hooks/useOfflineCache';
 
-// ─── Static config ───
-const MENTOR_IMAGES: Record<string, any> = {
-  maya: require('../../assets/mentors/mentor-maya.png'),
-  alex: require('../../assets/mentors/mentor-alex.png'),
-  kai: require('../../assets/mentors/mentor-kai.png'),
-  sophia: require('../../assets/mentors/mentor-sophia.png'),
-};
-
+// Market illustrations — flat 3D isometric style (matching web)
 // Market illustrations — flat 3D isometric style (matching web)
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -113,7 +97,7 @@ export default function HomeScreen() {
   const [showStreakFreeze, setShowStreakFreeze] = useState(true);
 
   // ─── Leo mascot state ───
-  const [mascotState, setMascotState] = useState<MascotState>('idle');
+  
 
   // Sync selectedMarket for dependent hooks
   useEffect(() => {
@@ -149,40 +133,15 @@ export default function HomeScreen() {
     dailyCompletion ?? null, streak
   );
 
-  // ─── Mentor chat ───
-  const [mentorChatVisible, setMentorChatVisible] = useState(false);
-  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
-  const [mentorChatContext, setMentorChatContext] = useState('');
   const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
 
-  // Trigger mascot celebration on lesson complete
+  // Play sound on lesson complete
   useEffect(() => {
     if (lessonCompletedToday) {
-      setMascotState('celebrate');
       playSound('lessonComplete');
-      const timer = setTimeout(() => setMascotState('idle'), 3000);
-      return () => clearTimeout(timer);
     }
   }, [lessonCompletedToday]);
-  const [showMentorDebrief, setShowMentorDebrief] = useState(true);
-
-  // ─── Leo greeting ───
-  const [leoMessage, setLeoMessage] = useState('');
-  const [leoAnimation, setLeoAnimation] = useState<'idle' | 'waving' | 'success' | 'celebrating'>('idle');
-
-  useEffect(() => {
-    const hour = new Date().getHours();
-    let greeting = '';
-    let anim: 'idle' | 'waving' | 'success' | 'celebrating' = 'idle';
-    if (hour < 12) { greeting = 'Good morning! Ready to learn?'; anim = 'waving'; }
-    else if (hour < 17) { greeting = "Good afternoon! Let's keep going!"; anim = 'idle'; }
-    else { greeting = 'Evening study session!'; anim = 'idle'; }
-    if (streak >= 7) { greeting = `${streak}-day streak! You're on fire!`; anim = 'celebrating'; }
-    else if (lessonCompletedToday) { greeting = 'Lesson done! Try practice?'; anim = 'success'; }
-    setLeoMessage(greeting);
-    setLeoAnimation(anim);
-  }, [streak, lessonCompletedToday]);
 
   // ─── Initial fetch ───
   useEffect(() => {
@@ -193,18 +152,6 @@ export default function HomeScreen() {
     });
   }, [user, authLoading]);
 
-  const handleOpenMentorChat = (context?: string) => {
-    triggerHaptic('light');
-    const mentor = getMentorForContext('strategy', selectedMarket || 'aerospace');
-    setActiveMentor(mentor);
-    if (context) setMentorChatContext(context);
-    setMentorChatVisible(true);
-  };
-
-  const handleOpenMentorForLesson = () => {
-    const title = session.activeStack?.title || lessonStack?.title || 'today\'s lesson';
-    handleOpenMentorChat(`The user just completed "${title}" (Day ${currentDay}) in ${getMarketName(selectedMarket || 'aerospace')}. Help them reflect and connect to real-world applications.`);
-  };
 
   // ─── Loading ───
   if (loading || authLoading) return <HomeSkeleton />;
@@ -230,10 +177,6 @@ export default function HomeScreen() {
           isReview={lessonCompletedToday && session.activeStack.stack_type === 'LESSON'}
           isProUser={isProUser}
           onPaywallTrigger={() => { session.closeReader(); router.push('/subscription' as any); }}
-          onAskMentor={() => {
-            handleOpenMentorChat(`Reading "${session.activeStack?.title}" (Day ${currentDay}) in ${getMarketName(selectedMarket || 'aerospace')}. Help understand the material.`);
-          }}
-          mentorName={getMentorForContext('strategy', selectedMarket || 'aerospace').name.split(' ')[0]}
         />
       ) : session.showSessionComplete ? (
         <SessionCompleteCard
@@ -247,8 +190,7 @@ export default function HomeScreen() {
           stageName={currentStage.name}
           onContinue={session.dismissSessionComplete}
           onDismiss={session.dismissSessionComplete}
-          onAskMentor={() => { session.dismissSessionComplete(); handleOpenMentorForLesson(); }}
-          mentorName={getMentorForContext('strategy', selectedMarket || 'aerospace').name.split(' ')[0]}
+        />
         />
       ) : (
         <>
@@ -263,9 +205,6 @@ export default function HomeScreen() {
                 <StreakBadge count={streak} />
                 <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} />
               </View>
-              <TouchableOpacity onPress={() => handleOpenMentorChat()} activeOpacity={0.7}>
-                <LeoCharacter size="sm" animation={leoAnimation} />
-              </TouchableOpacity>
             </View>
 
             {/* ── Hero Section: Brilliant-style ── */}
@@ -393,14 +332,43 @@ export default function HomeScreen() {
               />
             )}
 
-            {/* ── Quick Actions Grid ── */}
+            {/* ── Practice & Play Grid — matches web ── */}
             <AnimatedSection delay={300}>
-              <QuickActionsGrid actions={[
-                { icon: APP_ICONS.notebook, label: 'Notebook', onPress: () => router.push('/(tabs)/notebook' as any) },
-                { icon: APP_ICONS.achievements, label: 'Awards', onPress: () => router.push('/achievements' as any) },
-                { icon: APP_ICONS.profile, label: 'Profile', onPress: () => router.push('/(tabs)/profile' as any) },
-                { label: 'Ask Leo', onPress: () => handleOpenMentorChat(), isLeo: true },
-              ]} />
+              <Text style={styles.sectionHeader}>Practice & Play</Text>
+              <View style={styles.practiceGrid}>
+                {[
+                  { icon: APP_ICONS.games, label: 'Games', onPress: () => router.push('/games' as any) },
+                  { icon: APP_ICONS.drills, label: 'Drills', onPress: () => router.push('/drills' as any) },
+                  { icon: APP_ICONS.trainer, label: 'Trainer', onPress: () => router.push('/trainer' as any) },
+                ].map((item) => (
+                  <TouchableOpacity key={item.label} style={styles.practiceItem} onPress={item.onPress} activeOpacity={0.7}>
+                    <View style={styles.practiceIconWrap}>
+                      <Image source={item.icon} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+                    </View>
+                    <Text style={styles.practiceLabel}>{item.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </AnimatedSection>
+
+            {/* ── Quick Access — matches web ── */}
+            <AnimatedSection delay={320}>
+              <Text style={styles.sectionHeader}>Quick Access</Text>
+              <View style={styles.quickGrid}>
+                {[
+                  { icon: APP_ICONS.notebook, label: 'Notes', onPress: () => router.push('/(tabs)/notebook' as any) },
+                  { icon: APP_ICONS.achievements, label: 'Rank', onPress: () => router.push('/leaderboard' as any) },
+                  { icon: APP_ICONS.achievements, label: 'Badges', onPress: () => router.push('/achievements' as any) },
+                  { icon: APP_ICONS.news, label: 'News', onPress: () => router.push('/summaries' as any) },
+                ].map((item) => (
+                  <TouchableOpacity key={item.label} style={styles.quickItem} onPress={item.onPress} activeOpacity={0.7}>
+                    <View style={styles.quickIconWrap}>
+                      <Image source={item.icon} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                    </View>
+                    <Text style={styles.quickLabel}>{item.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </AnimatedSection>
 
             {/* ── Spaced Repetition ── */}
@@ -492,22 +460,6 @@ export default function HomeScreen() {
               </AnimatedSection>
             )}
           </ScrollView>
-
-          {/* Mentor Chat Overlay */}
-          {activeMentor && (
-            <MentorChatOverlay
-              visible={mentorChatVisible}
-              mentor={activeMentor}
-              onClose={() => { setMentorChatVisible(false); setMentorChatContext(''); }}
-              marketId={selectedMarket || undefined}
-              context={mentorChatContext || `${getMarketName(selectedMarket || 'aerospace')} industry learning. Day ${currentDay} of 180. Recent: ${newsItems.slice(0, 3).map(n => n.title).join('; ')}`}
-            />
-          )}
-
-          {/* Floating Leo Reaction */}
-          {mascotState !== 'idle' && (
-            <MascotReaction state={mascotState} position="bottom-right" size="md" />
-          )}
         </>
       )}
 
@@ -649,4 +601,42 @@ const styles = StyleSheet.create({
   journeyPct: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
 
   section: { marginBottom: 20 },
+
+  // Section headers
+  sectionHeader: {
+    fontSize: 14, fontWeight: '700', color: COLORS.textPrimary,
+    marginBottom: 10, letterSpacing: 0.2,
+  },
+
+  // Practice & Play grid (3 cols, matches web)
+  practiceGrid: {
+    flexDirection: 'row', gap: 10, marginBottom: 20,
+  },
+  practiceItem: {
+    flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8,
+    paddingVertical: 18, borderRadius: 18,
+    backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 4, elevation: 1,
+  },
+  practiceIconWrap: {
+    width: 48, height: 48, borderRadius: 14,
+    backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center',
+  },
+  practiceLabel: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary },
+
+  // Quick Access grid (4 cols, matches web)
+  quickGrid: {
+    flexDirection: 'row', gap: 8, marginBottom: 20,
+  },
+  quickItem: {
+    flex: 1, alignItems: 'center', justifyContent: 'center', gap: 6,
+    paddingVertical: 14, borderRadius: 18,
+    backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 4, elevation: 1,
+  },
+  quickIconWrap: {
+    width: 40, height: 40, borderRadius: 12,
+    backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center',
+  },
+  quickLabel: { fontSize: 11, fontWeight: '600', color: COLORS.textSecondary },
 });
