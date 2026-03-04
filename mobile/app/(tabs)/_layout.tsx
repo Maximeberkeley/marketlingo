@@ -1,13 +1,14 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
+import { APP_ICONS } from '../../lib/icons';
 
-function TabBarIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
+function TabBarIcon({ icon, focused }: { icon: any; focused: boolean }) {
   return (
     <View style={styles.tabIcon}>
-      <Text style={[styles.emoji, { opacity: focused ? 1 : 0.5 }]}>{emoji}</Text>
+      <Image source={icon} style={[styles.iconImage, { opacity: focused ? 1 : 0.45 }]} />
     </View>
   );
 }
@@ -40,7 +41,7 @@ export default function TabLayout() {
         options={{
           title: 'Learn',
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon emoji="📖" focused={focused} />
+            <TabBarIcon icon={APP_ICONS.learn} focused={focused} />
           ),
         }}
       />
@@ -49,7 +50,7 @@ export default function TabLayout() {
         options={{
           title: 'Practice',
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon emoji="⚡" focused={focused} />
+            <TabBarIcon icon={APP_ICONS.drills} focused={focused} />
           ),
         }}
       />
@@ -58,7 +59,7 @@ export default function TabLayout() {
         options={{
           title: 'Progress',
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon emoji="🗺️" focused={focused} />
+            <TabBarIcon icon={APP_ICONS.progress} focused={focused} />
           ),
         }}
       />
@@ -67,7 +68,7 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon emoji="👤" focused={focused} />
+            <TabBarIcon icon={APP_ICONS.profile} focused={focused} />
           ),
         }}
       />
@@ -89,7 +90,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  emoji: {
-    fontSize: 22,
+  iconImage: {
+    width: 26,
+    height: 26,
+    resizeMode: 'contain',
   },
 });

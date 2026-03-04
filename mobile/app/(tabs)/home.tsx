@@ -33,6 +33,7 @@ import { getMentorForContext, Mentor } from '../../data/mentors';
 import { getPrimaryMentorForMarket } from '../../data/marketConfig';
 import { TodaysMission } from '../../components/home/TodaysMission';
 import { StreakAtRisk } from '../../components/home/StreakAtRisk';
+import { APP_ICONS } from '../../lib/icons';
 import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
 import { SocialNudge } from '../../components/home/SocialNudge';
 import { TomorrowPreview } from '../../components/home/TomorrowPreview';
@@ -301,10 +302,10 @@ export default function HomeScreen() {
 
             <AnimatedSection delay={400}>
               <QuickActionsGrid actions={[
-                { emoji: '⚡', label: 'Practice', onPress: () => router.push('/(tabs)/practice' as any) },
-                { emoji: '🧠', label: 'Trainer', onPress: () => router.push('/trainer' as any) },
-                { emoji: '🎮', label: 'Games', onPress: () => router.push('/games' as any) },
-                { emoji: '👥', label: 'Friends', onPress: () => router.push('/friends' as any) },
+                { icon: APP_ICONS.drills, label: 'Practice', onPress: () => router.push('/(tabs)/practice' as any) },
+                { icon: APP_ICONS.passport, label: 'Passport', onPress: () => router.push('/passport' as any) },
+                { icon: APP_ICONS.notebook, label: 'Notebook', onPress: () => router.push('/(tabs)/notebook' as any) },
+                { icon: APP_ICONS.achievements, label: 'Awards', onPress: () => router.push('/achievements' as any) },
               ]} />
             </AnimatedSection>
 
@@ -316,7 +317,7 @@ export default function HomeScreen() {
                   onPress={() => router.push('/trainer' as any)}
                   activeOpacity={0.8}
                 >
-                  <Text style={{ fontSize: 20 }}>🧠</Text>
+                  <Image source={APP_ICONS.trainer} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
                   <View style={{ flex: 1 }}>
                     <Text style={styles.reviewPromptTitle}>{dueCount} concept{dueCount !== 1 ? 's' : ''} to review</Text>
                     <Text style={styles.reviewPromptSub}>Spaced repetition keeps it fresh</Text>

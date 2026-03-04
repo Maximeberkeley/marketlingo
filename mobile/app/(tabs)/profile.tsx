@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Modal,
   Animated,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -21,6 +22,7 @@ import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, STARTUP_STAGES } from '../../hooks/useUserXP';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { APP_ICONS } from '../../lib/icons';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -156,21 +158,21 @@ export default function ProfileScreen() {
           <Animated.View style={[styles.statsGrid, animStyle(statsAnim)]}>
             <View style={styles.statCard}>
               <View style={[styles.statIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
-                <Text style={styles.statEmoji}>🔥</Text>
+                <Image source={APP_ICONS.streak} style={styles.statIconImg} />
               </View>
               <Text style={styles.statValue}>{progress.current_streak || 0}</Text>
               <Text style={styles.statLabel}>Current Streak</Text>
             </View>
             <View style={styles.statCard}>
               <View style={[styles.statIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
-                <Text style={styles.statEmoji}>🏆</Text>
+                <Image source={APP_ICONS.achievements} style={styles.statIconImg} />
               </View>
               <Text style={styles.statValue}>{progress.longest_streak || 0}</Text>
               <Text style={styles.statLabel}>Best Streak</Text>
             </View>
             <View style={styles.statCard}>
               <View style={[styles.statIcon, { backgroundColor: 'rgba(16, 185, 129, 0.2)' }]}>
-                <Text style={styles.statEmoji}>🎯</Text>
+                <Image source={APP_ICONS.quests} style={styles.statIconImg} />
               </View>
               <Text style={styles.statValue}>Day {availableDay}</Text>
               <Text style={styles.statLabel}>of 180</Text>
@@ -265,9 +267,20 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>ACCOUNT</Text>
 
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/passport' as any)}>
+            <View style={[styles.menuIcon, { backgroundColor: 'rgba(99, 102, 241, 0.2)' }]}>
+              <Image source={APP_ICONS.passport} style={styles.menuIconImg} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Industry Passport</Text>
+              <Text style={styles.menuSubtitle}>Your learning journey stamps</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/settings' as any)}>
             <View style={[styles.menuIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
-              <Text style={{ fontSize: 20 }}>⚙️</Text>
+              <Image source={APP_ICONS.concept} style={styles.menuIconImg} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Settings</Text>
@@ -278,22 +291,11 @@ export default function ProfileScreen() {
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/achievements' as any)}>
             <View style={[styles.menuIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
-              <Text style={{ fontSize: 20 }}>🏅</Text>
+              <Image source={APP_ICONS.achievements} style={styles.menuIconImg} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Achievements</Text>
               <Text style={styles.menuSubtitle}>Badges & milestones</Text>
-            </View>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/friends' as any)}>
-            <View style={[styles.menuIcon, { backgroundColor: 'rgba(59, 130, 246, 0.2)' }]}>
-              <Text style={{ fontSize: 20 }}>👥</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>Friends</Text>
-              <Text style={styles.menuSubtitle}>Activity & leaderboard</Text>
             </View>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
@@ -353,7 +355,7 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: COLORS.border,
   },
   statIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
-  statEmoji: { fontSize: 20 },
+  statIconImg: { width: 24, height: 24, resizeMode: 'contain' as const },
   statValue: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary },
   statLabel: { fontSize: 10, color: COLORS.textMuted, marginTop: 2 },
   stageCard: {
@@ -383,6 +385,7 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: COLORS.border, marginBottom: 8, gap: 12,
   },
   menuIcon: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  menuIconImg: { width: 24, height: 24, resizeMode: 'contain' as const },
   menuTitle: { fontSize: 15, fontWeight: '500', color: COLORS.textPrimary },
   menuSubtitle: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
   chevron: { fontSize: 22, color: COLORS.textMuted },
