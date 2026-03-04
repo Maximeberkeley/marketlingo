@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Bookmark, PenLine, Flame, Target, CheckCircle2, Clock, Zap } from "lucide-react";
+import { ConfettiBurst } from "../ui/ConfettiBurst";
 import { Button } from "../ui/button";
 import { MentorAvatar } from "../ai/MentorAvatar";
 import { MentorChatOverlay } from "../ai/MentorChatOverlay";
@@ -357,39 +358,14 @@ export function SlideReader({
       {/* Completion Celebration Modal with Mentor */}
       <AnimatePresence>
         {showCompletion && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-background/95 backdrop-blur-sm flex items-center justify-center p-6"
-          >
-            {/* Confetti particles */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              {[...Array(15)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className={`absolute w-2 h-2 rounded-full ${
-                    ["bg-yellow-400", "bg-pink-400", "bg-purple-400", "bg-cyan-400", "bg-green-400"][i % 5]
-                  }`}
-                  initial={{
-                    x: "50vw",
-                    y: "50vh",
-                    scale: 0,
-                  }}
-                  animate={{
-                    x: `${Math.random() * 100}vw`,
-                    y: `${Math.random() * 100}vh`,
-                    scale: [0, 1.5, 1],
-                    opacity: [0, 1, 0],
-                  }}
-                  transition={{
-                    duration: 2,
-                    delay: i * 0.1,
-                    ease: "easeOut",
-                  }}
-                />
-              ))}
-            </div>
+          <>
+            <ConfettiBurst show={showCompletion && hasMetMinimumTime && !isReview} count={30} />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[60] bg-background/95 backdrop-blur-sm flex items-center justify-center p-6"
+            >
 
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -526,6 +502,7 @@ export function SlideReader({
               </div>
             </motion.div>
           </motion.div>
+          </>
         )}
       </AnimatePresence>
 

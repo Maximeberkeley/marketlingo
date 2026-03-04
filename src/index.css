@@ -379,8 +379,112 @@
   }
 }
 
-/* Leo breathing animation */
+/* ======================================
+   ANIMATION SYSTEM — Brilliant-inspired
+   ====================================== */
+
+/* Leo breathing */
 @keyframes leo-breathe {
   0%, 100% { transform: translateY(0) scale(1); }
   50% { transform: translateY(-1.5px) scale(1.005); }
+}
+
+/* Shimmer loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--bg-1)) 25%,
+    hsl(var(--bg-0)) 50%,
+    hsl(var(--bg-1)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+/* Confetti burst */
+@keyframes confetti-fall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes confetti-pop {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  40% { transform: scale(1.3) rotate(180deg); opacity: 1; }
+  100% { transform: scale(1) rotate(360deg); opacity: 1; }
+}
+
+/* Pulse glow for active elements */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--accent) / 0.4); }
+  50% { box-shadow: 0 0 0 8px hsl(var(--accent) / 0); }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Progress bar glow */
+@keyframes progress-glow {
+  0% { box-shadow: 0 0 4px hsl(var(--accent) / 0.3); }
+  50% { box-shadow: 0 0 12px hsl(var(--accent) / 0.5); }
+  100% { box-shadow: 0 0 4px hsl(var(--accent) / 0.3); }
+}
+
+/* Slide-up entrance for staggered children */
+@keyframes slide-up-fade {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Scale bounce for badges/icons */
+@keyframes pop-in {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Number tick-up visual (used with JS) */
+@keyframes number-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); color: hsl(var(--accent)); }
+  100% { transform: scale(1); }
+}
+
+.number-bump {
+  animation: number-pulse 0.3s ease-out;
+}
+
+/* Streak flame flicker */
+@keyframes flame-flicker {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.05) rotate(-3deg); }
+  50% { transform: scale(0.95) rotate(2deg); }
+  75% { transform: scale(1.08) rotate(-1deg); }
+}
+
+.flame-flicker {
+  animation: flame-flicker 1.5s ease-in-out infinite;
+}
+
+/* Bottom nav indicator slide */
+@keyframes nav-indicator {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+
+/* Card hover lift */
+.card-hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+.card-hover-lift:active {
+  transform: translateY(0) scale(0.98);
 }
