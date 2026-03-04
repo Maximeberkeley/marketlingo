@@ -133,13 +133,14 @@ export default function OnboardingScreen() {
           </Animated.View>
           <View style={styles.speechBubble}>
             <Text style={styles.speechText}>
-              Hey! I'm Leo 🦁 Let's pick your first industry to master!
+              Hey there! I'm Leo, your industry mentor 🦁{'\n'}
+              I'll make you market-smart in just 5 min/day!
             </Text>
             <View style={styles.speechTail} />
           </View>
           <Text style={styles.title}>Choose your industry</Text>
           <Text style={styles.subtitle}>
-            Pick one. I'll guide you for 6 months. 🗓️
+            Your 6-month mastery journey starts here 🗓️
           </Text>
         </View>
 

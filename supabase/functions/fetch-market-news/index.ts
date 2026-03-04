@@ -115,51 +115,9 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Authentication check
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Unauthorized - no auth token provided' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
-    // Verify user
-    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-
-    const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getClaims(token);
-    
-    if (claimsError || !claimsData?.claims) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Unauthorized - invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const userId = claimsData.claims.sub as string;
-    console.log('Authenticated user for fetch-market-news:', userId);
-
-    // Check if user is admin (expensive operation, require admin)
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    
-    const { data: isAdmin } = await supabase.rpc('has_role', {
-      _user_id: userId,
-      _role: 'admin',
-    });
-    
-    if (!isAdmin) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Forbidden - admin access required for this operation' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
 
     const { marketId } = await req.json();
     
@@ -319,6 +277,28 @@ Respond with a JSON array of insight strings only.`;
     }
 
     console.log(`Processed ${newsItems.length} news items for ${marketId}`);
+
+    // Persist to DB for caching
+    if (newsItems.length > 0) {
+      const dbRows = newsItems.map((item) => ({
+        title: item.title,
+        source_name: item.sourceName,
+        source_url: item.sourceUrl,
+        market_id: marketId,
+        category_tag: item.categoryTag,
+        summary: item.summary || null,
+        published_at: new Date().toISOString(),
+      }));
+
+      // Delete old news for this market (keep fresh)
+      await supabase.from('news_items').delete().eq('market_id', marketId);
+      const { error: insertError } = await supabase.from('news_items').insert(dbRows);
+      if (insertError) {
+        console.error('Error persisting news to DB:', insertError);
+      } else {
+        console.log(`Persisted ${dbRows.length} news items to DB for ${marketId}`);
+      }
+    }
 
     return new Response(
       JSON.stringify({ success: true, data: newsItems }),
