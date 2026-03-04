@@ -28,6 +28,13 @@ export function SlideContentCard({
   // Determine if this slide should have a mascot
   const slidePosition = getSlidePosition(slideIndex, totalSlides);
   const showMascot = slidePosition !== null;
+
+  // Safeguard: ensure title and body are always strings
+  const safeTitle = typeof title === 'string' ? title : String(title ?? '');
+  const safeBody = typeof body === 'string' ? body : String(body ?? '');
+  const safeSources = Array.isArray(sources)
+    ? sources.filter((s) => typeof s?.label === 'string' && typeof s?.url === 'string')
+    : [];
   
   return (
     <div className="flex flex-col gap-4 pb-4">
@@ -43,16 +50,16 @@ export function SlideContentCard({
       
       {/* Content Card */}
       <div className="card-elevated flex flex-col">
-        <h3 className="text-h3 text-text-primary mb-3">{title}</h3>
+        <h3 className="text-h3 text-text-primary mb-3">{safeTitle}</h3>
         <p className="text-body text-text-secondary leading-relaxed whitespace-pre-wrap">
-          {body}
+          {safeBody}
         </p>
         
         {/* Sources */}
-        {sources.length > 0 && (
+        {safeSources.length > 0 && (
           <div className="mt-4 pt-4 border-t border-border">
             <div className="flex flex-wrap gap-2">
-              {sources.map((source, idx) => (
+              {safeSources.map((source, idx) => (
                 <a
                   key={idx}
                   href={source.url}

@@ -29,6 +29,13 @@ export function SlideContentCard({
 }: SlideContentCardProps) {
   const slidePosition = getSlidePosition(slideIndex, totalSlides);
 
+  // Safeguard: ensure title and body are always strings
+  const safeTitle = typeof title === 'string' ? title : String(title ?? '');
+  const safeBody = typeof body === 'string' ? body : String(body ?? '');
+  const safeSources = Array.isArray(sources)
+    ? sources.filter((s) => typeof s?.label === 'string' && typeof s?.url === 'string')
+    : [];
+
   return (
     <View style={styles.container}>
       {/* Mascot card on strategic slides */}
@@ -43,15 +50,15 @@ export function SlideContentCard({
 
       {/* Content Card */}
       <View style={styles.card}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.body}>{body}</Text>
+        <Text style={styles.title}>{safeTitle}</Text>
+        <Text style={styles.body}>{safeBody}</Text>
 
         {/* Sources */}
-        {sources.length > 0 && (
+        {safeSources.length > 0 && (
           <View style={styles.sourcesSection}>
             <View style={styles.divider} />
             <View style={styles.sourcesRow}>
-              {sources.map((source, idx) => (
+              {safeSources.map((source, idx) => (
                 <TouchableOpacity
                   key={idx}
                   style={styles.sourceChip}
