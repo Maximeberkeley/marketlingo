@@ -146,7 +146,7 @@ export default function ProfileScreen() {
           <View style={styles.headerRight}>
             {isProUser && (
               <View style={styles.proBadge}>
-                <Text style={styles.proBadgeText}>👑 PRO</Text>
+                <Text style={styles.proBadgeText}>PRO</Text>
               </View>
             )}
             <LeoCharacter size="sm" animation="idle" />
@@ -185,12 +185,12 @@ export default function ProfileScreen() {
         {xpData && (
           <View style={styles.stageCard}>
             <View style={styles.stageHeader}>
-              <Text style={styles.stageEmoji}>👑</Text>
+              <Image source={APP_ICONS.progress} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.stageTitle}>Stage {currentStage.stage}: {currentStage.name}</Text>
                 <Text style={styles.stageDesc}>{currentStage.description}</Text>
               </View>
-              <Text style={styles.xpText}>⚡ {xpData.total_xp.toLocaleString()} XP</Text>
+              <Text style={styles.xpText}>{xpData.total_xp.toLocaleString()} XP</Text>
             </View>
             <ProgressBar progress={stageProgress} />
           </View>
@@ -202,7 +202,7 @@ export default function ProfileScreen() {
           <View style={styles.certCard}>
             <View style={styles.certRow}>
               <View style={[styles.certIcon, isCertEligible && { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
-                <Text style={{ fontSize: 24 }}>{isCertEligible ? '🏅' : '🔒'}</Text>
+                <Image source={APP_ICONS.achievements} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.certTitle}>
@@ -227,7 +227,7 @@ export default function ProfileScreen() {
               disabled={!isCertEligible}
             >
               <Text style={styles.certButtonText}>
-                🏅 {isCertEligible ? 'View Certificate' : `${certPercentage}% Complete`}
+                {isCertEligible ? 'View Certificate' : `${certPercentage}% Complete`}
               </Text>
             </TouchableOpacity>
           </View>
@@ -253,7 +253,7 @@ export default function ProfileScreen() {
           <Text style={styles.sectionTitle}>DATA</Text>
           <TouchableOpacity style={styles.menuItem} onPress={handleExportNotebook}>
             <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
-              <Text style={{ fontSize: 20 }}>📥</Text>
+              <Image source={APP_ICONS.notebook} style={styles.menuIconImg} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Export Notebook</Text>
@@ -305,7 +305,7 @@ export default function ProfileScreen() {
             onPress={handleSignOut}
           >
             <View style={[styles.menuIcon, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
-              <Text style={{ fontSize: 20 }}>🚪</Text>
+              <Image source={APP_ICONS.concept} style={styles.menuIconImg} />
             </View>
             <Text style={[styles.menuTitle, { color: '#EF4444' }]}>Log out</Text>
           </TouchableOpacity>
@@ -319,7 +319,7 @@ export default function ProfileScreen() {
       <Modal visible={showChangeWarning} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={{ fontSize: 32, textAlign: 'center', marginBottom: 12 }}>⚠️</Text>
+            <Text style={{ fontSize: 32, textAlign: 'center', marginBottom: 12 }}>⚠</Text>
             <Text style={styles.modalTitle}>Change Market?</Text>
             <Text style={styles.modalSubtitle}>
               Changing your market will reset your path and streak. This action cannot be undone.

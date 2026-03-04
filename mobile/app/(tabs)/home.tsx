@@ -175,11 +175,11 @@ export default function HomeScreen() {
     const hour = new Date().getHours();
     let greeting = '';
     let anim: 'idle' | 'waving' | 'success' | 'celebrating' = 'idle';
-    if (hour < 12) { greeting = 'Good morning! Ready to learn? ☀️'; anim = 'waving'; }
-    else if (hour < 17) { greeting = "Good afternoon! Let's keep going! 🚀"; anim = 'idle'; }
-    else { greeting = 'Evening study session! 🌙'; anim = 'idle'; }
-    if (streak >= 7) { greeting = `${streak} day streak! You're on fire! 🔥`; anim = 'celebrating'; }
-    else if (lessonCompletedToday) { greeting = 'Lesson done! Try a game? 🎮'; anim = 'success'; }
+    if (hour < 12) { greeting = 'Good morning! Ready to learn?'; anim = 'waving'; }
+    else if (hour < 17) { greeting = "Good afternoon! Let's keep going!"; anim = 'idle'; }
+    else { greeting = 'Evening study session!'; anim = 'idle'; }
+    if (streak >= 7) { greeting = `${streak}-day streak! You're on fire!`; anim = 'celebrating'; }
+    else if (lessonCompletedToday) { greeting = 'Lesson done! Try practice?'; anim = 'success'; }
     setLeoMessage(greeting);
     setLeoAnimation(anim);
   }, [streak, lessonCompletedToday]);
@@ -318,7 +318,7 @@ export default function HomeScreen() {
                 {lessonCompletedToday ? (
                   <View style={styles.lessonCompleteRow}>
                     <View style={styles.lessonCompleteIcon}>
-                      <Text style={{ fontSize: 18 }}>✅</Text>
+                      <Image source={APP_ICONS.learn} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.lessonCompleteTitle}>Lesson Complete!</Text>
@@ -353,7 +353,7 @@ export default function HomeScreen() {
                         onPress={() => router.push('/(tabs)/practice' as any)}
                         activeOpacity={0.7}
                       >
-                        <Text style={styles.successBtnText}>⚡ Practice</Text>
+                        <Text style={styles.successBtnText}>Practice</Text>
                       </TouchableOpacity>
                     </View>
                   ) : (
@@ -396,9 +396,9 @@ export default function HomeScreen() {
             {/* ── Quick Actions Grid ── */}
             <AnimatedSection delay={300}>
               <QuickActionsGrid actions={[
-                { icon: APP_ICONS.passport, label: 'Passport', onPress: () => router.push('/passport' as any) },
                 { icon: APP_ICONS.notebook, label: 'Notebook', onPress: () => router.push('/(tabs)/notebook' as any) },
                 { icon: APP_ICONS.achievements, label: 'Awards', onPress: () => router.push('/achievements' as any) },
+                { icon: APP_ICONS.profile, label: 'Profile', onPress: () => router.push('/(tabs)/profile' as any) },
                 { label: 'Ask Leo', onPress: () => handleOpenMentorChat(), isLeo: true },
               ]} />
             </AnimatedSection>
@@ -416,7 +416,7 @@ export default function HomeScreen() {
                     <Text style={styles.reviewPromptTitle}>{dueCount} concept{dueCount !== 1 ? 's' : ''} to review</Text>
                     <Text style={styles.reviewPromptSub}>Spaced repetition keeps it fresh</Text>
                   </View>
-                  <Text style={{ color: COLORS.textMuted, fontSize: 16 }}>→</Text>
+                  <Text style={{ color: COLORS.textMuted, fontSize: 14 }}>›</Text>
                 </TouchableOpacity>
               </AnimatedSection>
             )}
@@ -441,7 +441,7 @@ export default function HomeScreen() {
                 activeOpacity={0.7}
               >
                 <View style={[styles.investIcon, isProUser && styles.investIconPro]}>
-                  <Text style={{ fontSize: 18 }}>{isProUser ? '📈' : '🔒'}</Text>
+                  <Image source={isProUser ? APP_ICONS.progress : APP_ICONS.lens} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
                 </View>
                 <View style={{ flex: 1 }}>
                   <View style={styles.investTitleRow}>
@@ -456,7 +456,7 @@ export default function HomeScreen() {
                     {isProUser ? 'Investment-ready scenarios' : 'Unlock with Pro'}
                   </Text>
                 </View>
-                <Text style={{ color: COLORS.textMuted, fontSize: 16 }}>→</Text>
+                <Text style={{ color: COLORS.textMuted, fontSize: 14 }}>›</Text>
               </TouchableOpacity>
             </AnimatedSection>
 
@@ -465,7 +465,7 @@ export default function HomeScreen() {
               <View style={styles.journeyCard}>
                 <View style={styles.journeyHeader}>
                   <View style={styles.journeyHeaderLeft}>
-                    <Text style={{ fontSize: 13, color: COLORS.accent }}>📍</Text>
+                    <Image source={APP_ICONS.progress} style={{ width: 16, height: 16, resizeMode: 'contain' }} />
                     <Text style={styles.journeyTitle}>Day {currentDay} of 180</Text>
                   </View>
                   <Text style={styles.journeyPct}>{Math.round(journeyProgress)}%</Text>
