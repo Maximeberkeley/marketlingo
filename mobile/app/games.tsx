@@ -44,6 +44,7 @@ export default function GamesScreen() {
   const [showIntro, setShowIntro] = useState(true);
   const [mascotState, setMascotState] = useState<MascotState>('idle');
   const [combo, setCombo] = useState<ComboState>(createComboState());
+  const [fetchKey, setFetchKey] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,12 +59,31 @@ export default function GamesScreen() {
       const market = profile?.selected_market || 'aerospace';
       setSelectedMarket(market);
 
+      // Fetch trainer_scenarios that the user hasn't completed yet for variety
+      const { data: completedAttempts } = await supabase
+        .from('trainer_attempts')
+        .select('scenario_id')
+        .eq('user_id', user.id);
+
+      const completedIds = new Set((completedAttempts || []).map(a => a.scenario_id));
+
+      // Also get learning goal for context
+      const { data: progressData } = await supabase
+        .from('user_progress')
+        .select('learning_goal')
+        .eq('user_id', user.id)
+        .eq('market_id', market)
+        .maybeSingle();
+
+      const learningGoal = progressData?.learning_goal || 'curiosity';
+
       // Use trainer_scenarios which have proper correct_option_index
+      // Fetch more than needed, then filter out completed ones
       const { data: scenarios, error } = await supabase
         .from('trainer_scenarios')
         .select('id, scenario, question, options, correct_option_index, feedback_pro_reasoning, tags')
         .eq('market_id', market)
-        .limit(5);
+        .limit(30);
 
       if (error || !scenarios?.length) {
         // Fallback: try game stacks but parse correct answer from content
@@ -111,20 +131,30 @@ export default function GamesScreen() {
         return;
       }
 
-      // Map trainer_scenarios to game questions
+      // Map trainer_scenarios to game questions — filter out completed, shuffle for variety
       const types: Array<'match' | 'timeline' | 'predict'> = ['match', 'timeline', 'predict'];
-      const gameQuestions: GameQuestion[] = scenarios.map((scenario, index) => {
+      const uncompleted = scenarios.filter(s => !completedIds.has(s.id));
+      // If all completed, allow replay but shuffle
+      const pool = uncompleted.length >= 5 ? uncompleted : scenarios;
+      // Shuffle pool
+      const shuffled = [...pool].sort(() => Math.random() - 0.5);
+      const selected = shuffled.slice(0, 5);
+
+      const gameQuestions: GameQuestion[] = selected.map((scenario, index) => {
+        // Options are objects with {label, isCorrect} — extract label strings
         const opts = Array.isArray(scenario.options)
-          ? (scenario.options as string[])
-          : typeof scenario.options === 'object'
-            ? Object.values(scenario.options as Record<string, string>)
-            : ['Option A', 'Option B', 'Option C', 'Option D'];
+          ? (scenario.options as any[]).map((o: any) => {
+              if (typeof o === 'string') return o;
+              if (typeof o === 'object' && o !== null && 'label' in o) return String(o.label);
+              return String(o);
+            })
+          : ['Option A', 'Option B', 'Option C', 'Option D'];
 
         return {
           id: scenario.id,
           type: types[index % 3],
           question: scenario.question || scenario.scenario,
-          options: opts.map((o: any) => String(o).substring(0, 120)),
+          options: opts.map((o: string) => o.substring(0, 120)),
           correctAnswer: scenario.correct_option_index,
           explanation: scenario.feedback_pro_reasoning || scenario.scenario,
           pattern: ((scenario.tags as string[]) || [])[0] || 'Industry Pattern',
@@ -135,7 +165,7 @@ export default function GamesScreen() {
       setLoading(false);
     };
     fetchData();
-  }, [user]);
+  }, [user, fetchKey]);
 
   const question = questions[currentQuestion];
   const isCorrect = selectedAnswer === question?.correctAnswer;
@@ -269,11 +299,17 @@ export default function GamesScreen() {
           <TouchableOpacity
             style={[styles.ctaButton, { flex: 1 }]}
             onPress={() => {
+              // Re-fetch for new questions
+              setLoading(true);
               setCurrentQuestion(0);
               setScore(0);
               setSelectedAnswer(null);
               setShowResult(false);
               setGameComplete(false);
+              setShowIntro(true);
+              setCombo(createComboState());
+              // Trigger data refetch with new random set
+              setFetchKey(k => k + 1);
             }}
           >
             <Text style={styles.ctaText}>Play Again</Text>
