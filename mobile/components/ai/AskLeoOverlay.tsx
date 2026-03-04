@@ -21,13 +21,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
+import { Audio } from 'expo-av';
 
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 
-// Edge functions (leo-voice-chat, elevenlabs-tts) are on Lovable Cloud
-const EDGE_FUNCTIONS_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL;
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
-const EDGE_ANON_KEY = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_ANON_KEY || SUPABASE_ANON_KEY;
 
 interface Message {
   role: 'user' | 'assistant';
@@ -77,12 +76,12 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
 
-      const response = await fetch(`${EDGE_FUNCTIONS_URL}/functions/v1/leo-voice-chat`, {
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/leo-voice-chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token || EDGE_ANON_KEY}`,
-          'apikey': EDGE_ANON_KEY || '',
+          'Authorization': `Bearer ${token || SUPABASE_ANON_KEY}`,
+          'apikey': SUPABASE_ANON_KEY || '',
         },
         body: JSON.stringify({
           messages: newMessages,
@@ -119,12 +118,12 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
   const playTTS = useCallback(async (text: string) => {
     try {
       setIsPlayingAudio(true);
-      const response = await fetch(`${EDGE_FUNCTIONS_URL}/functions/v1/elevenlabs-tts`, {
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/elevenlabs-tts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': EDGE_ANON_KEY || '',
-          'Authorization': `Bearer ${EDGE_ANON_KEY}`,
+          'apikey': SUPABASE_ANON_KEY || '',
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({ text }),
       });
@@ -134,38 +133,34 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
       if (Platform.OS === 'web') {
         const audioBlob = await response.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        audio.onended = () => setIsPlayingAudio(false);
-        await audio.play();
+        const webAudio = new window.Audio(audioUrl);
+        webAudio.onended = () => setIsPlayingAudio(false);
+        await webAudio.play();
       } else {
         // Native: use expo-av
-        const { Audio } = require('expo-av');
-        const blob = await response.blob();
-        const reader = new (globalThis as any).FileReader();
-        const base64 = await new Promise<string>((resolve, reject) => {
-          reader.onload = () => {
-            const result = reader.result as string;
-            resolve(result.split(',')[1]);
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
+        const arrayBuffer = await response.arrayBuffer();
+        const bytes = new Uint8Array(arrayBuffer);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        const base64 = btoa(binary);
 
         await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
           playsInSilentModeIOS: true,
           staysActiveInBackground: false,
+          shouldDuckAndroid: true,
         });
 
         const { sound } = await Audio.Sound.createAsync(
           { uri: `data:audio/mpeg;base64,${base64}` },
           { shouldPlay: true },
-          (status: any) => {
+          (status) => {
             if (status.isLoaded && status.didJustFinish) {
               setIsPlayingAudio(false);
               sound.unloadAsync();
             }
-          },
+          }
         );
       }
     } catch {
