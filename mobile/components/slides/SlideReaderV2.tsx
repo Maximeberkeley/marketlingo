@@ -155,16 +155,15 @@ export function SlideReaderV2({
 
   const hasMetMinimumTime = timeSpentSeconds >= MINIMUM_LESSON_TIME_SECONDS;
 
-  // Build all cards from all slides, inserting Leo interstitials
+  // Build all cards from all slides
   const allCards: CardItem[] = useMemo(() => {
     const items: CardItem[] = [];
 
     slides.forEach((slide, slideIdx) => {
-      // Only include sources on the last slide to reduce card count
-      const isLastSlide = slideIdx === slides.length - 1;
-      const slideSources = isLastSlide ? slide.sources : [];
-      const parsed = parseSlideIntoCards(slide.title, slide.body, slideSources, slideIdx);
+      const parsed = parseSlideIntoCards(slide.title, slide.body, [], slideIdx);
       parsed.forEach((card) => {
+        // Skip source-only cards — they add no learning value
+        if (card.type === 'sources') return;
         items.push({
           type: 'concept',
           cardType: card.type,
@@ -177,21 +176,86 @@ export function SlideReaderV2({
       });
     });
 
-    // Cap at ~12 concept cards max to keep lessons digestible
+    // Append a single sources card at the very end if the last slide has sources
+    const lastSlide = slides[slides.length - 1];
+    if (lastSlide?.sources?.length > 0) {
+      items.push({
+        type: 'concept',
+        cardType: 'sources',
+        content: '',
+        sources: lastSlide.sources,
+        slideIndex: slides.length - 1,
+      });
+    }
+
+    // Cap at ~12 concept cards — but use smart merging instead of sampling
     const MAX_CONCEPT_CARDS = 12;
     if (items.length > MAX_CONCEPT_CARDS) {
-      // Keep first 3 (title + intro), last 2 (conclusion), sample middle
-      const head = items.slice(0, 3);
-      const tail = items.slice(-2);
-      const middle = items.slice(3, -2);
-      const middleTarget = MAX_CONCEPT_CARDS - 5;
-      const step = Math.max(1, Math.floor(middle.length / middleTarget));
-      const sampledMiddle: CardItem[] = [];
-      for (let i = 0; i < middle.length && sampledMiddle.length < middleTarget; i += step) {
-        sampledMiddle.push(middle[i]);
+      // Keep all headers and bullet groups, merge consecutive concept paragraphs
+      const merged: CardItem[] = [];
+      let pendingContent = '';
+      let pendingTitle: string | undefined;
+      let pendingSlideIdx = 0;
+
+      for (const item of items) {
+        if (item.type !== 'concept') {
+          // Flush any pending
+          if (pendingContent) {
+            merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
+            pendingContent = '';
+            pendingTitle = undefined;
+          }
+          merged.push(item);
+          continue;
+        }
+        const card = item;
+        if (card.cardType === 'header' || card.cardType === 'bullet-group' || card.cardType === 'sources') {
+          if (pendingContent) {
+            merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
+            pendingContent = '';
+            pendingTitle = undefined;
+          }
+          merged.push(card);
+        } else {
+          // Merge consecutive concept cards
+          if (pendingContent.length > 0 && (pendingContent.length + (card.content?.length || 0)) > 600) {
+            merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
+            pendingContent = card.content || '';
+            pendingTitle = card.title;
+            pendingSlideIdx = card.slideIndex;
+          } else {
+            if (!pendingTitle && card.title) pendingTitle = card.title;
+            pendingContent += (pendingContent ? ' ' : '') + (card.content || '');
+            pendingSlideIdx = card.slideIndex;
+          }
+        }
       }
-      items.length = 0;
-      items.push(...head, ...sampledMiddle, ...tail);
+      if (pendingContent) {
+        merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
+      }
+
+      // If still too many after merging, remove excess headers (keep first & last)
+      if (merged.length > MAX_CONCEPT_CARDS) {
+        const result: CardItem[] = [];
+        let headerCount = 0;
+        for (const item of merged) {
+          if (item.type === 'concept' && item.cardType === 'header') {
+            headerCount++;
+            // Keep first header, last header, and every 3rd header
+            if (headerCount === 1 || headerCount % 3 === 0) {
+              result.push(item);
+            }
+            // Skip excess headers
+          } else {
+            result.push(item);
+          }
+        }
+        items.length = 0;
+        items.push(...result.slice(0, MAX_CONCEPT_CARDS));
+      } else {
+        items.length = 0;
+        items.push(...merged);
+      }
     }
 
     // Insert Leo cards at strategic positions
