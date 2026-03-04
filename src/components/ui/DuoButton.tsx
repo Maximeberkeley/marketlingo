@@ -16,34 +16,29 @@ interface DuoButtonProps {
 
 const variantStyles = {
   primary: {
-    base: "bg-gradient-to-b from-accent to-purple-600 text-white",
-    shadow: "shadow-[0_4px_0_0_rgba(88,28,135,1),0_6px_20px_-4px_rgba(124,92,255,0.5)]",
-    hover: "hover:shadow-[0_6px_0_0_rgba(88,28,135,1),0_8px_24px_-4px_rgba(124,92,255,0.6)]",
-    active: "active:shadow-[0_2px_0_0_rgba(88,28,135,1)] active:translate-y-[2px]",
+    base: "bg-primary text-white",
+    shadow: "shadow-[0_4px_0_0_hsl(258_70%_45%)]",
+    active: "active:shadow-[0_2px_0_0_hsl(258_70%_45%)] active:translate-y-[2px]",
   },
   secondary: {
-    base: "bg-bg-2 text-text-primary border-2 border-border",
-    shadow: "shadow-[0_4px_0_0_rgba(30,41,59,1)]",
-    hover: "hover:shadow-[0_6px_0_0_rgba(30,41,59,1)] hover:border-text-muted",
-    active: "active:shadow-[0_2px_0_0_rgba(30,41,59,1)] active:translate-y-[2px]",
+    base: "bg-bg-1 text-text-primary border-2 border-border",
+    shadow: "shadow-[0_4px_0_0_hsl(var(--border))]",
+    active: "active:shadow-[0_2px_0_0_hsl(var(--border))] active:translate-y-[2px]",
   },
   success: {
-    base: "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white",
-    shadow: "shadow-[0_4px_0_0_rgba(4,120,87,1),0_6px_20px_-4px_rgba(16,185,129,0.5)]",
-    hover: "hover:shadow-[0_6px_0_0_rgba(4,120,87,1),0_8px_24px_-4px_rgba(16,185,129,0.6)]",
-    active: "active:shadow-[0_2px_0_0_rgba(4,120,87,1)] active:translate-y-[2px]",
+    base: "bg-success text-white",
+    shadow: "shadow-[0_4px_0_0_hsl(142_71%_35%)]",
+    active: "active:shadow-[0_2px_0_0_hsl(142_71%_35%)] active:translate-y-[2px]",
   },
   streak: {
     base: "bg-gradient-to-b from-orange-500 to-red-500 text-white",
-    shadow: "shadow-[0_4px_0_0_rgba(153,27,27,1),0_6px_20px_-4px_rgba(249,115,22,0.5)]",
-    hover: "hover:shadow-[0_6px_0_0_rgba(153,27,27,1),0_8px_24px_-4px_rgba(249,115,22,0.6)]",
+    shadow: "shadow-[0_4px_0_0_rgba(153,27,27,1)]",
     active: "active:shadow-[0_2px_0_0_rgba(153,27,27,1)] active:translate-y-[2px]",
   },
   ghost: {
     base: "bg-transparent text-text-secondary hover:text-text-primary hover:bg-bg-1",
     shadow: "",
-    hover: "",
-    active: "active:bg-bg-2",
+    active: "active:bg-bg-1",
   },
 };
 
@@ -76,7 +71,6 @@ export const DuoButton = forwardRef<HTMLButtonElement, DuoButtonProps>(({
     <motion.button
       ref={ref}
       type={type}
-      whileHover={disabled ? {} : { scale: 1.02, y: -2 }}
       whileTap={disabled ? {} : { scale: 0.98 }}
       onClick={handleClick}
       disabled={disabled}
@@ -84,7 +78,6 @@ export const DuoButton = forwardRef<HTMLButtonElement, DuoButtonProps>(({
         "relative font-semibold transition-all duration-150 no-select",
         styles.base,
         styles.shadow,
-        styles.hover,
         styles.active,
         sizeStyles[size],
         fullWidth && "w-full",
@@ -92,15 +85,6 @@ export const DuoButton = forwardRef<HTMLButtonElement, DuoButtonProps>(({
         className
       )}
     >
-      {/* Top shine */}
-      <div 
-        className="absolute inset-x-0 top-0 h-[40%] rounded-t-xl opacity-20"
-        style={{
-          background: "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 100%)"
-        }}
-      />
-      
-      {/* Content */}
       <span className="relative z-10 flex items-center justify-center gap-2">
         {children}
       </span>

@@ -20,8 +20,8 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
       className={cn(
         "flex items-center gap-3 rounded-xl p-3 border transition-colors",
         quest.isCompleted
-          ? "bg-emerald-500/5 border-emerald-500/15"
-          : "bg-white/[0.02] border-white/[0.04]"
+          ? "bg-emerald-50 dark:bg-emerald-500/5 border-emerald-200 dark:border-emerald-500/15"
+          : "bg-card border-border"
       )}
     >
       <div

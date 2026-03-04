@@ -1,4 +1,4 @@
-import { Home, Map, BookOpen, User } from "lucide-react";
+import { Home, Map, Dumbbell, BookOpen, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -6,9 +6,10 @@ import { hapticFeedback } from "@/lib/ios-utils";
 
 const navItems = [
   { path: "/home", icon: Home, label: "Home" },
-  { path: "/roadmap", icon: Map, label: "Roadmap" },
-  { path: "/notebook", icon: BookOpen, label: "Notebook" },
-  { path: "/profile", icon: User, label: "Profile" },
+  { path: "/roadmap", icon: Map, label: "Courses" },
+  { path: "/trainer", icon: Dumbbell, label: "Practice" },
+  { path: "/notebook", icon: BookOpen, label: "Notes" },
+  { path: "/profile", icon: User, label: "You" },
 ];
 
 export function BottomNav() {
@@ -25,62 +26,46 @@ export function BottomNav() {
       className="fixed bottom-0 left-0 right-0 z-50"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      {/* Glassmorphism background */}
-      <div className="absolute inset-0 bg-bg-1/90 backdrop-blur-xl border-t border-white/5" />
+      {/* Clean background — no blur needed on white */}
+      <div className="absolute inset-0 bg-background/95 backdrop-blur-lg border-t border-border" />
       
-      <div className="relative flex items-center justify-center h-16 max-w-md mx-auto px-4">
+      <div className="relative flex items-center justify-center h-[56px] max-w-md mx-auto px-2">
         <div className="flex items-center justify-around w-full">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = location.pathname === item.path || 
+              (item.path === "/trainer" && ["/trainer", "/games", "/drills"].includes(location.pathname));
             const Icon = item.icon;
             
             return (
               <motion.button
                 key={item.path}
                 onClick={() => handleNavClick(item.path)}
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.85 }}
                 className={cn(
                   "flex flex-col items-center justify-center w-16 h-full relative no-select",
-                  "transition-colors duration-200"
+                  "transition-colors duration-150"
                 )}
               >
-                {/* Active background pill */}
-                {isActive && (
-                  <motion.div
-                    layoutId="navActiveBg"
-                    className="absolute inset-x-2 top-1 bottom-1 rounded-xl bg-accent/15"
-                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                  />
-                )}
-
                 <div className="relative flex items-center justify-center">
-                  <motion.div
-                    animate={isActive ? { scale: [1, 1.15, 1] } : {}}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Icon
-                      size={22}
-                      className={cn(
-                        "transition-all duration-200",
-                        isActive 
-                          ? "text-accent drop-shadow-[0_0_8px_rgba(124,92,255,0.5)]" 
-                          : "text-text-muted"
-                      )}
-                      strokeWidth={isActive ? 2.5 : 2}
-                    />
-                  </motion.div>
+                  <Icon
+                    size={22}
+                    className={cn(
+                      "transition-colors duration-150",
+                      isActive ? "text-primary" : "text-text-muted"
+                    )}
+                    strokeWidth={isActive ? 2.5 : 1.8}
+                    fill={isActive ? "currentColor" : "none"}
+                  />
                 </div>
                 
-                <motion.span
-                  animate={isActive ? { y: [0, -1, 0] } : {}}
-                  transition={{ duration: 0.2 }}
+                <span
                   className={cn(
-                    "text-[10px] mt-1 font-medium transition-all duration-200",
-                    isActive ? "text-accent" : "text-text-muted"
+                    "text-[10px] mt-0.5 font-semibold transition-colors duration-150",
+                    isActive ? "text-primary" : "text-text-muted"
                   )}
                 >
                   {item.label}
-                </motion.span>
+                </span>
               </motion.button>
             );
           })}
