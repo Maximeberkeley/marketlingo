@@ -55,15 +55,44 @@ export const FAMILIARITY_LEVELS = [
 
 // Light-first Brilliant-inspired color palette
 export const COLORS = {
+  // Backgrounds
   bg0: '#FFFFFF',           // Primary background — clean white
-  bg1: '#F3F4F6',           // Elevated surfaces
+  bg1: '#F3F4F6',           // Elevated surfaces (gray-100)
   bg2: '#FFFFFF',           // Cards
-  accent: '#8B5CF6',        // Brand purple
+
+  // Text
   textPrimary: '#1A1F36',   // Near-black for headings
-  textSecondary: '#6B7280', // Gray-600
+  textSecondary: '#6B7280', // Gray-500
   textMuted: '#9CA3AF',     // Gray-400
-  streak: '#F97316',
+
+  // Accent / Brand
+  accent: '#8B5CF6',        // Brand purple
+  accentSoft: 'rgba(139, 92, 246, 0.1)',
+  accentMedium: 'rgba(139, 92, 246, 0.15)',
+
+  // Status / Semantic
   success: '#22C55E',
+  successSoft: 'rgba(34, 197, 94, 0.1)',
+  warning: '#F59E0B',
+  warningSoft: 'rgba(245, 158, 11, 0.1)',
+  error: '#EF4444',
+  errorSoft: 'rgba(239, 68, 68, 0.1)',
+  info: '#3B82F6',
+  infoSoft: 'rgba(59, 130, 246, 0.1)',
+
+  // Borders & Surfaces
+  streak: '#F97316',
   border: '#E5E7EB',        // Gray-200
+  borderLight: '#F3F4F6',   // Gray-100
   cardShadow: 'rgba(0,0,0,0.04)',
+
+  // Misc
+  orange: '#FB923C',
+  orangeSoft: 'rgba(251, 146, 60, 0.1)',
+  gold: '#FBBF24',
+  goldSoft: 'rgba(251, 191, 36, 0.1)',
+
+  // Surface tints for light mode
+  surfaceSubtle: 'rgba(0, 0, 0, 0.02)',
+  surfaceLight: 'rgba(0, 0, 0, 0.04)',
 };

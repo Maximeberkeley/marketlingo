@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   durationBadge: {
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    backgroundColor: 'rgba(0,0,0,0.45)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 20,
