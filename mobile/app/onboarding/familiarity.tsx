@@ -200,7 +200,7 @@ export default function FamiliarityScreen() {
 
         {/* Almost done indicator */}
         <View style={styles.almostDone}>
-          <Text style={styles.almostDoneEmoji}>🎉</Text>
+          <Text style={styles.almostDoneEmoji}>·</Text>
           <Text style={styles.almostDoneText}>
             Almost done! One more tap and you're in.
           </Text>
