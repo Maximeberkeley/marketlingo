@@ -358,7 +358,7 @@ export default function SettingsScreen() {
               onPress={() => setShowNotifOnboarding(true)}
               activeOpacity={0.85}
             >
-              <Text style={{ fontSize: 18 }}>🔔</Text>
+              <Image source={APP_ICONS.streak} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.notifSetupLabel}>Set Up Notifications</Text>
                 <Text style={styles.notifSetupDesc}>Daily reminders, streaks & industry news</Text>
