@@ -288,7 +288,7 @@ export default function NotebookScreen() {
           </View>
         ) : (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyEmoji}>📓</Text>
+            <Image source={APP_ICONS.notebook} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
             <Text style={styles.emptyTitle}>
               {searchQuery ? 'No notes found' : 'Start your notebook'}
             </Text>
