@@ -162,9 +162,9 @@ export default function InvestmentLabScreen() {
                 </View>
                 <View style={styles.heroBannerDivider} />
                 <View style={styles.heroBannerStat}>
-                  <Text style={[styles.heroBannerStatNum, progress?.investment_certified && { color: '#4ADE80' }]}>
-                    {progress?.investment_certified ? '✅' : '🔒'}
-                  </Text>
+                   <Text style={[styles.heroBannerStatNum, progress?.investment_certified && { color: '#4ADE80' }]}>
+                     {progress?.investment_certified ? '✓' : '—'}
+                   </Text>
                   <Text style={styles.heroBannerStatLabel}>Certified</Text>
                 </View>
               </View>
