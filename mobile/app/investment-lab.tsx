@@ -193,9 +193,9 @@ export default function InvestmentLabScreen() {
                 </View>
                 <View style={styles.progressDivider} />
                 <View style={styles.progressStat}>
-                  <Text style={[styles.progressValue, progress.investment_certified && { color: '#22C55E' }]}>
-                    {progress.investment_certified ? '✅' : '🔒'}
-                  </Text>
+                   <Text style={[styles.progressValue, progress.investment_certified && { color: '#22C55E' }]}>
+                     {progress.investment_certified ? '✓' : '—'}
+                   </Text>
                   <Text style={styles.progressLabel}>Certified</Text>
                 </View>
               </View>
