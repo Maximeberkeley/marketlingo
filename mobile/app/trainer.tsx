@@ -363,7 +363,7 @@ export default function TrainerScreen() {
       {showPaywallNudge && (
         <View style={styles.paywallOverlay}>
           <View style={styles.paywallCard}>
-            <Text style={styles.paywallEmoji}>🔥</Text>
+            <Image source={APP_ICONS.streak} style={{ width: 44, height: 44, resizeMode: 'contain', marginBottom: 8 }} />
             <Text style={styles.paywallTitle}>You're on fire!</Text>
             <Text style={styles.paywallBody}>
               {correctCount} correct in a row — you clearly have the instincts.{'\n\n'}
