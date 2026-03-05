@@ -257,7 +257,7 @@ export default function InvestmentLabScreen() {
             style={[styles.watchlistCard, progress?.investment_certified && { borderColor: 'rgba(34,197,94,0.3)', backgroundColor: 'rgba(34,197,94,0.05)' }]}
             onPress={() => router.push('/investment-certificate')}
           >
-            <Text style={{ fontSize: 24 }}>{progress?.investment_certified ? '🎓' : '🏆'}</Text>
+            <Image source={APP_ICONS.achievements} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
             <View style={{ flex: 1 }}>
               <Text style={styles.watchlistTitle}>
                 {progress?.investment_certified ? 'View Certificate' : 'Investment Certification'}
