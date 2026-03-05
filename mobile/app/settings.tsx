@@ -397,7 +397,7 @@ export default function SettingsScreen() {
           </View>
 
           <TouchableOpacity style={styles.menuItem} onPress={handleResetPassword}>
-            <Text style={{ fontSize: 18 }}>🔑</Text>
+            <Image source={APP_ICONS.profile} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
             <Text style={styles.menuText}>Reset Password</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
