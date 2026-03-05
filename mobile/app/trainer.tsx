@@ -205,7 +205,7 @@ export default function TrainerScreen() {
     if (currentIndex < scenarios.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      Alert.alert('Complete!', 'All scenarios completed! 🎉');
+      Alert.alert('Complete!', 'All scenarios completed!');
       setCurrentIndex(0);
     }
   };
