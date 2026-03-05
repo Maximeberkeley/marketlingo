@@ -12,12 +12,11 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { COLORS } from '../../lib/constants';
+import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
 import { supabase } from '../../lib/supabase';
-import { getMarketEmoji, getMarketName } from '../../lib/markets';
-import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { getMarketName, getMarketColor } from '../../lib/markets';
 import { APP_ICONS } from '../../lib/icons';
 
 interface PracticeStats {
@@ -26,7 +25,7 @@ interface PracticeStats {
   trainerAttempts: number;
 }
 
-// ── Animated Practice Card with AI icon ──
+// ── Animated Practice Card ──
 function PracticeCard({
   icon,
   title,
@@ -35,6 +34,7 @@ function PracticeCard({
   accentColor,
   onPress,
   index,
+  stat,
 }: {
   icon: any;
   title: string;
@@ -43,12 +43,14 @@ function PracticeCard({
   accentColor: string;
   onPress: () => void;
   index: number;
+  stat?: number;
 }) {
   const fadeIn = useRef(new Animated.Value(0)).current;
   const slideUp = useRef(new Animated.Value(40)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    const delay = index * 100;
+    const delay = index * 120;
     setTimeout(() => {
       Animated.parallel([
         Animated.timing(fadeIn, { toValue: 1, duration: 400, useNativeDriver: true }),
@@ -57,28 +59,42 @@ function PracticeCard({
     }, delay);
   }, [index]);
 
+  const onPressIn = () => {
+    Animated.spring(scaleAnim, { toValue: 0.97, tension: 300, friction: 10, useNativeDriver: true }).start();
+  };
+  const onPressOut = () => {
+    Animated.spring(scaleAnim, { toValue: 1, tension: 300, friction: 10, useNativeDriver: true }).start();
+  };
+
   return (
-    <Animated.View style={{ opacity: fadeIn, transform: [{ translateY: slideUp }] }}>
+    <Animated.View style={{ opacity: fadeIn, transform: [{ translateY: slideUp }, { scale: scaleAnim }] }}>
       <TouchableOpacity
         style={styles.practiceCard}
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           onPress();
         }}
-        activeOpacity={0.8}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        activeOpacity={1}
       >
-        <View style={[styles.accentDot, { backgroundColor: accentColor }]} />
-        <View style={styles.practiceCardLeft}>
-          <View style={[styles.practiceIcon, { backgroundColor: accentColor + '15' }]}>
+        <View style={[styles.accentStripe, { backgroundColor: accentColor }]} />
+        <View style={styles.practiceCardInner}>
+          <View style={[styles.practiceIcon, { backgroundColor: accentColor + '12' }]}>
             <Image source={icon} style={styles.practiceIconImg} />
           </View>
-          <View style={{ flex: 1 }}>
+          <View style={styles.practiceCardMid}>
             <Text style={styles.practiceTitle}>{title}</Text>
             <Text style={styles.practiceSub}>{subtitle}</Text>
           </View>
-        </View>
-        <View style={[styles.xpChip, { backgroundColor: accentColor + '18' }]}>
-          <Text style={[styles.xpChipText, { color: accentColor }]}>{xpLabel}</Text>
+          <View style={styles.practiceCardRight}>
+            <View style={[styles.xpChip, { backgroundColor: accentColor + '14' }]}>
+              <Text style={[styles.xpChipText, { color: accentColor }]}>{xpLabel}</Text>
+            </View>
+            {stat !== undefined && stat > 0 && (
+              <Text style={styles.statText}>{stat} today</Text>
+            )}
+          </View>
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -143,6 +159,7 @@ export default function PracticeScreen() {
   }
 
   const totalToday = stats.gamesPlayed + stats.drillsCompleted;
+  const marketColor = selectedMarket ? getMarketColor(selectedMarket) : COLORS.accent;
 
   return (
     <View style={styles.container}>
@@ -158,25 +175,26 @@ export default function PracticeScreen() {
           <View>
             <Text style={styles.headerTitle}>Practice</Text>
             <Text style={styles.headerSub}>
-              {selectedMarket
-                ? `${getMarketEmoji(selectedMarket)} ${getMarketName(selectedMarket)}`
-                : 'Select a market'}
+              {selectedMarket ? getMarketName(selectedMarket) : 'Select a market'}
             </Text>
           </View>
+          {totalToday > 0 && (
+            <View style={styles.todayBadge}>
+              <Text style={styles.todayBadgeText}>{totalToday} completed</Text>
+            </View>
+          )}
         </Animated.View>
 
-        {/* Leo Encouragement */}
-        <Animated.View style={[styles.leoRow, animStyle(headerAnim)]}>
-          <View style={styles.leoMiniWrap}>
-            <LeoCharacter size="sm" animation={totalToday >= 3 ? 'celebrating' : 'idle'} />
-          </View>
-          <View style={styles.leoBubble}>
-            <Text style={styles.leoBubbleText}>
+        {/* Motivation card — clean, no mascot */}
+        <Animated.View style={animStyle(headerAnim)}>
+          <View style={styles.motivationCard}>
+            <View style={[styles.motivationAccent, { backgroundColor: marketColor }]} />
+            <Text style={styles.motivationText}>
               {totalToday === 0
-                ? "Let's sharpen your skills! Pick a mode below."
+                ? "Sharpen your skills with quick challenges below."
                 : totalToday >= 3
-                  ? "You're on fire today! Keep pushing!"
-                  : "Nice start! Try another round?"}
+                  ? "On fire today! Keep the momentum going."
+                  : "Nice start — try another round?"}
             </Text>
           </View>
         </Animated.View>
@@ -192,6 +210,7 @@ export default function PracticeScreen() {
             subtitle="Test your market knowledge"
             xpLabel={`+${XP_REWARDS.GAME_COMPLETE} XP`}
             accentColor="#8B5CF6"
+            stat={stats.gamesPlayed}
             onPress={() => router.push('/games' as any)}
           />
           <PracticeCard
@@ -201,6 +220,7 @@ export default function PracticeScreen() {
             subtitle="Race the clock with rapid-fire questions"
             xpLabel={`+${XP_REWARDS.DRILL_CORRECT} XP/q`}
             accentColor="#F59E0B"
+            stat={stats.drillsCompleted}
             onPress={() => router.push('/drills' as any)}
           />
           <PracticeCard
@@ -213,15 +233,15 @@ export default function PracticeScreen() {
             onPress={() => router.push('/trainer' as any)}
           />
 
-          {/* Resources — only unique, non-duplicated items */}
-          <Text style={[styles.sectionLabel, { marginTop: 24 }]}>RESOURCES</Text>
+          {/* Resources */}
+          <Text style={[styles.sectionLabel, { marginTop: 28 }]}>RESOURCES</Text>
 
           <View style={styles.resourceGrid}>
             {[
-              { icon: APP_ICONS.news, label: 'Summaries', route: '/summaries' },
-              { icon: APP_ICONS.regulatory, label: 'Regulatory', route: '/regulatory-hub' },
-              { icon: APP_ICONS.notebook, label: 'Notebook', route: '/(tabs)/notebook' },
-              { icon: APP_ICONS.passport, label: 'Passport', route: '/passport' },
+              { icon: APP_ICONS.news, label: 'Summaries', route: '/summaries', color: '#3B82F6' },
+              { icon: APP_ICONS.regulatory, label: 'Regulatory', route: '/regulatory-hub', color: '#EF4444' },
+              { icon: APP_ICONS.notebook, label: 'Notebook', route: '/(tabs)/notebook', color: '#8B5CF6' },
+              { icon: APP_ICONS.passport, label: 'Passport', route: '/passport', color: '#F59E0B' },
             ].map((item, idx) => (
               <TouchableOpacity
                 key={idx}
@@ -230,8 +250,9 @@ export default function PracticeScreen() {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   router.push(item.route as any);
                 }}
+                activeOpacity={0.7}
               >
-                <View style={styles.resourceIcon}>
+                <View style={[styles.resourceIcon, { backgroundColor: item.color + '10' }]}>
                   <Image source={item.icon} style={styles.resourceIconImg} />
                 </View>
                 <Text style={styles.resourceLabel}>{item.label}</Text>
@@ -249,47 +270,102 @@ const styles = StyleSheet.create({
   centered: { alignItems: 'center', justifyContent: 'center' },
   scrollContent: { paddingHorizontal: 20 },
 
-  header: { marginBottom: 20 },
-  headerTitle: { fontSize: 28, fontWeight: '800', color: COLORS.textPrimary },
-  headerSub: { fontSize: 13, color: COLORS.textMuted, marginTop: 4 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },
+  headerTitle: { ...TYPE.hero, color: COLORS.textPrimary },
+  headerSub: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 4 },
 
-  leoRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
-  leoMiniWrap: { width: 56, height: 56, alignItems: 'center', justifyContent: 'center' },
-  leoBubble: {
-    flex: 1, backgroundColor: COLORS.bg2, borderRadius: 16, borderTopLeftRadius: 4, padding: 14,
-    borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.12)',
-    shadowColor: COLORS.accent, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
+  todayBadge: {
+    backgroundColor: COLORS.successSoft,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.15)',
   },
-  leoBubbleText: { fontSize: 14, color: COLORS.textSecondary, lineHeight: 20 },
+  todayBadgeText: { ...TYPE.caption, color: COLORS.success },
 
-  sectionLabel: { fontSize: 11, fontWeight: '700', color: COLORS.textMuted, letterSpacing: 1.2, marginBottom: 12 },
+  motivationCard: {
+    backgroundColor: COLORS.bg1,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  motivationAccent: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 3,
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
+  },
+  motivationText: { ...TYPE.body, color: COLORS.textSecondary, paddingLeft: 8 },
+
+  sectionLabel: { ...TYPE.overline, color: COLORS.textMuted, marginBottom: 14 },
 
   practiceCard: {
-    backgroundColor: COLORS.bg2, borderRadius: 18, padding: 18, marginBottom: 12,
-    borderWidth: 1, borderColor: COLORS.border, flexDirection: 'row',
-    alignItems: 'center', justifyContent: 'space-between', overflow: 'hidden',
+    backgroundColor: COLORS.bg2,
+    borderRadius: 20,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    overflow: 'hidden',
+    ...SHADOWS.md,
   },
-  accentDot: {
-    position: 'absolute', left: 0, top: 0, bottom: 0, width: 4,
-    borderTopLeftRadius: 18, borderBottomLeftRadius: 18,
+  accentStripe: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 4,
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
   },
-  practiceCardLeft: { flexDirection: 'row', alignItems: 'center', gap: 14, flex: 1 },
-  practiceIcon: { width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  practiceCardInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 18,
+    paddingLeft: 20,
+    gap: 14,
+  },
+  practiceIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   practiceIconImg: { width: 32, height: 32, resizeMode: 'contain' },
-  practiceTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 2 },
-  practiceSub: { fontSize: 12, color: COLORS.textMuted },
+  practiceCardMid: { flex: 1 },
+  practiceTitle: { ...TYPE.h3, color: COLORS.textPrimary, marginBottom: 2 },
+  practiceSub: { ...TYPE.caption, color: COLORS.textMuted, fontWeight: '500' },
+  practiceCardRight: { alignItems: 'flex-end', gap: 4 },
   xpChip: { borderRadius: 12, paddingHorizontal: 10, paddingVertical: 5 },
   xpChipText: { fontSize: 11, fontWeight: '700' },
+  statText: { ...TYPE.caption, color: COLORS.textMuted, fontWeight: '500' },
 
   resourceGrid: { flexDirection: 'row', gap: 10 },
   resourceItem: {
-    flex: 1, backgroundColor: COLORS.bg2, borderRadius: 18, paddingVertical: 18,
-    alignItems: 'center', borderWidth: 1, borderColor: COLORS.border, gap: 8,
+    flex: 1,
+    backgroundColor: COLORS.bg2,
+    borderRadius: 20,
+    paddingVertical: 20,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    gap: 10,
+    ...SHADOWS.sm,
   },
   resourceIcon: {
-    width: 40, height: 40, borderRadius: 14, backgroundColor: 'rgba(139, 92, 246, 0.08)',
-    alignItems: 'center', justifyContent: 'center',
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   resourceIconImg: { width: 28, height: 28, resizeMode: 'contain' },
-  resourceLabel: { fontSize: 11, fontWeight: '600', color: COLORS.textSecondary },
+  resourceLabel: { ...TYPE.caption, color: COLORS.textSecondary, fontWeight: '600' },
 });
