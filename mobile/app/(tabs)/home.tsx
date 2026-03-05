@@ -182,7 +182,7 @@ export default function HomeScreen() {
         <SessionCompleteCard
           dayNumber={currentDay}
           marketName={getMarketName(selectedMarket || 'aerospace')}
-          marketEmoji={getMarketEmoji(selectedMarket || 'aerospace')}
+          marketEmoji=""
           xpEarned={session.sessionXPEarned}
           streak={streak}
           lessonTitle={session.activeStack?.title || lessonStack?.title || 'Lesson'}
