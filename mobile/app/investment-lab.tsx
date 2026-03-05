@@ -214,7 +214,7 @@ export default function InvestmentLabScreen() {
                 Analyze companies, evaluate markets, and make investment decisions based on real industry data.
               </Text>
               <TouchableOpacity style={[styles.upgradeBtn, { backgroundColor: accentColor }]} onPress={() => router.push('/subscription')}>
-                <Text style={styles.upgradeBtnText}>👑 Unlock with Pro</Text>
+                <Text style={styles.upgradeBtnText}>Unlock with Pro</Text>
               </TouchableOpacity>
             </View>
           )}
