@@ -438,7 +438,9 @@ export default function SettingsScreen() {
             style={[styles.menuItem, { backgroundColor: 'rgba(239, 68, 68, 0.08)', borderColor: 'rgba(239, 68, 68, 0.2)' }]}
             onPress={handleDeleteAccount}
           >
-            <Text style={{ fontSize: 18 }}>⚠️</Text>
+            <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: 'rgba(239,68,68,0.2)', alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ fontSize: 10, color: '#EF4444', fontWeight: '800' }}>!</Text>
+            </View>
             <Text style={[styles.menuText, { color: '#EF4444' }]}>Delete Account</Text>
           </TouchableOpacity>
         </View>

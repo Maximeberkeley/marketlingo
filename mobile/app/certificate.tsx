@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,19 +7,20 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Share,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
-import { getMarketName, getMarketEmoji } from '../lib/markets';
+import { getMarketName } from '../lib/markets';
+import { APP_ICONS } from '../lib/icons';
 
 interface CertificateData {
   userName: string;
   completionDate: string;
   marketName: string;
-  marketEmoji: string;
   totalXP: number;
   lessonsCompleted: number;
   trainersCompleted: number;
@@ -74,7 +75,6 @@ export default function CertificateScreen() {
           userName: profileRes.data?.username || user.email?.split('@')[0] || 'Learner',
           completionDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
           marketName: getMarketName(marketId),
-          marketEmoji: getMarketEmoji(marketId),
           totalXP: xp?.total_xp || 0,
           lessonsCompleted: completedStacks,
           trainersCompleted: trainerRes.count || 0,
@@ -94,11 +94,11 @@ export default function CertificateScreen() {
   const handleShare = async () => {
     if (!data) return;
     const text =
-      `🚀 I just completed the 180-day ${data.marketName} Industry Mastery Program!\n\n` +
-      `📊 ${data.totalXP.toLocaleString()} XP earned\n` +
-      `📚 ${data.lessonsCompleted} lessons completed\n` +
-      `🎯 ${data.trainersCompleted} decision scenarios mastered\n` +
-      `🔥 ${data.longestStreak}-day learning streak\n\n` +
+      `I just completed the 180-day ${data.marketName} Industry Mastery Program!\n\n` +
+      `${data.totalXP.toLocaleString()} XP earned\n` +
+      `${data.lessonsCompleted} lessons completed\n` +
+      `${data.trainersCompleted} decision scenarios mastered\n` +
+      `${data.longestStreak}-day learning streak\n\n` +
       `Key skills: ${data.skillAreas.join(', ')}\n\n` +
       `#${data.marketName.replace(/\s+/g, '')} #ProfessionalDevelopment #MarketLingo`;
     try { await Share.share({ message: text }); } catch {}
@@ -125,14 +125,13 @@ export default function CertificateScreen() {
 
         <View style={[styles.centered, { flex: 1 }]}>
           <View style={styles.lockedIcon}>
-            <Text style={{ fontSize: 44 }}>🏆</Text>
+            <Image source={APP_ICONS.achievements} style={{ width: 44, height: 44, resizeMode: 'contain' }} />
           </View>
           <Text style={styles.lockedTitle}>Not Yet Eligible</Text>
           <Text style={styles.lockedSubtitle}>
             Complete the full 180-day program to earn your Certificate of Completion
           </Text>
 
-          {/* Progress bar */}
           <View style={styles.progressContainer}>
             <View style={styles.progressBar}>
               <View style={[styles.progressFill, { width: `${pct}%` }]} />
@@ -152,13 +151,19 @@ export default function CertificateScreen() {
 
   if (!data) return null;
 
+  const STAT_ITEMS = [
+    { icon: APP_ICONS.progress, value: data.totalXP.toLocaleString(), label: 'XP Earned' },
+    { icon: APP_ICONS.learn, value: data.lessonsCompleted, label: 'Lessons' },
+    { icon: APP_ICONS.trainer, value: data.trainersCompleted, label: 'Scenarios' },
+    { icon: APP_ICONS.streak, value: data.longestStreak, label: 'Day Streak' },
+  ];
+
   return (
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
         <View style={styles.headerRow}>
           <TouchableOpacity onPress={() => router.back()}>
             <Text style={styles.backText}>← Back</Text>
@@ -169,15 +174,12 @@ export default function CertificateScreen() {
           </View>
         </View>
 
-        {/* Certificate Card */}
         <View style={styles.certOuter}>
-          {/* Top accent line */}
           <View style={styles.accentLine} />
 
           <View style={styles.certInner}>
-            {/* Badge */}
             <View style={styles.badge}>
-              <Text style={{ fontSize: 36 }}>🏆</Text>
+              <Image source={APP_ICONS.achievements} style={{ width: 36, height: 36, resizeMode: 'contain' }} />
             </View>
 
             <Text style={styles.certTitle}>CERTIFICATE OF COMPLETION</Text>
@@ -188,39 +190,22 @@ export default function CertificateScreen() {
             <Text style={styles.certAwardLabel}>This certifies that</Text>
             <Text style={styles.certName}>{data.userName}</Text>
             <Text style={styles.certAwardLabel}>has successfully completed the 180-day</Text>
-            <Text style={styles.certMarket}>
-              {data.marketEmoji} {data.marketName} Industry Mastery Program
-            </Text>
+            <Text style={styles.certMarket}>{data.marketName} Industry Mastery Program</Text>
 
             <View style={styles.divider} />
 
-            {/* Stats Grid */}
             <View style={styles.statsGrid}>
-              <View style={styles.statItem}>
-                <Text style={styles.statIcon}>🚀</Text>
-                <Text style={styles.statValue}>{data.totalXP.toLocaleString()}</Text>
-                <Text style={styles.statLabel}>XP Earned</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statIcon}>🧠</Text>
-                <Text style={styles.statValue}>{data.lessonsCompleted}</Text>
-                <Text style={styles.statLabel}>Lessons</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statIcon}>🎯</Text>
-                <Text style={styles.statValue}>{data.trainersCompleted}</Text>
-                <Text style={styles.statLabel}>Scenarios</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statIcon}>🔥</Text>
-                <Text style={styles.statValue}>{data.longestStreak}</Text>
-                <Text style={styles.statLabel}>Day Streak</Text>
-              </View>
+              {STAT_ITEMS.map((s, i) => (
+                <View key={i} style={styles.statItem}>
+                  <Image source={s.icon} style={styles.statIcon} />
+                  <Text style={styles.statValue}>{s.value}</Text>
+                  <Text style={styles.statLabel}>{s.label}</Text>
+                </View>
+              ))}
             </View>
 
             <View style={styles.divider} />
 
-            {/* Skills */}
             <Text style={styles.skillsLabel}>Demonstrated proficiency in:</Text>
             <View style={styles.skillsWrap}>
               {data.skillAreas.map((skill, i) => (
@@ -232,41 +217,28 @@ export default function CertificateScreen() {
 
             <View style={styles.divider} />
 
-            {/* Footer */}
             <Text style={styles.certDate}>Issued on {data.completionDate}</Text>
             <Text style={styles.certIssuer}>MarketLingo</Text>
           </View>
 
-          {/* Bottom accent line */}
           <View style={styles.accentLine} />
         </View>
 
-        {/* Actions */}
         <View style={styles.actionsRow}>
           <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-            <Text style={styles.shareText}>📤 Share</Text>
+            <Text style={styles.shareText}>Share</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.linkedinButton}
             onPress={async () => {
               const text =
-                `🚀 I just completed the 180-day ${data.marketName} Industry Mastery Program on MarketLingo!\n\n` +
+                `I just completed the 180-day ${data.marketName} Industry Mastery Program on MarketLingo!\n\n` +
                 `Key skills: ${data.skillAreas.join(', ')}\n\n#ProfessionalDevelopment`;
               try { await Share.share({ message: text }); } catch {}
             }}
           >
-            <Text style={styles.linkedinText}>💼 LinkedIn</Text>
+            <Text style={styles.linkedinText}>LinkedIn</Text>
           </TouchableOpacity>
-        </View>
-
-        {/* Share preview */}
-        <View style={styles.previewCard}>
-          <Text style={styles.previewLabel}>📋 Share Message</Text>
-          <Text style={styles.previewText}>
-            🚀 I just completed the 180-day {data.marketName} Industry Mastery Program!{'\n'}
-            📊 {data.totalXP.toLocaleString()} XP • 📚 {data.lessonsCompleted} lessons • 🔥 {data.longestStreak}-day streak{'\n'}
-            Skills: {data.skillAreas.join(', ')}
-          </Text>
         </View>
       </ScrollView>
     </View>
@@ -281,8 +253,6 @@ const styles = StyleSheet.create({
   backText: { fontSize: 15, color: COLORS.textSecondary },
   headerTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary },
   headerSub: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
-
-  // Locked state
   lockedIcon: { width: 88, height: 88, borderRadius: 22, backgroundColor: 'rgba(245,158,11,0.1)', alignItems: 'center', justifyContent: 'center', marginBottom: 20 },
   lockedTitle: { fontSize: 24, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 8 },
   lockedSubtitle: { fontSize: 14, color: COLORS.textMuted, textAlign: 'center', maxWidth: 280, marginBottom: 24, lineHeight: 20 },
@@ -292,8 +262,6 @@ const styles = StyleSheet.create({
   progressLabel: { fontSize: 12, color: COLORS.textMuted, textAlign: 'center', marginTop: 8 },
   ctaButton: { backgroundColor: COLORS.accent, borderRadius: 16, paddingVertical: 16, paddingHorizontal: 36, alignItems: 'center' },
   ctaText: { color: '#FFFFFF', fontWeight: '700', fontSize: 16 },
-
-  // Certificate card
   certOuter: { borderRadius: 22, overflow: 'hidden', borderWidth: 2, borderColor: 'rgba(139,92,246,0.3)', backgroundColor: COLORS.bg1, marginBottom: 16 },
   accentLine: { height: 3, backgroundColor: COLORS.accent },
   certInner: { padding: 24, alignItems: 'center' },
@@ -304,31 +272,20 @@ const styles = StyleSheet.create({
   certAwardLabel: { fontSize: 12, color: COLORS.textMuted, marginBottom: 4 },
   certName: { fontSize: 28, fontWeight: '700', color: COLORS.accent, marginBottom: 8 },
   certMarket: { fontSize: 16, fontWeight: '600', color: COLORS.textPrimary, textAlign: 'center' },
-
-  // Stats
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12 },
   statItem: { width: '44%', backgroundColor: 'rgba(11,16,32,0.5)', borderRadius: 14, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: COLORS.border },
-  statIcon: { fontSize: 20, marginBottom: 4 },
+  statIcon: { width: 24, height: 24, resizeMode: 'contain', marginBottom: 4 },
   statValue: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary },
   statLabel: { fontSize: 9, color: COLORS.textMuted, textTransform: 'uppercase', letterSpacing: 1, marginTop: 2 },
-
-  // Skills
   skillsLabel: { fontSize: 12, color: COLORS.textMuted, marginBottom: 10, textAlign: 'center' },
   skillsWrap: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 },
   skillChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: 'rgba(139,92,246,0.1)', borderWidth: 1, borderColor: 'rgba(139,92,246,0.2)' },
   skillText: { fontSize: 11, color: COLORS.accent, fontWeight: '500' },
-
-  // Footer
   certDate: { fontSize: 12, color: COLORS.textMuted, marginBottom: 4 },
   certIssuer: { fontSize: 10, color: COLORS.textMuted, fontStyle: 'italic' },
-
-  // Actions
   actionsRow: { flexDirection: 'row', gap: 12, marginBottom: 16 },
   shareButton: { flex: 1, backgroundColor: COLORS.bg2, borderRadius: 14, paddingVertical: 14, alignItems: 'center', borderWidth: 1, borderColor: COLORS.border },
   shareText: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
   linkedinButton: { flex: 1, backgroundColor: '#0A66C2', borderRadius: 14, paddingVertical: 14, alignItems: 'center' },
   linkedinText: { fontSize: 15, fontWeight: '600', color: '#FFFFFF' },
-  previewCard: { backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.border },
-  previewLabel: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary, marginBottom: 8 },
-  previewText: { fontSize: 12, color: COLORS.textMuted, lineHeight: 18 },
 });
