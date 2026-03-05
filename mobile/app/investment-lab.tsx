@@ -243,7 +243,7 @@ export default function InvestmentLabScreen() {
                           <Text style={[styles.difficultyText, { color: passed ? '#22C55E' : '#FBBF24' }]}>{score}%</Text>
                         </View>
                       )}
-                      {passed && <Text style={{ fontSize: 12 }}>✅</Text>}
+                      {passed && <View style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: '#22C55E', alignItems: 'center', justifyContent: 'center' }}><Text style={{ fontSize: 10, color: '#fff', fontWeight: '700' }}>✓</Text></View>}
                     </View>
                   </View>
                   <Text style={styles.chevron}>›</Text>
