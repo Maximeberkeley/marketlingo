@@ -163,7 +163,7 @@ export default function SettingsScreen() {
           .update({ push_token: token })
           .eq('id', user!.id);
 
-        Alert.alert('Notifications Enabled! 🔔', 'You\'ll receive daily reminders and streak alerts.');
+        Alert.alert('Notifications Enabled', 'You\'ll receive daily reminders and streak alerts.');
       } catch (e) {
         console.error('Push registration error:', e);
         setPushEnabled(false);
