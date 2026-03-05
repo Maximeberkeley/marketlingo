@@ -269,20 +269,20 @@ export default function TrainerScreen() {
 
           <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
             <View style={styles.introCenter}>
-              <LeoCharacter size="lg" animation="waving" />
-              <Text style={styles.introMsg}>Time to level up! These scenarios will teach you to think like a pro 🧠</Text>
+              <Image source={APP_ICONS.trainer} style={{ width: 64, height: 64, resizeMode: 'contain', marginBottom: 12 }} />
+              <Text style={styles.introMsg}>Time to level up! These scenarios will teach you to think like a pro.</Text>
             </View>
 
             <View style={styles.featuresCard}>
               <Text style={styles.featuresTitle}>What you'll master</Text>
               {[
-                { icon: '🎯', text: 'Real-world decision scenarios' },
-                { icon: '💡', text: 'Pro reasoning breakdowns' },
-                { icon: '⚠️', text: 'Common mistake analysis' },
-                { icon: '🧩', text: 'Mental models for founders' },
+                { icon: APP_ICONS.concept, text: 'Real-world decision scenarios' },
+                { icon: APP_ICONS.lens, text: 'Pro reasoning breakdowns' },
+                { icon: APP_ICONS.trainer, text: 'Common mistake analysis' },
+                { icon: APP_ICONS.learn, text: 'Mental models for founders' },
               ].map((f, i) => (
                 <View key={i} style={styles.featureRow}>
-                  <Text style={styles.featureIcon}>{f.icon}</Text>
+                  <Image source={f.icon} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
                   <Text style={styles.featureText}>{f.text}</Text>
                 </View>
               ))}
