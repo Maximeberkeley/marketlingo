@@ -291,7 +291,7 @@ export default function SettingsScreen() {
               <Text style={styles.settingLabel}>Push Notifications</Text>
               <Text style={styles.settingDesc}>
                 {pushEnabled && pushToken
-                  ? '✅ Registered — you\'ll receive alerts'
+                  ? 'Registered — you\'ll receive alerts'
                   : 'Enable to receive reminders and alerts'}
               </Text>
             </View>
