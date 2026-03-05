@@ -123,7 +123,7 @@ export default function SettingsScreen() {
       const data = (notification.request.content.data || {}) as Record<string, any>;
       const route = data?.route || (data?.type ? NOTIFICATION_ROUTES[data.type] : null);
       Alert.alert(
-        notification.request.content.title || '🔔 Notification',
+        notification.request.content.title || 'Notification',
         notification.request.content.body || '',
         [
           { text: 'Dismiss', style: 'cancel' },
