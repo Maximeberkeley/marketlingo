@@ -2,22 +2,24 @@ import React, { useRef, useEffect } from 'react';
 import { Tabs } from 'expo-router';
 import { View, Image, StyleSheet, Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { COLORS } from '../../lib/constants';
+import { COLORS, SHADOWS } from '../../lib/constants';
 import { APP_ICONS } from '../../lib/icons';
 
 function TabBarIcon({ icon, focused }: { icon: any; focused: boolean }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const opacityAnim = useRef(new Animated.Value(focused ? 1 : 0.4)).current;
+  const opacityAnim = useRef(new Animated.Value(focused ? 1 : 0.35)).current;
 
   useEffect(() => {
     if (focused) {
       Animated.sequence([
-        Animated.timing(scaleAnim, { toValue: 1.18, duration: 100, easing: Easing.out(Easing.ease), useNativeDriver: true }),
-        Animated.spring(scaleAnim, { toValue: 1, friction: 4, tension: 200, useNativeDriver: true }),
+        Animated.timing(scaleAnim, { toValue: 1.2, duration: 100, easing: Easing.out(Easing.ease), useNativeDriver: true }),
+        Animated.spring(scaleAnim, { toValue: 1.05, friction: 4, tension: 200, useNativeDriver: true }),
       ]).start();
+    } else {
+      Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
     }
     Animated.timing(opacityAnim, {
-      toValue: focused ? 1 : 0.4,
+      toValue: focused ? 1 : 0.35,
       duration: 180,
       useNativeDriver: true,
     }).start();
@@ -45,18 +47,22 @@ export default function TabLayout() {
           backgroundColor: '#FFFFFF',
           borderTopColor: COLORS.border,
           borderTopWidth: StyleSheet.hairlineWidth,
-          height: 52 + insets.bottom,
+          height: 56 + insets.bottom,
           paddingBottom: insets.bottom,
-          paddingTop: 6,
+          paddingTop: 8,
           elevation: 0,
-          shadowOpacity: 0,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 8,
         },
         tabBarActiveTintColor: COLORS.textPrimary,
         tabBarInactiveTintColor: COLORS.textMuted,
         tabBarLabelStyle: {
           fontSize: 10,
           fontWeight: '600',
-          letterSpacing: 0.2,
+          letterSpacing: 0.3,
+          marginTop: 2,
         },
       }}
     >
@@ -123,10 +129,10 @@ const styles = StyleSheet.create({
   },
   activeIndicator: {
     position: 'absolute',
-    bottom: -4,
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: COLORS.textPrimary,
+    bottom: -6,
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: COLORS.accent,
   },
 });
