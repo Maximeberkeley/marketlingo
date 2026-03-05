@@ -253,7 +253,9 @@ export default function NotebookScreen() {
             {Object.entries(groupedNotes).map(([date, dateNotes]) => (
               <View key={date}>
                 <View style={styles.dateHeader}>
-                  <Text style={styles.dateEmoji}>📅</Text>
+                  <View style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 8, color: '#fff', fontWeight: '700' }}>·</Text>
+                  </View>
                   <Text style={styles.dateText}>{date}</Text>
                 </View>
                 <View style={{ gap: 8 }}>
