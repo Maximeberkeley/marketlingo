@@ -15,7 +15,7 @@ import { AnimatedSection } from '../../components/home/AnimatedSection';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../../lib/constants';
-import { getMarketEmoji, getMarketName } from '../../lib/markets';
+import { getMarketName, getMarketColor } from '../../lib/markets';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
