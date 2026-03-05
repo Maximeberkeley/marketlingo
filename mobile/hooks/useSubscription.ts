@@ -102,22 +102,25 @@ export function useSubscription() {
         }
       }
 
-      // On native, also check RevenueCat entitlements
+      // On native, also check RevenueCat entitlements (only if configured)
       if (isNative && revenueCatModule && !isInTrial) {
         try {
-          const info = await revenueCatModule.getCustomerInfo();
-          const rcPro = info.entitlements?.active?.['MarketLingo Pro'] !== undefined;
-          if (rcPro && !effectiveIsProUser) {
-            // RevenueCat says pro but DB doesn't — sync
-            effectiveIsProUser = true;
-            effectivePlanType = 'annual'; // default to annual if we can't determine
-            await supabase.from('profiles').update({
-              is_pro_user: true,
-              pro_plan_type: 'annual',
-            }).eq('id', user.id);
+          // Check if Purchases is configured before calling getCustomerInfo
+          const isConfigured = revenueCatModule.isConfigured?.() ?? true;
+          if (isConfigured) {
+            const info = await revenueCatModule.getCustomerInfo();
+            const rcPro = info.entitlements?.active?.['MarketLingo Pro'] !== undefined;
+            if (rcPro && !effectiveIsProUser) {
+              effectiveIsProUser = true;
+              effectivePlanType = 'annual';
+              await supabase.from('profiles').update({
+                is_pro_user: true,
+                pro_plan_type: 'annual',
+              }).eq('id', user.id);
+            }
           }
         } catch {
-          // RevenueCat unavailable — use DB state
+          // RevenueCat unavailable or not configured — use DB state silently
         }
       }
 
@@ -152,13 +155,17 @@ export function useSubscription() {
 
     (async () => {
       try {
-        await revenueCatModule.configure({ apiKey });
-        // Identify user if logged in
+        // Only configure if not already configured
+        const alreadyConfigured = revenueCatModule.isConfigured?.() ?? false;
+        if (!alreadyConfigured) {
+          await revenueCatModule.configure({ apiKey });
+        }
         if (user?.id) {
           await revenueCatModule.logIn(user.id);
         }
       } catch (e) {
-        console.warn('RevenueCat configure error:', e);
+        // Silently handle — RevenueCat may not be available in Expo Go
+        console.warn('RevenueCat configure skipped:', e);
       }
     })();
   }, [isNative, user?.id]);

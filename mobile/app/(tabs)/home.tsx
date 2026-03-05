@@ -191,7 +191,6 @@ export default function HomeScreen() {
           onContinue={session.dismissSessionComplete}
           onDismiss={session.dismissSessionComplete}
         />
-        />
       ) : (
         <>
           <ScrollView
