@@ -139,7 +139,7 @@ export default function InvestmentLabScreen() {
             </TouchableOpacity>
             <View style={{ gap: 8 }}>
               <View style={[styles.heroBadge, { backgroundColor: accentColor + 'CC' }]}>
-                <Text style={styles.heroBadgeText}>📈 INVESTMENT LAB</Text>
+                <Text style={styles.heroBadgeText}>INVESTMENT LAB</Text>
               </View>
               <View style={styles.heroBannerTitleRow}>
                 <Text style={styles.heroBannerTitle}>Investment Lab</Text>
