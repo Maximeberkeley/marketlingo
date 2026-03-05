@@ -300,7 +300,7 @@ export default function TrainerScreen() {
   if (scenarios.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Text style={{ fontSize: 48, marginBottom: 12 }}>🧠</Text>
+        <Image source={APP_ICONS.trainer} style={{ width: 56, height: 56, resizeMode: 'contain', marginBottom: 12 }} />
         <Text style={styles.emptyTitle}>No scenarios available</Text>
         <Text style={styles.emptySubtitle}>Complete more lessons to unlock trainer scenarios!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
