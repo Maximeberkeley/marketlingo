@@ -20,6 +20,7 @@ import { useSubscription } from '../hooks/useSubscription';
 import { MentorChatOverlay } from '../components/ai/MentorChatOverlay';
 import { getMentorForContext } from '../data/mentors';
 import type { Mentor } from '../data/mentors';
+import { APP_ICONS } from '../lib/icons';
 
 
 // Market-specific hero images
