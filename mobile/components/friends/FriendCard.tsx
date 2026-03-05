@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { COLORS } from '../../lib/constants';
 import { Friend } from '../../hooks/useFriends';
+import { APP_ICONS } from '../../lib/icons';
 
 interface FriendCardProps {
   friend: Friend;
@@ -21,14 +22,22 @@ export function FriendCard({ friend, isActive, onNudge, onRemove }: FriendCardPr
       <View style={styles.info}>
         <Text style={styles.name}>{friend.username}</Text>
         <View style={styles.meta}>
-          <Text style={styles.stat}>⚡ {friend.totalXP.toLocaleString()}</Text>
-          {friend.currentStreak > 0 && <Text style={styles.stat}>🔥 {friend.currentStreak}</Text>}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+            <Image source={APP_ICONS.progress} style={{ width: 12, height: 12, resizeMode: 'contain' }} />
+            <Text style={styles.stat}>{friend.totalXP.toLocaleString()}</Text>
+          </View>
+          {friend.currentStreak > 0 && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+              <Image source={APP_ICONS.streak} style={{ width: 12, height: 12, resizeMode: 'contain' }} />
+              <Text style={styles.stat}>{friend.currentStreak}</Text>
+            </View>
+          )}
           <Text style={styles.stat}>Lv.{friend.currentLevel}</Text>
         </View>
       </View>
 
       <TouchableOpacity style={styles.nudgeBtn} onPress={() => onNudge(friend)}>
-        <Text style={styles.nudgeBtnText}>👋</Text>
+        <Image source={APP_ICONS.trainer} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => onRemove(friend)}>
@@ -60,6 +69,5 @@ const styles = StyleSheet.create({
     width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(139,92,246,0.12)',
     alignItems: 'center', justifyContent: 'center',
   },
-  nudgeBtnText: { fontSize: 18 },
   moreIcon: { color: COLORS.textMuted, fontSize: 18, paddingLeft: 4 },
 });

@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { COLORS } from '../../lib/constants';
 import { Friend } from '../../hooks/useFriends';
+import { APP_ICONS } from '../../lib/icons';
 
 interface FriendActivityFeedProps {
   friends: Friend[];
@@ -16,10 +17,10 @@ function getActivityText(friend: Friend): string {
   return `Last active ${days}d ago`;
 }
 
-function getActivityEmoji(friend: Friend): string {
-  if (friend.currentStreak >= 7) return '🔥';
-  if (friend.totalXP > 1000) return '⭐';
-  return '📘';
+function getActivityIcon(friend: Friend): any {
+  if (friend.currentStreak >= 7) return APP_ICONS.streak;
+  if (friend.totalXP > 1000) return APP_ICONS.achievements;
+  return APP_ICONS.learn;
 }
 
 export function FriendActivityFeed({ friends }: FriendActivityFeedProps) {
@@ -39,12 +40,16 @@ export function FriendActivityFeed({ friends }: FriendActivityFeedProps) {
             <Text style={styles.avatarText}>{friend.username.charAt(0).toUpperCase()}</Text>
           </View>
           <View style={styles.content}>
-            <Text style={styles.name}>
-              {friend.username} {getActivityEmoji(friend)}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Text style={styles.name}>{friend.username}</Text>
+              <Image source={getActivityIcon(friend)} style={{ width: 14, height: 14, resizeMode: 'contain' }} />
+            </View>
             <Text style={styles.activity}>{getActivityText(friend)}</Text>
           </View>
-          <Text style={styles.xp}>⚡ {friend.totalXP.toLocaleString()}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+            <Image source={APP_ICONS.progress} style={{ width: 12, height: 12, resizeMode: 'contain' }} />
+            <Text style={styles.xp}>{friend.totalXP.toLocaleString()}</Text>
+          </View>
         </View>
       ))}
     </View>

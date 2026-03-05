@@ -187,7 +187,7 @@ export default function FriendsScreen() {
             {activeTab === 'requests' && (
               pendingRequests.length === 0 ? (
                 <View style={styles.empty}>
-                  <Text style={styles.emptyEmoji}>📬</Text>
+                  <Image source={APP_ICONS.quests} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
                   <Text style={styles.emptyTitle}>No pending requests</Text>
                 </View>
               ) : (
