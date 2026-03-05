@@ -219,14 +219,14 @@ export default function SettingsScreen() {
     }
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: '🦁 Leo: Your streak is at risk!',
+        title: 'Leo: Your streak is at risk!',
         body: "5 mins is all I ask… Don't lose your streak today!",
         data: { type: 'streak_warning', route: '/(tabs)/home' },
         sound: true,
       },
       trigger: { seconds: 3 } as any,
     });
-    Alert.alert('Test Sent ✅', "You'll receive a notification in 3 seconds. Tap it to test deep-linking!");
+    Alert.alert('Test Sent', "You'll receive a notification in 3 seconds. Tap it to test deep-linking!");
   };
 
   const handleResetPassword = async () => {
