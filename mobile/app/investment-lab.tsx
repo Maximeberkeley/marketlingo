@@ -188,7 +188,7 @@ export default function InvestmentLabScreen() {
                 </View>
                 <View style={styles.progressDivider} />
                 <View style={styles.progressStat}>
-                  <Text style={styles.progressValue}>⚡ {progress.investment_xp}</Text>
+                  <Text style={styles.progressValue}>{progress.investment_xp}</Text>
                   <Text style={styles.progressLabel}>XP</Text>
                 </View>
                 <View style={styles.progressDivider} />
