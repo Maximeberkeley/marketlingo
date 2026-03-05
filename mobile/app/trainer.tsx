@@ -422,8 +422,8 @@ const styles = StyleSheet.create({
   backTextLight: { fontSize: 15, color: 'rgba(255,255,255,0.85)' },
   heroBannerContent: { gap: 10 },
   heroBadge: {
-    alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 5,
-    borderRadius: 10,
+    alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10,
   },
   heroBadgeText: { fontSize: 11, fontWeight: '700', color: '#FFFFFF', letterSpacing: 0.5 },
   heroBannerTitle: { fontSize: 26, fontWeight: '800', color: '#FFFFFF', lineHeight: 32 },
