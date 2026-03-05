@@ -153,7 +153,7 @@ export default function FriendsScreen() {
             {activeTab === 'friends' && (
               friends.length === 0 ? (
                 <View style={styles.empty}>
-                  <Text style={styles.emptyEmoji}>👋</Text>
+                  <Image source={APP_ICONS.trainer} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
                   <Text style={styles.emptyTitle}>No friends yet</Text>
                   <Text style={styles.emptySub}>Add friends by username to see their progress and compete!</Text>
                 </View>
