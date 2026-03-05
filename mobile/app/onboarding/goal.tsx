@@ -249,7 +249,7 @@ export default function GoalScreen() {
         {/* Info */}
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
-            💡 You can change this anytime in Settings. Your goal shapes content priority, not access.
+            You can change this anytime in Settings. Your goal shapes content priority, not access.
           </Text>
         </View>
       </Animated.ScrollView>

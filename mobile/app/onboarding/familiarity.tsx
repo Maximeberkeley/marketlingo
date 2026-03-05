@@ -215,7 +215,7 @@ export default function FamiliarityScreen() {
       </Animated.ScrollView>
 
       <StickyBottomCTA
-        title="Start Learning 🚀"
+        title="Start Learning"
         onPress={handleContinue}
         disabled={!selectedLevel}
       />

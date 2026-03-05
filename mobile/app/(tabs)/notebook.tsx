@@ -299,7 +299,7 @@ export default function NotebookScreen() {
             </Text>
             {!searchQuery && (
               <TouchableOpacity style={styles.emptyButton} onPress={() => setShowAddNote(true)}>
-                <Text style={styles.emptyButtonText}>📝 Add your first note</Text>
+                <Text style={styles.emptyButtonText}>Add your first note</Text>
               </TouchableOpacity>
             )}
           </View>
