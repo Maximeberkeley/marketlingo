@@ -425,7 +425,7 @@ export default function SettingsScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
-            <Text style={{ fontSize: 18 }}>🔒</Text>
+            <Image source={APP_ICONS.regulatory} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
             <Text style={styles.menuText}>Privacy Policy</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
