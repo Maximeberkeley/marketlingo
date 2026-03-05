@@ -24,9 +24,9 @@ import { triggerHaptic } from '../../lib/haptics';
 const STEP_LABELS = ['Industry', 'Goal', 'Level'];
 
 const LEO_LEVEL_REACTIONS: Record<string, string> = {
-  beginner: "Perfect — we'll start from scratch! No jargon, I promise 🤝",
-  intermediate: "Nice! I'll skip the basics and go straight to the good stuff 🎯",
-  advanced: "Respect! Expert-mode unlocked. Let's get deep 🧠",
+  beginner: "Perfect — we'll start from scratch! No jargon, I promise.",
+  intermediate: "Nice! I'll skip the basics and go straight to the good stuff.",
+  advanced: "Respect! Expert-mode unlocked. Let's get deep.",
 };
 
 export default function FamiliarityScreen() {
