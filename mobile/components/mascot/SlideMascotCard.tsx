@@ -4,7 +4,6 @@ import { COLORS } from '../../lib/constants';
 import { mentors } from '../../data/mentors';
 import { getPrimaryMentorForMarket } from '../../data/marketConfig';
 
-// Local asset maps
 const MENTOR_IMAGES: Record<string, any> = {
   maya: require('../../assets/mentors/mentor-maya.png'),
   alex: require('../../assets/mentors/mentor-alex.png'),
@@ -13,9 +12,6 @@ const MENTOR_IMAGES: Record<string, any> = {
 };
 const LEO_STICKER = require('../../assets/mascot/leo-reference.png');
 
-// ─────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────
 export type SlidePosition = 'first' | 'middle' | 'last';
 
 interface Character {
@@ -24,9 +20,6 @@ interface Character {
   isLeo: boolean;
 }
 
-// ─────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────
 const getLeo = (): Character => ({ id: 'leo', name: 'Leo', isLeo: true });
 
 const getMentorCharacter = (marketId?: string): Character => {
@@ -44,19 +37,19 @@ const getMessages = (
   const progress = Math.round(((slideIndex + 1) / totalSlides) * 100);
   const bank: Record<SlidePosition, { greeting: string; subtext: string }[]> = {
     first: [
-      { greeting: "Let's learn together! 🚀", subtext: "I'll be here to guide you" },
+      { greeting: "Let's learn together!", subtext: "I'll be here to guide you" },
       { greeting: 'Ready to dive in?', subtext: "This is going to be great!" },
-      { greeting: 'Hey there! 👋', subtext: "Let's make this fun" },
+      { greeting: 'Hey there!', subtext: "Let's make this fun" },
     ],
     middle: [
-      { greeting: `${progress}% complete! 💪`, subtext: "You're doing amazing" },
+      { greeting: `${progress}% complete!`, subtext: "You're doing amazing" },
       { greeting: 'Great progress!', subtext: 'Keep that momentum going' },
-      { greeting: 'Halfway there! 🔥', subtext: 'Almost to the finish line' },
+      { greeting: 'Halfway there!', subtext: 'Almost to the finish line' },
     ],
     last: [
-      { greeting: 'You crushed it! 🎉', subtext: 'Another lesson conquered' },
+      { greeting: 'You crushed it!', subtext: 'Another lesson conquered' },
       { greeting: 'Brilliant work!', subtext: 'Knowledge is power' },
-      { greeting: 'All done! 🏆', subtext: 'See you next time' },
+      { greeting: 'All done!', subtext: 'See you next time' },
     ],
   };
   const options = bank[position];
@@ -75,9 +68,6 @@ const ACCENT_COLORS: Record<SlidePosition, string> = {
   last: '#22C55E',
 };
 
-// ─────────────────────────────────────────────
-// SlideMascotCard
-// ─────────────────────────────────────────────
 interface SlideMascotCardProps {
   position: SlidePosition;
   slideIndex: number;
@@ -124,7 +114,6 @@ export function SlideMascotCard({ position, slideIndex, totalSlides, marketId }:
         { backgroundColor: GRADIENT_TINTS[position], opacity, transform: [{ translateY }] },
       ]}
     >
-      {/* Avatar with bob */}
       <Animated.Image
         source={avatarSource}
         style={[
@@ -133,8 +122,6 @@ export function SlideMascotCard({ position, slideIndex, totalSlides, marketId }:
           { transform: [{ translateY: bobY }] },
         ]}
       />
-
-      {/* Text */}
       <View style={styles.textBlock}>
         <Text style={[styles.greeting, { color: accentColor }]}>{messages.greeting}</Text>
         <Text style={styles.subtext}>— {character.name}</Text>
@@ -143,9 +130,6 @@ export function SlideMascotCard({ position, slideIndex, totalSlides, marketId }:
   );
 }
 
-// ─────────────────────────────────────────────
-// Utility
-// ─────────────────────────────────────────────
 export function getSlidePosition(slideIndex: number, totalSlides: number): SlidePosition | null {
   if (slideIndex === 0) return 'first';
   const midpoint = Math.floor(totalSlides / 2);
