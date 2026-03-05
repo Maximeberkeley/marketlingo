@@ -57,7 +57,7 @@ export default function FriendsScreen() {
     setAdding(false);
     if (result.success) {
       trackEvent('friend_request_sent', { to: addUsername.trim() });
-      Alert.alert('Request Sent! 🎉', `Friend request sent to "${addUsername}"`);
+      Alert.alert('Request Sent!', `Friend request sent to "${addUsername}"`);
       setAddUsername('');
     } else {
       Alert.alert('Oops', result.error || 'Something went wrong');
