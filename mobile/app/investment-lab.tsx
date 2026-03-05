@@ -144,8 +144,8 @@ export default function InvestmentLabScreen() {
               <View style={styles.heroBannerTitleRow}>
                 <Text style={styles.heroBannerTitle}>Investment Lab</Text>
                 {!isProUser && (
-                  <View style={styles.proChip}>
-                    <Text style={styles.proChipText}>👑 PRO</Text>
+                   <View style={styles.proChip}>
+                     <Text style={styles.proChipText}>PRO</Text>
                   </View>
                 )}
               </View>
