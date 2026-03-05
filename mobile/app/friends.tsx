@@ -67,7 +67,7 @@ export default function FriendsScreen() {
   const handleNudge = (friend: Friend) => {
     triggerHaptic('medium');
     trackEvent('nudge_sent', { to: friend.id });
-    Alert.alert('👋 Nudge Sent!', `${friend.username} will get a reminder to keep learning!`);
+    Alert.alert('Nudge Sent!', `${friend.username} will get a reminder to keep learning!`);
   };
 
   const handleRemove = (friend: Friend) => {
