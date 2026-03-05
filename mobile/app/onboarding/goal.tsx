@@ -33,7 +33,7 @@ interface GoalOption {
 const goalOptions: GoalOption[] = [
   {
     id: 'join_industry',
-    emoji: '🚀',
+    emoji: '',
     title: 'Join the industry',
     subtitle: 'Career Move',
     description: 'Prepare for interviews, understand org structures, and learn what hiring managers look for',
@@ -41,7 +41,7 @@ const goalOptions: GoalOption[] = [
   },
   {
     id: 'invest',
-    emoji: '💰',
+    emoji: '',
     title: 'Invest & evaluate',
     subtitle: 'Investor Lens',
     description: 'Master unit economics, valuations, market sizing, and due diligence frameworks',
@@ -49,7 +49,7 @@ const goalOptions: GoalOption[] = [
   },
   {
     id: 'build_startup',
-    emoji: '🏗️',
+    emoji: '',
     title: 'Build a startup',
     subtitle: 'Founder Path',
     description: 'Learn GTM strategies, fundraising, competitive moats, and regulatory pathways',
@@ -57,7 +57,7 @@ const goalOptions: GoalOption[] = [
   },
   {
     id: 'curiosity',
-    emoji: '🧠',
+    emoji: '',
     title: 'Pure curiosity',
     subtitle: 'Explorer Mode',
     description: 'Discover big-picture trends, fascinating history, and "wow factor" insights',
