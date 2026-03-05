@@ -100,7 +100,7 @@ export default function FriendsScreen() {
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <Text style={styles.backBtnText}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>👥 Friends</Text>
+        <Text style={styles.headerTitle}>Friends</Text>
         {pendingRequests.length > 0 && (
           <View style={styles.badge}><Text style={styles.badgeText}>{pendingRequests.length}</Text></View>
         )}
