@@ -66,10 +66,10 @@ const goalOptions: GoalOption[] = [
 ];
 
 const LEO_REACTIONS: Record<LearningGoal, string> = {
-  join_industry: "Great choice! I'll prep you like a recruiter's dream candidate 💼",
-  invest: "Love it! Let's sharpen your investment thesis 📈",
-  build_startup: "Founder mode activated! Let's build something big 🔥",
-  curiosity: "Curiosity is a superpower — let's explore together! ✨",
+  join_industry: "Great choice! I'll prep you like a recruiter's dream candidate.",
+  invest: "Love it! Let's sharpen your investment thesis.",
+  build_startup: "Founder mode activated! Let's build something big.",
+  curiosity: "Curiosity is a superpower — let's explore together!",
 };
 
 const STEP_LABELS = ['Industry', 'Goal', 'Level'];
