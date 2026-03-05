@@ -213,7 +213,7 @@ export default function InvestmentModuleScreen() {
                 </View>
                 {currentScenario.real_world_example && (
                   <View style={styles.exampleCard}>
-                    <Text style={styles.exampleLabel}>🏢 Real World Example</Text>
+                    <Text style={styles.exampleLabel}>Real World Example</Text>
                     <Text style={styles.insightBody}>{currentScenario.real_world_example}</Text>
                   </View>
                 )}
