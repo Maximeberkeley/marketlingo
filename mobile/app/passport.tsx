@@ -7,13 +7,15 @@ import {
   TouchableOpacity,
   Share,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
-import { getMarketName, getMarketEmoji } from '../lib/markets';
+import { getMarketName } from '../lib/markets';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
+import { APP_ICONS } from '../lib/icons';
 
 interface StampData {
   month: number;
@@ -41,7 +43,10 @@ const gradeColors: Record<string, { bg: string; text: string; border: string }> 
   C: { bg: COLORS.bg2, text: COLORS.textMuted, border: COLORS.border },
 };
 
-const stampEmojis = ['🏛️', '🔬', '⚔️', '🌌', '🔮', '👑'];
+const STAMP_ICONS: any[] = [
+  APP_ICONS.learn, APP_ICONS.concept, APP_ICONS.trainer,
+  APP_ICONS.lens, APP_ICONS.achievements, APP_ICONS.progress,
+];
 
 const goalLabels: Record<string, string> = {
   career: 'Career Move',
@@ -98,10 +103,7 @@ export default function PassportScreen() {
     setCurrentDay(day);
     setLearningGoal(progress?.learning_goal || null);
 
-    // Build 6 month stamps
-    const themes = [
-      'Foundations', 'Deep Dive', 'Strategy', 'Innovation', 'Mastery', 'Leadership',
-    ];
+    const themes = ['Foundations', 'Deep Dive', 'Strategy', 'Innovation', 'Mastery', 'Leadership'];
 
     const builtStamps: StampData[] = themes.map((theme, i) => {
       const monthStart = i * 30 + 1;
@@ -129,9 +131,9 @@ export default function PassportScreen() {
 
   const handleShare = async () => {
     const completedStamps = stamps.filter((s) => s.completed);
-    const text = `🛂 My ${getMarketName(marketId || '')} Industry Passport\n\n${completedStamps
-      .map((s) => `✅ ${s.theme} — Grade ${s.grade}`)
-      .join('\n')}\n\n${totalXP} XP earned • Day ${currentDay}/180\n\nBuilding industry mastery on MarketLingo 📚`;
+    const text = `My ${getMarketName(marketId || '')} Industry Passport\n\n${completedStamps
+      .map((s) => `${s.theme} — Grade ${s.grade}`)
+      .join('\n')}\n\n${totalXP} XP earned · Day ${currentDay}/180\n\nBuilding industry mastery on MarketLingo`;
 
     try {
       await Share.share({ message: text, title: 'My Industry Passport' });
@@ -154,20 +156,16 @@ export default function PassportScreen() {
         contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Back */}
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
 
-        {/* Passport Cover */}
         <View style={styles.passportCard}>
-          {/* Header */}
           <View style={styles.passportHeader}>
-            <Text style={{ fontSize: 32 }}>🛂</Text>
+            <Image source={APP_ICONS.passport} style={styles.passportIcon} />
             <Text style={styles.passportTitle}>INDUSTRY PASSPORT</Text>
             {marketId && (
               <View style={styles.marketRow}>
-                <Text style={{ fontSize: 24 }}>{getMarketEmoji(marketId)}</Text>
                 <Text style={styles.marketLabel}>{getMarketName(marketId)}</Text>
               </View>
             )}
@@ -178,7 +176,6 @@ export default function PassportScreen() {
             )}
           </View>
 
-          {/* Stats */}
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
               <Text style={styles.statValue}>{currentDay}</Text>
@@ -196,7 +193,6 @@ export default function PassportScreen() {
             </View>
           </View>
 
-          {/* Stamps Grid */}
           <View style={styles.stampsGrid}>
             {stamps.map((stamp, index) => {
               const gc = stamp.grade ? gradeColors[stamp.grade] || gradeColors.C : null;
@@ -212,9 +208,10 @@ export default function PassportScreen() {
                       : { borderColor: 'rgba(100,116,139,0.2)', backgroundColor: COLORS.bg2, opacity: 0.5 },
                   ]}
                 >
-                  <Text style={{ fontSize: 28, marginBottom: 6 }}>
-                    {stamp.completed ? stampEmojis[index] || '✅' : stamp.grade !== null ? '📖' : '🔒'}
-                  </Text>
+                  <Image
+                    source={stamp.completed ? STAMP_ICONS[index] || APP_ICONS.achievements : stamp.grade !== null ? APP_ICONS.learn : APP_ICONS.progress}
+                    style={[styles.stampIcon, { opacity: stamp.completed ? 1 : stamp.grade !== null ? 0.7 : 0.3 }]}
+                  />
                   <Text style={styles.stampTheme} numberOfLines={1}>{stamp.theme}</Text>
                   <Text style={styles.stampMonth}>Month {stamp.month}</Text>
                   {stamp.grade ? (
@@ -222,14 +219,20 @@ export default function PassportScreen() {
                       <Text style={[styles.gradeText, { color: gc!.text }]}>{stamp.grade}</Text>
                     </View>
                   ) : (
-                    <Text style={styles.lockedText}>🔒 Locked</Text>
+                    <View style={styles.lockedRow}>
+                      <View style={styles.lockIconSmall}>
+                        <View style={styles.lockBarSmall} />
+                        <View style={styles.lockBodySmall} />
+                      </View>
+                      <Text style={styles.lockedText}>Locked</Text>
+                    </View>
                   )}
                   {stamp.completedDate && (
                     <Text style={styles.completedDate}>{stamp.completedDate}</Text>
                   )}
                   {stamp.completed && (
                     <View style={styles.checkBadge}>
-                      <Text style={{ fontSize: 14 }}>✅</Text>
+                      <Text style={styles.checkMark}>✓</Text>
                     </View>
                   )}
                 </View>
@@ -237,18 +240,16 @@ export default function PassportScreen() {
             })}
           </View>
 
-          {/* Footer */}
           <Text style={styles.passportFooter}>
             {completedCount === 6
-              ? '🎓 Full mastery achieved — Congratulations!'
+              ? 'Full mastery achieved — Congratulations!'
               : `${6 - completedCount} stamps remaining to complete your passport`}
           </Text>
         </View>
 
-        {/* Actions */}
         <View style={styles.actions}>
           <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.7}>
-            <Text style={styles.shareBtnText}>📤 Share Progress</Text>
+            <Text style={styles.shareBtnText}>Share Progress</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -263,98 +264,41 @@ const styles = StyleSheet.create({
   backBtn: { marginBottom: 16 },
   backText: { fontSize: 14, color: COLORS.textSecondary },
   passportCard: {
-    borderRadius: 24,
-    borderWidth: 2,
-    borderColor: 'rgba(139, 92, 246, 0.3)',
-    backgroundColor: COLORS.bg2,
-    overflow: 'hidden',
+    borderRadius: 24, borderWidth: 2, borderColor: 'rgba(139, 92, 246, 0.3)',
+    backgroundColor: COLORS.bg2, overflow: 'hidden',
   },
-  passportHeader: {
-    padding: 24,
-    paddingBottom: 16,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  passportTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-    letterSpacing: 2,
-    marginTop: 8,
-  },
-  marketRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 10,
-  },
+  passportHeader: { padding: 24, paddingBottom: 16, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: COLORS.border },
+  passportIcon: { width: 40, height: 40, resizeMode: 'contain', marginBottom: 8 },
+  passportTitle: { fontSize: 18, fontWeight: '800', color: COLORS.textPrimary, letterSpacing: 2, marginTop: 4 },
+  marketRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10 },
   marketLabel: { fontSize: 15, color: COLORS.textSecondary, fontWeight: '600' },
-  goalBadge: {
-    marginTop: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 20,
-    backgroundColor: 'rgba(139, 92, 246, 0.15)',
-  },
+  goalBadge: { marginTop: 8, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20, backgroundColor: 'rgba(139, 92, 246, 0.15)' },
   goalBadgeText: { fontSize: 12, fontWeight: '600', color: COLORS.accent },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
+  statsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   statItem: { alignItems: 'center' },
   statValue: { fontSize: 22, fontWeight: '800', color: COLORS.textPrimary },
   statLabel: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
   statDivider: { width: 1, height: 32, backgroundColor: COLORS.border },
-  stampsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: 12,
-    gap: 10,
-  },
-  stampCard: {
-    width: '47%' as any,
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 2,
-    alignItems: 'center',
-    position: 'relative',
-  },
+  stampsGrid: { flexDirection: 'row', flexWrap: 'wrap', padding: 12, gap: 10 },
+  stampCard: { width: '47%' as any, padding: 16, borderRadius: 16, borderWidth: 2, alignItems: 'center', position: 'relative' },
+  stampIcon: { width: 32, height: 32, resizeMode: 'contain', marginBottom: 6 },
   stampTheme: { fontSize: 12, fontWeight: '700', color: COLORS.textPrimary, textAlign: 'center', marginBottom: 2 },
   stampMonth: { fontSize: 10, color: COLORS.textMuted, marginBottom: 8 },
-  gradeBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
+  gradeBadge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 12, borderWidth: 1 },
   gradeText: { fontSize: 12, fontWeight: '800' },
+  lockedRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   lockedText: { fontSize: 10, color: COLORS.textMuted },
+  lockIconSmall: { alignItems: 'center' },
+  lockBarSmall: { width: 6, height: 5, borderRadius: 3, borderWidth: 1, borderColor: COLORS.textMuted, borderBottomWidth: 0, marginBottom: -0.5 },
+  lockBodySmall: { width: 9, height: 6, borderRadius: 1.5, backgroundColor: COLORS.textMuted },
   completedDate: { fontSize: 9, color: COLORS.textMuted, marginTop: 4 },
-  checkBadge: { position: 'absolute', top: 8, right: 8 },
-  passportFooter: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-    paddingVertical: 16,
-  },
-  actions: {
-    marginTop: 20,
-    flexDirection: 'row',
-    gap: 10,
-  },
+  checkBadge: { position: 'absolute', top: 8, right: 8, width: 20, height: 20, borderRadius: 10, backgroundColor: COLORS.success, alignItems: 'center', justifyContent: 'center' },
+  checkMark: { fontSize: 12, color: '#fff', fontWeight: '700' },
+  passportFooter: { fontSize: 11, color: COLORS.textMuted, textAlign: 'center', paddingVertical: 16 },
+  actions: { marginTop: 20, flexDirection: 'row', gap: 10 },
   shareBtn: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 14,
-    backgroundColor: 'rgba(139, 92, 246, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.3)',
-    alignItems: 'center',
+    flex: 1, paddingVertical: 14, borderRadius: 14,
+    backgroundColor: 'rgba(139, 92, 246, 0.12)', borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.3)', alignItems: 'center',
   },
   shareBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.accent },
 });

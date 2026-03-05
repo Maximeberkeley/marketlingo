@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
-import { TouchableOpacity, Text, View, StyleSheet, Animated } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, Animated, Image } from 'react-native';
 import { COLORS } from '../../lib/constants';
+import { APP_ICONS } from '../../lib/icons';
 
 export type NodeStatus = 'locked' | 'current' | 'completed' | 'available';
 
@@ -48,7 +49,6 @@ export function RoadmapNode({ weekNumber, status, onClick }: RoadmapNodeProps) {
       style={styles.container}
       activeOpacity={isInteractive ? 0.7 : 1}
     >
-      {/* Pulse ring for current */}
       {status === 'current' && (
         <Animated.View
           style={[
@@ -62,7 +62,12 @@ export function RoadmapNode({ weekNumber, status, onClick }: RoadmapNodeProps) {
       )}
 
       <View style={nodeStyle}>
-        {status === 'locked' && <Text style={styles.lockIcon}>🔒</Text>}
+        {status === 'locked' && (
+          <View style={styles.lockIconWrap}>
+            <View style={styles.lockBar} />
+            <View style={styles.lockBody} />
+          </View>
+        )}
         {status === 'completed' && <Text style={styles.checkIcon}>✓</Text>}
         {(status === 'current' || status === 'available') && (
           <Text style={styles.weekNumber}>{weekNumber}</Text>
@@ -121,7 +126,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.accent,
   },
-  lockIcon: { fontSize: 16 },
+  lockIconWrap: { alignItems: 'center' },
+  lockBar: { width: 10, height: 8, borderRadius: 5, borderWidth: 1.5, borderColor: COLORS.textMuted, borderBottomWidth: 0, marginBottom: -1 },
+  lockBody: { width: 14, height: 10, borderRadius: 2, backgroundColor: COLORS.textMuted },
   checkIcon: { fontSize: 20, color: '#fff', fontWeight: '700' },
   weekNumber: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
 });

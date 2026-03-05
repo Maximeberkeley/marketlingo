@@ -18,6 +18,7 @@ import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { NotificationOnboarding } from '../components/onboarding/NotificationOnboarding';
+import { APP_ICONS } from '../lib/icons';
 
 // Deep-link route map (mirrors _layout.tsx)
 const NOTIFICATION_ROUTES: Record<string, string> = {
@@ -123,7 +124,7 @@ export default function SettingsScreen() {
       const data = (notification.request.content.data || {}) as Record<string, any>;
       const route = data?.route || (data?.type ? NOTIFICATION_ROUTES[data.type] : null);
       Alert.alert(
-        notification.request.content.title || '🔔 Notification',
+        notification.request.content.title || 'Notification',
         notification.request.content.body || '',
         [
           { text: 'Dismiss', style: 'cancel' },
@@ -163,7 +164,7 @@ export default function SettingsScreen() {
           .update({ push_token: token })
           .eq('id', user!.id);
 
-        Alert.alert('Notifications Enabled! 🔔', 'You\'ll receive daily reminders and streak alerts.');
+        Alert.alert('Notifications Enabled', 'You\'ll receive daily reminders and streak alerts.');
       } catch (e) {
         console.error('Push registration error:', e);
         setPushEnabled(false);
@@ -219,14 +220,14 @@ export default function SettingsScreen() {
     }
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: '🦁 Leo: Your streak is at risk!',
+        title: 'Leo: Your streak is at risk!',
         body: "5 mins is all I ask… Don't lose your streak today!",
         data: { type: 'streak_warning', route: '/(tabs)/home' },
         sound: true,
       },
       trigger: { seconds: 3 } as any,
     });
-    Alert.alert('Test Sent ✅', "You'll receive a notification in 3 seconds. Tap it to test deep-linking!");
+    Alert.alert('Test Sent', "You'll receive a notification in 3 seconds. Tap it to test deep-linking!");
   };
 
   const handleResetPassword = async () => {
@@ -291,7 +292,7 @@ export default function SettingsScreen() {
               <Text style={styles.settingLabel}>Push Notifications</Text>
               <Text style={styles.settingDesc}>
                 {pushEnabled && pushToken
-                  ? '✅ Registered — you\'ll receive alerts'
+                  ? 'Registered — you\'ll receive alerts'
                   : 'Enable to receive reminders and alerts'}
               </Text>
             </View>
@@ -358,7 +359,7 @@ export default function SettingsScreen() {
               onPress={() => setShowNotifOnboarding(true)}
               activeOpacity={0.85}
             >
-              <Text style={{ fontSize: 18 }}>🔔</Text>
+              <Image source={APP_ICONS.streak} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.notifSetupLabel}>Set Up Notifications</Text>
                 <Text style={styles.notifSetupDesc}>Daily reminders, streaks & industry news</Text>
@@ -370,14 +371,14 @@ export default function SettingsScreen() {
           {/* Token debug info (subtle) */}
           {pushEnabled && pushToken && (
             <View style={styles.tokenCard}>
-              <Text style={styles.tokenLabel}>📱 Device registered for push</Text>
+              <Text style={styles.tokenLabel}>Device registered for push</Text>
             </View>
           )}
 
           {/* Test deep-link notification */}
           {pushEnabled && (
             <TouchableOpacity style={styles.testNotifBtn} onPress={handleTestNotification}>
-              <Text style={styles.testNotifIcon}>🔔</Text>
+              <Image source={APP_ICONS.streak} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.testNotifLabel}>Send Test Notification</Text>
                 <Text style={styles.testNotifDesc}>Fires in 3s — tap to test deep-linking</Text>
@@ -397,13 +398,13 @@ export default function SettingsScreen() {
           </View>
 
           <TouchableOpacity style={styles.menuItem} onPress={handleResetPassword}>
-            <Text style={{ fontSize: 18 }}>🔑</Text>
+            <Image source={APP_ICONS.profile} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
             <Text style={styles.menuText}>Reset Password</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/subscription' as any)}>
-            <Text style={{ fontSize: 18 }}>👑</Text>
+            <Image source={APP_ICONS.achievements} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
             <Text style={styles.menuText}>Manage Subscription</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
@@ -419,13 +420,13 @@ export default function SettingsScreen() {
           </View>
 
           <TouchableOpacity style={styles.menuItem}>
-            <Text style={{ fontSize: 18 }}>📜</Text>
+            <Image source={APP_ICONS.notebook} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
             <Text style={styles.menuText}>Terms of Service</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
-            <Text style={{ fontSize: 18 }}>🔒</Text>
+            <Image source={APP_ICONS.regulatory} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
             <Text style={styles.menuText}>Privacy Policy</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
@@ -438,7 +439,9 @@ export default function SettingsScreen() {
             style={[styles.menuItem, { backgroundColor: 'rgba(239, 68, 68, 0.08)', borderColor: 'rgba(239, 68, 68, 0.2)' }]}
             onPress={handleDeleteAccount}
           >
-            <Text style={{ fontSize: 18 }}>⚠️</Text>
+            <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: 'rgba(239,68,68,0.2)', alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ fontSize: 10, color: '#EF4444', fontWeight: '800' }}>!</Text>
+            </View>
             <Text style={[styles.menuText, { color: '#EF4444' }]}>Delete Account</Text>
           </TouchableOpacity>
         </View>
