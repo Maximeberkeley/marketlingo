@@ -141,7 +141,7 @@ export default function InvestmentModuleScreen() {
             <Text style={styles.headerSub}>Scenario {currentScenarioIndex + 1} of {moduleScenarios.length}</Text>
           </View>
           <View style={[styles.moduleIcon, { backgroundColor: moduleConfig.color + '20' }]}>
-            <Text style={{ fontSize: 18 }}>{moduleConfig.emoji}</Text>
+            <Image source={moduleConfig.icon} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
           </View>
         </View>
 
