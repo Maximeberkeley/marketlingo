@@ -14,9 +14,9 @@ import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { getMarketName } from '../lib/markets';
+import { APP_ICONS } from '../lib/icons';
 
 interface RegulatoryItem {
-  emoji: string;
   title: string;
   description: string;
   url?: string;

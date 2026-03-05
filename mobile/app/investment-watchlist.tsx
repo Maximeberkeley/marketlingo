@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -14,6 +15,7 @@ import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useInvestmentLab } from '../hooks/useInvestmentLab';
+import { APP_ICONS } from '../lib/icons';
 
 export default function InvestmentWatchlistScreen() {
   const insets = useSafeAreaInsets();
@@ -69,7 +71,7 @@ export default function InvestmentWatchlistScreen() {
         {/* Add Companies CTA */}
         <TouchableOpacity style={styles.addCard} onPress={() => router.push('/(tabs)/home')}>
           <View style={styles.addIcon}>
-            <Text style={{ fontSize: 20 }}>+</Text>
+            <Text style={{ fontSize: 20, color: COLORS.accent }}>+</Text>
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.addTitle}>Add Companies</Text>
@@ -84,7 +86,7 @@ export default function InvestmentWatchlistScreen() {
             {watchlist.map((company, index) => (
               <View key={company.id} style={styles.companyCard}>
                 <View style={styles.companyIcon}>
-                  <Text style={{ fontSize: 18 }}>🏢</Text>
+                  <Image source={APP_ICONS.passport} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.companyName} numberOfLines={1}>{company.name}</Text>
@@ -94,7 +96,7 @@ export default function InvestmentWatchlistScreen() {
                   style={styles.removeBtn}
                   onPress={() => handleRemove(company.id, company.name)}
                 >
-                  <Text style={{ fontSize: 14, color: '#EF4444' }}>🗑️</Text>
+                  <Text style={{ fontSize: 14, color: '#EF4444', fontWeight: '600' }}>×</Text>
                 </TouchableOpacity>
               </View>
             ))}
@@ -102,7 +104,7 @@ export default function InvestmentWatchlistScreen() {
         ) : (
           <View style={styles.emptyState}>
             <View style={styles.emptyIcon}>
-              <Text style={{ fontSize: 28 }}>🏢</Text>
+              <Image source={APP_ICONS.passport} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
             </View>
             <Text style={styles.emptyTitle}>No Companies Yet</Text>
             <Text style={styles.emptySubtitle}>Add companies from Key Players section to track them here</Text>
@@ -111,7 +113,7 @@ export default function InvestmentWatchlistScreen() {
 
         {/* Tips */}
         <View style={styles.tipsCard}>
-          <Text style={styles.tipsTitle}>💡 Watchlist Tips</Text>
+          <Text style={styles.tipsTitle}>Watchlist Tips</Text>
           <Text style={styles.tipsItem}>• Track companies you're interested in investing in</Text>
           <Text style={styles.tipsItem}>• Add from Key Players when exploring industries</Text>
           <Text style={styles.tipsItem}>• Use for building your investment thesis</Text>
