@@ -14,7 +14,6 @@ import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
-import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { MentorChatOverlay } from '../components/ai/MentorChatOverlay';
 import { TrainerCard } from '../components/trainer/TrainerCard';
@@ -22,6 +21,7 @@ import { getMentorForContext } from '../data/mentors';
 import type { Mentor } from '../data/mentors';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
+import { APP_ICONS } from '../lib/icons';
 
 
 // Market-specific hero images
