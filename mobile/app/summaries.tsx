@@ -73,8 +73,8 @@ export default function SummariesScreen() {
         <ScrollView contentContainerStyle={[styles.detailContent, { paddingBottom: insets.bottom + 40 }]} showsVerticalScrollIndicator={false}>
           <Text style={styles.detailTitle}>{selectedSummary.title}</Text>
           <View style={styles.detailMeta}>
-            <Text style={styles.detailMetaText}>📅 {formatDate(selectedSummary.for_date)}</Text>
-            <Text style={styles.detailMetaText}>🕐 {readTime(selectedSummary.content)} min read</Text>
+          <Text style={styles.detailMetaText}>{formatDate(selectedSummary.for_date)}</Text>
+            <Text style={styles.detailMetaText}>{readTime(selectedSummary.content)} min read</Text>
           </View>
           {selectedSummary.key_takeaways && selectedSummary.key_takeaways.length > 0 && (
             <View style={styles.takeawaysCard}>
