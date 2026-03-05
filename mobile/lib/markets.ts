@@ -118,6 +118,11 @@ export function getMarketById(id: string): MarketInfo | undefined {
   return markets.find((m) => m.id === id);
 }
 
+/** @deprecated Use market illustrations instead of emojis */
+export function getMarketEmoji(_id: string): string {
+  return '';
+}
+
 export function getMarketName(id: string): string {
   return getMarketById(id)?.name || "Industry";
 }
