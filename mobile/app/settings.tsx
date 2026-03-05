@@ -370,7 +370,7 @@ export default function SettingsScreen() {
           {/* Token debug info (subtle) */}
           {pushEnabled && pushToken && (
             <View style={styles.tokenCard}>
-              <Text style={styles.tokenLabel}>📱 Device registered for push</Text>
+              <Text style={styles.tokenLabel}>Device registered for push</Text>
             </View>
           )}
 
