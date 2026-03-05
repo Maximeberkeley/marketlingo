@@ -13,6 +13,8 @@ import { triggerHaptic } from '../lib/haptics';
 import { trackEvent } from '../lib/analytics';
 import { FriendCard } from '../components/friends/FriendCard';
 import { FriendActivityFeed } from '../components/friends/FriendActivityFeed';
+import { APP_ICONS } from '../lib/icons';
+import { FriendActivityFeed } from '../components/friends/FriendActivityFeed';
 
 export default function FriendsScreen() {
   const insets = useSafeAreaInsets();
