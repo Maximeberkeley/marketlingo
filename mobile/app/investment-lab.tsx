@@ -231,8 +231,8 @@ export default function InvestmentLabScreen() {
                   style={styles.scenarioCard}
                   onPress={() => handleModulePress(mod.id)}
                 >
-                  <View style={[styles.moduleIcon, { backgroundColor: mod.color + '20' }]}>
-                    <Text style={{ fontSize: 22 }}>{mod.emoji}</Text>
+                 <View style={[styles.moduleIcon, { backgroundColor: mod.color + '20' }]}>
+                     <Image source={mod.icon} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.scenarioTitle}>{mod.title}</Text>
