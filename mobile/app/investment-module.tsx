@@ -208,7 +208,7 @@ export default function InvestmentModuleScreen() {
             {showFeedback && currentScenario.explanation && (
               <View style={{ gap: 10 }}>
                 <View style={styles.insightCard}>
-                  <Text style={styles.insightLabel}>💡 Investment Insight</Text>
+                  <Text style={styles.insightLabel}>Investment Insight</Text>
                   <Text style={styles.insightBody}>{currentScenario.explanation}</Text>
                 </View>
                 {currentScenario.real_world_example && (
