@@ -127,7 +127,7 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
                         resizeMode="contain"
                       />
                     ) : (
-                      <Text style={{ fontSize: 28 }}>{company.logo}</Text>
+                      <Text style={{ fontSize: 22, fontWeight: '700', color: COLORS.textMuted }}>{company.name.charAt(0)}</Text>
                     )}
                   </View>
 

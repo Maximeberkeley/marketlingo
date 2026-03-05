@@ -93,7 +93,7 @@ export function CompanyDetailModal({ company, onClose }: CompanyDetailModalProps
                   resizeMode="contain"
                 />
               ) : (
-                <Text style={styles.logoEmoji}>{company.logo}</Text>
+                <Text style={styles.logoEmoji}>{company.name.charAt(0)}</Text>
               )}
             </View>
             <View style={{ flex: 1 }}>
