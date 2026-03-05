@@ -175,7 +175,7 @@ export default function FriendsScreen() {
             {activeTab === 'activity' && (
               friends.length === 0 ? (
                 <View style={styles.empty}>
-                  <Text style={styles.emptyEmoji}>📊</Text>
+                  <Image source={APP_ICONS.progress} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
                   <Text style={styles.emptyTitle}>No activity yet</Text>
                   <Text style={styles.emptySub}>Add friends to see what they're up to!</Text>
                 </View>
