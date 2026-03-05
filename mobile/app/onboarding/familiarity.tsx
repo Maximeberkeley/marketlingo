@@ -24,9 +24,9 @@ import { triggerHaptic } from '../../lib/haptics';
 const STEP_LABELS = ['Industry', 'Goal', 'Level'];
 
 const LEO_LEVEL_REACTIONS: Record<string, string> = {
-  beginner: "Perfect — we'll start from scratch! No jargon, I promise 🤝",
-  intermediate: "Nice! I'll skip the basics and go straight to the good stuff 🎯",
-  advanced: "Respect! Expert-mode unlocked. Let's get deep 🧠",
+  beginner: "Perfect — we'll start from scratch! No jargon, I promise.",
+  intermediate: "Nice! I'll skip the basics and go straight to the good stuff.",
+  advanced: "Respect! Expert-mode unlocked. Let's get deep.",
 };
 
 export default function FamiliarityScreen() {
@@ -200,7 +200,7 @@ export default function FamiliarityScreen() {
 
         {/* Almost done indicator */}
         <View style={styles.almostDone}>
-          <Text style={styles.almostDoneEmoji}>🎉</Text>
+          <Text style={styles.almostDoneEmoji}>·</Text>
           <Text style={styles.almostDoneText}>
             Almost done! One more tap and you're in.
           </Text>
@@ -209,13 +209,13 @@ export default function FamiliarityScreen() {
         {/* Info Box */}
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
-            💡 You can change this anytime in Settings
+            You can change this anytime in Settings
           </Text>
         </View>
       </Animated.ScrollView>
 
       <StickyBottomCTA
-        title="Start Learning 🚀"
+        title="Start Learning"
         onPress={handleContinue}
         disabled={!selectedLevel}
       />

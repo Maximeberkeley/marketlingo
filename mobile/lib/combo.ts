@@ -72,9 +72,9 @@ export function comboWrong(state: ComboState, baseXP: number): { newState: Combo
 }
 
 export function getComboMessage(combo: number): string | null {
-  if (combo === 3) return '🔥 On Fire! 2x XP';
-  if (combo === 5) return '⚡ UNSTOPPABLE! 3x XP';
-  if (combo === 10) return '🌟 LEGENDARY! 3x XP';
-  if (combo > 5 && combo % 5 === 0) return `💫 ${combo} combo! 3x XP`;
+  if (combo === 3) return 'On Fire! 2x XP';
+  if (combo === 5) return 'UNSTOPPABLE! 3x XP';
+  if (combo === 10) return 'LEGENDARY! 3x XP';
+  if (combo > 5 && combo % 5 === 0) return `${combo} combo! 3x XP`;
   return null;
 }

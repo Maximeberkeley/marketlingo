@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
+import { APP_ICONS } from '../../lib/icons';
 
 interface NoteEntry {
   id: string;
@@ -64,10 +65,10 @@ const typeColors: Record<string, { bg: string; text: string; label: string }> = 
 };
 
 const filters = [
-  { id: null, label: 'All', emoji: '📖' },
-  { id: 'lesson', label: 'Lessons', emoji: '💡' },
-  { id: 'news', label: 'News', emoji: '📰' },
-  { id: 'trainer', label: 'Trainer', emoji: '🎯' },
+  { id: null, label: 'All' },
+  { id: 'lesson', label: 'Lessons' },
+  { id: 'news', label: 'News' },
+  { id: 'trainer', label: 'Trainer' },
 ];
 
 export default function NotebookScreen() {
@@ -252,7 +253,9 @@ export default function NotebookScreen() {
             {Object.entries(groupedNotes).map(([date, dateNotes]) => (
               <View key={date}>
                 <View style={styles.dateHeader}>
-                  <Text style={styles.dateEmoji}>📅</Text>
+                  <View style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 8, color: '#fff', fontWeight: '700' }}>·</Text>
+                  </View>
                   <Text style={styles.dateText}>{date}</Text>
                 </View>
                 <View style={{ gap: 8 }}>
@@ -285,7 +288,7 @@ export default function NotebookScreen() {
           </View>
         ) : (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyEmoji}>📓</Text>
+            <Image source={APP_ICONS.notebook} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
             <Text style={styles.emptyTitle}>
               {searchQuery ? 'No notes found' : 'Start your notebook'}
             </Text>
@@ -296,7 +299,7 @@ export default function NotebookScreen() {
             </Text>
             {!searchQuery && (
               <TouchableOpacity style={styles.emptyButton} onPress={() => setShowAddNote(true)}>
-                <Text style={styles.emptyButtonText}>📝 Add your first note</Text>
+                <Text style={styles.emptyButtonText}>Add your first note</Text>
               </TouchableOpacity>
             )}
           </View>

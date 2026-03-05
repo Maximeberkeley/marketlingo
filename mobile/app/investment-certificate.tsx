@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Share,
   Alert,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -16,6 +17,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useInvestmentLab } from '../hooks/useInvestmentLab';
 import { getMarketName } from '../lib/markets';
+import { APP_ICONS } from '../lib/icons';
 
 export default function InvestmentCertificateScreen() {
   const insets = useSafeAreaInsets();
@@ -45,7 +47,7 @@ export default function InvestmentCertificateScreen() {
     const marketName = getMarketName(selectedMarket || '');
     try {
       await Share.share({
-        message: `🎓 I've earned my Investment Certification in ${marketName} from MarketLingo! Certified investment-ready after comprehensive training in valuation, due diligence, risk assessment, and portfolio construction. #InvestmentCertification #MarketLingo`,
+        message: `I've earned my Investment Certification in ${marketName} from MarketLingo! Certified investment-ready after comprehensive training in valuation, due diligence, risk assessment, and portfolio construction. #InvestmentCertification #MarketLingo`,
       });
     } catch {}
   };
@@ -62,7 +64,7 @@ export default function InvestmentCertificateScreen() {
     return (
       <View style={[styles.container, styles.centered]}>
         <View style={styles.lockedIcon}>
-          <Text style={{ fontSize: 40 }}>🏆</Text>
+          <Image source={APP_ICONS.achievements} style={{ width: 40, height: 40, resizeMode: 'contain' }} />
         </View>
         <Text style={styles.lockedTitle}>Not Yet Certified</Text>
         <Text style={styles.lockedSubtitle}>
@@ -101,7 +103,7 @@ export default function InvestmentCertificateScreen() {
         <View style={styles.certCard}>
           <View style={styles.certBorder}>
             <View style={styles.certInner}>
-              <Text style={{ fontSize: 40, marginBottom: 8 }}>🎓</Text>
+              <Image source={APP_ICONS.achievements} style={{ width: 40, height: 40, resizeMode: 'contain', marginBottom: 8 }} />
               <Text style={styles.certLabel}>CERTIFICATE OF COMPLETION</Text>
               <Text style={styles.certName}>{userName}</Text>
               <Text style={styles.certBody}>
@@ -131,7 +133,10 @@ export default function InvestmentCertificateScreen() {
 
               <View style={styles.certDivider} />
               <Text style={styles.certDate}>{completionDate}</Text>
-              <Text style={styles.certXP}>⚡ {progress.investment_xp} Investment XP</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Image source={APP_ICONS.progress} style={{ width: 14, height: 14, resizeMode: 'contain' }} />
+                <Text style={styles.certXP}>{progress.investment_xp} Investment XP</Text>
+              </View>
               <Text style={styles.certIssuer}>MarketLingo</Text>
             </View>
           </View>
@@ -140,21 +145,21 @@ export default function InvestmentCertificateScreen() {
         {/* Actions */}
         <View style={styles.actionsRow}>
           <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-            <Text style={styles.shareText}>📤 Share</Text>
+            <Text style={styles.shareText}>Share</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.linkedinButton}
             onPress={() => Alert.alert('LinkedIn', 'Open LinkedIn to share your certificate.')}
           >
-            <Text style={styles.linkedinText}>💼 LinkedIn</Text>
+            <Text style={styles.linkedinText}>LinkedIn</Text>
           </TouchableOpacity>
         </View>
 
         {/* Share Message Preview */}
         <View style={styles.previewCard}>
-          <Text style={styles.previewLabel}>📋 Share Message</Text>
+          <Text style={styles.previewLabel}>Share Message</Text>
           <Text style={styles.previewText}>
-            🎓 I've earned my Investment Certification in {marketName} from MarketLingo!
+            I've earned my Investment Certification in {marketName} from MarketLingo!
             Certified investment-ready after comprehensive training in valuation, due diligence,
             risk assessment, and portfolio construction.
           </Text>

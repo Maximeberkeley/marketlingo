@@ -20,6 +20,7 @@ import { useSubscription } from '../hooks/useSubscription';
 import { MentorChatOverlay } from '../components/ai/MentorChatOverlay';
 import { getMentorForContext } from '../data/mentors';
 import type { Mentor } from '../data/mentors';
+import { APP_ICONS } from '../lib/icons';
 
 
 // Market-specific hero images
@@ -60,10 +61,10 @@ const MARKET_ACCENT_COLORS: Record<string, string> = {
 };
 
 const MODULES = [
-  { id: 'valuation', title: 'Valuation Mastery', desc: 'Master industry-specific valuation methodologies', emoji: '📊', color: '#10B981', scoreKey: 'valuation_score' as const },
-  { id: 'due_diligence', title: 'Due Diligence', desc: 'Systematic investment evaluation', emoji: '👁️', color: '#3B82F6', scoreKey: 'due_diligence_score' as const },
-  { id: 'risk_assessment', title: 'Risk Assessment', desc: 'Identify and quantify investment risks', emoji: '🛡️', color: '#F59E0B', scoreKey: 'risk_assessment_score' as const },
-  { id: 'portfolio', title: 'Portfolio Construction', desc: 'Build balanced investment portfolios', emoji: '🧩', color: '#8B5CF6', scoreKey: 'portfolio_construction_score' as const },
+  { id: 'valuation', title: 'Valuation Mastery', desc: 'Master industry-specific valuation methodologies', icon: APP_ICONS.progress, color: '#10B981', scoreKey: 'valuation_score' as const },
+  { id: 'due_diligence', title: 'Due Diligence', desc: 'Systematic investment evaluation', icon: APP_ICONS.lens, color: '#3B82F6', scoreKey: 'due_diligence_score' as const },
+  { id: 'risk_assessment', title: 'Risk Assessment', desc: 'Identify and quantify investment risks', icon: APP_ICONS.regulatory, color: '#F59E0B', scoreKey: 'risk_assessment_score' as const },
+  { id: 'portfolio', title: 'Portfolio Construction', desc: 'Build balanced investment portfolios', icon: APP_ICONS.concept, color: '#8B5CF6', scoreKey: 'portfolio_construction_score' as const },
 ];
 
 export default function InvestmentLabScreen() {
@@ -138,13 +139,13 @@ export default function InvestmentLabScreen() {
             </TouchableOpacity>
             <View style={{ gap: 8 }}>
               <View style={[styles.heroBadge, { backgroundColor: accentColor + 'CC' }]}>
-                <Text style={styles.heroBadgeText}>📈 INVESTMENT LAB</Text>
+                <Text style={styles.heroBadgeText}>INVESTMENT LAB</Text>
               </View>
               <View style={styles.heroBannerTitleRow}>
                 <Text style={styles.heroBannerTitle}>Investment Lab</Text>
                 {!isProUser && (
-                  <View style={styles.proChip}>
-                    <Text style={styles.proChipText}>👑 PRO</Text>
+                   <View style={styles.proChip}>
+                     <Text style={styles.proChipText}>PRO</Text>
                   </View>
                 )}
               </View>
@@ -161,9 +162,9 @@ export default function InvestmentLabScreen() {
                 </View>
                 <View style={styles.heroBannerDivider} />
                 <View style={styles.heroBannerStat}>
-                  <Text style={[styles.heroBannerStatNum, progress?.investment_certified && { color: '#4ADE80' }]}>
-                    {progress?.investment_certified ? '✅' : '🔒'}
-                  </Text>
+                   <Text style={[styles.heroBannerStatNum, progress?.investment_certified && { color: '#4ADE80' }]}>
+                     {progress?.investment_certified ? '✓' : '—'}
+                   </Text>
                   <Text style={styles.heroBannerStatLabel}>Certified</Text>
                 </View>
               </View>
@@ -187,14 +188,14 @@ export default function InvestmentLabScreen() {
                 </View>
                 <View style={styles.progressDivider} />
                 <View style={styles.progressStat}>
-                  <Text style={styles.progressValue}>⚡ {progress.investment_xp}</Text>
+                  <Text style={styles.progressValue}>{progress.investment_xp}</Text>
                   <Text style={styles.progressLabel}>XP</Text>
                 </View>
                 <View style={styles.progressDivider} />
                 <View style={styles.progressStat}>
-                  <Text style={[styles.progressValue, progress.investment_certified && { color: '#22C55E' }]}>
-                    {progress.investment_certified ? '✅' : '🔒'}
-                  </Text>
+                   <Text style={[styles.progressValue, progress.investment_certified && { color: '#22C55E' }]}>
+                     {progress.investment_certified ? '✓' : '—'}
+                   </Text>
                   <Text style={styles.progressLabel}>Certified</Text>
                 </View>
               </View>
@@ -207,13 +208,13 @@ export default function InvestmentLabScreen() {
           {/* Not Pro */}
           {!isProUser && (
             <View style={styles.heroCard}>
-              <Text style={{ fontSize: 32, marginBottom: 8 }}>📈</Text>
+              <Image source={APP_ICONS.progress} style={{ width: 32, height: 32, resizeMode: 'contain', marginBottom: 8 }} />
               <Text style={styles.heroTitle}>Real-World Investment Scenarios</Text>
               <Text style={styles.heroDesc}>
                 Analyze companies, evaluate markets, and make investment decisions based on real industry data.
               </Text>
               <TouchableOpacity style={[styles.upgradeBtn, { backgroundColor: accentColor }]} onPress={() => router.push('/subscription')}>
-                <Text style={styles.upgradeBtnText}>👑 Unlock with Pro</Text>
+                <Text style={styles.upgradeBtnText}>Unlock with Pro</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -230,8 +231,8 @@ export default function InvestmentLabScreen() {
                   style={styles.scenarioCard}
                   onPress={() => handleModulePress(mod.id)}
                 >
-                  <View style={[styles.moduleIcon, { backgroundColor: mod.color + '20' }]}>
-                    <Text style={{ fontSize: 22 }}>{mod.emoji}</Text>
+                 <View style={[styles.moduleIcon, { backgroundColor: mod.color + '20' }]}>
+                     <Image source={mod.icon} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.scenarioTitle}>{mod.title}</Text>
@@ -242,7 +243,7 @@ export default function InvestmentLabScreen() {
                           <Text style={[styles.difficultyText, { color: passed ? '#22C55E' : '#FBBF24' }]}>{score}%</Text>
                         </View>
                       )}
-                      {passed && <Text style={{ fontSize: 12 }}>✅</Text>}
+                      {passed && <View style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: '#22C55E', alignItems: 'center', justifyContent: 'center' }}><Text style={{ fontSize: 10, color: '#fff', fontWeight: '700' }}>✓</Text></View>}
                     </View>
                   </View>
                   <Text style={styles.chevron}>›</Text>
@@ -256,7 +257,7 @@ export default function InvestmentLabScreen() {
             style={[styles.watchlistCard, progress?.investment_certified && { borderColor: 'rgba(34,197,94,0.3)', backgroundColor: 'rgba(34,197,94,0.05)' }]}
             onPress={() => router.push('/investment-certificate')}
           >
-            <Text style={{ fontSize: 24 }}>{progress?.investment_certified ? '🎓' : '🏆'}</Text>
+            <Image source={APP_ICONS.achievements} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
             <View style={{ flex: 1 }}>
               <Text style={styles.watchlistTitle}>
                 {progress?.investment_certified ? 'View Certificate' : 'Investment Certification'}
@@ -273,7 +274,7 @@ export default function InvestmentLabScreen() {
             style={styles.watchlistCard}
             onPress={() => router.push('/investment-watchlist')}
           >
-            <Text style={{ fontSize: 24 }}>👁️</Text>
+            <Image source={APP_ICONS.lens} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
             <View style={{ flex: 1 }}>
               <Text style={styles.watchlistTitle}>Your Watchlist</Text>
               <Text style={styles.watchlistDesc}>
@@ -285,7 +286,7 @@ export default function InvestmentLabScreen() {
 
           {/* Chat with Mentor */}
           <TouchableOpacity style={styles.mentorChatCard} onPress={handleOpenMentorChat}>
-            <Text style={{ fontSize: 24 }}>💬</Text>
+            <Image source={APP_ICONS.trainer} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
             <View style={{ flex: 1 }}>
               <Text style={styles.watchlistTitle}>Ask Your Investment Mentor</Text>
               <Text style={styles.watchlistDesc}>Get AI-powered investment guidance</Text>

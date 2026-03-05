@@ -13,6 +13,8 @@ import { triggerHaptic } from '../lib/haptics';
 import { trackEvent } from '../lib/analytics';
 import { FriendCard } from '../components/friends/FriendCard';
 import { FriendActivityFeed } from '../components/friends/FriendActivityFeed';
+import { APP_ICONS } from '../lib/icons';
+import { FriendActivityFeed } from '../components/friends/FriendActivityFeed';
 
 export default function FriendsScreen() {
   const insets = useSafeAreaInsets();
@@ -57,7 +59,7 @@ export default function FriendsScreen() {
     setAdding(false);
     if (result.success) {
       trackEvent('friend_request_sent', { to: addUsername.trim() });
-      Alert.alert('Request Sent! 🎉', `Friend request sent to "${addUsername}"`);
+      Alert.alert('Request Sent!', `Friend request sent to "${addUsername}"`);
       setAddUsername('');
     } else {
       Alert.alert('Oops', result.error || 'Something went wrong');
@@ -67,7 +69,7 @@ export default function FriendsScreen() {
   const handleNudge = (friend: Friend) => {
     triggerHaptic('medium');
     trackEvent('nudge_sent', { to: friend.id });
-    Alert.alert('👋 Nudge Sent!', `${friend.username} will get a reminder to keep learning!`);
+    Alert.alert('Nudge Sent!', `${friend.username} will get a reminder to keep learning!`);
   };
 
   const handleRemove = (friend: Friend) => {
@@ -100,7 +102,7 @@ export default function FriendsScreen() {
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <Text style={styles.backBtnText}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>👥 Friends</Text>
+        <Text style={styles.headerTitle}>Friends</Text>
         {pendingRequests.length > 0 && (
           <View style={styles.badge}><Text style={styles.badgeText}>{pendingRequests.length}</Text></View>
         )}
@@ -153,7 +155,7 @@ export default function FriendsScreen() {
             {activeTab === 'friends' && (
               friends.length === 0 ? (
                 <View style={styles.empty}>
-                  <Text style={styles.emptyEmoji}>👋</Text>
+                  <Image source={APP_ICONS.trainer} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
                   <Text style={styles.emptyTitle}>No friends yet</Text>
                   <Text style={styles.emptySub}>Add friends by username to see their progress and compete!</Text>
                 </View>
@@ -175,7 +177,7 @@ export default function FriendsScreen() {
             {activeTab === 'activity' && (
               friends.length === 0 ? (
                 <View style={styles.empty}>
-                  <Text style={styles.emptyEmoji}>📊</Text>
+                  <Image source={APP_ICONS.progress} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
                   <Text style={styles.emptyTitle}>No activity yet</Text>
                   <Text style={styles.emptySub}>Add friends to see what they're up to!</Text>
                 </View>
@@ -187,7 +189,7 @@ export default function FriendsScreen() {
             {activeTab === 'requests' && (
               pendingRequests.length === 0 ? (
                 <View style={styles.empty}>
-                  <Text style={styles.emptyEmoji}>📬</Text>
+                  <Image source={APP_ICONS.quests} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
                   <Text style={styles.emptyTitle}>No pending requests</Text>
                 </View>
               ) : (
@@ -247,7 +249,7 @@ const styles = StyleSheet.create({
   scrollContent: { paddingHorizontal: 16 },
   list: { gap: 8 },
   empty: { alignItems: 'center', paddingTop: 60 },
-  emptyEmoji: { fontSize: 48, marginBottom: 12 },
+  emptyTitle: { fontSize: 16, color: COLORS.textPrimary, fontWeight: '500', marginBottom: 6 },
   emptyTitle: { fontSize: 16, color: COLORS.textPrimary, fontWeight: '500', marginBottom: 6 },
   emptySub: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center', paddingHorizontal: 20 },
   requestCard: {
