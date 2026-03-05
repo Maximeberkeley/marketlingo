@@ -8,10 +8,11 @@ import {
   Animated,
   Modal,
   Image,
+  PanResponder,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { COLORS } from '../../lib/constants';
+import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { mentors, LEO_VOICE_ID } from '../../data/mentors';
 import { getPrimaryMentorForMarket } from '../../data/marketConfig';
 import { ConceptCard, parseSlideIntoCards, ConceptCardType } from './ConceptCard';
@@ -19,6 +20,7 @@ import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
 import { AskLeoOverlay } from '../ai/AskLeoOverlay';
 import { playSound } from '../../lib/sounds';
 import { useNarration } from '../../hooks/useNarration';
+import { APP_ICONS } from '../../lib/icons';
 
 const MENTOR_IMAGES: Record<string, any> = {
   maya: require('../../assets/mentors/mentor-maya.png'),
@@ -30,6 +32,7 @@ const MENTOR_IMAGES: Record<string, any> = {
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const SWIPE_THRESHOLD = 50;
 
 interface Source {
   label: string;
@@ -59,7 +62,7 @@ interface SlideReaderV2Props {
   mentorName?: string;
 }
 
-const MINIMUM_LESSON_TIME_SECONDS = 120; // Reduced since cards are bite-sized
+const MINIMUM_LESSON_TIME_SECONDS = 120;
 
 const TYPE_COLORS: Record<string, string> = {
   LESSON: '#22C55E',
@@ -105,6 +108,10 @@ export function SlideReaderV2({
   const [narrationEnabled, setNarrationEnabled] = useState(false);
   const cardKey = useRef(0);
 
+  // Swipe animation
+  const swipeX = useRef(new Animated.Value(0)).current;
+  const cardOpacity = useRef(new Animated.Value(1)).current;
+
   // Resolve mentor voice for this market
   const mentorId = marketId ? getPrimaryMentorForMarket(marketId) : 'sophia';
   const mentor = mentors.find(m => m.id === mentorId) || mentors[0];
@@ -126,43 +133,31 @@ export function SlideReaderV2({
     return () => clearInterval(interval);
   }, [startTime]);
 
-  // Auto-narrate when card changes and narration is enabled
+  // Auto-narrate when card changes
   useEffect(() => {
     if (!narrationEnabled) return;
     const card = allCards[currentCard];
     if (!card) return;
-
     if (card.type === 'concept') {
-      const textToRead = [card.title, card.content, ...(card.bullets || [])]
-        .filter(Boolean)
-        .join('. ');
+      const textToRead = [card.title, card.content, ...(card.bullets || [])].filter(Boolean).join('. ');
       speak(textToRead);
     } else {
-      // Leo interstitials — don't narrate, just stop
       stopNarration();
     }
   }, [currentCard, narrationEnabled]);
 
-  // Stop narration when toggled off
-  useEffect(() => {
-    if (!narrationEnabled) stopNarration();
-  }, [narrationEnabled]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => { stopNarration(); };
-  }, []);
+  useEffect(() => { if (!narrationEnabled) stopNarration(); }, [narrationEnabled]);
+  useEffect(() => { return () => { stopNarration(); }; }, []);
 
   const hasMetMinimumTime = timeSpentSeconds >= MINIMUM_LESSON_TIME_SECONDS;
 
-  // Build all cards from all slides
+  // Build all cards from slides
   const allCards: CardItem[] = useMemo(() => {
     const items: CardItem[] = [];
 
     slides.forEach((slide, slideIdx) => {
       const parsed = parseSlideIntoCards(slide.title, slide.body, [], slideIdx);
       parsed.forEach((card) => {
-        // Skip source-only cards — they add no learning value
         if (card.type === 'sources') return;
         items.push({
           type: 'concept',
@@ -176,7 +171,7 @@ export function SlideReaderV2({
       });
     });
 
-    // Append a single sources card at the very end if the last slide has sources
+    // Single sources card at end
     const lastSlide = slides[slides.length - 1];
     if (lastSlide?.sources?.length > 0) {
       items.push({
@@ -188,10 +183,9 @@ export function SlideReaderV2({
       });
     }
 
-    // Cap at ~12 concept cards — but use smart merging instead of sampling
+    // Smart merging for cap
     const MAX_CONCEPT_CARDS = 12;
     if (items.length > MAX_CONCEPT_CARDS) {
-      // Keep all headers and bullet groups, merge consecutive concept paragraphs
       const merged: CardItem[] = [];
       let pendingContent = '';
       let pendingTitle: string | undefined;
@@ -199,7 +193,6 @@ export function SlideReaderV2({
 
       for (const item of items) {
         if (item.type !== 'concept') {
-          // Flush any pending
           if (pendingContent) {
             merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
             pendingContent = '';
@@ -217,7 +210,6 @@ export function SlideReaderV2({
           }
           merged.push(card);
         } else {
-          // Merge consecutive concept cards
           if (pendingContent.length > 0 && (pendingContent.length + (card.content?.length || 0)) > 600) {
             merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
             pendingContent = card.content || '';
@@ -234,18 +226,13 @@ export function SlideReaderV2({
         merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
       }
 
-      // If still too many after merging, remove excess headers (keep first & last)
       if (merged.length > MAX_CONCEPT_CARDS) {
         const result: CardItem[] = [];
         let headerCount = 0;
         for (const item of merged) {
           if (item.type === 'concept' && item.cardType === 'header') {
             headerCount++;
-            // Keep first header, last header, and every 3rd header
-            if (headerCount === 1 || headerCount % 3 === 0) {
-              result.push(item);
-            }
-            // Skip excess headers
+            if (headerCount === 1 || headerCount % 3 === 0) result.push(item);
           } else {
             result.push(item);
           }
@@ -258,27 +245,18 @@ export function SlideReaderV2({
       }
     }
 
-    // Insert Leo cards at strategic positions
+    // Insert Leo cards
     const totalItems = items.length;
     const leoPositions: { index: number; leoType: any }[] = [];
-
     for (let i = 0; i < totalItems; i++) {
       const leoType = shouldShowLeoCard(i, totalItems);
-      if (leoType) {
-        leoPositions.push({ index: i, leoType });
-      }
+      if (leoType) leoPositions.push({ index: i, leoType });
     }
-
-    // Insert in reverse to maintain indices
     for (let i = leoPositions.length - 1; i >= 0; i--) {
       const { index, leoType } = leoPositions[i];
       const nearbyItem = items[index];
       const slideIndex = nearbyItem && 'slideIndex' in nearbyItem ? nearbyItem.slideIndex : 0;
-      items.splice(index, 0, {
-        type: 'leo',
-        leoType,
-        slideIndex,
-      });
+      items.splice(index, 0, { type: 'leo', leoType, slideIndex });
     }
 
     return items;
@@ -291,10 +269,9 @@ export function SlideReaderV2({
   const currentSlide = slides[currentSlideIndex];
   const isLastCard = currentCard >= totalCards - 1;
 
-  // Paywall check
+  // Paywall
   const paywallCardIndex = useMemo(() => {
     if (isProUser || isReview) return -1;
-    // Find the card index corresponding to slide 3 (4th slide, 0-indexed)
     let count = 0;
     for (let i = 0; i < allCards.length; i++) {
       const card = allCards[i];
@@ -306,6 +283,22 @@ export function SlideReaderV2({
     return -1;
   }, [allCards, isProUser, isReview]);
 
+  const animateTransition = useCallback((direction: 'left' | 'right', callback: () => void) => {
+    const toX = direction === 'left' ? -SCREEN_WIDTH * 0.3 : SCREEN_WIDTH * 0.3;
+    Animated.parallel([
+      Animated.timing(swipeX, { toValue: toX, duration: 150, useNativeDriver: true }),
+      Animated.timing(cardOpacity, { toValue: 0.3, duration: 150, useNativeDriver: true }),
+    ]).start(() => {
+      callback();
+      swipeX.setValue(direction === 'left' ? SCREEN_WIDTH * 0.15 : -SCREEN_WIDTH * 0.15);
+      cardOpacity.setValue(0.3);
+      Animated.parallel([
+        Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }),
+        Animated.timing(cardOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+      ]).start();
+    });
+  }, [swipeX, cardOpacity]);
+
   const goNext = useCallback(() => {
     if (isLastCard) {
       setShowCompletion(true);
@@ -313,34 +306,52 @@ export function SlideReaderV2({
       playSound('lessonComplete');
       return;
     }
-
-    // Paywall
     if (paywallCardIndex > 0 && currentCard + 1 >= paywallCardIndex) {
       onPaywallTrigger?.();
       return;
     }
-
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    cardKey.current++;
-    setCurrentCard(prev => prev + 1);
-  }, [isLastCard, currentCard, paywallCardIndex, onPaywallTrigger]);
+    animateTransition('left', () => {
+      cardKey.current++;
+      setCurrentCard(prev => prev + 1);
+    });
+  }, [isLastCard, currentCard, paywallCardIndex, onPaywallTrigger, animateTransition]);
 
   const goPrev = useCallback(() => {
     if (currentCard <= 0) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    cardKey.current++;
-    setCurrentCard(prev => prev - 1);
-  }, [currentCard]);
+    animateTransition('right', () => {
+      cardKey.current++;
+      setCurrentCard(prev => prev - 1);
+    });
+  }, [currentCard, animateTransition]);
+
+  // Swipe gesture
+  const panResponder = useMemo(() => PanResponder.create({
+    onMoveShouldSetPanResponder: (_, gestureState) => {
+      return Math.abs(gestureState.dx) > 10 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+    },
+    onPanResponderMove: (_, gestureState) => {
+      swipeX.setValue(gestureState.dx * 0.4);
+    },
+    onPanResponderRelease: (_, gestureState) => {
+      if (gestureState.dx < -SWIPE_THRESHOLD) {
+        goNext();
+      } else if (gestureState.dx > SWIPE_THRESHOLD) {
+        goPrev();
+      } else {
+        Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }).start();
+      }
+    },
+  }), [goNext, goPrev]);
 
   const handleComplete = useCallback(() => {
     setShowCompletion(false);
     onComplete(isReview, timeSpentSeconds);
   }, [isReview, timeSpentSeconds, onComplete]);
 
-  // Render the current card
   const renderCard = () => {
     if (!currentCardData) return null;
-
     if (currentCardData.type === 'leo') {
       return (
         <LeoInterstitial
@@ -351,7 +362,6 @@ export function SlideReaderV2({
         />
       );
     }
-
     return (
       <ConceptCard
         key={`card-${currentCard}`}
@@ -371,7 +381,7 @@ export function SlideReaderV2({
     <Modal visible animationType="slide" presentationStyle="fullScreen">
       <View style={[styles.container, { paddingTop: insets.top }]}>
 
-        {/* ── Top Bar ── */}
+        {/* Top Bar */}
         <View style={styles.topBar}>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
             <Text style={styles.closeIcon}>✕</Text>
@@ -381,104 +391,82 @@ export function SlideReaderV2({
             <Text style={styles.stackLabel} numberOfLines={1}>{stackTitle}</Text>
           </View>
 
-          {/* Ask Leo button */}
-          <TouchableOpacity
-            onPress={() => setShowAskLeo(true)}
-            style={styles.askLeoBtn}
-          >
+          {/* Ask Leo */}
+          <TouchableOpacity onPress={() => setShowAskLeo(true)} style={styles.askLeoBtn}>
             <Image source={LEO_IMAGE} style={styles.askLeoImage} />
-            <Text style={styles.askLeoText}>?</Text>
           </TouchableOpacity>
 
-          {/* Narration toggle — shows mentor name */}
+          {/* Narration toggle */}
           <TouchableOpacity
             onPress={() => setNarrationEnabled(!narrationEnabled)}
             style={[styles.narrationBtn, narrationEnabled && styles.narrationBtnActive]}
           >
-            <Text style={styles.narrationIcon}>
-              {narrationLoading ? '⏳' : isPlaying ? '🔊' : '🔇'}
-            </Text>
+            <Image
+              source={APP_ICONS.learn}
+              style={[
+                styles.narrationImg,
+                { opacity: narrationEnabled ? 1 : 0.4 },
+              ]}
+            />
           </TouchableOpacity>
         </View>
 
-        {/* ── Progress Bar ── */}
+        {/* Progress Bar */}
         <View style={styles.progressBar}>
-          <View
-            style={[
-              styles.progressFill,
-              {
-                backgroundColor: accentColor,
-                width: `${progress * 100}%`,
-              },
-            ]}
-          />
+          <Animated.View style={[styles.progressFill, { backgroundColor: accentColor, width: `${progress * 100}%` }]} />
         </View>
 
-        {/* ── Card Area (tap zones) ── */}
-        <View style={styles.cardArea}>
-          {/* Left tap zone - go back */}
-          <TouchableOpacity
-            style={styles.tapZoneLeft}
-            onPress={goPrev}
-            activeOpacity={1}
-          />
-
-          {/* Card content */}
+        {/* Card Area with swipe */}
+        <Animated.View
+          style={[styles.cardArea, { transform: [{ translateX: swipeX }], opacity: cardOpacity }]}
+          {...panResponder.panHandlers}
+        >
           <View style={styles.cardContent}>
             {renderCard()}
           </View>
+        </Animated.View>
 
-          {/* Right tap zone - go forward */}
-          <TouchableOpacity
-            style={styles.tapZoneRight}
-            onPress={goNext}
-            activeOpacity={1}
-          />
-        </View>
-
-        {/* ── Bottom Bar ── */}
+        {/* Bottom Bar */}
         <View style={[styles.bottomBar, { paddingBottom: insets.bottom + 12 }]}>
           <View style={styles.bottomRow}>
-            {/* Note/Save buttons - only for concept cards */}
+            {/* Action buttons */}
             {currentCardData?.type === 'concept' && currentCardData.cardType !== 'sources' && (
               <>
                 <TouchableOpacity
                   style={styles.actionBtn}
                   onPress={() => currentSlide && onAddNote(currentSlide.slideNumber)}
                 >
-                  <Text style={styles.actionEmoji}>📝</Text>
+                  <Image source={APP_ICONS.notebook} style={styles.actionIcon} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.actionBtn}
                   onPress={() => currentSlide && onSaveInsight(currentSlide.slideNumber)}
                 >
-                  <Text style={styles.actionEmoji}>🔖</Text>
+                  <Image source={APP_ICONS.concept} style={styles.actionIcon} />
                 </TouchableOpacity>
               </>
             )}
 
             <View style={{ flex: 1 }} />
 
-            {/* Card counter */}
             <Text style={styles.counterText}>
               {currentCard + 1} / {totalCards}
             </Text>
 
             <View style={{ flex: 1 }} />
 
-            {/* Next CTA */}
             <TouchableOpacity
               style={[styles.nextBtn, { backgroundColor: accentColor }]}
               onPress={goNext}
             >
               <Text style={styles.nextBtnText}>
-                {isLastCard ? '✅ Done' : 'Next →'}
+                {isLastCard ? 'Done' : 'Next'}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* ── Completion Modal ── */}
+        {/* Completion Modal */}
         <Modal visible={showCompletion} transparent animationType="fade">
           <CompletionOverlay
             isReview={isReview}
@@ -490,7 +478,7 @@ export function SlideReaderV2({
           />
         </Modal>
 
-        {/* ── Ask Leo Overlay ── */}
+        {/* Ask Leo */}
         <AskLeoOverlay
           visible={showAskLeo}
           onClose={() => setShowAskLeo(false)}
@@ -519,20 +507,12 @@ function CompletionOverlay({
 }) {
   const scaleAnim = useRef(new Animated.Value(0.85)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
-  const leoY = useRef(new Animated.Value(20)).current;
 
   useEffect(() => {
     Animated.parallel([
       Animated.spring(scaleAnim, { toValue: 1, tension: 200, friction: 15, useNativeDriver: true }),
       Animated.timing(opacityAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
     ]).start();
-
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(leoY, { toValue: -10, duration: 800, useNativeDriver: true }),
-        Animated.timing(leoY, { toValue: 0, duration: 800, useNativeDriver: true }),
-      ]),
-    ).start();
   }, []);
 
   const remaining = Math.max(0, MINIMUM_LESSON_TIME_SECONDS - timeSpentSeconds);
@@ -542,39 +522,40 @@ function CompletionOverlay({
   return (
     <Animated.View style={[compStyles.overlay, { opacity: opacityAnim }]}>
       <Animated.View style={[compStyles.card, { transform: [{ scale: scaleAnim }] }]}>
-        <Animated.Image
-          source={require('../../assets/mascot/leo-reference.png')}
-          style={[compStyles.leo, { transform: [{ translateY: leoY }] }]}
-        />
+        {/* Icon instead of emoji */}
+        <View style={compStyles.iconCircle}>
+          <Image
+            source={isReview ? APP_ICONS.learn : hasMetMinimumTime ? APP_ICONS.achievements : APP_ICONS.progress}
+            style={compStyles.iconImg}
+          />
+        </View>
 
         {isReview ? (
           <>
-            <Text style={compStyles.emoji}>📖</Text>
             <Text style={compStyles.title}>Great review!</Text>
-            <Text style={compStyles.sub}>Knowledge reinforced 💪</Text>
+            <Text style={compStyles.sub}>Knowledge reinforced</Text>
           </>
         ) : !hasMetMinimumTime ? (
           <>
-            <Text style={compStyles.emoji}>⏱️</Text>
             <Text style={compStyles.title}>Take your time!</Text>
             <Text style={compStyles.sub}>Read for {remainMin}:{remainSec.toString().padStart(2, '0')} more to earn XP</Text>
             <TouchableOpacity style={compStyles.keepBtn} onPress={onKeepReading}>
-              <Text style={compStyles.keepBtnText}>⏱ Keep Reading</Text>
+              <Text style={compStyles.keepBtnText}>Keep Reading</Text>
             </TouchableOpacity>
           </>
         ) : (
           <>
-            <Text style={compStyles.emoji}>🔥</Text>
             <Text style={compStyles.title}>Lesson Complete!</Text>
             <View style={compStyles.xpBadge}>
-              <Text style={compStyles.xpText}>⚡ +50 XP</Text>
+              <Image source={APP_ICONS.streak} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+              <Text style={compStyles.xpText}>+50 XP</Text>
             </View>
           </>
         )}
 
         {(isReview || hasMetMinimumTime) && (
           <TouchableOpacity style={compStyles.ctaBtn} onPress={onComplete}>
-            <Text style={compStyles.ctaBtnText}>Continue 🚀</Text>
+            <Text style={compStyles.ctaBtnText}>Continue</Text>
           </TouchableOpacity>
         )}
       </Animated.View>
@@ -585,7 +566,7 @@ function CompletionOverlay({
 const compStyles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(8,11,24,0.95)',
+    backgroundColor: 'rgba(8,11,24,0.9)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 28,
@@ -598,27 +579,39 @@ const compStyles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: COLORS.border,
+    ...SHADOWS.lg,
   },
-  leo: {
-    width: 100,
-    height: 100,
+  iconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: COLORS.accentSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: COLORS.accentMedium,
+  },
+  iconImg: {
+    width: 40,
+    height: 40,
     resizeMode: 'contain',
-    marginTop: -64,
-    marginBottom: 8,
   },
-  emoji: { fontSize: 48, marginBottom: 12 },
-  title: { fontSize: 24, fontWeight: '800', color: COLORS.textPrimary, marginBottom: 6, textAlign: 'center' },
-  sub: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginBottom: 12 },
+  title: { ...TYPE.h1, color: COLORS.textPrimary, marginBottom: 6, textAlign: 'center' },
+  sub: { ...TYPE.body, color: COLORS.textSecondary, textAlign: 'center', marginBottom: 16 },
   xpBadge: {
-    backgroundColor: 'rgba(139,92,246,0.15)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: COLORS.accentSoft,
     borderRadius: 20,
     paddingHorizontal: 24,
     paddingVertical: 12,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: 'rgba(139,92,246,0.3)',
+    borderColor: COLORS.accentMedium,
   },
-  xpText: { fontSize: 20, fontWeight: '800', color: COLORS.accent },
+  xpText: { ...TYPE.h2, color: COLORS.accent },
   ctaBtn: {
     width: '100%',
     height: 54,
@@ -626,6 +619,7 @@ const compStyles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    ...SHADOWS.accent,
   },
   ctaBtnText: { fontSize: 17, fontWeight: '800', color: '#fff' },
   keepBtn: {
@@ -638,7 +632,7 @@ const compStyles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 8,
   },
-  keepBtnText: { fontSize: 14, color: COLORS.textSecondary, fontWeight: '600' },
+  keepBtnText: { ...TYPE.bodyBold, color: COLORS.textSecondary },
 });
 
 const styles = StyleSheet.create({
@@ -657,69 +651,57 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: COLORS.bg1,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   closeIcon: {
     fontSize: 16,
     color: COLORS.textSecondary,
+    fontWeight: '600',
   },
   topBarCenter: {
     flex: 1,
   },
   stackLabel: {
-    fontSize: 14,
-    fontWeight: '600',
+    ...TYPE.bodyBold,
     color: COLORS.textSecondary,
   },
   askLeoBtn: {
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: 'rgba(249,115,22,0.12)',
+    backgroundColor: 'rgba(249,115,22,0.1)',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: 'rgba(249,115,22,0.3)',
-    position: 'relative',
+    borderWidth: 1.5,
+    borderColor: 'rgba(249,115,22,0.25)',
   },
   askLeoImage: {
     width: 28,
     height: 28,
     resizeMode: 'contain',
   },
-  askLeoText: {
-    position: 'absolute',
-    bottom: -2,
-    right: -2,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: '#F97316',
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: '800',
-    textAlign: 'center',
-    lineHeight: 16,
-    overflow: 'hidden',
-  },
   narrationBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: COLORS.bg1,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: COLORS.border,
   },
   narrationBtnActive: {
-    backgroundColor: 'rgba(139,92,246,0.15)',
-    borderColor: 'rgba(139,92,246,0.3)',
+    backgroundColor: COLORS.accentSoft,
+    borderColor: COLORS.accentMedium,
   },
-  narrationIcon: {
-    fontSize: 16,
+  narrationImg: {
+    width: 18,
+    height: 18,
+    resizeMode: 'contain',
   },
   progressBar: {
     height: 4,
@@ -735,24 +717,6 @@ const styles = StyleSheet.create({
   },
   cardArea: {
     flex: 1,
-    flexDirection: 'row',
-    position: 'relative',
-  },
-  tapZoneLeft: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: '25%',
-    zIndex: 10,
-  },
-  tapZoneRight: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: '25%',
-    zIndex: 10,
   },
   cardContent: {
     flex: 1,
@@ -774,30 +738,31 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: COLORS.bg1,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  actionEmoji: {
-    fontSize: 18,
+  actionIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
   },
   counterText: {
-    fontSize: 12,
+    ...TYPE.caption,
     color: COLORS.textMuted,
-    fontWeight: '600',
   },
   nextBtn: {
     height: 44,
-    paddingHorizontal: 24,
+    paddingHorizontal: 28,
     borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
+    ...SHADOWS.accent,
   },
   nextBtnText: {
-    fontSize: 15,
-    fontWeight: '700',
+    ...TYPE.bodyBold,
     color: '#fff',
   },
 });

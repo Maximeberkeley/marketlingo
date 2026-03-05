@@ -8,14 +8,15 @@ import {
   ActivityIndicator,
   Modal,
   Animated,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { COLORS } from '../../lib/constants';
+import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
-import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { SeasonSection } from '../../components/roadmap/SeasonSection';
+import { APP_ICONS } from '../../lib/icons';
 import type { NodeStatus } from '../../components/roadmap/RoadmapNode';
 
 interface Lesson {
@@ -45,12 +46,12 @@ interface Season {
 }
 
 const SEASON_META = [
-  { title: 'Foundations', subtitle: 'Month 1 • Core fundamentals' },
-  { title: 'Forces & Cycles', subtitle: 'Month 2 • Market forces and timing' },
-  { title: 'Startup Patterns', subtitle: 'Month 3 • Building in this market' },
-  { title: 'Key Players', subtitle: 'Month 4 • Industry deep dives' },
-  { title: 'Investment Lens', subtitle: 'Month 5 • Investor perspective' },
-  { title: 'Builder Mode', subtitle: 'Month 6 • Apply everything' },
+  { title: 'Foundations', subtitle: 'Month 1 · Core fundamentals' },
+  { title: 'Forces & Cycles', subtitle: 'Month 2 · Market forces and timing' },
+  { title: 'Startup Patterns', subtitle: 'Month 3 · Building in this market' },
+  { title: 'Key Players', subtitle: 'Month 4 · Industry deep dives' },
+  { title: 'Investment Lens', subtitle: 'Month 5 · Investor perspective' },
+  { title: 'Builder Mode', subtitle: 'Month 6 · Apply everything' },
 ];
 
 const WEEK_TITLES = [
@@ -112,7 +113,6 @@ export default function RoadmapScreen() {
       }
       setCurrentDay(day);
 
-      // Fetch all lesson stacks for this market
       const { data: allStacks } = await supabase
         .from('stacks')
         .select('id, title, tags')
@@ -120,7 +120,6 @@ export default function RoadmapScreen() {
         .contains('tags', ['MICRO_LESSON'])
         .not('published_at', 'is', null);
 
-      // Build day -> lesson map, preferring goal-tagged stacks
       const dayLessonMap = new Map<number, { title: string; stackId: string }>();
       allStacks?.forEach((stack: any) => {
         const tags = stack.tags as string[];
@@ -135,13 +134,11 @@ export default function RoadmapScreen() {
         }
       });
 
-      // Set current lesson title
       const todayLesson = dayLessonMap.get(day);
       setCurrentLessonTitle(todayLesson?.title || `Day ${day}`);
 
       const currentWeek = getDayWeek(day);
 
-      // Build 6 seasons × 6 weeks × 5 days = 180 days
       const builtSeasons: Season[] = SEASON_META.map((meta, sIdx) => {
         const weeksPerMonth = 6;
         const startWeek = sIdx * weeksPerMonth + 1;
@@ -238,6 +235,8 @@ export default function RoadmapScreen() {
     );
   }
 
+  const journeyPct = Math.round(((currentDay || 1) / 180) * 100);
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -255,7 +254,10 @@ export default function RoadmapScreen() {
               Day {currentDay} of 180 · Week {getDayWeek(currentDay)}
             </Text>
           </View>
-          <LeoCharacter size="sm" animation={currentDay > 1 ? 'success' : 'idle'} />
+          <View style={styles.dayBadge}>
+            <Image source={APP_ICONS.progress} style={{ width: 16, height: 16, resizeMode: 'contain' }} />
+            <Text style={styles.dayBadgeText}>{journeyPct}%</Text>
+          </View>
         </Animated.View>
 
         {/* Current lesson quick-start card */}
@@ -266,9 +268,10 @@ export default function RoadmapScreen() {
               onPress={() => router.push('/(tabs)/home')}
               activeOpacity={0.8}
             >
+              <View style={styles.currentCardAccent} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.continueLabel}>CONTINUE LEARNING</Text>
-                <Text style={styles.currentTitle}>{currentLessonTitle}</Text>
+                <Text style={styles.currentTitle} numberOfLines={2}>{currentLessonTitle}</Text>
               </View>
               <View style={styles.startBtn}>
                 <Text style={styles.startBtnText}>Start</Text>
@@ -298,13 +301,20 @@ export default function RoadmapScreen() {
       <Modal visible={!!selectedLesson} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>
-              Day {selectedLesson?.day}: {selectedLesson?.title}
-            </Text>
-            <View style={styles.modalStatusRow}>
-              <Text style={{ fontSize: 13, color: selectedLesson?.completed ? '#22C55E' : COLORS.accent }}>
-                {selectedLesson?.completed ? 'Completed' : 'Current lesson'}
-              </Text>
+            <View style={styles.modalHeader}>
+              <View style={[styles.modalDayBadge, selectedLesson?.completed ? styles.modalDayDone : {}]}>
+                <Text style={[styles.modalDayText, selectedLesson?.completed ? { color: '#fff' } : {}]}>
+                  {selectedLesson?.day}
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.modalTitle} numberOfLines={2}>
+                  {selectedLesson?.title}
+                </Text>
+                <Text style={[styles.modalStatus, { color: selectedLesson?.completed ? COLORS.success : COLORS.accent }]}>
+                  {selectedLesson?.completed ? 'Completed' : 'Current lesson'}
+                </Text>
+              </View>
             </View>
             <TouchableOpacity
               style={styles.modalCTA}
@@ -338,63 +348,108 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 20,
   },
-  title: { fontSize: 28, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 4 },
-  subtitle: { fontSize: 13, color: COLORS.textMuted },
+  title: { ...TYPE.hero, color: COLORS.textPrimary, marginBottom: 4 },
+  subtitle: { ...TYPE.caption, color: COLORS.textMuted },
+  dayBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: COLORS.accentSoft,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.accentMedium,
+  },
+  dayBadgeText: { ...TYPE.caption, color: COLORS.accent },
   currentCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 16,
-    backgroundColor: 'rgba(139,92,246,0.1)',
+    padding: 18,
+    borderRadius: 20,
+    marginBottom: 20,
+    backgroundColor: COLORS.bg2,
     borderWidth: 1,
-    borderColor: 'rgba(139,92,246,0.3)',
+    borderColor: COLORS.border,
+    overflow: 'hidden',
+    ...SHADOWS.md,
+  },
+  currentCardAccent: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 4,
+    backgroundColor: COLORS.accent,
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
   },
   continueLabel: {
-    fontSize: 10,
-    fontWeight: '600',
+    ...TYPE.overline,
     color: COLORS.accent,
     marginBottom: 4,
-    letterSpacing: 0.5,
   },
-  currentTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
+  currentTitle: { ...TYPE.bodyBold, color: COLORS.textPrimary },
   startBtn: {
     backgroundColor: COLORS.accent,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 12,
+    ...SHADOWS.accent,
   },
-  startBtnText: { color: '#fff', fontWeight: '700', fontSize: 13 },
+  startBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(11,16,32,0.9)',
+    backgroundColor: 'rgba(11,16,32,0.85)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
   },
   modalCard: {
     backgroundColor: COLORS.bg2,
-    borderRadius: 20,
+    borderRadius: 24,
     padding: 24,
     borderWidth: 1,
     borderColor: COLORS.border,
     width: '100%',
+    ...SHADOWS.lg,
   },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginBottom: 20,
+  },
+  modalDayBadge: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: COLORS.accentSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.accentMedium,
+  },
+  modalDayDone: {
+    backgroundColor: COLORS.success,
+    borderColor: COLORS.success,
+  },
+  modalDayText: { ...TYPE.h3, color: COLORS.accent },
   modalTitle: {
-    fontSize: 18,
-    fontWeight: '700',
+    ...TYPE.h2,
     color: COLORS.textPrimary,
-    marginBottom: 12,
+    marginBottom: 4,
   },
-  modalStatusRow: { marginBottom: 16 },
+  modalStatus: { ...TYPE.caption },
   modalCTA: {
     backgroundColor: COLORS.accent,
-    paddingVertical: 14,
-    borderRadius: 14,
+    paddingVertical: 16,
+    borderRadius: 16,
     alignItems: 'center',
     marginBottom: 10,
+    ...SHADOWS.accent,
   },
-  modalCTAText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  modalCTAText: { color: '#fff', fontWeight: '700', fontSize: 16 },
   modalCancel: { alignItems: 'center', paddingVertical: 10 },
   modalCancelText: { color: COLORS.textMuted, fontSize: 14 },
 });
