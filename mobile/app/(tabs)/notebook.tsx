@@ -65,10 +65,10 @@ const typeColors: Record<string, { bg: string; text: string; label: string }> = 
 };
 
 const filters = [
-  { id: null, label: 'All', emoji: '📖' },
-  { id: 'lesson', label: 'Lessons', emoji: '💡' },
-  { id: 'news', label: 'News', emoji: '📰' },
-  { id: 'trainer', label: 'Trainer', emoji: '🎯' },
+  { id: null, label: 'All' },
+  { id: 'lesson', label: 'Lessons' },
+  { id: 'news', label: 'News' },
+  { id: 'trainer', label: 'Trainer' },
 ];
 
 export default function NotebookScreen() {
