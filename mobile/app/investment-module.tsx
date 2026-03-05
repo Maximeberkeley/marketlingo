@@ -14,30 +14,31 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useInvestmentLab, InvestmentScenario } from '../hooks/useInvestmentLab';
 import { ProgressBar } from '../components/ui/ProgressBar';
+import { APP_ICONS } from '../lib/icons';
 
 const MODULE_CONFIG: Record<string, {
   title: string;
   description: string;
-  emoji: string;
+  icon: any;
   color: string;
   scenarioType: InvestmentScenario['scenario_type'];
   scoreKey: 'valuation_score' | 'due_diligence_score' | 'risk_assessment_score' | 'portfolio_construction_score';
 }> = {
   valuation: {
     title: 'Valuation Mastery', description: 'Master industry-specific valuation methodologies',
-    emoji: '📊', color: '#10B981', scenarioType: 'valuation', scoreKey: 'valuation_score',
+    icon: APP_ICONS.progress, color: '#10B981', scenarioType: 'valuation', scoreKey: 'valuation_score',
   },
   due_diligence: {
     title: 'Due Diligence', description: 'Systematic investment evaluation',
-    emoji: '👁️', color: '#3B82F6', scenarioType: 'due_diligence', scoreKey: 'due_diligence_score',
+    icon: APP_ICONS.lens, color: '#3B82F6', scenarioType: 'due_diligence', scoreKey: 'due_diligence_score',
   },
   risk_assessment: {
     title: 'Risk Assessment', description: 'Identify and quantify investment risks',
-    emoji: '🛡️', color: '#F59E0B', scenarioType: 'risk', scoreKey: 'risk_assessment_score',
+    icon: APP_ICONS.regulatory, color: '#F59E0B', scenarioType: 'risk', scoreKey: 'risk_assessment_score',
   },
   portfolio: {
     title: 'Portfolio Construction', description: 'Build balanced investment portfolios',
-    emoji: '🧩', color: '#8B5CF6', scenarioType: 'portfolio', scoreKey: 'portfolio_construction_score',
+    icon: APP_ICONS.concept, color: '#8B5CF6', scenarioType: 'portfolio', scoreKey: 'portfolio_construction_score',
   },
 };
 
