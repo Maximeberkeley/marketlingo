@@ -419,7 +419,7 @@ export default function SettingsScreen() {
           </View>
 
           <TouchableOpacity style={styles.menuItem}>
-            <Text style={{ fontSize: 18 }}>📜</Text>
+            <Image source={APP_ICONS.notebook} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
             <Text style={styles.menuText}>Terms of Service</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
