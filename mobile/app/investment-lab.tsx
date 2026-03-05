@@ -208,7 +208,7 @@ export default function InvestmentLabScreen() {
           {/* Not Pro */}
           {!isProUser && (
             <View style={styles.heroCard}>
-              <Text style={{ fontSize: 32, marginBottom: 8 }}>📈</Text>
+              <Image source={APP_ICONS.progress} style={{ width: 32, height: 32, resizeMode: 'contain', marginBottom: 8 }} />
               <Text style={styles.heroTitle}>Real-World Investment Scenarios</Text>
               <Text style={styles.heroDesc}>
                 Analyze companies, evaluate markets, and make investment decisions based on real industry data.
