@@ -209,7 +209,7 @@ export default function FamiliarityScreen() {
         {/* Info Box */}
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
-            💡 You can change this anytime in Settings
+            You can change this anytime in Settings
           </Text>
         </View>
       </Animated.ScrollView>
