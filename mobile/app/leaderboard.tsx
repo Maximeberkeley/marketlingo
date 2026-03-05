@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator, Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
+import { APP_ICONS } from '../lib/icons';
 
 type TimeFilter = 'weekly' | 'monthly' | 'all-time';
 
@@ -26,11 +27,11 @@ interface LeaderboardEntry {
   isCurrentUser: boolean;
 }
 
-function getRankDisplay(rank: number) {
-  if (rank === 1) return { emoji: '👑', color: '#FBBF24' };
-  if (rank === 2) return { emoji: '🥈', color: '#CBD5E1' };
-  if (rank === 3) return { emoji: '🥉', color: '#F97316' };
-  return { emoji: `#${rank}`, color: COLORS.textMuted };
+function getRankIcon(rank: number) {
+  if (rank === 1) return { label: '1st', color: '#FBBF24', bg: 'rgba(251,191,36,0.15)' };
+  if (rank === 2) return { label: '2nd', color: '#94A3B8', bg: 'rgba(148,163,184,0.15)' };
+  if (rank === 3) return { label: '3rd', color: '#F97316', bg: 'rgba(249,115,22,0.15)' };
+  return { label: `#${rank}`, color: COLORS.textMuted, bg: COLORS.bg1 };
 }
 
 export default function LeaderboardScreen() {
@@ -47,10 +48,7 @@ export default function LeaderboardScreen() {
     market: string,
   ) => {
     const userIds = xpData.map((x) => x.user_id);
-    if (userIds.length === 0) {
-      setLeaderboard([]);
-      return;
-    }
+    if (userIds.length === 0) { setLeaderboard([]); return; }
 
     const [{ data: profiles }, { data: progressData }] = await Promise.all([
       supabase.from('profiles').select('id, username').in('id', userIds),
@@ -61,20 +59,16 @@ export default function LeaderboardScreen() {
       const p = profiles?.find((pr) => pr.id === xp.user_id);
       const s = progressData?.find((pr) => pr.user_id === xp.user_id);
       return {
-        rank: index + 1,
-        user_id: xp.user_id,
+        rank: index + 1, user_id: xp.user_id,
         username: p?.username?.split('@')[0] || `User ${index + 1}`,
-        total_xp: xp.total_xp,
-        current_level: xp.current_level,
-        current_streak: s?.current_streak || 0,
-        isCurrentUser: xp.user_id === user?.id,
+        total_xp: xp.total_xp, current_level: xp.current_level,
+        current_streak: s?.current_streak || 0, isCurrentUser: xp.user_id === user?.id,
       };
     });
 
     setLeaderboard(entries);
     const me = entries.find((e) => e.isCurrentUser);
-    if (me) setCurrentUserRank(me.rank);
-    else setCurrentUserRank(null);
+    setCurrentUserRank(me?.rank ?? null);
   }, [user]);
 
   useEffect(() => {
@@ -95,28 +89,18 @@ export default function LeaderboardScreen() {
         const now = new Date();
         const since = new Date(now);
         since.setDate(since.getDate() - (timeFilter === 'weekly' ? 7 : 30));
-
         const { data: txns } = await supabase
-          .from('xp_transactions')
-          .select('user_id, xp_amount')
-          .eq('market_id', market)
-          .gte('created_at', since.toISOString());
-
+          .from('xp_transactions').select('user_id, xp_amount')
+          .eq('market_id', market).gte('created_at', since.toISOString());
         if (txns) {
           const userXPMap = new Map<string, number>();
-          txns.forEach((t) => {
-            userXPMap.set(t.user_id, (userXPMap.get(t.user_id) || 0) + t.xp_amount);
-          });
-
+          txns.forEach((t) => userXPMap.set(t.user_id, (userXPMap.get(t.user_id) || 0) + t.xp_amount));
           const sorted = Array.from(userXPMap.entries())
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 50)
+            .sort((a, b) => b[1] - a[1]).slice(0, 50)
             .map(([uid, total_xp]) => ({ user_id: uid, total_xp, current_level: 1 }));
-
           await buildEntries(sorted, market);
         }
       }
-
       setLoading(false);
     };
     fetchLeaderboard();
@@ -129,7 +113,10 @@ export default function LeaderboardScreen() {
           <Text style={styles.backBtnText}>←</Text>
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle}>🏆 Leaderboard</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Image source={APP_ICONS.achievements} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+            <Text style={styles.headerTitle}>Leaderboard</Text>
+          </View>
           <Text style={styles.headerSub}>{marketName} Industry</Text>
         </View>
         {currentUserRank && (
@@ -161,7 +148,9 @@ export default function LeaderboardScreen() {
       >
         {/* Prize banner */}
         <View style={styles.prizeBanner}>
-          <View style={styles.prizeIconWrap}><Text style={{ fontSize: 24 }}>✨</Text></View>
+          <View style={styles.prizeIconWrap}>
+            <Image source={APP_ICONS.achievements} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+          </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.prizeTitle}>Become the Industry Master</Text>
             <Text style={styles.prizeDesc}>
@@ -174,7 +163,7 @@ export default function LeaderboardScreen() {
         {/* Market + filter chip */}
         <View style={styles.chipRow}>
           <View style={styles.marketPill}>
-            <Text style={styles.marketPillText}>🏭 {marketName} Rankings</Text>
+            <Text style={styles.marketPillText}>{marketName} Rankings</Text>
           </View>
           <View style={styles.filterBadge}>
             <Text style={styles.filterBadgeText}>
@@ -187,14 +176,14 @@ export default function LeaderboardScreen() {
           <View style={styles.centered}><ActivityIndicator color={COLORS.accent} size="large" /></View>
         ) : leaderboard.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={{ fontSize: 48, marginBottom: 12 }}>🏆</Text>
+            <Image source={APP_ICONS.achievements} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
             <Text style={styles.emptyTitle}>No one on the leaderboard yet!</Text>
             <Text style={styles.emptySub}>Complete lessons to earn XP</Text>
           </View>
         ) : (
           <View style={styles.entriesContainer}>
             {leaderboard.map((entry) => {
-              const rank = getRankDisplay(entry.rank);
+              const rank = getRankIcon(entry.rank);
               const isTop3 = entry.rank <= 3;
               return (
                 <View key={entry.user_id} style={[
@@ -202,8 +191,8 @@ export default function LeaderboardScreen() {
                   entry.isCurrentUser && styles.entryMe,
                   isTop3 && !entry.isCurrentUser && styles.entryTop3,
                 ]}>
-                  <View style={styles.rankWrap}>
-                    <Text style={[styles.rankText, { color: rank.color }]}>{rank.emoji}</Text>
+                  <View style={[styles.rankWrap, { backgroundColor: rank.bg }]}>
+                    <Text style={[styles.rankText, { color: rank.color }]}>{rank.label}</Text>
                   </View>
                   <View style={{ flex: 1, minWidth: 0 }}>
                     <Text style={[styles.username, entry.isCurrentUser && { color: COLORS.accent }]} numberOfLines={1}>
@@ -211,11 +200,16 @@ export default function LeaderboardScreen() {
                     </Text>
                     <View style={styles.userMeta}>
                       <Text style={styles.levelText}>Lv. {entry.current_level}</Text>
-                      {entry.current_streak > 0 && <Text style={styles.streakText}>🔥 {entry.current_streak}</Text>}
+                      {entry.current_streak > 0 && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                          <Image source={APP_ICONS.streak} style={{ width: 12, height: 12, resizeMode: 'contain' }} />
+                          <Text style={styles.streakText}>{entry.current_streak}</Text>
+                        </View>
+                      )}
                     </View>
                   </View>
                   <View style={styles.xpChip}>
-                    <Text style={{ fontSize: 12 }}>⚡</Text>
+                    <Image source={APP_ICONS.drills} style={{ width: 12, height: 12, resizeMode: 'contain' }} />
                     <Text style={styles.xpValue}>{entry.total_xp.toLocaleString()}</Text>
                   </View>
                 </View>
@@ -234,7 +228,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     paddingHorizontal: 16, paddingBottom: 12,
-    backgroundColor: COLORS.bg0, borderBottomWidth: 0, borderBottomColor: COLORS.border,
+    backgroundColor: COLORS.bg0,
   },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
   backBtnText: { fontSize: 18, color: COLORS.textPrimary },
@@ -246,13 +240,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row', gap: 4, paddingHorizontal: 16, paddingBottom: 12, paddingTop: 4,
     backgroundColor: COLORS.bg0, borderBottomWidth: 1, borderBottomColor: COLORS.border,
   },
-  tab: {
-    flex: 1, paddingVertical: 9, borderRadius: 10, alignItems: 'center',
-    backgroundColor: COLORS.bg2,
-  },
-  tabActive: {
-    backgroundColor: COLORS.accent,
-  },
+  tab: { flex: 1, paddingVertical: 9, borderRadius: 10, alignItems: 'center', backgroundColor: COLORS.bg2 },
+  tabActive: { backgroundColor: COLORS.accent },
   tabText: { fontSize: 12, fontWeight: '600', color: COLORS.textMuted },
   tabTextActive: { color: '#FFFFFF' },
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
@@ -273,12 +262,12 @@ const styles = StyleSheet.create({
   entry: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 14, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border },
   entryMe: { backgroundColor: 'rgba(139,92,246,0.08)', borderColor: 'rgba(139,92,246,0.3)' },
   entryTop3: { backgroundColor: 'rgba(245,158,11,0.05)', borderColor: 'rgba(245,158,11,0.2)' },
-  rankWrap: { width: 40, alignItems: 'center' },
-  rankText: { fontSize: 18, fontWeight: '700' },
+  rankWrap: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  rankText: { fontSize: 14, fontWeight: '700' },
   username: { fontSize: 14, fontWeight: '500', color: COLORS.textPrimary },
   userMeta: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
   levelText: { fontSize: 11, color: COLORS.textMuted },
-  streakText: { fontSize: 11, color: '#FB923C' },
+  streakText: { fontSize: 11, color: '#FB923C', fontWeight: '600' },
   xpChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, backgroundColor: COLORS.bg1 },
   xpValue: { fontSize: 12, fontWeight: '700', color: COLORS.textPrimary },
   emptyState: { alignItems: 'center', paddingTop: 60 },

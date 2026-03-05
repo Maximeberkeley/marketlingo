@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
+  Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,13 +18,33 @@ import { COLORS } from '../../lib/constants';
 import { markets } from '../../lib/markets';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
-import { MascotAvatar } from '../../components/mascot/MascotAvatar';
+import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { getDemoXP } from '../../lib/demoXPBridge';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress';
 import { triggerHaptic } from '../../lib/haptics';
+import { APP_ICONS } from '../../lib/icons';
 
 const STEP_LABELS = ['Industry', 'Goal', 'Level'];
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+// Market illustrations for the grid
+const MARKET_ILLUSTRATIONS: Record<string, any> = {
+  aerospace: require('../../assets/illustrations/aerospace.png'),
+  ai: require('../../assets/illustrations/ai.png'),
+  biotech: require('../../assets/illustrations/biotech.png'),
+  cleanenergy: require('../../assets/illustrations/cleanenergy.png'),
+  fintech: require('../../assets/illustrations/fintech.png'),
+  ev: require('../../assets/illustrations/ev.png'),
+  cybersecurity: require('../../assets/illustrations/cybersecurity.png'),
+  robotics: require('../../assets/illustrations/robotics.png'),
+  spacetech: require('../../assets/illustrations/spacetech.png'),
+  healthtech: require('../../assets/illustrations/healthtech.png'),
+  web3: require('../../assets/illustrations/web3.png'),
+  agtech: require('../../assets/illustrations/agtech.png'),
+  logistics: require('../../assets/illustrations/logistics.png'),
+  climatetech: require('../../assets/illustrations/climatetech.png'),
+  neuroscience: require('../../assets/illustrations/neuroscience.png'),
+};
 
 export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
@@ -37,24 +58,12 @@ export default function OnboardingScreen() {
   // Animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
-  const mascotBounce = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Entry animation
     Animated.parallel([
       Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
       Animated.spring(slideAnim, { toValue: 0, tension: 50, friction: 8, useNativeDriver: true }),
     ]).start();
-
-    // Mascot idle bounce
-    const bounce = Animated.loop(
-      Animated.sequence([
-        Animated.timing(mascotBounce, { toValue: -6, duration: 1200, useNativeDriver: true }),
-        Animated.timing(mascotBounce, { toValue: 0, duration: 1200, useNativeDriver: true }),
-      ])
-    );
-    bounce.start();
-    return () => bounce.stop();
   }, []);
 
   useEffect(() => {
@@ -126,28 +135,19 @@ export default function OnboardingScreen() {
         showsVerticalScrollIndicator={false}
         style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
       >
-        {/* Header with animated Leo */}
+        {/* Header — clean, no speech bubble */}
         <View style={styles.header}>
-          <Animated.View style={{ transform: [{ translateY: mascotBounce }] }}>
-            <MascotAvatar emoji="🦁" size="lg" />
-          </Animated.View>
-          <View style={styles.speechBubble}>
-            <Text style={styles.speechText}>
-              Hey there! I'm Leo, your industry mentor 🦁{'\n'}
-              I'll make you market-smart in just 5 min/day!
-            </Text>
-            <View style={styles.speechTail} />
-          </View>
+          <LeoCharacter size="lg" animation="waving" />
           <Text style={styles.title}>Choose your industry</Text>
           <Text style={styles.subtitle}>
-            Your 6-month mastery journey starts here 🗓️
+            Your 6-month mastery journey starts here
           </Text>
         </View>
 
         {/* Demo bridge banner */}
         {demoMarket && demoXP > 0 && (
           <View style={styles.demoBanner}>
-            <Text style={styles.demoBannerEmoji}>⚡</Text>
+            <Image source={APP_ICONS.streak} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
             <View style={{ flex: 1 }}>
               <Text style={styles.demoBannerTitle}>Continue where you left off</Text>
               <Text style={styles.demoBannerSub}>
@@ -159,10 +159,10 @@ export default function OnboardingScreen() {
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
-          <Text style={styles.searchIcon}>🔍</Text>
+          <Image source={APP_ICONS.lens} style={{ width: 18, height: 18, resizeMode: 'contain', marginRight: 10 }} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search industries…"
+            placeholder="Search industries..."
             placeholderTextColor={COLORS.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -173,41 +173,50 @@ export default function OnboardingScreen() {
           {filteredMarkets.length} industries available
         </Text>
 
-        {/* 2-Column Market Grid */}
+        {/* 2-Column Market Grid — with illustrations instead of emojis */}
         <View style={styles.gridContainer}>
-          {filteredMarkets.map((market, index) => (
-            <Animated.View
-              key={market.id}
-              style={{
-                width: (SCREEN_WIDTH - 42) / 2,
-                opacity: fadeAnim,
-                transform: [{
-                  translateY: fadeAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [20 + index * 5, 0],
-                  }),
-                }],
-              }}
-            >
-              <TouchableOpacity
-                style={[
-                  styles.gridCard,
-                  selectedIndustry === market.id && styles.gridCardSelected,
-                  selectedIndustry === market.id && { borderColor: market.color },
-                ]}
-                onPress={() => handleSelect(market.id)}
-                activeOpacity={0.7}
+          {filteredMarkets.map((market, index) => {
+            const illustration = MARKET_ILLUSTRATIONS[market.id];
+            return (
+              <Animated.View
+                key={market.id}
+                style={{
+                  width: (SCREEN_WIDTH - 42) / 2,
+                  opacity: fadeAnim,
+                  transform: [{
+                    translateY: fadeAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [20 + index * 5, 0],
+                    }),
+                  }],
+                }}
               >
-                <Text style={styles.gridEmoji}>{market.emoji}</Text>
-                <Text style={styles.gridName}>{market.name}</Text>
-                {selectedIndustry === market.id && (
-                  <View style={[styles.gridCheck, { backgroundColor: market.color }]}>
-                    <Text style={styles.gridCheckText}>✓</Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-            </Animated.View>
-          ))}
+                <TouchableOpacity
+                  style={[
+                    styles.gridCard,
+                    selectedIndustry === market.id && styles.gridCardSelected,
+                    selectedIndustry === market.id && { borderColor: market.color },
+                  ]}
+                  onPress={() => handleSelect(market.id)}
+                  activeOpacity={0.7}
+                >
+                  {illustration ? (
+                    <Image source={illustration} style={styles.gridIllustration} resizeMode="contain" />
+                  ) : (
+                    <View style={[styles.gridIconFallback, { backgroundColor: market.color + '20' }]}>
+                      <Text style={{ fontSize: 28 }}>{market.emoji}</Text>
+                    </View>
+                  )}
+                  <Text style={styles.gridName}>{market.name}</Text>
+                  {selectedIndustry === market.id && (
+                    <View style={[styles.gridCheck, { backgroundColor: market.color }]}>
+                      <Text style={styles.gridCheckText}>✓</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              </Animated.View>
+            );
+          })}
         </View>
       </Animated.ScrollView>
 
@@ -221,7 +230,9 @@ export default function OnboardingScreen() {
         {selectedMarketData && (
           <View style={styles.selectedPreview}>
             <View style={styles.selectedPreviewRow}>
-              <Text style={{ fontSize: 18 }}>{selectedMarketData.emoji}</Text>
+              {MARKET_ILLUSTRATIONS[selectedMarketData.id] && (
+                <Image source={MARKET_ILLUSTRATIONS[selectedMarketData.id]} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+              )}
               <Text style={styles.selectedPreviewName}>{selectedMarketData.name}</Text>
             </View>
             <Text style={styles.selectedPreviewDesc}>{selectedMarketData.description}</Text>
@@ -241,7 +252,7 @@ export default function OnboardingScreen() {
             <ActivityIndicator color="#fff" />
           ) : (
             <Text style={styles.ctaButtonText}>
-              {selectedIndustry ? 'Continue →' : 'Select an industry'}
+              {selectedIndustry ? 'Continue' : 'Select an industry'}
             </Text>
           )}
         </TouchableOpacity>
@@ -263,37 +274,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 16,
     marginBottom: 20,
-  },
-  speechBubble: {
-    backgroundColor: COLORS.bg2,
-    borderRadius: 16,
-    padding: 14,
-    marginTop: 12,
-    marginHorizontal: 20,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    position: 'relative',
-  },
-  speechText: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  speechTail: {
-    position: 'absolute',
-    top: -8,
-    alignSelf: 'center',
-    left: '50%',
-    marginLeft: -8,
-    width: 0,
-    height: 0,
-    borderLeftWidth: 8,
-    borderRightWidth: 8,
-    borderBottomWidth: 8,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: COLORS.bg2,
   },
   title: {
     fontSize: 28,
@@ -320,10 +300,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  searchIcon: {
-    fontSize: 16,
-    marginRight: 10,
-  },
   searchInput: {
     flex: 1,
     fontSize: 15,
@@ -345,7 +321,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 100,
+    minHeight: 110,
     borderWidth: 2,
     borderColor: 'transparent',
     position: 'relative',
@@ -353,8 +329,17 @@ const styles = StyleSheet.create({
   gridCardSelected: {
     backgroundColor: 'rgba(139, 92, 246, 0.1)',
   },
-  gridEmoji: {
-    fontSize: 32,
+  gridIllustration: {
+    width: 48,
+    height: 48,
+    marginBottom: 8,
+  },
+  gridIconFallback: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 8,
   },
   gridName: {
@@ -439,7 +424,6 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 16,
   },
-  demoBannerEmoji: { fontSize: 28 },
   demoBannerTitle: {
     fontSize: 14,
     fontWeight: '700',
