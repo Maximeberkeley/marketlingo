@@ -119,7 +119,7 @@ export default function SummariesScreen() {
         <View style={styles.centered}><ActivityIndicator color={COLORS.accent} size="large" /></View>
       ) : filtered.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={{ fontSize: 40, marginBottom: 12 }}>📖</Text>
+          <Image source={APP_ICONS.learn} style={{ width: 40, height: 40, resizeMode: 'contain', marginBottom: 12 }} />
           <Text style={styles.emptyTitle}>No {activeTab.toLowerCase()} summaries yet</Text>
           <Text style={styles.emptySub}>Check back soon!</Text>
         </View>
