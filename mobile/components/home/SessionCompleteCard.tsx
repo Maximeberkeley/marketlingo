@@ -11,7 +11,8 @@ import {
 import { COLORS } from '../../lib/constants';
 import { LeoCharacter } from '../mascot/LeoCharacter';
 import { ConfettiBurst } from '../ui/ConfettiBurst';
-
+import { triggerCelebration } from '../../lib/haptics';
+import { playSound } from '../../lib/sounds';
 interface SessionCompleteCardProps {
   dayNumber: number;
   marketName: string;
