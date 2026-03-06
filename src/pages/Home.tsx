@@ -331,64 +331,78 @@ export default function HomePage() {
     <AppLayout>
       <div className="screen-padding pt-4 pb-6 overflow-x-hidden w-full max-w-lg mx-auto">
         
-        {/* Clean Header — Like Brilliant */}
+        {/* Header — Badges + Leo with speech bubble */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex items-center justify-between py-3 mb-2"
+          className="flex items-start justify-between pt-2 mb-4"
         >
-          <div className="flex items-center gap-2">
-            <StreakBadge count={streak} size="sm" />
-            <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} showLevel={false} />
+          {/* Left: Stats */}
+          <div className="flex items-center gap-2 pt-1">
+            <StreakBadge count={streak} size="md" />
+            <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} showLevel={false} size="md" />
           </div>
+
+          {/* Right: Leo with speech bubble */}
           <button
             onClick={() => {
               const mentor = getMentorForContext(selectedMarket || "aerospace", selectedMarket || undefined);
               setActiveMentor(mentor);
             }}
-            className="relative"
+            className="relative flex items-center gap-2"
           >
+            {/* Speech bubble */}
+            <motion.div
+              initial={{ opacity: 0, x: 10, scale: 0.85 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 300, damping: 20 }}
+              className="relative bg-card border border-border rounded-2xl rounded-br-sm px-3 py-1.5 shadow-card max-w-[160px]"
+            >
+              <p className="text-[11px] text-text-secondary font-medium leading-snug">{leoMessage}</p>
+              {/* Tail */}
+              <div className="absolute -right-1 bottom-1 w-2.5 h-2.5 bg-card border-r border-b border-border rotate-[-45deg]" />
+            </motion.div>
             <LeoCharacter size="sm" animation={leoAnimation} />
           </button>
         </motion.div>
 
-        {/* Hero Course Card — Brilliant-inspired */}
+        {/* Hero Card — Market illustration + lesson info */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="mb-6"
+          className="mb-5"
         >
-          {/* Recommended tag */}
-          <div className="flex justify-center mb-3">
+          {/* Status tag */}
+          <div className="flex justify-center mb-2">
             <span className={cn("px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider", marketAccent.light, marketAccent.text)}>
-              {lessonCompletedToday ? "Completed" : "Recommended"}
+              {lessonCompletedToday ? "✓ Completed" : `Day ${currentDay}`}
             </span>
           </div>
 
           {/* Title */}
-          <h1 className="text-center text-[26px] font-bold text-text-primary leading-tight mb-1">
+          <h1 className="text-center text-[22px] font-bold text-text-primary leading-tight mb-0.5">
             {lessonStack?.title || getMarketName(selectedMarket || "aerospace")}
           </h1>
           
-          <p className={cn("text-center text-[13px] font-bold uppercase tracking-wider mb-5", marketAccent.text)}>
-            Day {currentDay} · Level {xpData?.current_level || 1}
+          <p className="text-center text-[12px] text-text-muted font-medium mb-4">
+            Level {xpData?.current_level || 1} · {getMarketName(selectedMarket || "aerospace")}
           </p>
 
-          {/* Illustration — centered, Brilliant-style */}
-          <div className="flex justify-center mb-6">
+          {/* Illustration */}
+          <div className="flex justify-center mb-4">
             <motion.img
               src={illustration}
               alt={getMarketName(selectedMarket || "aerospace")}
-              className="w-48 h-48 object-contain"
+              className="w-40 h-40 object-contain"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.1, type: "spring" }}
             />
           </div>
 
-          {/* Dot indicators (progress through curriculum) */}
-          <div className="flex justify-center gap-1.5 mb-6">
+          {/* Progress dots */}
+          <div className="flex justify-center gap-1.5 mb-2">
             {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
