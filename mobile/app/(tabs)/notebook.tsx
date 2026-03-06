@@ -288,7 +288,7 @@ export default function NotebookScreen() {
           </View>
         ) : (
           <View style={styles.emptyState}>
-            <Image source={APP_ICONS.notebook} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
+            <Feather name="edit-3" size={40} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
             <Text style={styles.emptyTitle}>
               {searchQuery ? 'No notes found' : 'Start your notebook'}
             </Text>

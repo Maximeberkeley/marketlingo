@@ -329,7 +329,7 @@ export default function GamesScreen() {
     return (
       <View style={[styles.container, styles.centered]}>
         <View style={styles.completeIcon}>
-          <Image source={APP_ICONS.achievements} style={{ width: 32, height: 32, resizeMode: 'contain' }} />
+          <Feather name="award" size={28} color={COLORS.success} />
         </View>
         <Text style={styles.completeTitle}>Game Complete!</Text>
         <Text style={styles.completeScore}>You scored {score}/{questions.length} ({percentage}%)</Text>
