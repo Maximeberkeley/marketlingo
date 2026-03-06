@@ -208,12 +208,6 @@ export default function NotebookPage() {
             <h1 className="text-h1 text-text-primary">My Notebook</h1>
             <p className="text-caption text-text-muted">{notes.length} insights captured</p>
           </div>
-          <button
-            onClick={() => setShowAddNote(true)}
-            className="w-10 h-10 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center"
-          >
-            <Plus size={20} className="text-accent" />
-          </button>
         </motion.div>
 
         {/* Hero Section - Only show when empty */}
