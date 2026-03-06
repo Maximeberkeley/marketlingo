@@ -305,7 +305,7 @@ export default function DrillsScreen() {
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           <View style={styles.introCenter}>
-            <Image source={APP_ICONS.drills} style={{ width: 64, height: 64, resizeMode: 'contain', marginBottom: 16 }} />
+            <Feather name="zap" size={56} color={COLORS.accent} style={{ marginBottom: 16 }} />
             <Text style={styles.introMsg}>15 seconds per question — trust your instincts!</Text>
           </View>
           <View style={styles.heroCard}>
