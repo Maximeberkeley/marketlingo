@@ -103,7 +103,7 @@ export default function InvestmentCertificateScreen() {
         <View style={styles.certCard}>
           <View style={styles.certBorder}>
             <View style={styles.certInner}>
-              <Image source={APP_ICONS.achievements} style={{ width: 40, height: 40, resizeMode: 'contain', marginBottom: 8 }} />
+              <Feather name="award" size={36} color={COLORS.accent} style={{ marginBottom: 8 }} />
               <Text style={styles.certLabel}>CERTIFICATE OF COMPLETION</Text>
               <Text style={styles.certName}>{userName}</Text>
               <Text style={styles.certBody}>
