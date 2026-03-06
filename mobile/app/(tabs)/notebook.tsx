@@ -196,7 +196,7 @@ export default function NotebookScreen() {
         {/* Pro Tip */}
         {notes.length > 0 && notes.length < 5 && (
           <View style={styles.tipCard}>
-            <Text style={styles.tipEmoji}>✨</Text>
+            <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: 'rgba(251,191,36,0.15)', alignItems: 'center', justifyContent: 'center' }}><Text style={{ fontSize: 14, color: '#FCD34D' }}>i</Text></View>
             <View style={{ flex: 1 }}>
               <Text style={styles.tipTitle}>Pro Tip</Text>
               <Text style={styles.tipText}>
@@ -208,7 +208,7 @@ export default function NotebookScreen() {
 
         {/* Search */}
         <View style={styles.searchContainer}>
-          <Text style={styles.searchIcon}>🔍</Text>
+          <Text style={styles.searchIcon}>⌕</Text>
           <TextInput
             style={styles.searchInput}
             placeholder="Search your notes..."
@@ -234,7 +234,6 @@ export default function NotebookScreen() {
               ]}
               onPress={() => setSelectedFilter(filter.id)}
             >
-              <Text style={styles.filterEmoji}>{filter.emoji}</Text>
               <Text
                 style={[
                   styles.filterText,

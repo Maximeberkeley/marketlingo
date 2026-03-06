@@ -33,7 +33,7 @@ export const mentors: Mentor[] = [
     title: 'Industry Strategist',
     expertise: ['Market Analysis', 'Competitive Intelligence', 'Business Strategy'],
     personality: 'Sharp, analytical, and direct. Maya cuts through noise to deliver actionable insights.',
-    emoji: '👩‍💼',
+    emoji: '‍',
     greeting: 'Ready to dive into market dynamics? I love a good strategic challenge.',
     specialties: ['Market structure', 'Competitive positioning', 'Investment thesis'],
     voiceId: 'Xb7hH8MSUJpSbSDYk0k2', // Alice
@@ -44,7 +44,7 @@ export const mentors: Mentor[] = [
     title: 'Technical Expert',
     expertise: ['Engineering', 'Certification', 'Supply Chain'],
     personality: 'Patient, thorough, and incredibly knowledgeable. 30+ years of experience.',
-    emoji: '👨‍🔬',
+    emoji: '‍',
     greeting: "Let's talk aerospace. What technical questions are on your mind?",
     specialties: ['Certification processes', 'Engineering challenges', 'Supply chain dynamics'],
     voiceId: 'nPczCjzI2devNBz1zQrb', // Brian
@@ -55,7 +55,7 @@ export const mentors: Mentor[] = [
     title: 'Startup Coach',
     expertise: ['Fundraising', 'GTM Strategy', 'Product-Market Fit'],
     personality: 'Energetic, encouraging, and practical. Founded two startups.',
-    emoji: '🚀',
+    emoji: '',
     greeting: 'Building something? Let\'s figure out your path to success.',
     specialties: ['Startup strategy', 'Fundraising', 'Go-to-market'],
     voiceId: 'iP95p4xoKVk53GoZ742B', // Chris
@@ -72,8 +72,8 @@ export const mentors: Mentor[] = [
     voiceId: 'pFZP5JQG7iQjIQuC4Bku', // Lily
     expressions: {
       thinking: ['Hmm, let me think...', "That's a deep one!", 'Interesting angle...'],
-      cheering: ["You're crushing it! 🎉", 'Amazing work!', 'Yes! Nailed it! 💪', 'I knew you could do it!'],
-      celebrating: ['Huge milestone! 🏆', 'Look at you go!', "That's what I'm talking about!", 'So proud of you!'],
+      cheering: ["You're crushing it! ", 'Amazing work!', 'Yes! Nailed it! ', 'I knew you could do it!'],
+      celebrating: ['Huge milestone! ', 'Look at you go!', "That's what I'm talking about!", 'So proud of you!'],
       encouraging: ["You've got this!", 'Keep pushing!', 'Almost there!', 'Trust the process!'],
       curious: ['Tell me more!', 'What led you there?', 'I love that thinking!', "Ooh, that's exciting!"],
     },

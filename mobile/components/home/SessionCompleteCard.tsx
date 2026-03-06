@@ -47,7 +47,7 @@ export function SessionCompleteCard({
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Day ${dayNumber} complete in ${marketName}! ${marketEmoji}\n\n📚 "${lessonTitle}"\n⚡ ${xpEarned} XP earned\n🔥 ${streak} day streak\n🚀 Stage: ${stageName}\n\nLearning markets daily with MarketLingo 💜`,
+        message: `Day ${dayNumber} complete in ${marketName}! ${marketEmoji}\n\n "${lessonTitle}"\n⚡ ${xpEarned} XP earned\n ${streak} day streak\n Stage: ${stageName}\n\nLearning markets daily with MarketLingo `,
         title: `MarketLingo — Day ${dayNumber} Complete`,
       });
     } catch (_) {}
@@ -71,7 +71,7 @@ export function SessionCompleteCard({
             <Text style={styles.statLabel}>XP Earned</Text>
           </View>
           <View style={[styles.statBox, styles.statBoxMiddle]}>
-            <Text style={styles.statValue}>🔥 {streak}</Text>
+            <Text style={styles.statValue}> {streak}</Text>
             <Text style={styles.statLabel}>Day Streak</Text>
           </View>
           <View style={styles.statBox}>

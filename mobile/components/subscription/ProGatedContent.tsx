@@ -63,9 +63,9 @@ export function ProGatedContent({
   if (compact) {
     return (
       <TouchableOpacity style={styles.compactBtn} onPress={handleUnlock} activeOpacity={0.8}>
-        <Text style={{ fontSize: 14 }}>🔒</Text>
+        <Text style={{ fontSize: 14 }}></Text>
         <Text style={styles.compactText}>Unlock {label}</Text>
-        <Text style={{ fontSize: 12 }}>👑</Text>
+        <Text style={{ fontSize: 12 }}></Text>
       </TouchableOpacity>
     );
   }
@@ -78,7 +78,7 @@ export function ProGatedContent({
         </View>
         <View style={styles.previewOverlay}>
           <View style={styles.previewIconWrap}>
-            <Text style={{ fontSize: 30 }}>👑</Text>
+            <Text style={{ fontSize: 30 }}></Text>
           </View>
           <Text style={styles.previewTitle}>{label} is Pro</Text>
           <Text style={styles.previewSubtitle}>Upgrade to unlock the full learning experience</Text>
@@ -93,14 +93,14 @@ export function ProGatedContent({
   return (
     <View style={styles.fullGate}>
       <View style={styles.fullGateIcon}>
-        <Text style={{ fontSize: 36 }}>🔒</Text>
+        <Text style={{ fontSize: 36 }}></Text>
       </View>
       <Text style={styles.fullGateTitle}>{label}</Text>
       <Text style={styles.fullGateDesc}>
         This feature is available with MarketLingo Pro. Upgrade to unlock the full learning experience.
       </Text>
       <TouchableOpacity style={styles.fullGateBtn} onPress={handleUnlock} activeOpacity={0.85}>
-        <Text style={styles.fullGateBtnText}>👑 Upgrade to Pro</Text>
+        <Text style={styles.fullGateBtnText}> Upgrade to Pro</Text>
       </TouchableOpacity>
     </View>
   );
@@ -110,7 +110,7 @@ export function ProGatedContent({
 export function ProBadge({ size = 'sm' }: { size?: 'sm' | 'md' }) {
   return (
     <View style={[styles.badge, size === 'md' && styles.badgeMd]}>
-      <Text style={[styles.badgeText, size === 'md' && styles.badgeTextMd]}>👑 PRO</Text>
+      <Text style={[styles.badgeText, size === 'md' && styles.badgeTextMd]}> PRO</Text>
     </View>
   );
 }

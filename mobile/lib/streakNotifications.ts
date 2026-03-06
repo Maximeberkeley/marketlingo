@@ -38,7 +38,7 @@ export async function scheduleStreakNotifications(
       const secondsUntil8PM = Math.floor((today8PM.getTime() - now.getTime()) / 1000);
       const id1 = await Notifications.scheduleNotificationAsync({
         content: {
-          title: `🔥 Your ${currentStreak}-day streak needs you!`,
+          title: ` Your ${currentStreak}-day streak needs you!`,
           body: "You haven't done today's lesson yet. A quick 5-minute session keeps your streak alive!",
           data: { type: 'streak_warning', route: '/(tabs)/home' },
           sound: true,

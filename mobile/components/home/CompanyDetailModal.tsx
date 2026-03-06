@@ -93,7 +93,7 @@ export function CompanyDetailModal({ company, onClose }: CompanyDetailModalProps
                   resizeMode="contain"
                 />
               ) : (
-                <Text style={styles.logoEmoji}>{company.name.charAt(0)}</Text>
+                <Text style={styles.logoInitial}>{company.name.charAt(0)}</Text>
               )}
             </View>
             <View style={{ flex: 1 }}>
@@ -144,17 +144,17 @@ export function CompanyDetailModal({ company, onClose }: CompanyDetailModalProps
 
                   {/* Industry Role */}
                   <View style={styles.industryRoleCard}>
-                    <Text style={styles.industryRoleLabel}>🎯 INDUSTRY ROLE</Text>
+                    <Text style={styles.industryRoleLabel}>INDUSTRY ROLE</Text>
                     <Text style={styles.industryRoleText}>{company.industryRole}</Text>
                   </View>
 
                   {/* Stats Grid */}
                   <View style={styles.statsGrid}>
                     {[
-                      { label: 'CEO', value: company.ceo, icon: '👤' },
-                      { label: 'Founded', value: company.founded, icon: '📅' },
-                      { label: 'HQ', value: company.headquarters.split(',')[0], icon: '📍' },
-                      { label: 'Employees', value: company.employees, icon: '🏢' },
+                      { label: 'CEO', value: company.ceo, icon: 'C' },
+                      { label: 'Founded', value: company.founded, icon: 'F' },
+                      { label: 'HQ', value: company.headquarters.split(',')[0], icon: 'H' },
+                      { label: 'Employees', value: company.employees, icon: 'E' },
                     ].map((stat) => (
                       <View key={stat.label} style={styles.statCard}>
                         <Text style={styles.statIcon}>{stat.icon}</Text>
@@ -167,7 +167,7 @@ export function CompanyDetailModal({ company, onClose }: CompanyDetailModalProps
                   {/* Market Cap */}
                   {company.marketCap && (
                     <View style={styles.marketCapCard}>
-                      <Text style={styles.marketCapLabel}>📈 MARKET CAP</Text>
+                      <Text style={styles.marketCapLabel}>MARKET CAP</Text>
                       <Text style={styles.marketCapValue}>{company.marketCap}</Text>
                     </View>
                   )}
@@ -206,9 +206,9 @@ export function CompanyDetailModal({ company, onClose }: CompanyDetailModalProps
                 <View style={styles.insightSlide}>
                   <View style={styles.insightTypeRow}>
                     <Text style={[styles.insightType, { color: slideTypeColor }]}>
-                      {slideData?.type === 'competitive' ? '⚔️ COMPETITIVE ANALYSIS'
-                        : slideData?.type === 'investment' ? '📈 INVESTMENT THESIS'
-                        : `💡 INSIGHT ${currentSlide} OF ${company.slides.length}`}
+                      {slideData?.type === 'competitive' ? 'COMPETITIVE ANALYSIS'
+                        : slideData?.type === 'investment' ? 'INVESTMENT THESIS'
+                        : `INSIGHT ${currentSlide} OF ${company.slides.length}`}
                     </Text>
                   </View>
                   <Text style={styles.insightTitle}>{slideData?.title}</Text>
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   logoImage: { width: 40, height: 40 },
-  logoEmoji: { fontSize: 28 },
+  logoInitial: { fontSize: 28, fontWeight: '700', color: '#9CA3AF' },
   companyName: { fontSize: 18, fontWeight: '700', color: COLORS.textPrimary },
   tickerBadge: {
     paddingHorizontal: 8,

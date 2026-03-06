@@ -7,6 +7,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Animated,
+  Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -167,7 +168,7 @@ export default function GoalScreen() {
 
         {/* Header */}
         <View style={styles.header}>
-          <MascotAvatar emoji="🦁" size="lg" />
+          <MascotAvatar size="lg" />
           {selectedMarket && (
             <View style={styles.marketBadge}>
               <Text style={{ fontSize: 16 }}>{getMarketEmoji(selectedMarket)}</Text>
@@ -181,7 +182,7 @@ export default function GoalScreen() {
         {/* Leo reaction bubble */}
         {selectedGoal && (
           <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}>
-            <Text style={styles.reactionEmoji}>🦁</Text>
+            <Image source={require('../../assets/mascot/leo-reference.png')} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
             <Text style={styles.reactionText}>{LEO_REACTIONS[selectedGoal]}</Text>
           </Animated.View>
         )}

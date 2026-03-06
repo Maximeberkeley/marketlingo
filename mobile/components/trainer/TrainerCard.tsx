@@ -115,15 +115,15 @@ function LeoFeedbackReaction({ isCorrect }: { isCorrect: boolean }) {
   }, []);
 
   const CORRECT_MESSAGES = [
-    "Nailed it! You think like a pro 🧠",
-    "That's the right call! 🎯",
-    "Exactly! Great analysis 💪",
+    "Nailed it! You think like a pro ",
+    "That's the right call! ",
+    "Exactly! Great analysis ",
   ];
 
   const WRONG_MESSAGES = [
-    "Tricky one! Let's learn from this 📚",
-    "Common trap — here's why 🤔",
-    "Almost! Check the reasoning below 👇",
+    "Tricky one! Let's learn from this ",
+    "Common trap — here's why ",
+    "Almost! Check the reasoning below ",
   ];
 
   const messages = isCorrect ? CORRECT_MESSAGES : WRONG_MESSAGES;
@@ -303,7 +303,7 @@ export function TrainerCard({
           {/* Pro Reasoning */}
           {(serverFeedback?.feedback_pro_reasoning || scenario.feedbackProReasoning) && (
             <View style={[styles.feedbackCard, styles.feedbackGreen]}>
-              <Text style={styles.feedbackCardLabel}>📈 Pro Reasoning</Text>
+              <Text style={styles.feedbackCardLabel}> Pro Reasoning</Text>
               <Text style={styles.feedbackCardText}>
                 {serverFeedback?.feedback_pro_reasoning || scenario.feedbackProReasoning}
               </Text>
@@ -323,7 +323,7 @@ export function TrainerCard({
           {/* Mental Model */}
           {(serverFeedback?.feedback_mental_model || scenario.feedbackMentalModel) && (
             <View style={[styles.feedbackCard, styles.feedbackBlue]}>
-              <Text style={styles.feedbackCardLabel}>🧠 Mental Model</Text>
+              <Text style={styles.feedbackCardLabel}> Mental Model</Text>
               <Text style={styles.feedbackCardText}>
                 {serverFeedback?.feedback_mental_model || scenario.feedbackMentalModel}
               </Text>
@@ -333,7 +333,7 @@ export function TrainerCard({
           {/* Follow-up */}
           {(serverFeedback?.follow_up_question || scenario.followUpQuestion) && (
             <View style={[styles.feedbackCard, styles.feedbackPurple]}>
-              <Text style={styles.feedbackCardLabel}>💼 For Your Startup</Text>
+              <Text style={styles.feedbackCardLabel}> For Your Startup</Text>
               <Text style={[styles.feedbackCardText, { fontStyle: 'italic' }]}>
                 {serverFeedback?.follow_up_question || scenario.followUpQuestion}
               </Text>
@@ -357,7 +357,7 @@ export function TrainerCard({
                 onPress={() => onAskMentor(serverFeedback?.follow_up_question || scenario.followUpQuestion || scenario.question)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.mentorCTABtnText}>💬 Discuss with AI Mentor</Text>
+                <Text style={styles.mentorCTABtnText}> Discuss with AI Mentor</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -365,7 +365,7 @@ export function TrainerCard({
           {/* Action Buttons */}
           <View style={styles.actionRow}>
             <TouchableOpacity style={styles.saveBtn} onPress={onSaveToNotebook} activeOpacity={0.8}>
-              <Text style={styles.saveBtnText}>📝 Save</Text>
+              <Text style={styles.saveBtnText}> Save</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.nextBtn} onPress={onNext} activeOpacity={0.8}>
               <Text style={styles.nextBtnText}>Next →</Text>

@@ -146,7 +146,7 @@ export function useNotifications() {
 
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: '🦁 Leo: Markets are moving!',
+          title: ' Leo: Markets are moving!',
           body: "Time for your daily brief? 5 mins is all I ask...",
           data: { route: '/(tabs)/home', type: 'daily_reminder' },
           sound: true,
@@ -169,7 +169,7 @@ export function useNotifications() {
     try {
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: "🦁 Leo: Don't let your streak end!",
+          title: " Leo: Don't let your streak end!",
           body: '5 mins is all I ask... Your streak is at risk!',
           data: { route: '/(tabs)/home', type: 'streak_warning' },
           sound: true,

@@ -77,7 +77,7 @@ export function ComboCounter({ combo, show }: ComboCounterProps) {
     <View style={styles.container}>
       <Animated.View style={[styles.comboChip, { transform: [{ scale: scaleAnim }] }]}>
         <Animated.View style={combo.isOnFire ? { transform: [{ scale: fireScale }] } : undefined}>
-          <Text style={styles.fireEmoji}>{combo.isOnFire ? '🔥' : '⚡'}</Text>
+          <Text style={styles.fireEmoji}>{combo.isOnFire ? '' : '⚡'}</Text>
         </Animated.View>
         <Text style={[styles.comboCount, { color: multiplierColor }]}>{combo.streak}</Text>
         <View style={[styles.multiplierBadge, { backgroundColor: multiplierColor + '20' }]}>

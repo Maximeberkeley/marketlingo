@@ -43,7 +43,7 @@ export function StreakBadge({ count }: StreakBadgeProps) {
   return (
     <Animated.View style={[styles.container, { transform: [{ scale: scaleAnim }] }]}>
       <Animated.Text style={[styles.emoji, isOnFire && { transform: [{ rotate: rotation }] }]}>
-        🔥
+        
       </Animated.Text>
       <Text style={styles.count}>{count}</Text>
     </Animated.View>

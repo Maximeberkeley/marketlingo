@@ -21,21 +21,21 @@ interface MarketStatus {
 }
 
 const MARKETS = [
-  { id: 'aerospace', name: 'Aerospace', icon: '✈️' },
-  { id: 'neuroscience', name: 'Neuroscience', icon: '🧠' },
-  { id: 'ai', name: 'AI', icon: '🤖' },
-  { id: 'fintech', name: 'Fintech', icon: '💳' },
-  { id: 'biotech', name: 'Biotech', icon: '🧬' },
-  { id: 'ev', name: 'EV', icon: '🔋' },
-  { id: 'cybersecurity', name: 'Cybersecurity', icon: '🔒' },
-  { id: 'cleanenergy', name: 'Clean Energy', icon: '☀️' },
-  { id: 'spacetech', name: 'Space Tech', icon: '🚀' },
-  { id: 'healthtech', name: 'HealthTech', icon: '🏥' },
-  { id: 'robotics', name: 'Robotics', icon: '🦾' },
-  { id: 'agtech', name: 'AgTech', icon: '🌾' },
-  { id: 'climatetech', name: 'ClimateTech', icon: '🌍' },
-  { id: 'logistics', name: 'Logistics', icon: '📦' },
-  { id: 'web3', name: 'Web3', icon: '⛓️' },
+  { id: 'aerospace', name: 'Aerospace', icon: 'AE' },
+  { id: 'neuroscience', name: 'Neuroscience', icon: 'NS' },
+  { id: 'ai', name: 'AI', icon: 'AI' },
+  { id: 'fintech', name: 'Fintech', icon: 'FT' },
+  { id: 'biotech', name: 'Biotech', icon: 'BT' },
+  { id: 'ev', name: 'EV', icon: 'EV' },
+  { id: 'cybersecurity', name: 'Cybersecurity', icon: 'CS' },
+  { id: 'cleanenergy', name: 'Clean Energy', icon: 'CE' },
+  { id: 'spacetech', name: 'Space Tech', icon: 'ST' },
+  { id: 'healthtech', name: 'HealthTech', icon: 'HT' },
+  { id: 'robotics', name: 'Robotics', icon: 'RB' },
+  { id: 'agtech', name: 'AgTech', icon: 'AG' },
+  { id: 'climatetech', name: 'ClimateTech', icon: 'CT' },
+  { id: 'logistics', name: 'Logistics', icon: 'LG' },
+  { id: 'web3', name: 'Web3', icon: 'W3' },
 ];
 
 const MONTHS = [
@@ -58,11 +58,11 @@ export default function AdminContentScreen() {
   const [planInfo, setPlanInfo] = useState<{ existingDays: number[]; daysToGenerate: number[]; goalStats?: Record<string, { existing: number; toGenerate: number }> } | null>(null);
 
   const GOALS = [
-    { id: 'all', label: 'All Goals', icon: '🎯' },
-    { id: 'career', label: 'Career', icon: '💼' },
-    { id: 'invest', label: 'Invest', icon: '📊' },
-    { id: 'build_startup', label: 'Startup', icon: '🚀' },
-    { id: 'curiosity', label: 'Curiosity', icon: '🔍' },
+    { id: 'all', label: 'All Goals', icon: 'All' },
+    { id: 'career', label: 'Career', icon: 'Ca' },
+    { id: 'invest', label: 'Invest', icon: 'Inv' },
+    { id: 'build_startup', label: 'Startup', icon: 'Su' },
+    { id: 'curiosity', label: 'Curiosity', icon: 'Cu' },
   ];
 
   useEffect(() => { loadMarketStatuses(); }, []);
@@ -164,7 +164,7 @@ export default function AdminContentScreen() {
       <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]} showsVerticalScrollIndicator={false}>
 
         {/* Market selector */}
-        <Text style={styles.sectionTitle}>🌍 Select Industry</Text>
+        <Text style={styles.sectionTitle}>Select Industry</Text>
         <View style={styles.marketsGrid}>
           {MARKETS.map((market) => {
             const status = getMarketStatus(market.id);
@@ -189,7 +189,7 @@ export default function AdminContentScreen() {
         </View>
 
         {/* Goal Selector */}
-        <Text style={styles.sectionTitle}>🎯 Learning Goal</Text>
+        <Text style={styles.sectionTitle}>Learning Goal</Text>
         <View style={styles.goalsRow}>
           {GOALS.map((g) => (
             <TouchableOpacity
@@ -241,7 +241,7 @@ export default function AdminContentScreen() {
         )}
 
         {/* Month picker */}
-        <Text style={styles.sectionTitle}>📅 Select Month</Text>
+        <Text style={styles.sectionTitle}>Select Month</Text>
         <View style={styles.monthsGrid}>
           {MONTHS.map((m) => {
             const pct = getMonthProgress(m.month);
@@ -277,7 +277,7 @@ export default function AdminContentScreen() {
             </Text>
             <View style={styles.actionsBtns}>
               <TouchableOpacity style={styles.summariesBtn} onPress={generateSummaries} disabled={loading} activeOpacity={0.8}>
-                <Text style={styles.summariesBtnText}>📖 Summaries</Text>
+                <Text style={styles.summariesBtnText}>Summaries</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.generateBtn, (!planInfo || planInfo.daysToGenerate?.length === 0) && styles.btnDisabled]}

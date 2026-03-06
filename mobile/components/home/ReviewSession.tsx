@@ -27,7 +27,7 @@ export function ReviewSession({ items, onGrade, onComplete, marketName }: Review
     return (
       <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
         <View style={styles.doneCard}>
-          <Text style={{ fontSize: 56, textAlign: 'center', marginBottom: 16 }}>🧠</Text>
+          <Text style={{ fontSize: 56, textAlign: 'center', marginBottom: 16 }}></Text>
           <Text style={styles.doneTitle}>Review Complete!</Text>
           <Text style={styles.doneSub}>
             {completedCount} concept{completedCount !== 1 ? 's' : ''} reviewed in {marketName}
@@ -91,28 +91,28 @@ export function ReviewSession({ items, onGrade, onComplete, marketName }: Review
                 style={[styles.gradeBtn, styles.gradeForgot]}
                 onPress={() => handleGrade(0)}
               >
-                <Text style={styles.gradeBtnEmoji}>😵</Text>
+                <Text style={styles.gradeBtnEmoji}></Text>
                 <Text style={[styles.gradeBtnText, { color: '#EF4444' }]}>Forgot</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.gradeBtn, styles.gradeHard]}
                 onPress={() => handleGrade(1)}
               >
-                <Text style={styles.gradeBtnEmoji}>😓</Text>
+                <Text style={styles.gradeBtnEmoji}></Text>
                 <Text style={[styles.gradeBtnText, { color: '#F97316' }]}>Hard</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.gradeBtn, styles.gradeGood]}
                 onPress={() => handleGrade(2)}
               >
-                <Text style={styles.gradeBtnEmoji}>😊</Text>
+                <Text style={styles.gradeBtnEmoji}></Text>
                 <Text style={[styles.gradeBtnText, { color: '#22C55E' }]}>Good</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.gradeBtn, styles.gradeEasy]}
                 onPress={() => handleGrade(3)}
               >
-                <Text style={styles.gradeBtnEmoji}>🤩</Text>
+                <Text style={styles.gradeBtnEmoji}></Text>
                 <Text style={[styles.gradeBtnText, { color: '#3B82F6' }]}>Easy</Text>
               </TouchableOpacity>
             </View>

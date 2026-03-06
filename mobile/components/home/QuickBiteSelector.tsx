@@ -36,7 +36,7 @@ export function QuickBiteSelector({
   const allBitesComplete = bites.every((b) => b.isComplete);
 
   const BITE_LABELS = ['Concept', 'Lens', 'Takeaway'];
-  const BITE_EMOJIS = ['💡', '🔍', '🎯'];
+  const BITE_EMOJIS = ['', '', ''];
 
   return (
     <View style={styles.container}>
@@ -69,7 +69,7 @@ export function QuickBiteSelector({
             activeOpacity={0.7}
           >
             <Text style={styles.biteEmoji}>
-              {bite.isComplete ? '✅' : (BITE_EMOJIS[bite.index] || '📖')}
+              {bite.isComplete ? '✅' : (BITE_EMOJIS[bite.index] || '')}
             </Text>
             <Text
               style={[styles.biteLabel, bite.isComplete && styles.biteLabelDone]}
@@ -91,13 +91,13 @@ export function QuickBiteSelector({
         activeOpacity={0.8}
       >
         <Text style={styles.fullLessonText}>
-          {isLessonComplete ? '📖 Review Full Lesson' : '📚 Full Lesson (all slides)'}
+          {isLessonComplete ? ' Review Full Lesson' : ' Full Lesson (all slides)'}
         </Text>
       </TouchableOpacity>
 
       {allBitesComplete && !isLessonComplete && (
         <Text style={styles.hintText}>
-          💡 Complete all bites to earn full lesson XP!
+           Complete all bites to earn full lesson XP!
         </Text>
       )}
     </View>

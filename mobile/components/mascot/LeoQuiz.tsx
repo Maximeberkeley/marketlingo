@@ -30,9 +30,9 @@ interface LeoQuizProps {
 // ─────────────────────────────────────────────
 // Messages
 // ─────────────────────────────────────────────
-const QUIZ_MESSAGES = ["Quick check! 🧠", "Test yourself!", "What do you think?", "Knowledge check!"];
-const CORRECT_MESSAGES = ["Brilliant! 🎉", "You nailed it! ⭐", "Perfect! 🌟", "Exactly right! 💪"];
-const INCORRECT_MESSAGES = ["Not quite — let's learn!", "Close! Here's the answer.", "Good effort! 📚", "Keep learning! 💡"];
+const QUIZ_MESSAGES = ["Quick check! ", "Test yourself!", "What do you think?", "Knowledge check!"];
+const CORRECT_MESSAGES = ["Brilliant! ", "You nailed it! ⭐", "Perfect! ", "Exactly right! "];
+const INCORRECT_MESSAGES = ["Not quite — let's learn!", "Close! Here's the answer.", "Good effort! ", "Keep learning! "];
 
 const getRand = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 

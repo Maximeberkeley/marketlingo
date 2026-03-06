@@ -12,7 +12,7 @@ interface DailyLimitGateProps {
 }
 
 const typeLabels = { games: 'games', drills: 'drills', trainer: 'trainer scenarios' };
-const typeIcons = { games: '🎯', drills: '⚡', trainer: '🧠' };
+const typeIcons = { games: '', drills: '⚡', trainer: '' };
 
 export function DailyLimitGate({ type, limitInfo, onContinue }: DailyLimitGateProps) {
   const { canStartTrial, startFreeTrial } = useSubscription();
@@ -48,7 +48,7 @@ export function DailyLimitGate({ type, limitInfo, onContinue }: DailyLimitGatePr
       </Text>
 
       <View style={styles.resetRow}>
-        <Text style={styles.resetIcon}>🕐</Text>
+        <Text style={styles.resetIcon}></Text>
         <Text style={styles.resetText}>Resets at midnight</Text>
       </View>
 
@@ -62,7 +62,7 @@ export function DailyLimitGate({ type, limitInfo, onContinue }: DailyLimitGatePr
           onPress={() => router.push('/subscription')}
           activeOpacity={0.85}
         >
-          <Text style={styles.upgradeBtnText}>👑 Upgrade for Unlimited</Text>
+          <Text style={styles.upgradeBtnText}> Upgrade for Unlimited</Text>
         </TouchableOpacity>
       )}
 

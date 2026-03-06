@@ -70,8 +70,8 @@ export function StreakAtRisk({ streak, hoursLeft, onStartLesson, onDismiss }: St
 
       <View style={styles.content}>
         <Animated.View style={[styles.flameContainer, { transform: [{ scale: flameScale }] }]}>
-          <Text style={styles.flame}>🔥</Text>
-          {urgencyLevel === 'critical' && <Text style={styles.flameDying}>💀</Text>}
+          <Text style={styles.flame}></Text>
+          {urgencyLevel === 'critical' && <Text style={styles.flameDying}></Text>}
         </Animated.View>
         <View style={styles.messageColumn}>
           <Text style={[styles.headline, { color: textColor }]}>

@@ -46,9 +46,9 @@ const getMentorMessage = (
     },
     sophia: isSophiaNeuro
       ? {
-          intro: 'Brain science awaits! 🧠',
-          first: 'This is exciting! 🎉',
-          last: 'You crushed it! 🏆',
+          intro: 'Brain science awaits! ',
+          first: 'This is exciting! ',
+          last: 'You crushed it! ',
         }
       : {
           intro: "You're going to love this!",

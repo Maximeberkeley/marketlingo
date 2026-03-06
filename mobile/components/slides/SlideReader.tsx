@@ -59,9 +59,9 @@ const MINIMUM_LESSON_TIME_SECONDS = 180;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const TYPE_CONFIG = {
-  LESSON: { color: '#4ADE80', bg: 'rgba(34,197,94,0.15)', label: 'LESSON', emoji: '📚' },
+  LESSON: { color: '#4ADE80', bg: 'rgba(34,197,94,0.15)', label: 'LESSON', emoji: '' },
   NEWS:   { color: '#60A5FA', bg: 'rgba(59,130,246,0.15)', label: 'INTEL', emoji: '⚡' },
-  HISTORY:{ color: '#FBBF24', bg: 'rgba(245,158,11,0.15)', label: 'HISTORY', emoji: '📜' },
+  HISTORY:{ color: '#FBBF24', bg: 'rgba(245,158,11,0.15)', label: 'HISTORY', emoji: '' },
 };
 
 // ─────────────────────────────────────────────
@@ -91,9 +91,9 @@ function MentorCard({
   const firstName = mentor.name.split(' ')[0];
 
   const MESSAGES: Record<typeof position, { text: string; sub: string }> = {
-    first:  { text: `Ready to dive in? 🚀`, sub: `${firstName} here to guide you` },
-    middle: { text: `${progress}% done — keep it up! 💪`, sub: 'Great momentum — stay focused' },
-    last:   { text: `You crushed it! 🎉`, sub: 'Tap to discuss what you learned' },
+    first:  { text: `Ready to dive in? `, sub: `${firstName} here to guide you` },
+    middle: { text: `${progress}% done — keep it up! `, sub: 'Great momentum — stay focused' },
+    last:   { text: `You crushed it! `, sub: 'Tap to discuss what you learned' },
   };
 
   const ACCENT: Record<typeof position, string> = {
@@ -126,7 +126,7 @@ function MentorCard({
         <Text style={mcStyles.sub}>{msg.sub}</Text>
         {position === 'last' && (
           <TouchableOpacity onPress={onChat} style={[mcStyles.chatBtn, { backgroundColor: accent + '25', borderColor: accent + '60' }]}>
-            <Text style={[mcStyles.chatBtnText, { color: accent }]}>💬 Discuss with {firstName}</Text>
+            <Text style={[mcStyles.chatBtnText, { color: accent }]}> Discuss with {firstName}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -302,7 +302,7 @@ function CompletionModal({
 
         {isReview ? (
           <>
-            <Text style={cStyles.emoji}>📖</Text>
+            <Text style={cStyles.emoji}></Text>
             <Text style={cStyles.title}>Great review session!</Text>
             <Text style={cStyles.sub}>Reviewing solidifies your knowledge.</Text>
             <Text style={cStyles.muted}>No XP on review — but you're reinforcing expertise!</Text>
@@ -321,7 +321,7 @@ function CompletionModal({
           </>
         ) : (
           <>
-            <Text style={cStyles.emoji}>🔥</Text>
+            <Text style={cStyles.emoji}></Text>
             <Text style={cStyles.title}>You're on fire!</Text>
             <Text style={cStyles.sub}>Lesson complete! Your streak is building.</Text>
             <View style={cStyles.xpBadge}>
@@ -338,10 +338,10 @@ function CompletionModal({
           ) : (
             <>
               <TouchableOpacity style={cStyles.ctaBtn} onPress={onComplete}>
-                <Text style={cStyles.ctaBtnText}>🔥 Continue</Text>
+                <Text style={cStyles.ctaBtnText}> Continue</Text>
               </TouchableOpacity>
               <TouchableOpacity style={cStyles.outlineBtn} onPress={onComplete}>
-                <Text style={cStyles.outlineBtnText}>🎯 Practice with Drills</Text>
+                <Text style={cStyles.outlineBtnText}> Practice with Drills</Text>
               </TouchableOpacity>
             </>
           )}
@@ -585,14 +585,14 @@ export function SlideReader({
             <View style={{ gap: 8 }}>
               <View style={styles.actionRow}>
                 <TouchableOpacity style={styles.secondaryBtn} onPress={() => currentSlide && onAddNote(currentSlide.slideNumber)}>
-                  <Text style={styles.secondaryBtnText}>📝 Note</Text>
+                  <Text style={styles.secondaryBtnText}> Note</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.secondaryBtn} onPress={() => currentSlide && onSaveInsight(currentSlide.slideNumber)}>
-                  <Text style={styles.secondaryBtnText}>🔖 Save</Text>
+                  <Text style={styles.secondaryBtnText}> Save</Text>
                 </TouchableOpacity>
                 {onAskMentor && (
                   <TouchableOpacity style={styles.mentorCTA} onPress={onAskMentor}>
-                    <Text style={styles.mentorCTAText}>🧠 {mentorName || 'Mentor'}</Text>
+                    <Text style={styles.mentorCTAText}> {mentorName || 'Mentor'}</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -603,10 +603,10 @@ export function SlideReader({
           ) : (
             <View style={styles.actionRow}>
               <TouchableOpacity style={styles.secondaryBtn} onPress={() => currentSlide && onAddNote(currentSlide.slideNumber)}>
-                <Text style={styles.secondaryBtnText}>📝 Note</Text>
+                <Text style={styles.secondaryBtnText}> Note</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.secondaryBtn} onPress={() => currentSlide && onSaveInsight(currentSlide.slideNumber)}>
-                <Text style={styles.secondaryBtnText}>🔖 Save</Text>
+                <Text style={styles.secondaryBtnText}> Save</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.nextBtn} onPress={goToNext}>
                 <Text style={styles.nextBtnText}>Next →</Text>

@@ -49,7 +49,7 @@ export function MentorBanner({ context, marketId }: MentorBannerProps) {
           onPress={() => setSelectedMentor(getMentorForContext(context || '', marketId))}
           activeOpacity={0.8}
         >
-          <Text style={styles.chatBtnText}>💬</Text>
+          <Text style={styles.chatBtnText}>Chat</Text>
         </TouchableOpacity>
       </View>
 

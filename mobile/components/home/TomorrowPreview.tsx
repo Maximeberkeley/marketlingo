@@ -66,7 +66,7 @@ export function TomorrowPreview({
       {/* Lock icon + "Coming tomorrow" label */}
       <View style={styles.header}>
         <View style={styles.lockBadge}>
-          <Text style={styles.lockIcon}>🔮</Text>
+          <Text style={styles.lockIcon}></Text>
         </View>
         <View style={{ flex: 1 }}>
           <Text style={styles.label}>COMING TOMORROW</Text>
@@ -88,7 +88,7 @@ export function TomorrowPreview({
       {/* Streak nudge */}
       <View style={styles.nudge}>
         <Text style={styles.nudgeText}>
-          Come back tomorrow to keep your streak alive 🔥
+          Come back tomorrow to keep your streak alive 
         </Text>
       </View>
     </Animated.View>

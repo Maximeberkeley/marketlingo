@@ -17,9 +17,9 @@ interface NotificationOnboardingProps {
 }
 
 const benefits = [
-  { icon: '🕐', title: 'Daily Reminders', description: 'Never miss a lesson with smart reminders at your preferred time', color: '#8B5CF6' },
-  { icon: '🔥', title: 'Streak Protection', description: 'Get warned before your learning streak expires', color: '#F97316' },
-  { icon: '📰', title: 'Breaking News', description: 'Stay ahead with real-time industry updates', color: '#3B82F6' },
+  { icon: '', title: 'Daily Reminders', description: 'Never miss a lesson with smart reminders at your preferred time', color: '#8B5CF6' },
+  { icon: '', title: 'Streak Protection', description: 'Get warned before your learning streak expires', color: '#F97316' },
+  { icon: '', title: 'Breaking News', description: 'Stay ahead with real-time industry updates', color: '#3B82F6' },
 ];
 
 export function NotificationOnboarding({ visible, onComplete }: NotificationOnboardingProps) {
@@ -56,7 +56,7 @@ export function NotificationOnboarding({ visible, onComplete }: NotificationOnbo
                 {/* Hero */}
                 <View style={styles.heroWrap}>
                   <View style={styles.heroIcon}>
-                    <Text style={{ fontSize: 40 }}>🔔</Text>
+                    <Text style={{ fontSize: 40 }}></Text>
                   </View>
                   <Text style={styles.heroTitle}>Stay on Track</Text>
                   <Text style={styles.heroSub}>
@@ -92,7 +92,7 @@ export function NotificationOnboarding({ visible, onComplete }: NotificationOnbo
                 {/* Step 2: permission request */}
                 <View style={styles.heroWrap}>
                   <View style={styles.heroIconRound}>
-                    <Text style={{ fontSize: 34 }}>🔔</Text>
+                    <Text style={{ fontSize: 34 }}></Text>
                   </View>
                   <Text style={styles.heroTitle}>Allow Notifications</Text>
                   <Text style={styles.heroSub}>

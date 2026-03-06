@@ -37,15 +37,15 @@ export const getRandomCharacter = (marketId?: string): MascotCharacter => {
 const getDefaultMessage = (type: MascotBreakType, charName: string, slideIndex?: number, totalSlides?: number): string => {
   const isLeo = charName === 'Leo';
   switch (type) {
-    case 'intro': return isLeo ? "Let's dive in together! 🚀" : "I'll guide you through this one. Ready?";
+    case 'intro': return isLeo ? "Let's dive in together! " : "I'll guide you through this one. Ready?";
     case 'midpoint': {
       const progress = slideIndex && totalSlides ? `${Math.round((slideIndex / totalSlides) * 100)}%` : 'halfway';
-      return isLeo ? `You're ${progress} there! Keep it up! 💪` : `Great progress! ${progress} complete.`;
+      return isLeo ? `You're ${progress} there! Keep it up! ` : `Great progress! ${progress} complete.`;
     }
-    case 'complete': return isLeo ? 'You crushed it! 🎉' : 'Amazing work! You should be proud.';
+    case 'complete': return isLeo ? 'You crushed it! ' : 'Amazing work! You should be proud.';
     case 'encourage': return isLeo ? "You've got this! Don't give up!" : "Keep pushing—you're learning!";
-    case 'tip': return isLeo ? 'Pro tip incoming! 💡' : "Here's something to remember...";
-    default: return 'Hey there! 👋';
+    case 'tip': return isLeo ? 'Pro tip incoming! ' : "Here's something to remember...";
+    default: return 'Hey there! ';
   }
 };
 

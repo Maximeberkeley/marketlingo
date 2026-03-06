@@ -21,7 +21,7 @@ export interface MentorData {
 export const LEO: Mascot = {
   id: 'leo',
   name: 'Leo',
-  emoji: '🦊',
+  emoji: '',
   color: '#F97316',
   isLeo: true,
 };
@@ -32,28 +32,28 @@ export const MENTORS: MentorData[] = [
     id: 'sophia',
     name: 'Sophia',
     specialty: 'Strategy & Analysis',
-    emoji: '👩‍💼',
+    emoji: '‍',
     color: '#8B5CF6',
   },
   {
     id: 'kai',
     name: 'Kai',
     specialty: 'Technical Deep-Dives',
-    emoji: '🧑‍🔬',
+    emoji: '‍',
     color: '#3B82F6',
   },
   {
     id: 'maya',
     name: 'Maya',
     specialty: 'Market Trends',
-    emoji: '👩‍🏫',
+    emoji: '‍',
     color: '#EC4899',
   },
   {
     id: 'alex',
     name: 'Alex',
     specialty: 'Investment Insights',
-    emoji: '🧑‍💼',
+    emoji: '‍',
     color: '#10B981',
   },
 ];
@@ -79,20 +79,20 @@ export type MascotState = 'idle' | 'thinking' | 'correct' | 'incorrect' | 'celeb
 // Messages based on context
 export const MASCOT_MESSAGES = {
   greeting: [
-    "Let's learn together! 🚀",
+    "Let's learn together! ",
     "Ready to dive in?",
-    "Hey there! 👋",
+    "Hey there! ",
   ],
   encouragement: [
-    "You've got this! 💪",
+    "You've got this! ",
     "Keep going, you're doing great!",
     "Almost there!",
   ],
   correct: [
-    "Brilliant! 🎉",
+    "Brilliant! ",
     "You nailed it!",
     "Perfect answer!",
-    "Exactly right! 🌟",
+    "Exactly right! ",
   ],
   incorrect: [
     "Not quite, but close!",
@@ -100,13 +100,13 @@ export const MASCOT_MESSAGES = {
     "Good effort, keep learning!",
   ],
   celebrate: [
-    "You crushed it! 🎉",
-    "All done! 🏆",
+    "You crushed it! ",
+    "All done! ",
     "Amazing work!",
   ],
   thinking: [
     "Hmm, let me think...",
-    "Processing... 🤔",
+    "Processing... ",
   ],
 };
 

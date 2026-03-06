@@ -14,6 +14,7 @@ import { trackEvent } from '../lib/analytics';
 import { FriendCard } from '../components/friends/FriendCard';
 import { FriendActivityFeed } from '../components/friends/FriendActivityFeed';
 import { Feather } from '@expo/vector-icons';
+import { APP_ICONS } from '../lib/icons';
 
 export default function FriendsScreen() {
   const insets = useSafeAreaInsets();

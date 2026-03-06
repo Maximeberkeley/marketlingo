@@ -35,7 +35,7 @@ const milestoneConfig: Record<MilestoneType, {
   getSubtitle: (data: any) => string;
 }> = {
   streak: {
-    emoji: '🔥',
+    emoji: '',
     color: '#F97316',
     bgColor: 'rgba(249, 115, 22, 0.15)',
     getTitle: (v) => `${v}-Day Streak!`,
@@ -49,14 +49,14 @@ const milestoneConfig: Record<MilestoneType, {
     getSubtitle: () => 'Knowledge compounds like interest',
   },
   passport_stamp: {
-    emoji: '🛂',
+    emoji: '',
     color: '#8B5CF6',
     bgColor: 'rgba(139, 92, 246, 0.15)',
     getTitle: (_v) => 'New Stamp Earned!',
     getSubtitle: (d) => d.monthName ? `Completed: ${d.monthName}` : 'Another month mastered',
   },
   stage_up: {
-    emoji: '🚀',
+    emoji: '',
     color: '#22C55E',
     bgColor: 'rgba(34, 197, 94, 0.15)',
     getTitle: (_v) => 'Stage Unlocked!',
@@ -75,16 +75,16 @@ export function MilestoneShareCard({ visible, type, data, onDismiss }: Milestone
     let shareText = '';
     switch (type) {
       case 'streak':
-        shareText = `🔥 ${data.value}-day learning streak in ${marketInfo}!\n\nConsistency > intensity. Studying markets daily with MarketLingo 💜`;
+        shareText = ` ${data.value}-day learning streak in ${marketInfo}!\n\nConsistency > intensity. Studying markets daily with MarketLingo `;
         break;
       case 'level_up':
-        shareText = `⚡ Just hit Level ${data.value} in ${marketInfo}!\n\nKnowledge compounds. Learning with MarketLingo 💜`;
+        shareText = `⚡ Just hit Level ${data.value} in ${marketInfo}!\n\nKnowledge compounds. Learning with MarketLingo `;
         break;
       case 'passport_stamp':
-        shareText = `🛂 Earned my "${data.monthName}" passport stamp in ${marketInfo}! Grade: ${data.grade || 'A'}\n\nBuilding industry expertise with MarketLingo 💜`;
+        shareText = ` Earned my "${data.monthName}" passport stamp in ${marketInfo}! Grade: ${data.grade || 'A'}\n\nBuilding industry expertise with MarketLingo `;
         break;
       case 'stage_up':
-        shareText = `🚀 Unlocked the "${data.stageName}" stage in ${marketInfo}!\n\nLeveling up my market knowledge with MarketLingo 💜`;
+        shareText = ` Unlocked the "${data.stageName}" stage in ${marketInfo}!\n\nLeveling up my market knowledge with MarketLingo `;
         break;
     }
 
@@ -133,7 +133,7 @@ export function MilestoneShareCard({ visible, type, data, onDismiss }: Milestone
           {/* Actions */}
           <View style={styles.actions}>
             <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.7}>
-              <Text style={styles.shareBtnText}>📤 Share on LinkedIn / Instagram</Text>
+              <Text style={styles.shareBtnText}> Share on LinkedIn / Instagram</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.dismissBtn} onPress={onDismiss} activeOpacity={0.7}>
               <Text style={styles.dismissBtnText}>Continue</Text>

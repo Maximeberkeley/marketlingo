@@ -26,14 +26,14 @@ interface ProUpsellModalProps {
 
 const triggerContent: Record<PromoTrigger, { headline: string; subheadline: string; emoji: string }> = {
   lesson_complete: {
-    headline: "You're crushing it! 🔥",
+    headline: "You're crushing it! ",
     subheadline: "Keep the momentum going with unlimited Pro access",
-    emoji: "🚀",
+    emoji: "",
   },
   feature_gate: {
     headline: "Unlock This Pro Feature",
     subheadline: "Get access to advanced tools that accelerate your learning",
-    emoji: "🔓",
+    emoji: "",
   },
   random: {
     headline: "Ready to Level Up?",
@@ -43,20 +43,20 @@ const triggerContent: Record<PromoTrigger, { headline: string; subheadline: stri
   low_engagement: {
     headline: "We Saved Your Spot!",
     subheadline: "Come back stronger with full Pro access",
-    emoji: "👋",
+    emoji: "",
   },
   manual: {
     headline: "Go Pro Today",
     subheadline: "Unlock the complete MarketLingo experience",
-    emoji: "👑",
+    emoji: "",
   },
 };
 
 const benefits = [
   { icon: '∞', text: 'Unlimited lessons & games' },
-  { icon: '📈', text: 'Investment Lab access' },
-  { icon: '🧠', text: 'AI mentors on-demand' },
-  { icon: '🎯', text: 'Pro Trainer scenarios' },
+  { icon: '', text: 'Investment Lab access' },
+  { icon: '', text: 'AI mentors on-demand' },
+  { icon: '', text: 'Pro Trainer scenarios' },
 ];
 
 export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureName }: ProUpsellModalProps) {
@@ -104,7 +104,7 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
             <View style={styles.floatingParticle1}><Text style={{ fontSize: 14 }}>✨</Text></View>
             <View style={styles.floatingParticle2}><Text style={{ fontSize: 12 }}>⚡</Text></View>
             <Animated.View style={[styles.iconWrap, { transform: [{ scale: iconScale }] }]}>
-              <Text style={{ fontSize: 40 }}>{canStartTrial ? '🎁' : '👑'}</Text>
+              <Text style={{ fontSize: 40 }}>{canStartTrial ? '' : ''}</Text>
             </Animated.View>
             <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
               <Text style={styles.closeBtnText}>✕</Text>
@@ -137,7 +137,7 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
             {canStartTrial ? (
               <>
                 <TouchableOpacity style={styles.ctaPrimary} onPress={handleStartTrial} activeOpacity={0.85}>
-                  <Text style={styles.ctaText}>🎁 Try {TRIAL_DURATION_DAYS} Days Free</Text>
+                  <Text style={styles.ctaText}> Try {TRIAL_DURATION_DAYS} Days Free</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.ctaSecondary} onPress={handleViewPlans}>
                   <Text style={styles.ctaSecondaryText}>View pricing plans</Text>
@@ -146,7 +146,7 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
             ) : (
               <>
                 <TouchableOpacity style={styles.ctaUpgrade} onPress={handleViewPlans} activeOpacity={0.85}>
-                  <Text style={styles.ctaText}>👑 Upgrade to Pro</Text>
+                  <Text style={styles.ctaText}> Upgrade to Pro</Text>
                 </TouchableOpacity>
                 <Text style={styles.priceLabel}>Starting at {monthlyPrice} • Cancel anytime</Text>
               </>

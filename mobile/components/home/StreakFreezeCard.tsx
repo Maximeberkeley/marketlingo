@@ -39,7 +39,7 @@ export function StreakFreezeCard({
     triggerHaptic('success');
     const success = await onUseFreeze();
     if (success) {
-      Alert.alert('Streak Frozen! 🧊', `Your ${streak}-day streak is safe for 24 more hours.`);
+      Alert.alert('Streak Frozen! ', `Your ${streak}-day streak is safe for 24 more hours.`);
       onDismiss();
     } else {
       Alert.alert('Cannot Freeze', "You've already used your freeze this week.");
@@ -56,7 +56,7 @@ export function StreakFreezeCard({
 
       <View style={styles.content}>
         <Animated.View style={[styles.iceCircle, { transform: [{ scale: iceScale }] }]}>
-          <Text style={{ fontSize: 28 }}>🧊</Text>
+          <Text style={{ fontSize: 28 }}></Text>
         </Animated.View>
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>Streak Freeze Available</Text>
@@ -70,12 +70,12 @@ export function StreakFreezeCard({
 
       {canFreeze && (
         <TouchableOpacity style={styles.freezeBtn} onPress={handleFreeze} activeOpacity={0.8}>
-          <Text style={styles.freezeBtnText}>🧊 Use Streak Freeze</Text>
+          <Text style={styles.freezeBtnText}> Use Streak Freeze</Text>
         </TouchableOpacity>
       )}
 
       {!isProUser && (
-        <Text style={styles.proHint}>👑 Pro users get unlimited freezes</Text>
+        <Text style={styles.proHint}> Pro users get unlimited freezes</Text>
       )}
     </Animated.View>
   );

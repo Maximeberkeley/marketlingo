@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   Animated,
+  Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -109,7 +110,7 @@ export default function FamiliarityScreen() {
           const demoXP = await applyDemoXP(user.id, profile.selected_market);
           if (demoXP > 0) {
             Alert.alert(
-              'Welcome bonus! 🎉',
+              'Welcome bonus!',
               `Your ${demoXP} XP from the demo lesson has been credited to your account. Keep that momentum going!`,
             );
           }
@@ -143,7 +144,7 @@ export default function FamiliarityScreen() {
 
         {/* Header */}
         <View style={styles.header}>
-          <MascotAvatar emoji="🦁" size="lg" />
+          <MascotAvatar size="lg" />
           <Text style={styles.title}>Your Experience Level</Text>
           <Text style={styles.subtitle}>
             I'll adapt the content depth to match your knowledge
@@ -153,7 +154,7 @@ export default function FamiliarityScreen() {
         {/* Leo reaction bubble */}
         {selectedLevel && (
           <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}>
-            <Text style={styles.reactionEmoji}>🦁</Text>
+            <Image source={require('../../assets/mascot/leo-reference.png')} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
             <Text style={styles.reactionText}>{LEO_LEVEL_REACTIONS[selectedLevel]}</Text>
           </Animated.View>
         )}

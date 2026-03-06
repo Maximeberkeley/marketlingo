@@ -108,7 +108,7 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
       console.error('Ask Leo error:', error);
       setMessages(prev => [
         ...prev,
-        { role: 'assistant', content: "Oops! I had trouble connecting. Try again? 🦁" },
+        { role: 'assistant', content: "Oops! I had trouble connecting. Try again?" },
       ]);
     } finally {
       setIsLoading(false);
@@ -197,9 +197,9 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
           <View style={styles.header}>
             <Image source={LEO_IMAGE} style={styles.leoAvatar} />
             <View style={styles.headerText}>
-              <Text style={styles.headerTitle}>Ask Leo 🦁</Text>
+              <Text style={styles.headerTitle}>Ask Leo</Text>
               <Text style={styles.headerSub}>
-                {isPlayingAudio ? '🔊 Speaking...' : 'Ask anything about this lesson'}
+                {isPlayingAudio ? 'Speaking...' : 'Ask anything about this lesson'}
               </Text>
             </View>
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
@@ -216,7 +216,7 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
           >
             {messages.length === 0 && (
               <View style={styles.emptyState}>
-                <Text style={styles.emptyEmoji}>💡</Text>
+                <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(251,191,36,0.15)', alignItems: 'center', justifyContent: 'center' }}><Text style={{ fontSize: 18, fontWeight: '700', color: '#FCD34D' }}>?</Text></View>
                 <Text style={styles.emptyText}>
                   Ask me anything about the lesson! I'll explain it simply and read it aloud.
                 </Text>
@@ -270,7 +270,7 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
                     onPress={() => playTTS(msg.content)}
                     disabled={isPlayingAudio}
                   >
-                    <Text style={styles.replayIcon}>{isPlayingAudio ? '⏳' : '🔊'}</Text>
+                    <Text style={styles.replayIcon}>{isPlayingAudio ? '...' : '▶'}</Text>
                   </TouchableOpacity>
                 )}
               </View>

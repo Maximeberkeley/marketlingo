@@ -10,6 +10,7 @@ import {
 import { Company, marketCompanies, defaultCompanies } from '../../data/keyPlayersData';
 import { CompanyDetailModal } from './CompanyDetailModal';
 import { COLORS } from '../../lib/constants';
+import { APP_ICONS } from '../../lib/icons';
 
 interface KeyPlayersProps {
   marketId: string;

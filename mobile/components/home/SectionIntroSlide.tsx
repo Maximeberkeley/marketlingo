@@ -18,21 +18,21 @@ const sectionInfo: Record<SectionType, {
   bgColor: string;
 }> = {
   daily_pattern: {
-    icon: '📈',
+    icon: '',
     title: 'Daily Pattern',
     tagline: 'Recognize recurring market forces',
     color: '#60A5FA',
     bgColor: 'rgba(59,130,246,0.1)',
   },
   micro_lesson: {
-    icon: '📖',
+    icon: '',
     title: 'Micro Lesson',
     tagline: '5-minute concept deep dive',
     color: '#34D399',
     bgColor: 'rgba(16,185,129,0.1)',
   },
   games: {
-    icon: '🎯',
+    icon: '',
     title: 'Knowledge Game',
     tagline: 'Test what you\'ve learned',
     color: '#A78BFA',
@@ -46,14 +46,14 @@ const sectionInfo: Record<SectionType, {
     bgColor: 'rgba(251,191,36,0.1)',
   },
   trainer: {
-    icon: '🧠',
+    icon: '',
     title: 'Pro Trainer',
     tagline: 'Think like an industry expert',
     color: '#F87171',
     bgColor: 'rgba(239,68,68,0.1)',
   },
   summaries: {
-    icon: '📅',
+    icon: '',
     title: 'Summary',
     tagline: 'Key takeaways consolidated',
     color: '#22D3EE',

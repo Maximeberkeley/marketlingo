@@ -32,13 +32,13 @@ export function FeatureGate({ children, featureName, showLockBadge = true, overl
           <View style={styles.blurredContent} pointerEvents="none">{children}</View>
           <Animated.View style={[styles.lockOverlay, { opacity: fadeAnim }]}>
             <View style={styles.lockIconCircle}>
-              <Text style={{ fontSize: 24 }}>🔒</Text>
+              <Text style={{ fontSize: 24 }}></Text>
             </View>
             <Text style={styles.lockTitle}>Pro Feature</Text>
             <Text style={styles.lockSubtitle}>Tap to unlock {featureName}</Text>
           </Animated.View>
           {showLockBadge && (
-            <View style={styles.proBadge}><Text style={styles.proBadgeText}>👑 PRO</Text></View>
+            <View style={styles.proBadge}><Text style={styles.proBadgeText}> PRO</Text></View>
           )}
         </TouchableOpacity>
         <ProUpsellModal isOpen={showPromo} onClose={() => setShowPromo(false)} trigger="feature_gate" featureName={featureName} />
@@ -49,10 +49,10 @@ export function FeatureGate({ children, featureName, showLockBadge = true, overl
   return (
     <>
       <TouchableOpacity style={styles.replaceContainer} onPress={() => setShowPromo(true)} activeOpacity={0.8}>
-        <View style={styles.lockIconCircleLarge}><Text style={{ fontSize: 32 }}>🔒</Text></View>
+        <View style={styles.lockIconCircleLarge}><Text style={{ fontSize: 32 }}></Text></View>
         <Text style={styles.replaceTitle}>Unlock {featureName}</Text>
         <Text style={styles.replaceSubtitle}>Available with Pro subscription</Text>
-        <View style={styles.goProChip}><Text style={styles.goProChipText}>👑 Go Pro</Text></View>
+        <View style={styles.goProChip}><Text style={styles.goProChipText}> Go Pro</Text></View>
       </TouchableOpacity>
       <ProUpsellModal isOpen={showPromo} onClose={() => setShowPromo(false)} trigger="feature_gate" featureName={featureName} />
     </>

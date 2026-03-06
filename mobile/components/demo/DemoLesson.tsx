@@ -124,9 +124,9 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
               <Text style={styles.introTitle}>Try a free lesson</Text>
               <Text style={styles.introSubtitle}>2 slides + 1 quiz from the AI market.{'\n'}Earn real XP that carries into your account.</Text>
               <View style={styles.introBadges}>
-                <View style={styles.introBadge}><Text style={styles.introBadgeText}>🤖 AI Market</Text></View>
-                <View style={styles.introBadge}><Text style={styles.introBadgeText}>⏱ 3 min</Text></View>
-                <View style={styles.introBadge}><Text style={styles.introBadgeText}>⚡ Up to 100 XP</Text></View>
+                <View style={styles.introBadge}><Text style={styles.introBadgeText}>AI Market</Text></View>
+                <View style={styles.introBadge}><Text style={styles.introBadgeText}>3 min</Text></View>
+                <View style={styles.introBadge}><Text style={styles.introBadgeText}>Up to 100 XP</Text></View>
               </View>
               <TouchableOpacity style={styles.primaryBtn} onPress={() => goToStep('slide1')} activeOpacity={0.8}>
                 <Text style={styles.primaryBtnText}>Start Demo Lesson →</Text>
@@ -141,7 +141,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
               <View style={styles.slideDivider} />
               <Text style={styles.slideBody}>{DEMO_SLIDES[0].body}</Text>
               <View style={styles.insightBox}>
-                <Text style={styles.insightLabel}>💡 KEY INSIGHT</Text>
+                <Text style={styles.insightLabel}>KEY INSIGHT</Text>
                 <Text style={styles.insightText}>{DEMO_SLIDES[0].insight}</Text>
               </View>
               <TouchableOpacity style={styles.primaryBtn} onPress={() => { awardXP(25); goToStep('slide2'); }} activeOpacity={0.8}>
@@ -157,7 +157,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
               <View style={styles.slideDivider} />
               <Text style={styles.slideBody}>{DEMO_SLIDES[1].body}</Text>
               <View style={styles.insightBox}>
-                <Text style={styles.insightLabel}>💡 KEY INSIGHT</Text>
+                <Text style={styles.insightLabel}>KEY INSIGHT</Text>
                 <Text style={styles.insightText}>{DEMO_SLIDES[1].insight}</Text>
               </View>
               <TouchableOpacity style={styles.primaryBtn} onPress={() => { awardXP(25); goToStep('quiz'); }} activeOpacity={0.8}>
@@ -204,9 +204,9 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
           {step === 'quiz-result' && (
             <View style={styles.stepContainer}>
               {DEMO_QUIZ.options[selectedQuiz!]?.correct ? (
-                <><Text style={styles.resultEmoji}>🎉</Text><Text style={styles.resultTitle}>Correct!</Text></>
+                <><Text style={styles.resultTitle}>Correct!</Text></>
               ) : (
-                <><Text style={styles.resultEmoji}>🤔</Text><Text style={styles.resultTitle}>Not quite</Text></>
+                <><Text style={styles.resultTitle}>Not quite</Text></>
               )}
               <View style={styles.feedbackBox}>
                 <Text style={styles.feedbackText}>{DEMO_QUIZ.options[selectedQuiz!]?.feedback}</Text>
@@ -219,10 +219,10 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
 
           {step === 'gate' && (
             <View style={styles.stepContainer}>
-              <Text style={styles.gateEmoji}>🏆</Text>
+              <Image source={require('../../assets/mascot/leo-reference.png')} style={{ width: 64, height: 64, resizeMode: 'contain', alignSelf: 'center' }} />
               <Text style={styles.gateTitle}>Demo Complete!</Text>
               <View style={styles.gateXPBox}>
-                <Text style={styles.gateXPAmount}>⚡ {totalXP} XP earned</Text>
+                <Text style={styles.gateXPAmount}>{totalXP} XP earned</Text>
                 <Text style={styles.gateXPLabel}>This XP will be credited to your account</Text>
               </View>
               <Text style={styles.gateBody}>

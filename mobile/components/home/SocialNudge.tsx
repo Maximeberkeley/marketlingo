@@ -64,7 +64,7 @@ export function SocialNudge({
       <View style={styles.content}>
         <View style={styles.avatarStack}>
           <View style={[styles.avatar, styles.rivalAvatar]}>
-            <Text style={styles.avatarEmoji}>👤</Text>
+            <Text style={styles.avatarEmoji}></Text>
           </View>
           <View style={[styles.avatar, styles.vsAvatar]}>
             <Text style={styles.vsText}>VS</Text>

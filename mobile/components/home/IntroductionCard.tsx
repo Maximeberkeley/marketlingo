@@ -27,7 +27,7 @@ const introContent: Record<IntroType, {
   gradient: readonly [string, string];
 }> = {
   course: {
-    icon: '📖',
+    icon: 'L',
     title: 'Welcome to Your Learning Path',
     subtitle: '6 Months to Industry Expertise',
     description: 'Master your market through daily micro-lessons designed for founders and investors.',
@@ -41,7 +41,7 @@ const introContent: Record<IntroType, {
     gradient: ['#7C3AED', '#8B5CF6'],
   },
   games: {
-    icon: '🎯',
+    icon: 'G',
     title: 'Test Your Knowledge',
     subtitle: 'Daily Pattern Games',
     description: 'Reinforce learning with quick multiple-choice questions based on today\'s content.',
@@ -55,7 +55,7 @@ const introContent: Record<IntroType, {
     gradient: ['#2563EB', '#06B6D4'],
   },
   drills: {
-    icon: '⚡',
+    icon: 'D',
     title: 'Speed Drills',
     subtitle: '15-Second Fact Checks',
     description: 'Rapid-fire true/false questions to build intuition and test your knowledge.',
@@ -69,7 +69,7 @@ const introContent: Record<IntroType, {
     gradient: ['#D97706', '#F59E0B'],
   },
   trainer: {
-    icon: '🧠',
+    icon: 'T',
     title: 'Pro Reasoning Trainer',
     subtitle: 'Think Like an Industry Expert',
     description: 'Complex scenarios that develop strategic thinking with pro-level feedback.',
@@ -83,7 +83,7 @@ const introContent: Record<IntroType, {
     gradient: ['#7C3AED', '#EC4899'],
   },
   daily: {
-    icon: '📈',
+    icon: 'N',
     title: 'Daily Patterns',
     subtitle: 'Industry Intelligence',
     description: 'Stay current with curated news and learn to spot recurring market patterns.',
@@ -112,7 +112,7 @@ export function IntroductionCard({ type, onStart, onDismiss }: IntroductionCardP
             <View style={styles.iconContainer}>
               <Text style={{ fontSize: 32 }}>{content.icon}</Text>
             </View>
-            <Text style={styles.sparkle}>✨</Text>
+            <View />
           </View>
 
           {/* Content */}

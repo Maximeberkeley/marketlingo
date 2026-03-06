@@ -16,7 +16,7 @@ export function ProGate({ feature, description, remaining, limit }: ProGateProps
   return (
     <View style={styles.container}>
       <View style={styles.iconCircle}>
-        <Text style={{ fontSize: 28 }}>👑</Text>
+        <Text style={{ fontSize: 28 }}></Text>
       </View>
       <Text style={styles.title}>
         {isLimitReached ? 'Daily Limit Reached' : `${feature} — Pro Feature`}
@@ -30,7 +30,7 @@ export function ProGate({ feature, description, remaining, limit }: ProGateProps
         style={styles.upgradeBtn}
         onPress={() => router.push('/subscription')}
       >
-        <Text style={styles.upgradeBtnText}>👑 Unlock with Pro</Text>
+        <Text style={styles.upgradeBtnText}> Unlock with Pro</Text>
       </TouchableOpacity>
       {isLimitReached && (
         <Text style={styles.resetText}>Free limit resets tomorrow at midnight</Text>
