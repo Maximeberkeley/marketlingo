@@ -162,7 +162,7 @@ export default function PassportScreen() {
 
         <View style={styles.passportCard}>
           <View style={styles.passportHeader}>
-            <Image source={APP_ICONS.passport} style={styles.passportIcon} />
+            <Feather name="globe" size={22} color={COLORS.accent} />
             <Text style={styles.passportTitle}>INDUSTRY PASSPORT</Text>
             {marketId && (
               <View style={styles.marketRow}>
