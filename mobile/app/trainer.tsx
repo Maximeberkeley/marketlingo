@@ -242,7 +242,7 @@ export default function TrainerScreen() {
               </TouchableOpacity>
               <View style={styles.heroBannerContent}>
                 <View style={[styles.heroBadge, { backgroundColor: accentColor + 'CC' }]}>
-                  <Image source={APP_ICONS.trainer} style={{ width: 14, height: 14, resizeMode: 'contain', tintColor: '#fff' }} />
+                  <Feather name="target" size={14} color="#fff" />
                   <Text style={styles.heroBadgeText}>INDUSTRY TRAINER</Text>
                 </View>
                 <Text style={styles.heroBannerTitle}>Think Like an Expert</Text>
