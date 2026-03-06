@@ -125,7 +125,7 @@ export default function CertificateScreen() {
 
         <View style={[styles.centered, { flex: 1 }]}>
           <View style={styles.lockedIcon}>
-            <Image source={APP_ICONS.achievements} style={{ width: 44, height: 44, resizeMode: 'contain' }} />
+            <Feather name="award" size={40} color={COLORS.textMuted} />
           </View>
           <Text style={styles.lockedTitle}>Not Yet Eligible</Text>
           <Text style={styles.lockedSubtitle}>
