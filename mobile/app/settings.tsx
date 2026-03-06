@@ -427,7 +427,7 @@ export default function SettingsScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
-            <Image source={APP_ICONS.regulatory} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
+            <Feather name="shield" size={18} color={COLORS.textSecondary} />
             <Text style={styles.menuText}>Privacy Policy</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
