@@ -7,7 +7,7 @@ import { hapticFeedback } from "@/lib/ios-utils";
 const navItems = [
   { path: "/home", icon: Home, label: "Home" },
   { path: "/roadmap", icon: Map, label: "Courses" },
-  { path: "/trainer", icon: Dumbbell, label: "Practice" },
+  { path: "/practice", icon: Dumbbell, label: "Practice" },
   { path: "/notebook", icon: BookOpen, label: "Notes" },
   { path: "/profile", icon: User, label: "You" },
 ];
