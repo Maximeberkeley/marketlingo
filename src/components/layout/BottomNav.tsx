@@ -32,7 +32,7 @@ export function BottomNav() {
         <div className="flex items-center justify-around w-full">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || 
-              (item.path === "/trainer" && ["/trainer", "/games", "/drills"].includes(location.pathname));
+              (item.path === "/practice" && ["/practice", "/trainer", "/games", "/drills"].includes(location.pathname));
             const Icon = item.icon;
             
             return (
