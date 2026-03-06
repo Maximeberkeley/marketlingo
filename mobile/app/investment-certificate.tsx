@@ -17,7 +17,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useInvestmentLab } from '../hooks/useInvestmentLab';
 import { getMarketName } from '../lib/markets';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 export default function InvestmentCertificateScreen() {
   const insets = useSafeAreaInsets();
