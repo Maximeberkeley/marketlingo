@@ -7,15 +7,15 @@ import {
   TouchableOpacity,
   RefreshControl,
   Image,
+  Animated,
 } from 'react-native';
-import { KeyPlayers } from '../../components/home/KeyPlayers';
 import { DailyNews } from '../../components/home/DailyNews';
 import { HomeSkeleton } from '../../components/home/HomeSkeleton';
 import { AnimatedSection } from '../../components/home/AnimatedSection';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS, TYPE, SHADOWS } from '../../lib/constants';
-import { getMarketName, getMarketColor } from '../../lib/markets';
+import { getMarketName } from '../../lib/markets';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
@@ -23,29 +23,22 @@ import { StreakBadge } from '../../components/ui/StreakBadge';
 import { XPBadge } from '../../components/ui/XPBadge';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { SlideReaderV2 as SlideReader } from '../../components/slides/SlideReaderV2';
-import { TodaysMission } from '../../components/home/TodaysMission';
 import { StreakAtRisk } from '../../components/home/StreakAtRisk';
 import { Feather } from '@expo/vector-icons';
 import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
-import { SocialNudge } from '../../components/home/SocialNudge';
-import { TomorrowPreview } from '../../components/home/TomorrowPreview';
-import { MentorDebrief, getDebriefQuestion } from '../../components/home/MentorDebrief';
 import { MilestoneShareCard } from '../../components/sharing/MilestoneShareCard';
 import { DailyQuests } from '../../components/home/DailyQuests';
-import { QuickBiteSelector } from '../../components/home/QuickBiteSelector';
 import { useDailyQuests } from '../../hooks/useDailyQuests';
 import { useMilestoneSharing } from '../../hooks/useMilestoneSharing';
 import { useHomeData } from '../../hooks/useHomeData';
 import { useSessionFlow } from '../../hooks/useSessionFlow';
 import { triggerHaptic } from '../../lib/haptics';
 import { useStreakFreeze } from '../../hooks/useStreakFreeze';
-import { StreakFreezeCard } from '../../components/home/StreakFreezeCard';
 import { playSound } from '../../lib/sounds';
 import { useSpacedRepetition } from '../../hooks/useSpacedRepetition';
 import { useOfflineCache } from '../../hooks/useOfflineCache';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 
-// Market illustrations
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
   ai: require('../../assets/illustrations/ai.png'),
@@ -64,26 +57,41 @@ const MARKET_ILLUSTRATIONS: Record<string, any> = {
   neuroscience: require('../../assets/illustrations/neuroscience.png'),
 };
 
-// Duolingo-style action rows
-const ACTION_ROWS = [
-  { key: 'games', icon: 'play-circle' as const, title: 'Trivia Games', sub: 'Test your knowledge', color: '#8B5CF6', route: '/games' },
-  { key: 'drills', icon: 'zap' as const, title: 'Speed Drills', sub: 'Quick-fire practice', color: '#F59E0B', route: '/drills' },
-  { key: 'trainer', icon: 'target' as const, title: 'Scenario Trainer', sub: 'Real-world decisions', color: '#22C55E', route: '/trainer' },
-];
+// Leo messages — contextual
+const LEO_GREETINGS = {
+  morning: [
+    "Rise and learn! Your industry awaits.",
+    "Good morning! Let's make today count.",
+    "Fresh day, fresh insights. Let's go!",
+  ],
+  afternoon: [
+    "Perfect time for a quick lesson!",
+    "Afternoon brain boost? I'm ready!",
+    "Let's keep the momentum going!",
+  ],
+  evening: [
+    "Wind down with some learning!",
+    "Evening session? Love the dedication!",
+    "One more lesson before rest?",
+  ],
+  completed: [
+    "You crushed it today! Come back tomorrow.",
+    "Lesson done! Your streak is safe.",
+    "Great work! Rest up for tomorrow.",
+  ],
+};
 
-const SECONDARY_ROWS = [
-  { key: 'rank', icon: 'award' as const, title: 'Leaderboard', color: '#F59E0B', route: '/leaderboard' },
-  { key: 'badges', icon: 'star' as const, title: 'Achievements', color: '#22C55E', route: '/achievements' },
-  { key: 'news', icon: 'file-text' as const, title: 'Daily Summaries', color: '#3B82F6', route: '/summaries' },
-  { key: 'passport', icon: 'globe' as const, title: 'Industry Passport', color: '#8B5CF6', route: '/passport' },
-];
+function getRandomGreeting(key: keyof typeof LEO_GREETINGS): string {
+  const msgs = LEO_GREETINGS[key];
+  return msgs[Math.floor(Math.random() * msgs.length)];
+}
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { user, loading: authLoading } = useAuth();
 
   const [selectedMarketLocal, setSelectedMarketLocal] = useState<string | null>(null);
-  const { progress, availableDay, completeStack, updateStreak } = useUserProgress(selectedMarketLocal || undefined);
+  const { progress, completeStack, updateStreak } = useUserProgress(selectedMarketLocal || undefined);
   const {
     xpData, dailyCompletion, completeLessonForToday,
     getCurrentStage, getProgressToNextStage, isLessonCompletedToday, addXP,
@@ -91,27 +99,25 @@ export default function HomeScreen() {
 
   const lessonCompletedToday = isLessonCompletedToday();
   const currentStage = getCurrentStage();
-  const stageProgress = getProgressToNextStage();
   const streak = progress?.current_streak || 0;
 
   const homeData = useHomeData(user?.id, progress, xpData, lessonCompletedToday);
   const {
     selectedMarket, isProUser, lessonStack, newsStack, newsItems,
-    streakRiskHours, socialNudge, tomorrowLesson,
+    streakRiskHours, tomorrowLesson,
     loading, refreshing, currentDay, fetchData, onRefresh,
   } = homeData;
 
   const { canFreeze, freezesUsedThisWeek, maxFreezes, useFreeze } = useStreakFreeze(
     selectedMarketLocal || undefined, isProUser
   );
-  const [showStreakFreeze, setShowStreakFreeze] = useState(true);
 
   useEffect(() => {
     if (selectedMarket) setSelectedMarketLocal(selectedMarket);
   }, [selectedMarket]);
 
-  const { dueCount, dueItems, gradeReview, addLessonConcepts } = useSpacedRepetition(selectedMarketLocal || undefined);
-  const { syncLessons, cachedCount } = useOfflineCache(selectedMarketLocal || undefined);
+  const { dueCount } = useSpacedRepetition(selectedMarketLocal || undefined);
+  const { syncLessons } = useOfflineCache(selectedMarketLocal || undefined);
 
   useEffect(() => {
     if (currentDay && selectedMarket) syncLessons(currentDay);
@@ -134,7 +140,6 @@ export default function HomeScreen() {
   );
 
   const [showStreakWarning, setShowStreakWarning] = useState(true);
-  const [showSocialNudge, setShowSocialNudge] = useState(true);
 
   useEffect(() => {
     if (lessonCompletedToday) playSound('lessonComplete');
@@ -148,14 +153,19 @@ export default function HomeScreen() {
     });
   }, [user, authLoading]);
 
+  // Stable greeting (don't re-randomize on re-render)
+  const [greeting] = useState(() => {
+    const hour = new Date().getHours();
+    if (lessonCompletedToday) return getRandomGreeting('completed');
+    if (hour < 12) return getRandomGreeting('morning');
+    if (hour < 17) return getRandomGreeting('afternoon');
+    return getRandomGreeting('evening');
+  });
+
   if (loading || authLoading) return <HomeSkeleton />;
 
   const marketIllustration = MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace'] || MARKET_ILLUSTRATIONS.aerospace;
   const journeyProgress = ((currentDay || 1) / 180) * 100;
-
-  // Greeting based on time
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
   return (
     <View style={styles.container}>
@@ -189,221 +199,151 @@ export default function HomeScreen() {
           onDismiss={session.dismissSessionComplete}
         />
       ) : (
-        <>
-          <ScrollView
-            contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 100 }]}
-            showsVerticalScrollIndicator={false}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.accent} />}
-          >
-            {/* ── Header: Streak + XP ── */}
-            <View style={styles.header}>
-              <View style={styles.headerLeft}>
-                <StreakBadge count={streak} />
-                <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} />
+        <ScrollView
+          contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 100 }]}
+          showsVerticalScrollIndicator={false}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.accent} />}
+        >
+          {/* ── Top bar: Streak + XP ── */}
+          <View style={styles.topBar}>
+            <StreakBadge count={streak} />
+            <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} />
+          </View>
+
+          {/* ── Leo + Greeting ── */}
+          <AnimatedSection delay={0}>
+            <View style={styles.leoSection}>
+              <LeoCharacter
+                size="lg"
+                animation={lessonCompletedToday ? 'celebrating' : 'waving'}
+              />
+              <View style={styles.speechBubble}>
+                <View style={styles.speechTail} />
+                <Text style={styles.speechText}>{greeting}</Text>
               </View>
             </View>
+          </AnimatedSection>
 
-            {/* ── Leo Greeting ── */}
+          {/* ── Streak Warning (urgent) ── */}
+          {streakRiskHours !== null && showStreakWarning && !lessonCompletedToday && (
             <AnimatedSection delay={50}>
-              <View style={styles.leoRow}>
-                <LeoCharacter size="md" animation="waving" />
-                <View style={styles.leoBubble}>
-                  <View style={styles.leoBubbleTail} />
-                  <Text style={styles.leoGreeting}>
-                    {lessonCompletedToday
-                      ? "Great work today! Why not practice or explore?"
-                      : `${greeting}! Ready for Day ${currentDay}?`}
-                  </Text>
-                </View>
-              </View>
-            </AnimatedSection>
-
-            {/* ── Today's Lesson — Big CTA ── */}
-            <AnimatedSection delay={100}>
-              <TouchableOpacity
-                style={[styles.lessonHero, lessonCompletedToday && styles.lessonHeroDone]}
-                onPress={() => lessonStack && session.handleOpenStack(lessonStack)}
-                activeOpacity={0.85}
-              >
-                <Image
-                  source={marketIllustration}
-                  style={styles.lessonIllustration}
-                  resizeMode="contain"
-                />
-                <View style={styles.lessonHeroContent}>
-                  <View style={[styles.statusTag, lessonCompletedToday && styles.statusTagDone]}>
-                    <Text style={[styles.statusTagText, lessonCompletedToday && styles.statusTagTextDone]}>
-                      {lessonCompletedToday ? '✓ COMPLETED' : `DAY ${currentDay}`}
-                    </Text>
-                  </View>
-                  <Text style={styles.lessonHeroTitle} numberOfLines={2}>
-                    {lessonStack?.title || getMarketName(selectedMarket || 'aerospace')}
-                  </Text>
-                  <Text style={styles.lessonHeroSub}>
-                    {lessonCompletedToday ? `+${XP_REWARDS.LESSON_COMPLETE} XP earned` : `~5 min · Level ${xpData?.current_level || 1}`}
-                  </Text>
-                </View>
-                <View style={[styles.lessonHeroCTA, lessonCompletedToday && styles.lessonHeroCTADone]}>
-                  <Feather
-                    name={lessonCompletedToday ? 'refresh-cw' : 'play'}
-                    size={20}
-                    color="#fff"
-                  />
-                </View>
-              </TouchableOpacity>
-            </AnimatedSection>
-
-            {/* ── Quick Bites ── */}
-            {lessonStack && !lessonCompletedToday && (lessonStack.slides?.length || 0) >= 4 && (
-              <AnimatedSection delay={150}>
-                <QuickBiteSelector
-                  totalSlides={lessonStack.slides?.length || 0}
-                  completedBites={session.completedBites || []}
-                  onSelectBite={(idx) => session.handleOpenBite?.(idx)}
-                  onFullLesson={() => session.handleOpenStack(lessonStack)}
-                  lessonTitle={lessonStack.title}
-                  isLessonComplete={lessonCompletedToday}
-                />
-              </AnimatedSection>
-            )}
-
-            {/* ── Streak Warning ── */}
-            {streakRiskHours !== null && showStreakWarning && !lessonCompletedToday && (
               <StreakAtRisk
                 streak={streak}
                 hoursLeft={streakRiskHours}
                 onStartLesson={() => lessonStack && session.handleOpenStack(lessonStack)}
                 onDismiss={() => setShowStreakWarning(false)}
               />
-            )}
+            </AnimatedSection>
+          )}
 
-            {/* ── Journey Progress (inline) ── */}
-            <AnimatedSection delay={200}>
-              <View style={styles.journeyRow}>
-                <Feather name="map" size={16} color={COLORS.accent} />
-                <Text style={styles.journeyLabel}>Day {currentDay} of 180</Text>
-                <View style={styles.journeyBarWrap}>
-                  <ProgressBar progress={journeyProgress} height={6} />
-                </View>
-                <Text style={styles.journeyPct}>{Math.round(journeyProgress)}%</Text>
+          {/* ── THE Lesson Card — the ONE thing ── */}
+          <AnimatedSection delay={100}>
+            <TouchableOpacity
+              style={styles.lessonCard}
+              onPress={() => {
+                triggerHaptic('medium');
+                if (lessonStack) session.handleOpenStack(lessonStack);
+              }}
+              activeOpacity={0.92}
+            >
+              {/* Illustration */}
+              <View style={styles.lessonIllustrationWrap}>
+                <Image source={marketIllustration} style={styles.lessonIllustration} resizeMode="contain" />
               </View>
-            </AnimatedSection>
 
-            {/* ── Practice & Play — Duolingo-style full-width rows ── */}
-            <AnimatedSection delay={250}>
-              <Text style={styles.sectionTitle}>Practice & Play</Text>
-              {ACTION_ROWS.map((row) => (
-                <TouchableOpacity
-                  key={row.key}
-                  style={styles.actionRow}
-                  onPress={() => { triggerHaptic('light'); router.push(row.route as any); }}
-                  activeOpacity={0.7}
-                >
-                  <View style={[styles.actionIcon, { backgroundColor: row.color + '14' }]}>
-                    <Feather name={row.icon} size={22} color={row.color} />
+              {/* Content */}
+              <View style={styles.lessonContent}>
+                <Text style={styles.lessonOverline}>
+                  {lessonCompletedToday ? '✓ COMPLETED' : `DAY ${currentDay} · ${getMarketName(selectedMarket || 'aerospace').toUpperCase()}`}
+                </Text>
+                <Text style={styles.lessonTitle} numberOfLines={2}>
+                  {lessonStack?.title || 'Loading lesson...'}
+                </Text>
+                <View style={styles.lessonMeta}>
+                  <View style={styles.lessonMetaItem}>
+                    <Feather name="clock" size={12} color={COLORS.textMuted} />
+                    <Text style={styles.lessonMetaText}>~5 min</Text>
                   </View>
-                  <View style={styles.actionText}>
-                    <Text style={styles.actionTitle}>{row.title}</Text>
-                    <Text style={styles.actionSub}>{row.sub}</Text>
+                  <View style={styles.lessonMetaItem}>
+                    <Feather name="layers" size={12} color={COLORS.textMuted} />
+                    <Text style={styles.lessonMetaText}>{lessonStack?.slides?.length || 6} slides</Text>
                   </View>
-                  <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
-                </TouchableOpacity>
-              ))}
-            </AnimatedSection>
+                  <View style={styles.lessonMetaItem}>
+                    <Feather name="zap" size={12} color={COLORS.accent} />
+                    <Text style={[styles.lessonMetaText, { color: COLORS.accent, fontWeight: '700' }]}>
+                      +{XP_REWARDS.LESSON_COMPLETE} XP
+                    </Text>
+                  </View>
+                </View>
+              </View>
 
-            {/* ── Spaced Repetition ── */}
-            {dueCount > 0 && (
-              <AnimatedSection delay={280}>
-                <TouchableOpacity
-                  style={styles.actionRow}
-                  onPress={() => router.push('/trainer' as any)}
-                  activeOpacity={0.8}
-                >
-                  <View style={[styles.actionIcon, { backgroundColor: COLORS.accentSoft }]}>
-                    <Feather name="refresh-cw" size={20} color={COLORS.accent} />
-                  </View>
-                  <View style={styles.actionText}>
-                    <Text style={styles.actionTitle}>{dueCount} concept{dueCount !== 1 ? 's' : ''} to review</Text>
-                    <Text style={styles.actionSub}>Spaced repetition keeps it fresh</Text>
-                  </View>
-                  <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
-                </TouchableOpacity>
-              </AnimatedSection>
-            )}
+              {/* CTA */}
+              <View style={[styles.lessonCTA, lessonCompletedToday && styles.lessonCTADone]}>
+                <Text style={styles.lessonCTAText}>
+                  {lessonCompletedToday ? 'Review' : 'Start'}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </AnimatedSection>
 
-            {/* ── Daily Quests ── */}
-            <AnimatedSection delay={300}>
-              <DailyQuests
-                quests={quests}
-                completedCount={completedCount}
-                totalBonusXP={totalBonusXP}
-                allComplete={allQuestsComplete}
-              />
-            </AnimatedSection>
+          {/* ── Progress bar (minimal) ── */}
+          <AnimatedSection delay={150}>
+            <View style={styles.progressSection}>
+              <View style={styles.progressHeader}>
+                <Text style={styles.progressLabel}>Day {currentDay} of 180</Text>
+                <Text style={styles.progressPct}>{Math.round(journeyProgress)}%</Text>
+              </View>
+              <ProgressBar progress={journeyProgress} height={4} />
+            </View>
+          </AnimatedSection>
 
-            {/* ── Explore — Clean list ── */}
-            <AnimatedSection delay={350}>
-              <Text style={styles.sectionTitle}>Explore</Text>
-              {SECONDARY_ROWS.map((row, i) => (
-                <TouchableOpacity
-                  key={row.key}
-                  style={[styles.actionRow, i === SECONDARY_ROWS.length - 1 && { marginBottom: 0 }]}
-                  onPress={() => { triggerHaptic('light'); router.push(row.route as any); }}
-                  activeOpacity={0.7}
-                >
-                  <View style={[styles.actionIcon, { backgroundColor: row.color + '14' }]}>
-                    <Feather name={row.icon} size={20} color={row.color} />
-                  </View>
-                  <View style={styles.actionText}>
-                    <Text style={styles.actionTitle}>{row.title}</Text>
-                  </View>
-                  <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
-                </TouchableOpacity>
-              ))}
-            </AnimatedSection>
-
-            {/* ── Investment Lab ── */}
-            <AnimatedSection delay={380}>
+          {/* ── Review prompt (if due) ── */}
+          {dueCount > 0 && (
+            <AnimatedSection delay={180}>
               <TouchableOpacity
-                style={styles.actionRow}
-                onPress={() => router.push('/investment-lab' as any)}
-                activeOpacity={0.7}
+                style={styles.reviewBanner}
+                onPress={() => router.push('/trainer' as any)}
+                activeOpacity={0.8}
               >
-                <View style={[styles.actionIcon, { backgroundColor: isProUser ? COLORS.successSoft : COLORS.accentSoft }]}>
-                  <Feather name={isProUser ? 'trending-up' : 'search'} size={20} color={isProUser ? COLORS.success : COLORS.accent} />
-                </View>
-                <View style={styles.actionText}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Text style={styles.actionTitle}>Investment Lab</Text>
-                    {!isProUser && (
-                      <View style={styles.proBadge}>
-                        <Text style={styles.proBadgeText}>PRO</Text>
-                      </View>
-                    )}
-                  </View>
-                  <Text style={styles.actionSub}>
-                    {isProUser ? 'Investment-ready scenarios' : 'Unlock with Pro'}
-                  </Text>
-                </View>
-                <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
+                <Feather name="refresh-cw" size={18} color={COLORS.accent} />
+                <Text style={styles.reviewText}>
+                  {dueCount} concept{dueCount !== 1 ? 's' : ''} ready for review
+                </Text>
+                <Feather name="chevron-right" size={16} color={COLORS.textMuted} />
               </TouchableOpacity>
             </AnimatedSection>
+          )}
 
-            {/* ── News ── */}
-            {selectedMarket && (
-              <AnimatedSection delay={420}>
-                <DailyNews marketId={selectedMarket} />
-              </AnimatedSection>
-            )}
+          {/* ── Daily Quests ── */}
+          <AnimatedSection delay={220}>
+            <DailyQuests
+              quests={quests}
+              completedCount={completedCount}
+              totalBonusXP={totalBonusXP}
+              allComplete={allQuestsComplete}
+            />
+          </AnimatedSection>
 
-            {/* ── Key Players ── */}
-            {selectedMarket && (
-              <AnimatedSection delay={460}>
-                <KeyPlayers marketId={selectedMarket} />
-              </AnimatedSection>
-            )}
-          </ScrollView>
-        </>
+          {/* ── Tomorrow preview (after lesson complete) ── */}
+          {lessonCompletedToday && tomorrowLesson && (
+            <AnimatedSection delay={280}>
+              <View style={styles.tomorrowCard}>
+                <Feather name="sunrise" size={18} color={COLORS.accent} />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.tomorrowLabel}>Coming tomorrow</Text>
+                  <Text style={styles.tomorrowTitle} numberOfLines={1}>{tomorrowLesson.title}</Text>
+                </View>
+              </View>
+            </AnimatedSection>
+          )}
+
+          {/* ── News (compact) ── */}
+          {selectedMarket && (
+            <AnimatedSection delay={320}>
+              <DailyNews marketId={selectedMarket} />
+            </AnimatedSection>
+          )}
+        </ScrollView>
       )}
 
       <MilestoneShareCard
@@ -420,106 +360,89 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   scrollContent: { paddingHorizontal: 20 },
 
-  // Header
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16,
+  // Top bar
+  topBar: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start',
+    gap: 8, marginBottom: 20,
   },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
 
-  // Leo greeting
-  leoRow: {
-    flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 20,
+  // Leo section
+  leoSection: {
+    alignItems: 'center', marginBottom: 24,
   },
-  leoBubble: {
-    flex: 1, backgroundColor: COLORS.bg1, borderRadius: 18,
-    padding: 14, marginTop: 8, position: 'relative',
+  speechBubble: {
+    backgroundColor: COLORS.bg1, borderRadius: 20,
+    paddingHorizontal: 20, paddingVertical: 12, marginTop: 8,
     borderWidth: 1, borderColor: COLORS.border,
+    maxWidth: '85%', position: 'relative',
   },
-  leoBubbleTail: {
-    position: 'absolute', left: -6, top: 14,
+  speechTail: {
+    position: 'absolute', top: -7, alignSelf: 'center', left: '50%', marginLeft: -7,
     width: 0, height: 0,
-    borderTopWidth: 6, borderBottomWidth: 6, borderRightWidth: 6,
-    borderTopColor: 'transparent', borderBottomColor: 'transparent',
-    borderRightColor: COLORS.bg1,
+    borderLeftWidth: 7, borderRightWidth: 7, borderBottomWidth: 7,
+    borderLeftColor: 'transparent', borderRightColor: 'transparent',
+    borderBottomColor: COLORS.bg1,
   },
-  leoGreeting: {
-    ...TYPE.body, color: COLORS.textPrimary, fontWeight: '500',
-  },
-
-  // Lesson Hero — big CTA
-  lessonHero: {
-    flexDirection: 'row', alignItems: 'center', gap: 14,
-    backgroundColor: COLORS.bg2, borderRadius: 22, padding: 16,
-    marginBottom: 16,
-    borderWidth: 1.5, borderColor: COLORS.accent + '30',
-    ...SHADOWS.md,
-  },
-  lessonHeroDone: {
-    borderColor: COLORS.success + '30',
-  },
-  lessonIllustration: {
-    width: 72, height: 72,
-  },
-  lessonHeroContent: { flex: 1 },
-  statusTag: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6,
-    backgroundColor: COLORS.accentSoft, marginBottom: 6,
-  },
-  statusTagDone: { backgroundColor: COLORS.successSoft },
-  statusTagText: {
-    fontSize: 9, fontWeight: '800', color: COLORS.accent,
-    textTransform: 'uppercase', letterSpacing: 1,
-  },
-  statusTagTextDone: { color: COLORS.success },
-  lessonHeroTitle: {
-    fontSize: 16, fontWeight: '700', color: COLORS.textPrimary,
-    lineHeight: 21, marginBottom: 2,
-  },
-  lessonHeroSub: {
-    fontSize: 12, color: COLORS.textMuted, fontWeight: '500',
-  },
-  lessonHeroCTA: {
-    width: 44, height: 44, borderRadius: 22,
-    backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center',
-  },
-  lessonHeroCTADone: {
-    backgroundColor: COLORS.success,
+  speechText: {
+    ...TYPE.body, color: COLORS.textPrimary, textAlign: 'center', fontWeight: '500',
   },
 
-  // Journey progress inline
-  journeyRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    marginBottom: 20, paddingHorizontal: 4,
+  // Lesson card — the hero
+  lessonCard: {
+    backgroundColor: COLORS.bg2, borderRadius: 24,
+    overflow: 'hidden', marginBottom: 16,
+    borderWidth: 1.5, borderColor: COLORS.accent + '20',
+    ...SHADOWS.lg,
   },
-  journeyLabel: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary },
-  journeyBarWrap: { flex: 1 },
-  journeyPct: { fontSize: 11, fontWeight: '600', color: COLORS.textMuted, minWidth: 30, textAlign: 'right' },
-
-  // Section title
-  sectionTitle: {
-    ...TYPE.h3, color: COLORS.textPrimary, marginBottom: 12, marginTop: 8,
+  lessonIllustrationWrap: {
+    alignItems: 'center', justifyContent: 'center',
+    paddingTop: 24, paddingBottom: 8,
+    backgroundColor: COLORS.bg1,
   },
-
-  // Duolingo-style full-width action rows
-  actionRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 14,
-    backgroundColor: COLORS.bg2, borderRadius: 16, padding: 14,
-    marginBottom: 10,
-    borderWidth: 1, borderColor: COLORS.border,
+  lessonIllustration: { width: 140, height: 140 },
+  lessonContent: { padding: 20 },
+  lessonOverline: {
+    ...TYPE.overline, color: COLORS.accent, marginBottom: 8,
   },
-  actionIcon: {
-    width: 44, height: 44, borderRadius: 14,
+  lessonTitle: {
+    fontSize: 20, fontWeight: '800', color: COLORS.textPrimary,
+    letterSpacing: -0.3, lineHeight: 26, marginBottom: 12,
+  },
+  lessonMeta: { flexDirection: 'row', gap: 16 },
+  lessonMetaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  lessonMetaText: { fontSize: 12, color: COLORS.textMuted, fontWeight: '500' },
+  lessonCTA: {
+    backgroundColor: COLORS.accent, paddingVertical: 16,
     alignItems: 'center', justifyContent: 'center',
   },
-  actionText: { flex: 1 },
-  actionTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
-  actionSub: { fontSize: 12, color: COLORS.textMuted, marginTop: 1 },
+  lessonCTADone: { backgroundColor: COLORS.success },
+  lessonCTAText: { fontSize: 17, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.3 },
 
-  // Pro badge
-  proBadge: {
-    paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4,
-    backgroundColor: COLORS.accent,
+  // Progress
+  progressSection: { marginBottom: 20, paddingHorizontal: 4 },
+  progressHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    marginBottom: 8,
   },
-  proBadgeText: { fontSize: 9, fontWeight: '800', color: '#FFFFFF' },
+  progressLabel: { ...TYPE.caption, color: COLORS.textSecondary },
+  progressPct: { ...TYPE.caption, color: COLORS.textMuted },
+
+  // Review banner
+  reviewBanner: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    backgroundColor: COLORS.accentSoft, borderRadius: 14,
+    padding: 14, marginBottom: 16,
+    borderWidth: 1, borderColor: COLORS.accent + '15',
+  },
+  reviewText: { flex: 1, fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
+
+  // Tomorrow
+  tomorrowCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: COLORS.bg1, borderRadius: 14,
+    padding: 14, marginBottom: 16,
+    borderWidth: 1, borderColor: COLORS.border,
+  },
+  tomorrowLabel: { ...TYPE.caption, color: COLORS.textMuted },
+  tomorrowTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary, marginTop: 2 },
 });
