@@ -171,7 +171,7 @@ export default function ProfileScreen() {
             </View>
             <View style={styles.statCard}>
               <View style={[styles.statIcon, { backgroundColor: 'rgba(16, 185, 129, 0.2)' }]}>
-                <Image source={APP_ICONS.quests} style={styles.statIconImg} />
+                <Feather name="flag" size={18} color="#10B981" />
               </View>
               <Text style={styles.statValue}>Day {availableDay}</Text>
               <Text style={styles.statLabel}>of 180</Text>
