@@ -197,7 +197,7 @@ export default function CertificateScreen() {
             <View style={styles.statsGrid}>
               {STAT_ITEMS.map((s, i) => (
                 <View key={i} style={styles.statItem}>
-                  <Image source={s.icon} style={styles.statIcon} />
+                  <Feather name={s.featherIcon} size={18} color={COLORS.accent} />
                   <Text style={styles.statValue}>{s.value}</Text>
                   <Text style={styles.statLabel}>{s.label}</Text>
                 </View>

@@ -232,7 +232,7 @@ export default function InvestmentLabScreen() {
                   onPress={() => handleModulePress(mod.id)}
                 >
                  <View style={[styles.moduleIcon, { backgroundColor: mod.color + '20' }]}>
-                     <Image source={mod.icon} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+                     <Feather name={mod.featherIcon} size={20} color={mod.color} />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.scenarioTitle}>{mod.title}</Text>

@@ -115,7 +115,7 @@ export default function InvestmentModuleScreen() {
     return (
       <View style={[styles.container, styles.centered]}>
         <View style={[styles.emptyIcon, { backgroundColor: moduleConfig.color + '20' }]}>
-          <Image source={moduleConfig.icon} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
+          <Feather name={moduleConfig.featherIcon} size={24} color={moduleConfig.color} />
         </View>
         <Text style={styles.emptyTitle}>Coming Soon</Text>
         <Text style={styles.emptySubtitle}>Scenarios for this module are being developed</Text>
