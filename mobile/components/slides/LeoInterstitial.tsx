@@ -109,7 +109,7 @@ export function LeoInterstitial({ type, progress, slideTitle, customMessage }: L
 
       {/* Type icon */}
       <View style={[styles.iconCircle, { backgroundColor: accent + '20' }]}>
-        <Image source={TYPE_ICONS[type]} style={styles.typeIcon} />
+        <Feather name={TYPE_FEATHER_ICONS[type]} size={22} color={accent} />
       </View>
 
       {/* Message */}

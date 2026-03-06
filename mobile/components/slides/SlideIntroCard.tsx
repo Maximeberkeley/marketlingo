@@ -71,7 +71,7 @@ export function SlideIntroCard({ stackTitle, stackType, totalSlides, marketId }:
 
       <Animated.View style={[styles.content, { opacity, transform: [{ translateY: slideUp }] }]}>
         <View style={[styles.iconBadge, { backgroundColor: config.color + '20' }]}>
-          <Image source={config.icon} style={styles.badgeIcon} />
+          <Feather name={config.icon} size={22} color={config.color} />
         </View>
 
         <Text style={[styles.typeLabel, { color: config.color }]}>{stackType}</Text>
