@@ -336,13 +336,13 @@ export default function HomeScreen() {
               <Text style={styles.sectionHeader}>Practice & Play</Text>
               <View style={styles.practiceGrid}>
                 {[
-                  { icon: APP_ICONS.games, label: 'Games', onPress: () => router.push('/games' as any) },
-                  { icon: APP_ICONS.drills, label: 'Drills', onPress: () => router.push('/drills' as any) },
-                  { icon: APP_ICONS.trainer, label: 'Trainer', onPress: () => router.push('/trainer' as any) },
+                  { icon: 'play-circle' as const, label: 'Games', color: '#8B5CF6', onPress: () => router.push('/games' as any) },
+                  { icon: 'zap' as const, label: 'Drills', color: '#F59E0B', onPress: () => router.push('/drills' as any) },
+                  { icon: 'target' as const, label: 'Trainer', color: '#22C55E', onPress: () => router.push('/trainer' as any) },
                 ].map((item) => (
                   <TouchableOpacity key={item.label} style={styles.practiceItem} onPress={item.onPress} activeOpacity={0.7}>
-                    <View style={styles.practiceIconWrap}>
-                      <Image source={item.icon} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+                    <View style={[styles.practiceIconWrap, { backgroundColor: item.color + '12' }]}>
+                      <Feather name={item.icon} size={22} color={item.color} />
                     </View>
                     <Text style={styles.practiceLabel}>{item.label}</Text>
                   </TouchableOpacity>
