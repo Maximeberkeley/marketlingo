@@ -1144,6 +1144,22 @@ export function getGoalTag(goal: LearningGoal): string {
   return `goal:${goal}`;
 }
 
+export type FamiliarityLevel = 'beginner' | 'intermediate' | 'advanced';
+
+export function getLevelTag(day: number): string {
+  const month = Math.ceil(day / 30);
+  if (month <= 2) return 'level:beginner';
+  if (month <= 4) return 'level:intermediate';
+  return 'level:advanced';
+}
+
+export function getLevelFromDay(day: number): FamiliarityLevel {
+  const month = Math.ceil(day / 30);
+  if (month <= 2) return 'beginner';
+  if (month <= 4) return 'intermediate';
+  return 'advanced';
+}
+
 export function getMarketContext(marketId: string): string {
   const contexts: Record<string, string> = {
     aerospace: "aerospace, aviation, defense, and space industries",
