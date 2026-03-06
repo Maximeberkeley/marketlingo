@@ -4,6 +4,7 @@ import { View, StyleSheet, Animated, Easing } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
+import { triggerHaptic } from '../../lib/haptics';
 
 const TAB_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   home: 'home',
