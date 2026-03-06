@@ -6,6 +6,7 @@ import {
   LEARNING_GOALS,
   GOAL_PERSONAS,
   getGoalTag,
+  getLevelTag,
   type CurriculumStructure,
   type LearningGoal,
 } from '../_shared/curriculum-structures.ts';
