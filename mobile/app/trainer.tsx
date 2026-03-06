@@ -269,7 +269,7 @@ export default function TrainerScreen() {
 
           <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
             <View style={styles.introCenter}>
-              <Image source={APP_ICONS.trainer} style={{ width: 64, height: 64, resizeMode: 'contain', marginBottom: 12 }} />
+              <Feather name="target" size={56} color={COLORS.accent} style={{ marginBottom: 12 }} />
               <Text style={styles.introMsg}>Time to level up! These scenarios will teach you to think like a pro.</Text>
             </View>
 
