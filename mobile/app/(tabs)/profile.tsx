@@ -294,7 +294,7 @@ export default function ProfileScreen() {
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/achievements' as any)}>
             <View style={[styles.menuIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
-              <Image source={APP_ICONS.achievements} style={styles.menuIconImg} />
+              <Feather name="award" size={18} color="#F59E0B" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Achievements</Text>
