@@ -14,7 +14,7 @@ import { HomeSkeleton } from '../../components/home/HomeSkeleton';
 import { AnimatedSection } from '../../components/home/AnimatedSection';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { COLORS } from '../../lib/constants';
+import { COLORS, TYPE, SHADOWS } from '../../lib/constants';
 import { getMarketName, getMarketColor } from '../../lib/markets';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
@@ -22,7 +22,6 @@ import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
 import { StreakBadge } from '../../components/ui/StreakBadge';
 import { XPBadge } from '../../components/ui/XPBadge';
 import { ProgressBar } from '../../components/ui/ProgressBar';
-import { LessonCard } from '../../components/ui/LessonCard';
 import { SlideReaderV2 as SlideReader } from '../../components/slides/SlideReaderV2';
 import { TodaysMission } from '../../components/home/TodaysMission';
 import { StreakAtRisk } from '../../components/home/StreakAtRisk';
@@ -44,9 +43,9 @@ import { StreakFreezeCard } from '../../components/home/StreakFreezeCard';
 import { playSound } from '../../lib/sounds';
 import { useSpacedRepetition } from '../../hooks/useSpacedRepetition';
 import { useOfflineCache } from '../../hooks/useOfflineCache';
+import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 
-// Market illustrations — flat 3D isometric style (matching web)
-// Market illustrations — flat 3D isometric style (matching web)
+// Market illustrations
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
   ai: require('../../assets/illustrations/ai.png'),
@@ -65,11 +64,24 @@ const MARKET_ILLUSTRATIONS: Record<string, any> = {
   neuroscience: require('../../assets/illustrations/neuroscience.png'),
 };
 
+// Duolingo-style action rows
+const ACTION_ROWS = [
+  { key: 'games', icon: 'play-circle' as const, title: 'Trivia Games', sub: 'Test your knowledge', color: '#8B5CF6', route: '/games' },
+  { key: 'drills', icon: 'zap' as const, title: 'Speed Drills', sub: 'Quick-fire practice', color: '#F59E0B', route: '/drills' },
+  { key: 'trainer', icon: 'target' as const, title: 'Scenario Trainer', sub: 'Real-world decisions', color: '#22C55E', route: '/trainer' },
+];
+
+const SECONDARY_ROWS = [
+  { key: 'rank', icon: 'award' as const, title: 'Leaderboard', color: '#F59E0B', route: '/leaderboard' },
+  { key: 'badges', icon: 'star' as const, title: 'Achievements', color: '#22C55E', route: '/achievements' },
+  { key: 'news', icon: 'file-text' as const, title: 'Daily Summaries', color: '#3B82F6', route: '/summaries' },
+  { key: 'passport', icon: 'globe' as const, title: 'Industry Passport', color: '#8B5CF6', route: '/passport' },
+];
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { user, loading: authLoading } = useAuth();
 
-  // ─── Core hooks ───
   const [selectedMarketLocal, setSelectedMarketLocal] = useState<string | null>(null);
   const { progress, availableDay, completeStack, updateStreak } = useUserProgress(selectedMarketLocal || undefined);
   const {
@@ -82,7 +94,6 @@ export default function HomeScreen() {
   const stageProgress = getProgressToNextStage();
   const streak = progress?.current_streak || 0;
 
-  // ─── Data hook ───
   const homeData = useHomeData(user?.id, progress, xpData, lessonCompletedToday);
   const {
     selectedMarket, isProUser, lessonStack, newsStack, newsItems,
@@ -90,34 +101,24 @@ export default function HomeScreen() {
     loading, refreshing, currentDay, fetchData, onRefresh,
   } = homeData;
 
-  // ─── Streak Freeze ───
   const { canFreeze, freezesUsedThisWeek, maxFreezes, useFreeze } = useStreakFreeze(
     selectedMarketLocal || undefined, isProUser
   );
   const [showStreakFreeze, setShowStreakFreeze] = useState(true);
 
-  // ─── Leo mascot state ───
-  
-
-  // Sync selectedMarket for dependent hooks
   useEffect(() => {
     if (selectedMarket) setSelectedMarketLocal(selectedMarket);
   }, [selectedMarket]);
 
-  // ─── Spaced Repetition ───
   const { dueCount, dueItems, gradeReview, addLessonConcepts } = useSpacedRepetition(selectedMarketLocal || undefined);
-
-  // ─── Offline Cache ───
   const { syncLessons, cachedCount } = useOfflineCache(selectedMarketLocal || undefined);
 
   useEffect(() => {
     if (currentDay && selectedMarket) syncLessons(currentDay);
   }, [currentDay, selectedMarket]);
 
-  // ─── Milestone sharing ───
   const { milestone, dismissMilestone, checkStreakMilestone, checkLevelMilestone } = useMilestoneSharing();
 
-  // ─── Session flow hook ───
   const session = useSessionFlow({
     user, selectedMarket, lessonStack, progress, xpData,
     lessonCompletedToday, currentDay,
@@ -128,7 +129,6 @@ export default function HomeScreen() {
     onDataRefresh: async () => { await fetchData(); },
   });
 
-  // ─── Daily Quests ───
   const { quests, completedCount, totalBonusXP, allComplete: allQuestsComplete } = useDailyQuests(
     dailyCompletion ?? null, streak
   );
@@ -136,14 +136,10 @@ export default function HomeScreen() {
   const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
 
-  // Play sound on lesson complete
   useEffect(() => {
-    if (lessonCompletedToday) {
-      playSound('lessonComplete');
-    }
+    if (lessonCompletedToday) playSound('lessonComplete');
   }, [lessonCompletedToday]);
 
-  // ─── Initial fetch ───
   useEffect(() => {
     if (!authLoading && !user) { router.replace('/'); return; }
     fetchData().then((result) => {
@@ -152,14 +148,15 @@ export default function HomeScreen() {
     });
   }, [user, authLoading]);
 
-
-  // ─── Loading ───
   if (loading || authLoading) return <HomeSkeleton />;
 
   const marketIllustration = MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace'] || MARKET_ILLUSTRATIONS.aerospace;
   const journeyProgress = ((currentDay || 1) / 180) * 100;
 
-  // ─── Render ───
+  // Greeting based on time
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
   return (
     <View style={styles.container}>
       {session.showReader && session.activeStack ? (
@@ -194,11 +191,11 @@ export default function HomeScreen() {
       ) : (
         <>
           <ScrollView
-            contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 }]}
+            contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 100 }]}
             showsVerticalScrollIndicator={false}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.accent} />}
           >
-            {/* ── Header: XP + Streak badges ── */}
+            {/* ── Header: Streak + XP ── */}
             <View style={styles.header}>
               <View style={styles.headerLeft}>
                 <StreakBadge count={streak} />
@@ -206,110 +203,59 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            {/* ── Hero Section: Brilliant-style ── */}
+            {/* ── Leo Greeting ── */}
             <AnimatedSection delay={50}>
-              <View style={styles.heroSection}>
-                {/* Recommended / Completed tag */}
-                <View style={styles.tagRow}>
-                  <View style={[styles.statusTag, lessonCompletedToday && styles.statusTagDone]}>
-                    <Text style={[styles.statusTagText, lessonCompletedToday && styles.statusTagTextDone]}>
-                      {lessonCompletedToday ? 'COMPLETED' : 'RECOMMENDED'}
-                    </Text>
-                  </View>
-                </View>
-
-                {/* Title */}
-                <Text style={styles.heroTitle}>
-                  {lessonStack?.title || getMarketName(selectedMarket || 'aerospace')}
-                </Text>
-                <Text style={styles.heroSubtitle}>
-                  Day {currentDay} · Level {xpData?.current_level || 1}
-                </Text>
-
-                {/* Market Illustration — flat 3D isometric, no crop */}
-                <View style={styles.illustrationWrap}>
-                  <Image
-                    source={marketIllustration}
-                    style={styles.illustration}
-                    resizeMode="contain"
-                  />
-                </View>
-
-                {/* Dot indicators */}
-                <View style={styles.dotRow}>
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <View
-                      key={i}
-                      style={[
-                        styles.dot,
-                        i < Math.ceil((currentDay || 1) / 36) && styles.dotActive,
-                      ]}
-                    />
-                  ))}
+              <View style={styles.leoRow}>
+                <LeoCharacter size="md" animation="waving" />
+                <View style={styles.leoBubble}>
+                  <View style={styles.leoBubbleTail} />
+                  <Text style={styles.leoGreeting}>
+                    {lessonCompletedToday
+                      ? "Great work today! Why not practice or explore?"
+                      : `${greeting}! Ready for Day ${currentDay}?`}
+                  </Text>
                 </View>
               </View>
             </AnimatedSection>
 
-            {/* ── Lesson Module Card ── */}
-            <AnimatedSection delay={150}>
-              <View style={styles.lessonCard}>
-                {lessonCompletedToday ? (
-                  <View style={styles.lessonCompleteRow}>
-                    <View style={styles.lessonCompleteIcon}>
-                      <Feather name="check-circle" size={20} color={COLORS.success} />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.lessonCompleteTitle}>Lesson Complete!</Text>
-                      <Text style={styles.lessonCompleteSub}>+{XP_REWARDS.LESSON_COMPLETE} XP earned</Text>
-                    </View>
+            {/* ── Today's Lesson — Big CTA ── */}
+            <AnimatedSection delay={100}>
+              <TouchableOpacity
+                style={[styles.lessonHero, lessonCompletedToday && styles.lessonHeroDone]}
+                onPress={() => lessonStack && session.handleOpenStack(lessonStack)}
+                activeOpacity={0.85}
+              >
+                <Image
+                  source={marketIllustration}
+                  style={styles.lessonIllustration}
+                  resizeMode="contain"
+                />
+                <View style={styles.lessonHeroContent}>
+                  <View style={[styles.statusTag, lessonCompletedToday && styles.statusTagDone]}>
+                    <Text style={[styles.statusTagText, lessonCompletedToday && styles.statusTagTextDone]}>
+                      {lessonCompletedToday ? '✓ COMPLETED' : `DAY ${currentDay}`}
+                    </Text>
                   </View>
-                ) : lessonStack ? (
-                  <View style={styles.lessonItemRow}>
-                    <View style={styles.lessonItemIcon}>
-                      <Feather name="book-open" size={20} color={COLORS.accent} />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.lessonItemTitle} numberOfLines={2}>{lessonStack.title}</Text>
-                    </View>
-                    <View style={styles.lessonItemCircle} />
-                  </View>
-                ) : null}
-
-                {/* CTA Buttons */}
-                <View style={styles.lessonActions}>
-                  {lessonCompletedToday ? (
-                    <View style={styles.lessonActionsRow}>
-                      <TouchableOpacity
-                        style={styles.secondaryBtn}
-                        onPress={() => lessonStack && session.handleOpenStack(lessonStack)}
-                        activeOpacity={0.7}
-                      >
-                        <Text style={styles.secondaryBtnText}>Review</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={styles.successBtn}
-                        onPress={() => router.push('/(tabs)/practice' as any)}
-                        activeOpacity={0.7}
-                      >
-                        <Text style={styles.successBtnText}>Practice</Text>
-                      </TouchableOpacity>
-                    </View>
-                  ) : (
-                    <TouchableOpacity
-                      style={styles.startBtn}
-                      onPress={() => lessonStack && session.handleOpenStack(lessonStack)}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={styles.startBtnText}>Start</Text>
-                    </TouchableOpacity>
-                  )}
+                  <Text style={styles.lessonHeroTitle} numberOfLines={2}>
+                    {lessonStack?.title || getMarketName(selectedMarket || 'aerospace')}
+                  </Text>
+                  <Text style={styles.lessonHeroSub}>
+                    {lessonCompletedToday ? `+${XP_REWARDS.LESSON_COMPLETE} XP earned` : `~5 min · Level ${xpData?.current_level || 1}`}
+                  </Text>
                 </View>
-              </View>
+                <View style={[styles.lessonHeroCTA, lessonCompletedToday && styles.lessonHeroCTADone]}>
+                  <Feather
+                    name={lessonCompletedToday ? 'refresh-cw' : 'play'}
+                    size={20}
+                    color="#fff"
+                  />
+                </View>
+              </TouchableOpacity>
             </AnimatedSection>
 
             {/* ── Quick Bites ── */}
             {lessonStack && !lessonCompletedToday && (lessonStack.slides?.length || 0) >= 4 && (
-              <AnimatedSection delay={200}>
+              <AnimatedSection delay={150}>
                 <QuickBiteSelector
                   totalSlides={lessonStack.slides?.length || 0}
                   completedBites={session.completedBites || []}
@@ -331,138 +277,135 @@ export default function HomeScreen() {
               />
             )}
 
-            {/* ── Practice & Play Grid — matches web ── */}
-            <AnimatedSection delay={300}>
-              <Text style={styles.sectionHeader}>Practice & Play</Text>
-              <View style={styles.practiceGrid}>
-                {[
-                  { icon: 'play-circle' as const, label: 'Games', color: '#8B5CF6', onPress: () => router.push('/games' as any) },
-                  { icon: 'zap' as const, label: 'Drills', color: '#F59E0B', onPress: () => router.push('/drills' as any) },
-                  { icon: 'target' as const, label: 'Trainer', color: '#22C55E', onPress: () => router.push('/trainer' as any) },
-                ].map((item) => (
-                  <TouchableOpacity key={item.label} style={styles.practiceItem} onPress={item.onPress} activeOpacity={0.7}>
-                    <View style={[styles.practiceIconWrap, { backgroundColor: item.color + '12' }]}>
-                      <Feather name={item.icon} size={22} color={item.color} />
-                    </View>
-                    <Text style={styles.practiceLabel}>{item.label}</Text>
-                  </TouchableOpacity>
-                ))}
+            {/* ── Journey Progress (inline) ── */}
+            <AnimatedSection delay={200}>
+              <View style={styles.journeyRow}>
+                <Feather name="map" size={16} color={COLORS.accent} />
+                <Text style={styles.journeyLabel}>Day {currentDay} of 180</Text>
+                <View style={styles.journeyBarWrap}>
+                  <ProgressBar progress={journeyProgress} height={6} />
+                </View>
+                <Text style={styles.journeyPct}>{Math.round(journeyProgress)}%</Text>
               </View>
             </AnimatedSection>
 
-            {/* ── Quick Access — matches web ── */}
-            <AnimatedSection delay={320}>
-              <Text style={styles.sectionHeader}>Quick Access</Text>
-              <View style={styles.quickGrid}>
-                {[
-                  { icon: 'edit-3' as const, label: 'Notes', color: '#8B5CF6', onPress: () => router.push('/(tabs)/notebook' as any) },
-                  { icon: 'award' as const, label: 'Rank', color: '#F59E0B', onPress: () => router.push('/leaderboard' as any) },
-                  { icon: 'star' as const, label: 'Badges', color: '#22C55E', onPress: () => router.push('/achievements' as any) },
-                  { icon: 'file-text' as const, label: 'News', color: '#3B82F6', onPress: () => router.push('/summaries' as any) },
-                ].map((item) => (
-                  <TouchableOpacity key={item.label} style={styles.quickItem} onPress={item.onPress} activeOpacity={0.7}>
-                    <View style={[styles.quickIconWrap, { backgroundColor: item.color + '12' }]}>
-                      <Feather name={item.icon} size={18} color={item.color} />
-                    </View>
-                    <Text style={styles.quickLabel}>{item.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
+            {/* ── Practice & Play — Duolingo-style full-width rows ── */}
+            <AnimatedSection delay={250}>
+              <Text style={styles.sectionTitle}>Practice & Play</Text>
+              {ACTION_ROWS.map((row) => (
+                <TouchableOpacity
+                  key={row.key}
+                  style={styles.actionRow}
+                  onPress={() => { triggerHaptic('light'); router.push(row.route as any); }}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.actionIcon, { backgroundColor: row.color + '14' }]}>
+                    <Feather name={row.icon} size={22} color={row.color} />
+                  </View>
+                  <View style={styles.actionText}>
+                    <Text style={styles.actionTitle}>{row.title}</Text>
+                    <Text style={styles.actionSub}>{row.sub}</Text>
+                  </View>
+                  <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
+                </TouchableOpacity>
+              ))}
             </AnimatedSection>
 
             {/* ── Spaced Repetition ── */}
             {dueCount > 0 && (
-              <AnimatedSection delay={350}>
+              <AnimatedSection delay={280}>
                 <TouchableOpacity
-                  style={styles.reviewPrompt}
+                  style={styles.actionRow}
                   onPress={() => router.push('/trainer' as any)}
                   activeOpacity={0.8}
                 >
-                  <Feather name="refresh-cw" size={20} color={COLORS.accent} />
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.reviewPromptTitle}>{dueCount} concept{dueCount !== 1 ? 's' : ''} to review</Text>
-                    <Text style={styles.reviewPromptSub}>Spaced repetition keeps it fresh</Text>
+                  <View style={[styles.actionIcon, { backgroundColor: COLORS.accentSoft }]}>
+                    <Feather name="refresh-cw" size={20} color={COLORS.accent} />
                   </View>
-                  <Text style={{ color: COLORS.textMuted, fontSize: 14 }}>›</Text>
+                  <View style={styles.actionText}>
+                    <Text style={styles.actionTitle}>{dueCount} concept{dueCount !== 1 ? 's' : ''} to review</Text>
+                    <Text style={styles.actionSub}>Spaced repetition keeps it fresh</Text>
+                  </View>
+                  <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
                 </TouchableOpacity>
               </AnimatedSection>
             )}
 
             {/* ── Daily Quests ── */}
-            <AnimatedSection delay={400}>
-              <View style={styles.section}>
-                <DailyQuests
-                  quests={quests}
-                  completedCount={completedCount}
-                  totalBonusXP={totalBonusXP}
-                  allComplete={allQuestsComplete}
-                />
-              </View>
+            <AnimatedSection delay={300}>
+              <DailyQuests
+                quests={quests}
+                completedCount={completedCount}
+                totalBonusXP={totalBonusXP}
+                allComplete={allQuestsComplete}
+              />
+            </AnimatedSection>
+
+            {/* ── Explore — Clean list ── */}
+            <AnimatedSection delay={350}>
+              <Text style={styles.sectionTitle}>Explore</Text>
+              {SECONDARY_ROWS.map((row, i) => (
+                <TouchableOpacity
+                  key={row.key}
+                  style={[styles.actionRow, i === SECONDARY_ROWS.length - 1 && { marginBottom: 0 }]}
+                  onPress={() => { triggerHaptic('light'); router.push(row.route as any); }}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.actionIcon, { backgroundColor: row.color + '14' }]}>
+                    <Feather name={row.icon} size={20} color={row.color} />
+                  </View>
+                  <View style={styles.actionText}>
+                    <Text style={styles.actionTitle}>{row.title}</Text>
+                  </View>
+                  <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
+                </TouchableOpacity>
+              ))}
             </AnimatedSection>
 
             {/* ── Investment Lab ── */}
-            <AnimatedSection delay={450}>
+            <AnimatedSection delay={380}>
               <TouchableOpacity
-                style={styles.investmentCard}
+                style={styles.actionRow}
                 onPress={() => router.push('/investment-lab' as any)}
                 activeOpacity={0.7}
               >
-                <View style={[styles.investIcon, isProUser && styles.investIconPro]}>
+                <View style={[styles.actionIcon, { backgroundColor: isProUser ? COLORS.successSoft : COLORS.accentSoft }]}>
                   <Feather name={isProUser ? 'trending-up' : 'search'} size={20} color={isProUser ? COLORS.success : COLORS.accent} />
                 </View>
-                <View style={{ flex: 1 }}>
-                  <View style={styles.investTitleRow}>
-                    <Text style={styles.investTitle}>Investment Lab</Text>
+                <View style={styles.actionText}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <Text style={styles.actionTitle}>Investment Lab</Text>
                     {!isProUser && (
                       <View style={styles.proBadge}>
                         <Text style={styles.proBadgeText}>PRO</Text>
                       </View>
                     )}
                   </View>
-                  <Text style={styles.investSub}>
+                  <Text style={styles.actionSub}>
                     {isProUser ? 'Investment-ready scenarios' : 'Unlock with Pro'}
                   </Text>
                 </View>
-                <Text style={{ color: COLORS.textMuted, fontSize: 14 }}>›</Text>
+                <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
               </TouchableOpacity>
-            </AnimatedSection>
-
-            {/* ── Journey Progress ── */}
-            <AnimatedSection delay={500}>
-              <View style={styles.journeyCard}>
-                <View style={styles.journeyHeader}>
-                  <View style={styles.journeyHeaderLeft}>
-                    <Feather name="bar-chart-2" size={14} color={COLORS.accent} />
-                    <Text style={styles.journeyTitle}>Day {currentDay} of 180</Text>
-                  </View>
-                  <Text style={styles.journeyPct}>{Math.round(journeyProgress)}%</Text>
-                </View>
-                <ProgressBar progress={journeyProgress} height={6} />
-              </View>
             </AnimatedSection>
 
             {/* ── News ── */}
             {selectedMarket && (
-              <AnimatedSection delay={550}>
-                <View style={styles.section}>
-                  <DailyNews marketId={selectedMarket} />
-                </View>
+              <AnimatedSection delay={420}>
+                <DailyNews marketId={selectedMarket} />
               </AnimatedSection>
             )}
 
             {/* ── Key Players ── */}
             {selectedMarket && (
-              <AnimatedSection delay={600}>
-                <View style={styles.section}>
-                  <KeyPlayers marketId={selectedMarket} />
-                </View>
+              <AnimatedSection delay={460}>
+                <KeyPlayers marketId={selectedMarket} />
               </AnimatedSection>
             )}
           </ScrollView>
         </>
       )}
 
-      {/* Milestone Share Card */}
       <MilestoneShareCard
         visible={milestone.visible}
         type={milestone.type}
@@ -475,167 +418,108 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
-  scrollContent: { paddingHorizontal: 16 },
+  scrollContent: { paddingHorizontal: 20 },
 
   // Header
   header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16,
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
 
-  // Hero Section — Brilliant-style
-  heroSection: { alignItems: 'center', marginBottom: 8 },
-  tagRow: { marginBottom: 10 },
+  // Leo greeting
+  leoRow: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 20,
+  },
+  leoBubble: {
+    flex: 1, backgroundColor: COLORS.bg1, borderRadius: 18,
+    padding: 14, marginTop: 8, position: 'relative',
+    borderWidth: 1, borderColor: COLORS.border,
+  },
+  leoBubbleTail: {
+    position: 'absolute', left: -6, top: 14,
+    width: 0, height: 0,
+    borderTopWidth: 6, borderBottomWidth: 6, borderRightWidth: 6,
+    borderTopColor: 'transparent', borderBottomColor: 'transparent',
+    borderRightColor: COLORS.bg1,
+  },
+  leoGreeting: {
+    ...TYPE.body, color: COLORS.textPrimary, fontWeight: '500',
+  },
+
+  // Lesson Hero — big CTA
+  lessonHero: {
+    flexDirection: 'row', alignItems: 'center', gap: 14,
+    backgroundColor: COLORS.bg2, borderRadius: 22, padding: 16,
+    marginBottom: 16,
+    borderWidth: 1.5, borderColor: COLORS.accent + '30',
+    ...SHADOWS.md,
+  },
+  lessonHeroDone: {
+    borderColor: COLORS.success + '30',
+  },
+  lessonIllustration: {
+    width: 72, height: 72,
+  },
+  lessonHeroContent: { flex: 1 },
   statusTag: {
-    paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20,
-    backgroundColor: COLORS.accentSoft,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6,
+    backgroundColor: COLORS.accentSoft, marginBottom: 6,
   },
   statusTagDone: { backgroundColor: COLORS.successSoft },
   statusTagText: {
-    fontSize: 10, fontWeight: '800', color: COLORS.accent,
-    textTransform: 'uppercase', letterSpacing: 1.2,
+    fontSize: 9, fontWeight: '800', color: COLORS.accent,
+    textTransform: 'uppercase', letterSpacing: 1,
   },
   statusTagTextDone: { color: COLORS.success },
-  heroTitle: {
-    fontSize: 24, fontWeight: '800', color: COLORS.textPrimary,
-    textAlign: 'center', lineHeight: 30, marginBottom: 4,
+  lessonHeroTitle: {
+    fontSize: 16, fontWeight: '700', color: COLORS.textPrimary,
+    lineHeight: 21, marginBottom: 2,
   },
-  heroSubtitle: {
-    fontSize: 12, fontWeight: '700', color: COLORS.accent,
-    textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16,
+  lessonHeroSub: {
+    fontSize: 12, color: COLORS.textMuted, fontWeight: '500',
   },
-  illustrationWrap: {
-    width: 192, height: 192,
-    marginBottom: 20, alignItems: 'center', justifyContent: 'center',
+  lessonHeroCTA: {
+    width: 44, height: 44, borderRadius: 22,
+    backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center',
   },
-  illustration: { width: 192, height: 192 },
-  dotRow: { flexDirection: 'row', gap: 6, marginBottom: 8 },
-  dot: {
-    width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.borderLight,
-  },
-  dotActive: { backgroundColor: COLORS.accent },
-
-  // Lesson Module Card
-  lessonCard: {
-    backgroundColor: COLORS.bg2, borderRadius: 20, padding: 18, marginBottom: 16,
-    borderWidth: 1, borderColor: COLORS.border,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 2,
-  },
-  lessonCompleteRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
-  lessonCompleteIcon: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: COLORS.successSoft, alignItems: 'center', justifyContent: 'center',
-  },
-  lessonCompleteTitle: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
-  lessonCompleteSub: { fontSize: 12, color: COLORS.textMuted },
-  lessonItemRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
-  lessonItemIcon: {
-    width: 40, height: 40, borderRadius: 12,
-    backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center',
-  },
-  lessonItemTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
-  lessonItemCircle: {
-    width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: COLORS.border,
-  },
-  lessonActions: {},
-  lessonActionsRow: { flexDirection: 'row', gap: 10 },
-  secondaryBtn: {
-    flex: 1, paddingVertical: 13, borderRadius: 14, alignItems: 'center',
-    backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border,
-  },
-  secondaryBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
-  successBtn: {
-    flex: 1, paddingVertical: 13, borderRadius: 14, alignItems: 'center',
+  lessonHeroCTADone: {
     backgroundColor: COLORS.success,
   },
-  successBtnText: { fontSize: 14, fontWeight: '700', color: '#FFFFFF' },
-  startBtn: {
-    paddingVertical: 16, borderRadius: 14, alignItems: 'center',
-    backgroundColor: COLORS.accent,
-  },
-  startBtnText: { fontSize: 17, fontWeight: '700', color: '#FFFFFF' },
 
-  // Review prompt
-  reviewPrompt: {
-    flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, marginBottom: 16,
-    backgroundColor: COLORS.bg2, borderRadius: 14,
-    borderWidth: 1, borderColor: 'rgba(139,92,246,0.15)',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 4, elevation: 1,
+  // Journey progress inline
+  journeyRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    marginBottom: 20, paddingHorizontal: 4,
   },
-  reviewPromptTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
-  reviewPromptSub: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
+  journeyLabel: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary },
+  journeyBarWrap: { flex: 1 },
+  journeyPct: { fontSize: 11, fontWeight: '600', color: COLORS.textMuted, minWidth: 30, textAlign: 'right' },
 
-  // Investment Lab
-  investmentCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.bg2, borderRadius: 16, padding: 16, marginBottom: 16,
+  // Section title
+  sectionTitle: {
+    ...TYPE.h3, color: COLORS.textPrimary, marginBottom: 12, marginTop: 8,
+  },
+
+  // Duolingo-style full-width action rows
+  actionRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 14,
+    backgroundColor: COLORS.bg2, borderRadius: 16, padding: 14,
+    marginBottom: 10,
     borderWidth: 1, borderColor: COLORS.border,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 4, elevation: 1,
   },
-  investIcon: {
-    width: 40, height: 40, borderRadius: 12,
-    backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center',
+  actionIcon: {
+    width: 44, height: 44, borderRadius: 14,
+    alignItems: 'center', justifyContent: 'center',
   },
-  investIconPro: { backgroundColor: COLORS.successSoft },
-  investTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  investTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
+  actionText: { flex: 1 },
+  actionTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
+  actionSub: { fontSize: 12, color: COLORS.textMuted, marginTop: 1 },
+
+  // Pro badge
   proBadge: {
     paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4,
     backgroundColor: COLORS.accent,
   },
   proBadgeText: { fontSize: 9, fontWeight: '800', color: '#FFFFFF' },
-  investSub: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
-
-  // Journey Progress
-  journeyCard: {
-    backgroundColor: COLORS.bg2, borderRadius: 16, padding: 16, marginBottom: 16,
-    borderWidth: 1, borderColor: COLORS.border,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 4, elevation: 1,
-  },
-  journeyHeader: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10,
-  },
-  journeyHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  journeyTitle: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary },
-  journeyPct: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
-
-  section: { marginBottom: 20 },
-
-  // Section headers
-  sectionHeader: {
-    fontSize: 14, fontWeight: '700', color: COLORS.textPrimary,
-    marginBottom: 10, letterSpacing: 0.2,
-  },
-
-  // Practice & Play grid (3 cols, matches web)
-  practiceGrid: {
-    flexDirection: 'row', gap: 10, marginBottom: 20,
-  },
-  practiceItem: {
-    flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8,
-    paddingVertical: 18, borderRadius: 18,
-    backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 4, elevation: 1,
-  },
-  practiceIconWrap: {
-    width: 48, height: 48, borderRadius: 14,
-    backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center',
-  },
-  practiceLabel: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary },
-
-  // Quick Access grid (4 cols, matches web)
-  quickGrid: {
-    flexDirection: 'row', gap: 8, marginBottom: 20,
-  },
-  quickItem: {
-    flex: 1, alignItems: 'center', justifyContent: 'center', gap: 6,
-    paddingVertical: 14, borderRadius: 18,
-    backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 4, elevation: 1,
-  },
-  quickIconWrap: {
-    width: 40, height: 40, borderRadius: 12,
-    backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center',
-  },
-  quickLabel: { fontSize: 11, fontWeight: '600', color: COLORS.textSecondary },
 });

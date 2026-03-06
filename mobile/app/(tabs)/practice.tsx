@@ -18,9 +18,8 @@ import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
 import { supabase } from '../../lib/supabase';
-import { getMarketName, getMarketColor } from '../../lib/markets';
-
-const { width: SCREEN_W } = Dimensions.get('window');
+import { getMarketName } from '../../lib/markets';
+import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 
 interface PracticeStats {
   gamesPlayed: number;
@@ -28,15 +27,13 @@ interface PracticeStats {
   trainerAttempts: number;
 }
 
-// ── Large Brilliant-style practice card ──
 const PRACTICE_MODES = [
   {
     key: 'games',
     icon: 'play-circle' as const,
     title: 'Trivia Games',
-    subtitle: 'Test your market knowledge with interactive quizzes and challenges',
+    subtitle: 'Test your market knowledge with interactive quizzes',
     color: '#8B5CF6',
-    bgGradientStart: '#F3F0FF',
     route: '/games',
     xpKey: 'GAME_COMPLETE' as const,
     statKey: 'gamesPlayed' as const,
@@ -45,9 +42,8 @@ const PRACTICE_MODES = [
     key: 'drills',
     icon: 'zap' as const,
     title: 'Speed Drills',
-    subtitle: 'Race the clock with rapid-fire questions to sharpen your instincts',
+    subtitle: 'Race the clock with rapid-fire questions',
     color: '#F59E0B',
-    bgGradientStart: '#FFFBEB',
     route: '/drills',
     xpKey: 'DRILL_CORRECT' as const,
     statKey: 'drillsCompleted' as const,
@@ -55,10 +51,9 @@ const PRACTICE_MODES = [
   {
     key: 'trainer',
     icon: 'target' as const,
-    title: 'Trainer Scenarios',
-    subtitle: 'Navigate real-world strategy decisions like an industry insider',
+    title: 'Scenario Trainer',
+    subtitle: 'Navigate real-world strategy decisions',
     color: '#22C55E',
-    bgGradientStart: '#F0FDF4',
     route: '/trainer',
     xpKey: 'TRAINER_COMPLETE' as const,
     statKey: 'trainerAttempts' as const,
@@ -67,85 +62,10 @@ const PRACTICE_MODES = [
 
 const RESOURCES = [
   { icon: 'file-text' as const, label: 'Summaries', route: '/summaries', color: '#3B82F6' },
-  { icon: 'shield' as const, label: 'Regulatory', route: '/regulatory-hub', color: '#EF4444' },
+  { icon: 'shield' as const, label: 'Regulatory Hub', route: '/regulatory-hub', color: '#EF4444' },
   { icon: 'edit-3' as const, label: 'Notebook', route: '/(tabs)/notebook', color: '#8B5CF6' },
   { icon: 'globe' as const, label: 'Passport', route: '/passport', color: '#F59E0B' },
 ];
-
-function PracticeCard({
-  mode,
-  stat,
-  index,
-  onPress,
-}: {
-  mode: typeof PRACTICE_MODES[number];
-  stat: number;
-  index: number;
-  onPress: () => void;
-}) {
-  const fadeIn = useRef(new Animated.Value(0)).current;
-  const slideUp = useRef(new Animated.Value(50)).current;
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    setTimeout(() => {
-      Animated.parallel([
-        Animated.timing(fadeIn, { toValue: 1, duration: 500, useNativeDriver: true }),
-        Animated.spring(slideUp, { toValue: 0, tension: 120, friction: 14, useNativeDriver: true }),
-      ]).start();
-    }, index * 150);
-  }, [index]);
-
-  return (
-    <Animated.View style={{ opacity: fadeIn, transform: [{ translateY: slideUp }, { scale: scaleAnim }] }}>
-      <TouchableOpacity
-        style={[styles.bigCard, { backgroundColor: mode.bgGradientStart }]}
-        onPress={() => {
-           triggerHaptic('light');
-          onPress();
-        }}
-        onPressIn={() => {
-          Animated.spring(scaleAnim, { toValue: 0.97, tension: 300, friction: 10, useNativeDriver: true }).start();
-        }}
-        onPressOut={() => {
-          Animated.spring(scaleAnim, { toValue: 1, tension: 300, friction: 10, useNativeDriver: true }).start();
-        }}
-        activeOpacity={1}
-      >
-        {/* Top section — icon + XP badge */}
-        <View style={styles.bigCardTop}>
-          <View style={[styles.bigCardIcon, { backgroundColor: mode.color + '18' }]}>
-            <Feather name={mode.icon} size={28} color={mode.color} />
-          </View>
-          <View style={[styles.xpBadge, { backgroundColor: mode.color + '14' }]}>
-            <Feather name="trending-up" size={12} color={mode.color} />
-            <Text style={[styles.xpBadgeText, { color: mode.color }]}>
-              +{XP_REWARDS[mode.xpKey]} XP
-            </Text>
-          </View>
-        </View>
-
-        {/* Title + description */}
-        <Text style={styles.bigCardTitle}>{mode.title}</Text>
-        <Text style={styles.bigCardSubtitle}>{mode.subtitle}</Text>
-
-        {/* Bottom — stat + start button */}
-        <View style={styles.bigCardBottom}>
-          {stat > 0 && (
-            <View style={styles.statBadge}>
-              <Feather name="check-circle" size={14} color={COLORS.success} />
-              <Text style={styles.statBadgeText}>{stat} today</Text>
-            </View>
-          )}
-          <View style={[styles.startChip, { backgroundColor: mode.color }]}>
-            <Text style={styles.startChipText}>Start</Text>
-            <Feather name="arrow-right" size={14} color="#fff" />
-          </View>
-        </View>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-}
 
 export default function PracticeScreen() {
   const insets = useSafeAreaInsets();
@@ -153,11 +73,9 @@ export default function PracticeScreen() {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [stats, setStats] = useState<PracticeStats>({ gamesPlayed: 0, drillsCompleted: 0, trainerAttempts: 0 });
   const [loading, setLoading] = useState(true);
-
   const headerAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => { fetchData(); }, [user]);
-
   useEffect(() => {
     if (!loading) {
       Animated.spring(headerAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }).start();
@@ -225,40 +143,63 @@ export default function PracticeScreen() {
           )}
         </Animated.View>
 
-        {/* Practice Mode Cards — large vertical layout */}
+        {/* Leo encouragement */}
+        <View style={styles.leoRow}>
+          <LeoCharacter size="sm" animation="idle" />
+          <View style={styles.leoBubble}>
+            <Text style={styles.leoText}>
+              {totalToday > 0
+                ? "You're on a roll! Keep practicing 💪"
+                : "Pick a mode and sharpen your skills!"}
+            </Text>
+          </View>
+        </View>
+
+        {/* Practice Modes — clean linear rows */}
         <Text style={styles.sectionLabel}>CHOOSE YOUR MODE</Text>
 
         {PRACTICE_MODES.map((mode, idx) => (
-          <PracticeCard
+          <TouchableOpacity
             key={mode.key}
-            mode={mode}
-            stat={stats[mode.statKey] || 0}
-            index={idx}
-            onPress={() => router.push(mode.route as any)}
-          />
+            style={styles.modeRow}
+            onPress={() => { triggerHaptic('light'); router.push(mode.route as any); }}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.modeIcon, { backgroundColor: mode.color + '14' }]}>
+              <Feather name={mode.icon} size={24} color={mode.color} />
+            </View>
+            <View style={styles.modeText}>
+              <Text style={styles.modeTitle}>{mode.title}</Text>
+              <Text style={styles.modeSub}>{mode.subtitle}</Text>
+              {stats[mode.statKey] > 0 && (
+                <View style={styles.modeStat}>
+                  <Feather name="check-circle" size={12} color={COLORS.success} />
+                  <Text style={styles.modeStatText}>{stats[mode.statKey]} today</Text>
+                </View>
+              )}
+            </View>
+            <View style={[styles.modeXP, { backgroundColor: mode.color + '14' }]}>
+              <Text style={[styles.modeXPText, { color: mode.color }]}>+{XP_REWARDS[mode.xpKey]}</Text>
+            </View>
+          </TouchableOpacity>
         ))}
 
-        {/* Resources grid */}
+        {/* Resources — simple list */}
         <Text style={[styles.sectionLabel, { marginTop: 28 }]}>RESOURCES</Text>
-
-        <View style={styles.resourceGrid}>
-          {RESOURCES.map((item, idx) => (
-            <TouchableOpacity
-              key={idx}
-              style={styles.resourceItem}
-              onPress={() => {
-                triggerHaptic('light');
-                router.push(item.route as any);
-              }}
-              activeOpacity={0.7}
-            >
-              <View style={[styles.resourceIconWrap, { backgroundColor: item.color + '10' }]}>
-                <Feather name={item.icon} size={22} color={item.color} />
-              </View>
-              <Text style={styles.resourceLabel}>{item.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        {RESOURCES.map((item) => (
+          <TouchableOpacity
+            key={item.label}
+            style={styles.resourceRow}
+            onPress={() => { triggerHaptic('light'); router.push(item.route as any); }}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.resourceIcon, { backgroundColor: item.color + '14' }]}>
+              <Feather name={item.icon} size={20} color={item.color} />
+            </View>
+            <Text style={styles.resourceLabel}>{item.label}</Text>
+            <Feather name="chevron-right" size={16} color={COLORS.textMuted} />
+          </TouchableOpacity>
+        ))}
       </ScrollView>
     </View>
   );
@@ -270,115 +211,64 @@ const styles = StyleSheet.create({
   scrollContent: { paddingHorizontal: 20 },
 
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 24,
+    flexDirection: 'row', justifyContent: 'space-between',
+    alignItems: 'flex-start', marginBottom: 16,
   },
   headerTitle: { ...TYPE.hero, color: COLORS.textPrimary },
   headerSub: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 4 },
-
   todayBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: COLORS.successSoft,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.15)',
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: COLORS.successSoft, paddingHorizontal: 12, paddingVertical: 6,
+    borderRadius: 20, borderWidth: 1, borderColor: 'rgba(34, 197, 94, 0.15)',
   },
   todayBadgeText: { ...TYPE.caption, color: COLORS.success, fontWeight: '600' },
 
-  sectionLabel: { ...TYPE.overline, color: COLORS.textMuted, marginBottom: 14 },
+  // Leo
+  leoRow: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 24,
+  },
+  leoBubble: {
+    flex: 1, backgroundColor: COLORS.bg1, borderRadius: 16,
+    padding: 12, marginTop: 4,
+    borderWidth: 1, borderColor: COLORS.border,
+  },
+  leoText: { ...TYPE.body, color: COLORS.textSecondary, fontWeight: '500' },
 
-  // ── Large Brilliant-style card ──
-  bigCard: {
-    borderRadius: 24,
-    padding: 24,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    ...SHADOWS.md,
-  },
-  bigCardTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  bigCardIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  xpBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  xpBadgeText: { fontSize: 12, fontWeight: '700' },
-  bigCardTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-    marginBottom: 6,
-    letterSpacing: -0.3,
-  },
-  bigCardSubtitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: COLORS.textSecondary,
-    lineHeight: 20,
-    marginBottom: 20,
-  },
-  bigCardBottom: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  statBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  statBadgeText: { ...TYPE.caption, color: COLORS.success, fontWeight: '600' },
-  startChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 14,
-    marginLeft: 'auto',
-  },
-  startChipText: { fontSize: 15, fontWeight: '700', color: '#FFFFFF' },
+  sectionLabel: { ...TYPE.overline, color: COLORS.textMuted, marginBottom: 12 },
 
-  // ── Resources ──
-  resourceGrid: { flexDirection: 'row', gap: 10 },
-  resourceItem: {
-    flex: 1,
-    backgroundColor: COLORS.bg2,
-    borderRadius: 20,
-    paddingVertical: 20,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    gap: 10,
+  // Mode rows
+  modeRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 14,
+    backgroundColor: COLORS.bg2, borderRadius: 18, padding: 16,
+    marginBottom: 12,
+    borderWidth: 1, borderColor: COLORS.border,
     ...SHADOWS.sm,
   },
-  resourceIconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
+  modeIcon: {
+    width: 52, height: 52, borderRadius: 16,
+    alignItems: 'center', justifyContent: 'center',
   },
-  resourceLabel: { ...TYPE.caption, color: COLORS.textSecondary, fontWeight: '600' },
+  modeText: { flex: 1 },
+  modeTitle: { fontSize: 17, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 2 },
+  modeSub: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 18 },
+  modeStat: {
+    flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4,
+  },
+  modeStatText: { fontSize: 11, color: COLORS.success, fontWeight: '600' },
+  modeXP: {
+    paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10,
+  },
+  modeXPText: { fontSize: 13, fontWeight: '800' },
+
+  // Resources
+  resourceRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 14,
+    paddingVertical: 14, paddingHorizontal: 4,
+    borderBottomWidth: 1, borderBottomColor: COLORS.borderLight,
+  },
+  resourceIcon: {
+    width: 40, height: 40, borderRadius: 12,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  resourceLabel: { flex: 1, fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
 });
