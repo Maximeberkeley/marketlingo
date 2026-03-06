@@ -20,7 +20,7 @@ import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
 import { AskLeoOverlay } from '../ai/AskLeoOverlay';
 import { playSound } from '../../lib/sounds';
 import { useNarration } from '../../hooks/useNarration';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 const MENTOR_IMAGES: Record<string, any> = {
   maya: require('../../assets/mentors/mentor-maya.png'),
