@@ -164,7 +164,7 @@ export default function ProfileScreen() {
             </View>
             <View style={styles.statCard}>
               <View style={[styles.statIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
-                <Image source={APP_ICONS.achievements} style={styles.statIconImg} />
+                <Feather name="award" size={18} color="#F59E0B" />
               </View>
               <Text style={styles.statValue}>{progress.longest_streak || 0}</Text>
               <Text style={styles.statLabel}>Best Streak</Text>
