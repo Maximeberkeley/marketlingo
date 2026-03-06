@@ -286,7 +286,7 @@ export default function GamesScreen() {
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           <View style={styles.introCenter}>
-            <Image source={APP_ICONS.games} style={{ width: 64, height: 64, resizeMode: 'contain', marginBottom: 16 }} />
+            <Feather name="play-circle" size={56} color={COLORS.accent} style={{ marginBottom: 16 }} />
             <Text style={styles.introMsg}>Pick the right answers and learn the patterns!</Text>
           </View>
           <View style={styles.heroCard}>
