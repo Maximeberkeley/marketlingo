@@ -279,7 +279,7 @@ export default function RegulatoryHubScreen() {
           {data.bodies.map((body, idx) => (
             <View key={idx} style={styles.bodyCard}>
               <View style={styles.bodyIcon}>
-                <Image source={APP_ICONS.regulatory} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                <Feather name="shield" size={18} color={COLORS.accent} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.bodyName}>{body.title}</Text>
