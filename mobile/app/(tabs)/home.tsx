@@ -355,14 +355,14 @@ export default function HomeScreen() {
               <Text style={styles.sectionHeader}>Quick Access</Text>
               <View style={styles.quickGrid}>
                 {[
-                  { icon: APP_ICONS.notebook, label: 'Notes', onPress: () => router.push('/(tabs)/notebook' as any) },
-                  { icon: APP_ICONS.achievements, label: 'Rank', onPress: () => router.push('/leaderboard' as any) },
-                  { icon: APP_ICONS.achievements, label: 'Badges', onPress: () => router.push('/achievements' as any) },
-                  { icon: APP_ICONS.news, label: 'News', onPress: () => router.push('/summaries' as any) },
+                  { icon: 'edit-3' as const, label: 'Notes', color: '#8B5CF6', onPress: () => router.push('/(tabs)/notebook' as any) },
+                  { icon: 'award' as const, label: 'Rank', color: '#F59E0B', onPress: () => router.push('/leaderboard' as any) },
+                  { icon: 'star' as const, label: 'Badges', color: '#22C55E', onPress: () => router.push('/achievements' as any) },
+                  { icon: 'file-text' as const, label: 'News', color: '#3B82F6', onPress: () => router.push('/summaries' as any) },
                 ].map((item) => (
                   <TouchableOpacity key={item.label} style={styles.quickItem} onPress={item.onPress} activeOpacity={0.7}>
-                    <View style={styles.quickIconWrap}>
-                      <Image source={item.icon} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                    <View style={[styles.quickIconWrap, { backgroundColor: item.color + '12' }]}>
+                      <Feather name={item.icon} size={18} color={item.color} />
                     </View>
                     <Text style={styles.quickLabel}>{item.label}</Text>
                   </TouchableOpacity>
