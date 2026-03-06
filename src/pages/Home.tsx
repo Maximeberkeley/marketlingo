@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Loader2, CheckCircle2, MapPin, Flame } from "lucide-react";
+import { Zap, Loader2, CheckCircle2, BookOpen, Newspaper, MapPin, Flame } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { XPBadge } from "@/components/ui/XPBadge";
