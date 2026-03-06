@@ -159,7 +159,7 @@ export default function OnboardingScreen() {
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
-          <Image source={APP_ICONS.lens} style={{ width: 18, height: 18, resizeMode: 'contain', marginRight: 10 }} />
+          <Feather name="search" size={18} color={COLORS.textMuted} style={{ marginRight: 10 }} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search industries..."

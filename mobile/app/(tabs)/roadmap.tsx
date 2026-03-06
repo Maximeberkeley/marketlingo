@@ -255,7 +255,7 @@ export default function RoadmapScreen() {
             </Text>
           </View>
           <View style={styles.dayBadge}>
-            <Image source={APP_ICONS.progress} style={{ width: 16, height: 16, resizeMode: 'contain' }} />
+            <Feather name="bar-chart-2" size={14} color={COLORS.accent} />
             <Text style={styles.dayBadgeText}>{journeyPct}%</Text>
           </View>
         </Animated.View>
