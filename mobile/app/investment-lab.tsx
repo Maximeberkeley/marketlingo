@@ -274,7 +274,7 @@ export default function InvestmentLabScreen() {
             style={styles.watchlistCard}
             onPress={() => router.push('/investment-watchlist')}
           >
-            <Image source={APP_ICONS.lens} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+            <Feather name="search" size={22} color={COLORS.accent} />
             <View style={{ flex: 1 }}>
               <Text style={styles.watchlistTitle}>Your Watchlist</Text>
               <Text style={styles.watchlistDesc}>
