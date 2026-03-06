@@ -202,7 +202,7 @@ export default function LeaderboardScreen() {
                       <Text style={styles.levelText}>Lv. {entry.current_level}</Text>
                       {entry.current_streak > 0 && (
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-                          <Image source={APP_ICONS.streak} style={{ width: 12, height: 12, resizeMode: 'contain' }} />
+                          <Feather name="activity" size={12} color={COLORS.orange} />
                           <Text style={styles.streakText}>{entry.current_streak}</Text>
                         </View>
                       )}
