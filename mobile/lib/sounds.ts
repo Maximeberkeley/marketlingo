@@ -1,13 +1,9 @@
 /**
  * Sound Effects System for MarketLingo
- * Uses expo-av for audio playback with generated tones as fallback.
- * Sounds are simple sine-wave beeps generated at runtime — no external files needed.
+ * Uses Web Audio API on web, pairs with haptics on native.
+ * All sounds are generated at runtime — no external files needed.
  */
 import { Platform } from 'react-native';
-
-// We use a simple approach: trigger haptics + visual feedback.
-// For full sound effects, expo-av would be needed, but we can create
-// a lightweight system using the Web Audio API on web or expo-av on native.
 
 type SoundType =
   | 'correct'
@@ -17,18 +13,26 @@ type SoundType =
   | 'swipe'
   | 'tap'
   | 'streakMilestone'
-  | 'lessonComplete';
+  | 'lessonComplete'
+  | 'buttonPress'
+  | 'celebration'
+  | 'unlock'
+  | 'navigate';
 
-// Sound configurations (frequency, duration, pattern)
-const SOUND_CONFIG: Record<SoundType, { frequencies: number[]; durations: number[]; volume: number }> = {
-  correct: { frequencies: [523, 659, 784], durations: [100, 100, 200], volume: 0.3 },
-  wrong: { frequencies: [300, 250], durations: [150, 200], volume: 0.2 },
-  levelUp: { frequencies: [523, 659, 784, 1047], durations: [100, 100, 100, 300], volume: 0.4 },
-  xpEarn: { frequencies: [880, 1100], durations: [80, 120], volume: 0.2 },
-  swipe: { frequencies: [400], durations: [50], volume: 0.1 },
-  tap: { frequencies: [600], durations: [30], volume: 0.1 },
+// Sound configs — frequency sequences + durations + volume
+const SOUND_CONFIG: Record<SoundType, { frequencies: number[]; durations: number[]; volume: number; type?: OscillatorType }> = {
+  correct:         { frequencies: [523, 659, 784], durations: [100, 100, 200], volume: 0.3 },
+  wrong:           { frequencies: [300, 250], durations: [150, 200], volume: 0.2 },
+  levelUp:         { frequencies: [523, 659, 784, 1047], durations: [100, 100, 100, 300], volume: 0.4 },
+  xpEarn:          { frequencies: [880, 1100], durations: [80, 120], volume: 0.2 },
+  swipe:           { frequencies: [400], durations: [50], volume: 0.1 },
+  tap:             { frequencies: [600], durations: [30], volume: 0.1 },
   streakMilestone: { frequencies: [523, 659, 784, 1047, 1319], durations: [80, 80, 80, 80, 300], volume: 0.4 },
-  lessonComplete: { frequencies: [523, 659, 784, 1047], durations: [150, 150, 150, 400], volume: 0.35 },
+  lessonComplete:  { frequencies: [523, 659, 784, 1047], durations: [150, 150, 150, 400], volume: 0.35 },
+  buttonPress:     { frequencies: [700], durations: [25], volume: 0.08 },
+  celebration:     { frequencies: [523, 659, 784, 1047, 1319, 1568], durations: [80, 80, 80, 80, 80, 400], volume: 0.35 },
+  unlock:          { frequencies: [440, 554, 659], durations: [120, 120, 250], volume: 0.25 },
+  navigate:        { frequencies: [500, 600], durations: [40, 60], volume: 0.08 },
 };
 
 let soundEnabled = true;
@@ -43,12 +47,11 @@ export function isSoundEnabled(): boolean {
 
 /**
  * Play a sound effect. On web, uses Web Audio API.
- * On native, this is a no-op placeholder — pair with haptics for feedback.
+ * On native, this is a lightweight no-op — pair with haptics.
  */
 export function playSound(type: SoundType) {
   if (!soundEnabled) return;
 
-  // Web Audio API (works in web preview)
   if (Platform.OS === 'web' && typeof window !== 'undefined' && window.AudioContext) {
     try {
       const config = SOUND_CONFIG[type];
@@ -61,7 +64,7 @@ export function playSound(type: SoundType) {
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.frequency.value = freq;
-        osc.type = 'sine';
+        osc.type = config.type || 'sine';
         gain.gain.value = config.volume;
         gain.gain.exponentialRampToValueAtTime(0.001, time + config.durations[i] / 1000);
         osc.start(time);
@@ -72,5 +75,16 @@ export function playSound(type: SoundType) {
       // Silent fail
     }
   }
-  // On native, rely on haptics (already integrated)
+}
+
+/**
+ * Combo — play sound + trigger haptic together.
+ * Import triggerHaptic separately to avoid circular deps.
+ */
+export function playSoundAndHaptic(
+  soundType: SoundType,
+  hapticFn?: () => Promise<void>
+) {
+  playSound(soundType);
+  hapticFn?.();
 }

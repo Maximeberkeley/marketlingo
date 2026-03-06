@@ -13,7 +13,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, STARTUP_STAGES } from '../../hooks/useUserXP';
 import { ProgressBar } from '../../components/ui/ProgressBar';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 // Market illustrations for profile
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
@@ -157,21 +157,21 @@ export default function ProfileScreen() {
           <Animated.View style={[styles.statsGrid, animStyle(statsAnim)]}>
             <View style={styles.statCard}>
               <View style={[styles.statIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
-                <Image source={APP_ICONS.streak} style={styles.statIconImg} />
+                <Feather name="activity" size={18} color="#8B5CF6" />
               </View>
               <Text style={styles.statValue}>{progress.current_streak || 0}</Text>
               <Text style={styles.statLabel}>Current Streak</Text>
             </View>
             <View style={styles.statCard}>
               <View style={[styles.statIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
-                <Image source={APP_ICONS.achievements} style={styles.statIconImg} />
+                <Feather name="award" size={18} color="#F59E0B" />
               </View>
               <Text style={styles.statValue}>{progress.longest_streak || 0}</Text>
               <Text style={styles.statLabel}>Best Streak</Text>
             </View>
             <View style={styles.statCard}>
               <View style={[styles.statIcon, { backgroundColor: 'rgba(16, 185, 129, 0.2)' }]}>
-                <Image source={APP_ICONS.quests} style={styles.statIconImg} />
+                <Feather name="flag" size={18} color="#10B981" />
               </View>
               <Text style={styles.statValue}>Day {availableDay}</Text>
               <Text style={styles.statLabel}>of 180</Text>
@@ -184,7 +184,7 @@ export default function ProfileScreen() {
         {xpData && (
           <View style={styles.stageCard}>
             <View style={styles.stageHeader}>
-              <Image source={APP_ICONS.progress} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+              <Feather name="bar-chart-2" size={18} color={COLORS.accent} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.stageTitle}>Stage {currentStage.stage}: {currentStage.name}</Text>
                 <Text style={styles.stageDesc}>{currentStage.description}</Text>
@@ -201,7 +201,7 @@ export default function ProfileScreen() {
           <View style={styles.certCard}>
             <View style={styles.certRow}>
               <View style={[styles.certIcon, isCertEligible && { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
-                <Image source={APP_ICONS.achievements} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
+                <Feather name="award" size={24} color={COLORS.accent} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.certTitle}>
@@ -240,7 +240,7 @@ export default function ProfileScreen() {
               {MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace'] ? (
                 <Image source={MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace']} style={styles.menuIconImg} />
               ) : (
-                <Image source={APP_ICONS.progress} style={styles.menuIconImg} />
+                <Feather name="bar-chart-2" size={18} color={COLORS.accent} />
               )}
             </View>
             <View style={{ flex: 1 }}>
@@ -256,7 +256,7 @@ export default function ProfileScreen() {
           <Text style={styles.sectionTitle}>DATA</Text>
           <TouchableOpacity style={styles.menuItem} onPress={handleExportNotebook}>
             <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
-              <Image source={APP_ICONS.notebook} style={styles.menuIconImg} />
+              <Feather name="edit-3" size={18} color="#8B5CF6" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Export Notebook</Text>
@@ -272,7 +272,7 @@ export default function ProfileScreen() {
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/passport' as any)}>
             <View style={[styles.menuIcon, { backgroundColor: 'rgba(99, 102, 241, 0.2)' }]}>
-              <Image source={APP_ICONS.passport} style={styles.menuIconImg} />
+              <Feather name="globe" size={18} color="#6366F1" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Industry Passport</Text>
@@ -283,7 +283,7 @@ export default function ProfileScreen() {
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/settings' as any)}>
             <View style={[styles.menuIcon, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-              <Image source={APP_ICONS.concept} style={styles.menuIconImg} />
+              <Feather name="settings" size={18} color="#3B82F6" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Settings</Text>
@@ -294,7 +294,7 @@ export default function ProfileScreen() {
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/achievements' as any)}>
             <View style={[styles.menuIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
-              <Image source={APP_ICONS.achievements} style={styles.menuIconImg} />
+              <Feather name="award" size={18} color="#F59E0B" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Achievements</Text>
@@ -308,7 +308,7 @@ export default function ProfileScreen() {
             onPress={handleSignOut}
           >
             <View style={[styles.menuIcon, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
-              <Image source={APP_ICONS.profile} style={styles.menuIconImg} />
+              <Feather name="log-out" size={18} color="#EF4444" />
             </View>
             <Text style={[styles.menuTitle, { color: '#EF4444' }]}>Log out</Text>
           </TouchableOpacity>
@@ -322,7 +322,7 @@ export default function ProfileScreen() {
       <Modal visible={showChangeWarning} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Image source={APP_ICONS.concept} style={{ width: 32, height: 32, resizeMode: 'contain', alignSelf: 'center', marginBottom: 12 }} />
+            <Feather name="alert-circle" size={28} color={COLORS.accent} style={{ alignSelf: 'center', marginBottom: 12 }} />
             <Text style={styles.modalTitle}>Change Market?</Text>
             <Text style={styles.modalSubtitle}>
               Changing your market will reset your path and streak. This action cannot be undone.

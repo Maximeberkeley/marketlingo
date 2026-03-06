@@ -1,13 +1,21 @@
 import React, { useRef, useEffect } from 'react';
 import { Tabs } from 'expo-router';
-import { View, Image, StyleSheet, Animated, Easing } from 'react-native';
+import { View, StyleSheet, Animated, Easing } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { COLORS, SHADOWS } from '../../lib/constants';
-import { APP_ICONS } from '../../lib/icons';
+import { COLORS } from '../../lib/constants';
+import { triggerHaptic } from '../../lib/haptics';
 
-function TabBarIcon({ icon, focused }: { icon: any; focused: boolean }) {
+const TAB_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
+  home: 'home',
+  roadmap: 'bar-chart-2',
+  practice: 'zap',
+  notebook: 'edit-3',
+  profile: 'user',
+};
+
+function TabBarIcon({ name, focused }: { name: string; focused: boolean }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const opacityAnim = useRef(new Animated.Value(focused ? 1 : 0.35)).current;
 
   useEffect(() => {
     if (focused) {
@@ -18,19 +26,19 @@ function TabBarIcon({ icon, focused }: { icon: any; focused: boolean }) {
     } else {
       Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
     }
-    Animated.timing(opacityAnim, {
-      toValue: focused ? 1 : 0.35,
-      duration: 180,
-      useNativeDriver: true,
-    }).start();
   }, [focused]);
+
+  const iconName = TAB_ICONS[name] || 'circle';
 
   return (
     <View style={styles.tabIcon}>
-      <Animated.Image
-        source={icon}
-        style={[styles.iconImage, { opacity: opacityAnim, transform: [{ scale: scaleAnim }] }]}
-      />
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <Feather
+          name={iconName}
+          size={22}
+          color={focused ? COLORS.textPrimary : COLORS.textMuted}
+        />
+      </Animated.View>
       {focused && <View style={styles.activeIndicator} />}
     </View>
   );
@@ -70,46 +78,41 @@ export default function TabLayout() {
         name="home"
         options={{
           title: 'Home',
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon icon={APP_ICONS.learn} focused={focused} />
-          ),
+          tabBarIcon: ({ focused }) => <TabBarIcon name="home" focused={focused} />,
         }}
+        listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
       <Tabs.Screen
         name="roadmap"
         options={{
           title: 'Courses',
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon icon={APP_ICONS.progress} focused={focused} />
-          ),
+          tabBarIcon: ({ focused }) => <TabBarIcon name="roadmap" focused={focused} />,
         }}
+        listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
       <Tabs.Screen
         name="practice"
         options={{
           title: 'Practice',
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon icon={APP_ICONS.drills} focused={focused} />
-          ),
+          tabBarIcon: ({ focused }) => <TabBarIcon name="practice" focused={focused} />,
         }}
+        listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
       <Tabs.Screen
         name="notebook"
         options={{
           title: 'Notes',
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon icon={APP_ICONS.notebook} focused={focused} />
-          ),
+          tabBarIcon: ({ focused }) => <TabBarIcon name="notebook" focused={focused} />,
         }}
+        listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'You',
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon icon={APP_ICONS.profile} focused={focused} />
-          ),
+          tabBarIcon: ({ focused }) => <TabBarIcon name="profile" focused={focused} />,
         }}
+        listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
     </Tabs>
   );
@@ -121,11 +124,6 @@ const styles = StyleSheet.create({
     height: 28,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  iconImage: {
-    width: 24,
-    height: 24,
-    resizeMode: 'contain',
   },
   activeIndicator: {
     position: 'absolute',

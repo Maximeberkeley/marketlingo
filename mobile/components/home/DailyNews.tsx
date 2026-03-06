@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { COLORS } from '../../lib/constants';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 import { MentorChatOverlay } from '../ai/MentorChatOverlay';
 import { getMentorForContext } from '../../data/mentors';
 import type { Mentor } from '../../data/mentors';
@@ -81,7 +81,7 @@ function NewsCardAnimated({ item, index, showAiInsights, onDiscuss }: { item: Ne
           <Text style={styles.newsTitle} numberOfLines={3}>{item.title}</Text>
           {showAiInsights && item.summary && (
             <View style={styles.summaryCard}>
-              <Image source={APP_ICONS.concept} style={{ width: 14, height: 14, resizeMode: 'contain', marginTop: 1 }} />
+              <Feather name="layers" size={14} color={COLORS.accent} style={{ marginTop: 1 }} />
               <Text style={styles.summaryText} numberOfLines={3}>{item.summary}</Text>
             </View>
           )}
@@ -92,7 +92,7 @@ function NewsCardAnimated({ item, index, showAiInsights, onDiscuss }: { item: Ne
               onPress={(e) => { e.stopPropagation(); onDiscuss(item); }}
               activeOpacity={0.7}
             >
-              <Image source={APP_ICONS.trainer} style={{ width: 14, height: 14, resizeMode: 'contain' }} />
+              <Feather name="message-circle" size={14} color={COLORS.accent} />
               <Text style={styles.discussText}>Discuss with AI</Text>
             </TouchableOpacity>
           </View>
@@ -179,7 +179,7 @@ export function DailyNews({ marketId }: DailyNewsProps) {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Image source={APP_ICONS.news} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+          <Feather name="file-text" size={20} color={COLORS.accent} />
           <View>
             <Text style={styles.headerTitle}>Industry Intel</Text>
             <Text style={styles.headerSubtitle}>AI-analyzed insights</Text>
@@ -191,7 +191,7 @@ export function DailyNews({ marketId }: DailyNewsProps) {
             onPress={() => setShowAiInsights(!showAiInsights)}
             style={[styles.aiToggle, showAiInsights && styles.aiToggleActive]}
           >
-            <Image source={APP_ICONS.concept} style={{ width: 12, height: 12, resizeMode: 'contain', marginRight: 2 }} />
+            <Feather name="layers" size={12} color={showAiInsights ? COLORS.accent : COLORS.textMuted} style={{ marginRight: 2 }} />
             <Text style={[styles.aiToggleText, showAiInsights && { color: COLORS.accent }]}>
               AI
             </Text>

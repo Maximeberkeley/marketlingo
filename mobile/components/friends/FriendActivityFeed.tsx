@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { Friend } from '../../hooks/useFriends';
-import { APP_ICONS } from '../../lib/icons';
 
 interface FriendActivityFeedProps {
   friends: Friend[];
@@ -17,10 +17,10 @@ function getActivityText(friend: Friend): string {
   return `Last active ${days}d ago`;
 }
 
-function getActivityIcon(friend: Friend): any {
-  if (friend.currentStreak >= 7) return APP_ICONS.streak;
-  if (friend.totalXP > 1000) return APP_ICONS.achievements;
-  return APP_ICONS.learn;
+function getActivityIcon(friend: Friend): keyof typeof Feather.glyphMap {
+  if (friend.currentStreak >= 7) return 'activity';
+  if (friend.totalXP > 1000) return 'award';
+  return 'book-open';
 }
 
 export function FriendActivityFeed({ friends }: FriendActivityFeedProps) {
@@ -42,12 +42,12 @@ export function FriendActivityFeed({ friends }: FriendActivityFeedProps) {
           <View style={styles.content}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
               <Text style={styles.name}>{friend.username}</Text>
-              <Image source={getActivityIcon(friend)} style={{ width: 14, height: 14, resizeMode: 'contain' }} />
+              <Feather name={getActivityIcon(friend)} size={14} color={COLORS.accent} />
             </View>
             <Text style={styles.activity}>{getActivityText(friend)}</Text>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-            <Image source={APP_ICONS.progress} style={{ width: 12, height: 12, resizeMode: 'contain' }} />
+            <Feather name="bar-chart-2" size={12} color={COLORS.textMuted} />
             <Text style={styles.xp}>{friend.totalXP.toLocaleString()}</Text>
           </View>
         </View>
@@ -57,19 +57,19 @@ export function FriendActivityFeed({ friends }: FriendActivityFeedProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: COLORS.bg2, borderRadius: 16, padding: 14, marginBottom: 12,
-    borderWidth: 1, borderColor: COLORS.border,
+  container: { gap: 8 },
+  title: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 4 },
+  row: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    backgroundColor: COLORS.bg1, borderRadius: 12, padding: 10,
   },
-  title: { fontSize: 13, fontWeight: '600', color: COLORS.textMuted, marginBottom: 10, letterSpacing: 0.5 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8 },
   avatar: {
-    width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(139,92,246,0.12)',
-    alignItems: 'center', justifyContent: 'center',
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center',
   },
-  avatarText: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
+  avatarText: { fontSize: 13, fontWeight: '700', color: COLORS.accent },
   content: { flex: 1 },
   name: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary },
-  activity: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
+  activity: { fontSize: 11, color: COLORS.textMuted },
   xp: { fontSize: 11, fontWeight: '600', color: COLORS.textMuted },
 });

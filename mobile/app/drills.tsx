@@ -16,7 +16,7 @@ import { useAuth } from '../hooks/useAuth';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 interface DrillQuestion {
   id: string;
@@ -305,7 +305,7 @@ export default function DrillsScreen() {
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           <View style={styles.introCenter}>
-            <Image source={APP_ICONS.drills} style={{ width: 64, height: 64, resizeMode: 'contain', marginBottom: 16 }} />
+            <Feather name="zap" size={56} color={COLORS.accent} style={{ marginBottom: 16 }} />
             <Text style={styles.introMsg}>15 seconds per question — trust your instincts!</Text>
           </View>
           <View style={styles.heroCard}>
@@ -336,7 +336,7 @@ export default function DrillsScreen() {
   if (questions.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Image source={APP_ICONS.drills} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
+        <Feather name="zap" size={44} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
         <Text style={styles.emptyTitle}>No drills available</Text>
         <Text style={styles.emptySubtitle}>Complete more lessons to unlock drills!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>

@@ -18,7 +18,7 @@ import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { ComboCounter } from '../components/ui/ComboCounter';
 import { createComboState, comboCorrect, comboWrong, ComboState } from '../lib/combo';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 interface GameQuestion {
   id: string;
@@ -286,7 +286,7 @@ export default function GamesScreen() {
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           <View style={styles.introCenter}>
-            <Image source={APP_ICONS.games} style={{ width: 64, height: 64, resizeMode: 'contain', marginBottom: 16 }} />
+            <Feather name="play-circle" size={56} color={COLORS.accent} style={{ marginBottom: 16 }} />
             <Text style={styles.introMsg}>Pick the right answers and learn the patterns!</Text>
           </View>
           <View style={styles.heroCard}>
@@ -314,7 +314,7 @@ export default function GamesScreen() {
   if (questions.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Image source={APP_ICONS.games} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
+        <Feather name="play-circle" size={44} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
         <Text style={styles.emptyTitle}>No games available</Text>
         <Text style={styles.emptySubtitle}>Complete more lessons to unlock games!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
@@ -329,7 +329,7 @@ export default function GamesScreen() {
     return (
       <View style={[styles.container, styles.centered]}>
         <View style={styles.completeIcon}>
-          <Image source={APP_ICONS.achievements} style={{ width: 32, height: 32, resizeMode: 'contain' }} />
+          <Feather name="award" size={28} color={COLORS.success} />
         </View>
         <Text style={styles.completeTitle}>Game Complete!</Text>
         <Text style={styles.completeScore}>You scored {score}/{questions.length} ({percentage}%)</Text>

@@ -20,7 +20,7 @@ import { useSubscription } from '../hooks/useSubscription';
 import { MentorChatOverlay } from '../components/ai/MentorChatOverlay';
 import { getMentorForContext } from '../data/mentors';
 import type { Mentor } from '../data/mentors';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 
 // Market-specific hero images
@@ -61,10 +61,10 @@ const MARKET_ACCENT_COLORS: Record<string, string> = {
 };
 
 const MODULES = [
-  { id: 'valuation', title: 'Valuation Mastery', desc: 'Master industry-specific valuation methodologies', icon: APP_ICONS.progress, color: '#10B981', scoreKey: 'valuation_score' as const },
-  { id: 'due_diligence', title: 'Due Diligence', desc: 'Systematic investment evaluation', icon: APP_ICONS.lens, color: '#3B82F6', scoreKey: 'due_diligence_score' as const },
-  { id: 'risk_assessment', title: 'Risk Assessment', desc: 'Identify and quantify investment risks', icon: APP_ICONS.regulatory, color: '#F59E0B', scoreKey: 'risk_assessment_score' as const },
-  { id: 'portfolio', title: 'Portfolio Construction', desc: 'Build balanced investment portfolios', icon: APP_ICONS.concept, color: '#8B5CF6', scoreKey: 'portfolio_construction_score' as const },
+  { id: 'valuation', title: 'Valuation Mastery', desc: 'Master industry-specific valuation methodologies', featherIcon: 'bar-chart-2' as const, color: '#10B981', scoreKey: 'valuation_score' as const },
+  { id: 'due_diligence', title: 'Due Diligence', desc: 'Systematic investment evaluation', featherIcon: 'search' as const, color: '#3B82F6', scoreKey: 'due_diligence_score' as const },
+  { id: 'risk_assessment', title: 'Risk Assessment', desc: 'Identify and quantify investment risks', featherIcon: 'shield' as const, color: '#F59E0B', scoreKey: 'risk_assessment_score' as const },
+  { id: 'portfolio', title: 'Portfolio Construction', desc: 'Build balanced investment portfolios', featherIcon: 'layers' as const, color: '#8B5CF6', scoreKey: 'portfolio_construction_score' as const },
 ];
 
 export default function InvestmentLabScreen() {
@@ -208,7 +208,7 @@ export default function InvestmentLabScreen() {
           {/* Not Pro */}
           {!isProUser && (
             <View style={styles.heroCard}>
-              <Image source={APP_ICONS.progress} style={{ width: 32, height: 32, resizeMode: 'contain', marginBottom: 8 }} />
+              <Feather name="trending-up" size={28} color={COLORS.accent} style={{ marginBottom: 8 }} />
               <Text style={styles.heroTitle}>Real-World Investment Scenarios</Text>
               <Text style={styles.heroDesc}>
                 Analyze companies, evaluate markets, and make investment decisions based on real industry data.
@@ -232,7 +232,7 @@ export default function InvestmentLabScreen() {
                   onPress={() => handleModulePress(mod.id)}
                 >
                  <View style={[styles.moduleIcon, { backgroundColor: mod.color + '20' }]}>
-                     <Image source={mod.icon} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+                     <Feather name={mod.featherIcon} size={20} color={mod.color} />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.scenarioTitle}>{mod.title}</Text>
@@ -257,7 +257,7 @@ export default function InvestmentLabScreen() {
             style={[styles.watchlistCard, progress?.investment_certified && { borderColor: 'rgba(34,197,94,0.3)', backgroundColor: 'rgba(34,197,94,0.05)' }]}
             onPress={() => router.push('/investment-certificate')}
           >
-            <Image source={APP_ICONS.achievements} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+            <Feather name="award" size={22} color={COLORS.accent} />
             <View style={{ flex: 1 }}>
               <Text style={styles.watchlistTitle}>
                 {progress?.investment_certified ? 'View Certificate' : 'Investment Certification'}
@@ -274,7 +274,7 @@ export default function InvestmentLabScreen() {
             style={styles.watchlistCard}
             onPress={() => router.push('/investment-watchlist')}
           >
-            <Image source={APP_ICONS.lens} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+            <Feather name="search" size={22} color={COLORS.accent} />
             <View style={{ flex: 1 }}>
               <Text style={styles.watchlistTitle}>Your Watchlist</Text>
               <Text style={styles.watchlistDesc}>
@@ -286,7 +286,7 @@ export default function InvestmentLabScreen() {
 
           {/* Chat with Mentor */}
           <TouchableOpacity style={styles.mentorChatCard} onPress={handleOpenMentorChat}>
-            <Image source={APP_ICONS.trainer} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+            <Feather name="message-circle" size={22} color={COLORS.accent} />
             <View style={{ flex: 1 }}>
               <Text style={styles.watchlistTitle}>Ask Your Investment Mentor</Text>
               <Text style={styles.watchlistDesc}>Get AI-powered investment guidance</Text>

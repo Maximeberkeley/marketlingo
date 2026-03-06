@@ -21,7 +21,7 @@ import { getMentorForContext } from '../data/mentors';
 import type { Mentor } from '../data/mentors';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 
 // Market-specific hero images
@@ -242,7 +242,7 @@ export default function TrainerScreen() {
               </TouchableOpacity>
               <View style={styles.heroBannerContent}>
                 <View style={[styles.heroBadge, { backgroundColor: accentColor + 'CC' }]}>
-                  <Image source={APP_ICONS.trainer} style={{ width: 14, height: 14, resizeMode: 'contain', tintColor: '#fff' }} />
+                  <Feather name="target" size={14} color="#fff" />
                   <Text style={styles.heroBadgeText}>INDUSTRY TRAINER</Text>
                 </View>
                 <Text style={styles.heroBannerTitle}>Think Like an Expert</Text>
@@ -269,20 +269,20 @@ export default function TrainerScreen() {
 
           <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
             <View style={styles.introCenter}>
-              <Image source={APP_ICONS.trainer} style={{ width: 64, height: 64, resizeMode: 'contain', marginBottom: 12 }} />
+              <Feather name="target" size={56} color={COLORS.accent} style={{ marginBottom: 12 }} />
               <Text style={styles.introMsg}>Time to level up! These scenarios will teach you to think like a pro.</Text>
             </View>
 
             <View style={styles.featuresCard}>
               <Text style={styles.featuresTitle}>What you'll master</Text>
               {[
-                { icon: APP_ICONS.concept, text: 'Real-world decision scenarios' },
-                { icon: APP_ICONS.lens, text: 'Pro reasoning breakdowns' },
-                { icon: APP_ICONS.trainer, text: 'Common mistake analysis' },
-                { icon: APP_ICONS.learn, text: 'Mental models for founders' },
+                { icon: 'layers' as const, text: 'Real-world decision scenarios' },
+                { icon: 'search' as const, text: 'Pro reasoning breakdowns' },
+                { icon: 'target' as const, text: 'Common mistake analysis' },
+                { icon: 'book-open' as const, text: 'Mental models for founders' },
               ].map((f, i) => (
                 <View key={i} style={styles.featureRow}>
-                  <Image source={f.icon} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                  <Feather name={f.icon} size={18} color={COLORS.accent} />
                   <Text style={styles.featureText}>{f.text}</Text>
                 </View>
               ))}
@@ -300,7 +300,7 @@ export default function TrainerScreen() {
   if (scenarios.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Image source={APP_ICONS.trainer} style={{ width: 56, height: 56, resizeMode: 'contain', marginBottom: 12 }} />
+        <Feather name="target" size={48} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
         <Text style={styles.emptyTitle}>No scenarios available</Text>
         <Text style={styles.emptySubtitle}>Complete more lessons to unlock trainer scenarios!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
@@ -363,7 +363,7 @@ export default function TrainerScreen() {
       {showPaywallNudge && (
         <View style={styles.paywallOverlay}>
           <View style={styles.paywallCard}>
-            <Image source={APP_ICONS.streak} style={{ width: 44, height: 44, resizeMode: 'contain', marginBottom: 8 }} />
+            <Feather name="activity" size={40} color={COLORS.accent} style={{ marginBottom: 8 }} />
             <Text style={styles.paywallTitle}>You're on fire!</Text>
             <Text style={styles.paywallBody}>
               {correctCount} correct in a row — you clearly have the instincts.{'\n\n'}
