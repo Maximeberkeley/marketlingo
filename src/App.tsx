@@ -33,6 +33,7 @@ import InvestmentModule from "./pages/InvestmentModule";
 import InvestmentCertificatePage from "./pages/InvestmentCertificatePage";
 import InvestmentWatchlist from "./pages/InvestmentWatchlist";
 import Subscription from "./pages/Subscription";
+import Practice from "./pages/Practice";
 import NotFound from "./pages/NotFound";
 import { PageTransition } from "@/components/layout/PageTransition";
 
