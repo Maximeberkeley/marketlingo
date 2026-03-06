@@ -408,7 +408,7 @@ export default function HomeScreen() {
                 activeOpacity={0.7}
               >
                 <View style={[styles.investIcon, isProUser && styles.investIconPro]}>
-                  <Image source={isProUser ? APP_ICONS.progress : APP_ICONS.lens} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                  <Feather name={isProUser ? 'trending-up' : 'search'} size={20} color={isProUser ? COLORS.success : COLORS.accent} />
                 </View>
                 <View style={{ flex: 1 }}>
                   <View style={styles.investTitleRow}>
