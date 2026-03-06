@@ -147,7 +147,7 @@ export default function OnboardingScreen() {
         {/* Demo bridge banner */}
         {demoMarket && demoXP > 0 && (
           <View style={styles.demoBanner}>
-            <Image source={APP_ICONS.streak} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
+            <Feather name="activity" size={24} color={COLORS.accent} />
             <View style={{ flex: 1 }}>
               <Text style={styles.demoBannerTitle}>Continue where you left off</Text>
               <Text style={styles.demoBannerSub}>
