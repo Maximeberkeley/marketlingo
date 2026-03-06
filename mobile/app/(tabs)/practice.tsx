@@ -7,8 +7,9 @@ import {
   StyleSheet,
   Animated,
   ActivityIndicator,
-  Image,
+  Dimensions,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -17,7 +18,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
 import { supabase } from '../../lib/supabase';
 import { getMarketName, getMarketColor } from '../../lib/markets';
-import { APP_ICONS } from '../../lib/icons';
+
+const { width: SCREEN_W } = Dimensions.get('window');
 
 interface PracticeStats {
   gamesPlayed: number;
@@ -25,75 +27,118 @@ interface PracticeStats {
   trainerAttempts: number;
 }
 
-// ── Animated Practice Card ──
+// ── Large Brilliant-style practice card ──
+const PRACTICE_MODES = [
+  {
+    key: 'games',
+    icon: 'play-circle' as const,
+    title: 'Trivia Games',
+    subtitle: 'Test your market knowledge with interactive quizzes and challenges',
+    color: '#8B5CF6',
+    bgGradientStart: '#F3F0FF',
+    route: '/games',
+    xpKey: 'GAME_COMPLETE' as const,
+    statKey: 'gamesPlayed' as const,
+  },
+  {
+    key: 'drills',
+    icon: 'zap' as const,
+    title: 'Speed Drills',
+    subtitle: 'Race the clock with rapid-fire questions to sharpen your instincts',
+    color: '#F59E0B',
+    bgGradientStart: '#FFFBEB',
+    route: '/drills',
+    xpKey: 'DRILL_CORRECT' as const,
+    statKey: 'drillsCompleted' as const,
+  },
+  {
+    key: 'trainer',
+    icon: 'target' as const,
+    title: 'Trainer Scenarios',
+    subtitle: 'Navigate real-world strategy decisions like an industry insider',
+    color: '#22C55E',
+    bgGradientStart: '#F0FDF4',
+    route: '/trainer',
+    xpKey: 'TRAINER_COMPLETE' as const,
+    statKey: 'trainerAttempts' as const,
+  },
+];
+
+const RESOURCES = [
+  { icon: 'file-text' as const, label: 'Summaries', route: '/summaries', color: '#3B82F6' },
+  { icon: 'shield' as const, label: 'Regulatory', route: '/regulatory-hub', color: '#EF4444' },
+  { icon: 'edit-3' as const, label: 'Notebook', route: '/(tabs)/notebook', color: '#8B5CF6' },
+  { icon: 'globe' as const, label: 'Passport', route: '/passport', color: '#F59E0B' },
+];
+
 function PracticeCard({
-  icon,
-  title,
-  subtitle,
-  xpLabel,
-  accentColor,
-  onPress,
-  index,
+  mode,
   stat,
+  index,
+  onPress,
 }: {
-  icon: any;
-  title: string;
-  subtitle: string;
-  xpLabel: string;
-  accentColor: string;
-  onPress: () => void;
+  mode: typeof PRACTICE_MODES[number];
+  stat: number;
   index: number;
-  stat?: number;
+  onPress: () => void;
 }) {
   const fadeIn = useRef(new Animated.Value(0)).current;
-  const slideUp = useRef(new Animated.Value(40)).current;
+  const slideUp = useRef(new Animated.Value(50)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    const delay = index * 120;
     setTimeout(() => {
       Animated.parallel([
-        Animated.timing(fadeIn, { toValue: 1, duration: 400, useNativeDriver: true }),
-        Animated.spring(slideUp, { toValue: 0, tension: 180, friction: 18, useNativeDriver: true }),
+        Animated.timing(fadeIn, { toValue: 1, duration: 500, useNativeDriver: true }),
+        Animated.spring(slideUp, { toValue: 0, tension: 120, friction: 14, useNativeDriver: true }),
       ]).start();
-    }, delay);
+    }, index * 150);
   }, [index]);
-
-  const onPressIn = () => {
-    Animated.spring(scaleAnim, { toValue: 0.97, tension: 300, friction: 10, useNativeDriver: true }).start();
-  };
-  const onPressOut = () => {
-    Animated.spring(scaleAnim, { toValue: 1, tension: 300, friction: 10, useNativeDriver: true }).start();
-  };
 
   return (
     <Animated.View style={{ opacity: fadeIn, transform: [{ translateY: slideUp }, { scale: scaleAnim }] }}>
       <TouchableOpacity
-        style={styles.practiceCard}
+        style={[styles.bigCard, { backgroundColor: mode.bgGradientStart }]}
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           onPress();
         }}
-        onPressIn={onPressIn}
-        onPressOut={onPressOut}
+        onPressIn={() => {
+          Animated.spring(scaleAnim, { toValue: 0.97, tension: 300, friction: 10, useNativeDriver: true }).start();
+        }}
+        onPressOut={() => {
+          Animated.spring(scaleAnim, { toValue: 1, tension: 300, friction: 10, useNativeDriver: true }).start();
+        }}
         activeOpacity={1}
       >
-        <View style={[styles.accentStripe, { backgroundColor: accentColor }]} />
-        <View style={styles.practiceCardInner}>
-          <View style={[styles.practiceIcon, { backgroundColor: accentColor + '12' }]}>
-            <Image source={icon} style={styles.practiceIconImg} />
+        {/* Top section — icon + XP badge */}
+        <View style={styles.bigCardTop}>
+          <View style={[styles.bigCardIcon, { backgroundColor: mode.color + '18' }]}>
+            <Feather name={mode.icon} size={28} color={mode.color} />
           </View>
-          <View style={styles.practiceCardMid}>
-            <Text style={styles.practiceTitle}>{title}</Text>
-            <Text style={styles.practiceSub}>{subtitle}</Text>
+          <View style={[styles.xpBadge, { backgroundColor: mode.color + '14' }]}>
+            <Feather name="trending-up" size={12} color={mode.color} />
+            <Text style={[styles.xpBadgeText, { color: mode.color }]}>
+              +{XP_REWARDS[mode.xpKey]} XP
+            </Text>
           </View>
-          <View style={styles.practiceCardRight}>
-            <View style={[styles.xpChip, { backgroundColor: accentColor + '14' }]}>
-              <Text style={[styles.xpChipText, { color: accentColor }]}>{xpLabel}</Text>
+        </View>
+
+        {/* Title + description */}
+        <Text style={styles.bigCardTitle}>{mode.title}</Text>
+        <Text style={styles.bigCardSubtitle}>{mode.subtitle}</Text>
+
+        {/* Bottom — stat + start button */}
+        <View style={styles.bigCardBottom}>
+          {stat > 0 && (
+            <View style={styles.statBadge}>
+              <Feather name="check-circle" size={14} color={COLORS.success} />
+              <Text style={styles.statBadgeText}>{stat} today</Text>
             </View>
-            {stat !== undefined && stat > 0 && (
-              <Text style={styles.statText}>{stat} today</Text>
-            )}
+          )}
+          <View style={[styles.startChip, { backgroundColor: mode.color }]}>
+            <Text style={styles.startChipText}>Start</Text>
+            <Feather name="arrow-right" size={14} color="#fff" />
           </View>
         </View>
       </TouchableOpacity>
@@ -109,23 +154,14 @@ export default function PracticeScreen() {
   const [loading, setLoading] = useState(true);
 
   const headerAnim = useRef(new Animated.Value(0)).current;
-  const bodyAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => { fetchData(); }, [user]);
 
   useEffect(() => {
     if (!loading) {
-      Animated.stagger(120, [
-        Animated.spring(headerAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }),
-        Animated.spring(bodyAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }),
-      ]).start();
+      Animated.spring(headerAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }).start();
     }
   }, [loading]);
-
-  const animStyle = (anim: Animated.Value) => ({
-    opacity: anim,
-    transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
-  });
 
   const fetchData = async () => {
     if (!user) return;
@@ -159,7 +195,6 @@ export default function PracticeScreen() {
   }
 
   const totalToday = stats.gamesPlayed + stats.drillsCompleted;
-  const marketColor = selectedMarket ? getMarketColor(selectedMarket) : COLORS.accent;
 
   return (
     <View style={styles.container}>
@@ -171,7 +206,10 @@ export default function PracticeScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <Animated.View style={[styles.header, animStyle(headerAnim)]}>
+        <Animated.View style={[styles.header, {
+          opacity: headerAnim,
+          transform: [{ translateY: headerAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
+        }]}>
           <View>
             <Text style={styles.headerTitle}>Practice</Text>
             <Text style={styles.headerSub}>
@@ -180,86 +218,46 @@ export default function PracticeScreen() {
           </View>
           {totalToday > 0 && (
             <View style={styles.todayBadge}>
+              <Feather name="check-circle" size={14} color={COLORS.success} />
               <Text style={styles.todayBadgeText}>{totalToday} completed</Text>
             </View>
           )}
         </Animated.View>
 
-        {/* Motivation card — clean, no mascot */}
-        <Animated.View style={animStyle(headerAnim)}>
-          <View style={styles.motivationCard}>
-            <View style={[styles.motivationAccent, { backgroundColor: marketColor }]} />
-            <Text style={styles.motivationText}>
-              {totalToday === 0
-                ? "Sharpen your skills with quick challenges below."
-                : totalToday >= 3
-                  ? "On fire today! Keep the momentum going."
-                  : "Nice start — try another round?"}
-            </Text>
-          </View>
-        </Animated.View>
+        {/* Practice Mode Cards — large vertical layout */}
+        <Text style={styles.sectionLabel}>CHOOSE YOUR MODE</Text>
 
-        {/* Practice Modes */}
-        <Animated.View style={animStyle(bodyAnim)}>
-          <Text style={styles.sectionLabel}>PRACTICE MODES</Text>
-
+        {PRACTICE_MODES.map((mode, idx) => (
           <PracticeCard
-            index={0}
-            icon={APP_ICONS.games}
-            title="Trivia Games"
-            subtitle="Test your market knowledge"
-            xpLabel={`+${XP_REWARDS.GAME_COMPLETE} XP`}
-            accentColor="#8B5CF6"
-            stat={stats.gamesPlayed}
-            onPress={() => router.push('/games' as any)}
+            key={mode.key}
+            mode={mode}
+            stat={stats[mode.statKey] || 0}
+            index={idx}
+            onPress={() => router.push(mode.route as any)}
           />
-          <PracticeCard
-            index={1}
-            icon={APP_ICONS.drills}
-            title="Speed Drills"
-            subtitle="Race the clock with rapid-fire questions"
-            xpLabel={`+${XP_REWARDS.DRILL_CORRECT} XP/q`}
-            accentColor="#F59E0B"
-            stat={stats.drillsCompleted}
-            onPress={() => router.push('/drills' as any)}
-          />
-          <PracticeCard
-            index={2}
-            icon={APP_ICONS.trainer}
-            title="Trainer Scenarios"
-            subtitle="Real-world strategy decisions"
-            xpLabel={`+${XP_REWARDS.TRAINER_COMPLETE} XP`}
-            accentColor="#22C55E"
-            onPress={() => router.push('/trainer' as any)}
-          />
+        ))}
 
-          {/* Resources */}
-          <Text style={[styles.sectionLabel, { marginTop: 28 }]}>RESOURCES</Text>
+        {/* Resources grid */}
+        <Text style={[styles.sectionLabel, { marginTop: 28 }]}>RESOURCES</Text>
 
-          <View style={styles.resourceGrid}>
-            {[
-              { icon: APP_ICONS.news, label: 'Summaries', route: '/summaries', color: '#3B82F6' },
-              { icon: APP_ICONS.regulatory, label: 'Regulatory', route: '/regulatory-hub', color: '#EF4444' },
-              { icon: APP_ICONS.notebook, label: 'Notebook', route: '/(tabs)/notebook', color: '#8B5CF6' },
-              { icon: APP_ICONS.passport, label: 'Passport', route: '/passport', color: '#F59E0B' },
-            ].map((item, idx) => (
-              <TouchableOpacity
-                key={idx}
-                style={styles.resourceItem}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  router.push(item.route as any);
-                }}
-                activeOpacity={0.7}
-              >
-                <View style={[styles.resourceIcon, { backgroundColor: item.color + '10' }]}>
-                  <Image source={item.icon} style={styles.resourceIconImg} />
-                </View>
-                <Text style={styles.resourceLabel}>{item.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </Animated.View>
+        <View style={styles.resourceGrid}>
+          {RESOURCES.map((item, idx) => (
+            <TouchableOpacity
+              key={idx}
+              style={styles.resourceItem}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.push(item.route as any);
+              }}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.resourceIconWrap, { backgroundColor: item.color + '10' }]}>
+                <Feather name={item.icon} size={22} color={item.color} />
+              </View>
+              <Text style={styles.resourceLabel}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </ScrollView>
     </View>
   );
@@ -270,11 +268,19 @@ const styles = StyleSheet.create({
   centered: { alignItems: 'center', justifyContent: 'center' },
   scrollContent: { paddingHorizontal: 20 },
 
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 24,
+  },
   headerTitle: { ...TYPE.hero, color: COLORS.textPrimary },
   headerSub: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 4 },
 
   todayBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     backgroundColor: COLORS.successSoft,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -282,71 +288,78 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(34, 197, 94, 0.15)',
   },
-  todayBadgeText: { ...TYPE.caption, color: COLORS.success },
-
-  motivationCard: {
-    backgroundColor: COLORS.bg1,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  motivationAccent: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: 3,
-    borderTopLeftRadius: 16,
-    borderBottomLeftRadius: 16,
-  },
-  motivationText: { ...TYPE.body, color: COLORS.textSecondary, paddingLeft: 8 },
+  todayBadgeText: { ...TYPE.caption, color: COLORS.success, fontWeight: '600' },
 
   sectionLabel: { ...TYPE.overline, color: COLORS.textMuted, marginBottom: 14 },
 
-  practiceCard: {
-    backgroundColor: COLORS.bg2,
-    borderRadius: 20,
-    marginBottom: 12,
+  // ── Large Brilliant-style card ──
+  bigCard: {
+    borderRadius: 24,
+    padding: 24,
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: COLORS.border,
-    overflow: 'hidden',
     ...SHADOWS.md,
   },
-  accentStripe: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: 4,
-    borderTopLeftRadius: 20,
-    borderBottomLeftRadius: 20,
-  },
-  practiceCardInner: {
+  bigCardTop: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 18,
-    paddingLeft: 20,
-    gap: 14,
+    marginBottom: 16,
   },
-  practiceIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
+  bigCardIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  practiceIconImg: { width: 32, height: 32, resizeMode: 'contain' },
-  practiceCardMid: { flex: 1 },
-  practiceTitle: { ...TYPE.h3, color: COLORS.textPrimary, marginBottom: 2 },
-  practiceSub: { ...TYPE.caption, color: COLORS.textMuted, fontWeight: '500' },
-  practiceCardRight: { alignItems: 'flex-end', gap: 4 },
-  xpChip: { borderRadius: 12, paddingHorizontal: 10, paddingVertical: 5 },
-  xpChipText: { fontSize: 11, fontWeight: '700' },
-  statText: { ...TYPE.caption, color: COLORS.textMuted, fontWeight: '500' },
+  xpBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  xpBadgeText: { fontSize: 12, fontWeight: '700' },
+  bigCardTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: COLORS.textPrimary,
+    marginBottom: 6,
+    letterSpacing: -0.3,
+  },
+  bigCardSubtitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: COLORS.textSecondary,
+    lineHeight: 20,
+    marginBottom: 20,
+  },
+  bigCardBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  statBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  statBadgeText: { ...TYPE.caption, color: COLORS.success, fontWeight: '600' },
+  startChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 14,
+    marginLeft: 'auto',
+  },
+  startChipText: { fontSize: 15, fontWeight: '700', color: '#FFFFFF' },
 
+  // ── Resources ──
   resourceGrid: { flexDirection: 'row', gap: 10 },
   resourceItem: {
     flex: 1,
@@ -359,13 +372,12 @@ const styles = StyleSheet.create({
     gap: 10,
     ...SHADOWS.sm,
   },
-  resourceIcon: {
+  resourceIconWrap: {
     width: 44,
     height: 44,
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  resourceIconImg: { width: 28, height: 28, resizeMode: 'contain' },
   resourceLabel: { ...TYPE.caption, color: COLORS.textSecondary, fontWeight: '600' },
 });
