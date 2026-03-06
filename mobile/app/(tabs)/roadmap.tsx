@@ -16,7 +16,7 @@ import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { SeasonSection } from '../../components/roadmap/SeasonSection';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 import type { NodeStatus } from '../../components/roadmap/RoadmapNode';
 
 interface Lesson {
