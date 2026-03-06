@@ -276,10 +276,10 @@ export default function TrainerScreen() {
             <View style={styles.featuresCard}>
               <Text style={styles.featuresTitle}>What you'll master</Text>
               {[
-                { icon: APP_ICONS.concept, text: 'Real-world decision scenarios' },
-                { icon: APP_ICONS.lens, text: 'Pro reasoning breakdowns' },
-                { icon: APP_ICONS.trainer, text: 'Common mistake analysis' },
-                { icon: APP_ICONS.learn, text: 'Mental models for founders' },
+                { icon: 'layers' as const, text: 'Real-world decision scenarios' },
+                { icon: 'search' as const, text: 'Pro reasoning breakdowns' },
+                { icon: 'target' as const, text: 'Common mistake analysis' },
+                { icon: 'book-open' as const, text: 'Mental models for founders' },
               ].map((f, i) => (
                 <View key={i} style={styles.featureRow}>
                   <Image source={f.icon} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
