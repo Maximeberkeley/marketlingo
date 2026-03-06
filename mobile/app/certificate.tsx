@@ -152,10 +152,10 @@ export default function CertificateScreen() {
   if (!data) return null;
 
   const STAT_ITEMS = [
-    { icon: APP_ICONS.progress, value: data.totalXP.toLocaleString(), label: 'XP Earned' },
-    { icon: APP_ICONS.learn, value: data.lessonsCompleted, label: 'Lessons' },
-    { icon: APP_ICONS.trainer, value: data.trainersCompleted, label: 'Scenarios' },
-    { icon: APP_ICONS.streak, value: data.longestStreak, label: 'Day Streak' },
+    { featherIcon: 'bar-chart-2' as const, value: data.totalXP.toLocaleString(), label: 'XP Earned' },
+    { featherIcon: 'book-open' as const, value: data.lessonsCompleted, label: 'Lessons' },
+    { featherIcon: 'target' as const, value: data.trainersCompleted, label: 'Scenarios' },
+    { featherIcon: 'activity' as const, value: data.longestStreak, label: 'Day Streak' },
   ];
 
   return (
