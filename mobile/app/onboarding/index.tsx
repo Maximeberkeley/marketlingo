@@ -22,7 +22,7 @@ import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { getDemoXP } from '../../lib/demoXPBridge';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress';
 import { triggerHaptic } from '../../lib/haptics';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 const STEP_LABELS = ['Industry', 'Goal', 'Level'];
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
