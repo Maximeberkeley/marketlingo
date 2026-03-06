@@ -256,7 +256,7 @@ export default function ProfileScreen() {
           <Text style={styles.sectionTitle}>DATA</Text>
           <TouchableOpacity style={styles.menuItem} onPress={handleExportNotebook}>
             <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
-              <Image source={APP_ICONS.notebook} style={styles.menuIconImg} />
+              <Feather name="edit-3" size={18} color="#8B5CF6" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Export Notebook</Text>
