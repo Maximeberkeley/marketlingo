@@ -149,7 +149,7 @@ export default function LeaderboardScreen() {
         {/* Prize banner */}
         <View style={styles.prizeBanner}>
           <View style={styles.prizeIconWrap}>
-            <Image source={APP_ICONS.achievements} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+            <Feather name="award" size={20} color="#FBBF24" />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.prizeTitle}>Become the Industry Master</Text>
