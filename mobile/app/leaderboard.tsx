@@ -176,7 +176,7 @@ export default function LeaderboardScreen() {
           <View style={styles.centered}><ActivityIndicator color={COLORS.accent} size="large" /></View>
         ) : leaderboard.length === 0 ? (
           <View style={styles.emptyState}>
-            <Image source={APP_ICONS.achievements} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
+            <Feather name="award" size={40} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
             <Text style={styles.emptyTitle}>No one on the leaderboard yet!</Text>
             <Text style={styles.emptySub}>Complete lessons to earn XP</Text>
           </View>
