@@ -7,11 +7,14 @@ import {
   Animated,
   Easing,
   Linking,
+  Image,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { COLORS } from '../../lib/constants';
 import { APP_ICONS } from '../../lib/icons';
-import { Image } from 'react-native';
+import { MentorChatOverlay } from '../ai/MentorChatOverlay';
+import { getMentorForContext } from '../../data/mentors';
+import type { Mentor } from '../../data/mentors';
 
 interface NewsItem {
   id: string;
@@ -44,7 +47,7 @@ const categoryColors: Record<string, { bg: string; text: string }> = {
   default: { bg: 'rgba(100,116,139,0.08)', text: '#64748B' },
 };
 
-function NewsCardAnimated({ item, index, showAiInsights }: { item: NewsItem; index: number; showAiInsights: boolean }) {
+function NewsCardAnimated({ item, index, showAiInsights, onDiscuss }: { item: NewsItem; index: number; showAiInsights: boolean; onDiscuss: (item: NewsItem) => void }) {
   const slideAnim = useRef(new Animated.Value(30)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
@@ -78,11 +81,21 @@ function NewsCardAnimated({ item, index, showAiInsights }: { item: NewsItem; ind
           <Text style={styles.newsTitle} numberOfLines={3}>{item.title}</Text>
           {showAiInsights && item.summary && (
             <View style={styles.summaryCard}>
-              <Text style={styles.summaryIcon}>✨</Text>
+              <Image source={APP_ICONS.concept} style={{ width: 14, height: 14, resizeMode: 'contain', marginTop: 1 }} />
               <Text style={styles.summaryText} numberOfLines={3}>{item.summary}</Text>
             </View>
           )}
-          <Text style={styles.readLink}>Read article →</Text>
+          <View style={styles.cardActions}>
+            <Text style={styles.readLink}>Read article</Text>
+            <TouchableOpacity
+              style={styles.discussBtn}
+              onPress={(e) => { e.stopPropagation(); onDiscuss(item); }}
+              activeOpacity={0.7}
+            >
+              <Image source={APP_ICONS.trainer} style={{ width: 14, height: 14, resizeMode: 'contain' }} />
+              <Text style={styles.discussText}>Discuss with AI</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -96,6 +109,13 @@ export function DailyNews({ marketId }: DailyNewsProps) {
   const [showAiInsights, setShowAiInsights] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const [chatNewsItem, setChatNewsItem] = useState<NewsItem | null>(null);
+
+  const kaiMentor: Mentor = getMentorForContext('news') || {
+    id: 'kai', name: 'Kai', title: 'Market Analyst', expertise: ['markets'],
+    personality: 'analytical', emoji: '', greeting: 'Hi!', specialties: ['news'],
+    voiceId: 'iP95p4xoKVk53GoZ742B',
+  };
 
   const fetchNews = async (forceRefresh = false) => {
     if (forceRefresh) setIsRefreshing(true);
@@ -171,8 +191,9 @@ export function DailyNews({ marketId }: DailyNewsProps) {
             onPress={() => setShowAiInsights(!showAiInsights)}
             style={[styles.aiToggle, showAiInsights && styles.aiToggleActive]}
           >
+            <Image source={APP_ICONS.concept} style={{ width: 12, height: 12, resizeMode: 'contain', marginRight: 2 }} />
             <Text style={[styles.aiToggleText, showAiInsights && { color: COLORS.accent }]}>
-              ✨ AI
+              AI
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -180,7 +201,7 @@ export function DailyNews({ marketId }: DailyNewsProps) {
             disabled={isRefreshing}
             style={{ opacity: isRefreshing ? 0.5 : 1 }}
           >
-            <Text style={styles.refreshText}>{isRefreshing ? '⏳' : '↺'} Refresh</Text>
+            <Text style={styles.refreshText}>Refresh</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -212,7 +233,13 @@ export function DailyNews({ marketId }: DailyNewsProps) {
       {!isLoading && !error && news.length > 0 && (
         <View style={{ gap: 10 }}>
           {news.map((item, index) => (
-            <NewsCardAnimated key={item.id} item={item} index={index} showAiInsights={showAiInsights} />
+            <NewsCardAnimated
+              key={item.id}
+              item={item}
+              index={index}
+              showAiInsights={showAiInsights}
+              onDiscuss={(newsItem) => setChatNewsItem(newsItem)}
+            />
           ))}
         </View>
       )}
@@ -222,7 +249,7 @@ export function DailyNews({ marketId }: DailyNewsProps) {
         <View style={styles.emptyCard}>
           <Text style={styles.emptyText}>No news available right now</Text>
           <TouchableOpacity onPress={() => fetchNews(true)} style={styles.retryBtn}>
-            <Text style={styles.retryText}>⚡ Fetch News</Text>
+            <Text style={styles.retryText}>Fetch News</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -231,6 +258,17 @@ export function DailyNews({ marketId }: DailyNewsProps) {
         <Text style={styles.lastUpdated}>
           Last updated: {lastFetched.toLocaleTimeString()}
         </Text>
+      )}
+
+      {/* AI Chat for specific news article */}
+      {chatNewsItem && (
+        <MentorChatOverlay
+          visible={!!chatNewsItem}
+          mentor={kaiMentor}
+          onClose={() => setChatNewsItem(null)}
+          context={`The user wants to discuss this ${marketId} industry news article:\n\nTitle: "${chatNewsItem.title}"\nSource: ${chatNewsItem.sourceName}\nSummary: ${chatNewsItem.summary ?? 'N/A'}\n\nHelp them understand:\n1. Why this matters for the industry\n2. The investment implications\n3. How it affects key players\n4. What to watch next`}
+          marketId={marketId}
+        />
       )}
     </View>
   );
@@ -249,6 +287,7 @@ const styles = StyleSheet.create({
   },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   aiToggle: {
+    flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20,
     backgroundColor: COLORS.surfaceLight,
   },
@@ -286,9 +325,18 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(139,92,246,0.12)', borderRadius: 10,
     padding: 8, marginBottom: 8,
   },
-  summaryIcon: { fontSize: 12, marginTop: 1 },
   summaryText: { flex: 1, fontSize: 12, color: COLORS.textSecondary, lineHeight: 18 },
+  cardActions: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+  },
   readLink: { fontSize: 11, color: COLORS.accent, fontWeight: '600' },
+  discussBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 16,
+    backgroundColor: COLORS.accentSoft,
+    borderWidth: 1, borderColor: 'rgba(139,92,246,0.2)',
+  },
+  discussText: { fontSize: 11, color: COLORS.accent, fontWeight: '600' },
   emptyCard: {
     padding: 24, backgroundColor: COLORS.bg1, borderRadius: 14,
     borderWidth: 1, borderColor: COLORS.borderLight, alignItems: 'center', gap: 12,
