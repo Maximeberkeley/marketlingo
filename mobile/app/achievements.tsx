@@ -123,7 +123,7 @@ export default function AchievementsScreen() {
             <View key={tier} style={{ marginTop: 20 }}>
               <View style={styles.tierHeader}>
                 <View style={[styles.tierBadge, { backgroundColor: tc.bg, borderColor: tc.border }]}>
-                  <Image source={APP_ICONS[tierIconKey]} style={[styles.tierBadgeIcon, { tintColor: tc.text }]} />
+                  <Feather name={FEATHER_TIER_ICONS[tier]} size={14} color={tc.text} />
                   <Text style={[styles.tierBadgeText, { color: tc.text }]}>
                     {tier.toUpperCase()}
                   </Text>
@@ -134,11 +134,11 @@ export default function AchievementsScreen() {
               </View>
               <View style={{ gap: 8 }}>
                 {tierAchievements.map((a) => {
-                  const iconSource = APP_ICONS[a.icon as IconKey] || APP_ICONS.achievements;
+                  const featherIcon = FEATHER_ACHIEVE_ICONS[a.icon] || 'award';
                   return (
                     <View key={a.id} style={[styles.card, { backgroundColor: a.unlocked ? tc.bg : COLORS.bg2, borderColor: a.unlocked ? tc.border : COLORS.border }, !a.unlocked && styles.cardLocked]}>
                       <View style={[styles.iconCircle, a.unlocked && { backgroundColor: tc.bg }]}>
-                        <Image source={iconSource} style={[styles.achieveIcon, { opacity: a.unlocked ? 1 : 0.3 }]} />
+                        <Feather name={featherIcon} size={20} color={a.unlocked ? tc.text : COLORS.textMuted} style={{ opacity: a.unlocked ? 1 : 0.3 }} />
                       </View>
                       <View style={{ flex: 1 }}>
                         <Text style={[styles.cardTitle, !a.unlocked && styles.textLocked]}>{a.name}</Text>
