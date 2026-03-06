@@ -15,7 +15,7 @@ import { COLORS } from '../lib/constants';
 import { getMarketName } from '../lib/markets';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 interface StampData {
   month: number;
