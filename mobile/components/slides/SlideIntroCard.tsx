@@ -8,7 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { COLORS } from '../../lib/constants';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 import { getMarketConfig } from '../../data/marketConfig';
 
 const MARKET_HERO_IMAGES: Record<string, any> = {
