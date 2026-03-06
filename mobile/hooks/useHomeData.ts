@@ -95,17 +95,21 @@ export function useHomeData(
     setSelectedMarket(profile.selected_market);
     setIsProUser(profile.is_pro_user || false);
     const market = profile.selected_market;
+    const familiarityLevel = profile.familiarity_level || 'beginner';
 
     // Get learning goal for content filtering
     const { data: userProgress } = await supabase
       .from('user_progress')
-      .select('start_date, learning_goal')
+      .select('start_date, learning_goal, familiarity_level')
       .eq('user_id', userId)
       .eq('market_id', market)
       .single();
 
     const learningGoal = userProgress?.learning_goal || 'curiosity';
     const goalTag = `goal:${learningGoal}`;
+    // Use market-specific familiarity if set, otherwise profile-level
+    const effectiveLevel = userProgress?.familiarity_level || familiarityLevel;
+    const levelTag = `level:${effectiveLevel}`;
 
     let calcDay = 1;
     if (userProgress?.start_date) {
@@ -119,14 +123,30 @@ export function useHomeData(
     setCurrentDay(calcDay);
     const dayTag = `day-${calcDay}`;
 
-    // Fetch lesson stack with progressive fallbacks
+    // Fetch lesson stack with progressive fallbacks:
+    // 1. Try goal + level + day (most specific)
+    // 2. Try goal + day (without level)
+    // 3. Try day only
+    // 4. Closest available day
     let { data: lessonStacks } = await supabase
       .from('stacks')
       .select('id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)')
       .eq('market_id', market)
-      .contains('tags', ['MICRO_LESSON', dayTag, goalTag])
+      .contains('tags', ['MICRO_LESSON', dayTag, goalTag, levelTag])
       .not('published_at', 'is', null)
       .limit(1);
+
+    // Fallback: goal + day (no level tag)
+    if (!lessonStacks?.[0]) {
+      const { data: fb1 } = await supabase
+        .from('stacks')
+        .select('id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)')
+        .eq('market_id', market)
+        .contains('tags', ['MICRO_LESSON', dayTag, goalTag])
+        .not('published_at', 'is', null)
+        .limit(1);
+      lessonStacks = fb1;
+    }
 
     if (!lessonStacks?.[0]) {
       const { data: fallback } = await supabase

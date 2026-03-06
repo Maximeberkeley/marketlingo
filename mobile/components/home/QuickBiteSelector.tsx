@@ -5,17 +5,21 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { COLORS } from '../../lib/constants';
+import { Feather } from '@expo/vector-icons';
+import { COLORS, TYPE } from '../../lib/constants';
 
 interface QuickBiteSelectorProps {
   totalSlides: number;
   completedBites: number[];
-  /** Which 2-slide bite to start (0-indexed) */
   onSelectBite: (biteIndex: number) => void;
   onFullLesson: () => void;
   lessonTitle: string;
   isLessonComplete: boolean;
 }
+
+const BITE_LABELS = ['Concept', 'Lens', 'Takeaway'];
+const BITE_ICONS: (keyof typeof Feather.glyphMap)[] = ['book-open', 'eye', 'award'];
+const BITE_COLORS = ['#3B82F6', '#8B5CF6', '#22C55E'];
 
 export function QuickBiteSelector({
   totalSlides,
@@ -33,143 +37,94 @@ export function QuickBiteSelector({
     isComplete: completedBites.includes(i),
   }));
 
-  const allBitesComplete = bites.every((b) => b.isComplete);
-
-  const BITE_LABELS = ['Concept', 'Lens', 'Takeaway'];
-  const BITE_EMOJIS = ['', '', ''];
-
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.headerEmoji}>⚡</Text>
-          <View>
-            <Text style={styles.headerTitle}>Quick Bites</Text>
-            <Text style={styles.headerSubtitle}>2-slide micro-lessons • ~1 min each</Text>
-          </View>
+        <Feather name="zap" size={18} color="#F59E0B" />
+        <View>
+          <Text style={styles.headerTitle}>Quick Bites</Text>
+          <Text style={styles.headerSubtitle}>2-slide micro-lessons · ~1 min each</Text>
         </View>
       </View>
 
-      {/* Lesson title */}
-      <Text style={styles.lessonTitle} numberOfLines={2}>
-        {lessonTitle}
-      </Text>
+      <Text style={styles.lessonTitle} numberOfLines={2}>{lessonTitle}</Text>
 
-      {/* Bite cards */}
       <View style={styles.bitesRow}>
-        {bites.map((bite) => (
-          <TouchableOpacity
-            key={bite.index}
-            style={[
-              styles.biteCard,
-              bite.isComplete && styles.biteCardComplete,
-            ]}
-            onPress={() => onSelectBite(bite.index)}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.biteEmoji}>
-              {bite.isComplete ? '✅' : (BITE_EMOJIS[bite.index] || '')}
-            </Text>
-            <Text
-              style={[styles.biteLabel, bite.isComplete && styles.biteLabelDone]}
-              numberOfLines={1}
+        {bites.map((bite) => {
+          const color = BITE_COLORS[bite.index] || COLORS.accent;
+          const icon = BITE_ICONS[bite.index] || 'book-open';
+          return (
+            <TouchableOpacity
+              key={bite.index}
+              style={[styles.biteCard, bite.isComplete && styles.biteCardComplete]}
+              onPress={() => onSelectBite(bite.index)}
+              activeOpacity={0.7}
             >
-              {BITE_LABELS[bite.index] || `Part ${bite.index + 1}`}
-            </Text>
-            <Text style={styles.biteSlides}>
-              Slides {bite.startSlide}–{bite.endSlide}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <View style={[styles.biteIconWrap, { backgroundColor: bite.isComplete ? COLORS.successSoft : color + '14' }]}>
+                <Feather
+                  name={bite.isComplete ? 'check' : icon}
+                  size={18}
+                  color={bite.isComplete ? COLORS.success : color}
+                />
+              </View>
+              <Text style={[styles.biteLabel, bite.isComplete && styles.biteLabelDone]}>
+                {BITE_LABELS[bite.index] || `Part ${bite.index + 1}`}
+              </Text>
+              <Text style={styles.biteSlides}>Slides {bite.startSlide}–{bite.endSlide}</Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
-      {/* Full lesson CTA */}
       <TouchableOpacity
         style={[styles.fullLessonBtn, isLessonComplete && styles.fullLessonBtnDone]}
         onPress={onFullLesson}
         activeOpacity={0.8}
       >
+        <Feather name={isLessonComplete ? 'refresh-cw' : 'play'} size={14} color={COLORS.accent} />
         <Text style={styles.fullLessonText}>
-          {isLessonComplete ? ' Review Full Lesson' : ' Full Lesson (all slides)'}
+          {isLessonComplete ? 'Review Full Lesson' : 'Full Lesson (all slides)'}
         </Text>
       </TouchableOpacity>
-
-      {allBitesComplete && !isLessonComplete && (
-        <Text style={styles.hintText}>
-           Complete all bites to earn full lesson XP!
-        </Text>
-      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.bg2,
-    borderRadius: 18,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(251,191,36,0.2)',
-    gap: 12,
+    backgroundColor: COLORS.bg2, borderRadius: 18, padding: 16,
+    borderWidth: 1, borderColor: 'rgba(251,191,36,0.2)', gap: 12,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  headerEmoji: { fontSize: 22 },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  headerTitle: { ...TYPE.h3, color: COLORS.textPrimary },
   headerSubtitle: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
   lessonTitle: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
-    fontStyle: 'italic',
-    lineHeight: 18,
+    fontSize: 13, color: COLORS.textSecondary, fontStyle: 'italic', lineHeight: 18,
   },
-  bitesRow: {
-    flexDirection: 'row',
-    gap: 10,
-  },
+  bitesRow: { flexDirection: 'row', gap: 10 },
   biteCard: {
-    flex: 1,
-    backgroundColor: 'rgba(251,191,36,0.08)',
-    borderRadius: 14,
-    padding: 14,
-    alignItems: 'center',
-    gap: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(251,191,36,0.15)',
+    flex: 1, backgroundColor: COLORS.bg1, borderRadius: 14,
+    padding: 14, alignItems: 'center', gap: 6,
+    borderWidth: 1, borderColor: COLORS.border,
   },
   biteCardComplete: {
-    backgroundColor: 'rgba(34,197,94,0.08)',
-    borderColor: 'rgba(34,197,94,0.2)',
+    backgroundColor: COLORS.successSoft, borderColor: 'rgba(34,197,94,0.2)',
   },
-  biteEmoji: { fontSize: 24 },
+  biteIconWrap: {
+    width: 36, height: 36, borderRadius: 10,
+    alignItems: 'center', justifyContent: 'center',
+  },
   biteLabel: { fontSize: 12, fontWeight: '700', color: COLORS.textPrimary },
-  biteLabelDone: { color: '#22C55E' },
+  biteLabelDone: { color: COLORS.success },
   biteSlides: { fontSize: 9, color: COLORS.textMuted },
   fullLessonBtn: {
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: 'rgba(139,92,246,0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(139,92,246,0.25)',
-    alignItems: 'center',
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    paddingVertical: 12, borderRadius: 12,
+    backgroundColor: COLORS.accentSoft,
+    borderWidth: 1, borderColor: 'rgba(139,92,246,0.2)',
   },
   fullLessonBtnDone: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderColor: COLORS.border,
+    backgroundColor: COLORS.bg1, borderColor: COLORS.border,
   },
-  fullLessonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: COLORS.accent,
-  },
-  hintText: {
-    fontSize: 11,
-    color: '#FBBF24',
-    textAlign: 'center',
-  },
+  fullLessonText: { fontSize: 13, fontWeight: '600', color: COLORS.accent },
 });
