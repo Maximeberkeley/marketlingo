@@ -201,7 +201,7 @@ export default function ProfileScreen() {
           <View style={styles.certCard}>
             <View style={styles.certRow}>
               <View style={[styles.certIcon, isCertEligible && { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
-                <Image source={APP_ICONS.achievements} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
+                <Feather name="award" size={24} color={COLORS.accent} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.certTitle}>
