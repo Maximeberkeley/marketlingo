@@ -244,7 +244,7 @@ export default function SubscriptionScreen() {
           {PRO_FEATURES.map((feature, index) => (
             <View key={index} style={styles.featureItem}>
               <View style={styles.featureIcon}>
-                <Image source={feature.icon} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+                <Feather name={feature.featherIcon} size={20} color={COLORS.accent} />
               </View>
               <View style={styles.featureContent}>
                 <View style={styles.featureTitleRow}>
