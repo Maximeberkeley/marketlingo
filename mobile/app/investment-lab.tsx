@@ -61,10 +61,10 @@ const MARKET_ACCENT_COLORS: Record<string, string> = {
 };
 
 const MODULES = [
-  { id: 'valuation', title: 'Valuation Mastery', desc: 'Master industry-specific valuation methodologies', icon: APP_ICONS.progress, color: '#10B981', scoreKey: 'valuation_score' as const },
-  { id: 'due_diligence', title: 'Due Diligence', desc: 'Systematic investment evaluation', icon: APP_ICONS.lens, color: '#3B82F6', scoreKey: 'due_diligence_score' as const },
-  { id: 'risk_assessment', title: 'Risk Assessment', desc: 'Identify and quantify investment risks', icon: APP_ICONS.regulatory, color: '#F59E0B', scoreKey: 'risk_assessment_score' as const },
-  { id: 'portfolio', title: 'Portfolio Construction', desc: 'Build balanced investment portfolios', icon: APP_ICONS.concept, color: '#8B5CF6', scoreKey: 'portfolio_construction_score' as const },
+  { id: 'valuation', title: 'Valuation Mastery', desc: 'Master industry-specific valuation methodologies', featherIcon: 'bar-chart-2' as const, color: '#10B981', scoreKey: 'valuation_score' as const },
+  { id: 'due_diligence', title: 'Due Diligence', desc: 'Systematic investment evaluation', featherIcon: 'search' as const, color: '#3B82F6', scoreKey: 'due_diligence_score' as const },
+  { id: 'risk_assessment', title: 'Risk Assessment', desc: 'Identify and quantify investment risks', featherIcon: 'shield' as const, color: '#F59E0B', scoreKey: 'risk_assessment_score' as const },
+  { id: 'portfolio', title: 'Portfolio Construction', desc: 'Build balanced investment portfolios', featherIcon: 'layers' as const, color: '#8B5CF6', scoreKey: 'portfolio_construction_score' as const },
 ];
 
 export default function InvestmentLabScreen() {
