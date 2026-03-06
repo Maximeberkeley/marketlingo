@@ -208,9 +208,11 @@ export default function PassportScreen() {
                       : { borderColor: 'rgba(100,116,139,0.2)', backgroundColor: COLORS.bg2, opacity: 0.5 },
                   ]}
                 >
-                  <Image
-                    source={stamp.completed ? STAMP_ICONS[index] || APP_ICONS.achievements : stamp.grade !== null ? APP_ICONS.learn : APP_ICONS.progress}
-                    style={[styles.stampIcon, { opacity: stamp.completed ? 1 : stamp.grade !== null ? 0.7 : 0.3 }]}
+                  <Feather
+                    name={stamp.completed ? (STAMP_FEATHER[index] || 'award') : stamp.grade !== null ? 'book-open' : 'bar-chart-2'}
+                    size={22}
+                    color={stamp.completed ? COLORS.accent : COLORS.textMuted}
+                    style={{ opacity: stamp.completed ? 1 : stamp.grade !== null ? 0.7 : 0.3 }}
                   />
                   <Text style={styles.stampTheme} numberOfLines={1}>{stamp.theme}</Text>
                   <Text style={styles.stampMonth}>Month {stamp.month}</Text>

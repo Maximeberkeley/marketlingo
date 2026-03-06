@@ -209,7 +209,7 @@ export default function LeaderboardScreen() {
                     </View>
                   </View>
                   <View style={styles.xpChip}>
-                    <Image source={APP_ICONS.drills} style={{ width: 12, height: 12, resizeMode: 'contain' }} />
+                    <Feather name="zap" size={12} color={COLORS.accent} />
                     <Text style={styles.xpValue}>{entry.total_xp.toLocaleString()}</Text>
                   </View>
                 </View>

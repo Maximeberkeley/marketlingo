@@ -179,7 +179,7 @@ export default function CertificateScreen() {
 
           <View style={styles.certInner}>
             <View style={styles.badge}>
-              <Image source={APP_ICONS.achievements} style={{ width: 36, height: 36, resizeMode: 'contain' }} />
+              <Feather name="award" size={32} color={COLORS.accent} />
             </View>
 
             <Text style={styles.certTitle}>CERTIFICATE OF COMPLETION</Text>
