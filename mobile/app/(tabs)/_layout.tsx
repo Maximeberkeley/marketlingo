@@ -112,6 +112,7 @@ export default function TabLayout() {
           title: 'You',
           tabBarIcon: ({ focused }) => <TabBarIcon name="profile" focused={focused} />,
         }}
+        listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
     </Tabs>
   );
