@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, Flame, Newspaper, Clock, ChevronRight, X } from "lucide-react";
+import { Bell, Flame, Newspaper, Clock, ChevronRight } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useNotifications } from "@/hooks/useNotifications";
 import { cn } from "@/lib/utils";
+
+// Editorial hero image
+import notifHero from "@/assets/cards/notifications-hero.jpg";
 
 interface NotificationOnboardingProps {
   open: boolean;
@@ -29,7 +32,7 @@ const benefits = [
   {
     icon: Newspaper,
     title: "Breaking News",
-    description: "Stay ahead with real-time aerospace industry updates",
+    description: "Stay ahead with real-time industry updates",
     color: "text-blue-400",
     bgColor: "bg-blue-400/20",
   },
@@ -52,7 +55,6 @@ export function NotificationOnboarding({ open, onComplete }: NotificationOnboard
   };
 
   if (!isSupported) {
-    // On web, just close the dialog
     return null;
   }
 
@@ -68,60 +70,59 @@ export function NotificationOnboarding({ open, onComplete }: NotificationOnboard
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="p-6"
+              className="p-0"
             >
-              {/* Hero */}
-              <div className="text-center mb-6">
-                <motion.div
-                  initial={{ scale: 0.8 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.1, type: "spring" }}
-                  className="w-20 h-20 rounded-2xl bg-gradient-to-br from-accent to-accent/50 flex items-center justify-center mx-auto mb-4"
-                >
-                  <Bell size={40} className="text-bg-0" />
-                </motion.div>
-                <h2 className="text-h1 text-text-primary mb-2">Stay on Track</h2>
-                <p className="text-body text-text-muted">
-                  Enable notifications to get the most out of your aerospace learning journey
+              {/* Editorial Hero Image */}
+              <div className="relative w-full h-36 overflow-hidden rounded-t-lg">
+                <img src={notifHero} alt="Notifications" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-bg-1 via-bg-1/40 to-transparent" />
+                <div className="absolute bottom-3 left-5 right-5">
+                  <h2 className="text-h1 text-text-primary">Stay on Track</h2>
+                </div>
+              </div>
+
+              <div className="px-5 pb-5 pt-2">
+                <p className="text-body text-text-muted mb-5">
+                  Enable notifications to get the most out of your learning journey
                 </p>
-              </div>
 
-              {/* Benefits */}
-              <div className="space-y-3 mb-6">
-                {benefits.map((benefit, index) => (
-                  <motion.div
-                    key={benefit.title}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 + index * 0.1 }}
-                    className="flex items-start gap-3 p-3 rounded-xl bg-bg-2 border border-border"
+                {/* Benefits */}
+                <div className="space-y-2.5 mb-5">
+                  {benefits.map((benefit, index) => (
+                    <motion.div
+                      key={benefit.title}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 + index * 0.1 }}
+                      className="flex items-start gap-3 p-3 rounded-xl bg-bg-2 border border-border"
+                    >
+                      <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0", benefit.bgColor)}>
+                        <benefit.icon size={20} className={benefit.color} />
+                      </div>
+                      <div>
+                        <p className="text-body font-medium text-text-primary">{benefit.title}</p>
+                        <p className="text-caption text-text-muted">{benefit.description}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Actions */}
+                <div className="space-y-3">
+                  <Button
+                    onClick={() => setStep(1)}
+                    className="w-full bg-accent hover:bg-accent/90 text-bg-0"
                   >
-                    <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0", benefit.bgColor)}>
-                      <benefit.icon size={20} className={benefit.color} />
-                    </div>
-                    <div>
-                      <p className="text-body font-medium text-text-primary">{benefit.title}</p>
-                      <p className="text-caption text-text-muted">{benefit.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Actions */}
-              <div className="space-y-3">
-                <Button
-                  onClick={() => setStep(1)}
-                  className="w-full bg-accent hover:bg-accent/90 text-bg-0"
-                >
-                  Continue
-                  <ChevronRight size={18} className="ml-2" />
-                </Button>
-                <button
-                  onClick={handleSkip}
-                  className="w-full py-2 text-caption text-text-muted hover:text-text-secondary transition-colors"
-                >
-                  Maybe later
-                </button>
+                    Continue
+                    <ChevronRight size={18} className="ml-2" />
+                  </Button>
+                  <button
+                    onClick={handleSkip}
+                    className="w-full py-2 text-caption text-text-muted hover:text-text-secondary transition-colors"
+                  >
+                    Maybe later
+                  </button>
+                </div>
               </div>
             </motion.div>
           ) : (
@@ -162,7 +163,7 @@ export function NotificationOnboarding({ open, onComplete }: NotificationOnboard
                   </li>
                   <li className="flex items-center gap-2 text-caption text-text-secondary">
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                    Breaking aerospace news (optional)
+                    Breaking industry news (optional)
                   </li>
                 </ul>
               </div>
@@ -184,7 +185,6 @@ export function NotificationOnboarding({ open, onComplete }: NotificationOnboard
                 </button>
               </div>
 
-              {/* Privacy note */}
               <p className="text-center text-[10px] text-text-muted mt-4">
                 You can change your preferences anytime in Settings
               </p>

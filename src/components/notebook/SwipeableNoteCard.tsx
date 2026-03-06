@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
-import { Trash2, Newspaper, BookOpen, Brain } from "lucide-react";
+import { Trash2, Newspaper, BookOpen, Brain, MoreVertical } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,6 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils";
 
 interface NoteEntry {
   id: string;
@@ -27,16 +28,10 @@ interface SwipeableNoteCardProps {
   index: number;
 }
 
-const typeIcons: Record<string, React.ReactNode> = {
-  news: <Newspaper size={14} className="text-blue-400" />,
-  lesson: <BookOpen size={14} className="text-green-400" />,
-  trainer: <Brain size={14} className="text-amber-400" />,
-};
-
-const typeColors: Record<string, string> = {
-  news: "bg-blue-500/20 text-blue-400",
-  lesson: "bg-green-500/20 text-green-400",
-  trainer: "bg-amber-500/20 text-amber-400",
+const typeConfig: Record<string, { icon: typeof Newspaper; color: string; bg: string }> = {
+  news: { icon: Newspaper, color: "text-blue-400", bg: "bg-blue-500/10" },
+  lesson: { icon: BookOpen, color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  trainer: { icon: Brain, color: "text-amber-400", bg: "bg-amber-500/10" },
 };
 
 function getLinkedType(label: string | null): "news" | "lesson" | "trainer" {
@@ -53,47 +48,39 @@ function formatTimestamp(dateStr: string): string {
   const diffMs = now.getTime() - date.getTime();
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
   if (diffHours < 1) return "Just now";
   if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-const SWIPE_THRESHOLD = -80;
-const DELETE_THRESHOLD = -150;
+const DELETE_THRESHOLD = -120;
 
 export function SwipeableNoteCard({ note, onDelete, index }: SwipeableNoteCardProps) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const constraintsRef = useRef(null);
-  
+
   const x = useMotionValue(0);
-  const deleteOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1]);
-  const deleteScale = useTransform(x, [SWIPE_THRESHOLD, DELETE_THRESHOLD], [0.8, 1]);
+  const deleteOpacity = useTransform(x, [0, -60], [0, 1]);
+  const deleteScale = useTransform(x, [-60, DELETE_THRESHOLD], [0.8, 1]);
   const cardOpacity = useTransform(x, [DELETE_THRESHOLD, DELETE_THRESHOLD - 50], [1, 0]);
-  
+
   const linkedType = getLinkedType(note.linked_label);
+  const config = typeConfig[linkedType];
+  const TypeIcon = config.icon;
 
   const handleDragEnd = (_: any, info: PanInfo) => {
-    if (info.offset.x < DELETE_THRESHOLD) {
-      // Full swipe - show confirmation
-      setShowConfirm(true);
-    }
+    if (info.offset.x < DELETE_THRESHOLD) setShowConfirm(true);
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     setIsDeleting(true);
     setShowConfirm(false);
-    // Small delay for animation
-    setTimeout(() => {
-      onDelete(note.id);
-    }, 200);
+    setTimeout(() => onDelete(note.id), 200);
   };
 
   const handleCancelDelete = () => {
     setShowConfirm(false);
-    // Reset position
     x.set(0);
   };
 
@@ -111,93 +98,76 @@ export function SwipeableNoteCard({ note, onDelete, index }: SwipeableNoteCardPr
   return (
     <>
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 + index * 0.05 }}
-        className="relative overflow-hidden rounded-[18px]"
-        ref={constraintsRef}
+        transition={{ delay: 0.05 + index * 0.04 }}
+        className="relative overflow-hidden rounded-2xl"
       >
         {/* Delete Background */}
         <motion.div
           style={{ opacity: deleteOpacity }}
-          className="absolute inset-0 bg-destructive/20 rounded-[18px] flex items-center justify-end pr-6"
+          className="absolute inset-0 bg-destructive/15 rounded-2xl flex items-center justify-end pr-5"
         >
-          <motion.div
-            style={{ scale: deleteScale }}
-            className="flex items-center gap-2 text-destructive"
-          >
-            <Trash2 size={20} />
-            <span className="text-sm font-medium">Delete</span>
+          <motion.div style={{ scale: deleteScale }} className="flex items-center gap-1.5 text-destructive">
+            <Trash2 size={18} />
+            <span className="text-xs font-medium">Delete</span>
           </motion.div>
         </motion.div>
 
-        {/* Card Content */}
+        {/* Card */}
         <motion.div
           drag="x"
           dragConstraints={{ left: DELETE_THRESHOLD, right: 0 }}
           dragElastic={{ left: 0.1, right: 0 }}
           onDragEnd={handleDragEnd}
           style={{ x, opacity: cardOpacity }}
-          className="card-elevated cursor-grab active:cursor-grabbing relative"
+          className="bg-bg-1 border border-border rounded-2xl p-4 cursor-grab active:cursor-grabbing relative"
         >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <p className="text-body text-text-primary line-clamp-2 mb-3">
-                {note.content}
-              </p>
-              
+          {/* Type indicator line */}
+          <div className={cn("absolute left-0 top-3 bottom-3 w-[3px] rounded-full", config.bg.replace("/10", "/40"))} />
+
+          <div className="pl-3">
+            <p className="text-[13px] leading-relaxed text-text-primary line-clamp-3 mb-3">
+              {note.content}
+            </p>
+
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-caption ${typeColors[linkedType]}`}>
-                  {typeIcons[linkedType]}
+                <span className={cn("inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium", config.bg, config.color)}>
+                  <TypeIcon size={11} />
                   {note.linked_label || "Note"}
                 </span>
-                <span className="text-caption text-text-muted">
+                <span className="text-[11px] text-text-muted">
                   {formatTimestamp(note.created_at)}
                 </span>
               </div>
-            </div>
-            
-            {/* Delete button - prevent drag from interfering */}
-            <div
-              onPointerDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              className="flex-shrink-0"
-            >
+
               <button
                 type="button"
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
                 onClick={() => setShowConfirm(true)}
-                className="p-2.5 rounded-lg bg-destructive/10 hover:bg-destructive/20 active:bg-destructive/30 transition-colors touch-manipulation"
-                title="Delete note"
+                className="p-1.5 rounded-lg hover:bg-bg-2 active:bg-bg-2 transition-colors touch-manipulation"
               >
-                <Trash2 size={18} className="text-destructive" />
+                <Trash2 size={14} className="text-text-muted" />
               </button>
             </div>
           </div>
         </motion.div>
       </motion.div>
 
-      {/* Confirmation Dialog */}
+      {/* Confirm Dialog */}
       <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
         <AlertDialogContent className="bg-bg-1 border-border">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-text-primary">Delete Note</AlertDialogTitle>
             <AlertDialogDescription className="text-text-secondary">
-              Are you sure you want to delete this note? This action cannot be undone.
+              Are you sure? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel 
-              onClick={handleCancelDelete}
-              className="bg-bg-2 border-border text-text-primary hover:bg-bg-2/80"
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
+            <AlertDialogCancel onClick={handleCancelDelete} className="bg-bg-2 border-border text-text-primary hover:bg-bg-2/80">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

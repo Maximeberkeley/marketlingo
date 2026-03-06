@@ -118,7 +118,7 @@ export default function AchievementsScreen() {
           const tierAchievements = achievements.filter((a) => a.tier === tier);
           if (tierAchievements.length === 0) return null;
           const tc = tierColors[tier];
-          const tierIconKey = TIER_ICONS[tier];
+          // FEATHER_TIER_ICONS used for tier badge icons
           return (
             <View key={tier} style={{ marginTop: 20 }}>
               <View style={styles.tierHeader}>
