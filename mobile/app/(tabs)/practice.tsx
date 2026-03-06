@@ -12,7 +12,8 @@ import {
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import * as Haptics from 'expo-haptics';
+import { triggerHaptic } from '../../lib/haptics';
+import { playSound } from '../../lib/sounds';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';

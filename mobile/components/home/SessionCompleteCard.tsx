@@ -36,6 +36,8 @@ export function SessionCompleteCard({
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    triggerCelebration();
+    playSound('celebration');
     Animated.parallel([
       Animated.spring(scaleAnim, { toValue: 1, friction: 6, tension: 80, useNativeDriver: true }),
       Animated.timing(opacityAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
