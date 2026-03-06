@@ -314,7 +314,7 @@ export default function GamesScreen() {
   if (questions.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Image source={APP_ICONS.games} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
+        <Feather name="play-circle" size={44} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
         <Text style={styles.emptyTitle}>No games available</Text>
         <Text style={styles.emptySubtitle}>Complete more lessons to unlock games!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
