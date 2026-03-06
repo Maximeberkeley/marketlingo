@@ -50,8 +50,8 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
         {/* Section Header */}
         <View style={styles.sectionHeader}>
           <View style={styles.headerLeft}>
-            <View style={styles.headerIcon}>
-              <Text style={{ fontSize: 14 }}>🏢</Text>
+          <View style={styles.headerIcon}>
+              <Image source={APP_ICONS.lens} style={{ width: 16, height: 16, resizeMode: 'contain' }} />
             </View>
             <Text style={styles.headerTitle}>Key Players</Text>
             <View style={styles.countBadge}>
