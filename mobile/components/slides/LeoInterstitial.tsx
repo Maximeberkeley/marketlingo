@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Image, StyleSheet, Animated } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 
