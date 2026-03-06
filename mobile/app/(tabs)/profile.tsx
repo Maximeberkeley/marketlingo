@@ -308,7 +308,7 @@ export default function ProfileScreen() {
             onPress={handleSignOut}
           >
             <View style={[styles.menuIcon, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
-              <Image source={APP_ICONS.profile} style={styles.menuIconImg} />
+              <Feather name="log-out" size={18} color="#EF4444" />
             </View>
             <Text style={[styles.menuTitle, { color: '#EF4444' }]}>Log out</Text>
           </TouchableOpacity>
