@@ -283,7 +283,7 @@ export default function ProfileScreen() {
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/settings' as any)}>
             <View style={[styles.menuIcon, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-              <Image source={APP_ICONS.concept} style={styles.menuIconImg} />
+              <Feather name="settings" size={18} color="#3B82F6" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Settings</Text>
