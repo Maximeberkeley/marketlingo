@@ -442,7 +442,7 @@ export function SlideReaderV2({
                   style={styles.actionBtn}
                   onPress={() => currentSlide && onSaveInsight(currentSlide.slideNumber)}
                 >
-                  <Image source={APP_ICONS.concept} style={styles.actionIcon} />
+                  <Feather name="bookmark" size={18} color={COLORS.textSecondary} />
                 </TouchableOpacity>
               </>
             )}
