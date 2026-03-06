@@ -4,6 +4,7 @@ import { View, StyleSheet, Animated, Easing } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
+import { triggerHaptic } from '../../lib/haptics';
 
 const TAB_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   home: 'home',
@@ -79,6 +80,7 @@ export default function TabLayout() {
           title: 'Home',
           tabBarIcon: ({ focused }) => <TabBarIcon name="home" focused={focused} />,
         }}
+        listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
       <Tabs.Screen
         name="roadmap"
@@ -86,6 +88,7 @@ export default function TabLayout() {
           title: 'Courses',
           tabBarIcon: ({ focused }) => <TabBarIcon name="roadmap" focused={focused} />,
         }}
+        listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
       <Tabs.Screen
         name="practice"
@@ -93,6 +96,7 @@ export default function TabLayout() {
           title: 'Practice',
           tabBarIcon: ({ focused }) => <TabBarIcon name="practice" focused={focused} />,
         }}
+        listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
       <Tabs.Screen
         name="notebook"
@@ -100,6 +104,7 @@ export default function TabLayout() {
           title: 'Notes',
           tabBarIcon: ({ focused }) => <TabBarIcon name="notebook" focused={focused} />,
         }}
+        listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
       <Tabs.Screen
         name="profile"
@@ -107,6 +112,7 @@ export default function TabLayout() {
           title: 'You',
           tabBarIcon: ({ focused }) => <TabBarIcon name="profile" focused={focused} />,
         }}
+        listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
     </Tabs>
   );
