@@ -114,7 +114,7 @@ export default function LeaderboardScreen() {
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Image source={APP_ICONS.achievements} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+            <Feather name="award" size={20} color={COLORS.accent} />
             <Text style={styles.headerTitle}>Leaderboard</Text>
           </View>
           <Text style={styles.headerSub}>{marketName} Industry</Text>
