@@ -86,7 +86,7 @@ export default function InvestmentWatchlistScreen() {
             {watchlist.map((company, index) => (
               <View key={company.id} style={styles.companyCard}>
                 <View style={styles.companyIcon}>
-                  <Image source={APP_ICONS.passport} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
+                  <Feather name="globe" size={16} color={COLORS.accent} />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.companyName} numberOfLines={1}>{company.name}</Text>
