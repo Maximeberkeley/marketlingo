@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableOpacity, Linking } from 'react-native';
-import { COLORS } from '../../lib/constants';
+import { COLORS, TYPE, SHADOWS } from '../../lib/constants';
 
 interface Source {
   label: string;
@@ -32,29 +32,32 @@ export function ConceptCard({
 }: ConceptCardProps) {
   const fadeIn = useRef(new Animated.Value(0)).current;
   const slideUp = useRef(new Animated.Value(30)).current;
+  const scale = useRef(new Animated.Value(0.96)).current;
 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeIn, { toValue: 1, duration: 350, useNativeDriver: true }),
       Animated.spring(slideUp, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }),
+      Animated.spring(scale, { toValue: 1, tension: 200, friction: 20, useNativeDriver: true }),
     ]).start();
   }, []);
 
   if (type === 'header') {
     return (
-      <Animated.View style={[styles.headerCard, { opacity: fadeIn, transform: [{ translateY: slideUp }] }]}>
+      <Animated.View style={[styles.headerCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
         <View style={[styles.headerAccent, { backgroundColor: accentColor }]} />
         <Text style={styles.headerTitle}>{title || content}</Text>
-        <Text style={styles.headerSubtext}>
-          {cardIndex + 1} of {totalCards}
-        </Text>
+        <View style={styles.headerCounterWrap}>
+          <Text style={styles.headerCounter}>{cardIndex + 1}</Text>
+          <Text style={styles.headerCounterOf}> of {totalCards}</Text>
+        </View>
       </Animated.View>
     );
   }
 
   if (type === 'bullet-group') {
     return (
-      <Animated.View style={[styles.card, { opacity: fadeIn, transform: [{ translateY: slideUp }] }]}>
+      <Animated.View style={[styles.card, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
         {title && <Text style={styles.sectionTitle}>{title}</Text>}
         <View style={styles.bulletList}>
           {(bullets || []).map((bullet, idx) => (
@@ -67,8 +70,8 @@ export function ConceptCard({
 
   if (type === 'sources') {
     return (
-      <Animated.View style={[styles.sourcesCard, { opacity: fadeIn, transform: [{ translateY: slideUp }] }]}>
-        <Text style={styles.sourcesLabel}>📎 Sources</Text>
+      <Animated.View style={[styles.sourcesCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
+        <Text style={styles.sourcesLabel}>Sources</Text>
         <View style={styles.sourcesRow}>
           {(sources || []).map((source, idx) => (
             <TouchableOpacity
@@ -76,7 +79,7 @@ export function ConceptCard({
               style={styles.sourceChip}
               onPress={() => Linking.openURL(source.url)}
             >
-              <Text style={styles.sourceText}>{source.label} ↗</Text>
+              <Text style={styles.sourceText}>{source.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -86,7 +89,7 @@ export function ConceptCard({
 
   // Default: concept card
   return (
-    <Animated.View style={[styles.card, { opacity: fadeIn, transform: [{ translateY: slideUp }] }]}>
+    <Animated.View style={[styles.card, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
       {title && <Text style={styles.sectionTitle}>{title}</Text>}
       <Text style={styles.conceptText}>{content}</Text>
     </Animated.View>
@@ -98,7 +101,7 @@ function BulletItem({ text, index, accentColor }: { text: string; index: number;
   const slideX = useRef(new Animated.Value(-20)).current;
 
   useEffect(() => {
-    const delay = index * 120;
+    const delay = index * 100;
     setTimeout(() => {
       Animated.parallel([
         Animated.timing(fadeIn, { toValue: 1, duration: 300, useNativeDriver: true }),
@@ -116,7 +119,6 @@ function BulletItem({ text, index, accentColor }: { text: string; index: number;
 }
 
 // Parse a slide body into concept cards
-// Optimized: merges aggressively to keep card count low (~2-3 cards per slide)
 export function parseSlideIntoCards(
   slideTitle: string,
   body: string,
@@ -125,7 +127,6 @@ export function parseSlideIntoCards(
 ): { type: ConceptCardType; title?: string; content: string; bullets?: string[]; sources?: Source[] }[] {
   const cards: { type: ConceptCardType; title?: string; content: string; bullets?: string[]; sources?: Source[] }[] = [];
 
-  // First card is always the slide title as a header
   cards.push({ type: 'header', content: slideTitle });
 
   const paragraphs = body.split('\n').filter(p => p.trim());
@@ -144,12 +145,7 @@ export function parseSlideIntoCards(
   const flushBullets = () => {
     if (currentBullets.length > 0) {
       flushText();
-      cards.push({
-        type: 'bullet-group',
-        title: currentHeader,
-        content: '',
-        bullets: [...currentBullets],
-      });
+      cards.push({ type: 'bullet-group', title: currentHeader, content: '', bullets: [...currentBullets] });
       currentBullets = [];
       currentHeader = undefined;
     }
@@ -172,25 +168,18 @@ export function parseSlideIntoCards(
       flushText();
       const cleanBullet = trimmed.replace(/^[•\-*]\s*/, '');
       currentBullets.push(cleanBullet);
-      // Flush every 6 bullets
-      if (currentBullets.length >= 6) {
-        flushBullets();
-      }
+      if (currentBullets.length >= 6) flushBullets();
       continue;
     }
 
-    // Regular paragraph — merge consecutive paragraphs into one card
     flushBullets();
-    if (pendingText.length > 0 && (pendingText.length + trimmed.length) > 500) {
-      flushText();
-    }
+    if (pendingText.length > 0 && (pendingText.length + trimmed.length) > 500) flushText();
     pendingText += (pendingText ? ' ' : '') + trimmed;
   }
 
   flushBullets();
   flushText();
 
-  // Sources card at the end (only for last slide)
   if (sources && sources.length > 0) {
     cards.push({ type: 'sources', content: '', sources });
   }
@@ -207,6 +196,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     minHeight: 160,
     justifyContent: 'center',
+    ...SHADOWS.md,
   },
   headerCard: {
     backgroundColor: COLORS.bg1,
@@ -218,6 +208,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 200,
     overflow: 'hidden',
+    ...SHADOWS.md,
   },
   headerAccent: {
     position: 'absolute',
@@ -229,24 +220,26 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: '800',
+    ...TYPE.hero,
     color: COLORS.textPrimary,
     textAlign: 'center',
     lineHeight: 36,
-    letterSpacing: -0.5,
   },
-  headerSubtext: {
-    fontSize: 12,
+  headerCounterWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  headerCounter: {
+    ...TYPE.overline,
+    color: COLORS.accent,
+  },
+  headerCounterOf: {
+    ...TYPE.overline,
     color: COLORS.textMuted,
-    marginTop: 12,
-    fontWeight: '600',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
+    ...TYPE.bodyBold,
     color: COLORS.accent,
     marginBottom: 14,
     letterSpacing: 0.3,
@@ -258,7 +251,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.1,
   },
   bulletList: {
-    gap: 12,
+    gap: 14,
   },
   bulletRow: {
     flexDirection: 'row',
@@ -284,12 +277,14 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: COLORS.border,
+    ...SHADOWS.sm,
   },
   sourcesLabel: {
-    fontSize: 13,
-    fontWeight: '700',
+    ...TYPE.caption,
     color: COLORS.textMuted,
-    marginBottom: 10,
+    marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   sourcesRow: {
     flexDirection: 'row',
@@ -305,7 +300,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   sourceText: {
-    fontSize: 12,
+    ...TYPE.caption,
     color: COLORS.textSecondary,
     fontWeight: '500',
   },

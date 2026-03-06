@@ -15,7 +15,7 @@ import { AnimatedSection } from '../../components/home/AnimatedSection';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../../lib/constants';
-import { getMarketEmoji, getMarketName } from '../../lib/markets';
+import { getMarketName, getMarketColor } from '../../lib/markets';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
@@ -182,7 +182,7 @@ export default function HomeScreen() {
         <SessionCompleteCard
           dayNumber={currentDay}
           marketName={getMarketName(selectedMarket || 'aerospace')}
-          marketEmoji={getMarketEmoji(selectedMarket || 'aerospace')}
+          marketEmoji=""
           xpEarned={session.sessionXPEarned}
           streak={streak}
           lessonTitle={session.activeStack?.title || lessonStack?.title || 'Lesson'}
@@ -190,7 +190,6 @@ export default function HomeScreen() {
           stageName={currentStage.name}
           onContinue={session.dismissSessionComplete}
           onDismiss={session.dismissSessionComplete}
-        />
         />
       ) : (
         <>

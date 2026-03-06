@@ -6,12 +6,14 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
+import { APP_ICONS } from '../lib/icons';
 
 interface Summary {
   id: string;
@@ -73,8 +75,8 @@ export default function SummariesScreen() {
         <ScrollView contentContainerStyle={[styles.detailContent, { paddingBottom: insets.bottom + 40 }]} showsVerticalScrollIndicator={false}>
           <Text style={styles.detailTitle}>{selectedSummary.title}</Text>
           <View style={styles.detailMeta}>
-            <Text style={styles.detailMetaText}>📅 {formatDate(selectedSummary.for_date)}</Text>
-            <Text style={styles.detailMetaText}>🕐 {readTime(selectedSummary.content)} min read</Text>
+          <Text style={styles.detailMetaText}>{formatDate(selectedSummary.for_date)}</Text>
+            <Text style={styles.detailMetaText}>{readTime(selectedSummary.content)} min read</Text>
           </View>
           {selectedSummary.key_takeaways && selectedSummary.key_takeaways.length > 0 && (
             <View style={styles.takeawaysCard}>
@@ -119,7 +121,7 @@ export default function SummariesScreen() {
         <View style={styles.centered}><ActivityIndicator color={COLORS.accent} size="large" /></View>
       ) : filtered.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={{ fontSize: 40, marginBottom: 12 }}>📖</Text>
+          <Image source={APP_ICONS.learn} style={{ width: 40, height: 40, resizeMode: 'contain', marginBottom: 12 }} />
           <Text style={styles.emptyTitle}>No {activeTab.toLowerCase()} summaries yet</Text>
           <Text style={styles.emptySub}>Check back soon!</Text>
         </View>

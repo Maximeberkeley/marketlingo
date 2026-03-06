@@ -14,7 +14,6 @@ import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
-import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { MentorChatOverlay } from '../components/ai/MentorChatOverlay';
 import { TrainerCard } from '../components/trainer/TrainerCard';
@@ -22,6 +21,7 @@ import { getMentorForContext } from '../data/mentors';
 import type { Mentor } from '../data/mentors';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
+import { APP_ICONS } from '../lib/icons';
 
 
 // Market-specific hero images
@@ -205,7 +205,7 @@ export default function TrainerScreen() {
     if (currentIndex < scenarios.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      Alert.alert('Complete!', 'All scenarios completed! 🎉');
+      Alert.alert('Complete!', 'All scenarios completed!');
       setCurrentIndex(0);
     }
   };
@@ -242,7 +242,8 @@ export default function TrainerScreen() {
               </TouchableOpacity>
               <View style={styles.heroBannerContent}>
                 <View style={[styles.heroBadge, { backgroundColor: accentColor + 'CC' }]}>
-                  <Text style={styles.heroBadgeText}>🧠 INDUSTRY TRAINER</Text>
+                  <Image source={APP_ICONS.trainer} style={{ width: 14, height: 14, resizeMode: 'contain', tintColor: '#fff' }} />
+                  <Text style={styles.heroBadgeText}>INDUSTRY TRAINER</Text>
                 </View>
                 <Text style={styles.heroBannerTitle}>Think Like an Expert</Text>
                 <Text style={styles.heroBannerSubtitle}>Complex scenarios with deep professional feedback</Text>
@@ -268,20 +269,20 @@ export default function TrainerScreen() {
 
           <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
             <View style={styles.introCenter}>
-              <LeoCharacter size="lg" animation="waving" />
-              <Text style={styles.introMsg}>Time to level up! These scenarios will teach you to think like a pro 🧠</Text>
+              <Image source={APP_ICONS.trainer} style={{ width: 64, height: 64, resizeMode: 'contain', marginBottom: 12 }} />
+              <Text style={styles.introMsg}>Time to level up! These scenarios will teach you to think like a pro.</Text>
             </View>
 
             <View style={styles.featuresCard}>
               <Text style={styles.featuresTitle}>What you'll master</Text>
               {[
-                { icon: '🎯', text: 'Real-world decision scenarios' },
-                { icon: '💡', text: 'Pro reasoning breakdowns' },
-                { icon: '⚠️', text: 'Common mistake analysis' },
-                { icon: '🧩', text: 'Mental models for founders' },
+                { icon: APP_ICONS.concept, text: 'Real-world decision scenarios' },
+                { icon: APP_ICONS.lens, text: 'Pro reasoning breakdowns' },
+                { icon: APP_ICONS.trainer, text: 'Common mistake analysis' },
+                { icon: APP_ICONS.learn, text: 'Mental models for founders' },
               ].map((f, i) => (
                 <View key={i} style={styles.featureRow}>
-                  <Text style={styles.featureIcon}>{f.icon}</Text>
+                  <Image source={f.icon} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
                   <Text style={styles.featureText}>{f.text}</Text>
                 </View>
               ))}
@@ -299,7 +300,7 @@ export default function TrainerScreen() {
   if (scenarios.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Text style={{ fontSize: 48, marginBottom: 12 }}>🧠</Text>
+        <Image source={APP_ICONS.trainer} style={{ width: 56, height: 56, resizeMode: 'contain', marginBottom: 12 }} />
         <Text style={styles.emptyTitle}>No scenarios available</Text>
         <Text style={styles.emptySubtitle}>Complete more lessons to unlock trainer scenarios!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
@@ -362,7 +363,7 @@ export default function TrainerScreen() {
       {showPaywallNudge && (
         <View style={styles.paywallOverlay}>
           <View style={styles.paywallCard}>
-            <Text style={styles.paywallEmoji}>🔥</Text>
+            <Image source={APP_ICONS.streak} style={{ width: 44, height: 44, resizeMode: 'contain', marginBottom: 8 }} />
             <Text style={styles.paywallTitle}>You're on fire!</Text>
             <Text style={styles.paywallBody}>
               {correctCount} correct in a row — you clearly have the instincts.{'\n\n'}
@@ -421,8 +422,8 @@ const styles = StyleSheet.create({
   backTextLight: { fontSize: 15, color: 'rgba(255,255,255,0.85)' },
   heroBannerContent: { gap: 10 },
   heroBadge: {
-    alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 5,
-    borderRadius: 10,
+    alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10,
   },
   heroBadgeText: { fontSize: 11, fontWeight: '700', color: '#FFFFFF', letterSpacing: 0.5 },
   heroBannerTitle: { fontSize: 26, fontWeight: '800', color: '#FFFFFF', lineHeight: 32 },

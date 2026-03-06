@@ -33,7 +33,7 @@ interface GoalOption {
 const goalOptions: GoalOption[] = [
   {
     id: 'join_industry',
-    emoji: '🚀',
+    emoji: '',
     title: 'Join the industry',
     subtitle: 'Career Move',
     description: 'Prepare for interviews, understand org structures, and learn what hiring managers look for',
@@ -41,7 +41,7 @@ const goalOptions: GoalOption[] = [
   },
   {
     id: 'invest',
-    emoji: '💰',
+    emoji: '',
     title: 'Invest & evaluate',
     subtitle: 'Investor Lens',
     description: 'Master unit economics, valuations, market sizing, and due diligence frameworks',
@@ -49,7 +49,7 @@ const goalOptions: GoalOption[] = [
   },
   {
     id: 'build_startup',
-    emoji: '🏗️',
+    emoji: '',
     title: 'Build a startup',
     subtitle: 'Founder Path',
     description: 'Learn GTM strategies, fundraising, competitive moats, and regulatory pathways',
@@ -57,7 +57,7 @@ const goalOptions: GoalOption[] = [
   },
   {
     id: 'curiosity',
-    emoji: '🧠',
+    emoji: '',
     title: 'Pure curiosity',
     subtitle: 'Explorer Mode',
     description: 'Discover big-picture trends, fascinating history, and "wow factor" insights',
@@ -66,10 +66,10 @@ const goalOptions: GoalOption[] = [
 ];
 
 const LEO_REACTIONS: Record<LearningGoal, string> = {
-  join_industry: "Great choice! I'll prep you like a recruiter's dream candidate 💼",
-  invest: "Love it! Let's sharpen your investment thesis 📈",
-  build_startup: "Founder mode activated! Let's build something big 🔥",
-  curiosity: "Curiosity is a superpower — let's explore together! ✨",
+  join_industry: "Great choice! I'll prep you like a recruiter's dream candidate.",
+  invest: "Love it! Let's sharpen your investment thesis.",
+  build_startup: "Founder mode activated! Let's build something big.",
+  curiosity: "Curiosity is a superpower — let's explore together!",
 };
 
 const STEP_LABELS = ['Industry', 'Goal', 'Level'];
@@ -249,7 +249,7 @@ export default function GoalScreen() {
         {/* Info */}
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
-            💡 You can change this anytime in Settings. Your goal shapes content priority, not access.
+            You can change this anytime in Settings. Your goal shapes content priority, not access.
           </Text>
         </View>
       </Animated.ScrollView>

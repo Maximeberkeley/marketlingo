@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Linking,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -14,9 +15,9 @@ import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { getMarketName } from '../lib/markets';
+import { APP_ICONS } from '../lib/icons';
 
 interface RegulatoryItem {
-  emoji: string;
   title: string;
   description: string;
   url?: string;
@@ -35,9 +36,9 @@ const REGULATORY_DATA: Record<string, MarketRegulatoryData> = {
     marketName: 'Aerospace',
     mentorTip: 'FAA certification is the single biggest time-to-market variable in aerospace startups. Start the process 18-24 months before you need it.',
     bodies: [
-      { emoji: '✈️', title: 'FAA', description: 'Federal Aviation Administration — governs all US civil aviation, certifications, and airspace.' },
-      { emoji: '🛡️', title: 'ITAR', description: 'International Traffic in Arms Regulations — controls defense-related technology exports.' },
-      { emoji: '🚀', title: 'FAA AST', description: 'Office of Commercial Space Transportation — licenses commercial launches and reentries.' },
+      { title: 'FAA', description: 'Federal Aviation Administration — governs all US civil aviation, certifications, and airspace.' },
+      { title: 'ITAR', description: 'International Traffic in Arms Regulations — controls defense-related technology exports.' },
+      { title: 'FAA AST', description: 'Office of Commercial Space Transportation — licenses commercial launches and reentries.' },
     ],
     keyRegulations: [
       { title: 'Part 135 Air Carrier', description: 'Required for commercial air carrier operations with aircraft under 6,000 lb.' },
@@ -45,17 +46,17 @@ const REGULATORY_DATA: Record<string, MarketRegulatoryData> = {
       { title: 'Export Control (EAR/ITAR)', description: 'Restricts export of dual-use and defense-related technologies to foreign nationals.' },
     ],
     resources: [
-      { emoji: '📋', title: 'FAA.gov', description: 'Official regulations, forms, and guidance', url: 'https://www.faa.gov' },
-      { emoji: '🛡️', title: 'DDTC (ITAR)', description: 'Directorate of Defense Trade Controls', url: 'https://www.pmddtc.state.gov' },
+      { title: 'FAA.gov', description: 'Official regulations, forms, and guidance', url: 'https://www.faa.gov' },
+      { title: 'DDTC (ITAR)', description: 'Directorate of Defense Trade Controls', url: 'https://www.pmddtc.state.gov' },
     ],
   },
   healthtech: {
     marketName: 'HealthTech',
     mentorTip: 'The FDA pathway you choose defines your timeline and burn rate. Most digital health tools are Software as a Medical Device (SaMD) — understand this classification first.',
     bodies: [
-      { emoji: '🏥', title: 'FDA', description: 'Food and Drug Administration — regulates drugs, devices, and digital health software.' },
-      { emoji: '🔒', title: 'HIPAA', description: 'Health Insurance Portability and Accountability Act — governs patient data privacy.' },
-      { emoji: '💊', title: 'CMS', description: 'Centers for Medicare & Medicaid Services — determines reimbursement for digital health.' },
+      { title: 'FDA', description: 'Food and Drug Administration — regulates drugs, devices, and digital health software.' },
+      { title: 'HIPAA', description: 'Health Insurance Portability and Accountability Act — governs patient data privacy.' },
+      { title: 'CMS', description: 'Centers for Medicare & Medicaid Services — determines reimbursement for digital health.' },
     ],
     keyRegulations: [
       { title: '510(k) Clearance', description: 'For devices substantially equivalent to an existing approved predicate. 3-6 months.' },
@@ -63,17 +64,17 @@ const REGULATORY_DATA: Record<string, MarketRegulatoryData> = {
       { title: 'HIPAA Compliance', description: 'Any software handling PHI must implement administrative, technical, and physical safeguards.' },
     ],
     resources: [
-      { emoji: '📋', title: 'FDA Device Advice', description: 'Official device guidance', url: 'https://www.fda.gov/medical-devices' },
-      { emoji: '🔒', title: 'HHS HIPAA', description: 'HIPAA compliance guidance', url: 'https://www.hhs.gov/hipaa' },
+      { title: 'FDA Device Advice', description: 'Official device guidance', url: 'https://www.fda.gov/medical-devices' },
+      { title: 'HHS HIPAA', description: 'HIPAA compliance guidance', url: 'https://www.hhs.gov/hipaa' },
     ],
   },
   biotech: {
     marketName: 'Biotech',
     mentorTip: 'IND applications are your gateway to human trials. File early, engage FDA in pre-IND meetings — it saves years and millions.',
     bodies: [
-      { emoji: '💊', title: 'FDA CDER', description: 'Center for Drug Evaluation & Research — oversees drug approval.' },
-      { emoji: '🧬', title: 'FDA CBER', description: 'Center for Biologics Evaluation & Research — oversees biologics, gene therapies, vaccines.' },
-      { emoji: '🏛️', title: 'NIH', description: 'National Institutes of Health — funds research and governs rDNA research.' },
+      { title: 'FDA CDER', description: 'Center for Drug Evaluation & Research — oversees drug approval.' },
+      { title: 'FDA CBER', description: 'Center for Biologics Evaluation & Research — oversees biologics, gene therapies, vaccines.' },
+      { title: 'NIH', description: 'National Institutes of Health — funds research and governs rDNA research.' },
     ],
     keyRegulations: [
       { title: 'IND Application', description: 'Investigational New Drug — required before testing any drug in humans.' },
@@ -81,17 +82,17 @@ const REGULATORY_DATA: Record<string, MarketRegulatoryData> = {
       { title: 'GxP Compliance', description: 'Good Manufacturing, Laboratory, and Clinical Practice — quality standards for regulated biotech.' },
     ],
     resources: [
-      { emoji: '📋', title: 'FDA Drug Guidance', description: 'Drug approval process', url: 'https://www.fda.gov/drugs' },
-      { emoji: '🧬', title: 'ClinicalTrials.gov', description: 'Clinical trial registry', url: 'https://clinicaltrials.gov' },
+      { title: 'FDA Drug Guidance', description: 'Drug approval process', url: 'https://www.fda.gov/drugs' },
+      { title: 'ClinicalTrials.gov', description: 'Clinical trial registry', url: 'https://clinicaltrials.gov' },
     ],
   },
   fintech: {
     marketName: 'Fintech',
     mentorTip: 'Fintech regulation varies radically by product and state. Money transmission licenses alone require 50 separate state applications. Start compliance early and budget 12-18 months.',
     bodies: [
-      { emoji: '🏦', title: 'CFPB', description: 'Consumer Financial Protection Bureau — regulates consumer financial products.' },
-      { emoji: '💳', title: 'FinCEN', description: 'Financial Crimes Enforcement Network — governs AML/KYC requirements.' },
-      { emoji: '🔐', title: 'OCC', description: 'Office of the Comptroller of the Currency — charters national banks and fintechs.' },
+      { title: 'CFPB', description: 'Consumer Financial Protection Bureau — regulates consumer financial products.' },
+      { title: 'FinCEN', description: 'Financial Crimes Enforcement Network — governs AML/KYC requirements.' },
+      { title: 'OCC', description: 'Office of the Comptroller of the Currency — charters national banks and fintechs.' },
     ],
     keyRegulations: [
       { title: 'Money Transmission License (MTL)', description: 'Required in most states to transmit money. 50-state licensing is costly and slow.' },
@@ -99,17 +100,17 @@ const REGULATORY_DATA: Record<string, MarketRegulatoryData> = {
       { title: 'PCI DSS', description: 'Payment Card Industry Data Security Standard — required for any card payment processing.' },
     ],
     resources: [
-      { emoji: '📋', title: 'CFPB', description: 'Consumer finance regulations', url: 'https://www.consumerfinance.gov' },
-      { emoji: '💳', title: 'FinCEN', description: 'AML/BSA guidance', url: 'https://www.fincen.gov' },
+      { title: 'CFPB', description: 'Consumer finance regulations', url: 'https://www.consumerfinance.gov' },
+      { title: 'FinCEN', description: 'AML/BSA guidance', url: 'https://www.fincen.gov' },
     ],
   },
   ai: {
     marketName: 'AI & ML',
     mentorTip: 'AI regulation is fast-moving. The EU AI Act is now in force and the US Executive Order on AI shapes federal procurement. Know these before pitching government or healthcare clients.',
     bodies: [
-      { emoji: '🇪🇺', title: 'EU AI Act', description: 'World\'s first comprehensive AI regulation — risk-based framework effective 2024-2025.' },
-      { emoji: '🏛️', title: 'FTC', description: 'Federal Trade Commission — enforces AI-related consumer protection and bias issues.' },
-      { emoji: '🔒', title: 'NIST AI RMF', description: 'AI Risk Management Framework — voluntary guidance for trustworthy AI systems.' },
+      { title: 'EU AI Act', description: 'World\'s first comprehensive AI regulation — risk-based framework effective 2024-2025.' },
+      { title: 'FTC', description: 'Federal Trade Commission — enforces AI-related consumer protection and bias issues.' },
+      { title: 'NIST AI RMF', description: 'AI Risk Management Framework — voluntary guidance for trustworthy AI systems.' },
     ],
     keyRegulations: [
       { title: 'EU AI Act Compliance', description: 'High-risk AI systems (HR, healthcare, law enforcement) face mandatory conformity assessments.' },
@@ -117,17 +118,17 @@ const REGULATORY_DATA: Record<string, MarketRegulatoryData> = {
       { title: 'FTC AI Guidance', description: 'Unfair or deceptive AI claims trigger FTC enforcement. Accuracy claims must be substantiated.' },
     ],
     resources: [
-      { emoji: '📋', title: 'NIST AI RMF', description: 'AI risk framework', url: 'https://airc.nist.gov' },
-      { emoji: '🇪🇺', title: 'EU AI Act Portal', description: 'Official EU AI regulation', url: 'https://artificialintelligenceact.eu' },
+      { title: 'NIST AI RMF', description: 'AI risk framework', url: 'https://airc.nist.gov' },
+      { title: 'EU AI Act Portal', description: 'Official EU AI regulation', url: 'https://artificialintelligenceact.eu' },
     ],
   },
   cybersecurity: {
     marketName: 'Cybersecurity',
     mentorTip: 'FedRAMP authorization is the key to selling to US federal agencies — it takes 12-18 months and $500K-$2M but unlocks a massive market.',
     bodies: [
-      { emoji: '🔐', title: 'CISA', description: 'Cybersecurity and Infrastructure Security Agency — governs critical infrastructure security.' },
-      { emoji: '🏛️', title: 'NIST', description: 'National Institute of Standards and Technology — publishes cybersecurity frameworks.' },
-      { emoji: '☁️', title: 'FedRAMP', description: 'Federal Risk and Authorization Management Program — cloud security for federal sales.' },
+      { title: 'CISA', description: 'Cybersecurity and Infrastructure Security Agency — governs critical infrastructure security.' },
+      { title: 'NIST', description: 'National Institute of Standards and Technology — publishes cybersecurity frameworks.' },
+      { title: 'FedRAMP', description: 'Federal Risk and Authorization Management Program — cloud security for federal sales.' },
     ],
     keyRegulations: [
       { title: 'NIST CSF 2.0', description: 'Cybersecurity Framework — widely adopted standard for managing cyber risk.' },
@@ -135,17 +136,17 @@ const REGULATORY_DATA: Record<string, MarketRegulatoryData> = {
       { title: 'FedRAMP Authorization', description: 'Required to sell cloud products to US federal agencies. 12-18 month process.' },
     ],
     resources: [
-      { emoji: '📋', title: 'NIST Cybersecurity', description: 'Frameworks and guidance', url: 'https://www.nist.gov/cyberframework' },
-      { emoji: '☁️', title: 'FedRAMP', description: 'Federal cloud authorization', url: 'https://www.fedramp.gov' },
+      { title: 'NIST Cybersecurity', description: 'Frameworks and guidance', url: 'https://www.nist.gov/cyberframework' },
+      { title: 'FedRAMP', description: 'Federal cloud authorization', url: 'https://www.fedramp.gov' },
     ],
   },
   ev: {
     marketName: 'Electric Vehicles',
     mentorTip: 'FMVSS compliance is non-negotiable for road vehicles. Start NHTSA engagement 2+ years before your target launch date.',
     bodies: [
-      { emoji: '🚗', title: 'NHTSA', description: 'National Highway Traffic Safety Administration — vehicle safety standards.' },
-      { emoji: '⚡', title: 'EPA', description: 'Environmental Protection Agency — emissions, fuel economy, and charging standards.' },
-      { emoji: '🔌', title: 'DOE', description: 'Department of Energy — EV infrastructure grants and standards.' },
+      { title: 'NHTSA', description: 'National Highway Traffic Safety Administration — vehicle safety standards.' },
+      { title: 'EPA', description: 'Environmental Protection Agency — emissions, fuel economy, and charging standards.' },
+      { title: 'DOE', description: 'Department of Energy — EV infrastructure grants and standards.' },
     ],
     keyRegulations: [
       { title: 'FMVSS Compliance', description: 'Federal Motor Vehicle Safety Standards — mandatory for all road vehicles sold in the US.' },
@@ -153,17 +154,17 @@ const REGULATORY_DATA: Record<string, MarketRegulatoryData> = {
       { title: 'IRA Tax Credits', description: 'Inflation Reduction Act EV credits require domestic battery content and assembly rules.' },
     ],
     resources: [
-      { emoji: '🚗', title: 'NHTSA', description: 'Vehicle safety regulations', url: 'https://www.nhtsa.gov' },
-      { emoji: '⚡', title: 'DOE AFDC', description: 'Alternative fuels data center', url: 'https://afdc.energy.gov' },
+      { title: 'NHTSA', description: 'Vehicle safety regulations', url: 'https://www.nhtsa.gov' },
+      { title: 'DOE AFDC', description: 'Alternative fuels data center', url: 'https://afdc.energy.gov' },
     ],
   },
   cleanenergy: {
     marketName: 'Clean Energy',
     mentorTip: 'The IRA created $369B in clean energy incentives — but claiming them requires navigating complex IRS rules, domestic content requirements, and interconnection queues.',
     bodies: [
-      { emoji: '⚡', title: 'FERC', description: 'Federal Energy Regulatory Commission — governs wholesale electricity markets and grid access.' },
-      { emoji: '☀️', title: 'DOE', description: 'Department of Energy — funds research, loans, and sets energy efficiency standards.' },
-      { emoji: '🌍', title: 'EPA', description: 'Environmental Protection Agency — air permits, Clean Power Plan, environmental reviews.' },
+      { title: 'FERC', description: 'Federal Energy Regulatory Commission — governs wholesale electricity markets and grid access.' },
+      { title: 'DOE', description: 'Department of Energy — funds research, loans, and sets energy efficiency standards.' },
+      { title: 'EPA', description: 'Environmental Protection Agency — air permits, Clean Power Plan, environmental reviews.' },
     ],
     keyRegulations: [
       { title: 'NEPA Environmental Review', description: 'Required for federally funded or permitted energy projects. Can take 1-5 years.' },
@@ -171,17 +172,17 @@ const REGULATORY_DATA: Record<string, MarketRegulatoryData> = {
       { title: 'IRA Investment Tax Credit', description: '30-50% ITC for solar, wind, storage — requires domestic content and prevailing wages.' },
     ],
     resources: [
-      { emoji: '⚡', title: 'FERC', description: 'Energy regulatory commission', url: 'https://www.ferc.gov' },
-      { emoji: '☀️', title: 'DOE LPO', description: 'DOE loan programs office', url: 'https://www.energy.gov/lpo' },
+      { title: 'FERC', description: 'Energy regulatory commission', url: 'https://www.ferc.gov' },
+      { title: 'DOE LPO', description: 'DOE loan programs office', url: 'https://www.energy.gov/lpo' },
     ],
   },
   neuroscience: {
     marketName: 'Neuroscience',
     mentorTip: 'Brain data is among the most sensitive personal data. Several states now have neurological data privacy laws — understand them before building consumer BCI products.',
     bodies: [
-      { emoji: '🧠', title: 'FDA CDRH', description: 'Center for Devices and Radiological Health — oversees neurostimulation and BCI devices.' },
-      { emoji: '🏛️', title: 'NIH NINDS', description: 'National Institute of Neurological Disorders — major funder of neurotech research.' },
-      { emoji: '⚖️', title: 'IRB', description: 'Institutional Review Board — required oversight for any human neuroscience research.' },
+      { title: 'FDA CDRH', description: 'Center for Devices and Radiological Health — oversees neurostimulation and BCI devices.' },
+      { title: 'NIH NINDS', description: 'National Institute of Neurological Disorders — major funder of neurotech research.' },
+      { title: 'IRB', description: 'Institutional Review Board — required oversight for any human neuroscience research.' },
     ],
     keyRegulations: [
       { title: '510(k) / De Novo / PMA', description: 'Device pathway depends on risk class. EEG headsets → 510(k); implanted BCIs → PMA.' },
@@ -189,20 +190,19 @@ const REGULATORY_DATA: Record<string, MarketRegulatoryData> = {
       { title: 'Neural Data Privacy', description: 'Colorado, Texas, and others have neurological privacy laws. Federal rules evolving.' },
     ],
     resources: [
-      { emoji: '📋', title: 'FDA Device Pathways', description: 'Medical device guidance', url: 'https://www.fda.gov/medical-devices' },
-      { emoji: '🧠', title: 'NIH NINDS', description: 'Neuro research grants', url: 'https://www.ninds.nih.gov' },
+      { title: 'FDA Device Pathways', description: 'Medical device guidance', url: 'https://www.fda.gov/medical-devices' },
+      { title: 'NIH NINDS', description: 'Neuro research grants', url: 'https://www.ninds.nih.gov' },
     ],
   },
 };
 
-// Default regulatory data for markets not specifically defined
 const DEFAULT_REGULATORY: MarketRegulatoryData = {
   marketName: 'Your Industry',
   mentorTip: 'Understanding the regulatory landscape is a founder superpower. Knowing the rules lets you build faster and fundraise more credibly.',
   bodies: [
-    { emoji: '🏛️', title: 'Federal Agencies', description: 'Industry-specific federal regulators set product standards and market access rules.' },
-    { emoji: '⚖️', title: 'State Regulators', description: 'State-level permits, licenses, and compliance vary significantly by geography.' },
-    { emoji: '🌍', title: 'International Bodies', description: 'EU regulations, ISO standards, and country-specific rules affect global expansion.' },
+    { title: 'Federal Agencies', description: 'Industry-specific federal regulators set product standards and market access rules.' },
+    { title: 'State Regulators', description: 'State-level permits, licenses, and compliance vary significantly by geography.' },
+    { title: 'International Bodies', description: 'EU regulations, ISO standards, and country-specific rules affect global expansion.' },
   ],
   keyRegulations: [
     { title: 'Licensing & Permits', description: 'Most regulated industries require federal and state licenses before operating.' },
@@ -210,8 +210,8 @@ const DEFAULT_REGULATORY: MarketRegulatoryData = {
     { title: 'Data & Privacy', description: 'GDPR, CCPA, and sector-specific rules govern how you handle user data.' },
   ],
   resources: [
-    { emoji: '📋', title: 'Regulations.gov', description: 'US federal regulatory docket', url: 'https://www.regulations.gov' },
-    { emoji: '🏛️', title: 'USA.gov Businesses', description: 'Federal business licensing guide', url: 'https://www.usa.gov/business' },
+    { title: 'Regulations.gov', description: 'US federal regulatory docket', url: 'https://www.regulations.gov' },
+    { title: 'USA.gov Businesses', description: 'Federal business licensing guide', url: 'https://www.usa.gov/business' },
   ],
 };
 
@@ -251,14 +251,13 @@ export default function RegulatoryHubScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
         <TouchableOpacity onPress={() => router.back()}>
           <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
 
         <View style={styles.mentorHeader}>
           <View style={styles.mentorAvatar}>
-            <Text style={{ fontSize: 28 }}>⚖️</Text>
+            <Image source={APP_ICONS.regulatory} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.title}>{data.marketName} Regulatory Hub</Text>
@@ -269,7 +268,7 @@ export default function RegulatoryHubScreen() {
         {/* Mentor Tip */}
         <View style={styles.tipCard}>
           <Text style={styles.tipText}>
-            <Text style={styles.tipLabel}>💡 Mentor Tip: </Text>
+            <Text style={styles.tipLabel}>Mentor Tip: </Text>
             {data.mentorTip}
           </Text>
         </View>
@@ -280,7 +279,7 @@ export default function RegulatoryHubScreen() {
           {data.bodies.map((body, idx) => (
             <View key={idx} style={styles.bodyCard}>
               <View style={styles.bodyIcon}>
-                <Text style={{ fontSize: 20 }}>{body.emoji}</Text>
+                <Image source={APP_ICONS.regulatory} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.bodyName}>{body.title}</Text>
@@ -316,12 +315,12 @@ export default function RegulatoryHubScreen() {
               onPress={() => resource.url && Linking.openURL(resource.url)}
               activeOpacity={0.7}
             >
-              <Text style={{ fontSize: 22 }}>{resource.emoji}</Text>
+              <Image source={APP_ICONS.news} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.resourceTitle}>{resource.title}</Text>
                 <Text style={styles.resourceDesc}>{resource.description}</Text>
               </View>
-              <Text style={{ fontSize: 16, color: COLORS.accent }}>↗</Text>
+              <Text style={{ fontSize: 16, color: COLORS.accent }}>→</Text>
             </TouchableOpacity>
           ))}
         </View>

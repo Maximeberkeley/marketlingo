@@ -1,28 +1,38 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-  Modal,
-  Animated,
-  Image,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert,
+  ActivityIndicator, Modal, Animated, Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { storage } from '../../lib/storage';
 import { COLORS } from '../../lib/constants';
-import { getMarketEmoji, getMarketName } from '../../lib/markets';
+import { getMarketName } from '../../lib/markets';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, STARTUP_STAGES } from '../../hooks/useUserXP';
 import { ProgressBar } from '../../components/ui/ProgressBar';
-import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { APP_ICONS } from '../../lib/icons';
+
+// Market illustrations for profile
+const MARKET_ILLUSTRATIONS: Record<string, any> = {
+  aerospace: require('../../assets/illustrations/aerospace.png'),
+  ai: require('../../assets/illustrations/ai.png'),
+  biotech: require('../../assets/illustrations/biotech.png'),
+  cleanenergy: require('../../assets/illustrations/cleanenergy.png'),
+  fintech: require('../../assets/illustrations/fintech.png'),
+  ev: require('../../assets/illustrations/ev.png'),
+  cybersecurity: require('../../assets/illustrations/cybersecurity.png'),
+  robotics: require('../../assets/illustrations/robotics.png'),
+  spacetech: require('../../assets/illustrations/spacetech.png'),
+  healthtech: require('../../assets/illustrations/healthtech.png'),
+  web3: require('../../assets/illustrations/web3.png'),
+  agtech: require('../../assets/illustrations/agtech.png'),
+  logistics: require('../../assets/illustrations/logistics.png'),
+  climatetech: require('../../assets/illustrations/climatetech.png'),
+  neuroscience: require('../../assets/illustrations/neuroscience.png'),
+};
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -43,7 +53,6 @@ export default function ProfileScreen() {
         .select('selected_market, is_pro_user')
         .eq('id', user.id)
         .single();
-
       if (profile) {
         setSelectedMarket(profile.selected_market);
         setIsProUser(profile.is_pro_user || false);
@@ -73,11 +82,7 @@ export default function ProfileScreen() {
   const handleExportNotebook = async () => {
     if (!user) return;
     const { data: notes } = await supabase
-      .from('notes')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-
+      .from('notes').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
     if (!notes || notes.length === 0) {
       Alert.alert('No Notes', 'No notes to export yet.');
       return;
@@ -89,8 +94,7 @@ export default function ProfileScreen() {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
       { text: 'Cancel', style: 'cancel' },
       {
-        text: 'Sign Out',
-        style: 'destructive',
+        text: 'Sign Out', style: 'destructive',
         onPress: async () => {
           await signOut();
           await storage.clearAll();
@@ -100,7 +104,6 @@ export default function ProfileScreen() {
     ]);
   };
 
-  // Entrance animations
   const headerAnim = useRef(new Animated.Value(0)).current;
   const statsAnim = useRef(new Animated.Value(0)).current;
   const bodyAnim = useRef(new Animated.Value(0)).current;
@@ -131,13 +134,10 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 },
-        ]}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header with Leo */}
+        {/* Header — clean, no mascot */}
         <Animated.View style={[styles.header, animStyle(headerAnim)]}>
           <View>
             <Text style={styles.title}>Profile</Text>
@@ -149,7 +149,6 @@ export default function ProfileScreen() {
                 <Text style={styles.proBadgeText}>PRO</Text>
               </View>
             )}
-            <LeoCharacter size="sm" animation="idle" />
           </View>
         </Animated.View>
 
@@ -233,12 +232,16 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Current Market */}
+        {/* Current Market — illustration instead of emoji */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>CURRENT MARKET</Text>
           <TouchableOpacity style={styles.menuItem} onPress={() => setShowChangeWarning(true)}>
             <View style={[styles.menuIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
-              <Text style={{ fontSize: 20 }}>{getMarketEmoji(selectedMarket || 'aerospace')}</Text>
+              {MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace'] ? (
+                <Image source={MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace']} style={styles.menuIconImg} />
+              ) : (
+                <Image source={APP_ICONS.progress} style={styles.menuIconImg} />
+              )}
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>{getMarketName(selectedMarket || 'aerospace')}</Text>
@@ -279,7 +282,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/settings' as any)}>
-            <View style={[styles.menuIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
+            <View style={[styles.menuIcon, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
               <Image source={APP_ICONS.concept} style={styles.menuIconImg} />
             </View>
             <View style={{ flex: 1 }}>
@@ -305,7 +308,7 @@ export default function ProfileScreen() {
             onPress={handleSignOut}
           >
             <View style={[styles.menuIcon, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
-              <Image source={APP_ICONS.concept} style={styles.menuIconImg} />
+              <Image source={APP_ICONS.profile} style={styles.menuIconImg} />
             </View>
             <Text style={[styles.menuTitle, { color: '#EF4444' }]}>Log out</Text>
           </TouchableOpacity>
@@ -319,7 +322,7 @@ export default function ProfileScreen() {
       <Modal visible={showChangeWarning} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={{ fontSize: 32, textAlign: 'center', marginBottom: 12 }}>⚠</Text>
+            <Image source={APP_ICONS.concept} style={{ width: 32, height: 32, resizeMode: 'contain', alignSelf: 'center', marginBottom: 12 }} />
             <Text style={styles.modalTitle}>Change Market?</Text>
             <Text style={styles.modalSubtitle}>
               Changing your market will reset your path and streak. This action cannot be undone.
@@ -363,7 +366,6 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: COLORS.border,
   },
   stageHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
-  stageEmoji: { fontSize: 16 },
   stageTitle: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary },
   stageDesc: { fontSize: 11, color: COLORS.textMuted },
   xpText: { fontSize: 12, fontWeight: '700', color: '#EAB308' },
@@ -376,9 +378,7 @@ const styles = StyleSheet.create({
   certSubtitle: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
   certProgressRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
   certProgressLabel: { fontSize: 11, color: COLORS.textMuted },
-  certButton: {
-    backgroundColor: COLORS.accent, borderRadius: 12, paddingVertical: 12, alignItems: 'center', marginTop: 14,
-  },
+  certButton: { backgroundColor: COLORS.accent, borderRadius: 12, paddingVertical: 12, alignItems: 'center', marginTop: 14 },
   certButtonText: { color: '#FFFFFF', fontWeight: '600', fontSize: 14 },
   menuItem: {
     backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, flexDirection: 'row', alignItems: 'center',
@@ -395,8 +395,8 @@ const styles = StyleSheet.create({
   modalTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary, textAlign: 'center', marginBottom: 8 },
   modalSubtitle: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginBottom: 20, lineHeight: 20 },
   modalActions: { flexDirection: 'row', gap: 12 },
-  modalCancel: { flex: 1, paddingVertical: 14, borderRadius: 12, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center' },
-  modalCancelText: { color: COLORS.textSecondary, fontSize: 14 },
+  modalCancel: { flex: 1, paddingVertical: 14, borderRadius: 12, backgroundColor: COLORS.bg1, alignItems: 'center' },
+  modalCancelText: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
   modalDestructive: { flex: 1, paddingVertical: 14, borderRadius: 12, backgroundColor: '#EF4444', alignItems: 'center' },
-  modalDestructiveText: { color: '#FFFFFF', fontWeight: '600', fontSize: 14 },
+  modalDestructiveText: { fontSize: 15, fontWeight: '600', color: '#FFFFFF' },
 });

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -14,30 +15,31 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useInvestmentLab, InvestmentScenario } from '../hooks/useInvestmentLab';
 import { ProgressBar } from '../components/ui/ProgressBar';
+import { APP_ICONS } from '../lib/icons';
 
 const MODULE_CONFIG: Record<string, {
   title: string;
   description: string;
-  emoji: string;
+  icon: any;
   color: string;
   scenarioType: InvestmentScenario['scenario_type'];
   scoreKey: 'valuation_score' | 'due_diligence_score' | 'risk_assessment_score' | 'portfolio_construction_score';
 }> = {
   valuation: {
     title: 'Valuation Mastery', description: 'Master industry-specific valuation methodologies',
-    emoji: '📊', color: '#10B981', scenarioType: 'valuation', scoreKey: 'valuation_score',
+    icon: APP_ICONS.progress, color: '#10B981', scenarioType: 'valuation', scoreKey: 'valuation_score',
   },
   due_diligence: {
     title: 'Due Diligence', description: 'Systematic investment evaluation',
-    emoji: '👁️', color: '#3B82F6', scenarioType: 'due_diligence', scoreKey: 'due_diligence_score',
+    icon: APP_ICONS.lens, color: '#3B82F6', scenarioType: 'due_diligence', scoreKey: 'due_diligence_score',
   },
   risk_assessment: {
     title: 'Risk Assessment', description: 'Identify and quantify investment risks',
-    emoji: '🛡️', color: '#F59E0B', scenarioType: 'risk', scoreKey: 'risk_assessment_score',
+    icon: APP_ICONS.regulatory, color: '#F59E0B', scenarioType: 'risk', scoreKey: 'risk_assessment_score',
   },
   portfolio: {
     title: 'Portfolio Construction', description: 'Build balanced investment portfolios',
-    emoji: '🧩', color: '#8B5CF6', scenarioType: 'portfolio', scoreKey: 'portfolio_construction_score',
+    icon: APP_ICONS.concept, color: '#8B5CF6', scenarioType: 'portfolio', scoreKey: 'portfolio_construction_score',
   },
 };
 
@@ -113,7 +115,7 @@ export default function InvestmentModuleScreen() {
     return (
       <View style={[styles.container, styles.centered]}>
         <View style={[styles.emptyIcon, { backgroundColor: moduleConfig.color + '20' }]}>
-          <Text style={{ fontSize: 28 }}>{moduleConfig.emoji}</Text>
+          <Image source={moduleConfig.icon} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
         </View>
         <Text style={styles.emptyTitle}>Coming Soon</Text>
         <Text style={styles.emptySubtitle}>Scenarios for this module are being developed</Text>
@@ -140,7 +142,7 @@ export default function InvestmentModuleScreen() {
             <Text style={styles.headerSub}>Scenario {currentScenarioIndex + 1} of {moduleScenarios.length}</Text>
           </View>
           <View style={[styles.moduleIcon, { backgroundColor: moduleConfig.color + '20' }]}>
-            <Text style={{ fontSize: 18 }}>{moduleConfig.emoji}</Text>
+            <Image source={moduleConfig.icon} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
           </View>
         </View>
 
@@ -207,12 +209,12 @@ export default function InvestmentModuleScreen() {
             {showFeedback && currentScenario.explanation && (
               <View style={{ gap: 10 }}>
                 <View style={styles.insightCard}>
-                  <Text style={styles.insightLabel}>💡 Investment Insight</Text>
+                  <Text style={styles.insightLabel}>Investment Insight</Text>
                   <Text style={styles.insightBody}>{currentScenario.explanation}</Text>
                 </View>
                 {currentScenario.real_world_example && (
                   <View style={styles.exampleCard}>
-                    <Text style={styles.exampleLabel}>🏢 Real World Example</Text>
+                    <Text style={styles.exampleLabel}>Real World Example</Text>
                     <Text style={styles.insightBody}>{currentScenario.real_world_example}</Text>
                   </View>
                 )}

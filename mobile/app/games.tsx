@@ -431,7 +431,7 @@ export default function GamesScreen() {
         {showResult && (
           <View style={[styles.feedbackCard, isCorrect ? styles.feedbackCorrect : styles.feedbackWrong]}>
             <Text style={[styles.feedbackTitle, { color: isCorrect ? '#22C55E' : '#F59E0B' }]}>
-              {isCorrect ? '✅ Correct!' : '⚠️ Not quite'}
+              {isCorrect ? 'Correct!' : 'Not quite'}
             </Text>
             <Text style={styles.feedbackBody}>{question.explanation}</Text>
             <TouchableOpacity style={styles.ctaButton} onPress={handleNext}>

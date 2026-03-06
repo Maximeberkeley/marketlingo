@@ -8,10 +8,9 @@ import {
   Animated,
 } from 'react-native';
 import { COLORS } from '../../lib/constants';
+import { APP_ICONS } from '../../lib/icons';
 import { getMarketConfig } from '../../data/marketConfig';
-import { MascotBreak } from '../mascot/MascotBreak';
 
-// Market hero images
 const MARKET_HERO_IMAGES: Record<string, any> = {
   aerospace: require('../../assets/markets/aerospace-hero.jpg'),
   neuroscience: require('../../assets/markets/neuroscience-hero.jpg'),
@@ -30,21 +29,12 @@ const MARKET_HERO_IMAGES: Record<string, any> = {
   web3: require('../../assets/markets/web3-hero.jpg'),
 };
 
-// Stack type config
 type StackType = 'NEWS' | 'HISTORY' | 'LESSON';
 
-const STACK_CONFIG: Record<StackType, { emoji: string; tagline: string; color: string }> = {
-  NEWS:    { emoji: '📈', tagline: 'Recognize recurring market forces', color: '#3B82F6' },
-  LESSON:  { emoji: '📖', tagline: '5-minute concept deep dive', color: '#10B981' },
-  HISTORY: { emoji: '✨', tagline: 'Key moments that shaped the industry', color: '#F59E0B' },
-};
-
-// Market emoji icons
-const MARKET_EMOJIS: Record<string, string> = {
-  aerospace: '🚀', neuroscience: '🧠', ai: '🤖', fintech: '💳',
-  ev: '⚡', biotech: '🧬', cybersecurity: '🛡️', spacetech: '🛸',
-  healthtech: '❤️', robotics: '🦾', cleanenergy: '☀️', climatetech: '🌱',
-  agtech: '🚜', logistics: '📦', web3: '🔗',
+const STACK_CONFIG: Record<StackType, { icon: any; tagline: string; color: string }> = {
+  NEWS:    { icon: APP_ICONS.news, tagline: 'Recognize recurring market forces', color: '#3B82F6' },
+  LESSON:  { icon: APP_ICONS.learn, tagline: '5-minute concept deep dive', color: '#10B981' },
+  HISTORY: { icon: APP_ICONS.slides, tagline: 'Key moments that shaped the industry', color: '#F59E0B' },
 };
 
 interface SlideIntroCardProps {
@@ -55,10 +45,8 @@ interface SlideIntroCardProps {
 }
 
 export function SlideIntroCard({ stackTitle, stackType, totalSlides, marketId }: SlideIntroCardProps) {
-  const marketCfg = getMarketConfig(marketId || 'aerospace');
   const config = STACK_CONFIG[stackType];
   const heroImage = MARKET_HERO_IMAGES[marketId || 'aerospace'];
-  const marketEmoji = MARKET_EMOJIS[marketId || 'aerospace'] || '🚀';
 
   const slideUp = useRef(new Animated.Value(12)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -72,33 +60,18 @@ export function SlideIntroCard({ stackTitle, stackType, totalSlides, marketId }:
 
   return (
     <View style={styles.wrapper}>
-      {/* Hero image */}
       <ImageBackground
         source={heroImage}
         style={styles.hero}
         imageStyle={styles.heroImage}
       >
-        <View style={styles.heroOverlay}>
-          <Text style={styles.heroEmoji}>{marketEmoji}</Text>
-        </View>
-        {/* Fade to bg */}
+        <View style={styles.heroOverlay} />
         <View style={styles.heroFade} />
       </ImageBackground>
 
-      {/* Mascot Break — greets user */}
-      <View style={styles.mascotWrap}>
-        <MascotBreak
-          type="intro"
-          marketId={marketId}
-          message={`Welcome! Let's learn about ${stackTitle}.`}
-        />
-      </View>
-
-      {/* Content section */}
       <Animated.View style={[styles.content, { opacity, transform: [{ translateY: slideUp }] }]}>
-        {/* Icon badge */}
-        <View style={[styles.iconBadge, { backgroundColor: config.color + '33' }]}>
-          <Text style={styles.badgeEmoji}>{config.emoji}</Text>
+        <View style={[styles.iconBadge, { backgroundColor: config.color + '20' }]}>
+          <Image source={config.icon} style={styles.badgeIcon} />
         </View>
 
         <Text style={[styles.typeLabel, { color: config.color }]}>{stackType}</Text>
@@ -141,24 +114,10 @@ const styles = StyleSheet.create({
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.35)',
-    alignItems: 'flex-end',
-    padding: 16,
-    paddingTop: 20,
-  },
-  heroEmoji: {
-    fontSize: 48,
-    opacity: 0.35,
   },
   heroFade: {
     height: 60,
     backgroundColor: 'transparent',
-    // gradient fade done via overlay
-  },
-  mascotWrap: {
-    paddingHorizontal: 16,
-    marginTop: -20,
-    marginBottom: 4,
-    zIndex: 10,
   },
   content: {
     alignItems: 'center',
@@ -173,7 +132,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 12,
   },
-  badgeEmoji: { fontSize: 26 },
+  badgeIcon: { width: 28, height: 28, resizeMode: 'contain' },
   typeLabel: {
     fontSize: 11,
     fontWeight: '700',

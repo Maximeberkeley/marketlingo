@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Image, StyleSheet, Animated } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
+import { APP_ICONS } from '../../lib/icons';
 
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 
@@ -9,47 +10,47 @@ type InterstitialType = 'encouragement' | 'fun-fact' | 'check-in' | 'celebration
 
 interface LeoInterstitialProps {
   type: InterstitialType;
-  progress: number; // 0-1
+  progress: number;
   slideTitle?: string;
   customMessage?: string;
 }
 
 const MESSAGES: Record<InterstitialType, string[]> = {
   encouragement: [
-    "You're doing great! Keep going! 🔥",
-    "Love the focus! You're learning fast 💪",
-    "This is your superpower building! 🚀",
+    "You're doing great! Keep going!",
+    "Love the focus! You're learning fast.",
+    "This is your superpower building!",
     "Pro tip: try to explain this to someone later!",
   ],
   'fun-fact': [
-    "Did you know? Top investors read for 5+ hours daily 📚",
-    "Fun fact: Your brain forms new connections right now! 🧠",
-    "Each concept you learn compounds over time 📈",
-    "The best founders never stop learning 🌟",
+    "Did you know? Top investors read for 5+ hours daily.",
+    "Fun fact: Your brain forms new connections right now!",
+    "Each concept you learn compounds over time.",
+    "The best founders never stop learning.",
   ],
   'check-in': [
-    "Quick check — can you recall the last concept? 🤔",
+    "Quick check — can you recall the last concept?",
     "Try to summarize what you just learned!",
     "What's the key takeaway so far?",
   ],
   celebration: [
-    "You crushed it! 🎉 Another lesson conquered!",
-    "Amazing work! Knowledge is your edge! 🏆",
-    "Lesson complete! You're leveling up! ⭐",
+    "You crushed it! Another lesson conquered!",
+    "Amazing work! Knowledge is your edge!",
+    "Lesson complete! You're leveling up!",
   ],
   halfway: [
-    "Halfway there! You're unstoppable! 💫",
-    "50% done — the momentum is real! 🔥",
-    "Keep this energy! Almost there! ⚡",
+    "Halfway there! You're unstoppable!",
+    "50% done — the momentum is real!",
+    "Keep this energy! Almost there!",
   ],
 };
 
-const EMOJIS: Record<InterstitialType, string> = {
-  encouragement: '💪',
-  'fun-fact': '💡',
-  'check-in': '🧠',
-  celebration: '🎉',
-  halfway: '🔥',
+const TYPE_ICONS: Record<InterstitialType, any> = {
+  encouragement: APP_ICONS.streak,
+  'fun-fact': APP_ICONS.concept,
+  'check-in': APP_ICONS.trainer,
+  celebration: APP_ICONS.achievements,
+  halfway: APP_ICONS.progress,
 };
 
 const ACCENT_COLORS: Record<InterstitialType, string> = {
@@ -66,7 +67,6 @@ export function LeoInterstitial({ type, progress, slideTitle, customMessage }: L
   const bounceAnim = useRef(new Animated.Value(0)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
 
-  // Pick ONE random message on mount — stable across re-renders
   const [message] = useState(() => {
     if (customMessage) return customMessage;
     const msgs = MESSAGES[type];
@@ -82,7 +82,6 @@ export function LeoInterstitial({ type, progress, slideTitle, customMessage }: L
       Animated.timing(opacityAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
     ]).start();
 
-    // Leo bounce
     Animated.loop(
       Animated.sequence([
         Animated.timing(bounceAnim, { toValue: -8, duration: 600, useNativeDriver: true }),
@@ -90,13 +89,13 @@ export function LeoInterstitial({ type, progress, slideTitle, customMessage }: L
       ]),
     ).start();
 
-    // Progress bar animation
     Animated.timing(progressAnim, {
       toValue: progress,
       duration: 800,
       useNativeDriver: false,
     }).start();
   }, []);
+
   return (
     <Animated.View style={[styles.container, { opacity: opacityAnim, transform: [{ scale: scaleAnim }] }]}>
       {/* Leo with glow */}
@@ -108,8 +107,10 @@ export function LeoInterstitial({ type, progress, slideTitle, customMessage }: L
         />
       </View>
 
-      {/* Big emoji */}
-      <Text style={styles.emoji}>{EMOJIS[type]}</Text>
+      {/* Type icon */}
+      <View style={[styles.iconCircle, { backgroundColor: accent + '20' }]}>
+        <Image source={TYPE_ICONS[type]} style={styles.typeIcon} />
+      </View>
 
       {/* Message */}
       <Text style={[styles.message, { color: accent }]}>{message}</Text>
@@ -139,29 +140,17 @@ export function LeoInterstitial({ type, progress, slideTitle, customMessage }: L
   );
 }
 
-/**
- * Determines if a Leo interstitial should appear at this card index.
- * Reduced frequency: only at halfway + every 6th card.
- * Returns the type of interstitial or null.
- */
 export function shouldShowLeoCard(
   cardIndex: number,
   totalCards: number,
 ): InterstitialType | null {
-  // Don't show on first 3 cards or last 2 cards
   if (cardIndex < 3 || cardIndex >= totalCards - 2) return null;
-
   const midpoint = Math.floor(totalCards / 2);
-
-  // Halfway point
   if (cardIndex === midpoint) return 'halfway';
-
-  // Every 6th card after the 4th (much less frequent)
   if ((cardIndex - 3) % 6 === 0 && cardIndex !== midpoint) {
     const types: InterstitialType[] = ['encouragement', 'fun-fact', 'check-in'];
     return types[Math.floor(Math.random() * types.length)];
   }
-
   return null;
 }
 
@@ -189,9 +178,18 @@ const styles = StyleSheet.create({
     height: 110,
     resizeMode: 'contain',
   },
-  emoji: {
-    fontSize: 44,
+  iconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 16,
+  },
+  typeIcon: {
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
   },
   message: {
     fontSize: 20,
