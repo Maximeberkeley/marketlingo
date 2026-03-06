@@ -19,7 +19,7 @@ import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { NotificationOnboarding } from '../components/onboarding/NotificationOnboarding';
-import { APP_ICONS } from '../lib/icons';
+
 
 // Deep-link route map (mirrors _layout.tsx)
 const NOTIFICATION_ROUTES: Record<string, string> = {
