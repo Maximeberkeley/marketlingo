@@ -33,6 +33,7 @@ import InvestmentModule from "./pages/InvestmentModule";
 import InvestmentCertificatePage from "./pages/InvestmentCertificatePage";
 import InvestmentWatchlist from "./pages/InvestmentWatchlist";
 import Subscription from "./pages/Subscription";
+import Practice from "./pages/Practice";
 import NotFound from "./pages/NotFound";
 import { PageTransition } from "@/components/layout/PageTransition";
 
@@ -53,6 +54,7 @@ function AnimatedRoutes() {
         <Route path="/roadmap" element={<PageTransition><Roadmap /></PageTransition>} />
         <Route path="/notebook" element={<PageTransition><Notebook /></PageTransition>} />
         <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
+        <Route path="/practice" element={<PageTransition><Practice /></PageTransition>} />
         <Route path="/trainer" element={<PageTransition><Trainer /></PageTransition>} />
         <Route path="/games" element={<PageTransition><Games /></PageTransition>} />
         <Route path="/drills" element={<PageTransition><Drills /></PageTransition>} />

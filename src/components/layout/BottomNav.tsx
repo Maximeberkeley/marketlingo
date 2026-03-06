@@ -7,7 +7,7 @@ import { hapticFeedback } from "@/lib/ios-utils";
 const navItems = [
   { path: "/home", icon: Home, label: "Home" },
   { path: "/roadmap", icon: Map, label: "Courses" },
-  { path: "/trainer", icon: Dumbbell, label: "Practice" },
+  { path: "/practice", icon: Dumbbell, label: "Practice" },
   { path: "/notebook", icon: BookOpen, label: "Notes" },
   { path: "/profile", icon: User, label: "You" },
 ];
@@ -32,7 +32,7 @@ export function BottomNav() {
         <div className="flex items-center justify-around w-full">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || 
-              (item.path === "/trainer" && ["/trainer", "/games", "/drills"].includes(location.pathname));
+              (item.path === "/practice" && ["/practice", "/trainer", "/games", "/drills"].includes(location.pathname));
             const Icon = item.icon;
             
             return (

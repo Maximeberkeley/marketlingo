@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronRight, Gamepad2, Zap, Loader2, CheckCircle2, BookOpen, Newspaper, FlaskConical, TrendingUp, Crown, Lock, MapPin, Flame, Trophy, Award, Target } from "lucide-react";
+import { Zap, Loader2, CheckCircle2, BookOpen, Newspaper, MapPin, Flame } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { XPBadge } from "@/components/ui/XPBadge";
@@ -517,106 +517,10 @@ export default function HomePage() {
           />
         </motion.div>
 
-        {/* Practice Grid — Clean, minimal */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.16 }}
-          className="mb-5"
-        >
-          <p className="section-header">Practice & Play</p>
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { icon: Gamepad2, label: "Games", path: "/games", color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-500/10" },
-              { icon: Zap, label: "Drills", path: "/drills", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10" },
-              { icon: Target, label: "Trainer", path: "/trainer", color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-500/10" },
-            ].map((item, idx) => (
-              <motion.button
-                key={item.path}
-                whileTap={{ scale: 0.92 }}
-                whileHover={{ y: -3, boxShadow: "var(--shadow-elevated)" }}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.16 + idx * 0.06, type: "spring", stiffness: 300, damping: 20 }}
-                onClick={() => { hapticFeedback("light"); navigate(item.path); }}
-                className="flex flex-col items-center gap-2.5 py-5 rounded-2xl border border-border bg-card shadow-card transition-shadow"
-              >
-                <motion.div 
-                  className={cn("w-12 h-12 rounded-xl flex items-center justify-center", item.bg)}
-                  whileHover={{ rotate: [0, -5, 5, 0], transition: { duration: 0.4 } }}
-                >
-                  <item.icon size={22} className={item.color} />
-                </motion.div>
-                <span className="text-[13px] font-semibold text-text-primary">{item.label}</span>
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
+        {/* Practice & Resources moved to /practice tab */}
 
-        {/* Investment Lab */}
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.18 }}
-          onClick={() => navigate("/investment-lab")}
-          whileTap={{ scale: 0.98 }}
-          className="w-full p-4 rounded-2xl mb-5 border border-border bg-card shadow-card flex items-center gap-3 text-left"
-        >
-          <div className={cn(
-            "w-10 h-10 rounded-xl flex items-center justify-center",
-            isProUser ? "bg-emerald-50 dark:bg-emerald-500/10" : "bg-primary/8"
-          )}>
-            {isProUser ? <TrendingUp size={20} className="text-emerald-600 dark:text-emerald-400" /> : <Lock size={20} className="text-primary" />}
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <span className="text-[15px] font-semibold text-text-primary">Investment Lab</span>
-              {!isProUser && (
-                <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-primary text-white">
-                  <Crown size={8} /> PRO
-                </span>
-              )}
-            </div>
-            <p className="text-[12px] text-text-muted">
-              {isProUser ? "Investment-ready scenarios" : "Unlock with Pro"}
-            </p>
-          </div>
-          <ChevronRight size={18} className="text-text-muted" />
-        </motion.button>
 
-        {/* Quick Links */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-5"
-        >
-          <p className="section-header">Quick Access</p>
-          <div className="grid grid-cols-4 gap-2.5">
-            {[
-              { icon: BookOpen, label: "Notes", path: "/notebook", color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-500/10" },
-              { icon: Trophy, label: "Rank", path: "/leaderboard", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" },
-              { icon: Award, label: "Badges", path: "/achievements", color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-500/10" },
-              { icon: Newspaper, label: "News", path: "/summaries", color: "text-cyan-600 dark:text-cyan-400", bg: "bg-cyan-50 dark:bg-cyan-500/10" },
-            ].map((item, idx) => (
-              <motion.button
-                key={item.path}
-                whileTap={{ scale: 0.9 }}
-                whileHover={{ y: -2 }}
-                initial={{ opacity: 0, scale: 0.85 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 + idx * 0.05, type: "spring", stiffness: 300, damping: 20 }}
-                onClick={() => { hapticFeedback("light"); navigate(item.path); }}
-                className="flex flex-col items-center gap-2 py-3.5 rounded-2xl border border-border bg-card shadow-card transition-shadow"
-              >
-                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", item.bg)}>
-                  <item.icon size={20} className={item.color} />
-                </div>
-                <span className="text-[11px] font-semibold text-text-secondary">{item.label}</span>
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
+
 
         {/* Social Nudge */}
         {socialNudge && showSocialNudge && (
