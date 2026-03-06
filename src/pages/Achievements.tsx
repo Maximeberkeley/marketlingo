@@ -10,7 +10,9 @@ import { useUserProgress } from "@/hooks/useUserProgress";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
-import { LeoMascot } from "@/components/mascot/LeoMascot";
+
+// Editorial hero
+import achievementsHero from "@/assets/cards/achievements-hero.jpg";
 
 export default function AchievementsPage() {
   const navigate = useNavigate();
@@ -42,6 +44,7 @@ export default function AchievementsPage() {
   }, {} as Record<string, Achievement[]>);
 
   const tierOrder = ["platinum", "gold", "silver", "bronze"] as const;
+  const progressPercent = getTotalCount() > 0 ? Math.round((getUnlockedCount() / getTotalCount()) * 100) : 0;
 
   return (
     <AppLayout showNav={false}>
@@ -66,16 +69,37 @@ export default function AchievementsPage() {
         </div>
 
         <div className="px-4 py-6 pb-28 space-y-6">
-          {/* Leo encouragement for achievements */}
-          <LeoMascot 
-            size="md" 
-            message={getUnlockedCount() > 0 
-              ? `${getUnlockedCount()} badges earned! Keep going! 🏆` 
-              : "Start unlocking badges! 💪"
-            }
-            mood={getUnlockedCount() > 5 ? "celebrating" : "encouraging"}
-            className="mb-4"
-          />
+          {/* Editorial Hero Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative overflow-hidden rounded-2xl"
+          >
+            <img src={achievementsHero} alt="Achievements" className="w-full h-36 object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-amber-900/80 via-amber-900/30 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-4">
+              <div className="flex items-end justify-between">
+                <div>
+                  <p className="text-xs font-medium text-amber-200/80 mb-1">Your Progress</p>
+                  <p className="text-2xl font-bold text-white">{progressPercent}% Complete</p>
+                </div>
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-sm">
+                  <Zap size={12} className="text-amber-300" />
+                  <span className="text-xs font-semibold text-white">{getUnlockedCount()} badges</span>
+                </div>
+              </div>
+              {/* Progress bar */}
+              <div className="mt-3 h-1.5 rounded-full bg-white/20 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-amber-400"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPercent}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                />
+              </div>
+            </div>
+          </motion.div>
+
           {tierOrder.map((tier) => {
             const achievements = groupedAchievements[tier] || [];
             if (achievements.length === 0) return null;

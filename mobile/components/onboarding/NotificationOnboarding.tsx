@@ -9,6 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import * as ExpoNotifications from 'expo-notifications';
+import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 
 interface NotificationOnboardingProps {
@@ -17,9 +18,9 @@ interface NotificationOnboardingProps {
 }
 
 const benefits = [
-  { icon: '', title: 'Daily Reminders', description: 'Never miss a lesson with smart reminders at your preferred time', color: '#8B5CF6' },
-  { icon: '', title: 'Streak Protection', description: 'Get warned before your learning streak expires', color: '#F97316' },
-  { icon: '', title: 'Breaking News', description: 'Stay ahead with real-time industry updates', color: '#3B82F6' },
+  { icon: 'clock' as keyof typeof Feather.glyphMap, title: 'Daily Reminders', description: 'Never miss a lesson with smart reminders at your preferred time', color: '#8B5CF6' },
+  { icon: 'activity' as keyof typeof Feather.glyphMap, title: 'Streak Protection', description: 'Get warned before your learning streak expires', color: '#F97316' },
+  { icon: 'file-text' as keyof typeof Feather.glyphMap, title: 'Breaking News', description: 'Stay ahead with real-time industry updates', color: '#3B82F6' },
 ];
 
 export function NotificationOnboarding({ visible, onComplete }: NotificationOnboardingProps) {
@@ -56,7 +57,7 @@ export function NotificationOnboarding({ visible, onComplete }: NotificationOnbo
                 {/* Hero */}
                 <View style={styles.heroWrap}>
                   <View style={styles.heroIcon}>
-                    <Text style={{ fontSize: 40 }}></Text>
+                    <Feather name="bell" size={36} color="#8B5CF6" />
                   </View>
                   <Text style={styles.heroTitle}>Stay on Track</Text>
                   <Text style={styles.heroSub}>
@@ -68,8 +69,8 @@ export function NotificationOnboarding({ visible, onComplete }: NotificationOnbo
                 <View style={styles.benefitsList}>
                   {benefits.map((b) => (
                     <View key={b.title} style={styles.benefitRow}>
-                      <View style={[styles.benefitIcon, { backgroundColor: b.color + '25' }]}>
-                        <Text style={{ fontSize: 20 }}>{b.icon}</Text>
+                      <View style={[styles.benefitIcon, { backgroundColor: b.color + '20' }]}>
+                        <Feather name={b.icon} size={20} color={b.color} />
                       </View>
                       <View style={{ flex: 1 }}>
                         <Text style={styles.benefitTitle}>{b.title}</Text>
@@ -81,7 +82,8 @@ export function NotificationOnboarding({ visible, onComplete }: NotificationOnbo
 
                 {/* CTA */}
                 <TouchableOpacity style={styles.primaryBtn} onPress={goToStep2} activeOpacity={0.85}>
-                  <Text style={styles.primaryBtnText}>Continue →</Text>
+                  <Text style={styles.primaryBtnText}>Continue</Text>
+                  <Feather name="arrow-right" size={16} color="#fff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.skipBtn} onPress={() => onComplete(false)}>
                   <Text style={styles.skipBtnText}>Maybe later</Text>
@@ -92,7 +94,7 @@ export function NotificationOnboarding({ visible, onComplete }: NotificationOnbo
                 {/* Step 2: permission request */}
                 <View style={styles.heroWrap}>
                   <View style={styles.heroIconRound}>
-                    <Text style={{ fontSize: 34 }}></Text>
+                    <Feather name="bell" size={30} color="#8B5CF6" />
                   </View>
                   <Text style={styles.heroTitle}>Allow Notifications</Text>
                   <Text style={styles.heroSub}>
@@ -103,9 +105,9 @@ export function NotificationOnboarding({ visible, onComplete }: NotificationOnbo
                 <View style={styles.summaryBox}>
                   <Text style={styles.summaryLabel}>You'll receive:</Text>
                   {[
-                    { dot: '#8B5CF6', text: 'Daily lesson reminders at your chosen time' },
-                    { dot: '#F97316', text: 'Streak expiration warnings' },
-                    { dot: '#3B82F6', text: 'Breaking industry news (optional)' },
+                    { dot: '#8B5CF6', icon: 'clock' as keyof typeof Feather.glyphMap, text: 'Daily lesson reminders at your chosen time' },
+                    { dot: '#F97316', icon: 'activity' as keyof typeof Feather.glyphMap, text: 'Streak expiration warnings' },
+                    { dot: '#3B82F6', icon: 'file-text' as keyof typeof Feather.glyphMap, text: 'Breaking industry news (optional)' },
                   ].map((item, i) => (
                     <View key={i} style={styles.summaryRow}>
                       <View style={[styles.dot, { backgroundColor: item.dot }]} />
@@ -120,6 +122,7 @@ export function NotificationOnboarding({ visible, onComplete }: NotificationOnbo
                   disabled={isEnabling}
                   activeOpacity={0.85}
                 >
+                  <Feather name="bell" size={16} color="#fff" style={{ marginRight: 6 }} />
                   <Text style={styles.primaryBtnText}>
                     {isEnabling ? 'Enabling...' : 'Enable Notifications'}
                   </Text>
@@ -152,12 +155,12 @@ const styles = StyleSheet.create({
   heroWrap: { alignItems: 'center', marginBottom: 24 },
   heroIcon: {
     width: 80, height: 80, borderRadius: 20,
-    backgroundColor: 'rgba(139,92,246,0.2)',
+    backgroundColor: 'rgba(139,92,246,0.15)',
     alignItems: 'center', justifyContent: 'center', marginBottom: 16,
   },
   heroIconRound: {
     width: 72, height: 72, borderRadius: 36,
-    backgroundColor: 'rgba(139,92,246,0.15)',
+    backgroundColor: 'rgba(139,92,246,0.12)',
     alignItems: 'center', justifyContent: 'center', marginBottom: 16,
   },
   heroTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 8, textAlign: 'center' },
@@ -177,6 +180,7 @@ const styles = StyleSheet.create({
   primaryBtn: {
     backgroundColor: COLORS.accent, borderRadius: 14,
     paddingVertical: 14, alignItems: 'center', marginBottom: 10,
+    flexDirection: 'row', justifyContent: 'center',
   },
   primaryBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   skipBtn: { alignItems: 'center', paddingVertical: 8 },
