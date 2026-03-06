@@ -405,7 +405,7 @@ export default function SettingsScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/subscription' as any)}>
-            <Image source={APP_ICONS.achievements} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
+            <Feather name="star" size={18} color={COLORS.textSecondary} />
             <Text style={styles.menuText}>Manage Subscription</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
