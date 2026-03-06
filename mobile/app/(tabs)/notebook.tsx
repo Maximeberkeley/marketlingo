@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 interface NoteEntry {
   id: string;
@@ -288,7 +288,7 @@ export default function NotebookScreen() {
           </View>
         ) : (
           <View style={styles.emptyState}>
-            <Image source={APP_ICONS.notebook} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
+            <Feather name="edit-3" size={40} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
             <Text style={styles.emptyTitle}>
               {searchQuery ? 'No notes found' : 'Start your notebook'}
             </Text>

@@ -15,7 +15,7 @@ import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useInvestmentLab } from '../hooks/useInvestmentLab';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 export default function InvestmentWatchlistScreen() {
   const insets = useSafeAreaInsets();
@@ -86,7 +86,7 @@ export default function InvestmentWatchlistScreen() {
             {watchlist.map((company, index) => (
               <View key={company.id} style={styles.companyCard}>
                 <View style={styles.companyIcon}>
-                  <Image source={APP_ICONS.passport} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
+                  <Feather name="globe" size={16} color={COLORS.accent} />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.companyName} numberOfLines={1}>{company.name}</Text>
@@ -104,7 +104,7 @@ export default function InvestmentWatchlistScreen() {
         ) : (
           <View style={styles.emptyState}>
             <View style={styles.emptyIcon}>
-              <Image source={APP_ICONS.passport} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
+              <Feather name="globe" size={24} color={COLORS.textMuted} />
             </View>
             <Text style={styles.emptyTitle}>No Companies Yet</Text>
             <Text style={styles.emptySubtitle}>Add companies from Key Players section to track them here</Text>

@@ -15,7 +15,7 @@ import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { getMarketName } from '../lib/markets';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 interface RegulatoryItem {
   title: string;
@@ -257,7 +257,7 @@ export default function RegulatoryHubScreen() {
 
         <View style={styles.mentorHeader}>
           <View style={styles.mentorAvatar}>
-            <Image source={APP_ICONS.regulatory} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
+            <Feather name="shield" size={24} color={COLORS.accent} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.title}>{data.marketName} Regulatory Hub</Text>
@@ -279,7 +279,7 @@ export default function RegulatoryHubScreen() {
           {data.bodies.map((body, idx) => (
             <View key={idx} style={styles.bodyCard}>
               <View style={styles.bodyIcon}>
-                <Image source={APP_ICONS.regulatory} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                <Feather name="shield" size={18} color={COLORS.accent} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.bodyName}>{body.title}</Text>
@@ -315,7 +315,7 @@ export default function RegulatoryHubScreen() {
               onPress={() => resource.url && Linking.openURL(resource.url)}
               activeOpacity={0.7}
             >
-              <Image source={APP_ICONS.news} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+              <Feather name="file-text" size={20} color={COLORS.accent} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.resourceTitle}>{resource.title}</Text>
                 <Text style={styles.resourceDesc}>{resource.description}</Text>

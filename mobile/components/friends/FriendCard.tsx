@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { Friend } from '../../hooks/useFriends';
-import { APP_ICONS } from '../../lib/icons';
 
 interface FriendCardProps {
   friend: Friend;
@@ -23,12 +23,12 @@ export function FriendCard({ friend, isActive, onNudge, onRemove }: FriendCardPr
         <Text style={styles.name}>{friend.username}</Text>
         <View style={styles.meta}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-            <Image source={APP_ICONS.progress} style={{ width: 12, height: 12, resizeMode: 'contain' }} />
+            <Feather name="bar-chart-2" size={12} color={COLORS.textMuted} />
             <Text style={styles.stat}>{friend.totalXP.toLocaleString()}</Text>
           </View>
           {friend.currentStreak > 0 && (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-              <Image source={APP_ICONS.streak} style={{ width: 12, height: 12, resizeMode: 'contain' }} />
+              <Feather name="activity" size={12} color={COLORS.orange} />
               <Text style={styles.stat}>{friend.currentStreak}</Text>
             </View>
           )}
@@ -37,11 +37,11 @@ export function FriendCard({ friend, isActive, onNudge, onRemove }: FriendCardPr
       </View>
 
       <TouchableOpacity style={styles.nudgeBtn} onPress={() => onNudge(friend)}>
-        <Image source={APP_ICONS.trainer} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
+        <Feather name="send" size={16} color={COLORS.accent} />
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => onRemove(friend)}>
-        <Text style={styles.moreIcon}>···</Text>
+        <Feather name="more-horizontal" size={18} color={COLORS.textMuted} />
       </TouchableOpacity>
     </View>
   );

@@ -7,7 +7,7 @@ import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 type TimeFilter = 'weekly' | 'monthly' | 'all-time';
 
@@ -114,7 +114,7 @@ export default function LeaderboardScreen() {
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Image source={APP_ICONS.achievements} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+            <Feather name="award" size={20} color={COLORS.accent} />
             <Text style={styles.headerTitle}>Leaderboard</Text>
           </View>
           <Text style={styles.headerSub}>{marketName} Industry</Text>
@@ -149,7 +149,7 @@ export default function LeaderboardScreen() {
         {/* Prize banner */}
         <View style={styles.prizeBanner}>
           <View style={styles.prizeIconWrap}>
-            <Image source={APP_ICONS.achievements} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+            <Feather name="award" size={20} color="#FBBF24" />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.prizeTitle}>Become the Industry Master</Text>
@@ -176,7 +176,7 @@ export default function LeaderboardScreen() {
           <View style={styles.centered}><ActivityIndicator color={COLORS.accent} size="large" /></View>
         ) : leaderboard.length === 0 ? (
           <View style={styles.emptyState}>
-            <Image source={APP_ICONS.achievements} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
+            <Feather name="award" size={40} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
             <Text style={styles.emptyTitle}>No one on the leaderboard yet!</Text>
             <Text style={styles.emptySub}>Complete lessons to earn XP</Text>
           </View>
@@ -202,14 +202,14 @@ export default function LeaderboardScreen() {
                       <Text style={styles.levelText}>Lv. {entry.current_level}</Text>
                       {entry.current_streak > 0 && (
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-                          <Image source={APP_ICONS.streak} style={{ width: 12, height: 12, resizeMode: 'contain' }} />
+                          <Feather name="activity" size={12} color={COLORS.orange} />
                           <Text style={styles.streakText}>{entry.current_streak}</Text>
                         </View>
                       )}
                     </View>
                   </View>
                   <View style={styles.xpChip}>
-                    <Image source={APP_ICONS.drills} style={{ width: 12, height: 12, resizeMode: 'contain' }} />
+                    <Feather name="zap" size={12} color={COLORS.accent} />
                     <Text style={styles.xpValue}>{entry.total_xp.toLocaleString()}</Text>
                   </View>
                 </View>

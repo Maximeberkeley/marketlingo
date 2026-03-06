@@ -15,7 +15,7 @@ import { COLORS } from '../lib/constants';
 import { getMarketName } from '../lib/markets';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 interface StampData {
   month: number;
@@ -43,9 +43,9 @@ const gradeColors: Record<string, { bg: string; text: string; border: string }> 
   C: { bg: COLORS.bg2, text: COLORS.textMuted, border: COLORS.border },
 };
 
-const STAMP_ICONS: any[] = [
-  APP_ICONS.learn, APP_ICONS.concept, APP_ICONS.trainer,
-  APP_ICONS.lens, APP_ICONS.achievements, APP_ICONS.progress,
+const STAMP_FEATHER: (keyof typeof Feather.glyphMap)[] = [
+  'book-open', 'layers', 'target',
+  'search', 'award', 'bar-chart-2',
 ];
 
 const goalLabels: Record<string, string> = {
@@ -162,7 +162,7 @@ export default function PassportScreen() {
 
         <View style={styles.passportCard}>
           <View style={styles.passportHeader}>
-            <Image source={APP_ICONS.passport} style={styles.passportIcon} />
+            <Feather name="globe" size={22} color={COLORS.accent} />
             <Text style={styles.passportTitle}>INDUSTRY PASSPORT</Text>
             {marketId && (
               <View style={styles.marketRow}>
@@ -208,9 +208,11 @@ export default function PassportScreen() {
                       : { borderColor: 'rgba(100,116,139,0.2)', backgroundColor: COLORS.bg2, opacity: 0.5 },
                   ]}
                 >
-                  <Image
-                    source={stamp.completed ? STAMP_ICONS[index] || APP_ICONS.achievements : stamp.grade !== null ? APP_ICONS.learn : APP_ICONS.progress}
-                    style={[styles.stampIcon, { opacity: stamp.completed ? 1 : stamp.grade !== null ? 0.7 : 0.3 }]}
+                  <Feather
+                    name={stamp.completed ? (STAMP_FEATHER[index] || 'award') : stamp.grade !== null ? 'book-open' : 'bar-chart-2'}
+                    size={22}
+                    color={stamp.completed ? COLORS.accent : COLORS.textMuted}
+                    style={{ opacity: stamp.completed ? 1 : stamp.grade !== null ? 0.7 : 0.3 }}
                   />
                   <Text style={styles.stampTheme} numberOfLines={1}>{stamp.theme}</Text>
                   <Text style={styles.stampMonth}>Month {stamp.month}</Text>

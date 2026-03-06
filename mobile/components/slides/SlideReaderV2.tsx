@@ -20,7 +20,7 @@ import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
 import { AskLeoOverlay } from '../ai/AskLeoOverlay';
 import { playSound } from '../../lib/sounds';
 import { useNarration } from '../../hooks/useNarration';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 const MENTOR_IMAGES: Record<string, any> = {
   maya: require('../../assets/mentors/mentor-maya.png'),
@@ -401,12 +401,11 @@ export function SlideReaderV2({
             onPress={() => setNarrationEnabled(!narrationEnabled)}
             style={[styles.narrationBtn, narrationEnabled && styles.narrationBtnActive]}
           >
-            <Image
-              source={APP_ICONS.learn}
-              style={[
-                styles.narrationImg,
-                { opacity: narrationEnabled ? 1 : 0.4 },
-              ]}
+            <Feather
+              name="volume-2"
+              size={20}
+              color={narrationEnabled ? COLORS.accent : COLORS.textMuted}
+              style={{ opacity: narrationEnabled ? 1 : 0.4 }}
             />
           </TouchableOpacity>
         </View>
@@ -436,13 +435,13 @@ export function SlideReaderV2({
                   style={styles.actionBtn}
                   onPress={() => currentSlide && onAddNote(currentSlide.slideNumber)}
                 >
-                  <Image source={APP_ICONS.notebook} style={styles.actionIcon} />
+                  <Feather name="edit-3" size={18} color={COLORS.textSecondary} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.actionBtn}
                   onPress={() => currentSlide && onSaveInsight(currentSlide.slideNumber)}
                 >
-                  <Image source={APP_ICONS.concept} style={styles.actionIcon} />
+                  <Feather name="bookmark" size={18} color={COLORS.textSecondary} />
                 </TouchableOpacity>
               </>
             )}
@@ -524,9 +523,11 @@ function CompletionOverlay({
       <Animated.View style={[compStyles.card, { transform: [{ scale: scaleAnim }] }]}>
         {/* Icon instead of emoji */}
         <View style={compStyles.iconCircle}>
-          <Image
-            source={isReview ? APP_ICONS.learn : hasMetMinimumTime ? APP_ICONS.achievements : APP_ICONS.progress}
-            style={compStyles.iconImg}
+          <Feather
+            name={isReview ? 'book-open' : hasMetMinimumTime ? 'award' : 'bar-chart-2'}
+            size={36}
+            color={hasMetMinimumTime ? COLORS.success : COLORS.accent}
+          />
           />
         </View>
 
@@ -547,7 +548,7 @@ function CompletionOverlay({
           <>
             <Text style={compStyles.title}>Lesson Complete!</Text>
             <View style={compStyles.xpBadge}>
-              <Image source={APP_ICONS.streak} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+              <Feather name="activity" size={18} color={COLORS.accent} />
               <Text style={compStyles.xpText}>+50 XP</Text>
             </View>
           </>

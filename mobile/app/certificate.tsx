@@ -15,7 +15,7 @@ import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { getMarketName } from '../lib/markets';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 interface CertificateData {
   userName: string;
@@ -125,7 +125,7 @@ export default function CertificateScreen() {
 
         <View style={[styles.centered, { flex: 1 }]}>
           <View style={styles.lockedIcon}>
-            <Image source={APP_ICONS.achievements} style={{ width: 44, height: 44, resizeMode: 'contain' }} />
+            <Feather name="award" size={40} color={COLORS.textMuted} />
           </View>
           <Text style={styles.lockedTitle}>Not Yet Eligible</Text>
           <Text style={styles.lockedSubtitle}>
@@ -152,10 +152,10 @@ export default function CertificateScreen() {
   if (!data) return null;
 
   const STAT_ITEMS = [
-    { icon: APP_ICONS.progress, value: data.totalXP.toLocaleString(), label: 'XP Earned' },
-    { icon: APP_ICONS.learn, value: data.lessonsCompleted, label: 'Lessons' },
-    { icon: APP_ICONS.trainer, value: data.trainersCompleted, label: 'Scenarios' },
-    { icon: APP_ICONS.streak, value: data.longestStreak, label: 'Day Streak' },
+    { featherIcon: 'bar-chart-2' as const, value: data.totalXP.toLocaleString(), label: 'XP Earned' },
+    { featherIcon: 'book-open' as const, value: data.lessonsCompleted, label: 'Lessons' },
+    { featherIcon: 'target' as const, value: data.trainersCompleted, label: 'Scenarios' },
+    { featherIcon: 'activity' as const, value: data.longestStreak, label: 'Day Streak' },
   ];
 
   return (
@@ -179,7 +179,7 @@ export default function CertificateScreen() {
 
           <View style={styles.certInner}>
             <View style={styles.badge}>
-              <Image source={APP_ICONS.achievements} style={{ width: 36, height: 36, resizeMode: 'contain' }} />
+              <Feather name="award" size={32} color={COLORS.accent} />
             </View>
 
             <Text style={styles.certTitle}>CERTIFICATE OF COMPLETION</Text>
@@ -197,7 +197,7 @@ export default function CertificateScreen() {
             <View style={styles.statsGrid}>
               {STAT_ITEMS.map((s, i) => (
                 <View key={i} style={styles.statItem}>
-                  <Image source={s.icon} style={styles.statIcon} />
+                  <Feather name={s.featherIcon} size={18} color={COLORS.accent} />
                   <Text style={styles.statValue}>{s.value}</Text>
                   <Text style={styles.statLabel}>{s.label}</Text>
                 </View>
