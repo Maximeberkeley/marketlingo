@@ -64,7 +64,7 @@ export default function InvestmentCertificateScreen() {
     return (
       <View style={[styles.container, styles.centered]}>
         <View style={styles.lockedIcon}>
-          <Image source={APP_ICONS.achievements} style={{ width: 40, height: 40, resizeMode: 'contain' }} />
+          <Feather name="award" size={36} color={COLORS.textMuted} />
         </View>
         <Text style={styles.lockedTitle}>Not Yet Certified</Text>
         <Text style={styles.lockedSubtitle}>
