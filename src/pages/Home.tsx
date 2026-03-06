@@ -519,12 +519,8 @@ export default function HomePage() {
 
         {/* Practice & Resources moved to /practice tab */}
 
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { icon: Gamepad2, label: "Games", path: "/games", color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-500/10" },
-              { icon: Zap, label: "Drills", path: "/drills", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10" },
-              { icon: Target, label: "Trainer", path: "/trainer", color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-500/10" },
-            ].map((item, idx) => (
+
+
               <motion.button
                 key={item.path}
                 whileTap={{ scale: 0.92 }}
