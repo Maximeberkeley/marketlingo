@@ -322,7 +322,7 @@ export default function ProfileScreen() {
       <Modal visible={showChangeWarning} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Image source={APP_ICONS.concept} style={{ width: 32, height: 32, resizeMode: 'contain', alignSelf: 'center', marginBottom: 12 }} />
+            <Feather name="alert-circle" size={28} color={COLORS.accent} style={{ alignSelf: 'center', marginBottom: 12 }} />
             <Text style={styles.modalTitle}>Change Market?</Text>
             <Text style={styles.modalSubtitle}>
               Changing your market will reset your path and streak. This action cannot be undone.
