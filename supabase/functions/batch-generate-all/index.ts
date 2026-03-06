@@ -6,6 +6,7 @@ import {
   LEARNING_GOALS,
   GOAL_PERSONAS,
   getGoalTag,
+  getLevelTag,
   type CurriculumStructure,
   type LearningGoal,
 } from '../_shared/curriculum-structures.ts';
@@ -322,7 +323,8 @@ async function saveContent(
   dayType: string, marketId: string, goal: LearningGoal
 ) {
   const goalTag = getGoalTag(goal);
-  const baseTags = [dayType, `day-${day}`, `month-${month}`, 'MICRO_LESSON', goalTag];
+  const levelTag = getLevelTag(day);
+  const baseTags = [dayType, `day-${day}`, `month-${month}`, 'MICRO_LESSON', goalTag, levelTag];
 
   if (dayType === 'TRAINER') {
     const correctIndex = content.options?.findIndex((o: any) => o.isCorrect) ?? 1;
