@@ -18,8 +18,8 @@ export function smartTruncate(text: string, maxLength: number = 280): string {
   const lastQuestion = truncated.lastIndexOf('?');
   const lastSentenceEnd = Math.max(lastPeriod, lastExclaim, lastQuestion);
   
-  // Use sentence boundary if it's at least 50% of max length
-  if (lastSentenceEnd > maxLength * 0.5) {
+  // Use sentence boundary if it's at least 30% of max length (lowered from 50%)
+  if (lastSentenceEnd > maxLength * 0.3) {
     return truncated.substring(0, lastSentenceEnd + 1);
   }
   
