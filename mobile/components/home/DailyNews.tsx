@@ -92,7 +92,7 @@ function NewsCardAnimated({ item, index, showAiInsights, onDiscuss }: { item: Ne
               onPress={(e) => { e.stopPropagation(); onDiscuss(item); }}
               activeOpacity={0.7}
             >
-              <Image source={APP_ICONS.trainer} style={{ width: 14, height: 14, resizeMode: 'contain' }} />
+              <Feather name="message-circle" size={14} color={COLORS.accent} />
               <Text style={styles.discussText}>Discuss with AI</Text>
             </TouchableOpacity>
           </View>
