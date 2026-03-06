@@ -378,7 +378,7 @@ export default function HomeScreen() {
                   onPress={() => router.push('/trainer' as any)}
                   activeOpacity={0.8}
                 >
-                  <Image source={APP_ICONS.trainer} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+                  <Feather name="refresh-cw" size={20} color={COLORS.accent} />
                   <View style={{ flex: 1 }}>
                     <Text style={styles.reviewPromptTitle}>{dueCount} concept{dueCount !== 1 ? 's' : ''} to review</Text>
                     <Text style={styles.reviewPromptSub}>Spaced repetition keeps it fresh</Text>
