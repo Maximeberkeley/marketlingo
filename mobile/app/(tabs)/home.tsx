@@ -26,7 +26,7 @@ import { LessonCard } from '../../components/ui/LessonCard';
 import { SlideReaderV2 as SlideReader } from '../../components/slides/SlideReaderV2';
 import { TodaysMission } from '../../components/home/TodaysMission';
 import { StreakAtRisk } from '../../components/home/StreakAtRisk';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
 import { SocialNudge } from '../../components/home/SocialNudge';
 import { TomorrowPreview } from '../../components/home/TomorrowPreview';
@@ -256,7 +256,7 @@ export default function HomeScreen() {
                 {lessonCompletedToday ? (
                   <View style={styles.lessonCompleteRow}>
                     <View style={styles.lessonCompleteIcon}>
-                      <Image source={APP_ICONS.learn} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                      <Feather name="check-circle" size={20} color={COLORS.success} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.lessonCompleteTitle}>Lesson Complete!</Text>
@@ -266,7 +266,7 @@ export default function HomeScreen() {
                 ) : lessonStack ? (
                   <View style={styles.lessonItemRow}>
                     <View style={styles.lessonItemIcon}>
-                      <Image source={APP_ICONS.learn} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                      <Feather name="book-open" size={20} color={COLORS.accent} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.lessonItemTitle} numberOfLines={2}>{lessonStack.title}</Text>
@@ -336,13 +336,13 @@ export default function HomeScreen() {
               <Text style={styles.sectionHeader}>Practice & Play</Text>
               <View style={styles.practiceGrid}>
                 {[
-                  { icon: APP_ICONS.games, label: 'Games', onPress: () => router.push('/games' as any) },
-                  { icon: APP_ICONS.drills, label: 'Drills', onPress: () => router.push('/drills' as any) },
-                  { icon: APP_ICONS.trainer, label: 'Trainer', onPress: () => router.push('/trainer' as any) },
+                  { icon: 'play-circle' as const, label: 'Games', color: '#8B5CF6', onPress: () => router.push('/games' as any) },
+                  { icon: 'zap' as const, label: 'Drills', color: '#F59E0B', onPress: () => router.push('/drills' as any) },
+                  { icon: 'target' as const, label: 'Trainer', color: '#22C55E', onPress: () => router.push('/trainer' as any) },
                 ].map((item) => (
                   <TouchableOpacity key={item.label} style={styles.practiceItem} onPress={item.onPress} activeOpacity={0.7}>
-                    <View style={styles.practiceIconWrap}>
-                      <Image source={item.icon} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+                    <View style={[styles.practiceIconWrap, { backgroundColor: item.color + '12' }]}>
+                      <Feather name={item.icon} size={22} color={item.color} />
                     </View>
                     <Text style={styles.practiceLabel}>{item.label}</Text>
                   </TouchableOpacity>
@@ -355,14 +355,14 @@ export default function HomeScreen() {
               <Text style={styles.sectionHeader}>Quick Access</Text>
               <View style={styles.quickGrid}>
                 {[
-                  { icon: APP_ICONS.notebook, label: 'Notes', onPress: () => router.push('/(tabs)/notebook' as any) },
-                  { icon: APP_ICONS.achievements, label: 'Rank', onPress: () => router.push('/leaderboard' as any) },
-                  { icon: APP_ICONS.achievements, label: 'Badges', onPress: () => router.push('/achievements' as any) },
-                  { icon: APP_ICONS.news, label: 'News', onPress: () => router.push('/summaries' as any) },
+                  { icon: 'edit-3' as const, label: 'Notes', color: '#8B5CF6', onPress: () => router.push('/(tabs)/notebook' as any) },
+                  { icon: 'award' as const, label: 'Rank', color: '#F59E0B', onPress: () => router.push('/leaderboard' as any) },
+                  { icon: 'star' as const, label: 'Badges', color: '#22C55E', onPress: () => router.push('/achievements' as any) },
+                  { icon: 'file-text' as const, label: 'News', color: '#3B82F6', onPress: () => router.push('/summaries' as any) },
                 ].map((item) => (
                   <TouchableOpacity key={item.label} style={styles.quickItem} onPress={item.onPress} activeOpacity={0.7}>
-                    <View style={styles.quickIconWrap}>
-                      <Image source={item.icon} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                    <View style={[styles.quickIconWrap, { backgroundColor: item.color + '12' }]}>
+                      <Feather name={item.icon} size={18} color={item.color} />
                     </View>
                     <Text style={styles.quickLabel}>{item.label}</Text>
                   </TouchableOpacity>
@@ -378,7 +378,7 @@ export default function HomeScreen() {
                   onPress={() => router.push('/trainer' as any)}
                   activeOpacity={0.8}
                 >
-                  <Image source={APP_ICONS.trainer} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+                  <Feather name="refresh-cw" size={20} color={COLORS.accent} />
                   <View style={{ flex: 1 }}>
                     <Text style={styles.reviewPromptTitle}>{dueCount} concept{dueCount !== 1 ? 's' : ''} to review</Text>
                     <Text style={styles.reviewPromptSub}>Spaced repetition keeps it fresh</Text>
@@ -408,7 +408,7 @@ export default function HomeScreen() {
                 activeOpacity={0.7}
               >
                 <View style={[styles.investIcon, isProUser && styles.investIconPro]}>
-                  <Image source={isProUser ? APP_ICONS.progress : APP_ICONS.lens} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                  <Feather name={isProUser ? 'trending-up' : 'search'} size={20} color={isProUser ? COLORS.success : COLORS.accent} />
                 </View>
                 <View style={{ flex: 1 }}>
                   <View style={styles.investTitleRow}>
@@ -432,7 +432,7 @@ export default function HomeScreen() {
               <View style={styles.journeyCard}>
                 <View style={styles.journeyHeader}>
                   <View style={styles.journeyHeaderLeft}>
-                    <Image source={APP_ICONS.progress} style={{ width: 16, height: 16, resizeMode: 'contain' }} />
+                    <Feather name="bar-chart-2" size={14} color={COLORS.accent} />
                     <Text style={styles.journeyTitle}>Day {currentDay} of 180</Text>
                   </View>
                   <Text style={styles.journeyPct}>{Math.round(journeyProgress)}%</Text>

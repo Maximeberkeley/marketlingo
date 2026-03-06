@@ -16,7 +16,7 @@ import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { SeasonSection } from '../../components/roadmap/SeasonSection';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 import type { NodeStatus } from '../../components/roadmap/RoadmapNode';
 
 interface Lesson {
@@ -255,7 +255,7 @@ export default function RoadmapScreen() {
             </Text>
           </View>
           <View style={styles.dayBadge}>
-            <Image source={APP_ICONS.progress} style={{ width: 16, height: 16, resizeMode: 'contain' }} />
+            <Feather name="bar-chart-2" size={14} color={COLORS.accent} />
             <Text style={styles.dayBadgeText}>{journeyPct}%</Text>
           </View>
         </Animated.View>

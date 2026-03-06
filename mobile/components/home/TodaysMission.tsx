@@ -6,10 +6,9 @@ import {
   StyleSheet,
   Animated,
   Easing,
-  Image,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
-import { APP_ICONS } from '../../lib/icons';
 
 interface TodaysMissionProps {
   dayNumber: number;
@@ -136,7 +135,7 @@ export function TodaysMission({
           </View>
           {streak > 0 && (
             <View style={styles.streakBadge}>
-              <Image source={APP_ICONS.streak} style={styles.streakIcon} />
+              <Feather name="activity" size={12} color={COLORS.orange} />
               <Text style={styles.streakText}>{streak} day streak</Text>
             </View>
           )}
@@ -147,10 +146,10 @@ export function TodaysMission({
             <CircularProgress progress={progress} size={88} strokeWidth={5} isCompleted={isCompleted} />
             <View style={styles.ringCenter}>
               {isCompleted ? (
-                <Text style={styles.ringCheckmark}>✓</Text>
+                <Feather name="check" size={32} color={COLORS.success} />
               ) : (
                 <>
-                  <Image source={APP_ICONS.learn} style={styles.ringIcon} />
+                  <Feather name="book-open" size={22} color={COLORS.accent} />
                   <Text style={styles.ringDay}>{dayNumber}</Text>
                 </>
               )}
@@ -179,11 +178,11 @@ export function TodaysMission({
         {isCompleted ? (
           <View style={styles.completedActions}>
             <TouchableOpacity style={styles.reviewBtn} onPress={onReview} activeOpacity={0.7}>
-              <Image source={APP_ICONS.learn} style={styles.btnIcon} />
+              <Feather name="book-open" size={14} color={COLORS.textSecondary} />
               <Text style={styles.reviewBtnText}>Review</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.practiceBtn} onPress={onPractice} activeOpacity={0.7}>
-              <Image source={APP_ICONS.drills} style={[styles.btnIcon, { tintColor: '#fff' }]} />
+              <Feather name="zap" size={14} color="#fff" />
               <Text style={styles.practiceBtnText}>Practice</Text>
             </TouchableOpacity>
           </View>
@@ -191,7 +190,7 @@ export function TodaysMission({
           <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
             <TouchableOpacity style={styles.startBtn} onPress={onStart} activeOpacity={0.8}>
               <Text style={styles.startBtnText}>Start Lesson</Text>
-              <Text style={styles.startBtnArrow}>→</Text>
+              <Feather name="arrow-right" size={18} color="rgba(255,255,255,0.7)" />
             </TouchableOpacity>
           </Animated.View>
         )}
@@ -213,14 +212,11 @@ const styles = StyleSheet.create({
   dayBadge: { backgroundColor: COLORS.accentSoft, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   dayBadgeText: { fontSize: 11, fontWeight: '800', color: COLORS.accent, letterSpacing: 1 },
   streakBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: COLORS.orangeSoft, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  streakIcon: { width: 14, height: 14, resizeMode: 'contain' },
   streakText: { fontSize: 11, fontWeight: '600', color: COLORS.orange },
   mainRow: { flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 16 },
   ringContainer: { width: 88, height: 88, alignItems: 'center', justifyContent: 'center' },
   ringCenter: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
-  ringIcon: { width: 24, height: 24, resizeMode: 'contain' },
   ringDay: { fontSize: 11, fontWeight: '700', color: COLORS.textMuted, marginTop: -2 },
-  ringCheckmark: { fontSize: 32, fontWeight: '700', color: COLORS.success },
   infoColumn: { flex: 1 },
   missionLabel: { fontSize: 10, fontWeight: '700', color: COLORS.accent, letterSpacing: 0.8, marginBottom: 4 },
   lessonTitle: { fontSize: 17, fontWeight: '700', color: COLORS.textPrimary, lineHeight: 22, marginBottom: 8 },
@@ -232,7 +228,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accent, paddingVertical: 16, borderRadius: 14, gap: 8,
   },
   startBtnText: { fontSize: 17, fontWeight: '700', color: '#FFFFFF' },
-  startBtnArrow: { fontSize: 18, fontWeight: '700', color: 'rgba(255,255,255,0.7)' },
   completedActions: { flexDirection: 'row', gap: 10 },
   reviewBtn: {
     flex: 1, flexDirection: 'row', gap: 6, paddingVertical: 14, borderRadius: 12, backgroundColor: COLORS.bg1,
@@ -241,5 +236,4 @@ const styles = StyleSheet.create({
   reviewBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.textSecondary },
   practiceBtn: { flex: 1, flexDirection: 'row', gap: 6, paddingVertical: 14, borderRadius: 12, backgroundColor: COLORS.success, alignItems: 'center', justifyContent: 'center' },
   practiceBtnText: { fontSize: 14, fontWeight: '700', color: '#FFFFFF' },
-  btnIcon: { width: 16, height: 16, resizeMode: 'contain' },
 });

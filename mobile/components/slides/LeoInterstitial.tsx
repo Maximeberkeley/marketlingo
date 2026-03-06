@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Image, StyleSheet, Animated } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 
@@ -45,12 +45,12 @@ const MESSAGES: Record<InterstitialType, string[]> = {
   ],
 };
 
-const TYPE_ICONS: Record<InterstitialType, any> = {
-  encouragement: APP_ICONS.streak,
-  'fun-fact': APP_ICONS.concept,
-  'check-in': APP_ICONS.trainer,
-  celebration: APP_ICONS.achievements,
-  halfway: APP_ICONS.progress,
+const TYPE_FEATHER_ICONS: Record<InterstitialType, keyof typeof Feather.glyphMap> = {
+  encouragement: 'activity',
+  'fun-fact': 'layers',
+  'check-in': 'target',
+  celebration: 'award',
+  halfway: 'bar-chart-2',
 };
 
 const ACCENT_COLORS: Record<InterstitialType, string> = {
@@ -109,7 +109,7 @@ export function LeoInterstitial({ type, progress, slideTitle, customMessage }: L
 
       {/* Type icon */}
       <View style={[styles.iconCircle, { backgroundColor: accent + '20' }]}>
-        <Image source={TYPE_ICONS[type]} style={styles.typeIcon} />
+        <Feather name={TYPE_FEATHER_ICONS[type]} size={22} color={accent} />
       </View>
 
       {/* Message */}

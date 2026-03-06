@@ -10,6 +10,7 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import * as Notifications from 'expo-notifications';
@@ -18,7 +19,7 @@ import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { NotificationOnboarding } from '../components/onboarding/NotificationOnboarding';
-import { APP_ICONS } from '../lib/icons';
+
 
 // Deep-link route map (mirrors _layout.tsx)
 const NOTIFICATION_ROUTES: Record<string, string> = {
@@ -359,7 +360,7 @@ export default function SettingsScreen() {
               onPress={() => setShowNotifOnboarding(true)}
               activeOpacity={0.85}
             >
-              <Image source={APP_ICONS.streak} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
+              <Feather name="bell" size={18} color={COLORS.accent} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.notifSetupLabel}>Set Up Notifications</Text>
                 <Text style={styles.notifSetupDesc}>Daily reminders, streaks & industry news</Text>
@@ -378,7 +379,7 @@ export default function SettingsScreen() {
           {/* Test deep-link notification */}
           {pushEnabled && (
             <TouchableOpacity style={styles.testNotifBtn} onPress={handleTestNotification}>
-              <Image source={APP_ICONS.streak} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
+              <Feather name="send" size={18} color={COLORS.accent} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.testNotifLabel}>Send Test Notification</Text>
                 <Text style={styles.testNotifDesc}>Fires in 3s — tap to test deep-linking</Text>
@@ -398,13 +399,13 @@ export default function SettingsScreen() {
           </View>
 
           <TouchableOpacity style={styles.menuItem} onPress={handleResetPassword}>
-            <Image source={APP_ICONS.profile} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
+            <Feather name="lock" size={18} color={COLORS.textSecondary} />
             <Text style={styles.menuText}>Reset Password</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/subscription' as any)}>
-            <Image source={APP_ICONS.achievements} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
+            <Feather name="star" size={18} color={COLORS.textSecondary} />
             <Text style={styles.menuText}>Manage Subscription</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
@@ -420,13 +421,13 @@ export default function SettingsScreen() {
           </View>
 
           <TouchableOpacity style={styles.menuItem}>
-            <Image source={APP_ICONS.notebook} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
+            <Feather name="file-text" size={18} color={COLORS.textSecondary} />
             <Text style={styles.menuText}>Terms of Service</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
-            <Image source={APP_ICONS.regulatory} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
+            <Feather name="shield" size={18} color={COLORS.textSecondary} />
             <Text style={styles.menuText}>Privacy Policy</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>

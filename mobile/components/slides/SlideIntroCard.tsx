@@ -8,7 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { COLORS } from '../../lib/constants';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 import { getMarketConfig } from '../../data/marketConfig';
 
 const MARKET_HERO_IMAGES: Record<string, any> = {
@@ -31,10 +31,10 @@ const MARKET_HERO_IMAGES: Record<string, any> = {
 
 type StackType = 'NEWS' | 'HISTORY' | 'LESSON';
 
-const STACK_CONFIG: Record<StackType, { icon: any; tagline: string; color: string }> = {
-  NEWS:    { icon: APP_ICONS.news, tagline: 'Recognize recurring market forces', color: '#3B82F6' },
-  LESSON:  { icon: APP_ICONS.learn, tagline: '5-minute concept deep dive', color: '#10B981' },
-  HISTORY: { icon: APP_ICONS.slides, tagline: 'Key moments that shaped the industry', color: '#F59E0B' },
+const STACK_CONFIG: Record<StackType, { icon: keyof typeof Feather.glyphMap; tagline: string; color: string }> = {
+  NEWS:    { icon: 'file-text', tagline: 'Recognize recurring market forces', color: '#3B82F6' },
+  LESSON:  { icon: 'book-open', tagline: '5-minute concept deep dive', color: '#10B981' },
+  HISTORY: { icon: 'layout', tagline: 'Key moments that shaped the industry', color: '#F59E0B' },
 };
 
 interface SlideIntroCardProps {
@@ -71,7 +71,7 @@ export function SlideIntroCard({ stackTitle, stackType, totalSlides, marketId }:
 
       <Animated.View style={[styles.content, { opacity, transform: [{ translateY: slideUp }] }]}>
         <View style={[styles.iconBadge, { backgroundColor: config.color + '20' }]}>
-          <Image source={config.icon} style={styles.badgeIcon} />
+          <Feather name={config.icon} size={22} color={config.color} />
         </View>
 
         <Text style={[styles.typeLabel, { color: config.color }]}>{stackType}</Text>

@@ -22,7 +22,7 @@ import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { getDemoXP } from '../../lib/demoXPBridge';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress';
 import { triggerHaptic } from '../../lib/haptics';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 const STEP_LABELS = ['Industry', 'Goal', 'Level'];
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -147,7 +147,7 @@ export default function OnboardingScreen() {
         {/* Demo bridge banner */}
         {demoMarket && demoXP > 0 && (
           <View style={styles.demoBanner}>
-            <Image source={APP_ICONS.streak} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
+            <Feather name="activity" size={24} color={COLORS.accent} />
             <View style={{ flex: 1 }}>
               <Text style={styles.demoBannerTitle}>Continue where you left off</Text>
               <Text style={styles.demoBannerSub}>
@@ -159,7 +159,7 @@ export default function OnboardingScreen() {
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
-          <Image source={APP_ICONS.lens} style={{ width: 18, height: 18, resizeMode: 'contain', marginRight: 10 }} />
+          <Feather name="search" size={18} color={COLORS.textMuted} style={{ marginRight: 10 }} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search industries..."
