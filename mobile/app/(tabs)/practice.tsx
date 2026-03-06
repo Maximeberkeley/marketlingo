@@ -101,7 +101,7 @@ function PracticeCard({
       <TouchableOpacity
         style={[styles.bigCard, { backgroundColor: mode.bgGradientStart }]}
         onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+           triggerHaptic('light');
           onPress();
         }}
         onPressIn={() => {
