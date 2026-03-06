@@ -266,7 +266,7 @@ export default function HomeScreen() {
                 ) : lessonStack ? (
                   <View style={styles.lessonItemRow}>
                     <View style={styles.lessonItemIcon}>
-                      <Image source={APP_ICONS.learn} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                      <Feather name="book-open" size={20} color={COLORS.accent} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.lessonItemTitle} numberOfLines={2}>{lessonStack.title}</Text>
