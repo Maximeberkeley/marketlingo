@@ -184,7 +184,7 @@ export default function ProfileScreen() {
         {xpData && (
           <View style={styles.stageCard}>
             <View style={styles.stageHeader}>
-              <Image source={APP_ICONS.progress} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+              <Feather name="bar-chart-2" size={18} color={COLORS.accent} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.stageTitle}>Stage {currentStage.stage}: {currentStage.name}</Text>
                 <Text style={styles.stageDesc}>{currentStage.description}</Text>
