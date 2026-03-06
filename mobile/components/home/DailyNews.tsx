@@ -179,7 +179,7 @@ export function DailyNews({ marketId }: DailyNewsProps) {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Image source={APP_ICONS.news} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+          <Feather name="file-text" size={20} color={COLORS.accent} />
           <View>
             <Text style={styles.headerTitle}>Industry Intel</Text>
             <Text style={styles.headerSubtitle}>AI-analyzed insights</Text>
