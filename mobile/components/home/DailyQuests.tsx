@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { COLORS } from '../../lib/constants';
-import { APP_ICONS } from '../../lib/icons';
 import { DailyQuest } from '../../hooks/useDailyQuests';
 import { triggerHaptic } from '../../lib/haptics';
 
@@ -13,13 +13,20 @@ interface DailyQuestsProps {
   allComplete: boolean;
 }
 
-// Map quest type → icon + route
-const QUEST_META: Record<string, { icon: any; route: string }> = {
-  lesson: { icon: APP_ICONS.learn, route: '/(tabs)/home' },
-  drill:  { icon: APP_ICONS.drills, route: '/drills' },
-  game:   { icon: APP_ICONS.games, route: '/games' },
-  combo:  { icon: APP_ICONS.trainer, route: '/(tabs)/practice' },
-  streak: { icon: APP_ICONS.streak, route: '/(tabs)/home' },
+const QUEST_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
+  lesson: 'book-open',
+  drill: 'zap',
+  game: 'play-circle',
+  combo: 'target',
+  streak: 'activity',
+};
+
+const QUEST_ROUTES: Record<string, string> = {
+  lesson: '/(tabs)/home',
+  drill: '/drills',
+  game: '/games',
+  combo: '/(tabs)/practice',
+  streak: '/(tabs)/home',
 };
 
 function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
@@ -41,19 +48,18 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
   }, [quest.isCompleted]);
 
   const progressPct = quest.target > 0 ? Math.min(1, quest.current / quest.target) : 0;
-  const meta = QUEST_META[quest.type] || QUEST_META.lesson;
+  const iconName = QUEST_ICONS[quest.type] || 'book-open';
+  const route = QUEST_ROUTES[quest.type] || '/(tabs)/home';
 
   const handlePress = () => {
     triggerHaptic('light');
     if (!quest.isCompleted) {
-      router.push(meta.route as any);
+      router.push(route as any);
     }
   };
 
   return (
-    <Animated.View
-      style={[{ transform: [{ translateX: slideAnim }], opacity: opacityAnim }]}
-    >
+    <Animated.View style={[{ transform: [{ translateX: slideAnim }], opacity: opacityAnim }]}>
       <TouchableOpacity
         style={[styles.questRow, quest.isCompleted && styles.questRowCompleted]}
         onPress={handlePress}
@@ -61,7 +67,7 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
         disabled={quest.isCompleted}
       >
         <View style={[styles.questIcon, quest.isCompleted && styles.questIconDone]}>
-          <Image source={meta.icon} style={styles.questIconImg} />
+          <Feather name={iconName} size={20} color={quest.isCompleted ? COLORS.success : COLORS.accent} />
         </View>
         <View style={styles.questContent}>
           <View style={styles.questHeader}>
@@ -87,10 +93,10 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
         </View>
         {quest.isCompleted ? (
           <Animated.View style={[styles.checkCircle, { transform: [{ scale: checkScale }] }]}>
-            <Text style={styles.checkText}>✓</Text>
+            <Feather name="check" size={14} color="#fff" />
           </Animated.View>
         ) : (
-          <Text style={styles.chevron}>›</Text>
+          <Feather name="chevron-right" size={16} color={COLORS.textMuted} />
         )}
       </TouchableOpacity>
     </Animated.View>
@@ -102,7 +108,7 @@ export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete 
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Image source={APP_ICONS.quests} style={styles.headerIcon} />
+          <Feather name="flag" size={18} color={COLORS.accent} />
           <Text style={styles.headerTitle}>Daily Quests</Text>
         </View>
         <View style={styles.countBadge}>
@@ -112,7 +118,7 @@ export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete 
 
       {allComplete && (
         <View style={styles.allCompleteBanner}>
-          <Image source={APP_ICONS.achievements} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
+          <Feather name="award" size={24} color={COLORS.success} />
           <View>
             <Text style={styles.allCompleteTitle}>All Quests Complete!</Text>
             <Text style={styles.allCompleteSubtitle}>+{totalBonusXP} bonus XP earned</Text>
@@ -135,7 +141,6 @@ const styles = StyleSheet.create({
   },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  headerIcon: { width: 22, height: 22, resizeMode: 'contain' },
   headerTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
   countBadge: {
     backgroundColor: COLORS.accentSoft, paddingHorizontal: 10, paddingVertical: 4,
@@ -152,15 +157,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 12,
     backgroundColor: COLORS.bg1, borderRadius: 14, padding: 12,
   },
-  questRowCompleted: {
-    backgroundColor: COLORS.successSoft,
-  },
+  questRowCompleted: { backgroundColor: COLORS.successSoft },
   questIcon: {
     width: 40, height: 40, borderRadius: 12,
     backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center',
   },
   questIconDone: { backgroundColor: 'rgba(34,197,94,0.12)' },
-  questIconImg: { width: 24, height: 24, resizeMode: 'contain' },
   questContent: { flex: 1 },
   questHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 },
   questTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, flex: 1 },
@@ -181,6 +183,5 @@ const styles = StyleSheet.create({
     width: 28, height: 28, borderRadius: 14,
     backgroundColor: COLORS.success, alignItems: 'center', justifyContent: 'center',
   },
-  checkText: { fontSize: 14, fontWeight: '800', color: '#fff' },
   chevron: { fontSize: 20, color: COLORS.textMuted, marginLeft: 4 },
 });

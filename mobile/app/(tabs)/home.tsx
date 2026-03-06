@@ -432,7 +432,7 @@ export default function HomeScreen() {
               <View style={styles.journeyCard}>
                 <View style={styles.journeyHeader}>
                   <View style={styles.journeyHeaderLeft}>
-                    <Image source={APP_ICONS.progress} style={{ width: 16, height: 16, resizeMode: 'contain' }} />
+                    <Feather name="bar-chart-2" size={14} color={COLORS.accent} />
                     <Text style={styles.journeyTitle}>Day {currentDay} of 180</Text>
                   </View>
                   <Text style={styles.journeyPct}>{Math.round(journeyProgress)}%</Text>
