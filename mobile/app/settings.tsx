@@ -399,7 +399,7 @@ export default function SettingsScreen() {
           </View>
 
           <TouchableOpacity style={styles.menuItem} onPress={handleResetPassword}>
-            <Image source={APP_ICONS.profile} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
+            <Feather name="lock" size={18} color={COLORS.textSecondary} />
             <Text style={styles.menuText}>Reset Password</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
