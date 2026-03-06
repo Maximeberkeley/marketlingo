@@ -157,7 +157,7 @@ export default function ProfileScreen() {
           <Animated.View style={[styles.statsGrid, animStyle(statsAnim)]}>
             <View style={styles.statCard}>
               <View style={[styles.statIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
-                <Image source={APP_ICONS.streak} style={styles.statIconImg} />
+                <Feather name="activity" size={18} color="#8B5CF6" />
               </View>
               <Text style={styles.statValue}>{progress.current_streak || 0}</Text>
               <Text style={styles.statLabel}>Current Streak</Text>
