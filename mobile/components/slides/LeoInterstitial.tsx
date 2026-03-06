@@ -45,12 +45,12 @@ const MESSAGES: Record<InterstitialType, string[]> = {
   ],
 };
 
-const TYPE_ICONS: Record<InterstitialType, any> = {
-  encouragement: APP_ICONS.streak,
-  'fun-fact': APP_ICONS.concept,
-  'check-in': APP_ICONS.trainer,
-  celebration: APP_ICONS.achievements,
-  halfway: APP_ICONS.progress,
+const TYPE_FEATHER_ICONS: Record<InterstitialType, keyof typeof Feather.glyphMap> = {
+  encouragement: 'activity',
+  'fun-fact': 'layers',
+  'check-in': 'target',
+  celebration: 'award',
+  halfway: 'bar-chart-2',
 };
 
 const ACCENT_COLORS: Record<InterstitialType, string> = {

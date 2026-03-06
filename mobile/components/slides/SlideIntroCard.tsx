@@ -31,10 +31,10 @@ const MARKET_HERO_IMAGES: Record<string, any> = {
 
 type StackType = 'NEWS' | 'HISTORY' | 'LESSON';
 
-const STACK_CONFIG: Record<StackType, { icon: any; tagline: string; color: string }> = {
-  NEWS:    { icon: APP_ICONS.news, tagline: 'Recognize recurring market forces', color: '#3B82F6' },
-  LESSON:  { icon: APP_ICONS.learn, tagline: '5-minute concept deep dive', color: '#10B981' },
-  HISTORY: { icon: APP_ICONS.slides, tagline: 'Key moments that shaped the industry', color: '#F59E0B' },
+const STACK_CONFIG: Record<StackType, { icon: keyof typeof Feather.glyphMap; tagline: string; color: string }> = {
+  NEWS:    { icon: 'file-text', tagline: 'Recognize recurring market forces', color: '#3B82F6' },
+  LESSON:  { icon: 'book-open', tagline: '5-minute concept deep dive', color: '#10B981' },
+  HISTORY: { icon: 'layout', tagline: 'Key moments that shaped the industry', color: '#F59E0B' },
 };
 
 interface SlideIntroCardProps {

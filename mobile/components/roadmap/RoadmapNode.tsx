@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { TouchableOpacity, Text, View, StyleSheet, Animated, Image } from 'react-native';
 import { COLORS } from '../../lib/constants';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 export type NodeStatus = 'locked' | 'current' | 'completed' | 'available';
 

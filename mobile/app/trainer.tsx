@@ -21,7 +21,7 @@ import { getMentorForContext } from '../data/mentors';
 import type { Mentor } from '../data/mentors';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 
 // Market-specific hero images
