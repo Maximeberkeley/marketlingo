@@ -43,9 +43,9 @@ const gradeColors: Record<string, { bg: string; text: string; border: string }> 
   C: { bg: COLORS.bg2, text: COLORS.textMuted, border: COLORS.border },
 };
 
-const STAMP_ICONS: any[] = [
-  APP_ICONS.learn, APP_ICONS.concept, APP_ICONS.trainer,
-  APP_ICONS.lens, APP_ICONS.achievements, APP_ICONS.progress,
+const STAMP_FEATHER: (keyof typeof Feather.glyphMap)[] = [
+  'book-open', 'layers', 'target',
+  'search', 'award', 'bar-chart-2',
 ];
 
 const goalLabels: Record<string, string> = {
