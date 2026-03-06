@@ -256,7 +256,7 @@ export default function HomeScreen() {
                 {lessonCompletedToday ? (
                   <View style={styles.lessonCompleteRow}>
                     <View style={styles.lessonCompleteIcon}>
-                      <Image source={APP_ICONS.learn} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                      <Feather name="check-circle" size={20} color={COLORS.success} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.lessonCompleteTitle}>Lesson Complete!</Text>
