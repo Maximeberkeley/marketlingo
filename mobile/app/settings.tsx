@@ -379,7 +379,7 @@ export default function SettingsScreen() {
           {/* Test deep-link notification */}
           {pushEnabled && (
             <TouchableOpacity style={styles.testNotifBtn} onPress={handleTestNotification}>
-              <Image source={APP_ICONS.streak} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
+              <Feather name="send" size={18} color={COLORS.accent} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.testNotifLabel}>Send Test Notification</Text>
                 <Text style={styles.testNotifDesc}>Fires in 3s — tap to test deep-linking</Text>
