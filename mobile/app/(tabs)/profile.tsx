@@ -272,7 +272,7 @@ export default function ProfileScreen() {
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/passport' as any)}>
             <View style={[styles.menuIcon, { backgroundColor: 'rgba(99, 102, 241, 0.2)' }]}>
-              <Image source={APP_ICONS.passport} style={styles.menuIconImg} />
+              <Feather name="globe" size={18} color="#6366F1" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Industry Passport</Text>
