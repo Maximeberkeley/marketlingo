@@ -401,12 +401,11 @@ export function SlideReaderV2({
             onPress={() => setNarrationEnabled(!narrationEnabled)}
             style={[styles.narrationBtn, narrationEnabled && styles.narrationBtnActive]}
           >
-            <Image
-              source={APP_ICONS.learn}
-              style={[
-                styles.narrationImg,
-                { opacity: narrationEnabled ? 1 : 0.4 },
-              ]}
+            <Feather
+              name="volume-2"
+              size={20}
+              color={narrationEnabled ? COLORS.accent : COLORS.textMuted}
+              style={{ opacity: narrationEnabled ? 1 : 0.4 }}
             />
           </TouchableOpacity>
         </View>
