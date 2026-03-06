@@ -282,7 +282,7 @@ export default function TrainerScreen() {
                 { icon: 'book-open' as const, text: 'Mental models for founders' },
               ].map((f, i) => (
                 <View key={i} style={styles.featureRow}>
-                  <Image source={f.icon} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                  <Feather name={f.icon} size={18} color={COLORS.accent} />
                   <Text style={styles.featureText}>{f.text}</Text>
                 </View>
               ))}
