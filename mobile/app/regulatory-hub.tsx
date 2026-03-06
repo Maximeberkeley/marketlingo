@@ -15,7 +15,7 @@ import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { getMarketName } from '../lib/markets';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 interface RegulatoryItem {
   title: string;
