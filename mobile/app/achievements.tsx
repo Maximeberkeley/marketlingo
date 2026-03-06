@@ -14,15 +14,26 @@ import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { ACHIEVEMENTS, tierColors } from '../data/achievements';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
-type IconKey = keyof typeof APP_ICONS;
+const FEATHER_TIER_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
+  bronze: 'bar-chart-2',
+  silver: 'target',
+  gold: 'award',
+  platinum: 'award',
+};
 
-const TIER_ICONS: Record<string, IconKey> = {
-  bronze: 'progress',
-  silver: 'trainer',
-  gold: 'achievements',
-  platinum: 'achievements',
+const FEATHER_ACHIEVE_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
+  games: 'play-circle',
+  drills: 'zap',
+  trainer: 'target',
+  progress: 'bar-chart-2',
+  achievements: 'award',
+  streak: 'activity',
+  learn: 'book-open',
+  notebook: 'edit-3',
+  quests: 'flag',
+  passport: 'globe',
 };
 
 interface AchievementDisplay {
