@@ -81,7 +81,7 @@ function NewsCardAnimated({ item, index, showAiInsights, onDiscuss }: { item: Ne
           <Text style={styles.newsTitle} numberOfLines={3}>{item.title}</Text>
           {showAiInsights && item.summary && (
             <View style={styles.summaryCard}>
-              <Image source={APP_ICONS.concept} style={{ width: 14, height: 14, resizeMode: 'contain', marginTop: 1 }} />
+              <Feather name="layers" size={14} color={COLORS.accent} style={{ marginTop: 1 }} />
               <Text style={styles.summaryText} numberOfLines={3}>{item.summary}</Text>
             </View>
           )}
