@@ -88,6 +88,7 @@ export default function TabLayout() {
           title: 'Courses',
           tabBarIcon: ({ focused }) => <TabBarIcon name="roadmap" focused={focused} />,
         }}
+        listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
       <Tabs.Screen
         name="practice"
