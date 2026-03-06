@@ -257,7 +257,7 @@ export default function RegulatoryHubScreen() {
 
         <View style={styles.mentorHeader}>
           <View style={styles.mentorAvatar}>
-            <Image source={APP_ICONS.regulatory} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
+            <Feather name="shield" size={24} color={COLORS.accent} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.title}>{data.marketName} Regulatory Hub</Text>
