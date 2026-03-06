@@ -240,7 +240,7 @@ export default function ProfileScreen() {
               {MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace'] ? (
                 <Image source={MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace']} style={styles.menuIconImg} />
               ) : (
-                <Image source={APP_ICONS.progress} style={styles.menuIconImg} />
+                <Feather name="bar-chart-2" size={18} color={COLORS.accent} />
               )}
             </View>
             <View style={{ flex: 1 }}>
