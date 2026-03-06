@@ -524,9 +524,11 @@ function CompletionOverlay({
       <Animated.View style={[compStyles.card, { transform: [{ scale: scaleAnim }] }]}>
         {/* Icon instead of emoji */}
         <View style={compStyles.iconCircle}>
-          <Image
-            source={isReview ? APP_ICONS.learn : hasMetMinimumTime ? APP_ICONS.achievements : APP_ICONS.progress}
-            style={compStyles.iconImg}
+          <Feather
+            name={isReview ? 'book-open' : hasMetMinimumTime ? 'award' : 'bar-chart-2'}
+            size={36}
+            color={hasMetMinimumTime ? COLORS.success : COLORS.accent}
+          />
           />
         </View>
 
