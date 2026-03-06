@@ -26,7 +26,7 @@ import { LessonCard } from '../../components/ui/LessonCard';
 import { SlideReaderV2 as SlideReader } from '../../components/slides/SlideReaderV2';
 import { TodaysMission } from '../../components/home/TodaysMission';
 import { StreakAtRisk } from '../../components/home/StreakAtRisk';
-import { APP_ICONS } from '../../lib/icons';
+import { Feather } from '@expo/vector-icons';
 import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
 import { SocialNudge } from '../../components/home/SocialNudge';
 import { TomorrowPreview } from '../../components/home/TomorrowPreview';
