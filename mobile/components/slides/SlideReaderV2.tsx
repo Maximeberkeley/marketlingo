@@ -436,7 +436,7 @@ export function SlideReaderV2({
                   style={styles.actionBtn}
                   onPress={() => currentSlide && onAddNote(currentSlide.slideNumber)}
                 >
-                  <Image source={APP_ICONS.notebook} style={styles.actionIcon} />
+                  <Feather name="edit-3" size={18} color={COLORS.textSecondary} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.actionBtn}
