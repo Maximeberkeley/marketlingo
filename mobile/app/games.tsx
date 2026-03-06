@@ -18,7 +18,7 @@ import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { ComboCounter } from '../components/ui/ComboCounter';
 import { createComboState, comboCorrect, comboWrong, ComboState } from '../lib/combo';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 interface GameQuestion {
   id: string;
