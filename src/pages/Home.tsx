@@ -517,14 +517,8 @@ export default function HomePage() {
           />
         </motion.div>
 
-        {/* Practice Grid — Clean, minimal */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.16 }}
-          className="mb-5"
-        >
-          <p className="section-header">Practice & Play</p>
+        {/* Practice & Resources moved to /practice tab */}
+
           <div className="grid grid-cols-3 gap-3">
             {[
               { icon: Gamepad2, label: "Games", path: "/games", color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-500/10" },
