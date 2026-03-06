@@ -247,7 +247,7 @@ export default function PracticeScreen() {
               key={idx}
               style={styles.resourceItem}
               onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                triggerHaptic('light');
                 router.push(item.route as any);
               }}
               activeOpacity={0.7}
