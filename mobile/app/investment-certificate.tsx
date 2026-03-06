@@ -134,7 +134,7 @@ export default function InvestmentCertificateScreen() {
               <View style={styles.certDivider} />
               <Text style={styles.certDate}>{completionDate}</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                <Image source={APP_ICONS.progress} style={{ width: 14, height: 14, resizeMode: 'contain' }} />
+                <Feather name="bar-chart-2" size={14} color={COLORS.accent} />
                 <Text style={styles.certXP}>{progress.investment_xp} Investment XP</Text>
               </View>
               <Text style={styles.certIssuer}>MarketLingo</Text>

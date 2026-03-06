@@ -174,7 +174,7 @@ export default function SubscriptionScreen() {
               <Animated.View style={[animStyle(cardsAnim)]}>
                 <View style={styles.trialCard}>
                   <View style={styles.trialHeaderRow}>
-                    <Image source={APP_ICONS.quests} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                    <Feather name="flag" size={18} color={COLORS.accent} />
                     <Text style={styles.trialLabel}>Limited Time</Text>
                   </View>
                   <Text style={styles.trialTitle}>Try Pro Free for {TRIAL_DURATION_DAYS} Days</Text>

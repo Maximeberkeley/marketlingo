@@ -315,7 +315,7 @@ export default function RegulatoryHubScreen() {
               onPress={() => resource.url && Linking.openURL(resource.url)}
               activeOpacity={0.7}
             >
-              <Image source={APP_ICONS.news} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+              <Feather name="file-text" size={20} color={COLORS.accent} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.resourceTitle}>{resource.title}</Text>
                 <Text style={styles.resourceDesc}>{resource.description}</Text>

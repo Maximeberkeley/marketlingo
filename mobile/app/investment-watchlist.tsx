@@ -104,7 +104,7 @@ export default function InvestmentWatchlistScreen() {
         ) : (
           <View style={styles.emptyState}>
             <View style={styles.emptyIcon}>
-              <Image source={APP_ICONS.passport} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
+              <Feather name="globe" size={24} color={COLORS.textMuted} />
             </View>
             <Text style={styles.emptyTitle}>No Companies Yet</Text>
             <Text style={styles.emptySubtitle}>Add companies from Key Players section to track them here</Text>
