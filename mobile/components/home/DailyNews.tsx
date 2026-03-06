@@ -191,7 +191,7 @@ export function DailyNews({ marketId }: DailyNewsProps) {
             onPress={() => setShowAiInsights(!showAiInsights)}
             style={[styles.aiToggle, showAiInsights && styles.aiToggleActive]}
           >
-            <Image source={APP_ICONS.concept} style={{ width: 12, height: 12, resizeMode: 'contain', marginRight: 2 }} />
+            <Feather name="layers" size={12} color={showAiInsights ? COLORS.accent : COLORS.textMuted} style={{ marginRight: 2 }} />
             <Text style={[styles.aiToggleText, showAiInsights && { color: COLORS.accent }]}>
               AI
             </Text>

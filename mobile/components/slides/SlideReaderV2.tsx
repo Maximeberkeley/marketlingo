@@ -549,7 +549,7 @@ function CompletionOverlay({
           <>
             <Text style={compStyles.title}>Lesson Complete!</Text>
             <View style={compStyles.xpBadge}>
-              <Image source={APP_ICONS.streak} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+              <Feather name="activity" size={18} color={COLORS.accent} />
               <Text style={compStyles.xpText}>+50 XP</Text>
             </View>
           </>
