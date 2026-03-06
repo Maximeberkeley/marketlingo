@@ -17,17 +17,17 @@ import { StickyBottomCTA } from '../components/StickyBottomCTA';
 import { useSubscription, TRIAL_DURATION_DAYS } from '../hooks/useSubscription';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { trackEvent } from '../lib/analytics';
-import { APP_ICONS } from '../lib/icons';
+import { Feather } from '@expo/vector-icons';
 
 type PlanType = 'monthly' | 'annual';
 
 const PRO_FEATURES = [
-  { icon: APP_ICONS.learn, title: 'Unlimited Learning', description: 'No daily caps on lessons, games & drills', highlight: 'Most Popular' },
-  { icon: APP_ICONS.concept, title: 'Investment Lab', description: 'Expert scenarios, portfolio simulations, and real valuation models', highlight: 'Pro Exclusive' },
-  { icon: APP_ICONS.trainer, title: 'AI Mentors On-Demand', description: 'Unlimited conversations with industry-specific AI mentors', highlight: null },
-  { icon: APP_ICONS.drills, title: 'Advanced Trainer', description: 'Pro Reasoning, Mental Models & Common Mistakes analysis', highlight: null },
-  { icon: APP_ICONS.achievements, title: 'LinkedIn Certificates', description: 'Shareable credentials that prove your industry expertise', highlight: null },
-  { icon: APP_ICONS.news, title: 'Priority Content', description: 'First access to new industries and premium insights', highlight: null },
+  { featherIcon: 'book-open' as const, title: 'Unlimited Learning', description: 'No daily caps on lessons, games & drills', highlight: 'Most Popular' },
+  { featherIcon: 'layers' as const, title: 'Investment Lab', description: 'Expert scenarios, portfolio simulations, and real valuation models', highlight: 'Pro Exclusive' },
+  { featherIcon: 'target' as const, title: 'AI Mentors On-Demand', description: 'Unlimited conversations with industry-specific AI mentors', highlight: null },
+  { featherIcon: 'zap' as const, title: 'Advanced Trainer', description: 'Pro Reasoning, Mental Models & Common Mistakes analysis', highlight: null },
+  { featherIcon: 'award' as const, title: 'LinkedIn Certificates', description: 'Shareable credentials that prove your industry expertise', highlight: null },
+  { featherIcon: 'file-text' as const, title: 'Priority Content', description: 'First access to new industries and premium insights', highlight: null },
 ];
 
 const TESTIMONIALS = [
