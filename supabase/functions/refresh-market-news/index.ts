@@ -7,6 +7,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
  * 1. Fetch fresh articles via Firecrawl for every active market
  * 2. Upsert them into news_items table with today's published_at
  * 3. Optionally enhance summaries with AI (Lovable AI gateway)
+ * 4. Send push notifications to subscribed users
  * 
  * Designed to be called by pg_cron 2× per day (8am + 6pm UTC).
  * Can also be triggered on-demand via POST with { marketId?: string }.
@@ -19,66 +20,81 @@ const corsHeaders = {
 
 // ─── Market search configs ──────────────────────────────────────────────────
 
-const marketSearchConfig: Record<string, { queries: string[]; categories: string[] }> = {
+const marketSearchConfig: Record<string, { queries: string[]; categories: string[]; label: string }> = {
   aerospace: {
     queries: ['site:aviationweek.com aerospace', 'site:spacenews.com', 'site:flightglobal.com aviation'],
     categories: ['Space', 'Aviation', 'Defense', 'Deals', 'Innovation'],
+    label: 'Aerospace & Defense',
   },
   ai: {
     queries: ['site:techcrunch.com artificial intelligence', 'site:wired.com AI machine learning', 'site:venturebeat.com AI'],
     categories: ['Models', 'Hardware', 'Research', 'Startups', 'Enterprise'],
+    label: 'Artificial Intelligence',
   },
   biotech: {
     queries: ['site:fiercebiotech.com', 'site:biopharmadive.com', 'site:statnews.com biotech'],
     categories: ['Clinical', 'FDA', 'Deals', 'Research', 'IPO'],
+    label: 'Biotech',
   },
   cleanenergy: {
     queries: ['site:renewableenergyworld.com', 'site:utilitydive.com clean energy', 'site:greentechmedia.com'],
     categories: ['Solar', 'Wind', 'Storage', 'Grid', 'Policy'],
+    label: 'Clean Energy',
   },
   climatetech: {
     queries: ['site:canarymedia.com', 'site:greenbiz.com climate', 'site:climatechangenews.com'],
     categories: ['Carbon', 'Policy', 'Investment', 'Tech', 'Impact'],
+    label: 'Climate Tech',
   },
   cybersecurity: {
     queries: ['site:darkreading.com', 'site:bleepingcomputer.com', 'site:therecord.media cybersecurity'],
     categories: ['Threats', 'Defense', 'Enterprise', 'Breach', 'Policy'],
+    label: 'Cybersecurity',
   },
   ev: {
     queries: ['site:electrek.co', 'site:insideevs.com', 'site:chargedevs.com'],
     categories: ['Vehicles', 'Charging', 'Battery', 'Policy', 'Deals'],
+    label: 'Electric Vehicles',
   },
   fintech: {
     queries: ['site:fintechfutures.com', 'site:pymnts.com fintech', 'site:finextra.com'],
     categories: ['Payments', 'Banking', 'Crypto', 'Lending', 'Deals'],
+    label: 'Fintech',
   },
   healthtech: {
     queries: ['site:mobihealthnews.com', 'site:healthcareitnews.com', 'site:fiercehealthcare.com digital health'],
     categories: ['Telehealth', 'AI', 'Devices', 'FDA', 'Deals'],
+    label: 'Health Tech',
   },
   logistics: {
     queries: ['site:freightwaves.com', 'site:supplychaindive.com', 'site:dcvelocity.com logistics'],
     categories: ['Shipping', 'Last-Mile', 'Automation', 'Supply Chain', 'Tech'],
+    label: 'Logistics',
   },
   neuroscience: {
     queries: ['site:neurosciencenews.com', 'site:statnews.com brain'],
     categories: ['BCI', 'Research', 'FDA', 'Therapeutics', 'Devices'],
+    label: 'Neuroscience',
   },
   robotics: {
     queries: ['site:therobotreport.com', 'site:roboticsandautomationnews.com'],
     categories: ['Industrial', 'Service', 'AI', 'Humanoid', 'Deals'],
+    label: 'Robotics',
   },
   spacetech: {
     queries: ['site:spacenews.com', 'site:arstechnica.com space', 'site:nasaspaceflight.com'],
     categories: ['Launch', 'Satellites', 'Exploration', 'Commercial', 'Policy'],
+    label: 'Space Tech',
   },
   agtech: {
     queries: ['site:agfundernews.com', 'site:agweb.com technology'],
     categories: ['Precision', 'Biotech', 'Climate', 'Robotics', 'Deals'],
+    label: 'AgTech',
   },
   web3: {
     queries: ['site:theblock.co', 'site:coindesk.com', 'site:decrypt.co blockchain'],
     categories: ['DeFi', 'NFT', 'Layer2', 'Regulation', 'Deals'],
+    label: 'Web3',
   },
 };
 
@@ -108,14 +124,68 @@ function getCategoryFromContent(title: string, content: string, marketId: string
   return config.categories[0] || 'Industry';
 }
 
+async function sendPushNotifications(
+  supabase: any,
+  marketId: string,
+  topHeadline: string,
+): Promise<number> {
+  try {
+    // Get users subscribed to this market with push tokens and news alerts enabled
+    const { data: profiles, error } = await supabase
+      .from('profiles')
+      .select('push_token, notification_preferences')
+      .eq('selected_market', marketId)
+      .not('push_token', 'is', null);
+
+    if (error || !profiles || profiles.length === 0) return 0;
+
+    const marketLabel = marketSearchConfig[marketId]?.label || marketId;
+    let sent = 0;
+
+    for (const profile of profiles) {
+      const prefs = profile.notification_preferences as any;
+      // Only send if user has news alerts enabled (default true)
+      if (prefs && prefs.newsAlerts === false) continue;
+
+      const token = profile.push_token;
+      if (!token) continue;
+
+      try {
+        // Send via Expo Push API
+        await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: token,
+            title: `${marketLabel} News`,
+            body: topHeadline,
+            data: { type: 'news', marketId, route: '/(tabs)/home' },
+            sound: 'default',
+            badge: 1,
+          }),
+        });
+        sent++;
+      } catch (_) {
+        // Skip individual failures
+      }
+    }
+
+    console.log(`[push] Sent ${sent} notifications for ${marketId}`);
+    return sent;
+  } catch (e) {
+    console.error(`[push] Error sending notifications:`, (e as Error).message);
+    return 0;
+  }
+}
+
 async function fetchAndPersistMarket(
   supabase: any,
   firecrawlKey: string,
   lovableKey: string | undefined,
   marketId: string,
-): Promise<{ inserted: number; errors: string[] }> {
+): Promise<{ inserted: number; notified: number; errors: string[] }> {
   const config = marketSearchConfig[marketId];
-  if (!config) return { inserted: 0, errors: [`No config for ${marketId}`] };
+  if (!config) return { inserted: 0, notified: 0, errors: [`No config for ${marketId}`] };
 
   const allResults: any[] = [];
   const errors: string[] = [];
@@ -159,7 +229,7 @@ async function fetchAndPersistMarket(
   }
 
   const top = deduped.slice(0, 10);
-  if (top.length === 0) return { inserted: 0, errors };
+  if (top.length === 0) return { inserted: 0, notified: 0, errors };
 
   // Build news items
   interface NewsRow {
@@ -193,7 +263,7 @@ async function fetchAndPersistMarket(
       title: item.title || 'Industry News',
       source_name: sourceName,
       source_url: item.url,
-      published_at: new Date().toISOString(), // Always today
+      published_at: new Date().toISOString(),
       category_tag: getCategoryFromContent(item.title || '', item.markdown || '', marketId),
       summary,
     };
@@ -249,11 +319,16 @@ Respond with a JSON array of insight strings only, no other text.`;
   const { error: insertError } = await supabase.from('news_items').insert(newsRows);
   if (insertError) {
     errors.push(`DB insert error: ${insertError.message}`);
-    return { inserted: 0, errors };
+    return { inserted: 0, notified: 0, errors };
   }
 
   console.log(`[refresh-market-news] ${marketId}: inserted ${newsRows.length} articles`);
-  return { inserted: newsRows.length, errors };
+
+  // Send push notifications with top headline
+  const topHeadline = newsRows[0]?.title || 'New articles available';
+  const notified = await sendPushNotifications(supabase, marketId, topHeadline);
+
+  return { inserted: newsRows.length, notified, errors };
 }
 
 // ─── Handler ─────────────────────────────────────────────────────────────────
@@ -289,7 +364,7 @@ Deno.serve(async (req) => {
 
     console.log(`[refresh-market-news] Refreshing ${marketsToRefresh.length} markets`);
 
-    const results: Record<string, { inserted: number; errors: string[] }> = {};
+    const results: Record<string, { inserted: number; notified: number; errors: string[] }> = {};
 
     for (const marketId of marketsToRefresh) {
       results[marketId] = await fetchAndPersistMarket(supabase, firecrawlKey, lovableKey, marketId);
@@ -298,10 +373,11 @@ Deno.serve(async (req) => {
     }
 
     const totalInserted = Object.values(results).reduce((s, r) => s + r.inserted, 0);
-    console.log(`[refresh-market-news] Done. Total inserted: ${totalInserted}`);
+    const totalNotified = Object.values(results).reduce((s, r) => s + r.notified, 0);
+    console.log(`[refresh-market-news] Done. Inserted: ${totalInserted}, Notified: ${totalNotified}`);
 
     return new Response(
-      JSON.stringify({ success: true, refreshed: marketsToRefresh.length, totalInserted, results }),
+      JSON.stringify({ success: true, refreshed: marketsToRefresh.length, totalInserted, totalNotified, results }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   } catch (error) {
