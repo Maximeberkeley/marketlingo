@@ -462,6 +462,7 @@ const styles = StyleSheet.create({
   timerDanger: { backgroundColor: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)' },
   timerText: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary },
   introCenter: { alignItems: 'center', marginBottom: 20 },
+  heroImage: { width: 160, height: 160, marginBottom: 12, borderRadius: 16 },
   introMsg: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginTop: 12, lineHeight: 20 },
   heroCard: {
     padding: 20, borderRadius: 16, marginBottom: 16,
