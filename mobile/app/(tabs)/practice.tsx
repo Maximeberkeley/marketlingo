@@ -260,6 +260,13 @@ function IslandCard({ card }: { card: CardData }) {
             ]}
           />
 
+          {/* Hero image */}
+          {card.heroImage && (
+            <View style={styles.cardImageWrap}>
+              <Image source={card.heroImage} style={styles.cardImage} resizeMode="contain" />
+            </View>
+          )}
+
           {/* Content at bottom */}
           <View style={styles.cardContent}>
             <View style={styles.cardBadgeRow}>
