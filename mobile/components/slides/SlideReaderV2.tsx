@@ -725,10 +725,14 @@ const styles = StyleSheet.create({
   cardArea: {
     flex: 1,
   },
-  cardContent: {
+  cardScroll: {
     flex: 1,
+  },
+  cardContent: {
+    flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
+    paddingVertical: 16,
   },
   bottomBar: {
     paddingHorizontal: 16,
