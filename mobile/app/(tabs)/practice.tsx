@@ -86,6 +86,7 @@ const RESOURCE_CARDS: CardData[] = [
     iconColor: '#FDBA74',
     gradient: ['#7C2D12', '#EA580C'] as const,
     path: '/summaries',
+    heroImage: require('../../assets/illustrations/summaries-hero.png'),
   },
   {
     id: 'regulatory',
@@ -96,6 +97,7 @@ const RESOURCE_CARDS: CardData[] = [
     iconColor: '#93C5FD',
     gradient: ['#1E3A5F', '#2563EB'] as const,
     path: '/regulatory-hub',
+    heroImage: require('../../assets/illustrations/regulatory-hero.png'),
   },
   {
     id: 'notebook',
@@ -106,6 +108,7 @@ const RESOURCE_CARDS: CardData[] = [
     iconColor: '#FDA4AF',
     gradient: ['#881337', '#E11D48'] as const,
     path: '/(tabs)/notebook',
+    heroImage: require('../../assets/cards/notebook-hero.jpg'),
   },
   {
     id: 'passport',
@@ -116,6 +119,7 @@ const RESOURCE_CARDS: CardData[] = [
     iconColor: '#5EEAD4',
     gradient: ['#134E4A', '#0D9488'] as const,
     path: '/passport',
+    heroImage: require('../../assets/illustrations/passport-hero.png'),
   },
   {
     id: 'investment',
