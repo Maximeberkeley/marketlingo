@@ -296,10 +296,10 @@ export default function InvestmentLabScreen() {
 
           {/* Chat with Mentor */}
           <TouchableOpacity style={styles.mentorChatCard} onPress={handleOpenMentorChat}>
-            <Feather name="message-circle" size={22} color={COLORS.accent} />
+            <Image source={SOPHIA_AVATAR} style={{ width: 36, height: 36, borderRadius: 18, borderWidth: 1.5, borderColor: 'rgba(139,92,246,0.4)' }} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.watchlistTitle}>Ask Your Investment Mentor</Text>
-              <Text style={styles.watchlistDesc}>Get AI-powered investment guidance</Text>
+              <Text style={styles.watchlistTitle}>Ask Sophia</Text>
+              <Text style={styles.watchlistDesc}>Your AI investment mentor</Text>
             </View>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
