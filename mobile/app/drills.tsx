@@ -214,9 +214,23 @@ export default function DrillsScreen() {
         });
       });
 
-      // Shuffle and pick 5 — different each session
+      // Shuffle and ensure balanced true/false distribution
       const shuffled = drillQuestions.sort(() => Math.random() - 0.5);
-      setQuestions(shuffled.slice(0, 7));
+      const trueQs = shuffled.filter(q => q.isTrue);
+      const falseQs = shuffled.filter(q => !q.isTrue);
+      // Pick balanced set: ~half true, ~half false
+      const balanced: DrillQuestion[] = [];
+      const halfCount = Math.ceil(7 / 2);
+      balanced.push(...trueQs.slice(0, halfCount));
+      balanced.push(...falseQs.slice(0, 7 - balanced.length));
+      // If not enough false, fill with true (and vice versa)
+      while (balanced.length < 7 && shuffled.length > balanced.length) {
+        const next = shuffled.find(q => !balanced.includes(q));
+        if (next) balanced.push(next);
+        else break;
+      }
+      // Final shuffle so true/false aren't grouped
+      setQuestions(balanced.sort(() => Math.random() - 0.5));
       setLoading(false);
     };
     fetchData();
