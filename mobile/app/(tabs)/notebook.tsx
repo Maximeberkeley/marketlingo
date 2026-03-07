@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,13 +11,20 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Animated,
+  Image,
+  Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { COLORS } from '../../lib/constants';
+import { COLORS, SHADOWS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { Feather } from '@expo/vector-icons';
+import { triggerHaptic } from '../../lib/haptics';
 
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+/* ─── Types ─── */
 interface NoteEntry {
   id: string;
   content: string;
@@ -27,7 +34,10 @@ interface NoteEntry {
   slide_id: string | null;
 }
 
-function getLinkedType(label: string | null): 'news' | 'lesson' | 'trainer' | 'personal' {
+type NoteCategory = 'all' | 'lesson' | 'news' | 'trainer' | 'personal';
+
+/* ─── Helpers ─── */
+function getLinkedType(label: string | null): NoteCategory {
   if (!label) return 'lesson';
   const lower = label.toLowerCase();
   if (lower.includes('news') || lower.includes('daily')) return 'news';
@@ -41,10 +51,13 @@ function formatDate(dateStr: string): string {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-
   if (date.toDateString() === today.toDateString()) return 'Today';
   if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function formatTime(dateStr: string): string {
+  return new Date(dateStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 }
 
 function groupNotesByDate(notes: NoteEntry[]): Record<string, NoteEntry[]> {
@@ -57,44 +70,192 @@ function groupNotesByDate(notes: NoteEntry[]): Record<string, NoteEntry[]> {
   return groups;
 }
 
-const typeColors: Record<string, { bg: string; text: string; label: string }> = {
-  lesson: { bg: 'rgba(139, 92, 246, 0.15)', text: '#A78BFA', label: 'Lesson' },
-  news: { bg: 'rgba(59, 130, 246, 0.15)', text: '#60A5FA', label: 'News' },
-  trainer: { bg: 'rgba(245, 158, 11, 0.15)', text: '#FBBF24', label: 'Trainer' },
-  personal: { bg: 'rgba(34, 197, 94, 0.15)', text: '#4ADE80', label: 'Personal' },
-};
-
-const filters = [
-  { id: null, label: 'All' },
-  { id: 'lesson', label: 'Lessons' },
-  { id: 'news', label: 'News' },
-  { id: 'trainer', label: 'Trainer' },
+/* ─── Category config ─── */
+const CATEGORIES: { id: NoteCategory; label: string; icon: keyof typeof Feather.glyphMap; color: string }[] = [
+  { id: 'all', label: 'All', icon: 'layers', color: COLORS.accent },
+  { id: 'lesson', label: 'Lessons', icon: 'book-open', color: '#8B5CF6' },
+  { id: 'trainer', label: 'Trainer', icon: 'target', color: '#F59E0B' },
+  { id: 'news', label: 'News', icon: 'file-text', color: '#3B82F6' },
+  { id: 'personal', label: 'Personal', icon: 'edit-3', color: '#10B981' },
 ];
 
+const TYPE_CONFIG: Record<string, { icon: keyof typeof Feather.glyphMap; color: string; bg: string; label: string }> = {
+  lesson: { icon: 'book-open', color: '#8B5CF6', bg: 'rgba(139,92,246,0.12)', label: 'Lesson' },
+  news: { icon: 'file-text', color: '#3B82F6', bg: 'rgba(59,130,246,0.12)', label: 'News' },
+  trainer: { icon: 'target', color: '#F59E0B', bg: 'rgba(245,158,11,0.12)', label: 'Trainer' },
+  personal: { icon: 'edit-3', color: '#10B981', bg: 'rgba(16,185,129,0.12)', label: 'Personal' },
+};
+
+/* ─── Streak helper ─── */
+function computeNoteStreak(notes: NoteEntry[]): { current: number; thisWeek: number[] } {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayMs = 86400000;
+
+  // Which days this week have notes (0=Sun..6=Sat)
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - today.getDay()); // Sunday
+  const thisWeek: number[] = [];
+  for (let d = 0; d < 7; d++) {
+    const day = new Date(weekStart.getTime() + d * dayMs);
+    const dayStr = day.toDateString();
+    if (notes.some((n) => new Date(n.created_at).toDateString() === dayStr)) {
+      thisWeek.push(d);
+    }
+  }
+
+  // Consecutive days streak ending today or yesterday
+  let streak = 0;
+  let checkDate = new Date(today);
+  // Check if notes exist today
+  const hasToday = notes.some((n) => new Date(n.created_at).toDateString() === today.toDateString());
+  if (!hasToday) {
+    // Allow yesterday as last day
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+  while (true) {
+    const dayStr = checkDate.toDateString();
+    if (notes.some((n) => new Date(n.created_at).toDateString() === dayStr)) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  return { current: streak, thisWeek };
+}
+
+/* ─── Note Card Component ─── */
+function NoteCard({ note, onDelete }: { note: NoteEntry; onDelete: (id: string) => void }) {
+  const linkedType = getLinkedType(note.linked_label);
+  const config = TYPE_CONFIG[linkedType] || TYPE_CONFIG.lesson;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const onPressIn = () => {
+    Animated.spring(scaleAnim, { toValue: 0.97, useNativeDriver: true, tension: 300, friction: 20 }).start();
+  };
+  const onPressOut = () => {
+    Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true, tension: 300, friction: 20 }).start();
+  };
+
+  return (
+    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+      <TouchableOpacity
+        style={styles.noteCard}
+        activeOpacity={0.9}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        onLongPress={() => {
+          triggerHaptic('warning');
+          onDelete(note.id);
+        }}
+      >
+        {/* Color accent line */}
+        <View style={[styles.noteAccentLine, { backgroundColor: config.color }]} />
+
+        <View style={styles.noteBody}>
+          {/* Header row */}
+          <View style={styles.noteHeader}>
+            <View style={[styles.noteIconCircle, { backgroundColor: config.bg }]}>
+              <Feather name={config.icon} size={12} color={config.color} />
+            </View>
+            <Text style={[styles.noteTypeLabel, { color: config.color }]}>
+              {note.linked_label || config.label}
+            </Text>
+            <Text style={styles.noteTime}>{formatTime(note.created_at)}</Text>
+          </View>
+
+          {/* Content */}
+          <Text style={styles.noteContent} numberOfLines={4}>
+            {note.content}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
+
+/* ─── Streak Week View ─── */
+function StreakWeekView({ streak, thisWeek, totalNotes }: { streak: number; thisWeek: number[]; totalNotes: number }) {
+  const dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const today = new Date().getDay();
+
+  return (
+    <View style={styles.streakCard}>
+      <View style={styles.streakTop}>
+        <View style={styles.streakFlameWrap}>
+          <Feather name="edit-3" size={20} color={COLORS.accent} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.streakCount}>{streak}</Text>
+          <Text style={styles.streakLabel}>day note streak</Text>
+        </View>
+        <View style={styles.streakStatPill}>
+          <Text style={styles.streakStatNum}>{totalNotes}</Text>
+          <Text style={styles.streakStatLabel}>total</Text>
+        </View>
+      </View>
+
+      {/* Week dots */}
+      <View style={styles.weekRow}>
+        {dayLabels.map((label, i) => {
+          const isActive = thisWeek.includes(i);
+          const isToday = i === today;
+          return (
+            <View key={i} style={styles.weekDay}>
+              <Text style={[styles.weekDayLabel, isToday && styles.weekDayLabelToday]}>{label}</Text>
+              <View
+                style={[
+                  styles.weekDot,
+                  isActive && styles.weekDotActive,
+                  isToday && !isActive && styles.weekDotToday,
+                ]}
+              >
+                {isActive && <Feather name="check" size={10} color="#fff" />}
+              </View>
+            </View>
+          );
+        })}
+      </View>
+
+      <Text style={styles.streakMotivation}>
+        {streak === 0
+          ? 'Add a note today to start your streak!'
+          : streak < 3
+          ? 'Great start! Keep capturing insights daily.'
+          : streak < 7
+          ? "You're building a habit! Keep it up."
+          : 'Amazing streak! You're a knowledge machine.'}
+      </Text>
+    </View>
+  );
+}
+
+/* ─── Main Screen ─── */
 export default function NotebookScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [notes, setNotes] = useState<NoteEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<NoteCategory>('all');
   const [showAddNote, setShowAddNote] = useState(false);
   const [newNoteContent, setNewNoteContent] = useState('');
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
+  const [showSearch, setShowSearch] = useState(false);
+
+  const headerAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
-
       const { data: profile } = await supabase
         .from('profiles')
         .select('selected_market')
         .eq('id', user.id)
         .single();
-
-      if (profile?.selected_market) {
-        setSelectedMarket(profile.selected_market);
-      }
+      if (profile?.selected_market) setSelectedMarket(profile.selected_market);
     };
     fetchData();
   }, [user]);
@@ -102,41 +263,38 @@ export default function NotebookScreen() {
   useEffect(() => {
     const fetchNotes = async () => {
       if (!user || !selectedMarket) return;
-
       const { data, error } = await supabase
         .from('notes')
         .select('*')
         .eq('user_id', user.id)
         .eq('market_id', selectedMarket)
         .order('created_at', { ascending: false });
-
-      if (!error) {
-        setNotes(data || []);
-      }
+      if (!error) setNotes(data || []);
       setLoading(false);
+      Animated.spring(headerAnim, { toValue: 1, tension: 60, friction: 12, useNativeDriver: true }).start();
     };
-
     if (selectedMarket) fetchNotes();
   }, [user, selectedMarket]);
 
-  const handleDeleteNote = async (noteId: string) => {
+  const handleDeleteNote = useCallback((noteId: string) => {
     if (!user) return;
-    Alert.alert('Delete Note', 'Are you sure?', [
+    Alert.alert('Delete Note', 'This cannot be undone.', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete',
         style: 'destructive',
         onPress: async () => {
+          triggerHaptic('warning');
           await supabase.from('notes').delete().eq('id', noteId).eq('user_id', user.id);
           setNotes((prev) => prev.filter((n) => n.id !== noteId));
         },
       },
     ]);
-  };
+  }, [user]);
 
   const handleAddNote = async () => {
     if (!user || !newNoteContent.trim() || !selectedMarket) return;
-
+    triggerHaptic('success');
     const { data, error } = await supabase
       .from('notes')
       .insert({
@@ -147,7 +305,6 @@ export default function NotebookScreen() {
       })
       .select()
       .single();
-
     if (!error && data) {
       setNotes((prev) => [data, ...prev]);
       setNewNoteContent('');
@@ -155,14 +312,23 @@ export default function NotebookScreen() {
     }
   };
 
+  // Filter + search
   const filteredNotes = notes.filter((note) => {
-    const matchesSearch = note.content.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = !searchQuery || note.content.toLowerCase().includes(searchQuery.toLowerCase());
     const linkedType = getLinkedType(note.linked_label);
-    const matchesFilter = !selectedFilter || linkedType === selectedFilter;
+    const matchesFilter = selectedCategory === 'all' || linkedType === selectedCategory;
     return matchesSearch && matchesFilter;
   });
 
   const groupedNotes = groupNotesByDate(filteredNotes);
+  const { current: streak, thisWeek } = computeNoteStreak(notes);
+
+  // Category counts
+  const categoryCounts: Record<string, number> = { all: notes.length };
+  notes.forEach((n) => {
+    const t = getLinkedType(n.linked_label);
+    categoryCounts[t] = (categoryCounts[t] || 0) + 1;
+  });
 
   if (loading) {
     return (
@@ -177,155 +343,184 @@ export default function NotebookScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 },
+          { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 100 },
         ]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header */}
-        <View style={styles.headerRow}>
+        {/* ── Header ── */}
+        <Animated.View
+          style={[
+            styles.header,
+            {
+              opacity: headerAnim,
+              transform: [{ translateY: headerAnim.interpolate({ inputRange: [0, 1], outputRange: [16, 0] }) }],
+            },
+          ]}
+        >
           <View style={{ flex: 1 }}>
-            <Text style={styles.title}>My Notebook</Text>
-            <Text style={styles.subtitle}>{notes.length} insights captured</Text>
+            <Text style={styles.title}>Notebook</Text>
+            <Text style={styles.subtitle}>
+              {notes.length === 0 ? 'Start capturing insights' : `${notes.length} insight${notes.length !== 1 ? 's' : ''} captured`}
+            </Text>
           </View>
-          <TouchableOpacity style={styles.addButton} onPress={() => setShowAddNote(true)}>
-            <Text style={styles.addButtonText}>+</Text>
+          <TouchableOpacity
+            style={styles.searchToggle}
+            onPress={() => setShowSearch((s) => !s)}
+          >
+            <Feather name="search" size={18} color={COLORS.textSecondary} />
           </TouchableOpacity>
-        </View>
+        </Animated.View>
 
-        {/* Pro Tip */}
-        {notes.length > 0 && notes.length < 5 && (
-          <View style={styles.tipCard}>
-            <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: 'rgba(251,191,36,0.15)', alignItems: 'center', justifyContent: 'center' }}><Text style={{ fontSize: 14, color: '#FCD34D' }}>i</Text></View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.tipTitle}>Pro Tip</Text>
-              <Text style={styles.tipText}>
-                Add notes during lessons to reinforce learning. Studies show writing helps retention by 30%.
-              </Text>
-            </View>
+        {/* ── Search (collapsible) ── */}
+        {showSearch && (
+          <View style={styles.searchContainer}>
+            <Feather name="search" size={16} color={COLORS.textMuted} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search notes..."
+              placeholderTextColor={COLORS.textMuted}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              autoFocus
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery('')}>
+                <Feather name="x" size={16} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            )}
           </View>
         )}
 
-        {/* Search */}
-        <View style={styles.searchContainer}>
-          <Text style={styles.searchIcon}>⌕</Text>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search your notes..."
-            placeholderTextColor={COLORS.textMuted}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
+        {/* ── Streak Card ── */}
+        <StreakWeekView streak={streak} thisWeek={thisWeek} totalNotes={notes.length} />
 
-        {/* Filters */}
+        {/* ── Category Tabs ── */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={styles.filtersRow}
+          style={styles.categoryRow}
           contentContainerStyle={{ gap: 8, paddingRight: 16 }}
         >
-          {filters.map((filter) => (
-            <TouchableOpacity
-              key={filter.id || 'all'}
-              style={[
-                styles.filterChip,
-                selectedFilter === filter.id && styles.filterChipActive,
-              ]}
-              onPress={() => setSelectedFilter(filter.id)}
-            >
-              <Text
-                style={[
-                  styles.filterText,
-                  selectedFilter === filter.id && styles.filterTextActive,
-                ]}
+          {CATEGORIES.map((cat) => {
+            const isActive = selectedCategory === cat.id;
+            const count = categoryCounts[cat.id] || 0;
+            return (
+              <TouchableOpacity
+                key={cat.id}
+                style={[styles.categoryChip, isActive && { backgroundColor: cat.color + '18', borderColor: cat.color + '40' }]}
+                onPress={() => {
+                  triggerHaptic('light');
+                  setSelectedCategory(cat.id);
+                }}
               >
-                {filter.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Feather name={cat.icon} size={13} color={isActive ? cat.color : COLORS.textMuted} />
+                <Text style={[styles.categoryLabel, isActive && { color: cat.color, fontWeight: '600' }]}>
+                  {cat.label}
+                </Text>
+                {count > 0 && (
+                  <View style={[styles.categoryCount, isActive && { backgroundColor: cat.color + '20' }]}>
+                    <Text style={[styles.categoryCountText, isActive && { color: cat.color }]}>{count}</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
 
-        {/* Notes by Date */}
+        {/* ── Notes List ── */}
         {Object.keys(groupedNotes).length > 0 ? (
           <View style={{ gap: 20 }}>
             {Object.entries(groupedNotes).map(([date, dateNotes]) => (
               <View key={date}>
                 <View style={styles.dateHeader}>
-                  <View style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontSize: 8, color: '#fff', fontWeight: '700' }}>·</Text>
-                  </View>
+                  <View style={styles.dateDot} />
                   <Text style={styles.dateText}>{date}</Text>
+                  <Text style={styles.dateCount}>{dateNotes.length} note{dateNotes.length !== 1 ? 's' : ''}</Text>
                 </View>
-                <View style={{ gap: 8 }}>
-                  {dateNotes.map((note) => {
-                    const linkedType = getLinkedType(note.linked_label);
-                    const colors = typeColors[linkedType] || typeColors.lesson;
-                    return (
-                      <TouchableOpacity
-                        key={note.id}
-                        style={styles.noteCard}
-                        activeOpacity={0.7}
-                        onLongPress={() => handleDeleteNote(note.id)}
-                      >
-                        <Text style={styles.noteContent} numberOfLines={4}>
-                          {note.content}
-                        </Text>
-                        <View style={styles.noteMeta}>
-                          <View style={[styles.noteTag, { backgroundColor: colors.bg }]}>
-                            <Text style={[styles.noteTagText, { color: colors.text }]}>
-                              {note.linked_label || colors.label}
-                            </Text>
-                          </View>
-                        </View>
-                      </TouchableOpacity>
-                    );
-                  })}
+                <View style={{ gap: 10 }}>
+                  {dateNotes.map((note) => (
+                    <NoteCard key={note.id} note={note} onDelete={handleDeleteNote} />
+                  ))}
                 </View>
               </View>
             ))}
           </View>
         ) : (
           <View style={styles.emptyState}>
-            <Feather name="edit-3" size={40} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
+            <Image
+              source={require('../../assets/cards/notebook-hero.jpg')}
+              style={styles.emptyImage}
+              resizeMode="contain"
+            />
             <Text style={styles.emptyTitle}>
               {searchQuery ? 'No notes found' : 'Start your notebook'}
             </Text>
             <Text style={styles.emptySubtitle}>
               {searchQuery
-                ? 'Try a different search term'
-                : 'Capture insights while learning to build your knowledge base'}
+                ? 'Try a different search or category'
+                : 'Capture insights while learning.\nStudies show writing helps retention by 30%.'}
             </Text>
             {!searchQuery && (
-              <TouchableOpacity style={styles.emptyButton} onPress={() => setShowAddNote(true)}>
-                <Text style={styles.emptyButtonText}>Add your first note</Text>
+              <TouchableOpacity
+                style={styles.emptyCta}
+                onPress={() => {
+                  triggerHaptic('medium');
+                  setShowAddNote(true);
+                }}
+              >
+                <Feather name="edit-3" size={16} color="#fff" />
+                <Text style={styles.emptyCtaText}>Write your first note</Text>
               </TouchableOpacity>
             )}
           </View>
         )}
       </ScrollView>
 
-      {/* FAB */}
-      <TouchableOpacity
-        style={[styles.fab, { bottom: insets.bottom + 80 }]}
-        onPress={() => setShowAddNote(true)}
-      >
-        <Text style={styles.fabIcon}>+</Text>
-      </TouchableOpacity>
+      {/* ── FAB ── */}
+      {notes.length > 0 && (
+        <TouchableOpacity
+          style={[styles.fab, { bottom: insets.bottom + 80 }]}
+          onPress={() => {
+            triggerHaptic('medium');
+            setShowAddNote(true);
+          }}
+          activeOpacity={0.85}
+        >
+          <Feather name="plus" size={24} color="#fff" />
+        </TouchableOpacity>
+      )}
 
-      {/* Add Note Modal */}
+      {/* ── Add Note Modal ── */}
       <Modal visible={showAddNote} transparent animationType="slide">
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1 }}
         >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalCard}>
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => {
+              setShowAddNote(false);
+              setNewNoteContent('');
+            }}
+          >
+            <TouchableOpacity activeOpacity={1} style={styles.modalCard}>
               <View style={styles.modalHandle} />
-              <Text style={styles.modalTitle}>New Note</Text>
+
+              <View style={styles.modalHeader}>
+                <View style={styles.modalIconCircle}>
+                  <Feather name="edit-3" size={18} color={COLORS.accent} />
+                </View>
+                <View>
+                  <Text style={styles.modalTitle}>New Insight</Text>
+                  <Text style={styles.modalSubtitle}>What did you learn?</Text>
+                </View>
+              </View>
+
               <TextInput
                 style={styles.modalInput}
-                placeholder="What insight do you want to remember?"
+                placeholder="Write your insight, takeaway, or idea..."
                 placeholderTextColor={COLORS.textMuted}
                 value={newNoteContent}
                 onChangeText={setNewNoteContent}
@@ -333,6 +528,14 @@ export default function NotebookScreen() {
                 autoFocus
                 textAlignVertical="top"
               />
+
+              <View style={styles.modalTip}>
+                <Feather name="info" size={12} color={COLORS.textMuted} />
+                <Text style={styles.modalTipText}>
+                  Great notes are specific. Try: "Key insight from today's lesson..."
+                </Text>
+              </View>
+
               <View style={styles.modalActions}>
                 <TouchableOpacity
                   style={styles.modalCancel}
@@ -344,104 +547,169 @@ export default function NotebookScreen() {
                   <Text style={styles.modalCancelText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.modalSave, !newNoteContent.trim() && { opacity: 0.5 }]}
+                  style={[styles.modalSave, !newNoteContent.trim() && { opacity: 0.4 }]}
                   onPress={handleAddNote}
                   disabled={!newNoteContent.trim()}
                 >
-                  <Text style={styles.modalSaveText}>Save Note</Text>
+                  <Feather name="check" size={16} color="#fff" />
+                  <Text style={styles.modalSaveText}>Save</Text>
                 </TouchableOpacity>
               </View>
-            </View>
-          </View>
+            </TouchableOpacity>
+          </TouchableOpacity>
         </KeyboardAvoidingView>
       </Modal>
     </View>
   );
 }
 
+/* ─── Styles ─── */
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: 'center', justifyContent: 'center' },
   scrollContent: { paddingHorizontal: 16 },
-  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
-  title: { fontSize: 28, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 4 },
-  subtitle: { fontSize: 13, color: COLORS.textMuted },
-  addButton: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: 'rgba(139, 92, 246, 0.1)', borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.3)',
+
+  // Header
+  header: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
+  title: { fontSize: 28, fontWeight: '800', color: COLORS.textPrimary, letterSpacing: -0.5 },
+  subtitle: { fontSize: 13, color: COLORS.textMuted, marginTop: 2 },
+  searchToggle: {
+    width: 40, height: 40, borderRadius: 12, backgroundColor: COLORS.bg2,
+    borderWidth: 1, borderColor: COLORS.border,
     alignItems: 'center', justifyContent: 'center',
   },
-  addButtonText: { fontSize: 22, color: COLORS.accent, fontWeight: '300' },
-  tipCard: {
-    flexDirection: 'row', padding: 12, borderRadius: 12, marginBottom: 12,
-    backgroundColor: 'rgba(139, 92, 246, 0.05)', borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.2)',
-    gap: 8, alignItems: 'flex-start',
-  },
-  tipEmoji: { fontSize: 14, marginTop: 2 },
-  tipTitle: { fontSize: 12, fontWeight: '600', color: COLORS.accent, marginBottom: 2 },
-  tipText: { fontSize: 11, color: COLORS.textMuted, lineHeight: 16 },
+
+  // Search
   searchContainer: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.bg2,
-    borderRadius: 12, paddingHorizontal: 12, marginBottom: 12, borderWidth: 1, borderColor: COLORS.border,
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    backgroundColor: COLORS.bg2, borderRadius: 12, paddingHorizontal: 14,
+    marginBottom: 14, borderWidth: 1, borderColor: COLORS.border,
   },
-  searchIcon: { fontSize: 16, marginRight: 8 },
   searchInput: { flex: 1, height: 44, fontSize: 15, color: COLORS.textPrimary },
-  filtersRow: { marginBottom: 16, flexGrow: 0 },
-  filterChip: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20,
+
+  // Streak card
+  streakCard: {
+    backgroundColor: COLORS.bg2, borderRadius: 20, padding: 20, marginBottom: 16,
+    borderWidth: 1, borderColor: COLORS.border, ...SHADOWS.md,
+  },
+  streakTop: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 18 },
+  streakFlameWrap: {
+    width: 44, height: 44, borderRadius: 14, backgroundColor: 'rgba(139,92,246,0.12)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  streakCount: { fontSize: 28, fontWeight: '800', color: COLORS.accent, lineHeight: 32 },
+  streakLabel: { fontSize: 12, color: COLORS.textMuted, fontWeight: '500' },
+  streakStatPill: {
+    alignItems: 'center', paddingHorizontal: 14, paddingVertical: 8,
+    backgroundColor: COLORS.bg1, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border,
+  },
+  streakStatNum: { fontSize: 18, fontWeight: '700', color: COLORS.textPrimary },
+  streakStatLabel: { fontSize: 10, color: COLORS.textMuted, marginTop: 1 },
+  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 14 },
+  weekDay: { alignItems: 'center', gap: 6, flex: 1 },
+  weekDayLabel: { fontSize: 11, fontWeight: '500', color: COLORS.textMuted },
+  weekDayLabelToday: { color: COLORS.accent, fontWeight: '700' },
+  weekDot: {
+    width: 28, height: 28, borderRadius: 14, backgroundColor: COLORS.bg1,
+    borderWidth: 1.5, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center',
+  },
+  weekDotActive: { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
+  weekDotToday: { borderColor: COLORS.accent, borderWidth: 2 },
+  streakMotivation: { fontSize: 12, color: COLORS.textMuted, textAlign: 'center', lineHeight: 17 },
+
+  // Category tabs
+  categoryRow: { marginBottom: 18, flexGrow: 0 },
+  categoryChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingHorizontal: 14, paddingVertical: 9, borderRadius: 12,
     backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border,
   },
-  filterChipActive: { backgroundColor: 'rgba(139, 92, 246, 0.15)', borderColor: 'rgba(139, 92, 246, 0.3)' },
-  filterEmoji: { fontSize: 12 },
-  filterText: { fontSize: 12, color: COLORS.textSecondary },
-  filterTextActive: { color: COLORS.accent, fontWeight: '600' },
-  dateHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
-  dateEmoji: { fontSize: 11 },
-  dateText: { fontSize: 12, fontWeight: '500', color: COLORS.textMuted },
+  categoryLabel: { fontSize: 13, color: COLORS.textMuted },
+  categoryCount: {
+    minWidth: 20, height: 18, borderRadius: 9, backgroundColor: COLORS.bg1,
+    alignItems: 'center', justifyContent: 'center', paddingHorizontal: 5,
+  },
+  categoryCountText: { fontSize: 10, fontWeight: '700', color: COLORS.textMuted },
+
+  // Date headers
+  dateHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
+  dateDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.accent },
+  dateText: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary },
+  dateCount: { fontSize: 11, color: COLORS.textMuted, marginLeft: 'auto' },
+
+  // Note cards
   noteCard: {
-    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14,
-    borderWidth: 1, borderColor: COLORS.border,
+    flexDirection: 'row', backgroundColor: COLORS.bg2, borderRadius: 16,
+    overflow: 'hidden', borderWidth: 1, borderColor: COLORS.border, ...SHADOWS.sm,
   },
-  noteContent: { fontSize: 14, color: COLORS.textPrimary, lineHeight: 21, marginBottom: 10 },
-  noteMeta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  noteTag: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  noteTagText: { fontSize: 10, fontWeight: '600' },
-  emptyState: { alignItems: 'center', paddingVertical: 60 },
-  emptyEmoji: { fontSize: 48, marginBottom: 16 },
-  emptyTitle: { fontSize: 18, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 8 },
-  emptySubtitle: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center', lineHeight: 20, marginBottom: 16, paddingHorizontal: 20 },
-  emptyButton: {
-    paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12,
-    backgroundColor: 'rgba(139, 92, 246, 0.1)', borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.3)',
+  noteAccentLine: { width: 4, borderTopLeftRadius: 16, borderBottomLeftRadius: 16 },
+  noteBody: { flex: 1, padding: 14 },
+  noteHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  noteIconCircle: {
+    width: 24, height: 24, borderRadius: 8, alignItems: 'center', justifyContent: 'center',
   },
-  emptyButtonText: { fontSize: 13, color: COLORS.accent, fontWeight: '500' },
+  noteTypeLabel: { fontSize: 11, fontWeight: '600', flex: 1 },
+  noteTime: { fontSize: 10, color: COLORS.textMuted },
+  noteContent: { fontSize: 14, color: COLORS.textPrimary, lineHeight: 21 },
+
+  // Empty state
+  emptyState: { alignItems: 'center', paddingVertical: 40 },
+  emptyImage: { width: 160, height: 160, marginBottom: 20, borderRadius: 20 },
+  emptyTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 8 },
+  emptySubtitle: {
+    fontSize: 14, color: COLORS.textMuted, textAlign: 'center', lineHeight: 21,
+    marginBottom: 20, paddingHorizontal: 24,
+  },
+  emptyCta: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    paddingHorizontal: 24, paddingVertical: 14, borderRadius: 14,
+    backgroundColor: COLORS.accent,
+  },
+  emptyCtaText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+
+  // FAB
   fab: {
-    position: 'absolute', right: 16, width: 56, height: 56, borderRadius: 28,
+    position: 'absolute', right: 20, width: 56, height: 56, borderRadius: 16,
     backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center',
-    shadowColor: COLORS.accent, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8,
+    ...SHADOWS.accent,
   },
-  fabIcon: { fontSize: 28, color: '#FFFFFF', fontWeight: '300' },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+
+  // Modal
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalCard: {
-    backgroundColor: COLORS.bg1, borderTopLeftRadius: 24, borderTopRightRadius: 24,
-    padding: 20, paddingBottom: 40,
+    backgroundColor: COLORS.bg1, borderTopLeftRadius: 28, borderTopRightRadius: 28,
+    padding: 24, paddingBottom: 40,
   },
   modalHandle: {
     width: 40, height: 4, borderRadius: 2, backgroundColor: 'rgba(100,116,139,0.3)',
-    alignSelf: 'center', marginBottom: 16,
+    alignSelf: 'center', marginBottom: 20,
   },
-  modalTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 16 },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 20 },
+  modalIconCircle: {
+    width: 44, height: 44, borderRadius: 14,
+    backgroundColor: 'rgba(139,92,246,0.12)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  modalTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary },
+  modalSubtitle: { fontSize: 13, color: COLORS.textMuted, marginTop: 2 },
   modalInput: {
-    height: 120, padding: 14, backgroundColor: COLORS.bg2, borderRadius: 12,
-    borderWidth: 1, borderColor: COLORS.border, fontSize: 15, color: COLORS.textPrimary, lineHeight: 22,
+    minHeight: 120, padding: 16, backgroundColor: COLORS.bg2, borderRadius: 16,
+    borderWidth: 1, borderColor: COLORS.border, fontSize: 15, color: COLORS.textPrimary, lineHeight: 23,
   },
-  modalActions: { flexDirection: 'row', gap: 12, marginTop: 16 },
+  modalTip: {
+    flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12,
+    paddingHorizontal: 4,
+  },
+  modalTipText: { fontSize: 11, color: COLORS.textMuted, flex: 1 },
+  modalActions: { flexDirection: 'row', gap: 12, marginTop: 20 },
   modalCancel: {
-    flex: 1, paddingVertical: 14, borderRadius: 12, backgroundColor: COLORS.bg2,
+    flex: 1, paddingVertical: 16, borderRadius: 14, backgroundColor: COLORS.bg2,
     borderWidth: 1, borderColor: COLORS.border, alignItems: 'center',
   },
-  modalCancelText: { color: COLORS.textSecondary, fontSize: 14 },
-  modalSave: { flex: 1, paddingVertical: 14, borderRadius: 12, backgroundColor: COLORS.accent, alignItems: 'center' },
-  modalSaveText: { color: '#FFFFFF', fontWeight: '600', fontSize: 14 },
+  modalCancelText: { color: COLORS.textSecondary, fontSize: 15, fontWeight: '500' },
+  modalSave: {
+    flex: 1, paddingVertical: 16, borderRadius: 14, backgroundColor: COLORS.accent,
+    alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8,
+  },
+  modalSaveText: { color: '#FFFFFF', fontWeight: '700', fontSize: 15 },
 });
