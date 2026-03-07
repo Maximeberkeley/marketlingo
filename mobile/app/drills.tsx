@@ -162,10 +162,11 @@ export default function DrillsScreen() {
         const category = tags[0] || 'Market Insight';
 
         slides.forEach((slide: any, index: number) => {
-          if (slide.body && slide.body.length > 30 && drillQuestions.length < 10) {
-            // Use a deterministic but varied pattern for true/false
-            const hash = slide.body.charCodeAt(0) + slide.body.charCodeAt(Math.floor(slide.body.length / 2));
-            const isTrue = hash % 3 !== 0; // ~66% true, ~33% false — more varied
+          if (slide.body && slide.body.length > 30 && drillQuestions.length < 14) {
+            // Use character-based hash for deterministic but varied true/false
+            // Aim for ~50/50 split across the question pool
+            const hash = slide.body.split('').reduce((acc: number, ch: string) => acc + ch.charCodeAt(0), 0);
+            const isTrue = hash % 2 === 0;
 
             let statement = slide.body;
             if (!isTrue) {
