@@ -21,7 +21,9 @@ import { MentorChatOverlay } from '../components/ai/MentorChatOverlay';
 import { getMentorForContext } from '../data/mentors';
 import type { Mentor } from '../data/mentors';
 import { Feather } from '@expo/vector-icons';
+import { Image } from 'react-native';
 
+const SOPHIA_AVATAR = require('../assets/mentors/mentor-sophia.png');
 
 // Market-specific hero images
 const MARKET_HERO_IMAGES: Record<string, any> = {
