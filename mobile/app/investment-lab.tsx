@@ -21,7 +21,9 @@ import { MentorChatOverlay } from '../components/ai/MentorChatOverlay';
 import { getMentorForContext } from '../data/mentors';
 import type { Mentor } from '../data/mentors';
 import { Feather } from '@expo/vector-icons';
+import { Image } from 'react-native';
 
+const SOPHIA_AVATAR = require('../assets/mentors/mentor-sophia.png');
 
 // Market-specific hero images
 const MARKET_HERO_IMAGES: Record<string, any> = {
@@ -138,6 +140,14 @@ export default function InvestmentLabScreen() {
               <Text style={styles.backTextLight}>← Back</Text>
             </TouchableOpacity>
             <View style={{ gap: 8 }}>
+              {/* Sophia mentor badge */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+                <Image source={SOPHIA_AVATAR} style={{ width: 40, height: 40, borderRadius: 20, borderWidth: 2, borderColor: 'rgba(255,255,255,0.5)' }} />
+                <View>
+                  <Text style={{ fontSize: 13, fontWeight: '700', color: '#fff' }}>Sophia Hernández</Text>
+                  <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)' }}>Your Investment Mentor</Text>
+                </View>
+              </View>
               <View style={[styles.heroBadge, { backgroundColor: accentColor + 'CC' }]}>
                 <Text style={styles.heroBadgeText}>INVESTMENT LAB</Text>
               </View>
@@ -286,10 +296,10 @@ export default function InvestmentLabScreen() {
 
           {/* Chat with Mentor */}
           <TouchableOpacity style={styles.mentorChatCard} onPress={handleOpenMentorChat}>
-            <Feather name="message-circle" size={22} color={COLORS.accent} />
+            <Image source={SOPHIA_AVATAR} style={{ width: 36, height: 36, borderRadius: 18, borderWidth: 1.5, borderColor: 'rgba(139,92,246,0.4)' }} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.watchlistTitle}>Ask Your Investment Mentor</Text>
-              <Text style={styles.watchlistDesc}>Get AI-powered investment guidance</Text>
+              <Text style={styles.watchlistTitle}>Ask Sophia</Text>
+              <Text style={styles.watchlistDesc}>Your AI investment mentor</Text>
             </View>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>

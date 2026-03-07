@@ -135,7 +135,7 @@ const RESOURCE_CARDS: CardData[] = [
   {
     id: 'investment',
     title: 'Investment Lab',
-    subtitle: 'Investment Scenarios',
+    subtitle: 'With Sophia Hernández',
     description: 'Real-world analysis and portfolio building.',
     icon: 'trending-up',
     iconColor: '#A7F3D0',
@@ -144,6 +144,7 @@ const RESOURCE_CARDS: CardData[] = [
     path: '/investment-lab',
     isPro: true,
     tag: 'PRO',
+    heroImage: require('../../assets/cards/investment-lab-hero.jpg'),
   },
 ];
 
