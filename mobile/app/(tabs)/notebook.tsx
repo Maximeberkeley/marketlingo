@@ -226,7 +226,7 @@ function StreakWeekView({ streak, thisWeek, totalNotes }: { streak: number; this
           ? 'Great start! Keep capturing insights daily.'
           : streak < 7
           ? "You're building a habit! Keep it up."
-          : 'Amazing streak! You're a knowledge machine.'}
+          : 'Amazing streak! You\'re a knowledge machine.'}
       </Text>
     </View>
   );
