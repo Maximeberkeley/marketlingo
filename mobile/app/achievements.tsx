@@ -104,6 +104,10 @@ export default function AchievementsScreen() {
           <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
 
+        <View style={{ alignItems: 'center', marginBottom: 16 }}>
+          <Image source={require('../assets/illustrations/achievements-hero.png')} style={{ width: 100, height: 100, marginBottom: 8 }} resizeMode="contain" />
+        </View>
+
         <Text style={styles.title}>Achievements</Text>
         <Text style={styles.subtitle}>{unlockedCount} of {achievements.length} unlocked · {totalXP} XP earned</Text>
 

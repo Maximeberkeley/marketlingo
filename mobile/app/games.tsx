@@ -132,6 +132,11 @@ export default function GamesScreen() {
             const correctTag = (stack.tags as string[])?.find((t: string) => t.startsWith('correct:'));
             const correctIdx = correctTag ? parseInt(correctTag.split(':')[1], 10) : Math.floor(Math.random() * baseOptions.length);
 
+            // Shuffle options and track correct answer position
+            const indexedOptions = baseOptions.map((opt: string, i: number) => ({ opt, i }));
+            const shuffledOpts = [...indexedOptions].sort(() => Math.random() - 0.5);
+            const newCorrectIdx = shuffledOpts.findIndex(o => o.i === Math.min(correctIdx, baseOptions.length - 1));
+
             // Smart truncate question and explanation at sentence boundaries
             let questionText = `${stack.title}: ${questionSlide}`;
             if (questionText.length > 180) {
@@ -164,8 +169,8 @@ export default function GamesScreen() {
               id: stack.id,
               type: types[index % 3],
               question: questionText,
-              options: baseOptions,
-              correctAnswer: Math.min(correctIdx, baseOptions.length - 1),
+              options: shuffledOpts.map(o => o.opt),
+              correctAnswer: newCorrectIdx >= 0 ? newCorrectIdx : 0,
               explanation: explanationText,
               pattern: (sorted.find((s: any) => s.body?.toLowerCase().includes('pattern:'))?.body || stack.title).substring(0, 60),
             };
@@ -188,27 +193,30 @@ export default function GamesScreen() {
 
       const gameQuestions: GameQuestion[] = selected.map((scenario, index) => {
         // Options are objects with {label, isCorrect} — extract label strings
-        const opts = Array.isArray(scenario.options)
-          ? (scenario.options as any[]).map((o: any) => {
-              if (typeof o === 'string') return o;
-              if (typeof o === 'object' && o !== null && 'label' in o) return String(o.label);
-              return String(o);
+        const rawOpts = Array.isArray(scenario.options)
+          ? (scenario.options as any[]).map((o: any, i: number) => {
+              const label = typeof o === 'string' ? o : (typeof o === 'object' && o !== null && 'label' in o ? String(o.label) : String(o));
+              return { label, originalIndex: i };
             })
-          : ['Option A', 'Option B', 'Option C', 'Option D'];
+          : [{ label: 'Option A', originalIndex: 0 }, { label: 'Option B', originalIndex: 1 }, { label: 'Option C', originalIndex: 2 }, { label: 'Option D', originalIndex: 3 }];
+
+        // CRITICAL: Shuffle options so correct answer isn't always in the same position
+        const shuffled = [...rawOpts].sort(() => Math.random() - 0.5);
+        const newCorrectIndex = shuffled.findIndex(o => o.originalIndex === scenario.correct_option_index);
 
         return {
           id: scenario.id,
           type: types[index % 3],
           question: scenario.question || scenario.scenario,
-          options: opts.map((o: string) => {
+          options: shuffled.map((o) => {
             // Truncate at sentence boundary, not mid-word
-            if (o.length > 140) {
-              const sentences = o.match(/[^.!?]*[.!?]+/g);
-              return sentences?.[0]?.trim() || o.substring(0, 140) + '…';
+            if (o.label.length > 140) {
+              const sentences = o.label.match(/[^.!?]*[.!?]+/g);
+              return sentences?.[0]?.trim() || o.label.substring(0, 140) + '…';
             }
-            return o;
+            return o.label;
           }),
-          correctAnswer: scenario.correct_option_index,
+          correctAnswer: newCorrectIndex >= 0 ? newCorrectIndex : 0,
           explanation: scenario.feedback_pro_reasoning || scenario.scenario,
           pattern: ((scenario.tags as string[]) || [])[0] || 'Industry Pattern',
         };
@@ -286,7 +294,7 @@ export default function GamesScreen() {
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           <View style={styles.introCenter}>
-            <Feather name="play-circle" size={56} color={COLORS.accent} style={{ marginBottom: 16 }} />
+            <Image source={require('../assets/cards/games-hero.jpg')} style={styles.heroImage} resizeMode="contain" />
             <Text style={styles.introMsg}>Pick the right answers and learn the patterns!</Text>
           </View>
           <View style={styles.heroCard}>
@@ -314,7 +322,7 @@ export default function GamesScreen() {
   if (questions.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Feather name="play-circle" size={44} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
+        <Image source={require('../assets/cards/games-hero.jpg')} style={{ width: 120, height: 120, marginBottom: 16 }} resizeMode="contain" />
         <Text style={styles.emptyTitle}>No games available</Text>
         <Text style={styles.emptySubtitle}>Complete more lessons to unlock games!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
@@ -328,9 +336,7 @@ export default function GamesScreen() {
     const percentage = Math.round((score / questions.length) * 100);
     return (
       <View style={[styles.container, styles.centered]}>
-        <View style={styles.completeIcon}>
-          <Feather name="award" size={28} color={COLORS.success} />
-        </View>
+        <Image source={require('../assets/illustrations/achievements-hero.png')} style={{ width: 100, height: 100, marginBottom: 8 }} resizeMode="contain" />
         <Text style={styles.completeTitle}>Game Complete!</Text>
         <Text style={styles.completeScore}>You scored {score}/{questions.length} ({percentage}%)</Text>
         <Text style={styles.completeFeedback}>
@@ -458,6 +464,7 @@ const styles = StyleSheet.create({
   scoreBadge: { backgroundColor: 'rgba(139, 92, 246, 0.15)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 },
   scoreBadgeText: { fontSize: 13, fontWeight: '600', color: COLORS.accent },
   introCenter: { alignItems: 'center', marginBottom: 20 },
+  heroImage: { width: 160, height: 160, marginBottom: 12, borderRadius: 16 },
   introMsg: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginTop: 12, lineHeight: 20 },
   heroCard: {
     padding: 20, borderRadius: 16, marginBottom: 16,

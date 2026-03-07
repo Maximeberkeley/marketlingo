@@ -37,6 +37,7 @@ interface CardData {
   gradient: readonly [string, string];
   path: string;
   isPro?: boolean;
+  heroImage?: any;
 }
 
 const ACTIVITY_CARDS: CardData[] = [
@@ -49,6 +50,7 @@ const ACTIVITY_CARDS: CardData[] = [
     iconColor: '#C4B5FD',
     gradient: ['#4C1D95', '#7C3AED'] as const,
     path: '/trainer',
+    heroImage: require('../../assets/cards/trainer-hero.jpg'),
   },
   {
     id: 'games',
@@ -59,6 +61,7 @@ const ACTIVITY_CARDS: CardData[] = [
     iconColor: '#A5B4FC',
     gradient: ['#312E81', '#6366F1'] as const,
     path: '/games',
+    heroImage: require('../../assets/cards/games-hero.jpg'),
   },
   {
     id: 'drills',
@@ -69,6 +72,7 @@ const ACTIVITY_CARDS: CardData[] = [
     iconColor: '#FCD34D',
     gradient: ['#78350F', '#D97706'] as const,
     path: '/drills',
+    heroImage: require('../../assets/cards/drills-hero.jpg'),
   },
 ];
 
@@ -82,6 +86,7 @@ const RESOURCE_CARDS: CardData[] = [
     iconColor: '#FDBA74',
     gradient: ['#7C2D12', '#EA580C'] as const,
     path: '/summaries',
+    heroImage: require('../../assets/illustrations/summaries-hero.png'),
   },
   {
     id: 'regulatory',
@@ -92,6 +97,7 @@ const RESOURCE_CARDS: CardData[] = [
     iconColor: '#93C5FD',
     gradient: ['#1E3A5F', '#2563EB'] as const,
     path: '/regulatory-hub',
+    heroImage: require('../../assets/illustrations/regulatory-hero.png'),
   },
   {
     id: 'notebook',
@@ -102,6 +108,7 @@ const RESOURCE_CARDS: CardData[] = [
     iconColor: '#FDA4AF',
     gradient: ['#881337', '#E11D48'] as const,
     path: '/(tabs)/notebook',
+    heroImage: require('../../assets/cards/notebook-hero.jpg'),
   },
   {
     id: 'passport',
@@ -112,6 +119,7 @@ const RESOURCE_CARDS: CardData[] = [
     iconColor: '#5EEAD4',
     gradient: ['#134E4A', '#0D9488'] as const,
     path: '/passport',
+    heroImage: require('../../assets/illustrations/passport-hero.png'),
   },
   {
     id: 'investment',
@@ -251,6 +259,13 @@ function IslandCard({ card }: { card: CardData }) {
               },
             ]}
           />
+
+          {/* Hero image */}
+          {card.heroImage && (
+            <View style={styles.cardImageWrap}>
+              <Image source={card.heroImage} style={styles.cardImage} resizeMode="contain" />
+            </View>
+          )}
 
           {/* Content at bottom */}
           <View style={styles.cardContent}>
@@ -405,6 +420,17 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 20,
     justifyContent: 'flex-end',
+  },
+  cardImageWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 16,
+  },
+  cardImage: {
+    width: '60%',
+    height: '100%',
+    borderRadius: 12,
   },
   cardContent: {
     padding: 20,

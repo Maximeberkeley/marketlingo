@@ -162,10 +162,11 @@ export default function DrillsScreen() {
         const category = tags[0] || 'Market Insight';
 
         slides.forEach((slide: any, index: number) => {
-          if (slide.body && slide.body.length > 30 && drillQuestions.length < 10) {
-            // Use a deterministic but varied pattern for true/false
-            const hash = slide.body.charCodeAt(0) + slide.body.charCodeAt(Math.floor(slide.body.length / 2));
-            const isTrue = hash % 3 !== 0; // ~66% true, ~33% false — more varied
+          if (slide.body && slide.body.length > 30 && drillQuestions.length < 14) {
+            // Use character-based hash for deterministic but varied true/false
+            // Aim for ~50/50 split across the question pool
+            const hash = slide.body.split('').reduce((acc: number, ch: string) => acc + ch.charCodeAt(0), 0);
+            const isTrue = hash % 2 === 0;
 
             let statement = slide.body;
             if (!isTrue) {
@@ -213,9 +214,23 @@ export default function DrillsScreen() {
         });
       });
 
-      // Shuffle and pick 5 — different each session
+      // Shuffle and ensure balanced true/false distribution
       const shuffled = drillQuestions.sort(() => Math.random() - 0.5);
-      setQuestions(shuffled.slice(0, 7));
+      const trueQs = shuffled.filter(q => q.isTrue);
+      const falseQs = shuffled.filter(q => !q.isTrue);
+      // Pick balanced set: ~half true, ~half false
+      const balanced: DrillQuestion[] = [];
+      const halfCount = Math.ceil(7 / 2);
+      balanced.push(...trueQs.slice(0, halfCount));
+      balanced.push(...falseQs.slice(0, 7 - balanced.length));
+      // If not enough false, fill with true (and vice versa)
+      while (balanced.length < 7 && shuffled.length > balanced.length) {
+        const next = shuffled.find(q => !balanced.includes(q));
+        if (next) balanced.push(next);
+        else break;
+      }
+      // Final shuffle so true/false aren't grouped
+      setQuestions(balanced.sort(() => Math.random() - 0.5));
       setLoading(false);
     };
     fetchData();
@@ -305,7 +320,7 @@ export default function DrillsScreen() {
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           <View style={styles.introCenter}>
-            <Feather name="zap" size={56} color={COLORS.accent} style={{ marginBottom: 16 }} />
+            <Image source={require('../assets/cards/drills-hero.jpg')} style={styles.heroImage} resizeMode="contain" />
             <Text style={styles.introMsg}>15 seconds per question — trust your instincts!</Text>
           </View>
           <View style={styles.heroCard}>
@@ -336,7 +351,7 @@ export default function DrillsScreen() {
   if (questions.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Feather name="zap" size={44} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
+        <Image source={require('../assets/cards/drills-hero.jpg')} style={{ width: 120, height: 120, marginBottom: 16 }} resizeMode="contain" />
         <Text style={styles.emptyTitle}>No drills available</Text>
         <Text style={styles.emptySubtitle}>Complete more lessons to unlock drills!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
@@ -462,6 +477,7 @@ const styles = StyleSheet.create({
   timerDanger: { backgroundColor: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)' },
   timerText: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary },
   introCenter: { alignItems: 'center', marginBottom: 20 },
+  heroImage: { width: 160, height: 160, marginBottom: 12, borderRadius: 16 },
   introMsg: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginTop: 12, lineHeight: 20 },
   heroCard: {
     padding: 20, borderRadius: 16, marginBottom: 16,
