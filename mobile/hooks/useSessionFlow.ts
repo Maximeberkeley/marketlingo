@@ -133,15 +133,23 @@ export function useSessionFlow({
 
   const handleSaveInsight = useCallback(async (slideNum: number) => {
     if (!user || !activeStack) return;
-    const slide = activeStack.slides[slideNum - 1];
-    await supabase.from('saved_insights').insert({
-      user_id: user.id,
-      title: slide?.title || 'Insight',
-      content: slide?.body,
-      stack_id: activeStack.id,
-    });
-    triggerHaptic('light');
-    Alert.alert('Saved!', 'Insight saved to your notebook.');
+    const slide = activeStack.slides.find((s) => s.slide_number === slideNum);
+    if (!slide) return;
+    try {
+      const { error } = await supabase.from('saved_insights').insert({
+        user_id: user.id,
+        title: slide.title || 'Insight',
+        content: slide.body,
+        stack_id: activeStack.id,
+        slide_id: slide.id,
+      });
+      if (error) throw error;
+      triggerHaptic('success');
+      Alert.alert('Saved!', 'Insight saved to your notebook.');
+    } catch (err) {
+      console.error('Save insight error:', err);
+      Alert.alert('Error', 'Could not save insight. Please try again.');
+    }
   }, [user, activeStack]);
 
   const handleAddNote = useCallback(async (slideNum: number) => {
