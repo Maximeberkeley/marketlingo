@@ -10,9 +10,11 @@ import {
   Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
-  Image,
+  ImageBackground,
+  Platform,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { triggerHaptic } from '../../lib/haptics';
@@ -20,12 +22,11 @@ import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { getMarketName } from '../../lib/markets';
-import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH * 0.82;
-const CARD_GAP = 12;
-const CARD_ASPECT = 4 / 3;
+const CARD_WIDTH = SCREEN_WIDTH - 40; // Full width with 20px padding each side
+const CARD_GAP = 16;
+const SNAP_WIDTH = CARD_WIDTH + CARD_GAP;
 
 interface CardData {
   id: string;
@@ -34,10 +35,12 @@ interface CardData {
   description: string;
   icon: keyof typeof Feather.glyphMap;
   iconColor: string;
-  gradient: readonly [string, string];
+  gradientColors: readonly [string, string, string];
+  accentGlow: string;
   path: string;
   isPro?: boolean;
   heroImage?: any;
+  tag?: string;
 }
 
 const ACTIVITY_CARDS: CardData[] = [
@@ -45,21 +48,24 @@ const ACTIVITY_CARDS: CardData[] = [
     id: 'trainer',
     title: 'Trainer',
     subtitle: 'Scenario Analysis',
-    description: 'Real-world case studies with expert feedback and mental models.',
+    description: 'Real-world case studies with expert feedback.',
     icon: 'target',
-    iconColor: '#C4B5FD',
-    gradient: ['#4C1D95', '#7C3AED'] as const,
+    iconColor: '#E9D5FF',
+    gradientColors: ['#5B21B6', '#7C3AED', '#A78BFA'] as const,
+    accentGlow: 'rgba(167, 139, 250, 0.4)',
     path: '/trainer',
     heroImage: require('../../assets/cards/trainer-hero.jpg'),
+    tag: 'FEATURED',
   },
   {
     id: 'games',
     title: 'Games',
     subtitle: 'Test Your Knowledge',
-    description: 'Quick MCQ challenges based on real industry patterns.',
+    description: 'Quick MCQ challenges on real patterns.',
     icon: 'play-circle',
-    iconColor: '#A5B4FC',
-    gradient: ['#312E81', '#6366F1'] as const,
+    iconColor: '#C7D2FE',
+    gradientColors: ['#312E81', '#4338CA', '#6366F1'] as const,
+    accentGlow: 'rgba(99, 102, 241, 0.4)',
     path: '/games',
     heroImage: require('../../assets/cards/games-hero.jpg'),
   },
@@ -67,10 +73,11 @@ const ACTIVITY_CARDS: CardData[] = [
     id: 'drills',
     title: 'Drills',
     subtitle: '15-Second Challenges',
-    description: 'Rapid-fire True/False to build pattern recognition.',
+    description: 'Rapid-fire True/False for pattern recognition.',
     icon: 'zap',
-    iconColor: '#FCD34D',
-    gradient: ['#78350F', '#D97706'] as const,
+    iconColor: '#FDE68A',
+    gradientColors: ['#92400E', '#B45309', '#D97706'] as const,
+    accentGlow: 'rgba(217, 119, 6, 0.4)',
     path: '/drills',
     heroImage: require('../../assets/cards/drills-hero.jpg'),
   },
@@ -81,10 +88,11 @@ const RESOURCE_CARDS: CardData[] = [
     id: 'summaries',
     title: 'Summaries',
     subtitle: 'Market Digests',
-    description: 'Daily and weekly recaps of everything you\'ve learned.',
+    description: 'Daily and weekly recaps of your learnings.',
     icon: 'file-text',
-    iconColor: '#FDBA74',
-    gradient: ['#7C2D12', '#EA580C'] as const,
+    iconColor: '#FED7AA',
+    gradientColors: ['#9A3412', '#C2410C', '#EA580C'] as const,
+    accentGlow: 'rgba(234, 88, 12, 0.4)',
     path: '/summaries',
     heroImage: require('../../assets/illustrations/summaries-hero.png'),
   },
@@ -92,10 +100,11 @@ const RESOURCE_CARDS: CardData[] = [
     id: 'regulatory',
     title: 'Regulatory Hub',
     subtitle: 'Compliance & Policy',
-    description: 'Stay informed on key regulations shaping your industry.',
+    description: 'Key regulations shaping your industry.',
     icon: 'shield',
-    iconColor: '#93C5FD',
-    gradient: ['#1E3A5F', '#2563EB'] as const,
+    iconColor: '#BFDBFE',
+    gradientColors: ['#1E3A5F', '#1D4ED8', '#3B82F6'] as const,
+    accentGlow: 'rgba(59, 130, 246, 0.4)',
     path: '/regulatory-hub',
     heroImage: require('../../assets/illustrations/regulatory-hero.png'),
   },
@@ -103,10 +112,11 @@ const RESOURCE_CARDS: CardData[] = [
     id: 'notebook',
     title: 'Notebook',
     subtitle: 'Your Insights',
-    description: 'All your captured notes and key takeaways in one place.',
+    description: 'Captured notes and key takeaways.',
     icon: 'edit-3',
-    iconColor: '#FDA4AF',
-    gradient: ['#881337', '#E11D48'] as const,
+    iconColor: '#FECDD3',
+    gradientColors: ['#9F1239', '#BE123C', '#E11D48'] as const,
+    accentGlow: 'rgba(225, 29, 72, 0.4)',
     path: '/(tabs)/notebook',
     heroImage: require('../../assets/cards/notebook-hero.jpg'),
   },
@@ -114,10 +124,11 @@ const RESOURCE_CARDS: CardData[] = [
     id: 'passport',
     title: 'Passport',
     subtitle: 'Industry Credentials',
-    description: 'Track your verified expertise across industries.',
+    description: 'Track verified expertise across industries.',
     icon: 'globe',
-    iconColor: '#5EEAD4',
-    gradient: ['#134E4A', '#0D9488'] as const,
+    iconColor: '#99F6E4',
+    gradientColors: ['#134E4A', '#0F766E', '#0D9488'] as const,
+    accentGlow: 'rgba(13, 148, 136, 0.4)',
     path: '/passport',
     heroImage: require('../../assets/illustrations/passport-hero.png'),
   },
@@ -125,73 +136,84 @@ const RESOURCE_CARDS: CardData[] = [
     id: 'investment',
     title: 'Investment Lab',
     subtitle: 'Investment Scenarios',
-    description: 'Real-world investment analysis and portfolio building.',
+    description: 'Real-world analysis and portfolio building.',
     icon: 'trending-up',
-    iconColor: '#6EE7B7',
-    gradient: ['#064E3B', '#059669'] as const,
+    iconColor: '#A7F3D0',
+    gradientColors: ['#064E3B', '#047857', '#059669'] as const,
+    accentGlow: 'rgba(5, 150, 105, 0.4)',
     path: '/investment-lab',
     isPro: true,
+    tag: 'PRO',
   },
 ];
 
-/* ─── Swipeable Carousel ─── */
-function SwipeableCarousel({ cards, title }: { cards: CardData[]; title: string }) {
+/* ─── Premium Carousel ─── */
+function PremiumCarousel({ cards, title }: { cards: CardData[]; title: string }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
 
   const handleScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       const offsetX = e.nativeEvent.contentOffset.x;
-      const idx = Math.round(offsetX / (CARD_WIDTH + CARD_GAP));
+      const idx = Math.round(offsetX / SNAP_WIDTH);
       setCurrentIndex(Math.min(Math.max(idx, 0), cards.length - 1));
     },
     [cards.length],
   );
 
   const scrollToIndex = useCallback((idx: number) => {
-    scrollRef.current?.scrollTo({ x: idx * (CARD_WIDTH + CARD_GAP), animated: true });
+    scrollRef.current?.scrollTo({ x: idx * SNAP_WIDTH, animated: true });
     setCurrentIndex(idx);
   }, []);
 
   return (
-    <View style={styles.carouselContainer}>
-      {/* Section header + dots */}
+    <View style={styles.carouselWrap}>
+      {/* Section header */}
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>{title}</Text>
-        <View style={styles.dots}>
+        <View style={styles.sectionTitleRow}>
+          <View style={styles.sectionDot} />
+          <Text style={styles.sectionTitle}>{title}</Text>
+        </View>
+        {/* Pill-style page indicator */}
+        <View style={styles.pageIndicator}>
           {cards.map((_, i) => (
             <TouchableOpacity
               key={i}
               onPress={() => scrollToIndex(i)}
-              style={[
-                styles.dot,
-                i === currentIndex ? styles.dotActive : styles.dotInactive,
-              ]}
-            />
+              hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}
+            >
+              <Animated.View
+                style={[
+                  styles.indicatorDot,
+                  i === currentIndex && styles.indicatorDotActive,
+                ]}
+              />
+            </TouchableOpacity>
           ))}
         </View>
       </View>
 
-      {/* Horizontal scroll */}
+      {/* Cards */}
       <ScrollView
         ref={scrollRef}
         horizontal
+        pagingEnabled={false}
         showsHorizontalScrollIndicator={false}
-        snapToInterval={CARD_WIDTH + CARD_GAP}
+        snapToInterval={SNAP_WIDTH}
         decelerationRate="fast"
         contentContainerStyle={styles.scrollContent}
         onMomentumScrollEnd={handleScroll}
       >
-        {cards.map((card) => (
-          <IslandCard key={card.id} card={card} />
+        {cards.map((card, index) => (
+          <PremiumCard key={card.id} card={card} index={index} />
         ))}
       </ScrollView>
     </View>
   );
 }
 
-/* ─── Island Card ─── */
-function IslandCard({ card }: { card: CardData }) {
+/* ─── Premium Card ─── */
+function PremiumCard({ card, index }: { card: CardData; index: number }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const { user } = useAuth();
   const [isPro, setIsPro] = useState(false);
@@ -212,10 +234,10 @@ function IslandCard({ card }: { card: CardData }) {
 
   const onPressIn = () => {
     Animated.spring(scaleAnim, {
-      toValue: 0.96,
+      toValue: 0.97,
       useNativeDriver: true,
-      tension: 300,
-      friction: 20,
+      tension: 400,
+      friction: 25,
     }).start();
   };
 
@@ -223,8 +245,8 @@ function IslandCard({ card }: { card: CardData }) {
     Animated.spring(scaleAnim, {
       toValue: 1,
       useNativeDriver: true,
-      tension: 300,
-      friction: 20,
+      tension: 400,
+      friction: 25,
     }).start();
   };
 
@@ -237,59 +259,87 @@ function IslandCard({ card }: { card: CardData }) {
     }
   };
 
+  const cardContent = (
+    <View style={styles.cardInner}>
+      {/* Top section: hero image full-bleed */}
+      {card.heroImage ? (
+        <ImageBackground
+          source={card.heroImage}
+          style={styles.heroImageBg}
+          imageStyle={styles.heroImageStyle}
+          resizeMode="cover"
+        >
+          {/* Dark gradient overlay for readability */}
+          <View style={styles.heroOverlay} />
+          
+          {/* Floating tag */}
+          {card.tag && (
+            <View style={[styles.floatingTag, locked && styles.floatingTagPro]}>
+              {locked && <Feather name="lock" size={9} color="#FFF" />}
+              <Text style={styles.floatingTagText}>{card.tag}</Text>
+            </View>
+          )}
+        </ImageBackground>
+      ) : (
+        <View style={[styles.heroPlaceholder, { backgroundColor: card.gradientColors[1] }]}>
+          <Feather name={card.icon} size={48} color="rgba(255,255,255,0.15)" />
+          {card.tag && (
+            <View style={[styles.floatingTag, locked && styles.floatingTagPro]}>
+              {locked && <Feather name="lock" size={9} color="#FFF" />}
+              <Text style={styles.floatingTagText}>{card.tag}</Text>
+            </View>
+          )}
+        </View>
+      )}
+
+      {/* Bottom content — glass-style panel */}
+      <View style={styles.contentPanel}>
+        {/* Icon + subtitle row */}
+        <View style={styles.metaRow}>
+          <View style={[styles.iconPill, { backgroundColor: `${card.gradientColors[1]}18` }]}>
+            <Feather name={card.icon} size={13} color={card.gradientColors[1]} />
+          </View>
+          <Text style={[styles.subtitleText, { color: card.gradientColors[1] }]}>
+            {card.subtitle}
+          </Text>
+        </View>
+
+        {/* Title */}
+        <Text style={styles.cardTitle}>{card.title}</Text>
+
+        {/* Description */}
+        <Text style={styles.cardDesc}>{card.description}</Text>
+
+        {/* Arrow CTA */}
+        <View style={styles.ctaRow}>
+          <Text style={[styles.ctaText, { color: card.gradientColors[1] }]}>
+            {locked ? 'Unlock' : 'Start'}
+          </Text>
+          <View style={[styles.ctaArrow, { backgroundColor: `${card.gradientColors[1]}12` }]}>
+            <Feather
+              name={locked ? 'lock' : 'arrow-right'}
+              size={14}
+              color={card.gradientColors[1]}
+            />
+          </View>
+        </View>
+      </View>
+
+      {/* Accent border at top */}
+      <View style={[styles.accentStripe, { backgroundColor: card.gradientColors[1] }]} />
+    </View>
+  );
+
   return (
     <Animated.View style={[styles.cardOuter, { transform: [{ scale: scaleAnim }] }]}>
       <TouchableOpacity
-        activeOpacity={0.95}
+        activeOpacity={0.92}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         onPress={onPress}
         style={styles.cardTouch}
       >
-        {/* Gradient background */}
-        <View style={[styles.cardGradient, { backgroundColor: card.gradient[0] }]}>
-          {/* Lighter overlay for depth */}
-          <View
-            style={[
-              StyleSheet.absoluteFill,
-              {
-                backgroundColor: card.gradient[1],
-                opacity: 0.4,
-                borderRadius: 20,
-              },
-            ]}
-          />
-
-          {/* Hero image */}
-          {card.heroImage && (
-            <View style={styles.cardImageWrap}>
-              <Image source={card.heroImage} style={styles.cardImage} resizeMode="contain" />
-            </View>
-          )}
-
-          {/* Content at bottom */}
-          <View style={styles.cardContent}>
-            <View style={styles.cardBadgeRow}>
-              <View style={[styles.cardIconBox, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
-                <Feather name={card.icon} size={16} color={card.iconColor} />
-              </View>
-              <Text style={styles.cardSubtitle}>{card.subtitle}</Text>
-              {locked && (
-                <View style={styles.proBadge}>
-                  <Feather name="award" size={8} color="#FFF" />
-                  <Text style={styles.proBadgeText}>PRO</Text>
-                </View>
-              )}
-            </View>
-            <Text style={styles.cardTitle}>{card.title}</Text>
-            <Text style={styles.cardDesc}>{card.description}</Text>
-          </View>
-
-          {/* Locked overlay */}
-          {locked && (
-            <View style={styles.lockedOverlay} />
-          )}
-        </View>
+        {cardContent}
       </TouchableOpacity>
     </Animated.View>
   );
@@ -339,7 +389,7 @@ export default function PracticeScreen() {
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={{
-          paddingTop: insets.top + 16,
+          paddingTop: insets.top + 12,
           paddingBottom: insets.bottom + 100,
         }}
         showsVerticalScrollIndicator={false}
@@ -363,127 +413,232 @@ export default function PracticeScreen() {
         >
           <View>
             <Text style={styles.headerTitle}>Practice</Text>
-            <Text style={styles.headerSub}>
-              {selectedMarket ? getMarketName(selectedMarket) : 'Sharpen your skills'}
-            </Text>
+            {selectedMarket && (
+              <View style={styles.marketBadge}>
+                <View style={styles.marketDot} />
+                <Text style={styles.marketBadgeText}>{getMarketName(selectedMarket)}</Text>
+              </View>
+            )}
           </View>
         </Animated.View>
 
-        {/* Activities Carousel */}
-        <SwipeableCarousel cards={ACTIVITY_CARDS} title="Activities" />
+        {/* Activities */}
+        <PremiumCarousel cards={ACTIVITY_CARDS} title="Activities" />
 
-        {/* Resources Carousel */}
-        <SwipeableCarousel cards={RESOURCE_CARDS} title="Resources" />
+        {/* Resources */}
+        <PremiumCarousel cards={RESOURCE_CARDS} title="Resources" />
       </ScrollView>
     </View>
   );
 }
 
+/* ─── Styles ─── */
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: 'center', justifyContent: 'center' },
 
-  header: { paddingHorizontal: 20, marginBottom: 8 },
-  headerTitle: { ...TYPE.hero, color: COLORS.textPrimary },
-  headerSub: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 4 },
+  /* Header */
+  header: { paddingHorizontal: 20, marginBottom: 20 },
+  headerTitle: {
+    ...TYPE.hero,
+    fontSize: 32,
+    color: COLORS.textPrimary,
+    letterSpacing: -0.8,
+  },
+  marketBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: COLORS.accentSoft,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+  },
+  marketDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: COLORS.accent,
+  },
+  marketBadgeText: {
+    ...TYPE.caption,
+    color: COLORS.accent,
+    fontSize: 11,
+  },
 
-  // Carousel
-  carouselContainer: { marginBottom: 24 },
+  /* Carousel */
+  carouselWrap: { marginBottom: 28 },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    marginBottom: 12,
+    marginBottom: 14,
   },
-  sectionTitle: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
-  dots: { flexDirection: 'row', gap: 6 },
-  dot: { borderRadius: 4 },
-  dotActive: { width: 20, height: 8, backgroundColor: COLORS.accent, borderRadius: 4 },
-  dotInactive: { width: 8, height: 8, backgroundColor: COLORS.borderLight, borderRadius: 4 },
-
-  scrollContent: { paddingHorizontal: 20, gap: CARD_GAP },
-
-  // Card
-  cardOuter: {
-    width: CARD_WIDTH,
-    borderRadius: 20,
-    ...SHADOWS.md,
-  },
-  cardTouch: {
-    width: '100%',
-    aspectRatio: CARD_ASPECT,
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  cardGradient: {
-    flex: 1,
-    borderRadius: 20,
-    justifyContent: 'flex-end',
-  },
-  cardImageWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 16,
-  },
-  cardImage: {
-    width: '60%',
-    height: '100%',
-    borderRadius: 12,
-  },
-  cardContent: {
-    padding: 20,
-  },
-  cardBadgeRow: {
+  sectionTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 8,
   },
-  cardIconBox: {
+  sectionDot: {
+    width: 4,
+    height: 16,
+    borderRadius: 2,
+    backgroundColor: COLORS.accent,
+  },
+  sectionTitle: {
+    ...TYPE.h3,
+    color: COLORS.textPrimary,
+  },
+  pageIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: COLORS.bg1,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  indicatorDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: COLORS.borderLight,
+  },
+  indicatorDotActive: {
+    width: 18,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: COLORS.accent,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    gap: CARD_GAP,
+  },
+
+  /* Card */
+  cardOuter: {
+    width: CARD_WIDTH,
+    borderRadius: 22,
+    ...SHADOWS.lg,
+  },
+  cardTouch: {
+    width: '100%',
+    borderRadius: 22,
+    overflow: 'hidden',
+  },
+  cardInner: {
+    backgroundColor: COLORS.bg2,
+    borderRadius: 22,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  accentStripe: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 3,
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+  },
+
+  /* Hero image area */
+  heroImageBg: {
+    height: 160,
+    justifyContent: 'flex-end',
+  },
+  heroImageStyle: {
+    borderTopLeftRadius: 21,
+    borderTopRightRadius: 21,
+  },
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.08)',
+    borderTopLeftRadius: 21,
+    borderTopRightRadius: 21,
+  },
+  heroPlaceholder: {
+    height: 160,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderTopLeftRadius: 21,
+    borderTopRightRadius: 21,
+  },
+
+  /* Floating tag */
+  floatingTag: {
+    position: 'absolute',
+    top: 14,
+    right: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+  },
+  floatingTagPro: {
+    backgroundColor: 'rgba(139, 92, 246, 0.9)',
+  },
+  floatingTagText: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: COLORS.textPrimary,
+    letterSpacing: 1,
+  },
+
+  /* Content panel */
+  contentPanel: {
+    padding: 18,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 10,
+  },
+  iconPill: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  subtitleText: {
+    ...TYPE.overline,
+    fontSize: 10,
+  },
+  cardTitle: {
+    ...TYPE.h1,
+    color: COLORS.textPrimary,
+    marginBottom: 4,
+  },
+  cardDesc: {
+    ...TYPE.body,
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    lineHeight: 19,
+    marginBottom: 14,
+  },
+  ctaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  ctaText: {
+    ...TYPE.bodyBold,
+    fontSize: 13,
+  },
+  ctaArrow: {
     width: 32,
     height: 32,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  cardSubtitle: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.7)',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    flex: 1,
-  },
-  proBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 4,
-    backgroundColor: 'rgba(139, 92, 246, 0.8)',
-  },
-  proBadgeText: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: '#FFF',
-  },
-  cardTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    marginBottom: 4,
-  },
-  cardDesc: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.75)',
-    lineHeight: 18,
-  },
-  lockedOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    borderRadius: 20,
   },
 });
