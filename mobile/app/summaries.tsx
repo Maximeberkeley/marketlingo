@@ -121,7 +121,7 @@ export default function SummariesScreen() {
         <View style={styles.centered}><ActivityIndicator color={COLORS.accent} size="large" /></View>
       ) : filtered.length === 0 ? (
         <View style={styles.emptyState}>
-          <Feather name="book-open" size={36} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
+          <Image source={require('../assets/illustrations/summaries-hero.png')} style={{ width: 140, height: 140, marginBottom: 16 }} resizeMode="contain" />
           <Text style={styles.emptyTitle}>No {activeTab.toLowerCase()} summaries yet</Text>
           <Text style={styles.emptySub}>Check back soon!</Text>
         </View>

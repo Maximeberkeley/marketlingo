@@ -256,9 +256,7 @@ export default function RegulatoryHubScreen() {
         </TouchableOpacity>
 
         <View style={styles.mentorHeader}>
-          <View style={styles.mentorAvatar}>
-            <Feather name="shield" size={24} color={COLORS.accent} />
-          </View>
+          <Image source={require('../assets/illustrations/regulatory-hero.png')} style={{ width: 56, height: 56 }} resizeMode="contain" />
           <View style={{ flex: 1 }}>
             <Text style={styles.title}>{data.marketName} Regulatory Hub</Text>
             <Text style={styles.subtitle}>Navigate compliance with confidence</Text>
