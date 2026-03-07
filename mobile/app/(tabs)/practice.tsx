@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,102 +8,309 @@ import {
   Animated,
   ActivityIndicator,
   Dimensions,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+  Image,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { triggerHaptic } from '../../lib/haptics';
-import { playSound } from '../../lib/sounds';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
-import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
 import { supabase } from '../../lib/supabase';
 import { getMarketName } from '../../lib/markets';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 
-interface PracticeStats {
-  gamesPlayed: number;
-  drillsCompleted: number;
-  trainerAttempts: number;
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const CARD_WIDTH = SCREEN_WIDTH * 0.82;
+const CARD_GAP = 12;
+const CARD_ASPECT = 4 / 3;
+
+interface CardData {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  icon: keyof typeof Feather.glyphMap;
+  iconColor: string;
+  gradient: readonly [string, string];
+  path: string;
+  isPro?: boolean;
 }
 
-const PRACTICE_MODES = [
+const ACTIVITY_CARDS: CardData[] = [
   {
-    key: 'games',
-    icon: 'play-circle' as const,
-    title: 'Trivia Games',
-    subtitle: 'Test your market knowledge with interactive quizzes',
-    color: '#8B5CF6',
-    route: '/games',
-    xpKey: 'GAME_COMPLETE' as const,
-    statKey: 'gamesPlayed' as const,
+    id: 'trainer',
+    title: 'Trainer',
+    subtitle: 'Scenario Analysis',
+    description: 'Real-world case studies with expert feedback and mental models.',
+    icon: 'target',
+    iconColor: '#C4B5FD',
+    gradient: ['#4C1D95', '#7C3AED'] as const,
+    path: '/trainer',
   },
   {
-    key: 'drills',
-    icon: 'zap' as const,
-    title: 'Speed Drills',
-    subtitle: 'Race the clock with rapid-fire questions',
-    color: '#F59E0B',
-    route: '/drills',
-    xpKey: 'DRILL_CORRECT' as const,
-    statKey: 'drillsCompleted' as const,
+    id: 'games',
+    title: 'Games',
+    subtitle: 'Test Your Knowledge',
+    description: 'Quick MCQ challenges based on real industry patterns.',
+    icon: 'play-circle',
+    iconColor: '#A5B4FC',
+    gradient: ['#312E81', '#6366F1'] as const,
+    path: '/games',
   },
   {
-    key: 'trainer',
-    icon: 'target' as const,
-    title: 'Scenario Trainer',
-    subtitle: 'Navigate real-world strategy decisions',
-    color: '#22C55E',
-    route: '/trainer',
-    xpKey: 'TRAINER_COMPLETE' as const,
-    statKey: 'trainerAttempts' as const,
+    id: 'drills',
+    title: 'Drills',
+    subtitle: '15-Second Challenges',
+    description: 'Rapid-fire True/False to build pattern recognition.',
+    icon: 'zap',
+    iconColor: '#FCD34D',
+    gradient: ['#78350F', '#D97706'] as const,
+    path: '/drills',
   },
 ];
 
-const RESOURCES = [
-  { icon: 'file-text' as const, label: 'Summaries', route: '/summaries', color: '#3B82F6' },
-  { icon: 'shield' as const, label: 'Regulatory Hub', route: '/regulatory-hub', color: '#EF4444' },
-  { icon: 'edit-3' as const, label: 'Notebook', route: '/(tabs)/notebook', color: '#8B5CF6' },
-  { icon: 'globe' as const, label: 'Passport', route: '/passport', color: '#F59E0B' },
+const RESOURCE_CARDS: CardData[] = [
+  {
+    id: 'summaries',
+    title: 'Summaries',
+    subtitle: 'Market Digests',
+    description: 'Daily and weekly recaps of everything you\'ve learned.',
+    icon: 'file-text',
+    iconColor: '#FDBA74',
+    gradient: ['#7C2D12', '#EA580C'] as const,
+    path: '/summaries',
+  },
+  {
+    id: 'regulatory',
+    title: 'Regulatory Hub',
+    subtitle: 'Compliance & Policy',
+    description: 'Stay informed on key regulations shaping your industry.',
+    icon: 'shield',
+    iconColor: '#93C5FD',
+    gradient: ['#1E3A5F', '#2563EB'] as const,
+    path: '/regulatory-hub',
+  },
+  {
+    id: 'notebook',
+    title: 'Notebook',
+    subtitle: 'Your Insights',
+    description: 'All your captured notes and key takeaways in one place.',
+    icon: 'edit-3',
+    iconColor: '#FDA4AF',
+    gradient: ['#881337', '#E11D48'] as const,
+    path: '/(tabs)/notebook',
+  },
+  {
+    id: 'passport',
+    title: 'Passport',
+    subtitle: 'Industry Credentials',
+    description: 'Track your verified expertise across industries.',
+    icon: 'globe',
+    iconColor: '#5EEAD4',
+    gradient: ['#134E4A', '#0D9488'] as const,
+    path: '/passport',
+  },
+  {
+    id: 'investment',
+    title: 'Investment Lab',
+    subtitle: 'Investment Scenarios',
+    description: 'Real-world investment analysis and portfolio building.',
+    icon: 'trending-up',
+    iconColor: '#6EE7B7',
+    gradient: ['#064E3B', '#059669'] as const,
+    path: '/investment-lab',
+    isPro: true,
+  },
 ];
 
+/* ─── Swipeable Carousel ─── */
+function SwipeableCarousel({ cards, title }: { cards: CardData[]; title: string }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollRef = useRef<ScrollView>(null);
+
+  const handleScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const offsetX = e.nativeEvent.contentOffset.x;
+      const idx = Math.round(offsetX / (CARD_WIDTH + CARD_GAP));
+      setCurrentIndex(Math.min(Math.max(idx, 0), cards.length - 1));
+    },
+    [cards.length],
+  );
+
+  const scrollToIndex = useCallback((idx: number) => {
+    scrollRef.current?.scrollTo({ x: idx * (CARD_WIDTH + CARD_GAP), animated: true });
+    setCurrentIndex(idx);
+  }, []);
+
+  return (
+    <View style={styles.carouselContainer}>
+      {/* Section header + dots */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>{title}</Text>
+        <View style={styles.dots}>
+          {cards.map((_, i) => (
+            <TouchableOpacity
+              key={i}
+              onPress={() => scrollToIndex(i)}
+              style={[
+                styles.dot,
+                i === currentIndex ? styles.dotActive : styles.dotInactive,
+              ]}
+            />
+          ))}
+        </View>
+      </View>
+
+      {/* Horizontal scroll */}
+      <ScrollView
+        ref={scrollRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        snapToInterval={CARD_WIDTH + CARD_GAP}
+        decelerationRate="fast"
+        contentContainerStyle={styles.scrollContent}
+        onMomentumScrollEnd={handleScroll}
+      >
+        {cards.map((card) => (
+          <IslandCard key={card.id} card={card} />
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
+
+/* ─── Island Card ─── */
+function IslandCard({ card }: { card: CardData }) {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const { user } = useAuth();
+  const [isPro, setIsPro] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('is_pro_user')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.is_pro_user) setIsPro(true);
+      });
+  }, [user]);
+
+  const locked = card.isPro && !isPro;
+
+  const onPressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.96,
+      useNativeDriver: true,
+      tension: 300,
+      friction: 20,
+    }).start();
+  };
+
+  const onPressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 300,
+      friction: 20,
+    }).start();
+  };
+
+  const onPress = () => {
+    triggerHaptic('light');
+    if (locked) {
+      router.push('/subscription' as any);
+    } else {
+      router.push(card.path as any);
+    }
+  };
+
+  return (
+    <Animated.View style={[styles.cardOuter, { transform: [{ scale: scaleAnim }] }]}>
+      <TouchableOpacity
+        activeOpacity={0.95}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        onPress={onPress}
+        style={styles.cardTouch}
+      >
+        {/* Gradient background */}
+        <View style={[styles.cardGradient, { backgroundColor: card.gradient[0] }]}>
+          {/* Lighter overlay for depth */}
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                backgroundColor: card.gradient[1],
+                opacity: 0.4,
+                borderRadius: 20,
+              },
+            ]}
+          />
+
+          {/* Content at bottom */}
+          <View style={styles.cardContent}>
+            <View style={styles.cardBadgeRow}>
+              <View style={[styles.cardIconBox, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
+                <Feather name={card.icon} size={16} color={card.iconColor} />
+              </View>
+              <Text style={styles.cardSubtitle}>{card.subtitle}</Text>
+              {locked && (
+                <View style={styles.proBadge}>
+                  <Feather name="award" size={8} color="#FFF" />
+                  <Text style={styles.proBadgeText}>PRO</Text>
+                </View>
+              )}
+            </View>
+            <Text style={styles.cardTitle}>{card.title}</Text>
+            <Text style={styles.cardDesc}>{card.description}</Text>
+          </View>
+
+          {/* Locked overlay */}
+          {locked && (
+            <View style={styles.lockedOverlay} />
+          )}
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
+
+/* ─── Main Screen ─── */
 export default function PracticeScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
-  const [stats, setStats] = useState<PracticeStats>({ gamesPlayed: 0, drillsCompleted: 0, trainerAttempts: 0 });
   const [loading, setLoading] = useState(true);
   const headerAnim = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => { fetchData(); }, [user]);
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('selected_market')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.selected_market) setSelectedMarket(data.selected_market);
+        setLoading(false);
+      });
+  }, [user]);
+
   useEffect(() => {
     if (!loading) {
-      Animated.spring(headerAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }).start();
+      Animated.spring(headerAnim, {
+        toValue: 1,
+        tension: 80,
+        friction: 12,
+        useNativeDriver: true,
+      }).start();
     }
   }, [loading]);
-
-  const fetchData = async () => {
-    if (!user) return;
-    const { data: profile } = await supabase
-      .from('profiles').select('selected_market').eq('id', user.id).single();
-    if (profile?.selected_market) {
-      setSelectedMarket(profile.selected_market);
-      const today = new Date().toISOString().split('T')[0];
-      const { data: daily } = await supabase
-        .from('daily_completions').select('games_completed, drills_completed')
-        .eq('user_id', user.id).eq('market_id', profile.selected_market)
-        .eq('completion_date', today).maybeSingle();
-      const { count: trainerCount } = await supabase
-        .from('trainer_attempts').select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id);
-      setStats({
-        gamesPlayed: daily?.games_completed || 0,
-        drillsCompleted: daily?.drills_completed || 0,
-        trainerAttempts: trainerCount || 0,
-      });
-    }
-    setLoading(false);
-  };
 
   if (loading) {
     return (
@@ -113,93 +320,45 @@ export default function PracticeScreen() {
     );
   }
 
-  const totalToday = stats.gamesPlayed + stats.drillsCompleted;
-
   return (
     <View style={styles.container}>
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 },
-        ]}
+        contentContainerStyle={{
+          paddingTop: insets.top + 16,
+          paddingBottom: insets.bottom + 100,
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <Animated.View style={[styles.header, {
-          opacity: headerAnim,
-          transform: [{ translateY: headerAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
-        }]}>
+        <Animated.View
+          style={[
+            styles.header,
+            {
+              opacity: headerAnim,
+              transform: [
+                {
+                  translateY: headerAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [20, 0],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
           <View>
             <Text style={styles.headerTitle}>Practice</Text>
             <Text style={styles.headerSub}>
-              {selectedMarket ? getMarketName(selectedMarket) : 'Select a market'}
+              {selectedMarket ? getMarketName(selectedMarket) : 'Sharpen your skills'}
             </Text>
           </View>
-          {totalToday > 0 && (
-            <View style={styles.todayBadge}>
-              <Feather name="check-circle" size={14} color={COLORS.success} />
-              <Text style={styles.todayBadgeText}>{totalToday} completed</Text>
-            </View>
-          )}
         </Animated.View>
 
-        {/* Leo encouragement */}
-        <View style={styles.leoRow}>
-          <LeoCharacter size="sm" animation="idle" />
-          <View style={styles.leoBubble}>
-            <Text style={styles.leoText}>
-              {totalToday > 0
-                ? "You're on a roll! Keep practicing 💪"
-                : "Pick a mode and sharpen your skills!"}
-            </Text>
-          </View>
-        </View>
+        {/* Activities Carousel */}
+        <SwipeableCarousel cards={ACTIVITY_CARDS} title="Activities" />
 
-        {/* Practice Modes — clean linear rows */}
-        <Text style={styles.sectionLabel}>CHOOSE YOUR MODE</Text>
-
-        {PRACTICE_MODES.map((mode, idx) => (
-          <TouchableOpacity
-            key={mode.key}
-            style={styles.modeRow}
-            onPress={() => { triggerHaptic('light'); router.push(mode.route as any); }}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.modeIcon, { backgroundColor: mode.color + '14' }]}>
-              <Feather name={mode.icon} size={24} color={mode.color} />
-            </View>
-            <View style={styles.modeText}>
-              <Text style={styles.modeTitle}>{mode.title}</Text>
-              <Text style={styles.modeSub}>{mode.subtitle}</Text>
-              {stats[mode.statKey] > 0 && (
-                <View style={styles.modeStat}>
-                  <Feather name="check-circle" size={12} color={COLORS.success} />
-                  <Text style={styles.modeStatText}>{stats[mode.statKey]} today</Text>
-                </View>
-              )}
-            </View>
-            <View style={[styles.modeXP, { backgroundColor: mode.color + '14' }]}>
-              <Text style={[styles.modeXPText, { color: mode.color }]}>+{XP_REWARDS[mode.xpKey]}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-
-        {/* Resources — simple list */}
-        <Text style={[styles.sectionLabel, { marginTop: 28 }]}>RESOURCES</Text>
-        {RESOURCES.map((item) => (
-          <TouchableOpacity
-            key={item.label}
-            style={styles.resourceRow}
-            onPress={() => { triggerHaptic('light'); router.push(item.route as any); }}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.resourceIcon, { backgroundColor: item.color + '14' }]}>
-              <Feather name={item.icon} size={20} color={item.color} />
-            </View>
-            <Text style={styles.resourceLabel}>{item.label}</Text>
-            <Feather name="chevron-right" size={16} color={COLORS.textMuted} />
-          </TouchableOpacity>
-        ))}
+        {/* Resources Carousel */}
+        <SwipeableCarousel cards={RESOURCE_CARDS} title="Resources" />
       </ScrollView>
     </View>
   );
@@ -208,67 +367,97 @@ export default function PracticeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: 'center', justifyContent: 'center' },
-  scrollContent: { paddingHorizontal: 20 },
 
-  header: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'flex-start', marginBottom: 16,
-  },
+  header: { paddingHorizontal: 20, marginBottom: 8 },
   headerTitle: { ...TYPE.hero, color: COLORS.textPrimary },
   headerSub: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 4 },
-  todayBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    backgroundColor: COLORS.successSoft, paddingHorizontal: 12, paddingVertical: 6,
-    borderRadius: 20, borderWidth: 1, borderColor: 'rgba(34, 197, 94, 0.15)',
-  },
-  todayBadgeText: { ...TYPE.caption, color: COLORS.success, fontWeight: '600' },
 
-  // Leo
-  leoRow: {
-    flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 24,
-  },
-  leoBubble: {
-    flex: 1, backgroundColor: COLORS.bg1, borderRadius: 16,
-    padding: 12, marginTop: 4,
-    borderWidth: 1, borderColor: COLORS.border,
-  },
-  leoText: { ...TYPE.body, color: COLORS.textSecondary, fontWeight: '500' },
-
-  sectionLabel: { ...TYPE.overline, color: COLORS.textMuted, marginBottom: 12 },
-
-  // Mode rows
-  modeRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 14,
-    backgroundColor: COLORS.bg2, borderRadius: 18, padding: 16,
+  // Carousel
+  carouselContainer: { marginBottom: 24 },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
     marginBottom: 12,
-    borderWidth: 1, borderColor: COLORS.border,
-    ...SHADOWS.sm,
   },
-  modeIcon: {
-    width: 52, height: 52, borderRadius: 16,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  modeText: { flex: 1 },
-  modeTitle: { fontSize: 17, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 2 },
-  modeSub: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 18 },
-  modeStat: {
-    flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4,
-  },
-  modeStatText: { fontSize: 11, color: COLORS.success, fontWeight: '600' },
-  modeXP: {
-    paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10,
-  },
-  modeXPText: { fontSize: 13, fontWeight: '800' },
+  sectionTitle: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
+  dots: { flexDirection: 'row', gap: 6 },
+  dot: { borderRadius: 4 },
+  dotActive: { width: 20, height: 8, backgroundColor: COLORS.accent, borderRadius: 4 },
+  dotInactive: { width: 8, height: 8, backgroundColor: COLORS.borderLight, borderRadius: 4 },
 
-  // Resources
-  resourceRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 14,
-    paddingVertical: 14, paddingHorizontal: 4,
-    borderBottomWidth: 1, borderBottomColor: COLORS.borderLight,
+  scrollContent: { paddingHorizontal: 20, gap: CARD_GAP },
+
+  // Card
+  cardOuter: {
+    width: CARD_WIDTH,
+    borderRadius: 20,
+    ...SHADOWS.md,
   },
-  resourceIcon: {
-    width: 40, height: 40, borderRadius: 12,
-    alignItems: 'center', justifyContent: 'center',
+  cardTouch: {
+    width: '100%',
+    aspectRatio: CARD_ASPECT,
+    borderRadius: 20,
+    overflow: 'hidden',
   },
-  resourceLabel: { flex: 1, fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
+  cardGradient: {
+    flex: 1,
+    borderRadius: 20,
+    justifyContent: 'flex-end',
+  },
+  cardContent: {
+    padding: 20,
+  },
+  cardBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  cardIconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardSubtitle: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.7)',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    flex: 1,
+  },
+  proBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 4,
+    backgroundColor: 'rgba(139, 92, 246, 0.8)',
+  },
+  proBadgeText: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#FFF',
+  },
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  cardDesc: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.75)',
+    lineHeight: 18,
+  },
+  lockedOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 20,
+  },
 });
