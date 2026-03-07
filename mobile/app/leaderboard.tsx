@@ -146,11 +146,9 @@ export default function LeaderboardScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 80 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Prize banner */}
+        {/* Hero banner with image */}
         <View style={styles.prizeBanner}>
-          <View style={styles.prizeIconWrap}>
-            <Feather name="award" size={20} color="#FBBF24" />
-          </View>
+          <Image source={require('../assets/illustrations/leaderboard-hero.png')} style={{ width: 56, height: 56 }} resizeMode="contain" />
           <View style={{ flex: 1 }}>
             <Text style={styles.prizeTitle}>Become the Industry Master</Text>
             <Text style={styles.prizeDesc}>
