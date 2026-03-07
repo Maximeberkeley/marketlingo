@@ -211,7 +211,7 @@ export function SlideReaderV2({
           }
           merged.push(card);
         } else {
-          if (pendingContent.length > 0 && (pendingContent.length + (card.content?.length || 0)) > 600) {
+          if (pendingContent.length > 0 && (pendingContent.length + (card.content?.length || 0)) > 900) {
             merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
             pendingContent = card.content || '';
             pendingTitle = card.title;
