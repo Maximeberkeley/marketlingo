@@ -421,6 +421,17 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'flex-end',
   },
+  cardImageWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 16,
+  },
+  cardImage: {
+    width: '60%',
+    height: '100%',
+    borderRadius: 12,
+  },
   cardContent: {
     padding: 20,
   },
