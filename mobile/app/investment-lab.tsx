@@ -140,6 +140,14 @@ export default function InvestmentLabScreen() {
               <Text style={styles.backTextLight}>← Back</Text>
             </TouchableOpacity>
             <View style={{ gap: 8 }}>
+              {/* Sophia mentor badge */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+                <Image source={SOPHIA_AVATAR} style={{ width: 40, height: 40, borderRadius: 20, borderWidth: 2, borderColor: 'rgba(255,255,255,0.5)' }} />
+                <View>
+                  <Text style={{ fontSize: 13, fontWeight: '700', color: '#fff' }}>Sophia Hernández</Text>
+                  <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)' }}>Your Investment Mentor</Text>
+                </View>
+              </View>
               <View style={[styles.heroBadge, { backgroundColor: accentColor + 'CC' }]}>
                 <Text style={styles.heroBadgeText}>INVESTMENT LAB</Text>
               </View>
