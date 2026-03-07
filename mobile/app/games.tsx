@@ -331,9 +331,7 @@ export default function GamesScreen() {
     const percentage = Math.round((score / questions.length) * 100);
     return (
       <View style={[styles.container, styles.centered]}>
-        <View style={styles.completeIcon}>
-          <Feather name="award" size={28} color={COLORS.success} />
-        </View>
+        <Image source={require('../assets/illustrations/achievements-hero.png')} style={{ width: 100, height: 100, marginBottom: 8 }} resizeMode="contain" />
         <Text style={styles.completeTitle}>Game Complete!</Text>
         <Text style={styles.completeScore}>You scored {score}/{questions.length} ({percentage}%)</Text>
         <Text style={styles.completeFeedback}>
