@@ -188,27 +188,30 @@ export default function GamesScreen() {
 
       const gameQuestions: GameQuestion[] = selected.map((scenario, index) => {
         // Options are objects with {label, isCorrect} — extract label strings
-        const opts = Array.isArray(scenario.options)
-          ? (scenario.options as any[]).map((o: any) => {
-              if (typeof o === 'string') return o;
-              if (typeof o === 'object' && o !== null && 'label' in o) return String(o.label);
-              return String(o);
+        const rawOpts = Array.isArray(scenario.options)
+          ? (scenario.options as any[]).map((o: any, i: number) => {
+              const label = typeof o === 'string' ? o : (typeof o === 'object' && o !== null && 'label' in o ? String(o.label) : String(o));
+              return { label, originalIndex: i };
             })
-          : ['Option A', 'Option B', 'Option C', 'Option D'];
+          : [{ label: 'Option A', originalIndex: 0 }, { label: 'Option B', originalIndex: 1 }, { label: 'Option C', originalIndex: 2 }, { label: 'Option D', originalIndex: 3 }];
+
+        // CRITICAL: Shuffle options so correct answer isn't always in the same position
+        const shuffled = [...rawOpts].sort(() => Math.random() - 0.5);
+        const newCorrectIndex = shuffled.findIndex(o => o.originalIndex === scenario.correct_option_index);
 
         return {
           id: scenario.id,
           type: types[index % 3],
           question: scenario.question || scenario.scenario,
-          options: opts.map((o: string) => {
+          options: shuffled.map((o) => {
             // Truncate at sentence boundary, not mid-word
-            if (o.length > 140) {
-              const sentences = o.match(/[^.!?]*[.!?]+/g);
-              return sentences?.[0]?.trim() || o.substring(0, 140) + '…';
+            if (o.label.length > 140) {
+              const sentences = o.label.match(/[^.!?]*[.!?]+/g);
+              return sentences?.[0]?.trim() || o.label.substring(0, 140) + '…';
             }
-            return o;
+            return o.label;
           }),
-          correctAnswer: scenario.correct_option_index,
+          correctAnswer: newCorrectIndex >= 0 ? newCorrectIndex : 0,
           explanation: scenario.feedback_pro_reasoning || scenario.scenario,
           pattern: ((scenario.tags as string[]) || [])[0] || 'Industry Pattern',
         };
