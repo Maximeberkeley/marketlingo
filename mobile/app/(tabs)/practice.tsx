@@ -50,6 +50,7 @@ const ACTIVITY_CARDS: CardData[] = [
     iconColor: '#C4B5FD',
     gradient: ['#4C1D95', '#7C3AED'] as const,
     path: '/trainer',
+    heroImage: require('../../assets/cards/trainer-hero.jpg'),
   },
   {
     id: 'games',
@@ -60,6 +61,7 @@ const ACTIVITY_CARDS: CardData[] = [
     iconColor: '#A5B4FC',
     gradient: ['#312E81', '#6366F1'] as const,
     path: '/games',
+    heroImage: require('../../assets/cards/games-hero.jpg'),
   },
   {
     id: 'drills',
@@ -70,6 +72,7 @@ const ACTIVITY_CARDS: CardData[] = [
     iconColor: '#FCD34D',
     gradient: ['#78350F', '#D97706'] as const,
     path: '/drills',
+    heroImage: require('../../assets/cards/drills-hero.jpg'),
   },
 ];
 
