@@ -459,6 +459,7 @@ const styles = StyleSheet.create({
   scoreBadge: { backgroundColor: 'rgba(139, 92, 246, 0.15)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 },
   scoreBadgeText: { fontSize: 13, fontWeight: '600', color: COLORS.accent },
   introCenter: { alignItems: 'center', marginBottom: 20 },
+  heroImage: { width: 160, height: 160, marginBottom: 12, borderRadius: 16 },
   introMsg: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginTop: 12, lineHeight: 20 },
   heroCard: {
     padding: 20, borderRadius: 16, marginBottom: 16,
