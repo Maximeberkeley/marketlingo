@@ -421,9 +421,14 @@ export function SlideReaderV2({
           style={[styles.cardArea, { transform: [{ translateX: swipeX }], opacity: cardOpacity }]}
           {...panResponder.panHandlers}
         >
-          <View style={styles.cardContent}>
+          <ScrollView
+            style={styles.cardScroll}
+            contentContainerStyle={styles.cardContent}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          >
             {renderCard()}
-          </View>
+          </ScrollView>
         </Animated.View>
 
         {/* Bottom Bar */}
