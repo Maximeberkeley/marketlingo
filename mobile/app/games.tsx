@@ -132,6 +132,11 @@ export default function GamesScreen() {
             const correctTag = (stack.tags as string[])?.find((t: string) => t.startsWith('correct:'));
             const correctIdx = correctTag ? parseInt(correctTag.split(':')[1], 10) : Math.floor(Math.random() * baseOptions.length);
 
+            // Shuffle options and track correct answer position
+            const indexedOptions = baseOptions.map((opt: string, i: number) => ({ opt, i }));
+            const shuffledOpts = [...indexedOptions].sort(() => Math.random() - 0.5);
+            const newCorrectIdx = shuffledOpts.findIndex(o => o.i === Math.min(correctIdx, baseOptions.length - 1));
+
             // Smart truncate question and explanation at sentence boundaries
             let questionText = `${stack.title}: ${questionSlide}`;
             if (questionText.length > 180) {
@@ -164,8 +169,8 @@ export default function GamesScreen() {
               id: stack.id,
               type: types[index % 3],
               question: questionText,
-              options: baseOptions,
-              correctAnswer: Math.min(correctIdx, baseOptions.length - 1),
+              options: shuffledOpts.map(o => o.opt),
+              correctAnswer: newCorrectIdx >= 0 ? newCorrectIdx : 0,
               explanation: explanationText,
               pattern: (sorted.find((s: any) => s.body?.toLowerCase().includes('pattern:'))?.body || stack.title).substring(0, 60),
             };
