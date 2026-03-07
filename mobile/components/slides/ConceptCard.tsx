@@ -173,7 +173,7 @@ export function parseSlideIntoCards(
     }
 
     flushBullets();
-    if (pendingText.length > 0 && (pendingText.length + trimmed.length) > 500) flushText();
+    if (pendingText.length > 0 && (pendingText.length + trimmed.length) > 800) flushText();
     pendingText += (pendingText ? ' ' : '') + trimmed;
   }
 

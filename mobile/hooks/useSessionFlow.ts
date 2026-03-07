@@ -133,29 +133,45 @@ export function useSessionFlow({
 
   const handleSaveInsight = useCallback(async (slideNum: number) => {
     if (!user || !activeStack) return;
-    const slide = activeStack.slides[slideNum - 1];
-    await supabase.from('saved_insights').insert({
-      user_id: user.id,
-      title: slide?.title || 'Insight',
-      content: slide?.body,
-      stack_id: activeStack.id,
-    });
-    triggerHaptic('light');
-    Alert.alert('Saved!', 'Insight saved to your notebook.');
+    const slide = activeStack.slides.find((s) => s.slide_number === slideNum);
+    if (!slide) return;
+    try {
+      const { error } = await supabase.from('saved_insights').insert({
+        user_id: user.id,
+        title: slide.title || 'Insight',
+        content: slide.body,
+        stack_id: activeStack.id,
+        slide_id: slide.id,
+      });
+      if (error) throw error;
+      triggerHaptic('success');
+      Alert.alert('Saved!', 'Insight saved to your notebook.');
+    } catch (err) {
+      console.error('Save insight error:', err);
+      Alert.alert('Error', 'Could not save insight. Please try again.');
+    }
   }, [user, activeStack]);
 
   const handleAddNote = useCallback(async (slideNum: number) => {
     if (!user || !activeStack || !selectedMarket) return;
     const slide = activeStack.slides.find((s) => s.slide_number === slideNum);
-    await supabase.from('notes').insert({
-      user_id: user.id,
-      content: slide?.body || '',
-      linked_label: `Slide ${slideNum}`,
-      stack_id: activeStack.id,
-      market_id: selectedMarket,
-    });
-    triggerHaptic('light');
-    Alert.alert('Note added!', 'Note saved to your notebook.');
+    if (!slide) return;
+    try {
+      const { error } = await supabase.from('notes').insert({
+        user_id: user.id,
+        content: slide.body || '',
+        linked_label: activeStack.title || `Slide ${slideNum}`,
+        stack_id: activeStack.id,
+        slide_id: slide.id,
+        market_id: selectedMarket,
+      });
+      if (error) throw error;
+      triggerHaptic('success');
+      Alert.alert('Note added!', 'Note saved to your notebook.');
+    } catch (err) {
+      console.error('Add note error:', err);
+      Alert.alert('Error', 'Could not save note. Please try again.');
+    }
   }, [user, activeStack, selectedMarket]);
 
   const dismissSessionComplete = useCallback(() => {

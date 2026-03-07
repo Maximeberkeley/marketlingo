@@ -9,6 +9,7 @@ import {
   Modal,
   Image,
   PanResponder,
+  ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -210,7 +211,7 @@ export function SlideReaderV2({
           }
           merged.push(card);
         } else {
-          if (pendingContent.length > 0 && (pendingContent.length + (card.content?.length || 0)) > 600) {
+          if (pendingContent.length > 0 && (pendingContent.length + (card.content?.length || 0)) > 900) {
             merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
             pendingContent = card.content || '';
             pendingTitle = card.title;
@@ -420,9 +421,14 @@ export function SlideReaderV2({
           style={[styles.cardArea, { transform: [{ translateX: swipeX }], opacity: cardOpacity }]}
           {...panResponder.panHandlers}
         >
-          <View style={styles.cardContent}>
+          <ScrollView
+            style={styles.cardScroll}
+            contentContainerStyle={styles.cardContent}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          >
             {renderCard()}
-          </View>
+          </ScrollView>
         </Animated.View>
 
         {/* Bottom Bar */}
@@ -719,10 +725,14 @@ const styles = StyleSheet.create({
   cardArea: {
     flex: 1,
   },
-  cardContent: {
+  cardScroll: {
     flex: 1,
+  },
+  cardContent: {
+    flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
+    paddingVertical: 16,
   },
   bottomBar: {
     paddingHorizontal: 16,
