@@ -37,6 +37,7 @@ interface CardData {
   gradient: readonly [string, string];
   path: string;
   isPro?: boolean;
+  heroImage?: any;
 }
 
 const ACTIVITY_CARDS: CardData[] = [
