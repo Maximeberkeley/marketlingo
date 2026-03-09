@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,53 @@ import { useAuth } from '../hooks/useAuth';
 import { useInvestmentLab, InvestmentScenario } from '../hooks/useInvestmentLab';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { Feather } from '@expo/vector-icons';
+
+const SOPHIA_AVATAR = require('../assets/mentors/mentor-sophia.png');
+
+const SOPHIA_TIPS: Record<string, string[]> = {
+  valuation: [
+    "Think about what drives value in this specific sector — revenue multiples differ widely across industries.",
+    "Compare the implied valuation with recent comparable transactions for a reality check.",
+    "Don't forget to consider the stage of the company — early-stage firms rarely fit traditional DCF models.",
+    "Always ask: what assumptions would need to be true for this valuation to hold?",
+  ],
+  due_diligence: [
+    "Great investors verify claims independently — never rely solely on management presentations.",
+    "Look for consistency between financial statements, customer data, and market positioning.",
+    "Red flags in due diligence often hide in the footnotes and off-balance-sheet items.",
+    "Think about what questions a skeptical LP would ask about this deal.",
+  ],
+  risk: [
+    "Quantify risks whenever possible — 'high risk' means different things to different people.",
+    "Consider second-order effects: how does one risk factor cascade into others?",
+    "The biggest risks are often the ones nobody is talking about — regulatory shifts, key-person dependency.",
+    "Build your risk framework around probability AND magnitude of impact.",
+  ],
+  portfolio: [
+    "Diversification isn't just about quantity — think about correlation between your holdings.",
+    "Consider how each new position changes the overall risk profile of the portfolio.",
+    "Rebalancing discipline separates good portfolio managers from great ones.",
+    "Think about liquidity needs — not every position can be exited quickly.",
+  ],
+};
+
+function SophiaTipBubble({ moduleId, scenarioIndex }: { moduleId: string; scenarioIndex: number }) {
+  const tips = SOPHIA_TIPS[moduleId] || SOPHIA_TIPS.valuation;
+  const tip = tips[scenarioIndex % tips.length];
+
+  return (
+    <View style={styles.sophiaBubble}>
+      <Image source={SOPHIA_AVATAR} style={styles.sophiaAvatar} />
+      <View style={styles.sophiaBubbleContent}>
+        <View style={styles.sophiaBubbleHeader}>
+          <Text style={styles.sophiaName}>Sophia</Text>
+          <View style={styles.sophiaOnlineDot} />
+        </View>
+        <Text style={styles.sophiaTipText}>{tip}</Text>
+      </View>
+    </View>
+  );
+}
 
 const MODULE_CONFIG: Record<string, {
   title: string;
@@ -141,9 +188,7 @@ export default function InvestmentModuleScreen() {
             <Text style={styles.headerTitle}>{moduleConfig.title}</Text>
             <Text style={styles.headerSub}>Scenario {currentScenarioIndex + 1} of {moduleScenarios.length}</Text>
           </View>
-          <View style={[styles.moduleIcon, { backgroundColor: moduleConfig.color + '20' }]}>
-            <Image source={moduleConfig.icon} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
-          </View>
+          <Image source={SOPHIA_AVATAR} style={{ width: 36, height: 36, borderRadius: 18, borderWidth: 2, borderColor: 'rgba(139,92,246,0.3)' }} />
         </View>
 
         <ProgressBar progress={moduleProgress} height={4} />
@@ -165,6 +210,9 @@ export default function InvestmentModuleScreen() {
               <Text style={styles.scenarioTitle}>{currentScenario.title}</Text>
               <Text style={styles.scenarioBody}>{currentScenario.scenario}</Text>
             </View>
+
+            {/* Sophia's mentor tip */}
+            <SophiaTipBubble moduleId={moduleId || 'valuation'} scenarioIndex={currentScenarioIndex} />
 
             {/* Question */}
             <View style={styles.questionCard}>
@@ -267,4 +315,12 @@ const styles = StyleSheet.create({
   insightBody: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20 },
   exampleCard: { backgroundColor: 'rgba(139,92,246,0.05)', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: 'rgba(139,92,246,0.2)' },
   exampleLabel: { fontSize: 12, fontWeight: '600', color: '#A78BFA', marginBottom: 6 },
+  // Sophia tip bubble
+  sophiaBubble: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: 'rgba(139,92,246,0.06)', borderRadius: 16, padding: 12, borderWidth: 1, borderColor: 'rgba(139,92,246,0.15)' },
+  sophiaAvatar: { width: 34, height: 34, borderRadius: 17, borderWidth: 1.5, borderColor: 'rgba(139,92,246,0.4)' },
+  sophiaBubbleContent: { flex: 1 },
+  sophiaBubbleHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
+  sophiaName: { fontSize: 12, fontWeight: '700', color: '#8B5CF6' },
+  sophiaOnlineDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#22C55E' },
+  sophiaTipText: { fontSize: 12, color: COLORS.textSecondary, lineHeight: 18, fontStyle: 'italic' },
 });
