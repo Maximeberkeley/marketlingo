@@ -112,6 +112,7 @@ export function SlideReaderV2({
   const [timeSpentSeconds, setTimeSpentSeconds] = useState(0);
   const [showCompletion, setShowCompletion] = useState(false);
   const [showAskLeo, setShowAskLeo] = useState(false);
+  const [showAnnotation, setShowAnnotation] = useState(false);
   const [narrationEnabled, setNarrationEnabled] = useState(false);
   const cardKey = useRef(0);
 
