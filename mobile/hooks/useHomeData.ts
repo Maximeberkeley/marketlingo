@@ -181,8 +181,10 @@ export function useHomeData(
       }
     }
 
-    if (lessonStacks?.[0]) {
-      const stack = lessonStacks[0] as any;
+    // Filter out stacks with no slides (some were generated without content)
+    const validLesson = (lessonStacks || []).find((s: any) => (s.slides as any[])?.length > 0);
+    if (validLesson) {
+      const stack = validLesson as any;
       setLessonStack({
         ...stack,
         tags: stack.tags || [],
