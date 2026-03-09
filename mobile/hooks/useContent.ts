@@ -77,7 +77,7 @@ export function useContent() {
           )
         `)
         .eq('market_id', filters.industry)
-        .contains('tags', [`day:${day}`])
+        .contains('tags', [`day-${day}`])
         .order('created_at', { ascending: true });
 
       if (error) {
