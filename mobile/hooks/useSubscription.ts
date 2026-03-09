@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 import { useAuth } from './useAuth';
 import { supabase } from '../lib/supabase';
@@ -32,8 +32,8 @@ interface RestoreResult {
 
 /**
  * useSubscription — unified subscription hook.
- * On native (iOS/Android), delegates purchases to RevenueCat via useRevenueCat.
- * On web, uses a DB-only mock for testing.
+ * On native (iOS/Android), delegates purchases to RevenueCat.
+ * On web or when RevenueCat unavailable, uses DB-only mock.
  * Trial logic is always DB-driven (profiles table).
  */
 export function useSubscription() {
@@ -49,17 +49,64 @@ export function useSubscription() {
   });
   const [planType, setPlanType] = useState<'monthly' | 'annual' | 'trial' | null>(null);
 
+  // RevenueCat cached offerings (real packages from App Store)
+  const [rcOfferings, setRcOfferings] = useState<any>(null);
+  const [rcReady, setRcReady] = useState(false);
+
   const isNative = Platform.OS === 'ios' || Platform.OS === 'android';
 
-  // ---------- RevenueCat lazy import for native ----------
-  let revenueCatModule: any = null;
-  if (isNative) {
+  // ---------- RevenueCat lazy import ----------
+  const revenueCatRef = useRef<any>(null);
+  
+  useEffect(() => {
+    if (!isNative) return;
     try {
-      revenueCatModule = require('react-native-purchases').default;
+      revenueCatRef.current = require('react-native-purchases').default;
     } catch {
-      // RevenueCat not installed — fallback to DB-only
+      // RevenueCat not available (e.g. Expo Go)
+      revenueCatRef.current = null;
     }
-  }
+  }, [isNative]);
+
+  // ---------- RevenueCat init on native ----------
+  useEffect(() => {
+    if (!isNative) return;
+    
+    const initRC = async () => {
+      const rc = revenueCatRef.current;
+      if (!rc) return;
+
+      const apiKey = Platform.OS === 'ios'
+        ? process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY
+        : process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY;
+
+      if (!apiKey) return;
+
+      try {
+        const alreadyConfigured = rc.isConfigured?.() ?? false;
+        if (!alreadyConfigured) {
+          await rc.configure({ apiKey });
+        }
+        if (user?.id) {
+          await rc.logIn(user.id);
+        }
+
+        // Cache offerings for purchase flow
+        const offerings = await rc.getOfferings();
+        if (offerings?.current) {
+          setRcOfferings(offerings.current);
+        }
+        setRcReady(true);
+      } catch (e) {
+        console.warn('RevenueCat init skipped:', e);
+        setRcReady(false);
+      }
+    };
+
+    // Small delay to let the ref be set
+    const timer = setTimeout(initRC, 100);
+    return () => clearTimeout(timer);
+  }, [isNative, user?.id]);
 
   // ---------- DB status fetch ----------
   const fetchSubscriptionStatus = useCallback(async () => {
@@ -79,6 +126,7 @@ export function useSubscription() {
         .single();
 
       if (error || !profile) {
+        console.error('Failed to fetch subscription status:', error?.message);
         setIsLoading(false);
         return;
       }
@@ -102,25 +150,28 @@ export function useSubscription() {
         }
       }
 
-      // On native, also check RevenueCat entitlements (only if configured)
-      if (isNative && revenueCatModule && !isInTrial) {
+      // On native, also check RevenueCat entitlements (skip if in trial)
+      if (isNative && revenueCatRef.current && rcReady && !isInTrial) {
         try {
-          // Check if Purchases is configured before calling getCustomerInfo
-          const isConfigured = revenueCatModule.isConfigured?.() ?? true;
+          const isConfigured = revenueCatRef.current.isConfigured?.() ?? false;
           if (isConfigured) {
-            const info = await revenueCatModule.getCustomerInfo();
+            const info = await revenueCatRef.current.getCustomerInfo();
             const rcPro = info.entitlements?.active?.['MarketLingo Pro'] !== undefined;
             if (rcPro && !effectiveIsProUser) {
               effectiveIsProUser = true;
-              effectivePlanType = 'annual';
+              // Determine plan type from active subscription
+              const activeEntitlement = info.entitlements?.active?.['MarketLingo Pro'];
+              const productId = activeEntitlement?.productIdentifier || '';
+              effectivePlanType = productId.includes('monthly') ? 'monthly' : 'annual';
               await supabase.from('profiles').update({
                 is_pro_user: true,
-                pro_plan_type: 'annual',
+                pro_plan_type: effectivePlanType,
+                pro_subscription_date: new Date().toISOString(),
               }).eq('id', user.id);
             }
           }
         } catch {
-          // RevenueCat unavailable or not configured — use DB state silently
+          // RevenueCat unavailable — use DB state
         }
       }
 
@@ -138,43 +189,28 @@ export function useSubscription() {
     }
 
     setIsLoading(false);
-  }, [user, isNative]);
+  }, [user, isNative, rcReady]);
 
   useEffect(() => {
     fetchSubscriptionStatus();
   }, [fetchSubscriptionStatus]);
 
-  // ---------- RevenueCat init on native ----------
-  useEffect(() => {
-    if (!isNative || !revenueCatModule) return;
-    const apiKey = Platform.OS === 'ios'
-      ? process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY
-      : process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY;
-
-    if (!apiKey) return;
-
-    (async () => {
-      try {
-        // Only configure if not already configured
-        const alreadyConfigured = revenueCatModule.isConfigured?.() ?? false;
-        if (!alreadyConfigured) {
-          await revenueCatModule.configure({ apiKey });
-        }
-        if (user?.id) {
-          await revenueCatModule.logIn(user.id);
-        }
-      } catch (e) {
-        // Silently handle — RevenueCat may not be available in Expo Go
-        console.warn('RevenueCat configure skipped:', e);
-      }
-    })();
-  }, [isNative, user?.id]);
-
   // ---------- Trial ----------
   const canStartTrial = !trialStatus.hasUsedTrial && !isProUser;
 
   const startFreeTrial = useCallback(async () => {
-    if (!user || trialStatus.hasUsedTrial || isProUser) return false;
+    if (!user) {
+      console.error('Cannot start trial: no user');
+      return false;
+    }
+    if (trialStatus.hasUsedTrial) {
+      console.warn('Trial already used');
+      return false;
+    }
+    if (isProUser) {
+      console.warn('Already a Pro user');
+      return false;
+    }
 
     const now = new Date();
     const endDate = new Date(now.getTime() + TRIAL_DURATION_DAYS * 24 * 60 * 60 * 1000);
@@ -190,7 +226,10 @@ export function useSubscription() {
         })
         .eq('id', user.id);
 
-      if (error) return false;
+      if (error) {
+        console.error('Failed to start trial:', error.message);
+        return false;
+      }
 
       setTrialStatus({
         isInTrial: true,
@@ -202,7 +241,8 @@ export function useSubscription() {
       setIsProUser(true);
       setPlanType('trial');
       return true;
-    } catch {
+    } catch (e) {
+      console.error('startFreeTrial error:', e);
       return false;
     }
   }, [user, trialStatus.hasUsedTrial, isProUser]);
@@ -211,86 +251,122 @@ export function useSubscription() {
   const purchasePackage = useCallback(async (pkg: any): Promise<PurchaseResult> => {
     if (!user) return { success: false, cancelled: false, error: 'Not logged in' };
 
-    const type = pkg.identifier as 'monthly' | 'annual';
+    const type = (pkg?.identifier || pkg) as 'monthly' | 'annual';
 
-    // Native: use RevenueCat
-    if (isNative && revenueCatModule) {
+    // Native: use RevenueCat if we have real offerings
+    if (isNative && revenueCatRef.current && rcReady && rcOfferings) {
       try {
-        const { customerInfo } = await revenueCatModule.purchasePackage(pkg);
-        const isPro = customerInfo.entitlements?.active?.['MarketLingo Pro'] !== undefined;
+        // Find the REAL RevenueCat package from cached offerings
+        const realPackage = rcOfferings.availablePackages?.find(
+          (p: any) => p.identifier === `$rc_${type}` || 
+                      p.identifier === type ||
+                      p.product?.identifier?.includes(type)
+        );
 
-        if (isPro) {
-          // Sync to DB
-          await supabase.from('profiles').update({
-            is_pro_user: true,
-            pro_plan_type: type,
-            pro_subscription_date: new Date().toISOString(),
-          }).eq('id', user.id);
-          setIsProUser(true);
-          setPlanType(type);
-          return { success: true, cancelled: false, error: null };
+        if (!realPackage) {
+          console.warn(`No RevenueCat package found for "${type}", falling back to DB mock`);
+          // Fall through to DB mock below
+        } else {
+          const { customerInfo } = await revenueCatRef.current.purchasePackage(realPackage);
+          const isPro = customerInfo.entitlements?.active?.['MarketLingo Pro'] !== undefined;
+
+          if (isPro) {
+            await supabase.from('profiles').update({
+              is_pro_user: true,
+              pro_plan_type: type,
+              pro_subscription_date: new Date().toISOString(),
+            }).eq('id', user.id);
+            setIsProUser(true);
+            setPlanType(type);
+            return { success: true, cancelled: false, error: null };
+          }
+          return { success: false, cancelled: false, error: 'Entitlement not granted' };
         }
-        return { success: false, cancelled: false, error: 'Entitlement not granted' };
       } catch (error: any) {
         if (error.userCancelled) return { success: false, cancelled: true, error: null };
-        return { success: false, cancelled: false, error: error.message || 'Purchase failed' };
+        console.error('RevenueCat purchase error:', error);
+        // Fall through to DB mock on error
       }
     }
 
-    // Web/testing fallback: DB-only mock
+    // DB-only mock (web, testing, or RevenueCat unavailable)
     try {
       const { error } = await supabase.from('profiles').update({
         is_pro_user: true,
         pro_plan_type: type,
+        pro_subscription_date: new Date().toISOString(),
       }).eq('id', user.id);
 
-      if (error) return { success: false, cancelled: false, error: error.message };
+      if (error) {
+        console.error('DB purchase error:', error.message);
+        return { success: false, cancelled: false, error: error.message };
+      }
       setIsProUser(true);
       setPlanType(type);
       return { success: true, cancelled: false, error: null };
     } catch {
       return { success: false, cancelled: false, error: 'Purchase failed' };
     }
-  }, [user, isNative]);
+  }, [user, isNative, rcReady, rcOfferings]);
 
   // ---------- Restore ----------
   const restorePurchases = useCallback(async (): Promise<RestoreResult> => {
-    if (isNative && revenueCatModule) {
+    if (isNative && revenueCatRef.current && rcReady) {
       try {
-        const customerInfo = await revenueCatModule.restorePurchases();
-        const isPro = customerInfo.entitlements?.active?.['MarketLingo Pro'] !== undefined;
+        const isConfigured = revenueCatRef.current.isConfigured?.() ?? false;
+        if (isConfigured) {
+          const customerInfo = await revenueCatRef.current.restorePurchases();
+          const isPro = customerInfo.entitlements?.active?.['MarketLingo Pro'] !== undefined;
 
-        if (isPro && user) {
-          await supabase.from('profiles').update({
-            is_pro_user: true,
-            pro_plan_type: 'annual',
-          }).eq('id', user.id);
-          setIsProUser(true);
-          setPlanType('annual');
+          if (isPro && user) {
+            const activeEntitlement = customerInfo.entitlements?.active?.['MarketLingo Pro'];
+            const productId = activeEntitlement?.productIdentifier || '';
+            const restoredType = productId.includes('monthly') ? 'monthly' : 'annual';
+            await supabase.from('profiles').update({
+              is_pro_user: true,
+              pro_plan_type: restoredType,
+              pro_subscription_date: new Date().toISOString(),
+            }).eq('id', user.id);
+            setIsProUser(true);
+            setPlanType(restoredType as 'monthly' | 'annual');
+          }
+          return { success: true, restored: isPro, error: null };
         }
-        return { success: true, restored: isPro, error: null };
       } catch (error: any) {
+        console.error('Restore error:', error);
         return { success: false, restored: false, error: error.message || 'Restore failed' };
       }
     }
 
-    // Web fallback
+    // Web/testing fallback
     await fetchSubscriptionStatus();
     return { success: true, restored: isProUser, error: null };
-  }, [isNative, user, fetchSubscriptionStatus, isProUser]);
+  }, [isNative, rcReady, user, fetchSubscriptionStatus, isProUser]);
 
   // ---------- Testing toggle ----------
   const toggleProForTesting = useCallback(async () => {
     if (!user) return;
     const newValue = !isProUser;
     try {
-      await supabase.from('profiles').update({
+      const { error } = await supabase.from('profiles').update({
         is_pro_user: newValue,
         pro_plan_type: newValue ? 'monthly' : null,
+        // Clear trial dates when toggling off
+        ...(newValue ? {} : { pro_trial_start_date: null, pro_trial_end_date: null }),
       }).eq('id', user.id);
+      
+      if (error) {
+        console.error('Toggle pro error:', error.message);
+        return;
+      }
       setIsProUser(newValue);
       setPlanType(newValue ? 'monthly' : null);
-    } catch {}
+      if (!newValue) {
+        setTrialStatus({ isInTrial: false, trialStartDate: null, trialEndDate: null, daysRemaining: 0, hasUsedTrial: false });
+      }
+    } catch (e) {
+      console.error('toggleProForTesting error:', e);
+    }
   }, [user, isProUser]);
 
   // ---------- Helpers ----------
@@ -305,11 +381,30 @@ export function useSubscription() {
   }, [isProUser, planType]);
 
   const getPackage = useCallback((type: 'monthly' | 'annual') => {
-    // On native with RevenueCat, try to get real packages
-    // This is a simplified version — real implementation would cache offerings
+    // Try to return real RevenueCat package if available
+    if (rcOfferings?.availablePackages) {
+      const realPkg = rcOfferings.availablePackages.find(
+        (p: any) => p.identifier === `$rc_${type}` ||
+                    p.identifier === type ||
+                    p.product?.identifier?.includes(type)
+      );
+      if (realPkg) {
+        return {
+          identifier: type,
+          product: {
+            identifier: realPkg.product?.identifier || PRODUCT_IDS[type.toUpperCase() as keyof typeof PRODUCT_IDS],
+            priceString: realPkg.product?.priceString || (type === 'monthly' ? '$9.99' : '$79.99'),
+            price: realPkg.product?.price || (type === 'monthly' ? 9.99 : 79.99),
+          },
+          _rcPackage: realPkg, // Keep reference to real package
+        };
+      }
+    }
+
+    // Fallback mock prices
     const prices = {
-      monthly: { priceString: '$9.99', price: 9.99 },
-      annual: { priceString: '$79.99', price: 79.99 },
+      monthly: { priceString: '$9.99/mo', price: 9.99 },
+      annual: { priceString: '$79.99/yr', price: 79.99 },
     };
     return {
       identifier: type,
@@ -318,11 +413,12 @@ export function useSubscription() {
         ...prices[type],
       },
     };
-  }, []);
+  }, [rcOfferings]);
 
   return {
     isProUser, isLoading, isNative, planType, trialStatus, canStartTrial,
     purchasePackage, restorePurchases, getExpirationDate, willRenew, getPackage,
     startFreeTrial, toggleProForTesting, refreshStatus: fetchSubscriptionStatus,
+    rcReady, // expose for UI to know if RevenueCat is available
   };
 }
