@@ -24,6 +24,7 @@ import { XPBadge } from '../../components/ui/XPBadge';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { SlideReaderV2 as SlideReader } from '../../components/slides/SlideReaderV2';
 import { StreakAtRisk } from '../../components/home/StreakAtRisk';
+import { SocialNudge } from '../../components/home/SocialNudge';
 import { Feather } from '@expo/vector-icons';
 import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
 import { MilestoneShareCard } from '../../components/sharing/MilestoneShareCard';
@@ -104,7 +105,7 @@ export default function HomeScreen() {
   const homeData = useHomeData(user?.id, progress, xpData, lessonCompletedToday);
   const {
     selectedMarket, isProUser, lessonStack, newsStack, newsItems,
-    streakRiskHours, tomorrowLesson,
+    streakRiskHours, socialNudge, tomorrowLesson,
     loading, refreshing, currentDay, fetchData, onRefresh,
   } = homeData;
 
@@ -140,6 +141,7 @@ export default function HomeScreen() {
   );
 
   const [showStreakWarning, setShowStreakWarning] = useState(true);
+  const [showSocialNudge, setShowSocialNudge] = useState(true);
 
   useEffect(() => {
     if (lessonCompletedToday) playSound('lessonComplete');
@@ -311,6 +313,20 @@ export default function HomeScreen() {
                 </Text>
                 <Feather name="chevron-right" size={16} color={COLORS.textMuted} />
               </TouchableOpacity>
+            </AnimatedSection>
+          )}
+
+          {/* ── Social Nudge (rival competition) ── */}
+          {socialNudge && showSocialNudge && !lessonCompletedToday && (
+            <AnimatedSection delay={210}>
+              <SocialNudge
+                rivalName={socialNudge.name?.split('@')[0] || 'Someone'}
+                rivalXP={socialNudge.xp}
+                userXP={xpData?.total_xp || 0}
+                marketName={getMarketName(selectedMarket || 'aerospace')}
+                onViewLeaderboard={() => router.push('/leaderboard' as any)}
+                onDismiss={() => setShowSocialNudge(false)}
+              />
             </AnimatedSection>
           )}
 
