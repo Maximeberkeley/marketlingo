@@ -267,6 +267,25 @@ export function SlideReaderV2({
       items.splice(index, 0, { type: 'leo', leoType, slideIndex });
     }
 
+    // Insert quiz cards at strategic points
+    const quizInsertions: { index: number; quiz: QuizCardData; slideIndex: number }[] = [];
+    for (let i = 0; i < items.length; i++) {
+      if (shouldShowQuiz(i, items.length)) {
+        const item = items[i];
+        if (item.type === 'concept' && item.content) {
+          const slideData = slides[item.slideIndex];
+          if (slideData) {
+            const quiz = generateQuizFromSlide(slideData.title, slideData.body, item.slideIndex);
+            if (quiz) quizInsertions.push({ index: i + 1, quiz, slideIndex: item.slideIndex });
+          }
+        }
+      }
+    }
+    for (let i = quizInsertions.length - 1; i >= 0; i--) {
+      const { index, quiz, slideIndex } = quizInsertions[i];
+      items.splice(index, 0, { type: 'quiz', quiz, slideIndex });
+    }
+
     return items;
   }, [slides]);
 
