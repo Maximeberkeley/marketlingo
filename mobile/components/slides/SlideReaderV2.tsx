@@ -85,6 +85,10 @@ type CardItem = {
   type: 'leo';
   leoType: 'encouragement' | 'fun-fact' | 'check-in' | 'celebration' | 'halfway';
   slideIndex: number;
+} | {
+  type: 'quiz';
+  quiz: QuizCardData;
+  slideIndex: number;
 };
 
 export function SlideReaderV2({
