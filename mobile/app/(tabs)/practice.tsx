@@ -20,6 +20,7 @@ import { router } from 'expo-router';
 import { triggerHaptic } from '../../lib/haptics';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
+import { useSubscription } from '../../hooks/useSubscription';
 import { supabase } from '../../lib/supabase';
 import { getMarketName } from '../../lib/markets';
 
@@ -216,20 +217,7 @@ function PremiumCarousel({ cards, title }: { cards: CardData[]; title: string })
 /* ─── Premium Card ─── */
 function PremiumCard({ card, index }: { card: CardData; index: number }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const { user } = useAuth();
-  const [isPro, setIsPro] = useState(false);
-
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from('profiles')
-      .select('is_pro_user')
-      .eq('id', user.id)
-      .single()
-      .then(({ data }) => {
-        if (data?.is_pro_user) setIsPro(true);
-      });
-  }, [user]);
+  const { isProUser: isPro } = useSubscription();
 
   const locked = card.isPro && !isPro;
 
