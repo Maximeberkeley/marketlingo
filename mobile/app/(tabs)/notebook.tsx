@@ -449,7 +449,7 @@ export default function NotebookScreen() {
                 </View>
                 <View style={{ gap: 10 }}>
                   {dateNotes.map((note) => (
-                    <NoteCard key={note.id} note={note} onDelete={handleDeleteNote} />
+                    <NoteCard key={note.id} note={note} onDelete={handleDeleteNote} onOpen={(n) => { setOpenNote(n); setEditingContent(n.content); }} />
                   ))}
                 </View>
               </View>
