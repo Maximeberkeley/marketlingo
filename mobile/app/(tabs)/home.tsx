@@ -316,6 +316,20 @@ export default function HomeScreen() {
             </AnimatedSection>
           )}
 
+          {/* ── Social Nudge (rival competition) ── */}
+          {socialNudge && showSocialNudge && !lessonCompletedToday && (
+            <AnimatedSection delay={210}>
+              <SocialNudge
+                rivalName={socialNudge.name?.split('@')[0] || 'Someone'}
+                rivalXP={socialNudge.xp}
+                userXP={xpData?.total_xp || 0}
+                marketName={getMarketName(selectedMarket || 'aerospace')}
+                onViewLeaderboard={() => router.push('/leaderboard' as any)}
+                onDismiss={() => setShowSocialNudge(false)}
+              />
+            </AnimatedSection>
+          )}
+
           {/* ── Daily Quests ── */}
           <AnimatedSection delay={220}>
             <DailyQuests
