@@ -153,40 +153,49 @@ export default function HomeScreen() {
     if (lessonCompletedToday) playSound('lessonComplete');
   }, [lessonCompletedToday]);
 
-  // Trigger contextual Leo popups
+  // Trigger contextual Leo popups — all interactive with CTAs
   useEffect(() => {
     if (loading || authLoading || hasTriggeredWelcome.current) return;
     if (!selectedMarket || !user) return;
     hasTriggeredWelcome.current = true;
 
-    // Welcome back message after short delay
     const timer = setTimeout(() => {
-      if (lessonCompletedToday) {
-        leoPopups.triggerTip();
-      } else if (streakRiskHours && streakRiskHours < 8) {
-        leoPopups.triggerStreak(streak);
+      // First popup: based on most important user context
+      if (!lessonCompletedToday && streakRiskHours && streakRiskHours < 8) {
+        leoPopups.triggerStreakProtect(streak, () => {
+          if (lessonStack) session.handleOpenStack(lessonStack);
+        });
+      } else if (!lessonCompletedToday) {
+        leoPopups.triggerStartLesson(currentDay, () => {
+          if (lessonStack) session.handleOpenStack(lessonStack);
+        });
+      } else if (dueCount > 0) {
+        leoPopups.triggerReviewDue(dueCount, () => {
+          router.push('/(tabs)/practice' as any);
+        });
       } else {
-        leoPopups.triggerWelcomeBack(streak, currentDay);
+        leoPopups.triggerWriteNote(() => {
+          router.push('/(tabs)/notebook' as any);
+        });
       }
 
-      // Schedule a second contextual popup
+      // Second popup after 90s — social/game action
       setTimeout(() => {
-        if (!lessonCompletedToday && dueCount > 0) {
-          leoPopups.triggerLearning({
-            title: `${dueCount} reviews due 📝`,
-            body: 'Spaced repetition works best when you review on time!',
-            actionLabel: 'Review now',
-            onAction: () => router.push('/(tabs)/practice' as any),
-          });
-        } else if (socialNudge) {
-          leoPopups.triggerSocial({
-            actionLabel: 'View leaderboard',
-            onAction: () => router.push('/leaderboard' as any),
+        if (socialNudge) {
+          leoPopups.triggerCheckLeaderboard(
+            socialNudge.name?.split('@')[0] || 'A rival',
+            () => router.push('/leaderboard' as any),
+          );
+        } else if (!lessonCompletedToday) {
+          leoPopups.triggerAddFriends(() => {
+            router.push('/friends' as any);
           });
         } else {
-          leoPopups.triggerGame();
+          leoPopups.triggerTryTrainer(() => {
+            router.push('/(tabs)/practice' as any);
+          });
         }
-      }, 90000); // 90s later
+      }, 90000);
     }, 2500);
 
     return () => clearTimeout(timer);
