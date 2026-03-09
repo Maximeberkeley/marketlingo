@@ -188,9 +188,7 @@ export default function InvestmentModuleScreen() {
             <Text style={styles.headerTitle}>{moduleConfig.title}</Text>
             <Text style={styles.headerSub}>Scenario {currentScenarioIndex + 1} of {moduleScenarios.length}</Text>
           </View>
-          <View style={[styles.moduleIcon, { backgroundColor: moduleConfig.color + '20' }]}>
-            <Image source={moduleConfig.icon} style={{ width: 18, height: 18, resizeMode: 'contain' }} />
-          </View>
+          <Image source={SOPHIA_AVATAR} style={{ width: 36, height: 36, borderRadius: 18, borderWidth: 2, borderColor: 'rgba(139,92,246,0.3)' }} />
         </View>
 
         <ProgressBar progress={moduleProgress} height={4} />
