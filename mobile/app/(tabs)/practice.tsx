@@ -20,6 +20,7 @@ import { router } from 'expo-router';
 import { triggerHaptic } from '../../lib/haptics';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
+import { useSubscription } from '../../hooks/useSubscription';
 import { supabase } from '../../lib/supabase';
 import { getMarketName } from '../../lib/markets';
 
