@@ -18,6 +18,8 @@ import { mentors, LEO_VOICE_ID } from '../../data/mentors';
 import { getPrimaryMentorForMarket } from '../../data/marketConfig';
 import { ConceptCard, parseSlideIntoCards, ConceptCardType } from './ConceptCard';
 import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
+import { QuizCard, generateQuizFromSlide, shouldShowQuiz, QuizCardData } from './QuizCard';
+import { AnnotationModal } from './AnnotationModal';
 import { AskLeoOverlay } from '../ai/AskLeoOverlay';
 import { playSound } from '../../lib/sounds';
 import { useNarration } from '../../hooks/useNarration';
@@ -54,7 +56,7 @@ interface SlideReaderV2Props {
   onClose: () => void;
   onComplete: (isReview: boolean, timeSpentSeconds: number) => void;
   onSaveInsight: (slideNumber: number) => void;
-  onAddNote: (slideNumber: number) => void;
+  onAddNote: (slideNumber: number, customContent?: string) => void;
   marketId?: string;
   isReview?: boolean;
   isProUser?: boolean;
@@ -83,6 +85,10 @@ type CardItem = {
   type: 'leo';
   leoType: 'encouragement' | 'fun-fact' | 'check-in' | 'celebration' | 'halfway';
   slideIndex: number;
+} | {
+  type: 'quiz';
+  quiz: QuizCardData;
+  slideIndex: number;
 };
 
 export function SlideReaderV2({
@@ -106,6 +112,7 @@ export function SlideReaderV2({
   const [timeSpentSeconds, setTimeSpentSeconds] = useState(0);
   const [showCompletion, setShowCompletion] = useState(false);
   const [showAskLeo, setShowAskLeo] = useState(false);
+  const [showAnnotation, setShowAnnotation] = useState(false);
   const [narrationEnabled, setNarrationEnabled] = useState(false);
   const cardKey = useRef(0);
 
@@ -260,6 +267,25 @@ export function SlideReaderV2({
       items.splice(index, 0, { type: 'leo', leoType, slideIndex });
     }
 
+    // Insert quiz cards at strategic points
+    const quizInsertions: { index: number; quiz: QuizCardData; slideIndex: number }[] = [];
+    for (let i = 0; i < items.length; i++) {
+      if (shouldShowQuiz(i, items.length)) {
+        const item = items[i];
+        if (item.type === 'concept' && item.content) {
+          const slideData = slides[item.slideIndex];
+          if (slideData) {
+            const quiz = generateQuizFromSlide(slideData.title, slideData.body, item.slideIndex);
+            if (quiz) quizInsertions.push({ index: i + 1, quiz, slideIndex: item.slideIndex });
+          }
+        }
+      }
+    }
+    for (let i = quizInsertions.length - 1; i >= 0; i--) {
+      const { index, quiz, slideIndex } = quizInsertions[i];
+      items.splice(index, 0, { type: 'quiz', quiz, slideIndex });
+    }
+
     return items;
   }, [slides]);
 
@@ -327,26 +353,31 @@ export function SlideReaderV2({
     });
   }, [currentCard, animateTransition]);
 
-  // Swipe gesture
+  // Swipe gesture — use a transparent overlay layer to avoid ScrollView conflict in Expo
   const panResponder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => false,
-    onMoveShouldSetPanResponder: (_, gestureState) => {
-      return Math.abs(gestureState.dx) > 8 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 1.5;
+    onMoveShouldSetPanResponder: (_, gs) => {
+      return Math.abs(gs.dx) > 10 && Math.abs(gs.dx) > Math.abs(gs.dy) * 1.2;
     },
-    onMoveShouldSetPanResponderCapture: (_, gestureState) => {
-      // Capture horizontal swipes so ScrollView doesn't steal them
-      return Math.abs(gestureState.dx) > 15 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2;
+    onMoveShouldSetPanResponderCapture: (_, gs) => {
+      // More aggressive capture for Expo: grab horizontal swipes early
+      return Math.abs(gs.dx) > 12 && Math.abs(gs.dx) > Math.abs(gs.dy) * 1.5;
     },
-    onPanResponderMove: (_, gestureState) => {
-      // Dampen at edges (can't go before first or after last)
-      const dampen = (currentCard === 0 && gestureState.dx > 0) || (isLastCard && gestureState.dx < 0) ? 0.15 : 0.5;
-      swipeX.setValue(gestureState.dx * dampen);
+    onPanResponderGrant: () => {
+      // Stop any ongoing spring animation when touch starts
+      swipeX.stopAnimation();
     },
-    onPanResponderRelease: (_, gestureState) => {
-      const vx = gestureState.vx;
-      if (gestureState.dx < -SWIPE_THRESHOLD || vx < -0.5) {
+    onPanResponderMove: (_, gs) => {
+      const dampen = (currentCard === 0 && gs.dx > 0) || (isLastCard && gs.dx < 0) ? 0.15 : 0.6;
+      swipeX.setValue(gs.dx * dampen);
+    },
+    onPanResponderRelease: (_, gs) => {
+      const vx = gs.vx;
+      if (gs.dx < -SWIPE_THRESHOLD || vx < -0.4) {
+        Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }).start();
         goNext();
-      } else if (gestureState.dx > SWIPE_THRESHOLD || vx > 0.5) {
+      } else if (gs.dx > SWIPE_THRESHOLD || vx > 0.4) {
+        Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }).start();
         goPrev();
       } else {
         Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }).start();
@@ -371,6 +402,20 @@ export function SlideReaderV2({
           type={currentCardData.leoType}
           progress={progress}
           slideTitle={currentSlide?.title}
+        />
+      );
+    }
+    if (currentCardData.type === 'quiz') {
+      return (
+        <QuizCard
+          key={`quiz-${currentCard}`}
+          quiz={currentCardData.quiz}
+          onAnswer={(correct) => {
+            if (correct) playSound('correct');
+            // Auto-advance after quiz
+            setTimeout(() => goNext(), 300);
+          }}
+          accentColor={accentColor}
         />
       );
     }
@@ -427,20 +472,34 @@ export function SlideReaderV2({
           <Animated.View style={[styles.progressFill, { backgroundColor: accentColor, width: `${progress * 100}%` }]} />
         </View>
 
-        {/* Card Area with swipe */}
-        <Animated.View
-          style={[styles.cardArea, { transform: [{ translateX: swipeX }], opacity: cardOpacity }]}
-          {...panResponder.panHandlers}
-        >
-          <ScrollView
-            style={styles.cardScroll}
-            contentContainerStyle={styles.cardContent}
-            showsVerticalScrollIndicator={false}
-            bounces={false}
+        {/* Card Area with swipe + edge tap zones for Expo fallback */}
+        <View style={styles.cardArea}>
+          <Animated.View
+            style={[{ flex: 1 }, { transform: [{ translateX: swipeX }], opacity: cardOpacity }]}
+            {...panResponder.panHandlers}
           >
-            {renderCard()}
-          </ScrollView>
-        </Animated.View>
+            <ScrollView
+              style={styles.cardScroll}
+              contentContainerStyle={styles.cardContent}
+              showsVerticalScrollIndicator={false}
+              bounces={false}
+            >
+              {renderCard()}
+            </ScrollView>
+          </Animated.View>
+
+          {/* Edge tap zones as swipe fallback for Expo */}
+          <TouchableOpacity
+            style={styles.edgeTapLeft}
+            onPress={goPrev}
+            activeOpacity={0.3}
+          />
+          <TouchableOpacity
+            style={styles.edgeTapRight}
+            onPress={goNext}
+            activeOpacity={0.3}
+          />
+        </View>
 
         {/* Bottom Bar */}
         <View style={[styles.bottomBar, { paddingBottom: insets.bottom + 12 }]}>
@@ -450,7 +509,7 @@ export function SlideReaderV2({
               <>
                 <TouchableOpacity
                   style={styles.actionBtn}
-                  onPress={() => currentSlide && onAddNote(currentSlide.slideNumber)}
+                  onPress={() => currentSlide && setShowAnnotation(true)}
                 >
                   <Feather name="edit-3" size={18} color={COLORS.textSecondary} />
                 </TouchableOpacity>
@@ -481,6 +540,20 @@ export function SlideReaderV2({
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Annotation Modal */}
+        <AnnotationModal
+          visible={showAnnotation}
+          slideTitle={currentSlide?.title || ''}
+          slideBody={currentCardData?.type === 'concept' ? (currentCardData.content || '') : ''}
+          onSave={(annotation) => {
+            setShowAnnotation(false);
+            if (currentSlide) {
+              onAddNote(currentSlide.slideNumber, annotation);
+            }
+          }}
+          onCancel={() => setShowAnnotation(false)}
+        />
 
         {/* Completion Modal */}
         <Modal visible={showCompletion} transparent animationType="fade">
@@ -544,7 +617,6 @@ function CompletionOverlay({
             name={isReview ? 'book-open' : hasMetMinimumTime ? 'award' : 'bar-chart-2'}
             size={36}
             color={hasMetMinimumTime ? COLORS.success : COLORS.accent}
-          />
           />
         </View>
 
@@ -735,6 +807,7 @@ const styles = StyleSheet.create({
   },
   cardArea: {
     flex: 1,
+    position: 'relative',
   },
   cardScroll: {
     flex: 1,
@@ -744,6 +817,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
+  },
+  edgeTapLeft: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 40,
+    zIndex: 10,
+  },
+  edgeTapRight: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 40,
+    zIndex: 10,
   },
   bottomBar: {
     paddingHorizontal: 16,
