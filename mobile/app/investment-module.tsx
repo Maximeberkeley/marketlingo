@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,53 @@ import { useAuth } from '../hooks/useAuth';
 import { useInvestmentLab, InvestmentScenario } from '../hooks/useInvestmentLab';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { Feather } from '@expo/vector-icons';
+
+const SOPHIA_AVATAR = require('../assets/mentors/mentor-sophia.png');
+
+const SOPHIA_TIPS: Record<string, string[]> = {
+  valuation: [
+    "Think about what drives value in this specific sector — revenue multiples differ widely across industries.",
+    "Compare the implied valuation with recent comparable transactions for a reality check.",
+    "Don't forget to consider the stage of the company — early-stage firms rarely fit traditional DCF models.",
+    "Always ask: what assumptions would need to be true for this valuation to hold?",
+  ],
+  due_diligence: [
+    "Great investors verify claims independently — never rely solely on management presentations.",
+    "Look for consistency between financial statements, customer data, and market positioning.",
+    "Red flags in due diligence often hide in the footnotes and off-balance-sheet items.",
+    "Think about what questions a skeptical LP would ask about this deal.",
+  ],
+  risk: [
+    "Quantify risks whenever possible — 'high risk' means different things to different people.",
+    "Consider second-order effects: how does one risk factor cascade into others?",
+    "The biggest risks are often the ones nobody is talking about — regulatory shifts, key-person dependency.",
+    "Build your risk framework around probability AND magnitude of impact.",
+  ],
+  portfolio: [
+    "Diversification isn't just about quantity — think about correlation between your holdings.",
+    "Consider how each new position changes the overall risk profile of the portfolio.",
+    "Rebalancing discipline separates good portfolio managers from great ones.",
+    "Think about liquidity needs — not every position can be exited quickly.",
+  ],
+};
+
+function SophiaTipBubble({ moduleId, scenarioIndex }: { moduleId: string; scenarioIndex: number }) {
+  const tips = SOPHIA_TIPS[moduleId] || SOPHIA_TIPS.valuation;
+  const tip = tips[scenarioIndex % tips.length];
+
+  return (
+    <View style={styles.sophiaBubble}>
+      <Image source={SOPHIA_AVATAR} style={styles.sophiaAvatar} />
+      <View style={styles.sophiaBubbleContent}>
+        <View style={styles.sophiaBubbleHeader}>
+          <Text style={styles.sophiaName}>Sophia</Text>
+          <View style={styles.sophiaOnlineDot} />
+        </View>
+        <Text style={styles.sophiaTipText}>{tip}</Text>
+      </View>
+    </View>
+  );
+}
 
 const MODULE_CONFIG: Record<string, {
   title: string;
