@@ -56,7 +56,7 @@ interface SlideReaderV2Props {
   onClose: () => void;
   onComplete: (isReview: boolean, timeSpentSeconds: number) => void;
   onSaveInsight: (slideNumber: number) => void;
-  onAddNote: (slideNumber: number) => void;
+  onAddNote: (slideNumber: number, customContent?: string) => void;
   marketId?: string;
   isReview?: boolean;
   isProUser?: boolean;
