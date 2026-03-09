@@ -33,7 +33,7 @@ const MENTOR_IMAGES: Record<string, any> = {
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const SWIPE_THRESHOLD = 50;
+const SWIPE_THRESHOLD = 35;
 
 interface Source {
   label: string;
