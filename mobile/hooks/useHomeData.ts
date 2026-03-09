@@ -134,28 +134,31 @@ export function useHomeData(
       .eq('market_id', market)
       .contains('tags', ['MICRO_LESSON', dayTag, goalTag, levelTag])
       .not('published_at', 'is', null)
-      .limit(1);
+      .limit(5);
+
+    // Filter out stacks with no slides at every fallback level
+    const hasSlides = (stacks: any[] | null) => (stacks || []).filter((s: any) => (s.slides as any[])?.length > 0);
 
     // Fallback: goal + day (no level tag)
-    if (!lessonStacks?.[0]) {
+    if (!hasSlides(lessonStacks).length) {
       const { data: fb1 } = await supabase
         .from('stacks')
         .select('id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)')
         .eq('market_id', market)
         .contains('tags', ['MICRO_LESSON', dayTag, goalTag])
         .not('published_at', 'is', null)
-        .limit(1);
+        .limit(5);
       lessonStacks = fb1;
     }
 
-    if (!lessonStacks?.[0]) {
+    if (!hasSlides(lessonStacks).length) {
       const { data: fallback } = await supabase
         .from('stacks')
         .select('id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)')
         .eq('market_id', market)
         .contains('tags', ['MICRO_LESSON', dayTag])
         .not('published_at', 'is', null)
-        .limit(1);
+        .limit(5);
       lessonStacks = fallback;
     }
 
