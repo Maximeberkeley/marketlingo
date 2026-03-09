@@ -38,7 +38,20 @@ export function MentorChatOverlay({ visible, mentor, onClose, context, marketId 
 
   useEffect(() => {
     if (visible && mentor) {
-      setMessages([{ id: '0', role: 'mentor', content: mentor.greeting }]);
+      const initial: ChatMessage[] = [{ id: '0', role: 'mentor', content: mentor.greeting }];
+      // If context contains a news article, show it as a visible context card
+      if (context && context.includes('news article')) {
+        // Extract title and summary from context
+        const titleMatch = context.match(/Title: "([^"]+)"/);
+        const sourceMatch = context.match(/Source: (.+)/);
+        const summaryMatch = context.match(/Summary: (.+?)(?:\n|$)/);
+        if (titleMatch) {
+          const newsPreview = `📰 **${titleMatch[1]}**${sourceMatch ? `\n_${sourceMatch[1]}_` : ''}${summaryMatch && summaryMatch[1] !== 'N/A' ? `\n\n${summaryMatch[1]}` : ''}`;
+          initial.push({ id: '0-context', role: 'mentor', content: newsPreview });
+          initial.push({ id: '0-prompt', role: 'mentor', content: `I've loaded this article for you. What would you like to know — investment implications, competitive impact, or something else?` });
+        }
+      }
+      setMessages(initial);
     }
   }, [visible, mentor?.id]);
 
