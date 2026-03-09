@@ -469,10 +469,10 @@ const styles = StyleSheet.create({
   },
   lessonIllustrationWrap: {
     alignItems: 'center', justifyContent: 'center',
-    paddingTop: 24, paddingBottom: 8,
+    paddingTop: 16, paddingBottom: 4,
     backgroundColor: COLORS.bg1,
   },
-  lessonIllustration: { width: 140, height: 140 },
+  lessonIllustration: { width: 180, height: 180 },
   lessonContent: { padding: 20 },
   lessonOverline: {
     ...TYPE.overline, color: COLORS.accent, marginBottom: 8,
