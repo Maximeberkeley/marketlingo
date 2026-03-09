@@ -549,10 +549,7 @@ export function SlideReaderV2({
           onSave={(annotation) => {
             setShowAnnotation(false);
             if (currentSlide) {
-              // Save the user's annotation (not the slide body) to notes
-              onAddNote(currentSlide.slideNumber);
-              // The annotation text is the user's own words — we pass it via a custom approach
-              // For now, call onAddNote which saves to notes table
+              onAddNote(currentSlide.slideNumber, annotation);
             }
           }}
           onCancel={() => setShowAnnotation(false)}
