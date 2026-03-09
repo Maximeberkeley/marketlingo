@@ -436,8 +436,20 @@ export function SlideReaderV2({
           quiz={currentCardData.quiz}
           onAnswer={(correct) => {
             if (correct) playSound('correct');
-            // Auto-advance after quiz
             setTimeout(() => goNext(), 300);
+          }}
+          accentColor={accentColor}
+        />
+      );
+    }
+    if (currentCardData.type === 'wordmatch') {
+      return (
+        <WordMatchGame
+          key={`wm-${currentCard}`}
+          pairs={currentCardData.pairs}
+          onComplete={(score, total) => {
+            if (score === total) playSound('correct');
+            setTimeout(() => goNext(), 600);
           }}
           accentColor={accentColor}
         />
