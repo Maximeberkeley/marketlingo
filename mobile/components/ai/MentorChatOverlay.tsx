@@ -38,7 +38,20 @@ export function MentorChatOverlay({ visible, mentor, onClose, context, marketId 
 
   useEffect(() => {
     if (visible && mentor) {
-      setMessages([{ id: '0', role: 'mentor', content: mentor.greeting }]);
+      const initial: ChatMessage[] = [{ id: '0', role: 'mentor', content: mentor.greeting }];
+      // If context contains a news article, show it as a visible context card
+      if (context && context.includes('news article')) {
+        // Extract title and summary from context
+        const titleMatch = context.match(/Title: "([^"]+)"/);
+        const sourceMatch = context.match(/Source: (.+)/);
+        const summaryMatch = context.match(/Summary: (.+?)(?:\n|$)/);
+        if (titleMatch) {
+          const newsPreview = `📰 **${titleMatch[1]}**${sourceMatch ? `\n_${sourceMatch[1]}_` : ''}${summaryMatch && summaryMatch[1] !== 'N/A' ? `\n\n${summaryMatch[1]}` : ''}`;
+          initial.push({ id: '0-context', role: 'mentor', content: newsPreview });
+          initial.push({ id: '0-prompt', role: 'mentor', content: `I've loaded this article for you. What would you like to know — investment implications, competitive impact, or something else?` });
+        }
+      }
+      setMessages(initial);
     }
   }, [visible, mentor?.id]);
 
@@ -65,6 +78,8 @@ export function MentorChatOverlay({ visible, mentor, onClose, context, marketId 
       const systemPrompt = `You are ${mentor.name}, ${mentor.title}. ${mentor.personality}
 
 Your specialties include: ${mentor.specialties.join(', ')}.
+
+CRITICAL RULE: You are EXCLUSIVELY an expert in the **${industryName}** industry. You MUST ONLY discuss topics, companies, trends, investments, and technologies related to ${industryName}. If the user asks about other industries, politely redirect the conversation back to ${industryName}. Never reference or discuss other industries unless directly comparing them to ${industryName}.
 
 You're helping a user learn about the ${industryName} industry to prepare them to build a startup or invest in this space.
 Be conversational, helpful, and draw from deep industry knowledge. Keep responses concise but insightful (2-3 paragraphs max).
@@ -171,20 +186,15 @@ ${context ? `Current context: ${context}` : ''}`;
           )}
         </ScrollView>
 
-        {/* Suggested prompts */}
-        {messages.length <= 1 && (
+        {/* Suggested prompts — contextual */}
+        {messages.length <= 3 && (
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.suggestionsRow}
             contentContainerStyle={{ gap: 8, paddingHorizontal: 16, paddingVertical: 8 }}
           >
-            {[
-              'What are the biggest investment risks?',
-              'Explain the key market dynamics',
-              'Who are the top players to watch?',
-              'What skills do I need to break in?',
-            ].map((prompt) => (
+            {getContextualPrompts(context).map((prompt) => (
               <TouchableOpacity
                 key={prompt}
                 style={styles.suggestionChip}
@@ -224,6 +234,41 @@ ${context ? `Current context: ${context}` : ''}`;
       </KeyboardAvoidingView>
     </Modal>
   );
+}
+
+/** Return contextual prompt chips based on chat context */
+function getContextualPrompts(context?: string): string[] {
+  if (context?.includes('news article')) {
+    return [
+      'Investment implications?',
+      'Who benefits most?',
+      'What are the risks?',
+      'How does this affect the market?',
+    ];
+  }
+  if (context?.includes('lesson') || context?.includes('slide') || context?.includes('concept')) {
+    return [
+      'Explain this simply',
+      'Real-world example?',
+      'Why does this matter?',
+      'How is this applied in practice?',
+    ];
+  }
+  if (context?.includes('trainer') || context?.includes('scenario')) {
+    return [
+      'Walk me through the reasoning',
+      'What framework applies here?',
+      'Common mistakes to avoid?',
+      'Similar real-world case?',
+    ];
+  }
+  // Default / general
+  return [
+    'What are the biggest trends?',
+    'Key players to watch?',
+    'Best entry points for beginners?',
+    'What skills do I need?',
+  ];
 }
 
 const styles = StyleSheet.create({

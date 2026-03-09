@@ -152,14 +152,15 @@ export function useSessionFlow({
     }
   }, [user, activeStack]);
 
-  const handleAddNote = useCallback(async (slideNum: number) => {
+  const handleAddNote = useCallback(async (slideNum: number, customContent?: string) => {
     if (!user || !activeStack || !selectedMarket) return;
     const slide = activeStack.slides.find((s) => s.slide_number === slideNum);
     if (!slide) return;
     try {
+      const noteContent = customContent || slide.body || '';
       const { error } = await supabase.from('notes').insert({
         user_id: user.id,
-        content: slide.body || '',
+        content: noteContent,
         linked_label: activeStack.title || `Slide ${slideNum}`,
         stack_id: activeStack.id,
         slide_id: slide.id,
@@ -167,7 +168,7 @@ export function useSessionFlow({
       });
       if (error) throw error;
       triggerHaptic('success');
-      Alert.alert('Note added!', 'Note saved to your notebook.');
+      Alert.alert('Note added!', 'Your annotation has been saved.');
     } catch (err) {
       console.error('Add note error:', err);
       Alert.alert('Error', 'Could not save note. Please try again.');

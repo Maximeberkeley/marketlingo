@@ -127,7 +127,7 @@ function computeNoteStreak(notes: NoteEntry[]): { current: number; thisWeek: num
 }
 
 /* ─── Note Card Component ─── */
-function NoteCard({ note, onDelete }: { note: NoteEntry; onDelete: (id: string) => void }) {
+function NoteCard({ note, onDelete, onOpen }: { note: NoteEntry; onDelete: (id: string) => void; onOpen: (note: NoteEntry) => void }) {
   const linkedType = getLinkedType(note.linked_label);
   const config = TYPE_CONFIG[linkedType] || TYPE_CONFIG.lesson;
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -146,6 +146,7 @@ function NoteCard({ note, onDelete }: { note: NoteEntry; onDelete: (id: string) 
         activeOpacity={0.9}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
+        onPress={() => onOpen(note)}
         onLongPress={() => {
           triggerHaptic('warning');
           onDelete(note.id);
@@ -170,6 +171,12 @@ function NoteCard({ note, onDelete }: { note: NoteEntry; onDelete: (id: string) 
           <Text style={styles.noteContent} numberOfLines={4}>
             {note.content}
           </Text>
+
+          {/* Tap hint */}
+          <View style={styles.noteTapHint}>
+            <Feather name="maximize-2" size={10} color={COLORS.textMuted} />
+            <Text style={styles.noteTapHintText}>Tap to expand</Text>
+          </View>
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -244,6 +251,8 @@ export default function NotebookScreen() {
   const [newNoteContent, setNewNoteContent] = useState('');
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showSearch, setShowSearch] = useState(false);
+  const [openNote, setOpenNote] = useState<NoteEntry | null>(null);
+  const [editingContent, setEditingContent] = useState('');
 
   const headerAnim = useRef(new Animated.Value(0)).current;
 
@@ -440,7 +449,7 @@ export default function NotebookScreen() {
                 </View>
                 <View style={{ gap: 10 }}>
                   {dateNotes.map((note) => (
-                    <NoteCard key={note.id} note={note} onDelete={handleDeleteNote} />
+                    <NoteCard key={note.id} note={note} onDelete={handleDeleteNote} onOpen={(n) => { setOpenNote(n); setEditingContent(n.content); }} />
                   ))}
                 </View>
               </View>
@@ -491,7 +500,93 @@ export default function NotebookScreen() {
         </TouchableOpacity>
       )}
 
-      {/* ── Add Note Modal ── */}
+      {/* ── Note Detail Modal ── */}
+      <Modal visible={!!openNote} transparent animationType="slide">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setOpenNote(null)}
+          >
+            <TouchableOpacity activeOpacity={1} style={styles.detailCard}>
+              <View style={styles.modalHandle} />
+
+              {/* Header */}
+              <View style={styles.modalHeader}>
+                <View style={styles.modalIconCircle}>
+                  <Feather name="file-text" size={18} color={COLORS.accent} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.modalTitle}>{openNote?.linked_label || 'Note'}</Text>
+                  <Text style={styles.modalSubtitle}>
+                    {openNote ? formatDate(openNote.created_at) + ' • ' + formatTime(openNote.created_at) : ''}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (!openNote) return;
+                    triggerHaptic('warning');
+                    handleDeleteNote(openNote.id);
+                    setOpenNote(null);
+                  }}
+                  style={styles.detailDeleteBtn}
+                >
+                  <Feather name="trash-2" size={16} color="#EF4444" />
+                </TouchableOpacity>
+              </View>
+
+              {/* Editable content */}
+              <ScrollView style={styles.detailScroll} nestedScrollEnabled>
+                <TextInput
+                  style={styles.detailInput}
+                  value={editingContent}
+                  onChangeText={setEditingContent}
+                  multiline
+                  textAlignVertical="top"
+                  placeholder="Your note..."
+                  placeholderTextColor={COLORS.textMuted}
+                />
+              </ScrollView>
+
+              {/* Save / Close */}
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={styles.modalCancel}
+                  onPress={() => setOpenNote(null)}
+                >
+                  <Text style={styles.modalCancelText}>Close</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalSave, editingContent === openNote?.content && { opacity: 0.4 }]}
+                  disabled={editingContent === openNote?.content}
+                  onPress={async () => {
+                    if (!openNote || !user) return;
+                    const { error } = await supabase
+                      .from('notes')
+                      .update({ content: editingContent.trim() })
+                      .eq('id', openNote.id)
+                      .eq('user_id', user.id);
+                    if (!error) {
+                      setNotes((prev) =>
+                        prev.map((n) => n.id === openNote.id ? { ...n, content: editingContent.trim() } : n)
+                      );
+                      triggerHaptic('success');
+                    }
+                    setOpenNote(null);
+                  }}
+                >
+                  <Feather name="check" size={16} color="#fff" />
+                  <Text style={styles.modalSaveText}>Save Changes</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
+      </Modal>
+
       <Modal visible={showAddNote} transparent animationType="slide">
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -651,6 +746,10 @@ const styles = StyleSheet.create({
   noteTypeLabel: { fontSize: 11, fontWeight: '600', flex: 1 },
   noteTime: { fontSize: 10, color: COLORS.textMuted },
   noteContent: { fontSize: 14, color: COLORS.textPrimary, lineHeight: 21 },
+  noteTapHint: {
+    flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8, opacity: 0.5,
+  },
+  noteTapHintText: { fontSize: 10, color: COLORS.textMuted },
 
   // Empty state
   emptyState: { alignItems: 'center', paddingVertical: 40 },
@@ -712,4 +811,19 @@ const styles = StyleSheet.create({
     alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8,
   },
   modalSaveText: { color: '#FFFFFF', fontWeight: '700', fontSize: 15 },
+
+  // Detail modal
+  detailCard: {
+    backgroundColor: COLORS.bg1, borderTopLeftRadius: 28, borderTopRightRadius: 28,
+    padding: 24, paddingBottom: 40, maxHeight: '85%',
+  },
+  detailDeleteBtn: {
+    width: 40, height: 40, borderRadius: 12,
+    backgroundColor: 'rgba(239,68,68,0.1)', alignItems: 'center', justifyContent: 'center',
+  },
+  detailScroll: { maxHeight: 300, marginBottom: 8 },
+  detailInput: {
+    minHeight: 200, padding: 16, backgroundColor: COLORS.bg2, borderRadius: 16,
+    borderWidth: 1, borderColor: COLORS.border, fontSize: 15, color: COLORS.textPrimary, lineHeight: 23,
+  },
 });
