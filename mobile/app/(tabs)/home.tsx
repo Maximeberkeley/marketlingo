@@ -24,6 +24,7 @@ import { XPBadge } from '../../components/ui/XPBadge';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { SlideReaderV2 as SlideReader } from '../../components/slides/SlideReaderV2';
 import { StreakAtRisk } from '../../components/home/StreakAtRisk';
+import { SocialNudge } from '../../components/home/SocialNudge';
 import { Feather } from '@expo/vector-icons';
 import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
 import { MilestoneShareCard } from '../../components/sharing/MilestoneShareCard';
