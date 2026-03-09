@@ -746,6 +746,10 @@ const styles = StyleSheet.create({
   noteTypeLabel: { fontSize: 11, fontWeight: '600', flex: 1 },
   noteTime: { fontSize: 10, color: COLORS.textMuted },
   noteContent: { fontSize: 14, color: COLORS.textPrimary, lineHeight: 21 },
+  noteTapHint: {
+    flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8, opacity: 0.5,
+  },
+  noteTapHintText: { fontSize: 10, color: COLORS.textMuted },
 
   // Empty state
   emptyState: { alignItems: 'center', paddingVertical: 40 },
@@ -807,4 +811,19 @@ const styles = StyleSheet.create({
     alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8,
   },
   modalSaveText: { color: '#FFFFFF', fontWeight: '700', fontSize: 15 },
+
+  // Detail modal
+  detailCard: {
+    backgroundColor: COLORS.bg1, borderTopLeftRadius: 28, borderTopRightRadius: 28,
+    padding: 24, paddingBottom: 40, maxHeight: '85%',
+  },
+  detailDeleteBtn: {
+    width: 40, height: 40, borderRadius: 12,
+    backgroundColor: 'rgba(239,68,68,0.1)', alignItems: 'center', justifyContent: 'center',
+  },
+  detailScroll: { maxHeight: 300, marginBottom: 8 },
+  detailInput: {
+    minHeight: 200, padding: 16, backgroundColor: COLORS.bg2, borderRadius: 16,
+    borderWidth: 1, borderColor: COLORS.border, fontSize: 15, color: COLORS.textPrimary, lineHeight: 23,
+  },
 });
