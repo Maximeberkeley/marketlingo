@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput,
-  Alert, ActivityIndicator, Animated,
+  Alert, ActivityIndicator, Animated, Image, Share,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -66,10 +66,29 @@ export default function FriendsScreen() {
     }
   };
 
-  const handleNudge = (friend: Friend) => {
+  const handleNudge = async (friend: Friend) => {
     triggerHaptic('medium');
     trackEvent('nudge_sent', { to: friend.id });
-    Alert.alert('Nudge Sent!', `${friend.username} will get a reminder to keep learning!`);
+
+    // Send real push notification via edge function
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        await supabase.functions.invoke('send-push-notification', {
+          body: {
+            userId: friend.id,
+            title: '👋 Nudge!',
+            body: `${user?.email?.split('@')[0] || 'A friend'} is reminding you to keep learning!`,
+            data: { type: 'nudge', route: '/(tabs)/home' },
+          },
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+      }
+    } catch (e) {
+      // Non-critical
+    }
+
+    Alert.alert('Nudge Sent! 👋', `${friend.username} will get a push notification to keep learning!`);
   };
 
   const handleRemove = (friend: Friend) => {
@@ -83,6 +102,18 @@ export default function FriendsScreen() {
     triggerHaptic('success');
     trackEvent('friend_request_accepted', {});
     acceptRequest(id);
+  };
+
+  const handleShareInvite = async () => {
+    triggerHaptic('light');
+    trackEvent('share_milestone', { type: 'friend_invite' });
+    try {
+      await Share.share({
+        message: `Join me on MarketLingo! Learn about industries in 5 mins/day 🚀\n\nhttps://marketlingo.app/invite`,
+      });
+    } catch (e) {
+      // User cancelled
+    }
   };
 
   const isActive = (friend: Friend) => {
@@ -100,12 +131,15 @@ export default function FriendsScreen() {
     <View style={styles.container}>
       <Animated.View style={[styles.header, { paddingTop: insets.top + 8 }, animStyle(headerAnim)]}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <Text style={styles.backBtnText}>←</Text>
+          <Feather name="arrow-left" size={18} color={COLORS.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Friends</Text>
         {pendingRequests.length > 0 && (
           <View style={styles.badge}><Text style={styles.badgeText}>{pendingRequests.length}</Text></View>
         )}
+        <TouchableOpacity style={styles.shareBtn} onPress={handleShareInvite}>
+          <Feather name="share-2" size={16} color={COLORS.accent} />
+        </TouchableOpacity>
       </Animated.View>
 
       {/* Add friend */}
@@ -155,9 +189,13 @@ export default function FriendsScreen() {
             {activeTab === 'friends' && (
               friends.length === 0 ? (
                 <View style={styles.empty}>
-                  <Image source={APP_ICONS.trainer} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
+                  <Feather name="users" size={48} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
                   <Text style={styles.emptyTitle}>No friends yet</Text>
                   <Text style={styles.emptySub}>Add friends by username to see their progress and compete!</Text>
+                  <TouchableOpacity style={styles.inviteBtn} onPress={handleShareInvite}>
+                    <Feather name="share-2" size={14} color="#FFF" />
+                    <Text style={styles.inviteBtnText}>Invite Friends</Text>
+                  </TouchableOpacity>
                 </View>
               ) : (
                 <View style={styles.list}>
@@ -177,7 +215,7 @@ export default function FriendsScreen() {
             {activeTab === 'activity' && (
               friends.length === 0 ? (
                 <View style={styles.empty}>
-                  <Image source={APP_ICONS.progress} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
+                  <Feather name="activity" size={48} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
                   <Text style={styles.emptyTitle}>No activity yet</Text>
                   <Text style={styles.emptySub}>Add friends to see what they're up to!</Text>
                 </View>
@@ -189,7 +227,7 @@ export default function FriendsScreen() {
             {activeTab === 'requests' && (
               pendingRequests.length === 0 ? (
                 <View style={styles.empty}>
-                  <Image source={APP_ICONS.quests} style={{ width: 48, height: 48, resizeMode: 'contain', marginBottom: 12 }} />
+                  <Feather name="inbox" size={48} color={COLORS.textMuted} style={{ marginBottom: 12 }} />
                   <Text style={styles.emptyTitle}>No pending requests</Text>
                 </View>
               ) : (
@@ -205,10 +243,10 @@ export default function FriendsScreen() {
                       </View>
                       <View style={styles.reqActions}>
                         <TouchableOpacity style={styles.acceptBtn} onPress={() => handleAccept(req.id)}>
-                          <Text style={styles.acceptText}>✓</Text>
+                          <Feather name="check" size={16} color="#FFF" />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.declineBtn} onPress={() => declineRequest(req.id)}>
-                          <Text style={styles.declineText}>✕</Text>
+                          <Feather name="x" size={16} color="#EF4444" />
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -230,10 +268,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16, paddingBottom: 12,
   },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
-  backBtnText: { fontSize: 18, color: COLORS.textPrimary },
   headerTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary, flex: 1 },
   badge: { backgroundColor: '#EF4444', borderRadius: 10, minWidth: 20, height: 20, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
   badgeText: { fontSize: 10, fontWeight: '700', color: '#FFF' },
+  shareBtn: {
+    width: 36, height: 36, borderRadius: 10, backgroundColor: COLORS.accentSoft || 'rgba(139,92,246,0.12)',
+    alignItems: 'center', justifyContent: 'center',
+  },
   addRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, marginBottom: 12 },
   addInput: {
     flex: 1, height: 44, backgroundColor: COLORS.bg2, borderRadius: 12, paddingHorizontal: 14,
@@ -249,9 +290,14 @@ const styles = StyleSheet.create({
   scrollContent: { paddingHorizontal: 16 },
   list: { gap: 8 },
   empty: { alignItems: 'center', paddingTop: 60 },
-  emptyTitle: { fontSize: 16, color: COLORS.textPrimary, fontWeight: '500', marginBottom: 6 },
-  emptyTitle: { fontSize: 16, color: COLORS.textPrimary, fontWeight: '500', marginBottom: 6 },
-  emptySub: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center', paddingHorizontal: 20 },
+  emptyTitle: { fontSize: 16, color: COLORS.textPrimary, fontWeight: '600', marginBottom: 6 },
+  emptySub: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center', paddingHorizontal: 20, marginBottom: 20 },
+  inviteBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    backgroundColor: COLORS.accent, borderRadius: 12,
+    paddingHorizontal: 20, paddingVertical: 12,
+  },
+  inviteBtnText: { fontSize: 14, fontWeight: '700', color: '#FFF' },
   requestCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14,
     backgroundColor: COLORS.bg2, borderRadius: 14, borderWidth: 1, borderColor: 'rgba(139,92,246,0.2)',
@@ -265,7 +311,5 @@ const styles = StyleSheet.create({
   reqSub: { fontSize: 11, color: COLORS.textMuted },
   reqActions: { flexDirection: 'row', gap: 8 },
   acceptBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#22C55E', alignItems: 'center', justifyContent: 'center' },
-  acceptText: { fontSize: 16, fontWeight: '700', color: '#FFF' },
   declineBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(239,68,68,0.15)', alignItems: 'center', justifyContent: 'center' },
-  declineText: { fontSize: 16, fontWeight: '600', color: '#EF4444' },
 });

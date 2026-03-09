@@ -104,7 +104,7 @@ export default function HomeScreen() {
   const homeData = useHomeData(user?.id, progress, xpData, lessonCompletedToday);
   const {
     selectedMarket, isProUser, lessonStack, newsStack, newsItems,
-    streakRiskHours, tomorrowLesson,
+    streakRiskHours, socialNudge, tomorrowLesson,
     loading, refreshing, currentDay, fetchData, onRefresh,
   } = homeData;
 
