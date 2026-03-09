@@ -312,4 +312,12 @@ const styles = StyleSheet.create({
   insightBody: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20 },
   exampleCard: { backgroundColor: 'rgba(139,92,246,0.05)', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: 'rgba(139,92,246,0.2)' },
   exampleLabel: { fontSize: 12, fontWeight: '600', color: '#A78BFA', marginBottom: 6 },
+  // Sophia tip bubble
+  sophiaBubble: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: 'rgba(139,92,246,0.06)', borderRadius: 16, padding: 12, borderWidth: 1, borderColor: 'rgba(139,92,246,0.15)' },
+  sophiaAvatar: { width: 34, height: 34, borderRadius: 17, borderWidth: 1.5, borderColor: 'rgba(139,92,246,0.4)' },
+  sophiaBubbleContent: { flex: 1 },
+  sophiaBubbleHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
+  sophiaName: { fontSize: 12, fontWeight: '700', color: '#8B5CF6' },
+  sophiaOnlineDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#22C55E' },
+  sophiaTipText: { fontSize: 12, color: COLORS.textSecondary, lineHeight: 18, fontStyle: 'italic' },
 });
