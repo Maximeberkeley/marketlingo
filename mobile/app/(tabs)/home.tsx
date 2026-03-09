@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -39,6 +39,8 @@ import { playSound } from '../../lib/sounds';
 import { useSpacedRepetition } from '../../hooks/useSpacedRepetition';
 import { useOfflineCache } from '../../hooks/useOfflineCache';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { LeoPopup } from '../../components/mascot/LeoPopup';
+import { useLeoPopups } from '../../hooks/useLeoPopups';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -143,9 +145,61 @@ export default function HomeScreen() {
   const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
 
+  // Leo popup system
+  const leoPopups = useLeoPopups({ cooldownMs: 45000, maxPerSession: 4 });
+  const hasTriggeredWelcome = useRef(false);
+
   useEffect(() => {
     if (lessonCompletedToday) playSound('lessonComplete');
   }, [lessonCompletedToday]);
+
+  // Trigger contextual Leo popups — all interactive with CTAs
+  useEffect(() => {
+    if (loading || authLoading || hasTriggeredWelcome.current) return;
+    if (!selectedMarket || !user) return;
+    hasTriggeredWelcome.current = true;
+
+    const timer = setTimeout(() => {
+      // First popup: based on most important user context
+      if (!lessonCompletedToday && streakRiskHours && streakRiskHours < 8) {
+        leoPopups.triggerStreakProtect(streak, () => {
+          if (lessonStack) session.handleOpenStack(lessonStack);
+        });
+      } else if (!lessonCompletedToday) {
+        leoPopups.triggerStartLesson(currentDay, () => {
+          if (lessonStack) session.handleOpenStack(lessonStack);
+        });
+      } else if (dueCount > 0) {
+        leoPopups.triggerReviewDue(dueCount, () => {
+          router.push('/(tabs)/practice' as any);
+        });
+      } else {
+        leoPopups.triggerWriteNote(() => {
+          router.push('/(tabs)/notebook' as any);
+        });
+      }
+
+      // Second popup after 90s — social/game action
+      setTimeout(() => {
+        if (socialNudge) {
+          leoPopups.triggerCheckLeaderboard(
+            socialNudge.name?.split('@')[0] || 'A rival',
+            () => router.push('/leaderboard' as any),
+          );
+        } else if (!lessonCompletedToday) {
+          leoPopups.triggerAddFriends(() => {
+            router.push('/friends' as any);
+          });
+        } else {
+          leoPopups.triggerTryTrainer(() => {
+            router.push('/(tabs)/practice' as any);
+          });
+        }
+      }, 90000);
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, [loading, authLoading, selectedMarket, user]);
 
   useEffect(() => {
     if (!authLoading && !user) { router.replace('/'); return; }
@@ -171,6 +225,9 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Leo popup overlay */}
+      <LeoPopup message={leoPopups.currentMessage} onDismiss={leoPopups.dismiss} />
+
       {session.showReader && session.activeStack ? (
         <SlideReader
           stackTitle={session.activeStack.title}

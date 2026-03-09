@@ -449,7 +449,7 @@ export default function NotebookScreen() {
         ) : (
           <View style={styles.emptyState}>
             <Image
-              source={require('../../assets/cards/notebook-hero.jpg')}
+              source={require('../../assets/cards/notebook-hero.png')}
               style={styles.emptyImage}
               resizeMode="contain"
             />
