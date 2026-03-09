@@ -19,6 +19,7 @@ import { getPrimaryMentorForMarket } from '../../data/marketConfig';
 import { ConceptCard, parseSlideIntoCards, ConceptCardType } from './ConceptCard';
 import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
 import { QuizCard, generateQuizFromSlide, shouldShowQuiz, QuizCardData } from './QuizCard';
+import { WordMatchGame, extractTermPairs, shouldShowWordMatch, WordPair } from './WordMatchGame';
 import { AnnotationModal } from './AnnotationModal';
 import { AskLeoOverlay } from '../ai/AskLeoOverlay';
 import { playSound } from '../../lib/sounds';
