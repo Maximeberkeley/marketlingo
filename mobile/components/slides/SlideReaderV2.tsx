@@ -811,6 +811,7 @@ const styles = StyleSheet.create({
   },
   cardArea: {
     flex: 1,
+    position: 'relative',
   },
   cardScroll: {
     flex: 1,
@@ -820,6 +821,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
+  },
+  edgeTapLeft: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 40,
+    zIndex: 10,
+  },
+  edgeTapRight: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 40,
+    zIndex: 10,
   },
   bottomBar: {
     paddingHorizontal: 16,
