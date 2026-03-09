@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -39,6 +39,8 @@ import { playSound } from '../../lib/sounds';
 import { useSpacedRepetition } from '../../hooks/useSpacedRepetition';
 import { useOfflineCache } from '../../hooks/useOfflineCache';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { LeoPopup } from '../../components/mascot/LeoPopup';
+import { useLeoPopups } from '../../hooks/useLeoPopups';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -143,9 +145,52 @@ export default function HomeScreen() {
   const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
 
+  // Leo popup system
+  const leoPopups = useLeoPopups({ cooldownMs: 45000, maxPerSession: 4 });
+  const hasTriggeredWelcome = useRef(false);
+
   useEffect(() => {
     if (lessonCompletedToday) playSound('lessonComplete');
   }, [lessonCompletedToday]);
+
+  // Trigger contextual Leo popups
+  useEffect(() => {
+    if (loading || authLoading || hasTriggeredWelcome.current) return;
+    if (!selectedMarket || !user) return;
+    hasTriggeredWelcome.current = true;
+
+    // Welcome back message after short delay
+    const timer = setTimeout(() => {
+      if (lessonCompletedToday) {
+        leoPopups.triggerTip();
+      } else if (streakRiskHours && streakRiskHours < 8) {
+        leoPopups.triggerStreak(streak);
+      } else {
+        leoPopups.triggerWelcomeBack(streak, currentDay);
+      }
+
+      // Schedule a second contextual popup
+      setTimeout(() => {
+        if (!lessonCompletedToday && dueCount > 0) {
+          leoPopups.triggerLearning({
+            title: `${dueCount} reviews due 📝`,
+            body: 'Spaced repetition works best when you review on time!',
+            actionLabel: 'Review now',
+            onAction: () => router.push('/(tabs)/practice' as any),
+          });
+        } else if (socialNudge) {
+          leoPopups.triggerSocial({
+            actionLabel: 'View leaderboard',
+            onAction: () => router.push('/leaderboard' as any),
+          });
+        } else {
+          leoPopups.triggerGame();
+        }
+      }, 90000); // 90s later
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, [loading, authLoading, selectedMarket, user]);
 
   useEffect(() => {
     if (!authLoading && !user) { router.replace('/'); return; }
@@ -171,6 +216,9 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Leo popup overlay */}
+      <LeoPopup message={leoPopups.currentMessage} onDismiss={leoPopups.dismiss} />
+
       {session.showReader && session.activeStack ? (
         <SlideReader
           stackTitle={session.activeStack.title}
