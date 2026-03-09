@@ -204,7 +204,7 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
     enqueue({
       category: 'achievement',
       title: 'Check your progress 📊',
-      body: 'See how far you've come in your learning journey.',
+      body: 'See how far you\'ve come in your learning journey.',
       actionLabel: 'View progress',
       onAction,
       duration: 7000,
