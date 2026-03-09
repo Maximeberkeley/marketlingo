@@ -300,6 +300,10 @@ export default function SubscriptionScreen() {
             </Text>
           </TouchableOpacity>
         )}
+
+        <Text style={styles.legalText}>
+          Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage subscriptions in your Apple ID settings.
+        </Text>
       </ScrollView>
 
       {!isProUser && (
