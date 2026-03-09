@@ -618,7 +618,6 @@ function CompletionOverlay({
             size={36}
             color={hasMetMinimumTime ? COLORS.success : COLORS.accent}
           />
-          />
         </View>
 
         {isReview ? (
