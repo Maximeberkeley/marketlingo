@@ -186,20 +186,15 @@ ${context ? `Current context: ${context}` : ''}`;
           )}
         </ScrollView>
 
-        {/* Suggested prompts */}
-        {messages.length <= 1 && (
+        {/* Suggested prompts — contextual */}
+        {messages.length <= 3 && (
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.suggestionsRow}
             contentContainerStyle={{ gap: 8, paddingHorizontal: 16, paddingVertical: 8 }}
           >
-            {[
-              'What are the biggest investment risks?',
-              'Explain the key market dynamics',
-              'Who are the top players to watch?',
-              'What skills do I need to break in?',
-            ].map((prompt) => (
+            {getContextualPrompts(context).map((prompt) => (
               <TouchableOpacity
                 key={prompt}
                 style={styles.suggestionChip}
