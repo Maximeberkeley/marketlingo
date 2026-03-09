@@ -141,6 +141,7 @@ export default function HomeScreen() {
   );
 
   const [showStreakWarning, setShowStreakWarning] = useState(true);
+  const [showSocialNudge, setShowSocialNudge] = useState(true);
 
   useEffect(() => {
     if (lessonCompletedToday) playSound('lessonComplete');
