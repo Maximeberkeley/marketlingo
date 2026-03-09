@@ -48,7 +48,7 @@ We may update this Privacy Policy from time to time. We will notify you of any c
 
 **Contact Us**
 
-If you have questions about this Privacy Policy, please contact us at privacy@marketlingo.app.
+If you have questions about this Privacy Policy, please contact us at contactus@marketlingo.net.
 `;
 
 const TERMS_OF_SERVICE = `
@@ -118,7 +118,7 @@ These Terms shall be governed by the laws of the State of California, United Sta
 
 **Contact Us**
 
-If you have questions about these Terms, please contact us at legal@marketlingo.app.
+If you have questions about these Terms, please contact us at contactus@marketlingo.net.
 `;
 
 export default function LegalScreen() {
