@@ -33,7 +33,7 @@ const MENTOR_IMAGES: Record<string, any> = {
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const SWIPE_THRESHOLD = 50;
+const SWIPE_THRESHOLD = 35;
 
 interface Source {
   label: string;
@@ -329,22 +329,33 @@ export function SlideReaderV2({
 
   // Swipe gesture
   const panResponder = useMemo(() => PanResponder.create({
+    onStartShouldSetPanResponder: () => false,
     onMoveShouldSetPanResponder: (_, gestureState) => {
-      return Math.abs(gestureState.dx) > 10 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+      return Math.abs(gestureState.dx) > 8 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 1.5;
+    },
+    onMoveShouldSetPanResponderCapture: (_, gestureState) => {
+      // Capture horizontal swipes so ScrollView doesn't steal them
+      return Math.abs(gestureState.dx) > 15 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2;
     },
     onPanResponderMove: (_, gestureState) => {
-      swipeX.setValue(gestureState.dx * 0.4);
+      // Dampen at edges (can't go before first or after last)
+      const dampen = (currentCard === 0 && gestureState.dx > 0) || (isLastCard && gestureState.dx < 0) ? 0.15 : 0.5;
+      swipeX.setValue(gestureState.dx * dampen);
     },
     onPanResponderRelease: (_, gestureState) => {
-      if (gestureState.dx < -SWIPE_THRESHOLD) {
+      const vx = gestureState.vx;
+      if (gestureState.dx < -SWIPE_THRESHOLD || vx < -0.5) {
         goNext();
-      } else if (gestureState.dx > SWIPE_THRESHOLD) {
+      } else if (gestureState.dx > SWIPE_THRESHOLD || vx > 0.5) {
         goPrev();
       } else {
         Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }).start();
       }
     },
-  }), [goNext, goPrev]);
+    onPanResponderTerminate: () => {
+      Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }).start();
+    },
+  }), [goNext, goPrev, currentCard, isLastCard]);
 
   const handleComplete = useCallback(() => {
     setShowCompletion(false);
