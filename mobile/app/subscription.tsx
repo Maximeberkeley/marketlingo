@@ -77,22 +77,20 @@ export default function SubscriptionScreen() {
   };
 
   const handlePurchase = async () => {
-    const pkg = getPackage(selectedPlan);
-    if (!pkg) {
-      toggleProForTesting();
-      Alert.alert('Pro activated for testing!');
-      return;
-    }
     setIsPurchasing(true);
-    const result = await purchasePackage(pkg);
-    setIsPurchasing(false);
-    if (result.success) {
-      trackEvent('subscription_purchase', { plan: selectedPlan });
-      Alert.alert('Welcome to MarketLingo Pro!');
-      router.back();
-    } else if (!result.cancelled) {
-      Alert.alert('Error', result.error || 'Purchase failed. Please try again.');
+    try {
+      const result = await purchasePackage(selectedPlan);
+      if (result.success) {
+        trackEvent('subscription_purchase', { plan: selectedPlan });
+        Alert.alert('Welcome to MarketLingo Pro!', 'You now have full access to all features.');
+        router.back();
+      } else if (!result.cancelled) {
+        Alert.alert('Purchase Issue', result.error || 'Purchase could not be completed. Please try again.');
+      }
+    } catch (e) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
     }
+    setIsPurchasing(false);
   };
 
   const handleRestore = async () => {
@@ -287,6 +285,21 @@ export default function SubscriptionScreen() {
         <TouchableOpacity style={styles.restoreButton} onPress={handleRestore} disabled={isRestoring}>
           <Text style={styles.restoreText}>{isRestoring ? 'Restoring...' : 'Restore Purchases'}</Text>
         </TouchableOpacity>
+
+        {/* Dev toggle for testing */}
+        {__DEV__ && (
+          <TouchableOpacity
+            style={[styles.restoreButton, { marginTop: 4, backgroundColor: 'rgba(139,92,246,0.08)', borderRadius: 12, paddingVertical: 10, paddingHorizontal: 16 }]}
+            onPress={async () => {
+              await toggleProForTesting();
+              Alert.alert(isProUser ? 'Pro deactivated' : 'Pro activated for testing');
+            }}
+          >
+            <Text style={[styles.restoreText, { color: COLORS.accent }]}>
+              {isProUser ? '🧪 Deactivate Pro (Dev)' : '🧪 Activate Pro (Dev)'}
+            </Text>
+          </TouchableOpacity>
+        )}
 
         <Text style={styles.legalText}>
           Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage subscriptions in your Apple ID settings.

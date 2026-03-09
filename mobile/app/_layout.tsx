@@ -100,6 +100,7 @@ export default function RootLayout() {
               <Stack.Screen name="passport" />
               <Stack.Screen name="certificate" />
               <Stack.Screen name="friends" />
+              <Stack.Screen name="legal" />
             </Stack>
           </LeoProvider>
         </AuthProvider>
