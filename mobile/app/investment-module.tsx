@@ -211,6 +211,9 @@ export default function InvestmentModuleScreen() {
               <Text style={styles.scenarioBody}>{currentScenario.scenario}</Text>
             </View>
 
+            {/* Sophia's mentor tip */}
+            <SophiaTipBubble moduleId={moduleId || 'valuation'} scenarioIndex={currentScenarioIndex} />
+
             {/* Question */}
             <View style={styles.questionCard}>
               <Text style={styles.questionText}>{currentScenario.question}</Text>
