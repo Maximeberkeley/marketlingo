@@ -3,12 +3,12 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-nati
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import { COLORS } from '../constants/theme';
+import { COLORS } from '../lib/constants';
 
 const PRIVACY_POLICY = `
 Last updated: March 9, 2026
 
-MarketLingo ("we", "our", or "us") operates the MarketLingo mobile application. This Privacy Policy informs you of our policies regarding the collection, use, and disclosure of personal data when you use our app.
+LLC Marketverse ("we", "our", or "us") operates the MarketLingo mobile application. This Privacy Policy informs you of our policies regarding the collection, use, and disclosure of personal data when you use our app.
 
 **Information We Collect**
 
