@@ -353,26 +353,31 @@ export function SlideReaderV2({
     });
   }, [currentCard, animateTransition]);
 
-  // Swipe gesture
+  // Swipe gesture — use a transparent overlay layer to avoid ScrollView conflict in Expo
   const panResponder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => false,
-    onMoveShouldSetPanResponder: (_, gestureState) => {
-      return Math.abs(gestureState.dx) > 8 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 1.5;
+    onMoveShouldSetPanResponder: (_, gs) => {
+      return Math.abs(gs.dx) > 10 && Math.abs(gs.dx) > Math.abs(gs.dy) * 1.2;
     },
-    onMoveShouldSetPanResponderCapture: (_, gestureState) => {
-      // Capture horizontal swipes so ScrollView doesn't steal them
-      return Math.abs(gestureState.dx) > 15 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2;
+    onMoveShouldSetPanResponderCapture: (_, gs) => {
+      // More aggressive capture for Expo: grab horizontal swipes early
+      return Math.abs(gs.dx) > 12 && Math.abs(gs.dx) > Math.abs(gs.dy) * 1.5;
     },
-    onPanResponderMove: (_, gestureState) => {
-      // Dampen at edges (can't go before first or after last)
-      const dampen = (currentCard === 0 && gestureState.dx > 0) || (isLastCard && gestureState.dx < 0) ? 0.15 : 0.5;
-      swipeX.setValue(gestureState.dx * dampen);
+    onPanResponderGrant: () => {
+      // Stop any ongoing spring animation when touch starts
+      swipeX.stopAnimation();
     },
-    onPanResponderRelease: (_, gestureState) => {
-      const vx = gestureState.vx;
-      if (gestureState.dx < -SWIPE_THRESHOLD || vx < -0.5) {
+    onPanResponderMove: (_, gs) => {
+      const dampen = (currentCard === 0 && gs.dx > 0) || (isLastCard && gs.dx < 0) ? 0.15 : 0.6;
+      swipeX.setValue(gs.dx * dampen);
+    },
+    onPanResponderRelease: (_, gs) => {
+      const vx = gs.vx;
+      if (gs.dx < -SWIPE_THRESHOLD || vx < -0.4) {
+        Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }).start();
         goNext();
-      } else if (gestureState.dx > SWIPE_THRESHOLD || vx > 0.5) {
+      } else if (gs.dx > SWIPE_THRESHOLD || vx > 0.4) {
+        Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }).start();
         goPrev();
       } else {
         Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }).start();
