@@ -19,6 +19,7 @@ import { getPrimaryMentorForMarket } from '../../data/marketConfig';
 import { ConceptCard, parseSlideIntoCards, ConceptCardType } from './ConceptCard';
 import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
 import { QuizCard, generateQuizFromSlide, shouldShowQuiz, QuizCardData } from './QuizCard';
+import { WordMatchGame, extractTermPairs, shouldShowWordMatch, WordPair } from './WordMatchGame';
 import { AnnotationModal } from './AnnotationModal';
 import { AskLeoOverlay } from '../ai/AskLeoOverlay';
 import { playSound } from '../../lib/sounds';
@@ -88,6 +89,10 @@ type CardItem = {
 } | {
   type: 'quiz';
   quiz: QuizCardData;
+  slideIndex: number;
+} | {
+  type: 'wordmatch';
+  pairs: WordPair[];
   slideIndex: number;
 };
 
@@ -286,6 +291,25 @@ export function SlideReaderV2({
       items.splice(index, 0, { type: 'quiz', quiz, slideIndex });
     }
 
+    // Insert word-match games at strategic midpoints
+    const wmInsertions: { index: number; pairs: WordPair[]; slideIndex: number }[] = [];
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.type === 'concept' && item.content) {
+        const slideData = slides[item.slideIndex];
+        if (slideData) {
+          const pairs = extractTermPairs(slideData.title, slideData.body);
+          if (shouldShowWordMatch(i, items.length, pairs)) {
+            wmInsertions.push({ index: i + 1, pairs, slideIndex: item.slideIndex });
+          }
+        }
+      }
+    }
+    for (let i = wmInsertions.length - 1; i >= 0; i--) {
+      const { index, pairs, slideIndex } = wmInsertions[i];
+      items.splice(index, 0, { type: 'wordmatch', pairs, slideIndex });
+    }
+
     return items;
   }, [slides]);
 
@@ -412,8 +436,20 @@ export function SlideReaderV2({
           quiz={currentCardData.quiz}
           onAnswer={(correct) => {
             if (correct) playSound('correct');
-            // Auto-advance after quiz
             setTimeout(() => goNext(), 300);
+          }}
+          accentColor={accentColor}
+        />
+      );
+    }
+    if (currentCardData.type === 'wordmatch') {
+      return (
+        <WordMatchGame
+          key={`wm-${currentCard}`}
+          pairs={currentCardData.pairs}
+          onComplete={(score, total) => {
+            if (score === total) playSound('correct');
+            setTimeout(() => goNext(), 600);
           }}
           accentColor={accentColor}
         />

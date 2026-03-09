@@ -186,20 +186,15 @@ ${context ? `Current context: ${context}` : ''}`;
           )}
         </ScrollView>
 
-        {/* Suggested prompts */}
-        {messages.length <= 1 && (
+        {/* Suggested prompts — contextual */}
+        {messages.length <= 3 && (
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.suggestionsRow}
             contentContainerStyle={{ gap: 8, paddingHorizontal: 16, paddingVertical: 8 }}
           >
-            {[
-              'What are the biggest investment risks?',
-              'Explain the key market dynamics',
-              'Who are the top players to watch?',
-              'What skills do I need to break in?',
-            ].map((prompt) => (
+            {getContextualPrompts(context).map((prompt) => (
               <TouchableOpacity
                 key={prompt}
                 style={styles.suggestionChip}
@@ -239,6 +234,41 @@ ${context ? `Current context: ${context}` : ''}`;
       </KeyboardAvoidingView>
     </Modal>
   );
+}
+
+/** Return contextual prompt chips based on chat context */
+function getContextualPrompts(context?: string): string[] {
+  if (context?.includes('news article')) {
+    return [
+      'Investment implications?',
+      'Who benefits most?',
+      'What are the risks?',
+      'How does this affect the market?',
+    ];
+  }
+  if (context?.includes('lesson') || context?.includes('slide') || context?.includes('concept')) {
+    return [
+      'Explain this simply',
+      'Real-world example?',
+      'Why does this matter?',
+      'How is this applied in practice?',
+    ];
+  }
+  if (context?.includes('trainer') || context?.includes('scenario')) {
+    return [
+      'Walk me through the reasoning',
+      'What framework applies here?',
+      'Common mistakes to avoid?',
+      'Similar real-world case?',
+    ];
+  }
+  // Default / general
+  return [
+    'What are the biggest trends?',
+    'Key players to watch?',
+    'Best entry points for beginners?',
+    'What skills do I need?',
+  ];
 }
 
 const styles = StyleSheet.create({
