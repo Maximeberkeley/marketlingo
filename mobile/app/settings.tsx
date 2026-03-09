@@ -420,13 +420,13 @@ export default function SettingsScreen() {
             <Text style={styles.infoValue}>1.0.0</Text>
           </View>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/legal?type=terms' as any)}>
             <Feather name="file-text" size={18} color={COLORS.textSecondary} />
             <Text style={styles.menuText}>Terms of Service</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/legal?type=privacy' as any)}>
             <Feather name="shield" size={18} color={COLORS.textSecondary} />
             <Text style={styles.menuText}>Privacy Policy</Text>
             <Text style={styles.chevron}>›</Text>
