@@ -286,9 +286,20 @@ export default function SubscriptionScreen() {
           <Text style={styles.restoreText}>{isRestoring ? 'Restoring...' : 'Restore Purchases'}</Text>
         </TouchableOpacity>
 
-        <Text style={styles.legalText}>
-          Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage subscriptions in your Apple ID settings.
-        </Text>
+        {/* Dev toggle for testing */}
+        {__DEV__ && (
+          <TouchableOpacity
+            style={[styles.restoreButton, { marginTop: 4, backgroundColor: 'rgba(139,92,246,0.08)', borderRadius: 12, paddingVertical: 10, paddingHorizontal: 16 }]}
+            onPress={async () => {
+              await toggleProForTesting();
+              Alert.alert(isProUser ? 'Pro deactivated' : 'Pro activated for testing');
+            }}
+          >
+            <Text style={[styles.restoreText, { color: COLORS.accent }]}>
+              {isProUser ? '🧪 Deactivate Pro (Dev)' : '🧪 Activate Pro (Dev)'}
+            </Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
 
       {!isProUser && (
