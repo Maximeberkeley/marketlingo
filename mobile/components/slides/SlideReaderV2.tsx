@@ -291,6 +291,25 @@ export function SlideReaderV2({
       items.splice(index, 0, { type: 'quiz', quiz, slideIndex });
     }
 
+    // Insert word-match games at strategic midpoints
+    const wmInsertions: { index: number; pairs: WordPair[]; slideIndex: number }[] = [];
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.type === 'concept' && item.content) {
+        const slideData = slides[item.slideIndex];
+        if (slideData) {
+          const pairs = extractTermPairs(slideData.title, slideData.body);
+          if (shouldShowWordMatch(i, items.length, pairs)) {
+            wmInsertions.push({ index: i + 1, pairs, slideIndex: item.slideIndex });
+          }
+        }
+      }
+    }
+    for (let i = wmInsertions.length - 1; i >= 0; i--) {
+      const { index, pairs, slideIndex } = wmInsertions[i];
+      items.splice(index, 0, { type: 'wordmatch', pairs, slideIndex });
+    }
+
     return items;
   }, [slides]);
 
