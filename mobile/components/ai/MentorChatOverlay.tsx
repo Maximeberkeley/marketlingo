@@ -236,6 +236,41 @@ ${context ? `Current context: ${context}` : ''}`;
   );
 }
 
+/** Return contextual prompt chips based on chat context */
+function getContextualPrompts(context?: string): string[] {
+  if (context?.includes('news article')) {
+    return [
+      'Investment implications?',
+      'Who benefits most?',
+      'What are the risks?',
+      'How does this affect the market?',
+    ];
+  }
+  if (context?.includes('lesson') || context?.includes('slide') || context?.includes('concept')) {
+    return [
+      'Explain this simply',
+      'Real-world example?',
+      'Why does this matter?',
+      'How is this applied in practice?',
+    ];
+  }
+  if (context?.includes('trainer') || context?.includes('scenario')) {
+    return [
+      'Walk me through the reasoning',
+      'What framework applies here?',
+      'Common mistakes to avoid?',
+      'Similar real-world case?',
+    ];
+  }
+  // Default / general
+  return [
+    'What are the biggest trends?',
+    'Key players to watch?',
+    'Best entry points for beginners?',
+    'What skills do I need?',
+  ];
+}
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   header: {
