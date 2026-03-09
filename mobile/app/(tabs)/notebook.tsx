@@ -251,6 +251,8 @@ export default function NotebookScreen() {
   const [newNoteContent, setNewNoteContent] = useState('');
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showSearch, setShowSearch] = useState(false);
+  const [openNote, setOpenNote] = useState<NoteEntry | null>(null);
+  const [editingContent, setEditingContent] = useState('');
 
   const headerAnim = useRef(new Animated.Value(0)).current;
 
