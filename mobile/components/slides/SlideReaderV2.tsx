@@ -90,6 +90,10 @@ type CardItem = {
   type: 'quiz';
   quiz: QuizCardData;
   slideIndex: number;
+} | {
+  type: 'wordmatch';
+  pairs: WordPair[];
+  slideIndex: number;
 };
 
 export function SlideReaderV2({
