@@ -77,22 +77,20 @@ export default function SubscriptionScreen() {
   };
 
   const handlePurchase = async () => {
-    const pkg = getPackage(selectedPlan);
-    if (!pkg) {
-      toggleProForTesting();
-      Alert.alert('Pro activated for testing!');
-      return;
-    }
     setIsPurchasing(true);
-    const result = await purchasePackage(pkg);
-    setIsPurchasing(false);
-    if (result.success) {
-      trackEvent('subscription_purchase', { plan: selectedPlan });
-      Alert.alert('Welcome to MarketLingo Pro!');
-      router.back();
-    } else if (!result.cancelled) {
-      Alert.alert('Error', result.error || 'Purchase failed. Please try again.');
+    try {
+      const result = await purchasePackage(selectedPlan);
+      if (result.success) {
+        trackEvent('subscription_purchase', { plan: selectedPlan });
+        Alert.alert('Welcome to MarketLingo Pro!', 'You now have full access to all features.');
+        router.back();
+      } else if (!result.cancelled) {
+        Alert.alert('Purchase Issue', result.error || 'Purchase could not be completed. Please try again.');
+      }
+    } catch (e) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
     }
+    setIsPurchasing(false);
   };
 
   const handleRestore = async () => {
