@@ -127,7 +127,7 @@ function computeNoteStreak(notes: NoteEntry[]): { current: number; thisWeek: num
 }
 
 /* ─── Note Card Component ─── */
-function NoteCard({ note, onDelete }: { note: NoteEntry; onDelete: (id: string) => void }) {
+function NoteCard({ note, onDelete, onOpen }: { note: NoteEntry; onDelete: (id: string) => void; onOpen: (note: NoteEntry) => void }) {
   const linkedType = getLinkedType(note.linked_label);
   const config = TYPE_CONFIG[linkedType] || TYPE_CONFIG.lesson;
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -146,6 +146,7 @@ function NoteCard({ note, onDelete }: { note: NoteEntry; onDelete: (id: string) 
         activeOpacity={0.9}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
+        onPress={() => onOpen(note)}
         onLongPress={() => {
           triggerHaptic('warning');
           onDelete(note.id);
@@ -170,6 +171,12 @@ function NoteCard({ note, onDelete }: { note: NoteEntry; onDelete: (id: string) 
           <Text style={styles.noteContent} numberOfLines={4}>
             {note.content}
           </Text>
+
+          {/* Tap hint */}
+          <View style={styles.noteTapHint}>
+            <Feather name="maximize-2" size={10} color={COLORS.textMuted} />
+            <Text style={styles.noteTapHintText}>Tap to expand</Text>
+          </View>
         </View>
       </TouchableOpacity>
     </Animated.View>
