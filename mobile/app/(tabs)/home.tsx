@@ -216,6 +216,9 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Leo popup overlay */}
+      <LeoPopup message={leoPopups.currentMessage} onDismiss={leoPopups.dismiss} />
+
       {session.showReader && session.activeStack ? (
         <SlideReader
           stackTitle={session.activeStack.title}
