@@ -162,7 +162,7 @@ export function useHomeData(
       lessonStacks = fallback;
     }
 
-    if (!lessonStacks?.[0]) {
+    if (!hasSlides(lessonStacks).length) {
       const { data: allLessons } = await supabase
         .from('stacks')
         .select('id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)')
@@ -171,7 +171,9 @@ export function useHomeData(
         .not('published_at', 'is', null);
 
       if (allLessons?.length) {
-        const lessonsWithDays = allLessons.map((stack: any) => {
+        // Only consider stacks that actually have slides
+        const withSlides = hasSlides(allLessons);
+        const lessonsWithDays = withSlides.map((stack: any) => {
           const dayMatch = (stack.tags as string[])?.find((t: string) => t.startsWith('day-'));
           const dayNum = dayMatch ? parseInt(dayMatch.replace('day-', ''), 10) : 999;
           return { ...stack, dayNum };
@@ -179,8 +181,10 @@ export function useHomeData(
         const validLessons = lessonsWithDays.filter((l: any) => l.dayNum <= calcDay);
         const selectedLesson = validLessons.length > 0
           ? validLessons.reduce((max: any, l: any) => (l.dayNum > max.dayNum ? l : max))
-          : lessonsWithDays.reduce((min: any, l: any) => (l.dayNum < min.dayNum ? l : min));
-        lessonStacks = [selectedLesson];
+          : lessonsWithDays.length > 0
+            ? lessonsWithDays.reduce((min: any, l: any) => (l.dayNum < min.dayNum ? l : min))
+            : null;
+        if (selectedLesson) lessonStacks = [selectedLesson];
       }
     }
 
