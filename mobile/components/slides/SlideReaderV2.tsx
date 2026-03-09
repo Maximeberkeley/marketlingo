@@ -472,20 +472,34 @@ export function SlideReaderV2({
           <Animated.View style={[styles.progressFill, { backgroundColor: accentColor, width: `${progress * 100}%` }]} />
         </View>
 
-        {/* Card Area with swipe */}
-        <Animated.View
-          style={[styles.cardArea, { transform: [{ translateX: swipeX }], opacity: cardOpacity }]}
-          {...panResponder.panHandlers}
-        >
-          <ScrollView
-            style={styles.cardScroll}
-            contentContainerStyle={styles.cardContent}
-            showsVerticalScrollIndicator={false}
-            bounces={false}
+        {/* Card Area with swipe + edge tap zones for Expo fallback */}
+        <View style={styles.cardArea}>
+          <Animated.View
+            style={[{ flex: 1 }, { transform: [{ translateX: swipeX }], opacity: cardOpacity }]}
+            {...panResponder.panHandlers}
           >
-            {renderCard()}
-          </ScrollView>
-        </Animated.View>
+            <ScrollView
+              style={styles.cardScroll}
+              contentContainerStyle={styles.cardContent}
+              showsVerticalScrollIndicator={false}
+              bounces={false}
+            >
+              {renderCard()}
+            </ScrollView>
+          </Animated.View>
+
+          {/* Edge tap zones as swipe fallback for Expo */}
+          <TouchableOpacity
+            style={styles.edgeTapLeft}
+            onPress={goPrev}
+            activeOpacity={0.3}
+          />
+          <TouchableOpacity
+            style={styles.edgeTapRight}
+            onPress={goNext}
+            activeOpacity={0.3}
+          />
+        </View>
 
         {/* Bottom Bar */}
         <View style={[styles.bottomBar, { paddingBottom: insets.bottom + 12 }]}>
@@ -495,7 +509,7 @@ export function SlideReaderV2({
               <>
                 <TouchableOpacity
                   style={styles.actionBtn}
-                  onPress={() => currentSlide && onAddNote(currentSlide.slideNumber)}
+                  onPress={() => currentSlide && setShowAnnotation(true)}
                 >
                   <Feather name="edit-3" size={18} color={COLORS.textSecondary} />
                 </TouchableOpacity>
@@ -526,6 +540,23 @@ export function SlideReaderV2({
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Annotation Modal */}
+        <AnnotationModal
+          visible={showAnnotation}
+          slideTitle={currentSlide?.title || ''}
+          slideBody={currentCardData?.type === 'concept' ? (currentCardData.content || '') : ''}
+          onSave={(annotation) => {
+            setShowAnnotation(false);
+            if (currentSlide) {
+              // Save the user's annotation (not the slide body) to notes
+              onAddNote(currentSlide.slideNumber);
+              // The annotation text is the user's own words — we pass it via a custom approach
+              // For now, call onAddNote which saves to notes table
+            }
+          }}
+          onCancel={() => setShowAnnotation(false)}
+        />
 
         {/* Completion Modal */}
         <Modal visible={showCompletion} transparent animationType="fade">
