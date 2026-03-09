@@ -39,6 +39,8 @@ import { playSound } from '../../lib/sounds';
 import { useSpacedRepetition } from '../../hooks/useSpacedRepetition';
 import { useOfflineCache } from '../../hooks/useOfflineCache';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { LeoPopup } from '../../components/mascot/LeoPopup';
+import { useLeoPopups } from '../../hooks/useLeoPopups';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
