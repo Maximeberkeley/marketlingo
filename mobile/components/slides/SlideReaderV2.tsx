@@ -405,6 +405,20 @@ export function SlideReaderV2({
         />
       );
     }
+    if (currentCardData.type === 'quiz') {
+      return (
+        <QuizCard
+          key={`quiz-${currentCard}`}
+          quiz={currentCardData.quiz}
+          onAnswer={(correct) => {
+            if (correct) playSound('correct');
+            // Auto-advance after quiz
+            setTimeout(() => goNext(), 300);
+          }}
+          accentColor={accentColor}
+        />
+      );
+    }
     return (
       <ConceptCard
         key={`card-${currentCard}`}
