@@ -500,7 +500,93 @@ export default function NotebookScreen() {
         </TouchableOpacity>
       )}
 
-      {/* ── Add Note Modal ── */}
+      {/* ── Note Detail Modal ── */}
+      <Modal visible={!!openNote} transparent animationType="slide">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setOpenNote(null)}
+          >
+            <TouchableOpacity activeOpacity={1} style={styles.detailCard}>
+              <View style={styles.modalHandle} />
+
+              {/* Header */}
+              <View style={styles.modalHeader}>
+                <View style={styles.modalIconCircle}>
+                  <Feather name="file-text" size={18} color={COLORS.accent} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.modalTitle}>{openNote?.linked_label || 'Note'}</Text>
+                  <Text style={styles.modalSubtitle}>
+                    {openNote ? formatDate(openNote.created_at) + ' • ' + formatTime(openNote.created_at) : ''}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (!openNote) return;
+                    triggerHaptic('warning');
+                    handleDeleteNote(openNote.id);
+                    setOpenNote(null);
+                  }}
+                  style={styles.detailDeleteBtn}
+                >
+                  <Feather name="trash-2" size={16} color="#EF4444" />
+                </TouchableOpacity>
+              </View>
+
+              {/* Editable content */}
+              <ScrollView style={styles.detailScroll} nestedScrollEnabled>
+                <TextInput
+                  style={styles.detailInput}
+                  value={editingContent}
+                  onChangeText={setEditingContent}
+                  multiline
+                  textAlignVertical="top"
+                  placeholder="Your note..."
+                  placeholderTextColor={COLORS.textMuted}
+                />
+              </ScrollView>
+
+              {/* Save / Close */}
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={styles.modalCancel}
+                  onPress={() => setOpenNote(null)}
+                >
+                  <Text style={styles.modalCancelText}>Close</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalSave, editingContent === openNote?.content && { opacity: 0.4 }]}
+                  disabled={editingContent === openNote?.content}
+                  onPress={async () => {
+                    if (!openNote || !user) return;
+                    const { error } = await supabase
+                      .from('notes')
+                      .update({ content: editingContent.trim() })
+                      .eq('id', openNote.id)
+                      .eq('user_id', user.id);
+                    if (!error) {
+                      setNotes((prev) =>
+                        prev.map((n) => n.id === openNote.id ? { ...n, content: editingContent.trim() } : n)
+                      );
+                      triggerHaptic('success');
+                    }
+                    setOpenNote(null);
+                  }}
+                >
+                  <Feather name="check" size={16} color="#fff" />
+                  <Text style={styles.modalSaveText}>Save Changes</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
+      </Modal>
+
       <Modal visible={showAddNote} transparent animationType="slide">
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
