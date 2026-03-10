@@ -66,3 +66,20 @@ export function cleanMarkdown(text: string): string {
     .replace(/^[•\-*]\s*/gm, '')
     .trim();
 }
+
+/**
+ * Shuffles options array and returns new correct answer index.
+ */
+export function shuffleOptions<T>(
+  options: T[],
+  correctIndex: number
+): { shuffledOptions: T[]; newCorrectIndex: number } {
+  const indices = options.map((_, i) => i);
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  const shuffledOptions = indices.map(i => options[i]);
+  const newCorrectIndex = indices.indexOf(correctIndex);
+  return { shuffledOptions, newCorrectIndex };
+}

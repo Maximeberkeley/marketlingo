@@ -68,6 +68,7 @@ interface TrainerScenario {
   scenario: string;
   question: string;
   options: { label: string; isCorrect: boolean }[];
+  correctIndex: number;
 }
 
 export default function TrainerScreen() {
