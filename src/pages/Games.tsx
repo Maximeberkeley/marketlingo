@@ -220,12 +220,8 @@ export default function GamesPage() {
         });
       }
 
-      // Show celebration randomly (70% of the time)
-      if (Math.random() < 0.7) {
-        setShowCelebration(true);
-      } else {
-        setGameComplete(true);
-        toast.success(`Game complete! ${finalScore}/${questions.length} · +${xpEarned} XP`);
+      // Always show Leo celebration
+      setShowCelebration(true);
       }
     }
   };
