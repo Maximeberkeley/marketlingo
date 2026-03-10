@@ -45,6 +45,11 @@ const NOTIFICATION_TEMPLATES = {
     { title: "🚀 What's happening in your market?", body: "New stories just in — stay sharp with the latest intel." },
     { title: "🦁 Leo's news roundup!", body: "I've curated today's top industry headlines. Worth a quick look!" },
   ],
+  weekly_recap: [
+    { title: "📊 Your weekly recap is ready!", body: "See what you learned this week and plan ahead." },
+    { title: "🦁 Leo's weekly summary", body: "Here's your progress snapshot. Let's keep the momentum!" },
+    { title: "🏆 Week in review", body: "Check your stats, streaks, and XP earned this week." },
+  ],
 };
 
 function getRandomTemplate(type: keyof typeof NOTIFICATION_TEMPLATES) {
