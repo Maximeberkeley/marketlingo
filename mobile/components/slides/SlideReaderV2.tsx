@@ -197,7 +197,7 @@ export function SlideReaderV2({
     }
 
     // Smart merging for cap
-    const MAX_CONCEPT_CARDS = 12;
+    const MAX_CONCEPT_CARDS = 18;
     if (items.length > MAX_CONCEPT_CARDS) {
       const merged: CardItem[] = [];
       let pendingContent = '';

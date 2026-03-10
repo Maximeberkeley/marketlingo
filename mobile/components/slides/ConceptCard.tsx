@@ -305,7 +305,7 @@ export function parseSlideIntoCards(
     }
 
     flushBullets();
-    if (pendingText.length > 0 && (pendingText.length + trimmed.length) > 600) flushText();
+    if (pendingText.length > 0 && (pendingText.length + trimmed.length) > 900) flushText();
     pendingText += (pendingText ? '\n\n' : '') + trimmed;
   }
 
