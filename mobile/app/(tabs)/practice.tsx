@@ -86,6 +86,19 @@ const ACTIVITY_CARDS: CardData[] = [
 
 const RESOURCE_CARDS: CardData[] = [
   {
+    id: 'leaderboard',
+    title: 'Leaderboard',
+    subtitle: 'Friends & Rivals',
+    description: 'Compete with friends and climb the rankings.',
+    icon: 'users',
+    iconColor: '#FDE68A',
+    gradientColors: ['#7C2D12', '#B45309', '#F59E0B'] as const,
+    accentGlow: 'rgba(245, 158, 11, 0.4)',
+    path: '/friends',
+    heroImage: require('../../assets/illustrations/passport-hero.png'),
+    tag: 'SOCIAL',
+  },
+  {
     id: 'summaries',
     title: 'Summaries',
     subtitle: 'Market Digests',
