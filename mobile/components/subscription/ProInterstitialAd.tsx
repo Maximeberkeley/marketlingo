@@ -22,7 +22,7 @@ let _sessionActivityCount = 0;
  */
 export function shouldShowInterstitial(): boolean {
   _sessionActivityCount++;
-  return _sessionActivityCount % 2 === 0;
+  return _sessionActivityCount % 3 === 0;
 }
 
 /** Reset counter (e.g. on app restart) */
