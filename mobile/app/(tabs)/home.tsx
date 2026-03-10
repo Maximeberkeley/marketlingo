@@ -8,6 +8,7 @@ import {
   RefreshControl,
   Image,
   Animated,
+  Alert,
 } from 'react-native';
 import { DailyNews } from '../../components/home/DailyNews';
 import { HomeSkeleton } from '../../components/home/HomeSkeleton';
@@ -42,6 +43,7 @@ import { useOfflineCache } from '../../hooks/useOfflineCache';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { LeoPopup } from '../../components/mascot/LeoPopup';
 import { useLeoPopups } from '../../hooks/useLeoPopups';
+import { useAchievements } from '../../hooks/useAchievements';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -128,6 +130,35 @@ export default function HomeScreen() {
   }, [currentDay, selectedMarket]);
 
   const { milestone, dismissMilestone, checkStreakMilestone, checkLevelMilestone } = useMilestoneSharing();
+
+  const { checkAndUnlockAchievements, newUnlocks, clearNewUnlocks } = useAchievements();
+
+  // Check achievements after session data changes
+  useEffect(() => {
+    if (!user || !xpData || !progress) return;
+    const completedLessons = progress?.completed_stacks?.length || 0;
+    checkAndUnlockAchievements({
+      streak: progress?.current_streak || 0,
+      xp: xpData?.total_xp || 0,
+      lessons: completedLessons,
+      drills: 0,
+      games: 0,
+      days: completedLessons,
+      level: xpData?.current_level || 1,
+    });
+  }, [xpData?.total_xp, progress?.current_streak, progress?.completed_stacks?.length]);
+
+  // Show achievement unlock alert
+  useEffect(() => {
+    if (newUnlocks.length > 0) {
+      const achievement = newUnlocks[0];
+      Alert.alert(
+        '🏆 Achievement Unlocked!',
+        `${achievement.name}\n${achievement.description}\n+${achievement.xpReward} XP`,
+      );
+      clearNewUnlocks();
+    }
+  }, [newUnlocks]);
 
   const session = useSessionFlow({
     user, selectedMarket, lessonStack, progress, xpData,
