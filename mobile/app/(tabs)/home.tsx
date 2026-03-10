@@ -227,6 +227,8 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Pro interstitial ad */}
+      <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="lesson" />
       {/* Leo popup overlay */}
       <LeoPopup message={leoPopups.currentMessage} onDismiss={leoPopups.dismiss} />
 
