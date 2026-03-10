@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useKeyboardAware, scrollInputIntoView } from "@/hooks/useKeyboardAware";
+import { getSearchTerms, countTermMatches, noteMatchesAnyTerm, SearchTermChips } from "@/components/notebook/HighlightedText";
 
 // Editorial hero
 import notebookHero from "@/assets/cards/notebook-hero.jpg";
