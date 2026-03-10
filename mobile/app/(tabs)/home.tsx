@@ -33,6 +33,7 @@ import { useDailyQuests } from '../../hooks/useDailyQuests';
 import { useMilestoneSharing } from '../../hooks/useMilestoneSharing';
 import { useHomeData } from '../../hooks/useHomeData';
 import { useSessionFlow } from '../../hooks/useSessionFlow';
+import { ProInterstitialAd } from '../../components/subscription/ProInterstitialAd';
 import { triggerHaptic } from '../../lib/haptics';
 import { useStreakFreeze } from '../../hooks/useStreakFreeze';
 import { playSound } from '../../lib/sounds';
