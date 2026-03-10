@@ -17,6 +17,8 @@ import { ProgressBar } from '../components/ui/ProgressBar';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
+import { useSubscription } from '../hooks/useSubscription';
+import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
 
 interface DrillQuestion {
   id: string;
