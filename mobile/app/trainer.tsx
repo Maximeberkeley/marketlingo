@@ -22,6 +22,7 @@ import type { Mentor } from '../data/mentors';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
+import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
 
 
 // Market-specific hero images
@@ -89,6 +90,7 @@ export default function TrainerScreen() {
   const [isProUser, setIsProUser] = useState(false);
   const [showPaywallNudge, setShowPaywallNudge] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
+  const [showProAd, setShowProAd] = useState(false);
 
 
   useEffect(() => {
@@ -202,6 +204,15 @@ export default function TrainerScreen() {
   const handleNext = () => {
     setSelectedOption(null);
     setFeedback(null);
+    // Show pro interstitial every 2 scenarios for free users
+    if (!isProUser && shouldShowInterstitial()) {
+      setShowProAd(true);
+      return; // Will advance after ad closes
+    }
+    advanceScenario();
+  };
+
+  const advanceScenario = () => {
     if (currentIndex < scenarios.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
@@ -312,6 +323,11 @@ export default function TrainerScreen() {
 
   return (
     <View style={styles.container}>
+      <ProInterstitialAd
+        visible={showProAd}
+        onClose={() => { setShowProAd(false); advanceScenario(); }}
+        trigger="trainer"
+      />
       <ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
         showsVerticalScrollIndicator={false}

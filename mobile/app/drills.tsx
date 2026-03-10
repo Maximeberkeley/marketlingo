@@ -17,6 +17,8 @@ import { ProgressBar } from '../components/ui/ProgressBar';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
+import { useSubscription } from '../hooks/useSubscription';
+import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
 
 interface DrillQuestion {
   id: string;
@@ -100,6 +102,9 @@ export default function DrillsScreen() {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const [showProAd, setShowProAd] = useState(false);
+  
+  const { isProUser } = useSubscription();
   
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [fetchKey, setFetchKey] = useState(0);
@@ -298,6 +303,9 @@ export default function DrillsScreen() {
       }
       triggerHaptic('success');
       setDrillComplete(true);
+      if (!isProUser && shouldShowInterstitial()) {
+        setTimeout(() => setShowProAd(true), 800);
+      }
     }
   };
 
@@ -365,6 +373,7 @@ export default function DrillsScreen() {
     const percentage = Math.round((score / questions.length) * 100);
     return (
       <View style={[styles.container, styles.centered]}>
+        <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="drill" />
         <View style={[styles.completeIcon, {
           backgroundColor: percentage >= 80 ? 'rgba(34, 197, 94, 0.2)' : percentage >= 60 ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)',
         }]}>

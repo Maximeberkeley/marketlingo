@@ -19,6 +19,8 @@ import { playSound } from '../lib/sounds';
 import { ComboCounter } from '../components/ui/ComboCounter';
 import { createComboState, comboCorrect, comboWrong, ComboState } from '../lib/combo';
 import { Feather } from '@expo/vector-icons';
+import { useSubscription } from '../hooks/useSubscription';
+import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
 
 interface GameQuestion {
   id: string;
@@ -42,7 +44,9 @@ export default function GamesScreen() {
   const [gameComplete, setGameComplete] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const [showProAd, setShowProAd] = useState(false);
   
+  const { isProUser } = useSubscription();
   const [combo, setCombo] = useState<ComboState>(createComboState());
   const [fetchKey, setFetchKey] = useState(0);
 
@@ -270,6 +274,10 @@ export default function GamesScreen() {
       triggerHaptic('success');
       playSound('levelUp');
       setGameComplete(true);
+      // Show pro interstitial for free users
+      if (!isProUser && shouldShowInterstitial()) {
+        setTimeout(() => setShowProAd(true), 800);
+      }
     }
   };
 
@@ -336,6 +344,7 @@ export default function GamesScreen() {
     const percentage = Math.round((score / questions.length) * 100);
     return (
       <View style={[styles.container, styles.centered]}>
+        <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="game" />
         <Image source={require('../assets/illustrations/achievements-hero.png')} style={{ width: 100, height: 100, marginBottom: 8 }} resizeMode="contain" />
         <Text style={styles.completeTitle}>Game Complete!</Text>
         <Text style={styles.completeScore}>You scored {score}/{questions.length} ({percentage}%)</Text>
