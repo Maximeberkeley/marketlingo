@@ -130,6 +130,35 @@ export default function HomeScreen() {
 
   const { milestone, dismissMilestone, checkStreakMilestone, checkLevelMilestone } = useMilestoneSharing();
 
+  const { checkAndUnlockAchievements, newUnlocks, clearNewUnlocks } = useAchievements();
+
+  // Check achievements after session data changes
+  useEffect(() => {
+    if (!user || !xpData || !progress) return;
+    const completedLessons = progress?.completed_stacks?.length || 0;
+    checkAndUnlockAchievements({
+      streak: progress?.current_streak || 0,
+      xp: xpData?.total_xp || 0,
+      lessons: completedLessons,
+      drills: 0,
+      games: 0,
+      days: completedLessons,
+      level: xpData?.current_level || 1,
+    });
+  }, [xpData?.total_xp, progress?.current_streak, progress?.completed_stacks?.length]);
+
+  // Show achievement unlock alert
+  useEffect(() => {
+    if (newUnlocks.length > 0) {
+      const achievement = newUnlocks[0];
+      Alert.alert(
+        '🏆 Achievement Unlocked!',
+        `${achievement.name}\n${achievement.description}\n+${achievement.xpReward} XP`,
+      );
+      clearNewUnlocks();
+    }
+  }, [newUnlocks]);
+
   const session = useSessionFlow({
     user, selectedMarket, lessonStack, progress, xpData,
     lessonCompletedToday, currentDay,
