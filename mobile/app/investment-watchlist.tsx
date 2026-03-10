@@ -38,15 +38,18 @@ export default function InvestmentWatchlistScreen() {
 
   const watchlist = progress?.watchlist_companies || [];
 
-  // Auto-suggest companies from Key Players data
+  // All companies from Key Players data
+  const allCompanies = useMemo(() => {
+    return marketCompanies[selectedMarket || ''] || defaultCompanies;
+  }, [selectedMarket]);
+
+  // Auto-suggest companies from Key Players data (not already in watchlist)
   const suggestedCompanies = useMemo(() => {
-    const companies = marketCompanies[selectedMarket || ''] || defaultCompanies;
     const watchlistIds = new Set(watchlist.map((c) => c.id));
-    return companies
+    return allCompanies
       .filter((c) => !watchlistIds.has(c.id))
-      .slice(0, 8)
       .map((c) => ({ id: c.id, name: c.name, ticker: c.ticker }));
-  }, [selectedMarket, watchlist]);
+  }, [allCompanies, watchlist]);
 
   const handleRemove = async (companyId: string, companyName: string) => {
     Alert.alert('Remove', `Remove ${companyName} from watchlist?`, [
@@ -122,14 +125,14 @@ export default function InvestmentWatchlistScreen() {
           </View>
         )}
 
-        {/* Browse Key Players CTA */}
-        <TouchableOpacity style={styles.addCard} onPress={() => router.push('/(tabs)/home')}>
+        {/* Browse All Companies */}
+        <TouchableOpacity style={styles.addCard} onPress={() => setShowSuggestions(true)}>
           <View style={styles.addIcon}>
             <Feather name="search" size={18} color={COLORS.accent} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.addTitle}>Browse Key Players</Text>
-            <Text style={styles.addDesc}>Find more companies to track</Text>
+            <Text style={styles.addTitle}>Browse All Companies</Text>
+            <Text style={styles.addDesc}>{allCompanies.length} companies available to track</Text>
           </View>
           <Text style={{ fontSize: 18, color: COLORS.textMuted }}>›</Text>
         </TouchableOpacity>

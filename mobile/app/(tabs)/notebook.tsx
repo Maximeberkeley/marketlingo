@@ -167,7 +167,7 @@ function NoteCard({ note, onDelete, onOpen }: { note: NoteEntry; onDelete: (id: 
             <Text style={styles.noteTime}>{formatTime(note.created_at)}</Text>
           </View>
 
-          {/* Content */}
+          {/* Content - with highlights if searching */}
           <Text style={styles.noteContent} numberOfLines={4}>
             {note.content}
           </Text>
@@ -321,12 +321,20 @@ export default function NotebookScreen() {
     }
   };
 
-  // Filter + search
+  // Multi-word search
+  const searchTerms = searchQuery.trim().split(/\s+/).filter((t) => t.length > 0).slice(0, 5);
+
   const filteredNotes = notes.filter((note) => {
-    const matchesSearch = !searchQuery || note.content.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = searchTerms.length === 0 || searchTerms.some((t) => note.content.toLowerCase().includes(t.toLowerCase()));
     const linkedType = getLinkedType(note.linked_label);
     const matchesFilter = selectedCategory === 'all' || linkedType === selectedCategory;
     return matchesSearch && matchesFilter;
+  });
+
+  // Match counts per term
+  const termMatchCounts = searchTerms.map((term) => {
+    const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    return filteredNotes.reduce((sum, n) => sum + (n.content.match(re) || []).length, 0);
   });
 
   const groupedNotes = groupNotesByDate(filteredNotes);
@@ -387,7 +395,7 @@ export default function NotebookScreen() {
             <Feather name="search" size={16} color={COLORS.textMuted} />
             <TextInput
               style={styles.searchInput}
-              placeholder="Search notes..."
+              placeholder="Search notes… (multiple words to compare)"
               placeholderTextColor={COLORS.textMuted}
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -436,6 +444,23 @@ export default function NotebookScreen() {
             );
           })}
         </ScrollView>
+
+        {/* ── Search Term Chips ── */}
+        {searchTerms.length > 1 && (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+            {searchTerms.map((term, i) => {
+              const chipColors = ['#EAB308', '#06B6D4', '#EC4899', '#22C55E', '#F97316'];
+              const c = chipColors[i % chipColors.length];
+              return (
+                <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: c + '20', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, borderWidth: 1, borderColor: c + '40' }}>
+                  <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: c }} />
+                  <Text style={{ fontSize: 11, fontWeight: '600', color: c }}>{term}</Text>
+                  <Text style={{ fontSize: 10, color: c, opacity: 0.7 }}>({termMatchCounts[i]})</Text>
+                </View>
+              );
+            })}
+          </View>
+        )}
 
         {/* ── Notes List ── */}
         {Object.keys(groupedNotes).length > 0 ? (

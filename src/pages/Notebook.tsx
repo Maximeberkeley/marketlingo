@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useKeyboardAware, scrollInputIntoView } from "@/hooks/useKeyboardAware";
+import { getSearchTerms, countTermMatches, noteMatchesAnyTerm, SearchTermChips } from "@/components/notebook/HighlightedText";
 
 // Editorial hero
 import notebookHero from "@/assets/cards/notebook-hero.jpg";
@@ -116,14 +117,22 @@ export default function NotebookPage() {
     else { setNotes((prev) => [data, ...prev]); setNewNoteContent(""); setShowAddNote(false); toast.success("Note added!"); }
   };
 
+  const searchTerms = getSearchTerms(searchQuery);
+
   const filteredNotes = notes.filter((note) => {
-    const matchesSearch = note.content.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = noteMatchesAnyTerm(note.content, searchTerms);
     const linkedType = getLinkedType(note.linked_label);
     const matchesFilter = !selectedFilter || linkedType === selectedFilter;
     return matchesSearch && matchesFilter;
   });
 
   const groupedNotes = groupNotesByDate(filteredNotes);
+
+  // Total match counts across all filtered notes
+  const totalMatchCounts = searchTerms.map((term) => {
+    const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+    return filteredNotes.reduce((sum, n) => sum + (n.content.match(re) || []).length, 0);
+  });
 
   if (loading) {
     return (
@@ -203,7 +212,7 @@ export default function NotebookPage() {
               <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
               <input
                 type="text"
-                placeholder="Search your notes…"
+                placeholder="Search notes… (multiple words to compare)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full h-11 pl-11 pr-4 bg-bg-2 border border-border rounded-xl text-body text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
@@ -233,6 +242,13 @@ export default function NotebookPage() {
           </motion.div>
         )}
 
+        {/* Search Term Chips */}
+        {searchTerms.length > 1 && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <SearchTermChips terms={searchTerms} matchCounts={totalMatchCounts} />
+          </motion.div>
+        )}
+
         {/* Notes by Date */}
         {Object.keys(groupedNotes).length > 0 ? (
           <div className="space-y-5">
@@ -244,7 +260,7 @@ export default function NotebookPage() {
                 </h3>
                 <div className="space-y-2">
                   {dateNotes.map((note, index) => (
-                    <SwipeableNoteCard key={note.id} note={note} onDelete={handleDeleteNote} index={index} />
+                    <SwipeableNoteCard key={note.id} note={note} onDelete={handleDeleteNote} index={index} searchTerms={searchTerms} />
                   ))}
                 </div>
               </motion.div>
