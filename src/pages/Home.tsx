@@ -32,6 +32,9 @@ import { MilestoneShareCard } from "@/components/sharing/MilestoneShareCard";
 import { DailyQuests } from "@/components/home/DailyQuests";
 import { QuickBiteSelector } from "@/components/home/QuickBiteSelector";
 import { useDailyQuests } from "@/hooks/useDailyQuests";
+import { useAchievements } from "@/hooks/useAchievements";
+import { AchievementPopup } from "@/components/achievements/AchievementPopup";
+import { Achievement } from "@/data/achievements";
 
 interface StackWithSlides {
   id: string;
@@ -102,6 +105,31 @@ export default function HomePage() {
 
   const [completedBites, setCompletedBites] = useState<number[]>([]);
   const [activeBiteIndex, setActiveBiteIndex] = useState<number | null>(null);
+  const [achievementPopup, setAchievementPopup] = useState<Achievement | null>(null);
+
+  const { newUnlocks, clearNewUnlocks, checkAndUnlockAchievements } = useAchievements();
+
+  // Check achievements when progress changes
+  useEffect(() => {
+    if (!user || !progress || !xpData) return;
+    checkAndUnlockAchievements({
+      streak: progress?.current_streak || 0,
+      xp: xpData?.total_xp || 0,
+      lessons: progress?.completed_stacks?.length || 0,
+      drills: 0,
+      games: 0,
+      days: progress?.completed_stacks?.length || 0,
+      level: xpData?.current_level || 1,
+    });
+  }, [xpData?.total_xp, progress?.current_streak, progress?.completed_stacks?.length]);
+
+  // Show achievement popup
+  useEffect(() => {
+    if (newUnlocks.length > 0) {
+      setAchievementPopup(newUnlocks[0]);
+      clearNewUnlocks();
+    }
+  }, [newUnlocks]);
 
   useEffect(() => {
     const currentStreak = progress?.current_streak || 0;
@@ -600,6 +628,11 @@ export default function HomePage() {
         type={milestone.type}
         data={milestone.data}
         onDismiss={dismissMilestone}
+      />
+
+      <AchievementPopup
+        achievement={achievementPopup}
+        onDismiss={() => setAchievementPopup(null)}
       />
     </AppLayout>
   );
