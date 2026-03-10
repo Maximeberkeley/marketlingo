@@ -5,8 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
-  Easing,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 
 interface SocialNudgeProps {
@@ -58,13 +58,13 @@ export function SocialNudge({
       ]}
     >
       <TouchableOpacity style={styles.dismissBtn} onPress={onDismiss} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-        <Text style={styles.dismissText}>✕</Text>
+        <Feather name="x" size={14} color="rgba(255,255,255,0.3)" />
       </TouchableOpacity>
 
       <View style={styles.content}>
         <View style={styles.avatarStack}>
           <View style={[styles.avatar, styles.rivalAvatar]}>
-            <Text style={styles.avatarEmoji}></Text>
+            <Feather name="user" size={18} color="#EF4444" />
           </View>
           <View style={[styles.avatar, styles.vsAvatar]}>
             <Text style={styles.vsText}>VS</Text>
@@ -83,7 +83,8 @@ export function SocialNudge({
       </View>
 
       <TouchableOpacity style={styles.ctaBtn} onPress={onViewLeaderboard} activeOpacity={0.8}>
-        <Text style={styles.ctaBtnText}>View Leaderboard →</Text>
+        <Feather name="bar-chart-2" size={14} color={COLORS.accent} style={{ marginRight: 6 }} />
+        <Text style={styles.ctaBtnText}>View Leaderboard</Text>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -100,14 +101,9 @@ const styles = StyleSheet.create({
   },
   dismissBtn: {
     position: 'absolute',
-    top: 8,
+    top: 10,
     right: 10,
     zIndex: 10,
-  },
-  dismissText: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.3)',
-    fontWeight: '600',
   },
   content: {
     flexDirection: 'row',
@@ -130,7 +126,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.bg2,
   },
   rivalAvatar: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
     zIndex: 1,
   },
   vsAvatar: {
@@ -139,9 +135,6 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-  },
-  avatarEmoji: {
-    fontSize: 20,
   },
   vsText: {
     fontSize: 8,
@@ -174,6 +167,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: 'rgba(139, 92, 246, 0.15)',
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   ctaBtnText: {
     fontSize: 13,
