@@ -68,16 +68,8 @@ export function useInvestmentLab(marketId?: string) {
   const fetchData = async () => {
     if (!user || !marketId) return;
     try {
-      const { data: userProgress } = await supabase
-        .from('user_progress')
-        .select('current_day')
-        .eq('user_id', user.id)
-        .eq('market_id', marketId)
-        .maybeSingle();
-
-      const unlocked = (userProgress?.current_day || 0) >= 30;
-      setIsUnlocked(unlocked);
-      if (!unlocked) { setLoading(false); return; }
+      // Investment Lab is always unlocked — Pro gate is handled at the screen level
+      setIsUnlocked(true);
 
       const { data: investmentData } = await supabase
         .from('investment_lab_progress')
