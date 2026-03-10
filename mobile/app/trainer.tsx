@@ -23,6 +23,7 @@ import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
 import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
+import { shuffleOptions } from '../lib/textUtils';
 
 
 // Market-specific hero images
