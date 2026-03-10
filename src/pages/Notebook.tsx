@@ -242,6 +242,13 @@ export default function NotebookPage() {
           </motion.div>
         )}
 
+        {/* Search Term Chips */}
+        {searchTerms.length > 1 && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <SearchTermChips terms={searchTerms} matchCounts={totalMatchCounts} />
+          </motion.div>
+        )}
+
         {/* Notes by Date */}
         {Object.keys(groupedNotes).length > 0 ? (
           <div className="space-y-5">
@@ -253,7 +260,7 @@ export default function NotebookPage() {
                 </h3>
                 <div className="space-y-2">
                   {dateNotes.map((note, index) => (
-                    <SwipeableNoteCard key={note.id} note={note} onDelete={handleDeleteNote} index={index} />
+                    <SwipeableNoteCard key={note.id} note={note} onDelete={handleDeleteNote} index={index} searchTerms={searchTerms} />
                   ))}
                 </div>
               </motion.div>
