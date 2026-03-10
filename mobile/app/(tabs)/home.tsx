@@ -466,6 +466,12 @@ export default function HomeScreen() {
         data={milestone.data}
         onDismiss={dismissMilestone}
       />
+
+      <AchievementPopup
+        visible={!!achievementPopup}
+        achievement={achievementPopup}
+        onDismiss={() => setAchievementPopup(null)}
+      />
     </View>
   );
 }
