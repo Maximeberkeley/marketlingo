@@ -274,6 +274,10 @@ export default function GamesScreen() {
       triggerHaptic('success');
       playSound('levelUp');
       setGameComplete(true);
+      // Show pro interstitial for free users
+      if (!isProUser && shouldShowInterstitial()) {
+        setTimeout(() => setShowProAd(true), 800);
+      }
     }
   };
 
