@@ -629,6 +629,11 @@ export default function HomePage() {
         data={milestone.data}
         onDismiss={dismissMilestone}
       />
+
+      <AchievementPopup
+        achievement={achievementPopup}
+        onDismiss={() => setAchievementPopup(null)}
+      />
     </AppLayout>
   );
 }
