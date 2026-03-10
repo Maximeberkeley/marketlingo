@@ -170,6 +170,24 @@ Deno.serve(async (req) => {
             await saveContent(supabase, content, dayNum, monthInfo.month, dayType, marketId, goalKey);
             results.generated.push({ market: marketId, day: dayNum, goal: goalKey });
             console.log(`✅ ${marketId} day ${dayNum} goal ${goalKey}`);
+
+            // Trigger drill generation for MICRO_LESSON days (only once per day, first goal)
+            if (dayType === 'MICRO_LESSON' && goalKey === goalsToGen[0]) {
+              try {
+                const drillUrl = `${supabaseUrl}/functions/v1/generate-drill-questions`;
+                await fetch(drillUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${supabaseKey}`,
+                  },
+                  body: JSON.stringify({ market_id: marketId, day_number: dayNum }),
+                });
+                console.log(`🎯 Triggered drill generation for ${marketId} day ${dayNum}`);
+              } catch (drillErr) {
+                console.warn(`⚠️ Drill generation trigger failed for ${marketId} day ${dayNum}:`, drillErr);
+              }
+            }
           }
         } catch (error) {
           const errMsg = error instanceof Error ? error.message : JSON.stringify(error);
