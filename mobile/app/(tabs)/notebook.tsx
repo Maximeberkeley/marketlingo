@@ -445,6 +445,23 @@ export default function NotebookScreen() {
           })}
         </ScrollView>
 
+        {/* ── Search Term Chips ── */}
+        {searchTerms.length > 1 && (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+            {searchTerms.map((term, i) => {
+              const chipColors = ['#EAB308', '#06B6D4', '#EC4899', '#22C55E', '#F97316'];
+              const c = chipColors[i % chipColors.length];
+              return (
+                <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: c + '20', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, borderWidth: 1, borderColor: c + '40' }}>
+                  <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: c }} />
+                  <Text style={{ fontSize: 11, fontWeight: '600', color: c }}>{term}</Text>
+                  <Text style={{ fontSize: 10, color: c, opacity: 0.7 }}>({termMatchCounts[i]})</Text>
+                </View>
+              );
+            })}
+          </View>
+        )}
+
         {/* ── Notes List ── */}
         {Object.keys(groupedNotes).length > 0 ? (
           <View style={{ gap: 20 }}>
