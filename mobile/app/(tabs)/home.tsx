@@ -10,6 +10,7 @@ import {
   Animated,
   Alert,
 } from 'react-native';
+import { AchievementPopup } from '../../components/achievements/AchievementPopup';
 import { DailyNews } from '../../components/home/DailyNews';
 import { HomeSkeleton } from '../../components/home/HomeSkeleton';
 import { AnimatedSection } from '../../components/home/AnimatedSection';
