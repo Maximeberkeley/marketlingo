@@ -212,7 +212,7 @@ export default function NotebookPage() {
               <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
               <input
                 type="text"
-                placeholder="Search your notes…"
+                placeholder="Search notes… (multiple words to compare)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full h-11 pl-11 pr-4 bg-bg-2 border border-border rounded-xl text-body text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"

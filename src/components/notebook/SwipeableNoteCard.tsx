@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
-import { Trash2, Newspaper, BookOpen, Brain, MoreVertical } from "lucide-react";
+import { Trash2, Newspaper, BookOpen, Brain } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,6 +12,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
+import { HighlightedText } from "./HighlightedText";
 
 interface NoteEntry {
   id: string;
@@ -26,6 +27,7 @@ interface SwipeableNoteCardProps {
   note: NoteEntry;
   onDelete: (id: string) => void;
   index: number;
+  searchTerms?: string[];
 }
 
 const typeConfig: Record<string, { icon: typeof Newspaper; color: string; bg: string }> = {
@@ -56,7 +58,7 @@ function formatTimestamp(dateStr: string): string {
 
 const DELETE_THRESHOLD = -120;
 
-export function SwipeableNoteCard({ note, onDelete, index }: SwipeableNoteCardProps) {
+export function SwipeableNoteCard({ note, onDelete, index, searchTerms = [] }: SwipeableNoteCardProps) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -128,7 +130,7 @@ export function SwipeableNoteCard({ note, onDelete, index }: SwipeableNoteCardPr
 
           <div className="pl-3">
             <p className="text-[13px] leading-relaxed text-text-primary line-clamp-3 mb-3">
-              {note.content}
+              <HighlightedText text={note.content} terms={searchTerms} maxLines={3} />
             </p>
 
             <div className="flex items-center justify-between">

@@ -38,15 +38,18 @@ export default function InvestmentWatchlistScreen() {
 
   const watchlist = progress?.watchlist_companies || [];
 
-  // Auto-suggest companies from Key Players data
+  // All companies from Key Players data
+  const allCompanies = useMemo(() => {
+    return marketCompanies[selectedMarket || ''] || defaultCompanies;
+  }, [selectedMarket]);
+
+  // Auto-suggest companies from Key Players data (not already in watchlist)
   const suggestedCompanies = useMemo(() => {
-    const companies = marketCompanies[selectedMarket || ''] || defaultCompanies;
     const watchlistIds = new Set(watchlist.map((c) => c.id));
-    return companies
+    return allCompanies
       .filter((c) => !watchlistIds.has(c.id))
-      .slice(0, 8)
       .map((c) => ({ id: c.id, name: c.name, ticker: c.ticker }));
-  }, [selectedMarket, watchlist]);
+  }, [allCompanies, watchlist]);
 
   const handleRemove = async (companyId: string, companyName: string) => {
     Alert.alert('Remove', `Remove ${companyName} from watchlist?`, [

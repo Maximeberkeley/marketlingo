@@ -167,7 +167,7 @@ function NoteCard({ note, onDelete, onOpen }: { note: NoteEntry; onDelete: (id: 
             <Text style={styles.noteTime}>{formatTime(note.created_at)}</Text>
           </View>
 
-          {/* Content */}
+          {/* Content - with highlights if searching */}
           <Text style={styles.noteContent} numberOfLines={4}>
             {note.content}
           </Text>
