@@ -368,8 +368,7 @@ const styles = StyleSheet.create({
     padding: 28,
     borderWidth: 1,
     borderColor: COLORS.border,
-    minHeight: 160,
-    justifyContent: 'center',
+    minHeight: 120,
     ...SHADOWS.md,
   },
   headerCard: {
