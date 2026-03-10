@@ -148,14 +148,13 @@ export default function HomeScreen() {
     });
   }, [xpData?.total_xp, progress?.current_streak, progress?.completed_stacks?.length]);
 
-  // Show achievement unlock alert
+  // Achievement popup state
+  const [achievementPopup, setAchievementPopup] = useState<typeof newUnlocks[0] | null>(null);
+
+  // Show achievement unlock popup
   useEffect(() => {
     if (newUnlocks.length > 0) {
-      const achievement = newUnlocks[0];
-      Alert.alert(
-        '🏆 Achievement Unlocked!',
-        `${achievement.name}\n${achievement.description}\n+${achievement.xpReward} XP`,
-      );
+      setAchievementPopup(newUnlocks[0]);
       clearNewUnlocks();
     }
   }, [newUnlocks]);
