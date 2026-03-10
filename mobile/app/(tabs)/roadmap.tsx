@@ -548,7 +548,8 @@ function WeekCard({
       {expanded && !isLocked && (
         <View style={styles.lessonsWrap}>
           {week.lessons.map((lesson) => {
-            const isAccessible = lesson.completed || lesson.current;
+            // Past and current days are accessible (for review or learning)
+            const isAccessible = lesson.completed || lesson.current || week.status === 'available';
             return (
               <TouchableOpacity
                 key={lesson.day}
@@ -565,6 +566,7 @@ function WeekCard({
                   styles.lessonDot,
                   lesson.completed && { backgroundColor: seasonColor },
                   lesson.current && { backgroundColor: seasonColor, opacity: 0.6 },
+                  (!lesson.completed && !lesson.current && isAccessible) && { backgroundColor: COLORS.textMuted, opacity: 0.4 },
                 ]}>
                   {lesson.completed && <Feather name="check" size={10} color="#fff" />}
                   {lesson.current && <Feather name="play" size={8} color="#fff" />}
