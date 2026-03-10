@@ -174,7 +174,7 @@ export default function RoadmapScreen() {
         const days = [startDay, startDay + 1, startDay + 2, startDay + 3, startDay + 4];
 
         let status: Week['status'] = 'locked';
-        if (weekNum < currentWeek) status = 'completed';
+        if (weekNum < currentWeek) status = 'available'; // Past weeks are reviewable
         else if (weekNum === currentWeek) status = 'current';
         else if (weekNum === currentWeek + 1) status = 'available';
 
@@ -232,7 +232,8 @@ export default function RoadmapScreen() {
   };
 
   const handleLessonClick = (lesson: Lesson) => {
-    if (lesson.completed || lesson.current) {
+    // Allow clicking any day up to and including the current day (for review or current lesson)
+    if (lesson.day <= currentDay) {
       triggerHaptic('light');
       setSelectedLesson(lesson);
     }
@@ -547,7 +548,8 @@ function WeekCard({
       {expanded && !isLocked && (
         <View style={styles.lessonsWrap}>
           {week.lessons.map((lesson) => {
-            const isAccessible = lesson.completed || lesson.current;
+            // Past and current days are accessible (for review or learning)
+            const isAccessible = lesson.completed || lesson.current || week.status === 'available';
             return (
               <TouchableOpacity
                 key={lesson.day}
@@ -564,6 +566,7 @@ function WeekCard({
                   styles.lessonDot,
                   lesson.completed && { backgroundColor: seasonColor },
                   lesson.current && { backgroundColor: seasonColor, opacity: 0.6 },
+                  (!lesson.completed && !lesson.current && isAccessible) && { backgroundColor: COLORS.textMuted, opacity: 0.4 },
                 ]}>
                   {lesson.completed && <Feather name="check" size={10} color="#fff" />}
                   {lesson.current && <Feather name="play" size={8} color="#fff" />}
