@@ -321,12 +321,20 @@ export default function NotebookScreen() {
     }
   };
 
-  // Filter + search
+  // Multi-word search
+  const searchTerms = searchQuery.trim().split(/\s+/).filter((t) => t.length > 0).slice(0, 5);
+
   const filteredNotes = notes.filter((note) => {
-    const matchesSearch = !searchQuery || note.content.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = searchTerms.length === 0 || searchTerms.some((t) => note.content.toLowerCase().includes(t.toLowerCase()));
     const linkedType = getLinkedType(note.linked_label);
     const matchesFilter = selectedCategory === 'all' || linkedType === selectedCategory;
     return matchesSearch && matchesFilter;
+  });
+
+  // Match counts per term
+  const termMatchCounts = searchTerms.map((term) => {
+    const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    return filteredNotes.reduce((sum, n) => sum + (n.content.match(re) || []).length, 0);
   });
 
   const groupedNotes = groupNotesByDate(filteredNotes);
