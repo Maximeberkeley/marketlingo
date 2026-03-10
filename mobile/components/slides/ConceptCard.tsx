@@ -380,9 +380,16 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 220,
+    minHeight: 280,
     overflow: 'hidden',
     ...SHADOWS.md,
+  },
+  headerIllustration: {
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
+    marginBottom: 12,
+    opacity: 0.85,
   },
   headerAccent: {
     position: 'absolute',
