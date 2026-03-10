@@ -174,7 +174,7 @@ export default function RoadmapScreen() {
         const days = [startDay, startDay + 1, startDay + 2, startDay + 3, startDay + 4];
 
         let status: Week['status'] = 'locked';
-        if (weekNum < currentWeek) status = 'completed';
+        if (weekNum < currentWeek) status = 'available'; // Past weeks are reviewable
         else if (weekNum === currentWeek) status = 'current';
         else if (weekNum === currentWeek + 1) status = 'available';
 
