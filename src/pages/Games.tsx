@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
-import { MentorCelebration } from "@/components/mascot/MentorCelebration";
+import { LeoCelebration } from "@/components/mascot/LeoCelebration";
 import { MascotBreak, InlineMascot, MascotReaction, getRandomCharacter } from "@/components/mascot";
 import { LeoMascot, getRandomLeoMessage } from "@/components/mascot/LeoMascot";
 import { DailyLimitGate, RemainingCount } from "@/components/subscription/DailyLimitGate";
@@ -220,13 +220,9 @@ export default function GamesPage() {
         });
       }
 
-      // Show celebration randomly (70% of the time)
-      if (Math.random() < 0.7) {
-        setShowCelebration(true);
-      } else {
-        setGameComplete(true);
-        toast.success(`Game complete! ${finalScore}/${questions.length} · +${xpEarned} XP`);
-      }
+      // Always show Leo celebration
+      setShowCelebration(true);
+      toast.success(`Game complete! ${score}/${questions.length} · +${xpEarned} XP`);
     }
   };
 
@@ -619,11 +615,11 @@ export default function GamesPage() {
         marketId={selectedMarket || undefined}
       />
 
-      {/* Celebration on completion */}
-      <MentorCelebration
+      {/* Leo Celebration on completion */}
+      <LeoCelebration
         isVisible={showCelebration}
-        marketId={selectedMarket || "aerospace"}
         type="game"
+        isPerfect={score === questions.length && questions.length > 0}
         onComplete={() => {
           setShowCelebration(false);
           setGameComplete(true);

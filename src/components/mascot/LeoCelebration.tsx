@@ -1,7 +1,7 @@
 import { useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Star, Sparkles, Flame } from "lucide-react";
-import leoMascot from "@/assets/mascot/leo-mascot.png";
+import { Trophy, Star, Sparkles, Flame, Zap } from "lucide-react";
+import leoCelebrating from "@/assets/mascot/leo-celebrating.png";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 
 // Lazy load 3D celebration for performance
@@ -15,9 +15,10 @@ interface LeoCelebrationProps {
   message?: string;
   onComplete?: () => void;
   use3D?: boolean;
+  isPerfect?: boolean;
 }
 
-export function LeoCelebration({ isVisible, type, message, onComplete, use3D = false }: LeoCelebrationProps) {
+export function LeoCelebration({ isVisible, type, message, onComplete, use3D = false, isPerfect = false }: LeoCelebrationProps) {
   const { play } = useSoundEffects();
   const messages = {
     lesson: ["You're on fire! 🔥", "Lesson complete!", "Knowledge unlocked!", "You crushed it!"],
@@ -25,16 +26,23 @@ export function LeoCelebration({ isVisible, type, message, onComplete, use3D = f
     drill: ["Speed demon! ⚡", "Quick thinking!", "Sharp mind!", "Lightning fast!"],
     achievement: ["Achievement unlocked! 🌟", "New badge earned!", "You're growing!", "Milestone reached!"],
   };
-  const randomMessage = message || messages[type][Math.floor(Math.random() * messages[type].length)];
+  const perfectMessages = [
+    "PERFECT SCORE! 💯",
+    "Flawless victory! ✨",
+    "100% — Unstoppable! 🔥",
+    "Not a single miss! 🎯",
+  ];
+  const randomMessage = message || (isPerfect 
+    ? perfectMessages[Math.floor(Math.random() * perfectMessages.length)]
+    : messages[type][Math.floor(Math.random() * messages[type].length)]
+  );
 
-  // Play celebration sound when visible
   useEffect(() => {
     if (isVisible) {
       play("celebration");
     }
   }, [isVisible, play]);
 
-  // Use 3D celebration if requested
   if (use3D) {
     return (
       <Suspense fallback={null}>
@@ -48,6 +56,15 @@ export function LeoCelebration({ isVisible, type, message, onComplete, use3D = f
     );
   }
 
+  const typeConfig = {
+    lesson: { icon: Trophy, color: "text-yellow-400", bg: "from-yellow-400/20 via-amber-400/20 to-orange-400/20" },
+    game: { icon: Star, color: "text-purple-400", bg: "from-purple-400/20 via-pink-400/20 to-fuchsia-400/20" },
+    drill: { icon: Sparkles, color: "text-cyan-400", bg: "from-cyan-400/20 via-blue-400/20 to-indigo-400/20" },
+    achievement: { icon: Flame, color: "text-orange-400", bg: "from-orange-400/20 via-red-400/20 to-amber-400/20" },
+  };
+  const config = typeConfig[type];
+  const Icon = config.icon;
+
   return (
     <AnimatePresence>
       {isVisible && (
@@ -55,38 +72,29 @@ export function LeoCelebration({ isVisible, type, message, onComplete, use3D = f
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
           onClick={onComplete}
         >
-          {/* Confetti particles */}
+          {/* Confetti */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {[...Array(20)].map((_, i) => (
+            {[...Array(isPerfect ? 30 : 20)].map((_, i) => (
               <motion.div
                 key={i}
                 className={`absolute w-3 h-3 rounded-full ${
                   ["bg-yellow-400", "bg-pink-400", "bg-purple-400", "bg-cyan-400", "bg-green-400"][i % 5]
                 }`}
-                initial={{
-                  x: "50vw",
-                  y: "50vh",
-                  scale: 0,
-                }}
+                initial={{ x: "50vw", y: "50vh", scale: 0 }}
                 animate={{
                   x: `${Math.random() * 100}vw`,
                   y: `${Math.random() * 100}vh`,
                   scale: [0, 1.5, 1],
                   rotate: [0, 360],
                 }}
-                transition={{
-                  duration: 1.5,
-                  delay: i * 0.05,
-                  ease: "easeOut",
-                }}
+                transition={{ duration: 1.5, delay: i * 0.04, ease: "easeOut" }}
               />
             ))}
           </div>
 
-          {/* Main celebration card */}
           <motion.div
             initial={{ scale: 0.5, y: 50 }}
             animate={{ scale: 1, y: 0 }}
@@ -94,11 +102,23 @@ export function LeoCelebration({ isVisible, type, message, onComplete, use3D = f
             transition={{ type: "spring", damping: 15, stiffness: 300 }}
             className="relative"
           >
-            {/* Glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/30 via-orange-400/30 to-amber-400/30 rounded-3xl blur-2xl" />
+            {/* Glow */}
+            <div className={`absolute inset-0 bg-gradient-to-r ${config.bg} rounded-3xl blur-2xl`} />
             
-            <div className="relative bg-bg-2 border-2 border-yellow-400/50 rounded-3xl p-8 text-center max-w-xs">
-              {/* Stars */}
+            <div className={`relative bg-bg-2 border-2 ${isPerfect ? 'border-yellow-400/60' : 'border-border'} rounded-3xl p-8 text-center max-w-xs`}>
+              {/* Perfect badge */}
+              {isPerfect && (
+                <motion.div
+                  initial={{ scale: 0, rotate: -20 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.6, type: "spring", stiffness: 300 }}
+                  className="absolute -top-3 -right-3 z-20 bg-yellow-400 text-black text-[10px] font-extrabold px-3 py-1 rounded-full shadow-lg"
+                >
+                  💯 PERFECT
+                </motion.div>
+              )}
+
+              {/* Rotating stars */}
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
@@ -114,50 +134,31 @@ export function LeoCelebration({ isVisible, type, message, onComplete, use3D = f
                 <Sparkles size={24} className="text-pink-400" />
               </motion.div>
 
-              {/* Leo jumping animation */}
+              {/* Leo celebrating - jumping animation */}
               <motion.div
-                animate={{
-                  y: [0, -20, 0],
-                }}
-                transition={{
-                  duration: 0.6,
-                  repeat: 3,
-                  ease: "easeOut",
-                }}
+                animate={{ y: [0, -20, 0] }}
+                transition={{ duration: 0.6, repeat: isPerfect ? 5 : 3, ease: "easeOut" }}
                 className="relative mb-4"
               >
                 <motion.div
-                  animate={{ 
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0],
-                  }}
-                  transition={{ 
-                    duration: 0.8, 
-                    repeat: 2,
-                    ease: "easeInOut" 
-                  }}
+                  animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 0.8, repeat: 2, ease: "easeInOut" }}
                 >
                   <img
-                    src={leoMascot}
+                    src={leoCelebrating}
                     alt="Leo celebrating"
-                    className="w-32 h-32 mx-auto object-contain drop-shadow-2xl"
+                    className="w-36 h-36 mx-auto object-contain drop-shadow-2xl"
                   />
                 </motion.div>
 
-                {/* Flame effect around Leo */}
-                <motion.div
-                  animate={{ 
-                    opacity: [0.5, 1, 0.5],
-                    scale: [0.9, 1.1, 0.9],
-                  }}
-                  transition={{ 
-                    duration: 0.5, 
-                    repeat: Infinity 
-                  }}
-                  className="absolute -bottom-2 left-1/2 -translate-x-1/2"
-                >
-                  <Flame size={40} className="text-orange-400" />
-                </motion.div>
+                {/* Sparkle ring around Leo */}
+                {isPerfect && (
+                  <motion.div
+                    animate={{ opacity: [0.3, 0.8, 0.3], scale: [0.95, 1.05, 0.95] }}
+                    transition={{ duration: 1.2, repeat: Infinity }}
+                    className="absolute inset-0 rounded-full border-2 border-yellow-400/40"
+                  />
+                )}
               </motion.div>
 
               {/* Message */}
@@ -177,10 +178,7 @@ export function LeoCelebration({ isVisible, type, message, onComplete, use3D = f
                 transition={{ delay: 0.5 }}
                 className="flex items-center justify-center gap-2 text-text-muted"
               >
-                {type === "lesson" && <Trophy size={18} className="text-yellow-400" />}
-                {type === "game" && <Star size={18} className="text-purple-400" />}
-                {type === "drill" && <Sparkles size={18} className="text-cyan-400" />}
-                {type === "achievement" && <Flame size={18} className="text-orange-400" />}
+                <Icon size={18} className={config.color} />
                 <span className="text-caption capitalize">{type} Complete</span>
               </motion.div>
 

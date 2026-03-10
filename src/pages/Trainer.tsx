@@ -6,7 +6,7 @@ import { TrainerCard } from "@/components/trainer/TrainerCard";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
-import { MentorCelebration } from "@/components/mascot/MentorCelebration";
+import { LeoCelebration } from "@/components/mascot/LeoCelebration";
 import { MascotBreak, InlineMascot } from "@/components/mascot";
 import { ProUpsellModal } from "@/components/subscription/ProUpsellModal";
 import { mentors, Mentor } from "@/data/mentors";
@@ -173,13 +173,8 @@ export default function TrainerPage() {
     if (currentIndex < scenarios.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      // Show celebration on completing all scenarios (50% of the time)
-      if (Math.random() < 0.5) {
-        setShowCelebration(true);
-      } else {
-        toast.success("All scenarios completed! 🎉");
-        setCurrentIndex(0);
-      }
+      // Always show Leo celebration
+      setShowCelebration(true);
     }
   };
 
@@ -430,10 +425,9 @@ export default function TrainerPage() {
         featureName="AI Mentor"
       />
 
-      {/* Celebration on completion */}
-      <MentorCelebration
+      {/* Leo Celebration on completion */}
+      <LeoCelebration
         isVisible={showCelebration}
-        marketId={selectedMarket || "aerospace"}
         type="lesson"
         onComplete={() => {
           setShowCelebration(false);

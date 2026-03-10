@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
-import { MentorCelebration } from "@/components/mascot/MentorCelebration";
+import { LeoCelebration } from "@/components/mascot/LeoCelebration";
 import { MascotBreak, InlineMascot, MascotReaction, getRandomCharacter } from "@/components/mascot";
 import { DailyLimitGate, RemainingCount } from "@/components/subscription/DailyLimitGate";
 import { mentors, Mentor } from "@/data/mentors";
@@ -228,13 +228,9 @@ export default function DrillsPage() {
         });
       }
 
-      // Show celebration or complete screen
-      if (Math.random() < 0.6) {
-        setShowCelebration(true);
-      } else {
-        setDrillComplete(true);
-        toast.success(`Drill complete! ${finalScore}/${questions.length} correct · +${xpEarned} XP`);
-      }
+      // Always show Leo celebration
+      setShowCelebration(true);
+      toast.success(`Drill complete! ${finalScore}/${questions.length} correct · +${xpEarned} XP`);
     }
   };
 
@@ -630,11 +626,11 @@ export default function DrillsPage() {
         marketId={selectedMarket || undefined}
       />
 
-      {/* Celebration on completion */}
-      <MentorCelebration
+      {/* Leo Celebration on completion */}
+      <LeoCelebration
         isVisible={showCelebration}
-        marketId={selectedMarket || "aerospace"}
         type="drill"
+        isPerfect={score === questions.length && questions.length > 0}
         onComplete={() => {
           setShowCelebration(false);
           setDrillComplete(true);
