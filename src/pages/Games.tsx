@@ -222,7 +222,7 @@ export default function GamesPage() {
 
       // Always show Leo celebration
       setShowCelebration(true);
-      }
+      toast.success(`Game complete! ${score}/${questions.length} · +${xpEarned} XP`);
     }
   };
 

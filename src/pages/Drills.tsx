@@ -230,8 +230,7 @@ export default function DrillsPage() {
 
       // Always show Leo celebration
       setShowCelebration(true);
-        toast.success(`Drill complete! ${finalScore}/${questions.length} correct · +${xpEarned} XP`);
-      }
+      toast.success(`Drill complete! ${finalScore}/${questions.length} correct · +${xpEarned} XP`);
     }
   };
 
