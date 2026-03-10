@@ -8,6 +8,7 @@ import {
   RefreshControl,
   Image,
   Animated,
+  Alert,
 } from 'react-native';
 import { DailyNews } from '../../components/home/DailyNews';
 import { HomeSkeleton } from '../../components/home/HomeSkeleton';
