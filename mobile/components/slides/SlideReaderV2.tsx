@@ -850,9 +850,9 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     flexGrow: 1,
-    justifyContent: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingTop: 12,
+    paddingBottom: 24,
   },
   edgeTapLeft: {
     position: 'absolute',
