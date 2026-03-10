@@ -111,7 +111,7 @@ export default function TrainerScreen() {
 
       const { data: scenarioData, error } = await supabase
         .from('trainer_scenarios')
-        .select('id, market_id, scenario, question, options, tags, sources, created_at')
+        .select('id, market_id, scenario, question, options, correct_option_index, tags, sources, created_at')
         .eq('market_id', market)
         .order('created_at', { ascending: true });
 
@@ -122,17 +122,24 @@ export default function TrainerScreen() {
       }
 
       const formatted = (scenarioData || []).map((s) => {
-        let options: { label: string; isCorrect: boolean }[] = [];
+        let rawOptions: string[] = [];
         if (Array.isArray(s.options)) {
-          options = (s.options as unknown[]).map((opt) => {
-            if (typeof opt === 'string') return { label: opt, isCorrect: false };
-            if (typeof opt === 'object' && opt !== null && 'label' in opt) {
-              return { label: (opt as any).label, isCorrect: false };
-            }
-            return { label: String(opt), isCorrect: false };
+          rawOptions = (s.options as unknown[]).map((opt) => {
+            if (typeof opt === 'string') return opt;
+            if (typeof opt === 'object' && opt !== null && 'label' in opt) return (opt as any).label;
+            return String(opt);
           });
         }
-        return { id: s.id, scenario: s.scenario, question: s.question, options };
+
+        const originalCorrectIndex = s.correct_option_index ?? 0;
+        const { shuffledOptions, newCorrectIndex } = shuffleOptions(rawOptions, originalCorrectIndex);
+
+        const options = shuffledOptions.map((label, idx) => ({
+          label,
+          isCorrect: idx === newCorrectIndex,
+        }));
+
+        return { id: s.id, scenario: s.scenario, question: s.question, options, correctIndex: newCorrectIndex };
       });
 
       // Resume from first uncompleted
