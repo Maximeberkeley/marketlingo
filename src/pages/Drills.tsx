@@ -228,11 +228,8 @@ export default function DrillsPage() {
         });
       }
 
-      // Show celebration or complete screen
-      if (Math.random() < 0.6) {
-        setShowCelebration(true);
-      } else {
-        setDrillComplete(true);
+      // Always show Leo celebration
+      setShowCelebration(true);
         toast.success(`Drill complete! ${finalScore}/${questions.length} correct · +${xpEarned} XP`);
       }
     }
