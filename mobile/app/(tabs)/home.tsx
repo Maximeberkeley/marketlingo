@@ -145,6 +145,7 @@ export default function HomeScreen() {
 
   const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
+  const [showProAd, setShowProAd] = useState(false);
 
   // Leo popup system
   const leoPopups = useLeoPopups({ cooldownMs: 45000, maxPerSession: 4 });
