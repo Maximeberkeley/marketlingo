@@ -44,7 +44,9 @@ export default function GamesScreen() {
   const [gameComplete, setGameComplete] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const [showProAd, setShowProAd] = useState(false);
   
+  const { isProUser } = useSubscription();
   const [combo, setCombo] = useState<ComboState>(createComboState());
   const [fetchKey, setFetchKey] = useState(0);
 
