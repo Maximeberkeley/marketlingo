@@ -303,6 +303,9 @@ export default function DrillsScreen() {
       }
       triggerHaptic('success');
       setDrillComplete(true);
+      if (!isProUser && shouldShowInterstitial()) {
+        setTimeout(() => setShowProAd(true), 800);
+      }
     }
   };
 
