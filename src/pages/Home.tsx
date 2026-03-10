@@ -32,6 +32,9 @@ import { MilestoneShareCard } from "@/components/sharing/MilestoneShareCard";
 import { DailyQuests } from "@/components/home/DailyQuests";
 import { QuickBiteSelector } from "@/components/home/QuickBiteSelector";
 import { useDailyQuests } from "@/hooks/useDailyQuests";
+import { useAchievements } from "@/hooks/useAchievements";
+import { AchievementPopup } from "@/components/achievements/AchievementPopup";
+import { Achievement } from "@/data/achievements";
 
 interface StackWithSlides {
   id: string;
