@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
-import { MentorCelebration } from "@/components/mascot/MentorCelebration";
+import { LeoCelebration } from "@/components/mascot/LeoCelebration";
 import { MascotBreak, InlineMascot, MascotReaction, getRandomCharacter } from "@/components/mascot";
 import { DailyLimitGate, RemainingCount } from "@/components/subscription/DailyLimitGate";
 import { mentors, Mentor } from "@/data/mentors";
