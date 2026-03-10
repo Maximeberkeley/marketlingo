@@ -395,7 +395,7 @@ export default function NotebookScreen() {
             <Feather name="search" size={16} color={COLORS.textMuted} />
             <TextInput
               style={styles.searchInput}
-              placeholder="Search notes..."
+              placeholder="Search notes… (multiple words to compare)"
               placeholderTextColor={COLORS.textMuted}
               value={searchQuery}
               onChangeText={setSearchQuery}
