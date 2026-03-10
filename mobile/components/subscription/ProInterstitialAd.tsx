@@ -48,6 +48,13 @@ const FEATURES = [
   { icon: 'award' as const, text: 'Industry certifications' },
 ];
 
+const GAME_FEATURES = [
+  { icon: 'zap' as const, text: '2x XP on all activities' },
+  { icon: 'repeat' as const, text: 'Unlimited game replays' },
+  { icon: 'target' as const, text: 'Detailed performance analytics' },
+  { icon: 'trending-up' as const, text: 'Level up 3x faster' },
+];
+
 export function ProInterstitialAd({ visible, onClose, trigger = 'lesson' }: ProInterstitialAdProps) {
   const [countdown, setCountdown] = useState(CLOSE_DELAY_SECONDS);
   const [canClose, setCanClose] = useState(false);
@@ -144,16 +151,20 @@ export function ProInterstitialAd({ visible, onClose, trigger = 'lesson' }: ProI
               <Feather name="star" size={32} color="#F59E0B" />
             </View>
 
-            <Text style={styles.title}>Unlock Full Access</Text>
+            <Text style={styles.title}>
+              {trigger === 'game' ? 'Level Up Faster' : 'Unlock Full Access'}
+            </Text>
             <Text style={styles.subtitle}>
-              {trigger === 'lesson'
+              {trigger === 'game'
+                ? 'Pro members earn 2x XP and master markets faster. Don\'t fall behind!'
+                : trigger === 'lesson'
                 ? 'Great lesson! Go Pro for unlimited learning.'
                 : 'You\'re on a roll! Upgrade to keep going.'}
             </Text>
 
             {/* Features */}
             <View style={styles.features}>
-              {FEATURES.map((f, idx) => (
+              {(trigger === 'game' ? GAME_FEATURES : FEATURES).map((f, idx) => (
                 <View key={idx} style={styles.featureRow}>
                   <View style={styles.featureIcon}>
                     <Feather name={f.icon} size={16} color={COLORS.accent} />

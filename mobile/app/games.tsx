@@ -274,8 +274,10 @@ export default function GamesScreen() {
       triggerHaptic('success');
       playSound('levelUp');
       setGameComplete(true);
-      // Show pro interstitial for free users
-      if (!isProUser && shouldShowInterstitial()) {
+      // Show pro interstitial for free users when they don't get a perfect score
+      const finalScore = score + (isCorrect ? 1 : 0);
+      const isPerfect = finalScore === questions.length;
+      if (!isProUser && !isPerfect) {
         setTimeout(() => setShowProAd(true), 800);
       }
     }

@@ -336,32 +336,65 @@ export function parseSlideIntoCards(
   let pendingText = '';
   let cardCount = 0;
 
-  const MAX_CARD_CHARS = 450; // Reduced from 900 for better readability
+  const MAX_CARD_CHARS = 350;
+
+  // Split text at sentence boundaries to avoid mid-sentence cutoff
+  const splitAtSentence = (text: string, maxLen: number): [string, string] => {
+    if (text.length <= maxLen) return [text, ''];
+    // Find last sentence end before maxLen
+    const sentenceEnders = /[.!?]\s/g;
+    let lastGoodBreak = -1;
+    let match: RegExpExecArray | null;
+    while ((match = sentenceEnders.exec(text)) !== null) {
+      if (match.index + match[0].length <= maxLen) {
+        lastGoodBreak = match.index + match[0].length;
+      } else {
+        break;
+      }
+    }
+    // If no sentence break found, try breaking at last period
+    if (lastGoodBreak === -1) {
+      const lastPeriod = text.lastIndexOf('.', maxLen);
+      if (lastPeriod > maxLen * 0.3) lastGoodBreak = lastPeriod + 1;
+    }
+    // Fallback: break at last space
+    if (lastGoodBreak === -1) {
+      const lastSpace = text.lastIndexOf(' ', maxLen);
+      if (lastSpace > maxLen * 0.3) lastGoodBreak = lastSpace + 1;
+      else lastGoodBreak = maxLen;
+    }
+    return [text.slice(0, lastGoodBreak).trim(), text.slice(lastGoodBreak).trim()];
+  };
 
   const flushText = () => {
     if (pendingText.trim()) {
-      const text = pendingText.trim();
-      const lower = text.toLowerCase();
+      let text = pendingText.trim();
+      
+      // Split into multiple cards at sentence boundaries if too long
+      while (text.length > 0) {
+        const [chunk, remainder] = splitAtSentence(text, MAX_CARD_CHARS);
+        const lower = chunk.toLowerCase();
 
-      // Detect callouts
-      const isCallout =
-        (lower.includes('key takeaway') || lower.includes('important:') || lower.includes('note:') || lower.includes('in summary')) &&
-        text.length < 300;
+        const isCallout =
+          (lower.includes('key takeaway') || lower.includes('important:') || lower.includes('note:') || lower.includes('in summary')) &&
+          chunk.length < 300;
 
-      if (isCallout) {
-        cards.push({ type: 'callout', title: currentHeader, content: text });
-      } else {
-        // Classify content for richer card types
-        const classification = classifyContent(text);
-        cards.push({
-          type: classification === 'stat' ? 'key-stat' : classification === 'example' ? 'example' : 'concept',
-          title: currentHeader,
-          content: text,
-        });
+        if (isCallout) {
+          cards.push({ type: 'callout', title: currentHeader, content: chunk });
+        } else {
+          const classification = classifyContent(chunk);
+          cards.push({
+            type: classification === 'stat' ? 'key-stat' : classification === 'example' ? 'example' : 'concept',
+            title: currentHeader,
+            content: chunk,
+          });
+        }
+        currentHeader = undefined;
+        cardCount++;
+        text = remainder;
       }
-      currentHeader = undefined;
+      
       pendingText = '';
-      cardCount++;
     }
   };
 
@@ -397,10 +430,6 @@ export function parseSlideIntoCards(
     }
 
     flushBullets();
-    // Split into cards when text would exceed threshold
-    if (pendingText.length > 0 && (pendingText.length + trimmed.length) > MAX_CARD_CHARS) {
-      flushText();
-    }
     pendingText += (pendingText ? '\n\n' : '') + trimmed;
   }
 
