@@ -279,17 +279,43 @@ export default function InvestmentLabScreen() {
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
+          {/* Portfolio Guide */}
+          <TouchableOpacity
+            style={[styles.watchlistCard, { borderColor: 'rgba(16,185,129,0.2)', backgroundColor: 'rgba(16,185,129,0.05)' }]}
+            onPress={() => router.push('/portfolio-guide')}
+          >
+            <Feather name="map" size={22} color="#10B981" />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.watchlistTitle}>Portfolio Building Guide</Text>
+              <Text style={styles.watchlistDesc}>5-step course to build your first portfolio</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
           {/* Watchlist */}
           <TouchableOpacity
             style={styles.watchlistCard}
             onPress={() => router.push('/investment-watchlist')}
           >
-            <Feather name="search" size={22} color={COLORS.accent} />
+            <Feather name="bookmark" size={22} color={COLORS.accent} />
             <View style={{ flex: 1 }}>
               <Text style={styles.watchlistTitle}>Your Watchlist</Text>
               <Text style={styles.watchlistDesc}>
                 {progress?.watchlist_companies?.length || 0} companies tracked
               </Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          {/* Portfolio Builder */}
+          <TouchableOpacity
+            style={styles.watchlistCard}
+            onPress={() => router.push('/portfolio-builder')}
+          >
+            <Feather name="pie-chart" size={22} color="#F59E0B" />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.watchlistTitle}>Portfolio Builder</Text>
+              <Text style={styles.watchlistDesc}>Allocate and balance your positions</Text>
             </View>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
