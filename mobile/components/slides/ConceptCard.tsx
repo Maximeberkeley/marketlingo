@@ -166,9 +166,13 @@ export function ConceptCard({
   // ── Header card ─────────────────────────────────────
   if (type === 'header') {
     const icon = getTopicIcon(title || content);
+    const illustration = getTopicIllustration(title || content);
     return (
       <Animated.View style={[styles.headerCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
         <View style={[styles.headerAccent, { backgroundColor: accentColor }]} />
+        {illustration && (
+          <Image source={illustration} style={styles.headerIllustration} />
+        )}
         <View style={[styles.headerIconWrap, { backgroundColor: accentColor + '18' }]}>
           <Feather name={icon} size={28} color={accentColor} />
         </View>
