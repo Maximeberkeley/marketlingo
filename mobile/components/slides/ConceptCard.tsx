@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableOpacity, Linking } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { COLORS, TYPE, SHADOWS } from '../../lib/constants';
 
 interface Source {
@@ -7,7 +8,7 @@ interface Source {
   url: string;
 }
 
-export type ConceptCardType = 'concept' | 'header' | 'bullet-group' | 'sources';
+export type ConceptCardType = 'concept' | 'header' | 'bullet-group' | 'sources' | 'callout';
 
 interface ConceptCardProps {
   type: ConceptCardType;
@@ -20,6 +21,89 @@ interface ConceptCardProps {
   accentColor?: string;
 }
 
+// ── Topic icon mapping ──────────────────────────────────────────────
+const TOPIC_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
+  market: 'trending-up',
+  revenue: 'dollar-sign',
+  growth: 'bar-chart-2',
+  risk: 'alert-triangle',
+  invest: 'pie-chart',
+  valuation: 'activity',
+  regulation: 'shield',
+  technology: 'cpu',
+  innovation: 'zap',
+  strategy: 'target',
+  competition: 'users',
+  finance: 'credit-card',
+  capital: 'briefcase',
+  profit: 'trending-up',
+  disruption: 'shuffle',
+  supply: 'truck',
+  demand: 'shopping-cart',
+  policy: 'book',
+  data: 'database',
+  ai: 'cpu',
+  energy: 'battery-charging',
+  climate: 'cloud',
+  health: 'heart',
+  security: 'lock',
+  global: 'globe',
+};
+
+function getTopicIcon(text: string): keyof typeof Feather.glyphMap {
+  const lower = (text || '').toLowerCase();
+  for (const [keyword, icon] of Object.entries(TOPIC_ICONS)) {
+    if (lower.includes(keyword)) return icon;
+  }
+  return 'book-open';
+}
+
+// ── Rich text renderer ──────────────────────────────────────────────
+function RichText({ text, style }: { text: string; style?: any }) {
+  // Parse **bold** and *italic* markers
+  const parts: React.ReactNode[] = [];
+  const regex = /(\*\*(.+?)\*\*|\*(.+?)\*)/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(
+        <Text key={key++} style={style}>
+          {text.slice(lastIndex, match.index)}
+        </Text>
+      );
+    }
+    if (match[2]) {
+      // Bold
+      parts.push(
+        <Text key={key++} style={[style, styles.boldHighlight]}>
+          {match[2]}
+        </Text>
+      );
+    } else if (match[3]) {
+      // Italic
+      parts.push(
+        <Text key={key++} style={[style, { fontStyle: 'italic' }]}>
+          {match[3]}
+        </Text>
+      );
+    }
+    lastIndex = regex.lastIndex;
+  }
+  if (lastIndex < text.length) {
+    parts.push(
+      <Text key={key++} style={style}>
+        {text.slice(lastIndex)}
+      </Text>
+    );
+  }
+
+  return <Text>{parts.length > 0 ? parts : <Text style={style}>{text}</Text>}</Text>;
+}
+
+// ── Main ConceptCard ────────────────────────────────────────────────
 export function ConceptCard({
   type,
   title,
@@ -42,23 +126,46 @@ export function ConceptCard({
     ]).start();
   }, []);
 
+  // ── Header card ─────────────────────────────────────
   if (type === 'header') {
+    const icon = getTopicIcon(title || content);
     return (
       <Animated.View style={[styles.headerCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
         <View style={[styles.headerAccent, { backgroundColor: accentColor }]} />
+        <View style={[styles.headerIconWrap, { backgroundColor: accentColor + '18' }]}>
+          <Feather name={icon} size={28} color={accentColor} />
+        </View>
         <Text style={styles.headerTitle}>{title || content}</Text>
         <View style={styles.headerCounterWrap}>
-          <Text style={styles.headerCounter}>{cardIndex + 1}</Text>
-          <Text style={styles.headerCounterOf}> of {totalCards}</Text>
+          <View style={[styles.counterPill, { backgroundColor: accentColor + '15' }]}>
+            <Text style={[styles.headerCounter, { color: accentColor }]}>{cardIndex + 1}</Text>
+            <Text style={styles.headerCounterOf}> / {totalCards}</Text>
+          </View>
         </View>
       </Animated.View>
     );
   }
 
+  // ── Callout card (pull-quote style) ─────────────────
+  if (type === 'callout') {
+    return (
+      <Animated.View style={[styles.calloutCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }], borderLeftColor: accentColor }]}>
+        <Feather name="info" size={18} color={accentColor} style={{ marginBottom: 8 }} />
+        <RichText text={content} style={styles.calloutText} />
+      </Animated.View>
+    );
+  }
+
+  // ── Bullet group card ───────────────────────────────
   if (type === 'bullet-group') {
     return (
       <Animated.View style={[styles.card, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
-        {title && <Text style={styles.sectionTitle}>{title}</Text>}
+        {title && (
+          <View style={styles.sectionHeader}>
+            <Feather name={getTopicIcon(title)} size={16} color={accentColor} />
+            <Text style={[styles.sectionTitle, { color: accentColor }]}>{title}</Text>
+          </View>
+        )}
         <View style={styles.bulletList}>
           {(bullets || []).map((bullet, idx) => (
             <BulletItem key={idx} text={bullet} index={idx} accentColor={accentColor} />
@@ -68,10 +175,14 @@ export function ConceptCard({
     );
   }
 
+  // ── Sources card ────────────────────────────────────
   if (type === 'sources') {
     return (
       <Animated.View style={[styles.sourcesCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
-        <Text style={styles.sourcesLabel}>Sources</Text>
+        <View style={styles.sourcesHeader}>
+          <Feather name="link" size={14} color={COLORS.textMuted} />
+          <Text style={styles.sourcesLabel}>Sources</Text>
+        </View>
         <View style={styles.sourcesRow}>
           {(sources || []).map((source, idx) => (
             <TouchableOpacity
@@ -80,6 +191,7 @@ export function ConceptCard({
               onPress={() => Linking.openURL(source.url)}
             >
               <Text style={styles.sourceText}>{source.label}</Text>
+              <Feather name="external-link" size={10} color={COLORS.textMuted} />
             </TouchableOpacity>
           ))}
         </View>
@@ -87,24 +199,31 @@ export function ConceptCard({
     );
   }
 
-  // Default: concept card
+  // ── Default concept card ────────────────────────────
   return (
     <Animated.View style={[styles.card, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
-      {title && <Text style={styles.sectionTitle}>{title}</Text>}
-      <Text style={styles.conceptText}>{content}</Text>
+      {title && (
+        <View style={styles.sectionHeader}>
+          <Feather name={getTopicIcon(title)} size={16} color={accentColor} />
+          <Text style={[styles.sectionTitle, { color: accentColor }]}>{title}</Text>
+        </View>
+      )}
+      {title && <View style={styles.sectionDivider} />}
+      <RichText text={content} style={styles.conceptText} />
     </Animated.View>
   );
 }
 
+// ── Bullet item with stagger animation ──────────────
 function BulletItem({ text, index, accentColor }: { text: string; index: number; accentColor: string }) {
   const fadeIn = useRef(new Animated.Value(0)).current;
   const slideX = useRef(new Animated.Value(-20)).current;
 
   useEffect(() => {
-    const delay = index * 100;
+    const delay = index * 80;
     setTimeout(() => {
       Animated.parallel([
-        Animated.timing(fadeIn, { toValue: 1, duration: 300, useNativeDriver: true }),
+        Animated.timing(fadeIn, { toValue: 1, duration: 250, useNativeDriver: true }),
         Animated.spring(slideX, { toValue: 0, tension: 200, friction: 18, useNativeDriver: true }),
       ]).start();
     }, delay);
@@ -113,17 +232,17 @@ function BulletItem({ text, index, accentColor }: { text: string; index: number;
   return (
     <Animated.View style={[styles.bulletRow, { opacity: fadeIn, transform: [{ translateX: slideX }] }]}>
       <View style={[styles.bulletDot, { backgroundColor: accentColor }]} />
-      <Text style={styles.bulletText}>{text}</Text>
+      <RichText text={text} style={styles.bulletText} />
     </Animated.View>
   );
 }
 
-// Parse a slide body into concept cards
+// ── Parser: slide body → concept cards ──────────────
 export function parseSlideIntoCards(
   slideTitle: string,
   body: string,
   sources: Source[],
-  slideIndex: number,
+  _slideIndex: number,
 ): { type: ConceptCardType; title?: string; content: string; bullets?: string[]; sources?: Source[] }[] {
   const cards: { type: ConceptCardType; title?: string; content: string; bullets?: string[]; sources?: Source[] }[] = [];
 
@@ -133,12 +252,24 @@ export function parseSlideIntoCards(
   let currentBullets: string[] = [];
   let currentHeader: string | undefined;
   let pendingText = '';
+  let cardCount = 0;
 
   const flushText = () => {
     if (pendingText.trim()) {
-      cards.push({ type: 'concept', title: currentHeader, content: pendingText.trim() });
+      // Detect "key insight" or "important" sentences → callout
+      const lower = pendingText.toLowerCase();
+      const isCallout =
+        (lower.includes('key takeaway') || lower.includes('important:') || lower.includes('note:') || lower.includes('in summary')) &&
+        pendingText.length < 300;
+
+      cards.push({
+        type: isCallout ? 'callout' : 'concept',
+        title: currentHeader,
+        content: pendingText.trim(),
+      });
       currentHeader = undefined;
       pendingText = '';
+      cardCount++;
     }
   };
 
@@ -148,6 +279,7 @@ export function parseSlideIntoCards(
       cards.push({ type: 'bullet-group', title: currentHeader, content: '', bullets: [...currentBullets] });
       currentBullets = [];
       currentHeader = undefined;
+      cardCount++;
     }
   };
 
@@ -168,13 +300,13 @@ export function parseSlideIntoCards(
       flushText();
       const cleanBullet = trimmed.replace(/^[•\-*]\s*/, '');
       currentBullets.push(cleanBullet);
-      if (currentBullets.length >= 6) flushBullets();
+      if (currentBullets.length >= 5) flushBullets();
       continue;
     }
 
     flushBullets();
-    if (pendingText.length > 0 && (pendingText.length + trimmed.length) > 800) flushText();
-    pendingText += (pendingText ? ' ' : '') + trimmed;
+    if (pendingText.length > 0 && (pendingText.length + trimmed.length) > 600) flushText();
+    pendingText += (pendingText ? '\n\n' : '') + trimmed;
   }
 
   flushBullets();
@@ -187,6 +319,7 @@ export function parseSlideIntoCards(
   return cards;
 }
 
+// ── Styles ──────────────────────────────────────────
 const styles = StyleSheet.create({
   card: {
     backgroundColor: COLORS.bg2,
@@ -206,7 +339,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 200,
+    minHeight: 220,
     overflow: 'hidden',
     ...SHADOWS.md,
   },
@@ -219,6 +352,14 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
   },
+  headerIconWrap: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
   headerTitle: {
     ...TYPE.hero,
     color: COLORS.textPrimary,
@@ -230,26 +371,68 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 16,
   },
+  counterPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
   headerCounter: {
     ...TYPE.overline,
-    color: COLORS.accent,
+    fontWeight: '700',
   },
   headerCounterOf: {
     ...TYPE.overline,
     color: COLORS.textMuted,
   },
+  // Section headers with icons
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
   sectionTitle: {
     ...TYPE.bodyBold,
-    color: COLORS.accent,
-    marginBottom: 14,
     letterSpacing: 0.3,
   },
+  sectionDivider: {
+    height: 1,
+    backgroundColor: COLORS.border,
+    marginBottom: 16,
+  },
+  // Concept text
   conceptText: {
-    fontSize: 19,
+    fontSize: 18,
     color: COLORS.textPrimary,
     lineHeight: 30,
+    letterSpacing: 0.15,
+  },
+  boldHighlight: {
+    fontWeight: '700',
+    color: COLORS.accent,
+  },
+  // Callout card
+  calloutCard: {
+    backgroundColor: COLORS.bg2,
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderLeftWidth: 4,
+    minHeight: 100,
+    justifyContent: 'center',
+    ...SHADOWS.sm,
+  },
+  calloutText: {
+    fontSize: 17,
+    color: COLORS.textPrimary,
+    lineHeight: 28,
+    fontStyle: 'italic',
     letterSpacing: 0.1,
   },
+  // Bullets
   bulletList: {
     gap: 14,
   },
@@ -271,6 +454,7 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     flex: 1,
   },
+  // Sources
   sourcesCard: {
     backgroundColor: COLORS.bg2,
     borderRadius: 20,
@@ -279,10 +463,15 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     ...SHADOWS.sm,
   },
+  sourcesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 12,
+  },
   sourcesLabel: {
     ...TYPE.caption,
     color: COLORS.textMuted,
-    marginBottom: 12,
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
@@ -292,6 +481,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   sourceChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     backgroundColor: COLORS.bg1,
     borderRadius: 20,
     paddingHorizontal: 14,
