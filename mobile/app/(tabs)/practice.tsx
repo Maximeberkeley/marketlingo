@@ -95,7 +95,7 @@ const RESOURCE_CARDS: CardData[] = [
     gradientColors: ['#7C2D12', '#B45309', '#F59E0B'] as const,
     accentGlow: 'rgba(245, 158, 11, 0.4)',
     path: '/friends',
-    heroImage: require('../../assets/illustrations/passport-hero.png'),
+    heroImage: require('../../assets/illustrations/leaderboard-hero.png'),
     tag: 'SOCIAL',
   },
   {
