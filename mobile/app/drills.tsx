@@ -102,6 +102,9 @@ export default function DrillsScreen() {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const [showProAd, setShowProAd] = useState(false);
+  
+  const { isProUser } = useSubscription();
   
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [fetchKey, setFetchKey] = useState(0);
