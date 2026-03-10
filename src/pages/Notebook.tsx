@@ -117,14 +117,22 @@ export default function NotebookPage() {
     else { setNotes((prev) => [data, ...prev]); setNewNoteContent(""); setShowAddNote(false); toast.success("Note added!"); }
   };
 
+  const searchTerms = getSearchTerms(searchQuery);
+
   const filteredNotes = notes.filter((note) => {
-    const matchesSearch = note.content.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = noteMatchesAnyTerm(note.content, searchTerms);
     const linkedType = getLinkedType(note.linked_label);
     const matchesFilter = !selectedFilter || linkedType === selectedFilter;
     return matchesSearch && matchesFilter;
   });
 
   const groupedNotes = groupNotesByDate(filteredNotes);
+
+  // Total match counts across all filtered notes
+  const totalMatchCounts = searchTerms.map((term) => {
+    const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+    return filteredNotes.reduce((sum, n) => sum + (n.content.match(re) || []).length, 0);
+  });
 
   if (loading) {
     return (
