@@ -109,6 +109,69 @@ export type Database = {
           },
         ]
       }
+      drill_questions: {
+        Row: {
+          category: string
+          created_at: string
+          day_number: number
+          difficulty: string
+          explanation: string
+          id: string
+          is_true: boolean
+          market_id: string
+          question_number: number
+          set_number: number
+          source_label: string | null
+          stack_id: string | null
+          statement: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          day_number: number
+          difficulty?: string
+          explanation: string
+          id?: string
+          is_true: boolean
+          market_id: string
+          question_number?: number
+          set_number?: number
+          source_label?: string | null
+          stack_id?: string | null
+          statement: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          day_number?: number
+          difficulty?: string
+          explanation?: string
+          id?: string
+          is_true?: boolean
+          market_id?: string
+          question_number?: number
+          set_number?: number
+          source_label?: string | null
+          stack_id?: string | null
+          statement?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drill_questions_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "drill_questions_stack_id_fkey"
+            columns: ["stack_id"]
+            isOneToOne: false
+            referencedRelation: "stacks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       drills_progress: {
         Row: {
           average_time_seconds: number | null
