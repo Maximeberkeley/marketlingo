@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableOpacity, Linking, Image } from 'react-native';
+import { View, Text, StyleSheet, Animated, TouchableOpacity, Linking, Image, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, TYPE, SHADOWS } from '../../lib/constants';
 
@@ -8,7 +8,7 @@ interface Source {
   url: string;
 }
 
-export type ConceptCardType = 'concept' | 'header' | 'bullet-group' | 'sources' | 'callout';
+export type ConceptCardType = 'concept' | 'header' | 'bullet-group' | 'sources' | 'callout' | 'key-stat' | 'example';
 
 interface ConceptCardProps {
   type: ConceptCardType;
@@ -95,9 +95,8 @@ function getTopicIcon(text: string): keyof typeof Feather.glyphMap {
   return 'book-open';
 }
 
-// ── Rich text renderer ──────────────────────────────────────────────
+// ── Rich text renderer with keyword highlights ──────────────────────
 function RichText({ text, style }: { text: string; style?: any }) {
-  // Parse **bold** and *italic* markers
   const parts: React.ReactNode[] = [];
   const regex = /(\*\*(.+?)\*\*|\*(.+?)\*)/g;
   let lastIndex = 0;
@@ -113,14 +112,12 @@ function RichText({ text, style }: { text: string; style?: any }) {
       );
     }
     if (match[2]) {
-      // Bold
       parts.push(
         <Text key={key++} style={[style, styles.boldHighlight]}>
           {match[2]}
         </Text>
       );
     } else if (match[3]) {
-      // Italic
       parts.push(
         <Text key={key++} style={[style, { fontStyle: 'italic' }]}>
           {match[3]}
@@ -193,6 +190,36 @@ export function ConceptCard({
       <Animated.View style={[styles.calloutCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }], borderLeftColor: accentColor }]}>
         <Feather name="info" size={18} color={accentColor} style={{ marginBottom: 8 }} />
         <RichText text={content} style={styles.calloutText} />
+      </Animated.View>
+    );
+  }
+
+  // ── Key stat card ───────────────────────────────────
+  if (type === 'key-stat') {
+    return (
+      <Animated.View style={[styles.keyStatCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
+        <View style={[styles.keyStatAccent, { backgroundColor: accentColor }]} />
+        <View style={[styles.keyStatIconWrap, { backgroundColor: accentColor + '12' }]}>
+          <Feather name="bar-chart-2" size={20} color={accentColor} />
+        </View>
+        {title && <Text style={[styles.keyStatLabel, { color: accentColor }]}>{title}</Text>}
+        <Text style={styles.keyStatValue}>{content}</Text>
+      </Animated.View>
+    );
+  }
+
+  // ── Example card (real-world case) ──────────────────
+  if (type === 'example') {
+    return (
+      <Animated.View style={[styles.exampleCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
+        <View style={styles.exampleHeader}>
+          <View style={[styles.exampleIconWrap, { backgroundColor: accentColor + '12' }]}>
+            <Feather name="briefcase" size={16} color={accentColor} />
+          </View>
+          <Text style={[styles.exampleTag, { color: accentColor }]}>Real-World Example</Text>
+        </View>
+        {title && <Text style={styles.exampleTitle}>{title}</Text>}
+        <RichText text={content} style={styles.exampleText} />
       </Animated.View>
     );
   }
@@ -278,6 +305,20 @@ function BulletItem({ text, index, accentColor }: { text: string; index: number;
   );
 }
 
+// ── Smart content classification ────────────────────
+function classifyContent(text: string): 'stat' | 'example' | 'concept' {
+  const lower = text.toLowerCase();
+  // Stats: contains numbers with $ or % or M/B, or phrases like "revenue of", "raised"
+  const statPatterns = /(\$[\d,.]+[mbk]?|\d+%|\d+\.\d+x|raised \$|revenue of|market (size|cap)|worth \$|valued at|\d+ (billion|million|trillion))/i;
+  if (statPatterns.test(text) && text.length < 250) return 'stat';
+
+  // Examples: mentions company names, "founded", case studies
+  const examplePatterns = /(founded \d{4}|for example|case study|such as [A-Z]|like (Lockheed|Boeing|SpaceX|Tesla|Apple|Google|Amazon|Microsoft|Velo3D|Relativity)|Inc\.|Corp\.|Ltd\.)/i;
+  if (examplePatterns.test(text)) return 'example';
+
+  return 'concept';
+}
+
 // ── Parser: slide body → concept cards ──────────────
 export function parseSlideIntoCards(
   slideTitle: string,
@@ -295,19 +336,29 @@ export function parseSlideIntoCards(
   let pendingText = '';
   let cardCount = 0;
 
+  const MAX_CARD_CHARS = 450; // Reduced from 900 for better readability
+
   const flushText = () => {
     if (pendingText.trim()) {
-      // Detect "key insight" or "important" sentences → callout
-      const lower = pendingText.toLowerCase();
+      const text = pendingText.trim();
+      const lower = text.toLowerCase();
+
+      // Detect callouts
       const isCallout =
         (lower.includes('key takeaway') || lower.includes('important:') || lower.includes('note:') || lower.includes('in summary')) &&
-        pendingText.length < 300;
+        text.length < 300;
 
-      cards.push({
-        type: isCallout ? 'callout' : 'concept',
-        title: currentHeader,
-        content: pendingText.trim(),
-      });
+      if (isCallout) {
+        cards.push({ type: 'callout', title: currentHeader, content: text });
+      } else {
+        // Classify content for richer card types
+        const classification = classifyContent(text);
+        cards.push({
+          type: classification === 'stat' ? 'key-stat' : classification === 'example' ? 'example' : 'concept',
+          title: currentHeader,
+          content: text,
+        });
+      }
       currentHeader = undefined;
       pendingText = '';
       cardCount++;
@@ -341,12 +392,15 @@ export function parseSlideIntoCards(
       flushText();
       const cleanBullet = trimmed.replace(/^[•\-*]\s*/, '');
       currentBullets.push(cleanBullet);
-      if (currentBullets.length >= 5) flushBullets();
+      if (currentBullets.length >= 4) flushBullets();
       continue;
     }
 
     flushBullets();
-    if (pendingText.length > 0 && (pendingText.length + trimmed.length) > 900) flushText();
+    // Split into cards when text would exceed threshold
+    if (pendingText.length > 0 && (pendingText.length + trimmed.length) > MAX_CARD_CHARS) {
+      flushText();
+    }
     pendingText += (pendingText ? '\n\n' : '') + trimmed;
   }
 
@@ -365,10 +419,9 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
-    padding: 28,
+    padding: 24,
     borderWidth: 1,
     borderColor: COLORS.border,
-    minHeight: 120,
     ...SHADOWS.md,
   },
   headerCard: {
@@ -449,11 +502,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.border,
     marginBottom: 16,
   },
-  // Concept text
+  // Concept text — slightly smaller for readability
   conceptText: {
-    fontSize: 18,
+    fontSize: 17,
     color: COLORS.textPrimary,
-    lineHeight: 30,
+    lineHeight: 28,
     letterSpacing: 0.15,
   },
   boldHighlight: {
@@ -468,15 +521,95 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     borderLeftWidth: 4,
-    minHeight: 100,
     justifyContent: 'center',
     ...SHADOWS.sm,
   },
   calloutText: {
-    fontSize: 17,
+    fontSize: 16,
     color: COLORS.textPrimary,
-    lineHeight: 28,
+    lineHeight: 26,
     fontStyle: 'italic',
+    letterSpacing: 0.1,
+  },
+  // Key stat card
+  keyStatCard: {
+    backgroundColor: COLORS.bg2,
+    borderRadius: 24,
+    padding: 28,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: 'center',
+    overflow: 'hidden',
+    ...SHADOWS.md,
+  },
+  keyStatAccent: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 3,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  keyStatIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  keyStatLabel: {
+    ...TYPE.overline,
+    letterSpacing: 1,
+    marginBottom: 8,
+    textTransform: 'uppercase',
+  },
+  keyStatValue: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+    textAlign: 'center',
+    lineHeight: 28,
+  },
+  // Example card
+  exampleCard: {
+    backgroundColor: COLORS.bg2,
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    ...SHADOWS.md,
+  },
+  exampleHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  exampleIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  exampleTag: {
+    ...TYPE.overline,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    fontWeight: '700',
+  },
+  exampleTitle: {
+    ...TYPE.bodyBold,
+    color: COLORS.textPrimary,
+    marginBottom: 10,
+    fontSize: 17,
+  },
+  exampleText: {
+    fontSize: 16,
+    color: COLORS.textSecondary,
+    lineHeight: 26,
     letterSpacing: 0.1,
   },
   // Bullets
@@ -496,12 +629,12 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   bulletText: {
-    fontSize: 17,
+    fontSize: 16,
     color: COLORS.textPrimary,
     lineHeight: 26,
     flex: 1,
   },
-  // Sources
+  // Sources card
   sourcesCard: {
     backgroundColor: COLORS.bg2,
     borderRadius: 20,
@@ -517,10 +650,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sourcesLabel: {
-    ...TYPE.caption,
+    ...TYPE.overline,
     color: COLORS.textMuted,
-    textTransform: 'uppercase',
     letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   sourcesRow: {
     flexDirection: 'row',
@@ -531,16 +664,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: COLORS.bg1,
-    borderRadius: 20,
-    paddingHorizontal: 14,
+    backgroundColor: COLORS.bg3,
+    paddingHorizontal: 12,
     paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    borderRadius: 12,
   },
   sourceText: {
     ...TYPE.caption,
     color: COLORS.textSecondary,
-    fontWeight: '500',
   },
 });
