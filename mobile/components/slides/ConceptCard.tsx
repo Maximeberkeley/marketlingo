@@ -336,7 +336,7 @@ export function parseSlideIntoCards(
   let pendingText = '';
   let cardCount = 0;
 
-  const MAX_CARD_CHARS = 350;
+  const MAX_CARD_CHARS = 450;
 
   // Split text at sentence boundaries to avoid mid-sentence cutoff
   const splitAtSentence = (text: string, maxLen: number): [string, string] => {
