@@ -48,6 +48,13 @@ const FEATURES = [
   { icon: 'award' as const, text: 'Industry certifications' },
 ];
 
+const GAME_FEATURES = [
+  { icon: 'zap' as const, text: '2x XP on all activities' },
+  { icon: 'repeat' as const, text: 'Unlimited game replays' },
+  { icon: 'target' as const, text: 'Detailed performance analytics' },
+  { icon: 'trending-up' as const, text: 'Level up 3x faster' },
+];
+
 export function ProInterstitialAd({ visible, onClose, trigger = 'lesson' }: ProInterstitialAdProps) {
   const [countdown, setCountdown] = useState(CLOSE_DELAY_SECONDS);
   const [canClose, setCanClose] = useState(false);
