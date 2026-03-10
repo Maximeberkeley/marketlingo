@@ -425,10 +425,9 @@ export default function TrainerPage() {
         featureName="AI Mentor"
       />
 
-      {/* Celebration on completion */}
-      <MentorCelebration
+      {/* Leo Celebration on completion */}
+      <LeoCelebration
         isVisible={showCelebration}
-        marketId={selectedMarket || "aerospace"}
         type="lesson"
         onComplete={() => {
           setShowCelebration(false);
