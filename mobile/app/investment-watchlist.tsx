@@ -122,14 +122,14 @@ export default function InvestmentWatchlistScreen() {
           </View>
         )}
 
-        {/* Browse Key Players CTA */}
-        <TouchableOpacity style={styles.addCard} onPress={() => router.push('/(tabs)/home')}>
+        {/* Browse All Companies */}
+        <TouchableOpacity style={styles.addCard} onPress={() => setShowSuggestions(true)}>
           <View style={styles.addIcon}>
             <Feather name="search" size={18} color={COLORS.accent} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.addTitle}>Browse Key Players</Text>
-            <Text style={styles.addDesc}>Find more companies to track</Text>
+            <Text style={styles.addTitle}>Browse All Companies</Text>
+            <Text style={styles.addDesc}>{allCompanies.length} companies available to track</Text>
           </View>
           <Text style={{ fontSize: 18, color: COLORS.textMuted }}>›</Text>
         </TouchableOpacity>
