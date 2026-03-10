@@ -204,6 +204,15 @@ export default function TrainerScreen() {
   const handleNext = () => {
     setSelectedOption(null);
     setFeedback(null);
+    // Show pro interstitial every 2 scenarios for free users
+    if (!isProUser && shouldShowInterstitial()) {
+      setShowProAd(true);
+      return; // Will advance after ad closes
+    }
+    advanceScenario();
+  };
+
+  const advanceScenario = () => {
     if (currentIndex < scenarios.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
