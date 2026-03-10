@@ -256,8 +256,14 @@ export default function HomeScreen() {
           lessonTitle={session.activeStack?.title || lessonStack?.title || 'Lesson'}
           totalXP={xpData?.total_xp || 0}
           stageName={currentStage.name}
-          onContinue={session.dismissSessionComplete}
-          onDismiss={session.dismissSessionComplete}
+          onContinue={() => {
+            session.dismissSessionComplete();
+            if (!isProUser) setTimeout(() => setShowProAd(true), 500);
+          }}
+          onDismiss={() => {
+            session.dismissSessionComplete();
+            if (!isProUser) setTimeout(() => setShowProAd(true), 500);
+          }}
         />
       ) : (
         <ScrollView
