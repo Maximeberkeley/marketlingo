@@ -373,6 +373,7 @@ export default function DrillsScreen() {
     const percentage = Math.round((score / questions.length) * 100);
     return (
       <View style={[styles.container, styles.centered]}>
+        <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="drill" />
         <View style={[styles.completeIcon, {
           backgroundColor: percentage >= 80 ? 'rgba(34, 197, 94, 0.2)' : percentage >= 60 ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)',
         }]}>
