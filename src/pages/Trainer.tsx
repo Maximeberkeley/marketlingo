@@ -6,7 +6,7 @@ import { TrainerCard } from "@/components/trainer/TrainerCard";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
-import { MentorCelebration } from "@/components/mascot/MentorCelebration";
+import { LeoCelebration } from "@/components/mascot/LeoCelebration";
 import { MascotBreak, InlineMascot } from "@/components/mascot";
 import { ProUpsellModal } from "@/components/subscription/ProUpsellModal";
 import { mentors, Mentor } from "@/data/mentors";
