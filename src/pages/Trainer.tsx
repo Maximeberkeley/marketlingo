@@ -173,13 +173,8 @@ export default function TrainerPage() {
     if (currentIndex < scenarios.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      // Show celebration on completing all scenarios (50% of the time)
-      if (Math.random() < 0.5) {
-        setShowCelebration(true);
-      } else {
-        toast.success("All scenarios completed! 🎉");
-        setCurrentIndex(0);
-      }
+      // Always show Leo celebration
+      setShowCelebration(true);
     }
   };
 
