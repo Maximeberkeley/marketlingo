@@ -50,6 +50,43 @@ const TOPIC_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   global: 'globe',
 };
 
+// ── Topic illustration mapping ──────────────────────────────────────
+const TOPIC_ILLUSTRATIONS: Record<string, any> = {
+  market: require('../../assets/illustrations/topic-market.png'),
+  revenue: require('../../assets/illustrations/topic-finance.png'),
+  growth: require('../../assets/illustrations/topic-growth.png'),
+  invest: require('../../assets/illustrations/topic-market.png'),
+  valuation: require('../../assets/illustrations/topic-finance.png'),
+  regulation: require('../../assets/illustrations/topic-security.png'),
+  technology: require('../../assets/illustrations/topic-technology.png'),
+  innovation: require('../../assets/illustrations/topic-innovation.png'),
+  strategy: require('../../assets/illustrations/topic-strategy.png'),
+  finance: require('../../assets/illustrations/topic-finance.png'),
+  capital: require('../../assets/illustrations/topic-finance.png'),
+  profit: require('../../assets/illustrations/topic-market.png'),
+  supply: require('../../assets/illustrations/topic-global.png'),
+  demand: require('../../assets/illustrations/topic-market.png'),
+  data: require('../../assets/illustrations/topic-technology.png'),
+  ai: require('../../assets/illustrations/topic-technology.png'),
+  energy: require('../../assets/illustrations/topic-growth.png'),
+  climate: require('../../assets/illustrations/topic-global.png'),
+  health: require('../../assets/illustrations/topic-growth.png'),
+  security: require('../../assets/illustrations/topic-security.png'),
+  global: require('../../assets/illustrations/topic-global.png'),
+  risk: require('../../assets/illustrations/topic-security.png'),
+  competition: require('../../assets/illustrations/topic-strategy.png'),
+  disruption: require('../../assets/illustrations/topic-innovation.png'),
+  policy: require('../../assets/illustrations/topic-security.png'),
+};
+
+function getTopicIllustration(text: string): any | null {
+  const lower = (text || '').toLowerCase();
+  for (const [keyword, img] of Object.entries(TOPIC_ILLUSTRATIONS)) {
+    if (lower.includes(keyword)) return img;
+  }
+  return require('../../assets/illustrations/topic-innovation.png');
+}
+
 function getTopicIcon(text: string): keyof typeof Feather.glyphMap {
   const lower = (text || '').toLowerCase();
   for (const [keyword, icon] of Object.entries(TOPIC_ICONS)) {
