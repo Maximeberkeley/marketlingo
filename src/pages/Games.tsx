@@ -615,11 +615,11 @@ export default function GamesPage() {
         marketId={selectedMarket || undefined}
       />
 
-      {/* Celebration on completion */}
-      <MentorCelebration
+      {/* Leo Celebration on completion */}
+      <LeoCelebration
         isVisible={showCelebration}
-        marketId={selectedMarket || "aerospace"}
         type="game"
+        isPerfect={score === questions.length && questions.length > 0}
         onComplete={() => {
           setShowCelebration(false);
           setGameComplete(true);

@@ -627,11 +627,11 @@ export default function DrillsPage() {
         marketId={selectedMarket || undefined}
       />
 
-      {/* Celebration on completion */}
-      <MentorCelebration
+      {/* Leo Celebration on completion */}
+      <LeoCelebration
         isVisible={showCelebration}
-        marketId={selectedMarket || "aerospace"}
         type="drill"
+        isPerfect={score === questions.length && questions.length > 0}
         onComplete={() => {
           setShowCelebration(false);
           setDrillComplete(true);
