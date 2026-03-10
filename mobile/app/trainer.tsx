@@ -22,6 +22,7 @@ import type { Mentor } from '../data/mentors';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
+import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
 
 
 // Market-specific hero images
