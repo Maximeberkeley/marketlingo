@@ -19,6 +19,8 @@ import { playSound } from '../lib/sounds';
 import { ComboCounter } from '../components/ui/ComboCounter';
 import { createComboState, comboCorrect, comboWrong, ComboState } from '../lib/combo';
 import { Feather } from '@expo/vector-icons';
+import { useSubscription } from '../hooks/useSubscription';
+import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
 
 interface GameQuestion {
   id: string;
