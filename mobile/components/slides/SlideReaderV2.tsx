@@ -180,6 +180,7 @@ export function SlideReaderV2({
           content: card.content,
           bullets: card.bullets,
           sources: card.sources,
+          keyTerms: card.keyTerms,
           slideIndex: slideIdx,
         });
       });
