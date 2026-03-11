@@ -1021,7 +1021,7 @@ const styles = StyleSheet.create({
     textWrap: "balance",
   },
   exampleText: {
-    fontSize: FLUID.body,
+    fontSize: Math.max(16, FLUID.body),
     color: COLORS.textSecondary,
     lineHeight: FLUID.bodyLineHeight,
     letterSpacing: 0.1,
