@@ -718,15 +718,17 @@ const MAX_CARD_CHARS = 350; // Lowered for beginner-friendly shorter cards
 
 // ── Styles ──────────────────────────────────────────
 const styles = StyleSheet.create({
-  /* Base card — flex column container with safe padding */
+  /* Base card — flex column, auto height, safe padding */
   card: {
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
     padding: 16,
     paddingHorizontal: 18,
+    paddingBottom: 48, // pb-12 — clears Next button / home bar
     borderWidth: 1,
     borderColor: COLORS.border,
     flexDirection: "column",
+    minHeight: 300,
     ...SHADOWS.md,
   },
 
