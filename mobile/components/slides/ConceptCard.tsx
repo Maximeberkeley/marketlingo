@@ -432,58 +432,11 @@ function classifyContent(text: string): "stat" | "example" | "concept" {
   return "concept";
 }
 
-// ── Acronym / key-term extraction ───────────────────
-const COMMON_ACRONYMS: Record<string, string> = {
-  OEM: "The big companies that build and sell the final product (like Boeing builds planes).",
-  MRO: "The repair shops that fix and maintain products so they keep working safely.",
-  IPO: "When a company sells its shares to the public for the first time to raise money.",
-  "R&D": "Money and effort spent inventing new things.",
-  ROI: "How much profit you get back compared to what you put in.",
-  CAGR: "How fast something grows each year, on average.",
-  EBITDA: "A simple way to measure how profitable a business really is.",
-  GDP: "The total value of everything a country makes in a year.",
-  B2B: "Companies selling to other companies, not regular people.",
-  B2C: "Companies selling directly to regular people like you.",
-  SaaS: "Software you rent monthly instead of buying once.",
-  AI: "Computer systems that can learn and make decisions on their own.",
-  EV: "A car or truck powered by batteries instead of gasoline.",
-  ESG: "A scorecard for how responsibly a company treats the planet and people.",
-  VC: "Money invested in brand-new startups that could grow fast.",
-  PE: "Investment firms that buy and improve existing companies.",
-  "M&A": "When companies join together or one buys another.",
-  TAM: "The biggest possible market — if you got every single customer.",
-  API: "A way for different software programs to talk to each other.",
-  IoT: "Everyday objects connected to the internet (smart fridges, sensors, etc.).",
-  SPAC: "A shortcut for a company to start selling shares without the usual long process.",
-  UAM: "Flying taxis and drones used as city transportation.",
-  LEO: "Low Earth Orbit — where most new satellites and space stations go.",
-  GHG: "Greenhouse gases — the pollution that causes climate change.",
-  LCOE: "The real cost of energy when you add up building and running a power plant.",
-  FDA: "The government agency that approves medicines and medical devices in the US.",
-  EHR: "Digital medical records that doctors use instead of paper files.",
-  ADAS: "Smart car features that help you drive safely, like lane assist.",
-  LiDAR: "A laser sensor that helps self-driving cars see the world around them.",
-  ARR: "The yearly revenue a subscription company expects to keep earning.",
-};
+// ── Acronym / key-term extraction (now uses per-industry data) ──
+import { getAcronymsForMarket } from "../../data/industryAcronyms";
 
-/**
- * Extracts acronyms found in text and returns key term definitions.
- */
-function extractKeyTerms(text: string): KeyTerm[] {
-  const found: KeyTerm[] = [];
-  const seen = new Set<string>();
-  // Match uppercase acronyms (2-6 chars) possibly in parentheses
-  const acronymRegex = /\b([A-Z][A-Z&]{1,5})\b/g;
-  let match: RegExpExecArray | null;
-  while ((match = acronymRegex.exec(text)) !== null) {
-    const acr = match[1];
-    if (!seen.has(acr) && COMMON_ACRONYMS[acr]) {
-      seen.add(acr);
-      found.push({ term: acr, definition: COMMON_ACRONYMS[acr] });
-    }
-  }
-  return found;
-}
+/** Max acronyms per key-terms card before auto-splitting */
+const KEY_TERMS_PER_CARD = 4;
 
 // ── Story Sequence: break long paragraphs into 3-5 cards ────────────
 function breakIntoStorySequence(text: string, maxChars: number): string[] {
