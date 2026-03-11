@@ -562,7 +562,8 @@ export function parseSlideIntoCards(
   let pendingText = "";
   let cardCount = 0;
 
-  const MAX_CARD_CHARS = 350; // Lowered for beginner-friendly shorter cards
+const MAX_CARD_CHARS = 350; // Lowered for beginner-friendly shorter cards
+    const WORD_SPLIT_THRESHOLD = 25; // Auto-split definitions longer than 25 words
 
   // Split text at sentence boundaries to avoid mid-sentence cutoff
   const splitAtSentence = (text: string, maxLen: number): [string, string] => {
