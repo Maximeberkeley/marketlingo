@@ -942,10 +942,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
     padding: 28,
+    paddingBottom: 48,
     borderWidth: 1,
     borderColor: COLORS.border,
     alignItems: "center",
     overflow: "hidden",
+    minHeight: 300,
     ...SHADOWS.md,
   },
   keyStatAccent: {
