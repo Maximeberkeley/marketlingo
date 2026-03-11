@@ -1044,7 +1044,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   bulletText: {
-    fontSize: FLUID.bullet,
+    fontSize: Math.max(16, FLUID.bullet),
     color: COLORS.textPrimary,
     lineHeight: FLUID.bulletLineHeight,
     flex: 1,
