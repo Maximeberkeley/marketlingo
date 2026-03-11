@@ -1,14 +1,20 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableOpacity, Linking, Image, ScrollView } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Animated, TouchableOpacity, Linking, Image, ScrollView, Dimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, TYPE, SHADOWS } from '../../lib/constants';
+import { FLUID, fluidFont, fluidLineHeight } from '../../lib/fluidType';
 
 interface Source {
   label: string;
   url: string;
 }
 
-export type ConceptCardType = 'concept' | 'header' | 'bullet-group' | 'sources' | 'callout' | 'key-stat' | 'example';
+export type ConceptCardType = 'concept' | 'header' | 'bullet-group' | 'sources' | 'callout' | 'key-stat' | 'example' | 'key-terms';
+
+interface KeyTerm {
+  term: string;
+  definition: string;
+}
 
 interface ConceptCardProps {
   type: ConceptCardType;
@@ -16,10 +22,14 @@ interface ConceptCardProps {
   content: string;
   bullets?: string[];
   sources?: Source[];
+  keyTerms?: KeyTerm[];
   cardIndex: number;
   totalCards: number;
   accentColor?: string;
 }
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const MAX_CARD_CONTENT_HEIGHT = SCREEN_HEIGHT * 0.55; // Safe area for scrollable content
 
 // ── Topic icon mapping ──────────────────────────────────────────────
 const TOPIC_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
@@ -137,6 +147,49 @@ function RichText({ text, style }: { text: string; style?: any }) {
   return <Text>{parts.length > 0 ? parts : <Text style={style}>{text}</Text>}</Text>;
 }
 
+// ── Read More toggle for long text ──────────────────────────────────
+function ReadMoreText({ text, style, maxLines = 8, accentColor = COLORS.accent }: {
+  text: string;
+  style?: any;
+  maxLines?: number;
+  accentColor?: string;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [needsTruncation, setNeedsTruncation] = useState(false);
+
+  return (
+    <View>
+      <Text
+        style={style}
+        numberOfLines={expanded ? undefined : maxLines}
+        onTextLayout={(e) => {
+          if (e.nativeEvent.lines.length > maxLines) {
+            setNeedsTruncation(true);
+          }
+        }}
+      >
+        <RichText text={text} style={style} />
+      </Text>
+      {needsTruncation && (
+        <TouchableOpacity
+          onPress={() => setExpanded(!expanded)}
+          style={styles.readMoreBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Text style={[styles.readMoreText, { color: accentColor }]}>
+            {expanded ? 'Show less' : 'Read more'}
+          </Text>
+          <Feather
+            name={expanded ? 'chevron-up' : 'chevron-down'}
+            size={14}
+            color={accentColor}
+          />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+}
+
 // ── Main ConceptCard ────────────────────────────────────────────────
 export function ConceptCard({
   type,
@@ -144,6 +197,7 @@ export function ConceptCard({
   content,
   bullets,
   sources,
+  keyTerms,
   cardIndex,
   totalCards,
   accentColor = COLORS.accent,
@@ -184,12 +238,42 @@ export function ConceptCard({
     );
   }
 
+  // ── Key Terms card (Beginner Mode) ──────────────────
+  if (type === 'key-terms' && keyTerms && keyTerms.length > 0) {
+    return (
+      <Animated.View style={[styles.keyTermsCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
+        <View style={[styles.keyTermsAccent, { backgroundColor: accentColor }]} />
+        <View style={styles.keyTermsHeader}>
+          <View style={[styles.keyTermsIconWrap, { backgroundColor: accentColor + '15' }]}>
+            <Feather name="book" size={18} color={accentColor} />
+          </View>
+          <Text style={[styles.keyTermsTitle, { color: accentColor }]}>Key Terms</Text>
+        </View>
+        {title && <Text style={styles.keyTermsSubtitle}>{title}</Text>}
+        <ScrollView
+          style={{ maxHeight: MAX_CARD_CONTENT_HEIGHT }}
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled
+        >
+          {keyTerms.map((item, idx) => (
+            <View key={idx} style={[styles.termRow, idx < keyTerms.length - 1 && styles.termRowBorder]}>
+              <View style={[styles.termBadge, { backgroundColor: accentColor + '12' }]}>
+                <Text style={[styles.termLabel, { color: accentColor }]}>{item.term}</Text>
+              </View>
+              <Text style={styles.termDefinition}>{item.definition}</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </Animated.View>
+    );
+  }
+
   // ── Callout card (pull-quote style) ─────────────────
   if (type === 'callout') {
     return (
       <Animated.View style={[styles.calloutCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }], borderLeftColor: accentColor }]}>
         <Feather name="info" size={18} color={accentColor} style={{ marginBottom: 8 }} />
-        <RichText text={content} style={styles.calloutText} />
+        <ReadMoreText text={content} style={styles.calloutText} accentColor={accentColor} />
       </Animated.View>
     );
   }
@@ -219,7 +303,7 @@ export function ConceptCard({
           <Text style={[styles.exampleTag, { color: accentColor }]}>Real-World Example</Text>
         </View>
         {title && <Text style={styles.exampleTitle}>{title}</Text>}
-        <RichText text={content} style={styles.exampleText} />
+        <ReadMoreText text={content} style={styles.exampleText} accentColor={accentColor} />
       </Animated.View>
     );
   }
@@ -234,11 +318,17 @@ export function ConceptCard({
             <Text style={[styles.sectionTitle, { color: accentColor }]}>{title}</Text>
           </View>
         )}
-        <View style={styles.bulletList}>
-          {(bullets || []).map((bullet, idx) => (
-            <BulletItem key={idx} text={bullet} index={idx} accentColor={accentColor} />
-          ))}
-        </View>
+        <ScrollView
+          style={{ maxHeight: MAX_CARD_CONTENT_HEIGHT }}
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled
+        >
+          <View style={styles.bulletList}>
+            {(bullets || []).map((bullet, idx) => (
+              <BulletItem key={idx} text={bullet} index={idx} accentColor={accentColor} />
+            ))}
+          </View>
+        </ScrollView>
       </Animated.View>
     );
   }
@@ -277,7 +367,13 @@ export function ConceptCard({
         </View>
       )}
       {title && <View style={styles.sectionDivider} />}
-      <RichText text={content} style={styles.conceptText} />
+      <ScrollView
+        style={{ maxHeight: MAX_CARD_CONTENT_HEIGHT }}
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled
+      >
+        <ReadMoreText text={content} style={styles.conceptText} accentColor={accentColor} />
+      </ScrollView>
     </Animated.View>
   );
 }
@@ -307,16 +403,93 @@ function BulletItem({ text, index, accentColor }: { text: string; index: number;
 
 // ── Smart content classification ────────────────────
 function classifyContent(text: string): 'stat' | 'example' | 'concept' {
-  const lower = text.toLowerCase();
-  // Stats: contains numbers with $ or % or M/B, or phrases like "revenue of", "raised"
   const statPatterns = /(\$[\d,.]+[mbk]?|\d+%|\d+\.\d+x|raised \$|revenue of|market (size|cap)|worth \$|valued at|\d+ (billion|million|trillion))/i;
   if (statPatterns.test(text) && text.length < 250) return 'stat';
 
-  // Examples: mentions company names, "founded", case studies
   const examplePatterns = /(founded \d{4}|for example|case study|such as [A-Z]|like (Lockheed|Boeing|SpaceX|Tesla|Apple|Google|Amazon|Microsoft|Velo3D|Relativity)|Inc\.|Corp\.|Ltd\.)/i;
   if (examplePatterns.test(text)) return 'example';
 
   return 'concept';
+}
+
+// ── Acronym / key-term extraction ───────────────────
+const COMMON_ACRONYMS: Record<string, string> = {
+  OEM: 'Original Equipment Manufacturer — the "Big Boss" companies that assemble and sell the final product.',
+  MRO: 'Maintenance, Repair & Overhaul — the "garage/hospital" that keeps products running safely.',
+  IPO: 'Initial Public Offering — when a company sells shares to the public for the first time.',
+  R&D: 'Research & Development — money and effort spent inventing new things.',
+  ROI: 'Return on Investment — how much profit you get back compared to what you put in.',
+  CAGR: 'Compound Annual Growth Rate — how fast something grows each year, on average.',
+  EBITDA: 'Earnings Before Interest, Taxes, Depreciation & Amortization — a way to measure how profitable a business is.',
+  GDP: 'Gross Domestic Product — the total value of everything a country produces in a year.',
+  B2B: 'Business-to-Business — companies selling to other companies, not regular people.',
+  B2C: 'Business-to-Consumer — companies selling directly to regular people.',
+  SaaS: 'Software as a Service — software you rent monthly instead of buying once.',
+  AI: 'Artificial Intelligence — computer systems that can learn and make decisions.',
+  EV: 'Electric Vehicle — a car or truck powered by batteries instead of gasoline.',
+  ESG: 'Environmental, Social & Governance — a scorecard for how responsibly a company operates.',
+  VC: 'Venture Capital — money invested in early-stage startups with high growth potential.',
+  PE: 'Private Equity — investment firms that buy and improve existing companies.',
+  M&A: 'Mergers & Acquisitions — when companies combine or one buys another.',
+  TAM: 'Total Addressable Market — the maximum possible revenue if you captured every customer.',
+  API: 'Application Programming Interface — a way for software programs to talk to each other.',
+  IoT: 'Internet of Things — everyday objects connected to the internet (smart fridges, sensors, etc.).',
+};
+
+/**
+ * Extracts acronyms found in text and returns key term definitions.
+ */
+function extractKeyTerms(text: string): KeyTerm[] {
+  const found: KeyTerm[] = [];
+  const seen = new Set<string>();
+  // Match uppercase acronyms (2-6 chars) possibly in parentheses
+  const acronymRegex = /\b([A-Z][A-Z&]{1,5})\b/g;
+  let match: RegExpExecArray | null;
+  while ((match = acronymRegex.exec(text)) !== null) {
+    const acr = match[1];
+    if (!seen.has(acr) && COMMON_ACRONYMS[acr]) {
+      seen.add(acr);
+      found.push({ term: acr, definition: COMMON_ACRONYMS[acr] });
+    }
+  }
+  return found;
+}
+
+// ── Story Sequence: break long paragraphs into 3-5 cards ────────────
+function breakIntoStorySequence(
+  text: string,
+  maxChars: number,
+): string[] {
+  if (text.length <= maxChars) return [text];
+
+  const sentences = text.match(/[^.!?]*[.!?]+/g) || [text];
+  const chunks: string[] = [];
+  let current = '';
+
+  for (const sentence of sentences) {
+    const trimmed = sentence.trim();
+    if (!trimmed) continue;
+
+    if (current.length + trimmed.length + 1 > maxChars && current.length > 0) {
+      chunks.push(current.trim());
+      current = trimmed;
+    } else {
+      current += (current ? ' ' : '') + trimmed;
+    }
+  }
+  if (current.trim()) chunks.push(current.trim());
+
+  // Cap at 5 story cards max
+  if (chunks.length > 5) {
+    const merged: string[] = [];
+    const perChunk = Math.ceil(chunks.length / 5);
+    for (let i = 0; i < chunks.length; i += perChunk) {
+      merged.push(chunks.slice(i, i + perChunk).join(' '));
+    }
+    return merged;
+  }
+
+  return chunks;
 }
 
 // ── Parser: slide body → concept cards ──────────────
@@ -325,10 +498,22 @@ export function parseSlideIntoCards(
   body: string,
   sources: Source[],
   _slideIndex: number,
-): { type: ConceptCardType; title?: string; content: string; bullets?: string[]; sources?: Source[] }[] {
-  const cards: { type: ConceptCardType; title?: string; content: string; bullets?: string[]; sources?: Source[] }[] = [];
+): { type: ConceptCardType; title?: string; content: string; bullets?: string[]; sources?: Source[]; keyTerms?: KeyTerm[] }[] {
+  const cards: { type: ConceptCardType; title?: string; content: string; bullets?: string[]; sources?: Source[]; keyTerms?: KeyTerm[] }[] = [];
 
   cards.push({ type: 'header', content: slideTitle });
+
+  // ── Beginner Mode: Extract & inject key terms card ──
+  const fullText = body;
+  const detectedTerms = extractKeyTerms(fullText);
+  if (detectedTerms.length > 0) {
+    cards.push({
+      type: 'key-terms',
+      title: 'Words you\'ll see in this lesson',
+      content: '',
+      keyTerms: detectedTerms,
+    });
+  }
 
   const paragraphs = body.split('\n').filter(p => p.trim());
   let currentBullets: string[] = [];
@@ -336,28 +521,25 @@ export function parseSlideIntoCards(
   let pendingText = '';
   let cardCount = 0;
 
-  const MAX_CARD_CHARS = 450;
+  const MAX_CARD_CHARS = 350; // Lowered for beginner-friendly shorter cards
 
   // Split text at sentence boundaries to avoid mid-sentence cutoff
   const splitAtSentence = (text: string, maxLen: number): [string, string] => {
     if (text.length <= maxLen) return [text, ''];
-    // Find last sentence end before maxLen
     const sentenceEnders = /[.!?]\s/g;
     let lastGoodBreak = -1;
-    let match: RegExpExecArray | null;
-    while ((match = sentenceEnders.exec(text)) !== null) {
-      if (match.index + match[0].length <= maxLen) {
-        lastGoodBreak = match.index + match[0].length;
+    let m: RegExpExecArray | null;
+    while ((m = sentenceEnders.exec(text)) !== null) {
+      if (m.index + m[0].length <= maxLen) {
+        lastGoodBreak = m.index + m[0].length;
       } else {
         break;
       }
     }
-    // If no sentence break found, try breaking at last period
     if (lastGoodBreak === -1) {
       const lastPeriod = text.lastIndexOf('.', maxLen);
       if (lastPeriod > maxLen * 0.3) lastGoodBreak = lastPeriod + 1;
     }
-    // Fallback: break at last space
     if (lastGoodBreak === -1) {
       const lastSpace = text.lastIndexOf(' ', maxLen);
       if (lastSpace > maxLen * 0.3) lastGoodBreak = lastSpace + 1;
@@ -369,31 +551,36 @@ export function parseSlideIntoCards(
   const flushText = () => {
     if (pendingText.trim()) {
       let text = pendingText.trim();
-      
-      // Split into multiple cards at sentence boundaries if too long
-      while (text.length > 0) {
-        const [chunk, remainder] = splitAtSentence(text, MAX_CARD_CHARS);
-        const lower = chunk.toLowerCase();
 
-        const isCallout =
-          (lower.includes('key takeaway') || lower.includes('important:') || lower.includes('note:') || lower.includes('in summary')) &&
-          chunk.length < 300;
+      // Story Sequence: break long paragraphs into multiple digestible cards
+      const storyChunks = breakIntoStorySequence(text, MAX_CARD_CHARS);
 
-        if (isCallout) {
-          cards.push({ type: 'callout', title: currentHeader, content: chunk });
-        } else {
-          const classification = classifyContent(chunk);
-          cards.push({
-            type: classification === 'stat' ? 'key-stat' : classification === 'example' ? 'example' : 'concept',
-            title: currentHeader,
-            content: chunk,
-          });
+      for (const chunk of storyChunks) {
+        let remaining = chunk;
+        while (remaining.length > 0) {
+          const [piece, rest] = splitAtSentence(remaining, MAX_CARD_CHARS);
+          const lower = piece.toLowerCase();
+
+          const isCallout =
+            (lower.includes('key takeaway') || lower.includes('important:') || lower.includes('note:') || lower.includes('in summary')) &&
+            piece.length < 300;
+
+          if (isCallout) {
+            cards.push({ type: 'callout', title: currentHeader, content: piece });
+          } else {
+            const classification = classifyContent(piece);
+            cards.push({
+              type: classification === 'stat' ? 'key-stat' : classification === 'example' ? 'example' : 'concept',
+              title: currentHeader,
+              content: piece,
+            });
+          }
+          currentHeader = undefined;
+          cardCount++;
+          remaining = rest;
         }
-        currentHeader = undefined;
-        cardCount++;
-        text = remainder;
       }
-      
+
       pendingText = '';
     }
   };
@@ -411,9 +598,9 @@ export function parseSlideIntoCards(
   for (const paragraph of paragraphs) {
     const trimmed = paragraph.trim();
     const isBullet = trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*');
-    const isHeader = trimmed.startsWith('##') || (trimmed.startsWith('**') && trimmed.endsWith('**'));
+    const isHeaderLine = trimmed.startsWith('##') || (trimmed.startsWith('**') && trimmed.endsWith('**'));
 
-    if (isHeader) {
+    if (isHeaderLine) {
       flushBullets();
       flushText();
       const cleanHeader = trimmed.replace(/^#{1,3}\s*/, '').replace(/\*\*/g, '');
@@ -445,14 +632,19 @@ export function parseSlideIntoCards(
 
 // ── Styles ──────────────────────────────────────────
 const styles = StyleSheet.create({
+  /* Base card — flex column container with safe padding */
   card: {
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
-    padding: 24,
+    padding: 16,
+    paddingHorizontal: 18,
     borderWidth: 1,
     borderColor: COLORS.border,
+    flexDirection: 'column',
     ...SHADOWS.md,
   },
+
+  /* Header card */
   headerCard: {
     backgroundColor: COLORS.bg1,
     borderRadius: 24,
@@ -490,10 +682,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   headerTitle: {
-    ...TYPE.hero,
+    fontSize: FLUID.heroTitle,
+    fontWeight: '800',
+    letterSpacing: -0.6,
+    lineHeight: FLUID.heroLineHeight,
     color: COLORS.textPrimary,
     textAlign: 'center',
-    lineHeight: 36,
   },
   headerCounterWrap: {
     flexDirection: 'row',
@@ -515,7 +709,76 @@ const styles = StyleSheet.create({
     ...TYPE.overline,
     color: COLORS.textMuted,
   },
-  // Section headers with icons
+
+  /* Key Terms card (Beginner Mode) */
+  keyTermsCard: {
+    backgroundColor: COLORS.bg2,
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    overflow: 'hidden',
+    ...SHADOWS.md,
+  },
+  keyTermsAccent: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 3,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  keyTermsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
+  },
+  keyTermsIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  keyTermsTitle: {
+    fontSize: FLUID.cardTitle,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+  keyTermsSubtitle: {
+    fontSize: FLUID.caption,
+    color: COLORS.textMuted,
+    marginBottom: 14,
+    fontStyle: 'italic',
+  },
+  termRow: {
+    paddingVertical: 12,
+  },
+  termRowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderLight,
+  },
+  termBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginBottom: 6,
+  },
+  termLabel: {
+    fontSize: FLUID.termLabel,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  termDefinition: {
+    fontSize: FLUID.termDef,
+    lineHeight: FLUID.termDefLineHeight,
+    color: COLORS.textSecondary,
+  },
+
+  /* Section headers with icons */
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -523,7 +786,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: {
-    ...TYPE.bodyBold,
+    fontSize: FLUID.cardTitle,
+    fontWeight: '600',
     letterSpacing: 0.3,
   },
   sectionDivider: {
@@ -531,36 +795,53 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.border,
     marginBottom: 16,
   },
-  // Concept text — slightly smaller for readability
+
+  /* Concept text — fluid sizing */
   conceptText: {
-    fontSize: 17,
+    fontSize: FLUID.body,
     color: COLORS.textPrimary,
-    lineHeight: 28,
+    lineHeight: FLUID.bodyLineHeight,
     letterSpacing: 0.15,
   },
   boldHighlight: {
     fontWeight: '700',
     color: COLORS.accent,
   },
-  // Callout card
+
+  /* Read more toggle */
+  readMoreBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 8,
+    paddingVertical: 4,
+  },
+  readMoreText: {
+    fontSize: FLUID.caption,
+    fontWeight: '700',
+  },
+
+  /* Callout card */
   calloutCard: {
     backgroundColor: COLORS.bg2,
     borderRadius: 20,
-    padding: 24,
+    padding: 20,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderLeftWidth: 4,
     justifyContent: 'center',
+    flexDirection: 'column',
     ...SHADOWS.sm,
   },
   calloutText: {
-    fontSize: 16,
+    fontSize: FLUID.body,
     color: COLORS.textPrimary,
-    lineHeight: 26,
+    lineHeight: FLUID.bodyLineHeight,
     fontStyle: 'italic',
     letterSpacing: 0.1,
   },
-  // Key stat card
+
+  /* Key stat card */
   keyStatCard: {
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
@@ -595,19 +876,21 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   keyStatValue: {
-    fontSize: 18,
+    fontSize: FLUID.stat,
     fontWeight: '600',
     color: COLORS.textPrimary,
     textAlign: 'center',
-    lineHeight: 28,
+    lineHeight: FLUID.statLineHeight,
   },
-  // Example card
+
+  /* Example card */
   exampleCard: {
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
-    padding: 24,
+    padding: 20,
     borderWidth: 1,
     borderColor: COLORS.border,
+    flexDirection: 'column',
     ...SHADOWS.md,
   },
   exampleHeader: {
@@ -630,18 +913,19 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   exampleTitle: {
-    ...TYPE.bodyBold,
+    fontSize: FLUID.cardTitle,
+    fontWeight: '700',
     color: COLORS.textPrimary,
     marginBottom: 10,
-    fontSize: 17,
   },
   exampleText: {
-    fontSize: 16,
+    fontSize: FLUID.body,
     color: COLORS.textSecondary,
-    lineHeight: 26,
+    lineHeight: FLUID.bodyLineHeight,
     letterSpacing: 0.1,
   },
-  // Bullets
+
+  /* Bullets */
   bulletList: {
     gap: 14,
   },
@@ -658,12 +942,13 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   bulletText: {
-    fontSize: 16,
+    fontSize: FLUID.bullet,
     color: COLORS.textPrimary,
-    lineHeight: 26,
+    lineHeight: FLUID.bulletLineHeight,
     flex: 1,
   },
-  // Sources card
+
+  /* Sources card */
   sourcesCard: {
     backgroundColor: COLORS.bg2,
     borderRadius: 20,
@@ -693,7 +978,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: COLORS.bg3,
+    backgroundColor: COLORS.bg1,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 12,
