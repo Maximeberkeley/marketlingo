@@ -890,9 +890,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-  /* Concept text — fluid sizing */
+  /* Concept text — fluid sizing, min 16px for mobile readability */
   conceptText: {
-    fontSize: FLUID.body,
+    fontSize: Math.max(16, FLUID.body),
     color: COLORS.textPrimary,
     lineHeight: FLUID.bodyLineHeight,
     letterSpacing: 0.15,
