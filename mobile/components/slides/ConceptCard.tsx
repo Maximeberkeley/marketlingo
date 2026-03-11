@@ -930,7 +930,7 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   calloutText: {
-    fontSize: FLUID.body,
+    fontSize: Math.max(16, FLUID.body),
     color: COLORS.textPrimary,
     lineHeight: FLUID.bodyLineHeight,
     fontStyle: "italic",
