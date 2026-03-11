@@ -1017,6 +1017,8 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: COLORS.textPrimary,
     marginBottom: 10,
+    // @ts-ignore
+    textWrap: "balance",
   },
   exampleText: {
     fontSize: FLUID.body,
