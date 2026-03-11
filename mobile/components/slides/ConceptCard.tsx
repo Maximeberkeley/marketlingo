@@ -590,6 +590,39 @@ const MAX_CARD_CHARS = 350; // Lowered for beginner-friendly shorter cards
     return [text.slice(0, lastGoodBreak).trim(), text.slice(lastGoodBreak).trim()];
   };
 
+  // Auto-split helper: splits text >25 words at sentence boundaries into sequenced cards
+  const autoSplitLongContent = (text: string, titlePrefix?: string) => {
+    const wordCount = text.split(/\s+/).length;
+    if (wordCount <= WORD_SPLIT_THRESHOLD) {
+      return [{ text, seqLabel: undefined }];
+    }
+    // Split at sentence boundaries into chunks of ≤25 words
+    const sentences = text.match(/[^.!?]*[.!?]+/g) || [text];
+    const chunks: string[] = [];
+    let current = "";
+    for (const sentence of sentences) {
+      const trimmed = sentence.trim();
+      if (!trimmed) continue;
+      const currentWords = current.split(/\s+/).filter(Boolean).length;
+      const sentenceWords = trimmed.split(/\s+/).filter(Boolean).length;
+      if (currentWords + sentenceWords > WORD_SPLIT_THRESHOLD && current.length > 0) {
+        chunks.push(current.trim());
+        current = trimmed;
+      } else {
+        current += (current ? " " : "") + trimmed;
+      }
+    }
+    if (current.trim()) chunks.push(current.trim());
+    // Cap at 5
+    const final = chunks.length > 5
+      ? (() => { const m: string[] = []; const p = Math.ceil(chunks.length / 5); for (let i = 0; i < chunks.length; i += p) m.push(chunks.slice(i, i + p).join(" ")); return m; })()
+      : chunks;
+    return final.map((t, i) => ({
+      text: t,
+      seqLabel: final.length > 1 ? `Card ${i + 1} of ${final.length}` : undefined,
+    }));
+  };
+
   const flushText = () => {
     if (pendingText.trim()) {
       let text = pendingText.trim();
@@ -601,27 +634,35 @@ const MAX_CARD_CHARS = 350; // Lowered for beginner-friendly shorter cards
         let remaining = chunk;
         while (remaining.length > 0) {
           const [piece, rest] = splitAtSentence(remaining, MAX_CARD_CHARS);
-          const lower = piece.toLowerCase();
 
-          const isCallout =
-            (lower.includes("key takeaway") ||
-              lower.includes("important:") ||
-              lower.includes("note:") ||
-              lower.includes("in summary")) &&
-            piece.length < 300;
+          // Apply 25-word auto-split
+          const splits = autoSplitLongContent(piece, currentHeader);
+          for (const split of splits) {
+            const lower = split.text.toLowerCase();
+            const isCallout =
+              (lower.includes("key takeaway") ||
+                lower.includes("important:") ||
+                lower.includes("note:") ||
+                lower.includes("in summary")) &&
+              split.text.length < 300;
 
-          if (isCallout) {
-            cards.push({ type: "callout", title: currentHeader, content: piece });
-          } else {
-            const classification = classifyContent(piece);
-            cards.push({
-              type: classification === "stat" ? "key-stat" : classification === "example" ? "example" : "concept",
-              title: currentHeader,
-              content: piece,
-            });
+            const seqTitle = split.seqLabel
+              ? (currentHeader ? `${currentHeader} (${split.seqLabel})` : split.seqLabel)
+              : currentHeader;
+
+            if (isCallout) {
+              cards.push({ type: "callout", title: seqTitle, content: split.text });
+            } else {
+              const classification = classifyContent(split.text);
+              cards.push({
+                type: classification === "stat" ? "key-stat" : classification === "example" ? "example" : "concept",
+                title: seqTitle,
+                content: split.text,
+              });
+            }
+            cardCount++;
           }
           currentHeader = undefined;
-          cardCount++;
           remaining = rest;
         }
       }
