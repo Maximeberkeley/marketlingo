@@ -344,10 +344,11 @@ export default function GamesScreen() {
 
   if (gameComplete) {
     const percentage = Math.round((score / questions.length) * 100);
+    const isGoodScore = percentage >= 80;
     return (
       <View style={[styles.container, styles.centered]}>
         <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="game" />
-        <Image source={require('../assets/illustrations/achievements-hero.png')} style={{ width: 100, height: 100, marginBottom: 8 }} resizeMode="contain" />
+        <ScoreMascot isGoodScore={isGoodScore} />
         <Text style={styles.completeTitle}>Game Complete!</Text>
         <Text style={styles.completeScore}>You scored {score}/{questions.length} ({percentage}%)</Text>
         <Text style={styles.completeFeedback}>
@@ -360,7 +361,6 @@ export default function GamesScreen() {
           <TouchableOpacity
             style={[styles.ctaButton, { flex: 1 }]}
             onPress={() => {
-              // Re-fetch for new questions
               setLoading(true);
               setCurrentQuestion(0);
               setScore(0);
@@ -369,7 +369,6 @@ export default function GamesScreen() {
               setGameComplete(false);
               setShowIntro(true);
               setCombo(createComboState());
-              // Trigger data refetch with new random set
               setFetchKey(k => k + 1);
             }}
           >

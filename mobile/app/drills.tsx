@@ -443,16 +443,11 @@ export default function DrillsScreen() {
   if (drillComplete) {
     const percentage = Math.round((score / questions.length) * 100);
     const hasMoreSets = currentSet < totalSets;
+    const isGoodScore = percentage >= 80;
     return (
       <View style={[styles.container, styles.centered]}>
         <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="drill" />
-        <View style={[styles.completeIcon, {
-          backgroundColor: percentage >= 80 ? 'rgba(34, 197, 94, 0.2)' : percentage >= 60 ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-        }]}>
-          <Text style={[styles.completePercent, {
-            color: percentage >= 80 ? '#22C55E' : percentage >= 60 ? '#F59E0B' : '#EF4444',
-          }]}>{percentage}%</Text>
-        </View>
+        <ScoreMascot isGoodScore={isGoodScore} />
         <Text style={styles.completeTitle}>Set {currentSet} Complete!</Text>
         <Text style={styles.completeScore}>{score}/{questions.length} correct</Text>
         <Text style={styles.completeFeedback}>
