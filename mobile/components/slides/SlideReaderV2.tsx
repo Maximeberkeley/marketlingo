@@ -313,7 +313,7 @@ export function SlideReaderV2({
     }
 
     return items;
-  }, [slides]);
+  }, [slides, marketId]);
 
   const totalCards = allCards.length;
   const progress = totalCards > 0 ? (currentCard + 1) / totalCards : 0;
