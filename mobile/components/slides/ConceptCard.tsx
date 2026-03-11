@@ -434,27 +434,36 @@ function classifyContent(text: string): "stat" | "example" | "concept" {
 
 // ── Acronym / key-term extraction ───────────────────
 const COMMON_ACRONYMS: Record<string, string> = {
-  OEM: 'Original Equipment Manufacturer — the "Big Boss" companies that assemble and sell the final product.',
-  MRO: 'Maintenance, Repair & Overhaul — the "garage/hospital" that keeps products running safely.',
-  IPO: "Initial Public Offering — when a company sells shares to the public for the first time.",
-  "R&D": "Research & Development — money and effort spent inventing new things.",
-  ROI: "Return on Investment — how much profit you get back compared to what you put in.",
-  CAGR: "Compound Annual Growth Rate — how fast something grows each year, on average.",
-  EBITDA:
-    "Earnings Before Interest, Taxes, Depreciation & Amortization — a way to measure how profitable a business is.",
-  GDP: "Gross Domestic Product — the total value of everything a country produces in a year.",
-  B2B: "Business-to-Business — companies selling to other companies, not regular people.",
-  B2C: "Business-to-Consumer — companies selling directly to regular people.",
-  SaaS: "Software as a Service — software you rent monthly instead of buying once.",
-  AI: "Artificial Intelligence — computer systems that can learn and make decisions.",
-  EV: "Electric Vehicle — a car or truck powered by batteries instead of gasoline.",
-  ESG: "Environmental, Social & Governance — a scorecard for how responsibly a company operates.",
-  VC: "Venture Capital — money invested in early-stage startups with high growth potential.",
-  PE: "Private Equity — investment firms that buy and improve existing companies.",
-  "M&A": "Mergers & Acquisitions — when companies combine or one buys another.",
-  TAM: "Total Addressable Market — the maximum possible revenue if you captured every customer.",
-  API: "Application Programming Interface — a way for software programs to talk to each other.",
-  IoT: "Internet of Things — everyday objects connected to the internet (smart fridges, sensors, etc.).",
+  OEM: "The big companies that build and sell the final product (like Boeing builds planes).",
+  MRO: "The repair shops that fix and maintain products so they keep working safely.",
+  IPO: "When a company sells its shares to the public for the first time to raise money.",
+  "R&D": "Money and effort spent inventing new things.",
+  ROI: "How much profit you get back compared to what you put in.",
+  CAGR: "How fast something grows each year, on average.",
+  EBITDA: "A simple way to measure how profitable a business really is.",
+  GDP: "The total value of everything a country makes in a year.",
+  B2B: "Companies selling to other companies, not regular people.",
+  B2C: "Companies selling directly to regular people like you.",
+  SaaS: "Software you rent monthly instead of buying once.",
+  AI: "Computer systems that can learn and make decisions on their own.",
+  EV: "A car or truck powered by batteries instead of gasoline.",
+  ESG: "A scorecard for how responsibly a company treats the planet and people.",
+  VC: "Money invested in brand-new startups that could grow fast.",
+  PE: "Investment firms that buy and improve existing companies.",
+  "M&A": "When companies join together or one buys another.",
+  TAM: "The biggest possible market — if you got every single customer.",
+  API: "A way for different software programs to talk to each other.",
+  IoT: "Everyday objects connected to the internet (smart fridges, sensors, etc.).",
+  SPAC: "A shortcut for a company to start selling shares without the usual long process.",
+  UAM: "Flying taxis and drones used as city transportation.",
+  LEO: "Low Earth Orbit — where most new satellites and space stations go.",
+  GHG: "Greenhouse gases — the pollution that causes climate change.",
+  LCOE: "The real cost of energy when you add up building and running a power plant.",
+  FDA: "The government agency that approves medicines and medical devices in the US.",
+  EHR: "Digital medical records that doctors use instead of paper files.",
+  ADAS: "Smart car features that help you drive safely, like lane assist.",
+  LiDAR: "A laser sensor that helps self-driving cars see the world around them.",
+  ARR: "The yearly revenue a subscription company expects to keep earning.",
 };
 
 /**
@@ -553,7 +562,8 @@ export function parseSlideIntoCards(
   let pendingText = "";
   let cardCount = 0;
 
-  const MAX_CARD_CHARS = 350; // Lowered for beginner-friendly shorter cards
+const MAX_CARD_CHARS = 350; // Lowered for beginner-friendly shorter cards
+    const WORD_SPLIT_THRESHOLD = 25; // Auto-split definitions longer than 25 words
 
   // Split text at sentence boundaries to avoid mid-sentence cutoff
   const splitAtSentence = (text: string, maxLen: number): [string, string] => {
@@ -580,6 +590,39 @@ export function parseSlideIntoCards(
     return [text.slice(0, lastGoodBreak).trim(), text.slice(lastGoodBreak).trim()];
   };
 
+  // Auto-split helper: splits text >25 words at sentence boundaries into sequenced cards
+  const autoSplitLongContent = (text: string, titlePrefix?: string) => {
+    const wordCount = text.split(/\s+/).length;
+    if (wordCount <= WORD_SPLIT_THRESHOLD) {
+      return [{ text, seqLabel: undefined }];
+    }
+    // Split at sentence boundaries into chunks of ≤25 words
+    const sentences = text.match(/[^.!?]*[.!?]+/g) || [text];
+    const chunks: string[] = [];
+    let current = "";
+    for (const sentence of sentences) {
+      const trimmed = sentence.trim();
+      if (!trimmed) continue;
+      const currentWords = current.split(/\s+/).filter(Boolean).length;
+      const sentenceWords = trimmed.split(/\s+/).filter(Boolean).length;
+      if (currentWords + sentenceWords > WORD_SPLIT_THRESHOLD && current.length > 0) {
+        chunks.push(current.trim());
+        current = trimmed;
+      } else {
+        current += (current ? " " : "") + trimmed;
+      }
+    }
+    if (current.trim()) chunks.push(current.trim());
+    // Cap at 5
+    const final = chunks.length > 5
+      ? (() => { const m: string[] = []; const p = Math.ceil(chunks.length / 5); for (let i = 0; i < chunks.length; i += p) m.push(chunks.slice(i, i + p).join(" ")); return m; })()
+      : chunks;
+    return final.map((t, i) => ({
+      text: t,
+      seqLabel: final.length > 1 ? `Card ${i + 1} of ${final.length}` : undefined,
+    }));
+  };
+
   const flushText = () => {
     if (pendingText.trim()) {
       let text = pendingText.trim();
@@ -591,27 +634,35 @@ export function parseSlideIntoCards(
         let remaining = chunk;
         while (remaining.length > 0) {
           const [piece, rest] = splitAtSentence(remaining, MAX_CARD_CHARS);
-          const lower = piece.toLowerCase();
 
-          const isCallout =
-            (lower.includes("key takeaway") ||
-              lower.includes("important:") ||
-              lower.includes("note:") ||
-              lower.includes("in summary")) &&
-            piece.length < 300;
+          // Apply 25-word auto-split
+          const splits = autoSplitLongContent(piece, currentHeader);
+          for (const split of splits) {
+            const lower = split.text.toLowerCase();
+            const isCallout =
+              (lower.includes("key takeaway") ||
+                lower.includes("important:") ||
+                lower.includes("note:") ||
+                lower.includes("in summary")) &&
+              split.text.length < 300;
 
-          if (isCallout) {
-            cards.push({ type: "callout", title: currentHeader, content: piece });
-          } else {
-            const classification = classifyContent(piece);
-            cards.push({
-              type: classification === "stat" ? "key-stat" : classification === "example" ? "example" : "concept",
-              title: currentHeader,
-              content: piece,
-            });
+            const seqTitle = split.seqLabel
+              ? (currentHeader ? `${currentHeader} (${split.seqLabel})` : split.seqLabel)
+              : currentHeader;
+
+            if (isCallout) {
+              cards.push({ type: "callout", title: seqTitle, content: split.text });
+            } else {
+              const classification = classifyContent(split.text);
+              cards.push({
+                type: classification === "stat" ? "key-stat" : classification === "example" ? "example" : "concept",
+                title: seqTitle,
+                content: split.text,
+              });
+            }
+            cardCount++;
           }
           currentHeader = undefined;
-          cardCount++;
           remaining = rest;
         }
       }
@@ -667,15 +718,17 @@ export function parseSlideIntoCards(
 
 // ── Styles ──────────────────────────────────────────
 const styles = StyleSheet.create({
-  /* Base card — flex column container with safe padding */
+  /* Base card — flex column, auto height, safe padding */
   card: {
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
     padding: 16,
     paddingHorizontal: 18,
+    paddingBottom: 48, // pb-12 — clears Next button / home bar
     borderWidth: 1,
     borderColor: COLORS.border,
     flexDirection: "column",
+    minHeight: 300,
     ...SHADOWS.md,
   },
 
@@ -723,6 +776,8 @@ const styles = StyleSheet.create({
     lineHeight: FLUID.heroLineHeight,
     color: COLORS.textPrimary,
     textAlign: "center",
+    // @ts-ignore — React Native supports textWrap on newer engines
+    textWrap: "balance",
   },
   headerCounterWrap: {
     flexDirection: "row",
@@ -750,9 +805,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
     padding: 20,
+    paddingBottom: 48,
     borderWidth: 1,
     borderColor: COLORS.border,
     overflow: "hidden",
+    minHeight: 300,
     ...SHADOWS.md,
   },
   keyTermsAccent: {
@@ -824,6 +881,8 @@ const styles = StyleSheet.create({
     fontSize: FLUID.cardTitle,
     fontWeight: "600",
     letterSpacing: 0.3,
+    // @ts-ignore
+    textWrap: "balance",
   },
   sectionDivider: {
     height: 1,
@@ -831,9 +890,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-  /* Concept text — fluid sizing */
+  /* Concept text — fluid sizing, min 16px for mobile readability */
   conceptText: {
-    fontSize: FLUID.body,
+    fontSize: Math.max(16, FLUID.body),
     color: COLORS.textPrimary,
     lineHeight: FLUID.bodyLineHeight,
     letterSpacing: 0.15,
@@ -861,15 +920,17 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg2,
     borderRadius: 20,
     padding: 20,
+    paddingBottom: 48,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderLeftWidth: 4,
     justifyContent: "center",
     flexDirection: "column",
+    minHeight: 300,
     ...SHADOWS.sm,
   },
   calloutText: {
-    fontSize: FLUID.body,
+    fontSize: Math.max(16, FLUID.body),
     color: COLORS.textPrimary,
     lineHeight: FLUID.bodyLineHeight,
     fontStyle: "italic",
@@ -881,10 +942,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
     padding: 28,
+    paddingBottom: 48,
     borderWidth: 1,
     borderColor: COLORS.border,
     alignItems: "center",
     overflow: "hidden",
+    minHeight: 300,
     ...SHADOWS.md,
   },
   keyStatAccent: {
@@ -923,9 +986,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
     padding: 20,
+    paddingBottom: 48,
     borderWidth: 1,
     borderColor: COLORS.border,
     flexDirection: "column",
+    minHeight: 300,
     ...SHADOWS.md,
   },
   exampleHeader: {
@@ -952,9 +1017,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: COLORS.textPrimary,
     marginBottom: 10,
+    // @ts-ignore
+    textWrap: "balance",
   },
   exampleText: {
-    fontSize: FLUID.body,
+    fontSize: Math.max(16, FLUID.body),
     color: COLORS.textSecondary,
     lineHeight: FLUID.bodyLineHeight,
     letterSpacing: 0.1,
@@ -977,7 +1044,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   bulletText: {
-    fontSize: FLUID.bullet,
+    fontSize: Math.max(16, FLUID.bullet),
     color: COLORS.textPrimary,
     lineHeight: FLUID.bulletLineHeight,
     flex: 1,

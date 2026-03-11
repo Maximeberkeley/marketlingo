@@ -853,9 +853,9 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     flexGrow: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingTop: 12,
-    paddingBottom: 24,
+    paddingBottom: 48, // pb-12 to clear Next button / home bar
   },
   edgeTapLeft: {
     position: 'absolute',
