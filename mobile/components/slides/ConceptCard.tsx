@@ -776,6 +776,8 @@ const styles = StyleSheet.create({
     lineHeight: FLUID.heroLineHeight,
     color: COLORS.textPrimary,
     textAlign: "center",
+    // @ts-ignore — React Native supports textWrap on newer engines
+    textWrap: "balance",
   },
   headerCounterWrap: {
     flexDirection: "row",
