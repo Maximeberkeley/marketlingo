@@ -23,7 +23,39 @@ import { Feather } from '@expo/vector-icons';
 import { useSubscription } from '../hooks/useSubscription';
 import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
 
-interface GameQuestion {
+const LEO_HAPPY = require('../assets/mascot/leo-celebrating.png');
+const LEO_DIZZY = require('../assets/mascot/leo-dizzy.png');
+
+function ScoreMascot({ isGoodScore }: { isGoodScore: boolean }) {
+  const wobble = useRef(new RNAnimated.Value(0)).current;
+  const scaleAnim = useRef(new RNAnimated.Value(0.5)).current;
+
+  useEffect(() => {
+    RNAnimated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 80, useNativeDriver: true }).start();
+    if (!isGoodScore) {
+      RNAnimated.loop(
+        RNAnimated.sequence([
+          RNAnimated.timing(wobble, { toValue: 1, duration: 300, useNativeDriver: true }),
+          RNAnimated.timing(wobble, { toValue: -1, duration: 300, useNativeDriver: true }),
+          RNAnimated.timing(wobble, { toValue: 0.5, duration: 200, useNativeDriver: true }),
+          RNAnimated.timing(wobble, { toValue: -0.5, duration: 200, useNativeDriver: true }),
+          RNAnimated.timing(wobble, { toValue: 0, duration: 150, useNativeDriver: true }),
+          RNAnimated.delay(1500),
+        ])
+      ).start();
+    }
+  }, [isGoodScore]);
+
+  const rotate = wobble.interpolate({ inputRange: [-1, 0, 1], outputRange: ['-8deg', '0deg', '8deg'] });
+
+  return (
+    <RNAnimated.View style={{ transform: [{ scale: scaleAnim }, { rotate }], marginBottom: 12, alignItems: 'center' }}>
+      <Image source={isGoodScore ? LEO_HAPPY : LEO_DIZZY} style={{ width: 120, height: 120 }} resizeMode="contain" />
+    </RNAnimated.View>
+  );
+}
+
+
   id: string;
   type: 'match' | 'timeline' | 'predict';
   question: string;
