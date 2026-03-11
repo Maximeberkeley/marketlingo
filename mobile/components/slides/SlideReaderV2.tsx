@@ -81,6 +81,7 @@ type CardItem = {
   content: string;
   bullets?: string[];
   sources?: Source[];
+  keyTerms?: { term: string; definition: string }[];
   slideIndex: number;
 } | {
   type: 'leo';
@@ -179,6 +180,7 @@ export function SlideReaderV2({
           content: card.content,
           bullets: card.bullets,
           sources: card.sources,
+          keyTerms: card.keyTerms,
           slideIndex: slideIdx,
         });
       });
@@ -463,6 +465,7 @@ export function SlideReaderV2({
         content={currentCardData.content}
         bullets={currentCardData.bullets}
         sources={currentCardData.sources}
+        keyTerms={currentCardData.keyTerms}
         cardIndex={currentCard}
         totalCards={totalCards}
         accentColor={accentColor}
