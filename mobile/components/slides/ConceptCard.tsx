@@ -1,15 +1,33 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableOpacity, Linking, Image, ScrollView, Dimensions } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { COLORS, TYPE, SHADOWS } from '../../lib/constants';
-import { FLUID, fluidFont, fluidLineHeight } from '../../lib/fluidType';
+import React, { useEffect, useRef, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  TouchableOpacity,
+  Linking,
+  Image,
+  ScrollView,
+  Dimensions,
+} from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { COLORS, TYPE, SHADOWS } from "../../lib/constants";
+import { FLUID, fluidFont, fluidLineHeight } from "../../lib/fluidType";
 
 interface Source {
   label: string;
   url: string;
 }
 
-export type ConceptCardType = 'concept' | 'header' | 'bullet-group' | 'sources' | 'callout' | 'key-stat' | 'example' | 'key-terms';
+export type ConceptCardType =
+  | "concept"
+  | "header"
+  | "bullet-group"
+  | "sources"
+  | "callout"
+  | "key-stat"
+  | "example"
+  | "key-terms";
 
 interface KeyTerm {
   term: string;
@@ -28,81 +46,81 @@ interface ConceptCardProps {
   accentColor?: string;
 }
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const MAX_CARD_CONTENT_HEIGHT = SCREEN_HEIGHT * 0.55; // Safe area for scrollable content
 
 // ── Topic icon mapping ──────────────────────────────────────────────
 const TOPIC_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
-  market: 'trending-up',
-  revenue: 'dollar-sign',
-  growth: 'bar-chart-2',
-  risk: 'alert-triangle',
-  invest: 'pie-chart',
-  valuation: 'activity',
-  regulation: 'shield',
-  technology: 'cpu',
-  innovation: 'zap',
-  strategy: 'target',
-  competition: 'users',
-  finance: 'credit-card',
-  capital: 'briefcase',
-  profit: 'trending-up',
-  disruption: 'shuffle',
-  supply: 'truck',
-  demand: 'shopping-cart',
-  policy: 'book',
-  data: 'database',
-  ai: 'cpu',
-  energy: 'battery-charging',
-  climate: 'cloud',
-  health: 'heart',
-  security: 'lock',
-  global: 'globe',
+  market: "trending-up",
+  revenue: "dollar-sign",
+  growth: "bar-chart-2",
+  risk: "alert-triangle",
+  invest: "pie-chart",
+  valuation: "activity",
+  regulation: "shield",
+  technology: "cpu",
+  innovation: "zap",
+  strategy: "target",
+  competition: "users",
+  finance: "credit-card",
+  capital: "briefcase",
+  profit: "trending-up",
+  disruption: "shuffle",
+  supply: "truck",
+  demand: "shopping-cart",
+  policy: "book",
+  data: "database",
+  ai: "cpu",
+  energy: "battery-charging",
+  climate: "cloud",
+  health: "heart",
+  security: "lock",
+  global: "globe",
 };
 
 // ── Topic illustration mapping ──────────────────────────────────────
 const TOPIC_ILLUSTRATIONS: Record<string, any> = {
-  market: require('../../assets/illustrations/topic-market.png'),
-  revenue: require('../../assets/illustrations/topic-finance.png'),
-  growth: require('../../assets/illustrations/topic-growth.png'),
-  invest: require('../../assets/illustrations/topic-market.png'),
-  valuation: require('../../assets/illustrations/topic-finance.png'),
-  regulation: require('../../assets/illustrations/topic-security.png'),
-  technology: require('../../assets/illustrations/topic-technology.png'),
-  innovation: require('../../assets/illustrations/topic-innovation.png'),
-  strategy: require('../../assets/illustrations/topic-strategy.png'),
-  finance: require('../../assets/illustrations/topic-finance.png'),
-  capital: require('../../assets/illustrations/topic-finance.png'),
-  profit: require('../../assets/illustrations/topic-market.png'),
-  supply: require('../../assets/illustrations/topic-global.png'),
-  demand: require('../../assets/illustrations/topic-market.png'),
-  data: require('../../assets/illustrations/topic-technology.png'),
-  ai: require('../../assets/illustrations/topic-technology.png'),
-  energy: require('../../assets/illustrations/topic-growth.png'),
-  climate: require('../../assets/illustrations/topic-global.png'),
-  health: require('../../assets/illustrations/topic-growth.png'),
-  security: require('../../assets/illustrations/topic-security.png'),
-  global: require('../../assets/illustrations/topic-global.png'),
-  risk: require('../../assets/illustrations/topic-security.png'),
-  competition: require('../../assets/illustrations/topic-strategy.png'),
-  disruption: require('../../assets/illustrations/topic-innovation.png'),
-  policy: require('../../assets/illustrations/topic-security.png'),
+  market: require("../../assets/illustrations/topic-market.png"),
+  revenue: require("../../assets/illustrations/topic-finance.png"),
+  growth: require("../../assets/illustrations/topic-growth.png"),
+  invest: require("../../assets/illustrations/topic-market.png"),
+  valuation: require("../../assets/illustrations/topic-finance.png"),
+  regulation: require("../../assets/illustrations/topic-security.png"),
+  technology: require("../../assets/illustrations/topic-technology.png"),
+  innovation: require("../../assets/illustrations/topic-innovation.png"),
+  strategy: require("../../assets/illustrations/topic-strategy.png"),
+  finance: require("../../assets/illustrations/topic-finance.png"),
+  capital: require("../../assets/illustrations/topic-finance.png"),
+  profit: require("../../assets/illustrations/topic-market.png"),
+  supply: require("../../assets/illustrations/topic-global.png"),
+  demand: require("../../assets/illustrations/topic-market.png"),
+  data: require("../../assets/illustrations/topic-technology.png"),
+  ai: require("../../assets/illustrations/topic-technology.png"),
+  energy: require("../../assets/illustrations/topic-growth.png"),
+  climate: require("../../assets/illustrations/topic-global.png"),
+  health: require("../../assets/illustrations/topic-growth.png"),
+  security: require("../../assets/illustrations/topic-security.png"),
+  global: require("../../assets/illustrations/topic-global.png"),
+  risk: require("../../assets/illustrations/topic-security.png"),
+  competition: require("../../assets/illustrations/topic-strategy.png"),
+  disruption: require("../../assets/illustrations/topic-innovation.png"),
+  policy: require("../../assets/illustrations/topic-security.png"),
 };
 
 function getTopicIllustration(text: string): any | null {
-  const lower = (text || '').toLowerCase();
+  const lower = (text || "").toLowerCase();
   for (const [keyword, img] of Object.entries(TOPIC_ILLUSTRATIONS)) {
     if (lower.includes(keyword)) return img;
   }
-  return require('../../assets/illustrations/topic-innovation.png');
+  return require("../../assets/illustrations/topic-innovation.png");
 }
 
 function getTopicIcon(text: string): keyof typeof Feather.glyphMap {
-  const lower = (text || '').toLowerCase();
+  const lower = (text || "").toLowerCase();
   for (const [keyword, icon] of Object.entries(TOPIC_ICONS)) {
     if (lower.includes(keyword)) return icon;
   }
-  return 'book-open';
+  return "book-open";
 }
 
 // ── Rich text renderer with keyword highlights ──────────────────────
@@ -118,20 +136,20 @@ function RichText({ text, style }: { text: string; style?: any }) {
       parts.push(
         <Text key={key++} style={style}>
           {text.slice(lastIndex, match.index)}
-        </Text>
+        </Text>,
       );
     }
     if (match[2]) {
       parts.push(
         <Text key={key++} style={[style, styles.boldHighlight]}>
           {match[2]}
-        </Text>
+        </Text>,
       );
     } else if (match[3]) {
       parts.push(
-        <Text key={key++} style={[style, { fontStyle: 'italic' }]}>
+        <Text key={key++} style={[style, { fontStyle: "italic" }]}>
           {match[3]}
-        </Text>
+        </Text>,
       );
     }
     lastIndex = regex.lastIndex;
@@ -140,7 +158,7 @@ function RichText({ text, style }: { text: string; style?: any }) {
     parts.push(
       <Text key={key++} style={style}>
         {text.slice(lastIndex)}
-      </Text>
+      </Text>,
     );
   }
 
@@ -148,7 +166,12 @@ function RichText({ text, style }: { text: string; style?: any }) {
 }
 
 // ── Read More toggle for long text ──────────────────────────────────
-function ReadMoreText({ text, style, maxLines = 8, accentColor = COLORS.accent }: {
+function ReadMoreText({
+  text,
+  style,
+  maxLines = 8,
+  accentColor = COLORS.accent,
+}: {
   text: string;
   style?: any;
   maxLines?: number;
@@ -176,14 +199,8 @@ function ReadMoreText({ text, style, maxLines = 8, accentColor = COLORS.accent }
           style={styles.readMoreBtn}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Text style={[styles.readMoreText, { color: accentColor }]}>
-            {expanded ? 'Show less' : 'Read more'}
-          </Text>
-          <Feather
-            name={expanded ? 'chevron-up' : 'chevron-down'}
-            size={14}
-            color={accentColor}
-          />
+          <Text style={[styles.readMoreText, { color: accentColor }]}>{expanded ? "Show less" : "Read more"}</Text>
+          <Feather name={expanded ? "chevron-up" : "chevron-down"} size={14} color={accentColor} />
         </TouchableOpacity>
       )}
     </View>
@@ -215,21 +232,19 @@ export function ConceptCard({
   }, []);
 
   // ── Header card ─────────────────────────────────────
-  if (type === 'header') {
+  if (type === "header") {
     const icon = getTopicIcon(title || content);
     const illustration = getTopicIllustration(title || content);
     return (
       <Animated.View style={[styles.headerCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
         <View style={[styles.headerAccent, { backgroundColor: accentColor }]} />
-        {illustration && (
-          <Image source={illustration} style={styles.headerIllustration} />
-        )}
-        <View style={[styles.headerIconWrap, { backgroundColor: accentColor + '18' }]}>
+        {illustration && <Image source={illustration} style={styles.headerIllustration} />}
+        <View style={[styles.headerIconWrap, { backgroundColor: accentColor + "18" }]}>
           <Feather name={icon} size={28} color={accentColor} />
         </View>
         <Text style={styles.headerTitle}>{title || content}</Text>
         <View style={styles.headerCounterWrap}>
-          <View style={[styles.counterPill, { backgroundColor: accentColor + '15' }]}>
+          <View style={[styles.counterPill, { backgroundColor: accentColor + "15" }]}>
             <Text style={[styles.headerCounter, { color: accentColor }]}>{cardIndex + 1}</Text>
             <Text style={styles.headerCounterOf}> / {totalCards}</Text>
           </View>
@@ -239,12 +254,14 @@ export function ConceptCard({
   }
 
   // ── Key Terms card (Beginner Mode) ──────────────────
-  if (type === 'key-terms' && keyTerms && keyTerms.length > 0) {
+  if (type === "key-terms" && keyTerms && keyTerms.length > 0) {
     return (
-      <Animated.View style={[styles.keyTermsCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
+      <Animated.View
+        style={[styles.keyTermsCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}
+      >
         <View style={[styles.keyTermsAccent, { backgroundColor: accentColor }]} />
         <View style={styles.keyTermsHeader}>
-          <View style={[styles.keyTermsIconWrap, { backgroundColor: accentColor + '15' }]}>
+          <View style={[styles.keyTermsIconWrap, { backgroundColor: accentColor + "15" }]}>
             <Feather name="book" size={18} color={accentColor} />
           </View>
           <Text style={[styles.keyTermsTitle, { color: accentColor }]}>Key Terms</Text>
@@ -257,7 +274,7 @@ export function ConceptCard({
         >
           {keyTerms.map((item, idx) => (
             <View key={idx} style={[styles.termRow, idx < keyTerms.length - 1 && styles.termRowBorder]}>
-              <View style={[styles.termBadge, { backgroundColor: accentColor + '12' }]}>
+              <View style={[styles.termBadge, { backgroundColor: accentColor + "12" }]}>
                 <Text style={[styles.termLabel, { color: accentColor }]}>{item.term}</Text>
               </View>
               <Text style={styles.termDefinition}>{item.definition}</Text>
@@ -269,9 +286,14 @@ export function ConceptCard({
   }
 
   // ── Callout card (pull-quote style) ─────────────────
-  if (type === 'callout') {
+  if (type === "callout") {
     return (
-      <Animated.View style={[styles.calloutCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }], borderLeftColor: accentColor }]}>
+      <Animated.View
+        style={[
+          styles.calloutCard,
+          { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }], borderLeftColor: accentColor },
+        ]}
+      >
         <Feather name="info" size={18} color={accentColor} style={{ marginBottom: 8 }} />
         <ReadMoreText text={content} style={styles.calloutText} accentColor={accentColor} />
       </Animated.View>
@@ -279,11 +301,11 @@ export function ConceptCard({
   }
 
   // ── Key stat card ───────────────────────────────────
-  if (type === 'key-stat') {
+  if (type === "key-stat") {
     return (
       <Animated.View style={[styles.keyStatCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
         <View style={[styles.keyStatAccent, { backgroundColor: accentColor }]} />
-        <View style={[styles.keyStatIconWrap, { backgroundColor: accentColor + '12' }]}>
+        <View style={[styles.keyStatIconWrap, { backgroundColor: accentColor + "12" }]}>
           <Feather name="bar-chart-2" size={20} color={accentColor} />
         </View>
         {title && <Text style={[styles.keyStatLabel, { color: accentColor }]}>{title}</Text>}
@@ -293,11 +315,11 @@ export function ConceptCard({
   }
 
   // ── Example card (real-world case) ──────────────────
-  if (type === 'example') {
+  if (type === "example") {
     return (
       <Animated.View style={[styles.exampleCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
         <View style={styles.exampleHeader}>
-          <View style={[styles.exampleIconWrap, { backgroundColor: accentColor + '12' }]}>
+          <View style={[styles.exampleIconWrap, { backgroundColor: accentColor + "12" }]}>
             <Feather name="briefcase" size={16} color={accentColor} />
           </View>
           <Text style={[styles.exampleTag, { color: accentColor }]}>Real-World Example</Text>
@@ -309,7 +331,7 @@ export function ConceptCard({
   }
 
   // ── Bullet group card ───────────────────────────────
-  if (type === 'bullet-group') {
+  if (type === "bullet-group") {
     return (
       <Animated.View style={[styles.card, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
         {title && (
@@ -334,7 +356,7 @@ export function ConceptCard({
   }
 
   // ── Sources card ────────────────────────────────────
-  if (type === 'sources') {
+  if (type === "sources") {
     return (
       <Animated.View style={[styles.sourcesCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
         <View style={styles.sourcesHeader}>
@@ -343,11 +365,7 @@ export function ConceptCard({
         </View>
         <View style={styles.sourcesRow}>
           {(sources || []).map((source, idx) => (
-            <TouchableOpacity
-              key={idx}
-              style={styles.sourceChip}
-              onPress={() => Linking.openURL(source.url)}
-            >
+            <TouchableOpacity key={idx} style={styles.sourceChip} onPress={() => Linking.openURL(source.url)}>
               <Text style={styles.sourceText}>{source.label}</Text>
               <Feather name="external-link" size={10} color={COLORS.textMuted} />
             </TouchableOpacity>
@@ -402,38 +420,41 @@ function BulletItem({ text, index, accentColor }: { text: string; index: number;
 }
 
 // ── Smart content classification ────────────────────
-function classifyContent(text: string): 'stat' | 'example' | 'concept' {
-  const statPatterns = /(\$[\d,.]+[mbk]?|\d+%|\d+\.\d+x|raised \$|revenue of|market (size|cap)|worth \$|valued at|\d+ (billion|million|trillion))/i;
-  if (statPatterns.test(text) && text.length < 250) return 'stat';
+function classifyContent(text: string): "stat" | "example" | "concept" {
+  const statPatterns =
+    /(\$[\d,.]+[mbk]?|\d+%|\d+\.\d+x|raised \$|revenue of|market (size|cap)|worth \$|valued at|\d+ (billion|million|trillion))/i;
+  if (statPatterns.test(text) && text.length < 250) return "stat";
 
-  const examplePatterns = /(founded \d{4}|for example|case study|such as [A-Z]|like (Lockheed|Boeing|SpaceX|Tesla|Apple|Google|Amazon|Microsoft|Velo3D|Relativity)|Inc\.|Corp\.|Ltd\.)/i;
-  if (examplePatterns.test(text)) return 'example';
+  const examplePatterns =
+    /(founded \d{4}|for example|case study|such as [A-Z]|like (Lockheed|Boeing|SpaceX|Tesla|Apple|Google|Amazon|Microsoft|Velo3D|Relativity)|Inc\.|Corp\.|Ltd\.)/i;
+  if (examplePatterns.test(text)) return "example";
 
-  return 'concept';
+  return "concept";
 }
 
 // ── Acronym / key-term extraction ───────────────────
 const COMMON_ACRONYMS: Record<string, string> = {
   OEM: 'Original Equipment Manufacturer — the "Big Boss" companies that assemble and sell the final product.',
   MRO: 'Maintenance, Repair & Overhaul — the "garage/hospital" that keeps products running safely.',
-  IPO: 'Initial Public Offering — when a company sells shares to the public for the first time.',
-  'R&D': 'Research & Development — money and effort spent inventing new things.',
-  ROI: 'Return on Investment — how much profit you get back compared to what you put in.',
-  CAGR: 'Compound Annual Growth Rate — how fast something grows each year, on average.',
-  EBITDA: 'Earnings Before Interest, Taxes, Depreciation & Amortization — a way to measure how profitable a business is.',
-  GDP: 'Gross Domestic Product — the total value of everything a country produces in a year.',
-  B2B: 'Business-to-Business — companies selling to other companies, not regular people.',
-  B2C: 'Business-to-Consumer — companies selling directly to regular people.',
-  SaaS: 'Software as a Service — software you rent monthly instead of buying once.',
-  AI: 'Artificial Intelligence — computer systems that can learn and make decisions.',
-  EV: 'Electric Vehicle — a car or truck powered by batteries instead of gasoline.',
-  ESG: 'Environmental, Social & Governance — a scorecard for how responsibly a company operates.',
-  VC: 'Venture Capital — money invested in early-stage startups with high growth potential.',
-  PE: 'Private Equity — investment firms that buy and improve existing companies.',
-  M&A: 'Mergers & Acquisitions — when companies combine or one buys another.',
-  TAM: 'Total Addressable Market — the maximum possible revenue if you captured every customer.',
-  API: 'Application Programming Interface — a way for software programs to talk to each other.',
-  IoT: 'Internet of Things — everyday objects connected to the internet (smart fridges, sensors, etc.).',
+  IPO: "Initial Public Offering — when a company sells shares to the public for the first time.",
+  "R&D": "Research & Development — money and effort spent inventing new things.",
+  ROI: "Return on Investment — how much profit you get back compared to what you put in.",
+  CAGR: "Compound Annual Growth Rate — how fast something grows each year, on average.",
+  EBITDA:
+    "Earnings Before Interest, Taxes, Depreciation & Amortization — a way to measure how profitable a business is.",
+  GDP: "Gross Domestic Product — the total value of everything a country produces in a year.",
+  B2B: "Business-to-Business — companies selling to other companies, not regular people.",
+  B2C: "Business-to-Consumer — companies selling directly to regular people.",
+  SaaS: "Software as a Service — software you rent monthly instead of buying once.",
+  AI: "Artificial Intelligence — computer systems that can learn and make decisions.",
+  EV: "Electric Vehicle — a car or truck powered by batteries instead of gasoline.",
+  ESG: "Environmental, Social & Governance — a scorecard for how responsibly a company operates.",
+  VC: "Venture Capital — money invested in early-stage startups with high growth potential.",
+  PE: "Private Equity — investment firms that buy and improve existing companies.",
+  "M&A": "Mergers & Acquisitions — when companies combine or one buys another.",
+  TAM: "Total Addressable Market — the maximum possible revenue if you captured every customer.",
+  API: "Application Programming Interface — a way for software programs to talk to each other.",
+  IoT: "Internet of Things — everyday objects connected to the internet (smart fridges, sensors, etc.).",
 };
 
 /**
@@ -456,15 +477,12 @@ function extractKeyTerms(text: string): KeyTerm[] {
 }
 
 // ── Story Sequence: break long paragraphs into 3-5 cards ────────────
-function breakIntoStorySequence(
-  text: string,
-  maxChars: number,
-): string[] {
+function breakIntoStorySequence(text: string, maxChars: number): string[] {
   if (text.length <= maxChars) return [text];
 
   const sentences = text.match(/[^.!?]*[.!?]+/g) || [text];
   const chunks: string[] = [];
-  let current = '';
+  let current = "";
 
   for (const sentence of sentences) {
     const trimmed = sentence.trim();
@@ -474,7 +492,7 @@ function breakIntoStorySequence(
       chunks.push(current.trim());
       current = trimmed;
     } else {
-      current += (current ? ' ' : '') + trimmed;
+      current += (current ? " " : "") + trimmed;
     }
   }
   if (current.trim()) chunks.push(current.trim());
@@ -484,7 +502,7 @@ function breakIntoStorySequence(
     const merged: string[] = [];
     const perChunk = Math.ceil(chunks.length / 5);
     for (let i = 0; i < chunks.length; i += perChunk) {
-      merged.push(chunks.slice(i, i + perChunk).join(' '));
+      merged.push(chunks.slice(i, i + perChunk).join(" "));
     }
     return merged;
   }
@@ -498,34 +516,48 @@ export function parseSlideIntoCards(
   body: string,
   sources: Source[],
   _slideIndex: number,
-): { type: ConceptCardType; title?: string; content: string; bullets?: string[]; sources?: Source[]; keyTerms?: KeyTerm[] }[] {
-  const cards: { type: ConceptCardType; title?: string; content: string; bullets?: string[]; sources?: Source[]; keyTerms?: KeyTerm[] }[] = [];
+): {
+  type: ConceptCardType;
+  title?: string;
+  content: string;
+  bullets?: string[];
+  sources?: Source[];
+  keyTerms?: KeyTerm[];
+}[] {
+  const cards: {
+    type: ConceptCardType;
+    title?: string;
+    content: string;
+    bullets?: string[];
+    sources?: Source[];
+    keyTerms?: KeyTerm[];
+  }[] = [];
 
-  cards.push({ type: 'header', content: slideTitle });
+  cards.push({ type: "header", content: slideTitle });
 
   // ── Beginner Mode: Extract & inject key terms card ──
   const fullText = body;
   const detectedTerms = extractKeyTerms(fullText);
   if (detectedTerms.length > 0) {
     cards.push({
-      type: 'key-terms',
-      title: 'Words you\'ll see in this lesson',
-      content: '',
+      type: "key-terms",
+      title: "Words you'll see in this lesson",
+      content: "",
       keyTerms: detectedTerms,
     });
   }
 
-  const paragraphs = body.split('\n').filter(p => p.trim());
+  const paragraphs = body.split("\n").filter((p) => p.trim());
   let currentBullets: string[] = [];
   let currentHeader: string | undefined;
-  let pendingText = '';
+  let pendingText = "";
   let cardCount = 0;
 
   const MAX_CARD_CHARS = 350; // Lowered for beginner-friendly shorter cards
 
   // Split text at sentence boundaries to avoid mid-sentence cutoff
   const splitAtSentence = (text: string, maxLen: number): [string, string] => {
-    if (text.length <= maxLen) return [text, ''];
+    if (text.length <= maxLen) return [text, ""];
     const sentenceEnders = /[.!?]\s/g;
     let lastGoodBreak = -1;
     let m: RegExpExecArray | null;
@@ -537,11 +569,11 @@ export function parseSlideIntoCards(
       }
     }
     if (lastGoodBreak === -1) {
-      const lastPeriod = text.lastIndexOf('.', maxLen);
+      const lastPeriod = text.lastIndexOf(".", maxLen);
       if (lastPeriod > maxLen * 0.3) lastGoodBreak = lastPeriod + 1;
     }
     if (lastGoodBreak === -1) {
-      const lastSpace = text.lastIndexOf(' ', maxLen);
+      const lastSpace = text.lastIndexOf(" ", maxLen);
       if (lastSpace > maxLen * 0.3) lastGoodBreak = lastSpace + 1;
       else lastGoodBreak = maxLen;
     }
@@ -562,15 +594,18 @@ export function parseSlideIntoCards(
           const lower = piece.toLowerCase();
 
           const isCallout =
-            (lower.includes('key takeaway') || lower.includes('important:') || lower.includes('note:') || lower.includes('in summary')) &&
+            (lower.includes("key takeaway") ||
+              lower.includes("important:") ||
+              lower.includes("note:") ||
+              lower.includes("in summary")) &&
             piece.length < 300;
 
           if (isCallout) {
-            cards.push({ type: 'callout', title: currentHeader, content: piece });
+            cards.push({ type: "callout", title: currentHeader, content: piece });
           } else {
             const classification = classifyContent(piece);
             cards.push({
-              type: classification === 'stat' ? 'key-stat' : classification === 'example' ? 'example' : 'concept',
+              type: classification === "stat" ? "key-stat" : classification === "example" ? "example" : "concept",
               title: currentHeader,
               content: piece,
             });
@@ -581,14 +616,14 @@ export function parseSlideIntoCards(
         }
       }
 
-      pendingText = '';
+      pendingText = "";
     }
   };
 
   const flushBullets = () => {
     if (currentBullets.length > 0) {
       flushText();
-      cards.push({ type: 'bullet-group', title: currentHeader, content: '', bullets: [...currentBullets] });
+      cards.push({ type: "bullet-group", title: currentHeader, content: "", bullets: [...currentBullets] });
       currentBullets = [];
       currentHeader = undefined;
       cardCount++;
@@ -597,34 +632,34 @@ export function parseSlideIntoCards(
 
   for (const paragraph of paragraphs) {
     const trimmed = paragraph.trim();
-    const isBullet = trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*');
-    const isHeaderLine = trimmed.startsWith('##') || (trimmed.startsWith('**') && trimmed.endsWith('**'));
+    const isBullet = trimmed.startsWith("•") || trimmed.startsWith("-") || trimmed.startsWith("*");
+    const isHeaderLine = trimmed.startsWith("##") || (trimmed.startsWith("**") && trimmed.endsWith("**"));
 
     if (isHeaderLine) {
       flushBullets();
       flushText();
-      const cleanHeader = trimmed.replace(/^#{1,3}\s*/, '').replace(/\*\*/g, '');
+      const cleanHeader = trimmed.replace(/^#{1,3}\s*/, "").replace(/\*\*/g, "");
       currentHeader = cleanHeader;
       continue;
     }
 
     if (isBullet) {
       flushText();
-      const cleanBullet = trimmed.replace(/^[•\-*]\s*/, '');
+      const cleanBullet = trimmed.replace(/^[•\-*]\s*/, "");
       currentBullets.push(cleanBullet);
       if (currentBullets.length >= 4) flushBullets();
       continue;
     }
 
     flushBullets();
-    pendingText += (pendingText ? '\n\n' : '') + trimmed;
+    pendingText += (pendingText ? "\n\n" : "") + trimmed;
   }
 
   flushBullets();
   flushText();
 
   if (sources && sources.length > 0) {
-    cards.push({ type: 'sources', content: '', sources });
+    cards.push({ type: "sources", content: "", sources });
   }
 
   return cards;
@@ -640,7 +675,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     borderWidth: 1,
     borderColor: COLORS.border,
-    flexDirection: 'column',
+    flexDirection: "column",
     ...SHADOWS.md,
   },
 
@@ -651,21 +686,21 @@ const styles = StyleSheet.create({
     padding: 32,
     borderWidth: 1,
     borderColor: COLORS.border,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     minHeight: 280,
-    overflow: 'hidden',
+    overflow: "hidden",
     ...SHADOWS.md,
   },
   headerIllustration: {
     width: 80,
     height: 80,
-    resizeMode: 'contain',
+    resizeMode: "contain",
     marginBottom: 12,
     opacity: 0.85,
   },
   headerAccent: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
@@ -677,33 +712,33 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 16,
   },
   headerTitle: {
     fontSize: FLUID.heroTitle,
-    fontWeight: '800',
+    fontWeight: "800",
     letterSpacing: -0.6,
     lineHeight: FLUID.heroLineHeight,
     color: COLORS.textPrimary,
-    textAlign: 'center',
+    textAlign: "center",
   },
   headerCounterWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 16,
   },
   counterPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
   },
   headerCounter: {
     ...TYPE.overline,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   headerCounterOf: {
     ...TYPE.overline,
@@ -717,11 +752,11 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: COLORS.border,
-    overflow: 'hidden',
+    overflow: "hidden",
     ...SHADOWS.md,
   },
   keyTermsAccent: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
@@ -730,8 +765,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
   },
   keyTermsHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     marginBottom: 8,
   },
@@ -739,19 +774,19 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   keyTermsTitle: {
     fontSize: FLUID.cardTitle,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 0.3,
   },
   keyTermsSubtitle: {
     fontSize: FLUID.caption,
     color: COLORS.textMuted,
     marginBottom: 14,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   termRow: {
     paddingVertical: 12,
@@ -761,7 +796,7 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.borderLight,
   },
   termBadge: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
@@ -769,7 +804,7 @@ const styles = StyleSheet.create({
   },
   termLabel: {
     fontSize: FLUID.termLabel,
-    fontWeight: '800',
+    fontWeight: "800",
     letterSpacing: 0.5,
   },
   termDefinition: {
@@ -780,14 +815,14 @@ const styles = StyleSheet.create({
 
   /* Section headers with icons */
   sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 12,
   },
   sectionTitle: {
     fontSize: FLUID.cardTitle,
-    fontWeight: '600',
+    fontWeight: "600",
     letterSpacing: 0.3,
   },
   sectionDivider: {
@@ -804,21 +839,21 @@ const styles = StyleSheet.create({
     letterSpacing: 0.15,
   },
   boldHighlight: {
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.accent,
   },
 
   /* Read more toggle */
   readMoreBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
     marginTop: 8,
     paddingVertical: 4,
   },
   readMoreText: {
     fontSize: FLUID.caption,
-    fontWeight: '700',
+    fontWeight: "700",
   },
 
   /* Callout card */
@@ -829,15 +864,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     borderLeftWidth: 4,
-    justifyContent: 'center',
-    flexDirection: 'column',
+    justifyContent: "center",
+    flexDirection: "column",
     ...SHADOWS.sm,
   },
   calloutText: {
     fontSize: FLUID.body,
     color: COLORS.textPrimary,
     lineHeight: FLUID.bodyLineHeight,
-    fontStyle: 'italic',
+    fontStyle: "italic",
     letterSpacing: 0.1,
   },
 
@@ -848,12 +883,12 @@ const styles = StyleSheet.create({
     padding: 28,
     borderWidth: 1,
     borderColor: COLORS.border,
-    alignItems: 'center',
-    overflow: 'hidden',
+    alignItems: "center",
+    overflow: "hidden",
     ...SHADOWS.md,
   },
   keyStatAccent: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
@@ -865,21 +900,21 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 12,
   },
   keyStatLabel: {
     ...TYPE.overline,
     letterSpacing: 1,
     marginBottom: 8,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
   keyStatValue: {
     fontSize: FLUID.stat,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.textPrimary,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: FLUID.statLineHeight,
   },
 
@@ -890,12 +925,12 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: COLORS.border,
-    flexDirection: 'column',
+    flexDirection: "column",
     ...SHADOWS.md,
   },
   exampleHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 12,
   },
@@ -903,18 +938,18 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   exampleTag: {
     ...TYPE.overline,
     letterSpacing: 0.8,
-    textTransform: 'uppercase',
-    fontWeight: '700',
+    textTransform: "uppercase",
+    fontWeight: "700",
   },
   exampleTitle: {
     fontSize: FLUID.cardTitle,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.textPrimary,
     marginBottom: 10,
   },
@@ -930,8 +965,8 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   bulletRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     gap: 12,
   },
   bulletDot: {
@@ -958,8 +993,8 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   sourcesHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     marginBottom: 12,
   },
@@ -967,16 +1002,16 @@ const styles = StyleSheet.create({
     ...TYPE.overline,
     color: COLORS.textMuted,
     letterSpacing: 1,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
   sourcesRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
   },
   sourceChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     backgroundColor: COLORS.bg1,
     paddingHorizontal: 12,
