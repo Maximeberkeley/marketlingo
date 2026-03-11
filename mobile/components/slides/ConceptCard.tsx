@@ -257,8 +257,10 @@ export function ConceptCard({
         >
           {keyTerms.map((item, idx) => (
             <View key={idx} style={[styles.termRow, idx < keyTerms.length - 1 && styles.termRowBorder]}>
-              <View style={[styles.termBadge, { backgroundColor: accentColor + '12' }]}>
-                <Text style={[styles.termLabel, { color: accentColor }]}>{item.term}</Text>
+              <View style={styles.termBadgeRow}>
+                <View style={[styles.termBadge, { backgroundColor: accentColor + '12' }]}>
+                  <Text style={[styles.termLabel, { color: accentColor }]}>{item.term}</Text>
+                </View>
               </View>
               <Text style={styles.termDefinition}>{item.definition}</Text>
             </View>
