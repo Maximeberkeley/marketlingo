@@ -254,8 +254,7 @@ export function ConceptCard({
   }
 
   // ── Key Terms card (Beginner Mode) ──────────────────
-  if (type === "key-terms") {
-    const terms = keyTerms || [];
+  if (type === "key-terms" && keyTerms && keyTerms.length > 0) {
     return (
       <Animated.View
         style={[styles.keyTermsCard, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}
@@ -265,33 +264,23 @@ export function ConceptCard({
           <View style={[styles.keyTermsIconWrap, { backgroundColor: accentColor + "15" }]}>
             <Feather name="book" size={18} color={accentColor} />
           </View>
-          <Text style={[styles.keyTermsTitle, { color: accentColor }]}>
-            {title || "Words you'll see in this lesson"}
-          </Text>
+          <Text style={[styles.keyTermsTitle, { color: accentColor }]}>Key Terms</Text>
         </View>
-        {terms.length === 0 ? (
-          <View style={{ paddingVertical: 20, alignItems: "center" }}>
-            <Feather name="info" size={20} color={COLORS.textMuted} />
-            <Text style={{ color: COLORS.textMuted, fontSize: 14, marginTop: 8 }}>
-              No key terms detected for this lesson.
-            </Text>
-          </View>
-        ) : (
-          <ScrollView
-            style={{ maxHeight: MAX_CARD_CONTENT_HEIGHT }}
-            showsVerticalScrollIndicator={false}
-            nestedScrollEnabled
-          >
-            {terms.map((item, idx) => (
-              <View key={idx} style={[styles.termRow, idx < terms.length - 1 && styles.termRowBorder]}>
-                <View style={[styles.termBadge, { backgroundColor: accentColor + "12" }]}>
-                  <Text style={[styles.termLabel, { color: accentColor }]}>{item.term}</Text>
-                </View>
-                <Text style={styles.termDefinition}>{item.definition}</Text>
+        {title && <Text style={styles.keyTermsSubtitle}>{title}</Text>}
+        <ScrollView
+          style={{ maxHeight: MAX_CARD_CONTENT_HEIGHT }}
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled
+        >
+          {keyTerms.map((item, idx) => (
+            <View key={idx} style={[styles.termRow, idx < keyTerms.length - 1 && styles.termRowBorder]}>
+              <View style={[styles.termBadge, { backgroundColor: accentColor + "12" }]}>
+                <Text style={[styles.termLabel, { color: accentColor }]}>{item.term}</Text>
               </View>
-            ))}
-          </ScrollView>
-        )}
+              <Text style={styles.termDefinition}>{item.definition}</Text>
+            </View>
+          ))}
+        </ScrollView>
       </Animated.View>
     );
   }
