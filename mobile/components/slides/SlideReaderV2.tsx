@@ -81,6 +81,7 @@ type CardItem = {
   content: string;
   bullets?: string[];
   sources?: Source[];
+  keyTerms?: { term: string; definition: string }[];
   slideIndex: number;
 } | {
   type: 'leo';
