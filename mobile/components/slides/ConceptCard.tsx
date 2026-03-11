@@ -881,6 +881,8 @@ const styles = StyleSheet.create({
     fontSize: FLUID.cardTitle,
     fontWeight: "600",
     letterSpacing: 0.3,
+    // @ts-ignore
+    textWrap: "balance",
   },
   sectionDivider: {
     height: 1,
