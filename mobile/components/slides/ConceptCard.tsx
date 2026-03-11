@@ -257,10 +257,8 @@ export function ConceptCard({
         >
           {keyTerms.map((item, idx) => (
             <View key={idx} style={[styles.termRow, idx < keyTerms.length - 1 && styles.termRowBorder]}>
-              <View style={styles.termBadgeRow}>
-                <View style={[styles.termBadge, { backgroundColor: accentColor + '12' }]}>
-                  <Text style={[styles.termLabel, { color: accentColor }]}>{item.term}</Text>
-                </View>
+              <View style={[styles.termBadge, { backgroundColor: accentColor + '12' }]}>
+                <Text style={[styles.termLabel, { color: accentColor }]}>{item.term}</Text>
               </View>
               <Text style={styles.termDefinition}>{item.definition}</Text>
             </View>
@@ -419,7 +417,7 @@ const COMMON_ACRONYMS: Record<string, string> = {
   OEM: 'Original Equipment Manufacturer — the "Big Boss" companies that assemble and sell the final product.',
   MRO: 'Maintenance, Repair & Overhaul — the "garage/hospital" that keeps products running safely.',
   IPO: 'Initial Public Offering — when a company sells shares to the public for the first time.',
-  R&D: 'Research & Development — money and effort spent inventing new things.',
+  'R&D': 'Research & Development — money and effort spent inventing new things.',
   ROI: 'Return on Investment — how much profit you get back compared to what you put in.',
   CAGR: 'Compound Annual Growth Rate — how fast something grows each year, on average.',
   EBITDA: 'Earnings Before Interest, Taxes, Depreciation & Amortization — a way to measure how profitable a business is.',
@@ -757,23 +755,17 @@ const styles = StyleSheet.create({
   },
   termRow: {
     paddingVertical: 12,
-    marginBottom: 8,
-    flexDirection: 'column',
   },
   termRowBorder: {
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderLight,
-  },
-  termBadgeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 6,
   },
   termBadge: {
     alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
+    marginBottom: 6,
   },
   termLabel: {
     fontSize: FLUID.termLabel,
@@ -784,7 +776,6 @@ const styles = StyleSheet.create({
     fontSize: FLUID.termDef,
     lineHeight: FLUID.termDefLineHeight,
     color: COLORS.textSecondary,
-    flexWrap: 'wrap',
   },
 
   /* Section headers with icons */
