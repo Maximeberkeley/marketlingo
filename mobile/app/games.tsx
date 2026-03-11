@@ -1,63 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  Image,
-  Animated as RNAnimated,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { COLORS } from '../lib/constants';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../hooks/useAuth';
-import { ProgressBar } from '../components/ui/ProgressBar';
-import { triggerHaptic } from '../lib/haptics';
-import { playSound } from '../lib/sounds';
-import { ComboCounter } from '../components/ui/ComboCounter';
-import { createComboState, comboCorrect, comboWrong, ComboState } from '../lib/combo';
-import { Feather } from '@expo/vector-icons';
-import { useSubscription } from '../hooks/useSubscription';
-import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator, Image } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { COLORS } from "../lib/constants";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../hooks/useAuth";
+import { ProgressBar } from "../components/ui/ProgressBar";
+import { triggerHaptic } from "../lib/haptics";
+import { playSound } from "../lib/sounds";
+import { ComboCounter } from "../components/ui/ComboCounter";
+import { createComboState, comboCorrect, comboWrong, ComboState } from "../lib/combo";
+import { Feather } from "@expo/vector-icons";
+import { useSubscription } from "../hooks/useSubscription";
+import { ProInterstitialAd, shouldShowInterstitial } from "../components/subscription/ProInterstitialAd";
 
-const LEO_HAPPY = require('../assets/mascot/leo-celebrating.png');
-const LEO_DIZZY = require('../assets/mascot/leo-dizzy.png');
-
-function ScoreMascot({ isGoodScore }: { isGoodScore: boolean }) {
-  const wobble = useRef(new RNAnimated.Value(0)).current;
-  const scaleAnim = useRef(new RNAnimated.Value(0.5)).current;
-
-  useEffect(() => {
-    RNAnimated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 80, useNativeDriver: true }).start();
-    if (!isGoodScore) {
-      RNAnimated.loop(
-        RNAnimated.sequence([
-          RNAnimated.timing(wobble, { toValue: 1, duration: 300, useNativeDriver: true }),
-          RNAnimated.timing(wobble, { toValue: -1, duration: 300, useNativeDriver: true }),
-          RNAnimated.timing(wobble, { toValue: 0.5, duration: 200, useNativeDriver: true }),
-          RNAnimated.timing(wobble, { toValue: -0.5, duration: 200, useNativeDriver: true }),
-          RNAnimated.timing(wobble, { toValue: 0, duration: 150, useNativeDriver: true }),
-          RNAnimated.delay(1500),
-        ])
-      ).start();
-    }
-  }, [isGoodScore]);
-
-  const rotate = wobble.interpolate({ inputRange: [-1, 0, 1], outputRange: ['-8deg', '0deg', '8deg'] });
-
-  return (
-    <RNAnimated.View style={{ transform: [{ scale: scaleAnim }, { rotate }], marginBottom: 12, alignItems: 'center' }}>
-      <Image source={isGoodScore ? LEO_HAPPY : LEO_DIZZY} style={{ width: 120, height: 120 }} resizeMode="contain" />
-    </RNAnimated.View>
-  );
-}
-
-
+interface GameQuestion {
   id: string;
-  type: 'match' | 'timeline' | 'predict';
+  type: "match" | "timeline" | "predict";
   question: string;
   options: string[];
   correctAnswer: number;
@@ -78,7 +37,7 @@ export default function GamesScreen() {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
   const [showProAd, setShowProAd] = useState(false);
-  
+
   const { isProUser } = useSubscription();
   const [combo, setCombo] = useState<ComboState>(createComboState());
   const [fetchKey, setFetchKey] = useState(0);
@@ -87,47 +46,43 @@ export default function GamesScreen() {
     const fetchData = async () => {
       if (!user) return;
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('selected_market')
-        .eq('id', user.id)
-        .single();
+      const { data: profile } = await supabase.from("profiles").select("selected_market").eq("id", user.id).single();
 
-      const market = profile?.selected_market || 'aerospace';
+      const market = profile?.selected_market || "aerospace";
       setSelectedMarket(market);
 
       // Fetch trainer_scenarios that the user hasn't completed yet for variety
       const { data: completedAttempts } = await supabase
-        .from('trainer_attempts')
-        .select('scenario_id')
-        .eq('user_id', user.id);
+        .from("trainer_attempts")
+        .select("scenario_id")
+        .eq("user_id", user.id);
 
-      const completedIds = new Set((completedAttempts || []).map(a => a.scenario_id));
+      const completedIds = new Set((completedAttempts || []).map((a) => a.scenario_id));
 
       // Get learning goal for goal-specific content
       const { data: progressData } = await supabase
-        .from('user_progress')
-        .select('learning_goal')
-        .eq('user_id', user.id)
-        .eq('market_id', market)
+        .from("user_progress")
+        .select("learning_goal")
+        .eq("user_id", user.id)
+        .eq("market_id", market)
         .maybeSingle();
 
-      const learningGoal = progressData?.learning_goal || 'curiosity';
+      const learningGoal = progressData?.learning_goal || "curiosity";
 
       // Try goal-specific trainer scenarios first (tags contain goal:career etc.)
       let { data: scenarios, error } = await supabase
-        .from('trainer_scenarios')
-        .select('id, scenario, question, options, correct_option_index, feedback_pro_reasoning, tags')
-        .eq('market_id', market)
-        .contains('tags', [`goal:${learningGoal}`])
+        .from("trainer_scenarios")
+        .select("id, scenario, question, options, correct_option_index, feedback_pro_reasoning, tags")
+        .eq("market_id", market)
+        .contains("tags", [`goal:${learningGoal}`])
         .limit(30);
 
       // Fallback: any trainer scenarios if no goal-specific ones
       if (!scenarios?.length) {
         const fallback = await supabase
-          .from('trainer_scenarios')
-          .select('id, scenario, question, options, correct_option_index, feedback_pro_reasoning, tags')
-          .eq('market_id', market)
+          .from("trainer_scenarios")
+          .select("id, scenario, question, options, correct_option_index, feedback_pro_reasoning, tags")
+          .eq("market_id", market)
           .limit(30);
         scenarios = fallback.data;
         error = fallback.error;
@@ -136,12 +91,12 @@ export default function GamesScreen() {
       if (error || !scenarios?.length) {
         // Fallback: try game stacks but parse correct answer from content
         const { data: stacks } = await supabase
-          .from('stacks')
-          .select('id, title, tags, slides (id, slide_number, title, body)')
-          .eq('market_id', market)
-          .contains('tags', ['DAILY_GAME'])
-          .not('published_at', 'is', null)
-          .order('created_at', { ascending: true })
+          .from("stacks")
+          .select("id, title, tags, slides (id, slide_number, title, body)")
+          .eq("market_id", market)
+          .contains("tags", ["DAILY_GAME"])
+          .not("published_at", "is", null)
+          .order("created_at", { ascending: true })
           .limit(5);
 
         if (stacks?.length) {
@@ -150,36 +105,41 @@ export default function GamesScreen() {
             const sorted = slides.sort((a: any, b: any) => a.slide_number - b.slide_number);
             const questionSlide = sorted[0]?.body || stack.title;
             const rawOptions = sorted.slice(1, 5).map((s: any) => {
-              const text = (s.body || s.title || '');
+              const text = s.body || s.title || "";
               // Truncate at sentence boundary
               if (text.length > 100) {
                 const sentences = text.match(/[^.!?]*[.!?]+/g);
-                return sentences?.[0]?.trim() || text.substring(0, 100) + '…';
+                return sentences?.[0]?.trim() || text.substring(0, 100) + "…";
               }
               return text;
             });
-            const baseOptions = rawOptions.length >= 4 ? rawOptions : [
-              rawOptions[0] || 'First key insight',
-              rawOptions[1] || 'Second consideration',
-              rawOptions[2] || 'Alternative perspective',
-              rawOptions[3] || 'Industry best practice',
-            ];
-            
+            const baseOptions =
+              rawOptions.length >= 4
+                ? rawOptions
+                : [
+                    rawOptions[0] || "First key insight",
+                    rawOptions[1] || "Second consideration",
+                    rawOptions[2] || "Alternative perspective",
+                    rawOptions[3] || "Industry best practice",
+                  ];
+
             // Try to find correct answer tag e.g. "correct:2", default to random
-            const correctTag = (stack.tags as string[])?.find((t: string) => t.startsWith('correct:'));
-            const correctIdx = correctTag ? parseInt(correctTag.split(':')[1], 10) : Math.floor(Math.random() * baseOptions.length);
+            const correctTag = (stack.tags as string[])?.find((t: string) => t.startsWith("correct:"));
+            const correctIdx = correctTag
+              ? parseInt(correctTag.split(":")[1], 10)
+              : Math.floor(Math.random() * baseOptions.length);
 
             // Shuffle options and track correct answer position
             const indexedOptions = baseOptions.map((opt: string, i: number) => ({ opt, i }));
             const shuffledOpts = [...indexedOptions].sort(() => Math.random() - 0.5);
-            const newCorrectIdx = shuffledOpts.findIndex(o => o.i === Math.min(correctIdx, baseOptions.length - 1));
+            const newCorrectIdx = shuffledOpts.findIndex((o) => o.i === Math.min(correctIdx, baseOptions.length - 1));
 
             // Smart truncate question and explanation at sentence boundaries
             let questionText = `${stack.title}: ${questionSlide}`;
             if (questionText.length > 180) {
               const sentences = questionText.match(/[^.!?]*[.!?]+/g);
               if (sentences) {
-                let result = stack.title + ': ';
+                let result = stack.title + ": ";
                 for (const s of sentences) {
                   if ((result + s).length > 200) break;
                   result += s;
@@ -192,24 +152,26 @@ export default function GamesScreen() {
             if (explanationText.length > 300) {
               const sentences = explanationText.match(/[^.!?]*[.!?]+/g);
               if (sentences) {
-                let result = '';
+                let result = "";
                 for (const s of sentences) {
                   if ((result + s).length > 350) break;
                   result += s;
                 }
-                explanationText = result.trim() || sentences.slice(0, 2).join(' ').trim();
+                explanationText = result.trim() || sentences.slice(0, 2).join(" ").trim();
               }
             }
 
-            const types: Array<'match' | 'timeline' | 'predict'> = ['match', 'timeline', 'predict'];
+            const types: Array<"match" | "timeline" | "predict"> = ["match", "timeline", "predict"];
             return {
               id: stack.id,
               type: types[index % 3],
               question: questionText,
-              options: shuffledOpts.map(o => o.opt),
+              options: shuffledOpts.map((o) => o.opt),
               correctAnswer: newCorrectIdx >= 0 ? newCorrectIdx : 0,
               explanation: explanationText,
-              pattern: (sorted.find((s: any) => s.body?.toLowerCase().includes('pattern:'))?.body || stack.title).substring(0, 60),
+              pattern: (
+                sorted.find((s: any) => s.body?.toLowerCase().includes("pattern:"))?.body || stack.title
+              ).substring(0, 60),
             };
           });
           setQuestions(gameQuestions);
@@ -220,8 +182,8 @@ export default function GamesScreen() {
       }
 
       // Map trainer_scenarios to game questions — filter out completed, shuffle for variety
-      const types: Array<'match' | 'timeline' | 'predict'> = ['match', 'timeline', 'predict'];
-      const uncompleted = scenarios.filter(s => !completedIds.has(s.id));
+      const types: Array<"match" | "timeline" | "predict"> = ["match", "timeline", "predict"];
+      const uncompleted = scenarios.filter((s) => !completedIds.has(s.id));
       // If all completed, allow replay but shuffle
       const pool = uncompleted.length >= 5 ? uncompleted : scenarios;
       // Shuffle pool
@@ -232,14 +194,24 @@ export default function GamesScreen() {
         // Options are objects with {label, isCorrect} — extract label strings
         const rawOpts = Array.isArray(scenario.options)
           ? (scenario.options as any[]).map((o: any, i: number) => {
-              const label = typeof o === 'string' ? o : (typeof o === 'object' && o !== null && 'label' in o ? String(o.label) : String(o));
+              const label =
+                typeof o === "string"
+                  ? o
+                  : typeof o === "object" && o !== null && "label" in o
+                    ? String(o.label)
+                    : String(o);
               return { label, originalIndex: i };
             })
-          : [{ label: 'Option A', originalIndex: 0 }, { label: 'Option B', originalIndex: 1 }, { label: 'Option C', originalIndex: 2 }, { label: 'Option D', originalIndex: 3 }];
+          : [
+              { label: "Option A", originalIndex: 0 },
+              { label: "Option B", originalIndex: 1 },
+              { label: "Option C", originalIndex: 2 },
+              { label: "Option D", originalIndex: 3 },
+            ];
 
         // CRITICAL: Shuffle options so correct answer isn't always in the same position
         const shuffled = [...rawOpts].sort(() => Math.random() - 0.5);
-        const newCorrectIndex = shuffled.findIndex(o => o.originalIndex === scenario.correct_option_index);
+        const newCorrectIndex = shuffled.findIndex((o) => o.originalIndex === scenario.correct_option_index);
 
         return {
           id: scenario.id,
@@ -249,13 +221,13 @@ export default function GamesScreen() {
             // Truncate at sentence boundary, not mid-word
             if (o.label.length > 140) {
               const sentences = o.label.match(/[^.!?]*[.!?]+/g);
-              return sentences?.[0]?.trim() || o.label.substring(0, 140) + '…';
+              return sentences?.[0]?.trim() || o.label.substring(0, 140) + "…";
             }
             return o.label;
           }),
           correctAnswer: newCorrectIndex >= 0 ? newCorrectIndex : 0,
           explanation: scenario.feedback_pro_reasoning || scenario.scenario,
-          pattern: ((scenario.tags as string[]) || [])[0] || 'Industry Pattern',
+          pattern: ((scenario.tags as string[]) || [])[0] || "Industry Pattern",
         };
       });
 
@@ -276,18 +248,18 @@ export default function GamesScreen() {
       const { newState, xpEarned } = comboCorrect(combo, 25);
       setCombo(newState);
       setScore((prev) => prev + 1);
-      triggerHaptic('success');
-      playSound('correct');
+      triggerHaptic("success");
+      playSound("correct");
     } else {
       const { newState } = comboWrong(combo, 25);
       setCombo(newState);
-      triggerHaptic('warning');
-      playSound('wrong');
+      triggerHaptic("warning");
+      playSound("wrong");
     }
   };
 
   const handleNext = async () => {
-    triggerHaptic('light');
+    triggerHaptic("light");
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
       setSelectedAnswer(null);
@@ -295,17 +267,20 @@ export default function GamesScreen() {
     } else {
       const finalScore = score + (isCorrect ? 1 : 0);
       if (user && selectedMarket) {
-        await supabase.from('games_progress').upsert({
-          user_id: user.id,
-          market_id: selectedMarket,
-          game_type: 'pattern_match',
-          score: finalScore,
-          level: 1,
-          completed_at: new Date().toISOString(),
-        }, { onConflict: 'user_id,market_id,game_type' });
+        await supabase.from("games_progress").upsert(
+          {
+            user_id: user.id,
+            market_id: selectedMarket,
+            game_type: "pattern_match",
+            score: finalScore,
+            level: 1,
+            completed_at: new Date().toISOString(),
+          },
+          { onConflict: "user_id,market_id,game_type" },
+        );
       }
-      triggerHaptic('success');
-      playSound('levelUp');
+      triggerHaptic("success");
+      playSound("levelUp");
       setGameComplete(true);
       // Show pro interstitial for free users when they don't get a perfect score
       const isPerfect = finalScore === questions.length;
@@ -314,8 +289,6 @@ export default function GamesScreen() {
       }
     }
   };
-
-  
 
   if (loading) {
     return (
@@ -329,14 +302,17 @@ export default function GamesScreen() {
     return (
       <View style={styles.container}>
         <ScrollView
-          contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 },
+          ]}
           showsVerticalScrollIndicator={false}
         >
           <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           <View style={styles.introCenter}>
-            <Image source={require('../assets/cards/games-hero.jpg')} style={styles.heroImage} resizeMode="contain" />
+            <Image source={require("../assets/cards/games-hero.jpg")} style={styles.heroImage} resizeMode="contain" />
             <Text style={styles.introMsg}>Pick the right answers and learn the patterns!</Text>
           </View>
           <View style={styles.heroCard}>
@@ -346,14 +322,25 @@ export default function GamesScreen() {
           </View>
           <View style={styles.featuresCard}>
             <Text style={styles.featuresTitle}>What to expect</Text>
-            {['Multiple choice questions', 'Instant feedback with explanations', 'Startup application tips', 'Track your score'].map((f, i) => (
+            {[
+              "Multiple choice questions",
+              "Instant feedback with explanations",
+              "Startup application tips",
+              "Track your score",
+            ].map((f, i) => (
               <View key={i} style={styles.featureRow}>
                 <View style={[styles.featureDot, { backgroundColor: COLORS.accent }]} />
                 <Text style={styles.featureText}>{f}</Text>
               </View>
             ))}
           </View>
-          <TouchableOpacity style={styles.ctaButton} onPress={() => { triggerHaptic('medium'); setShowIntro(false); }}>
+          <TouchableOpacity
+            style={styles.ctaButton}
+            onPress={() => {
+              triggerHaptic("medium");
+              setShowIntro(false);
+            }}
+          >
             <Text style={styles.ctaText}>Start Game →</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -364,7 +351,11 @@ export default function GamesScreen() {
   if (questions.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Image source={require('../assets/cards/games-hero.jpg')} style={{ width: 120, height: 120, marginBottom: 16 }} resizeMode="contain" />
+        <Image
+          source={require("../assets/cards/games-hero.jpg")}
+          style={{ width: 120, height: 120, marginBottom: 16 }}
+          resizeMode="contain"
+        />
         <Text style={styles.emptyTitle}>No games available</Text>
         <Text style={styles.emptySubtitle}>Complete more lessons to unlock games!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
@@ -376,23 +367,33 @@ export default function GamesScreen() {
 
   if (gameComplete) {
     const percentage = Math.round((score / questions.length) * 100);
-    const isGoodScore = percentage >= 80;
     return (
       <View style={[styles.container, styles.centered]}>
         <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="game" />
-        <ScoreMascot isGoodScore={isGoodScore} />
+        <Image
+          source={require("../assets/illustrations/achievements-hero.png")}
+          style={{ width: 100, height: 100, marginBottom: 8 }}
+          resizeMode="contain"
+        />
         <Text style={styles.completeTitle}>Game Complete!</Text>
-        <Text style={styles.completeScore}>You scored {score}/{questions.length} ({percentage}%)</Text>
-        <Text style={styles.completeFeedback}>
-          {percentage >= 80 ? "Excellent! You're a market pro." : percentage >= 60 ? 'Good job! Keep practicing.' : 'Review the lessons and try again.'}
+        <Text style={styles.completeScore}>
+          You scored {score}/{questions.length} ({percentage}%)
         </Text>
-        <View style={{ flexDirection: 'row', gap: 12, marginTop: 20, width: '100%' }}>
+        <Text style={styles.completeFeedback}>
+          {percentage >= 80
+            ? "Excellent! You're a market pro."
+            : percentage >= 60
+              ? "Good job! Keep practicing."
+              : "Review the lessons and try again."}
+        </Text>
+        <View style={{ flexDirection: "row", gap: 12, marginTop: 20, width: "100%" }}>
           <TouchableOpacity style={[styles.secondaryBtn, { flex: 1 }]} onPress={() => router.back()}>
             <Text style={styles.secondaryBtnText}>Home</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.ctaButton, { flex: 1 }]}
             onPress={() => {
+              // Re-fetch for new questions
               setLoading(true);
               setCurrentQuestion(0);
               setScore(0);
@@ -401,7 +402,8 @@ export default function GamesScreen() {
               setGameComplete(false);
               setShowIntro(true);
               setCombo(createComboState());
-              setFetchKey(k => k + 1);
+              // Trigger data refetch with new random set
+              setFetchKey((k) => k + 1);
             }}
           >
             <Text style={styles.ctaText}>Play Again</Text>
@@ -414,7 +416,10 @@ export default function GamesScreen() {
   return (
     <View style={styles.container}>
       <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
@@ -423,7 +428,9 @@ export default function GamesScreen() {
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
             <Text style={styles.headerTitle}>Games</Text>
-            <Text style={styles.headerSub}>Question {currentQuestion + 1} of {questions.length}</Text>
+            <Text style={styles.headerSub}>
+              Question {currentQuestion + 1} of {questions.length}
+            </Text>
           </View>
           <View style={styles.scoreBadge}>
             <Text style={styles.scoreBadgeText}>{score}</Text>
@@ -461,13 +468,15 @@ export default function GamesScreen() {
                 onPress={() => handleAnswer(idx)}
                 disabled={showResult}
               >
-                <View style={[
-                  styles.optionLetter,
-                  showResult && isCorrectOpt && { backgroundColor: '#22C55E' },
-                  showResult && isSelected && !isCorrectOpt && { backgroundColor: '#EF4444' },
-                ]}>
+                <View
+                  style={[
+                    styles.optionLetter,
+                    showResult && isCorrectOpt && { backgroundColor: "#22C55E" },
+                    showResult && isSelected && !isCorrectOpt && { backgroundColor: "#EF4444" },
+                  ]}
+                >
                   <Text style={styles.optionLetterText}>
-                    {showResult && isCorrectOpt ? '✓' : String.fromCharCode(65 + idx)}
+                    {showResult && isCorrectOpt ? "✓" : String.fromCharCode(65 + idx)}
                   </Text>
                 </View>
                 <Text style={styles.optionText}>{opt}</Text>
@@ -478,13 +487,13 @@ export default function GamesScreen() {
 
         {showResult && (
           <View style={[styles.feedbackCard, isCorrect ? styles.feedbackCorrect : styles.feedbackWrong]}>
-            <Text style={[styles.feedbackTitle, { color: isCorrect ? '#22C55E' : '#F59E0B' }]}>
-              {isCorrect ? 'Correct!' : 'Not quite'}
+            <Text style={[styles.feedbackTitle, { color: isCorrect ? "#22C55E" : "#F59E0B" }]}>
+              {isCorrect ? "Correct!" : "Not quite"}
             </Text>
             <Text style={styles.feedbackBody}>{question.explanation}</Text>
             <TouchableOpacity style={styles.ctaButton} onPress={handleNext}>
               <Text style={styles.ctaText}>
-                {currentQuestion < questions.length - 1 ? 'Next Question →' : 'See Results'}
+                {currentQuestion < questions.length - 1 ? "Next Question →" : "See Results"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -496,63 +505,110 @@ export default function GamesScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
-  centered: { alignItems: 'center', justifyContent: 'center', padding: 24 },
+  centered: { alignItems: "center", justifyContent: "center", padding: 24 },
   scrollContent: { paddingHorizontal: 16 },
   backBtn: { marginBottom: 12 },
   backText: { fontSize: 15, color: COLORS.textSecondary },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
-  headerTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary },
+  header: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 12 },
+  headerTitle: { fontSize: 22, fontWeight: "700", color: COLORS.textPrimary },
   headerSub: { fontSize: 12, color: COLORS.textMuted },
-  scoreBadge: { backgroundColor: 'rgba(139, 92, 246, 0.15)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 },
-  scoreBadgeText: { fontSize: 13, fontWeight: '600', color: COLORS.accent },
-  introCenter: { alignItems: 'center', marginBottom: 20 },
-  heroImage: { width: 160, height: 160, marginBottom: 12, borderRadius: 16 },
-  introMsg: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginTop: 12, lineHeight: 20 },
-  heroCard: {
-    padding: 20, borderRadius: 16, marginBottom: 16,
-    backgroundColor: 'rgba(139, 92, 246, 0.12)', borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.3)',
+  scoreBadge: {
+    backgroundColor: "rgba(139, 92, 246, 0.15)",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
   },
-  heroLabel: { fontSize: 12, color: 'rgba(139, 92, 246, 0.8)', fontWeight: '500', marginBottom: 4 },
-  heroTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 6 },
+  scoreBadgeText: { fontSize: 13, fontWeight: "600", color: COLORS.accent },
+  introCenter: { alignItems: "center", marginBottom: 20 },
+  heroImage: { width: 160, height: 160, marginBottom: 12, borderRadius: 16 },
+  introMsg: { fontSize: 14, color: COLORS.textSecondary, textAlign: "center", marginTop: 12, lineHeight: 20 },
+  heroCard: {
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 16,
+    backgroundColor: "rgba(139, 92, 246, 0.12)",
+    borderWidth: 1,
+    borderColor: "rgba(139, 92, 246, 0.3)",
+  },
+  heroLabel: { fontSize: 12, color: "rgba(139, 92, 246, 0.8)", fontWeight: "500", marginBottom: 4 },
+  heroTitle: { fontSize: 20, fontWeight: "700", color: COLORS.textPrimary, marginBottom: 6 },
   heroDesc: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19 },
   featuresCard: {
-    backgroundColor: COLORS.bg2, borderRadius: 16, padding: 16, marginBottom: 16,
-    borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: COLORS.bg2,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
-  featuresTitle: { fontSize: 16, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 12 },
-  featureRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 },
+  featuresTitle: { fontSize: 16, fontWeight: "600", color: COLORS.textPrimary, marginBottom: 12 },
+  featureRow: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 8 },
   featureDot: { width: 6, height: 6, borderRadius: 3 },
   featureText: { fontSize: 14, color: COLORS.textSecondary },
-  ctaButton: { backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center' },
-  ctaText: { color: '#FFFFFF', fontWeight: '700', fontSize: 16 },
-  emptyTitle: { fontSize: 20, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 8 },
-  emptySubtitle: { fontSize: 14, color: COLORS.textMuted, textAlign: 'center', marginBottom: 20 },
-  chipRow: { flexDirection: 'row', gap: 8, marginVertical: 16 },
-  chip: { backgroundColor: 'rgba(139, 92, 246, 0.15)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 },
-  chipText: { fontSize: 11, fontWeight: '600', color: COLORS.accent },
-  chipSecondary: { backgroundColor: COLORS.bg2, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: COLORS.border },
-  chipSecondaryText: { fontSize: 11, color: COLORS.textMuted },
-  questionText: { fontSize: 18, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 16, lineHeight: 26 },
-  optionCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14,
-    borderWidth: 1, borderColor: COLORS.border,
+  ctaButton: { backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 16, alignItems: "center" },
+  ctaText: { color: "#FFFFFF", fontWeight: "700", fontSize: 16 },
+  emptyTitle: { fontSize: 20, fontWeight: "600", color: COLORS.textPrimary, marginBottom: 8 },
+  emptySubtitle: { fontSize: 14, color: COLORS.textMuted, textAlign: "center", marginBottom: 20 },
+  chipRow: { flexDirection: "row", gap: 8, marginVertical: 16 },
+  chip: { backgroundColor: "rgba(139, 92, 246, 0.15)", paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 },
+  chipText: { fontSize: 11, fontWeight: "600", color: COLORS.accent },
+  chipSecondary: {
+    backgroundColor: COLORS.bg2,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
-  optionSelected: { borderColor: 'rgba(139, 92, 246, 0.5)' },
-  optionCorrect: { borderColor: 'rgba(34, 197, 94, 0.5)', backgroundColor: 'rgba(34, 197, 94, 0.08)' },
-  optionWrong: { borderColor: 'rgba(239, 68, 68, 0.5)', backgroundColor: 'rgba(239, 68, 68, 0.08)' },
-  optionLetter: { width: 32, height: 32, borderRadius: 16, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
-  optionLetterText: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary },
+  chipSecondaryText: { fontSize: 11, color: COLORS.textMuted },
+  questionText: { fontSize: 18, fontWeight: "600", color: COLORS.textPrimary, marginBottom: 16, lineHeight: 26 },
+  optionCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    backgroundColor: COLORS.bg2,
+    borderRadius: 14,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  optionSelected: { borderColor: "rgba(139, 92, 246, 0.5)" },
+  optionCorrect: { borderColor: "rgba(34, 197, 94, 0.5)", backgroundColor: "rgba(34, 197, 94, 0.08)" },
+  optionWrong: { borderColor: "rgba(239, 68, 68, 0.5)", backgroundColor: "rgba(239, 68, 68, 0.08)" },
+  optionLetter: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.bg1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  optionLetterText: { fontSize: 13, fontWeight: "600", color: COLORS.textSecondary },
   optionText: { flex: 1, fontSize: 14, color: COLORS.textPrimary, lineHeight: 20 },
   feedbackCard: { backgroundColor: COLORS.bg2, borderRadius: 14, padding: 16, marginTop: 16, borderWidth: 1 },
-  feedbackCorrect: { borderColor: 'rgba(34, 197, 94, 0.3)' },
-  feedbackWrong: { borderColor: 'rgba(245, 158, 11, 0.3)' },
-  feedbackTitle: { fontSize: 16, fontWeight: '700', marginBottom: 8 },
+  feedbackCorrect: { borderColor: "rgba(34, 197, 94, 0.3)" },
+  feedbackWrong: { borderColor: "rgba(245, 158, 11, 0.3)" },
+  feedbackTitle: { fontSize: 16, fontWeight: "700", marginBottom: 8 },
   feedbackBody: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20, marginBottom: 12 },
-  completeIcon: { width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(34, 197, 94, 0.2)', alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
-  completeTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 8 },
+  completeIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "rgba(34, 197, 94, 0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
+  },
+  completeTitle: { fontSize: 22, fontWeight: "700", color: COLORS.textPrimary, marginBottom: 8 },
   completeScore: { fontSize: 16, color: COLORS.textSecondary, marginBottom: 4 },
-  completeFeedback: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center' },
-  secondaryBtn: { paddingVertical: 14, borderRadius: 14, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center' },
+  completeFeedback: { fontSize: 13, color: COLORS.textMuted, textAlign: "center" },
+  secondaryBtn: {
+    paddingVertical: 14,
+    borderRadius: 14,
+    backgroundColor: COLORS.bg2,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: "center",
+  },
   secondaryBtnText: { fontSize: 15, color: COLORS.textSecondary },
 });
