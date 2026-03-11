@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
+  Animated as RNAnimated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -19,6 +20,38 @@ import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
 import { useSubscription } from '../hooks/useSubscription';
 import { ProInterstitialAd } from '../components/subscription/ProInterstitialAd';
+
+const LEO_HAPPY = require('../assets/mascot/leo-celebrating.png');
+const LEO_DIZZY = require('../assets/mascot/leo-dizzy.png');
+
+function ScoreMascot({ isGoodScore }: { isGoodScore: boolean }) {
+  const wobble = useRef(new RNAnimated.Value(0)).current;
+  const scaleAnim = useRef(new RNAnimated.Value(0.5)).current;
+
+  useEffect(() => {
+    RNAnimated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 80, useNativeDriver: true }).start();
+    if (!isGoodScore) {
+      RNAnimated.loop(
+        RNAnimated.sequence([
+          RNAnimated.timing(wobble, { toValue: 1, duration: 300, useNativeDriver: true }),
+          RNAnimated.timing(wobble, { toValue: -1, duration: 300, useNativeDriver: true }),
+          RNAnimated.timing(wobble, { toValue: 0.5, duration: 200, useNativeDriver: true }),
+          RNAnimated.timing(wobble, { toValue: -0.5, duration: 200, useNativeDriver: true }),
+          RNAnimated.timing(wobble, { toValue: 0, duration: 150, useNativeDriver: true }),
+          RNAnimated.delay(1500),
+        ])
+      ).start();
+    }
+  }, [isGoodScore]);
+
+  const rotate = wobble.interpolate({ inputRange: [-1, 0, 1], outputRange: ['-8deg', '0deg', '8deg'] });
+
+  return (
+    <RNAnimated.View style={{ transform: [{ scale: scaleAnim }, { rotate }], marginBottom: 12, alignItems: 'center' }}>
+      <Image source={isGoodScore ? LEO_HAPPY : LEO_DIZZY} style={{ width: 120, height: 120 }} resizeMode="contain" />
+    </RNAnimated.View>
+  );
+}
 
 interface DrillQuestion {
   id: string;
@@ -443,16 +476,11 @@ export default function DrillsScreen() {
   if (drillComplete) {
     const percentage = Math.round((score / questions.length) * 100);
     const hasMoreSets = currentSet < totalSets;
+    const isGoodScore = percentage >= 80;
     return (
       <View style={[styles.container, styles.centered]}>
         <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="drill" />
-        <View style={[styles.completeIcon, {
-          backgroundColor: percentage >= 80 ? 'rgba(34, 197, 94, 0.2)' : percentage >= 60 ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-        }]}>
-          <Text style={[styles.completePercent, {
-            color: percentage >= 80 ? '#22C55E' : percentage >= 60 ? '#F59E0B' : '#EF4444',
-          }]}>{percentage}%</Text>
-        </View>
+        <ScoreMascot isGoodScore={isGoodScore} />
         <Text style={styles.completeTitle}>Set {currentSet} Complete!</Text>
         <Text style={styles.completeScore}>{score}/{questions.length} correct</Text>
         <Text style={styles.completeFeedback}>

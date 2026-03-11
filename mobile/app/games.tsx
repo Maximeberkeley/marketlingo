@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
+  Animated as RNAnimated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -22,7 +23,39 @@ import { Feather } from '@expo/vector-icons';
 import { useSubscription } from '../hooks/useSubscription';
 import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
 
-interface GameQuestion {
+const LEO_HAPPY = require('../assets/mascot/leo-celebrating.png');
+const LEO_DIZZY = require('../assets/mascot/leo-dizzy.png');
+
+function ScoreMascot({ isGoodScore }: { isGoodScore: boolean }) {
+  const wobble = useRef(new RNAnimated.Value(0)).current;
+  const scaleAnim = useRef(new RNAnimated.Value(0.5)).current;
+
+  useEffect(() => {
+    RNAnimated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 80, useNativeDriver: true }).start();
+    if (!isGoodScore) {
+      RNAnimated.loop(
+        RNAnimated.sequence([
+          RNAnimated.timing(wobble, { toValue: 1, duration: 300, useNativeDriver: true }),
+          RNAnimated.timing(wobble, { toValue: -1, duration: 300, useNativeDriver: true }),
+          RNAnimated.timing(wobble, { toValue: 0.5, duration: 200, useNativeDriver: true }),
+          RNAnimated.timing(wobble, { toValue: -0.5, duration: 200, useNativeDriver: true }),
+          RNAnimated.timing(wobble, { toValue: 0, duration: 150, useNativeDriver: true }),
+          RNAnimated.delay(1500),
+        ])
+      ).start();
+    }
+  }, [isGoodScore]);
+
+  const rotate = wobble.interpolate({ inputRange: [-1, 0, 1], outputRange: ['-8deg', '0deg', '8deg'] });
+
+  return (
+    <RNAnimated.View style={{ transform: [{ scale: scaleAnim }, { rotate }], marginBottom: 12, alignItems: 'center' }}>
+      <Image source={isGoodScore ? LEO_HAPPY : LEO_DIZZY} style={{ width: 120, height: 120 }} resizeMode="contain" />
+    </RNAnimated.View>
+  );
+}
+
+
   id: string;
   type: 'match' | 'timeline' | 'predict';
   question: string;
@@ -343,10 +376,11 @@ export default function GamesScreen() {
 
   if (gameComplete) {
     const percentage = Math.round((score / questions.length) * 100);
+    const isGoodScore = percentage >= 80;
     return (
       <View style={[styles.container, styles.centered]}>
         <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="game" />
-        <Image source={require('../assets/illustrations/achievements-hero.png')} style={{ width: 100, height: 100, marginBottom: 8 }} resizeMode="contain" />
+        <ScoreMascot isGoodScore={isGoodScore} />
         <Text style={styles.completeTitle}>Game Complete!</Text>
         <Text style={styles.completeScore}>You scored {score}/{questions.length} ({percentage}%)</Text>
         <Text style={styles.completeFeedback}>
@@ -359,7 +393,6 @@ export default function GamesScreen() {
           <TouchableOpacity
             style={[styles.ctaButton, { flex: 1 }]}
             onPress={() => {
-              // Re-fetch for new questions
               setLoading(true);
               setCurrentQuestion(0);
               setScore(0);
@@ -368,7 +401,6 @@ export default function GamesScreen() {
               setGameComplete(false);
               setShowIntro(true);
               setCombo(createComboState());
-              // Trigger data refetch with new random set
               setFetchKey(k => k + 1);
             }}
           >
