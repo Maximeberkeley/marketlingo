@@ -920,11 +920,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg2,
     borderRadius: 20,
     padding: 20,
+    paddingBottom: 48,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderLeftWidth: 4,
     justifyContent: "center",
     flexDirection: "column",
+    minHeight: 300,
     ...SHADOWS.sm,
   },
   calloutText: {
