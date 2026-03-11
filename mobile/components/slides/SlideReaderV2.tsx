@@ -465,6 +465,7 @@ export function SlideReaderV2({
         content={currentCardData.content}
         bullets={currentCardData.bullets}
         sources={currentCardData.sources}
+        keyTerms={currentCardData.keyTerms}
         cardIndex={currentCard}
         totalCards={totalCards}
         accentColor={accentColor}
