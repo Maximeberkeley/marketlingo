@@ -170,7 +170,7 @@ export function SlideReaderV2({
     const items: CardItem[] = [];
 
     slides.forEach((slide, slideIdx) => {
-      const parsed = parseSlideIntoCards(slide.title, slide.body, [], slideIdx);
+      const parsed = parseSlideIntoCards(slide.title, slide.body, [], slideIdx, marketId);
       parsed.forEach((card) => {
         if (card.type === 'sources') return;
         items.push({

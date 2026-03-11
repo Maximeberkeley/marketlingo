@@ -478,6 +478,7 @@ export function parseSlideIntoCards(
   body: string,
   sources: Source[],
   _slideIndex: number,
+  marketId?: string,
 ): {
   type: ConceptCardType;
   title?: string;
@@ -497,15 +498,25 @@ export function parseSlideIntoCards(
 
   cards.push({ type: "header", content: slideTitle });
 
-  // ── Beginner Mode: Extract & inject key terms card ──
-  const fullText = body;
-  const detectedTerms = extractKeyTerms(fullText);
-  if (detectedTerms.length > 0) {
-    cards.push({
-      type: "key-terms",
-      title: "Words you'll see in this lesson",
-      content: "",
-      keyTerms: detectedTerms,
+  // ── Beginner Mode: Use industry-specific acronyms (NOT text extraction) ──
+  const allAcronyms = getAcronymsForMarket(marketId);
+  // Only show on first slide of the lesson (_slideIndex === 0)
+  if (_slideIndex === 0 && allAcronyms.length > 0) {
+    // Auto-split: max KEY_TERMS_PER_CARD per card
+    const chunks: KeyTerm[][] = [];
+    for (let i = 0; i < allAcronyms.length; i += KEY_TERMS_PER_CARD) {
+      chunks.push(allAcronyms.slice(i, i + KEY_TERMS_PER_CARD));
+    }
+    chunks.forEach((chunk, chunkIdx) => {
+      const label = chunks.length > 1
+        ? `Words you'll see in this lesson (${chunkIdx + 1}/${chunks.length})`
+        : "Words you'll see in this lesson";
+      cards.push({
+        type: "key-terms",
+        title: label,
+        content: "",
+        keyTerms: chunk,
+      });
     });
   }
 
