@@ -833,6 +833,31 @@ const styles = StyleSheet.create({
     fontSize: FLUID.termDef,
     lineHeight: FLUID.termDefLineHeight,
     color: COLORS.textSecondary,
+    flexWrap: "wrap",
+  },
+
+  /* Mini-card layout for key-terms */
+  termMiniCard: {
+    backgroundColor: COLORS.bg1,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight || COLORS.border,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginBottom: 10,
+  },
+  termMiniLabel: {
+    fontSize: Math.max(16, FLUID.termLabel),
+    fontWeight: "800",
+    letterSpacing: 0.3,
+    marginBottom: 4,
+    color: COLORS.textPrimary,
+  },
+  termMiniDefinition: {
+    fontSize: Math.max(16, FLUID.termDef),
+    lineHeight: Math.max(24, FLUID.termDefLineHeight),
+    color: COLORS.textSecondary,
+    flexWrap: "wrap",
   },
 
   /* Section headers with icons */
