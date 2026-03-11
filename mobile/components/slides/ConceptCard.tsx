@@ -253,7 +253,7 @@ export function ConceptCard({
     );
   }
 
-  // ── Key Terms card (Beginner Mode) ──────────────────
+  // ── Key Terms card (Beginner Mode) — mini-card layout ──
   if (type === "key-terms" && keyTerms && keyTerms.length > 0) {
     return (
       <Animated.View
@@ -262,7 +262,7 @@ export function ConceptCard({
         <View style={[styles.keyTermsAccent, { backgroundColor: accentColor }]} />
         <View style={styles.keyTermsHeader}>
           <View style={[styles.keyTermsIconWrap, { backgroundColor: accentColor + "15" }]}>
-            <Feather name="book" size={18} color={accentColor} />
+            <Feather name="book-open" size={18} color={accentColor} />
           </View>
           <Text style={[styles.keyTermsTitle, { color: accentColor }]}>Key Terms</Text>
         </View>
@@ -271,13 +271,14 @@ export function ConceptCard({
           style={{ maxHeight: MAX_CARD_CONTENT_HEIGHT }}
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled
+          contentContainerStyle={{ paddingBottom: 40 }}
         >
           {keyTerms.map((item, idx) => (
-            <View key={idx} style={[styles.termRow, idx < keyTerms.length - 1 && styles.termRowBorder]}>
-              <View style={[styles.termBadge, { backgroundColor: accentColor + "12" }]}>
-                <Text style={[styles.termLabel, { color: accentColor }]}>{item.term}</Text>
-              </View>
-              <Text style={styles.termDefinition}>{item.definition}</Text>
+            <View key={idx} style={styles.termMiniCard}>
+              <Text style={[styles.termMiniLabel, { color: COLORS.textPrimary }]}>
+                {item.term}
+              </Text>
+              <Text style={styles.termMiniDefinition}>{item.definition}</Text>
             </View>
           ))}
         </ScrollView>
