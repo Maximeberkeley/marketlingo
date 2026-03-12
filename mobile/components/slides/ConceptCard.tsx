@@ -765,12 +765,10 @@ const styles = StyleSheet.create({
   keyTermsCard: {
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
-    padding: 20,
+    padding: 24,
     paddingBottom: 48,
-    borderWidth: 1,
-    borderColor: COLORS.border,
     overflow: "hidden",
-    minHeight: 300,
+    minHeight: 320,
     ...SHADOWS.md,
   },
   keyTermsAccent: {
