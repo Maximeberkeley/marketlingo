@@ -98,6 +98,20 @@ type CardItem = {
   type: 'wordmatch';
   pairs: WordPair[];
   slideIndex: number;
+} | {
+  type: 'objective';
+  goals: string[];
+  slideIndex: number;
+} | {
+  type: 'recap';
+  previousTopic?: string;
+  currentTopic: string;
+  slideIndex: number;
+} | {
+  type: 'reflection';
+  keyTakeaway: string;
+  nextPreview?: string;
+  slideIndex: number;
 };
 
 export function SlideReaderV2({
