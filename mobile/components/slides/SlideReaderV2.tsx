@@ -366,7 +366,7 @@ export function SlideReaderV2({
     }
 
     return items;
-  }, [slides, marketId]);
+  }, [slides, marketId, stackType, stackTitle, isReview, previousLessonTitle, dayNumber]);
 
   const totalCards = allCards.length;
   const progress = totalCards > 0 ? (currentCard + 1) / totalCards : 0;
