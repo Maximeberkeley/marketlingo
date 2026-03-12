@@ -364,7 +364,6 @@ const recapStyles = StyleSheet.create({
     height: 32,
     marginLeft: 5.5,
     borderRadius: 2,
-    transformOrigin: 'top',
   },
   timelineContent: {
     flex: 1,
