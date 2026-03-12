@@ -278,6 +278,7 @@ export default function HomeScreen() {
           isReview={lessonCompletedToday && session.activeStack.stack_type === 'LESSON'}
           isProUser={isProUser}
           onPaywallTrigger={() => { session.closeReader(); router.push('/subscription' as any); }}
+          dayNumber={currentDay}
         />
       ) : session.showSessionComplete ? (
         <SessionCompleteCard
