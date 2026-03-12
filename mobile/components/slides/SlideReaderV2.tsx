@@ -510,6 +510,40 @@ export function SlideReaderV2({
         />
       );
     }
+    // ── Immersive cards ──
+    if (currentCardData.type === 'objective') {
+      return (
+        <ObjectiveCard
+          key={`obj-${currentCard}`}
+          goals={currentCardData.goals}
+          accentColor={accentColor}
+          marketId={marketId}
+        />
+      );
+    }
+    if (currentCardData.type === 'recap') {
+      return (
+        <RecapCard
+          key={`recap-${currentCard}`}
+          dayNumber={dayNumber}
+          previousTopic={currentCardData.previousTopic}
+          currentTopic={currentCardData.currentTopic}
+          accentColor={accentColor}
+          marketId={marketId}
+        />
+      );
+    }
+    if (currentCardData.type === 'reflection') {
+      return (
+        <ReflectionCard
+          key={`refl-${currentCard}`}
+          keyTakeaway={currentCardData.keyTakeaway}
+          nextPreview={currentCardData.nextPreview}
+          accentColor={accentColor}
+          dayNumber={dayNumber}
+        />
+      );
+    }
     return (
       <ConceptCard
         key={`card-${currentCard}`}
