@@ -188,6 +188,27 @@ export function SlideReaderV2({
   const allCards: CardItem[] = useMemo(() => {
     const items: CardItem[] = [];
 
+    // ── RECAP CARD: Bridge from previous lesson ──
+    if (stackType === 'LESSON' && !isReview) {
+      items.push({
+        type: 'recap',
+        previousTopic: previousLessonTitle,
+        currentTopic: stackTitle,
+        slideIndex: 0,
+      });
+    }
+
+    // ── OBJECTIVE CARD: Extract goals from slide titles ──
+    if (stackType === 'LESSON' && !isReview && slides.length >= 2) {
+      const goals = slides
+        .map(s => s.title)
+        .filter(t => t && t.length > 5)
+        .slice(0, 3);
+      if (goals.length > 0) {
+        items.push({ type: 'objective', goals, slideIndex: 0 });
+      }
+    }
+
     slides.forEach((slide, slideIdx) => {
       const parsed = parseSlideIntoCards(slide.title, slide.body, [], slideIdx, marketId);
       parsed.forEach((card) => {
@@ -204,6 +225,19 @@ export function SlideReaderV2({
         });
       });
     });
+
+    // ── REFLECTION CARD: Synthesize key takeaway ──
+    if (stackType === 'LESSON' && slides.length >= 2) {
+      // Extract a meaningful takeaway from the last slide's content
+      const lastSlideContent = slides[slides.length - 1];
+      const takeawayText = lastSlideContent?.title || stackTitle;
+      items.push({
+        type: 'reflection',
+        keyTakeaway: `Understanding ${takeawayText.toLowerCase()} is essential to mastering how this industry operates and where it's heading.`,
+        nextPreview: dayNumber ? `Day ${dayNumber + 1} continues your journey deeper into the fundamentals.` : undefined,
+        slideIndex: slides.length - 1,
+      });
+    }
 
     // Single sources card at end
     const lastSlide = slides[slides.length - 1];
