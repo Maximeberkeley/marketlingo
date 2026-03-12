@@ -65,6 +65,8 @@ interface SlideReaderV2Props {
   onPaywallTrigger?: () => void;
   onAskMentor?: () => void;
   mentorName?: string;
+  dayNumber?: number;
+  previousLessonTitle?: string;
 }
 
 const MINIMUM_LESSON_TIME_SECONDS = 120;
