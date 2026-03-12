@@ -683,30 +683,26 @@ const MAX_CARD_CHARS = 350; // Lowered for beginner-friendly shorter cards
 
 // ── Styles ──────────────────────────────────────────
 const styles = StyleSheet.create({
-  /* Base card — flex column, auto height, safe padding */
+  /* Base card — immersive, borderless, generous spacing */
   card: {
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
-    padding: 16,
-    paddingHorizontal: 18,
-    paddingBottom: 48, // pb-12 — clears Next button / home bar
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    padding: 24,
+    paddingHorizontal: 24,
+    paddingBottom: 48,
     flexDirection: "column",
-    minHeight: 300,
+    minHeight: 340,
     ...SHADOWS.md,
   },
 
-  /* Header card */
+  /* Header card — immersive full-height */
   headerCard: {
     backgroundColor: COLORS.bg1,
     borderRadius: 24,
-    padding: 32,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    padding: 36,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 280,
+    minHeight: 320,
     overflow: "hidden",
     ...SHADOWS.md,
   },
@@ -769,12 +765,10 @@ const styles = StyleSheet.create({
   keyTermsCard: {
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
-    padding: 20,
+    padding: 24,
     paddingBottom: 48,
-    borderWidth: 1,
-    borderColor: COLORS.border,
     overflow: "hidden",
-    minHeight: 300,
+    minHeight: 320,
     ...SHADOWS.md,
   },
   keyTermsAccent: {
@@ -880,11 +874,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-  /* Concept text — fluid sizing, min 16px for mobile readability */
+  /* Concept text — larger, more readable for immersive feel */
   conceptText: {
-    fontSize: Math.max(16, FLUID.body),
+    fontSize: Math.max(17, FLUID.body + 1),
     color: COLORS.textPrimary,
-    lineHeight: FLUID.bodyLineHeight,
+    lineHeight: FLUID.bodyLineHeight + 4,
     letterSpacing: 0.15,
   },
   boldHighlight: {

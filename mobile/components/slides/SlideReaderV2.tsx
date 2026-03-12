@@ -17,6 +17,7 @@ import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { mentors, LEO_VOICE_ID } from '../../data/mentors';
 import { getPrimaryMentorForMarket } from '../../data/marketConfig';
 import { ConceptCard, parseSlideIntoCards, ConceptCardType } from './ConceptCard';
+import { ObjectiveCard, RecapCard, ReflectionCard } from './ImmersiveCards';
 import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
 import { QuizCard, generateQuizFromSlide, shouldShowQuiz, QuizCardData } from './QuizCard';
 import { WordMatchGame, extractTermPairs, shouldShowWordMatch, WordPair } from './WordMatchGame';
@@ -64,6 +65,8 @@ interface SlideReaderV2Props {
   onPaywallTrigger?: () => void;
   onAskMentor?: () => void;
   mentorName?: string;
+  dayNumber?: number;
+  previousLessonTitle?: string;
 }
 
 const MINIMUM_LESSON_TIME_SECONDS = 120;
@@ -95,6 +98,20 @@ type CardItem = {
   type: 'wordmatch';
   pairs: WordPair[];
   slideIndex: number;
+} | {
+  type: 'objective';
+  goals: string[];
+  slideIndex: number;
+} | {
+  type: 'recap';
+  previousTopic?: string;
+  currentTopic: string;
+  slideIndex: number;
+} | {
+  type: 'reflection';
+  keyTakeaway: string;
+  nextPreview?: string;
+  slideIndex: number;
 };
 
 export function SlideReaderV2({
@@ -111,6 +128,8 @@ export function SlideReaderV2({
   onPaywallTrigger,
   onAskMentor,
   mentorName,
+  dayNumber,
+  previousLessonTitle,
 }: SlideReaderV2Props) {
   const insets = useSafeAreaInsets();
   const [currentCard, setCurrentCard] = useState(0);
@@ -169,6 +188,27 @@ export function SlideReaderV2({
   const allCards: CardItem[] = useMemo(() => {
     const items: CardItem[] = [];
 
+    // ── RECAP CARD: Bridge from previous lesson ──
+    if (stackType === 'LESSON' && !isReview) {
+      items.push({
+        type: 'recap',
+        previousTopic: previousLessonTitle,
+        currentTopic: stackTitle,
+        slideIndex: 0,
+      });
+    }
+
+    // ── OBJECTIVE CARD: Extract goals from slide titles ──
+    if (stackType === 'LESSON' && !isReview && slides.length >= 2) {
+      const goals = slides
+        .map(s => s.title)
+        .filter(t => t && t.length > 5)
+        .slice(0, 3);
+      if (goals.length > 0) {
+        items.push({ type: 'objective', goals, slideIndex: 0 });
+      }
+    }
+
     slides.forEach((slide, slideIdx) => {
       const parsed = parseSlideIntoCards(slide.title, slide.body, [], slideIdx, marketId);
       parsed.forEach((card) => {
@@ -185,6 +225,19 @@ export function SlideReaderV2({
         });
       });
     });
+
+    // ── REFLECTION CARD: Synthesize key takeaway ──
+    if (stackType === 'LESSON' && slides.length >= 2) {
+      // Extract a meaningful takeaway from the last slide's content
+      const lastSlideContent = slides[slides.length - 1];
+      const takeawayText = lastSlideContent?.title || stackTitle;
+      items.push({
+        type: 'reflection',
+        keyTakeaway: `Understanding ${takeawayText.toLowerCase()} is essential to mastering how this industry operates and where it's heading.`,
+        nextPreview: dayNumber ? `Day ${dayNumber + 1} continues your journey deeper into the fundamentals.` : undefined,
+        slideIndex: slides.length - 1,
+      });
+    }
 
     // Single sources card at end
     const lastSlide = slides[slides.length - 1];
@@ -313,7 +366,7 @@ export function SlideReaderV2({
     }
 
     return items;
-  }, [slides, marketId]);
+  }, [slides, marketId, stackType, stackTitle, isReview, previousLessonTitle, dayNumber]);
 
   const totalCards = allCards.length;
   const progress = totalCards > 0 ? (currentCard + 1) / totalCards : 0;
@@ -454,6 +507,40 @@ export function SlideReaderV2({
             setTimeout(() => goNext(), 600);
           }}
           accentColor={accentColor}
+        />
+      );
+    }
+    // ── Immersive cards ──
+    if (currentCardData.type === 'objective') {
+      return (
+        <ObjectiveCard
+          key={`obj-${currentCard}`}
+          goals={currentCardData.goals}
+          accentColor={accentColor}
+          marketId={marketId}
+        />
+      );
+    }
+    if (currentCardData.type === 'recap') {
+      return (
+        <RecapCard
+          key={`recap-${currentCard}`}
+          dayNumber={dayNumber}
+          previousTopic={currentCardData.previousTopic}
+          currentTopic={currentCardData.currentTopic}
+          accentColor={accentColor}
+          marketId={marketId}
+        />
+      );
+    }
+    if (currentCardData.type === 'reflection') {
+      return (
+        <ReflectionCard
+          key={`refl-${currentCard}`}
+          keyTakeaway={currentCardData.keyTakeaway}
+          nextPreview={currentCardData.nextPreview}
+          accentColor={accentColor}
+          dayNumber={dayNumber}
         />
       );
     }
