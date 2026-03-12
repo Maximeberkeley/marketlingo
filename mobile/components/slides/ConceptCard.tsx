@@ -876,11 +876,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-  /* Concept text — fluid sizing, min 16px for mobile readability */
+  /* Concept text — larger, more readable for immersive feel */
   conceptText: {
-    fontSize: Math.max(16, FLUID.body),
+    fontSize: Math.max(17, FLUID.body + 1),
     color: COLORS.textPrimary,
-    lineHeight: FLUID.bodyLineHeight,
+    lineHeight: FLUID.bodyLineHeight + 4,
     letterSpacing: 0.15,
   },
   boldHighlight: {
