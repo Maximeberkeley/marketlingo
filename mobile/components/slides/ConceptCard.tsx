@@ -695,16 +695,14 @@ const styles = StyleSheet.create({
     ...SHADOWS.md,
   },
 
-  /* Header card */
+  /* Header card — immersive full-height */
   headerCard: {
     backgroundColor: COLORS.bg1,
     borderRadius: 24,
-    padding: 32,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    padding: 36,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 280,
+    minHeight: 320,
     overflow: "hidden",
     ...SHADOWS.md,
   },
