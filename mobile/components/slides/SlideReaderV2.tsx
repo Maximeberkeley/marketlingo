@@ -128,6 +128,8 @@ export function SlideReaderV2({
   onPaywallTrigger,
   onAskMentor,
   mentorName,
+  dayNumber,
+  previousLessonTitle,
 }: SlideReaderV2Props) {
   const insets = useSafeAreaInsets();
   const [currentCard, setCurrentCard] = useState(0);
