@@ -10,6 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { router } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { useSubscription, TRIAL_DURATION_DAYS } from '../../hooks/useSubscription';
 
