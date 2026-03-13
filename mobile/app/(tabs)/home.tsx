@@ -243,6 +243,17 @@ export default function HomeScreen() {
     });
   }, [user, authLoading]);
 
+  // Re-fetch when tab regains focus (after changing goal/level in profile)
+  const hasLoadedOnce = useRef(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (hasLoadedOnce.current && user && !authLoading) {
+        fetchData();
+      }
+      hasLoadedOnce.current = true;
+    }, [user, authLoading, fetchData])
+  );
+
   // Stable greeting (don't re-randomize on re-render)
   const [greeting] = useState(() => {
     const hour = new Date().getHours();
