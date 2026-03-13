@@ -382,9 +382,11 @@ export default function TrainerScreen() {
               setMentorChatVisible(true);
             }}
             onAttemptComplete={async (_isCorrect, selectedOption) => {
+              // Map shuffled index back to original for the RPC's correctness check
+              const origIdx = current.options[selectedOption]?.originalIndex ?? selectedOption;
               const { data, error } = await supabase.rpc('submit_trainer_answer', {
                 p_scenario_id: current.id,
-                p_selected_option: selectedOption,
+                p_selected_option: origIdx,
                 p_time_spent: null,
               });
               if (error) { console.error(error); return undefined; }
