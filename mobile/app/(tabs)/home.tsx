@@ -279,6 +279,7 @@ export default function HomeScreen() {
           isProUser={isProUser}
           onPaywallTrigger={() => { session.closeReader(); router.push('/subscription' as any); }}
           dayNumber={currentDay}
+          metadata={(session.activeStack as any).metadata}
         />
       ) : session.showSessionComplete ? (
         <SessionCompleteCard
