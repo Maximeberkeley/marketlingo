@@ -204,7 +204,7 @@ export function useHomeData(
     // Fetch news/game stack
     const { data: newsStacks } = await supabase
       .from('stacks')
-      .select('id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)')
+      .select('id, title, stack_type, tags, duration_minutes, metadata, slides (slide_number, title, body, sources)')
       .eq('market_id', market)
       .contains('tags', ['DAILY_GAME'])
       .not('published_at', 'is', null)
