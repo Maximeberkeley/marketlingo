@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import { router } from 'expo-router';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 
