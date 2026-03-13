@@ -114,6 +114,7 @@ export function useContent() {
         stackType: stack.stack_type,
         slides: (stack.slides || []).sort((a: any, b: any) => a.slide_number - b.slide_number),
         requiresPro: stack.stack_type === 'game' || stack.stack_type === 'drill',
+        metadata: stack.metadata as StackMetadata | undefined,
       }));
 
       setLessons(formattedLessons);
