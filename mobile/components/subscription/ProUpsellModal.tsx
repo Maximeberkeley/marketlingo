@@ -128,7 +128,9 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
             <View style={styles.benefitsGrid}>
               {benefits.map((b, i) => (
                 <View key={i} style={styles.benefitItem}>
-                  <Text style={{ fontSize: 20 }}>{b.icon}</Text>
+                  <View style={styles.benefitIconWrap}>
+                    <Feather name={b.icon} size={16} color={COLORS.accent} />
+                  </View>
                   <Text style={styles.benefitText}>{b.text}</Text>
                 </View>
               ))}
