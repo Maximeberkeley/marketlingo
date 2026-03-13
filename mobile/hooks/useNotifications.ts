@@ -197,23 +197,18 @@ export function useNotifications() {
     await saveNotificationPreferences(updated);
   }, [preferences, scheduleDailyReminder, saveNotificationPreferences]);
 
-  // Setup listeners
+  // Setup foreground notification listener only (response handling is in _layout.tsx)
   useEffect(() => {
     notificationListener.current = Notifications.addNotificationReceivedListener(() => {
       // Notification received while app is foregrounded — handled by Notifications.setNotificationHandler
     });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
-
     return () => {
       if (notificationListener.current) {
         notificationListener.current.remove();
       }
-      if (responseListener.current) {
-        responseListener.current.remove();
-      }
     };
-  }, [handleNotificationResponse]);
+  }, []);
 
   // Auto-register when user is available
   useEffect(() => {
