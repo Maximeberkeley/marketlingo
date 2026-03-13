@@ -33,9 +33,10 @@ serve(async (req) => {
     if (type === "stack") {
       systemPrompt = `You are a market intelligence expert creating educational content for market analysts. 
       Generate a 6-slide stack following the exact template structure.
-      Each slide body MUST be under 280 characters.
+      Each slide body MUST be under 450 characters.
       Each slide title MUST be under 6 words.
       Include credible sources for slides 1-5.
+      CRITICAL: Each slide should teach ONE clear idea with a real example or data point.
       
       For NEWS stacks:
       Slide 1: What happened
@@ -66,16 +67,29 @@ serve(async (req) => {
       Return valid JSON with this structure:
       {
         "title": "Stack title (max 6 words)",
+        "learning_objectives": [
+          "One clear outcome the learner will understand (max 60 chars)",
+          "A second distinct learning outcome (max 60 chars)",
+          "A third outcome if applicable (max 60 chars)"
+        ],
+        "key_takeaway": "The single most important insight from this lesson (max 120 chars)",
+        "recap_bridge": "How this connects to what they already know (max 100 chars)",
+        "next_preview": "Teaser for what comes next (max 100 chars)",
         "slides": [
           {
             "slide_number": 1,
             "title": "Slide title",
-            "body": "Slide content under 280 chars",
+            "body": "Slide content under 450 chars",
             "sources": [{"label": "Source Name", "url": "https://..."}]
           }
         ],
         "tags": ["tag1", "tag2"]
-      }`;
+      }
+      
+      RULES:
+      - learning_objectives: Write as outcomes, not topics. "How SpaceX cut launch costs by 90%" NOT "Launch costs"
+      - key_takeaway: Write as an insight, not a summary. Should feel like a revelation.
+      - Create exactly 6 slides. Each body under 450 characters.`;
     } else if (type === "trainer") {
       systemPrompt = `You are a market reasoning coach. Create challenging scenarios that test market analysis skills.
       Focus on real-world decision-making situations.
