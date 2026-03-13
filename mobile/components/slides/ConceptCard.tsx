@@ -689,9 +689,8 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 24,
     paddingHorizontal: 24,
-    paddingBottom: 48,
+    paddingBottom: 32,
     flexDirection: "column",
-    minHeight: 340,
     ...SHADOWS.md,
   },
 
