@@ -27,7 +27,7 @@ export function useNotifications() {
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [preferences, setPreferences] = useState<NotificationPreferences>(DEFAULT_PREFERENCES);
   const notificationListener = useRef<Notifications.EventSubscription>(undefined as any);
-  const responseListener = useRef<Notifications.EventSubscription>(undefined as any);
+  
 
   // Check platform support
   useEffect(() => {
