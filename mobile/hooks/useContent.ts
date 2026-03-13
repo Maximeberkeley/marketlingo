@@ -2,6 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { storage, FamiliarityLevel, UserTier } from '../lib/storage';
 
+interface StackMetadata {
+  learning_objectives?: string[];
+  key_takeaway?: string;
+  recap_bridge?: string;
+  next_preview?: string;
+}
+
 interface Lesson {
   id: string;
   title: string;
@@ -11,6 +18,7 @@ interface Lesson {
   stackType: string;
   slides: Slide[];
   requiresPro: boolean;
+  metadata?: StackMetadata;
 }
 
 interface Slide {
