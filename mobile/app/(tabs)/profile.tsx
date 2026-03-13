@@ -305,7 +305,40 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Current Market — illustration instead of emoji */}
+        {/* Learning Preferences */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>LEARNING PREFERENCES</Text>
+          <TouchableOpacity style={styles.menuItem} onPress={() => setShowGoalPicker(true)}>
+            <View style={[styles.menuIcon, { backgroundColor: currentGoal ? (GOAL_OPTIONS.find(g => g.id === currentGoal)?.color || COLORS.accent) + '20' : COLORS.bg1 }]}>
+              <Feather
+                name={GOAL_OPTIONS.find(g => g.id === currentGoal)?.icon || 'target'}
+                size={18}
+                color={GOAL_OPTIONS.find(g => g.id === currentGoal)?.color || COLORS.accent}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Learning Goal</Text>
+              <Text style={styles.menuSubtitle}>
+                {GOAL_OPTIONS.find(g => g.id === currentGoal)?.title || 'Not set'}
+              </Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem} onPress={() => setShowLevelPicker(true)}>
+            <View style={[styles.menuIcon, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
+              <Feather name="sliders" size={18} color="#10B981" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Experience Level</Text>
+              <Text style={styles.menuSubtitle}>
+                {FAMILIARITY_LEVELS.find(l => l.id === currentLevel)?.name || 'Not set'}
+              </Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>CURRENT MARKET</Text>
           <TouchableOpacity style={styles.menuItem} onPress={() => setShowChangeWarning(true)}>
