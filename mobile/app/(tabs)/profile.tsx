@@ -6,7 +6,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { storage } from '../../lib/storage';
-import { COLORS } from '../../lib/constants';
+import { COLORS, FAMILIARITY_LEVELS } from '../../lib/constants';
 import { getMarketName } from '../../lib/markets';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
@@ -14,6 +14,7 @@ import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, STARTUP_STAGES } from '../../hooks/useUserXP';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { Feather } from '@expo/vector-icons';
+import { triggerHaptic } from '../../lib/haptics';
 
 // Market illustrations for profile
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
@@ -34,6 +35,15 @@ const MARKET_ILLUSTRATIONS: Record<string, any> = {
   neuroscience: require('../../assets/illustrations/neuroscience.png'),
 };
 
+type LearningGoal = 'join_industry' | 'invest' | 'build_startup' | 'curiosity';
+
+const GOAL_OPTIONS: { id: LearningGoal; icon: keyof typeof Feather.glyphMap; title: string; color: string }[] = [
+  { id: 'join_industry', icon: 'briefcase', title: 'Join the industry', color: '#3B82F6' },
+  { id: 'invest', icon: 'trending-up', title: 'Invest & evaluate', color: '#8B5CF6' },
+  { id: 'build_startup', icon: 'layers', title: 'Build a startup', color: '#22C55E' },
+  { id: 'curiosity', icon: 'compass', title: 'Pure curiosity', color: '#F59E0B' },
+];
+
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, signOut, loading: authLoading } = useAuth();
@@ -41,6 +51,13 @@ export default function ProfileScreen() {
   const [isProUser, setIsProUser] = useState(false);
   const [showChangeWarning, setShowChangeWarning] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Learning preferences state
+  const [currentGoal, setCurrentGoal] = useState<LearningGoal | null>(null);
+  const [currentLevel, setCurrentLevel] = useState<string | null>(null);
+  const [showGoalPicker, setShowGoalPicker] = useState(false);
+  const [showLevelPicker, setShowLevelPicker] = useState(false);
+  const [savingPreference, setSavingPreference] = useState(false);
 
   const { progress, availableDay } = useUserProgress(selectedMarket || undefined);
   const { xpData, getCurrentStage, getProgressToNextStage } = useUserXP(selectedMarket || undefined);
@@ -50,12 +67,28 @@ export default function ProfileScreen() {
       if (!user) return;
       const { data: profile } = await supabase
         .from('profiles')
-        .select('selected_market, is_pro_user')
+        .select('selected_market, is_pro_user, familiarity_level')
         .eq('id', user.id)
         .single();
       if (profile) {
         setSelectedMarket(profile.selected_market);
         setIsProUser(profile.is_pro_user || false);
+        setCurrentLevel(profile.familiarity_level || null);
+      }
+
+      // Fetch learning goal from user_progress
+      if (profile?.selected_market) {
+        const { data: prog } = await supabase
+          .from('user_progress')
+          .select('learning_goal, familiarity_level')
+          .eq('user_id', user.id)
+          .eq('market_id', profile.selected_market)
+          .maybeSingle();
+        if (prog) {
+          setCurrentGoal((prog.learning_goal as LearningGoal) || null);
+          // Market-specific level takes priority
+          if (prog.familiarity_level) setCurrentLevel(prog.familiarity_level);
+        }
       }
       setLoading(false);
     };
