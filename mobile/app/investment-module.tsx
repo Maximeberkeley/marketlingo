@@ -99,6 +99,7 @@ export default function InvestmentModuleScreen() {
   const [currentScenarioIndex, setCurrentScenarioIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [hasResumed, setHasResumed] = useState(false);
 
   useEffect(() => {
     const fetchMarket = async () => {
@@ -110,21 +111,35 @@ export default function InvestmentModuleScreen() {
     fetchMarket();
   }, [user]);
 
-  const { progress, scenarios, completedScenarioIds, loading: labLoading, recordAttempt, updateModuleScore } = useInvestmentLab(selectedMarket || undefined);
+  const { progress, scenarios, completedScenarioIds, loading: labLoading, recordAttempt, updateModuleScore, getResumeIndex } = useInvestmentLab(selectedMarket || undefined);
 
   const moduleConfig = MODULE_CONFIG[moduleId || 'valuation'];
-  const moduleScenarios = scenarios.filter((s) => s.scenario_type === moduleConfig?.scenarioType);
+  const moduleScenarios = useMemo(
+    () => scenarios.filter((s) => s.scenario_type === moduleConfig?.scenarioType),
+    [scenarios, moduleConfig?.scenarioType]
+  );
   const currentScenario = moduleScenarios[currentScenarioIndex];
   const completedInModule = moduleScenarios.filter((s) => completedScenarioIds.includes(s.id)).length;
   const moduleProgress = moduleScenarios.length > 0 ? Math.round((completedInModule / moduleScenarios.length) * 100) : 0;
 
+  // Resume from first incomplete scenario on initial load
+  useEffect(() => {
+    if (!hasResumed && !labLoading && moduleScenarios.length > 0) {
+      const resumeIdx = getResumeIndex(moduleScenarios);
+      if (resumeIdx > 0) setCurrentScenarioIndex(resumeIdx);
+      setHasResumed(true);
+    }
+  }, [labLoading, moduleScenarios, hasResumed]);
+
   const handleOptionSelect = async (index: number) => {
     if (selectedOption !== null || !currentScenario) return;
     setSelectedOption(index);
-    const isCorrect = currentScenario.options[index]?.isCorrect || index === currentScenario.correct_option_index;
+    // Use the shuffled isCorrect flag — always authoritative after shuffle
+    const isCorrect = currentScenario.options[index]?.isCorrect === true;
     await recordAttempt(currentScenario.id, index, isCorrect);
+    // Calculate score using current completedInModule + this result (avoids stale state)
     const newCount = completedInModule + (isCorrect ? 1 : 0);
-    const newScore = Math.round((newCount / moduleScenarios.length) * 100);
+    const newScore = moduleScenarios.length > 0 ? Math.round((newCount / moduleScenarios.length) * 100) : 0;
     await updateModuleScore(moduleConfig.scoreKey.replace('_score', '') as any, newScore);
     setShowFeedback(true);
   };
