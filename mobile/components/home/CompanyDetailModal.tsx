@@ -11,6 +11,7 @@ import {
   Dimensions,
   Image,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { Company } from '../../data/keyPlayersData';
 import { COLORS } from '../../lib/constants';
 
@@ -19,6 +20,10 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 interface CompanyDetailModalProps {
   company: Company | null;
   onClose: () => void;
+  /** Whether this company is already on the watchlist */
+  isOnWatchlist?: boolean;
+  /** Callback to add/remove from watchlist */
+  onToggleWatchlist?: (company: Company) => void;
 }
 
 const segmentColors: Record<string, { bg: string; text: string }> = {
@@ -43,7 +48,7 @@ const segmentColors: Record<string, { bg: string; text: string }> = {
   battery: { bg: 'rgba(99,102,241,0.2)', text: '#818CF8' },
 };
 
-export function CompanyDetailModal({ company, onClose }: CompanyDetailModalProps) {
+export function CompanyDetailModal({ company, onClose, isOnWatchlist, onToggleWatchlist }: CompanyDetailModalProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slideAnim = useRef(new Animated.Value(0)).current;
 
@@ -111,6 +116,22 @@ export function CompanyDetailModal({ company, onClose }: CompanyDetailModalProps
                 </View>
               </View>
             </View>
+            {/* Watchlist toggle */}
+            {onToggleWatchlist && (
+              <TouchableOpacity
+                style={[styles.watchlistBtn, isOnWatchlist && styles.watchlistBtnActive]}
+                onPress={() => onToggleWatchlist(company)}
+              >
+                <Feather
+                  name={isOnWatchlist ? 'check' : 'plus'}
+                  size={14}
+                  color={isOnWatchlist ? '#22C55E' : COLORS.accent}
+                />
+                <Text style={[styles.watchlistBtnText, isOnWatchlist && { color: '#22C55E' }]}>
+                  {isOnWatchlist ? 'Tracked' : 'Watch'}
+                </Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
               <Text style={styles.closeBtnText}>✕</Text>
             </TouchableOpacity>
@@ -199,6 +220,17 @@ export function CompanyDetailModal({ company, onClose }: CompanyDetailModalProps
                         ))}
                       </View>
                     </View>
+                  )}
+
+                  {/* Watchlist CTA at bottom of overview */}
+                  {onToggleWatchlist && !isOnWatchlist && (
+                    <TouchableOpacity
+                      style={styles.watchlistCTA}
+                      onPress={() => onToggleWatchlist(company)}
+                    >
+                      <Feather name="bookmark" size={16} color="#fff" />
+                      <Text style={styles.watchlistCTAText}>Add to Watchlist</Text>
+                    </TouchableOpacity>
                   )}
                 </View>
               ) : (
@@ -319,6 +351,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   closeBtnText: { color: COLORS.textMuted, fontSize: 14 },
+  // Watchlist button in header
+  watchlistBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+    backgroundColor: 'rgba(139,92,246,0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(139,92,246,0.2)',
+  },
+  watchlistBtnActive: {
+    backgroundColor: 'rgba(34,197,94,0.08)',
+    borderColor: 'rgba(34,197,94,0.2)',
+  },
+  watchlistBtnText: { fontSize: 11, fontWeight: '600', color: COLORS.accent },
+  // Watchlist CTA at bottom
+  watchlistCTA: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: COLORS.accent,
+    borderRadius: 14,
+    paddingVertical: 14,
+    marginTop: 4,
+  },
+  watchlistCTAText: { fontSize: 15, fontWeight: '700', color: '#fff' },
   progressRow: {
     flexDirection: 'row',
     gap: 4,
