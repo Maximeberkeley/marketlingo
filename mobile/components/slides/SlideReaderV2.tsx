@@ -197,22 +197,22 @@ export function SlideReaderV2({
   const allCards: CardItem[] = useMemo(() => {
     const items: CardItem[] = [];
 
-    // ── RECAP CARD: Bridge from previous lesson ──
+    // ── RECAP CARD: Use generated recap_bridge or fall back to previousLessonTitle ──
     if (stackType === 'LESSON' && !isReview) {
+      const recapText = metadata?.recap_bridge || previousLessonTitle;
       items.push({
         type: 'recap',
-        previousTopic: previousLessonTitle,
+        previousTopic: recapText,
         currentTopic: stackTitle,
         slideIndex: 0,
       });
     }
 
-    // ── OBJECTIVE CARD: Extract goals from slide titles ──
+    // ── OBJECTIVE CARD: Use generated learning_objectives or fall back to slide titles ──
     if (stackType === 'LESSON' && !isReview && slides.length >= 2) {
-      const goals = slides
-        .map(s => s.title)
-        .filter(t => t && t.length > 5)
-        .slice(0, 3);
+      const goals = metadata?.learning_objectives?.length
+        ? metadata.learning_objectives.slice(0, 3)
+        : slides.map(s => s.title).filter(t => t && t.length > 5).slice(0, 3);
       if (goals.length > 0) {
         items.push({ type: 'objective', goals, slideIndex: 0 });
       }
@@ -235,15 +235,16 @@ export function SlideReaderV2({
       });
     });
 
-    // ── REFLECTION CARD: Synthesize key takeaway ──
+    // ── REFLECTION CARD: Use generated key_takeaway and next_preview ──
     if (stackType === 'LESSON' && slides.length >= 2) {
-      // Extract a meaningful takeaway from the last slide's content
-      const lastSlideContent = slides[slides.length - 1];
-      const takeawayText = lastSlideContent?.title || stackTitle;
+      const takeaway = metadata?.key_takeaway
+        || `Understanding ${(slides[slides.length - 1]?.title || stackTitle).toLowerCase()} is essential to mastering how this industry operates and where it's heading.`;
+      const preview = metadata?.next_preview
+        || (dayNumber ? `Day ${dayNumber + 1} continues your journey deeper into the fundamentals.` : undefined);
       items.push({
         type: 'reflection',
-        keyTakeaway: `Understanding ${takeawayText.toLowerCase()} is essential to mastering how this industry operates and where it's heading.`,
-        nextPreview: dayNumber ? `Day ${dayNumber + 1} continues your journey deeper into the fundamentals.` : undefined,
+        keyTakeaway: takeaway,
+        nextPreview: preview,
         slideIndex: slides.length - 1,
       });
     }
