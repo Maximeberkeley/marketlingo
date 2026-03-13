@@ -6,7 +6,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { storage } from '../../lib/storage';
-import { COLORS } from '../../lib/constants';
+import { COLORS, FAMILIARITY_LEVELS } from '../../lib/constants';
 import { getMarketName } from '../../lib/markets';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
@@ -14,6 +14,7 @@ import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, STARTUP_STAGES } from '../../hooks/useUserXP';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { Feather } from '@expo/vector-icons';
+import { triggerHaptic } from '../../lib/haptics';
 
 // Market illustrations for profile
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
@@ -34,6 +35,15 @@ const MARKET_ILLUSTRATIONS: Record<string, any> = {
   neuroscience: require('../../assets/illustrations/neuroscience.png'),
 };
 
+type LearningGoal = 'join_industry' | 'invest' | 'build_startup' | 'curiosity';
+
+const GOAL_OPTIONS: { id: LearningGoal; icon: keyof typeof Feather.glyphMap; title: string; color: string }[] = [
+  { id: 'join_industry', icon: 'briefcase', title: 'Join the industry', color: '#3B82F6' },
+  { id: 'invest', icon: 'trending-up', title: 'Invest & evaluate', color: '#8B5CF6' },
+  { id: 'build_startup', icon: 'layers', title: 'Build a startup', color: '#22C55E' },
+  { id: 'curiosity', icon: 'compass', title: 'Pure curiosity', color: '#F59E0B' },
+];
+
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, signOut, loading: authLoading } = useAuth();
@@ -41,6 +51,13 @@ export default function ProfileScreen() {
   const [isProUser, setIsProUser] = useState(false);
   const [showChangeWarning, setShowChangeWarning] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Learning preferences state
+  const [currentGoal, setCurrentGoal] = useState<LearningGoal | null>(null);
+  const [currentLevel, setCurrentLevel] = useState<string | null>(null);
+  const [showGoalPicker, setShowGoalPicker] = useState(false);
+  const [showLevelPicker, setShowLevelPicker] = useState(false);
+  const [savingPreference, setSavingPreference] = useState(false);
 
   const { progress, availableDay } = useUserProgress(selectedMarket || undefined);
   const { xpData, getCurrentStage, getProgressToNextStage } = useUserXP(selectedMarket || undefined);
@@ -50,12 +67,28 @@ export default function ProfileScreen() {
       if (!user) return;
       const { data: profile } = await supabase
         .from('profiles')
-        .select('selected_market, is_pro_user')
+        .select('selected_market, is_pro_user, familiarity_level')
         .eq('id', user.id)
         .single();
       if (profile) {
         setSelectedMarket(profile.selected_market);
         setIsProUser(profile.is_pro_user || false);
+        setCurrentLevel(profile.familiarity_level || null);
+      }
+
+      // Fetch learning goal from user_progress
+      if (profile?.selected_market) {
+        const { data: prog } = await supabase
+          .from('user_progress')
+          .select('learning_goal, familiarity_level')
+          .eq('user_id', user.id)
+          .eq('market_id', profile.selected_market)
+          .maybeSingle();
+        if (prog) {
+          setCurrentGoal((prog.learning_goal as LearningGoal) || null);
+          // Market-specific level takes priority
+          if (prog.familiarity_level) setCurrentLevel(prog.familiarity_level);
+        }
       }
       setLoading(false);
     };
@@ -78,6 +111,46 @@ export default function ProfileScreen() {
     setShowChangeWarning(false);
     router.replace('/onboarding' as any);
   };
+
+  const handleChangeGoal = async (goal: LearningGoal) => {
+    if (!user || !selectedMarket) return;
+    triggerHaptic('medium');
+    setSavingPreference(true);
+    try {
+      await supabase.from('user_progress').upsert(
+        { user_id: user.id, market_id: selectedMarket, learning_goal: goal },
+        { onConflict: 'user_id,market_id' }
+      );
+      setCurrentGoal(goal);
+      setShowGoalPicker(false);
+      Alert.alert('Goal Updated', 'Your lessons will now be tailored to this goal. Go back to Home to see updated content.');
+    } catch (err) {
+      Alert.alert('Error', 'Failed to update goal.');
+    } finally {
+      setSavingPreference(false);
+    }
+  };
+
+  const handleChangeLevel = async (level: string) => {
+    if (!user || !selectedMarket) return;
+    triggerHaptic('medium');
+    setSavingPreference(true);
+    try {
+      await Promise.all([
+        supabase.from('profiles').update({ familiarity_level: level }).eq('id', user.id),
+        supabase.from('user_progress').upsert(
+          { user_id: user.id, market_id: selectedMarket, familiarity_level: level },
+          { onConflict: 'user_id,market_id' }
+        ),
+      ]);
+      setCurrentLevel(level);
+      setShowLevelPicker(false);
+      Alert.alert('Level Updated', 'Content difficulty will adjust to your new experience level.');
+    } catch (err) {
+      Alert.alert('Error', 'Failed to update level.');
+    } finally {
+      setSavingPreference(false);
+    }
 
   const handleExportNotebook = async () => {
     if (!user) return;
@@ -232,7 +305,40 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Current Market — illustration instead of emoji */}
+        {/* Learning Preferences */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>LEARNING PREFERENCES</Text>
+          <TouchableOpacity style={styles.menuItem} onPress={() => setShowGoalPicker(true)}>
+            <View style={[styles.menuIcon, { backgroundColor: currentGoal ? (GOAL_OPTIONS.find(g => g.id === currentGoal)?.color || COLORS.accent) + '20' : COLORS.bg1 }]}>
+              <Feather
+                name={GOAL_OPTIONS.find(g => g.id === currentGoal)?.icon || 'target'}
+                size={18}
+                color={GOAL_OPTIONS.find(g => g.id === currentGoal)?.color || COLORS.accent}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Learning Goal</Text>
+              <Text style={styles.menuSubtitle}>
+                {GOAL_OPTIONS.find(g => g.id === currentGoal)?.title || 'Not set'}
+              </Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem} onPress={() => setShowLevelPicker(true)}>
+            <View style={[styles.menuIcon, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
+              <Feather name="sliders" size={18} color="#10B981" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Experience Level</Text>
+              <Text style={styles.menuSubtitle}>
+                {FAMILIARITY_LEVELS.find(l => l.id === currentLevel)?.name || 'Not set'}
+              </Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>CURRENT MARKET</Text>
           <TouchableOpacity style={styles.menuItem} onPress={() => setShowChangeWarning(true)}>
@@ -338,6 +444,89 @@ export default function ProfileScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* Goal Picker Modal */}
+      <Modal visible={showGoalPicker} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Change Learning Goal</Text>
+            <Text style={styles.modalSubtitle}>
+              Your lessons and practice content will adapt to match your new objective.
+            </Text>
+            <View style={{ gap: 8, marginBottom: 16 }}>
+              {GOAL_OPTIONS.map((goal) => (
+                <TouchableOpacity
+                  key={goal.id}
+                  style={[
+                    styles.pickerOption,
+                    currentGoal === goal.id && { borderColor: goal.color, backgroundColor: goal.color + '08' },
+                  ]}
+                  onPress={() => handleChangeGoal(goal.id)}
+                  disabled={savingPreference}
+                >
+                  <View style={[styles.pickerIcon, { backgroundColor: goal.color + '18' }]}>
+                    <Feather name={goal.icon} size={18} color={goal.color} />
+                  </View>
+                  <Text style={[styles.pickerText, currentGoal === goal.id && { color: goal.color, fontWeight: '700' }]}>
+                    {goal.title}
+                  </Text>
+                  {currentGoal === goal.id && (
+                    <Feather name="check" size={18} color={goal.color} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity style={styles.modalCancel} onPress={() => setShowGoalPicker(false)}>
+              <Text style={styles.modalCancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Level Picker Modal */}
+      <Modal visible={showLevelPicker} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Change Experience Level</Text>
+            <Text style={styles.modalSubtitle}>
+              This adjusts the depth and complexity of your daily lessons.
+            </Text>
+            <View style={{ gap: 8, marginBottom: 16 }}>
+              {FAMILIARITY_LEVELS.map((level) => (
+                <TouchableOpacity
+                  key={level.id}
+                  style={[
+                    styles.pickerOption,
+                    currentLevel === level.id && { borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.06)' },
+                  ]}
+                  onPress={() => handleChangeLevel(level.id)}
+                  disabled={savingPreference}
+                >
+                  <View style={[styles.pickerIcon, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
+                    <Feather
+                      name={level.id === 'beginner' ? 'sunrise' : level.id === 'intermediate' ? 'sun' : 'zap'}
+                      size={18}
+                      color="#10B981"
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.pickerText, currentLevel === level.id && { color: '#10B981', fontWeight: '700' }]}>
+                      {level.name}
+                    </Text>
+                    <Text style={{ fontSize: 11, color: COLORS.textMuted, marginTop: 1 }}>{level.description}</Text>
+                  </View>
+                  {currentLevel === level.id && (
+                    <Feather name="check" size={18} color="#10B981" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity style={styles.modalCancel} onPress={() => setShowLevelPicker(false)}>
+              <Text style={styles.modalCancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -399,4 +588,15 @@ const styles = StyleSheet.create({
   modalCancelText: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
   modalDestructive: { flex: 1, paddingVertical: 14, borderRadius: 12, backgroundColor: '#EF4444', alignItems: 'center' },
   modalDestructiveText: { fontSize: 15, fontWeight: '600', color: '#FFFFFF' },
+  pickerOption: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    padding: 14, borderRadius: 14, borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: COLORS.bg2,
+  },
+  pickerIcon: {
+    width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center',
+  },
+  pickerText: {
+    fontSize: 15, fontWeight: '500', color: COLORS.textPrimary, flex: 1,
+  },
 });
