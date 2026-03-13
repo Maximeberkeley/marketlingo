@@ -277,7 +277,7 @@ export function TrainerCard({
             disabled={showFeedback || isSubmitting}
             activeOpacity={0.75}
           >
-            <View style={[styles.letterBadge, showFeedback && idx === serverFeedback?.correctIndex && styles.letterBadgeCorrect, showFeedback && idx === selectedIndex && !serverFeedback?.isCorrect && idx !== serverFeedback?.correctIndex && styles.letterBadgeWrong]}>
+            <View style={[styles.letterBadge, showFeedback && scenario.options[idx]?.isCorrect && styles.letterBadgeCorrect, showFeedback && idx === selectedIndex && !scenario.options[idx]?.isCorrect && styles.letterBadgeWrong]}>
               <Text style={styles.letterText}>{getOptionLetter(idx)}</Text>
             </View>
             <Text style={styles.optionText}>{opt.label}</Text>
