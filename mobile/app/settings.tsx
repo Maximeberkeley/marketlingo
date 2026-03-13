@@ -445,7 +445,13 @@ export default function SettingsScreen() {
       {/* Notification onboarding modal */}
       <NotificationOnboarding
         visible={showNotifOnboarding}
-        onComplete={(_enabled) => setShowNotifOnboarding(false)}
+        onComplete={async (enabled) => {
+          setShowNotifOnboarding(false);
+          if (enabled) {
+            // Permission was granted — now register and save token
+            await handleTogglePush(true);
+          }
+        }}
       />
     </View>
   );

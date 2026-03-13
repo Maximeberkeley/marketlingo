@@ -81,6 +81,17 @@ interface LeoCharacterProps {
   variant?: LeoVariant;
 }
 
+const LEO_IMAGES: Record<string, any> = {
+  idle: require('../../assets/mascot/leo-reference.png'),
+  thinking: require('../../assets/mascot/leo-reference.png'),
+  waving: require('../../assets/mascot/leo-reference.png'),
+  success: require('../../assets/mascot/leo-celebrating.png'),
+  celebrating: require('../../assets/mascot/leo-celebrating.png'),
+  failure: require('../../assets/mascot/leo-dizzy.png'),
+  urgent: require('../../assets/mascot/leo-dizzy.png'),
+  sleeping: require('../../assets/mascot/leo-reference.png'),
+};
+
 export function LeoCharacter({
   size = 'md',
   animation = 'idle',
@@ -120,6 +131,8 @@ export function LeoCharacter({
     }
   }, [animation, bounceAnim]);
 
+  const imageSource = LEO_IMAGES[animation] || LEO_IMAGES.idle;
+
   return (
     <View style={[styles.container, { width: px, height: px }]}>
       <View style={[styles.shadow, { width: px * 0.5, left: px * 0.25, bottom: px * 0.05 }]} />
@@ -131,7 +144,7 @@ export function LeoCharacter({
         }}
       >
         <Image
-          source={require('../../assets/mascot/leo-reference.png')}
+          source={imageSource}
           style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
         />
       </Animated.View>

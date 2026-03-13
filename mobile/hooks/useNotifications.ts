@@ -19,16 +19,7 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
   streakReminders: true,
 };
 
-// Configure notification handler
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+// NOTE: setNotificationHandler is configured globally in _layout.tsx — do not duplicate here
 
 export function useNotifications() {
   const { user } = useAuth();

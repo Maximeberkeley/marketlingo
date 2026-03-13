@@ -244,6 +244,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: COLORS.bg2,
   },
+  benefitIconWrap: {
+    width: 32, height: 32, borderRadius: 8,
+    backgroundColor: COLORS.accent + '15',
+    alignItems: 'center', justifyContent: 'center',
+  },
   benefitText: { fontSize: 12, color: COLORS.textMuted, flex: 1 },
   ctaPrimary: {
     backgroundColor: '#7C3AED',
