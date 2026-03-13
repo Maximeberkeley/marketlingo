@@ -350,7 +350,9 @@ export default function HomeScreen() {
             >
               {/* Illustration */}
               <View style={styles.lessonIllustrationWrap}>
-                <Image source={marketIllustration} style={styles.lessonIllustration} resizeMode="contain" />
+                <View style={styles.lessonIllustrationInner}>
+                  <Image source={marketIllustration} style={styles.lessonIllustration} resizeMode="contain" />
+                </View>
               </View>
 
               {/* Content */}
@@ -518,12 +520,16 @@ const styles = StyleSheet.create({
   },
   lessonIllustrationWrap: {
     alignItems: 'center', justifyContent: 'center',
-    paddingTop: 20, paddingBottom: 8,
-    backgroundColor: 'rgba(139, 92, 246, 0.04)',
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    paddingVertical: 24, paddingHorizontal: 20,
+    backgroundColor: COLORS.accent + '0A',
   },
-  lessonIllustration: { width: 180, height: 180 },
+  lessonIllustrationInner: {
+    width: 240, height: 200,
+    borderRadius: 20,
+    backgroundColor: COLORS.accent + '0C',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  lessonIllustration: { width: 200, height: 180 },
   lessonContent: { padding: 20 },
   lessonOverline: {
     ...TYPE.overline, color: COLORS.accent, marginBottom: 8,
