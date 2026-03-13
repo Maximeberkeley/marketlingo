@@ -35,18 +35,8 @@ export function useNotifications() {
     setIsSupported(Platform.OS === 'ios' || Platform.OS === 'android');
   }, []);
 
-  // Handle notification response (user tapped notification)
-  const handleNotificationResponse = useCallback((response: Notifications.NotificationResponse) => {
-    const data = response.notification.request.content.data;
-
-    if (data?.route) {
-      router.push(data.route as any);
-    } else if (data?.type === 'streak_warning') {
-      router.push('/(tabs)/home');
-    } else if (data?.type === 'leaderboard') {
-      router.push('/leaderboard');
-    }
-  }, []);
+  // NOTE: Notification response (tap) handling is done globally in _layout.tsx
+  // This hook only manages registration, scheduling, and preferences
 
   // Save push token to database
   const savePushToken = useCallback(async (token: string) => {
