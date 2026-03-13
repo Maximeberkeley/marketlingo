@@ -47,7 +47,7 @@ interface ConceptCardProps {
 }
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-const MAX_CARD_CONTENT_HEIGHT = SCREEN_HEIGHT * 0.55; // Safe area for scrollable content
+const MAX_CARD_CONTENT_HEIGHT = SCREEN_HEIGHT * 0.65; // Safe area for scrollable content
 
 // ── Topic icon mapping ──────────────────────────────────────────────
 const TOPIC_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
@@ -386,13 +386,7 @@ export function ConceptCard({
         </View>
       )}
       {title && <View style={styles.sectionDivider} />}
-      <ScrollView
-        style={{ maxHeight: MAX_CARD_CONTENT_HEIGHT }}
-        showsVerticalScrollIndicator={false}
-        nestedScrollEnabled
-      >
-        <ReadMoreText text={content} style={styles.conceptText} accentColor={accentColor} />
-      </ScrollView>
+      <ReadMoreText text={content} style={styles.conceptText} maxLines={20} accentColor={accentColor} />
     </Animated.View>
   );
 }
@@ -689,9 +683,8 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 24,
     paddingHorizontal: 24,
-    paddingBottom: 48,
+    paddingBottom: 32,
     flexDirection: "column",
-    minHeight: 340,
     ...SHADOWS.md,
   },
 
