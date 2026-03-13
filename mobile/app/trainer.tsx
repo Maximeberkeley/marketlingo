@@ -180,9 +180,12 @@ export default function TrainerScreen() {
     if (feedback || !user || !current) return;
     setSelectedOption(optionIdx);
 
+    // Send the ORIGINAL index to the RPC so correctness check matches the DB
+    const originalIndex = current.options[optionIdx]?.originalIndex ?? optionIdx;
+
     const { data, error } = await supabase.rpc('submit_trainer_answer', {
       p_scenario_id: current.id,
-      p_selected_option: optionIdx,
+      p_selected_option: originalIndex,
       p_time_spent: null,
     });
 
