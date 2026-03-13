@@ -112,6 +112,46 @@ export default function ProfileScreen() {
     router.replace('/onboarding' as any);
   };
 
+  const handleChangeGoal = async (goal: LearningGoal) => {
+    if (!user || !selectedMarket) return;
+    triggerHaptic('medium');
+    setSavingPreference(true);
+    try {
+      await supabase.from('user_progress').upsert(
+        { user_id: user.id, market_id: selectedMarket, learning_goal: goal },
+        { onConflict: 'user_id,market_id' }
+      );
+      setCurrentGoal(goal);
+      setShowGoalPicker(false);
+      Alert.alert('Goal Updated', 'Your lessons will now be tailored to this goal. Go back to Home to see updated content.');
+    } catch (err) {
+      Alert.alert('Error', 'Failed to update goal.');
+    } finally {
+      setSavingPreference(false);
+    }
+  };
+
+  const handleChangeLevel = async (level: string) => {
+    if (!user || !selectedMarket) return;
+    triggerHaptic('medium');
+    setSavingPreference(true);
+    try {
+      await Promise.all([
+        supabase.from('profiles').update({ familiarity_level: level }).eq('id', user.id),
+        supabase.from('user_progress').upsert(
+          { user_id: user.id, market_id: selectedMarket, familiarity_level: level },
+          { onConflict: 'user_id,market_id' }
+        ),
+      ]);
+      setCurrentLevel(level);
+      setShowLevelPicker(false);
+      Alert.alert('Level Updated', 'Content difficulty will adjust to your new experience level.');
+    } catch (err) {
+      Alert.alert('Error', 'Failed to update level.');
+    } finally {
+      setSavingPreference(false);
+    }
+
   const handleExportNotebook = async () => {
     if (!user) return;
     const { data: notes } = await supabase
