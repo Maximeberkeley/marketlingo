@@ -130,7 +130,7 @@ export function useHomeData(
     // 4. Closest available day
     let { data: lessonStacks } = await supabase
       .from('stacks')
-      .select('id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)')
+      .select('id, title, stack_type, tags, duration_minutes, metadata, slides (slide_number, title, body, sources)')
       .eq('market_id', market)
       .contains('tags', ['MICRO_LESSON', dayTag, goalTag, levelTag])
       .not('published_at', 'is', null)
