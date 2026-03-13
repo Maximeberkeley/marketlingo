@@ -386,13 +386,7 @@ export function ConceptCard({
         </View>
       )}
       {title && <View style={styles.sectionDivider} />}
-      <ScrollView
-        style={{ maxHeight: MAX_CARD_CONTENT_HEIGHT }}
-        showsVerticalScrollIndicator={false}
-        nestedScrollEnabled
-      >
-        <ReadMoreText text={content} style={styles.conceptText} accentColor={accentColor} />
-      </ScrollView>
+      <ReadMoreText text={content} style={styles.conceptText} maxLines={20} accentColor={accentColor} />
     </Animated.View>
   );
 }
