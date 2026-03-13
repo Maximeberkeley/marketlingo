@@ -612,7 +612,7 @@ const styles = StyleSheet.create({
   centered: { justifyContent: 'center', alignItems: 'center', padding: 24 },
   scrollContent: { padding: 20 },
   backBtn: { marginBottom: 16 },
-  heroImage: { width: 140, height: 140, marginBottom: 12 },
+  heroImage: { width: 200, height: 200, marginBottom: 12 },
   introCenter: { alignItems: 'center', marginBottom: 20 },
   introMsg: { fontSize: 14, color: COLORS.textMuted, textAlign: 'center', marginTop: 8 },
   heroCard: {
