@@ -138,6 +138,7 @@ export function SlideReaderV2({
   mentorName,
   dayNumber,
   previousLessonTitle,
+  metadata,
 }: SlideReaderV2Props) {
   const insets = useSafeAreaInsets();
   const [currentCard, setCurrentCard] = useState(0);
