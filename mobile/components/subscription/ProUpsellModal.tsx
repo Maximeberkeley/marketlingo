@@ -102,10 +102,10 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
         <Animated.View style={[styles.sheet, { transform: [{ translateY: slideAnim }] }]}>
           {/* Header gradient bar */}
           <View style={styles.header}>
-            <View style={styles.floatingParticle1}><Text style={{ fontSize: 14 }}>✨</Text></View>
-            <View style={styles.floatingParticle2}><Text style={{ fontSize: 12 }}>⚡</Text></View>
+            <View style={styles.floatingParticle1}><Feather name="star" size={14} color="rgba(255,255,255,0.5)" /></View>
+            <View style={styles.floatingParticle2}><Feather name="zap" size={12} color="rgba(255,255,255,0.4)" /></View>
             <Animated.View style={[styles.iconWrap, { transform: [{ scale: iconScale }] }]}>
-              <Text style={{ fontSize: 40 }}>{canStartTrial ? '' : ''}</Text>
+              <Feather name={canStartTrial ? 'gift' : 'award'} size={36} color="#FFF" />
             </Animated.View>
             <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
               <Text style={styles.closeBtnText}>✕</Text>
