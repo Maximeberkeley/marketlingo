@@ -520,11 +520,16 @@ const styles = StyleSheet.create({
   },
   lessonIllustrationWrap: {
     alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 28,
-    backgroundColor: COLORS.accent + '08',
-    borderBottomWidth: 0,
+    paddingVertical: 24, paddingHorizontal: 20,
+    backgroundColor: COLORS.accent + '0A',
   },
-  lessonIllustration: { width: 220, height: 200 },
+  lessonIllustrationInner: {
+    width: 240, height: 200,
+    borderRadius: 20,
+    backgroundColor: COLORS.accent + '0C',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  lessonIllustration: { width: 200, height: 180 },
   lessonContent: { padding: 20 },
   lessonOverline: {
     ...TYPE.overline, color: COLORS.accent, marginBottom: 8,
