@@ -463,7 +463,7 @@ export default function DrillsScreen() {
   if (questions.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Image source={require('../assets/cards/drills-hero.jpg')} style={{ width: 120, height: 120, marginBottom: 16 }} resizeMode="contain" />
+        <Image source={require('../assets/cards/drills-hero.jpg')} style={{ width: 180, height: 180, marginBottom: 16 }} resizeMode="contain" />
         <Text style={styles.emptyTitle}>No drills available</Text>
         <Text style={styles.emptySubtitle}>Complete more lessons to unlock drills!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
