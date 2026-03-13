@@ -5,6 +5,7 @@ import {
   getMarketContext,
   LEARNING_GOALS,
   GOAL_PERSONAS,
+  IMMERSIVE_METADATA_PROMPT,
   getGoalTag,
   getLevelTag,
   type CurriculumStructure,
@@ -240,14 +241,14 @@ async function generateDayContent(
       CRITICAL: Reference REAL companies, executives, deals, and dollar amounts.
       Include actual dates, announcement details, or market data.
       Every slide must be framed through the ${persona.label} lens.
-      Slide structure (6 slides, each body UNDER 280 characters):
+      Slide structure (6 slides, each body UNDER 450 characters):
       ${persona.slideGuidance}`,
     MICRO_LESSON: `Create a LESSON stack teaching a core concept about "${topic}" in ${marketContext}.
       YOU ARE WRITING EXCLUSIVELY FOR: ${persona.label.toUpperCase()} learners.
       CRITICAL: Teach like an industry veteran. Use REAL numbers, percentages, timelines.
       Reference actual companies, deals, and case studies.
       ALL 6 slides must serve the ${persona.label} perspective.
-      Slide structure (6 slides, each body UNDER 280 characters):
+      Slide structure (6 slides, each body UNDER 450 characters):
       ${persona.slideGuidance}`,
     TRAINER: `Create a decision-making SCENARIO about "${topic}" in ${marketContext}.
       Frame for a ${persona.label.toUpperCase()} learner.
@@ -259,13 +260,13 @@ async function generateDayContent(
       YOU ARE WRITING EXCLUSIVELY FOR: ${persona.label.toUpperCase()} learners.
       CRITICAL: Reference REAL historical events with specific dates and actors.
       Frame lessons through the ${persona.label} lens.
-      Slide structure (6 slides, each body UNDER 280 characters):
+      Slide structure (6 slides, each body UNDER 450 characters):
       ${persona.slideGuidance}`,
   };
 
   const systemPrompt = isTrainer
     ? `${persona.systemPrompt}\nYou create challenging decision scenarios for ${marketContext}. Based on REAL situations — framed for: ${persona.label}.`
-    : `${persona.systemPrompt}\nYou create educational content about ${marketContext}.\nEach slide body MUST be UNDER 280 characters. Each title MUST be 6 words or fewer.\nMonth ${month} theme: ${theme}\nStyle: Professional, direct, insight-dense. No fluff. Real examples only.`;
+    : `${persona.systemPrompt}\nYou create educational content about ${marketContext}.\nEach slide body MUST be UNDER 450 characters. Each title MUST be 6 words or fewer.\nMonth ${month} theme: ${theme}\nStyle: Professional, direct, insight-dense. No fluff. Real examples only.\nCRITICAL: Each slide should teach ONE clear idea with a real example or data point.`;
 
   const userPrompt = isTrainer
     ? `${typePrompts[dayType]}
@@ -287,20 +288,27 @@ async function generateDayContent(
          "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "strategy"]
        }`
     : `${typePrompts[dayType]}
+       
+       ${IMMERSIVE_METADATA_PROMPT}
+       
        Return valid JSON:
        {
          "title": "Stack title for ${persona.label} learners (max 6 words)",
+         "learning_objectives": ["Outcome 1 (max 60 chars)", "Outcome 2 (max 60 chars)", "Outcome 3 (max 60 chars)"],
+         "key_takeaway": "The single most important insight (max 120 chars)",
+         "recap_bridge": "Connection to previous day's topic (max 100 chars)",
+         "next_preview": "Teaser for what comes next (max 100 chars)",
          "slides": [
            {
              "slide_number": 1,
              "title": "Slide title (max 6 words)",
-             "body": "Insight-dense content under 280 characters",
+             "body": "Insight-dense content under 450 characters",
              "sources": [{"label": "Source", "url": "https://example.com"}]
            }
          ],
-         "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "${theme.toLowerCase().replace(/\s+/g, '-')}"]
+         "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "${theme.toLowerCase().replace(/\\s+/g, '-')}"]
        }
-       IMPORTANT: Create exactly 6 slides. Each body MUST be under 280 characters.
+       IMPORTANT: Create exactly 6 slides. Each body MUST be under 450 characters.
        ALL slides must serve the ${persona.label} perspective — ONLY for ${persona.label} learners.`;
 
   const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -372,6 +380,12 @@ async function saveContent(
       title: content.title || content.scenario?.substring(0, 50) || `Day ${day}`,
       stack_type: stackTypeMap[dayType] || 'LESSON',
       tags: [...baseTags, ...(content.tags || [])],
+      metadata: {
+        learning_objectives: content.learning_objectives || [],
+        key_takeaway: content.key_takeaway || '',
+        recap_bridge: content.recap_bridge || '',
+        next_preview: content.next_preview || '',
+      },
       published_at: new Date().toISOString(),
     })
     .select()
@@ -384,7 +398,7 @@ async function saveContent(
       stack_id: stack.id,
       slide_number: slide.slide_number || index + 1,
       title: (slide.title || `Slide ${index + 1}`).substring(0, 100),
-      body: (slide.body || '').substring(0, 280),
+      body: (slide.body || '').substring(0, 450),
       sources: slide.sources || [],
     }));
     await supabase.from('slides').insert(slideInserts);

@@ -2,6 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { storage, FamiliarityLevel, UserTier } from '../lib/storage';
 
+interface StackMetadata {
+  learning_objectives?: string[];
+  key_takeaway?: string;
+  recap_bridge?: string;
+  next_preview?: string;
+}
+
 interface Lesson {
   id: string;
   title: string;
@@ -11,6 +18,7 @@ interface Lesson {
   stackType: string;
   slides: Slide[];
   requiresPro: boolean;
+  metadata?: StackMetadata;
 }
 
 interface Slide {
@@ -69,6 +77,7 @@ export function useContent() {
           duration_minutes,
           market_id,
           tags,
+          metadata,
           slides (
             slide_number,
             title,
@@ -105,6 +114,7 @@ export function useContent() {
         stackType: stack.stack_type,
         slides: (stack.slides || []).sort((a: any, b: any) => a.slide_number - b.slide_number),
         requiresPro: stack.stack_type === 'game' || stack.stack_type === 'drill',
+        metadata: stack.metadata as StackMetadata | undefined,
       }));
 
       setLessons(formattedLessons);
