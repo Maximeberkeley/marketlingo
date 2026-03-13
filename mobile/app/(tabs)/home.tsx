@@ -350,7 +350,9 @@ export default function HomeScreen() {
             >
               {/* Illustration */}
               <View style={styles.lessonIllustrationWrap}>
-                <Image source={marketIllustration} style={styles.lessonIllustration} resizeMode="contain" />
+                <View style={styles.lessonIllustrationInner}>
+                  <Image source={marketIllustration} style={styles.lessonIllustration} resizeMode="contain" />
+                </View>
               </View>
 
               {/* Content */}
