@@ -588,4 +588,15 @@ const styles = StyleSheet.create({
   modalCancelText: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
   modalDestructive: { flex: 1, paddingVertical: 14, borderRadius: 12, backgroundColor: '#EF4444', alignItems: 'center' },
   modalDestructiveText: { fontSize: 15, fontWeight: '600', color: '#FFFFFF' },
+  pickerOption: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    padding: 14, borderRadius: 14, borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: COLORS.bg2,
+  },
+  pickerIcon: {
+    width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center',
+  },
+  pickerText: {
+    fontSize: 15, fontWeight: '500', color: COLORS.textPrimary, flex: 1,
+  },
 });
