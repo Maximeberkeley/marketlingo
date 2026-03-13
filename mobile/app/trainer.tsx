@@ -132,11 +132,19 @@ export default function TrainerScreen() {
         }
 
         const originalCorrectIndex = s.correct_option_index ?? 0;
-        const { shuffledOptions, newCorrectIndex } = shuffleOptions(rawOptions, originalCorrectIndex);
+        // Tag each option with its original index BEFORE shuffling
+        const tagged = rawOptions.map((label, i) => ({ label, originalIndex: i }));
+        // Fisher-Yates shuffle
+        for (let i = tagged.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [tagged[i], tagged[j]] = [tagged[j], tagged[i]];
+        }
+        const newCorrectIndex = tagged.findIndex((o) => o.originalIndex === originalCorrectIndex);
 
-        const options = shuffledOptions.map((label, idx) => ({
-          label,
+        const options = tagged.map((opt, idx) => ({
+          label: opt.label,
           isCorrect: idx === newCorrectIndex,
+          originalIndex: opt.originalIndex,
         }));
 
         return { id: s.id, scenario: s.scenario, question: s.question, options, correctIndex: newCorrectIndex };
