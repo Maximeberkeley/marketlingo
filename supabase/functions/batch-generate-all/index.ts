@@ -5,6 +5,7 @@ import {
   getMarketContext,
   LEARNING_GOALS,
   GOAL_PERSONAS,
+  IMMERSIVE_METADATA_PROMPT,
   getGoalTag,
   getLevelTag,
   type CurriculumStructure,
