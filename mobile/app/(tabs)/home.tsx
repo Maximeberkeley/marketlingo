@@ -518,12 +518,11 @@ const styles = StyleSheet.create({
   },
   lessonIllustrationWrap: {
     alignItems: 'center', justifyContent: 'center',
-    paddingTop: 20, paddingBottom: 8,
-    backgroundColor: 'rgba(139, 92, 246, 0.04)',
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    paddingVertical: 28,
+    backgroundColor: COLORS.accent + '08',
+    borderBottomWidth: 0,
   },
-  lessonIllustration: { width: 180, height: 180 },
+  lessonIllustration: { width: 220, height: 200 },
   lessonContent: { padding: 20 },
   lessonOverline: {
     ...TYPE.overline, color: COLORS.accent, marginBottom: 8,
