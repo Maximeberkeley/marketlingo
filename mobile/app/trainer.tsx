@@ -67,7 +67,7 @@ interface TrainerScenario {
   id: string;
   scenario: string;
   question: string;
-  options: { label: string; isCorrect: boolean }[];
+  options: { label: string; isCorrect: boolean; originalIndex: number }[];
   correctIndex: number;
 }
 
