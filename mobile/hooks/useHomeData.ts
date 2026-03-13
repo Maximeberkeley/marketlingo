@@ -165,7 +165,7 @@ export function useHomeData(
     if (!hasSlides(lessonStacks).length) {
       const { data: allLessons } = await supabase
         .from('stacks')
-        .select('id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)')
+        .select('id, title, stack_type, tags, duration_minutes, metadata, slides (slide_number, title, body, sources)')
         .eq('market_id', market)
         .contains('tags', ['MICRO_LESSON'])
         .not('published_at', 'is', null);
