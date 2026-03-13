@@ -77,6 +77,7 @@ export function useContent() {
           duration_minutes,
           market_id,
           tags,
+          metadata,
           slides (
             slide_number,
             title,
