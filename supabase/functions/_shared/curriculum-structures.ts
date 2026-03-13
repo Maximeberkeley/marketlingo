@@ -1140,6 +1140,27 @@ Slide 6: Reflection — thought-provoking question that changes how you see the 
   },
 };
 
+// Immersive lesson metadata prompt — appended to all non-trainer content generation
+export const IMMERSIVE_METADATA_PROMPT = `
+ADDITIONAL REQUIRED FIELDS — these power the immersive lesson UI:
+
+"learning_objectives": [
+  "One clear, specific thing the learner will understand after this lesson (max 60 chars)",
+  "A second distinct learning outcome (max 60 chars)",
+  "A third learning outcome if applicable (max 60 chars)"
+],
+"key_takeaway": "The single most important insight from this lesson — the one thing they should remember tomorrow (max 120 chars)",
+"recap_bridge": "One sentence connecting this lesson's topic to the PREVIOUS day's topic — what they already know that leads to today (max 100 chars)",
+"next_preview": "One sentence teasing what comes NEXT — why today's lesson matters for tomorrow (max 100 chars)"
+
+RULES FOR THESE FIELDS:
+- learning_objectives: Write as outcomes, not topics. "How SpaceX cut launch costs by 90%" NOT "Launch costs"
+- key_takeaway: Write as an insight, not a summary. Should feel like a revelation.
+- recap_bridge: Assume continuity. "Yesterday you learned X — today we go deeper into Y"
+- next_preview: Create anticipation. "Tomorrow: the company that proved everyone wrong"
+- Keep ALL fields concise — these appear as visual cards, not paragraphs
+`;
+
 export function getGoalTag(goal: LearningGoal): string {
   return `goal:${goal}`;
 }
