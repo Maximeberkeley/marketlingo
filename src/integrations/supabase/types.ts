@@ -789,6 +789,7 @@ export type Database = {
           duration_minutes: number | null
           id: string
           market_id: string
+          metadata: Json | null
           published_at: string | null
           stack_type: string
           tags: string[] | null
@@ -799,6 +800,7 @@ export type Database = {
           duration_minutes?: number | null
           id?: string
           market_id: string
+          metadata?: Json | null
           published_at?: string | null
           stack_type: string
           tags?: string[] | null
@@ -809,6 +811,7 @@ export type Database = {
           duration_minutes?: number | null
           id?: string
           market_id?: string
+          metadata?: Json | null
           published_at?: string | null
           stack_type?: string
           tags?: string[] | null
