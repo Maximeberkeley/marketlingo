@@ -23,7 +23,7 @@ import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
 import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
-import { shuffleOptions } from '../lib/textUtils';
+// shuffleOptions no longer needed — inline shuffle preserves originalIndex mapping
 
 
 // Market-specific hero images
@@ -67,7 +67,7 @@ interface TrainerScenario {
   id: string;
   scenario: string;
   question: string;
-  options: { label: string; isCorrect: boolean }[];
+  options: { label: string; isCorrect: boolean; originalIndex: number }[];
   correctIndex: number;
 }
 
@@ -132,11 +132,19 @@ export default function TrainerScreen() {
         }
 
         const originalCorrectIndex = s.correct_option_index ?? 0;
-        const { shuffledOptions, newCorrectIndex } = shuffleOptions(rawOptions, originalCorrectIndex);
+        // Tag each option with its original index BEFORE shuffling
+        const tagged = rawOptions.map((label, i) => ({ label, originalIndex: i }));
+        // Fisher-Yates shuffle
+        for (let i = tagged.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [tagged[i], tagged[j]] = [tagged[j], tagged[i]];
+        }
+        const newCorrectIndex = tagged.findIndex((o) => o.originalIndex === originalCorrectIndex);
 
-        const options = shuffledOptions.map((label, idx) => ({
-          label,
+        const options = tagged.map((opt, idx) => ({
+          label: opt.label,
           isCorrect: idx === newCorrectIndex,
+          originalIndex: opt.originalIndex,
         }));
 
         return { id: s.id, scenario: s.scenario, question: s.question, options, correctIndex: newCorrectIndex };
@@ -172,9 +180,12 @@ export default function TrainerScreen() {
     if (feedback || !user || !current) return;
     setSelectedOption(optionIdx);
 
+    // Send the ORIGINAL index to the RPC so correctness check matches the DB
+    const originalIndex = current.options[optionIdx]?.originalIndex ?? optionIdx;
+
     const { data, error } = await supabase.rpc('submit_trainer_answer', {
       p_scenario_id: current.id,
-      p_selected_option: optionIdx,
+      p_selected_option: originalIndex,
       p_time_spent: null,
     });
 
@@ -371,9 +382,11 @@ export default function TrainerScreen() {
               setMentorChatVisible(true);
             }}
             onAttemptComplete={async (_isCorrect, selectedOption) => {
+              // Map shuffled index back to original for the RPC's correctness check
+              const origIdx = current.options[selectedOption]?.originalIndex ?? selectedOption;
               const { data, error } = await supabase.rpc('submit_trainer_answer', {
                 p_scenario_id: current.id,
-                p_selected_option: selectedOption,
+                p_selected_option: origIdx,
                 p_time_spent: null,
               });
               if (error) { console.error(error); return undefined; }

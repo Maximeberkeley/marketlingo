@@ -89,7 +89,12 @@ export default function InvestmentLabScreen() {
     fetchMarket();
   }, [user]);
 
-  const { progress, completedScenarioIds, loading: labLoading, isUnlocked, getOverallProgress } = useInvestmentLab(selectedMarket || undefined);
+  const { progress, completedScenarioIds, loading: labLoading, isUnlocked, getOverallProgress, refetch } = useInvestmentLab(selectedMarket || undefined);
+
+  // Refetch when returning to this screen (e.g. after completing a module)
+  useEffect(() => {
+    if (selectedMarket && !labLoading) refetch();
+  }, [selectedMarket]);
 
   const loading = marketLoading || labLoading;
   const overallProgress = getOverallProgress();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -79,7 +79,15 @@ export default function InvestmentWatchlistScreen() {
     fetchMarket();
   }, [user]);
 
-  const { progress, loading: labLoading, removeFromWatchlist, addToWatchlist } = useInvestmentLab(selectedMarket || undefined);
+  const { progress, loading: labLoading, removeFromWatchlist, addToWatchlist, refetch } = useInvestmentLab(selectedMarket || undefined);
+
+  // Refetch watchlist data every time this screen mounts (handles cross-screen additions)
+  useEffect(() => {
+    if (selectedMarket && !labLoading) {
+      refetch();
+    }
+  }, [selectedMarket]);
+
   const watchlist = progress?.watchlist_companies || [];
   const watchlistIds = useMemo(() => new Set(watchlist.map((c) => c.id)), [watchlist]);
 
