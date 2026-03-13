@@ -48,7 +48,7 @@ function ScoreMascot({ isGoodScore }: { isGoodScore: boolean }) {
 
   return (
     <RNAnimated.View style={{ transform: [{ scale: scaleAnim }, { rotate }], marginBottom: 12, alignItems: 'center' }}>
-      <Image source={isGoodScore ? LEO_HAPPY : LEO_DIZZY} style={{ width: 120, height: 120 }} resizeMode="contain" />
+      <Image source={isGoodScore ? LEO_HAPPY : LEO_DIZZY} style={{ width: 180, height: 180 }} resizeMode="contain" />
     </RNAnimated.View>
   );
 }
@@ -463,7 +463,7 @@ export default function DrillsScreen() {
   if (questions.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Image source={require('../assets/cards/drills-hero.jpg')} style={{ width: 120, height: 120, marginBottom: 16 }} resizeMode="contain" />
+        <Image source={require('../assets/cards/drills-hero.jpg')} style={{ width: 180, height: 180, marginBottom: 16 }} resizeMode="contain" />
         <Text style={styles.emptyTitle}>No drills available</Text>
         <Text style={styles.emptySubtitle}>Complete more lessons to unlock drills!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
@@ -612,7 +612,7 @@ const styles = StyleSheet.create({
   centered: { justifyContent: 'center', alignItems: 'center', padding: 24 },
   scrollContent: { padding: 20 },
   backBtn: { marginBottom: 16 },
-  heroImage: { width: 140, height: 140, marginBottom: 12 },
+  heroImage: { width: 200, height: 200, marginBottom: 12 },
   introCenter: { alignItems: 'center', marginBottom: 20 },
   introMsg: { fontSize: 14, color: COLORS.textMuted, textAlign: 'center', marginTop: 8 },
   heroCard: {
