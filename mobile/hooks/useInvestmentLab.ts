@@ -251,13 +251,20 @@ export function useInvestmentLab(marketId?: string) {
     setTimeout(() => checkCertificationEligibility(), 100);
   };
 
-  const addToWatchlist = async (company: { id: string; name: string; ticker?: string }) => {
+  const addToWatchlist = async (company: { id: string; name: string; ticker?: string; segment?: string }) => {
     if (!user || !marketId) return;
     const currentProgress = await ensureProgress();
     if (!currentProgress) return;
     const currentList = currentProgress.watchlist_companies || [];
     if (currentList.some((c) => c.id === company.id)) return;
-    const newList = [...currentList, company];
+    const enriched = {
+      id: company.id,
+      name: company.name,
+      ticker: company.ticker,
+      segment: company.segment,
+      addedAt: new Date().toISOString(),
+    };
+    const newList = [...currentList, enriched];
     await supabase.from('investment_lab_progress').update({ watchlist_companies: newList }).eq('user_id', user.id).eq('market_id', marketId);
     updateProgress((prev) => prev ? { ...prev, watchlist_companies: newList } : prev);
     await addInvestmentXP(INVESTMENT_XP_REWARDS.WATCHLIST_ADD);

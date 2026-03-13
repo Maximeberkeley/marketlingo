@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { Company, marketCompanies, defaultCompanies } from '../../data/keyPlayersData';
 import { CompanyDetailModal } from './CompanyDetailModal';
 import { COLORS } from '../../lib/constants';
@@ -14,6 +15,10 @@ import { APP_ICONS } from '../../lib/icons';
 
 interface KeyPlayersProps {
   marketId: string;
+  /** IDs of companies already on the watchlist */
+  watchlistIds?: Set<string>;
+  /** Callback when user taps add/remove watchlist on a company */
+  onToggleWatchlist?: (company: Company) => void;
 }
 
 const segmentColors: Record<string, { bg: string; text: string }> = {
@@ -38,12 +43,13 @@ const segmentColors: Record<string, { bg: string; text: string }> = {
   battery: { bg: 'rgba(99,102,241,0.2)', text: '#818CF8' },
 };
 
-export function KeyPlayers({ marketId }: KeyPlayersProps) {
+export function KeyPlayers({ marketId, watchlistIds, onToggleWatchlist }: KeyPlayersProps) {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [showAll, setShowAll] = useState(false);
 
   const companies = marketCompanies[marketId] || defaultCompanies;
   const displayedCompanies = showAll ? companies : companies.slice(0, 8);
+  const watchlistSet = watchlistIds || new Set<string>();
 
   return (
     <>
@@ -69,6 +75,7 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
           <View style={styles.grid}>
             {displayedCompanies.map((company) => {
               const segStyle = segmentColors[company.segment] || { bg: 'rgba(139,92,246,0.15)', text: '#A78BFA' };
+              const isWatched = watchlistSet.has(company.id);
               return (
                 <TouchableOpacity
                   key={company.id}
@@ -94,11 +101,31 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
                         <Text style={styles.gridTicker}>${company.ticker}</Text>
                       )}
                     </View>
+                    {/* Watchlist indicator */}
+                    {isWatched && (
+                      <View style={styles.watchedDot}>
+                        <Feather name="eye" size={10} color="#22C55E" />
+                      </View>
+                    )}
                   </View>
-                  <View style={[styles.segmentBadge, { backgroundColor: segStyle.bg }]}>
-                    <Text style={[styles.segmentText, { color: segStyle.text }]}>
-                      {company.segment.toUpperCase()}
-                    </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <View style={[styles.segmentBadge, { backgroundColor: segStyle.bg }]}>
+                      <Text style={[styles.segmentText, { color: segStyle.text }]}>
+                        {company.segment.toUpperCase()}
+                      </Text>
+                    </View>
+                    {onToggleWatchlist && !isWatched && (
+                      <TouchableOpacity
+                        style={styles.quickAddBtn}
+                        onPress={(e) => {
+                          e.stopPropagation?.();
+                          onToggleWatchlist(company);
+                        }}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      >
+                        <Feather name="plus" size={10} color={COLORS.accent} />
+                      </TouchableOpacity>
+                    )}
                   </View>
                 </TouchableOpacity>
               );
@@ -112,6 +139,7 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
           >
             {displayedCompanies.map((company) => {
               const segStyle = segmentColors[company.segment] || { bg: 'rgba(139,92,246,0.15)', text: '#A78BFA' };
+              const isWatched = watchlistSet.has(company.id);
               return (
                 <TouchableOpacity
                   key={company.id}
@@ -119,6 +147,13 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
                   onPress={() => setSelectedCompany(company)}
                   activeOpacity={0.75}
                 >
+                  {/* Watched indicator */}
+                  {isWatched && (
+                    <View style={styles.watchedBadge}>
+                      <Feather name="eye" size={9} color="#22C55E" />
+                    </View>
+                  )}
+
                   {/* Logo */}
                   <View style={styles.logoContainerLarge}>
                     {company.logoUrl ? (
@@ -148,7 +183,7 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
                   </View>
 
                   {/* Bottom accent line */}
-                  <View style={styles.accentLine} />
+                  <View style={[styles.accentLine, isWatched && { backgroundColor: '#22C55E' }]} />
                 </TouchableOpacity>
               );
             })}
@@ -159,6 +194,10 @@ export function KeyPlayers({ marketId }: KeyPlayersProps) {
       <CompanyDetailModal
         company={selectedCompany}
         onClose={() => setSelectedCompany(null)}
+        isOnWatchlist={selectedCompany ? watchlistSet.has(selectedCompany.id) : false}
+        onToggleWatchlist={onToggleWatchlist ? (c) => {
+          onToggleWatchlist(c);
+        } : undefined}
       />
     </>
   );
@@ -247,6 +286,35 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accent,
     opacity: 0.5,
     borderRadius: 1,
+  },
+  // Watched indicators
+  watchedBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(34,197,94,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
+  watchedDot: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(34,197,94,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickAddBtn: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(139,92,246,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   // Grid styles
   grid: {
