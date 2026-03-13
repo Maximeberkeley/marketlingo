@@ -23,7 +23,7 @@ import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
 import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
-import { shuffleOptions } from '../lib/textUtils';
+// shuffleOptions no longer needed — inline shuffle preserves originalIndex mapping
 
 
 // Market-specific hero images
