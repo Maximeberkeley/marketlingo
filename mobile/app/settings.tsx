@@ -31,16 +31,7 @@ const NOTIFICATION_ROUTES: Record<string, string> = {
   investment: '/investment-lab',
 };
 
-// Configure foreground notification behavior
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+// NOTE: setNotificationHandler is configured globally in _layout.tsx — do not duplicate here
 
 async function registerForPushNotifications(): Promise<string | null> {
   if (Platform.OS === 'android') {
