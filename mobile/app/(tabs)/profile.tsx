@@ -444,6 +444,89 @@ export default function ProfileScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* Goal Picker Modal */}
+      <Modal visible={showGoalPicker} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Change Learning Goal</Text>
+            <Text style={styles.modalSubtitle}>
+              Your lessons and practice content will adapt to match your new objective.
+            </Text>
+            <View style={{ gap: 8, marginBottom: 16 }}>
+              {GOAL_OPTIONS.map((goal) => (
+                <TouchableOpacity
+                  key={goal.id}
+                  style={[
+                    styles.pickerOption,
+                    currentGoal === goal.id && { borderColor: goal.color, backgroundColor: goal.color + '08' },
+                  ]}
+                  onPress={() => handleChangeGoal(goal.id)}
+                  disabled={savingPreference}
+                >
+                  <View style={[styles.pickerIcon, { backgroundColor: goal.color + '18' }]}>
+                    <Feather name={goal.icon} size={18} color={goal.color} />
+                  </View>
+                  <Text style={[styles.pickerText, currentGoal === goal.id && { color: goal.color, fontWeight: '700' }]}>
+                    {goal.title}
+                  </Text>
+                  {currentGoal === goal.id && (
+                    <Feather name="check" size={18} color={goal.color} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity style={styles.modalCancel} onPress={() => setShowGoalPicker(false)}>
+              <Text style={styles.modalCancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Level Picker Modal */}
+      <Modal visible={showLevelPicker} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Change Experience Level</Text>
+            <Text style={styles.modalSubtitle}>
+              This adjusts the depth and complexity of your daily lessons.
+            </Text>
+            <View style={{ gap: 8, marginBottom: 16 }}>
+              {FAMILIARITY_LEVELS.map((level) => (
+                <TouchableOpacity
+                  key={level.id}
+                  style={[
+                    styles.pickerOption,
+                    currentLevel === level.id && { borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.06)' },
+                  ]}
+                  onPress={() => handleChangeLevel(level.id)}
+                  disabled={savingPreference}
+                >
+                  <View style={[styles.pickerIcon, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
+                    <Feather
+                      name={level.id === 'beginner' ? 'sunrise' : level.id === 'intermediate' ? 'sun' : 'zap'}
+                      size={18}
+                      color="#10B981"
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.pickerText, currentLevel === level.id && { color: '#10B981', fontWeight: '700' }]}>
+                      {level.name}
+                    </Text>
+                    <Text style={{ fontSize: 11, color: COLORS.textMuted, marginTop: 1 }}>{level.description}</Text>
+                  </View>
+                  {currentLevel === level.id && (
+                    <Feather name="check" size={18} color="#10B981" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity style={styles.modalCancel} onPress={() => setShowLevelPicker(false)}>
+              <Text style={styles.modalCancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
