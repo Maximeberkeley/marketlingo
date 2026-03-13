@@ -48,7 +48,7 @@ function ScoreMascot({ isGoodScore }: { isGoodScore: boolean }) {
 
   return (
     <RNAnimated.View style={{ transform: [{ scale: scaleAnim }, { rotate }], marginBottom: 12, alignItems: 'center' }}>
-      <Image source={isGoodScore ? LEO_HAPPY : LEO_DIZZY} style={{ width: 120, height: 120 }} resizeMode="contain" />
+      <Image source={isGoodScore ? LEO_HAPPY : LEO_DIZZY} style={{ width: 180, height: 180 }} resizeMode="contain" />
     </RNAnimated.View>
   );
 }
