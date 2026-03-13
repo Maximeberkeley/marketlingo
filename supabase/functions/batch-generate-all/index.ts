@@ -380,6 +380,12 @@ async function saveContent(
       title: content.title || content.scenario?.substring(0, 50) || `Day ${day}`,
       stack_type: stackTypeMap[dayType] || 'LESSON',
       tags: [...baseTags, ...(content.tags || [])],
+      metadata: {
+        learning_objectives: content.learning_objectives || [],
+        key_takeaway: content.key_takeaway || '',
+        recap_bridge: content.recap_bridge || '',
+        next_preview: content.next_preview || '',
+      },
       published_at: new Date().toISOString(),
     })
     .select()
@@ -392,7 +398,7 @@ async function saveContent(
       stack_id: stack.id,
       slide_number: slide.slide_number || index + 1,
       title: (slide.title || `Slide ${index + 1}`).substring(0, 100),
-      body: (slide.body || '').substring(0, 280),
+      body: (slide.body || '').substring(0, 450),
       sources: slide.sources || [],
     }));
     await supabase.from('slides').insert(slideInserts);
