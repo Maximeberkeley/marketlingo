@@ -47,7 +47,7 @@ interface ConceptCardProps {
 }
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-const MAX_CARD_CONTENT_HEIGHT = SCREEN_HEIGHT * 0.55; // Safe area for scrollable content
+const MAX_CARD_CONTENT_HEIGHT = SCREEN_HEIGHT * 0.65; // Safe area for scrollable content
 
 // ── Topic icon mapping ──────────────────────────────────────────────
 const TOPIC_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
