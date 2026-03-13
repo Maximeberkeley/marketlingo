@@ -217,7 +217,10 @@ export default function SettingsScreen() {
         data: { type: 'streak_warning', route: '/(tabs)/home' },
         sound: true,
       },
-      trigger: { seconds: 3 } as any,
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: 3,
+      },
     });
     Alert.alert('Test Sent', "You'll receive a notification in 3 seconds. Tap it to test deep-linking!");
   };
