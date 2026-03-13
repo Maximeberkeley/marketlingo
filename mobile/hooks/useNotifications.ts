@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import { router } from 'expo-router';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 
@@ -19,16 +18,7 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
   streakReminders: true,
 };
 
-// Configure notification handler
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+// NOTE: setNotificationHandler is configured globally in _layout.tsx — do not duplicate here
 
 export function useNotifications() {
   const { user } = useAuth();
@@ -37,25 +27,15 @@ export function useNotifications() {
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [preferences, setPreferences] = useState<NotificationPreferences>(DEFAULT_PREFERENCES);
   const notificationListener = useRef<Notifications.EventSubscription>(undefined as any);
-  const responseListener = useRef<Notifications.EventSubscription>(undefined as any);
+  
 
   // Check platform support
   useEffect(() => {
     setIsSupported(Platform.OS === 'ios' || Platform.OS === 'android');
   }, []);
 
-  // Handle notification response (user tapped notification)
-  const handleNotificationResponse = useCallback((response: Notifications.NotificationResponse) => {
-    const data = response.notification.request.content.data;
-
-    if (data?.route) {
-      router.push(data.route as any);
-    } else if (data?.type === 'streak_warning') {
-      router.push('/(tabs)/home');
-    } else if (data?.type === 'leaderboard') {
-      router.push('/leaderboard');
-    }
-  }, []);
+  // NOTE: Notification response (tap) handling is done globally in _layout.tsx
+  // This hook only manages registration, scheduling, and preferences
 
   // Save push token to database
   const savePushToken = useCallback(async (token: string) => {
@@ -217,23 +197,18 @@ export function useNotifications() {
     await saveNotificationPreferences(updated);
   }, [preferences, scheduleDailyReminder, saveNotificationPreferences]);
 
-  // Setup listeners
+  // Setup foreground notification listener only (response handling is in _layout.tsx)
   useEffect(() => {
     notificationListener.current = Notifications.addNotificationReceivedListener(() => {
       // Notification received while app is foregrounded — handled by Notifications.setNotificationHandler
     });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
-
     return () => {
       if (notificationListener.current) {
         notificationListener.current.remove();
       }
-      if (responseListener.current) {
-        responseListener.current.remove();
-      }
     };
-  }, [handleNotificationResponse]);
+  }, []);
 
   // Auto-register when user is available
   useEffect(() => {

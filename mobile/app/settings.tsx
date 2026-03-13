@@ -31,16 +31,7 @@ const NOTIFICATION_ROUTES: Record<string, string> = {
   investment: '/investment-lab',
 };
 
-// Configure foreground notification behavior
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+// NOTE: setNotificationHandler is configured globally in _layout.tsx — do not duplicate here
 
 async function registerForPushNotifications(): Promise<string | null> {
   if (Platform.OS === 'android') {
@@ -226,7 +217,10 @@ export default function SettingsScreen() {
         data: { type: 'streak_warning', route: '/(tabs)/home' },
         sound: true,
       },
-      trigger: { seconds: 3 } as any,
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: 3,
+      },
     });
     Alert.alert('Test Sent', "You'll receive a notification in 3 seconds. Tap it to test deep-linking!");
   };
@@ -451,7 +445,13 @@ export default function SettingsScreen() {
       {/* Notification onboarding modal */}
       <NotificationOnboarding
         visible={showNotifOnboarding}
-        onComplete={(_enabled) => setShowNotifOnboarding(false)}
+        onComplete={async (enabled) => {
+          setShowNotifOnboarding(false);
+          if (enabled) {
+            // Permission was granted — now register and save token
+            await handleTogglePush(true);
+          }
+        }}
       />
     </View>
   );

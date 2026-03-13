@@ -10,6 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { router } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { useSubscription, TRIAL_DURATION_DAYS } from '../../hooks/useSubscription';
 
@@ -53,10 +54,10 @@ const triggerContent: Record<PromoTrigger, { headline: string; subheadline: stri
 };
 
 const benefits = [
-  { icon: '∞', text: 'Unlimited lessons & games' },
-  { icon: '', text: 'Investment Lab access' },
-  { icon: '', text: 'AI mentors on-demand' },
-  { icon: '', text: 'Pro Trainer scenarios' },
+  { icon: 'layers' as const, text: 'Unlimited lessons & games' },
+  { icon: 'trending-up' as const, text: 'Investment Lab access' },
+  { icon: 'cpu' as const, text: 'AI mentors on-demand' },
+  { icon: 'target' as const, text: 'Pro Trainer scenarios' },
 ];
 
 export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureName }: ProUpsellModalProps) {
@@ -101,10 +102,10 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
         <Animated.View style={[styles.sheet, { transform: [{ translateY: slideAnim }] }]}>
           {/* Header gradient bar */}
           <View style={styles.header}>
-            <View style={styles.floatingParticle1}><Text style={{ fontSize: 14 }}>✨</Text></View>
-            <View style={styles.floatingParticle2}><Text style={{ fontSize: 12 }}>⚡</Text></View>
+            <View style={styles.floatingParticle1}><Feather name="star" size={14} color="rgba(255,255,255,0.5)" /></View>
+            <View style={styles.floatingParticle2}><Feather name="zap" size={12} color="rgba(255,255,255,0.4)" /></View>
             <Animated.View style={[styles.iconWrap, { transform: [{ scale: iconScale }] }]}>
-              <Text style={{ fontSize: 40 }}>{canStartTrial ? '' : ''}</Text>
+              <Feather name={canStartTrial ? 'gift' : 'award'} size={36} color="#FFF" />
             </Animated.View>
             <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
               <Text style={styles.closeBtnText}>✕</Text>
@@ -127,7 +128,9 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
             <View style={styles.benefitsGrid}>
               {benefits.map((b, i) => (
                 <View key={i} style={styles.benefitItem}>
-                  <Text style={{ fontSize: 20 }}>{b.icon}</Text>
+                  <View style={styles.benefitIconWrap}>
+                    <Feather name={b.icon} size={16} color={COLORS.accent} />
+                  </View>
                   <Text style={styles.benefitText}>{b.text}</Text>
                 </View>
               ))}
@@ -240,6 +243,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 12,
     backgroundColor: COLORS.bg2,
+  },
+  benefitIconWrap: {
+    width: 32, height: 32, borderRadius: 8,
+    backgroundColor: COLORS.accent + '15',
+    alignItems: 'center', justifyContent: 'center',
   },
   benefitText: { fontSize: 12, color: COLORS.textMuted, flex: 1 },
   ctaPrimary: {
