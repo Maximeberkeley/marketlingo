@@ -51,6 +51,13 @@ interface SlideData {
   sources: Source[];
 }
 
+interface StackMetadata {
+  learning_objectives?: string[];
+  key_takeaway?: string;
+  recap_bridge?: string;
+  next_preview?: string;
+}
+
 interface SlideReaderV2Props {
   stackTitle: string;
   stackType: 'NEWS' | 'HISTORY' | 'LESSON';
@@ -67,6 +74,7 @@ interface SlideReaderV2Props {
   mentorName?: string;
   dayNumber?: number;
   previousLessonTitle?: string;
+  metadata?: StackMetadata;
 }
 
 const MINIMUM_LESSON_TIME_SECONDS = 120;
