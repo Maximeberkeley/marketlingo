@@ -54,10 +54,10 @@ const triggerContent: Record<PromoTrigger, { headline: string; subheadline: stri
 };
 
 const benefits = [
-  { icon: '∞', text: 'Unlimited lessons & games' },
-  { icon: '', text: 'Investment Lab access' },
-  { icon: '', text: 'AI mentors on-demand' },
-  { icon: '', text: 'Pro Trainer scenarios' },
+  { icon: 'layers' as const, text: 'Unlimited lessons & games' },
+  { icon: 'trending-up' as const, text: 'Investment Lab access' },
+  { icon: 'cpu' as const, text: 'AI mentors on-demand' },
+  { icon: 'target' as const, text: 'Pro Trainer scenarios' },
 ];
 
 export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureName }: ProUpsellModalProps) {
