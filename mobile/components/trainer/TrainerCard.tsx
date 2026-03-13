@@ -238,7 +238,8 @@ export function TrainerCard({
 
   const getOptionStyle = (index: number) => {
     const isSelected = selectedIndex === index;
-    const isCorrectOption = serverFeedback ? index === serverFeedback.correctIndex : false;
+    // Use the pre-tagged isCorrect from the shuffled options (NOT serverFeedback.correctIndex which is the original DB index)
+    const isCorrectOption = scenario.options[index]?.isCorrect === true;
 
     if (!showFeedback) {
       return isSelected ? styles.optionSelected : styles.optionDefault;
