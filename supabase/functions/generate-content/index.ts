@@ -193,6 +193,12 @@ serve(async (req) => {
           title: parsedContent.title,
           stack_type: stack_type,
           tags: parsedContent.tags || [],
+          metadata: {
+            learning_objectives: parsedContent.learning_objectives || [],
+            key_takeaway: parsedContent.key_takeaway || '',
+            recap_bridge: parsedContent.recap_bridge || '',
+            next_preview: parsedContent.next_preview || '',
+          },
           published_at: new Date().toISOString(),
         })
         .select()
