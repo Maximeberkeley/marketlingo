@@ -34,6 +34,7 @@ import InvestmentCertificatePage from "./pages/InvestmentCertificatePage";
 import InvestmentWatchlist from "./pages/InvestmentWatchlist";
 import Subscription from "./pages/Subscription";
 import Practice from "./pages/Practice";
+import InterviewLab from "./pages/InterviewLab";
 import NotFound from "./pages/NotFound";
 import { PageTransition } from "@/components/layout/PageTransition";
 
