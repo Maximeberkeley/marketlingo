@@ -25,10 +25,9 @@ interface Summary {
   key_takeaways: string[] | null;
 }
 
-type TabType = 'DAILY' | 'WEEKLY' | 'MONTHLY';
+type TabType = 'WEEKLY' | 'MONTHLY';
 
 const typeColors: Record<string, { bg: string; text: string; label: string }> = {
-  DAILY: { bg: 'rgba(59,130,246,0.15)', text: '#60A5FA', label: 'Daily' },
   WEEKLY: { bg: 'rgba(139,92,246,0.15)', text: '#A78BFA', label: 'Weekly' },
   MONTHLY: { bg: 'rgba(16,185,129,0.15)', text: '#34D399', label: 'Monthly' },
 };
