@@ -97,7 +97,7 @@ function LeoCelebration({ visible, score }: { visible: boolean; score: number })
           {score === 100 ? '💯 PERFECT!' : score >= 90 ? '🌟 Outstanding!' : '🔥 Great Job!'}
         </Text>
         <Text style={st.celebrationSub}>Sophia is impressed!</Text>
-        <TouchableOpacity style={st.celebrationBtn} onPress={() => triggerHaptic('light')}>
+        <TouchableOpacity style={st.celebrationBtn} onPress={() => { triggerHaptic('light'); onDismiss?.(); }}>
           <Text style={st.celebrationBtnText}>Continue</Text>
         </TouchableOpacity>
       </Animated.View>
