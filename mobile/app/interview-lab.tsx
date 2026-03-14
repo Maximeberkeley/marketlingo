@@ -996,4 +996,19 @@ const st = StyleSheet.create({
   celebrationSub: { ...TYPE.body, color: 'rgba(255,255,255,0.7)', marginTop: 4 },
   celebrationBtn: { marginTop: 24, paddingHorizontal: 40, paddingVertical: 14, borderRadius: 14, backgroundColor: '#7C3AED' },
   celebrationBtnText: { ...TYPE.bodyBold, color: '#FFF' },
+
+  // Voice controls
+  voiceBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(139, 92, 246, 0.1)', alignItems: 'center', justifyContent: 'center' },
+  voiceBtnActive: { backgroundColor: '#7C3AED' },
+  voiceToggle: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: '#7C3AED' },
+  voiceToggleActive: { backgroundColor: '#7C3AED' },
+  voiceToggleText: { ...TYPE.caption, color: '#7C3AED', fontSize: 11, fontWeight: '700' },
+  voiceRecordArea: { alignItems: 'center', paddingVertical: 24, gap: 12 },
+  startRecordBtn: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#7C3AED', alignItems: 'center', justifyContent: 'center', ...SHADOWS.accent },
+  stopRecordBtn: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#EF4444', alignItems: 'center', justifyContent: 'center', ...SHADOWS.accent },
+  recordingPulse: { borderRadius: 40, borderWidth: 3, borderColor: 'rgba(239, 68, 68, 0.3)', padding: 4 },
+  recordingLabel: { ...TYPE.body, color: COLORS.textMuted, fontSize: 13 },
+  transcriptPreview: { width: '100%', marginTop: 8, padding: 12, borderRadius: 10, backgroundColor: COLORS.bg1 },
+  transcriptLabel: { ...TYPE.caption, color: COLORS.textMuted, marginBottom: 4 },
+  transcriptText: { ...TYPE.body, color: COLORS.textPrimary, lineHeight: 20 },
 });
