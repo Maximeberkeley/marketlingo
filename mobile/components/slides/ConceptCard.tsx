@@ -576,9 +576,9 @@ const MAX_CARD_CHARS = 350; // Lowered for beginner-friendly shorter cards
     const final = chunks.length > 5
       ? (() => { const m: string[] = []; const p = Math.ceil(chunks.length / 5); for (let i = 0; i < chunks.length; i += p) m.push(chunks.slice(i, i + p).join(" ")); return m; })()
       : chunks;
-    return final.map((t, i) => ({
+    return final.map((t, _i) => ({
       text: t,
-      seqLabel: final.length > 1 ? `Card ${i + 1} of ${final.length}` : undefined,
+      seqLabel: undefined, // No more confusing "Card X of Y" labels
     }));
   };
 
