@@ -69,6 +69,7 @@ function AnimatedRoutes() {
         <Route path="/investment-lab/watchlist" element={<PageTransition><InvestmentWatchlist /></PageTransition>} />
         <Route path="/investment-lab/certificate" element={<PageTransition><InvestmentCertificatePage /></PageTransition>} />
         <Route path="/investment-lab/:moduleId" element={<PageTransition><InvestmentModule /></PageTransition>} />
+        <Route path="/interview-lab" element={<PageTransition><InterviewLab /></PageTransition>} />
         <Route path="/subscription" element={<PageTransition><Subscription /></PageTransition>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
