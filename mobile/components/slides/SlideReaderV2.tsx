@@ -240,6 +240,18 @@ export function SlideReaderV2({
       });
     });
 
+    // ── FLASHCARD DRILL: Swipe-based true/false review before reflection ──
+    if (stackType === 'LESSON' && slides.length >= 2 && !isReview) {
+      const flashcards = generateFlashcardsFromSlides(slides.map(s => ({ title: s.title, body: s.body })));
+      if (flashcards.length >= 3) {
+        items.push({
+          type: 'flashcard',
+          cards: flashcards,
+          slideIndex: slides.length - 1,
+        });
+      }
+    }
+
     // ── REFLECTION CARD: Use generated key_takeaway and next_preview ──
     if (stackType === 'LESSON' && slides.length >= 2) {
       const takeaway = metadata?.key_takeaway
