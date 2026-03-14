@@ -107,7 +107,7 @@ export default function SummariesScreen() {
 
       {/* Tabs */}
       <View style={styles.tabs}>
-        {(['DAILY', 'WEEKLY', 'MONTHLY'] as TabType[]).map((tab) => (
+        {(['WEEKLY', 'MONTHLY'] as TabType[]).map((tab) => (
           <TouchableOpacity key={tab} style={[styles.tab, activeTab === tab && styles.tabActive]} onPress={() => setActiveTab(tab)}>
             <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
               {tab.charAt(0) + tab.slice(1).toLowerCase()}

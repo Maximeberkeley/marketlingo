@@ -40,8 +40,9 @@ export default function SummariesPage() {
         .from("summaries")
         .select("*")
         .eq("market_id", market)
+        .in("summary_type", ["WEEKLY", "MONTHLY"])
         .order("for_date", { ascending: false })
-        .limit(20);
+        .limit(50);
 
       if (error) {
         console.error("Error fetching summaries:", error);
