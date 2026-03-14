@@ -45,7 +45,7 @@ export default function SummariesScreen() {
       if (!user) return;
       const { data: profile } = await supabase.from('profiles').select('selected_market').eq('id', user.id).single();
       const market = profile?.selected_market || 'aerospace';
-      const { data } = await supabase.from('summaries').select('*').eq('market_id', market).order('for_date', { ascending: false }).limit(20);
+      const { data } = await supabase.from('summaries').select('*').eq('market_id', market).in('summary_type', ['WEEKLY', 'MONTHLY']).order('for_date', { ascending: false }).limit(50);
       setSummaries((data || []).map((s) => ({ ...s, key_takeaways: Array.isArray(s.key_takeaways) ? s.key_takeaways as string[] : null })));
       setLoading(false);
     };
