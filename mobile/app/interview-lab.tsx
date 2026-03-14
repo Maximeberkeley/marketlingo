@@ -7,12 +7,14 @@ import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { Audio } from 'expo-av';
 import { COLORS, SHADOWS, TYPE } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { triggerHaptic } from '../lib/haptics';
 import { getMarketName } from '../lib/markets';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
+import { speakAsSophia, transcribeAudio, buildFeedbackNarration } from '../lib/interviewVoice';
 import {
   InterviewPath, InterviewStage, ConfidencePersona,
   MECE_FRAMEWORKS, BIG_BOSS_QUESTIONS, STORY_HERO_STEPS,
@@ -125,6 +127,14 @@ export default function InterviewLabScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
 
+  // Voice state
+  const [isRecording, setIsRecording] = useState(false);
+  const [isNarrating, setIsNarrating] = useState(false);
+  const [isSophiaSpeaking, setIsSophiaSpeaking] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false); // toggle voice vs text input
+  const recordingRef = useRef<Audio.Recording | null>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
+
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -135,6 +145,120 @@ export default function InterviewLabScreen() {
         setLoading(false);
       });
   }, [user]);
+
+  // ─── Voice: Narrate scenario ───
+  const narrateScenario = useCallback(async (text: string) => {
+    if (isNarrating) return;
+    setIsNarrating(true);
+    triggerHaptic('light');
+    try {
+      // Stop any existing playback
+      if (soundRef.current) {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+      }
+      const sound = await speakAsSophia(text);
+      soundRef.current = sound;
+      if (sound) {
+        sound.setOnPlaybackStatusUpdate((status) => {
+          if ('didJustFinish' in status && status.didJustFinish) {
+            setIsNarrating(false);
+          }
+        });
+      } else {
+        setIsNarrating(false);
+      }
+    } catch {
+      setIsNarrating(false);
+    }
+  }, [isNarrating]);
+
+  // ─── Voice: Sophia reads feedback ───
+  const speakFeedback = useCallback(async (fb: any) => {
+    if (isSophiaSpeaking) return;
+    setIsSophiaSpeaking(true);
+    triggerHaptic('light');
+    try {
+      if (soundRef.current) {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+      }
+      const narration = buildFeedbackNarration(fb);
+      const sound = await speakAsSophia(narration);
+      soundRef.current = sound;
+      if (sound) {
+        sound.setOnPlaybackStatusUpdate((status) => {
+          if ('didJustFinish' in status && status.didJustFinish) {
+            setIsSophiaSpeaking(false);
+          }
+        });
+      } else {
+        setIsSophiaSpeaking(false);
+      }
+    } catch {
+      setIsSophiaSpeaking(false);
+    }
+  }, [isSophiaSpeaking]);
+
+  // ─── Voice: Record user answer ───
+  const startRecording = useCallback(async () => {
+    try {
+      const permission = await Audio.requestPermissionsAsync();
+      if (!permission.granted) return;
+
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+      recordingRef.current = recording;
+      setIsRecording(true);
+      triggerHaptic('medium');
+    } catch (err) {
+      console.warn('Recording error:', err);
+    }
+  }, []);
+
+  const stopRecording = useCallback(async () => {
+    if (!recordingRef.current) return;
+    setIsRecording(false);
+    setSubmitting(true);
+    triggerHaptic('light');
+
+    try {
+      await recordingRef.current.stopAndUnloadAsync();
+      const uri = recordingRef.current.getURI();
+      recordingRef.current = null;
+
+      if (uri) {
+        const transcribed = await transcribeAudio(uri);
+        if (transcribed) {
+          setUserResponse(transcribed);
+        }
+      }
+    } catch (err) {
+      console.warn('Stop recording error:', err);
+    } finally {
+      setSubmitting(false);
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
+    }
+  }, []);
+
+  // ─── Stop audio on unmount ───
+  useEffect(() => {
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.stopAsync().catch(() => {});
+        soundRef.current.unloadAsync().catch(() => {});
+      }
+      if (recordingRef.current) {
+        recordingRef.current.stopAndUnloadAsync().catch(() => {});
+      }
+    };
+  }, []);
 
   const submitMock = useCallback(async () => {
     if (!market || !user || userResponse.trim().length < 20) return;
@@ -166,6 +290,9 @@ export default function InterviewLabScreen() {
       } else {
         triggerHaptic('light');
       }
+
+      // Auto-narrate feedback with Sophia's voice
+      setTimeout(() => speakFeedback(data), 800);
     } catch (err) {
       console.error('Mock submission error:', err);
       setFeedback({
@@ -180,7 +307,7 @@ export default function InterviewLabScreen() {
     } finally {
       setSubmitting(false);
     }
-  }, [market, user, userResponse, mockIndex, persona, path]);
+  }, [market, user, userResponse, mockIndex, persona, path, speakFeedback]);
 
   if (loading) {
     return <View style={[st.container, st.centered]}><ActivityIndicator size="large" color={COLORS.accent} /></View>;
@@ -470,10 +597,17 @@ export default function InterviewLabScreen() {
               <View style={st.card}>
                 <View style={st.sophiaHeader}>
                   <View style={st.sophiaAvatar}><Text style={{ fontSize: 20 }}>👩‍💼</Text></View>
-                  <View>
+                  <View style={{ flex: 1 }}>
                     <Text style={st.sophiaName}>Sophia Hernández</Text>
                     <Text style={st.sophiaRole}>Case Interview Coach</Text>
                   </View>
+                  {/* Narrate scenario button */}
+                  <TouchableOpacity
+                    onPress={() => narrateScenario(`${currentMock.scenario} ... ${currentMock.question}`)}
+                    style={[st.voiceBtn, isNarrating && st.voiceBtnActive]}
+                  >
+                    <Feather name={isNarrating ? 'volume-2' : 'volume-1'} size={18} color={isNarrating ? '#FFF' : '#7C3AED'} />
+                  </TouchableOpacity>
                 </View>
                 <View style={st.scenarioBox}>
                   <Text style={st.scenarioText}>{currentMock.scenario}</Text>
@@ -485,16 +619,61 @@ export default function InterviewLabScreen() {
               {!feedback && (
                 <>
                   <View style={st.card}>
-                    <Text style={st.cardLabel}>Your Response</Text>
-                    <TextInput
-                      style={st.responseInput}
-                      multiline
-                      placeholder="Type your answer here... Start with 'First, I would...' for a structured approach."
-                      placeholderTextColor={COLORS.textMuted}
-                      value={userResponse}
-                      onChangeText={setUserResponse}
-                      textAlignVertical="top"
-                    />
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <Text style={st.cardLabel}>Your Response</Text>
+                      {/* Voice/Text toggle */}
+                      <TouchableOpacity
+                        onPress={() => { setVoiceMode(!voiceMode); triggerHaptic('light'); }}
+                        style={[st.voiceToggle, voiceMode && st.voiceToggleActive]}
+                      >
+                        <Feather name={voiceMode ? 'mic' : 'edit-3'} size={14} color={voiceMode ? '#FFF' : '#7C3AED'} />
+                        <Text style={[st.voiceToggleText, voiceMode && { color: '#FFF' }]}>
+                          {voiceMode ? 'Voice' : 'Text'}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    {voiceMode ? (
+                      /* Voice Recording Mode */
+                      <View style={st.voiceRecordArea}>
+                        {isRecording ? (
+                          <>
+                            <Animated.View style={st.recordingPulse}>
+                              <TouchableOpacity onPress={stopRecording} style={st.stopRecordBtn}>
+                                <Feather name="square" size={24} color="#FFF" />
+                              </TouchableOpacity>
+                            </Animated.View>
+                            <Text style={st.recordingLabel}>🔴 Recording... Tap to stop</Text>
+                          </>
+                        ) : (
+                          <>
+                            <TouchableOpacity onPress={startRecording} style={st.startRecordBtn}>
+                              <Feather name="mic" size={28} color="#FFF" />
+                            </TouchableOpacity>
+                            <Text style={st.recordingLabel}>Tap to speak your answer</Text>
+                            {userResponse.length > 0 && (
+                              <View style={st.transcriptPreview}>
+                                <Text style={st.transcriptLabel}>Transcription:</Text>
+                                <Text style={st.transcriptText}>{userResponse}</Text>
+                              </View>
+                            )}
+                          </>
+                        )}
+                      </View>
+                    ) : (
+                      /* Text Input Mode */
+                      <>
+                        <TextInput
+                          style={st.responseInput}
+                          multiline
+                          placeholder="Type your answer here... Start with 'First, I would...' for a structured approach."
+                          placeholderTextColor={COLORS.textMuted}
+                          value={userResponse}
+                          onChangeText={setUserResponse}
+                          textAlignVertical="top"
+                        />
+                      </>
+                    )}
                     <VibeMeter text={userResponse} />
                   </View>
                   <TouchableOpacity
@@ -531,7 +710,13 @@ export default function InterviewLabScreen() {
                   <View style={st.card}>
                     <View style={st.sophiaHeader}>
                       <View style={st.sophiaAvatar}><Text style={{ fontSize: 20 }}>👩‍💼</Text></View>
-                      <Text style={st.sophiaQuote}>{feedback.sophiaSays}</Text>
+                      <Text style={[st.sophiaQuote, { flex: 1 }]}>{feedback.sophiaSays}</Text>
+                      <TouchableOpacity
+                        onPress={() => speakFeedback(feedback)}
+                        style={[st.voiceBtn, isSophiaSpeaking && st.voiceBtnActive]}
+                      >
+                        <Feather name={isSophiaSpeaking ? 'volume-2' : 'volume-1'} size={16} color={isSophiaSpeaking ? '#FFF' : '#7C3AED'} />
+                      </TouchableOpacity>
                     </View>
                   </View>
 
@@ -811,4 +996,19 @@ const st = StyleSheet.create({
   celebrationSub: { ...TYPE.body, color: 'rgba(255,255,255,0.7)', marginTop: 4 },
   celebrationBtn: { marginTop: 24, paddingHorizontal: 40, paddingVertical: 14, borderRadius: 14, backgroundColor: '#7C3AED' },
   celebrationBtnText: { ...TYPE.bodyBold, color: '#FFF' },
+
+  // Voice controls
+  voiceBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(139, 92, 246, 0.1)', alignItems: 'center', justifyContent: 'center' },
+  voiceBtnActive: { backgroundColor: '#7C3AED' },
+  voiceToggle: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: '#7C3AED' },
+  voiceToggleActive: { backgroundColor: '#7C3AED' },
+  voiceToggleText: { ...TYPE.caption, color: '#7C3AED', fontSize: 11, fontWeight: '700' },
+  voiceRecordArea: { alignItems: 'center', paddingVertical: 24, gap: 12 },
+  startRecordBtn: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#7C3AED', alignItems: 'center', justifyContent: 'center', ...SHADOWS.accent },
+  stopRecordBtn: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#EF4444', alignItems: 'center', justifyContent: 'center', ...SHADOWS.accent },
+  recordingPulse: { borderRadius: 40, borderWidth: 3, borderColor: 'rgba(239, 68, 68, 0.3)', padding: 4 },
+  recordingLabel: { ...TYPE.body, color: COLORS.textMuted, fontSize: 13 },
+  transcriptPreview: { width: '100%', marginTop: 8, padding: 12, borderRadius: 10, backgroundColor: COLORS.bg1 },
+  transcriptLabel: { ...TYPE.caption, color: COLORS.textMuted, marginBottom: 4 },
+  transcriptText: { ...TYPE.body, color: COLORS.textPrimary, lineHeight: 20 },
 });
