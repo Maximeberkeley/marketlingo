@@ -172,7 +172,40 @@ export default function HomeScreen() {
     onDataRefresh: async () => { await fetchData(); },
   });
 
-  const { quests, completedCount, totalBonusXP, allComplete: allQuestsComplete } = useDailyQuests(
+  // Handle deep-link from roadmap: open a specific stack by ID
+  const openStackHandled = useRef<string | null>(null);
+  useEffect(() => {
+    if (!openStackId || !selectedMarket || !user || session.showReader) return;
+    if (openStackHandled.current === openStackId) return;
+    openStackHandled.current = openStackId;
+
+    (async () => {
+      const { data: stack } = await supabase
+        .from('stacks')
+        .select('id, title, stack_type, tags, duration_minutes, metadata, slides (slide_number, title, body, sources)')
+        .eq('id', openStackId)
+        .not('published_at', 'is', null)
+        .single();
+
+      if (stack && (stack.slides as any[])?.length > 0) {
+        const formatted = {
+          ...stack,
+          tags: stack.tags || [],
+          slides: ((stack.slides as any[]) || [])
+            .sort((a: any, b: any) => a.slide_number - b.slide_number)
+            .map((s: any) => ({
+              ...s,
+              sources: Array.isArray(s.sources)
+                ? s.sources.map((src: any) => typeof src === 'string' ? { label: 'Source', url: src } : src).filter(Boolean)
+                : [],
+            })),
+        };
+        session.handleOpenStack(formatted as any);
+      }
+    })();
+  }, [openStackId, selectedMarket, user]);
+
+
     dailyCompletion ?? null, streak
   );
 
