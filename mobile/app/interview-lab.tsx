@@ -528,8 +528,21 @@ export default function InterviewLabScreen() {
                       disabled={revealed}
                       onPress={() => {
                         setMcqSelected(i);
-                        triggerHaptic(correct ? 'success' : 'error');
-                        if (correct) setMcqScore(s => s + 1);
+                        const isCorrect = i === currentMCQ.correctIndex;
+                        triggerHaptic(isCorrect ? 'success' : 'error');
+                        if (isCorrect) setMcqScore(s => s + 1);
+                        // Issue #10: Persist MCQ attempt
+                        if (user && market && path) {
+                          supabase.from('interview_lab_attempts').insert({
+                            user_id: user.id,
+                            market_id: market,
+                            path,
+                            stage: 3,
+                            attempt_type: 'mcq',
+                            score: isCorrect ? 100 : 0,
+                            scenario_question: currentMCQ.question,
+                          }).then(() => {});
+                        }
                       }}
                       style={[
                         st.mcqOption,
