@@ -600,3 +600,4 @@ const styles = StyleSheet.create({
     fontSize: 15, fontWeight: '500', color: COLORS.textPrimary, flex: 1,
   },
 });
+}
