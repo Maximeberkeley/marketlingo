@@ -710,7 +710,13 @@ export default function InterviewLabScreen() {
                   <View style={st.card}>
                     <View style={st.sophiaHeader}>
                       <View style={st.sophiaAvatar}><Text style={{ fontSize: 20 }}>👩‍💼</Text></View>
-                      <Text style={st.sophiaQuote}>{feedback.sophiaSays}</Text>
+                      <Text style={[st.sophiaQuote, { flex: 1 }]}>{feedback.sophiaSays}</Text>
+                      <TouchableOpacity
+                        onPress={() => speakFeedback(feedback)}
+                        style={[st.voiceBtn, isSophiaSpeaking && st.voiceBtnActive]}
+                      >
+                        <Feather name={isSophiaSpeaking ? 'volume-2' : 'volume-1'} size={16} color={isSophiaSpeaking ? '#FFF' : '#7C3AED'} />
+                      </TouchableOpacity>
                     </View>
                   </View>
 
