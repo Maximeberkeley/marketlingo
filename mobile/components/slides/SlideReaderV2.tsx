@@ -21,6 +21,7 @@ import { ObjectiveCard, RecapCard, ReflectionCard } from './ImmersiveCards';
 import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
 import { QuizCard, generateQuizFromSlide, shouldShowQuiz, QuizCardData } from './QuizCard';
 import { WordMatchGame, extractTermPairs, shouldShowWordMatch, WordPair } from './WordMatchGame';
+import { SwipeFlashcardDrill, generateFlashcardsFromSlides, FlashcardItem } from './SwipeFlashcardDrill';
 import { AnnotationModal } from './AnnotationModal';
 import { AskLeoOverlay } from '../ai/AskLeoOverlay';
 import { playSound } from '../../lib/sounds';
@@ -119,6 +120,10 @@ type CardItem = {
   type: 'reflection';
   keyTakeaway: string;
   nextPreview?: string;
+  slideIndex: number;
+} | {
+  type: 'flashcard';
+  cards: FlashcardItem[];
   slideIndex: number;
 };
 
@@ -234,6 +239,18 @@ export function SlideReaderV2({
         });
       });
     });
+
+    // ── FLASHCARD DRILL: Swipe-based true/false review before reflection ──
+    if (stackType === 'LESSON' && slides.length >= 2 && !isReview) {
+      const flashcards = generateFlashcardsFromSlides(slides.map(s => ({ title: s.title, body: s.body })));
+      if (flashcards.length >= 3) {
+        items.push({
+          type: 'flashcard',
+          cards: flashcards,
+          slideIndex: slides.length - 1,
+        });
+      }
+    }
 
     // ── REFLECTION CARD: Use generated key_takeaway and next_preview ──
     if (stackType === 'LESSON' && slides.length >= 2) {
@@ -540,6 +557,19 @@ export function SlideReaderV2({
           currentTopic={currentCardData.currentTopic}
           accentColor={accentColor}
           marketId={marketId}
+        />
+      );
+    }
+    if (currentCardData.type === 'flashcard') {
+      return (
+        <SwipeFlashcardDrill
+          key={`flash-${currentCard}`}
+          cards={currentCardData.cards}
+          onComplete={(score, total) => {
+            if (score >= total * 0.7) playSound('correct');
+            setTimeout(() => goNext(), 800);
+          }}
+          accentColor={accentColor}
         />
       );
     }

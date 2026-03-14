@@ -40,8 +40,9 @@ export default function SummariesPage() {
         .from("summaries")
         .select("*")
         .eq("market_id", market)
+        .in("summary_type", ["WEEKLY", "MONTHLY"])
         .order("for_date", { ascending: false })
-        .limit(20);
+        .limit(50);
 
       if (error) {
         console.error("Error fetching summaries:", error);
@@ -160,11 +161,8 @@ export default function SummariesPage() {
 
       {/* Tabs */}
       <div className="flex-1 screen-padding py-6">
-        <Tabs defaultValue="daily" className="w-full">
+        <Tabs defaultValue="weekly" className="w-full">
           <TabsList className="w-full bg-bg-1 p-1 rounded-button mb-6">
-            <TabsTrigger value="daily" className="flex-1 rounded-button data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Daily
-            </TabsTrigger>
             <TabsTrigger value="weekly" className="flex-1 rounded-button data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Weekly
             </TabsTrigger>
@@ -172,18 +170,6 @@ export default function SummariesPage() {
               Monthly
             </TabsTrigger>
           </TabsList>
-
-          <TabsContent value="daily" className="space-y-3">
-            {filterByType("DAILY").map((summary, index) => (
-              <SummaryCard
-                key={summary.id}
-                summary={summary}
-                index={index}
-                onClick={() => setSelectedSummary(summary)}
-              />
-            ))}
-            {filterByType("DAILY").length === 0 && <EmptyState type="daily" />}
-          </TabsContent>
 
           <TabsContent value="weekly" className="space-y-3">
             {filterByType("WEEKLY").map((summary, index) => (

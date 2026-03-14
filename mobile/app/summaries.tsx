@@ -25,10 +25,9 @@ interface Summary {
   key_takeaways: string[] | null;
 }
 
-type TabType = 'DAILY' | 'WEEKLY' | 'MONTHLY';
+type TabType = 'WEEKLY' | 'MONTHLY';
 
 const typeColors: Record<string, { bg: string; text: string; label: string }> = {
-  DAILY: { bg: 'rgba(59,130,246,0.15)', text: '#60A5FA', label: 'Daily' },
   WEEKLY: { bg: 'rgba(139,92,246,0.15)', text: '#A78BFA', label: 'Weekly' },
   MONTHLY: { bg: 'rgba(16,185,129,0.15)', text: '#34D399', label: 'Monthly' },
 };
@@ -38,7 +37,7 @@ export default function SummariesScreen() {
   const { user } = useAuth();
   const [summaries, setSummaries] = useState<Summary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<TabType>('DAILY');
+  const [activeTab, setActiveTab] = useState<TabType>('WEEKLY');
   const [selectedSummary, setSelectedSummary] = useState<Summary | null>(null);
 
   useEffect(() => {
@@ -46,7 +45,7 @@ export default function SummariesScreen() {
       if (!user) return;
       const { data: profile } = await supabase.from('profiles').select('selected_market').eq('id', user.id).single();
       const market = profile?.selected_market || 'aerospace';
-      const { data } = await supabase.from('summaries').select('*').eq('market_id', market).order('for_date', { ascending: false }).limit(20);
+      const { data } = await supabase.from('summaries').select('*').eq('market_id', market).in('summary_type', ['WEEKLY', 'MONTHLY']).order('for_date', { ascending: false }).limit(50);
       setSummaries((data || []).map((s) => ({ ...s, key_takeaways: Array.isArray(s.key_takeaways) ? s.key_takeaways as string[] : null })));
       setLoading(false);
     };
@@ -108,7 +107,7 @@ export default function SummariesScreen() {
 
       {/* Tabs */}
       <View style={styles.tabs}>
-        {(['DAILY', 'WEEKLY', 'MONTHLY'] as TabType[]).map((tab) => (
+        {(['WEEKLY', 'MONTHLY'] as TabType[]).map((tab) => (
           <TouchableOpacity key={tab} style={[styles.tab, activeTab === tab && styles.tabActive]} onPress={() => setActiveTab(tab)}>
             <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
               {tab.charAt(0) + tab.slice(1).toLowerCase()}
