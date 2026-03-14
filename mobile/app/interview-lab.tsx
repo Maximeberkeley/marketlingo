@@ -127,6 +127,14 @@ export default function InterviewLabScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
 
+  // Voice state
+  const [isRecording, setIsRecording] = useState(false);
+  const [isNarrating, setIsNarrating] = useState(false);
+  const [isSophiaSpeaking, setIsSophiaSpeaking] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false); // toggle voice vs text input
+  const recordingRef = useRef<Audio.Recording | null>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
+
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
