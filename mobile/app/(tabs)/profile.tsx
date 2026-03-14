@@ -151,6 +151,7 @@ export default function ProfileScreen() {
     } finally {
       setSavingPreference(false);
     }
+  };
 
   const handleExportNotebook = async () => {
     if (!user) return;
