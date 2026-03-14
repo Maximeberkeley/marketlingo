@@ -13,8 +13,10 @@ import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { triggerHaptic } from '../lib/haptics';
 import { getMarketName } from '../lib/markets';
-import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { speakAsSophia, transcribeAudio, buildFeedbackNarration } from '../lib/interviewVoice';
+import {
+  StageTracker, VibeMeter, LeoCelebration, ScoreBar, MathDrill,
+} from '../components/interview/InterviewLabComponents';
 import {
   InterviewPath, InterviewStage, ConfidencePersona,
   MECE_FRAMEWORKS, BIG_BOSS_QUESTIONS, STORY_HERO_STEPS,
