@@ -425,7 +425,7 @@ export default function InterviewLabPage() {
                           disabled={revealed}
                           onClick={() => {
                             setMcqSelected(i);
-                            hapticFeedback(i === currentMCQ.correctIndex ? "success" : "error");
+                            hapticFeedback(i === currentMCQ.correctIndex ? "medium" : "heavy");
                             if (i === currentMCQ.correctIndex) setMcqScore(s => s + 1);
                             if (user && market && path) {
                               supabase.from('interview_lab_attempts').insert({
