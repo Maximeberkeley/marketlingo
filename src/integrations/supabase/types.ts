@@ -14,6 +14,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      behavioral_stories: {
+        Row: {
+          action: string | null
+          ai_feedback: Json | null
+          created_at: string
+          id: string
+          market_id: string
+          quality_score: number | null
+          result: string | null
+          situation: string | null
+          tags: string[] | null
+          task: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          action?: string | null
+          ai_feedback?: Json | null
+          created_at?: string
+          id?: string
+          market_id: string
+          quality_score?: number | null
+          result?: string | null
+          situation?: string | null
+          tags?: string[] | null
+          task?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          action?: string | null
+          ai_feedback?: Json | null
+          created_at?: string
+          id?: string
+          market_id?: string
+          quality_score?: number | null
+          result?: string | null
+          situation?: string | null
+          tags?: string[] | null
+          task?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "behavioral_stories_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       curriculum_generation_jobs: {
         Row: {
           completed_at: string | null
@@ -293,6 +349,74 @@ export type Database = {
           },
         ]
       }
+      interview_analytics: {
+        Row: {
+          avg_content_score: number | null
+          avg_persona_score: number | null
+          avg_score: number | null
+          avg_structure_score: number | null
+          cases_completed: number | null
+          created_at: string
+          id: string
+          market_id: string
+          mcqs_attempted: number | null
+          mcqs_correct: number | null
+          path: string
+          session_date: string
+          strong_areas: string[] | null
+          total_mocks: number | null
+          updated_at: string
+          user_id: string
+          weak_areas: string[] | null
+        }
+        Insert: {
+          avg_content_score?: number | null
+          avg_persona_score?: number | null
+          avg_score?: number | null
+          avg_structure_score?: number | null
+          cases_completed?: number | null
+          created_at?: string
+          id?: string
+          market_id: string
+          mcqs_attempted?: number | null
+          mcqs_correct?: number | null
+          path: string
+          session_date?: string
+          strong_areas?: string[] | null
+          total_mocks?: number | null
+          updated_at?: string
+          user_id: string
+          weak_areas?: string[] | null
+        }
+        Update: {
+          avg_content_score?: number | null
+          avg_persona_score?: number | null
+          avg_score?: number | null
+          avg_structure_score?: number | null
+          cases_completed?: number | null
+          created_at?: string
+          id?: string
+          market_id?: string
+          mcqs_attempted?: number | null
+          mcqs_correct?: number | null
+          path?: string
+          session_date?: string
+          strong_areas?: string[] | null
+          total_mocks?: number | null
+          updated_at?: string
+          user_id?: string
+          weak_areas?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_analytics_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interview_lab_attempts: {
         Row: {
           attempt_type: string
@@ -357,6 +481,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "interview_lab_attempts_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_leaderboard: {
+        Row: {
+          avg_score: number | null
+          best_score: number | null
+          created_at: string
+          id: string
+          market_id: string
+          mocks_completed: number | null
+          rank_percentile: number | null
+          total_score: number | null
+          updated_at: string
+          user_id: string
+          week_of: string
+        }
+        Insert: {
+          avg_score?: number | null
+          best_score?: number | null
+          created_at?: string
+          id?: string
+          market_id: string
+          mocks_completed?: number | null
+          rank_percentile?: number | null
+          total_score?: number | null
+          updated_at?: string
+          user_id: string
+          week_of?: string
+        }
+        Update: {
+          avg_score?: number | null
+          best_score?: number | null
+          created_at?: string
+          id?: string
+          market_id?: string
+          mocks_completed?: number | null
+          rank_percentile?: number | null
+          total_score?: number | null
+          updated_at?: string
+          user_id?: string
+          week_of?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_leaderboard_market_id_fkey"
             columns: ["market_id"]
             isOneToOne: false
             referencedRelation: "markets"
