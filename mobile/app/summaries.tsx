@@ -37,7 +37,7 @@ export default function SummariesScreen() {
   const { user } = useAuth();
   const [summaries, setSummaries] = useState<Summary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<TabType>('DAILY');
+  const [activeTab, setActiveTab] = useState<TabType>('WEEKLY');
   const [selectedSummary, setSelectedSummary] = useState<Summary | null>(null);
 
   useEffect(() => {
