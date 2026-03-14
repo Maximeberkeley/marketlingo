@@ -289,6 +289,27 @@ export default function InterviewLabScreen() {
       if (error) throw error;
       setFeedback(data);
 
+      // Issue #11: Persist mock attempt to database
+      if (path) {
+        supabase.from('interview_lab_attempts').insert({
+          user_id: user.id,
+          market_id: market,
+          path,
+          stage: 4,
+          attempt_type: 'mock',
+          score: data?.score ?? 0,
+          structure_score: data?.structureScore,
+          content_score: data?.contentScore,
+          persona_score: data?.personaScore,
+          persona,
+          scenario_question: current.question,
+          user_response: userResponse,
+          feedback: data,
+          buzzwords_used: data?.buzzwordsUsed ?? [],
+          buzzwords_missed: data?.buzzwordsMissed ?? [],
+        }).then(() => {});
+      }
+
       if (data?.score >= 80) {
         triggerHaptic('success');
         setTimeout(() => setShowCelebration(true), 500);
