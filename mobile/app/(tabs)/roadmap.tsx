@@ -188,7 +188,10 @@ export default function RoadmapScreen() {
 
         const lessons: Lesson[] = days.map((d) => {
           const dbLesson = dayLessonMap.get(d);
-          const isCompleted = dbLesson ? completed.includes(dbLesson.stackId) : d < day;
+          const allIdsForDay = dayAllStackIds.get(d) || [];
+          const isCompleted = dbLesson
+            ? (completed.includes(dbLesson.stackId) || allIdsForDay.some(id => completed.includes(id)))
+            : false;
           totalLessons++;
           if (isCompleted) completedLessons++;
           return {
