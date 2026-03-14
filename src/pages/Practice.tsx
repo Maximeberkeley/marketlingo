@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import trainerHero from "@/assets/cards/trainer-practice-hero.jpg";
 import gamesHero from "@/assets/cards/games-hero.jpg";
 import drillsHero from "@/assets/cards/drills-hero.jpg";
+import interviewLabHero from "@/assets/cards/interview-lab-hero.jpg";
 import summariesHero from "@/assets/cards/summaries-hero.jpg";
 import regulatoryHero from "@/assets/cards/regulatory-hero.jpg";
 import passportHero from "@/assets/cards/passport-hero.jpg";
