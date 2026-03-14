@@ -70,7 +70,7 @@ function VibeMeter({ text }: { text: string }) {
 }
 
 // ─── LEO Celebration ───
-function LeoCelebration({ visible, score }: { visible: boolean; score: number }) {
+function LeoCelebration({ visible, score, onDismiss }: { visible: boolean; score: number; onDismiss?: () => void }) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
