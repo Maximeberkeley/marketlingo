@@ -146,6 +146,120 @@ export default function InterviewLabScreen() {
       });
   }, [user]);
 
+  // ─── Voice: Narrate scenario ───
+  const narrateScenario = useCallback(async (text: string) => {
+    if (isNarrating) return;
+    setIsNarrating(true);
+    triggerHaptic('light');
+    try {
+      // Stop any existing playback
+      if (soundRef.current) {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+      }
+      const sound = await speakAsSophia(text);
+      soundRef.current = sound;
+      if (sound) {
+        sound.setOnPlaybackStatusUpdate((status) => {
+          if ('didJustFinish' in status && status.didJustFinish) {
+            setIsNarrating(false);
+          }
+        });
+      } else {
+        setIsNarrating(false);
+      }
+    } catch {
+      setIsNarrating(false);
+    }
+  }, [isNarrating]);
+
+  // ─── Voice: Sophia reads feedback ───
+  const speakFeedback = useCallback(async (fb: any) => {
+    if (isSophiaSpeaking) return;
+    setIsSophiaSpeaking(true);
+    triggerHaptic('light');
+    try {
+      if (soundRef.current) {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+      }
+      const narration = buildFeedbackNarration(fb);
+      const sound = await speakAsSophia(narration);
+      soundRef.current = sound;
+      if (sound) {
+        sound.setOnPlaybackStatusUpdate((status) => {
+          if ('didJustFinish' in status && status.didJustFinish) {
+            setIsSophiaSpeaking(false);
+          }
+        });
+      } else {
+        setIsSophiaSpeaking(false);
+      }
+    } catch {
+      setIsSophiaSpeaking(false);
+    }
+  }, [isSophiaSpeaking]);
+
+  // ─── Voice: Record user answer ───
+  const startRecording = useCallback(async () => {
+    try {
+      const permission = await Audio.requestPermissionsAsync();
+      if (!permission.granted) return;
+
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+      recordingRef.current = recording;
+      setIsRecording(true);
+      triggerHaptic('medium');
+    } catch (err) {
+      console.warn('Recording error:', err);
+    }
+  }, []);
+
+  const stopRecording = useCallback(async () => {
+    if (!recordingRef.current) return;
+    setIsRecording(false);
+    setSubmitting(true);
+    triggerHaptic('light');
+
+    try {
+      await recordingRef.current.stopAndUnloadAsync();
+      const uri = recordingRef.current.getURI();
+      recordingRef.current = null;
+
+      if (uri) {
+        const transcribed = await transcribeAudio(uri);
+        if (transcribed) {
+          setUserResponse(transcribed);
+        }
+      }
+    } catch (err) {
+      console.warn('Stop recording error:', err);
+    } finally {
+      setSubmitting(false);
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
+    }
+  }, []);
+
+  // ─── Stop audio on unmount ───
+  useEffect(() => {
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.stopAsync().catch(() => {});
+        soundRef.current.unloadAsync().catch(() => {});
+      }
+      if (recordingRef.current) {
+        recordingRef.current.stopAndUnloadAsync().catch(() => {});
+      }
+    };
+  }, []);
+
   const submitMock = useCallback(async () => {
     if (!market || !user || userResponse.trim().length < 20) return;
     setSubmitting(true);
@@ -176,6 +290,9 @@ export default function InterviewLabScreen() {
       } else {
         triggerHaptic('light');
       }
+
+      // Auto-narrate feedback with Sophia's voice
+      setTimeout(() => speakFeedback(data), 800);
     } catch (err) {
       console.error('Mock submission error:', err);
       setFeedback({
@@ -190,7 +307,7 @@ export default function InterviewLabScreen() {
     } finally {
       setSubmitting(false);
     }
-  }, [market, user, userResponse, mockIndex, persona, path]);
+  }, [market, user, userResponse, mockIndex, persona, path, speakFeedback]);
 
   if (loading) {
     return <View style={[st.container, st.centered]}><ActivityIndicator size="large" color={COLORS.accent} /></View>;
