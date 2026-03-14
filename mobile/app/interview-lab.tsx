@@ -137,13 +137,18 @@ export default function InterviewLabScreen() {
 
   const scrollRef = useRef<ScrollView>(null);
 
+  // Issue #12: Handle market fetch failure
   useEffect(() => {
     if (!user) return;
     supabase.from('profiles').select('selected_market').eq('id', user.id).single()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          console.warn('Failed to fetch market:', error);
+        }
         if (data?.selected_market) setMarket(data.selected_market);
         setLoading(false);
-      });
+      })
+      .catch(() => setLoading(false));
   }, [user]);
 
   // ─── Voice: Narrate scenario ───
