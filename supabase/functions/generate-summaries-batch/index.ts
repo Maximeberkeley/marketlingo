@@ -2,7 +2,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { 
   CURRICULUM_STRUCTURES, 
   getMarketContext,
-  type CurriculumStructure,
 } from '../_shared/curriculum-structures.ts';
 
 const corsHeaders = {
@@ -11,6 +10,10 @@ const corsHeaders = {
 };
 
 const ALL_MARKETS = Object.keys(CURRICULUM_STRUCTURES);
+
+// 180-day program = 6 months × ~4 weeks = ~26 weeks (we'll use 4 weeks per month = 24 weeks)
+// But for cleaner labeling: 36 weeks (6 months × 6 weeks) is too many
+// Stick with curriculum: 6 months, 4 weeks each = 24 weekly summaries + 6 monthly
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -44,11 +47,11 @@ Deno.serve(async (req) => {
     (existing || []).map((s: any) => `${s.market_id}-${s.summary_type}-${s.for_date}`)
   );
 
-  let totalGenerated = 0;
   const results: Record<string, number> = {};
 
-  // Process in background
   const processAsync = async () => {
+    let totalGenerated = 0;
+
     for (const marketId of marketsToProcess) {
       const structure = CURRICULUM_STRUCTURES[marketId];
       if (!structure) continue;
@@ -60,19 +63,19 @@ Deno.serve(async (req) => {
         const monthInfo = structure.months[month - 1];
         if (!monthInfo) continue;
 
-        // Generate 4 weekly summaries + daily summaries for this month
+        // Generate 4 weekly summaries per month (Week 1-4 of Month X)
         for (let week = 1; week <= 4; week++) {
-          const weekNum = (month - 1) * 4 + week;
+          const globalWeek = (month - 1) * 4 + week;
           const forDate = new Date();
-          forDate.setDate(forDate.getDate() - (24 - weekNum) * 7);
+          forDate.setDate(forDate.getDate() - (24 - globalWeek) * 7);
           const dateStr = forDate.toISOString().split('T')[0];
           
           const key = `${marketId}-WEEKLY-${dateStr}`;
           if (existingSet.has(key)) continue;
 
           try {
-            const content = await generateSummary(
-              LOVABLE_API_KEY, 'WEEKLY', monthInfo.theme, monthInfo.topics, weekNum, month, marketContext
+            const content = await generateWeeklySummary(
+              LOVABLE_API_KEY, globalWeek, week, month, monthInfo.theme, monthInfo.topics, marketContext
             );
             
             await supabase.from('summaries').insert({
@@ -87,45 +90,11 @@ Deno.serve(async (req) => {
             marketCount++;
             totalGenerated++;
             existingSet.add(key);
-            console.log(`Generated WEEKLY summary for ${marketId} week ${weekNum}`);
+            console.log(`Generated WEEKLY summary for ${marketId} Week ${globalWeek}`);
           } catch (e) {
-            console.error(`Failed WEEKLY ${marketId} week ${weekNum}:`, e);
+            console.error(`Failed WEEKLY ${marketId} week ${globalWeek}:`, e);
           }
           await new Promise(r => setTimeout(r, 800));
-        }
-
-        // Generate daily summaries for each day in this month
-        const startDay = (month - 1) * 30 + 1;
-        for (let dayOffset = 0; dayOffset < 30 && startDay + dayOffset <= 180; dayOffset++) {
-          const day = startDay + dayOffset;
-          const forDate = new Date();
-          forDate.setDate(forDate.getDate() - (180 - day));
-          const dateStr = forDate.toISOString().split('T')[0];
-          
-          const key = `${marketId}-DAILY-${dateStr}`;
-          if (existingSet.has(key)) continue;
-
-          try {
-            const content = await generateDailySummary(
-              LOVABLE_API_KEY, day, month, monthInfo.theme, monthInfo.topics, marketContext
-            );
-            
-            await supabase.from('summaries').insert({
-              market_id: marketId,
-              summary_type: 'DAILY',
-              title: content.title,
-              content: content.content,
-              key_takeaways: content.key_takeaways || [],
-              for_date: dateStr,
-            });
-            
-            marketCount++;
-            totalGenerated++;
-            existingSet.add(key);
-          } catch (e) {
-            console.error(`Failed DAILY ${marketId} day ${day}:`, e);
-          }
-          await new Promise(r => setTimeout(r, 600));
         }
 
         // Monthly summary
@@ -136,8 +105,8 @@ Deno.serve(async (req) => {
         
         if (!existingSet.has(monthKey)) {
           try {
-            const content = await generateSummary(
-              LOVABLE_API_KEY, 'MONTHLY', monthInfo.theme, monthInfo.topics, 0, month, marketContext
+            const content = await generateMonthlySummary(
+              LOVABLE_API_KEY, month, monthInfo.theme, monthInfo.topics, marketContext
             );
             
             await supabase.from('summaries').insert({
@@ -164,7 +133,6 @@ Deno.serve(async (req) => {
     console.log(`Total summaries generated: ${totalGenerated}`);
   };
 
-  // Fire and forget
   processAsync().catch(console.error);
 
   return new Response(JSON.stringify({
@@ -176,52 +144,43 @@ Deno.serve(async (req) => {
   });
 });
 
-async function generateSummary(
-  apiKey: string, type: 'WEEKLY' | 'MONTHLY', theme: string, topics: string[],
-  weekNum: number, month: number, marketContext: string
+async function generateWeeklySummary(
+  apiKey: string, globalWeek: number, weekInMonth: number, month: number,
+  theme: string, topics: string[], marketContext: string
 ) {
-  const prompt = type === 'WEEKLY'
-    ? `Create a WEEKLY summary for Week ${weekNum} of the "${theme}" module for professionals learning ${marketContext}.
-       Topics covered: ${topics.slice(0, 2).join(', ')}
-       Create an executive-style summary that synthesizes the week's key learnings into actionable knowledge.
-       Return JSON: { "title": "Week ${weekNum}: [title]", "content": "3-4 paragraphs (600-800 words)", "key_takeaways": ["takeaway1", "takeaway2", "takeaway3", "takeaway4"] }`
-    : `Create a MONTHLY summary for Month ${month}: "${theme}" for professionals mastering ${marketContext}.
-       Topics covered: ${topics.join(', ')}
-       Create a comprehensive month-end review.
-       Return JSON: { "title": "Month ${month} Complete: Mastering ${theme}", "content": "4-5 paragraphs (800-1000 words)", "key_takeaways": ["t1", "t2", "t3", "t4", "t5"] }`;
+  const topicFocus = topics[Math.min(weekInMonth - 1, topics.length - 1)] || topics[0];
+  const prompt = `Create a WEEKLY recap for Week ${globalWeek} (Week ${weekInMonth} of Month ${month}: "${theme}") for professionals learning ${marketContext}.
+Focus topic this week: ${topicFocus}
+All month topics: ${topics.join(', ')}
 
+Create an executive-style weekly recap that synthesizes the week's key learnings into actionable knowledge.
+The title MUST start with "Week ${globalWeek}:" followed by a descriptive title.
+Return JSON: { "title": "Week ${globalWeek}: [descriptive title about the week's focus]", "content": "3-4 paragraphs (600-800 words) summarizing key insights", "key_takeaways": ["takeaway1", "takeaway2", "takeaway3", "takeaway4"] }`;
+
+  return callAI(apiKey, prompt, `senior ${marketContext} industry analyst creating weekly executive recaps`);
+}
+
+async function generateMonthlySummary(
+  apiKey: string, month: number, theme: string, topics: string[], marketContext: string
+) {
+  const prompt = `Create a MONTHLY review for Month ${month}: "${theme}" for professionals mastering ${marketContext}.
+Topics covered this month: ${topics.join(', ')}
+
+Create a comprehensive month-end review that ties together all weekly learnings.
+The title MUST start with "Month ${month}:" followed by the theme.
+Return JSON: { "title": "Month ${month}: Mastering ${theme}", "content": "4-5 paragraphs (800-1000 words) reviewing the month's journey", "key_takeaways": ["t1", "t2", "t3", "t4", "t5"] }`;
+
+  return callAI(apiKey, prompt, `senior ${marketContext} industry analyst creating monthly reviews`);
+}
+
+async function callAI(apiKey: string, prompt: string, systemRole: string) {
   const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: 'google/gemini-2.5-flash',
       messages: [
-        { role: 'system', content: `You are a senior ${marketContext} industry analyst creating executive summaries.` },
-        { role: 'user', content: prompt },
-      ],
-      response_format: { type: 'json_object' },
-    }),
-  });
-
-  if (!response.ok) throw new Error(`AI API error: ${response.status}`);
-  const r = await response.json();
-  return JSON.parse(r.choices?.[0]?.message?.content || '{}');
-}
-
-async function generateDailySummary(
-  apiKey: string, day: number, month: number, theme: string, topics: string[], marketContext: string
-) {
-  const prompt = `Create a brief DAILY summary for Day ${day} (Month ${month}: "${theme}") for ${marketContext} learners.
-    Topics: ${topics.join(', ')}
-    Return JSON: { "title": "Day ${day}: [short insight title]", "content": "2 paragraphs (200-300 words) summarizing one key concept", "key_takeaways": ["key point 1", "key point 2"] }`;
-
-  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'google/gemini-2.5-flash-lite',
-      messages: [
-        { role: 'system', content: `You are a ${marketContext} industry analyst writing daily learning recaps.` },
+        { role: 'system', content: `You are a ${systemRole}.` },
         { role: 'user', content: prompt },
       ],
       response_format: { type: 'json_object' },
