@@ -762,48 +762,7 @@ export default function InterviewLabScreen() {
   );
 }
 
-// ─── Mental Math Drill Component ───
-function MathDrill({ question: q }: { question: { question: string; options: string[]; correctIndex: number; explanation: string } }) {
-  const [selected, setSelected] = useState<number | null>(null);
-  const correct = selected === q.correctIndex;
-  const revealed = selected !== null;
 
-  return (
-    <View style={st.card}>
-      <Text style={[st.cardBody, { fontWeight: '600', marginBottom: 10 }]}>{q.question}</Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-        {q.options.map((opt, i) => (
-          <TouchableOpacity
-            key={i}
-            disabled={revealed}
-            onPress={() => { setSelected(i); triggerHaptic(i === q.correctIndex ? 'success' : 'error'); }}
-            style={[
-              st.mathOption,
-              revealed && i === q.correctIndex && st.mcqOptionCorrect,
-              selected === i && i !== q.correctIndex && st.mcqOptionWrong,
-            ]}
-          >
-            <Text style={st.mathOptionText}>{opt}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      {revealed && <Text style={st.explanationText}>{q.explanation}</Text>}
-    </View>
-  );
-}
-
-// ─── Score Bar ───
-function ScoreBar({ label, value, color }: { label: string; value: number; color: string }) {
-  return (
-    <View style={st.scoreBarWrap}>
-      <Text style={st.scoreBarLabel}>{label}</Text>
-      <View style={st.scoreBarTrack}>
-        <View style={[st.scoreBarFill, { width: `${Math.min(100, value)}%`, backgroundColor: color }]} />
-      </View>
-      <Text style={st.scoreBarVal}>{value}</Text>
-    </View>
-  );
-}
 
 // ─── Styles ───
 const st = StyleSheet.create({
