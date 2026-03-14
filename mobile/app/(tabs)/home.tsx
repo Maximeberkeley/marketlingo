@@ -97,6 +97,7 @@ function getRandomGreeting(key: keyof typeof LEO_GREETINGS): string {
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { user, loading: authLoading } = useAuth();
+  const { openStackId } = useLocalSearchParams<{ openStackId?: string }>();
 
   const [selectedMarketLocal, setSelectedMarketLocal] = useState<string | null>(null);
   const { progress, completeStack, updateStreak } = useUserProgress(selectedMarketLocal || undefined);
