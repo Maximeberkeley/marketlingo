@@ -121,6 +121,10 @@ type CardItem = {
   keyTakeaway: string;
   nextPreview?: string;
   slideIndex: number;
+} | {
+  type: 'flashcard';
+  cards: FlashcardItem[];
+  slideIndex: number;
 };
 
 export function SlideReaderV2({
