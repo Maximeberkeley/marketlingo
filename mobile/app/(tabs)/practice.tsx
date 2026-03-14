@@ -82,6 +82,19 @@ const ACTIVITY_CARDS: CardData[] = [
     path: '/drills',
     heroImage: require('../../assets/cards/drills-hero.jpg'),
   },
+  {
+    id: 'interview-lab',
+    title: 'Interview Lab',
+    subtitle: 'Case Prep Simulator',
+    description: 'Mock interviews with AI coach Sophia Hernández.',
+    icon: 'mic',
+    iconColor: '#C4B5FD',
+    gradientColors: ['#1E1B4B', '#4338CA', '#7C3AED'] as const,
+    accentGlow: 'rgba(124, 58, 237, 0.5)',
+    path: '/interview-lab',
+    heroImage: require('../../assets/illustrations/interview-lab-hero.png'),
+    tag: 'NEW',
+  },
 ];
 
 const RESOURCE_CARDS: CardData[] = [

@@ -68,6 +68,17 @@ const practiceCards: ResourceCard[] = [
     icon: Zap,
     iconColor: "text-amber-300",
   },
+  {
+    id: "interview-lab",
+    title: "Interview Lab",
+    subtitle: "Case Prep Simulator",
+    description: "Mock case interviews with AI coach Sophia Hernández.",
+    image: interviewLabHero,
+    gradient: "from-indigo-950/90 via-violet-800/60 to-transparent",
+    path: "/interview-lab",
+    icon: Target,
+    iconColor: "text-violet-300",
+  },
 ];
 
 const resourceCards: ResourceCard[] = [
