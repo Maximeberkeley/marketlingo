@@ -265,7 +265,9 @@ export default function RoadmapScreen() {
 
   const totalCompleted = seasons.reduce((a, s) => a + s.completedLessons, 0);
   const totalLessons = seasons.reduce((a, s) => a + s.totalLessons, 0);
-  const overallPct = Math.round((totalCompleted / totalLessons) * 100);
+  const completionPct = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
+  const journeyPct = Math.round(((currentDay - 1) / 179) * 100);
+  const overallPct = Math.max(journeyPct, completionPct);
   const currentWeek = getDayWeek(currentDay);
 
   return (
