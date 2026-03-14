@@ -438,8 +438,13 @@ export default function RoadmapScreen() {
               style={styles.modalCTA}
               onPress={() => {
                 triggerHaptic('light');
+                const stackId = selectedLesson?.stackId;
                 setSelectedLesson(null);
-                router.push('/(tabs)/home');
+                if (stackId) {
+                  router.push({ pathname: '/(tabs)/home', params: { openStackId: stackId } });
+                } else {
+                  router.push('/(tabs)/home');
+                }
               }}
               activeOpacity={0.85}
             >
