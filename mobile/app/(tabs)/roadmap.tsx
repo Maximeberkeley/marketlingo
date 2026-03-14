@@ -146,15 +146,23 @@ export default function RoadmapScreen() {
       .not('published_at', 'is', null);
 
     const dayLessonMap = new Map<number, { title: string; stackId: string }>();
+    // Track ALL stack IDs per day so we can match completed stacks even if a different variant was used
+    const dayAllStackIds = new Map<number, string[]>();
     allStacks?.forEach((stack: any) => {
       const tags = stack.tags as string[];
       const dayTag = tags?.find((t: string) => t.startsWith('day-'));
       if (!dayTag) return;
       const dayNum = parseInt(dayTag.replace('day-', ''), 10);
       if (isNaN(dayNum)) return;
+
+      // Collect all stack IDs for this day
+      const existing = dayAllStackIds.get(dayNum) || [];
+      existing.push(stack.id);
+      dayAllStackIds.set(dayNum, existing);
+
       const hasGoalTag = tags.includes(goalTag);
-      const existing = dayLessonMap.get(dayNum);
-      if (!existing || hasGoalTag) {
+      const existingLesson = dayLessonMap.get(dayNum);
+      if (!existingLesson || hasGoalTag) {
         dayLessonMap.set(dayNum, { title: stack.title, stackId: stack.id });
       }
     });
@@ -180,7 +188,10 @@ export default function RoadmapScreen() {
 
         const lessons: Lesson[] = days.map((d) => {
           const dbLesson = dayLessonMap.get(d);
-          const isCompleted = dbLesson ? completed.includes(dbLesson.stackId) : d < day;
+          const allIdsForDay = dayAllStackIds.get(d) || [];
+          const isCompleted = dbLesson
+            ? (completed.includes(dbLesson.stackId) || allIdsForDay.some(id => completed.includes(id)))
+            : false;
           totalLessons++;
           if (isCompleted) completedLessons++;
           return {
@@ -438,8 +449,13 @@ export default function RoadmapScreen() {
               style={styles.modalCTA}
               onPress={() => {
                 triggerHaptic('light');
+                const stackId = selectedLesson?.stackId;
                 setSelectedLesson(null);
-                router.push('/(tabs)/home');
+                if (stackId) {
+                  router.push({ pathname: '/(tabs)/home', params: { openStackId: stackId } });
+                } else {
+                  router.push('/(tabs)/home');
+                }
               }}
               activeOpacity={0.85}
             >

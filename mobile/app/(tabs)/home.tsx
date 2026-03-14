@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import { AnimatedSection } from '../../components/home/AnimatedSection';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS, TYPE, SHADOWS } from '../../lib/constants';
+import { supabase } from '../../lib/supabase';
 import { getMarketName } from '../../lib/markets';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
@@ -97,6 +98,7 @@ function getRandomGreeting(key: keyof typeof LEO_GREETINGS): string {
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { user, loading: authLoading } = useAuth();
+  const { openStackId } = useLocalSearchParams<{ openStackId?: string }>();
 
   const [selectedMarketLocal, setSelectedMarketLocal] = useState<string | null>(null);
   const { progress, completeStack, updateStreak } = useUserProgress(selectedMarketLocal || undefined);
@@ -171,7 +173,40 @@ export default function HomeScreen() {
     onDataRefresh: async () => { await fetchData(); },
   });
 
-  const { quests, completedCount, totalBonusXP, allComplete: allQuestsComplete } = useDailyQuests(
+  // Handle deep-link from roadmap: open a specific stack by ID
+  const openStackHandled = useRef<string | null>(null);
+  useEffect(() => {
+    if (!openStackId || !selectedMarket || !user || session.showReader) return;
+    if (openStackHandled.current === openStackId) return;
+    openStackHandled.current = openStackId;
+
+    (async () => {
+      const { data: stack } = await supabase
+        .from('stacks')
+        .select('id, title, stack_type, tags, duration_minutes, metadata, slides (slide_number, title, body, sources)')
+        .eq('id', openStackId)
+        .not('published_at', 'is', null)
+        .single();
+
+      if (stack && (stack.slides as any[])?.length > 0) {
+        const formatted = {
+          ...stack,
+          tags: stack.tags || [],
+          slides: ((stack.slides as any[]) || [])
+            .sort((a: any, b: any) => a.slide_number - b.slide_number)
+            .map((s: any) => ({
+              ...s,
+              sources: Array.isArray(s.sources)
+                ? s.sources.map((src: any) => typeof src === 'string' ? { label: 'Source', url: src } : src).filter(Boolean)
+                : [],
+            })),
+        };
+        session.handleOpenStack(formatted as any);
+      }
+    })();
+  }, [openStackId, selectedMarket, user]);
+
+
     dailyCompletion ?? null, streak
   );
 
