@@ -806,7 +806,7 @@ function MathDrillCard({ question: q }: { question: { question: string; options:
           <button
             key={i}
             disabled={revealed}
-            onClick={() => { setSelected(i); hapticFeedback(i === q.correctIndex ? "success" : "error"); }}
+            onClick={() => { setSelected(i); hapticFeedback(i === q.correctIndex ? "medium" : "heavy"); }}
             className={cn(
               "p-2.5 rounded-xl border-2 text-sm font-semibold text-center transition-all",
               !revealed && "border-border hover:border-violet-400",
