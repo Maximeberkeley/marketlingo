@@ -13,8 +13,10 @@ import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { triggerHaptic } from '../lib/haptics';
 import { getMarketName } from '../lib/markets';
-import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { speakAsSophia, transcribeAudio, buildFeedbackNarration } from '../lib/interviewVoice';
+import {
+  StageTracker, VibeMeter, LeoCelebration, ScoreBar, MathDrill,
+} from '../components/interview/InterviewLabComponents';
 import {
   InterviewPath, InterviewStage, ConfidencePersona,
   MECE_FRAMEWORKS, BIG_BOSS_QUESTIONS, STORY_HERO_STEPS,
@@ -24,88 +26,7 @@ import {
 
 const { width: SW } = Dimensions.get('window');
 
-// ─── Progress Tracker ───
-function StageTracker({ current, onTap }: { current: InterviewStage; onTap: (s: InterviewStage) => void }) {
-  const stages: { stage: InterviewStage; label: string; icon: keyof typeof Feather.glyphMap }[] = [
-    { stage: 1, label: 'Framework', icon: 'layers' },
-    { stage: 2, label: 'Expect', icon: 'eye' },
-    { stage: 3, label: 'Practice', icon: 'check-circle' },
-    { stage: 4, label: 'Mock Lab', icon: 'mic' },
-  ];
 
-  return (
-    <View style={st.trackerRow}>
-      {stages.map((s, i) => {
-        const done = current > s.stage;
-        const active = current === s.stage;
-        return (
-          <React.Fragment key={s.stage}>
-            {i > 0 && <View style={[st.trackerLine, (done || active) && st.trackerLineActive]} />}
-            <TouchableOpacity onPress={() => onTap(s.stage)} style={[st.trackerDot, active && st.trackerDotActive, done && st.trackerDotDone]}>
-              <Feather name={done ? 'check' : s.icon} size={14} color={active || done ? '#FFF' : COLORS.textMuted} />
-            </TouchableOpacity>
-          </React.Fragment>
-        );
-      })}
-    </View>
-  );
-}
-
-// ─── Vibe Check Meter ───
-function VibeMeter({ text }: { text: string }) {
-  const len = text.trim().length;
-  const level = len < 30 ? 0 : len < 100 ? 1 : len < 250 ? 2 : 3;
-  const labels = ['Too Short', 'Getting There', 'Good Length', 'Perfect! 🔥'];
-  const colors = ['#EF4444', '#F59E0B', '#3B82F6', '#10B981'];
-  const widths = [15, 40, 70, 100];
-
-  return (
-    <View style={st.vibeMeter}>
-      <View style={st.vibeTrack}>
-        <Animated.View style={[st.vibeFill, { width: `${widths[level]}%`, backgroundColor: colors[level] }]} />
-      </View>
-      <Text style={[st.vibeLabel, { color: colors[level] }]}>{labels[level]}</Text>
-    </View>
-  );
-}
-
-// ─── LEO Celebration ───
-function LeoCelebration({ visible, score }: { visible: boolean; score: number }) {
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const opacityAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (visible) {
-      Animated.parallel([
-        Animated.spring(scaleAnim, { toValue: 1, tension: 60, friction: 8, useNativeDriver: true }),
-        Animated.timing(opacityAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
-      ]).start();
-    } else {
-      scaleAnim.setValue(0);
-      opacityAnim.setValue(0);
-    }
-  }, [visible]);
-
-  if (!visible) return null;
-
-  return (
-    <Animated.View style={[st.celebrationOverlay, { opacity: opacityAnim }]}>
-      <Animated.View style={[st.celebrationContent, { transform: [{ scale: scaleAnim }] }]}>
-        <LeoCharacter size="xl" animation="celebrating" />
-        <Text style={st.celebrationScore}>{score}%</Text>
-        <Text style={st.celebrationTitle}>
-          {score === 100 ? '💯 PERFECT!' : score >= 90 ? '🌟 Outstanding!' : '🔥 Great Job!'}
-        </Text>
-        <Text style={st.celebrationSub}>Sophia is impressed!</Text>
-        <TouchableOpacity style={st.celebrationBtn} onPress={() => triggerHaptic('light')}>
-          <Text style={st.celebrationBtnText}>Continue</Text>
-        </TouchableOpacity>
-      </Animated.View>
-    </Animated.View>
-  );
-}
-
-// ─── Main Screen ───
 export default function InterviewLabScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
@@ -137,13 +58,18 @@ export default function InterviewLabScreen() {
 
   const scrollRef = useRef<ScrollView>(null);
 
+  // Issue #12: Handle market fetch failure
   useEffect(() => {
     if (!user) return;
     supabase.from('profiles').select('selected_market').eq('id', user.id).single()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          console.warn('Failed to fetch market:', error);
+        }
         if (data?.selected_market) setMarket(data.selected_market);
         setLoading(false);
-      });
+      })
+      .catch(() => setLoading(false));
   }, [user]);
 
   // ─── Voice: Narrate scenario ───
@@ -283,6 +209,27 @@ export default function InterviewLabScreen() {
 
       if (error) throw error;
       setFeedback(data);
+
+      // Issue #11: Persist mock attempt to database
+      if (path) {
+        supabase.from('interview_lab_attempts').insert({
+          user_id: user.id,
+          market_id: market,
+          path,
+          stage: 4,
+          attempt_type: 'mock',
+          score: data?.score ?? 0,
+          structure_score: data?.structureScore,
+          content_score: data?.contentScore,
+          persona_score: data?.personaScore,
+          persona,
+          scenario_question: current.question,
+          user_response: userResponse,
+          feedback: data,
+          buzzwords_used: data?.buzzwordsUsed ?? [],
+          buzzwords_missed: data?.buzzwordsMissed ?? [],
+        }).then(() => {});
+      }
 
       if (data?.score >= 80) {
         triggerHaptic('success');
@@ -523,8 +470,21 @@ export default function InterviewLabScreen() {
                       disabled={revealed}
                       onPress={() => {
                         setMcqSelected(i);
-                        triggerHaptic(correct ? 'success' : 'error');
-                        if (correct) setMcqScore(s => s + 1);
+                        const isCorrect = i === currentMCQ.correctIndex;
+                        triggerHaptic(isCorrect ? 'success' : 'error');
+                        if (isCorrect) setMcqScore(s => s + 1);
+                        // Issue #10: Persist MCQ attempt
+                        if (user && market && path) {
+                          supabase.from('interview_lab_attempts').insert({
+                            user_id: user.id,
+                            market_id: market,
+                            path,
+                            stage: 3,
+                            attempt_type: 'mcq',
+                            score: isCorrect ? 100 : 0,
+                            scenario_question: currentMCQ.question,
+                          }).then(() => {});
+                        }
                       }}
                       style={[
                         st.mcqOption,
@@ -797,53 +757,12 @@ export default function InterviewLabScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <LeoCelebration visible={showCelebration} score={feedback?.score ?? 0} />
+      <LeoCelebration visible={showCelebration} score={feedback?.score ?? 0} onDismiss={() => setShowCelebration(false)} />
     </View>
   );
 }
 
-// ─── Mental Math Drill Component ───
-function MathDrill({ question: q }: { question: { question: string; options: string[]; correctIndex: number; explanation: string } }) {
-  const [selected, setSelected] = useState<number | null>(null);
-  const correct = selected === q.correctIndex;
-  const revealed = selected !== null;
 
-  return (
-    <View style={st.card}>
-      <Text style={[st.cardBody, { fontWeight: '600', marginBottom: 10 }]}>{q.question}</Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-        {q.options.map((opt, i) => (
-          <TouchableOpacity
-            key={i}
-            disabled={revealed}
-            onPress={() => { setSelected(i); triggerHaptic(i === q.correctIndex ? 'success' : 'error'); }}
-            style={[
-              st.mathOption,
-              revealed && i === q.correctIndex && st.mcqOptionCorrect,
-              selected === i && i !== q.correctIndex && st.mcqOptionWrong,
-            ]}
-          >
-            <Text style={st.mathOptionText}>{opt}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      {revealed && <Text style={st.explanationText}>{q.explanation}</Text>}
-    </View>
-  );
-}
-
-// ─── Score Bar ───
-function ScoreBar({ label, value, color }: { label: string; value: number; color: string }) {
-  return (
-    <View style={st.scoreBarWrap}>
-      <Text style={st.scoreBarLabel}>{label}</Text>
-      <View style={st.scoreBarTrack}>
-        <View style={[st.scoreBarFill, { width: `${Math.min(100, value)}%`, backgroundColor: color }]} />
-      </View>
-      <Text style={st.scoreBarVal}>{value}</Text>
-    </View>
-  );
-}
 
 // ─── Styles ───
 const st = StyleSheet.create({

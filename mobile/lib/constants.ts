@@ -1,32 +1,6 @@
-export const INDUSTRIES = [
-  {
-    id: 'aerospace',
-    name: 'Aerospace & Defense',
-    description: 'Commercial aviation, defense systems, and space exploration',
-    color: '#3B82F6',
-  },
-  {
-    id: 'tech',
-    name: 'Technology',
-    description: 'Software, hardware, AI, and cloud computing',
-    color: '#8B5CF6',
-    comingSoon: true,
-  },
-  {
-    id: 'healthcare',
-    name: 'Healthcare',
-    description: 'Pharmaceuticals, biotech, and medical devices',
-    color: '#10B981',
-    comingSoon: true,
-  },
-  {
-    id: 'energy',
-    name: 'Energy',
-    description: 'Oil & gas, renewables, and utilities',
-    color: '#F59E0B',
-    comingSoon: true,
-  },
-];
+// Industries are now sourced from mobile/lib/markets.ts
+// This constant is kept for backward compat but markets.ts is the source of truth
+export { markets as INDUSTRIES } from './markets';
 
 export const FAMILIARITY_LEVELS = [
   {
