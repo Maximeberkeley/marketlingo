@@ -560,6 +560,19 @@ export function SlideReaderV2({
         />
       );
     }
+    if (currentCardData.type === 'flashcard') {
+      return (
+        <SwipeFlashcardDrill
+          key={`flash-${currentCard}`}
+          cards={currentCardData.cards}
+          onComplete={(score, total) => {
+            if (score >= total * 0.7) playSound('correct');
+            setTimeout(() => goNext(), 800);
+          }}
+          accentColor={accentColor}
+        />
+      );
+    }
     if (currentCardData.type === 'reflection') {
       return (
         <ReflectionCard
