@@ -619,16 +619,61 @@ export default function InterviewLabScreen() {
               {!feedback && (
                 <>
                   <View style={st.card}>
-                    <Text style={st.cardLabel}>Your Response</Text>
-                    <TextInput
-                      style={st.responseInput}
-                      multiline
-                      placeholder="Type your answer here... Start with 'First, I would...' for a structured approach."
-                      placeholderTextColor={COLORS.textMuted}
-                      value={userResponse}
-                      onChangeText={setUserResponse}
-                      textAlignVertical="top"
-                    />
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <Text style={st.cardLabel}>Your Response</Text>
+                      {/* Voice/Text toggle */}
+                      <TouchableOpacity
+                        onPress={() => { setVoiceMode(!voiceMode); triggerHaptic('light'); }}
+                        style={[st.voiceToggle, voiceMode && st.voiceToggleActive]}
+                      >
+                        <Feather name={voiceMode ? 'mic' : 'edit-3'} size={14} color={voiceMode ? '#FFF' : '#7C3AED'} />
+                        <Text style={[st.voiceToggleText, voiceMode && { color: '#FFF' }]}>
+                          {voiceMode ? 'Voice' : 'Text'}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    {voiceMode ? (
+                      /* Voice Recording Mode */
+                      <View style={st.voiceRecordArea}>
+                        {isRecording ? (
+                          <>
+                            <Animated.View style={st.recordingPulse}>
+                              <TouchableOpacity onPress={stopRecording} style={st.stopRecordBtn}>
+                                <Feather name="square" size={24} color="#FFF" />
+                              </TouchableOpacity>
+                            </Animated.View>
+                            <Text style={st.recordingLabel}>🔴 Recording... Tap to stop</Text>
+                          </>
+                        ) : (
+                          <>
+                            <TouchableOpacity onPress={startRecording} style={st.startRecordBtn}>
+                              <Feather name="mic" size={28} color="#FFF" />
+                            </TouchableOpacity>
+                            <Text style={st.recordingLabel}>Tap to speak your answer</Text>
+                            {userResponse.length > 0 && (
+                              <View style={st.transcriptPreview}>
+                                <Text style={st.transcriptLabel}>Transcription:</Text>
+                                <Text style={st.transcriptText}>{userResponse}</Text>
+                              </View>
+                            )}
+                          </>
+                        )}
+                      </View>
+                    ) : (
+                      /* Text Input Mode */
+                      <>
+                        <TextInput
+                          style={st.responseInput}
+                          multiline
+                          placeholder="Type your answer here... Start with 'First, I would...' for a structured approach."
+                          placeholderTextColor={COLORS.textMuted}
+                          value={userResponse}
+                          onChangeText={setUserResponse}
+                          textAlignVertical="top"
+                        />
+                      </>
+                    )}
                     <VibeMeter text={userResponse} />
                   </View>
                   <TouchableOpacity
