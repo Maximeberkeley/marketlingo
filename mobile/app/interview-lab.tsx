@@ -597,10 +597,17 @@ export default function InterviewLabScreen() {
               <View style={st.card}>
                 <View style={st.sophiaHeader}>
                   <View style={st.sophiaAvatar}><Text style={{ fontSize: 20 }}>👩‍💼</Text></View>
-                  <View>
+                  <View style={{ flex: 1 }}>
                     <Text style={st.sophiaName}>Sophia Hernández</Text>
                     <Text style={st.sophiaRole}>Case Interview Coach</Text>
                   </View>
+                  {/* Narrate scenario button */}
+                  <TouchableOpacity
+                    onPress={() => narrateScenario(`${currentMock.scenario} ... ${currentMock.question}`)}
+                    style={[st.voiceBtn, isNarrating && st.voiceBtnActive]}
+                  >
+                    <Feather name={isNarrating ? 'volume-2' : 'volume-1'} size={18} color={isNarrating ? '#FFF' : '#7C3AED'} />
+                  </TouchableOpacity>
                 </View>
                 <View style={st.scenarioBox}>
                   <Text style={st.scenarioText}>{currentMock.scenario}</Text>
