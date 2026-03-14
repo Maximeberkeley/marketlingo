@@ -91,6 +91,7 @@ export default function RootLayout() {
               <Stack.Screen name="achievements" />
               <Stack.Screen name="leaderboard" />
               <Stack.Screen name="settings" />
+              <Stack.Screen name="interview-lab" />
               <Stack.Screen name="investment-lab" />
               <Stack.Screen name="investment-module" />
               <Stack.Screen name="investment-certificate" />

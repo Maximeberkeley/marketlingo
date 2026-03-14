@@ -293,6 +293,77 @@ export type Database = {
           },
         ]
       }
+      interview_lab_attempts: {
+        Row: {
+          attempt_type: string
+          buzzwords_missed: string[] | null
+          buzzwords_used: string[] | null
+          content_score: number | null
+          created_at: string
+          feedback: Json | null
+          id: string
+          market_id: string
+          path: string
+          persona: string | null
+          persona_score: number | null
+          scenario_question: string | null
+          score: number | null
+          stage: number
+          structure_score: number | null
+          time_spent_seconds: number | null
+          user_id: string
+          user_response: string | null
+        }
+        Insert: {
+          attempt_type: string
+          buzzwords_missed?: string[] | null
+          buzzwords_used?: string[] | null
+          content_score?: number | null
+          created_at?: string
+          feedback?: Json | null
+          id?: string
+          market_id: string
+          path: string
+          persona?: string | null
+          persona_score?: number | null
+          scenario_question?: string | null
+          score?: number | null
+          stage: number
+          structure_score?: number | null
+          time_spent_seconds?: number | null
+          user_id: string
+          user_response?: string | null
+        }
+        Update: {
+          attempt_type?: string
+          buzzwords_missed?: string[] | null
+          buzzwords_used?: string[] | null
+          content_score?: number | null
+          created_at?: string
+          feedback?: Json | null
+          id?: string
+          market_id?: string
+          path?: string
+          persona?: string | null
+          persona_score?: number | null
+          scenario_question?: string | null
+          score?: number | null
+          stage?: number
+          structure_score?: number | null
+          time_spent_seconds?: number | null
+          user_id?: string
+          user_response?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_lab_attempts_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       investment_attempts: {
         Row: {
           created_at: string

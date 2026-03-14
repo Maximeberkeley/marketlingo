@@ -3,6 +3,7 @@
 // ======================================================================
 
 import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
 import { supabase } from './supabase';
 
 // Sophia Hernández voice = Jessica (warm, professional)
@@ -11,7 +12,22 @@ const SOPHIA_VOICE_ID = 'cgSgspJ2msm6clMCkdW9';
 const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || '';
 
 /**
- * Play TTS audio using Sophia's voice
+ * Get auth headers for edge function calls
+ */
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (session?.access_token) {
+    headers['Authorization'] = `Bearer ${session.access_token}`;
+  }
+  return headers;
+}
+
+/**
+ * Play TTS audio using Sophia's voice.
+ * Issue #9: Writes to temp file instead of data URI to avoid OOM on large responses.
  */
 export async function speakAsSophia(text: string): Promise<Audio.Sound | null> {
   if (!text || text.trim().length === 0) return null;
@@ -37,12 +53,25 @@ export async function speakAsSophia(text: string): Promise<Audio.Sound | null> {
       reader.onloadend = async () => {
         try {
           const base64 = (reader.result as string).split(',')[1];
-          const uri = `data:audio/mpeg;base64,${base64}`;
+          
+          // Write to temp file instead of data URI for memory efficiency
+          const tempPath = `${FileSystem.cacheDirectory}sophia_tts_${Date.now()}.mp3`;
+          await FileSystem.writeAsStringAsync(tempPath, base64, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
           
           const { sound } = await Audio.Sound.createAsync(
-            { uri },
+            { uri: tempPath },
             { shouldPlay: true }
           );
+          
+          // Clean up temp file when playback finishes
+          sound.setOnPlaybackStatusUpdate((status) => {
+            if ('didJustFinish' in status && status.didJustFinish) {
+              FileSystem.deleteAsync(tempPath, { idempotent: true }).catch(() => {});
+            }
+          });
+          
           resolve(sound);
         } catch (err) {
           console.warn('Audio playback error:', err);
@@ -58,16 +87,14 @@ export async function speakAsSophia(text: string): Promise<Audio.Sound | null> {
 }
 
 /**
- * Transcribe audio recording using ElevenLabs STT
+ * Transcribe audio recording using ElevenLabs STT.
+ * Issue #3: Removed unused blob fetch — directly pass uri to FormData.
  */
 export async function transcribeAudio(uri: string): Promise<string> {
   try {
     const sttUrl = `${EDGE_URL}/elevenlabs-stt`;
+    const authHeaders = await getAuthHeaders();
 
-    // Read the file and create FormData
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    
     const formData = new FormData();
     formData.append('audio', {
       uri,
@@ -77,6 +104,10 @@ export async function transcribeAudio(uri: string): Promise<string> {
 
     const sttResponse = await fetch(sttUrl, {
       method: 'POST',
+      headers: {
+        // Don't set Content-Type for FormData — browser sets boundary
+        ...(authHeaders.Authorization ? { Authorization: authHeaders.Authorization } : {}),
+      },
       body: formData,
     });
 

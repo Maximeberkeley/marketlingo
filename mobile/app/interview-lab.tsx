@@ -797,7 +797,7 @@ export default function InterviewLabScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <LeoCelebration visible={showCelebration} score={feedback?.score ?? 0} />
+      <LeoCelebration visible={showCelebration} score={feedback?.score ?? 0} onDismiss={() => setShowCelebration(false)} />
     </View>
   );
 }
