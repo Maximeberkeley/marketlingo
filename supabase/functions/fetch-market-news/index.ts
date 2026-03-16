@@ -299,6 +299,7 @@ Respond with a JSON array of insight strings only.`;
         market_id: marketId,
         category_tag: item.categoryTag,
         summary: item.summary || null,
+        image_url: item.imageUrl || null,
         published_at: new Date().toISOString(),
       }));
 
