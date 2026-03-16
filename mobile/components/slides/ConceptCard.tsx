@@ -333,7 +333,7 @@ export function ConceptCard({
           <Text style={[styles.exampleTag, { color: accentColor }]}>Real-World Example</Text>
         </View>
         {title && <Text style={styles.exampleTitle}>{title}</Text>}
-        <ReadMoreText text={content} style={styles.exampleText} accentColor={accentColor} />
+        <FormattedText text={content} style={styles.exampleText} accentColor={accentColor} />
       </Animated.View>
     );
   }
