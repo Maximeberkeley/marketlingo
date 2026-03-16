@@ -359,7 +359,7 @@ export default function InterviewLabPage() {
                   <>
                     <div className="flex items-center gap-2 mt-5 mb-3">
                       <Clock size={18} className="text-red-500" />
-                      <h3 className="text-base font-bold text-text-primary">🧮 Mental Math Minute</h3>
+                      <h3 className="text-base font-bold text-text-primary">Mental Math Minute</h3>
                     </div>
                     {mentalMath.map((q, i) => (
                       <MathDrillCard key={i} question={q} />
