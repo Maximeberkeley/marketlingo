@@ -249,7 +249,7 @@ export default function InterviewLabScreen() {
         trySaying: 'Try again when you have a stable connection.',
         buzzwordsUsed: [],
         buzzwordsMissed: [],
-        sophiaSays: 'Looks like we hit a glitch! Try again? 💪',
+        sophiaSays: 'Looks like we hit a glitch. Try again!',
       });
     } finally {
       setSubmitting(false);
