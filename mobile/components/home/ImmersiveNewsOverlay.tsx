@@ -621,8 +621,6 @@ User's goal: ${learningGoal}`;
           ))}
         </View>
 
-        {/* Full-screen gesture layer — sits on top so swipes work everywhere */}
-        <View style={st.gestureLayer} {...panResponder.panHandlers} />
       </Animated.View>
     </Modal>
   );
