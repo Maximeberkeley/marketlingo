@@ -631,6 +631,10 @@ const st = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
+  gestureLayer: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 5,
+  },
   bgContainer: {
     ...StyleSheet.absoluteFillObject,
   },
