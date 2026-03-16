@@ -304,7 +304,7 @@ export default function InterviewLabPage() {
                 ) : (
                   <>
                     <div className="bg-bg-2 rounded-2xl p-4 border border-border mb-3">
-                      <p className="text-sm font-semibold text-text-primary mb-2">🦸 The Story Hero Method</p>
+                      <p className="text-sm font-semibold text-text-primary mb-2">The Story Hero Method</p>
                       <p className="text-sm text-text-secondary">
                         Every great interview answer is a mini-story. You are the hero! Use these 4 steps.
                       </p>
