@@ -705,7 +705,7 @@ export default function InterviewLabScreen() {
                   {/* Buzzwords */}
                   {((feedback.buzzwordsUsed?.length > 0) || (feedback.buzzwordsMissed?.length > 0)) && (
                     <View style={st.card}>
-                      <Text style={st.feedbackHeading}>🔑 Buzzword Detector</Text>
+                      <Text style={st.feedbackHeading}>Buzzword Detector</Text>
                       {feedback.buzzwordsUsed?.length > 0 && (
                         <View style={st.buzzRow}>
                           <Text style={st.buzzLabel}>Used ✅</Text>
