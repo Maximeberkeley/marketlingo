@@ -788,6 +788,8 @@ const st = StyleSheet.create({
     paddingBottom: 10,
     alignItems: 'center',
     gap: 12,
+    zIndex: 10,
+  },
   },
   sourceBtn: {
     flexDirection: 'row',
