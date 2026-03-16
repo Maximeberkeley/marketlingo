@@ -477,7 +477,7 @@ export default function InterviewLabPage() {
                     <div className="bg-bg-2 rounded-2xl p-4 border border-border mb-3">
                       <div className="flex items-center gap-3 mb-3">
                         <div className="w-11 h-11 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-                          <span className="text-xl">👩‍💼</span>
+                          <Mic size={20} className="text-violet-600" />
                         </div>
                         <div>
                           <p className="text-sm font-bold text-text-primary">Sophia Hernández</p>
