@@ -708,7 +708,7 @@ export default function InterviewLabScreen() {
                       <Text style={st.feedbackHeading}>Buzzword Detector</Text>
                       {feedback.buzzwordsUsed?.length > 0 && (
                         <View style={st.buzzRow}>
-                          <Text style={st.buzzLabel}>Used ✅</Text>
+                          <Text style={st.buzzLabel}>Used</Text>
                           <View style={st.buzzTags}>
                             {feedback.buzzwordsUsed.map((w: string) => (
                               <View key={w} style={st.buzzTagGood}><Text style={st.buzzTagText}>{w}</Text></View>
