@@ -538,11 +538,20 @@ User's goal: ${learningGoal}`;
             )}
           </View>
 
-          {/* Narration text (subtitle-style) */}
+          {/* Narration text (subtitle-style, tap to expand) */}
           {narrationText && !isGenerating && (
-            <View style={st.subtitleBox}>
-              <Text style={st.subtitleText} numberOfLines={4}>{narrationText}</Text>
-            </View>
+            <TouchableOpacity
+              style={st.subtitleBox}
+              onPress={() => setSubtitlesExpanded(!subtitlesExpanded)}
+              activeOpacity={0.8}
+            >
+              <Text style={st.subtitleText} numberOfLines={subtitlesExpanded ? undefined : 2}>
+                {narrationText}
+              </Text>
+              {!subtitlesExpanded && narrationText.length > 80 && (
+                <Text style={st.expandHint}>Tap to read more</Text>
+              )}
+            </TouchableOpacity>
           )}
         </View>
 
