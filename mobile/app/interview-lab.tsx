@@ -690,7 +690,7 @@ export default function InterviewLabScreen() {
 
                   {/* Missing */}
                   <View style={[st.card, { borderLeftColor: '#F59E0B', borderLeftWidth: 3 }]}>
-                    <Text style={st.feedbackHeading}>⚡ What Was Missing</Text>
+                    <Text style={st.feedbackHeading}>What Was Missing</Text>
                     {(feedback.missing || []).map((b: string, i: number) => (
                       <Text key={i} style={st.feedbackBullet}>• {b}</Text>
                     ))}
