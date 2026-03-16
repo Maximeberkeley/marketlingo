@@ -505,7 +505,9 @@ export default function HomeScreen() {
           {/* ── News (compact) ── */}
           {selectedMarket && (
             <AnimatedSection delay={320}>
-              <DailyNews marketId={selectedMarket} />
+              <View style={{ marginTop: 12 }}>
+                <DailyNews marketId={selectedMarket} />
+              </View>
             </AnimatedSection>
           )}
         </ScrollView>
