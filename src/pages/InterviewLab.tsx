@@ -463,7 +463,11 @@ export default function InterviewLabPage() {
                                 persona === key ? "border-violet-500 bg-violet-500/5" : "border-border"
                               )}
                             >
-                              <span className="text-xl block mb-1">{p.emoji}</span>
+                              <div className="flex justify-center mb-1">
+                                {key === 'humble_leader' ? <Users size={20} className="text-violet-500" /> :
+                                 key === 'tech_genius' ? <Cpu size={20} className="text-violet-500" /> :
+                                 <Palette size={20} className="text-violet-500" />}
+                              </div>
                               <span className={cn("text-[10px] font-medium", persona === key ? "text-violet-500" : "text-text-muted")}>{p.label}</span>
                             </button>
                           ))}
