@@ -594,7 +594,10 @@ export function DailyNews({ marketId }: DailyNewsProps) {
                 key={item.id}
                 item={item}
                 index={index}
-                onSelect={setSelectedArticle}
+                onSelect={(item) => {
+                  const idx = news.findIndex(n => n.id === item.id);
+                  setImmersiveIndex(idx >= 0 ? idx : 0);
+                }}
                 onAiAction={handleAiAction}
               />
             ))}
