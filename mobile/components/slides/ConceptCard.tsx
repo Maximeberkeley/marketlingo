@@ -872,6 +872,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.border,
     marginBottom: 16,
   },
+  paragraphDivider: {
+    height: 1,
+    backgroundColor: COLORS.border + '40',
+    marginBottom: 10,
+    marginHorizontal: 4,
+  },
 
   /* Concept text — larger, more readable for immersive feel */
   conceptText: {
