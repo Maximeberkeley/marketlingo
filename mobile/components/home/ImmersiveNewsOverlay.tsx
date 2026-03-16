@@ -793,7 +793,6 @@ const st = StyleSheet.create({
     gap: 12,
     zIndex: 10,
   },
-  },
   sourceBtn: {
     flexDirection: 'row',
     alignItems: 'center',
