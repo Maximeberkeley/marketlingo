@@ -393,7 +393,7 @@ export function ConceptCard({
         </View>
       )}
       {title && <View style={styles.sectionDivider} />}
-      <ReadMoreText text={content} style={styles.conceptText} maxLines={20} accentColor={accentColor} />
+      <FormattedText text={content} style={styles.conceptText} accentColor={accentColor} />
     </Animated.View>
   );
 }
