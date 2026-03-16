@@ -431,7 +431,7 @@ function classifyContent(text: string): "stat" | "example" | "concept" {
 import { getAcronymsForMarket } from "../../data/industryAcronyms";
 
 /** Max acronyms per key-terms card before auto-splitting */
-const KEY_TERMS_PER_CARD = 4;
+const KEY_TERMS_PER_CARD = 7;
 
 // ── Story Sequence: break long paragraphs into 3-5 cards ────────────
 function breakIntoStorySequence(text: string, maxChars: number): string[] {
