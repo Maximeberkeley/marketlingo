@@ -340,7 +340,7 @@ function ArticleDetailSheet({
               {article.imageUrl ? (
                 <View style={ds.heroContainer}>
                   <Image source={{ uri: article.imageUrl }} style={ds.heroImage} resizeMode="cover" />
-                  <LinearGradient colors={['transparent', COLORS.bg0]} style={ds.heroGradient} />
+                  <View style={[ds.heroGradient, { backgroundColor: 'rgba(255,255,255,0.3)' }]} />
                 </View>
               ) : null}
 
