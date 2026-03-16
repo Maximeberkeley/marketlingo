@@ -22,6 +22,7 @@ import { Feather } from '@expo/vector-icons';
 import { MentorChatOverlay } from '../ai/MentorChatOverlay';
 import { getMentorForContext } from '../../data/mentors';
 import type { Mentor } from '../../data/mentors';
+import { ImmersiveNewsOverlay } from './ImmersiveNewsOverlay';
 // LinearGradient replaced with View fallbacks (expo-linear-gradient not installed)
 
 // ── Types ──
