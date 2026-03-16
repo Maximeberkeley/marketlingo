@@ -635,7 +635,7 @@ const st = StyleSheet.create({
   bgImage: {
     width: SCREEN_W,
     height: SCREEN_H,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
   },
   bgOverlay: {
     ...StyleSheet.absoluteFillObject,
