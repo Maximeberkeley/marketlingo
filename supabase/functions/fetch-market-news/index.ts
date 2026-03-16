@@ -14,6 +14,7 @@ interface NewsItem {
   categoryTag: string;
   summary: string;
   marketId: string;
+  imageUrl: string | null;
 }
 
 // Market-specific search configurations
