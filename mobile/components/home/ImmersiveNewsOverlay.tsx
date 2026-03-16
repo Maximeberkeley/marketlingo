@@ -821,7 +821,7 @@ const st = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 4,
-    paddingBottom: Platform.OS === 'ios' ? 40 : 24,
+    paddingBottom: BOTTOM_PADDING,
   },
   dot: {
     width: 6,
