@@ -625,6 +625,9 @@ User's goal: ${learningGoal}`;
   );
 }
 
+const BOTTOM_PADDING = Platform.OS === 'ios' ? 40 : 24;
+const TOP_PADDING = Platform.OS === 'ios' ? 56 : 40;
+
 // ── Styles ──
 const st = StyleSheet.create({
   container: {
@@ -653,7 +656,7 @@ const st = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: Platform.OS === 'ios' ? 56 : 40,
+    paddingTop: TOP_PADDING,
     paddingHorizontal: 20,
     zIndex: 10,
   },
@@ -818,7 +821,7 @@ const st = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 4,
-    paddingBottom: Platform.OS === 'ios' ? 40 : 24,
+    paddingBottom: BOTTOM_PADDING,
   },
   dot: {
     width: 6,
