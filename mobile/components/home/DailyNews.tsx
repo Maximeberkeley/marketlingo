@@ -620,8 +620,19 @@ export function DailyNews({ marketId }: DailyNewsProps) {
         <Text style={s.lastUpdated}>Updated {lastFetched.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
       )}
 
-      {/* Article Detail Sheet */}
-      <ArticleDetailSheet article={selectedArticle} onClose={() => setSelectedArticle(null)} marketId={marketId} />
+      {/* Immersive News Overlay */}
+      <ImmersiveNewsOverlay
+        visible={immersiveIndex >= 0}
+        articles={news}
+        initialIndex={immersiveIndex >= 0 ? immersiveIndex : 0}
+        onClose={() => setImmersiveIndex(-1)}
+        onOpenChat={(article) => {
+          const ctx = `The user wants to discuss this ${marketId} industry news article:\n\nTitle: "${article.title}"\nSource: ${article.sourceName}\nSummary: ${article.summary ?? 'N/A'}\n\nHelp them understand the key implications.`;
+          setChatContext(ctx);
+          setChatNewsItem(article);
+        }}
+        marketId={marketId}
+      />
 
       {/* AI Chat overlay (from AI action buttons) */}
       {chatNewsItem && (
