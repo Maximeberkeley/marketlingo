@@ -337,6 +337,24 @@ export function SlideReader({
 
       {/* Bottom Actions - Fixed with modal-safe padding for iOS */}
       <div className="flex-shrink-0 px-4 py-4 border-t border-border bg-bg-0 modal-bottom-safe">
+        {/* Progress dots */}
+        {!isIntroSlide && (
+          <div className="flex items-center justify-center gap-1 mb-3">
+            {slides.map((_, i) => (
+              <div
+                key={i}
+                className={cn(
+                  "h-1 rounded-full transition-all duration-300",
+                  i === currentIndex
+                    ? "w-5 bg-primary"
+                    : i < currentIndex
+                    ? "w-1.5 bg-primary/40"
+                    : "w-1.5 bg-border"
+                )}
+              />
+            ))}
+          </div>
+        )}
         {isIntroSlide ? (
           <Button variant="cta" size="full" onClick={goToNext}>
             Begin
