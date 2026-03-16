@@ -324,7 +324,8 @@ export function ImmersiveNewsOverlay({
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 15 || Math.abs(g.dy) > 15,
+      onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 10 || Math.abs(g.dy) > 10,
+      onMoveShouldSetPanResponderCapture: (_, g) => Math.abs(g.dx) > 10 || Math.abs(g.dy) > 10,
       onPanResponderMove: (_, g) => {
         if (Math.abs(g.dy) > Math.abs(g.dx)) {
           translateY.setValue(Math.min(0, g.dy));
@@ -433,6 +434,7 @@ User's goal: ${learningGoal}`;
 
         const answer = data?.message || "Sorry, I didn't catch that. Try again?";
         setNarrationText(answer);
+        setSubtitlesExpanded(false);
         setIsGenerating(false);
         setIsSpeaking(true);
         setIsDoneSpeaking(false);
@@ -491,6 +493,7 @@ User's goal: ${learningGoal}`;
       <StatusBar barStyle="light-content" />
       <Animated.View
         style={[st.container, { opacity: fadeAnim, transform: [{ translateY }] }]}
+        {...panResponder.panHandlers}
       >
         {/* Background image */}
         <Animated.View style={[st.bgContainer, { transform: [{ translateX }] }]}>
@@ -618,8 +621,6 @@ User's goal: ${learningGoal}`;
           ))}
         </View>
 
-        {/* Full-screen gesture layer — sits on top so swipes work everywhere */}
-        <View style={st.gestureLayer} {...panResponder.panHandlers} />
       </Animated.View>
     </Modal>
   );
@@ -633,10 +634,6 @@ const st = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
-  },
-  gestureLayer: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 5,
   },
   bgContainer: {
     ...StyleSheet.absoluteFillObject,
