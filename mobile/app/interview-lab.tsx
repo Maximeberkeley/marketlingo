@@ -545,7 +545,7 @@ export default function InterviewLabScreen() {
                         onPress={() => { setPersona(key); triggerHaptic('light'); }}
                         style={[st.personaBtn, persona === key && st.personaBtnActive]}
                       >
-                        <Text style={st.personaEmoji}>{p.emoji}</Text>
+                        <Feather name={p.icon as any} size={22} color={persona === key ? '#7C3AED' : COLORS.textMuted} />
                         <Text style={[st.personaLabel, persona === key && st.personaLabelActive]}>{p.label}</Text>
                       </TouchableOpacity>
                     ))}
