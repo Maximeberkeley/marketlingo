@@ -603,7 +603,7 @@ export default function InterviewLabScreen() {
                                 <Feather name="square" size={24} color="#FFF" />
                               </TouchableOpacity>
                             </Animated.View>
-                            <Text style={st.recordingLabel}>🔴 Recording... Tap to stop</Text>
+                            <Text style={st.recordingLabel}>Recording... Tap to stop</Text>
                           </>
                         ) : (
                           <>
