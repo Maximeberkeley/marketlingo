@@ -463,7 +463,7 @@ User's goal: ${learningGoal}`;
         {/* Background image */}
         <Animated.View style={[st.bgContainer, { transform: [{ translateX }] }]}>
           {article.imageUrl ? (
-            <Image source={{ uri: article.imageUrl }} style={st.bgImage} blurRadius={2} />
+            <Image source={{ uri: article.imageUrl }} style={st.bgImage} blurRadius={1} />
           ) : (
             <View style={[st.bgImage, { backgroundColor: '#1A1035' }]} />
           )}
