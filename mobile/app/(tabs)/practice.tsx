@@ -443,6 +443,9 @@ export default function PracticeScreen() {
         {/* Activities */}
         <PremiumCarousel cards={ACTIVITY_CARDS} title="Activities" />
 
+        {/* Labs */}
+        <PremiumCarousel cards={LAB_CARDS} title="Labs" />
+
         {/* Resources */}
         <PremiumCarousel cards={RESOURCE_CARDS} title="Resources" />
       </ScrollView>
