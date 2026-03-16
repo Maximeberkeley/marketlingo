@@ -299,10 +299,11 @@ export default function HomePage() {
       const newStreak = (updatedProgress as any)?.current_streak || progress.current_streak || 0;
       checkStreakMilestone(newStreak, mktName, mktEmoji);
       if (xpData) checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
-      if (!isProUser) triggerAfterLesson(progress.current_day || 1);
     }
-    toast.success("Lesson complete! 🔥");
+    toast.success("Lesson complete!");
     navigate("/drills");
+    // Show Pro promo AFTER lesson is fully registered and user sees completion
+    if (!isProUser) setTimeout(() => triggerAfterLesson(progress?.current_day || 1), 1500);
   };
 
   const handleOpenStack = (stack: StackWithSlides) => { setActiveStack(stack); setActiveBiteIndex(null); setShowReader(true); };
