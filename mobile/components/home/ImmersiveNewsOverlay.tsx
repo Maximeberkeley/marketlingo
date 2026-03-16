@@ -656,7 +656,7 @@ const st = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: Platform.OS === 'ios' ? 56 : 40,
+    paddingTop: TOP_PADDING,
     paddingHorizontal: 20,
     zIndex: 10,
   },
