@@ -191,6 +191,7 @@ export function ImmersiveNewsOverlay({
   const [isDoneSpeaking, setIsDoneSpeaking] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [subtitlesExpanded, setSubtitlesExpanded] = useState(false);
 
   const soundRef = useRef<Audio.Sound | null>(null);
   const recordingRef = useRef<Audio.Recording | null>(null);
@@ -463,7 +464,7 @@ User's goal: ${learningGoal}`;
         {/* Background image */}
         <Animated.View style={[st.bgContainer, { transform: [{ translateX }] }]}>
           {article.imageUrl ? (
-            <Image source={{ uri: article.imageUrl }} style={st.bgImage} blurRadius={2} />
+            <Image source={{ uri: article.imageUrl }} style={st.bgImage} blurRadius={1} />
           ) : (
             <View style={[st.bgImage, { backgroundColor: '#1A1035' }]} />
           )}
@@ -537,11 +538,20 @@ User's goal: ${learningGoal}`;
             )}
           </View>
 
-          {/* Narration text (subtitle-style) */}
+          {/* Narration text (subtitle-style, tap to expand) */}
           {narrationText && !isGenerating && (
-            <View style={st.subtitleBox}>
-              <Text style={st.subtitleText} numberOfLines={4}>{narrationText}</Text>
-            </View>
+            <TouchableOpacity
+              style={st.subtitleBox}
+              onPress={() => setSubtitlesExpanded(!subtitlesExpanded)}
+              activeOpacity={0.8}
+            >
+              <Text style={st.subtitleText} numberOfLines={subtitlesExpanded ? undefined : 2}>
+                {narrationText}
+              </Text>
+              {!subtitlesExpanded && narrationText.length > 80 && (
+                <Text style={st.expandHint}>Tap to read more</Text>
+              )}
+            </TouchableOpacity>
           )}
         </View>
 
@@ -593,7 +603,7 @@ const st = StyleSheet.create({
   bgImage: {
     width: SCREEN_W,
     height: SCREEN_H,
-    resizeMode: 'cover',
+    resizeMode: 'contain',
   },
   bgOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -706,6 +716,13 @@ const st = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontWeight: '400',
+  },
+  expandHint: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.5)',
+    textAlign: 'center',
+    marginTop: 4,
+    fontWeight: '600',
   },
 
   // Title
