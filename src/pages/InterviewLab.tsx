@@ -735,7 +735,7 @@ function FeedbackDisplay({ feedback, onRetry, onNext, onContinue, continueLabel 
           )}
           {feedback.buzzwordsMissed?.length > 0 && (
             <div>
-              <p className="text-[11px] text-text-muted mb-1.5">Missed 🎯</p>
+              <p className="text-[11px] text-text-muted mb-1.5">Missed</p>
               <div className="flex flex-wrap gap-1.5">
                 {feedback.buzzwordsMissed.map((w: string) => (
                   <span key={w} className="px-2 py-1 rounded-lg bg-amber-500/10 text-[11px] text-amber-600 font-medium">{w}</span>
