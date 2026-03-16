@@ -303,7 +303,7 @@ export function ConceptCard({
         ]}
       >
         <Feather name="info" size={18} color={accentColor} style={{ marginBottom: 8 }} />
-        <ReadMoreText text={content} style={styles.calloutText} accentColor={accentColor} />
+        <FormattedText text={content} style={styles.calloutText} accentColor={accentColor} />
       </Animated.View>
     );
   }
