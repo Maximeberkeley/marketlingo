@@ -285,7 +285,7 @@ export default function InterviewLabPage() {
                       </p>
                     </div>
                     <div className="bg-bg-2 rounded-2xl p-4 border border-border mb-3">
-                      <p className="text-sm font-semibold text-text-primary mb-2">🎯 {marketName} Example</p>
+                      <p className="text-sm font-semibold text-text-primary mb-2"><Target size={14} className="inline mr-1 text-violet-500" />{marketName} Example</p>
                       <p className="text-sm text-text-secondary mb-3">"{framework.label}"</p>
                       <div className="space-y-2 mb-3">
                         {framework.branches.map((b, i) => (
