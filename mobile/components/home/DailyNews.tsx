@@ -97,10 +97,10 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
                 {item.imageUrl ? (
                   <Image source={{ uri: item.imageUrl }} style={s.featuredImage} resizeMode="cover" />
                 ) : (
-                  <LinearGradient colors={GRADIENT_SETS[i % GRADIENT_SETS.length]} style={s.featuredImage} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
+                  <View style={[s.featuredImage, { backgroundColor: GRADIENT_SETS[i % GRADIENT_SETS.length][0] }]} />
                 )}
-                {/* Gradient overlay */}
-                <LinearGradient colors={['transparent', 'rgba(0,0,0,0.75)']} style={s.featuredOverlay} />
+                {/* Dark overlay for text readability */}
+                <View style={[s.featuredOverlay, { backgroundColor: 'rgba(0,0,0,0.45)' }]} />
                 <View style={s.featuredContent}>
                   <View style={[s.featuredBadge, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
                     <Text style={s.featuredBadgeText}>{item.categoryTag.toUpperCase()}</Text>
