@@ -22,6 +22,7 @@ import { Feather } from '@expo/vector-icons';
 import { MentorChatOverlay } from '../ai/MentorChatOverlay';
 import { getMentorForContext } from '../../data/mentors';
 import type { Mentor } from '../../data/mentors';
+import { ImmersiveNewsOverlay } from './ImmersiveNewsOverlay';
 // LinearGradient replaced with View fallbacks (expo-linear-gradient not installed)
 
 // ── Types ──
@@ -445,7 +446,7 @@ export function DailyNews({ marketId }: DailyNewsProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
-  const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(null);
+  const [immersiveIndex, setImmersiveIndex] = useState(-1);
   const [chatNewsItem, setChatNewsItem] = useState<NewsItem | null>(null);
   const [chatContext, setChatContext] = useState('');
 
@@ -571,7 +572,10 @@ export function DailyNews({ marketId }: DailyNewsProps) {
       {!isLoading && !error && news.length > 0 && (
         <View>
           {/* Featured horizontal carousel */}
-          <FeaturedCarousel items={featured} onSelect={setSelectedArticle} />
+          <FeaturedCarousel items={featured} onSelect={(item) => {
+            const idx = news.findIndex(n => n.id === item.id);
+            setImmersiveIndex(idx >= 0 ? idx : 0);
+          }} />
 
           {/* Feed section label */}
           {feed.length > 0 && (
@@ -589,7 +593,10 @@ export function DailyNews({ marketId }: DailyNewsProps) {
                 key={item.id}
                 item={item}
                 index={index}
-                onSelect={setSelectedArticle}
+                onSelect={(item) => {
+                  const idx = news.findIndex(n => n.id === item.id);
+                  setImmersiveIndex(idx >= 0 ? idx : 0);
+                }}
                 onAiAction={handleAiAction}
               />
             ))}
@@ -612,8 +619,19 @@ export function DailyNews({ marketId }: DailyNewsProps) {
         <Text style={s.lastUpdated}>Updated {lastFetched.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
       )}
 
-      {/* Article Detail Sheet */}
-      <ArticleDetailSheet article={selectedArticle} onClose={() => setSelectedArticle(null)} marketId={marketId} />
+      {/* Immersive News Overlay */}
+      <ImmersiveNewsOverlay
+        visible={immersiveIndex >= 0}
+        articles={news}
+        initialIndex={immersiveIndex >= 0 ? immersiveIndex : 0}
+        onClose={() => setImmersiveIndex(-1)}
+        onOpenChat={(article) => {
+          const ctx = `The user wants to discuss this ${marketId} industry news article:\n\nTitle: "${article.title}"\nSource: ${article.sourceName}\nSummary: ${article.summary ?? 'N/A'}\n\nHelp them understand the key implications.`;
+          setChatContext(ctx);
+          setChatNewsItem(article);
+        }}
+        marketId={marketId}
+      />
 
       {/* AI Chat overlay (from AI action buttons) */}
       {chatNewsItem && (
