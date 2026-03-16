@@ -556,7 +556,7 @@ export default function InterviewLabScreen() {
               {/* Scenario */}
               <View style={st.card}>
                 <View style={st.sophiaHeader}>
-                  <View style={st.sophiaAvatar}><Text style={{ fontSize: 20 }}>👩‍💼</Text></View>
+                  <View style={st.sophiaAvatar}><Feather name="mic" size={20} color="#7C3AED" /></View>
                   <View style={{ flex: 1 }}>
                     <Text style={st.sophiaName}>Sophia Hernández</Text>
                     <Text style={st.sophiaRole}>Case Interview Coach</Text>
