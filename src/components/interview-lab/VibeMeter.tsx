@@ -5,7 +5,7 @@ interface VibeMeterProps {
 export function VibeMeter({ text }: VibeMeterProps) {
   const len = text.trim().length;
   const level = len < 30 ? 0 : len < 100 ? 1 : len < 250 ? 2 : 3;
-  const labels = ['Too Short', 'Getting There', 'Good Length', 'Perfect! 🔥'];
+  const labels = ['Too Short', 'Getting There', 'Good Length', 'Perfect'];
   const colors = ['#EF4444', '#F59E0B', '#3B82F6', '#10B981'];
   const widths = [15, 40, 70, 100];
 

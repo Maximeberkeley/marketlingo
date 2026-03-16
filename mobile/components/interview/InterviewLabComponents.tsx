@@ -76,7 +76,7 @@ export function LeoCelebration({ visible, score, onDismiss }: { visible: boolean
         <LeoCharacter size="xl" animation="celebrating" />
         <Text style={styles.celebrationScore}>{score}%</Text>
         <Text style={styles.celebrationTitle}>
-          {score === 100 ? '💯 PERFECT!' : score >= 90 ? '🌟 Outstanding!' : '🔥 Great Job!'}
+          {score === 100 ? 'PERFECT!' : score >= 90 ? 'Outstanding!' : 'Great Job!'}
         </Text>
         <Text style={styles.celebrationSub}>Sophia is impressed!</Text>
         <TouchableOpacity style={styles.celebrationBtn} onPress={() => { triggerHaptic('light'); onDismiss?.(); }}>

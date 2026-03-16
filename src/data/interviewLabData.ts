@@ -66,10 +66,10 @@ export const STAGE_LABELS: Record<InterviewStage, { label: string; icon: string;
 };
 
 // ─── Confidence Personas ───
-export const CONFIDENCE_PERSONAS: Record<ConfidencePersona, { label: string; emoji: string; description: string }> = {
-  humble_leader: { label: 'Humble Leader', emoji: '🤝', description: 'Collaborative, team-focused language' },
-  tech_genius: { label: 'Tech Genius', emoji: '🧠', description: 'Data-driven, analytical approach' },
-  creative_dreamer: { label: 'Creative Dreamer', emoji: '🎨', description: 'Innovative, vision-focused narrative' },
+export const CONFIDENCE_PERSONAS: Record<ConfidencePersona, { label: string; icon: string; description: string }> = {
+  humble_leader: { label: 'Humble Leader', icon: 'users', description: 'Collaborative, team-focused language' },
+  tech_genius: { label: 'Tech Genius', icon: 'cpu', description: 'Data-driven, analytical approach' },
+  creative_dreamer: { label: 'Creative Dreamer', icon: 'palette', description: 'Innovative, vision-focused narrative' },
 };
 
 // ─── Story Hero Steps (Academic Path) ───
