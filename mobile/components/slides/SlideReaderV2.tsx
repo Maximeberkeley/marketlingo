@@ -697,25 +697,23 @@ export function SlideReaderV2({
               </>
             )}
 
-            <View style={{ flex: 1 }} />
-
-            <View style={styles.progressDots}>
-              {Array.from({ length: totalCards }).map((_, i) => (
-                <View
-                  key={i}
-                  style={[
-                    styles.dot,
-                    i === currentCard
-                      ? [styles.dotActive, { backgroundColor: accentColor }]
-                      : i < currentCard
-                      ? [styles.dotCompleted, { backgroundColor: accentColor }]
-                      : styles.dotUpcoming,
-                  ]}
-                />
-              ))}
+            <View style={styles.progressDotsWrapper}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.progressDots}>
+                {Array.from({ length: totalCards }).map((_, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.dot,
+                      i === currentCard
+                        ? [styles.dotActive, { backgroundColor: accentColor }]
+                        : i < currentCard
+                        ? [styles.dotCompleted, { backgroundColor: accentColor }]
+                        : styles.dotUpcoming,
+                    ]}
+                  />
+                ))}
+              </ScrollView>
             </View>
-
-            <View style={{ flex: 1 }} />
 
             <TouchableOpacity
               style={[styles.nextBtn, { backgroundColor: accentColor }]}
@@ -1052,7 +1050,8 @@ const styles = StyleSheet.create({
     ...TYPE.caption,
     color: COLORS.textMuted,
   },
-  progressDots: { flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'center' as const, gap: 3 },
+  progressDotsWrapper: { flex: 1, alignItems: 'center' as const, justifyContent: 'center' as const, overflow: 'hidden' as const },
+  progressDots: { flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'center' as const, gap: 3, paddingHorizontal: 4 },
   dot: { height: 3, borderRadius: 2 },
   dotActive: { width: 16, opacity: 1 },
   dotCompleted: { width: 5, opacity: 0.4 },
@@ -1064,6 +1063,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
+    flexShrink: 0,
     ...SHADOWS.accent,
   },
   nextBtnText: {

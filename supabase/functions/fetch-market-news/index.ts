@@ -166,7 +166,7 @@ Deno.serve(async (req) => {
             query,
             limit: 3,
             tbs: 'qdr:d', // Last 24 hours
-            scrapeOptions: { formats: ['markdown'] },
+            scrapeOptions: { formats: ['markdown'], includeTags: ['meta'] },
           }),
         });
 
@@ -214,7 +214,7 @@ Deno.serve(async (req) => {
         summary = summary.substring(0, 200) + '...';
       }
 
-      // Extract image URL from metadata (og:image)
+      // Extract image URL from metadata (og:image) or markdown
       let imageUrl: string | null = null;
       if (item.metadata?.ogImage) {
         imageUrl = item.metadata.ogImage;
@@ -222,6 +222,15 @@ Deno.serve(async (req) => {
         imageUrl = item.metadata.image;
       } else if (item.metadata?.['og:image']) {
         imageUrl = item.metadata['og:image'];
+      } else if (item.metadata?.sourceURL) {
+        // Try common og:image patterns
+      }
+      // Fallback: extract first image from markdown
+      if (!imageUrl && item.markdown) {
+        const imgMatch = item.markdown.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/);
+        if (imgMatch?.[1] && !imgMatch[1].includes('icon') && !imgMatch[1].includes('logo') && !imgMatch[1].includes('avatar')) {
+          imageUrl = imgMatch[1];
+        }
       }
 
       return {

@@ -225,7 +225,7 @@ export function useHomeData(
     // Fetch news items
     const { data: cachedNews } = await supabase
       .from('news_items')
-      .select('id, title, summary, source_name, source_url, published_at, category_tag')
+      .select('id, title, summary, source_name, source_url, published_at, category_tag, image_url')
       .eq('market_id', market)
       .order('published_at', { ascending: false })
       .limit(10);
@@ -240,7 +240,7 @@ export function useHomeData(
         if (liveData?.data && liveData.data.length > 0) {
           const { data: freshNews } = await supabase
             .from('news_items')
-            .select('id, title, summary, source_name, source_url, published_at, category_tag')
+            .select('id, title, summary, source_name, source_url, published_at, category_tag, image_url')
             .eq('market_id', market)
             .order('published_at', { ascending: false })
             .limit(10);
