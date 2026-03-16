@@ -166,7 +166,7 @@ Deno.serve(async (req) => {
             query,
             limit: 3,
             tbs: 'qdr:d', // Last 24 hours
-            scrapeOptions: { formats: ['markdown'], includeTags: ['meta'] },
+            scrapeOptions: { formats: ['markdown', 'html'] },
           }),
         });
 
