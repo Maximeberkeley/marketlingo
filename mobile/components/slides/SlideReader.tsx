@@ -577,6 +577,24 @@ export function SlideReader({
 
         {/* ── BOTTOM ACTIONS ── */}
         <View style={styles.bottomBar}>
+          {/* Progress dots */}
+          {!isIntroSlide && (
+            <View style={styles.progressDots}>
+              {slides.map((_, i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.dot,
+                    i === currentIndex
+                      ? styles.dotActive
+                      : i < currentIndex
+                      ? styles.dotCompleted
+                      : styles.dotUpcoming,
+                  ]}
+                />
+              ))}
+            </View>
+          )}
           {isIntroSlide ? (
             <TouchableOpacity style={styles.ctaBtn} onPress={goToNext}>
               <Text style={styles.ctaBtnText}>Begin →</Text>
@@ -679,6 +697,11 @@ const styles = StyleSheet.create({
 
   // Bottom actions
   bottomBar: { paddingHorizontal: 16, paddingBottom: 36, paddingTop: 8, borderTopWidth: 1, borderTopColor: COLORS.border },
+  progressDots: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, marginBottom: 10 },
+  dot: { height: 3, borderRadius: 2 },
+  dotActive: { width: 18, backgroundColor: COLORS.accent },
+  dotCompleted: { width: 6, backgroundColor: COLORS.accent, opacity: 0.4 },
+  dotUpcoming: { width: 6, backgroundColor: COLORS.border },
   actionRow: { flexDirection: 'row', gap: 8, alignItems: 'center' },
   secondaryBtn: { flex: 1, height: 46, backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 14, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
   secondaryBtnText: { fontSize: 13, color: COLORS.textSecondary, fontWeight: '600' },

@@ -699,9 +699,21 @@ export function SlideReaderV2({
 
             <View style={{ flex: 1 }} />
 
-            <Text style={styles.counterText}>
-              {currentCard + 1} / {totalCards}
-            </Text>
+            <View style={styles.progressDots}>
+              {Array.from({ length: totalCards }).map((_, i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.dot,
+                    i === currentCard
+                      ? [styles.dotActive, { backgroundColor: accentColor }]
+                      : i < currentCard
+                      ? [styles.dotCompleted, { backgroundColor: accentColor }]
+                      : styles.dotUpcoming,
+                  ]}
+                />
+              ))}
+            </View>
 
             <View style={{ flex: 1 }} />
 
@@ -1039,6 +1051,12 @@ const styles = StyleSheet.create({
   counterText: {
     ...TYPE.caption,
     color: COLORS.textMuted,
+  },
+  progressDots: { flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'center' as const, gap: 3 },
+  dot: { height: 3, borderRadius: 2 },
+  dotActive: { width: 16, opacity: 1 },
+  dotCompleted: { width: 5, opacity: 0.4 },
+  dotUpcoming: { width: 5, backgroundColor: COLORS.border },
   },
   nextBtn: {
     height: 44,
