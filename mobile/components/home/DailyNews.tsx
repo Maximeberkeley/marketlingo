@@ -22,7 +22,7 @@ import { Feather } from '@expo/vector-icons';
 import { MentorChatOverlay } from '../ai/MentorChatOverlay';
 import { getMentorForContext } from '../../data/mentors';
 import type { Mentor } from '../../data/mentors';
-import { LinearGradient } from 'expo-linear-gradient';
+// LinearGradient replaced with View fallbacks (expo-linear-gradient not installed)
 
 // ── Types ──
 interface NewsItem {
@@ -97,10 +97,10 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
                 {item.imageUrl ? (
                   <Image source={{ uri: item.imageUrl }} style={s.featuredImage} resizeMode="cover" />
                 ) : (
-                  <LinearGradient colors={GRADIENT_SETS[i % GRADIENT_SETS.length]} style={s.featuredImage} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
+                  <View style={[s.featuredImage, { backgroundColor: GRADIENT_SETS[i % GRADIENT_SETS.length][0] }]} />
                 )}
-                {/* Gradient overlay */}
-                <LinearGradient colors={['transparent', 'rgba(0,0,0,0.75)']} style={s.featuredOverlay} />
+                {/* Dark overlay for text readability */}
+                <View style={[s.featuredOverlay, { backgroundColor: 'rgba(0,0,0,0.45)' }]} />
                 <View style={s.featuredContent}>
                   <View style={[s.featuredBadge, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
                     <Text style={s.featuredBadgeText}>{item.categoryTag.toUpperCase()}</Text>
@@ -185,12 +185,11 @@ function NewsFeedCard({
               resizeMode="cover"
             />
           ) : (
-            <LinearGradient
-              colors={['rgba(139,92,246,0.15)', 'rgba(139,92,246,0.05)']}
-              style={[s.feedThumbImage, { alignItems: 'center', justifyContent: 'center' }]}
+            <View
+              style={[s.feedThumbImage, { alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.accentSoft }]}
             >
               <Feather name="file-text" size={20} color={COLORS.accent} style={{ opacity: 0.5 }} />
-            </LinearGradient>
+            </View>
           )}
         </View>
       </TouchableOpacity>
@@ -341,7 +340,7 @@ function ArticleDetailSheet({
               {article.imageUrl ? (
                 <View style={ds.heroContainer}>
                   <Image source={{ uri: article.imageUrl }} style={ds.heroImage} resizeMode="cover" />
-                  <LinearGradient colors={['transparent', COLORS.bg0]} style={ds.heroGradient} />
+                  <View style={[ds.heroGradient, { backgroundColor: 'rgba(255,255,255,0.3)' }]} />
                 </View>
               ) : null}
 
