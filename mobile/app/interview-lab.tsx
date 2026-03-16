@@ -718,7 +718,7 @@ export default function InterviewLabScreen() {
                       )}
                       {feedback.buzzwordsMissed?.length > 0 && (
                         <View style={st.buzzRow}>
-                          <Text style={st.buzzLabel}>Missed 🎯</Text>
+                          <Text style={st.buzzLabel}>Missed</Text>
                           <View style={st.buzzTags}>
                             {feedback.buzzwordsMissed.map((w: string) => (
                               <View key={w} style={st.buzzTagMiss}><Text style={st.buzzTagTextMiss}>{w}</Text></View>
