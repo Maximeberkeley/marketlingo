@@ -195,11 +195,15 @@ export function ImmersiveNewsOverlay({
 
   const soundRef = useRef<Audio.Sound | null>(null);
   const recordingRef = useRef<Audio.Recording | null>(null);
+  const currentIndexRef = useRef(currentIndex);
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const sophiaScale = useRef(new Animated.Value(0)).current;
+
+  // Keep ref in sync
+  useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
 
   const article = articles[currentIndex];
 
