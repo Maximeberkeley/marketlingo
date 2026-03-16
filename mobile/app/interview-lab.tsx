@@ -682,7 +682,7 @@ export default function InterviewLabScreen() {
 
                   {/* Awesome */}
                   <View style={[st.card, { borderLeftColor: '#10B981', borderLeftWidth: 3 }]}>
-                    <Text style={st.feedbackHeading}>✅ What Was Awesome</Text>
+                    <Text style={st.feedbackHeading}>What Was Awesome</Text>
                     {(feedback.awesome || []).map((b: string, i: number) => (
                       <Text key={i} style={st.feedbackBullet}>• {b}</Text>
                     ))}
