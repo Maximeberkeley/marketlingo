@@ -30,14 +30,14 @@ const QUEST_ROUTES: Record<string, string> = {
 };
 
 function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
-  const slideAnim = useRef(new Animated.Value(40)).current;
+  const slideAnim = useRef(new Animated.Value(20)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const checkScale = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(slideAnim, { toValue: 0, duration: 350, delay: index * 80, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }),
-      Animated.timing(opacityAnim, { toValue: 1, duration: 280, delay: index * 80, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 300, delay: index * 60, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }),
+      Animated.timing(opacityAnim, { toValue: 1, duration: 250, delay: index * 60, useNativeDriver: true }),
     ]).start();
   }, []);
 
@@ -47,7 +47,6 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
     }
   }, [quest.isCompleted]);
 
-  const progressPct = quest.target > 0 ? Math.min(1, quest.current / quest.target) : 0;
   const iconName = QUEST_ICONS[quest.type] || 'book-open';
   const route = QUEST_ROUTES[quest.type] || '/(tabs)/home';
 
@@ -61,43 +60,36 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
   return (
     <Animated.View style={[{ transform: [{ translateX: slideAnim }], opacity: opacityAnim }]}>
       <TouchableOpacity
-        style={[styles.questRow, quest.isCompleted && styles.questRowCompleted]}
+        style={styles.questRow}
         onPress={handlePress}
         activeOpacity={0.7}
         disabled={quest.isCompleted}
       >
+        {/* Icon circle */}
         <View style={[styles.questIcon, quest.isCompleted && styles.questIconDone]}>
-          <Feather name={iconName} size={20} color={quest.isCompleted ? COLORS.success : COLORS.accent} />
+          {quest.isCompleted ? (
+            <Animated.View style={{ transform: [{ scale: checkScale }] }}>
+              <Feather name="check" size={14} color="#fff" />
+            </Animated.View>
+          ) : (
+            <Feather name={iconName} size={14} color={COLORS.accent} />
+          )}
         </View>
-        <View style={styles.questContent}>
-          <View style={styles.questHeader}>
-            <Text style={[styles.questTitle, quest.isCompleted && styles.questTitleDone]} numberOfLines={1}>
-              {quest.title}
-            </Text>
-            <View style={[styles.xpChip, quest.isCompleted && styles.xpChipDone]}>
-              <Text style={[styles.xpChipText, quest.isCompleted && styles.xpChipTextDone]}>
-                {quest.isCompleted ? '✓' : `+${quest.xpBonus}`}
-              </Text>
-            </View>
-          </View>
-          <Text style={styles.questDesc} numberOfLines={1}>{quest.description}</Text>
-          <View style={styles.questProgressBg}>
-            <View style={[styles.questProgressFill, quest.isCompleted && styles.questProgressFillDone, { width: `${progressPct * 100}%` }]} />
-          </View>
-          <Text style={styles.questProgress}>
-            {quest.current}/{quest.target}
-            {quest.multiplier > 1 && !quest.isCompleted && (
-              <Text style={styles.multiplierText}> · {quest.multiplier}x</Text>
-            )}
+
+        {/* Title */}
+        <Text
+          style={[styles.questTitle, quest.isCompleted && styles.questTitleDone]}
+          numberOfLines={1}
+        >
+          {quest.title}
+        </Text>
+
+        {/* XP chip */}
+        <View style={[styles.xpChip, quest.isCompleted && styles.xpChipDone]}>
+          <Text style={[styles.xpChipText, quest.isCompleted && styles.xpChipTextDone]}>
+            {quest.isCompleted ? '✓' : `+${quest.xpBonus}`}
           </Text>
         </View>
-        {quest.isCompleted ? (
-          <Animated.View style={[styles.checkCircle, { transform: [{ scale: checkScale }] }]}>
-            <Feather name="check" size={14} color="#fff" />
-          </Animated.View>
-        ) : (
-          <Feather name="chevron-right" size={16} color={COLORS.textMuted} />
-        )}
       </TouchableOpacity>
     </Animated.View>
   );
@@ -106,26 +98,24 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
 export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete }: DailyQuestsProps) {
   return (
     <View style={styles.container}>
+      {/* Header row */}
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Feather name="flag" size={18} color={COLORS.accent} />
-          <Text style={styles.headerTitle}>Daily Quests</Text>
-        </View>
+        <Feather name="flag" size={14} color={COLORS.accent} />
+        <Text style={styles.headerTitle}>Daily Quests</Text>
         <View style={styles.countBadge}>
           <Text style={styles.countText}>{completedCount}/{quests.length}</Text>
         </View>
       </View>
 
+      {/* All complete banner (compact) */}
       {allComplete && (
         <View style={styles.allCompleteBanner}>
-          <Feather name="award" size={24} color={COLORS.success} />
-          <View>
-            <Text style={styles.allCompleteTitle}>All Quests Complete!</Text>
-            <Text style={styles.allCompleteSubtitle}>+{totalBonusXP} bonus XP earned</Text>
-          </View>
+          <Feather name="award" size={16} color={COLORS.success} />
+          <Text style={styles.allCompleteText}>All done! +{totalBonusXP} XP</Text>
         </View>
       )}
 
+      {/* Quest rows */}
       {quests.map((quest, idx) => (
         <QuestRow key={quest.id} quest={quest} index={idx} />
       ))}
@@ -135,53 +125,38 @@ export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete 
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.bg2, borderRadius: 18, padding: 16,
-    borderWidth: 1, borderColor: COLORS.border, gap: 8,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 2,
+    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 12,
+    borderWidth: 1, borderColor: COLORS.border, gap: 4,
   },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
+  header: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    marginBottom: 2,
+  },
+  headerTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, flex: 1 },
   countBadge: {
-    backgroundColor: COLORS.accentSoft, paddingHorizontal: 10, paddingVertical: 4,
-    borderRadius: 10,
+    backgroundColor: COLORS.accentSoft, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8,
   },
-  countText: { fontSize: 12, fontWeight: '700', color: COLORS.accent },
+  countText: { fontSize: 11, fontWeight: '700', color: COLORS.accent },
   allCompleteBanner: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: COLORS.successSoft, borderRadius: 12, padding: 12,
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: COLORS.successSoft, borderRadius: 10, paddingVertical: 6, paddingHorizontal: 10,
   },
-  allCompleteTitle: { fontSize: 14, fontWeight: '700', color: COLORS.success },
-  allCompleteSubtitle: { fontSize: 11, color: COLORS.textMuted },
+  allCompleteText: { fontSize: 12, fontWeight: '700', color: COLORS.success },
   questRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.bg1, borderRadius: 14, padding: 12,
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    paddingVertical: 8, paddingHorizontal: 4,
   },
-  questRowCompleted: { backgroundColor: COLORS.successSoft },
   questIcon: {
-    width: 40, height: 40, borderRadius: 12,
+    width: 28, height: 28, borderRadius: 14,
     backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center',
   },
-  questIconDone: { backgroundColor: 'rgba(34,197,94,0.12)' },
-  questContent: { flex: 1 },
-  questHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 },
-  questTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, flex: 1 },
-  questTitleDone: { color: COLORS.success },
-  questDesc: { fontSize: 11, color: COLORS.textMuted, marginBottom: 6 },
-  xpChip: { backgroundColor: COLORS.accentSoft, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
-  xpChipDone: { backgroundColor: 'rgba(34,197,94,0.15)' },
+  questIconDone: { backgroundColor: COLORS.success },
+  questTitle: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary, flex: 1 },
+  questTitleDone: { color: COLORS.textMuted, textDecorationLine: 'line-through' },
+  xpChip: {
+    backgroundColor: COLORS.accentSoft, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8,
+  },
+  xpChipDone: { backgroundColor: 'rgba(34,197,94,0.12)' },
   xpChipText: { fontSize: 10, fontWeight: '700', color: COLORS.accent },
   xpChipTextDone: { color: COLORS.success },
-  questProgressBg: {
-    height: 4, borderRadius: 2, backgroundColor: COLORS.surfaceLight, overflow: 'hidden', marginBottom: 3,
-  },
-  questProgressFill: { height: '100%', borderRadius: 2, backgroundColor: COLORS.accent },
-  questProgressFillDone: { backgroundColor: COLORS.success },
-  questProgress: { fontSize: 10, color: COLORS.textMuted },
-  multiplierText: { color: COLORS.gold, fontWeight: '600' },
-  checkCircle: {
-    width: 28, height: 28, borderRadius: 14,
-    backgroundColor: COLORS.success, alignItems: 'center', justifyContent: 'center',
-  },
-  chevron: { fontSize: 20, color: COLORS.textMuted, marginLeft: 4 },
 });

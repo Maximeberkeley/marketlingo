@@ -569,16 +569,16 @@ const styles = StyleSheet.create({
   },
   lessonIllustrationWrap: {
     alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 24, paddingHorizontal: 20,
+    paddingVertical: 12, paddingHorizontal: 16,
     backgroundColor: COLORS.accent + '0A',
   },
   lessonIllustrationInner: {
-    width: 240, height: 200,
-    borderRadius: 20,
+    width: 180, height: 120,
+    borderRadius: 16,
     backgroundColor: COLORS.accent + '0C',
     alignItems: 'center', justifyContent: 'center',
   },
-  lessonIllustration: { width: 200, height: 180 },
+  lessonIllustration: { width: 140, height: 110 },
   lessonContent: { padding: 20 },
   lessonOverline: {
     ...TYPE.overline, color: COLORS.accent, marginBottom: 8,
