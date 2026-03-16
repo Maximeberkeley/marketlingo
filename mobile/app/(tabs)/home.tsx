@@ -541,7 +541,7 @@ const styles = StyleSheet.create({
 
   // Leo section
   leoSection: {
-    alignItems: 'center', marginBottom: 24,
+    alignItems: 'center', marginBottom: 16,
   },
   speechBubble: {
     backgroundColor: COLORS.bg1, borderRadius: 20,
