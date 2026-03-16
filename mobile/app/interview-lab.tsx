@@ -378,7 +378,7 @@ export default function InterviewLabScreen() {
               ) : (
                 <>
                   <View style={st.card}>
-                    <Text style={st.cardLabel}>🦸 The Story Hero Method</Text>
+                    <Text style={st.cardLabel}>The Story Hero Method</Text>
                     <Text style={st.cardBody}>
                       Every great interview answer is a mini-story. You are the hero! Use these 4 steps to make your answer unforgettable.
                     </Text>
