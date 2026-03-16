@@ -717,6 +717,13 @@ const st = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '400',
   },
+  expandHint: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.5)',
+    textAlign: 'center',
+    marginTop: 4,
+    fontWeight: '600',
+  },
 
   // Title
   titleContainer: {
