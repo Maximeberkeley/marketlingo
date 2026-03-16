@@ -359,7 +359,7 @@ export default function InterviewLabScreen() {
                   </View>
 
                   <View style={st.card}>
-                    <Text style={st.cardLabel}>🎯 {marketName} Example</Text>
+                    <Text style={st.cardLabel}>{marketName} Example</Text>
                     <Text style={st.cardBody}>Problem: "{framework.label}"</Text>
                     <View style={st.branchContainer}>
                       {framework.branches.map((b, i) => (
