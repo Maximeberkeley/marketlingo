@@ -700,7 +700,7 @@ function FeedbackDisplay({ feedback, onRetry, onNext, onContinue, continueLabel 
       </div>
       {(feedback.awesome || []).length > 0 && (
         <div className="bg-bg-2 rounded-2xl p-4 border border-border border-l-4 border-l-emerald-500">
-          <p className="text-sm font-bold text-text-primary mb-2">✅ What Was Awesome</p>
+          <p className="text-sm font-bold text-text-primary mb-2"><CheckCircle size={14} className="inline mr-1 text-emerald-500" />What Was Awesome</p>
           {(feedback.awesome || []).map((b: string, i: number) => (
             <p key={i} className="text-sm text-text-secondary mb-1">• {b}</p>
           ))}
