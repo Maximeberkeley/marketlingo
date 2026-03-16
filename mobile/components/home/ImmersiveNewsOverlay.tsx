@@ -434,6 +434,7 @@ User's goal: ${learningGoal}`;
 
         const answer = data?.message || "Sorry, I didn't catch that. Try again?";
         setNarrationText(answer);
+        setSubtitlesExpanded(false);
         setIsGenerating(false);
         setIsSpeaking(true);
         setIsDoneSpeaking(false);
