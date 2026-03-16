@@ -1052,6 +1052,12 @@ const styles = StyleSheet.create({
     ...TYPE.caption,
     color: COLORS.textMuted,
   },
+  progressDots: { flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'center' as const, gap: 3 },
+  dot: { height: 3, borderRadius: 2 },
+  dotActive: { width: 16, opacity: 1 },
+  dotCompleted: { width: 5, opacity: 0.4 },
+  dotUpcoming: { width: 5, backgroundColor: COLORS.border },
+  },
   nextBtn: {
     height: 44,
     paddingHorizontal: 24,
