@@ -1057,7 +1057,6 @@ const styles = StyleSheet.create({
   dotActive: { width: 16, opacity: 1 },
   dotCompleted: { width: 5, opacity: 0.4 },
   dotUpcoming: { width: 5, backgroundColor: COLORS.border },
-  },
   nextBtn: {
     height: 44,
     paddingHorizontal: 24,
