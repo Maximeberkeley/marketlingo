@@ -309,28 +309,32 @@ export function ImmersiveNewsOverlay({
   // Navigate to article
   const goTo = useCallback((index: number) => {
     if (index < 0 || index >= articles.length) return;
-    // Animate transition
-    const dir = index > currentIndex ? -1 : 1;
+    const cur = currentIndexRef.current;
+    const dir = index > cur ? -1 : 1;
     Animated.timing(translateX, { toValue: dir * SCREEN_W, duration: 200, useNativeDriver: true }).start(() => {
       setCurrentIndex(index);
+      currentIndexRef.current = index;
+      setSubtitlesExpanded(false);
       translateX.setValue(-dir * SCREEN_W);
       Animated.spring(translateX, { toValue: 0, friction: 8, tension: 60, useNativeDriver: true }).start();
     });
-  }, [currentIndex, articles.length]);
+  }, [articles.length]);
 
-  // Pan gesture for swipe
+  // Pan gesture for swipe — uses refs so the handler always reads fresh state
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 15 || Math.abs(g.dy) > 15,
       onPanResponderMove: (_, g) => {
         if (Math.abs(g.dy) > Math.abs(g.dx)) {
-          translateY.setValue(Math.min(0, g.dy)); // only allow upward
+          translateY.setValue(Math.min(0, g.dy));
         } else {
           translateX.setValue(g.dx);
         }
       },
       onPanResponderRelease: (_, g) => {
+        const idx = currentIndexRef.current;
+
         // Swipe up → close
         if (g.dy < -SWIPE_THRESHOLD && Math.abs(g.dy) > Math.abs(g.dx)) {
           Animated.timing(translateY, { toValue: -SCREEN_H, duration: 300, useNativeDriver: true }).start(() => {
@@ -342,13 +346,37 @@ export function ImmersiveNewsOverlay({
         translateY.setValue(0);
 
         // Swipe left → next
-        if (g.dx < -SWIPE_THRESHOLD && currentIndex < articles.length - 1) {
-          goTo(currentIndex + 1);
+        if (g.dx < -SWIPE_THRESHOLD) {
+          // goTo reads from ref inside, but we call setCurrentIndex there
+          // We need to call goTo from outside — use a wrapper
+          const next = idx + 1;
+          if (next < articles.length) {
+            const dir = -1;
+            Animated.timing(translateX, { toValue: dir * SCREEN_W, duration: 200, useNativeDriver: true }).start(() => {
+              currentIndexRef.current = next;
+              setCurrentIndex(next);
+              translateX.setValue(-dir * SCREEN_W);
+              Animated.spring(translateX, { toValue: 0, friction: 8, tension: 60, useNativeDriver: true }).start();
+            });
+          } else {
+            Animated.spring(translateX, { toValue: 0, friction: 8, useNativeDriver: true }).start();
+          }
           return;
         }
         // Swipe right → prev
-        if (g.dx > SWIPE_THRESHOLD && currentIndex > 0) {
-          goTo(currentIndex - 1);
+        if (g.dx > SWIPE_THRESHOLD) {
+          const prev = idx - 1;
+          if (prev >= 0) {
+            const dir = 1;
+            Animated.timing(translateX, { toValue: dir * SCREEN_W, duration: 200, useNativeDriver: true }).start(() => {
+              currentIndexRef.current = prev;
+              setCurrentIndex(prev);
+              translateX.setValue(-dir * SCREEN_W);
+              Animated.spring(translateX, { toValue: 0, friction: 8, tension: 60, useNativeDriver: true }).start();
+            });
+          } else {
+            Animated.spring(translateX, { toValue: 0, friction: 8, useNativeDriver: true }).start();
+          }
           return;
         }
 
