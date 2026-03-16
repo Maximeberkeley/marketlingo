@@ -577,6 +577,24 @@ export function SlideReader({
 
         {/* ── BOTTOM ACTIONS ── */}
         <View style={styles.bottomBar}>
+          {/* Progress dots */}
+          {!isIntroSlide && (
+            <View style={styles.progressDots}>
+              {slides.map((_, i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.dot,
+                    i === currentIndex
+                      ? styles.dotActive
+                      : i < currentIndex
+                      ? styles.dotCompleted
+                      : styles.dotUpcoming,
+                  ]}
+                />
+              ))}
+            </View>
+          )}
           {isIntroSlide ? (
             <TouchableOpacity style={styles.ctaBtn} onPress={goToNext}>
               <Text style={styles.ctaBtnText}>Begin →</Text>
