@@ -191,6 +191,7 @@ export function ImmersiveNewsOverlay({
   const [isDoneSpeaking, setIsDoneSpeaking] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [subtitlesExpanded, setSubtitlesExpanded] = useState(false);
 
   const soundRef = useRef<Audio.Sound | null>(null);
   const recordingRef = useRef<Audio.Recording | null>(null);
