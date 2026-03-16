@@ -83,7 +83,7 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
         snapToInterval={FEATURED_CARD_WIDTH + 12}
         decelerationRate="fast"
         contentContainerStyle={{ paddingHorizontal: 4, gap: 12 }}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: true })}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: false })}
         scrollEventThrottle={16}
       >
         {items.map((item, i) => {
