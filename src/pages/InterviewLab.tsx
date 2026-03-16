@@ -716,7 +716,7 @@ function FeedbackDisplay({ feedback, onRetry, onNext, onContinue, continueLabel 
       )}
       {feedback.trySaying && (
         <div className="bg-bg-2 rounded-2xl p-4 border border-border border-l-4 border-l-violet-500">
-          <p className="text-sm font-bold text-text-primary mb-2">💡 Try Saying This Instead</p>
+          <p className="text-sm font-bold text-text-primary mb-2"><Lightbulb size={14} className="inline mr-1 text-violet-500" />Try Saying This Instead</p>
           <p className="text-sm text-violet-500 italic leading-relaxed">"{feedback.trySaying}"</p>
         </div>
       )}
