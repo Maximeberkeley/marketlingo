@@ -578,7 +578,7 @@ export default function InterviewLabPage() {
                           <div key={ti}>
                             <div className="bg-bg-2 rounded-2xl p-4 border border-border">
                               <div className="flex items-center gap-2 mb-2">
-                                <span className="text-lg">👩‍💼</span>
+                                <Mic size={16} className="text-violet-500" />
                                 <span className="text-xs font-bold text-violet-500">Sophia — Turn {ti + 1}</span>
                               </div>
                               <p className="text-sm text-text-secondary">{turn.prompt}</p>
