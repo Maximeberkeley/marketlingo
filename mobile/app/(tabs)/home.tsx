@@ -579,7 +579,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   lessonIllustration: { width: 140, height: 110 },
-  lessonContent: { padding: 20 },
+  lessonContent: { padding: 14 },
   lessonOverline: {
     ...TYPE.overline, color: COLORS.accent, marginBottom: 8,
   },
