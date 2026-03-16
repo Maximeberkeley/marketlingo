@@ -82,6 +82,9 @@ const ACTIVITY_CARDS: CardData[] = [
     path: '/drills',
     heroImage: require('../../assets/cards/drills-hero.jpg'),
   },
+];
+
+const LAB_CARDS: CardData[] = [
   {
     id: 'interview-lab',
     title: 'Interview Lab',
@@ -94,6 +97,20 @@ const ACTIVITY_CARDS: CardData[] = [
     path: '/interview-lab',
     heroImage: require('../../assets/illustrations/interview-lab-hero.png'),
     tag: 'NEW',
+  },
+  {
+    id: 'investment',
+    title: 'Investment Lab',
+    subtitle: 'With Sophia Hernández',
+    description: 'Real-world analysis and portfolio building.',
+    icon: 'trending-up',
+    iconColor: '#A7F3D0',
+    gradientColors: ['#064E3B', '#047857', '#059669'] as const,
+    accentGlow: 'rgba(5, 150, 105, 0.4)',
+    path: '/investment-lab',
+    isPro: true,
+    tag: 'PRO',
+    heroImage: require('../../assets/cards/investment-lab-hero.jpg'),
   },
 ];
 
@@ -158,20 +175,6 @@ const RESOURCE_CARDS: CardData[] = [
     accentGlow: 'rgba(13, 148, 136, 0.4)',
     path: '/passport',
     heroImage: require('../../assets/illustrations/passport-hero.png'),
-  },
-  {
-    id: 'investment',
-    title: 'Investment Lab',
-    subtitle: 'With Sophia Hernández',
-    description: 'Real-world analysis and portfolio building.',
-    icon: 'trending-up',
-    iconColor: '#A7F3D0',
-    gradientColors: ['#064E3B', '#047857', '#059669'] as const,
-    accentGlow: 'rgba(5, 150, 105, 0.4)',
-    path: '/investment-lab',
-    isPro: true,
-    tag: 'PRO',
-    heroImage: require('../../assets/cards/investment-lab-hero.jpg'),
   },
 ];
 
@@ -439,6 +442,9 @@ export default function PracticeScreen() {
 
         {/* Activities */}
         <PremiumCarousel cards={ACTIVITY_CARDS} title="Activities" />
+
+        {/* Labs */}
+        <PremiumCarousel cards={LAB_CARDS} title="Labs" />
 
         {/* Resources */}
         <PremiumCarousel cards={RESOURCE_CARDS} title="Resources" />
