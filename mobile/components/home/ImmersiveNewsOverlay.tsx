@@ -687,6 +687,7 @@ const st = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 30,
+    zIndex: 10,
   },
   sophiaRing: {
     width: 130,
