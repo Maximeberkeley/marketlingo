@@ -446,7 +446,6 @@ export function DailyNews({ marketId }: DailyNewsProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
-  const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(null);
   const [immersiveIndex, setImmersiveIndex] = useState(-1);
   const [chatNewsItem, setChatNewsItem] = useState<NewsItem | null>(null);
   const [chatContext, setChatContext] = useState('');
