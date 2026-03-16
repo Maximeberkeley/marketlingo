@@ -324,7 +324,8 @@ export function ImmersiveNewsOverlay({
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 15 || Math.abs(g.dy) > 15,
+      onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 10 || Math.abs(g.dy) > 10,
+      onMoveShouldSetPanResponderCapture: (_, g) => Math.abs(g.dx) > 10 || Math.abs(g.dy) > 10,
       onPanResponderMove: (_, g) => {
         if (Math.abs(g.dy) > Math.abs(g.dx)) {
           translateY.setValue(Math.min(0, g.dy));
