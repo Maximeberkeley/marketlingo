@@ -493,6 +493,7 @@ User's goal: ${learningGoal}`;
       <StatusBar barStyle="light-content" />
       <Animated.View
         style={[st.container, { opacity: fadeAnim, transform: [{ translateY }] }]}
+        {...panResponder.panHandlers}
       >
         {/* Background image */}
         <Animated.View style={[st.bgContainer, { transform: [{ translateX }] }]}>
