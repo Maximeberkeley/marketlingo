@@ -693,7 +693,7 @@ function FeedbackDisplay({ feedback, onRetry, onNext, onContinue, continueLabel 
       <div className="bg-bg-2 rounded-2xl p-4 border border-border">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0">
-            <span className="text-lg">👩‍💼</span>
+            <Mic size={18} className="text-violet-600" />
           </div>
           <p className="text-sm text-text-secondary italic">{feedback.sophiaSays}</p>
         </div>
