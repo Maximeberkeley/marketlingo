@@ -725,7 +725,7 @@ function FeedbackDisplay({ feedback, onRetry, onNext, onContinue, continueLabel 
           <p className="text-sm font-bold text-text-primary mb-3"><Key size={14} className="inline mr-1 text-text-primary" />Buzzword Detector</p>
           {feedback.buzzwordsUsed?.length > 0 && (
             <div className="mb-2">
-              <p className="text-[11px] text-text-muted mb-1.5">Used ✅</p>
+              <p className="text-[11px] text-text-muted mb-1.5">Used</p>
               <div className="flex flex-wrap gap-1.5">
                 {feedback.buzzwordsUsed.map((w: string) => (
                   <span key={w} className="px-2 py-1 rounded-lg bg-emerald-500/10 text-[11px] text-emerald-600 font-medium">{w}</span>
