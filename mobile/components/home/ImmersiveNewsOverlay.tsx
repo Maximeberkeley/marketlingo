@@ -491,7 +491,6 @@ User's goal: ${learningGoal}`;
       <StatusBar barStyle="light-content" />
       <Animated.View
         style={[st.container, { opacity: fadeAnim, transform: [{ translateY }] }]}
-        {...panResponder.panHandlers}
       >
         {/* Background image */}
         <Animated.View style={[st.bgContainer, { transform: [{ translateX }] }]}>
@@ -618,6 +617,9 @@ User's goal: ${learningGoal}`;
             />
           ))}
         </View>
+
+        {/* Full-screen gesture layer — sits on top so swipes work everywhere */}
+        <View style={st.gestureLayer} {...panResponder.panHandlers} />
       </Animated.View>
     </Modal>
   );
@@ -628,6 +630,10 @@ const st = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+  },
+  gestureLayer: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 5,
   },
   bgContainer: {
     ...StyleSheet.absoluteFillObject,
@@ -681,6 +687,7 @@ const st = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 30,
+    zIndex: 10,
   },
   sophiaRing: {
     width: 130,
@@ -781,6 +788,8 @@ const st = StyleSheet.create({
     paddingBottom: 10,
     alignItems: 'center',
     gap: 12,
+    zIndex: 10,
+  },
   },
   sourceBtn: {
     flexDirection: 'row',
