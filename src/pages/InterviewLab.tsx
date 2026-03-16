@@ -722,7 +722,7 @@ function FeedbackDisplay({ feedback, onRetry, onNext, onContinue, continueLabel 
       )}
       {((feedback.buzzwordsUsed?.length > 0) || (feedback.buzzwordsMissed?.length > 0)) && (
         <div className="bg-bg-2 rounded-2xl p-4 border border-border">
-          <p className="text-sm font-bold text-text-primary mb-3">🔑 Buzzword Detector</p>
+          <p className="text-sm font-bold text-text-primary mb-3"><Key size={14} className="inline mr-1 text-text-primary" />Buzzword Detector</p>
           {feedback.buzzwordsUsed?.length > 0 && (
             <div className="mb-2">
               <p className="text-[11px] text-text-muted mb-1.5">Used ✅</p>
