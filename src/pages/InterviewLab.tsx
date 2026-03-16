@@ -708,7 +708,7 @@ function FeedbackDisplay({ feedback, onRetry, onNext, onContinue, continueLabel 
       )}
       {(feedback.missing || []).length > 0 && (
         <div className="bg-bg-2 rounded-2xl p-4 border border-border border-l-4 border-l-amber-500">
-          <p className="text-sm font-bold text-text-primary mb-2">⚡ What Was Missing</p>
+          <p className="text-sm font-bold text-text-primary mb-2"><AlertTriangle size={14} className="inline mr-1 text-amber-500" />What Was Missing</p>
           {(feedback.missing || []).map((b: string, i: number) => (
             <p key={i} className="text-sm text-text-secondary mb-1">• {b}</p>
           ))}
