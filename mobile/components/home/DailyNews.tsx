@@ -573,7 +573,10 @@ export function DailyNews({ marketId }: DailyNewsProps) {
       {!isLoading && !error && news.length > 0 && (
         <View>
           {/* Featured horizontal carousel */}
-          <FeaturedCarousel items={featured} onSelect={setSelectedArticle} />
+          <FeaturedCarousel items={featured} onSelect={(item) => {
+            const idx = news.findIndex(n => n.id === item.id);
+            setImmersiveIndex(idx >= 0 ? idx : 0);
+          }} />
 
           {/* Feed section label */}
           {feed.length > 0 && (
