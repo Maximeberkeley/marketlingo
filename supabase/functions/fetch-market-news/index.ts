@@ -214,6 +214,16 @@ Deno.serve(async (req) => {
         summary = summary.substring(0, 200) + '...';
       }
 
+      // Extract image URL from metadata (og:image)
+      let imageUrl: string | null = null;
+      if (item.metadata?.ogImage) {
+        imageUrl = item.metadata.ogImage;
+      } else if (item.metadata?.image) {
+        imageUrl = item.metadata.image;
+      } else if (item.metadata?.['og:image']) {
+        imageUrl = item.metadata['og:image'];
+      }
+
       return {
         id: `news-${marketId}-${index}`,
         title: item.title || 'Industry News',
@@ -223,6 +233,7 @@ Deno.serve(async (req) => {
         categoryTag,
         summary,
         marketId,
+        imageUrl,
       };
     });
 
