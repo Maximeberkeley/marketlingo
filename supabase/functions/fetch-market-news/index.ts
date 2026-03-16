@@ -166,7 +166,7 @@ Deno.serve(async (req) => {
             query,
             limit: 3,
             tbs: 'qdr:d', // Last 24 hours
-            scrapeOptions: { formats: ['markdown'], includeTags: ['meta'] },
+            scrapeOptions: { formats: ['markdown', 'html'] },
           }),
         });
 
@@ -214,21 +214,40 @@ Deno.serve(async (req) => {
         summary = summary.substring(0, 200) + '...';
       }
 
-      // Extract image URL from metadata (og:image) or markdown
+      // Extract image URL from metadata or HTML og:image
       let imageUrl: string | null = null;
+      
+      // Check metadata fields (varies by Firecrawl response)
       if (item.metadata?.ogImage) {
         imageUrl = item.metadata.ogImage;
       } else if (item.metadata?.image) {
         imageUrl = item.metadata.image;
       } else if (item.metadata?.['og:image']) {
         imageUrl = item.metadata['og:image'];
-      } else if (item.metadata?.sourceURL) {
-        // Try common og:image patterns
       }
-      // Fallback: extract first image from markdown
+      
+      // Parse og:image from HTML content if available
+      if (!imageUrl && item.html) {
+        const ogMatch = item.html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
+          || item.html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+        if (ogMatch?.[1]) {
+          imageUrl = ogMatch[1];
+        }
+      }
+      
+      // Fallback: twitter:image from HTML
+      if (!imageUrl && item.html) {
+        const twMatch = item.html.match(/<meta[^>]+(?:name|property)=["']twitter:image["'][^>]+content=["']([^"']+)["']/i)
+          || item.html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:name|property)=["']twitter:image["']/i);
+        if (twMatch?.[1]) {
+          imageUrl = twMatch[1];
+        }
+      }
+
+      // Fallback: extract first large image from markdown (skip icons/logos/avatars/favicons)
       if (!imageUrl && item.markdown) {
         const imgMatch = item.markdown.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/);
-        if (imgMatch?.[1] && !imgMatch[1].includes('icon') && !imgMatch[1].includes('logo') && !imgMatch[1].includes('avatar')) {
+        if (imgMatch?.[1] && !imgMatch[1].match(/icon|logo|avatar|favicon|badge|sprite|pixel|1x1|tracking/i)) {
           imageUrl = imgMatch[1];
         }
       }
