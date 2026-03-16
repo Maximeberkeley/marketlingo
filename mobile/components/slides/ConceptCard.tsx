@@ -165,44 +165,51 @@ function RichText({ text, style }: { text: string; style?: any }) {
   return <Text>{parts.length > 0 ? parts : <Text style={style}>{text}</Text>}</Text>;
 }
 
-// ── Read More toggle for long text ──────────────────────────────────
-function ReadMoreText({
+// ── Paragraph-aware text renderer ───────────────────────────────────
+// Splits long text into visually separated paragraphs with spacing
+// instead of showing one giant wall of text.
+function FormattedText({
   text,
   style,
-  maxLines = 8,
   accentColor = COLORS.accent,
 }: {
   text: string;
   style?: any;
-  maxLines?: number;
   accentColor?: string;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const [needsTruncation, setNeedsTruncation] = useState(false);
+  if (!text) return null;
+
+  // Split on double newlines or detect long single blocks
+  let paragraphs = text.split(/\n{2,}/).filter(p => p.trim());
+  
+  // If still one big block, split at sentence boundaries (~3 sentences per paragraph)
+  if (paragraphs.length === 1 && text.length > 200) {
+    const sentences = text.match(/[^.!?]*[.!?]+/g) || [text];
+    const chunks: string[] = [];
+    let current = "";
+    const SENTENCES_PER_CHUNK = 3;
+    let count = 0;
+    for (const s of sentences) {
+      current += s;
+      count++;
+      if (count >= SENTENCES_PER_CHUNK) {
+        chunks.push(current.trim());
+        current = "";
+        count = 0;
+      }
+    }
+    if (current.trim()) chunks.push(current.trim());
+    paragraphs = chunks;
+  }
 
   return (
     <View>
-      <Text
-        style={style}
-        numberOfLines={expanded ? undefined : maxLines}
-        onTextLayout={(e) => {
-          if (e.nativeEvent.lines.length > maxLines) {
-            setNeedsTruncation(true);
-          }
-        }}
-      >
-        <RichText text={text} style={style} />
-      </Text>
-      {needsTruncation && (
-        <TouchableOpacity
-          onPress={() => setExpanded(!expanded)}
-          style={styles.readMoreBtn}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
-          <Text style={[styles.readMoreText, { color: accentColor }]}>{expanded ? "Show less" : "Read more"}</Text>
-          <Feather name={expanded ? "chevron-up" : "chevron-down"} size={14} color={accentColor} />
-        </TouchableOpacity>
-      )}
+      {paragraphs.map((para, idx) => (
+        <View key={idx} style={idx > 0 ? { marginTop: 14 } : undefined}>
+          {idx > 0 && <View style={styles.paragraphDivider} />}
+          <RichText text={para.trim()} style={style} />
+        </View>
+      ))}
     </View>
   );
 }
@@ -296,7 +303,7 @@ export function ConceptCard({
         ]}
       >
         <Feather name="info" size={18} color={accentColor} style={{ marginBottom: 8 }} />
-        <ReadMoreText text={content} style={styles.calloutText} accentColor={accentColor} />
+        <FormattedText text={content} style={styles.calloutText} accentColor={accentColor} />
       </Animated.View>
     );
   }
@@ -326,7 +333,7 @@ export function ConceptCard({
           <Text style={[styles.exampleTag, { color: accentColor }]}>Real-World Example</Text>
         </View>
         {title && <Text style={styles.exampleTitle}>{title}</Text>}
-        <ReadMoreText text={content} style={styles.exampleText} accentColor={accentColor} />
+        <FormattedText text={content} style={styles.exampleText} accentColor={accentColor} />
       </Animated.View>
     );
   }
@@ -386,7 +393,7 @@ export function ConceptCard({
         </View>
       )}
       {title && <View style={styles.sectionDivider} />}
-      <ReadMoreText text={content} style={styles.conceptText} maxLines={20} accentColor={accentColor} />
+      <FormattedText text={content} style={styles.conceptText} accentColor={accentColor} />
     </Animated.View>
   );
 }
@@ -864,6 +871,12 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: COLORS.border,
     marginBottom: 16,
+  },
+  paragraphDivider: {
+    height: 1,
+    backgroundColor: COLORS.border + '40',
+    marginBottom: 10,
+    marginHorizontal: 4,
   },
 
   /* Concept text — larger, more readable for immersive feel */

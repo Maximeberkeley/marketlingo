@@ -670,6 +670,15 @@ export function SlideReaderV2({
         {/* Bottom Bar */}
         <View style={[styles.bottomBar, { paddingBottom: insets.bottom + 12 }]}>
           <View style={styles.bottomRow}>
+            {/* Back button */}
+            <TouchableOpacity
+              style={[styles.backBtn, currentCard === 0 && { opacity: 0.3 }]}
+              onPress={goPrev}
+              disabled={currentCard === 0}
+            >
+              <Feather name="chevron-left" size={20} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+
             {/* Action buttons */}
             {currentCardData?.type === 'concept' && currentCardData.cardType !== 'sources' && (
               <>
@@ -700,6 +709,7 @@ export function SlideReaderV2({
               style={[styles.nextBtn, { backgroundColor: accentColor }]}
               onPress={goNext}
             >
+              <Feather name={isLastCard ? 'check' : 'chevron-right'} size={18} color="#fff" style={{ marginRight: 4 }} />
               <Text style={styles.nextBtnText}>
                 {isLastCard ? 'Done' : 'Next'}
               </Text>
@@ -1032,14 +1042,25 @@ const styles = StyleSheet.create({
   },
   nextBtn: {
     height: 44,
-    paddingHorizontal: 28,
+    paddingHorizontal: 24,
     borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
     ...SHADOWS.accent,
   },
   nextBtnText: {
     ...TYPE.bodyBold,
     color: '#fff',
+  },
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: COLORS.bg1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 });
