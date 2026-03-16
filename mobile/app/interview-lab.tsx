@@ -249,7 +249,7 @@ export default function InterviewLabScreen() {
         trySaying: 'Try again when you have a stable connection.',
         buzzwordsUsed: [],
         buzzwordsMissed: [],
-        sophiaSays: 'Looks like we hit a glitch! Try again? 💪',
+        sophiaSays: 'Looks like we hit a glitch. Try again!',
       });
     } finally {
       setSubmitting(false);
@@ -359,7 +359,7 @@ export default function InterviewLabScreen() {
                   </View>
 
                   <View style={st.card}>
-                    <Text style={st.cardLabel}>🎯 {marketName} Example</Text>
+                    <Text style={st.cardLabel}>{marketName} Example</Text>
                     <Text style={st.cardBody}>Problem: "{framework.label}"</Text>
                     <View style={st.branchContainer}>
                       {framework.branches.map((b, i) => (
@@ -378,7 +378,7 @@ export default function InterviewLabScreen() {
               ) : (
                 <>
                   <View style={st.card}>
-                    <Text style={st.cardLabel}>🦸 The Story Hero Method</Text>
+                    <Text style={st.cardLabel}>The Story Hero Method</Text>
                     <Text style={st.cardBody}>
                       Every great interview answer is a mini-story. You are the hero! Use these 4 steps to make your answer unforgettable.
                     </Text>
@@ -435,7 +435,7 @@ export default function InterviewLabScreen() {
                 <>
                   <View style={[st.stageHeader, { marginTop: 20 }]}>
                     <Feather name="clock" size={20} color="#EF4444" />
-                    <Text style={st.stageTitle}>🧮 Mental Math Minute</Text>
+                    <Text style={st.stageTitle}>Mental Math Minute</Text>
                   </View>
                   {mentalMath.map((q, i) => (
                     <MathDrill key={i} question={q} />
@@ -545,7 +545,7 @@ export default function InterviewLabScreen() {
                         onPress={() => { setPersona(key); triggerHaptic('light'); }}
                         style={[st.personaBtn, persona === key && st.personaBtnActive]}
                       >
-                        <Text style={st.personaEmoji}>{p.emoji}</Text>
+                        <Feather name={p.icon as any} size={22} color={persona === key ? '#7C3AED' : COLORS.textMuted} />
                         <Text style={[st.personaLabel, persona === key && st.personaLabelActive]}>{p.label}</Text>
                       </TouchableOpacity>
                     ))}
@@ -556,7 +556,7 @@ export default function InterviewLabScreen() {
               {/* Scenario */}
               <View style={st.card}>
                 <View style={st.sophiaHeader}>
-                  <View style={st.sophiaAvatar}><Text style={{ fontSize: 20 }}>👩‍💼</Text></View>
+                  <View style={st.sophiaAvatar}><Feather name="mic" size={20} color="#7C3AED" /></View>
                   <View style={{ flex: 1 }}>
                     <Text style={st.sophiaName}>Sophia Hernández</Text>
                     <Text style={st.sophiaRole}>Case Interview Coach</Text>
@@ -603,7 +603,7 @@ export default function InterviewLabScreen() {
                                 <Feather name="square" size={24} color="#FFF" />
                               </TouchableOpacity>
                             </Animated.View>
-                            <Text style={st.recordingLabel}>🔴 Recording... Tap to stop</Text>
+                            <Text style={st.recordingLabel}>Recording... Tap to stop</Text>
                           </>
                         ) : (
                           <>
@@ -669,7 +669,7 @@ export default function InterviewLabScreen() {
                   {/* Sophia Says */}
                   <View style={st.card}>
                     <View style={st.sophiaHeader}>
-                      <View style={st.sophiaAvatar}><Text style={{ fontSize: 20 }}>👩‍💼</Text></View>
+                      <View style={st.sophiaAvatar}><Feather name="mic" size={18} color="#7C3AED" /></View>
                       <Text style={[st.sophiaQuote, { flex: 1 }]}>{feedback.sophiaSays}</Text>
                       <TouchableOpacity
                         onPress={() => speakFeedback(feedback)}
@@ -682,7 +682,7 @@ export default function InterviewLabScreen() {
 
                   {/* Awesome */}
                   <View style={[st.card, { borderLeftColor: '#10B981', borderLeftWidth: 3 }]}>
-                    <Text style={st.feedbackHeading}>✅ What Was Awesome</Text>
+                    <Text style={st.feedbackHeading}>What Was Awesome</Text>
                     {(feedback.awesome || []).map((b: string, i: number) => (
                       <Text key={i} style={st.feedbackBullet}>• {b}</Text>
                     ))}
@@ -690,7 +690,7 @@ export default function InterviewLabScreen() {
 
                   {/* Missing */}
                   <View style={[st.card, { borderLeftColor: '#F59E0B', borderLeftWidth: 3 }]}>
-                    <Text style={st.feedbackHeading}>⚡ What Was Missing</Text>
+                    <Text style={st.feedbackHeading}>What Was Missing</Text>
                     {(feedback.missing || []).map((b: string, i: number) => (
                       <Text key={i} style={st.feedbackBullet}>• {b}</Text>
                     ))}
@@ -698,17 +698,17 @@ export default function InterviewLabScreen() {
 
                   {/* Try Saying */}
                   <View style={[st.card, { borderLeftColor: '#7C3AED', borderLeftWidth: 3 }]}>
-                    <Text style={st.feedbackHeading}>💡 Try Saying This Instead</Text>
+                    <Text style={st.feedbackHeading}>Try Saying This Instead</Text>
                     <Text style={st.trySayingText}>"{feedback.trySaying}"</Text>
                   </View>
 
                   {/* Buzzwords */}
                   {((feedback.buzzwordsUsed?.length > 0) || (feedback.buzzwordsMissed?.length > 0)) && (
                     <View style={st.card}>
-                      <Text style={st.feedbackHeading}>🔑 Buzzword Detector</Text>
+                      <Text style={st.feedbackHeading}>Buzzword Detector</Text>
                       {feedback.buzzwordsUsed?.length > 0 && (
                         <View style={st.buzzRow}>
-                          <Text style={st.buzzLabel}>Used ✅</Text>
+                          <Text style={st.buzzLabel}>Used</Text>
                           <View style={st.buzzTags}>
                             {feedback.buzzwordsUsed.map((w: string) => (
                               <View key={w} style={st.buzzTagGood}><Text style={st.buzzTagText}>{w}</Text></View>
@@ -718,7 +718,7 @@ export default function InterviewLabScreen() {
                       )}
                       {feedback.buzzwordsMissed?.length > 0 && (
                         <View style={st.buzzRow}>
-                          <Text style={st.buzzLabel}>Missed 🎯</Text>
+                          <Text style={st.buzzLabel}>Missed</Text>
                           <View style={st.buzzTags}>
                             {feedback.buzzwordsMissed.map((w: string) => (
                               <View key={w} style={st.buzzTagMiss}><Text style={st.buzzTagTextMiss}>{w}</Text></View>

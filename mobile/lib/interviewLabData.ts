@@ -57,10 +57,10 @@ export const STORY_HERO_STEPS: StoryHeroStep[] = [
   { letter: 'R', label: 'Result', prompt: 'What happened? Use numbers!', example: 'I pitched 12 companies, landed 3 sponsors, and raised $4,500.' },
 ];
 
-export const CONFIDENCE_PERSONAS: Record<ConfidencePersona, { label: string; emoji: string; description: string; reviewFocus: string }> = {
-  humble_leader: { label: 'The Humble Leader', emoji: '🤝', description: 'You lead through empathy and teamwork.', reviewFocus: 'collaboration, empathy, team dynamics' },
-  tech_genius: { label: 'The Tech Genius', emoji: '🧠', description: 'You dazzle with data and technical depth.', reviewFocus: 'data-driven arguments, technical accuracy, analytical depth' },
-  creative_dreamer: { label: 'The Creative Dreamer', emoji: '🎨', description: 'You inspire with vision and bold ideas.', reviewFocus: 'creativity, vision, innovative thinking' },
+export const CONFIDENCE_PERSONAS: Record<ConfidencePersona, { label: string; icon: string; description: string; reviewFocus: string }> = {
+  humble_leader: { label: 'The Humble Leader', icon: 'users', description: 'You lead through empathy and teamwork.', reviewFocus: 'collaboration, empathy, team dynamics' },
+  tech_genius: { label: 'The Tech Genius', icon: 'cpu', description: 'You dazzle with data and technical depth.', reviewFocus: 'data-driven arguments, technical accuracy, analytical depth' },
+  creative_dreamer: { label: 'The Creative Dreamer', icon: 'palette', description: 'You inspire with vision and bold ideas.', reviewFocus: 'creativity, vision, innovative thinking' },
 };
 
 // MECE Framework example per industry

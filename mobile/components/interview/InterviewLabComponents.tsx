@@ -37,7 +37,7 @@ export function StageTracker({ current, onTap }: { current: InterviewStage; onTa
 export function VibeMeter({ text }: { text: string }) {
   const len = text.trim().length;
   const level = len < 30 ? 0 : len < 100 ? 1 : len < 250 ? 2 : 3;
-  const labels = ['Too Short', 'Getting There', 'Good Length', 'Perfect! 🔥'];
+  const labels = ['Too Short', 'Getting There', 'Good Length', 'Perfect'];
   const colors = ['#EF4444', '#F59E0B', '#3B82F6', '#10B981'];
   const widths = [15, 40, 70, 100];
 
@@ -76,7 +76,7 @@ export function LeoCelebration({ visible, score, onDismiss }: { visible: boolean
         <LeoCharacter size="xl" animation="celebrating" />
         <Text style={styles.celebrationScore}>{score}%</Text>
         <Text style={styles.celebrationTitle}>
-          {score === 100 ? '💯 PERFECT!' : score >= 90 ? '🌟 Outstanding!' : '🔥 Great Job!'}
+          {score === 100 ? 'PERFECT!' : score >= 90 ? 'Outstanding!' : 'Great Job!'}
         </Text>
         <Text style={styles.celebrationSub}>Sophia is impressed!</Text>
         <TouchableOpacity style={styles.celebrationBtn} onPress={() => { triggerHaptic('light'); onDismiss?.(); }}>

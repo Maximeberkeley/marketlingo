@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Layers, Eye, CheckCircle, Mic, Briefcase, Award,
   Zap, ChevronRight, Crown, Lock, RotateCcw,
-  Send, Clock, Trophy,
+  Send, Clock, Trophy, Target, Users, Cpu, Palette,
+  Lightbulb, Key, AlertTriangle,
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
@@ -104,7 +105,7 @@ export default function InterviewLabPage() {
         score: 0, awesome: ['You tried!'], missing: ['Could not analyze — check your connection'],
         trySaying: 'Try again when you have a stable connection.',
         buzzwordsUsed: [], buzzwordsMissed: [],
-        sophiaSays: 'Looks like we hit a glitch! Try again? 💪',
+        sophiaSays: 'Looks like we hit a glitch! Try again.',
       });
     } finally {
       setSubmitting(false);
@@ -284,7 +285,7 @@ export default function InterviewLabPage() {
                       </p>
                     </div>
                     <div className="bg-bg-2 rounded-2xl p-4 border border-border mb-3">
-                      <p className="text-sm font-semibold text-text-primary mb-2">🎯 {marketName} Example</p>
+                      <p className="text-sm font-semibold text-text-primary mb-2"><Target size={14} className="inline mr-1 text-violet-500" />{marketName} Example</p>
                       <p className="text-sm text-text-secondary mb-3">"{framework.label}"</p>
                       <div className="space-y-2 mb-3">
                         {framework.branches.map((b, i) => (
@@ -303,7 +304,7 @@ export default function InterviewLabPage() {
                 ) : (
                   <>
                     <div className="bg-bg-2 rounded-2xl p-4 border border-border mb-3">
-                      <p className="text-sm font-semibold text-text-primary mb-2">🦸 The Story Hero Method</p>
+                      <p className="text-sm font-semibold text-text-primary mb-2">The Story Hero Method</p>
                       <p className="text-sm text-text-secondary">
                         Every great interview answer is a mini-story. You are the hero! Use these 4 steps.
                       </p>
@@ -358,7 +359,7 @@ export default function InterviewLabPage() {
                   <>
                     <div className="flex items-center gap-2 mt-5 mb-3">
                       <Clock size={18} className="text-red-500" />
-                      <h3 className="text-base font-bold text-text-primary">🧮 Mental Math Minute</h3>
+                      <h3 className="text-base font-bold text-text-primary">Mental Math Minute</h3>
                     </div>
                     {mentalMath.map((q, i) => (
                       <MathDrillCard key={i} question={q} />
@@ -462,7 +463,11 @@ export default function InterviewLabPage() {
                                 persona === key ? "border-violet-500 bg-violet-500/5" : "border-border"
                               )}
                             >
-                              <span className="text-xl block mb-1">{p.emoji}</span>
+                              <div className="flex justify-center mb-1">
+                                {key === 'humble_leader' ? <Users size={20} className="text-violet-500" /> :
+                                 key === 'tech_genius' ? <Cpu size={20} className="text-violet-500" /> :
+                                 <Palette size={20} className="text-violet-500" />}
+                              </div>
                               <span className={cn("text-[10px] font-medium", persona === key ? "text-violet-500" : "text-text-muted")}>{p.label}</span>
                             </button>
                           ))}
@@ -472,7 +477,7 @@ export default function InterviewLabPage() {
                     <div className="bg-bg-2 rounded-2xl p-4 border border-border mb-3">
                       <div className="flex items-center gap-3 mb-3">
                         <div className="w-11 h-11 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-                          <span className="text-xl">👩‍💼</span>
+                          <Mic size={20} className="text-violet-600" />
                         </div>
                         <div>
                           <p className="text-sm font-bold text-text-primary">Sophia Hernández</p>
@@ -573,7 +578,7 @@ export default function InterviewLabPage() {
                           <div key={ti}>
                             <div className="bg-bg-2 rounded-2xl p-4 border border-border">
                               <div className="flex items-center gap-2 mb-2">
-                                <span className="text-lg">👩‍💼</span>
+                                <Mic size={16} className="text-violet-500" />
                                 <span className="text-xs font-bold text-violet-500">Sophia — Turn {ti + 1}</span>
                               </div>
                               <p className="text-sm text-text-secondary">{turn.prompt}</p>
@@ -616,7 +621,7 @@ export default function InterviewLabPage() {
                         {caseResponses.length >= caseStudies[caseIndex].turns.length && !caseFeedback && (
                           <div className="bg-emerald-500/10 rounded-2xl p-4 border border-emerald-500/20 text-center">
                             <Trophy size={32} className="text-emerald-500 mx-auto mb-2" />
-                            <p className="text-base font-bold text-text-primary mb-1">Case Complete! 🎉</p>
+                            <p className="text-base font-bold text-text-primary mb-1">Case Complete!</p>
                             <p className="text-sm text-text-muted mb-3">You navigated all {caseStudies[caseIndex].turns.length} turns.</p>
                             <Button
                               onClick={submitCaseForFeedback}
@@ -688,14 +693,14 @@ function FeedbackDisplay({ feedback, onRetry, onNext, onContinue, continueLabel 
       <div className="bg-bg-2 rounded-2xl p-4 border border-border">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0">
-            <span className="text-lg">👩‍💼</span>
+            <Mic size={18} className="text-violet-600" />
           </div>
           <p className="text-sm text-text-secondary italic">{feedback.sophiaSays}</p>
         </div>
       </div>
       {(feedback.awesome || []).length > 0 && (
         <div className="bg-bg-2 rounded-2xl p-4 border border-border border-l-4 border-l-emerald-500">
-          <p className="text-sm font-bold text-text-primary mb-2">✅ What Was Awesome</p>
+          <p className="text-sm font-bold text-text-primary mb-2"><CheckCircle size={14} className="inline mr-1 text-emerald-500" />What Was Awesome</p>
           {(feedback.awesome || []).map((b: string, i: number) => (
             <p key={i} className="text-sm text-text-secondary mb-1">• {b}</p>
           ))}
@@ -703,7 +708,7 @@ function FeedbackDisplay({ feedback, onRetry, onNext, onContinue, continueLabel 
       )}
       {(feedback.missing || []).length > 0 && (
         <div className="bg-bg-2 rounded-2xl p-4 border border-border border-l-4 border-l-amber-500">
-          <p className="text-sm font-bold text-text-primary mb-2">⚡ What Was Missing</p>
+          <p className="text-sm font-bold text-text-primary mb-2"><AlertTriangle size={14} className="inline mr-1 text-amber-500" />What Was Missing</p>
           {(feedback.missing || []).map((b: string, i: number) => (
             <p key={i} className="text-sm text-text-secondary mb-1">• {b}</p>
           ))}
@@ -711,16 +716,16 @@ function FeedbackDisplay({ feedback, onRetry, onNext, onContinue, continueLabel 
       )}
       {feedback.trySaying && (
         <div className="bg-bg-2 rounded-2xl p-4 border border-border border-l-4 border-l-violet-500">
-          <p className="text-sm font-bold text-text-primary mb-2">💡 Try Saying This Instead</p>
+          <p className="text-sm font-bold text-text-primary mb-2"><Lightbulb size={14} className="inline mr-1 text-violet-500" />Try Saying This Instead</p>
           <p className="text-sm text-violet-500 italic leading-relaxed">"{feedback.trySaying}"</p>
         </div>
       )}
       {((feedback.buzzwordsUsed?.length > 0) || (feedback.buzzwordsMissed?.length > 0)) && (
         <div className="bg-bg-2 rounded-2xl p-4 border border-border">
-          <p className="text-sm font-bold text-text-primary mb-3">🔑 Buzzword Detector</p>
+          <p className="text-sm font-bold text-text-primary mb-3"><Key size={14} className="inline mr-1 text-text-primary" />Buzzword Detector</p>
           {feedback.buzzwordsUsed?.length > 0 && (
             <div className="mb-2">
-              <p className="text-[11px] text-text-muted mb-1.5">Used ✅</p>
+              <p className="text-[11px] text-text-muted mb-1.5">Used</p>
               <div className="flex flex-wrap gap-1.5">
                 {feedback.buzzwordsUsed.map((w: string) => (
                   <span key={w} className="px-2 py-1 rounded-lg bg-emerald-500/10 text-[11px] text-emerald-600 font-medium">{w}</span>
@@ -730,7 +735,7 @@ function FeedbackDisplay({ feedback, onRetry, onNext, onContinue, continueLabel 
           )}
           {feedback.buzzwordsMissed?.length > 0 && (
             <div>
-              <p className="text-[11px] text-text-muted mb-1.5">Missed 🎯</p>
+              <p className="text-[11px] text-text-muted mb-1.5">Missed</p>
               <div className="flex flex-wrap gap-1.5">
                 {feedback.buzzwordsMissed.map((w: string) => (
                   <span key={w} className="px-2 py-1 rounded-lg bg-amber-500/10 text-[11px] text-amber-600 font-medium">{w}</span>

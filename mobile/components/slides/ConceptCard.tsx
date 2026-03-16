@@ -431,7 +431,7 @@ function classifyContent(text: string): "stat" | "example" | "concept" {
 import { getAcronymsForMarket } from "../../data/industryAcronyms";
 
 /** Max acronyms per key-terms card before auto-splitting */
-const KEY_TERMS_PER_CARD = 4;
+const KEY_TERMS_PER_CARD = 7;
 
 // ── Story Sequence: break long paragraphs into 3-5 cards ────────────
 function breakIntoStorySequence(text: string, maxChars: number): string[] {
@@ -497,18 +497,17 @@ export function parseSlideIntoCards(
   const allAcronyms = getAcronymsForMarket(marketId);
   // Only show on first slide of the lesson (_slideIndex === 0)
   if (_slideIndex === 0 && allAcronyms.length > 0) {
+    // Limit to industry-specific terms only (cap at 10 most relevant)
+    const capped = allAcronyms.slice(0, 10);
     // Auto-split: max KEY_TERMS_PER_CARD per card
     const chunks: KeyTerm[][] = [];
-    for (let i = 0; i < allAcronyms.length; i += KEY_TERMS_PER_CARD) {
-      chunks.push(allAcronyms.slice(i, i + KEY_TERMS_PER_CARD));
+    for (let i = 0; i < capped.length; i += KEY_TERMS_PER_CARD) {
+      chunks.push(capped.slice(i, i + KEY_TERMS_PER_CARD));
     }
     chunks.forEach((chunk, chunkIdx) => {
-      const label = chunks.length > 1
-        ? `Words you'll see in this lesson (${chunkIdx + 1}/${chunks.length})`
-        : "Words you'll see in this lesson";
       cards.push({
         type: "key-terms",
-        title: label,
+        title: "Key terms for this lesson",
         content: "",
         keyTerms: chunk,
       });
