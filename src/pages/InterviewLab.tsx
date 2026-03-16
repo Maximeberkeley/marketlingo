@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Layers, Eye, CheckCircle, Mic, Briefcase, Award,
   Zap, ChevronRight, Crown, Lock, RotateCcw,
-  Send, Clock, Trophy,
+  Send, Clock, Trophy, Target, Users, Cpu, Palette,
+  Lightbulb, Key, AlertTriangle,
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
