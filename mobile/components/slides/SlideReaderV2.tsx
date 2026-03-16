@@ -697,25 +697,23 @@ export function SlideReaderV2({
               </>
             )}
 
-            <View style={{ flex: 1 }} />
-
-            <View style={styles.progressDots}>
-              {Array.from({ length: totalCards }).map((_, i) => (
-                <View
-                  key={i}
-                  style={[
-                    styles.dot,
-                    i === currentCard
-                      ? [styles.dotActive, { backgroundColor: accentColor }]
-                      : i < currentCard
-                      ? [styles.dotCompleted, { backgroundColor: accentColor }]
-                      : styles.dotUpcoming,
-                  ]}
-                />
-              ))}
+            <View style={styles.progressDotsWrapper}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.progressDots}>
+                {Array.from({ length: totalCards }).map((_, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.dot,
+                      i === currentCard
+                        ? [styles.dotActive, { backgroundColor: accentColor }]
+                        : i < currentCard
+                        ? [styles.dotCompleted, { backgroundColor: accentColor }]
+                        : styles.dotUpcoming,
+                    ]}
+                  />
+                ))}
+              </ScrollView>
             </View>
-
-            <View style={{ flex: 1 }} />
 
             <TouchableOpacity
               style={[styles.nextBtn, { backgroundColor: accentColor }]}
