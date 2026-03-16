@@ -621,7 +621,7 @@ export default function InterviewLabPage() {
                         {caseResponses.length >= caseStudies[caseIndex].turns.length && !caseFeedback && (
                           <div className="bg-emerald-500/10 rounded-2xl p-4 border border-emerald-500/20 text-center">
                             <Trophy size={32} className="text-emerald-500 mx-auto mb-2" />
-                            <p className="text-base font-bold text-text-primary mb-1">Case Complete! 🎉</p>
+                            <p className="text-base font-bold text-text-primary mb-1">Case Complete!</p>
                             <p className="text-sm text-text-muted mb-3">You navigated all {caseStudies[caseIndex].turns.length} turns.</p>
                             <Button
                               onClick={submitCaseForFeedback}
