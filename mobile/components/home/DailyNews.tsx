@@ -185,12 +185,11 @@ function NewsFeedCard({
               resizeMode="cover"
             />
           ) : (
-            <LinearGradient
-              colors={['rgba(139,92,246,0.15)', 'rgba(139,92,246,0.05)']}
-              style={[s.feedThumbImage, { alignItems: 'center', justifyContent: 'center' }]}
+            <View
+              style={[s.feedThumbImage, { alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.accentSoft }]}
             >
               <Feather name="file-text" size={20} color={COLORS.accent} style={{ opacity: 0.5 }} />
-            </LinearGradient>
+            </View>
           )}
         </View>
       </TouchableOpacity>
