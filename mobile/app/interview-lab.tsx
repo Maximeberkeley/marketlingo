@@ -435,7 +435,7 @@ export default function InterviewLabScreen() {
                 <>
                   <View style={[st.stageHeader, { marginTop: 20 }]}>
                     <Feather name="clock" size={20} color="#EF4444" />
-                    <Text style={st.stageTitle}>🧮 Mental Math Minute</Text>
+                    <Text style={st.stageTitle}>Mental Math Minute</Text>
                   </View>
                   {mentalMath.map((q, i) => (
                     <MathDrill key={i} question={q} />
