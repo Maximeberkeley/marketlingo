@@ -3,98 +3,30 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Layers, Eye, CheckCircle, Mic, Briefcase, Award,
-  BarChart2, Zap, ChevronRight, Crown, BookOpen, Lock, RotateCcw,
-  Volume2, Send, PenLine, Clock, Target, Trophy, Star,
+  Zap, ChevronRight, Crown, Lock, RotateCcw,
+  Send, Clock, Trophy,
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { useContentAccess } from "@/hooks/useContentAccess";
-import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { getMarketName } from "@/data/markets";
 import { cn } from "@/lib/utils";
 import { hapticFeedback } from "@/lib/ios-utils";
 import { Button } from "@/components/ui/button";
 import { DailyLimitGate } from "@/components/subscription/DailyLimitGate";
+import { updateLeaderboard } from "@/lib/leaderboardUtils";
+import { StageTracker } from "@/components/interview-lab/StageTracker";
+import { ScoreBar } from "@/components/interview-lab/ScoreBar";
+import { VibeMeter } from "@/components/interview-lab/VibeMeter";
+import { MathDrillCard } from "@/components/interview-lab/MathDrillCard";
+import { InterviewAnalytics } from "@/components/interview-lab/InterviewAnalytics";
 import {
   InterviewPath, InterviewStage, ConfidencePersona,
-  STAGE_LABELS, CONFIDENCE_PERSONAS, STORY_HERO_STEPS,
+  CONFIDENCE_PERSONAS, STORY_HERO_STEPS,
   getMECEForMarket, getBigBossForMarket, getMCQForMarket,
   getMockPromptsForMarket, getMentalMathForMarket, getCaseStudiesForMarket,
-  type MCQQuestion, type CaseStudy,
 } from "@/data/interviewLabData";
-
-// ─── Stage Tracker ───
-function StageTracker({ current, onTap, path }: { current: InterviewStage; onTap: (s: InterviewStage) => void; path: InterviewPath }) {
-  const stages = path === 'consulting'
-    ? [1, 2, 3, 4, 5, 6] as InterviewStage[]
-    : [1, 2, 3, 4, 6] as InterviewStage[]; // academic skips case sim
-
-  const icons = { 1: Layers, 2: Eye, 3: CheckCircle, 4: Mic, 5: Briefcase, 6: BarChart2 };
-
-  return (
-    <div className="flex items-center justify-center px-6 mb-5 gap-0">
-      {stages.map((s, i) => {
-        const done = current > s;
-        const active = current === s;
-        const Icon = icons[s];
-        return (
-          <div key={s} className="flex items-center">
-            {i > 0 && <div className={cn("h-0.5 w-6 sm:w-10", done || active ? "bg-violet-500" : "bg-border")} />}
-            <button
-              onClick={() => onTap(s)}
-              className={cn(
-                "w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all",
-                active && "bg-violet-600 border-violet-600 text-white scale-110",
-                done && "bg-emerald-500 border-emerald-500 text-white",
-                !active && !done && "bg-bg-2 border-border text-text-muted"
-              )}
-            >
-              <Icon size={14} />
-            </button>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ─── Score Bar ───
-function ScoreBar({ label, value, color }: { label: string; value: number; color: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-[10px] text-text-muted w-16">{label}</span>
-      <div className="flex-1 h-1.5 rounded-full bg-bg-1 overflow-hidden">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${Math.min(100, value)}%` }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="h-full rounded-full"
-          style={{ backgroundColor: color }}
-        />
-      </div>
-      <span className="text-[10px] text-text-muted w-6 text-right">{value}</span>
-    </div>
-  );
-}
-
-// ─── Vibe Meter ───
-function VibeMeter({ text }: { text: string }) {
-  const len = text.trim().length;
-  const level = len < 30 ? 0 : len < 100 ? 1 : len < 250 ? 2 : 3;
-  const labels = ['Too Short', 'Getting There', 'Good Length', 'Perfect! 🔥'];
-  const colors = ['#EF4444', '#F59E0B', '#3B82F6', '#10B981'];
-  const widths = [15, 40, 70, 100];
-
-  return (
-    <div className="flex items-center gap-3 mt-2">
-      <div className="flex-1 h-1.5 rounded-full bg-bg-1 overflow-hidden">
-        <div className="h-full rounded-full transition-all duration-300" style={{ width: `${widths[level]}%`, backgroundColor: colors[level] }} />
-      </div>
-      <span className="text-[10px] font-bold w-20 text-right" style={{ color: colors[level] }}>{labels[level]}</span>
-    </div>
-  );
-}
 
 export default function InterviewLabPage() {
   const navigate = useNavigate();
@@ -122,9 +54,10 @@ export default function InterviewLabPage() {
   const [caseTurn, setCaseTurn] = useState(0);
   const [caseResponses, setCaseResponses] = useState<string[]>([]);
   const [caseInput, setCaseInput] = useState('');
+  const [caseFeedback, setCaseFeedback] = useState<any>(null);
+  const [caseSubmitting, setCaseSubmitting] = useState(false);
 
-  // Daily limit check
-  const interviewLimit = checkDailyLimit('trainer'); // reuse trainer limit for interviews
+  const interviewLimit = checkDailyLimit('trainer');
 
   useEffect(() => {
     if (!user) return;
@@ -150,16 +83,20 @@ export default function InterviewLabPage() {
       if (error) throw error;
       setFeedback(data);
 
+      const score = data?.score ?? 0;
+
       // Persist attempt
       await supabase.from('interview_lab_attempts').insert({
         user_id: user.id, market_id: market, path: path || 'consulting', stage: 4,
-        attempt_type: 'mock', score: data?.score ?? 0,
+        attempt_type: 'mock', score,
         structure_score: data?.structureScore, content_score: data?.contentScore, persona_score: data?.personaScore,
         persona, scenario_question: current.question, user_response: userResponse, feedback: data,
         buzzwords_used: data?.buzzwordsUsed ?? [], buzzwords_missed: data?.buzzwordsMissed ?? [],
       });
 
-      // Track daily usage
+      // Update leaderboard
+      await updateLeaderboard(user.id, market, score);
+
       incrementUsage('trainer');
     } catch (err) {
       console.error('Mock submission error:', err);
@@ -173,6 +110,52 @@ export default function InterviewLabPage() {
       setSubmitting(false);
     }
   }, [market, user, userResponse, mockIndex, persona, path, incrementUsage]);
+
+  const submitCaseForFeedback = useCallback(async () => {
+    if (!market || !user || caseResponses.length === 0) return;
+    setCaseSubmitting(true);
+
+    const cs = getCaseStudiesForMarket(market || '')[caseIndex];
+    if (!cs) { setCaseSubmitting(false); return; }
+
+    try {
+      const conversationSummary = cs.turns.map((turn, i) => 
+        `Sophia (Turn ${i+1}): ${turn.prompt}\nCandidate: ${caseResponses[i] || '(no response)'}`
+      ).join('\n\n');
+
+      const { data, error } = await supabase.functions.invoke('interview-feedback', {
+        body: {
+          userResponse: conversationSummary,
+          scenario: `Multi-turn case study: ${cs.title}. ${cs.summary}`,
+          question: 'Evaluate the full case interview performance across all turns.',
+          buzzwords: [],
+          persona,
+          marketId: market,
+          path: 'consulting',
+        },
+      });
+      if (error) throw error;
+      setCaseFeedback(data);
+
+      // Persist case attempt
+      await supabase.from('interview_lab_attempts').insert({
+        user_id: user.id, market_id: market, path: 'consulting', stage: 5,
+        attempt_type: 'case_study', score: data?.score ?? 0,
+        structure_score: data?.structureScore, content_score: data?.contentScore, persona_score: data?.personaScore,
+        persona, scenario_question: cs.title, user_response: conversationSummary, feedback: data,
+      });
+
+      await updateLeaderboard(user.id, market, data?.score ?? 0);
+    } catch (err) {
+      console.error('Case feedback error:', err);
+      setCaseFeedback({
+        score: 0, sophiaSays: 'Could not generate feedback — try again!',
+        awesome: [], missing: [], trySaying: '',
+      });
+    } finally {
+      setCaseSubmitting(false);
+    }
+  }, [market, user, caseResponses, caseIndex, persona]);
 
   if (loading) {
     return (
@@ -193,13 +176,10 @@ export default function InterviewLabPage() {
             <button onClick={() => navigate('/practice')} className="flex items-center gap-2 text-text-muted mb-6 mt-4">
               <ArrowLeft size={18} /> <span className="text-sm">Back</span>
             </button>
-
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
               <h1 className="text-[28px] font-bold text-text-primary mb-1">Interview Lab</h1>
               <p className="text-sm text-text-muted mb-6">Career Accelerator — choose your path</p>
             </motion.div>
-
-            {/* Daily limit indicator */}
             {!isProUser && (
               <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
                 <Clock size={14} className="text-amber-500" />
@@ -208,8 +188,6 @@ export default function InterviewLabPage() {
                 </span>
               </div>
             )}
-
-            {/* Path A: Future Pro */}
             <motion.button
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
               onClick={() => { hapticFeedback("light"); setPath('consulting'); }}
@@ -229,8 +207,6 @@ export default function InterviewLabPage() {
                 ))}
               </div>
             </motion.button>
-
-            {/* Path B: Academic Star */}
             <motion.button
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               onClick={() => { hapticFeedback("light"); setPath('academic'); }}
@@ -286,8 +262,8 @@ export default function InterviewLabPage() {
 
           <StageTracker current={stage} onTap={setStage} path={path} />
 
-          {/* ─── STAGE 1: Framework ─── */}
           <AnimatePresence mode="wait">
+            {/* ─── STAGE 1: Framework ─── */}
             {stage === 1 && (
               <motion.div key="s1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                 <div className="flex items-center gap-2 mb-3">
@@ -296,7 +272,6 @@ export default function InterviewLabPage() {
                     {path === 'consulting' ? 'MECE Framework' : 'Story Hero Method'}
                   </h3>
                 </div>
-
                 {path === 'consulting' ? (
                   <>
                     <div className="bg-bg-2 rounded-2xl p-4 border border-border mb-3">
@@ -351,7 +326,6 @@ export default function InterviewLabPage() {
                     ))}
                   </>
                 )}
-
                 <Button onClick={() => { hapticFeedback("light"); setStage(2); }} className="w-full bg-violet-600 hover:bg-violet-700 text-white mt-2">
                   Next: Expectations <ChevronRight size={16} />
                 </Button>
@@ -366,7 +340,6 @@ export default function InterviewLabPage() {
                   <h3 className="text-base font-bold text-text-primary">Top 5 "Big Boss" Questions</h3>
                 </div>
                 <p className="text-sm text-text-muted mb-4">Questions that separate good from great in {marketName}.</p>
-
                 {bigBoss.map((q, i) => (
                   <div key={i} className="bg-bg-2 rounded-2xl p-4 border border-border mb-3">
                     <div className="flex gap-3 mb-2">
@@ -381,8 +354,6 @@ export default function InterviewLabPage() {
                     </div>
                   </div>
                 ))}
-
-                {/* Mental Math */}
                 {path === 'consulting' && mentalMath.length > 0 && (
                   <>
                     <div className="flex items-center gap-2 mt-5 mb-3">
@@ -394,7 +365,6 @@ export default function InterviewLabPage() {
                     ))}
                   </>
                 )}
-
                 <Button onClick={() => { hapticFeedback("light"); setStage(3); setMcqIndex(0); setMcqSelected(null); setMcqScore(0); }} className="w-full bg-violet-600 hover:bg-violet-700 text-white mt-2">
                   Next: Practice MCQs <ChevronRight size={16} />
                 </Button>
@@ -411,7 +381,6 @@ export default function InterviewLabPage() {
                   </h3>
                 </div>
                 <p className="text-sm text-text-muted mb-4">Question {mcqIndex + 1} of {mcqs.length}</p>
-
                 <div className="bg-bg-2 rounded-2xl p-4 border border-border mb-3">
                   <p className="text-sm font-semibold text-text-primary mb-4">{currentMCQ.question}</p>
                   <div className="space-y-2">
@@ -454,7 +423,6 @@ export default function InterviewLabPage() {
                     </div>
                   )}
                 </div>
-
                 {mcqSelected !== null && (
                   <Button
                     onClick={() => {
@@ -473,7 +441,6 @@ export default function InterviewLabPage() {
             {/* ─── STAGE 4: Mock Lab ─── */}
             {stage === 4 && (
               <motion.div key="s4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                {/* Daily limit gate */}
                 {!isProUser && !interviewLimit.canAccess ? (
                   <DailyLimitGate type="trainer" onContinue={() => {}} />
                 ) : (
@@ -482,8 +449,6 @@ export default function InterviewLabPage() {
                       <Mic size={18} className="text-violet-500" />
                       <h3 className="text-base font-bold text-text-primary">Mock Lab with Sophia</h3>
                     </div>
-
-                    {/* Persona selector */}
                     {!feedback && (
                       <div className="bg-bg-2 rounded-2xl p-4 border border-border mb-3">
                         <p className="text-sm font-semibold text-text-primary mb-2">Choose Your Persona</p>
@@ -504,8 +469,6 @@ export default function InterviewLabPage() {
                         </div>
                       </div>
                     )}
-
-                    {/* Scenario card */}
                     <div className="bg-bg-2 rounded-2xl p-4 border border-border mb-3">
                       <div className="flex items-center gap-3 mb-3">
                         <div className="w-11 h-11 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
@@ -521,14 +484,10 @@ export default function InterviewLabPage() {
                       </div>
                       <p className="text-sm font-bold text-text-primary">{currentMock.question}</p>
                     </div>
-
-                    {/* Response */}
                     {!feedback && (
                       <>
                         <div className="bg-bg-2 rounded-2xl p-4 border border-border mb-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-semibold text-text-primary">Your Response</p>
-                          </div>
+                          <p className="text-sm font-semibold text-text-primary mb-2">Your Response</p>
                           <textarea
                             className="w-full min-h-[160px] p-3 rounded-xl border-2 border-border bg-bg-1 text-sm text-text-primary placeholder:text-text-muted resize-none focus:border-violet-500 focus:outline-none transition-colors"
                             placeholder="Type your answer here... Start with 'First, I would...' for structure."
@@ -546,108 +505,14 @@ export default function InterviewLabPage() {
                         </Button>
                       </>
                     )}
-
-                    {/* Feedback */}
                     {feedback && (
-                      <div className="space-y-3 mt-2">
-                        {/* Score card */}
-                        <div className="bg-bg-2 rounded-2xl p-4 border border-border flex items-center gap-4">
-                          <div className="w-20 h-20 rounded-full bg-violet-100 dark:bg-violet-900/30 flex flex-col items-center justify-center">
-                            <span className="text-2xl font-black text-violet-600">{feedback.score ?? 0}</span>
-                            <span className="text-[10px] text-text-muted">/100</span>
-                          </div>
-                          <div className="flex-1 space-y-1.5">
-                            <ScoreBar label="Structure" value={feedback.structureScore ?? 0} color="#7C3AED" />
-                            <ScoreBar label="Content" value={feedback.contentScore ?? 0} color="#3B82F6" />
-                            <ScoreBar label="Persona" value={feedback.personaScore ?? 0} color="#F59E0B" />
-                          </div>
-                        </div>
-
-                        {/* Sophia Says */}
-                        <div className="bg-bg-2 rounded-2xl p-4 border border-border">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0">
-                              <span className="text-lg">👩‍💼</span>
-                            </div>
-                            <p className="text-sm text-text-secondary italic">{feedback.sophiaSays}</p>
-                          </div>
-                        </div>
-
-                        {/* Awesome */}
-                        <div className="bg-bg-2 rounded-2xl p-4 border border-border border-l-4 border-l-emerald-500">
-                          <p className="text-sm font-bold text-text-primary mb-2">✅ What Was Awesome</p>
-                          {(feedback.awesome || []).map((b: string, i: number) => (
-                            <p key={i} className="text-sm text-text-secondary mb-1">• {b}</p>
-                          ))}
-                        </div>
-
-                        {/* Missing */}
-                        <div className="bg-bg-2 rounded-2xl p-4 border border-border border-l-4 border-l-amber-500">
-                          <p className="text-sm font-bold text-text-primary mb-2">⚡ What Was Missing</p>
-                          {(feedback.missing || []).map((b: string, i: number) => (
-                            <p key={i} className="text-sm text-text-secondary mb-1">• {b}</p>
-                          ))}
-                        </div>
-
-                        {/* Try Saying */}
-                        <div className="bg-bg-2 rounded-2xl p-4 border border-border border-l-4 border-l-violet-500">
-                          <p className="text-sm font-bold text-text-primary mb-2">💡 Try Saying This Instead</p>
-                          <p className="text-sm text-violet-500 italic leading-relaxed">"{feedback.trySaying}"</p>
-                        </div>
-
-                        {/* Buzzwords */}
-                        {((feedback.buzzwordsUsed?.length > 0) || (feedback.buzzwordsMissed?.length > 0)) && (
-                          <div className="bg-bg-2 rounded-2xl p-4 border border-border">
-                            <p className="text-sm font-bold text-text-primary mb-3">🔑 Buzzword Detector</p>
-                            {feedback.buzzwordsUsed?.length > 0 && (
-                              <div className="mb-2">
-                                <p className="text-[11px] text-text-muted mb-1.5">Used ✅</p>
-                                <div className="flex flex-wrap gap-1.5">
-                                  {feedback.buzzwordsUsed.map((w: string) => (
-                                    <span key={w} className="px-2 py-1 rounded-lg bg-emerald-500/10 text-[11px] text-emerald-600 font-medium">{w}</span>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                            {feedback.buzzwordsMissed?.length > 0 && (
-                              <div>
-                                <p className="text-[11px] text-text-muted mb-1.5">Missed 🎯</p>
-                                <div className="flex flex-wrap gap-1.5">
-                                  {feedback.buzzwordsMissed.map((w: string) => (
-                                    <span key={w} className="px-2 py-1 rounded-lg bg-amber-500/10 text-[11px] text-amber-600 font-medium">{w}</span>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {/* Actions */}
-                        <div className="flex gap-3">
-                          <Button
-                            variant="outline"
-                            onClick={() => { setFeedback(null); setUserResponse(''); }}
-                            className="flex-1 border-violet-500 text-violet-500"
-                          >
-                            <RotateCcw size={14} /> Try Again
-                          </Button>
-                          <Button
-                            onClick={() => { setFeedback(null); setUserResponse(''); setMockIndex(i => i + 1); }}
-                            className="flex-1 bg-violet-600 hover:bg-violet-700 text-white"
-                          >
-                            Next Scenario <ChevronRight size={14} />
-                          </Button>
-                        </div>
-
-                        {/* Continue to Case Sim (consulting) or Analytics */}
-                        <Button
-                          variant="ghost"
-                          onClick={() => setStage(path === 'consulting' ? 5 : 6)}
-                          className="w-full text-text-muted"
-                        >
-                          Continue to {path === 'consulting' ? 'Case Simulator' : 'Analytics'} <ChevronRight size={14} />
-                        </Button>
-                      </div>
+                      <FeedbackDisplay
+                        feedback={feedback}
+                        onRetry={() => { setFeedback(null); setUserResponse(''); }}
+                        onNext={() => { setFeedback(null); setUserResponse(''); setMockIndex(i => i + 1); }}
+                        onContinue={() => setStage(path === 'consulting' ? 5 : 6)}
+                        continueLabel={path === 'consulting' ? 'Case Simulator' : 'Analytics'}
+                      />
                     )}
                   </>
                 )}
@@ -664,7 +529,6 @@ export default function InterviewLabPage() {
                     <Crown size={8} /> PRO
                   </span>
                 </div>
-
                 {!isProUser ? (
                   <div className="bg-bg-2 rounded-2xl p-6 border border-border text-center">
                     <div className="w-16 h-16 rounded-full bg-violet-100 dark:bg-violet-900/20 flex items-center justify-center mx-auto mb-4">
@@ -678,24 +542,23 @@ export default function InterviewLabPage() {
                   </div>
                 ) : caseStudies.length > 0 ? (
                   <>
-                    {/* Case selection */}
-                    <div className="space-y-3 mb-4">
+                    <div className="grid gap-2 mb-4">
                       {caseStudies.map((cs, i) => (
                         <button
                           key={cs.id}
-                          onClick={() => { setCaseIndex(i); setCaseTurn(0); setCaseResponses([]); setCaseInput(''); }}
+                          onClick={() => { setCaseIndex(i); setCaseTurn(0); setCaseResponses([]); setCaseInput(''); setCaseFeedback(null); hapticFeedback("light"); }}
                           className={cn(
-                            "w-full bg-bg-2 rounded-2xl p-4 border-2 text-left transition-all",
-                            caseIndex === i ? "border-violet-500" : "border-border"
+                            "bg-bg-2 rounded-xl p-3 border-2 text-left transition-all",
+                            caseIndex === i ? "border-violet-500 bg-violet-500/5" : "border-border"
                           )}
                         >
-                          <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2 mb-1">
                             <p className="text-sm font-bold text-text-primary">{cs.title}</p>
                             <span className={cn(
-                              "text-[10px] font-medium px-2 py-0.5 rounded-full",
-                              cs.difficulty === 'beginner' ? "bg-emerald-500/10 text-emerald-500" :
-                              cs.difficulty === 'intermediate' ? "bg-amber-500/10 text-amber-500" :
-                              "bg-red-500/10 text-red-500"
+                              "text-[9px] font-bold px-1.5 py-0.5 rounded",
+                              cs.difficulty === 'beginner' ? "bg-emerald-500/10 text-emerald-600" :
+                              cs.difficulty === 'intermediate' ? "bg-amber-500/10 text-amber-600" :
+                              "bg-red-500/10 text-red-600"
                             )}>
                               {cs.difficulty}
                             </span>
@@ -704,11 +567,8 @@ export default function InterviewLabPage() {
                         </button>
                       ))}
                     </div>
-
-                    {/* Active case */}
                     {caseStudies[caseIndex] && (
                       <div className="space-y-3">
-                        {/* Previous turns */}
                         {caseStudies[caseIndex].turns.slice(0, caseTurn + 1).map((turn, ti) => (
                           <div key={ti}>
                             <div className="bg-bg-2 rounded-2xl p-4 border border-border">
@@ -726,8 +586,6 @@ export default function InterviewLabPage() {
                             )}
                           </div>
                         ))}
-
-                        {/* Response input for current turn */}
                         {caseTurn < caseStudies[caseIndex].turns.length && !caseResponses[caseTurn] && (
                           <div className="space-y-2">
                             <textarea
@@ -754,20 +612,33 @@ export default function InterviewLabPage() {
                             </Button>
                           </div>
                         )}
-
-                        {/* Case complete */}
-                        {caseResponses.length >= caseStudies[caseIndex].turns.length && (
+                        {/* Case complete — get AI feedback */}
+                        {caseResponses.length >= caseStudies[caseIndex].turns.length && !caseFeedback && (
                           <div className="bg-emerald-500/10 rounded-2xl p-4 border border-emerald-500/20 text-center">
                             <Trophy size={32} className="text-emerald-500 mx-auto mb-2" />
                             <p className="text-base font-bold text-text-primary mb-1">Case Complete! 🎉</p>
-                            <p className="text-sm text-text-muted">You navigated all {caseStudies[caseIndex].turns.length} turns.</p>
+                            <p className="text-sm text-text-muted mb-3">You navigated all {caseStudies[caseIndex].turns.length} turns.</p>
                             <Button
-                              onClick={() => setStage(6)}
-                              className="bg-violet-600 text-white mt-3"
+                              onClick={submitCaseForFeedback}
+                              disabled={caseSubmitting}
+                              className="bg-violet-600 text-white"
                             >
-                              View Analytics <ChevronRight size={14} />
+                              {caseSubmitting ? (
+                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              ) : (
+                                <>Get AI Feedback <ChevronRight size={14} /></>
+                              )}
                             </Button>
                           </div>
+                        )}
+                        {caseFeedback && (
+                          <FeedbackDisplay
+                            feedback={caseFeedback}
+                            onRetry={() => { setCaseFeedback(null); setCaseResponses([]); setCaseTurn(0); }}
+                            onNext={() => { setCaseFeedback(null); setCaseResponses([]); setCaseTurn(0); setCaseIndex(i => (i + 1) % caseStudies.length); }}
+                            onContinue={() => setStage(6)}
+                            continueLabel="Analytics"
+                          />
                         )}
                       </div>
                     )}
@@ -793,177 +664,93 @@ export default function InterviewLabPage() {
   );
 }
 
-// ─── Math Drill Card ───
-function MathDrillCard({ question: q }: { question: { question: string; options: string[]; correctIndex: number; explanation: string } }) {
-  const [selected, setSelected] = useState<number | null>(null);
-  const revealed = selected !== null;
-
+// ─── Shared Feedback Display ───
+function FeedbackDisplay({ feedback, onRetry, onNext, onContinue, continueLabel }: {
+  feedback: any;
+  onRetry: () => void;
+  onNext: () => void;
+  onContinue: () => void;
+  continueLabel: string;
+}) {
   return (
-    <div className="bg-bg-2 rounded-2xl p-4 border border-border mb-3">
-      <p className="text-sm font-semibold text-text-primary mb-3">{q.question}</p>
-      <div className="grid grid-cols-2 gap-2">
-        {q.options.map((opt, i) => (
-          <button
-            key={i}
-            disabled={revealed}
-            onClick={() => { setSelected(i); hapticFeedback(i === q.correctIndex ? "medium" : "heavy"); }}
-            className={cn(
-              "p-2.5 rounded-xl border-2 text-sm font-semibold text-center transition-all",
-              !revealed && "border-border hover:border-violet-400",
-              revealed && i === q.correctIndex && "border-emerald-500 bg-emerald-500/5",
-              selected === i && i !== q.correctIndex && "border-red-500 bg-red-500/5",
-            )}
-          >
-            {opt}
-          </button>
-        ))}
-      </div>
-      {revealed && <p className="text-xs text-text-secondary mt-3">{q.explanation}</p>}
-    </div>
-  );
-}
-
-// ─── Analytics Component ───
-function InterviewAnalytics({ userId, marketId, path }: { userId?: string; marketId: string | null; path: InterviewPath | null }) {
-  const [analytics, setAnalytics] = useState<any[]>([]);
-  const [leaderboard, setLeaderboard] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { isProUser } = useSubscription();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!userId || !marketId) return;
-    
-    Promise.all([
-      supabase.from('interview_lab_attempts')
-        .select('score, structure_score, content_score, persona_score, created_at, attempt_type')
-        .eq('user_id', userId).eq('market_id', marketId)
-        .order('created_at', { ascending: false }).limit(20),
-      supabase.from('interview_leaderboard')
-        .select('*, profiles!inner(username, avatar_url)')
-        .eq('market_id', marketId)
-        .order('avg_score', { ascending: false }).limit(10),
-    ]).then(([attemptsRes, leaderboardRes]) => {
-      setAnalytics(attemptsRes.data || []);
-      setLeaderboard(leaderboardRes.data || []);
-      setLoading(false);
-    });
-  }, [userId, marketId]);
-
-  if (loading) {
-    return <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" /></div>;
-  }
-
-  const mockAttempts = analytics.filter(a => a.attempt_type === 'mock');
-  const avgScore = mockAttempts.length > 0 ? Math.round(mockAttempts.reduce((s, a) => s + (a.score || 0), 0) / mockAttempts.length) : 0;
-  const bestScore = mockAttempts.length > 0 ? Math.max(...mockAttempts.map(a => a.score || 0)) : 0;
-
-  return (
-    <div>
-      <div className="flex items-center gap-2 mb-4">
-        <BarChart2 size={18} className="text-violet-500" />
-        <h3 className="text-base font-bold text-text-primary">Performance Analytics</h3>
-      </div>
-
-      {/* Stats grid */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="bg-bg-2 rounded-2xl p-4 border border-border text-center">
-          <p className="text-2xl font-black text-violet-500">{mockAttempts.length}</p>
-          <p className="text-[10px] text-text-muted">Mocks Done</p>
+    <div className="space-y-3 mt-2">
+      <div className="bg-bg-2 rounded-2xl p-4 border border-border flex items-center gap-4">
+        <div className="w-20 h-20 rounded-full bg-violet-100 dark:bg-violet-900/30 flex flex-col items-center justify-center">
+          <span className="text-2xl font-black text-violet-600">{feedback.score ?? 0}</span>
+          <span className="text-[10px] text-text-muted">/100</span>
         </div>
-        <div className="bg-bg-2 rounded-2xl p-4 border border-border text-center">
-          <p className="text-2xl font-black text-emerald-500">{avgScore}</p>
-          <p className="text-[10px] text-text-muted">Avg Score</p>
-        </div>
-        <div className="bg-bg-2 rounded-2xl p-4 border border-border text-center">
-          <p className="text-2xl font-black text-amber-500">{bestScore}</p>
-          <p className="text-[10px] text-text-muted">Best Score</p>
+        <div className="flex-1 space-y-1.5">
+          <ScoreBar label="Structure" value={feedback.structureScore ?? 0} color="#7C3AED" />
+          <ScoreBar label="Content" value={feedback.contentScore ?? 0} color="#3B82F6" />
+          <ScoreBar label="Persona" value={feedback.personaScore ?? 0} color="#F59E0B" />
         </div>
       </div>
-
-      {/* Score breakdown averages */}
-      {mockAttempts.length > 0 && (
-        <div className="bg-bg-2 rounded-2xl p-4 border border-border mb-4">
-          <p className="text-sm font-bold text-text-primary mb-3">Score Breakdown</p>
-          <div className="space-y-2">
-            <ScoreBar label="Structure" value={Math.round(mockAttempts.reduce((s, a) => s + (a.structure_score || 0), 0) / mockAttempts.length)} color="#7C3AED" />
-            <ScoreBar label="Content" value={Math.round(mockAttempts.reduce((s, a) => s + (a.content_score || 0), 0) / mockAttempts.length)} color="#3B82F6" />
-            <ScoreBar label="Persona" value={Math.round(mockAttempts.reduce((s, a) => s + (a.persona_score || 0), 0) / mockAttempts.length)} color="#F59E0B" />
+      <div className="bg-bg-2 rounded-2xl p-4 border border-border">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0">
+            <span className="text-lg">👩‍💼</span>
           </div>
+          <p className="text-sm text-text-secondary italic">{feedback.sophiaSays}</p>
         </div>
-      )}
-
-      {/* Leaderboard */}
-      <div className="flex items-center gap-2 mb-3">
-        <Trophy size={18} className="text-amber-500" />
-        <h3 className="text-base font-bold text-text-primary">Weekly Leaderboard</h3>
       </div>
-
-      {!isProUser ? (
-        <div className="bg-bg-2 rounded-2xl p-6 border border-border text-center">
-          <Lock size={24} className="text-violet-500 mx-auto mb-2" />
-          <p className="text-sm font-bold text-text-primary mb-1">Leaderboard is Pro-only</p>
-          <p className="text-xs text-text-muted mb-3">See how you rank against other candidates.</p>
-          <Button onClick={() => navigate('/subscription')} size="sm" className="bg-violet-600 text-white">
-            <Crown size={12} /> Upgrade
-          </Button>
-        </div>
-      ) : leaderboard.length > 0 ? (
-        <div className="space-y-2">
-          {leaderboard.map((entry, i) => (
-            <div key={entry.id} className={cn(
-              "bg-bg-2 rounded-xl p-3 border border-border flex items-center gap-3",
-              i < 3 && "border-amber-500/30"
-            )}>
-              <div className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center text-xs font-black",
-                i === 0 ? "bg-amber-400 text-white" :
-                i === 1 ? "bg-gray-300 text-white" :
-                i === 2 ? "bg-amber-700 text-white" :
-                "bg-bg-1 text-text-muted"
-              )}>
-                {i + 1}
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-text-primary">{entry.profiles?.username || 'Anonymous'}</p>
-                <p className="text-[10px] text-text-muted">{entry.mocks_completed} mocks</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-bold text-violet-500">{Math.round(entry.avg_score)}</p>
-                <p className="text-[10px] text-text-muted">avg</p>
-              </div>
-            </div>
+      {(feedback.awesome || []).length > 0 && (
+        <div className="bg-bg-2 rounded-2xl p-4 border border-border border-l-4 border-l-emerald-500">
+          <p className="text-sm font-bold text-text-primary mb-2">✅ What Was Awesome</p>
+          {(feedback.awesome || []).map((b: string, i: number) => (
+            <p key={i} className="text-sm text-text-secondary mb-1">• {b}</p>
           ))}
         </div>
-      ) : (
-        <div className="bg-bg-2 rounded-2xl p-6 border border-border text-center">
-          <Star size={24} className="text-text-muted mx-auto mb-2" />
-          <p className="text-sm text-text-muted">No leaderboard data yet. Complete mock interviews to rank!</p>
+      )}
+      {(feedback.missing || []).length > 0 && (
+        <div className="bg-bg-2 rounded-2xl p-4 border border-border border-l-4 border-l-amber-500">
+          <p className="text-sm font-bold text-text-primary mb-2">⚡ What Was Missing</p>
+          {(feedback.missing || []).map((b: string, i: number) => (
+            <p key={i} className="text-sm text-text-secondary mb-1">• {b}</p>
+          ))}
         </div>
       )}
-
-      {/* Recent attempts */}
-      {analytics.length > 0 && (
-        <div className="mt-4">
-          <p className="text-sm font-bold text-text-primary mb-3">Recent Attempts</p>
-          <div className="space-y-2">
-            {analytics.slice(0, 5).map((a, i) => (
-              <div key={i} className="bg-bg-2 rounded-xl p-3 border border-border flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium text-text-primary capitalize">{a.attempt_type}</p>
-                  <p className="text-[10px] text-text-muted">{new Date(a.created_at).toLocaleDateString()}</p>
-                </div>
-                <span className={cn(
-                  "text-sm font-bold",
-                  (a.score || 0) >= 80 ? "text-emerald-500" : (a.score || 0) >= 50 ? "text-amber-500" : "text-red-500"
-                )}>
-                  {a.score ?? 0}/100
-                </span>
+      {feedback.trySaying && (
+        <div className="bg-bg-2 rounded-2xl p-4 border border-border border-l-4 border-l-violet-500">
+          <p className="text-sm font-bold text-text-primary mb-2">💡 Try Saying This Instead</p>
+          <p className="text-sm text-violet-500 italic leading-relaxed">"{feedback.trySaying}"</p>
+        </div>
+      )}
+      {((feedback.buzzwordsUsed?.length > 0) || (feedback.buzzwordsMissed?.length > 0)) && (
+        <div className="bg-bg-2 rounded-2xl p-4 border border-border">
+          <p className="text-sm font-bold text-text-primary mb-3">🔑 Buzzword Detector</p>
+          {feedback.buzzwordsUsed?.length > 0 && (
+            <div className="mb-2">
+              <p className="text-[11px] text-text-muted mb-1.5">Used ✅</p>
+              <div className="flex flex-wrap gap-1.5">
+                {feedback.buzzwordsUsed.map((w: string) => (
+                  <span key={w} className="px-2 py-1 rounded-lg bg-emerald-500/10 text-[11px] text-emerald-600 font-medium">{w}</span>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
+          {feedback.buzzwordsMissed?.length > 0 && (
+            <div>
+              <p className="text-[11px] text-text-muted mb-1.5">Missed 🎯</p>
+              <div className="flex flex-wrap gap-1.5">
+                {feedback.buzzwordsMissed.map((w: string) => (
+                  <span key={w} className="px-2 py-1 rounded-lg bg-amber-500/10 text-[11px] text-amber-600 font-medium">{w}</span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
+      <div className="flex gap-3">
+        <Button variant="outline" onClick={onRetry} className="flex-1 border-violet-500 text-violet-500">
+          <RotateCcw size={14} /> Try Again
+        </Button>
+        <Button onClick={onNext} className="flex-1 bg-violet-600 hover:bg-violet-700 text-white">
+          Next Scenario <ChevronRight size={14} />
+        </Button>
+      </div>
+      <Button variant="ghost" onClick={onContinue} className="w-full text-text-muted">
+        Continue to {continueLabel} <ChevronRight size={14} />
+      </Button>
     </div>
   );
 }
