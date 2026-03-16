@@ -247,17 +247,24 @@ const INDUSTRY_ACRONYMS: Record<string, Record<string, string>> = {
 };
 
 /**
- * Returns all acronyms for a given market: industry-specific + shared.
- * Max items per card is handled by the parser (auto-split at 4).
+ * Returns acronyms for a given market: industry-specific only (no shared bloat).
+ * Shared terms are appended only if industry has fewer than 7 terms.
  */
 export function getAcronymsForMarket(marketId?: string): AcronymEntry[] {
   const industryTerms = marketId ? INDUSTRY_ACRONYMS[marketId] || {} : {};
+  const industryEntries = Object.entries(industryTerms).map(([term, definition]) => ({ term, definition }));
 
-  // Merge: industry-specific first, then shared (no duplicates)
-  const merged: Record<string, string> = { ...industryTerms };
-  for (const [term, def] of Object.entries(SHARED)) {
-    if (!merged[term]) merged[term] = def;
+  // Only pad with shared terms if industry doesn't have enough
+  if (industryEntries.length >= 7) {
+    return industryEntries;
   }
 
-  return Object.entries(merged).map(([term, definition]) => ({ term, definition }));
+  const needed = 7 - industryEntries.length;
+  const industryKeys = new Set(Object.keys(industryTerms));
+  const sharedEntries = Object.entries(SHARED)
+    .filter(([term]) => !industryKeys.has(term))
+    .slice(0, needed)
+    .map(([term, definition]) => ({ term, definition }));
+
+  return [...industryEntries, ...sharedEntries];
 }
