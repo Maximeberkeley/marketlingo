@@ -1042,14 +1042,25 @@ const styles = StyleSheet.create({
   },
   nextBtn: {
     height: 44,
-    paddingHorizontal: 28,
+    paddingHorizontal: 24,
     borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
     ...SHADOWS.accent,
   },
   nextBtnText: {
     ...TYPE.bodyBold,
     color: '#fff',
+  },
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: COLORS.bg1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 });
