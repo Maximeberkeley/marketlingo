@@ -698,7 +698,7 @@ export default function InterviewLabScreen() {
 
                   {/* Try Saying */}
                   <View style={[st.card, { borderLeftColor: '#7C3AED', borderLeftWidth: 3 }]}>
-                    <Text style={st.feedbackHeading}>💡 Try Saying This Instead</Text>
+                    <Text style={st.feedbackHeading}>Try Saying This Instead</Text>
                     <Text style={st.trySayingText}>"{feedback.trySaying}"</Text>
                   </View>
 
