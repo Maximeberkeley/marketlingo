@@ -122,7 +122,12 @@ export default function GoalScreen() {
   };
 
   const handleContinue = async () => {
-    if (!selectedGoal || !user || !selectedMarket) return;
+    if (!selectedGoal || !selectedMarket) return;
+    if (!user) {
+      // Guest user — redirect to auth
+      router.replace('/auth');
+      return;
+    }
     triggerHaptic('medium');
     setIsSubmitting(true);
     try {

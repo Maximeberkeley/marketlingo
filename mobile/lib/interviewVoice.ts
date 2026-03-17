@@ -92,7 +92,7 @@ export async function speakAsSophia(text: string): Promise<Audio.Sound | null> {
  */
 export async function transcribeAudio(uri: string): Promise<string> {
   try {
-    const sttUrl = `${EDGE_URL}/elevenlabs-stt`;
+    const sttUrl = `${EDGE_URL}/functions/v1/elevenlabs-stt`;
     const authHeaders = await getAuthHeaders();
 
     const formData = new FormData();

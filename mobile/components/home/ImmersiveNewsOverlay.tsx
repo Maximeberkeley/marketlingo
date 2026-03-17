@@ -99,7 +99,7 @@ async function speakText(text: string, voiceId: string): Promise<Audio.Sound | n
       ? `Bearer ${session.access_token}`
       : `Bearer ${SUPABASE_ANON_KEY}`;
 
-    const response = await fetch(`${EDGE_URL}/elevenlabs-tts`, {
+    const response = await fetch(`${EDGE_URL}/functions/v1/elevenlabs-tts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
