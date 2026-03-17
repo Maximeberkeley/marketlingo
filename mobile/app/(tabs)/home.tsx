@@ -600,21 +600,15 @@ const styles = StyleSheet.create({
   },
   lessonHero: {
     alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 28, paddingHorizontal: 20,
+    paddingVertical: 24, paddingHorizontal: 20,
     position: 'relative',
-    minHeight: 180,
   },
-  heroOrb: {
+  heroGlow: {
     position: 'absolute',
-    borderRadius: 999,
-  },
-  heroOrbLeft: {
     width: 200, height: 200,
-    top: -60, left: -40,
-  },
-  heroOrbRight: {
-    width: 160, height: 160,
-    bottom: -40, right: -30,
+    borderRadius: 100,
+    top: '50%', left: '50%',
+    marginTop: -100, marginLeft: -100,
   },
   lessonIllustration: { width: 180, height: 150, zIndex: 2 },
   dayBadge: {
