@@ -110,19 +110,19 @@ export function useFriends(marketId?: string) {
     fetchFriends();
   }, [fetchFriends]);
 
-  const sendRequest = useCallback(async (friendUsername: string): Promise<{ success: boolean; error?: string }> => {
+  const sendRequest = useCallback(async (friendIdentifier: string): Promise<{ success: boolean; error?: string }> => {
     if (!user) return { success: false, error: 'Not authenticated' };
 
-    // Find user by username
+    // Search by username (which may contain email) — case-insensitive partial match
     const { data: targetProfile } = await supabase
       .from('profiles')
-      .select('id')
-      .ilike('username', `%${friendUsername}%`)
+      .select('id, username')
+      .or(`username.ilike.%${friendIdentifier}%`)
       .neq('id', user.id)
       .limit(1)
       .maybeSingle();
 
-    if (!targetProfile) return { success: false, error: 'User not found' };
+    if (!targetProfile) return { success: false, error: 'User not found. Make sure they have an account.' };
 
     // Check if friendship already exists
     const { data: existing } = await supabase
