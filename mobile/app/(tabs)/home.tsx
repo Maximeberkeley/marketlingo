@@ -589,39 +589,65 @@ const styles = StyleSheet.create({
 
   // Lesson card — the hero
   lessonCard: {
-    backgroundColor: COLORS.bg2, borderRadius: 24,
+    backgroundColor: COLORS.bg2, borderRadius: 28,
     overflow: 'hidden', marginBottom: 16,
-    borderWidth: 1.5, borderColor: COLORS.accent + '20',
-    ...SHADOWS.lg,
+    borderWidth: 1.5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.12,
+    shadowRadius: 28,
+    elevation: 12,
   },
-  lessonIllustrationWrap: {
+  lessonHero: {
     alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 12, paddingHorizontal: 16,
-    backgroundColor: COLORS.accent + '0A',
+    paddingVertical: 28, paddingHorizontal: 20,
+    position: 'relative',
+    minHeight: 180,
   },
-  lessonIllustrationInner: {
-    width: 180, height: 120,
-    borderRadius: 16,
-    backgroundColor: COLORS.accent + '0C',
-    alignItems: 'center', justifyContent: 'center',
+  heroOrb: {
+    position: 'absolute',
+    borderRadius: 999,
   },
-  lessonIllustration: { width: 140, height: 110 },
-  lessonContent: { padding: 14 },
+  heroOrbLeft: {
+    width: 200, height: 200,
+    top: -60, left: -40,
+  },
+  heroOrbRight: {
+    width: 160, height: 160,
+    bottom: -40, right: -30,
+  },
+  lessonIllustration: { width: 180, height: 150, zIndex: 2 },
+  dayBadge: {
+    position: 'absolute', top: 16, right: 16,
+    paddingHorizontal: 12, paddingVertical: 5,
+    borderRadius: 10, zIndex: 3,
+  },
+  dayBadgeText: {
+    fontSize: 11, fontWeight: '800', color: '#FFFFFF',
+    letterSpacing: 1,
+  },
+  lessonContent: { padding: 18, paddingTop: 16 },
   lessonOverline: {
-    ...TYPE.overline, color: COLORS.accent, marginBottom: 8,
+    ...TYPE.overline, marginBottom: 8,
   },
   lessonTitle: {
-    fontSize: 20, fontWeight: '800', color: COLORS.textPrimary,
-    letterSpacing: -0.3, lineHeight: 26, marginBottom: 12,
+    fontSize: 21, fontWeight: '800', color: COLORS.textPrimary,
+    letterSpacing: -0.4, lineHeight: 27, marginBottom: 14,
   },
-  lessonMeta: { flexDirection: 'row', gap: 16 },
+  lessonMeta: { flexDirection: 'row', gap: 12, alignItems: 'center' },
   lessonMetaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   lessonMetaText: { fontSize: 12, color: COLORS.textMuted, fontWeight: '500' },
-  lessonCTA: {
-    backgroundColor: COLORS.accent, paddingVertical: 16,
-    alignItems: 'center', justifyContent: 'center',
+  xpChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8,
   },
-  lessonCTADone: { backgroundColor: COLORS.success },
+  xpChipText: { fontSize: 12, fontWeight: '700' },
+  lessonCTA: {
+    paddingVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'center', justifyContent: 'center',
+    gap: 8,
+  },
   lessonCTAText: { fontSize: 17, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.3 },
 
   // Progress
