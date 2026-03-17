@@ -112,6 +112,34 @@ export function useAchievements(progress?: AchievementProgress) {
         if (!error) {
           newlyUnlocked.push(achievement);
 
+          // Actually add the XP reward to user's total
+          try {
+            // Get current XP data
+            const { data: xpData } = await supabase
+              .from('user_xp')
+              .select('id, total_xp')
+              .eq('user_id', user.id)
+              .maybeSingle();
+
+            if (xpData) {
+              await supabase.from('user_xp')
+                .update({ total_xp: xpData.total_xp + achievement.xpReward })
+                .eq('id', xpData.id);
+
+              // Record XP transaction
+              await supabase.from('xp_transactions').insert({
+                user_id: user.id,
+                market_id: 'achievement',
+                xp_amount: achievement.xpReward,
+                source_type: 'achievement',
+                source_id: achievement.id,
+                description: `Achievement: ${achievement.name}`,
+              });
+            }
+          } catch (xpErr) {
+            console.error('Failed to add achievement XP:', xpErr);
+          }
+
           // Send push notification for the achievement
           sendMilestoneNotification(user.id, 'achievement', {
             achievementName: achievement.name,
