@@ -510,11 +510,11 @@ export default function ProfileScreen() {
                       color="#10B981"
                     />
                   </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[styles.pickerText, currentLevel === level.id && { color: '#10B981', fontWeight: '700' }]}>
+                  <View style={{ flex: 1, gap: 3 }}>
+                    <Text style={[styles.pickerText, { flex: 0 }, currentLevel === level.id && { color: '#10B981', fontWeight: '700' }]}>
                       {level.name}
                     </Text>
-                    <Text style={{ fontSize: 11, color: COLORS.textMuted, marginTop: 1 }}>{level.description}</Text>
+                    <Text style={{ fontSize: 11, color: COLORS.textMuted, lineHeight: 15 }}>{level.description}</Text>
                   </View>
                   {currentLevel === level.id && (
                     <Feather name="check" size={18} color="#10B981" />
