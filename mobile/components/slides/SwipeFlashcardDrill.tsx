@@ -17,7 +17,8 @@ import { playSound } from '../../lib/sounds';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 80;
 
-const LEO_HAPPY = require('../../assets/mascot/leo-happy.png');
+const LEO_CELEBRATING = require('../../assets/mascot/leo-celebrating.png');
+const LEO_DIZZY = require('../../assets/mascot/leo-dizzy.png');
 
 export interface FlashcardItem {
   statement: string;
@@ -46,18 +47,81 @@ export function generateFlashcardsFromSlides(
     // Pick up to 2 factual sentences per slide
     const picked = sentences.slice(0, 2);
     for (const sentence of picked) {
-      // True statement
+      // True statement — use original sentence
       cards.push({
         statement: sentence + '.',
         isTrue: true,
-        explanation: `This is correct. From: "${slide.title}"`,
+        explanation: `Correct — from "${slide.title}".`,
         source: slide.title,
       });
+
+      // False statement — negate/distort the sentence
+      const falseStatement = createFalseStatement(sentence);
+      if (falseStatement) {
+        cards.push({
+          statement: falseStatement + '.',
+          isTrue: false,
+          explanation: `This is false. The original fact is: "${sentence}."`,
+          source: slide.title,
+        });
+      }
     }
   }
 
-  // Shuffle and cap at 8 cards
-  return cards.sort(() => Math.random() - 0.5).slice(0, 8);
+  // Ensure roughly equal true/false balance, shuffle, and cap at 8
+  const trueCards = cards.filter(c => c.isTrue);
+  const falseCards = cards.filter(c => !c.isTrue);
+  const maxPerType = 4;
+  const balanced = [
+    ...trueCards.sort(() => Math.random() - 0.5).slice(0, maxPerType),
+    ...falseCards.sort(() => Math.random() - 0.5).slice(0, maxPerType),
+  ];
+  return balanced.sort(() => Math.random() - 0.5).slice(0, 8);
+}
+
+/** Create a plausible-sounding false version of a factual sentence */
+function createFalseStatement(sentence: string): string | null {
+  // Strategy 1: Swap key quantifiers/modifiers
+  const negationPairs: [RegExp, string][] = [
+    [/\bincrease[sd]?\b/i, 'decreased'],
+    [/\bdecrease[sd]?\b/i, 'increased'],
+    [/\bhigh(?:er|est)?\b/i, 'lower'],
+    [/\blow(?:er|est)?\b/i, 'higher'],
+    [/\bmore\b/i, 'fewer'],
+    [/\bfewer\b/i, 'more'],
+    [/\blargest?\b/i, 'smallest'],
+    [/\bsmallest?\b/i, 'largest'],
+    [/\bstronger?\b/i, 'weaker'],
+    [/\bweaker?\b/i, 'stronger'],
+    [/\bgrew\b/i, 'shrank'],
+    [/\bshrank\b/i, 'grew'],
+    [/\bbenefits?\b/i, 'drawbacks'],
+    [/\badvantages?\b/i, 'disadvantages'],
+    [/\bpositive\b/i, 'negative'],
+    [/\bnegative\b/i, 'positive'],
+    [/\bsuccess\w*\b/i, 'failure'],
+    [/\bfail\w*\b/i, 'success'],
+    [/\bexpand\w*\b/i, 'contracted'],
+    [/\bcontract\w*\b/i, 'expanded'],
+    [/\brisk[sy]?\b/i, 'safe'],
+    [/\bsafe\w*\b/i, 'risky'],
+  ];
+
+  for (const [pattern, replacement] of negationPairs) {
+    if (pattern.test(sentence)) {
+      return sentence.replace(pattern, replacement);
+    }
+  }
+
+  // Strategy 2: Add "not" or "never" if no swap found
+  if (/\b(is|are|was|were|has|have|had|does|do|did|can|will|would|should)\b/i.test(sentence)) {
+    return sentence.replace(
+      /\b(is|are|was|were|has|have|had|does|do|did|can|will|would|should)\b/i,
+      '$1 not'
+    );
+  }
+
+  return null;
 }
 
 export function SwipeFlashcardDrill({ cards, onComplete, accentColor = COLORS.accent }: SwipeFlashcardDrillProps) {
@@ -139,9 +203,10 @@ export function SwipeFlashcardDrill({ cards, onComplete, accentColor = COLORS.ac
 
   if (isComplete) {
     const pct = Math.round((score / cards.length) * 100);
+    const mascotImage = pct >= 80 ? LEO_CELEBRATING : LEO_DIZZY;
     return (
       <View style={styles.completeContainer}>
-        <Image source={LEO_HAPPY} style={styles.completeMascot} />
+        <Image source={mascotImage} style={styles.completeMascot} />
         <Text style={styles.completeTitle}>
           {pct >= 80 ? 'Excellent!' : pct >= 50 ? 'Good effort!' : 'Keep practicing!'}
         </Text>
