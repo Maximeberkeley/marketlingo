@@ -66,6 +66,24 @@ const MARKET_ILLUSTRATIONS: Record<string, any> = {
   neuroscience: require('../../assets/illustrations/neuroscience.png'),
 };
 
+const MARKET_GRADIENTS: Record<string, [string, string]> = {
+  aerospace: ['#8B5CF6', '#6D28D9'],
+  ai: ['#3B82F6', '#1D4ED8'],
+  biotech: ['#EC4899', '#DB2777'],
+  cleanenergy: ['#F59E0B', '#D97706'],
+  fintech: ['#10B981', '#059669'],
+  ev: ['#06B6D4', '#0891B2'],
+  cybersecurity: ['#EF4444', '#DC2626'],
+  robotics: ['#64748B', '#475569'],
+  spacetech: ['#6366F1', '#4F46E5'],
+  healthtech: ['#0EA5E9', '#0284C7'],
+  web3: ['#7C3AED', '#6D28D9'],
+  agtech: ['#22C55E', '#16A34A'],
+  logistics: ['#F97316', '#EA580C'],
+  climatetech: ['#14B8A6', '#0D9488'],
+  neuroscience: ['#F43F5E', '#E11D48'],
+};
+
 // Leo messages — contextual
 const LEO_GREETINGS = {
   morning: [
