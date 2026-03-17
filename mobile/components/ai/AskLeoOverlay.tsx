@@ -25,6 +25,7 @@ import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
+const LEO_VOICE_ID = 'onwK4e9ZLuTAKqWW03F9'; // Daniel - friendly educator
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
