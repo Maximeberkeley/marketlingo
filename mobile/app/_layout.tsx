@@ -82,7 +82,7 @@ export default function RootLayout() {
               <Stack.Screen name="auth" />
               <Stack.Screen name="onboarding/index" />
               <Stack.Screen name="onboarding/goal" />
-              <Stack.Screen name="onboarding/familiarity" />
+              <Stack.Screen name="onboarding/familiarity" options={{ gestureEnabled: false }} />
               <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
               <Stack.Screen name="trainer" />
               <Stack.Screen name="games" />
