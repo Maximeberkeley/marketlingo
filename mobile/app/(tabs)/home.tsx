@@ -320,6 +320,7 @@ export default function HomeScreen() {
   const marketIllustration = MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace'] || MARKET_ILLUSTRATIONS.aerospace;
   const marketGradient = MARKET_GRADIENTS[selectedMarket || 'aerospace'] || MARKET_GRADIENTS.aerospace;
   const marketAccent = marketGradient[0];
+  const journeyProgress = ((currentDay || 1) / 180) * 100;
 
   return (
     <View style={styles.container}>
