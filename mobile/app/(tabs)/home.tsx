@@ -414,16 +414,15 @@ export default function HomeScreen() {
               }}
               activeOpacity={0.92}
             >
-              {/* Hero illustration area with market-colored gradient */}
-              <View style={[styles.lessonHero, { backgroundColor: marketAccent + '12' }]}>
-                {/* Gradient orbs for depth */}
-                <View style={[styles.heroOrb, styles.heroOrbLeft, { backgroundColor: marketAccent + '18' }]} />
-                <View style={[styles.heroOrb, styles.heroOrbRight, { backgroundColor: marketGradient[1] + '15' }]} />
+              {/* Hero illustration — transparent PNG floating over card */}
+              <View style={styles.lessonHero}>
+                {/* Soft radial glow behind the illustration */}
+                <View style={[styles.heroGlow, { backgroundColor: marketAccent + '10' }]} />
                 
-                {/* Large illustration */}
+                {/* Illustration */}
                 <Image source={marketIllustration} style={styles.lessonIllustration} resizeMode="contain" />
                 
-                {/* Day badge overlay */}
+                {/* Day badge */}
                 <View style={[styles.dayBadge, { backgroundColor: marketAccent }]}>
                   <Text style={styles.dayBadgeText}>DAY {currentDay}</Text>
                 </View>
@@ -601,21 +600,15 @@ const styles = StyleSheet.create({
   },
   lessonHero: {
     alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 28, paddingHorizontal: 20,
+    paddingVertical: 24, paddingHorizontal: 20,
     position: 'relative',
-    minHeight: 180,
   },
-  heroOrb: {
+  heroGlow: {
     position: 'absolute',
-    borderRadius: 999,
-  },
-  heroOrbLeft: {
     width: 200, height: 200,
-    top: -60, left: -40,
-  },
-  heroOrbRight: {
-    width: 160, height: 160,
-    bottom: -40, right: -30,
+    borderRadius: 100,
+    top: '50%', left: '50%',
+    marginTop: -100, marginLeft: -100,
   },
   lessonIllustration: { width: 180, height: 150, zIndex: 2 },
   dayBadge: {
