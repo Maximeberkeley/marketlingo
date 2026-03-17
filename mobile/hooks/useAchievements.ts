@@ -114,10 +114,10 @@ export function useAchievements(progress?: AchievementProgress) {
 
           // Actually add the XP reward to user's total
           try {
-            // Get current XP data
+            // Get current XP data (includes market_id for FK constraint)
             const { data: xpData } = await supabase
               .from('user_xp')
-              .select('id, total_xp')
+              .select('id, total_xp, market_id')
               .eq('user_id', user.id)
               .maybeSingle();
 
@@ -126,10 +126,10 @@ export function useAchievements(progress?: AchievementProgress) {
                 .update({ total_xp: xpData.total_xp + achievement.xpReward })
                 .eq('id', xpData.id);
 
-              // Record XP transaction
+              // Record XP transaction with the user's actual market_id
               await supabase.from('xp_transactions').insert({
                 user_id: user.id,
-                market_id: 'achievement',
+                market_id: xpData.market_id,
                 xp_amount: achievement.xpReward,
                 source_type: 'achievement',
                 source_id: achievement.id,
