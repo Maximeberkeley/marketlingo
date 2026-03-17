@@ -402,19 +402,9 @@ export function SlideReaderV2({
   const currentSlide = slides[currentSlideIndex];
   const isLastCard = currentCard >= totalCards - 1;
 
-  // Paywall
-  const paywallCardIndex = useMemo(() => {
-    if (isProUser || isReview) return -1;
-    let count = 0;
-    for (let i = 0; i < allCards.length; i++) {
-      const card = allCards[i];
-      if (card.type === 'concept' && card.cardType === 'header') {
-        count++;
-        if (count > 3) return i;
-      }
-    }
-    return -1;
-  }, [allCards, isProUser, isReview]);
+  // Paywall disabled — free users can complete full lessons
+  // Pro ad is shown AFTER lesson completion instead
+  const paywallCardIndex = -1;
 
   const animateTransition = useCallback((direction: 'left' | 'right', callback: () => void) => {
     const toX = direction === 'left' ? -SCREEN_WIDTH * 0.3 : SCREEN_WIDTH * 0.3;
