@@ -406,24 +406,32 @@ export default function HomeScreen() {
           {/* ── THE Lesson Card — the ONE thing ── */}
           <AnimatedSection delay={100}>
             <TouchableOpacity
-              style={styles.lessonCard}
+              style={[styles.lessonCard, { borderColor: marketAccent + '30' }]}
               onPress={() => {
                 triggerHaptic('medium');
                 if (lessonStack) session.handleOpenStack(lessonStack);
               }}
               activeOpacity={0.92}
             >
-              {/* Illustration */}
-              <View style={styles.lessonIllustrationWrap}>
-                <View style={styles.lessonIllustrationInner}>
-                  <Image source={marketIllustration} style={styles.lessonIllustration} resizeMode="contain" />
+              {/* Hero illustration area with market-colored gradient */}
+              <View style={[styles.lessonHero, { backgroundColor: marketAccent + '12' }]}>
+                {/* Gradient orbs for depth */}
+                <View style={[styles.heroOrb, styles.heroOrbLeft, { backgroundColor: marketAccent + '18' }]} />
+                <View style={[styles.heroOrb, styles.heroOrbRight, { backgroundColor: marketGradient[1] + '15' }]} />
+                
+                {/* Large illustration */}
+                <Image source={marketIllustration} style={styles.lessonIllustration} resizeMode="contain" />
+                
+                {/* Day badge overlay */}
+                <View style={[styles.dayBadge, { backgroundColor: marketAccent }]}>
+                  <Text style={styles.dayBadgeText}>DAY {currentDay}</Text>
                 </View>
               </View>
 
               {/* Content */}
               <View style={styles.lessonContent}>
-                <Text style={styles.lessonOverline}>
-                  {lessonCompletedToday ? '✓ COMPLETED' : `DAY ${currentDay} · ${getMarketName(selectedMarket || 'aerospace').toUpperCase()}`}
+                <Text style={[styles.lessonOverline, { color: marketAccent }]}>
+                  {lessonCompletedToday ? '✓ COMPLETED' : getMarketName(selectedMarket || 'aerospace').toUpperCase()}
                 </Text>
                 <Text style={styles.lessonTitle} numberOfLines={2}>
                   {lessonStack?.title || 'Loading lesson...'}
@@ -437,9 +445,9 @@ export default function HomeScreen() {
                     <Feather name="layers" size={12} color={COLORS.textMuted} />
                     <Text style={styles.lessonMetaText}>{lessonStack?.slides?.length || 6} slides</Text>
                   </View>
-                  <View style={styles.lessonMetaItem}>
-                    <Feather name="zap" size={12} color={COLORS.accent} />
-                    <Text style={[styles.lessonMetaText, { color: COLORS.accent, fontWeight: '700' }]}>
+                  <View style={[styles.xpChip, { backgroundColor: marketAccent + '15' }]}>
+                    <Feather name="zap" size={12} color={marketAccent} />
+                    <Text style={[styles.xpChipText, { color: marketAccent }]}>
                       +{XP_REWARDS.LESSON_COMPLETE} XP
                     </Text>
                   </View>
@@ -447,10 +455,11 @@ export default function HomeScreen() {
               </View>
 
               {/* CTA */}
-              <View style={[styles.lessonCTA, lessonCompletedToday && styles.lessonCTADone]}>
+              <View style={[styles.lessonCTA, { backgroundColor: lessonCompletedToday ? COLORS.success : marketAccent }]}>
                 <Text style={styles.lessonCTAText}>
-                  {lessonCompletedToday ? 'Review' : 'Start'}
+                  {lessonCompletedToday ? 'Review Lesson' : 'Start Today\'s Lesson'}
                 </Text>
+                <Feather name={lessonCompletedToday ? "refresh-cw" : "arrow-right"} size={18} color="#FFFFFF" />
               </View>
             </TouchableOpacity>
           </AnimatedSection>
