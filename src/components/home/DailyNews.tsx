@@ -21,8 +21,10 @@ export function DailyNews({ marketId }: DailyNewsProps) {
   const [mentorContext, setMentorContext] = useState("");
 
   const kaiMentor = mentors.find((m) => m.id === "kai")!;
-  const featured = news.slice(0, 3);
-  const feed = news.slice(3);
+  // If few items, skip carousel and show all in feed; otherwise split 3 featured + rest
+  const hasEnoughForCarousel = news.length > 3;
+  const featured = hasEnoughForCarousel ? news.slice(0, 3) : [];
+  const feed = hasEnoughForCarousel ? news.slice(3) : news;
 
   const handleAiAction = (item: NewsItem, action: "discuss" | "summarize" | "why") => {
     const prompts: Record<string, string> = {
