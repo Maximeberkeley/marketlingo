@@ -4,7 +4,7 @@
  * Swipe right/left = next/prev article, swipe up = close, tap Sophia = voice Q&A.
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
