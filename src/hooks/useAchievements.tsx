@@ -130,8 +130,8 @@ export function useAchievements(progress?: AchievementProgress) {
                 market_id: xpData.market_id,
                 xp_amount: achievement.xpReward,
                 source_type: 'achievement',
-                source_id: achievement.id,
-                description: `Achievement: ${achievement.name}`,
+                source_id: null,
+                description: `Achievement: ${achievement.name} (${achievement.id})`,
               });
             }
           } catch (xpErr) {
