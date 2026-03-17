@@ -150,9 +150,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg1,
     borderRadius: 24,
     borderWidth: 1.5,
-    overflow: 'hidden',
+    overflow: 'visible',
     alignItems: 'center',
     paddingBottom: 20,
+    paddingTop: 10,
     position: 'relative',
   },
   glowRing: {

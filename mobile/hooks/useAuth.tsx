@@ -22,25 +22,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkSession = useCallback(async () => {
-    try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) console.error('Error checking session:', error);
-      setSession(session ?? null);
-      setUser(session?.user ?? null);
-      if (session?.user) await storage.setUserId(session.user.id);
-    } catch (error) {
-      console.error('Error in checkSession:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
     let mounted = true;
 
-    checkSession();
-
+    // CRITICAL: Set up listener BEFORE getSession to avoid race conditions
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         if (!mounted) return;
@@ -51,11 +36,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
+    // Then check for existing session
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (!mounted) return;
+      if (error) console.error('Error checking session:', error);
+      setSession(session ?? null);
+      setUser(session?.user ?? null);
+      setLoading(false);
+      if (session?.user) storage.setUserId(session.user.id);
+    });
+
     return () => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [checkSession]);
+  }, []);
 
   const signInWithEmail = useCallback(async (email: string, password: string) => {
     try {
@@ -118,7 +113,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signUpWithEmail,
         signOut,
         resetPassword,
-        refreshSession: checkSession,
+        refreshSession: async () => {
+          const { data: { session } } = await supabase.auth.getSession();
+          setSession(session ?? null);
+          setUser(session?.user ?? null);
+        },
       }}
     >
       {children}
