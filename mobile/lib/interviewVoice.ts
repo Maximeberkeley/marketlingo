@@ -33,7 +33,7 @@ export async function speakAsSophia(text: string): Promise<Audio.Sound | null> {
   if (!text || text.trim().length === 0) return null;
 
   try {
-    const ttsUrl = `${EDGE_URL}/elevenlabs-tts`;
+    const ttsUrl = `${EDGE_URL}/functions/v1/elevenlabs-tts`;
     
     const response = await fetch(ttsUrl, {
       method: 'POST',
