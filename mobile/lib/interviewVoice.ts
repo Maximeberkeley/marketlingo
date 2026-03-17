@@ -34,10 +34,11 @@ export async function speakAsSophia(text: string): Promise<Audio.Sound | null> {
 
   try {
     const ttsUrl = `${EDGE_URL}/functions/v1/elevenlabs-tts`;
+    const authHeaders = await getAuthHeaders();
     
     const response = await fetch(ttsUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders,
       body: JSON.stringify({ text, voiceId: SOPHIA_VOICE_ID }),
     });
 

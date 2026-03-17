@@ -22,8 +22,10 @@ import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
 
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
+const LEO_VOICE_ID = 'onwK4e9ZLuTAKqWW03F9'; // Daniel - friendly educator
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
@@ -118,14 +120,19 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
   const playTTS = useCallback(async (text: string) => {
     try {
       setIsPlayingAudio(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      const authHeader = session?.access_token
+        ? `Bearer ${session.access_token}`
+        : `Bearer ${SUPABASE_ANON_KEY}`;
+
       const response = await fetch(`${SUPABASE_URL}/functions/v1/elevenlabs-tts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'apikey': SUPABASE_ANON_KEY || '',
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Authorization': authHeader,
         },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, voiceId: LEO_VOICE_ID }),
       });
 
       if (!response.ok) throw new Error('TTS failed');
@@ -137,14 +144,23 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
         webAudio.onended = () => setIsPlayingAudio(false);
         await webAudio.play();
       } else {
-        // Native: use expo-av
-        const arrayBuffer = await response.arrayBuffer();
-        const bytes = new Uint8Array(arrayBuffer);
-        let binary = '';
-        for (let i = 0; i < bytes.byteLength; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        const base64 = btoa(binary);
+        // Native: write to temp file to avoid OOM with large base64 strings
+        const blob = await response.blob();
+        const reader = new FileReader();
+
+        const base64 = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => {
+            const result = reader.result as string;
+            resolve(result.split(',')[1]);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+
+        const tempPath = `${FileSystem.cacheDirectory}leo_tts_${Date.now()}.mp3`;
+        await FileSystem.writeAsStringAsync(tempPath, base64, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
 
         await Audio.setAudioModeAsync({
           playsInSilentModeIOS: true,
@@ -153,15 +169,17 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
         });
 
         const { sound } = await Audio.Sound.createAsync(
-          { uri: `data:audio/mpeg;base64,${base64}` },
+          { uri: tempPath },
           { shouldPlay: true },
-          (status) => {
-            if (status.isLoaded && status.didJustFinish) {
-              setIsPlayingAudio(false);
-              sound.unloadAsync();
-            }
-          }
         );
+
+        sound.setOnPlaybackStatusUpdate((status) => {
+          if ('didJustFinish' in status && status.didJustFinish) {
+            setIsPlayingAudio(false);
+            sound.unloadAsync();
+            FileSystem.deleteAsync(tempPath, { idempotent: true }).catch(() => {});
+          }
+        });
       }
     } catch {
       setIsPlayingAudio(false);
