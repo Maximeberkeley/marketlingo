@@ -414,15 +414,16 @@ export default function HomeScreen() {
               }}
               activeOpacity={0.92}
             >
-              {/* Hero illustration — transparent PNG floating over card */}
-              <View style={styles.lessonHero}>
-                {/* Soft radial glow behind the illustration */}
-                <View style={[styles.heroGlow, { backgroundColor: marketAccent + '10' }]} />
+              {/* Hero illustration area with market-colored gradient */}
+              <View style={[styles.lessonHero, { backgroundColor: marketAccent + '12' }]}>
+                {/* Gradient orbs for depth */}
+                <View style={[styles.heroOrb, styles.heroOrbLeft, { backgroundColor: marketAccent + '18' }]} />
+                <View style={[styles.heroOrb, styles.heroOrbRight, { backgroundColor: marketGradient[1] + '15' }]} />
                 
-                {/* Illustration */}
+                {/* Large illustration */}
                 <Image source={marketIllustration} style={styles.lessonIllustration} resizeMode="contain" />
                 
-                {/* Day badge */}
+                {/* Day badge overlay */}
                 <View style={[styles.dayBadge, { backgroundColor: marketAccent }]}>
                   <Text style={styles.dayBadgeText}>DAY {currentDay}</Text>
                 </View>
