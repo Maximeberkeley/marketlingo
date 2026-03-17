@@ -22,6 +22,7 @@ import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
 
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 
