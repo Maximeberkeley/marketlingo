@@ -203,9 +203,10 @@ export function SwipeFlashcardDrill({ cards, onComplete, accentColor = COLORS.ac
 
   if (isComplete) {
     const pct = Math.round((score / cards.length) * 100);
+    const mascotImage = pct >= 80 ? LEO_CELEBRATING : LEO_DIZZY;
     return (
       <View style={styles.completeContainer}>
-        <Image source={LEO_HAPPY} style={styles.completeMascot} />
+        <Image source={mascotImage} style={styles.completeMascot} />
         <Text style={styles.completeTitle}>
           {pct >= 80 ? 'Excellent!' : pct >= 50 ? 'Good effort!' : 'Keep practicing!'}
         </Text>
