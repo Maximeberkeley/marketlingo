@@ -160,7 +160,7 @@ async function transcribeVoice(uri: string): Promise<string> {
     const formData = new FormData();
     formData.append('audio', { uri, type: 'audio/m4a', name: 'recording.m4a' } as any);
 
-    const response = await fetch(`${EDGE_URL}/elevenlabs-stt`, {
+    const response = await fetch(`${EDGE_URL}/functions/v1/elevenlabs-stt`, {
       method: 'POST',
       headers: { Authorization: authHeader },
       body: formData,
