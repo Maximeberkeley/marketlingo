@@ -320,15 +320,23 @@ export function ImmersiveNewsOverlay({
     });
   }, [articles.length]);
 
-  // Pan gesture for swipe — uses refs so the handler always reads fresh state
-  const panResponder = useRef(
+  // Pan gesture for swipe
+  const panResponder = useMemo(() =>
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 10 || Math.abs(g.dy) > 10,
-      onMoveShouldSetPanResponderCapture: (_, g) => Math.abs(g.dx) > 10 || Math.abs(g.dy) > 10,
+      onMoveShouldSetPanResponder: (_, g) => {
+        // Only claim the gesture if horizontal movement is significant
+        return Math.abs(g.dx) > 15 || (g.dy < -15 && Math.abs(g.dy) > Math.abs(g.dx));
+      },
+      onMoveShouldSetPanResponderCapture: () => false,
+      onPanResponderGrant: () => {
+        // Stop any ongoing animations
+        translateX.stopAnimation();
+        translateY.stopAnimation();
+      },
       onPanResponderMove: (_, g) => {
-        if (Math.abs(g.dy) > Math.abs(g.dx)) {
-          translateY.setValue(Math.min(0, g.dy));
+        if (Math.abs(g.dy) > Math.abs(g.dx) && g.dy < 0) {
+          translateY.setValue(g.dy);
         } else {
           translateX.setValue(g.dx);
         }
@@ -344,19 +352,17 @@ export function ImmersiveNewsOverlay({
           });
           return;
         }
-        translateY.setValue(0);
+        Animated.spring(translateY, { toValue: 0, friction: 8, useNativeDriver: true }).start();
 
         // Swipe left → next
-        if (g.dx < -SWIPE_THRESHOLD) {
-          // goTo reads from ref inside, but we call setCurrentIndex there
-          // We need to call goTo from outside — use a wrapper
+        if (g.dx < -SWIPE_THRESHOLD && Math.abs(g.dx) > Math.abs(g.dy)) {
           const next = idx + 1;
           if (next < articles.length) {
-            const dir = -1;
-            Animated.timing(translateX, { toValue: dir * SCREEN_W, duration: 200, useNativeDriver: true }).start(() => {
+            Animated.timing(translateX, { toValue: -SCREEN_W, duration: 200, useNativeDriver: true }).start(() => {
               currentIndexRef.current = next;
               setCurrentIndex(next);
-              translateX.setValue(-dir * SCREEN_W);
+              setSubtitlesExpanded(false);
+              translateX.setValue(SCREEN_W);
               Animated.spring(translateX, { toValue: 0, friction: 8, tension: 60, useNativeDriver: true }).start();
             });
           } else {
@@ -365,14 +371,14 @@ export function ImmersiveNewsOverlay({
           return;
         }
         // Swipe right → prev
-        if (g.dx > SWIPE_THRESHOLD) {
+        if (g.dx > SWIPE_THRESHOLD && Math.abs(g.dx) > Math.abs(g.dy)) {
           const prev = idx - 1;
           if (prev >= 0) {
-            const dir = 1;
-            Animated.timing(translateX, { toValue: dir * SCREEN_W, duration: 200, useNativeDriver: true }).start(() => {
+            Animated.timing(translateX, { toValue: SCREEN_W, duration: 200, useNativeDriver: true }).start(() => {
               currentIndexRef.current = prev;
               setCurrentIndex(prev);
-              translateX.setValue(-dir * SCREEN_W);
+              setSubtitlesExpanded(false);
+              translateX.setValue(-SCREEN_W);
               Animated.spring(translateX, { toValue: 0, friction: 8, tension: 60, useNativeDriver: true }).start();
             });
           } else {
@@ -385,7 +391,7 @@ export function ImmersiveNewsOverlay({
         Animated.spring(translateX, { toValue: 0, friction: 8, useNativeDriver: true }).start();
       },
     }),
-  ).current;
+  [articles.length, onClose]);
 
   // Voice Q&A — tap Sophia to record
   const handleSophiaTap = useCallback(async () => {
