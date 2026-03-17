@@ -206,13 +206,12 @@ export default function HomeScreen() {
     })();
   }, [openStackId, selectedMarket, user]);
 
-
-    dailyCompletion ?? null, streak
-  );
-
   const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
   const [showProAd, setShowProAd] = useState(false);
+
+  // Daily quests
+  const { quests, completedCount, totalBonusXP, allComplete } = useDailyQuests(dailyCompletion, streak);
 
   // Leo popup system
   const leoPopups = useLeoPopups({ cooldownMs: 45000, maxPerSession: 4 });
@@ -485,7 +484,7 @@ export default function HomeScreen() {
               quests={quests}
               completedCount={completedCount}
               totalBonusXP={totalBonusXP}
-              allComplete={allQuestsComplete}
+              allComplete={allComplete}
             />
           </AnimatedSection>
 

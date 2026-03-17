@@ -17,7 +17,7 @@ import { playSound } from '../../lib/sounds';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 80;
 
-const LEO_HAPPY = require('../../assets/mascot/leo-happy.png');
+const LEO_HAPPY = require('../../assets/mascot/leo-mascot.png');
 
 export interface FlashcardItem {
   statement: string;
