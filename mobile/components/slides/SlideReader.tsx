@@ -435,13 +435,9 @@ export function SlideReader({
   }, [slideAnim]);
 
   const goToNext = useCallback(() => {
-    // Emotional paywall: free users hit a gate at slide 3→4 boundary
-    if (!isProUser && !isReview && currentIndex === 2 && slides.length > 3) {
-      onPaywallTrigger?.();
-      return;
-    }
+    // Free users can complete full lessons — Pro ad shown after completion
     if (currentIndex < slides.length - 1) animateSlide(1, () => setCurrentIndex((prev) => prev + 1));
-  }, [currentIndex, slides.length, animateSlide, isProUser, isReview, onPaywallTrigger]);
+  }, [currentIndex, slides.length, animateSlide]);
 
   const goToPrev = useCallback(() => {
     if (currentIndex > -1) animateSlide(-1, () => setCurrentIndex((prev) => prev - 1));
