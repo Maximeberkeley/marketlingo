@@ -66,6 +66,24 @@ const MARKET_ILLUSTRATIONS: Record<string, any> = {
   neuroscience: require('../../assets/illustrations/neuroscience.png'),
 };
 
+const MARKET_GRADIENTS: Record<string, [string, string]> = {
+  aerospace: ['#8B5CF6', '#6D28D9'],
+  ai: ['#3B82F6', '#1D4ED8'],
+  biotech: ['#EC4899', '#DB2777'],
+  cleanenergy: ['#F59E0B', '#D97706'],
+  fintech: ['#10B981', '#059669'],
+  ev: ['#06B6D4', '#0891B2'],
+  cybersecurity: ['#EF4444', '#DC2626'],
+  robotics: ['#64748B', '#475569'],
+  spacetech: ['#6366F1', '#4F46E5'],
+  healthtech: ['#0EA5E9', '#0284C7'],
+  web3: ['#7C3AED', '#6D28D9'],
+  agtech: ['#22C55E', '#16A34A'],
+  logistics: ['#F97316', '#EA580C'],
+  climatetech: ['#14B8A6', '#0D9488'],
+  neuroscience: ['#F43F5E', '#E11D48'],
+};
+
 // Leo messages — contextual
 const LEO_GREETINGS = {
   morning: [
@@ -300,7 +318,8 @@ export default function HomeScreen() {
   if (loading || authLoading) return <HomeSkeleton />;
 
   const marketIllustration = MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace'] || MARKET_ILLUSTRATIONS.aerospace;
-  const journeyProgress = ((currentDay || 1) / 180) * 100;
+  const marketGradient = MARKET_GRADIENTS[selectedMarket || 'aerospace'] || MARKET_GRADIENTS.aerospace;
+  const marketAccent = marketGradient[0];
 
   return (
     <View style={styles.container}>
@@ -387,24 +406,32 @@ export default function HomeScreen() {
           {/* ── THE Lesson Card — the ONE thing ── */}
           <AnimatedSection delay={100}>
             <TouchableOpacity
-              style={styles.lessonCard}
+              style={[styles.lessonCard, { borderColor: marketAccent + '30' }]}
               onPress={() => {
                 triggerHaptic('medium');
                 if (lessonStack) session.handleOpenStack(lessonStack);
               }}
               activeOpacity={0.92}
             >
-              {/* Illustration */}
-              <View style={styles.lessonIllustrationWrap}>
-                <View style={styles.lessonIllustrationInner}>
-                  <Image source={marketIllustration} style={styles.lessonIllustration} resizeMode="contain" />
+              {/* Hero illustration area with market-colored gradient */}
+              <View style={[styles.lessonHero, { backgroundColor: marketAccent + '12' }]}>
+                {/* Gradient orbs for depth */}
+                <View style={[styles.heroOrb, styles.heroOrbLeft, { backgroundColor: marketAccent + '18' }]} />
+                <View style={[styles.heroOrb, styles.heroOrbRight, { backgroundColor: marketGradient[1] + '15' }]} />
+                
+                {/* Large illustration */}
+                <Image source={marketIllustration} style={styles.lessonIllustration} resizeMode="contain" />
+                
+                {/* Day badge overlay */}
+                <View style={[styles.dayBadge, { backgroundColor: marketAccent }]}>
+                  <Text style={styles.dayBadgeText}>DAY {currentDay}</Text>
                 </View>
               </View>
 
               {/* Content */}
               <View style={styles.lessonContent}>
-                <Text style={styles.lessonOverline}>
-                  {lessonCompletedToday ? '✓ COMPLETED' : `DAY ${currentDay} · ${getMarketName(selectedMarket || 'aerospace').toUpperCase()}`}
+                <Text style={[styles.lessonOverline, { color: marketAccent }]}>
+                  {lessonCompletedToday ? '✓ COMPLETED' : getMarketName(selectedMarket || 'aerospace').toUpperCase()}
                 </Text>
                 <Text style={styles.lessonTitle} numberOfLines={2}>
                   {lessonStack?.title || 'Loading lesson...'}
@@ -418,9 +445,9 @@ export default function HomeScreen() {
                     <Feather name="layers" size={12} color={COLORS.textMuted} />
                     <Text style={styles.lessonMetaText}>{lessonStack?.slides?.length || 6} slides</Text>
                   </View>
-                  <View style={styles.lessonMetaItem}>
-                    <Feather name="zap" size={12} color={COLORS.accent} />
-                    <Text style={[styles.lessonMetaText, { color: COLORS.accent, fontWeight: '700' }]}>
+                  <View style={[styles.xpChip, { backgroundColor: marketAccent + '15' }]}>
+                    <Feather name="zap" size={12} color={marketAccent} />
+                    <Text style={[styles.xpChipText, { color: marketAccent }]}>
                       +{XP_REWARDS.LESSON_COMPLETE} XP
                     </Text>
                   </View>
@@ -428,10 +455,11 @@ export default function HomeScreen() {
               </View>
 
               {/* CTA */}
-              <View style={[styles.lessonCTA, lessonCompletedToday && styles.lessonCTADone]}>
+              <View style={[styles.lessonCTA, { backgroundColor: lessonCompletedToday ? COLORS.success : marketAccent }]}>
                 <Text style={styles.lessonCTAText}>
-                  {lessonCompletedToday ? 'Review' : 'Start'}
+                  {lessonCompletedToday ? 'Review Lesson' : 'Start Today\'s Lesson'}
                 </Text>
+                <Feather name={lessonCompletedToday ? "refresh-cw" : "arrow-right"} size={18} color="#FFFFFF" />
               </View>
             </TouchableOpacity>
           </AnimatedSection>
@@ -561,39 +589,65 @@ const styles = StyleSheet.create({
 
   // Lesson card — the hero
   lessonCard: {
-    backgroundColor: COLORS.bg2, borderRadius: 24,
+    backgroundColor: COLORS.bg2, borderRadius: 28,
     overflow: 'hidden', marginBottom: 16,
-    borderWidth: 1.5, borderColor: COLORS.accent + '20',
-    ...SHADOWS.lg,
+    borderWidth: 1.5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.12,
+    shadowRadius: 28,
+    elevation: 12,
   },
-  lessonIllustrationWrap: {
+  lessonHero: {
     alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 12, paddingHorizontal: 16,
-    backgroundColor: COLORS.accent + '0A',
+    paddingVertical: 28, paddingHorizontal: 20,
+    position: 'relative',
+    minHeight: 180,
   },
-  lessonIllustrationInner: {
-    width: 180, height: 120,
-    borderRadius: 16,
-    backgroundColor: COLORS.accent + '0C',
-    alignItems: 'center', justifyContent: 'center',
+  heroOrb: {
+    position: 'absolute',
+    borderRadius: 999,
   },
-  lessonIllustration: { width: 140, height: 110 },
-  lessonContent: { padding: 14 },
+  heroOrbLeft: {
+    width: 200, height: 200,
+    top: -60, left: -40,
+  },
+  heroOrbRight: {
+    width: 160, height: 160,
+    bottom: -40, right: -30,
+  },
+  lessonIllustration: { width: 180, height: 150, zIndex: 2 },
+  dayBadge: {
+    position: 'absolute', top: 16, right: 16,
+    paddingHorizontal: 12, paddingVertical: 5,
+    borderRadius: 10, zIndex: 3,
+  },
+  dayBadgeText: {
+    fontSize: 11, fontWeight: '800', color: '#FFFFFF',
+    letterSpacing: 1,
+  },
+  lessonContent: { padding: 18, paddingTop: 16 },
   lessonOverline: {
-    ...TYPE.overline, color: COLORS.accent, marginBottom: 8,
+    ...TYPE.overline, marginBottom: 8,
   },
   lessonTitle: {
-    fontSize: 20, fontWeight: '800', color: COLORS.textPrimary,
-    letterSpacing: -0.3, lineHeight: 26, marginBottom: 12,
+    fontSize: 21, fontWeight: '800', color: COLORS.textPrimary,
+    letterSpacing: -0.4, lineHeight: 27, marginBottom: 14,
   },
-  lessonMeta: { flexDirection: 'row', gap: 16 },
+  lessonMeta: { flexDirection: 'row', gap: 12, alignItems: 'center' },
   lessonMetaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   lessonMetaText: { fontSize: 12, color: COLORS.textMuted, fontWeight: '500' },
-  lessonCTA: {
-    backgroundColor: COLORS.accent, paddingVertical: 16,
-    alignItems: 'center', justifyContent: 'center',
+  xpChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8,
   },
-  lessonCTADone: { backgroundColor: COLORS.success },
+  xpChipText: { fontSize: 12, fontWeight: '700' },
+  lessonCTA: {
+    paddingVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'center', justifyContent: 'center',
+    gap: 8,
+  },
   lessonCTAText: { fontSize: 17, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.3 },
 
   // Progress
