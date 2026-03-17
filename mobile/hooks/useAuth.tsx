@@ -113,7 +113,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signUpWithEmail,
         signOut,
         resetPassword,
-        refreshSession: checkSession,
+        refreshSession: async () => {
+          const { data: { session } } = await supabase.auth.getSession();
+          setSession(session ?? null);
+          setUser(session?.user ?? null);
+        },
       }}
     >
       {children}
