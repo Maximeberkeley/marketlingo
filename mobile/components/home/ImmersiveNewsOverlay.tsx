@@ -439,6 +439,12 @@ User's goal: ${learningGoal}`;
 
       // Start recording
       try {
+        const permission = await Audio.requestPermissionsAsync();
+        if (!permission.granted) {
+          console.warn('Recording failed: microphone permission not granted');
+          return;
+        }
+
         await Audio.setAudioModeAsync({
           allowsRecordingIOS: true,
           playsInSilentModeIOS: true,
