@@ -80,10 +80,13 @@ export async function scheduleStreakNotifications(
 
 /**
  * Cancel all pending streak notifications.
- * Called when the user completes their daily lesson.
+ * Uses two strategies to ensure no duplicates survive:
+ * 1. Cancel by saved AsyncStorage IDs (fast path)
+ * 2. Scan all scheduled notifications and cancel any with streak_warning type (catches orphans)
  */
 export async function cancelStreakNotifications() {
   try {
+    // Strategy 1: Cancel by saved IDs
     const stored = await AsyncStorage.getItem(STREAK_NOTIF_KEY);
     if (stored) {
       const ids: string[] = JSON.parse(stored);
@@ -91,6 +94,15 @@ export async function cancelStreakNotifications() {
         await Notifications.cancelScheduledNotificationAsync(id);
       }
       await AsyncStorage.removeItem(STREAK_NOTIF_KEY);
+    }
+
+    // Strategy 2: Scan all scheduled notifications for any orphaned streak ones
+    const allScheduled = await Notifications.getAllScheduledNotificationsAsync();
+    for (const notif of allScheduled) {
+      const data = notif.content.data as Record<string, any> | undefined;
+      if (data?.type === 'streak_warning') {
+        await Notifications.cancelScheduledNotificationAsync(notif.identifier);
+      }
     }
   } catch (error) {
     console.warn('Failed to cancel streak notifications:', error);
