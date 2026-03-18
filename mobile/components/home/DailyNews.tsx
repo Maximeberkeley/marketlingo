@@ -441,7 +441,7 @@ function ArticleDetailSheet({
 }
 
 // ── Main Component ──
-export function DailyNews({ marketId }: DailyNewsProps) {
+export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
