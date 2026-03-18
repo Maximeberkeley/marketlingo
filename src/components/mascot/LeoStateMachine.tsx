@@ -106,6 +106,7 @@ export const LeoPuppet = forwardRef<HTMLDivElement, LeoPuppetProps>(function Leo
 
   return (
     <div
+      ref={ref}
       className={className}
       style={{
         width: size,
