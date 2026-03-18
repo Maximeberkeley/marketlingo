@@ -564,8 +564,7 @@ export function SlideReaderV2({
           key={`quiz-${currentCard}`}
           quiz={currentCardData.quiz}
           onAnswer={(correct) => {
-            if (correct) playSound('correct');
-            setTimeout(() => goNext(), 300);
+            handleAnswer(correct, currentCardData.quiz.explanation);
           }}
           accentColor={accentColor}
         />
@@ -577,8 +576,7 @@ export function SlideReaderV2({
           key={`wm-${currentCard}`}
           pairs={currentCardData.pairs}
           onComplete={(score, total) => {
-            if (score === total) playSound('correct');
-            setTimeout(() => goNext(), 600);
+            handleAnswer(score === total, `You matched ${score}/${total} pairs correctly.`);
           }}
           accentColor={accentColor}
         />
@@ -613,8 +611,7 @@ export function SlideReaderV2({
           key={`flash-${currentCard}`}
           cards={currentCardData.cards}
           onComplete={(score, total) => {
-            if (score >= total * 0.7) playSound('correct');
-            setTimeout(() => goNext(), 800);
+            handleAnswer(score >= total * 0.7, `You got ${score}/${total} correct!`);
           }}
           accentColor={accentColor}
         />
