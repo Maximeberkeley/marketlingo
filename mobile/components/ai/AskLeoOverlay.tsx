@@ -120,66 +120,41 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
   const playTTS = useCallback(async (text: string) => {
     try {
       setIsPlayingAudio(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      const authHeader = session?.access_token
-        ? `Bearer ${session.access_token}`
-        : `Bearer ${SUPABASE_ANON_KEY}`;
-
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/elevenlabs-tts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_ANON_KEY || '',
-          'Authorization': authHeader,
-        },
-        body: JSON.stringify({ text, voiceId: LEO_VOICE_ID }),
-      });
-
-      if (!response.ok) throw new Error('TTS failed');
 
       if (Platform.OS === 'web') {
+        const { data: { session } } = await supabase.auth.getSession();
+        const authHeader = session?.access_token
+          ? `Bearer ${session.access_token}`
+          : `Bearer ${SUPABASE_ANON_KEY}`;
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/elevenlabs-tts`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY || '',
+            'Authorization': authHeader,
+          },
+          body: JSON.stringify({ text, voiceId: LEO_VOICE_ID }),
+        });
+        if (!response.ok) throw new Error('TTS failed');
         const audioBlob = await response.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
         const webAudio = new window.Audio(audioUrl);
         webAudio.onended = () => setIsPlayingAudio(false);
         await webAudio.play();
       } else {
-        // Native: write to temp file to avoid OOM with large base64 strings
-        const blob = await response.blob();
-        const reader = new FileReader();
-
-        const base64 = await new Promise<string>((resolve, reject) => {
-          reader.onload = () => {
-            const result = reader.result as string;
-            resolve(result.split(',')[1]);
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
-
-        const tempPath = `${FileSystem.cacheDirectory}leo_tts_${Date.now()}.mp3`;
-        await FileSystem.writeAsStringAsync(tempPath, base64, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-
-        await Audio.setAudioModeAsync({
-          playsInSilentModeIOS: true,
-          staysActiveInBackground: false,
-          shouldDuckAndroid: true,
-        });
-
-        const { sound } = await Audio.Sound.createAsync(
-          { uri: tempPath },
-          { shouldPlay: true },
-        );
-
-        sound.setOnPlaybackStatusUpdate((status) => {
-          if ('didJustFinish' in status && status.didJustFinish) {
-            setIsPlayingAudio(false);
-            sound.unloadAsync();
-            FileSystem.deleteAsync(tempPath, { idempotent: true }).catch(() => {});
-          }
-        });
+        // Native: use shared TTS utility with XHR for reliable binary handling
+        const { speakWithElevenLabs } = require('../../lib/tts');
+        const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_chat');
+        if (sound) {
+          sound.setOnPlaybackStatusUpdate((status: any) => {
+            if (status.didJustFinish) {
+              setIsPlayingAudio(false);
+              sound.unloadAsync();
+            }
+          });
+        } else {
+          setIsPlayingAudio(false);
+        }
       }
     } catch {
       setIsPlayingAudio(false);
