@@ -10,8 +10,11 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProgress } from "@/hooks/useUserProgress";
 import { useCertificate } from "@/hooks/useCertificate";
+import { useSubscription } from "@/hooks/useSubscription";
 import { CompletionCertificate } from "@/components/certificate/CompletionCertificate";
 import { supabase } from "@/integrations/supabase/client";
+import goProBanner from "@/assets/go-pro-banner.png";
+import proDistinctionBanner from "@/assets/pro-distinction-banner.png";
 
 const marketNames: Record<string, string> = {
   ai: "AI Industry",
