@@ -1536,6 +1536,26 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_user_xp: {
+        Args: { p_amount: number; p_market_id: string; p_user_id: string }
+        Returns: {
+          created_at: string
+          current_level: number
+          id: string
+          market_id: string
+          startup_stage: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+          xp_to_next_level: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "user_xp"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       submit_investment_answer: {
         Args: {
           p_scenario_id: string
