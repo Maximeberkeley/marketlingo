@@ -158,6 +158,18 @@ export function SlideReaderV2({
   const [narrationEnabled, setNarrationEnabled] = useState(false);
   const cardKey = useRef(0);
 
+  // Combo system state
+  const [comboState, setComboState] = useState<ComboState>(createComboState);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [totalAnswered, setTotalAnswered] = useState(0);
+
+  // Feedback banner state
+  const [feedbackVisible, setFeedbackVisible] = useState(false);
+  const [feedbackCorrect, setFeedbackCorrect] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [feedbackExplanation, setFeedbackExplanation] = useState<string | undefined>();
+  const [feedbackXP, setFeedbackXP] = useState(0);
+
   // Swipe animation
   const swipeX = useRef(new Animated.Value(0)).current;
   const cardOpacity = useRef(new Animated.Value(1)).current;
