@@ -816,6 +816,17 @@ export function SlideReaderV2({
           onClose={() => setShowAskLeo(false)}
           lessonContext={`Lesson: ${stackTitle}\nCurrent slide: ${currentSlide?.title || ''}\nContent: ${currentCardData?.type === 'concept' ? currentCardData.content : ''}`}
         />
+
+        {/* Feedback Banner — Duolingo-style bottom feedback */}
+        <FeedbackBanner
+          visible={feedbackVisible}
+          isCorrect={feedbackCorrect}
+          message={feedbackMessage}
+          explanation={feedbackExplanation}
+          xpEarned={feedbackXP}
+          comboMultiplier={comboState.multiplier}
+          onContinue={handleFeedbackContinue}
+        />
       </View>
     </Modal>
   );
