@@ -57,8 +57,16 @@ const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
 
 const sophiaAvatar = require('../../assets/mentors/mentor-sophia.png');
 
+const GOAL_LABELS: Record<string, string> = {
+  join_industry: 'joining and building a career in',
+  invest: 'investing in',
+  build_startup: 'building a startup in',
+  curiosity: 'learning about and understanding',
+};
+
 // ── Helpers ──
 async function generateNarration(article: NewsItem, marketId: string, goal: string): Promise<string> {
+  const goalPhrase = GOAL_LABELS[goal] || 'learning about';
   const { data: { session } } = await supabase.auth.getSession();
   const authHeader = session?.access_token
     ? `Bearer ${session.access_token}`
