@@ -243,8 +243,8 @@ export default function RoadmapScreen() {
   };
 
   const handleLessonClick = (lesson: Lesson) => {
-    // Allow clicking any day up to and including the current day (for review or current lesson)
-    if (lesson.day <= currentDay) {
+    // Allow clicking any lesson that has content (stackId), regardless of completion status
+    if (lesson.stackId) {
       triggerHaptic('light');
       setSelectedLesson(lesson);
     }
