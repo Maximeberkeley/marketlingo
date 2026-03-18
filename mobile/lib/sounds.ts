@@ -5,7 +5,7 @@
  */
 import { Platform } from 'react-native';
 import { Audio } from 'expo-av';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 type SoundType =
   | 'correct'
@@ -120,7 +120,7 @@ async function getSoundFilePath(type: SoundType): Promise<string> {
   const filePath = `${FileSystem.cacheDirectory}sfx_${type}.wav`;
 
   await FileSystem.writeAsStringAsync(filePath, base64, {
-    encoding: FileSystem.EncodingType.Base64,
+    encoding: 'base64' as any,
   });
 
   soundCache.set(type, filePath);
