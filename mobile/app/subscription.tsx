@@ -72,8 +72,8 @@ export default function SubscriptionScreen() {
   const handleStartTrial = async () => {
     const success = await startFreeTrial();
     if (success) {
-      Alert.alert('Trial Started!', `Your ${TRIAL_DURATION_DAYS}-day Pro trial is active. Explore all Pro features!`);
-      router.back();
+      setCelebrationType('trial');
+      setShowCelebration(true);
     } else {
       Alert.alert('Error', 'Trial not available');
     }
@@ -85,8 +85,8 @@ export default function SubscriptionScreen() {
       const result = await purchasePackage(selectedPlan);
       if (result.success) {
         trackEvent('subscription_purchase', { plan: selectedPlan });
-        Alert.alert('Welcome to MarketLingo Pro!', 'You now have full access to all features.');
-        router.back();
+        setCelebrationType(selectedPlan);
+        setShowCelebration(true);
       } else if (!result.cancelled) {
         Alert.alert('Purchase Issue', result.error || 'Purchase could not be completed. Please try again.');
       }
