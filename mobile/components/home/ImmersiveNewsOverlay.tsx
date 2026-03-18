@@ -52,8 +52,8 @@ interface ImmersiveNewsOverlayProps {
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 80;
 const SOPHIA_VOICE_ID = 'pFZP5JQG7iQjIQuC4Bku'; // Lily
-const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || '';
-const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
+const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_KEY || '';
 
 const sophiaAvatar = require('../../assets/mentors/mentor-sophia.png');
 
