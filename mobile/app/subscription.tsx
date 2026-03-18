@@ -16,6 +16,7 @@ import { COLORS } from '../lib/constants';
 import { StickyBottomCTA } from '../components/StickyBottomCTA';
 import { useSubscription, TRIAL_DURATION_DAYS } from '../hooks/useSubscription';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
+import { ProCelebration } from '../components/subscription/ProCelebration';
 import { trackEvent } from '../lib/analytics';
 import { Feather } from '@expo/vector-icons';
 
