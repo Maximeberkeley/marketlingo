@@ -54,6 +54,7 @@ function fetchAudioAsBase64(text: string, voiceId: string, token: string): Promi
       }
 
       const blob = xhr.response;
+      console.log('[TTS] Blob received, size:', blob?.size || 0);
       if (!blob || blob.size === 0) {
         reject(new Error('Empty audio response'));
         return;
