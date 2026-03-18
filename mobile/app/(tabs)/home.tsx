@@ -123,6 +123,7 @@ export default function HomeScreen() {
   const {
     xpData, dailyCompletion, completeLessonForToday,
     getCurrentStage, getProgressToNextStage, isLessonCompletedToday, addXP,
+    refetch: refetchXP,
   } = useUserXP(selectedMarketLocal || undefined);
 
   const lessonCompletedToday = isLessonCompletedToday();
