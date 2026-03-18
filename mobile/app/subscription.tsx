@@ -16,6 +16,7 @@ import { COLORS } from '../lib/constants';
 import { StickyBottomCTA } from '../components/StickyBottomCTA';
 import { useSubscription, TRIAL_DURATION_DAYS } from '../hooks/useSubscription';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
+import { ProCelebration } from '../components/subscription/ProCelebration';
 import { trackEvent } from '../lib/analytics';
 import { Feather } from '@expo/vector-icons';
 
@@ -47,6 +48,8 @@ export default function SubscriptionScreen() {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const [showTestimonials, setShowTestimonials] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationType, setCelebrationType] = useState<'trial' | 'monthly' | 'annual'>('trial');
 
   const heroAnim = useRef(new Animated.Value(0)).current;
   const cardsAnim = useRef(new Animated.Value(0)).current;
@@ -69,8 +72,8 @@ export default function SubscriptionScreen() {
   const handleStartTrial = async () => {
     const success = await startFreeTrial();
     if (success) {
-      Alert.alert('Trial Started!', `Your ${TRIAL_DURATION_DAYS}-day Pro trial is active. Explore all Pro features!`);
-      router.back();
+      setCelebrationType('trial');
+      setShowCelebration(true);
     } else {
       Alert.alert('Error', 'Trial not available');
     }
@@ -82,8 +85,8 @@ export default function SubscriptionScreen() {
       const result = await purchasePackage(selectedPlan);
       if (result.success) {
         trackEvent('subscription_purchase', { plan: selectedPlan });
-        Alert.alert('Welcome to MarketLingo Pro!', 'You now have full access to all features.');
-        router.back();
+        setCelebrationType(selectedPlan);
+        setShowCelebration(true);
       } else if (!result.cancelled) {
         Alert.alert('Purchase Issue', result.error || 'Purchase could not be completed. Please try again.');
       }
@@ -122,6 +125,11 @@ export default function SubscriptionScreen() {
 
   return (
     <View style={styles.container}>
+      <ProCelebration
+        visible={showCelebration}
+        onDismiss={() => { setShowCelebration(false); router.back(); }}
+        planType={celebrationType}
+      />
       <ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: 160 }]}
         showsVerticalScrollIndicator={false}
