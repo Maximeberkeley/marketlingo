@@ -18,6 +18,32 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
   streakReminders: true,
 };
 
+// Duolingo-style funny notification templates
+const DAILY_TEMPLATES = [
+  { title: "🦁 Leo noticed you haven't studied today", body: "I'm not mad, just disappointed. 5 minutes?" },
+  { title: "🦁 Leo is staring at you", body: "...waiting for you to open the app. No pressure." },
+  { title: "🦁 Your competitors are learning right now", body: "Just saying. Your daily lesson is ready." },
+  { title: "🦁 Leo made you a lesson", body: "It took me all day. Please don't ignore it. 🥺" },
+  { title: "🦁 Knock knock", body: "It's Leo. With your daily lesson. Let me in." },
+  { title: "🦁 This is your sign", body: "The universe wants you to do your lesson. (It's me. I'm the universe.)" },
+  { title: "🦁 Fun fact:", body: "People who skip lessons turn into pumpkins. Don't risk it." },
+  { title: "🦁 5 minutes → smarter you", body: "That's a better ROI than most hedge funds. Let's go!" },
+  { title: "🦁 Good morning, future CEO", body: "Today's lesson is fresh. Let's make you dangerous." },
+  { title: "🦁 Your brain called", body: "It wants more knowledge. Who are we to deny it?" },
+];
+
+const STREAK_TEMPLATES = [
+  { title: "🔥 YOUR STREAK. IT'S DYING.", body: "Quick, do a lesson before it flatlines! 💀" },
+  { title: "⚠️ Leo is performing CPR on your streak", body: "Help me out here. One lesson. That's all." },
+  { title: "🦁 Your streak is hanging by a thread", body: "Don't make Leo watch it fall. Save it now!" },
+  { title: "🦁 Leo can't watch", body: "Your streak is about to disappear. I'm covering my eyes. 🙈" },
+  { title: "🦁 This is not a drill", body: "Well, actually it could be. Do a drill. Save your streak." },
+];
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 // NOTE: setNotificationHandler is configured globally in _layout.tsx — do not duplicate here
 
 export function useNotifications() {
