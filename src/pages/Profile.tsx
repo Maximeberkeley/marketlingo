@@ -42,6 +42,7 @@ const marketNames: Record<string, string> = {
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { user, signOut, loading } = useAuth();
+  const { isProUser } = useSubscription();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showChangeWarning, setShowChangeWarning] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
