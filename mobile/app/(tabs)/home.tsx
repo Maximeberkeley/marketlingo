@@ -189,7 +189,7 @@ export default function HomeScreen() {
     checkStreakMilestone, checkLevelMilestone,
     xpRewardLessonComplete: XP_REWARDS.LESSON_COMPLETE,
     xpRewardStreakBonus: XP_REWARDS.STREAK_BONUS,
-    onDataRefresh: async () => { await fetchData(); },
+    onDataRefresh: async () => { await Promise.all([fetchData(), refetchXP()]); },
   });
 
   // Handle deep-link from roadmap: open a specific stack by ID
