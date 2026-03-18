@@ -534,7 +534,7 @@ export default function HomeScreen() {
           {selectedMarket && (
             <AnimatedSection delay={320}>
               <View style={{ marginTop: 12 }}>
-                <DailyNews marketId={selectedMarket} />
+                <DailyNews marketId={selectedMarket} learningGoal={learningGoal} />
               </View>
             </AnimatedSection>
           )}
