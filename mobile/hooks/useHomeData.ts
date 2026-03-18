@@ -40,6 +40,7 @@ interface HomeData {
   refreshing: boolean;
   newsRefreshing: boolean;
   currentDay: number;
+  learningGoal: string;
 }
 
 // Normalize sources — DB has mixed formats
