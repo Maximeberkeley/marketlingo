@@ -52,8 +52,8 @@ interface ImmersiveNewsOverlayProps {
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 80;
 const SOPHIA_VOICE_ID = 'pFZP5JQG7iQjIQuC4Bku'; // Lily
-const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || '';
-const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
+const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_KEY || '';
 
 const sophiaAvatar = require('../../assets/mentors/mentor-sophia.png');
 
@@ -99,11 +99,20 @@ Category: ${article.categoryTag}`;
 }
 
 async function speakText(text: string, voiceId: string): Promise<Audio.Sound | null> {
-  if (!text || text.trim().length < 5) return null;
+  if (!text || text.trim().length < 5) {
+    console.warn('[Sophia TTS] Text too short to speak');
+    return null;
+  }
   try {
     const { speakWithElevenLabs } = require('../../lib/tts');
-    return await speakWithElevenLabs(text, voiceId, 'sophia_news');
-  } catch {
+    console.log('[Sophia TTS] Calling speakWithElevenLabs, text length:', text.length);
+    const sound = await speakWithElevenLabs(text, voiceId, 'sophia_news');
+    if (!sound) {
+      console.warn('[Sophia TTS] speakWithElevenLabs returned null — check env vars and edge function');
+    }
+    return sound;
+  } catch (err) {
+    console.error('[Sophia TTS] Error:', err);
     return null;
   }
 }
@@ -204,13 +213,13 @@ export function ImmersiveNewsOverlay({
         setNarrationText(text);
         setIsGenerating(false);
 
-        // Auto-speak
-        setIsSpeaking(true);
+        // Auto-speak — only set isSpeaking AFTER audio loads
         const sound = await speakText(text, SOPHIA_VOICE_ID);
         if (cancelled) { sound?.unloadAsync(); return; }
         soundRef.current = sound;
 
         if (sound) {
+          setIsSpeaking(true);
           sound.setOnPlaybackStatusUpdate((status) => {
             if ('didJustFinish' in status && status.didJustFinish) {
               setIsSpeaking(false);
@@ -219,6 +228,7 @@ export function ImmersiveNewsOverlay({
             }
           });
         } else {
+          console.warn('[Sophia News] No sound returned — skipping audio');
           setIsSpeaking(false);
           setIsDoneSpeaking(true);
         }

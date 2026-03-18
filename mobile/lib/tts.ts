@@ -10,7 +10,11 @@ import * as FileSystem from 'expo-file-system';
 import { supabase } from './supabase';
 
 const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
+const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_KEY || '';
+
+// Log config once at import time
+console.log('[TTS] EDGE_URL:', EDGE_URL ? `${EDGE_URL.substring(0, 30)}...` : '⚠️ EMPTY');
+console.log('[TTS] ANON_KEY:', SUPABASE_ANON_KEY ? `${SUPABASE_ANON_KEY.substring(0, 10)}...` : '⚠️ EMPTY');
 
 async function getAuthToken(): Promise<string> {
   try {
@@ -27,20 +31,30 @@ async function getAuthToken(): Promise<string> {
  */
 function fetchAudioAsBase64(text: string, voiceId: string, token: string): Promise<string> {
   return new Promise((resolve, reject) => {
+    const url = `${EDGE_URL}/functions/v1/elevenlabs-tts`;
+    console.log('[TTS] Fetching audio from:', url);
+    
+    if (!EDGE_URL) {
+      reject(new Error('EDGE_URL is empty — check EXPO_PUBLIC_EDGE_FUNCTIONS_URL or EXPO_PUBLIC_SUPABASE_URL env vars'));
+      return;
+    }
+    
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', `${EDGE_URL}/functions/v1/elevenlabs-tts`);
+    xhr.open('POST', url);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.setRequestHeader('apikey', SUPABASE_ANON_KEY);
     xhr.setRequestHeader('Authorization', `Bearer ${token}`);
     xhr.responseType = 'blob';
 
     xhr.onload = () => {
+      console.log('[TTS] XHR response status:', xhr.status);
       if (xhr.status !== 200) {
         reject(new Error(`TTS returned ${xhr.status}`));
         return;
       }
 
       const blob = xhr.response;
+      console.log('[TTS] Blob received, size:', blob?.size || 0);
       if (!blob || blob.size === 0) {
         reject(new Error('Empty audio response'));
         return;
