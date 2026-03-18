@@ -39,6 +39,7 @@ interface NewsItem {
 
 interface DailyNewsProps {
   marketId: string;
+  learningGoal?: string;
 }
 
 // ── Category colors ──
