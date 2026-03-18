@@ -347,6 +347,7 @@ export function useHomeData(
     refreshing,
     newsRefreshing,
     currentDay,
+    learningGoal,
     fetchData,
     onRefresh,
     refreshNews,
