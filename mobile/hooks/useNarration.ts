@@ -1,16 +1,11 @@
 /**
  * useNarration — manages ElevenLabs TTS playback for lesson narration.
- * Each mentor has a unique voice. Audio is fetched from the elevenlabs-tts edge function.
+ * Each mentor has a unique voice. Audio is fetched via the shared TTS utility.
  */
 
 import { useState, useCallback, useRef } from 'react';
 import { Audio } from 'expo-av';
-import { supabase } from '../lib/supabase';
-
-// Edge functions are on Lovable Cloud project
-const EDGE_FUNCTIONS_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
-const EDGE_ANON_KEY = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_ANON_KEY || SUPABASE_ANON_KEY;
+import { speakWithElevenLabs } from '../lib/tts';
 
 interface UseNarrationOptions {
   voiceId: string;
@@ -21,11 +16,10 @@ export function useNarration({ voiceId, enabled }: UseNarrationOptions) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const soundRef = useRef<Audio.Sound | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
+  const abortedRef = useRef(false);
 
   const stop = useCallback(async () => {
-    abortRef.current?.abort();
-    abortRef.current = null;
+    abortedRef.current = true;
     if (soundRef.current) {
       try {
         await soundRef.current.stopAsync();
@@ -42,6 +36,7 @@ export function useNarration({ voiceId, enabled }: UseNarrationOptions) {
 
     // Stop any current playback
     await stop();
+    abortedRef.current = false;
 
     // Strip markdown/emoji for cleaner narration
     const cleanText = text
@@ -54,79 +49,28 @@ export function useNarration({ voiceId, enabled }: UseNarrationOptions) {
     if (cleanText.length < 5) return;
 
     setIsLoading(true);
-    const controller = new AbortController();
-    abortRef.current = controller;
 
     try {
-      // Get auth token if available
-      const { data: { session } } = await supabase.auth.getSession();
-      const authHeader = session?.access_token
-        ? `Bearer ${session.access_token}`
-        : `Bearer ${SUPABASE_ANON_KEY}`;
+      const sound = await speakWithElevenLabs(cleanText, voiceId, 'narration');
 
-      const response = await fetch(
-        `${EDGE_FUNCTIONS_URL}/functions/v1/elevenlabs-tts`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': EDGE_ANON_KEY,
-            'Authorization': authHeader,
-          },
-          body: JSON.stringify({ text: cleanText, voiceId }),
-          signal: controller.signal,
-        },
-      );
-
-      if (!response.ok) {
-        console.warn('TTS failed:', response.status);
+      if (abortedRef.current || !sound) {
         setIsLoading(false);
         return;
       }
 
-      // Convert response to a playable audio file
-      const blob = await response.blob();
-      const reader = new FileReader();
-
-      const base64 = await new Promise<string>((resolve, reject) => {
-        reader.onload = () => {
-          const result = reader.result as string;
-          // Extract base64 data after the comma
-          const base64Data = result.split(',')[1];
-          resolve(base64Data);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-
-      if (controller.signal.aborted) return;
-
-      // Play using expo-av
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-      });
-
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: `data:audio/mpeg;base64,${base64}` },
-        { shouldPlay: true },
-        (status) => {
-          if (status.isLoaded && status.didJustFinish) {
-            setIsPlaying(false);
-            sound.unloadAsync();
-            soundRef.current = null;
-          }
-        },
-      );
-
       soundRef.current = sound;
       setIsPlaying(true);
       setIsLoading(false);
+
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if ('didJustFinish' in status && status.didJustFinish) {
+          setIsPlaying(false);
+          sound.unloadAsync();
+          soundRef.current = null;
+        }
+      });
     } catch (err: any) {
-      if (err?.name !== 'AbortError') {
-        console.warn('Narration error:', err);
-      }
+      console.warn('Narration error:', err);
       setIsLoading(false);
     }
   }, [enabled, voiceId, stop]);

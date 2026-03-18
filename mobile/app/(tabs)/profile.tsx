@@ -12,6 +12,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, STARTUP_STAGES } from '../../hooks/useUserXP';
+import { useSubscription } from '../../hooks/useSubscription';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { Feather } from '@expo/vector-icons';
 import { triggerHaptic } from '../../lib/haptics';
@@ -48,7 +49,7 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, signOut, loading: authLoading } = useAuth();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
-  const [isProUser, setIsProUser] = useState(false);
+  const { isProUser } = useSubscription();
   const [showChangeWarning, setShowChangeWarning] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -67,12 +68,11 @@ export default function ProfileScreen() {
       if (!user) return;
       const { data: profile } = await supabase
         .from('profiles')
-        .select('selected_market, is_pro_user, familiarity_level')
+        .select('selected_market, familiarity_level')
         .eq('id', user.id)
         .single();
       if (profile) {
         setSelectedMarket(profile.selected_market);
-        setIsProUser(profile.is_pro_user || false);
         setCurrentLevel(profile.familiarity_level || null);
       }
 

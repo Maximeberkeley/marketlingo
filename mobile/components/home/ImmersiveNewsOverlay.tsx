@@ -92,61 +92,9 @@ Category: ${article.categoryTag}`;
 
 async function speakText(text: string, voiceId: string): Promise<Audio.Sound | null> {
   if (!text || text.trim().length < 5) return null;
-
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    const authHeader = session?.access_token
-      ? `Bearer ${session.access_token}`
-      : `Bearer ${SUPABASE_ANON_KEY}`;
-
-    const response = await fetch(`${EDGE_URL}/functions/v1/elevenlabs-tts`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: authHeader,
-      },
-      body: JSON.stringify({ text, voiceId }),
-    });
-
-    if (!response.ok) return null;
-
-    const blob = await response.blob();
-    const reader = new FileReader();
-
-    return new Promise((resolve) => {
-      reader.onloadend = async () => {
-        try {
-          const base64 = (reader.result as string).split(',')[1];
-          const tempPath = `${FileSystem.cacheDirectory}sophia_news_${Date.now()}.mp3`;
-          await FileSystem.writeAsStringAsync(tempPath, base64, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
-
-          await Audio.setAudioModeAsync({
-            allowsRecordingIOS: false,
-            playsInSilentModeIOS: true,
-            staysActiveInBackground: false,
-          });
-
-          const { sound } = await Audio.Sound.createAsync(
-            { uri: tempPath },
-            { shouldPlay: true },
-          );
-
-          sound.setOnPlaybackStatusUpdate((status) => {
-            if ('didJustFinish' in status && status.didJustFinish) {
-              FileSystem.deleteAsync(tempPath, { idempotent: true }).catch(() => {});
-            }
-          });
-
-          resolve(sound);
-        } catch {
-          resolve(null);
-        }
-      };
-      reader.readAsDataURL(blob);
-    });
+    const { speakWithElevenLabs } = require('../../lib/tts');
+    return await speakWithElevenLabs(text, voiceId, 'sophia_news');
   } catch {
     return null;
   }
