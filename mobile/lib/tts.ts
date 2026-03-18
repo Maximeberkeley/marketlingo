@@ -47,6 +47,7 @@ function fetchAudioAsBase64(text: string, voiceId: string, token: string): Promi
     xhr.responseType = 'blob';
 
     xhr.onload = () => {
+      console.log('[TTS] XHR response status:', xhr.status);
       if (xhr.status !== 200) {
         reject(new Error(`TTS returned ${xhr.status}`));
         return;
