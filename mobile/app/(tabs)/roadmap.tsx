@@ -566,8 +566,8 @@ function WeekCard({
       {expanded && !isLocked && (
         <View style={styles.lessonsWrap}>
           {week.lessons.map((lesson) => {
-            // Past and current days are accessible (for review or learning)
-            const isAccessible = lesson.completed || lesson.current || week.status === 'available';
+            // All lessons with content are accessible
+            const isAccessible = !!lesson.stackId;
             return (
               <TouchableOpacity
                 key={lesson.day}

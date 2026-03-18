@@ -632,6 +632,7 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
           setChatNewsItem(article);
         }}
         marketId={marketId}
+        learningGoal={learningGoal}
       />
 
       {/* AI Chat overlay (from AI action buttons) */}

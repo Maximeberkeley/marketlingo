@@ -130,7 +130,7 @@ export function ImmersiveNewsOverlay({
   onClose,
   onOpenChat,
   marketId,
-  learningGoal = 'build a startup',
+  learningGoal = 'curiosity',
 }: ImmersiveNewsOverlayProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [narrationText, setNarrationText] = useState('');
