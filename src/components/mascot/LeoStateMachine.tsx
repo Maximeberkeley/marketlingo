@@ -1,5 +1,7 @@
 import { useState, createContext, useContext, ReactNode, useCallback } from "react";
 import leoSticker from "@/assets/leo-sticker.png";
+import leoStudy from "@/assets/mascot/leo-study.png";
+import leoCelebrating from "@/assets/mascot/leo-celebrating.png";
 
 // ============================================
 // LEO STATE MACHINE - Simplified Version
