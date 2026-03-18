@@ -99,11 +99,20 @@ Category: ${article.categoryTag}`;
 }
 
 async function speakText(text: string, voiceId: string): Promise<Audio.Sound | null> {
-  if (!text || text.trim().length < 5) return null;
+  if (!text || text.trim().length < 5) {
+    console.warn('[Sophia TTS] Text too short to speak');
+    return null;
+  }
   try {
     const { speakWithElevenLabs } = require('../../lib/tts');
-    return await speakWithElevenLabs(text, voiceId, 'sophia_news');
-  } catch {
+    console.log('[Sophia TTS] Calling speakWithElevenLabs, text length:', text.length);
+    const sound = await speakWithElevenLabs(text, voiceId, 'sophia_news');
+    if (!sound) {
+      console.warn('[Sophia TTS] speakWithElevenLabs returned null — check env vars and edge function');
+    }
+    return sound;
+  } catch (err) {
+    console.error('[Sophia TTS] Error:', err);
     return null;
   }
 }
