@@ -677,10 +677,23 @@ export function SlideReaderV2({
           </TouchableOpacity>
         </View>
 
-        {/* Progress Bar */}
-        <View style={styles.progressBar}>
-          <Animated.View style={[styles.progressFill, { backgroundColor: accentColor, width: `${progress * 100}%` }]} />
+        {/* Progress Bar — Duolingo style */}
+        <View style={styles.progressBarContainer}>
+          <View style={styles.progressBar}>
+            <Animated.View style={[styles.progressFill, { backgroundColor: accentColor, width: `${progress * 100}%` }]} />
+            {/* Progress knob */}
+            <View style={[styles.progressKnob, { left: `${Math.min(progress * 100, 97)}%`, borderColor: accentColor }]} />
+          </View>
         </View>
+
+        {/* Combo Bar — visible when user has answered questions */}
+        {totalAnswered > 0 && (
+          <ComboBar
+            combo={comboState}
+            correctCount={correctCount}
+            totalAnswered={totalAnswered}
+          />
+        )}
 
         {/* Card Area with swipe + edge tap zones for Expo fallback */}
         <View style={styles.cardArea}>
