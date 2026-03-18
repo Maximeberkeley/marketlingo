@@ -226,32 +226,24 @@ export default function ProfileScreen() {
           </View>
         </Animated.View>
 
-        {/* Stats Grid */}
-        {progress && (
-          <Animated.View style={[styles.statsGrid, animStyle(statsAnim)]}>
-            <View style={styles.statCard}>
-              <View style={[styles.statIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
-                <Feather name="activity" size={18} color="#8B5CF6" />
-              </View>
-              <Text style={styles.statValue}>{progress.current_streak || 0}</Text>
-              <Text style={styles.statLabel}>Current Streak</Text>
-            </View>
-            <View style={styles.statCard}>
-              <View style={[styles.statIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
-                <Feather name="award" size={18} color="#F59E0B" />
-              </View>
-              <Text style={styles.statValue}>{progress.longest_streak || 0}</Text>
-              <Text style={styles.statLabel}>Best Streak</Text>
-            </View>
-            <View style={styles.statCard}>
-              <View style={[styles.statIcon, { backgroundColor: 'rgba(16, 185, 129, 0.2)' }]}>
-                <Feather name="flag" size={18} color="#10B981" />
-              </View>
-              <Text style={styles.statValue}>Day {availableDay}</Text>
-              <Text style={styles.statLabel}>of 180</Text>
-            </View>
-          </Animated.View>
-        )}
+        {/* Pro Banner */}
+        <Animated.View style={[{ marginBottom: 16 }, animStyle(statsAnim)]}>
+          {isProUser ? (
+            <Image
+              source={require('../../assets/banners/pro-distinction-banner.png')}
+              style={styles.proBanner}
+              resizeMode="contain"
+            />
+          ) : (
+            <TouchableOpacity onPress={() => router.push('/subscription')} activeOpacity={0.85}>
+              <Image
+                source={require('../../assets/banners/go-pro-banner.png')}
+                style={styles.proBanner}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          )}
+        </Animated.View>
 
         {/* XP & Stage */}
         <Animated.View style={animStyle(bodyAnim)}>
