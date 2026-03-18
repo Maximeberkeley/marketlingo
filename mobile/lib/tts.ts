@@ -1,8 +1,9 @@
 /**
  * tts.ts — Shared ElevenLabs TTS utility for React Native (iOS/Android).
  *
- * Uses expo-file-system downloadAsync to avoid the broken
- * fetch().blob() + FileReader pattern that silently fails on iOS native builds.
+ * Uses XMLHttpRequest with responseType='blob' which is more reliable
+ * than fetch().blob() on React Native iOS. Then converts via FileReader
+ * and writes to temp file for expo-av playback.
  */
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
@@ -11,9 +12,69 @@ import { supabase } from './supabase';
 const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
 
+async function getAuthToken(): Promise<string> {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.access_token || SUPABASE_ANON_KEY;
+  } catch {
+    return SUPABASE_ANON_KEY;
+  }
+}
+
+/**
+ * Fetches audio from ElevenLabs TTS edge function using XMLHttpRequest
+ * (more reliable for binary data on React Native than fetch).
+ */
+function fetchAudioAsBase64(text: string, voiceId: string, token: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${EDGE_URL}/functions/v1/elevenlabs-tts`);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('apikey', SUPABASE_ANON_KEY);
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    xhr.responseType = 'blob';
+
+    xhr.onload = () => {
+      if (xhr.status !== 200) {
+        reject(new Error(`TTS returned ${xhr.status}`));
+        return;
+      }
+
+      const blob = xhr.response;
+      if (!blob || blob.size === 0) {
+        reject(new Error('Empty audio response'));
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const dataUrl = reader.result as string;
+        if (!dataUrl || !dataUrl.includes(',')) {
+          reject(new Error('FileReader produced invalid result'));
+          return;
+        }
+        const base64 = dataUrl.split(',')[1];
+        if (!base64 || base64.length < 100) {
+          reject(new Error('Base64 data too short'));
+          return;
+        }
+        resolve(base64);
+      };
+      reader.onerror = () => reject(new Error('FileReader error'));
+      reader.readAsDataURL(blob);
+    };
+
+    xhr.onerror = () => reject(new Error('XHR network error'));
+    xhr.ontimeout = () => reject(new Error('XHR timeout'));
+    xhr.timeout = 30000;
+
+    xhr.send(JSON.stringify({ text, voiceId }));
+  });
+}
+
 /**
  * Speaks text using ElevenLabs TTS via the edge function.
- * Returns an Audio.Sound instance (caller should manage cleanup) or null on failure.
+ * Returns an Audio.Sound instance (caller manages cleanup) or null on failure.
  */
 export async function speakWithElevenLabs(
   text: string,
@@ -23,65 +84,21 @@ export async function speakWithElevenLabs(
   if (!text || text.trim().length < 5) return null;
 
   try {
-    // Get auth header
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token || SUPABASE_ANON_KEY;
+    const token = await getAuthToken();
+    const base64 = await fetchAudioAsBase64(text, voiceId, token);
 
-    // Download directly to a temp file — avoids blob/FileReader issues on iOS
+    // Write to temp file
     const tempPath = `${FileSystem.cacheDirectory}${tag}_${Date.now()}.mp3`;
-
-    const downloadResult = await FileSystem.downloadAsync(
-      `${EDGE_URL}/functions/v1/elevenlabs-tts`,
-      tempPath,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${token}`,
-        },
-        // downloadAsync doesn't support POST body natively,
-        // so we fall back to fetch + writeAsStringAsync
-      },
-    );
-
-    // downloadAsync uses GET — we need POST. Fall back to manual approach.
-    // Delete the GET attempt
-    await FileSystem.deleteAsync(tempPath, { idempotent: true });
-
-    // Use fetch with POST, then write arrayBuffer to file via base64
-    const response = await fetch(`${EDGE_URL}/functions/v1/elevenlabs-tts`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ text, voiceId }),
-    });
-
-    if (!response.ok) {
-      console.warn(`[TTS] Edge function returned ${response.status}`);
-      return null;
-    }
-
-    // Read as arrayBuffer and convert to base64 manually (RN compatible)
-    const arrayBuffer = await response.arrayBuffer();
-    const bytes = new Uint8Array(arrayBuffer);
-    
-    // Convert to base64 in chunks to avoid stack overflow
-    let binary = '';
-    const chunkSize = 8192;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-      const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
-      binary += String.fromCharCode(...chunk);
-    }
-    const base64 = btoa(binary);
-
-    // Write base64 to temp file
-    const finalPath = `${FileSystem.cacheDirectory}${tag}_${Date.now()}.mp3`;
-    await FileSystem.writeAsStringAsync(finalPath, base64, {
+    await FileSystem.writeAsStringAsync(tempPath, base64, {
       encoding: FileSystem.EncodingType.Base64,
     });
+
+    // Verify file was written
+    const info = await FileSystem.getInfoAsync(tempPath);
+    if (!info.exists || (info as any).size < 100) {
+      console.warn(`[TTS] Temp file too small or missing: ${tempPath}`);
+      return null;
+    }
 
     // Configure audio mode for iOS
     await Audio.setAudioModeAsync({
@@ -92,14 +109,14 @@ export async function speakWithElevenLabs(
 
     // Create and play sound
     const { sound } = await Audio.Sound.createAsync(
-      { uri: finalPath },
+      { uri: tempPath },
       { shouldPlay: true },
     );
 
     // Clean up temp file when done
     sound.setOnPlaybackStatusUpdate((status) => {
       if ('didJustFinish' in status && status.didJustFinish) {
-        FileSystem.deleteAsync(finalPath, { idempotent: true }).catch(() => {});
+        FileSystem.deleteAsync(tempPath, { idempotent: true }).catch(() => {});
       }
     });
 
