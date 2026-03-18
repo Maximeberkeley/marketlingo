@@ -27,60 +27,14 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 
 /**
  * Play TTS audio using Sophia's voice.
- * Issue #9: Writes to temp file instead of data URI to avoid OOM on large responses.
+ * Uses shared TTS utility with XHR for reliable binary handling on iOS.
  */
 export async function speakAsSophia(text: string): Promise<Audio.Sound | null> {
   if (!text || text.trim().length === 0) return null;
 
   try {
-    const ttsUrl = `${EDGE_URL}/functions/v1/elevenlabs-tts`;
-    const authHeaders = await getAuthHeaders();
-    
-    const response = await fetch(ttsUrl, {
-      method: 'POST',
-      headers: authHeaders,
-      body: JSON.stringify({ text, voiceId: SOPHIA_VOICE_ID }),
-    });
-
-    if (!response.ok) {
-      console.warn('TTS failed:', response.status);
-      return null;
-    }
-
-    const audioBlob = await response.blob();
-    const reader = new FileReader();
-    
-    return new Promise((resolve) => {
-      reader.onloadend = async () => {
-        try {
-          const base64 = (reader.result as string).split(',')[1];
-          
-          // Write to temp file instead of data URI for memory efficiency
-          const tempPath = `${FileSystem.cacheDirectory}sophia_tts_${Date.now()}.mp3`;
-          await FileSystem.writeAsStringAsync(tempPath, base64, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
-          
-          const { sound } = await Audio.Sound.createAsync(
-            { uri: tempPath },
-            { shouldPlay: true }
-          );
-          
-          // Clean up temp file when playback finishes
-          sound.setOnPlaybackStatusUpdate((status) => {
-            if ('didJustFinish' in status && status.didJustFinish) {
-              FileSystem.deleteAsync(tempPath, { idempotent: true }).catch(() => {});
-            }
-          });
-          
-          resolve(sound);
-        } catch (err) {
-          console.warn('Audio playback error:', err);
-          resolve(null);
-        }
-      };
-      reader.readAsDataURL(audioBlob);
-    });
+    const { speakWithElevenLabs } = require('./tts');
+    return await speakWithElevenLabs(text, SOPHIA_VOICE_ID, 'sophia_interview');
   } catch (err) {
     console.warn('Sophia TTS error:', err);
     return null;
