@@ -3,15 +3,32 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STREAK_NOTIF_KEY = 'ml_streak_notif_ids';
 
+// Duolingo-style streak notification templates
+const EVENING_TEMPLATES = [
+  { title: "🔥 Your {streak}-day streak needs you!", body: "You haven't done today's lesson yet. 5 minutes keeps it alive!" },
+  { title: "🦁 Leo checked — no lesson today", body: "Your {streak}-day streak is waiting. Don't leave it hanging!" },
+  { title: "🦁 Your streak is getting nervous", body: "{streak} days strong. Don't blow it now. Quick lesson?" },
+  { title: "🦁 Leo's holding your streak hostage", body: "Do a lesson and I'll release it. Fair deal. 🤝" },
+];
+
+const URGENT_TEMPLATES = [
+  { title: "⚠️ {streak}-day streak ends in 2 HOURS!", body: "This is your last chance. Open the app NOW. 💀" },
+  { title: "🚨 STREAK EMERGENCY", body: "Your {streak}-day streak expires at midnight. Leo is panicking." },
+  { title: "🦁 Leo is crying real tears", body: "{streak} days of progress, about to vanish. 2 hours left!" },
+  { title: "⏰ Final warning from Leo", body: "Your streak dies at midnight. 5 minutes can save it. GO!" },
+];
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function fillStreak(text: string, streak: number): string {
+  return text.replace(/\{streak\}/g, String(streak));
+}
+
 /**
  * Schedule streak-at-risk push notifications.
  * Called after each session or when app opens.
- *
- * Strategy:
- * - If user has an active streak and hasn't completed today's lesson:
- *   - Schedule a notification at 8 PM local time
- *   - Schedule an urgent one at 10 PM if still not done
- * - Cancel all streak notifications when lesson is completed today
  */
 export async function scheduleStreakNotifications(
   currentStreak: number,
@@ -35,11 +52,12 @@ export async function scheduleStreakNotifications(
   try {
     // 8 PM reminder — friendly nudge
     if (now < today8PM) {
+      const template = pickRandom(EVENING_TEMPLATES);
       const secondsUntil8PM = Math.floor((today8PM.getTime() - now.getTime()) / 1000);
       const id1 = await Notifications.scheduleNotificationAsync({
         content: {
-          title: ` Your ${currentStreak}-day streak needs you!`,
-          body: "You haven't done today's lesson yet. A quick 5-minute session keeps your streak alive!",
+          title: fillStreak(template.title, currentStreak),
+          body: fillStreak(template.body, currentStreak),
           data: { type: 'streak_warning', route: '/(tabs)/home' },
           sound: true,
         },
@@ -53,11 +71,12 @@ export async function scheduleStreakNotifications(
 
     // 10 PM reminder — urgent
     if (now < today10PM) {
+      const template = pickRandom(URGENT_TEMPLATES);
       const secondsUntil10PM = Math.floor((today10PM.getTime() - now.getTime()) / 1000);
       const id2 = await Notifications.scheduleNotificationAsync({
         content: {
-          title: `⚠️ ${currentStreak}-day streak ends in 2 hours!`,
-          body: "Don't lose your progress! Open the app now — it only takes 5 minutes.",
+          title: fillStreak(template.title, currentStreak),
+          body: fillStreak(template.body, currentStreak),
           data: { type: 'streak_warning', route: '/(tabs)/home' },
           sound: true,
         },
