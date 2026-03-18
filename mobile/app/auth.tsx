@@ -273,8 +273,4 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   demoBtnText: { fontSize: 15, fontWeight: '600', color: COLORS.accent },
-  guestBtn: {
-    borderRadius: 14, paddingVertical: 12, alignItems: 'center', marginBottom: 24,
-  },
-  guestBtnText: { fontSize: 14, fontWeight: '500', color: COLORS.textMuted, textDecorationLine: 'underline' },
 });
