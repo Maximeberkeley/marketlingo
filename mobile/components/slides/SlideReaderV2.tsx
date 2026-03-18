@@ -22,10 +22,13 @@ import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
 import { QuizCard, generateQuizFromSlide, shouldShowQuiz, QuizCardData } from './QuizCard';
 import { WordMatchGame, extractTermPairs, shouldShowWordMatch, WordPair } from './WordMatchGame';
 import { SwipeFlashcardDrill, generateFlashcardsFromSlides, FlashcardItem } from './SwipeFlashcardDrill';
+import { ComboBar } from './ComboBar';
+import { FeedbackBanner } from './FeedbackBanner';
 import { AnnotationModal } from './AnnotationModal';
 import { AskLeoOverlay } from '../ai/AskLeoOverlay';
 import { playSound } from '../../lib/sounds';
 import { useNarration } from '../../hooks/useNarration';
+import { ComboState, createComboState, comboCorrect, comboWrong, getComboMessage } from '../../lib/combo';
 import { Feather } from '@expo/vector-icons';
 
 const MENTOR_IMAGES: Record<string, any> = {
