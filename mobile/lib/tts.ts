@@ -31,8 +31,16 @@ async function getAuthToken(): Promise<string> {
  */
 function fetchAudioAsBase64(text: string, voiceId: string, token: string): Promise<string> {
   return new Promise((resolve, reject) => {
+    const url = `${EDGE_URL}/functions/v1/elevenlabs-tts`;
+    console.log('[TTS] Fetching audio from:', url);
+    
+    if (!EDGE_URL) {
+      reject(new Error('EDGE_URL is empty — check EXPO_PUBLIC_EDGE_FUNCTIONS_URL or EXPO_PUBLIC_SUPABASE_URL env vars'));
+      return;
+    }
+    
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', `${EDGE_URL}/functions/v1/elevenlabs-tts`);
+    xhr.open('POST', url);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.setRequestHeader('apikey', SUPABASE_ANON_KEY);
     xhr.setRequestHeader('Authorization', `Bearer ${token}`);
