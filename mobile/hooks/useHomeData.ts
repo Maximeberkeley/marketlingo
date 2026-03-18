@@ -80,6 +80,7 @@ export function useHomeData(
   const [refreshing, setRefreshing] = useState(false);
   const [newsRefreshing, setNewsRefreshing] = useState(false);
   const [currentDay, setCurrentDay] = useState(1);
+  const [learningGoal, setLearningGoal] = useState('curiosity');
 
   const fetchData = useCallback(async () => {
     if (!userId) return null;
