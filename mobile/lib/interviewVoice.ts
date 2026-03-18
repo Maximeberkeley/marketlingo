@@ -5,11 +5,12 @@
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import { supabase } from './supabase';
+import { speakWithElevenLabs } from './tts';
 
 // Sophia Hernández voice = Jessica (warm, professional)
 const SOPHIA_VOICE_ID = 'cgSgspJ2msm6clMCkdW9';
 
-const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || '';
+const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 
 /**
  * Get auth headers for edge function calls
@@ -27,13 +28,13 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 
 /**
  * Play TTS audio using Sophia's voice.
- * Uses shared TTS utility with XHR for reliable binary handling on iOS.
+ * Uses static import of speakWithElevenLabs for reliable native bundling.
  */
 export async function speakAsSophia(text: string): Promise<Audio.Sound | null> {
   if (!text || text.trim().length === 0) return null;
 
   try {
-    const { speakWithElevenLabs } = require('./tts');
+    console.log('[Sophia] Speaking:', text.substring(0, 60) + '...');
     return await speakWithElevenLabs(text, SOPHIA_VOICE_ID, 'sophia_interview');
   } catch (err) {
     console.warn('Sophia TTS error:', err);
@@ -43,7 +44,6 @@ export async function speakAsSophia(text: string): Promise<Audio.Sound | null> {
 
 /**
  * Transcribe audio recording using ElevenLabs STT.
- * Issue #3: Removed unused blob fetch — directly pass uri to FormData.
  */
 export async function transcribeAudio(uri: string): Promise<string> {
   try {
@@ -60,7 +60,6 @@ export async function transcribeAudio(uri: string): Promise<string> {
     const sttResponse = await fetch(sttUrl, {
       method: 'POST',
       headers: {
-        // Don't set Content-Type for FormData — browser sets boundary
         ...(authHeaders.Authorization ? { Authorization: authHeaders.Authorization } : {}),
       },
       body: formData,
