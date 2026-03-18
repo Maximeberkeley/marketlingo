@@ -535,6 +535,7 @@ const styles = StyleSheet.create({
   proBadge: { backgroundColor: 'rgba(139, 92, 246, 0.2)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 },
   proBadgeText: { fontSize: 12, fontWeight: '600', color: COLORS.accent },
   statsGrid: { flexDirection: 'row', gap: 8, marginBottom: 16 },
+  proBanner: { width: '100%', height: undefined, aspectRatio: 728 / 200, borderRadius: 16 },
   statCard: {
     flex: 1, backgroundColor: COLORS.bg2, borderRadius: 16, padding: 14, alignItems: 'center',
     borderWidth: 1, borderColor: COLORS.border,
