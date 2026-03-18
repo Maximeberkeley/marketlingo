@@ -184,7 +184,7 @@ export default function RoadmapScreen() {
         let status: Week['status'] = 'locked';
         if (weekNum < currentWeek) status = 'available'; // Past weeks are reviewable
         else if (weekNum === currentWeek) status = 'current';
-        else if (weekNum === currentWeek + 1) status = 'available';
+        else status = 'available'; // All future weeks with content are browsable
 
         const lessons: Lesson[] = days.map((d) => {
           const dbLesson = dayLessonMap.get(d);
