@@ -213,13 +213,13 @@ export function ImmersiveNewsOverlay({
         setNarrationText(text);
         setIsGenerating(false);
 
-        // Auto-speak
-        setIsSpeaking(true);
+        // Auto-speak — only set isSpeaking AFTER audio loads
         const sound = await speakText(text, SOPHIA_VOICE_ID);
         if (cancelled) { sound?.unloadAsync(); return; }
         soundRef.current = sound;
 
         if (sound) {
+          setIsSpeaking(true);
           sound.setOnPlaybackStatusUpdate((status) => {
             if ('didJustFinish' in status && status.didJustFinish) {
               setIsSpeaking(false);
@@ -228,6 +228,7 @@ export function ImmersiveNewsOverlay({
             }
           });
         } else {
+          console.warn('[Sophia News] No sound returned — skipping audio');
           setIsSpeaking(false);
           setIsDoneSpeaking(true);
         }

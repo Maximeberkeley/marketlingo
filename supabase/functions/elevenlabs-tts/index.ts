@@ -32,9 +32,9 @@ serve(async (req) => {
       );
     }
 
-    // Use streaming for lower latency
+    // Use non-streaming endpoint for reliable mobile binary handling
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId || DEFAULT_VOICE_ID}/stream?output_format=mp3_44100_128`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId || DEFAULT_VOICE_ID}?output_format=mp3_44100_128`,
       {
         method: "POST",
         headers: {
@@ -64,11 +64,14 @@ serve(async (req) => {
       );
     }
 
-    return new Response(response.body, {
+    const audioBuffer = await response.arrayBuffer();
+    console.log(`TTS generated: ${audioBuffer.byteLength} bytes for voice ${voiceId || DEFAULT_VOICE_ID}`);
+
+    return new Response(audioBuffer, {
       headers: {
         ...corsHeaders,
         "Content-Type": "audio/mpeg",
-        "Transfer-Encoding": "chunked",
+        "Content-Length": audioBuffer.byteLength.toString(),
       },
     });
   } catch (e) {
