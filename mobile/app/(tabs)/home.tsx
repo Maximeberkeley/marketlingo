@@ -133,7 +133,7 @@ export default function HomeScreen() {
   const {
     selectedMarket, isProUser, lessonStack, newsStack, newsItems,
     streakRiskHours, socialNudge, tomorrowLesson,
-    loading, refreshing, currentDay, fetchData, onRefresh,
+    loading, refreshing, currentDay, learningGoal, fetchData, onRefresh,
   } = homeData;
 
   const { canFreeze, freezesUsedThisWeek, maxFreezes, useFreeze } = useStreakFreeze(
