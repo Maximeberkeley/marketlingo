@@ -144,10 +144,6 @@ export default function AuthScreen() {
           </TouchableOpacity>
         )}
 
-        {/* Browse as Guest */}
-        <TouchableOpacity style={styles.guestBtn} onPress={() => router.replace('/onboarding' as any)} activeOpacity={0.8}>
-          <Text style={styles.guestBtnText}>Browse as Guest</Text>
-        </TouchableOpacity>
 
         {/* Form */}
         <View style={styles.form}>
