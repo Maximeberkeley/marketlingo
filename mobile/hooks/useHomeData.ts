@@ -107,8 +107,9 @@ export function useHomeData(
       .eq('market_id', market)
       .single();
 
-    const learningGoal = userProgress?.learning_goal || 'curiosity';
-    const goalTag = `goal:${learningGoal}`;
+    const learningGoalValue = userProgress?.learning_goal || 'curiosity';
+    setLearningGoal(learningGoalValue);
+    const goalTag = `goal:${learningGoalValue}`;
     // Use market-specific familiarity if set, otherwise profile-level
     const effectiveLevel = userProgress?.familiarity_level || familiarityLevel;
     const levelTag = `level:${effectiveLevel}`;
