@@ -159,7 +159,7 @@ export const LeoPuppet = forwardRef<HTMLDivElement, LeoPuppetProps>(function Leo
       </div>
     </div>
   );
-}
+});
 
 // ============================================
 // LEO CHARACTER - Main export with size presets
@@ -179,18 +179,19 @@ const sizeMap = {
   xl: 200,
 };
 
-export function LeoCharacter({
+export const LeoCharacter = forwardRef<HTMLDivElement, LeoCharacterProps>(function LeoCharacter({
   size = "md",
   animation = "idle",
   variant = "normal",
   className,
-}: LeoCharacterProps) {
+}, ref) {
   return (
     <LeoPuppet
+      ref={ref}
       size={sizeMap[size]}
       animation={animation}
       variant={variant}
       className={className}
     />
   );
-}
+});
