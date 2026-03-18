@@ -2,10 +2,14 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import * as jose from 'https://deno.land/x/jose@v5.2.0/index.ts';
 
 // Scheduled notification sender for:
-// - Daily lesson reminders
+// - Daily lesson reminders (Duolingo-style guilt trips)
 // - Streak warnings (about to expire)
 // - Re-engagement (inactive users)
 // - Milestone celebrations
+// - Industry Intel (news updates)
+// - Practice nudges (drills & trainer)
+// - Investment Lab nudges
+// - Weekly recaps
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,42 +17,83 @@ const corsHeaders = {
 };
 
 interface NotificationJob {
-  type: 'daily_reminder' | 'streak_warning' | 're_engagement' | 'milestone' | 'news_update' | 'weekly_recap';
+  type: 'daily_reminder' | 'streak_warning' | 're_engagement' | 'milestone' | 'news_update' | 'weekly_recap' | 'practice_nudge' | 'lab_nudge';
 }
 
-// Notification templates with Leo's personality
+// ============================================
+// DUOLINGO-STYLE NOTIFICATION TEMPLATES
+// Funny, guilt-trippy, personality-driven
+// ============================================
 const NOTIFICATION_TEMPLATES = {
   daily_reminder: [
-    { title: "🦁 Leo: Markets are moving!", body: "Your 5-minute lesson is ready. Let's stay sharp!" },
-    { title: "🦁 Good morning, learner!", body: "Today's industry insight awaits. Shall we?" },
-    { title: "🦁 Quick check-in!", body: "5 mins to get smarter about markets. I'll make it worth it." },
-    { title: "🦁 Your daily brief is here", body: "Industry leaders never skip a day. Neither should we!" },
+    // Classic guilt trips
+    { title: "🦁 Leo noticed you haven't studied today", body: "I'm not mad, just disappointed. 5 minutes?" },
+    { title: "🦁 Leo is staring at you", body: "...waiting for you to open the app. No pressure." },
+    { title: "🦁 Your competitors are learning right now", body: "Just saying. Your daily lesson is ready." },
+    { title: "🦁 Leo made you a lesson", body: "It took me all day. Please don't ignore it. 🥺" },
+    { title: "🦁 Knock knock", body: "It's Leo. With your daily lesson. Let me in." },
+    { title: "🦁 This is your sign", body: "The universe wants you to do your lesson. (It's me. I'm the universe.)" },
+    { title: "🦁 Fun fact:", body: "People who skip lessons turn into pumpkins. Don't risk it." },
+    { title: "🦁 Leo's getting lonely", body: "Your lesson has been sitting here for hours. It's starting to cry." },
+    // Motivational
+    { title: "🦁 5 minutes → smarter you", body: "That's a better ROI than most hedge funds. Let's go!" },
+    { title: "🔥 Markets moved today", body: "Your daily brief is ready. Stay ahead of the curve." },
+    { title: "🦁 Good morning, future CEO", body: "Today's lesson is fresh. Let's make you dangerous." },
+    { title: "🦁 Your brain called", body: "It wants more knowledge. Who are we to deny it?" },
   ],
   streak_warning: [
-    { title: "🔥 Your streak is at risk!", body: "Complete a quick lesson to keep it alive. You've got this!" },
-    { title: "⚠️ Don't break the chain!", body: "Your streak expires soon. 5 minutes is all it takes." },
-    { title: "🦁 Leo here: Streak alert!", body: "You're about to lose your progress. Quick lesson?" },
+    { title: "🔥 YOUR STREAK. IT'S DYING.", body: "Quick, do a lesson before it flatlines! 💀" },
+    { title: "⚠️ Leo is performing CPR on your streak", body: "Help me out here. One lesson. That's all." },
+    { title: "🦁 Your streak is hanging by a thread", body: "Don't make Leo watch it fall. Save it now!" },
+    { title: "🔥 Streak emergency!", body: "Your {streak}-day streak expires soon. Don't let it end like this!" },
+    { title: "🦁 Leo can't watch", body: "Your streak is about to disappear. I'm covering my eyes. 🙈" },
+    { title: "⏰ Time's running out!", body: "Your streak needs you. Be the hero it deserves." },
+    { title: "🦁 This is not a drill", body: "Well, actually it could be. Do a drill. Save your streak." },
   ],
   re_engagement: [
-    { title: "🦁 We miss you!", body: "It's been a few days. Markets have moved – catch up in 5 mins." },
-    { title: "👋 Welcome back?", body: "Your industry mastery journey is waiting. Let's continue!" },
-    { title: "🦁 Leo checking in", body: "Haven't seen you in a while. New lessons are piling up!" },
+    { title: "🦁 Leo here. Remember me?", body: "I've been watering your lesson garden alone. It's lonely." },
+    { title: "🦁 It's been {days} days...", body: "Not that I'm counting. (I'm absolutely counting.)" },
+    { title: "👀 Leo spotted you online", body: "You have time for memes but not for me? Okay. Cool. Fine." },
+    { title: "🦁 Your knowledge is getting dusty", body: "Let's blow the cobwebs off with a quick session." },
+    { title: "🦁 We need to talk", body: "About your absence. I've prepared a 5-minute intervention." },
+    { title: "📉 While you were away...", body: "Markets moved. New lessons dropped. Come see what you missed!" },
+    { title: "🦁 Plot twist:", body: "You come back and finish what you started. 5 mins?" },
   ],
   milestone: [
     { title: "🎉 Achievement Unlocked!", body: "You've hit a new milestone. Come see what you've earned!" },
-    { title: "🏆 Congrats, champion!", body: "Your hard work is paying off. Check your new achievement!" },
-    { title: "⭐ Level up!", body: "You've reached a new level. The next challenge awaits!" },
+    { title: "🏆 Leo is doing a victory dance", body: "You earned it. Check your new achievement!" },
+    { title: "⭐ Level up, legend!", body: "You've reached a new level. The next challenge awaits!" },
+    { title: "🦁 Leo is SO proud right now", body: "Like, embarrassingly proud. Come see your achievement!" },
   ],
   news_update: [
-    { title: "📰 Industry Intel just dropped!", body: "Fresh market insights are ready for you. Stay ahead of the curve." },
-    { title: "⚡ Breaking: New market moves", body: "Today's top stories in your industry. Tap to read the highlights." },
-    { title: "🚀 What's happening in your market?", body: "New stories just in — stay sharp with the latest intel." },
-    { title: "🦁 Leo's news roundup!", body: "I've curated today's top industry headlines. Worth a quick look!" },
+    { title: "📰 Industry Intel just dropped!", body: "Fresh market insights are ready. Stay ahead of the curve." },
+    { title: "⚡ Breaking: New market moves", body: "Today's top stories in your industry. Tap to read." },
+    { title: "🦁 Leo's news roundup!", body: "I curated today's top headlines. Worth a quick look!" },
+    { title: "🗞️ Your industry had a day", body: "Big moves. Big news. Tap to see what happened." },
+    { title: "📰 Leo's morning brief", body: "Coffee + headlines = unstoppable. Let's go." },
+  ],
+  practice_nudge: [
+    { title: "🎯 Time to sharpen those skills!", body: "Quick drills are waiting. 3 minutes to level up." },
+    { title: "🦁 Leo prepared a quiz for you", body: "No grades, just glory. Ready to test yourself?" },
+    { title: "🧠 Your brain called again", body: "It wants a workout. Try today's practice drills!" },
+    { title: "⚔️ Challenge mode: activated", body: "Think you're smart? Prove it with a quick drill session." },
+    { title: "🦁 Pop quiz!", body: "Just kidding. But also not. Drills are ready when you are." },
+    { title: "🎮 Game time!", body: "Market scenarios are loaded. Can you beat your high score?" },
+    { title: "🦁 Leo vs. You", body: "I bet you can't get 100% on today's drills. Prove me wrong." },
+  ],
+  lab_nudge: [
+    { title: "🔬 The Investment Lab awaits", body: "Real scenarios. Real decisions. No real money at risk." },
+    { title: "🦁 Wanna play investor?", body: "New investment scenarios are ready. Build your thesis!" },
+    { title: "📊 Paper trading time!", body: "Practice making million-dollar decisions. Zero risk." },
+    { title: "🦁 Think like a VC", body: "Your Investment Lab has fresh scenarios. Ready to analyze?" },
+    { title: "💡 New investment case study", body: "Can you spot the winner? Head to the Investment Lab." },
+    { title: "🦁 Leo's investor challenge", body: "I found a tricky scenario. Think you can crack it?" },
   ],
   weekly_recap: [
-    { title: "📊 Your weekly recap is ready!", body: "See what you learned this week and plan ahead." },
-    { title: "🦁 Leo's weekly summary", body: "Here's your progress snapshot. Let's keep the momentum!" },
-    { title: "🏆 Week in review", body: "Check your stats, streaks, and XP earned this week." },
+    { title: "📊 Your weekly recap is ready!", body: "See what you conquered this week. Spoiler: a lot." },
+    { title: "🦁 Leo's weekly report card", body: "Here's your progress snapshot. Let's keep the momentum!" },
+    { title: "🏆 Week in review", body: "Check your stats, streaks, and XP. You might surprise yourself." },
+    { title: "🦁 Sunday stats!", body: "Leo crunched the numbers. Your week was 🔥" },
   ],
 };
 
@@ -149,6 +194,17 @@ async function sendNotification(token: string, title: string, body: string, data
     : await sendToFCM(token, title, body, data);
 }
 
+// Personalize template — replace {streak}, {days}, etc.
+function personalize(text: string, vars: Record<string, string | number | undefined>): string {
+  let result = text;
+  for (const [key, value] of Object.entries(vars)) {
+    if (value !== undefined) {
+      result = result.replace(new RegExp(`\\{${key}\\}`, 'g'), String(value));
+    }
+  }
+  return result;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -170,19 +226,13 @@ Deno.serve(async (req) => {
       
       const { data: users } = await supabase
         .from('profiles')
-        .select(`
-          id,
-          push_token,
-          notification_preferences
-        `)
+        .select('id, push_token, notification_preferences')
         .not('push_token', 'is', null);
 
-      // Filter by preference and check if they haven't completed today
       for (const user of users || []) {
         const prefs = user.notification_preferences || {};
         if (prefs.dailyReminder === false) continue;
 
-        // Check if user completed lesson today
         const { data: completion } = await supabase
           .from('daily_completions')
           .select('id')
@@ -196,7 +246,6 @@ Deno.serve(async (req) => {
         }
       }
     } else if (job.type === 'streak_warning') {
-      // Get users whose streak expires in the next 6 hours
       const sixHoursFromNow = new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString();
       const now = new Date().toISOString();
 
@@ -223,7 +272,6 @@ Deno.serve(async (req) => {
           streak: u.current_streak,
         }));
     } else if (job.type === 're_engagement') {
-      // Get users inactive for 3+ days
       const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
 
       const { data: inactiveUsers } = await supabase
@@ -240,19 +288,77 @@ Deno.serve(async (req) => {
           const prefs = (u.profiles as any)?.notification_preferences || {};
           return prefs.dailyReminder !== false && (u.profiles as any)?.push_token;
         })
-        .map(u => ({
-          id: u.user_id,
-          push_token: (u.profiles as any).push_token,
-        }));
+        .map(u => {
+          const daysAway = Math.floor((Date.now() - new Date((u as any).last_activity_at).getTime()) / (24 * 60 * 60 * 1000));
+          return {
+            id: u.user_id,
+            push_token: (u.profiles as any).push_token,
+            days: daysAway,
+          };
+        });
+    } else if (job.type === 'practice_nudge') {
+      // Nudge users who haven't done drills/trainer today
+      const today = new Date().toISOString().split('T')[0];
+
+      const { data: users } = await supabase
+        .from('profiles')
+        .select('id, push_token, notification_preferences, selected_market')
+        .not('push_token', 'is', null);
+
+      for (const user of users || []) {
+        const prefs = (user.notification_preferences as any) || {};
+        if (prefs.dailyReminder === false || !user.push_token) continue;
+
+        // Check if user has done drills today
+        const { data: todayDrills } = await supabase
+          .from('daily_completions')
+          .select('drills_completed, games_completed')
+          .eq('user_id', user.id)
+          .eq('completion_date', today)
+          .single();
+
+        const drillsDone = todayDrills?.drills_completed || 0;
+        const gamesDone = todayDrills?.games_completed || 0;
+
+        // Nudge if they did their lesson but haven't practiced
+        if (drillsDone === 0 && gamesDone === 0) {
+          usersToNotify.push(user);
+        }
+      }
+    } else if (job.type === 'lab_nudge') {
+      // Nudge users who haven't visited Investment Lab recently
+      const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+
+      const { data: users } = await supabase
+        .from('profiles')
+        .select('id, push_token, notification_preferences, selected_market')
+        .not('push_token', 'is', null);
+
+      for (const user of users || []) {
+        const prefs = (user.notification_preferences as any) || {};
+        if (prefs.dailyReminder === false || !user.push_token || !user.selected_market) continue;
+
+        // Check last investment attempt
+        const { data: lastAttempt } = await supabase
+          .from('investment_attempts')
+          .select('created_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        const lastActivity = lastAttempt?.created_at;
+        if (!lastActivity || new Date(lastActivity) < new Date(threeDaysAgo)) {
+          usersToNotify.push(user);
+        }
+      }
     } else if (job.type === 'news_update') {
-      // Send to users grouped by their selected_market so each gets their own market's news
       const { data: allUsers } = await supabase
         .from('profiles')
         .select('id, push_token, notification_preferences, selected_market')
         .not('push_token', 'is', null)
         .not('selected_market', 'is', null);
 
-      // Build per-market notification queue
       const marketUserMap: Record<string, { id: string; push_token: string; market: string }[]> = {};
       for (const u of allUsers || []) {
         const prefs = (u.notification_preferences as any) || {};
@@ -262,7 +368,6 @@ Deno.serve(async (req) => {
         marketUserMap[m].push({ id: u.id, push_token: u.push_token, market: m });
       }
 
-      // Check which markets actually have fresh news today, then enqueue users
       const today = new Date().toISOString().split('T')[0];
       for (const [marketId, users] of Object.entries(marketUserMap)) {
         const { data: latestNews } = await supabase
@@ -280,7 +385,6 @@ Deno.serve(async (req) => {
         }
       }
     } else if (job.type === 'weekly_recap') {
-      // Send weekly recap every Sunday — summarise week's XP + lessons
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       
       const { data: activeUsers } = await supabase
@@ -292,7 +396,6 @@ Deno.serve(async (req) => {
         const prefs = (u.notification_preferences as any) || {};
         if (prefs.dailyReminder === false || !u.push_token || !u.selected_market) continue;
 
-        // Aggregate weekly XP
         const { data: weekTxns } = await supabase
           .from('xp_transactions')
           .select('xp_amount')
@@ -303,7 +406,6 @@ Deno.serve(async (req) => {
         const weeklyXP = (weekTxns || []).reduce((sum: number, t: any) => sum + t.xp_amount, 0);
         if (weeklyXP === 0) continue;
 
-        // Count completed lessons
         const { count: lessonCount } = await supabase
           .from('daily_completions')
           .select('id', { count: 'exact', head: true })
@@ -331,15 +433,17 @@ Deno.serve(async (req) => {
 
       const template = getRandomTemplate(job.type);
 
-      // For news_update, personalise body with the actual headline if available
-      let notifTitle = template.title;
-      let notifBody = template.body;
+      // Personalize templates with user data
+      let notifTitle = personalize(template.title, { streak: user.streak, days: user.days });
+      let notifBody = personalize(template.body, { streak: user.streak, days: user.days });
 
-      // For weekly_recap, personalise with stats
+      // Override for weekly_recap with actual stats
       if (job.type === 'weekly_recap' && user.weeklyXP) {
         notifTitle = `📊 Your Weekly Recap`;
-        notifBody = `You earned ${user.weeklyXP} XP and completed ${user.lessonsCompleted || 0} lessons this week!`;
+        notifBody = `You earned ${user.weeklyXP} XP and completed ${user.lessonsCompleted || 0} lessons this week! 🔥`;
       }
+
+      // Override for news_update with actual headline
       if (job.type === 'news_update' && user.latestHeadline) {
         const marketLabel = user.market
           ? user.market.charAt(0).toUpperCase() + user.market.slice(1)
@@ -350,12 +454,18 @@ Deno.serve(async (req) => {
           : user.latestHeadline;
       }
 
+      // Route based on notification type
+      let route = '/home';
+      if (job.type === 'practice_nudge') route = '/drills';
+      else if (job.type === 'lab_nudge') route = '/investment-lab';
+      else if (job.type === 'news_update') route = '/home';
+
       const success = await sendNotification(
         user.push_token,
         notifTitle,
         notifBody,
         { 
-          route: '/home', 
+          route,
           type: job.type,
           streak: user.streak,
           market: user.market,
@@ -365,7 +475,7 @@ Deno.serve(async (req) => {
       if (success) successCount++;
       else failCount++;
 
-      // Rate limiting - small delay between sends
+      // Rate limiting
       await new Promise(resolve => setTimeout(resolve, 50));
     }
 
