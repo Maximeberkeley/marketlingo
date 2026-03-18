@@ -39,6 +39,7 @@ interface NewsItem {
 
 interface DailyNewsProps {
   marketId: string;
+  learningGoal?: string;
 }
 
 // ── Category colors ──
@@ -440,7 +441,7 @@ function ArticleDetailSheet({
 }
 
 // ── Main Component ──
-export function DailyNews({ marketId }: DailyNewsProps) {
+export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -631,6 +632,7 @@ export function DailyNews({ marketId }: DailyNewsProps) {
           setChatNewsItem(article);
         }}
         marketId={marketId}
+        learningGoal={learningGoal}
       />
 
       {/* AI Chat overlay (from AI action buttons) */}

@@ -133,7 +133,7 @@ export default function HomeScreen() {
   const {
     selectedMarket, isProUser, lessonStack, newsStack, newsItems,
     streakRiskHours, socialNudge, tomorrowLesson,
-    loading, refreshing, currentDay, fetchData, onRefresh,
+    loading, refreshing, currentDay, learningGoal, fetchData, onRefresh,
   } = homeData;
 
   const { canFreeze, freezesUsedThisWeek, maxFreezes, useFreeze } = useStreakFreeze(
@@ -534,7 +534,7 @@ export default function HomeScreen() {
           {selectedMarket && (
             <AnimatedSection delay={320}>
               <View style={{ marginTop: 12 }}>
-                <DailyNews marketId={selectedMarket} />
+                <DailyNews marketId={selectedMarket} learningGoal={learningGoal} />
               </View>
             </AnimatedSection>
           )}

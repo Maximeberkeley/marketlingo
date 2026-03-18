@@ -184,7 +184,7 @@ export default function RoadmapScreen() {
         let status: Week['status'] = 'locked';
         if (weekNum < currentWeek) status = 'available'; // Past weeks are reviewable
         else if (weekNum === currentWeek) status = 'current';
-        else if (weekNum === currentWeek + 1) status = 'available';
+        else status = 'available'; // All future weeks with content are browsable
 
         const lessons: Lesson[] = days.map((d) => {
           const dbLesson = dayLessonMap.get(d);
@@ -243,8 +243,8 @@ export default function RoadmapScreen() {
   };
 
   const handleLessonClick = (lesson: Lesson) => {
-    // Allow clicking any day up to and including the current day (for review or current lesson)
-    if (lesson.day <= currentDay) {
+    // Allow clicking any lesson that has content (stackId), regardless of completion status
+    if (lesson.stackId) {
       triggerHaptic('light');
       setSelectedLesson(lesson);
     }
@@ -566,8 +566,8 @@ function WeekCard({
       {expanded && !isLocked && (
         <View style={styles.lessonsWrap}>
           {week.lessons.map((lesson) => {
-            // Past and current days are accessible (for review or learning)
-            const isAccessible = lesson.completed || lesson.current || week.status === 'available';
+            // All lessons with content are accessible
+            const isAccessible = !!lesson.stackId;
             return (
               <TouchableOpacity
                 key={lesson.day}

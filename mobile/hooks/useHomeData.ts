@@ -40,6 +40,7 @@ interface HomeData {
   refreshing: boolean;
   newsRefreshing: boolean;
   currentDay: number;
+  learningGoal: string;
 }
 
 // Normalize sources — DB has mixed formats
@@ -79,6 +80,7 @@ export function useHomeData(
   const [refreshing, setRefreshing] = useState(false);
   const [newsRefreshing, setNewsRefreshing] = useState(false);
   const [currentDay, setCurrentDay] = useState(1);
+  const [learningGoal, setLearningGoal] = useState('curiosity');
 
   const fetchData = useCallback(async () => {
     if (!userId) return null;
@@ -105,8 +107,9 @@ export function useHomeData(
       .eq('market_id', market)
       .single();
 
-    const learningGoal = userProgress?.learning_goal || 'curiosity';
-    const goalTag = `goal:${learningGoal}`;
+    const learningGoalValue = userProgress?.learning_goal || 'curiosity';
+    setLearningGoal(learningGoalValue);
+    const goalTag = `goal:${learningGoalValue}`;
     // Use market-specific familiarity if set, otherwise profile-level
     const effectiveLevel = userProgress?.familiarity_level || familiarityLevel;
     const levelTag = `level:${effectiveLevel}`;
@@ -344,6 +347,7 @@ export function useHomeData(
     refreshing,
     newsRefreshing,
     currentDay,
+    learningGoal,
     fetchData,
     onRefresh,
     refreshNews,

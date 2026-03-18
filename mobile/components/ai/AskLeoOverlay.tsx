@@ -171,6 +171,7 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
       <KeyboardAvoidingView
         style={styles.overlay}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
       >
         <Animated.View
           style={[
