@@ -76,7 +76,7 @@ async function generateNarration(article: NewsItem, marketId: string, goal: stri
 
 Rules:
 - Start with a brief hook about the news (1 sentence)
-- Explain why it matters for someone whose goal is "${goal}" in the ${marketId} industry (2 sentences)
+- Explain why it matters for someone whose goal is ${goalPhrase} the ${marketId} industry (2 sentences)
 - End with an actionable insight or encouraging nudge (1 sentence)
 - Don't use markdown, lists, or special formatting — this will be spoken aloud
 - Sound natural and warm, like you're talking to a friend`;
