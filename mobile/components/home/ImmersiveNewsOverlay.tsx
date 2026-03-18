@@ -105,7 +105,6 @@ async function speakText(text: string, voiceId: string): Promise<Audio.Sound | n
     return null;
   }
   try {
-    const { speakWithElevenLabs } = require('../../lib/tts');
     console.log('[Sophia TTS] Calling speakWithElevenLabs, text length:', text.length);
     const sound = await speakWithElevenLabs(text, voiceId, 'sophia_news');
     if (!sound) {
