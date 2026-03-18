@@ -1,4 +1,4 @@
-import { useState, createContext, useContext, ReactNode, useCallback } from "react";
+import { useState, createContext, useContext, ReactNode, useCallback, forwardRef } from "react";
 import leoSticker from "@/assets/leo-sticker.png";
 import leoStudy from "@/assets/mascot/leo-study.png";
 import leoCelebrating from "@/assets/mascot/leo-celebrating.png";
@@ -88,12 +88,12 @@ interface LeoPuppetProps {
   className?: string;
 }
 
-export function LeoPuppet({
+export const LeoPuppet = forwardRef<HTMLDivElement, LeoPuppetProps>(function LeoPuppet({
   size = 180,
   animation = "idle",
   variant = "normal",
   className,
-}: LeoPuppetProps) {
+}, ref) {
   // Mood filter
   const filter =
     variant === "sick"
@@ -106,6 +106,7 @@ export function LeoPuppet({
 
   return (
     <div
+      ref={ref}
       className={className}
       style={{
         width: size,
@@ -158,7 +159,7 @@ export function LeoPuppet({
       </div>
     </div>
   );
-}
+});
 
 // ============================================
 // LEO CHARACTER - Main export with size presets
@@ -178,18 +179,19 @@ const sizeMap = {
   xl: 200,
 };
 
-export function LeoCharacter({
+export const LeoCharacter = forwardRef<HTMLDivElement, LeoCharacterProps>(function LeoCharacter({
   size = "md",
   animation = "idle",
   variant = "normal",
   className,
-}: LeoCharacterProps) {
+}, ref) {
   return (
     <LeoPuppet
+      ref={ref}
       size={sizeMap[size]}
       animation={animation}
       variant={variant}
       className={className}
     />
   );
-}
+});
