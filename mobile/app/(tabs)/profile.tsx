@@ -49,7 +49,7 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, signOut, loading: authLoading } = useAuth();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
-  const [isProUser, setIsProUser] = useState(false);
+  const { isProUser } = useSubscription();
   const [showChangeWarning, setShowChangeWarning] = useState(false);
   const [loading, setLoading] = useState(true);
 
