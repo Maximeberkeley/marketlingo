@@ -125,6 +125,11 @@ export default function SubscriptionScreen() {
 
   return (
     <View style={styles.container}>
+      <ProCelebration
+        visible={showCelebration}
+        onDismiss={() => { setShowCelebration(false); router.back(); }}
+        planType={celebrationType}
+      />
       <ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: 160 }]}
         showsVerticalScrollIndicator={false}
