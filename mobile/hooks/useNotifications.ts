@@ -149,10 +149,12 @@ export function useNotifications() {
 
       const [hours, minutes] = preferences.reminderTime.split(':').map(Number);
 
+      const template = pickRandom(DAILY_TEMPLATES);
+
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: ' Leo: Markets are moving!',
-          body: "Time for your daily brief? 5 mins is all I ask...",
+          title: template.title,
+          body: template.body,
           data: { route: '/(tabs)/home', type: 'daily_reminder' },
           sound: true,
         },
