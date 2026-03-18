@@ -144,22 +144,19 @@ export function useUserXP(marketId?: string) {
       description,
     });
 
-    // Update total XP
-    const newTotalXP = xpData.total_xp + amount;
+    // Atomic XP increment to prevent race conditions
     const { data: updatedXP, error } = await supabase
-      .from("user_xp")
-      .update({ total_xp: newTotalXP })
-      .eq("id", xpData.id)
-      .select()
-      .single();
+      .rpc("increment_user_xp", {
+        p_user_id: user.id,
+        p_market_id: marketId,
+        p_amount: amount,
+      });
 
     if (!error && updatedXP) {
-      // Check if user leveled up
       const previousLevel = xpData.current_level;
       const newLevel = updatedXP.current_level;
       
       if (newLevel > previousLevel) {
-        // Send level-up notification
         sendMilestoneNotification(user.id, 'level', {
           levelNumber: newLevel,
         });

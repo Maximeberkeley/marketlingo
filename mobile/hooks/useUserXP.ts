@@ -102,13 +102,13 @@ export function useUserXP(marketId?: string) {
       description,
     });
 
-    const newTotalXP = xpData.total_xp + amount;
+    // Atomic XP increment to prevent race conditions
     const { data: updatedXP, error } = await supabase
-      .from('user_xp')
-      .update({ total_xp: newTotalXP })
-      .eq('id', xpData.id)
-      .select()
-      .single();
+      .rpc('increment_user_xp', {
+        p_user_id: user.id,
+        p_market_id: marketId,
+        p_amount: amount,
+      });
 
     if (!error && updatedXP) {
       setXpData(updatedXP);
