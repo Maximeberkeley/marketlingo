@@ -18,6 +18,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { speakWithElevenLabs } from '../../lib/tts';
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
@@ -143,7 +144,6 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
         await webAudio.play();
       } else {
         // Native: use shared TTS utility with XHR for reliable binary handling
-        const { speakWithElevenLabs } = require('../../lib/tts');
         const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_chat');
         if (sound) {
           sound.setOnPlaybackStatusUpdate((status: any) => {

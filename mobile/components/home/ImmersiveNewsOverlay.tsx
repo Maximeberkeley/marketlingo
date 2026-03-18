@@ -25,6 +25,7 @@ import * as FileSystem from 'expo-file-system';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, TYPE } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
+import { speakWithElevenLabs } from '../../lib/tts';
 
 // ── Types ──
 interface NewsItem {
@@ -104,7 +105,6 @@ async function speakText(text: string, voiceId: string): Promise<Audio.Sound | n
     return null;
   }
   try {
-    const { speakWithElevenLabs } = require('../../lib/tts');
     console.log('[Sophia TTS] Calling speakWithElevenLabs, text length:', text.length);
     const sound = await speakWithElevenLabs(text, voiceId, 'sophia_news');
     if (!sound) {
