@@ -18,6 +18,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { speakWithElevenLabs } from '../../lib/tts';
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';

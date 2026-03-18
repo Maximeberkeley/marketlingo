@@ -25,6 +25,7 @@ import * as FileSystem from 'expo-file-system';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, TYPE } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
+import { speakWithElevenLabs } from '../../lib/tts';
 
 // ── Types ──
 interface NewsItem {
