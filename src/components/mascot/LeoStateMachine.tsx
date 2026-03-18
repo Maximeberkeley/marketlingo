@@ -141,8 +141,11 @@ export function LeoPuppet({
         }}
       >
         <img
-          src={leoSticker}
-          alt="Leo"
+          src={
+            animation === "thinking" ? leoStudy
+            : animation === "celebrating" || animation === "success" ? leoCelebrating
+            : leoSticker
+          }
           draggable={false}
           style={{
             width: "100%",
