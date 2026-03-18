@@ -88,12 +88,12 @@ interface LeoPuppetProps {
   className?: string;
 }
 
-export function LeoPuppet({
+export const LeoPuppet = forwardRef<HTMLDivElement, LeoPuppetProps>(function LeoPuppet({
   size = 180,
   animation = "idle",
   variant = "normal",
   className,
-}: LeoPuppetProps) {
+}, ref) {
   // Mood filter
   const filter =
     variant === "sick"
