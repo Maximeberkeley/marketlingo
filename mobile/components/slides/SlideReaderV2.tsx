@@ -499,6 +499,48 @@ export function SlideReaderV2({
     },
   }), [goNext, goPrev, currentCard, isLastCard]);
 
+  // Handle answer from quiz/flashcard/wordmatch → show feedback banner
+  const handleAnswer = useCallback((correct: boolean, explanation?: string) => {
+    const BASE_XP = 10;
+    let xpEarned: number;
+    let newCombo: ComboState;
+
+    if (correct) {
+      const result = comboCorrect(comboState, BASE_XP);
+      newCombo = result.newState;
+      xpEarned = result.xpEarned;
+      setCorrectCount(prev => prev + 1);
+      playSound('correct');
+    } else {
+      const result = comboWrong(comboState, BASE_XP);
+      newCombo = result.newState;
+      xpEarned = result.xpEarned;
+      playSound('wrong');
+    }
+
+    setComboState(newCombo);
+    setTotalAnswered(prev => prev + 1);
+
+    // Combo message
+    const comboMsg = getComboMessage(newCombo.streak);
+    const correctMsgs = ['Nailed it! 🎯', 'Exactly right! ⭐', 'Perfect! 💡', 'You got it! ✅'];
+    const wrongMsgs = ['Not quite!', 'Close one!', 'Good try!', 'Almost!'];
+    const baseMsg = correct
+      ? correctMsgs[Math.floor(Math.random() * correctMsgs.length)]
+      : wrongMsgs[Math.floor(Math.random() * wrongMsgs.length)];
+
+    setFeedbackCorrect(correct);
+    setFeedbackMessage(comboMsg || baseMsg);
+    setFeedbackExplanation(explanation);
+    setFeedbackXP(xpEarned);
+    setFeedbackVisible(true);
+  }, [comboState]);
+
+  const handleFeedbackContinue = useCallback(() => {
+    setFeedbackVisible(false);
+    goNext();
+  }, [goNext]);
+
   const handleComplete = useCallback(() => {
     setShowCompletion(false);
     onComplete(isReview, timeSpentSeconds);
