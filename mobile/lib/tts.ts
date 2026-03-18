@@ -10,7 +10,11 @@ import * as FileSystem from 'expo-file-system';
 import { supabase } from './supabase';
 
 const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
+const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_KEY || '';
+
+// Log config once at import time
+console.log('[TTS] EDGE_URL:', EDGE_URL ? `${EDGE_URL.substring(0, 30)}...` : '⚠️ EMPTY');
+console.log('[TTS] ANON_KEY:', SUPABASE_ANON_KEY ? `${SUPABASE_ANON_KEY.substring(0, 10)}...` : '⚠️ EMPTY');
 
 async function getAuthToken(): Promise<string> {
   try {
