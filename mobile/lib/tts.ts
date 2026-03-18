@@ -135,7 +135,7 @@ export async function speakWithElevenLabs(
     // Write to temp file
     const tempPath = `${FileSystem.cacheDirectory}${tag}_${Date.now()}.mp3`;
     await FileSystem.writeAsStringAsync(tempPath, base64, {
-      encoding: FileSystem.EncodingType.Base64,
+      encoding: 'base64' as any,
     });
 
     // Verify file was written
