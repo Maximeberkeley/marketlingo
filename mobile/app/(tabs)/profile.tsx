@@ -12,6 +12,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, STARTUP_STAGES } from '../../hooks/useUserXP';
+import { useSubscription } from '../../hooks/useSubscription';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { Feather } from '@expo/vector-icons';
 import { triggerHaptic } from '../../lib/haptics';
