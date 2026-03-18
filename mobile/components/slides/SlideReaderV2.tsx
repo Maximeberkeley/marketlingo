@@ -22,10 +22,13 @@ import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
 import { QuizCard, generateQuizFromSlide, shouldShowQuiz, QuizCardData } from './QuizCard';
 import { WordMatchGame, extractTermPairs, shouldShowWordMatch, WordPair } from './WordMatchGame';
 import { SwipeFlashcardDrill, generateFlashcardsFromSlides, FlashcardItem } from './SwipeFlashcardDrill';
+import { ComboBar } from './ComboBar';
+import { FeedbackBanner } from './FeedbackBanner';
 import { AnnotationModal } from './AnnotationModal';
 import { AskLeoOverlay } from '../ai/AskLeoOverlay';
 import { playSound } from '../../lib/sounds';
 import { useNarration } from '../../hooks/useNarration';
+import { ComboState, createComboState, comboCorrect, comboWrong, getComboMessage } from '../../lib/combo';
 import { Feather } from '@expo/vector-icons';
 
 const MENTOR_IMAGES: Record<string, any> = {
@@ -154,6 +157,18 @@ export function SlideReaderV2({
   const [showAnnotation, setShowAnnotation] = useState(false);
   const [narrationEnabled, setNarrationEnabled] = useState(false);
   const cardKey = useRef(0);
+
+  // Combo system state
+  const [comboState, setComboState] = useState<ComboState>(createComboState);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [totalAnswered, setTotalAnswered] = useState(0);
+
+  // Feedback banner state
+  const [feedbackVisible, setFeedbackVisible] = useState(false);
+  const [feedbackCorrect, setFeedbackCorrect] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [feedbackExplanation, setFeedbackExplanation] = useState<string | undefined>();
+  const [feedbackXP, setFeedbackXP] = useState(0);
 
   // Swipe animation
   const swipeX = useRef(new Animated.Value(0)).current;
@@ -484,6 +499,48 @@ export function SlideReaderV2({
     },
   }), [goNext, goPrev, currentCard, isLastCard]);
 
+  // Handle answer from quiz/flashcard/wordmatch → show feedback banner
+  const handleAnswer = useCallback((correct: boolean, explanation?: string) => {
+    const BASE_XP = 10;
+    let xpEarned: number;
+    let newCombo: ComboState;
+
+    if (correct) {
+      const result = comboCorrect(comboState, BASE_XP);
+      newCombo = result.newState;
+      xpEarned = result.xpEarned;
+      setCorrectCount(prev => prev + 1);
+      playSound('correct');
+    } else {
+      const result = comboWrong(comboState, BASE_XP);
+      newCombo = result.newState;
+      xpEarned = result.xpEarned;
+      playSound('wrong');
+    }
+
+    setComboState(newCombo);
+    setTotalAnswered(prev => prev + 1);
+
+    // Combo message
+    const comboMsg = getComboMessage(newCombo.streak);
+    const correctMsgs = ['Nailed it! 🎯', 'Exactly right! ⭐', 'Perfect! 💡', 'You got it! ✅'];
+    const wrongMsgs = ['Not quite!', 'Close one!', 'Good try!', 'Almost!'];
+    const baseMsg = correct
+      ? correctMsgs[Math.floor(Math.random() * correctMsgs.length)]
+      : wrongMsgs[Math.floor(Math.random() * wrongMsgs.length)];
+
+    setFeedbackCorrect(correct);
+    setFeedbackMessage(comboMsg || baseMsg);
+    setFeedbackExplanation(explanation);
+    setFeedbackXP(xpEarned);
+    setFeedbackVisible(true);
+  }, [comboState]);
+
+  const handleFeedbackContinue = useCallback(() => {
+    setFeedbackVisible(false);
+    goNext();
+  }, [goNext]);
+
   const handleComplete = useCallback(() => {
     setShowCompletion(false);
     onComplete(isReview, timeSpentSeconds);
@@ -507,8 +564,7 @@ export function SlideReaderV2({
           key={`quiz-${currentCard}`}
           quiz={currentCardData.quiz}
           onAnswer={(correct) => {
-            if (correct) playSound('correct');
-            setTimeout(() => goNext(), 300);
+            handleAnswer(correct, currentCardData.quiz.explanation);
           }}
           accentColor={accentColor}
         />
@@ -520,8 +576,7 @@ export function SlideReaderV2({
           key={`wm-${currentCard}`}
           pairs={currentCardData.pairs}
           onComplete={(score, total) => {
-            if (score === total) playSound('correct');
-            setTimeout(() => goNext(), 600);
+            handleAnswer(score === total, `You matched ${score}/${total} pairs correctly.`);
           }}
           accentColor={accentColor}
         />
@@ -556,8 +611,7 @@ export function SlideReaderV2({
           key={`flash-${currentCard}`}
           cards={currentCardData.cards}
           onComplete={(score, total) => {
-            if (score >= total * 0.7) playSound('correct');
-            setTimeout(() => goNext(), 800);
+            handleAnswer(score >= total * 0.7, `You got ${score}/${total} correct!`);
           }}
           accentColor={accentColor}
         />
@@ -623,10 +677,23 @@ export function SlideReaderV2({
           </TouchableOpacity>
         </View>
 
-        {/* Progress Bar */}
-        <View style={styles.progressBar}>
-          <Animated.View style={[styles.progressFill, { backgroundColor: accentColor, width: `${progress * 100}%` }]} />
+        {/* Progress Bar — Duolingo style */}
+        <View style={styles.progressBarContainer}>
+          <View style={styles.progressBar}>
+            <Animated.View style={[styles.progressFill, { backgroundColor: accentColor, width: `${progress * 100}%` }]} />
+            {/* Progress knob */}
+            <View style={[styles.progressKnob, { left: `${Math.min(progress * 100, 97)}%`, borderColor: accentColor }]} />
+          </View>
         </View>
+
+        {/* Combo Bar — visible when user has answered questions */}
+        {totalAnswered > 0 && (
+          <ComboBar
+            combo={comboState}
+            correctCount={correctCount}
+            totalAnswered={totalAnswered}
+          />
+        )}
 
         {/* Card Area with swipe + edge tap zones for Expo fallback */}
         <View style={styles.cardArea}>
@@ -748,6 +815,17 @@ export function SlideReaderV2({
           visible={showAskLeo}
           onClose={() => setShowAskLeo(false)}
           lessonContext={`Lesson: ${stackTitle}\nCurrent slide: ${currentSlide?.title || ''}\nContent: ${currentCardData?.type === 'concept' ? currentCardData.content : ''}`}
+        />
+
+        {/* Feedback Banner — Duolingo-style bottom feedback */}
+        <FeedbackBanner
+          visible={feedbackVisible}
+          isCorrect={feedbackCorrect}
+          message={feedbackMessage}
+          explanation={feedbackExplanation}
+          xpEarned={feedbackXP}
+          comboMultiplier={comboState.multiplier}
+          onContinue={handleFeedbackContinue}
         />
       </View>
     </Modal>
@@ -969,17 +1047,35 @@ const styles = StyleSheet.create({
     height: 18,
     resizeMode: 'contain',
   },
+  progressBarContainer: {
+    paddingHorizontal: 16,
+    marginBottom: 4,
+  },
   progressBar: {
-    height: 4,
-    backgroundColor: COLORS.border,
-    marginHorizontal: 16,
-    borderRadius: 2,
-    overflow: 'hidden',
-    marginBottom: 8,
+    height: 10,
+    backgroundColor: '#E5E7EB',
+    borderRadius: 5,
+    overflow: 'visible',
+    position: 'relative',
   },
   progressFill: {
     height: '100%',
-    borderRadius: 2,
+    borderRadius: 5,
+  },
+  progressKnob: {
+    position: 'absolute',
+    top: -3,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    borderWidth: 3,
+    marginLeft: -8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+    elevation: 3,
   },
   cardArea: {
     flex: 1,

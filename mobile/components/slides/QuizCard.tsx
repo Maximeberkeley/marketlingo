@@ -46,7 +46,8 @@ export function QuizCard({ quiz, onAnswer, accentColor }: QuizCardProps) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
 
-    setTimeout(() => onAnswer(correct), 1800);
+    // Immediately notify parent — FeedbackBanner handles the continue flow
+    onAnswer(correct);
   };
 
   const isCorrect = selected === quiz.correctIndex;
