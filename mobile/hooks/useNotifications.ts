@@ -174,10 +174,12 @@ export function useNotifications() {
     if (!isSupported || !preferences.streakReminders) return;
 
     try {
+      const template = pickRandom(STREAK_TEMPLATES);
+
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: " Leo: Don't let your streak end!",
-          body: '5 mins is all I ask... Your streak is at risk!',
+          title: template.title,
+          body: template.body,
           data: { route: '/(tabs)/home', type: 'streak_warning' },
           sound: true,
         },
