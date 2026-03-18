@@ -149,39 +149,32 @@ export default function ProfilePage() {
           )}
         </motion.div>
 
-        {/* Stats Cards */}
-        {progress && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="grid grid-cols-3 gap-2 mb-6 w-full"
-          >
-            <div className="card-elevated text-center min-w-0">
-              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-2">
-                <Flame size={20} className="text-primary" />
-              </div>
-              <p className="text-h2 text-text-primary">{progress.current_streak}</p>
-              <p className="text-caption text-text-muted">Current Streak</p>
-            </div>
-
-            <div className="card-elevated text-center min-w-0">
-              <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-2">
-                <Trophy size={20} className="text-amber-400" />
-              </div>
-              <p className="text-h2 text-text-primary">{progress.longest_streak}</p>
-              <p className="text-caption text-text-muted">Best Streak</p>
-            </div>
-
-            <div className="card-elevated text-center min-w-0">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-2">
-                <Target size={20} className="text-emerald-400" />
-              </div>
-              <p className="text-h2 text-text-primary">Day {availableDay}</p>
-              <p className="text-caption text-text-muted">of 180</p>
-            </div>
-          </motion.div>
-        )}
+        {/* Pro Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="mb-6 w-full"
+        >
+          {isProUser ? (
+            <img
+              src={proDistinctionBanner}
+              alt="MarketLingo Pro Member"
+              className="w-full rounded-2xl"
+            />
+          ) : (
+            <button
+              onClick={() => navigate("/subscription")}
+              className="w-full block"
+            >
+              <img
+                src={goProBanner}
+                alt="Upgrade to MarketLingo Pro"
+                className="w-full rounded-2xl"
+              />
+            </button>
+          )}
+        </motion.div>
 
         {/* Industry Passport */}
         <motion.div
