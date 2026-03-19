@@ -390,10 +390,7 @@ export default function HomeScreen() {
           {/* ── Leo + Greeting ── */}
           <AnimatedSection delay={0}>
             <View style={styles.leoSection}>
-              <LeoCharacter
-                size="lg"
-                animation={lessonCompletedToday ? 'celebrating' : 'waving'}
-              />
+              <FoxMascot industry={selectedMarket || 'aerospace'} size={200} />
               <View style={styles.speechBubble}>
                 <View style={styles.speechTail} />
                 <Text style={styles.speechText}>{greeting}</Text>

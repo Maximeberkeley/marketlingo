@@ -6,5 +6,6 @@ export { MascotBreak, InlineMascot, shouldShowMascotBreak, getRandomCharacter } 
 export { SlideMascotCard, getSlidePosition } from './SlideMascotCard';
 export { LeoQuiz, useLeoQuiz } from './LeoQuiz';
 export { LeoPopup } from './LeoPopup';
+export { FoxMascot } from './FoxMascot';
 export type { LeoPopupMessage, LeoPopupCategory } from './LeoPopup';
 
