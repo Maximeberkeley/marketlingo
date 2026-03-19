@@ -44,6 +44,7 @@ import { playSound } from '../../lib/sounds';
 import { useSpacedRepetition } from '../../hooks/useSpacedRepetition';
 import { useOfflineCache } from '../../hooks/useOfflineCache';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { FoxMascot } from '../../components/mascot/FoxMascot';
 import { LeoPopup } from '../../components/mascot/LeoPopup';
 import { useLeoPopups } from '../../hooks/useLeoPopups';
 import { useAchievements } from '../../hooks/useAchievements';
@@ -389,10 +390,7 @@ export default function HomeScreen() {
           {/* ── Leo + Greeting ── */}
           <AnimatedSection delay={0}>
             <View style={styles.leoSection}>
-              <LeoCharacter
-                size="lg"
-                animation={lessonCompletedToday ? 'celebrating' : 'waving'}
-              />
+              <FoxMascot industry={selectedMarket || 'aerospace'} size={200} />
               <View style={styles.speechBubble}>
                 <View style={styles.speechTail} />
                 <Text style={styles.speechText}>{greeting}</Text>
