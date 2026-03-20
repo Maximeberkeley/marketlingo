@@ -92,7 +92,16 @@ export function InterviewGlossary({ marketName, marketId }: { marketName: string
           <Text style={st.categoryLabel}>{category}</Text>
           {terms.map(t => (
             <View key={t.term} style={st.termCard}>
-              <Text style={st.termName}>{t.term}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                <Text style={[st.termName, { flex: 1 }]}>{t.term}</Text>
+                <TouchableOpacity
+                  onPress={() => saveToNotebook(`📖 ${t.term}\n\n${t.definition}\n\nCategory: ${t.category}`, 'interview-glossary')}
+                  disabled={saving}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Feather name="bookmark" size={16} color="#7C3AED" />
+                </TouchableOpacity>
+              </View>
               <Text style={st.termDef}>{t.definition}</Text>
             </View>
           ))}

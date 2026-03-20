@@ -230,6 +230,16 @@ export function FrameworksTab({ marketName, marketId }: FrameworksTabProps) {
                     <Text style={st.industryText}>{industryExample}</Text>
                   </View>
                 )}
+
+                {/* Save to Notebook */}
+                <TouchableOpacity
+                  onPress={() => handleSaveFramework(fw)}
+                  disabled={saving}
+                  style={st.saveBtn}
+                >
+                  <Feather name="bookmark" size={14} color="#7C3AED" />
+                  <Text style={st.saveBtnText}>{saving ? 'Saving...' : 'Save to Notebook'}</Text>
+                </TouchableOpacity>
               </View>
             )}
           </View>
