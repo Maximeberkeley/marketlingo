@@ -193,6 +193,53 @@ export default function InterviewLabScreen() {
       .catch(() => setLoading(false));
   }, [user]);
 
+  // ─── Load curriculum progress ───
+  useEffect(() => {
+    if (!user || !market) return;
+    const key = `interview_progress_${user.id}_${market}`;
+    AsyncStorage.getItem(key).then(data => {
+      if (data) {
+        const parsed = JSON.parse(data);
+        setCyclesCompleted(parsed.cyclesCompleted || 0);
+        setTotalQuestionsAnswered(parsed.totalQuestionsAnswered || 0);
+        setMcqCycleCount(parsed.mcqCycleCount || 0);
+      }
+    }).catch(() => {});
+  }, [user, market]);
+
+  const saveCurriculumProgress = useCallback(async (updates: {
+    cyclesCompleted?: number;
+    totalQuestionsAnswered?: number;
+    mcqCycleCount?: number;
+  }) => {
+    if (!user || !market) return;
+    const key = `interview_progress_${user.id}_${market}`;
+    const current = {
+      cyclesCompleted: updates.cyclesCompleted ?? cyclesCompleted,
+      totalQuestionsAnswered: updates.totalQuestionsAnswered ?? totalQuestionsAnswered,
+      mcqCycleCount: updates.mcqCycleCount ?? mcqCycleCount,
+    };
+    try { await AsyncStorage.setItem(key, JSON.stringify(current)); } catch {}
+  }, [user, market, cyclesCompleted, totalQuestionsAnswered, mcqCycleCount]);
+
+  // Save feedback to notebook
+  const saveFeedbackToNotebook = useCallback(async (fb: any, questionText: string) => {
+    if (!user || !market || !fb) return;
+    triggerHaptic('medium');
+    try {
+      const content = `🎤 Mock Interview Feedback\n\nQ: ${questionText}\n\n📊 Score: ${fb.score}/10\n\n✅ What Went Well: ${fb.whatWentWell || ''}\n\n📈 Room for Improvement: ${fb.roomForImprovement || ''}\n\n💎 Pro Version: "${fb.betterVersion || ''}"`;
+      await supabase.from('notes').insert({
+        user_id: user.id,
+        content,
+        linked_label: 'interview-feedback',
+        market_id: market,
+      });
+      triggerHaptic('success');
+    } catch (err) {
+      console.warn('Save feedback error:', err);
+    }
+  }, [user, market]);
+
   // ─── Voice helpers ───
   const stopNarration = useCallback(async () => {
     try {
