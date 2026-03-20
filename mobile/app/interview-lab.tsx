@@ -42,7 +42,7 @@ const MOCK_QUESTION_COUNT = 5;
 type BottomTab = 'learn' | 'math' | 'frameworks' | 'glossary';
 
 // ─── Stage Tracker ───
-function StageTracker({ current, onTap }: { current: InterviewStage; onTap: (s: InterviewStage) => void }) {
+function StageTracker({ current, onTap, introCompleted }: { current: InterviewStage; onTap: (s: InterviewStage) => void; introCompleted: boolean }) {
   const stages: { stage: InterviewStage; label: string; icon: keyof typeof Feather.glyphMap }[] = [
     { stage: 1, label: 'Framework', icon: 'layers' },
     { stage: 2, label: 'Expect', icon: 'eye' },
@@ -53,13 +53,15 @@ function StageTracker({ current, onTap }: { current: InterviewStage; onTap: (s: 
   return (
     <View style={st.trackerRow}>
       {stages.map((s, i) => {
-        const done = current > s.stage;
+        const done = introCompleted ? s.stage < 4 : current > s.stage;
         const active = current === s.stage;
+        const locked = introCompleted && s.stage < 4; // Intro stages locked after completion
         return (
           <React.Fragment key={s.stage}>
             {i > 0 && <View style={[st.trackerLine, (done || active) && st.trackerLineActive]} />}
             <TouchableOpacity
-              onPress={() => onTap(s.stage)}
+              onPress={() => !locked && onTap(s.stage)}
+              disabled={locked}
               style={[st.trackerDot, active && st.trackerDotActive, done && st.trackerDotDone]}
             >
               <Feather name={done ? 'check' : s.icon} size={14} color={active || done ? '#FFF' : COLORS.textMuted} />
