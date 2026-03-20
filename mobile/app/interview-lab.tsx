@@ -536,7 +536,7 @@ export default function InterviewLabScreen() {
   const renderLearnTab = () => (
     <>
       {/* Stage Progress */}
-      <StageTracker current={stage} onTap={(s) => setStage(s)} />
+      <StageTracker current={stage} onTap={(s) => setStage(s)} introCompleted={introCompleted} />
 
       {/* ═══ STAGE 1: Framework ═══ */}
       {stage === 1 && (
