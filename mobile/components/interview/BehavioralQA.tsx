@@ -4,6 +4,7 @@ import { Feather } from '@expo/vector-icons';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useInterviewNotebook } from '../../hooks/useInterviewNotebook';
 
 interface BehavioralQAProps {
   marketName: string;
