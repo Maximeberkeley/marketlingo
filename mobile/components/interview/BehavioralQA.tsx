@@ -361,4 +361,7 @@ const st = StyleSheet.create({
 
   addNoteBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 12, borderRadius: 12, borderWidth: 1.5, borderColor: '#7C3AED', borderStyle: 'dashed' },
   addNoteBtnText: { ...TYPE.bodyBold, color: '#7C3AED', fontSize: 13 },
+
+  saveToNotebookBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: 'rgba(124,58,237,0.06)', borderWidth: 1, borderColor: 'rgba(124,58,237,0.15)' },
+  saveToNotebookText: { ...TYPE.bodyBold, color: '#7C3AED', fontSize: 12 },
 });
