@@ -28,6 +28,8 @@ import { MentalMathTab } from '../components/interview/MentalMathTab';
 import { FrameworksTab } from '../components/interview/FrameworksTab';
 import { BehavioralQA } from '../components/interview/BehavioralQA';
 import { InterviewGlossary } from '../components/interview/InterviewGlossary';
+import { useSubscription } from '../hooks/useSubscription';
+import { ProUpsellModal } from '../components/subscription/ProUpsellModal';
 
 // Assets
 const SOPHIA_AVATAR = require('../assets/mascot/sophia-hernandez.png');
