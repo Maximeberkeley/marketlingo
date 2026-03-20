@@ -271,6 +271,12 @@ export default function SettingsScreen() {
     );
   };
 
+  const handleToggleIndustryMascots = async (value: boolean) => {
+    setUseIndustryMascots(value);
+    if (!user) return;
+    await supabase.from('profiles').update({ use_industry_mascots: value } as any).eq('id', user.id);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
