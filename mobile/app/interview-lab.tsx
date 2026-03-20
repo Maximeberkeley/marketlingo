@@ -425,7 +425,7 @@ export default function InterviewLabScreen() {
       case 'frameworks':
         return <FrameworksTab marketName={marketName} marketId={market || 'aerospace'} />;
       case 'glossary':
-        return <InterviewGlossary marketName={marketName} />;
+        return <InterviewGlossary marketName={marketName} marketId={market || 'aerospace'} />;
       case 'learn':
       default:
         return renderLearnTab();
