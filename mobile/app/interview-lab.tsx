@@ -1056,25 +1056,28 @@ export default function InterviewLabScreen() {
               <Text style={st.sessionCompleteSubtitle}>{marketName} • {INTERVIEW_PERSONAS[persona]?.label}</Text>
 
               <View style={st.sessionScoresGrid}>
-                {mockSessionScores.map((s, i) => (
-                  <View key={i} style={st.sessionScoreItem}>
-                    <Text style={st.sessionScoreLabel}>Q{i + 1}</Text>
-                    <View style={[st.sessionScoreBadge, {
-                      backgroundColor: s >= 8 ? 'rgba(16,185,129,0.12)' : s >= 5 ? 'rgba(245,158,11,0.12)' : 'rgba(239,68,68,0.12)',
-                    }]}>
-                      <Text style={[st.sessionScoreValue, {
-                        color: s >= 8 ? '#10B981' : s >= 5 ? '#F59E0B' : '#EF4444',
-                      }]}>{s}/10</Text>
+                {mockSessionScores.map((s, i) => {
+                  const s100 = Math.round(s * 10);
+                  return (
+                    <View key={i} style={st.sessionScoreItem}>
+                      <Text style={st.sessionScoreLabel}>Q{i + 1}</Text>
+                      <View style={[st.sessionScoreBadge, {
+                        backgroundColor: s >= 8 ? 'rgba(16,185,129,0.12)' : s >= 5 ? 'rgba(245,158,11,0.12)' : 'rgba(239,68,68,0.12)',
+                      }]}>
+                        <Text style={[st.sessionScoreValue, {
+                          color: s >= 8 ? '#10B981' : s >= 5 ? '#F59E0B' : '#EF4444',
+                        }]}>{s100}/100</Text>
+                      </View>
                     </View>
-                  </View>
-                ))}
+                  );
+                })}
               </View>
 
               <View style={st.sessionAvgWrap}>
                 <Text style={st.sessionAvgLabel}>Average Score</Text>
                 <Text style={[st.sessionAvgValue, {
                   color: avgScore >= 8 ? '#10B981' : avgScore >= 5 ? '#F59E0B' : '#EF4444',
-                }]}>{avgScore.toFixed(1)}/10</Text>
+                }]}>{Math.round(avgScore * 10)}/100</Text>
               </View>
 
               {/* Curriculum Progress */}
