@@ -232,6 +232,19 @@ export function BehavioralQA({ marketName, marketId }: BehavioralQAProps) {
                   <Text style={st.suggestedText}>{q.suggestedAnswer}</Text>
                 </View>
 
+                {/* Save Q&A to Notebook */}
+                <TouchableOpacity
+                  onPress={() => {
+                    const content = `❓ ${q.question}\n\n💡 Tip: ${q.tip}\n\n📝 Suggested: ${q.suggestedAnswer}${notes[q.id] ? `\n\n✍️ My Answer: ${notes[q.id]}` : ''}`;
+                    saveToNotebook(content, 'interview-qa');
+                  }}
+                  disabled={savingToNotebook}
+                  style={st.saveToNotebookBtn}
+                >
+                  <Feather name="bookmark" size={14} color="#7C3AED" />
+                  <Text style={st.saveToNotebookText}>{savingToNotebook ? 'Saving...' : 'Save to Notebook'}</Text>
+                </TouchableOpacity>
+
                 {/* User Note */}
                 {hasNote && !isEditing && (
                   <View style={st.noteBox}>
