@@ -92,7 +92,7 @@ export default function SettingsScreen() {
       if (!user) return;
       const { data: profile } = await supabase
         .from('profiles')
-        .select('push_token, notification_preferences')
+        .select('push_token, notification_preferences, use_industry_mascots')
         .eq('id', user.id)
         .single();
 
@@ -100,6 +100,9 @@ export default function SettingsScreen() {
         const hasToken = !!profile.push_token;
         setPushToken(profile.push_token || null);
         setPushEnabled(hasToken);
+        if (typeof (profile as any).use_industry_mascots === 'boolean') {
+          setUseIndustryMascots((profile as any).use_industry_mascots);
+        }
 
         const prefs = profile.notification_preferences as any;
         if (prefs) {
