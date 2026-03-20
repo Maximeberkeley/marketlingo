@@ -74,6 +74,7 @@ async function registerForPushNotifications(): Promise<string | null> {
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const { user, resetPassword } = useAuth();
+  const { isProUser } = useSubscription();
   const [pushEnabled, setPushEnabled] = useState(false);
   const [dailyReminder, setDailyReminder] = useState(true);
   const [streakAlerts, setStreakAlerts] = useState(true);
@@ -82,6 +83,7 @@ export default function SettingsScreen() {
   const [registering, setRegistering] = useState(false);
   const [prefsLoaded, setPrefsLoaded] = useState(false);
   const [showNotifOnboarding, setShowNotifOnboarding] = useState(false);
+  const [useIndustryMascots, setUseIndustryMascots] = useState(true);
   const notificationListener = useRef<any>(null);
 
   // Load saved preferences from profile
