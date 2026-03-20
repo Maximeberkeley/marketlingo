@@ -1368,4 +1368,18 @@ const st = StyleSheet.create({
   bottomTabIconActive: { backgroundColor: 'rgba(124,58,237,0.1)' },
   bottomTabLabel: { ...TYPE.caption, color: COLORS.textMuted, fontSize: 10 },
   bottomTabLabelActive: { color: '#7C3AED' },
+
+  // Save feedback to notebook
+  saveFeedbackBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 12, borderRadius: 12, borderWidth: 1.5, borderColor: '#7C3AED', borderStyle: 'dashed', marginBottom: 8 },
+  saveFeedbackText: { ...TYPE.bodyBold, color: '#7C3AED', fontSize: 13 },
+
+  // Curriculum progress
+  curriculumCard: { padding: 16, borderRadius: 16, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, marginBottom: 16 },
+  curriculumTitle: { ...TYPE.bodyBold, color: COLORS.textPrimary, fontSize: 15, marginBottom: 12, textAlign: 'center' },
+  curriculumRow: { flexDirection: 'row', alignItems: 'center' },
+  curriculumStat: { flex: 1, alignItems: 'center' },
+  curriculumStatNum: { ...TYPE.h2, color: '#7C3AED', fontSize: 20 },
+  curriculumStatLabel: { ...TYPE.caption, color: COLORS.textMuted, fontSize: 10, marginTop: 2 },
+  curriculumDivider: { width: 1, height: 30, backgroundColor: COLORS.border },
+  curriculumHint: { ...TYPE.caption, color: COLORS.textMuted, fontSize: 11, textAlign: 'center', marginTop: 10, lineHeight: 16 },
 });
