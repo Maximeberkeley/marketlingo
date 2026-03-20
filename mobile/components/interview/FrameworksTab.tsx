@@ -121,6 +121,7 @@ const INDUSTRY_EXAMPLES: Record<string, Record<string, string>> = {
 export function FrameworksTab({ marketName, marketId }: FrameworksTabProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [readFrameworks, setReadFrameworks] = useState<Set<string>>(new Set());
+  const { saveToNotebook, saving } = useInterviewNotebook(marketId);
 
   const toggleFramework = (id: string) => {
     triggerHaptic('light');
@@ -130,6 +131,11 @@ export function FrameworksTab({ marketName, marketId }: FrameworksTabProps) {
       setExpanded(id);
       setReadFrameworks(prev => new Set(prev).add(id));
     }
+  };
+
+  const handleSaveFramework = (fw: Framework) => {
+    const content = `📚 ${fw.name}\n\n${fw.overview}\n\n🎯 When to use: ${fw.whenToUse}\n\n${fw.components.map(c => `• ${c.label}: ${c.description}`).join('\n')}`;
+    saveToNotebook(content, 'interview-framework');
   };
 
   const progress = Math.round((readFrameworks.size / FRAMEWORKS_LIBRARY.length) * 100);
