@@ -172,6 +172,7 @@ export default function InterviewLabScreen() {
   const [cyclesCompleted, setCyclesCompleted] = useState(0);
   const [totalQuestionsAnswered, setTotalQuestionsAnswered] = useState(0);
   const [mcqCycleCount, setMcqCycleCount] = useState(0);
+  const [introCompleted, setIntroCompleted] = useState(false);
 
   // Voice state
   const [isRecording, setIsRecording] = useState(false);
