@@ -831,7 +831,7 @@ const st = StyleSheet.create({
 
   // Path selection
   pathScreen: { flex: 1, paddingHorizontal: 20 },
-  backBtn: { marginBottom: 20, marginTop: 8, width: 40 },
+  backBtn: { marginBottom: 20, marginTop: 8, width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center', zIndex: 10 },
   pathTitle: { ...TYPE.hero, color: '#FFF', fontSize: 32 },
   pathSubtitle: { ...TYPE.body, color: 'rgba(255,255,255,0.7)', marginBottom: 28 },
   pathCard: { marginBottom: 16, borderRadius: 20, overflow: 'hidden', ...SHADOWS.lg },
