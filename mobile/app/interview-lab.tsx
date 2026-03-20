@@ -164,6 +164,11 @@ export default function InterviewLabScreen() {
   const [mockSessionScores, setMockSessionScores] = useState<number[]>([]);
   const [mockSessionComplete, setMockSessionComplete] = useState(false);
 
+  // Curriculum progress tracking
+  const [cyclesCompleted, setCyclesCompleted] = useState(0);
+  const [totalQuestionsAnswered, setTotalQuestionsAnswered] = useState(0);
+  const [mcqCycleCount, setMcqCycleCount] = useState(0);
+
   // Voice state
   const [isRecording, setIsRecording] = useState(false);
   const [isNarrating, setIsNarrating] = useState(false);
