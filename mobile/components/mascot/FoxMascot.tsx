@@ -1,5 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Image, Animated, StyleSheet, ImageSourcePropType } from 'react-native';
+import { useAuth } from '../../hooks/useAuth';
+import { useSubscription } from '../../hooks/useSubscription';
+import { supabase } from '../../lib/supabase';
 
 const FOX_MAP: Record<string, ImageSourcePropType> = {
   agtech: require('../../assets/mascot/leo_AgTech.png'),
@@ -22,11 +25,27 @@ interface FoxMascotProps {
 
 /**
  * Displays the industry-themed fox mascot image.
- * Falls back to the default Leo if the industry key isn't mapped.
+ * PRO-only feature: Basic users always see the default Leo.
+ * PRO users with 'Use Industry Mascots' toggle ON see industry-specific Leo.
  */
 export function FoxMascot({ industry, size = 220 }: FoxMascotProps) {
+  const { user } = useAuth();
+  const { isProUser } = useSubscription();
+  const [useIndustryMascots, setUseIndustryMascots] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('profiles').select('use_industry_mascots').eq('id', user.id).single()
+      .then(({ data }) => {
+        if (data && typeof data.use_industry_mascots === 'boolean') {
+          setUseIndustryMascots(data.use_industry_mascots);
+        }
+      }).catch(() => {});
+  }, [user]);
+
   const key = industry?.toLowerCase().replace(/[\s\/]+/g, '');
-  const source = FOX_MAP[key] || DEFAULT_IMAGE;
+  const canUseIndustry = isProUser && useIndustryMascots;
+  const source = canUseIndustry ? (FOX_MAP[key] || DEFAULT_IMAGE) : DEFAULT_IMAGE;
 
   const scaleAnim = useRef(new Animated.Value(0.85)).current;
   const breatheAnim = useRef(new Animated.Value(1)).current;

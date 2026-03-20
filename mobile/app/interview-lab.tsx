@@ -798,7 +798,7 @@ export default function InterviewLabScreen() {
                 i > mockIndex && st.mockDotPending,
               ]}>
                 {i < mockIndex && mockSessionScores[i] !== undefined && (
-                  <Text style={st.mockDotScore}>{mockSessionScores[i]}</Text>
+                  <Text style={st.mockDotScore}>{Math.round(mockSessionScores[i] * 10)}</Text>
                 )}
                 {i === mockIndex && <Feather name="mic" size={10} color="#FFF" />}
               </View>
