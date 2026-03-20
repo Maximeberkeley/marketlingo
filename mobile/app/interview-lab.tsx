@@ -1124,12 +1124,13 @@ export default function InterviewLabScreen() {
                 <TouchableOpacity
                   style={st.retryBtn}
                   onPress={() => {
+                    // Stay on stage 4, just reset mock state for a new cycle with new questions
                     setMockIndex(0); setMockSessionScores([]); setMockSessionComplete(false);
                     setFeedback(null); setUserResponse('');
                   }}
                 >
-                  <Feather name="rotate-ccw" size={16} color="#7C3AED" />
-                  <Text style={st.retryBtnText}>Try Again</Text>
+                  <Feather name="refresh-cw" size={16} color="#7C3AED" />
+                  <Text style={st.retryBtnText}>New Cycle</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={st.primaryBtn} onPress={() => router.back()}>
                   <Text style={st.primaryBtnText}>Done</Text>
