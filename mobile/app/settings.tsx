@@ -17,6 +17,7 @@ import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
+import { useSubscription } from '../hooks/useSubscription';
 import { supabase } from '../lib/supabase';
 import { NotificationOnboarding } from '../components/onboarding/NotificationOnboarding';
 
