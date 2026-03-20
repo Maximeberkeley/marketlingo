@@ -11,9 +11,11 @@ interface FeedbackRequest {
   scenario: string;
   question: string;
   buzzwords: string[];
-  persona: string; // humble_leader | tech_genius | creative_dreamer
+  persona: string; // consultant | tech_lead | recruiter
   marketId: string;
   path: string; // consulting | academic
+  questionNumber?: number; // 1-5 for sequential mock
+  totalQuestions?: number;
 }
 
 serve(async (req) => {
@@ -44,7 +46,7 @@ serve(async (req) => {
       });
     }
 
-    const { userResponse, scenario, question, buzzwords, persona, marketId, path } = await req.json() as FeedbackRequest;
+    const { userResponse, scenario, question, buzzwords, persona, marketId, path, questionNumber, totalQuestions } = await req.json() as FeedbackRequest;
 
     if (!userResponse || userResponse.trim().length < 10) {
       return new Response(JSON.stringify({ error: "Response too short" }), {
@@ -61,52 +63,77 @@ serve(async (req) => {
       });
     }
 
-    const personaFocus: Record<string, string> = {
-      humble_leader: "collaboration, empathy, team dynamics, and servant leadership",
-      tech_genius: "data-driven arguments, technical accuracy, analytical rigor, and quantitative reasoning",
-      creative_dreamer: "creativity, bold vision, innovative thinking, and storytelling",
+    // Persona definitions — 3 distinct interviewer styles
+    const personaProfiles: Record<string, { name: string; style: string; focus: string }> = {
+      consultant: {
+        name: "The Consultant",
+        style: "Professional and structured. You focus on frameworks, ROI, and business impact. You reward MECE thinking, quantitative reasoning, and clear structure. You speak like a McKinsey partner — direct, analytical, and results-oriented.",
+        focus: "frameworks, structured thinking, ROI analysis, MECE logic, and quantitative reasoning",
+      },
+      tech_lead: {
+        name: "The Tech Lead",
+        style: "Technical and precise. You deep-dive into specifications, regulatory compliance (FAA/FDA/NIST), and technical feasibility. You reward domain expertise, technical accuracy, and understanding of engineering trade-offs. You speak like a senior engineer — curious, detail-oriented, and rigorous.",
+        focus: "technical specifications, regulatory compliance, engineering trade-offs, and domain expertise",
+      },
+      recruiter: {
+        name: "The Recruiter",
+        style: "Warm but evaluative. You focus on cultural fit, behavioral competencies, and soft skills. You reward self-awareness, growth mindset, teamwork examples, and authentic storytelling. You speak like a senior talent partner — empathetic, perceptive, and looking for character.",
+        focus: "cultural fit, behavioral competencies, teamwork, growth mindset, and authentic storytelling",
+      },
+      // Legacy personas mapped to new ones
+      humble_leader: {
+        name: "The Recruiter",
+        style: "Warm but evaluative. You focus on cultural fit, behavioral competencies, and soft skills.",
+        focus: "cultural fit, behavioral competencies, teamwork, growth mindset, and authentic storytelling",
+      },
+      tech_genius: {
+        name: "The Tech Lead",
+        style: "Technical and precise. You deep-dive into specifications and regulatory compliance.",
+        focus: "technical specifications, regulatory compliance, engineering trade-offs, and domain expertise",
+      },
+      creative_dreamer: {
+        name: "The Consultant",
+        style: "Professional and structured. You focus on frameworks, ROI, and business impact.",
+        focus: "frameworks, structured thinking, ROI analysis, MECE logic, and quantitative reasoning",
+      },
     };
 
-    const reviewLens = personaFocus[persona] || personaFocus.humble_leader;
+    const selectedPersona = personaProfiles[persona] || personaProfiles.consultant;
+    const qProgress = questionNumber && totalQuestions ? `\n\nThis is question ${questionNumber} of ${totalQuestions} in a mock interview session.` : '';
 
-    const structureKeywords = [
-      "first", "second", "third", "firstly", "secondly", "thirdly",
-      "in conclusion", "to summarize", "let me break this down",
-      "on one hand", "on the other hand", "there are two key",
-      "i would approach this by", "my framework", "step one", "step two",
-    ];
+    const systemPrompt = `You are Sophia Hernandez, a sharp, warm, and inspiring case interview coach. You are currently acting as "${selectedPersona.name}" interviewer persona.
 
-    const systemPrompt = `You are Sophia Hernández, a sharp, warm, and inspiring case interview coach. You speak to students like a cool older sister who went to a top consulting firm. Your tone is encouraging but honest — you push students to be their best.
+PERSONA STYLE: ${selectedPersona.style}
 
-You are reviewing a ${path === 'academic' ? 'scholarship/academic interview' : 'case interview/consulting prep'} response for the ${marketId} industry.
+You are reviewing a ${path === 'academic' ? 'scholarship/academic interview' : 'case interview/consulting prep'} response for the ${marketId} industry.${qProgress}
 
 SCENARIO: ${scenario}
 QUESTION: ${question}
 
 INDUSTRY BUZZWORDS TO LOOK FOR: ${buzzwords.join(', ')}
 
-THE USER'S CHOSEN PERSONA: "${persona}" — so evaluate their answer with extra focus on: ${reviewLens}
+EVALUATE WITH EXTRA FOCUS ON: ${selectedPersona.focus}
 
-GRADING CRITERIA:
-1. STRUCTURE (40%): Did they use a clear framework? Look for transition words like "First/Second/Third", "Let me break this down", etc.
-2. CONTENT (35%): Did they demonstrate industry knowledge? Did they use relevant buzzwords naturally?
-3. PERSONA FIT (25%): Does the answer match their chosen persona style?
+GRADING CRITERIA (score each out of 10):
+1. INDUSTRY KNOWLEDGE (40%): Did they demonstrate real understanding of the industry? Did they use relevant technical terms naturally? Did they show awareness of current trends?
+2. COMMUNICATION STYLE (35%): Was their answer structured? Did they use frameworks? Was the tone appropriate for a professional setting?
+3. PERSONA FIT (25%): Does the answer match what "${selectedPersona.name}" would look for?
 
 RESPOND IN THIS EXACT JSON FORMAT:
 {
-  "score": <number 0-100>,
-  "structureScore": <number 0-100>,
-  "contentScore": <number 0-100>,
-  "personaScore": <number 0-100>,
-  "awesome": ["bullet point 1", "bullet point 2", "bullet point 3"],
-  "missing": ["bullet point 1", "bullet point 2", "bullet point 3"],
-  "trySaying": "A rewritten version of their answer that would score 95+, written in their persona style. Keep it under 150 words.",
+  "score": <number 1-10>,
+  "industryKnowledgeScore": <number 1-10>,
+  "communicationScore": <number 1-10>,
+  "personaFitScore": <number 1-10>,
+  "whatWentWell": "One specific, concrete positive point about their answer (1-2 sentences)",
+  "roomForImprovement": "One specific suggestion with an industry-specific way to rephrase (1-2 sentences)",
+  "betterVersion": "A rewritten version of their answer that would score 9-10/10, written in their persona style. Keep it under 120 words.",
   "buzzwordsUsed": ["list of industry buzzwords they correctly used"],
   "buzzwordsMissed": ["list of key buzzwords they should have included"],
-  "sophiaSays": "A 1-2 sentence encouraging message in Sophia's voice"
+  "sophiaSays": "A 1-2 sentence encouraging message in Sophia's voice — warm, direct, inspiring"
 }
 
-IMPORTANT: Write for a 15-year-old reader. Be warm, direct, and inspiring. Use active language. Avoid corporate jargon in YOUR feedback (even if you expect it in their answer).`;
+IMPORTANT: Write for a 15-year-old reader. Be warm, direct, and inspiring. Use active language. Score honestly — most first attempts should be 4-6/10.`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -149,7 +176,6 @@ IMPORTANT: Write for a 15-year-old reader. Be warm, direct, and inspiring. Use a
     const aiData = await aiResponse.json();
     const raw = aiData.choices?.[0]?.message?.content || "";
 
-    // Parse JSON from the response (handle markdown code blocks)
     let feedback;
     try {
       const jsonMatch = raw.match(/\{[\s\S]*\}/);
@@ -160,16 +186,16 @@ IMPORTANT: Write for a 15-year-old reader. Be warm, direct, and inspiring. Use a
       }
     } catch {
       feedback = {
-        score: 60,
-        structureScore: 50,
-        contentScore: 60,
-        personaScore: 70,
-        awesome: ["You attempted the question — that takes courage!", "You showed some relevant thinking", "Good effort on engaging with the scenario"],
-        missing: ["Try using a clear framework (First, Second, Third)", "Include industry-specific terms", "Be more specific with numbers and examples"],
-        trySaying: "I couldn't generate a specific rewrite, but try starting with 'I'd approach this in three steps...' and include specific numbers.",
+        score: 5,
+        industryKnowledgeScore: 4,
+        communicationScore: 5,
+        personaFitScore: 5,
+        whatWentWell: "You attempted the question — that takes courage and is the first step to mastering interviews!",
+        roomForImprovement: "Try using a clear framework (First, Second, Third) and include industry-specific terms to show domain expertise.",
+        betterVersion: "I couldn't generate a specific rewrite, but try starting with 'I'd approach this in three steps...' and include specific numbers and industry terms.",
         buzzwordsUsed: [],
         buzzwordsMissed: buzzwords.slice(0, 3),
-        sophiaSays: "Hey, good start! The fact that you're practicing already puts you ahead. Let's polish this answer together! 💪",
+        sophiaSays: "Hey, good start! The fact that you're practicing already puts you ahead. Let's polish this answer together!",
       };
     }
 
