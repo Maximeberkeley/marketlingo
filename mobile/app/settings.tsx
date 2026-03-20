@@ -395,6 +395,25 @@ export default function SettingsScreen() {
           )}
         </View>
 
+        {/* Pro Features */}
+        {isProUser && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>PRO FEATURES</Text>
+            <View style={styles.settingRow}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.settingLabel}>Use Industry Mascots</Text>
+                <Text style={styles.settingDesc}>Show industry-themed Leo on home screen</Text>
+              </View>
+              <Switch
+                value={useIndustryMascots}
+                onValueChange={handleToggleIndustryMascots}
+                trackColor={{ false: COLORS.bg1, true: COLORS.accent }}
+                thumbColor="#FFFFFF"
+              />
+            </View>
+          </View>
+        )}
+
         {/* Account */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>ACCOUNT</Text>
