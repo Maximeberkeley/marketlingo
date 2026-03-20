@@ -188,8 +188,24 @@ export default function InterviewLabScreen() {
   }, [user]);
 
   // ─── Voice helpers ───
+  const stopNarration = useCallback(async () => {
+    try {
+      if (soundRef.current) {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+        soundRef.current = null;
+      }
+    } catch {}
+    setIsNarrating(false);
+    setIsSophiaSpeaking(false);
+  }, []);
+
   const narrateScenario = useCallback(async (text: string) => {
-    if (isNarrating) return;
+    if (isNarrating) {
+      // Tap again to mute/stop
+      await stopNarration();
+      return;
+    }
     setIsNarrating(true);
     triggerHaptic('light');
     try {
@@ -198,11 +214,11 @@ export default function InterviewLabScreen() {
       soundRef.current = sound;
       if (sound) {
         sound.setOnPlaybackStatusUpdate((status) => {
-          if ('didJustFinish' in status && status.didJustFinish) setIsNarrating(false);
+          if ('didJustFinish' in status && status.didJustFinish) { setIsNarrating(false); soundRef.current = null; }
         });
       } else { setIsNarrating(false); }
     } catch { setIsNarrating(false); }
-  }, [isNarrating]);
+  }, [isNarrating, stopNarration]);
 
   const speakFeedback = useCallback(async (fb: any) => {
     if (isSophiaSpeaking) return;
