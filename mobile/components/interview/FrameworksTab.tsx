@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import { Feather } from '@expo/vector-icons';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
+import { useInterviewNotebook } from '../../hooks/useInterviewNotebook';
 
 interface FrameworksTabProps {
   marketName: string;
