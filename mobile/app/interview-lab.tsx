@@ -208,6 +208,10 @@ export default function InterviewLabScreen() {
         setCyclesCompleted(parsed.cyclesCompleted || 0);
         setTotalQuestionsAnswered(parsed.totalQuestionsAnswered || 0);
         setMcqCycleCount(parsed.mcqCycleCount || 0);
+        if (parsed.introCompleted) {
+          setIntroCompleted(true);
+          setStage(4); // Skip intro stages on subsequent visits
+        }
       }
     }).catch(() => {});
   }, [user, market]);
