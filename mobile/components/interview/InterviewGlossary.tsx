@@ -38,8 +38,9 @@ const CONSULTING_GLOSSARY: GlossaryTerm[] = [
   { term: 'Pivot', definition: 'A fundamental change in business strategy or product direction based on market feedback.', category: 'Strategy' },
 ];
 
-export function InterviewGlossary({ marketName }: { marketName: string }) {
+export function InterviewGlossary({ marketName, marketId }: { marketName: string; marketId?: string }) {
   const [search, setSearch] = useState('');
+  const { saveToNotebook, saving } = useInterviewNotebook(marketId || 'default');
 
   const filtered = useMemo(() => {
     if (!search.trim()) return CONSULTING_GLOSSARY;
