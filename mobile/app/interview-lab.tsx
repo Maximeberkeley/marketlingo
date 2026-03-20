@@ -761,6 +761,9 @@ export default function InterviewLabScreen() {
                   setMcqIndex(i => i + 1);
                   setMcqSelected(null);
                 } else {
+                  // Mark intro stages as completed — skip them on future visits
+                  setIntroCompleted(true);
+                  saveCurriculumProgress({ introCompleted: true });
                   setStage(4);
                   setMockIndex(0);
                   setMockSessionScores([]);
