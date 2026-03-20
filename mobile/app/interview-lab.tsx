@@ -391,15 +391,22 @@ export default function InterviewLabScreen() {
 
   const goToNextMockQuestion = useCallback(() => {
     const nextIndex = mockIndex + 1;
+    const newTotal = totalQuestionsAnswered + 1;
+    setTotalQuestionsAnswered(newTotal);
+
     if (nextIndex >= Math.min(MOCK_QUESTION_COUNT, mockQuestions.length)) {
+      const newCycles = cyclesCompleted + 1;
+      setCyclesCompleted(newCycles);
       setMockSessionComplete(true);
+      saveCurriculumProgress({ cyclesCompleted: newCycles, totalQuestionsAnswered: newTotal });
     } else {
       setMockIndex(nextIndex);
+      saveCurriculumProgress({ totalQuestionsAnswered: newTotal });
     }
     setFeedback(null);
     setUserResponse('');
     setShowCelebration(false);
-  }, [mockIndex, mockQuestions.length]);
+  }, [mockIndex, mockQuestions.length, totalQuestionsAnswered, cyclesCompleted, saveCurriculumProgress]);
 
   if (loading || questionsLoading) {
     return <View style={[st.container, st.centered]}><ActivityIndicator size="large" color={COLORS.accent} /></View>;
