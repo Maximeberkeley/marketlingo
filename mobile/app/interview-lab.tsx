@@ -42,7 +42,7 @@ const MOCK_QUESTION_COUNT = 5;
 type BottomTab = 'learn' | 'math' | 'frameworks' | 'glossary';
 
 // ─── Stage Tracker ───
-function StageTracker({ current, onTap }: { current: InterviewStage; onTap: (s: InterviewStage) => void }) {
+function StageTracker({ current, onTap, introCompleted }: { current: InterviewStage; onTap: (s: InterviewStage) => void; introCompleted: boolean }) {
   const stages: { stage: InterviewStage; label: string; icon: keyof typeof Feather.glyphMap }[] = [
     { stage: 1, label: 'Framework', icon: 'layers' },
     { stage: 2, label: 'Expect', icon: 'eye' },
@@ -53,13 +53,15 @@ function StageTracker({ current, onTap }: { current: InterviewStage; onTap: (s: 
   return (
     <View style={st.trackerRow}>
       {stages.map((s, i) => {
-        const done = current > s.stage;
+        const done = introCompleted ? s.stage < 4 : current > s.stage;
         const active = current === s.stage;
+        const locked = introCompleted && s.stage < 4; // Intro stages locked after completion
         return (
           <React.Fragment key={s.stage}>
             {i > 0 && <View style={[st.trackerLine, (done || active) && st.trackerLineActive]} />}
             <TouchableOpacity
-              onPress={() => onTap(s.stage)}
+              onPress={() => !locked && onTap(s.stage)}
+              disabled={locked}
               style={[st.trackerDot, active && st.trackerDotActive, done && st.trackerDotDone]}
             >
               <Feather name={done ? 'check' : s.icon} size={14} color={active || done ? '#FFF' : COLORS.textMuted} />
@@ -172,6 +174,7 @@ export default function InterviewLabScreen() {
   const [cyclesCompleted, setCyclesCompleted] = useState(0);
   const [totalQuestionsAnswered, setTotalQuestionsAnswered] = useState(0);
   const [mcqCycleCount, setMcqCycleCount] = useState(0);
+  const [introCompleted, setIntroCompleted] = useState(false);
 
   // Voice state
   const [isRecording, setIsRecording] = useState(false);
@@ -207,6 +210,10 @@ export default function InterviewLabScreen() {
         setCyclesCompleted(parsed.cyclesCompleted || 0);
         setTotalQuestionsAnswered(parsed.totalQuestionsAnswered || 0);
         setMcqCycleCount(parsed.mcqCycleCount || 0);
+        if (parsed.introCompleted) {
+          setIntroCompleted(true);
+          setStage(4); // Skip intro stages on subsequent visits
+        }
       }
     }).catch(() => {});
   }, [user, market]);
@@ -215,6 +222,7 @@ export default function InterviewLabScreen() {
     cyclesCompleted?: number;
     totalQuestionsAnswered?: number;
     mcqCycleCount?: number;
+    introCompleted?: boolean;
   }) => {
     if (!user || !market) return;
     const key = `interview_progress_${user.id}_${market}`;
@@ -222,9 +230,10 @@ export default function InterviewLabScreen() {
       cyclesCompleted: updates.cyclesCompleted ?? cyclesCompleted,
       totalQuestionsAnswered: updates.totalQuestionsAnswered ?? totalQuestionsAnswered,
       mcqCycleCount: updates.mcqCycleCount ?? mcqCycleCount,
+      introCompleted: updates.introCompleted ?? introCompleted,
     };
     try { await AsyncStorage.setItem(key, JSON.stringify(current)); } catch {}
-  }, [user, market, cyclesCompleted, totalQuestionsAnswered, mcqCycleCount]);
+  }, [user, market, cyclesCompleted, totalQuestionsAnswered, mcqCycleCount, introCompleted]);
 
   // Save feedback to notebook
   const saveFeedbackToNotebook = useCallback(async (fb: any, questionText: string) => {
@@ -527,7 +536,7 @@ export default function InterviewLabScreen() {
   const renderLearnTab = () => (
     <>
       {/* Stage Progress */}
-      <StageTracker current={stage} onTap={(s) => setStage(s)} />
+      <StageTracker current={stage} onTap={(s) => setStage(s)} introCompleted={introCompleted} />
 
       {/* ═══ STAGE 1: Framework ═══ */}
       {stage === 1 && (
@@ -754,6 +763,9 @@ export default function InterviewLabScreen() {
                   setMcqIndex(i => i + 1);
                   setMcqSelected(null);
                 } else {
+                  // Mark intro stages as completed — skip them on future visits
+                  setIntroCompleted(true);
+                  saveCurriculumProgress({ introCompleted: true });
                   setStage(4);
                   setMockIndex(0);
                   setMockSessionScores([]);
@@ -1112,12 +1124,13 @@ export default function InterviewLabScreen() {
                 <TouchableOpacity
                   style={st.retryBtn}
                   onPress={() => {
+                    // Stay on stage 4, just reset mock state for a new cycle with new questions
                     setMockIndex(0); setMockSessionScores([]); setMockSessionComplete(false);
                     setFeedback(null); setUserResponse('');
                   }}
                 >
-                  <Feather name="rotate-ccw" size={16} color="#7C3AED" />
-                  <Text style={st.retryBtnText}>Try Again</Text>
+                  <Feather name="refresh-cw" size={16} color="#7C3AED" />
+                  <Text style={st.retryBtnText}>New Cycle</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={st.primaryBtn} onPress={() => router.back()}>
                   <Text style={st.primaryBtnText}>Done</Text>
@@ -1138,8 +1151,9 @@ export default function InterviewLabScreen() {
         <View style={[st.header, { paddingTop: insets.top + 8 }]}>
           <TouchableOpacity onPress={() => {
             if (activeTab !== 'learn') { setActiveTab('learn'); }
-            else if (stage === 1 && !feedback) { setPath(null); }
-            else { setStage(Math.max(1, stage - 1) as InterviewStage); }
+            else if (!introCompleted && stage === 1 && !feedback) { setPath(null); }
+            else if (!introCompleted) { setStage(Math.max(1, stage - 1) as InterviewStage); }
+            else { router.back(); } // Intro done — back exits
           }} style={st.backBtn2}>
             <Feather name="chevron-left" size={22} color={COLORS.textPrimary} />
           </TouchableOpacity>

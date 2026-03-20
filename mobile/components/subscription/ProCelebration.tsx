@@ -7,7 +7,9 @@ import {
   Dimensions,
   TouchableOpacity,
   Modal,
+  ScrollView,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { LeoCharacter } from '../mascot/LeoCharacter';
 import { triggerHaptic } from '../../lib/haptics';
@@ -64,6 +66,15 @@ function ConfettiPiece({ delay, startX }: { delay: number; startX: number }) {
   );
 }
 
+const PRO_BENEFITS: { icon: keyof typeof Feather.glyphMap; title: string; desc: string }[] = [
+  { icon: 'book-open', title: 'Unlimited Learning', desc: 'No daily caps on lessons, games & drills' },
+  { icon: 'mic', title: 'Interview Lab', desc: 'AI mock interviews with Sophia Hernández' },
+  { icon: 'layers', title: 'Investment Lab', desc: 'Portfolio simulations & valuation models' },
+  { icon: 'smile', title: 'Industry Mascots', desc: 'Unlock themed Leo mascots — toggle in Settings!' },
+  { icon: 'target', title: 'AI Mentors On-Demand', desc: 'Unlimited industry-specific mentor chats' },
+  { icon: 'award', title: 'LinkedIn Certificates', desc: 'Shareable credentials for your expertise' },
+];
+
 interface ProCelebrationProps {
   visible: boolean;
   onDismiss: () => void;
@@ -75,12 +86,12 @@ export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationP
   const glowAnim = useRef(new Animated.Value(0)).current;
   const badgeScale = useRef(new Animated.Value(0)).current;
   const textOpacity = useRef(new Animated.Value(0)).current;
+  const benefitsOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (!visible) return;
     triggerHaptic('success');
 
-    // Sequence: glow → badge burst → text fade
     Animated.sequence([
       Animated.spring(scaleAnim, { toValue: 1, tension: 40, friction: 6, useNativeDriver: true }),
       Animated.parallel([
@@ -92,10 +103,10 @@ export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationP
         ),
         Animated.spring(badgeScale, { toValue: 1, tension: 100, friction: 5, delay: 300, useNativeDriver: true }),
         Animated.timing(textOpacity, { toValue: 1, duration: 600, delay: 600, useNativeDriver: true }),
+        Animated.timing(benefitsOpacity, { toValue: 1, duration: 800, delay: 1000, useNativeDriver: true }),
       ]),
     ]).start();
 
-    // Extra haptics for the "epic" feel
     setTimeout(() => triggerHaptic('success'), 400);
     setTimeout(() => triggerHaptic('medium'), 800);
   }, [visible]);
@@ -109,15 +120,13 @@ export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationP
   const title = planType === 'trial' ? 'Pro Trial Activated!' : "You're Pro Now!";
   const subtitle = planType === 'trial'
     ? '7 days of unlimited access.\nMake the most of it!'
-    : 'Welcome to the inner circle.\nAll features unlocked forever.';
+    : 'Welcome to the inner circle.\nAll features unlocked!';
 
   return (
     <Modal transparent animationType="fade" visible={visible}>
       <View style={styles.overlay}>
-        {/* Confetti layer */}
         <View style={StyleSheet.absoluteFill}>{confettiPieces}</View>
 
-        {/* Glow ring */}
         <Animated.View
           style={[
             styles.glowRing,
@@ -130,26 +139,47 @@ export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationP
           ]}
         />
 
-        {/* Center content */}
-        <Animated.View style={[styles.content, { transform: [{ scale: scaleAnim }] }]}>
-          <LeoCharacter size="lg" animation="celebrating" />
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+        >
+          <Animated.View style={[styles.content, { transform: [{ scale: scaleAnim }] }]}>
+            <LeoCharacter size="lg" animation="celebrating" />
 
-          {/* PRO badge burst */}
-          <Animated.View style={[styles.proBadgeBig, { transform: [{ scale: badgeScale }] }]}>
-            <Text style={styles.proBadgeText}>⚡ PRO</Text>
-          </Animated.View>
+            <Animated.View style={[styles.proBadgeBig, { transform: [{ scale: badgeScale }] }]}>
+              <Text style={styles.proBadgeText}>⚡ PRO</Text>
+            </Animated.View>
 
-          <Animated.View style={{ opacity: textOpacity, alignItems: 'center' }}>
-            <Text style={styles.title}>{title}</Text>
-            <Text style={styles.subtitle}>{subtitle}</Text>
-          </Animated.View>
+            <Animated.View style={{ opacity: textOpacity, alignItems: 'center' }}>
+              <Text style={styles.title}>{title}</Text>
+              <Text style={styles.subtitle}>{subtitle}</Text>
+            </Animated.View>
 
-          <Animated.View style={{ opacity: textOpacity }}>
-            <TouchableOpacity style={styles.continueBtn} onPress={onDismiss} activeOpacity={0.85}>
-              <Text style={styles.continueBtnText}>Let's Go! 🚀</Text>
-            </TouchableOpacity>
+            {/* Benefits List */}
+            <Animated.View style={[styles.benefitsContainer, { opacity: benefitsOpacity }]}>
+              <Text style={styles.benefitsTitle}>Here's what you unlocked:</Text>
+              {PRO_BENEFITS.map((b, i) => (
+                <View key={i} style={styles.benefitRow}>
+                  <View style={[styles.benefitIcon, b.icon === 'smile' && styles.benefitIconHighlight]}>
+                    <Feather name={b.icon} size={16} color={b.icon === 'smile' ? '#FDE68A' : '#C4B5FD'} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.benefitTitle}>{b.title}</Text>
+                    <Text style={styles.benefitDesc}>{b.desc}</Text>
+                  </View>
+                  <Feather name="check" size={14} color="#10B981" />
+                </View>
+              ))}
+            </Animated.View>
+
+            <Animated.View style={{ opacity: textOpacity }}>
+              <TouchableOpacity style={styles.continueBtn} onPress={onDismiss} activeOpacity={0.85}>
+                <Text style={styles.continueBtnText}>Let's Go! 🚀</Text>
+              </TouchableOpacity>
+            </Animated.View>
           </Animated.View>
-        </Animated.View>
+        </ScrollView>
       </View>
     </Modal>
   );
@@ -161,6 +191,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.92)',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
   },
   glowRing: {
     position: 'absolute',
@@ -177,7 +213,8 @@ const styles = StyleSheet.create({
   },
   content: {
     alignItems: 'center',
-    gap: 20,
+    gap: 16,
+    paddingHorizontal: 24,
   },
   proBadgeBig: {
     backgroundColor: '#8B5CF6',
@@ -198,24 +235,70 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#FFF',
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: '800',
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: 4,
   },
   subtitle: {
     color: 'rgba(255,255,255,0.7)',
-    fontSize: 15,
+    fontSize: 14,
     textAlign: 'center',
     lineHeight: 22,
+    marginTop: 4,
+  },
+  benefitsContainer: {
+    width: '100%',
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 16,
+    padding: 16,
     marginTop: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(139,92,246,0.2)',
+  },
+  benefitsTitle: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 13,
+    fontWeight: '600',
+    marginBottom: 12,
+    textAlign: 'center',
+    letterSpacing: 0.5,
+  },
+  benefitRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 8,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(255,255,255,0.08)',
+  },
+  benefitIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    backgroundColor: 'rgba(139,92,246,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  benefitIconHighlight: {
+    backgroundColor: 'rgba(245,158,11,0.2)',
+  },
+  benefitTitle: {
+    color: '#FFF',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  benefitDesc: {
+    color: 'rgba(255,255,255,0.55)',
+    fontSize: 11,
+    marginTop: 1,
   },
   continueBtn: {
     backgroundColor: '#8B5CF6',
     paddingHorizontal: 40,
     paddingVertical: 16,
     borderRadius: 30,
-    marginTop: 24,
+    marginTop: 16,
     shadowColor: '#8B5CF6',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
