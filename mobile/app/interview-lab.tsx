@@ -145,6 +145,8 @@ function BottomTabBar({ active, onSelect, insetBottom }: { active: BottomTab; on
 export default function InterviewLabScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { isProUser } = useSubscription();
+  const [showProGate, setShowProGate] = useState(false);
   const [market, setMarket] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [path, setPath] = useState<InterviewPath | null>(null);
