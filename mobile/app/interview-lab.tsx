@@ -28,6 +28,8 @@ import { MentalMathTab } from '../components/interview/MentalMathTab';
 import { FrameworksTab } from '../components/interview/FrameworksTab';
 import { BehavioralQA } from '../components/interview/BehavioralQA';
 import { InterviewGlossary } from '../components/interview/InterviewGlossary';
+import { useSubscription } from '../hooks/useSubscription';
+import { ProUpsellModal } from '../components/subscription/ProUpsellModal';
 
 // Assets
 const SOPHIA_AVATAR = require('../assets/mascot/sophia-hernandez.png');
@@ -143,6 +145,8 @@ function BottomTabBar({ active, onSelect, insetBottom }: { active: BottomTab; on
 export default function InterviewLabScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { isProUser } = useSubscription();
+  const [showProGate, setShowProGate] = useState(false);
   const [market, setMarket] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [path, setPath] = useState<InterviewPath | null>(null);
@@ -227,7 +231,7 @@ export default function InterviewLabScreen() {
     if (!user || !market || !fb) return;
     triggerHaptic('medium');
     try {
-      const content = `🎤 Mock Interview Feedback\n\nQ: ${questionText}\n\n📊 Score: ${fb.score}/10\n\n✅ What Went Well: ${fb.whatWentWell || ''}\n\n📈 Room for Improvement: ${fb.roomForImprovement || ''}\n\n💎 Pro Version: "${fb.betterVersion || ''}"`;
+      const content = `🎤 Mock Interview Feedback\n\nQ: ${questionText}\n\n📊 Score: ${Math.round((fb.score ?? 5) * 10)}/100\n\n✅ What Went Well: ${fb.whatWentWell || ''}\n\n📈 Room for Improvement: ${fb.roomForImprovement || ''}\n\n💎 Pro Version: "${fb.betterVersion || ''}"`;
       await supabase.from('notes').insert({
         user_id: user.id,
         content,
@@ -410,6 +414,33 @@ export default function InterviewLabScreen() {
 
   if (loading || questionsLoading) {
     return <View style={[st.container, st.centered]}><ActivityIndicator size="large" color={COLORS.accent} /></View>;
+  }
+
+  // PRO gate — show upsell if not pro
+  if (!isProUser) {
+    return (
+      <View style={[st.container, st.centered, { paddingHorizontal: 20 }]}>
+        <View style={{ alignItems: 'center', gap: 16 }}>
+          <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(124,58,237,0.12)', alignItems: 'center', justifyContent: 'center' }}>
+            <Feather name="lock" size={36} color="#7C3AED" />
+          </View>
+          <Text style={{ ...TYPE.h2, color: COLORS.textPrimary, textAlign: 'center' }}>Interview Lab is a Pro Feature</Text>
+          <Text style={{ ...TYPE.body, color: COLORS.textMuted, textAlign: 'center', lineHeight: 22 }}>
+            Unlock mock interviews with AI coach Sophia, mental math drills, frameworks library, and more.
+          </Text>
+          <TouchableOpacity
+            style={{ paddingVertical: 16, paddingHorizontal: 40, borderRadius: 16, backgroundColor: '#7C3AED', ...SHADOWS.accent }}
+            onPress={() => { triggerHaptic('medium'); router.push('/subscription' as any); }}
+          >
+            <Text style={{ ...TYPE.bodyBold, color: '#FFF', fontSize: 16 }}>Upgrade to Pro</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.back()} style={{ paddingVertical: 10 }}>
+            <Text style={{ ...TYPE.body, color: COLORS.textMuted }}>Go Back</Text>
+          </TouchableOpacity>
+        </View>
+        <ProUpsellModal isOpen={showProGate} onClose={() => setShowProGate(false)} trigger="feature_gate" featureName="Interview Lab" />
+      </View>
+    );
   }
 
   const marketName = market ? getMarketName(market) : 'Industry';
@@ -767,7 +798,7 @@ export default function InterviewLabScreen() {
                 i > mockIndex && st.mockDotPending,
               ]}>
                 {i < mockIndex && mockSessionScores[i] !== undefined && (
-                  <Text style={st.mockDotScore}>{mockSessionScores[i]}</Text>
+                  <Text style={st.mockDotScore}>{Math.round(mockSessionScores[i] * 10)}</Text>
                 )}
                 {i === mockIndex && <Feather name="mic" size={10} color="#FFF" />}
               </View>
@@ -903,8 +934,8 @@ export default function InterviewLabScreen() {
             <View style={st.feedbackContainer}>
               <View style={st.scoreCard}>
                 <View style={[st.scoreCircle, { backgroundColor: (feedback.score ?? 5) >= 8 ? 'rgba(16,185,129,0.12)' : (feedback.score ?? 5) >= 5 ? 'rgba(245,158,11,0.12)' : 'rgba(239,68,68,0.12)' }]}>
-                  <Text style={[st.scoreNum, { color: (feedback.score ?? 5) >= 8 ? '#10B981' : (feedback.score ?? 5) >= 5 ? '#F59E0B' : '#EF4444' }]}>{feedback.score ?? 5}</Text>
-                  <Text style={st.scoreSlash}>/10</Text>
+                  <Text style={[st.scoreNum, { color: (feedback.score ?? 5) >= 8 ? '#10B981' : (feedback.score ?? 5) >= 5 ? '#F59E0B' : '#EF4444' }]}>{Math.round((feedback.score ?? 5) * 10)}</Text>
+                  <Text style={st.scoreSlash}>/100</Text>
                 </View>
                 <View style={st.scoreBreakdown}>
                   <ScoreBar label="Industry" value={(feedback.industryKnowledgeScore ?? 0) * 10} color="#7C3AED" />
@@ -1025,25 +1056,28 @@ export default function InterviewLabScreen() {
               <Text style={st.sessionCompleteSubtitle}>{marketName} • {INTERVIEW_PERSONAS[persona]?.label}</Text>
 
               <View style={st.sessionScoresGrid}>
-                {mockSessionScores.map((s, i) => (
-                  <View key={i} style={st.sessionScoreItem}>
-                    <Text style={st.sessionScoreLabel}>Q{i + 1}</Text>
-                    <View style={[st.sessionScoreBadge, {
-                      backgroundColor: s >= 8 ? 'rgba(16,185,129,0.12)' : s >= 5 ? 'rgba(245,158,11,0.12)' : 'rgba(239,68,68,0.12)',
-                    }]}>
-                      <Text style={[st.sessionScoreValue, {
-                        color: s >= 8 ? '#10B981' : s >= 5 ? '#F59E0B' : '#EF4444',
-                      }]}>{s}/10</Text>
+                {mockSessionScores.map((s, i) => {
+                  const s100 = Math.round(s * 10);
+                  return (
+                    <View key={i} style={st.sessionScoreItem}>
+                      <Text style={st.sessionScoreLabel}>Q{i + 1}</Text>
+                      <View style={[st.sessionScoreBadge, {
+                        backgroundColor: s >= 8 ? 'rgba(16,185,129,0.12)' : s >= 5 ? 'rgba(245,158,11,0.12)' : 'rgba(239,68,68,0.12)',
+                      }]}>
+                        <Text style={[st.sessionScoreValue, {
+                          color: s >= 8 ? '#10B981' : s >= 5 ? '#F59E0B' : '#EF4444',
+                        }]}>{s100}/100</Text>
+                      </View>
                     </View>
-                  </View>
-                ))}
+                  );
+                })}
               </View>
 
               <View style={st.sessionAvgWrap}>
                 <Text style={st.sessionAvgLabel}>Average Score</Text>
                 <Text style={[st.sessionAvgValue, {
                   color: avgScore >= 8 ? '#10B981' : avgScore >= 5 ? '#F59E0B' : '#EF4444',
-                }]}>{avgScore.toFixed(1)}/10</Text>
+                }]}>{Math.round(avgScore * 10)}/100</Text>
               </View>
 
               {/* Curriculum Progress */}

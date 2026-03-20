@@ -915,6 +915,7 @@ export type Database = {
           push_token: string | null
           selected_market: string | null
           updated_at: string
+          use_industry_mascots: boolean
           username: string | null
         }
         Insert: {
@@ -931,6 +932,7 @@ export type Database = {
           push_token?: string | null
           selected_market?: string | null
           updated_at?: string
+          use_industry_mascots?: boolean
           username?: string | null
         }
         Update: {
@@ -947,6 +949,7 @@ export type Database = {
           push_token?: string | null
           selected_market?: string | null
           updated_at?: string
+          use_industry_mascots?: boolean
           username?: string | null
         }
         Relationships: [

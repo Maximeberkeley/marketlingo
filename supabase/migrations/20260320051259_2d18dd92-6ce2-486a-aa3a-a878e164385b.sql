@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS use_industry_mascots boolean NOT NULL DEFAULT true;

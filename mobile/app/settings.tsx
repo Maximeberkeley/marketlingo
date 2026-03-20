@@ -17,6 +17,7 @@ import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
+import { useSubscription } from '../hooks/useSubscription';
 import { supabase } from '../lib/supabase';
 import { NotificationOnboarding } from '../components/onboarding/NotificationOnboarding';
 
@@ -73,6 +74,7 @@ async function registerForPushNotifications(): Promise<string | null> {
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const { user, resetPassword } = useAuth();
+  const { isProUser } = useSubscription();
   const [pushEnabled, setPushEnabled] = useState(false);
   const [dailyReminder, setDailyReminder] = useState(true);
   const [streakAlerts, setStreakAlerts] = useState(true);
@@ -81,6 +83,7 @@ export default function SettingsScreen() {
   const [registering, setRegistering] = useState(false);
   const [prefsLoaded, setPrefsLoaded] = useState(false);
   const [showNotifOnboarding, setShowNotifOnboarding] = useState(false);
+  const [useIndustryMascots, setUseIndustryMascots] = useState(true);
   const notificationListener = useRef<any>(null);
 
   // Load saved preferences from profile
@@ -89,7 +92,7 @@ export default function SettingsScreen() {
       if (!user) return;
       const { data: profile } = await supabase
         .from('profiles')
-        .select('push_token, notification_preferences')
+        .select('push_token, notification_preferences, use_industry_mascots')
         .eq('id', user.id)
         .single();
 
@@ -97,6 +100,9 @@ export default function SettingsScreen() {
         const hasToken = !!profile.push_token;
         setPushToken(profile.push_token || null);
         setPushEnabled(hasToken);
+        if (typeof (profile as any).use_industry_mascots === 'boolean') {
+          setUseIndustryMascots((profile as any).use_industry_mascots);
+        }
 
         const prefs = profile.notification_preferences as any;
         if (prefs) {
@@ -265,6 +271,12 @@ export default function SettingsScreen() {
     );
   };
 
+  const handleToggleIndustryMascots = async (value: boolean) => {
+    setUseIndustryMascots(value);
+    if (!user) return;
+    await supabase.from('profiles').update({ use_industry_mascots: value } as any).eq('id', user.id);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -382,6 +394,25 @@ export default function SettingsScreen() {
             </TouchableOpacity>
           )}
         </View>
+
+        {/* Pro Features */}
+        {isProUser && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>PRO FEATURES</Text>
+            <View style={styles.settingRow}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.settingLabel}>Use Industry Mascots</Text>
+                <Text style={styles.settingDesc}>Show industry-themed Leo on home screen</Text>
+              </View>
+              <Switch
+                value={useIndustryMascots}
+                onValueChange={handleToggleIndustryMascots}
+                trackColor={{ false: COLORS.bg1, true: COLORS.accent }}
+                thumbColor="#FFFFFF"
+              />
+            </View>
+          </View>
+        )}
 
         {/* Account */}
         <View style={styles.section}>

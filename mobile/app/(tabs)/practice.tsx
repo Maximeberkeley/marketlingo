@@ -96,7 +96,8 @@ const LAB_CARDS: CardData[] = [
     accentGlow: 'rgba(124, 58, 237, 0.5)',
     path: '/interview-lab',
     heroImage: require('../../assets/illustrations/interview-lab-hero.png'),
-    tag: 'NEW',
+    tag: 'PRO',
+    isPro: true,
   },
   {
     id: 'investment',
