@@ -220,6 +220,7 @@ export default function InterviewLabScreen() {
     cyclesCompleted?: number;
     totalQuestionsAnswered?: number;
     mcqCycleCount?: number;
+    introCompleted?: boolean;
   }) => {
     if (!user || !market) return;
     const key = `interview_progress_${user.id}_${market}`;
@@ -227,9 +228,10 @@ export default function InterviewLabScreen() {
       cyclesCompleted: updates.cyclesCompleted ?? cyclesCompleted,
       totalQuestionsAnswered: updates.totalQuestionsAnswered ?? totalQuestionsAnswered,
       mcqCycleCount: updates.mcqCycleCount ?? mcqCycleCount,
+      introCompleted: updates.introCompleted ?? introCompleted,
     };
     try { await AsyncStorage.setItem(key, JSON.stringify(current)); } catch {}
-  }, [user, market, cyclesCompleted, totalQuestionsAnswered, mcqCycleCount]);
+  }, [user, market, cyclesCompleted, totalQuestionsAnswered, mcqCycleCount, introCompleted]);
 
   // Save feedback to notebook
   const saveFeedbackToNotebook = useCallback(async (fb: any, questionText: string) => {
