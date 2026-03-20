@@ -980,6 +980,15 @@ export default function InterviewLabScreen() {
                 </View>
               )}
 
+              {/* Save to Notebook */}
+              <TouchableOpacity
+                onPress={() => saveFeedbackToNotebook(feedback, currentMock?.question || '')}
+                style={st.saveFeedbackBtn}
+              >
+                <Feather name="bookmark" size={14} color="#7C3AED" />
+                <Text style={st.saveFeedbackText}>Save to Notebook</Text>
+              </TouchableOpacity>
+
               <View style={st.feedbackActions}>
                 <TouchableOpacity
                   style={st.retryBtn}
