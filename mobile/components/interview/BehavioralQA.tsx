@@ -96,6 +96,7 @@ export function BehavioralQA({ marketName, marketId }: BehavioralQAProps) {
   const [noteText, setNoteText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [answeredCount, setAnsweredCount] = useState(0);
+  const { saveToNotebook, saving: savingToNotebook } = useInterviewNotebook(marketId);
 
   // Load notes from storage
   React.useEffect(() => {

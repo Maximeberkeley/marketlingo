@@ -294,4 +294,8 @@ const st = StyleSheet.create({
   industryHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
   industryLabel: { ...TYPE.bodyBold, color: '#D97706', fontSize: 12 },
   industryText: { ...TYPE.body, color: COLORS.textSecondary, fontSize: 13, lineHeight: 20 },
+
+  // Save button
+  saveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 12, borderRadius: 12, borderWidth: 1.5, borderColor: '#7C3AED', borderStyle: 'dashed', marginTop: 12 },
+  saveBtnText: { ...TYPE.bodyBold, color: '#7C3AED', fontSize: 13 },
 });
