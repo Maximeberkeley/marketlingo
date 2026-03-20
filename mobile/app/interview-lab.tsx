@@ -416,6 +416,33 @@ export default function InterviewLabScreen() {
     return <View style={[st.container, st.centered]}><ActivityIndicator size="large" color={COLORS.accent} /></View>;
   }
 
+  // PRO gate — show upsell if not pro
+  if (!isProUser) {
+    return (
+      <View style={[st.container, st.centered, { paddingHorizontal: 20 }]}>
+        <View style={{ alignItems: 'center', gap: 16 }}>
+          <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(124,58,237,0.12)', alignItems: 'center', justifyContent: 'center' }}>
+            <Feather name="lock" size={36} color="#7C3AED" />
+          </View>
+          <Text style={{ ...TYPE.h2, color: COLORS.textPrimary, textAlign: 'center' }}>Interview Lab is a Pro Feature</Text>
+          <Text style={{ ...TYPE.body, color: COLORS.textMuted, textAlign: 'center', lineHeight: 22 }}>
+            Unlock mock interviews with AI coach Sophia, mental math drills, frameworks library, and more.
+          </Text>
+          <TouchableOpacity
+            style={{ paddingVertical: 16, paddingHorizontal: 40, borderRadius: 16, backgroundColor: '#7C3AED', ...SHADOWS.accent }}
+            onPress={() => { triggerHaptic('medium'); router.push('/subscription' as any); }}
+          >
+            <Text style={{ ...TYPE.bodyBold, color: '#FFF', fontSize: 16 }}>Upgrade to Pro</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.back()} style={{ paddingVertical: 10 }}>
+            <Text style={{ ...TYPE.body, color: COLORS.textMuted }}>Go Back</Text>
+          </TouchableOpacity>
+        </View>
+        <ProUpsellModal isOpen={showProGate} onClose={() => setShowProGate(false)} trigger="feature_gate" featureName="Interview Lab" />
+      </View>
+    );
+  }
+
   const marketName = market ? getMarketName(market) : 'Industry';
 
   // ─── Path Selection ───
