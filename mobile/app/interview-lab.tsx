@@ -934,8 +934,8 @@ export default function InterviewLabScreen() {
             <View style={st.feedbackContainer}>
               <View style={st.scoreCard}>
                 <View style={[st.scoreCircle, { backgroundColor: (feedback.score ?? 5) >= 8 ? 'rgba(16,185,129,0.12)' : (feedback.score ?? 5) >= 5 ? 'rgba(245,158,11,0.12)' : 'rgba(239,68,68,0.12)' }]}>
-                  <Text style={[st.scoreNum, { color: (feedback.score ?? 5) >= 8 ? '#10B981' : (feedback.score ?? 5) >= 5 ? '#F59E0B' : '#EF4444' }]}>{feedback.score ?? 5}</Text>
-                  <Text style={st.scoreSlash}>/10</Text>
+                  <Text style={[st.scoreNum, { color: (feedback.score ?? 5) >= 8 ? '#10B981' : (feedback.score ?? 5) >= 5 ? '#F59E0B' : '#EF4444' }]}>{Math.round((feedback.score ?? 5) * 10)}</Text>
+                  <Text style={st.scoreSlash}>/100</Text>
                 </View>
                 <View style={st.scoreBreakdown}>
                   <ScoreBar label="Industry" value={(feedback.industryKnowledgeScore ?? 0) * 10} color="#7C3AED" />
