@@ -1150,8 +1150,9 @@ export default function InterviewLabScreen() {
         <View style={[st.header, { paddingTop: insets.top + 8 }]}>
           <TouchableOpacity onPress={() => {
             if (activeTab !== 'learn') { setActiveTab('learn'); }
-            else if (stage === 1 && !feedback) { setPath(null); }
-            else { setStage(Math.max(1, stage - 1) as InterviewStage); }
+            else if (!introCompleted && stage === 1 && !feedback) { setPath(null); }
+            else if (!introCompleted) { setStage(Math.max(1, stage - 1) as InterviewStage); }
+            else { router.back(); } // Intro done — back exits
           }} style={st.backBtn2}>
             <Feather name="chevron-left" size={22} color={COLORS.textPrimary} />
           </TouchableOpacity>
