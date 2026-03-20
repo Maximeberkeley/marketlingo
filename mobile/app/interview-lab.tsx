@@ -1046,6 +1046,34 @@ export default function InterviewLabScreen() {
                 }]}>{avgScore.toFixed(1)}/10</Text>
               </View>
 
+              {/* Curriculum Progress */}
+              <View style={st.curriculumCard}>
+                <Text style={st.curriculumTitle}>📈 Your Interview Progress</Text>
+                <View style={st.curriculumRow}>
+                  <View style={st.curriculumStat}>
+                    <Text style={st.curriculumStatNum}>{cyclesCompleted}</Text>
+                    <Text style={st.curriculumStatLabel}>Cycles Done</Text>
+                  </View>
+                  <View style={st.curriculumDivider} />
+                  <View style={st.curriculumStat}>
+                    <Text style={st.curriculumStatNum}>{totalQuestionsAnswered}</Text>
+                    <Text style={st.curriculumStatLabel}>Questions</Text>
+                  </View>
+                  <View style={st.curriculumDivider} />
+                  <View style={st.curriculumStat}>
+                    <Text style={[st.curriculumStatNum, { color: '#10B981' }]}>
+                      {cyclesCompleted > 0 ? '🔄 New Q\'s' : '—'}
+                    </Text>
+                    <Text style={st.curriculumStatLabel}>Next Cycle</Text>
+                  </View>
+                </View>
+                {cyclesCompleted > 0 && (
+                  <Text style={st.curriculumHint}>
+                    Complete another cycle to unlock new industry-specific questions!
+                  </Text>
+                )}
+              </View>
+
               <View style={st.sessionActions}>
                 <TouchableOpacity
                   style={st.retryBtn}
