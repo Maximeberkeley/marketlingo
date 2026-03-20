@@ -24,7 +24,9 @@ type PlanType = 'monthly' | 'annual';
 
 const PRO_FEATURES = [
   { featherIcon: 'book-open' as const, title: 'Unlimited Learning', description: 'No daily caps on lessons, games & drills', highlight: 'Most Popular' },
+  { featherIcon: 'mic' as const, title: 'Interview Lab', description: 'AI mock interviews, frameworks, mental math & behavioral prep', highlight: 'Pro Exclusive' },
   { featherIcon: 'layers' as const, title: 'Investment Lab', description: 'Expert scenarios, portfolio simulations, and real valuation models', highlight: 'Pro Exclusive' },
+  { featherIcon: 'smile' as const, title: 'Industry Mascots', description: 'Themed Leo mascots for each industry — toggle in Settings', highlight: 'New' },
   { featherIcon: 'target' as const, title: 'AI Mentors On-Demand', description: 'Unlimited conversations with industry-specific AI mentors', highlight: null },
   { featherIcon: 'zap' as const, title: 'Advanced Trainer', description: 'Pro Reasoning, Mental Models & Common Mistakes analysis', highlight: null },
   { featherIcon: 'award' as const, title: 'LinkedIn Certificates', description: 'Shareable credentials that prove your industry expertise', highlight: null },
