@@ -18,14 +18,13 @@ import {
   StageTracker, VibeMeter, LeoCelebration, ScoreBar, MathDrill,
 } from '../components/interview/InterviewLabComponents';
 import {
-  InterviewPath, InterviewStage, ConfidencePersona,
-  MECE_FRAMEWORKS, BIG_BOSS_QUESTIONS, STORY_HERO_STEPS,
-  CONFIDENCE_PERSONAS, getMCQForMarket, getMockPromptsForMarket,
-  getMentalMathForMarket, getAcademicQuestionsForMarket,
+  InterviewPath, InterviewStage, InterviewPersona,
+  MECE_FRAMEWORKS, STORY_HERO_STEPS, INTERVIEW_PERSONAS,
 } from '../lib/interviewLabData';
+import { useInterviewQuestions } from '../hooks/useInterviewQuestions';
 
 const { width: SW } = Dimensions.get('window');
-
+const MOCK_QUESTION_COUNT = 5;
 
 export default function InterviewLabScreen() {
   const insets = useSafeAreaInsets();
@@ -34,38 +33,41 @@ export default function InterviewLabScreen() {
   const [loading, setLoading] = useState(true);
   const [path, setPath] = useState<InterviewPath | null>(null);
   const [stage, setStage] = useState<InterviewStage>(1);
-  const [persona, setPersona] = useState<ConfidencePersona>('humble_leader');
+  const [persona, setPersona] = useState<InterviewPersona>('consultant');
 
   // Stage 3 MCQ state
   const [mcqIndex, setMcqIndex] = useState(0);
   const [mcqSelected, setMcqSelected] = useState<number | null>(null);
   const [mcqScore, setMcqScore] = useState(0);
 
-  // Stage 4 Mock state
+  // Stage 4 Mock state — 5 sequential questions
   const [mockIndex, setMockIndex] = useState(0);
   const [userResponse, setUserResponse] = useState('');
   const [feedback, setFeedback] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [mockSessionScores, setMockSessionScores] = useState<number[]>([]);
+  const [mockSessionComplete, setMockSessionComplete] = useState(false);
 
   // Voice state
   const [isRecording, setIsRecording] = useState(false);
   const [isNarrating, setIsNarrating] = useState(false);
   const [isSophiaSpeaking, setIsSophiaSpeaking] = useState(false);
-  const [voiceMode, setVoiceMode] = useState(false); // toggle voice vs text input
+  const [voiceMode, setVoiceMode] = useState(false);
   const recordingRef = useRef<Audio.Recording | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
-
   const scrollRef = useRef<ScrollView>(null);
 
-  // Issue #12: Handle market fetch failure
+  // Fetch questions from Supabase
+  const {
+    mockQuestions, mcqQuestions, mentalMathQuestions, bigBossQuestions,
+    loading: questionsLoading, heroProblem,
+  } = useInterviewQuestions(market, path || 'consulting');
+
   useEffect(() => {
     if (!user) return;
     supabase.from('profiles').select('selected_market').eq('id', user.id).single()
-      .then(({ data, error }) => {
-        if (error) {
-          console.warn('Failed to fetch market:', error);
-        }
+      .then(({ data }) => {
         if (data?.selected_market) setMarket(data.selected_market);
         setLoading(false);
       })
@@ -78,7 +80,6 @@ export default function InterviewLabScreen() {
     setIsNarrating(true);
     triggerHaptic('light');
     try {
-      // Stop any existing playback
       if (soundRef.current) {
         await soundRef.current.stopAsync();
         await soundRef.current.unloadAsync();
@@ -87,16 +88,10 @@ export default function InterviewLabScreen() {
       soundRef.current = sound;
       if (sound) {
         sound.setOnPlaybackStatusUpdate((status) => {
-          if ('didJustFinish' in status && status.didJustFinish) {
-            setIsNarrating(false);
-          }
+          if ('didJustFinish' in status && status.didJustFinish) setIsNarrating(false);
         });
-      } else {
-        setIsNarrating(false);
-      }
-    } catch {
-      setIsNarrating(false);
-    }
+      } else { setIsNarrating(false); }
+    } catch { setIsNarrating(false); }
   }, [isNarrating]);
 
   // ─── Voice: Sophia reads feedback ───
@@ -114,16 +109,10 @@ export default function InterviewLabScreen() {
       soundRef.current = sound;
       if (sound) {
         sound.setOnPlaybackStatusUpdate((status) => {
-          if ('didJustFinish' in status && status.didJustFinish) {
-            setIsSophiaSpeaking(false);
-          }
+          if ('didJustFinish' in status && status.didJustFinish) setIsSophiaSpeaking(false);
         });
-      } else {
-        setIsSophiaSpeaking(false);
-      }
-    } catch {
-      setIsSophiaSpeaking(false);
-    }
+      } else { setIsSophiaSpeaking(false); }
+    } catch { setIsSophiaSpeaking(false); }
   }, [isSophiaSpeaking]);
 
   // ─── Voice: Record user answer ───
@@ -131,21 +120,12 @@ export default function InterviewLabScreen() {
     try {
       const permission = await Audio.requestPermissionsAsync();
       if (!permission.granted) return;
-
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
-
-      const { recording } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY
-      );
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
+      const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
       recordingRef.current = recording;
       setIsRecording(true);
       triggerHaptic('medium');
-    } catch (err) {
-      console.warn('Recording error:', err);
-    }
+    } catch (err) { console.warn('Recording error:', err); }
   }, []);
 
   const stopRecording = useCallback(async () => {
@@ -153,21 +133,16 @@ export default function InterviewLabScreen() {
     setIsRecording(false);
     setSubmitting(true);
     triggerHaptic('light');
-
     try {
       await recordingRef.current.stopAndUnloadAsync();
       const uri = recordingRef.current.getURI();
       recordingRef.current = null;
-
       if (uri) {
         const transcribed = await transcribeAudio(uri);
-        if (transcribed) {
-          setUserResponse(transcribed);
-        }
+        if (transcribed) setUserResponse(transcribed);
       }
-    } catch (err) {
-      console.warn('Stop recording error:', err);
-    } finally {
+    } catch (err) { console.warn('Stop recording error:', err); }
+    finally {
       setSubmitting(false);
       await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
     }
@@ -176,23 +151,18 @@ export default function InterviewLabScreen() {
   // ─── Stop audio on unmount ───
   useEffect(() => {
     return () => {
-      if (soundRef.current) {
-        soundRef.current.stopAsync().catch(() => {});
-        soundRef.current.unloadAsync().catch(() => {});
-      }
-      if (recordingRef.current) {
-        recordingRef.current.stopAndUnloadAsync().catch(() => {});
-      }
+      if (soundRef.current) { soundRef.current.stopAsync().catch(() => {}); soundRef.current.unloadAsync().catch(() => {}); }
+      if (recordingRef.current) { recordingRef.current.stopAndUnloadAsync().catch(() => {}); }
     };
   }, []);
 
+  // ─── Submit mock answer ───
   const submitMock = useCallback(async () => {
     if (!market || !user || userResponse.trim().length < 20) return;
     setSubmitting(true);
     triggerHaptic('medium');
 
-    const prompts = getMockPromptsForMarket(market);
-    const current = prompts[mockIndex % prompts.length];
+    const current = mockQuestions[mockIndex % mockQuestions.length];
 
     try {
       const { data, error } = await supabase.functions.invoke('interview-feedback', {
@@ -204,13 +174,19 @@ export default function InterviewLabScreen() {
           persona,
           marketId: market,
           path: path || 'consulting',
+          questionNumber: mockIndex + 1,
+          totalQuestions: Math.min(MOCK_QUESTION_COUNT, mockQuestions.length),
         },
       });
 
       if (error) throw error;
       setFeedback(data);
 
-      // Issue #11: Persist mock attempt to database
+      // Track score
+      const score = data?.score ?? 5;
+      setMockSessionScores(prev => [...prev, score]);
+
+      // Persist attempt
       if (path) {
         supabase.from('interview_lab_attempts').insert({
           user_id: user.id,
@@ -218,10 +194,10 @@ export default function InterviewLabScreen() {
           path,
           stage: 4,
           attempt_type: 'mock',
-          score: data?.score ?? 0,
-          structure_score: data?.structureScore,
-          content_score: data?.contentScore,
-          persona_score: data?.personaScore,
+          score: score * 10, // convert 1-10 to 0-100 for DB
+          structure_score: (data?.communicationScore ?? 0) * 10,
+          content_score: (data?.industryKnowledgeScore ?? 0) * 10,
+          persona_score: (data?.personaFitScore ?? 0) * 10,
           persona,
           scenario_question: current.question,
           user_response: userResponse,
@@ -231,22 +207,24 @@ export default function InterviewLabScreen() {
         }).then(() => {});
       }
 
-      if (data?.score >= 80) {
+      if (score >= 8) {
         triggerHaptic('success');
         setTimeout(() => setShowCelebration(true), 500);
       } else {
         triggerHaptic('light');
       }
 
-      // Auto-narrate feedback with Sophia's voice
       setTimeout(() => speakFeedback(data), 800);
     } catch (err) {
       console.error('Mock submission error:', err);
       setFeedback({
-        score: 0,
-        awesome: ['You tried!'],
-        missing: ['Could not analyze — check your connection'],
-        trySaying: 'Try again when you have a stable connection.',
+        score: 5,
+        industryKnowledgeScore: 4,
+        communicationScore: 5,
+        personaFitScore: 5,
+        whatWentWell: 'You tried — that takes courage!',
+        roomForImprovement: 'Check your connection and try again.',
+        betterVersion: 'Try again when you have a stable connection.',
         buzzwordsUsed: [],
         buzzwordsMissed: [],
         sophiaSays: 'Looks like we hit a glitch. Try again!',
@@ -254,9 +232,22 @@ export default function InterviewLabScreen() {
     } finally {
       setSubmitting(false);
     }
-  }, [market, user, userResponse, mockIndex, persona, path, speakFeedback]);
+  }, [market, user, userResponse, mockIndex, persona, path, mockQuestions, speakFeedback]);
 
-  if (loading) {
+  // ─── Move to next mock question ───
+  const goToNextMockQuestion = useCallback(() => {
+    const nextIndex = mockIndex + 1;
+    if (nextIndex >= Math.min(MOCK_QUESTION_COUNT, mockQuestions.length)) {
+      setMockSessionComplete(true);
+    } else {
+      setMockIndex(nextIndex);
+    }
+    setFeedback(null);
+    setUserResponse('');
+    setShowCelebration(false);
+  }, [mockIndex, mockQuestions.length]);
+
+  if (loading || questionsLoading) {
     return <View style={[st.container, st.centered]}><ActivityIndicator size="large" color={COLORS.accent} /></View>;
   }
 
@@ -304,13 +295,10 @@ export default function InterviewLabScreen() {
   }
 
   const marketName = market ? getMarketName(market) : 'Industry';
-  const mcqs = path === 'consulting' ? getMCQForMarket(market || '') : getAcademicQuestionsForMarket(market || '');
-  const currentMCQ = mcqs[mcqIndex % mcqs.length];
-  const mockPrompts = getMockPromptsForMarket(market || '');
-  const currentMock = mockPrompts[mockIndex % mockPrompts.length];
+  const currentMCQ = mcqQuestions[mcqIndex % mcqQuestions.length];
+  const currentMock = mockQuestions[mockIndex % mockQuestions.length];
   const framework = MECE_FRAMEWORKS[market || ''] || MECE_FRAMEWORKS.aerospace;
-  const bigBoss = BIG_BOSS_QUESTIONS[market || ''] || BIG_BOSS_QUESTIONS.aerospace;
-  const mentalMath = getMentalMathForMarket(market || '');
+  const totalMockQ = Math.min(MOCK_QUESTION_COUNT, mockQuestions.length);
 
   return (
     <View style={st.container}>
@@ -323,16 +311,23 @@ export default function InterviewLabScreen() {
         >
           {/* Header */}
           <View style={st.header}>
-            <TouchableOpacity onPress={() => { if (stage === 1 && !feedback) { setPath(null); } else { setStage(Math.max(1, stage - 1) as InterviewStage); }}} style={st.backBtn2}>
+            <TouchableOpacity onPress={() => {
+              if (stage === 1 && !feedback) { setPath(null); }
+              else { setStage(Math.max(1, stage - 1) as InterviewStage); }
+            }} style={st.backBtn2}>
               <Feather name="arrow-left" size={20} color={COLORS.textPrimary} />
             </TouchableOpacity>
             <View style={{ flex: 1 }}>
               <Text style={st.headerTitle}>Interview Lab</Text>
               <Text style={st.headerSub}>{marketName} • {path === 'consulting' ? 'Future Pro' : 'Academic Star'}</Text>
             </View>
+            {heroProblem ? (
+              <View style={st.heroProblemBadge}>
+                <Text style={st.heroProblemText} numberOfLines={1}>{heroProblem}</Text>
+              </View>
+            ) : null}
           </View>
 
-          {/* Stage Tracker */}
           <StageTracker current={stage} onTap={(s) => setStage(s)} />
 
           {/* ─── STAGE 1: Framework Fundamentals ─── */}
@@ -408,16 +403,16 @@ export default function InterviewLabScreen() {
             </View>
           )}
 
-          {/* ─── STAGE 2: Expectation Guide ─── */}
+          {/* ─── STAGE 2: Expectation Guide + Mental Math ─── */}
           {stage === 2 && (
             <View style={st.stageContainer}>
               <View style={st.stageHeader}>
                 <Feather name="eye" size={20} color="#3B82F6" />
-                <Text style={st.stageTitle}>Top 5 "Big Boss" Questions</Text>
+                <Text style={st.stageTitle}>Top "Big Boss" Questions</Text>
               </View>
               <Text style={st.stageDesc}>These are the questions that separate good candidates from great ones in {marketName}.</Text>
 
-              {bigBoss.map((q, i) => (
+              {bigBossQuestions.map((q, i) => (
                 <View key={i} style={st.card}>
                   <View style={{ flexDirection: 'row', gap: 10, marginBottom: 6 }}>
                     <View style={st.questionNum}><Text style={st.questionNumText}>{i + 1}</Text></View>
@@ -431,13 +426,13 @@ export default function InterviewLabScreen() {
               ))}
 
               {/* Mental Math Minute */}
-              {path === 'consulting' && mentalMath.length > 0 && (
+              {path === 'consulting' && mentalMathQuestions.length > 0 && (
                 <>
                   <View style={[st.stageHeader, { marginTop: 20 }]}>
                     <Feather name="clock" size={20} color="#EF4444" />
                     <Text style={st.stageTitle}>Mental Math Minute</Text>
                   </View>
-                  {mentalMath.map((q, i) => (
+                  {mentalMathQuestions.map((q, i) => (
                     <MathDrill key={i} question={q} />
                   ))}
                 </>
@@ -450,13 +445,13 @@ export default function InterviewLabScreen() {
           )}
 
           {/* ─── STAGE 3: MCQ Practice ─── */}
-          {stage === 3 && (
+          {stage === 3 && mcqQuestions.length > 0 && (
             <View style={st.stageContainer}>
               <View style={st.stageHeader}>
                 <Feather name="check-circle" size={20} color="#10B981" />
                 <Text style={st.stageTitle}>{path === 'consulting' ? 'Case Practice' : 'Values & Impact'}</Text>
               </View>
-              <Text style={st.stageDesc}>Question {mcqIndex + 1} of {mcqs.length}</Text>
+              <Text style={st.stageDesc}>Question {mcqIndex + 1} of {mcqQuestions.length}</Text>
 
               <View style={st.card}>
                 <Text style={[st.cardBody, { fontWeight: '600', marginBottom: 14 }]}>{currentMCQ.question}</Text>
@@ -473,14 +468,10 @@ export default function InterviewLabScreen() {
                         const isCorrect = i === currentMCQ.correctIndex;
                         triggerHaptic(isCorrect ? 'success' : 'error');
                         if (isCorrect) setMcqScore(s => s + 1);
-                        // Issue #10: Persist MCQ attempt
                         if (user && market && path) {
                           supabase.from('interview_lab_attempts').insert({
-                            user_id: user.id,
-                            market_id: market,
-                            path,
-                            stage: 3,
-                            attempt_type: 'mcq',
+                            user_id: user.id, market_id: market, path,
+                            stage: 3, attempt_type: 'mcq',
                             score: isCorrect ? 100 : 0,
                             scenario_question: currentMCQ.question,
                           }).then(() => {});
@@ -510,58 +501,85 @@ export default function InterviewLabScreen() {
                   style={st.nextBtn}
                   onPress={() => {
                     triggerHaptic('light');
-                    if (mcqIndex < mcqs.length - 1) {
+                    if (mcqIndex < mcqQuestions.length - 1) {
                       setMcqIndex(i => i + 1);
                       setMcqSelected(null);
                     } else {
                       setStage(4);
+                      setMockIndex(0);
+                      setMockSessionScores([]);
+                      setMockSessionComplete(false);
+                      setFeedback(null);
+                      setUserResponse('');
                     }
                   }}
                 >
                   <Text style={st.nextBtnText}>
-                    {mcqIndex < mcqs.length - 1 ? 'Next Question →' : 'Go to Mock Lab →'}
+                    {mcqIndex < mcqQuestions.length - 1 ? 'Next Question →' : 'Go to Mock Lab →'}
                   </Text>
                 </TouchableOpacity>
               )}
             </View>
           )}
 
-          {/* ─── STAGE 4: Mock Lab with Sophia ─── */}
-          {stage === 4 && (
+          {/* ─── STAGE 4: Mock Lab with Sophia — 5 Sequential Questions ─── */}
+          {stage === 4 && !mockSessionComplete && (
             <View style={st.stageContainer}>
               <View style={st.stageHeader}>
                 <Feather name="mic" size={20} color="#8B5CF6" />
-                <Text style={st.stageTitle}>Mock Lab with Sophia</Text>
+                <Text style={st.stageTitle}>Mock Interview</Text>
+                <View style={st.mockProgress}>
+                  <Text style={st.mockProgressText}>{mockIndex + 1}/{totalMockQ}</Text>
+                </View>
               </View>
 
-              {/* Confidence Persona Toggle */}
-              {!feedback && (
+              {/* Mock Progress Dots */}
+              <View style={st.mockDotsRow}>
+                {Array.from({ length: totalMockQ }).map((_, i) => (
+                  <View key={i} style={[
+                    st.mockDot,
+                    i < mockIndex && st.mockDotDone,
+                    i === mockIndex && st.mockDotActive,
+                    i > mockIndex && st.mockDotPending,
+                  ]}>
+                    {i < mockIndex && mockSessionScores[i] !== undefined && (
+                      <Text style={st.mockDotScore}>{mockSessionScores[i]}</Text>
+                    )}
+                    {i === mockIndex && <Feather name="mic" size={10} color="#FFF" />}
+                  </View>
+                ))}
+              </View>
+
+              {/* Persona Selector — only before first question */}
+              {mockIndex === 0 && !feedback && (
                 <View style={st.card}>
-                  <Text style={st.cardLabel}>Choose Your Persona</Text>
+                  <Text style={st.cardLabel}>Choose Your Interviewer</Text>
                   <View style={st.personaRow}>
-                    {(Object.entries(CONFIDENCE_PERSONAS) as [ConfidencePersona, typeof CONFIDENCE_PERSONAS[ConfidencePersona]][]).map(([key, p]) => (
+                    {(Object.entries(INTERVIEW_PERSONAS) as [InterviewPersona, typeof INTERVIEW_PERSONAS[InterviewPersona]][]).map(([key, p]) => (
                       <TouchableOpacity
                         key={key}
                         onPress={() => { setPersona(key); triggerHaptic('light'); }}
-                        style={[st.personaBtn, persona === key && st.personaBtnActive]}
+                        style={[st.personaBtn, persona === key && { borderColor: p.color, backgroundColor: `${p.color}15` }]}
                       >
-                        <Feather name={p.icon as any} size={22} color={persona === key ? '#7C3AED' : COLORS.textMuted} />
-                        <Text style={[st.personaLabel, persona === key && st.personaLabelActive]}>{p.label}</Text>
+                        <View style={[st.personaIconWrap, { backgroundColor: persona === key ? p.color : COLORS.bg1 }]}>
+                          <Feather name={p.icon as any} size={20} color={persona === key ? '#FFF' : COLORS.textMuted} />
+                        </View>
+                        <Text style={[st.personaLabel, persona === key && { color: p.color }]}>{p.label}</Text>
+                        <Text style={st.personaDesc}>{p.description}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
                 </View>
               )}
 
-              {/* Scenario */}
+              {/* Scenario Card */}
               <View style={st.card}>
                 <View style={st.sophiaHeader}>
                   <View style={st.sophiaAvatar}><Feather name="mic" size={20} color="#7C3AED" /></View>
                   <View style={{ flex: 1 }}>
-                    <Text style={st.sophiaName}>Sophia Hernández</Text>
-                    <Text style={st.sophiaRole}>Case Interview Coach</Text>
+                    <Text style={st.sophiaName}>Sophia Hernandez</Text>
+                    <Text style={st.sophiaRole}>{INTERVIEW_PERSONAS[persona]?.label || 'Interview Coach'}</Text>
                   </View>
-                  {/* Narrate scenario button */}
                   <TouchableOpacity
                     onPress={() => narrateScenario(`${currentMock.scenario} ... ${currentMock.question}`)}
                     style={[st.voiceBtn, isNarrating && st.voiceBtnActive]}
@@ -581,7 +599,6 @@ export default function InterviewLabScreen() {
                   <View style={st.card}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                       <Text style={st.cardLabel}>Your Response</Text>
-                      {/* Voice/Text toggle */}
                       <TouchableOpacity
                         onPress={() => { setVoiceMode(!voiceMode); triggerHaptic('light'); }}
                         style={[st.voiceToggle, voiceMode && st.voiceToggleActive]}
@@ -594,7 +611,6 @@ export default function InterviewLabScreen() {
                     </View>
 
                     {voiceMode ? (
-                      /* Voice Recording Mode */
                       <View style={st.voiceRecordArea}>
                         {isRecording ? (
                           <>
@@ -621,18 +637,15 @@ export default function InterviewLabScreen() {
                         )}
                       </View>
                     ) : (
-                      /* Text Input Mode */
-                      <>
-                        <TextInput
-                          style={st.responseInput}
-                          multiline
-                          placeholder="Type your answer here... Start with 'First, I would...' for a structured approach."
-                          placeholderTextColor={COLORS.textMuted}
-                          value={userResponse}
-                          onChangeText={setUserResponse}
-                          textAlignVertical="top"
-                        />
-                      </>
+                      <TextInput
+                        style={st.responseInput}
+                        multiline
+                        placeholder="Type your answer here... Start with 'First, I would...' for a structured approach."
+                        placeholderTextColor={COLORS.textMuted}
+                        value={userResponse}
+                        onChangeText={setUserResponse}
+                        textAlignVertical="top"
+                      />
                     )}
                     <VibeMeter text={userResponse} />
                   </View>
@@ -650,19 +663,19 @@ export default function InterviewLabScreen() {
                 </>
               )}
 
-              {/* Feedback */}
+              {/* ─── NEW FEEDBACK UI: Score/10, What Went Well, Improvement ─── */}
               {feedback && (
                 <View style={st.feedbackContainer}>
-                  {/* Score */}
+                  {/* Score Circle — out of 10 */}
                   <View style={st.scoreCard}>
                     <View style={st.scoreCircle}>
-                      <Text style={st.scoreNum}>{feedback.score ?? 0}</Text>
-                      <Text style={st.scoreSlash}>/100</Text>
+                      <Text style={st.scoreNum}>{feedback.score ?? 5}</Text>
+                      <Text style={st.scoreSlash}>/10</Text>
                     </View>
                     <View style={st.scoreBreakdown}>
-                      <ScoreBar label="Structure" value={feedback.structureScore ?? 0} color="#7C3AED" />
-                      <ScoreBar label="Content" value={feedback.contentScore ?? 0} color="#3B82F6" />
-                      <ScoreBar label="Persona" value={feedback.personaScore ?? 0} color="#F59E0B" />
+                      <ScoreBar label="Industry" value={(feedback.industryKnowledgeScore ?? 0) * 10} color="#7C3AED" />
+                      <ScoreBar label="Comms" value={(feedback.communicationScore ?? 0) * 10} color="#3B82F6" />
+                      <ScoreBar label="Persona" value={(feedback.personaFitScore ?? 0) * 10} color="#F59E0B" />
                     </View>
                   </View>
 
@@ -680,32 +693,40 @@ export default function InterviewLabScreen() {
                     </View>
                   </View>
 
-                  {/* Awesome */}
+                  {/* What Went Well */}
                   <View style={[st.card, { borderLeftColor: '#10B981', borderLeftWidth: 3 }]}>
-                    <Text style={st.feedbackHeading}>What Was Awesome</Text>
-                    {(feedback.awesome || []).map((b: string, i: number) => (
-                      <Text key={i} style={st.feedbackBullet}>• {b}</Text>
-                    ))}
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <Feather name="check-circle" size={16} color="#10B981" />
+                      <Text style={[st.feedbackHeading, { color: '#10B981' }]}>What Went Well</Text>
+                    </View>
+                    <Text style={st.feedbackBody}>{feedback.whatWentWell}</Text>
                   </View>
 
-                  {/* Missing */}
+                  {/* Room for Improvement */}
                   <View style={[st.card, { borderLeftColor: '#F59E0B', borderLeftWidth: 3 }]}>
-                    <Text style={st.feedbackHeading}>What Was Missing</Text>
-                    {(feedback.missing || []).map((b: string, i: number) => (
-                      <Text key={i} style={st.feedbackBullet}>• {b}</Text>
-                    ))}
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <Feather name="arrow-up-circle" size={16} color="#F59E0B" />
+                      <Text style={[st.feedbackHeading, { color: '#F59E0B' }]}>Room for Improvement</Text>
+                    </View>
+                    <Text style={st.feedbackBody}>{feedback.roomForImprovement}</Text>
                   </View>
 
-                  {/* Try Saying */}
+                  {/* Better Version — Pro Rewrite */}
                   <View style={[st.card, { borderLeftColor: '#7C3AED', borderLeftWidth: 3 }]}>
-                    <Text style={st.feedbackHeading}>Try Saying This Instead</Text>
-                    <Text style={st.trySayingText}>"{feedback.trySaying}"</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <Feather name="edit-3" size={16} color="#7C3AED" />
+                      <Text style={[st.feedbackHeading, { color: '#7C3AED' }]}>Pro Version</Text>
+                    </View>
+                    <Text style={st.trySayingText}>"{feedback.betterVersion}"</Text>
                   </View>
 
                   {/* Buzzwords */}
                   {((feedback.buzzwordsUsed?.length > 0) || (feedback.buzzwordsMissed?.length > 0)) && (
                     <View style={st.card}>
-                      <Text style={st.feedbackHeading}>Buzzword Detector</Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                        <Feather name="zap" size={16} color="#8B5CF6" />
+                        <Text style={st.feedbackHeading}>Industry Buzz Detector</Text>
+                      </View>
                       {feedback.buzzwordsUsed?.length > 0 && (
                         <View style={st.buzzRow}>
                           <Text style={st.buzzLabel}>Used</Text>
@@ -729,39 +750,78 @@ export default function InterviewLabScreen() {
                     </View>
                   )}
 
-                  {/* Try Again / Next */}
+                  {/* Next Question / Try Again */}
                   <View style={st.feedbackActions}>
                     <TouchableOpacity
                       style={st.retryBtn}
                       onPress={() => { setFeedback(null); setUserResponse(''); setShowCelebration(false); }}
                     >
                       <Feather name="rotate-ccw" size={16} color="#7C3AED" />
-                      <Text style={st.retryBtnText}>Try Again</Text>
+                      <Text style={st.retryBtnText}>Retry</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                      style={st.nextBtn}
-                      onPress={() => {
-                        setFeedback(null);
-                        setUserResponse('');
-                        setMockIndex(i => i + 1);
-                        setShowCelebration(false);
-                      }}
-                    >
-                      <Text style={st.nextBtnText}>Next Scenario →</Text>
+                    <TouchableOpacity style={st.nextBtn} onPress={goToNextMockQuestion}>
+                      <Text style={st.nextBtnText}>
+                        {mockIndex + 1 >= totalMockQ ? 'Finish Interview →' : `Question ${mockIndex + 2} →`}
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 </View>
               )}
             </View>
           )}
+
+          {/* ─── SESSION COMPLETE SUMMARY ─── */}
+          {stage === 4 && mockSessionComplete && (
+            <View style={st.stageContainer}>
+              <View style={st.sessionCompleteCard}>
+                <Feather name="award" size={40} color="#FDE68A" />
+                <Text style={st.sessionCompleteTitle}>Mock Interview Complete!</Text>
+                <Text style={st.sessionCompleteSubtitle}>{marketName} • {INTERVIEW_PERSONAS[persona]?.label}</Text>
+
+                <View style={st.sessionScoresGrid}>
+                  {mockSessionScores.map((s, i) => (
+                    <View key={i} style={st.sessionScoreItem}>
+                      <Text style={st.sessionScoreLabel}>Q{i + 1}</Text>
+                      <Text style={[st.sessionScoreValue, { color: s >= 7 ? '#10B981' : s >= 5 ? '#F59E0B' : '#EF4444' }]}>{s}/10</Text>
+                    </View>
+                  ))}
+                </View>
+
+                <View style={st.sessionAvgWrap}>
+                  <Text style={st.sessionAvgLabel}>Average Score</Text>
+                  <Text style={st.sessionAvgValue}>
+                    {(mockSessionScores.reduce((a, b) => a + b, 0) / mockSessionScores.length).toFixed(1)}/10
+                  </Text>
+                </View>
+
+                <View style={st.sessionActions}>
+                  <TouchableOpacity
+                    style={st.retryBtn}
+                    onPress={() => {
+                      setMockIndex(0);
+                      setMockSessionScores([]);
+                      setMockSessionComplete(false);
+                      setFeedback(null);
+                      setUserResponse('');
+                    }}
+                  >
+                    <Feather name="rotate-ccw" size={16} color="#7C3AED" />
+                    <Text style={st.retryBtnText}>Try Again</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={st.nextBtn} onPress={() => router.back()}>
+                    <Text style={st.nextBtnText}>Done</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <LeoCelebration visible={showCelebration} score={feedback?.score ?? 0} onDismiss={() => setShowCelebration(false)} />
+      <LeoCelebration visible={showCelebration} score={(feedback?.score ?? 5) * 10} onDismiss={() => setShowCelebration(false)} />
     </View>
   );
 }
-
 
 
 // ─── Styles ───
@@ -789,145 +849,134 @@ const st = StyleSheet.create({
   backBtn2: { width: 36, height: 36, borderRadius: 12, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
   headerTitle: { ...TYPE.h2, color: COLORS.textPrimary },
   headerSub: { ...TYPE.caption, color: COLORS.textMuted, fontSize: 11 },
+  heroProblemBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: 'rgba(124,58,237,0.1)', maxWidth: 120 },
+  heroProblemText: { ...TYPE.caption, color: '#7C3AED', fontSize: 9 },
 
-  // Stage Tracker
-  trackerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 30, marginBottom: 20, gap: 0 },
-  trackerDot: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.bg2, borderWidth: 2, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
-  trackerDotActive: { backgroundColor: '#7C3AED', borderColor: '#7C3AED' },
-  trackerDotDone: { backgroundColor: '#10B981', borderColor: '#10B981' },
-  trackerLine: { flex: 1, height: 2, backgroundColor: COLORS.border },
-  trackerLineActive: { backgroundColor: '#7C3AED' },
-
-  // Stage content
+  // Stages
   stageContainer: { paddingHorizontal: 20 },
-  stageHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 },
+  stageHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
   stageTitle: { ...TYPE.h2, color: COLORS.textPrimary, fontSize: 18 },
-  stageDesc: { ...TYPE.body, color: COLORS.textMuted, marginBottom: 16 },
+  stageDesc: { ...TYPE.body, color: COLORS.textSecondary, marginBottom: 16, lineHeight: 20 },
 
   // Cards
   card: { backgroundColor: COLORS.bg2, borderRadius: 16, padding: 18, marginBottom: 12, borderWidth: 1, borderColor: COLORS.border },
   cardLabel: { ...TYPE.bodyBold, color: COLORS.textPrimary, marginBottom: 6 },
   cardBody: { ...TYPE.body, color: COLORS.textSecondary, lineHeight: 22 },
 
-  // MECE branches
-  branchContainer: { marginTop: 12, gap: 8 },
+  // Framework
+  branchContainer: { marginTop: 14, gap: 10 },
   branchItem: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  branchDot: { width: 8, height: 8, borderRadius: 4, marginTop: 6 },
-  branchText: { ...TYPE.body, color: COLORS.textPrimary, flex: 1 },
+  branchDot: { width: 10, height: 10, borderRadius: 5, marginTop: 6 },
+  branchText: { ...TYPE.body, color: COLORS.textPrimary, flex: 1, lineHeight: 20 },
+  tipBox: { flexDirection: 'row', gap: 8, marginTop: 12, padding: 12, borderRadius: 10, backgroundColor: 'rgba(245,158,11,0.08)' },
+  tipText: { ...TYPE.caption, color: '#D97706', flex: 1, lineHeight: 18 },
 
-  // Tips
-  tipBox: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginTop: 12, padding: 12, borderRadius: 10, backgroundColor: 'rgba(245, 158, 11, 0.08)' },
-  tipText: { ...TYPE.body, color: COLORS.textSecondary, flex: 1, fontSize: 13, fontStyle: 'italic' },
+  // Hero Steps
+  heroLetterBg: { width: 36, height: 36, borderRadius: 12, backgroundColor: '#7C3AED', alignItems: 'center', justifyContent: 'center' },
+  heroLetter: { ...TYPE.h1, color: '#FFF', fontSize: 18 },
+  exampleBox: { padding: 12, borderRadius: 10, backgroundColor: 'rgba(124,58,237,0.06)', marginTop: 8 },
+  exampleText: { ...TYPE.body, color: COLORS.textSecondary, fontStyle: 'italic', lineHeight: 20 },
 
-  // Story Hero
-  heroLetterBg: { width: 40, height: 40, borderRadius: 12, backgroundColor: '#EDE9FE', alignItems: 'center', justifyContent: 'center' },
-  heroLetter: { fontSize: 20, fontWeight: '800', color: '#7C3AED' },
-  exampleBox: { padding: 10, borderRadius: 8, backgroundColor: 'rgba(139, 92, 246, 0.06)' },
-  exampleText: { ...TYPE.body, fontSize: 13, color: COLORS.textSecondary, fontStyle: 'italic' },
-
-  // Big Boss
-  questionNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#EDE9FE', alignItems: 'center', justifyContent: 'center' },
-  questionNumText: { fontWeight: '800', color: '#7C3AED', fontSize: 13 },
+  // Question numbers
+  questionNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#7C3AED', alignItems: 'center', justifyContent: 'center' },
+  questionNumText: { ...TYPE.bodyBold, color: '#FFF', fontSize: 12 },
 
   // MCQ
   mcqOption: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.border, marginBottom: 8 },
-  mcqOptionCorrect: { borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.06)' },
-  mcqOptionWrong: { borderColor: '#EF4444', backgroundColor: 'rgba(239, 68, 68, 0.06)' },
-  mcqOptionText: { ...TYPE.body, color: COLORS.textPrimary, flex: 1, paddingRight: 8 },
-  explanationBox: { marginTop: 12, padding: 12, borderRadius: 10, backgroundColor: 'rgba(16, 185, 129, 0.06)' },
-  explanationText: { ...TYPE.body, color: COLORS.textSecondary, fontSize: 13, marginTop: 8 },
+  mcqOptionCorrect: { borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.06)' },
+  mcqOptionWrong: { borderColor: '#EF4444', backgroundColor: 'rgba(239,68,68,0.06)' },
+  mcqOptionText: { ...TYPE.body, color: COLORS.textPrimary, flex: 1, lineHeight: 20 },
+  explanationBox: { marginTop: 12, padding: 12, borderRadius: 10, backgroundColor: 'rgba(59,130,246,0.06)' },
+  explanationText: { ...TYPE.body, color: COLORS.textSecondary, fontSize: 13, lineHeight: 19 },
 
-  // Mental Math
-  mathOption: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.border, minWidth: '40%' },
-  mathOptionText: { ...TYPE.bodyBold, color: COLORS.textPrimary, textAlign: 'center' },
+  // Mock Progress Dots
+  mockProgress: { marginLeft: 'auto', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10, backgroundColor: 'rgba(124,58,237,0.15)' },
+  mockProgressText: { ...TYPE.bodyBold, color: '#7C3AED', fontSize: 12 },
+  mockDotsRow: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 16 },
+  mockDot: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: COLORS.border },
+  mockDotDone: { backgroundColor: '#10B981', borderColor: '#10B981' },
+  mockDotActive: { backgroundColor: '#7C3AED', borderColor: '#7C3AED' },
+  mockDotPending: { backgroundColor: COLORS.bg1 },
+  mockDotScore: { ...TYPE.caption, color: '#FFF', fontSize: 10, fontWeight: '700' },
 
-  // Next button
-  nextBtn: { backgroundColor: '#7C3AED', paddingVertical: 16, borderRadius: 14, alignItems: 'center', marginTop: 8, marginBottom: 4 },
-  nextBtnText: { ...TYPE.bodyBold, color: '#FFF', fontSize: 15 },
+  // Persona Selector
+  personaRow: { gap: 10 },
+  personaBtn: { padding: 14, borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.border, marginBottom: 8 },
+  personaIconWrap: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
+  personaLabel: { ...TYPE.bodyBold, color: COLORS.textPrimary, marginBottom: 2 },
+  personaDesc: { ...TYPE.caption, color: COLORS.textMuted, fontSize: 11 },
 
-  // Sophia & Mock
-  sophiaHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 10 },
-  sophiaAvatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#EDE9FE', alignItems: 'center', justifyContent: 'center' },
+  // Sophia
+  sophiaHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
+  sophiaAvatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(124,58,237,0.12)', alignItems: 'center', justifyContent: 'center' },
   sophiaName: { ...TYPE.bodyBold, color: COLORS.textPrimary },
-  sophiaRole: { ...TYPE.caption, color: COLORS.textMuted },
-  sophiaQuote: { ...TYPE.body, color: COLORS.textSecondary, flex: 1, fontStyle: 'italic' },
-  scenarioBox: { padding: 14, borderRadius: 12, backgroundColor: 'rgba(139, 92, 246, 0.06)', marginBottom: 4 },
+  sophiaRole: { ...TYPE.caption, color: COLORS.textMuted, fontSize: 11 },
+  sophiaQuote: { ...TYPE.body, color: COLORS.textSecondary, fontStyle: 'italic', lineHeight: 20 },
+  scenarioBox: { padding: 14, borderRadius: 12, backgroundColor: COLORS.bg1, marginBottom: 6 },
   scenarioText: { ...TYPE.body, color: COLORS.textSecondary, lineHeight: 22 },
 
-  // Persona toggle
-  personaRow: { flexDirection: 'row', gap: 8, marginTop: 8 },
-  personaBtn: { flex: 1, padding: 12, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.border, alignItems: 'center' },
-  personaBtnActive: { borderColor: '#7C3AED', backgroundColor: 'rgba(139, 92, 246, 0.06)' },
-  personaEmoji: { fontSize: 24, marginBottom: 4 },
-  personaLabel: { ...TYPE.caption, color: COLORS.textMuted, fontSize: 10, textAlign: 'center' },
-  personaLabelActive: { color: '#7C3AED' },
-
-  // Response input
-  responseInput: { minHeight: 160, ...TYPE.body, color: COLORS.textPrimary, padding: 14, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.border, backgroundColor: COLORS.bg1, textAlignVertical: 'top', marginBottom: 8 },
-
-  // Vibe meter
-  vibeMeter: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  vibeTrack: { flex: 1, height: 6, borderRadius: 3, backgroundColor: COLORS.bg1, overflow: 'hidden' },
-  vibeFill: { height: '100%', borderRadius: 3 },
-  vibeLabel: { ...TYPE.caption, fontSize: 10, fontWeight: '700', width: 80, textAlign: 'right' },
-
-  // Submit
-  submitBtn: { backgroundColor: '#7C3AED', paddingVertical: 16, borderRadius: 14, alignItems: 'center', marginTop: 4 },
-  submitBtnDisabled: { opacity: 0.4 },
-  submitBtnText: { ...TYPE.bodyBold, color: '#FFF', fontSize: 15 },
-
-  // Feedback
-  feedbackContainer: { marginTop: 8 },
-  scoreCard: { flexDirection: 'row', alignItems: 'center', gap: 16, backgroundColor: COLORS.bg2, borderRadius: 16, padding: 18, marginBottom: 12, borderWidth: 1, borderColor: COLORS.border },
-  scoreCircle: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#EDE9FE', alignItems: 'center', justifyContent: 'center' },
-  scoreNum: { fontSize: 28, fontWeight: '900', color: '#7C3AED' },
-  scoreSlash: { fontSize: 12, color: COLORS.textMuted },
-  scoreBreakdown: { flex: 1, gap: 6 },
-  scoreBarWrap: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  scoreBarLabel: { ...TYPE.caption, color: COLORS.textMuted, width: 60, fontSize: 10 },
-  scoreBarTrack: { flex: 1, height: 6, borderRadius: 3, backgroundColor: COLORS.bg1, overflow: 'hidden' },
-  scoreBarFill: { height: '100%', borderRadius: 3 },
-  scoreBarVal: { ...TYPE.caption, color: COLORS.textMuted, width: 24, textAlign: 'right', fontSize: 10 },
-
-  feedbackHeading: { ...TYPE.bodyBold, color: COLORS.textPrimary, marginBottom: 8 },
-  feedbackBullet: { ...TYPE.body, color: COLORS.textSecondary, marginBottom: 4, paddingLeft: 4 },
-  trySayingText: { ...TYPE.body, color: '#7C3AED', fontStyle: 'italic', lineHeight: 22 },
-
-  // Buzzwords
-  buzzRow: { marginTop: 8 },
-  buzzLabel: { ...TYPE.caption, color: COLORS.textMuted, marginBottom: 6 },
-  buzzTags: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  buzzTagGood: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, backgroundColor: 'rgba(16, 185, 129, 0.1)' },
-  buzzTagText: { ...TYPE.caption, color: '#059669', fontSize: 11 },
-  buzzTagMiss: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, backgroundColor: 'rgba(245, 158, 11, 0.1)' },
-  buzzTagTextMiss: { ...TYPE.caption, color: '#D97706', fontSize: 11 },
-
-  // Feedback actions
-  feedbackActions: { flexDirection: 'row', gap: 10, marginTop: 4 },
-  retryBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 14, borderWidth: 1.5, borderColor: '#7C3AED' },
-  retryBtnText: { ...TYPE.bodyBold, color: '#7C3AED' },
-
-  // Leo celebration
-  celebrationOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.7)', alignItems: 'center', justifyContent: 'center', zIndex: 100 },
-  celebrationContent: { alignItems: 'center', padding: 32 },
-  celebrationScore: { fontSize: 56, fontWeight: '900', color: '#FDE68A', marginTop: 16 },
-  celebrationTitle: { ...TYPE.h1, color: '#FFF', fontSize: 24, marginTop: 8 },
-  celebrationSub: { ...TYPE.body, color: 'rgba(255,255,255,0.7)', marginTop: 4 },
-  celebrationBtn: { marginTop: 24, paddingHorizontal: 40, paddingVertical: 14, borderRadius: 14, backgroundColor: '#7C3AED' },
-  celebrationBtnText: { ...TYPE.bodyBold, color: '#FFF' },
-
-  // Voice controls
-  voiceBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(139, 92, 246, 0.1)', alignItems: 'center', justifyContent: 'center' },
+  // Voice
+  voiceBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(124,58,237,0.12)', alignItems: 'center', justifyContent: 'center' },
   voiceBtnActive: { backgroundColor: '#7C3AED' },
-  voiceToggle: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: '#7C3AED' },
+  voiceToggle: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, borderWidth: 1, borderColor: '#7C3AED' },
   voiceToggleActive: { backgroundColor: '#7C3AED' },
-  voiceToggleText: { ...TYPE.caption, color: '#7C3AED', fontSize: 11, fontWeight: '700' },
+  voiceToggleText: { ...TYPE.caption, color: '#7C3AED', fontSize: 11, fontWeight: '600' },
   voiceRecordArea: { alignItems: 'center', paddingVertical: 24, gap: 12 },
-  startRecordBtn: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#7C3AED', alignItems: 'center', justifyContent: 'center', ...SHADOWS.accent },
-  stopRecordBtn: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#EF4444', alignItems: 'center', justifyContent: 'center', ...SHADOWS.accent },
-  recordingPulse: { borderRadius: 40, borderWidth: 3, borderColor: 'rgba(239, 68, 68, 0.3)', padding: 4 },
-  recordingLabel: { ...TYPE.body, color: COLORS.textMuted, fontSize: 13 },
-  transcriptPreview: { width: '100%', marginTop: 8, padding: 12, borderRadius: 10, backgroundColor: COLORS.bg1 },
+  startRecordBtn: { width: 64, height: 64, borderRadius: 32, backgroundColor: '#7C3AED', alignItems: 'center', justifyContent: 'center', ...SHADOWS.md },
+  stopRecordBtn: { width: 64, height: 64, borderRadius: 32, backgroundColor: '#EF4444', alignItems: 'center', justifyContent: 'center' },
+  recordingPulse: { borderRadius: 40, borderWidth: 3, borderColor: 'rgba(239,68,68,0.3)', padding: 4 },
+  recordingLabel: { ...TYPE.caption, color: COLORS.textMuted },
+  transcriptPreview: { width: '100%', padding: 12, borderRadius: 10, backgroundColor: COLORS.bg1, marginTop: 8 },
   transcriptLabel: { ...TYPE.caption, color: COLORS.textMuted, marginBottom: 4 },
   transcriptText: { ...TYPE.body, color: COLORS.textPrimary, lineHeight: 20 },
+
+  // Input
+  responseInput: { ...TYPE.body, color: COLORS.textPrimary, minHeight: 120, padding: 14, borderRadius: 12, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, lineHeight: 22, marginBottom: 8 },
+
+  // Buttons
+  nextBtn: { paddingVertical: 14, paddingHorizontal: 24, borderRadius: 14, backgroundColor: '#7C3AED', alignItems: 'center', marginTop: 8 },
+  nextBtnText: { ...TYPE.bodyBold, color: '#FFF' },
+  submitBtn: { paddingVertical: 16, borderRadius: 14, backgroundColor: '#7C3AED', alignItems: 'center', marginBottom: 8, ...SHADOWS.md },
+  submitBtnDisabled: { opacity: 0.4 },
+  submitBtnText: { ...TYPE.bodyBold, color: '#FFF', fontSize: 16 },
+
+  // Feedback
+  feedbackContainer: { gap: 0 },
+  scoreCard: { flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 12, padding: 18, borderRadius: 16, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border },
+  scoreCircle: { alignItems: 'center', justifyContent: 'center', width: 72, height: 72, borderRadius: 36, backgroundColor: 'rgba(124,58,237,0.12)' },
+  scoreNum: { fontSize: 28, fontWeight: '900', color: '#7C3AED' },
+  scoreSlash: { ...TYPE.caption, color: COLORS.textMuted, fontSize: 12 },
+  scoreBreakdown: { flex: 1, gap: 6 },
+
+  feedbackHeading: { ...TYPE.bodyBold, color: COLORS.textPrimary, fontSize: 14 },
+  feedbackBody: { ...TYPE.body, color: COLORS.textSecondary, lineHeight: 22 },
+  feedbackBullet: { ...TYPE.body, color: COLORS.textSecondary, lineHeight: 22, paddingLeft: 4 },
+  trySayingText: { ...TYPE.body, color: COLORS.textSecondary, fontStyle: 'italic', lineHeight: 22 },
+
+  // Buzzwords
+  buzzRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 8 },
+  buzzLabel: { ...TYPE.caption, color: COLORS.textMuted, width: 40, marginTop: 4, fontSize: 10 },
+  buzzTags: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, flex: 1 },
+  buzzTagGood: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, backgroundColor: 'rgba(16,185,129,0.12)' },
+  buzzTagText: { ...TYPE.caption, color: '#059669', fontSize: 11 },
+  buzzTagMiss: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, backgroundColor: 'rgba(239,68,68,0.08)' },
+  buzzTagTextMiss: { ...TYPE.caption, color: '#DC2626', fontSize: 11 },
+
+  // Actions
+  feedbackActions: { flexDirection: 'row', gap: 10, marginTop: 8 },
+  retryBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 14, borderRadius: 14, borderWidth: 1.5, borderColor: '#7C3AED' },
+  retryBtnText: { ...TYPE.bodyBold, color: '#7C3AED' },
+
+  // Session Complete
+  sessionCompleteCard: { alignItems: 'center', padding: 28, borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border },
+  sessionCompleteTitle: { ...TYPE.h1, color: COLORS.textPrimary, fontSize: 22, marginTop: 16, textAlign: 'center' },
+  sessionCompleteSubtitle: { ...TYPE.caption, color: COLORS.textMuted, marginBottom: 20 },
+  sessionScoresGrid: { flexDirection: 'row', gap: 12, marginBottom: 20 },
+  sessionScoreItem: { alignItems: 'center', gap: 4 },
+  sessionScoreLabel: { ...TYPE.caption, color: COLORS.textMuted, fontSize: 11 },
+  sessionScoreValue: { ...TYPE.h2, fontSize: 18 },
+  sessionAvgWrap: { alignItems: 'center', marginBottom: 24, padding: 16, borderRadius: 14, backgroundColor: COLORS.bg1, width: '100%' },
+  sessionAvgLabel: { ...TYPE.caption, color: COLORS.textMuted, marginBottom: 4 },
+  sessionAvgValue: { ...TYPE.hero, color: '#7C3AED', fontSize: 32 },
+  sessionActions: { flexDirection: 'row', gap: 12, width: '100%' },
 });
