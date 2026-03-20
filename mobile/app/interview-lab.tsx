@@ -13,6 +13,7 @@ import { COLORS, SHADOWS, TYPE } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { triggerHaptic } from '../lib/haptics';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getMarketName } from '../lib/markets';
 import { speakAsSophia, transcribeAudio, buildFeedbackNarration } from '../lib/interviewVoice';
 import {
@@ -163,6 +164,11 @@ export default function InterviewLabScreen() {
   const [mockSessionScores, setMockSessionScores] = useState<number[]>([]);
   const [mockSessionComplete, setMockSessionComplete] = useState(false);
 
+  // Curriculum progress tracking
+  const [cyclesCompleted, setCyclesCompleted] = useState(0);
+  const [totalQuestionsAnswered, setTotalQuestionsAnswered] = useState(0);
+  const [mcqCycleCount, setMcqCycleCount] = useState(0);
+
   // Voice state
   const [isRecording, setIsRecording] = useState(false);
   const [isNarrating, setIsNarrating] = useState(false);
@@ -187,9 +193,72 @@ export default function InterviewLabScreen() {
       .catch(() => setLoading(false));
   }, [user]);
 
+  // ─── Load curriculum progress ───
+  useEffect(() => {
+    if (!user || !market) return;
+    const key = `interview_progress_${user.id}_${market}`;
+    AsyncStorage.getItem(key).then(data => {
+      if (data) {
+        const parsed = JSON.parse(data);
+        setCyclesCompleted(parsed.cyclesCompleted || 0);
+        setTotalQuestionsAnswered(parsed.totalQuestionsAnswered || 0);
+        setMcqCycleCount(parsed.mcqCycleCount || 0);
+      }
+    }).catch(() => {});
+  }, [user, market]);
+
+  const saveCurriculumProgress = useCallback(async (updates: {
+    cyclesCompleted?: number;
+    totalQuestionsAnswered?: number;
+    mcqCycleCount?: number;
+  }) => {
+    if (!user || !market) return;
+    const key = `interview_progress_${user.id}_${market}`;
+    const current = {
+      cyclesCompleted: updates.cyclesCompleted ?? cyclesCompleted,
+      totalQuestionsAnswered: updates.totalQuestionsAnswered ?? totalQuestionsAnswered,
+      mcqCycleCount: updates.mcqCycleCount ?? mcqCycleCount,
+    };
+    try { await AsyncStorage.setItem(key, JSON.stringify(current)); } catch {}
+  }, [user, market, cyclesCompleted, totalQuestionsAnswered, mcqCycleCount]);
+
+  // Save feedback to notebook
+  const saveFeedbackToNotebook = useCallback(async (fb: any, questionText: string) => {
+    if (!user || !market || !fb) return;
+    triggerHaptic('medium');
+    try {
+      const content = `🎤 Mock Interview Feedback\n\nQ: ${questionText}\n\n📊 Score: ${fb.score}/10\n\n✅ What Went Well: ${fb.whatWentWell || ''}\n\n📈 Room for Improvement: ${fb.roomForImprovement || ''}\n\n💎 Pro Version: "${fb.betterVersion || ''}"`;
+      await supabase.from('notes').insert({
+        user_id: user.id,
+        content,
+        linked_label: 'interview-feedback',
+        market_id: market,
+      });
+      triggerHaptic('success');
+    } catch (err) {
+      console.warn('Save feedback error:', err);
+    }
+  }, [user, market]);
+
   // ─── Voice helpers ───
+  const stopNarration = useCallback(async () => {
+    try {
+      if (soundRef.current) {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+        soundRef.current = null;
+      }
+    } catch {}
+    setIsNarrating(false);
+    setIsSophiaSpeaking(false);
+  }, []);
+
   const narrateScenario = useCallback(async (text: string) => {
-    if (isNarrating) return;
+    if (isNarrating) {
+      // Tap again to mute/stop
+      await stopNarration();
+      return;
+    }
     setIsNarrating(true);
     triggerHaptic('light');
     try {
@@ -198,14 +267,18 @@ export default function InterviewLabScreen() {
       soundRef.current = sound;
       if (sound) {
         sound.setOnPlaybackStatusUpdate((status) => {
-          if ('didJustFinish' in status && status.didJustFinish) setIsNarrating(false);
+          if ('didJustFinish' in status && status.didJustFinish) { setIsNarrating(false); soundRef.current = null; }
         });
       } else { setIsNarrating(false); }
     } catch { setIsNarrating(false); }
-  }, [isNarrating]);
+  }, [isNarrating, stopNarration]);
 
   const speakFeedback = useCallback(async (fb: any) => {
-    if (isSophiaSpeaking) return;
+    if (isSophiaSpeaking) {
+      // Tap again to mute/stop
+      await stopNarration();
+      return;
+    }
     setIsSophiaSpeaking(true);
     triggerHaptic('light');
     try {
@@ -215,11 +288,11 @@ export default function InterviewLabScreen() {
       soundRef.current = sound;
       if (sound) {
         sound.setOnPlaybackStatusUpdate((status) => {
-          if ('didJustFinish' in status && status.didJustFinish) setIsSophiaSpeaking(false);
+          if ('didJustFinish' in status && status.didJustFinish) { setIsSophiaSpeaking(false); soundRef.current = null; }
         });
       } else { setIsSophiaSpeaking(false); }
     } catch { setIsSophiaSpeaking(false); }
-  }, [isSophiaSpeaking]);
+  }, [isSophiaSpeaking, stopNarration]);
 
   const startRecording = useCallback(async () => {
     try {
@@ -318,15 +391,22 @@ export default function InterviewLabScreen() {
 
   const goToNextMockQuestion = useCallback(() => {
     const nextIndex = mockIndex + 1;
+    const newTotal = totalQuestionsAnswered + 1;
+    setTotalQuestionsAnswered(newTotal);
+
     if (nextIndex >= Math.min(MOCK_QUESTION_COUNT, mockQuestions.length)) {
+      const newCycles = cyclesCompleted + 1;
+      setCyclesCompleted(newCycles);
       setMockSessionComplete(true);
+      saveCurriculumProgress({ cyclesCompleted: newCycles, totalQuestionsAnswered: newTotal });
     } else {
       setMockIndex(nextIndex);
+      saveCurriculumProgress({ totalQuestionsAnswered: newTotal });
     }
     setFeedback(null);
     setUserResponse('');
     setShowCelebration(false);
-  }, [mockIndex, mockQuestions.length]);
+  }, [mockIndex, mockQuestions.length, totalQuestionsAnswered, cyclesCompleted, saveCurriculumProgress]);
 
   if (loading || questionsLoading) {
     return <View style={[st.container, st.centered]}><ActivityIndicator size="large" color={COLORS.accent} /></View>;
@@ -405,7 +485,7 @@ export default function InterviewLabScreen() {
       case 'frameworks':
         return <FrameworksTab marketName={marketName} marketId={market || 'aerospace'} />;
       case 'glossary':
-        return <InterviewGlossary marketName={marketName} />;
+        return <InterviewGlossary marketName={marketName} marketId={market || 'aerospace'} />;
       case 'learn':
       default:
         return renderLearnTab();
@@ -900,6 +980,15 @@ export default function InterviewLabScreen() {
                 </View>
               )}
 
+              {/* Save to Notebook */}
+              <TouchableOpacity
+                onPress={() => saveFeedbackToNotebook(feedback, currentMock?.question || '')}
+                style={st.saveFeedbackBtn}
+              >
+                <Feather name="bookmark" size={14} color="#7C3AED" />
+                <Text style={st.saveFeedbackText}>Save to Notebook</Text>
+              </TouchableOpacity>
+
               <View style={st.feedbackActions}>
                 <TouchableOpacity
                   style={st.retryBtn}
@@ -955,6 +1044,34 @@ export default function InterviewLabScreen() {
                 <Text style={[st.sessionAvgValue, {
                   color: avgScore >= 8 ? '#10B981' : avgScore >= 5 ? '#F59E0B' : '#EF4444',
                 }]}>{avgScore.toFixed(1)}/10</Text>
+              </View>
+
+              {/* Curriculum Progress */}
+              <View style={st.curriculumCard}>
+                <Text style={st.curriculumTitle}>📈 Your Interview Progress</Text>
+                <View style={st.curriculumRow}>
+                  <View style={st.curriculumStat}>
+                    <Text style={st.curriculumStatNum}>{cyclesCompleted}</Text>
+                    <Text style={st.curriculumStatLabel}>Cycles Done</Text>
+                  </View>
+                  <View style={st.curriculumDivider} />
+                  <View style={st.curriculumStat}>
+                    <Text style={st.curriculumStatNum}>{totalQuestionsAnswered}</Text>
+                    <Text style={st.curriculumStatLabel}>Questions</Text>
+                  </View>
+                  <View style={st.curriculumDivider} />
+                  <View style={st.curriculumStat}>
+                    <Text style={[st.curriculumStatNum, { color: '#10B981' }]}>
+                      {cyclesCompleted > 0 ? '🔄 New Q\'s' : '—'}
+                    </Text>
+                    <Text style={st.curriculumStatLabel}>Next Cycle</Text>
+                  </View>
+                </View>
+                {cyclesCompleted > 0 && (
+                  <Text style={st.curriculumHint}>
+                    Complete another cycle to unlock new industry-specific questions!
+                  </Text>
+                )}
               </View>
 
               <View style={st.sessionActions}>
@@ -1251,4 +1368,18 @@ const st = StyleSheet.create({
   bottomTabIconActive: { backgroundColor: 'rgba(124,58,237,0.1)' },
   bottomTabLabel: { ...TYPE.caption, color: COLORS.textMuted, fontSize: 10 },
   bottomTabLabelActive: { color: '#7C3AED' },
+
+  // Save feedback to notebook
+  saveFeedbackBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 12, borderRadius: 12, borderWidth: 1.5, borderColor: '#7C3AED', borderStyle: 'dashed', marginBottom: 8 },
+  saveFeedbackText: { ...TYPE.bodyBold, color: '#7C3AED', fontSize: 13 },
+
+  // Curriculum progress
+  curriculumCard: { padding: 16, borderRadius: 16, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, marginBottom: 16 },
+  curriculumTitle: { ...TYPE.bodyBold, color: COLORS.textPrimary, fontSize: 15, marginBottom: 12, textAlign: 'center' },
+  curriculumRow: { flexDirection: 'row', alignItems: 'center' },
+  curriculumStat: { flex: 1, alignItems: 'center' },
+  curriculumStatNum: { ...TYPE.h2, color: '#7C3AED', fontSize: 20 },
+  curriculumStatLabel: { ...TYPE.caption, color: COLORS.textMuted, fontSize: 10, marginTop: 2 },
+  curriculumDivider: { width: 1, height: 30, backgroundColor: COLORS.border },
+  curriculumHint: { ...TYPE.caption, color: COLORS.textMuted, fontSize: 11, textAlign: 'center', marginTop: 10, lineHeight: 16 },
 });

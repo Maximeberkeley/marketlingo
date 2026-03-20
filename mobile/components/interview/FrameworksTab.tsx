@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import { Feather } from '@expo/vector-icons';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
+import { useInterviewNotebook } from '../../hooks/useInterviewNotebook';
 
 interface FrameworksTabProps {
   marketName: string;
@@ -120,6 +121,7 @@ const INDUSTRY_EXAMPLES: Record<string, Record<string, string>> = {
 export function FrameworksTab({ marketName, marketId }: FrameworksTabProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [readFrameworks, setReadFrameworks] = useState<Set<string>>(new Set());
+  const { saveToNotebook, saving } = useInterviewNotebook(marketId);
 
   const toggleFramework = (id: string) => {
     triggerHaptic('light');
@@ -129,6 +131,11 @@ export function FrameworksTab({ marketName, marketId }: FrameworksTabProps) {
       setExpanded(id);
       setReadFrameworks(prev => new Set(prev).add(id));
     }
+  };
+
+  const handleSaveFramework = (fw: Framework) => {
+    const content = `📚 ${fw.name}\n\n${fw.overview}\n\n🎯 When to use: ${fw.whenToUse}\n\n${fw.components.map(c => `• ${c.label}: ${c.description}`).join('\n')}`;
+    saveToNotebook(content, 'interview-framework');
   };
 
   const progress = Math.round((readFrameworks.size / FRAMEWORKS_LIBRARY.length) * 100);
@@ -223,6 +230,16 @@ export function FrameworksTab({ marketName, marketId }: FrameworksTabProps) {
                     <Text style={st.industryText}>{industryExample}</Text>
                   </View>
                 )}
+
+                {/* Save to Notebook */}
+                <TouchableOpacity
+                  onPress={() => handleSaveFramework(fw)}
+                  disabled={saving}
+                  style={st.saveBtn}
+                >
+                  <Feather name="bookmark" size={14} color="#7C3AED" />
+                  <Text style={st.saveBtnText}>{saving ? 'Saving...' : 'Save to Notebook'}</Text>
+                </TouchableOpacity>
               </View>
             )}
           </View>
@@ -277,4 +294,8 @@ const st = StyleSheet.create({
   industryHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
   industryLabel: { ...TYPE.bodyBold, color: '#D97706', fontSize: 12 },
   industryText: { ...TYPE.body, color: COLORS.textSecondary, fontSize: 13, lineHeight: 20 },
+
+  // Save button
+  saveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 12, borderRadius: 12, borderWidth: 1.5, borderColor: '#7C3AED', borderStyle: 'dashed', marginTop: 12 },
+  saveBtnText: { ...TYPE.bodyBold, color: '#7C3AED', fontSize: 13 },
 });

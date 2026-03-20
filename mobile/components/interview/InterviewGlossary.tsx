@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
+import { useInterviewNotebook } from '../../hooks/useInterviewNotebook';
 
 interface GlossaryTerm {
   term: string;
@@ -37,8 +38,9 @@ const CONSULTING_GLOSSARY: GlossaryTerm[] = [
   { term: 'Pivot', definition: 'A fundamental change in business strategy or product direction based on market feedback.', category: 'Strategy' },
 ];
 
-export function InterviewGlossary({ marketName }: { marketName: string }) {
+export function InterviewGlossary({ marketName, marketId }: { marketName: string; marketId?: string }) {
   const [search, setSearch] = useState('');
+  const { saveToNotebook, saving } = useInterviewNotebook(marketId || 'default');
 
   const filtered = useMemo(() => {
     if (!search.trim()) return CONSULTING_GLOSSARY;
@@ -90,7 +92,16 @@ export function InterviewGlossary({ marketName }: { marketName: string }) {
           <Text style={st.categoryLabel}>{category}</Text>
           {terms.map(t => (
             <View key={t.term} style={st.termCard}>
-              <Text style={st.termName}>{t.term}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                <Text style={[st.termName, { flex: 1 }]}>{t.term}</Text>
+                <TouchableOpacity
+                  onPress={() => saveToNotebook(`📖 ${t.term}\n\n${t.definition}\n\nCategory: ${t.category}`, 'interview-glossary')}
+                  disabled={saving}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Feather name="bookmark" size={16} color="#7C3AED" />
+                </TouchableOpacity>
+              </View>
               <Text style={st.termDef}>{t.definition}</Text>
             </View>
           ))}

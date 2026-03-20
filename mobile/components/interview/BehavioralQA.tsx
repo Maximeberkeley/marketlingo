@@ -4,6 +4,7 @@ import { Feather } from '@expo/vector-icons';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useInterviewNotebook } from '../../hooks/useInterviewNotebook';
 
 interface BehavioralQAProps {
   marketName: string;
@@ -95,6 +96,7 @@ export function BehavioralQA({ marketName, marketId }: BehavioralQAProps) {
   const [noteText, setNoteText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [answeredCount, setAnsweredCount] = useState(0);
+  const { saveToNotebook, saving: savingToNotebook } = useInterviewNotebook(marketId);
 
   // Load notes from storage
   React.useEffect(() => {
@@ -230,6 +232,19 @@ export function BehavioralQA({ marketName, marketId }: BehavioralQAProps) {
                   <Text style={st.suggestedText}>{q.suggestedAnswer}</Text>
                 </View>
 
+                {/* Save Q&A to Notebook */}
+                <TouchableOpacity
+                  onPress={() => {
+                    const content = `❓ ${q.question}\n\n💡 Tip: ${q.tip}\n\n📝 Suggested: ${q.suggestedAnswer}${notes[q.id] ? `\n\n✍️ My Answer: ${notes[q.id]}` : ''}`;
+                    saveToNotebook(content, 'interview-qa');
+                  }}
+                  disabled={savingToNotebook}
+                  style={st.saveToNotebookBtn}
+                >
+                  <Feather name="bookmark" size={14} color="#7C3AED" />
+                  <Text style={st.saveToNotebookText}>{savingToNotebook ? 'Saving...' : 'Save to Notebook'}</Text>
+                </TouchableOpacity>
+
                 {/* User Note */}
                 {hasNote && !isEditing && (
                   <View style={st.noteBox}>
@@ -346,4 +361,7 @@ const st = StyleSheet.create({
 
   addNoteBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 12, borderRadius: 12, borderWidth: 1.5, borderColor: '#7C3AED', borderStyle: 'dashed' },
   addNoteBtnText: { ...TYPE.bodyBold, color: '#7C3AED', fontSize: 13 },
+
+  saveToNotebookBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: 'rgba(124,58,237,0.06)', borderWidth: 1, borderColor: 'rgba(124,58,237,0.15)' },
+  saveToNotebookText: { ...TYPE.bodyBold, color: '#7C3AED', fontSize: 12 },
 });

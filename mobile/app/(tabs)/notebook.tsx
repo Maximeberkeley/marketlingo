@@ -34,12 +34,13 @@ interface NoteEntry {
   slide_id: string | null;
 }
 
-type NoteCategory = 'all' | 'lesson' | 'news' | 'trainer' | 'personal';
+type NoteCategory = 'all' | 'lesson' | 'news' | 'trainer' | 'personal' | 'interview';
 
 /* ─── Helpers ─── */
 function getLinkedType(label: string | null): NoteCategory {
   if (!label) return 'lesson';
   const lower = label.toLowerCase();
+  if (lower.includes('interview')) return 'interview';
   if (lower.includes('news') || lower.includes('daily')) return 'news';
   if (lower.includes('trainer')) return 'trainer';
   if (lower.includes('personal')) return 'personal';
