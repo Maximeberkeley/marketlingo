@@ -538,6 +538,83 @@ export type Database = {
           },
         ]
       }
+      interview_questions: {
+        Row: {
+          buzzwords: string[] | null
+          correct_index: number | null
+          created_at: string
+          difficulty: string | null
+          explanation: string | null
+          hero_problem: string | null
+          hints: Json | null
+          id: string
+          is_active: boolean | null
+          market_id: string
+          options: Json | null
+          path: string
+          persona_focus: string | null
+          question: string
+          question_type: string
+          reasonable_range: string | null
+          sample_answer: string | null
+          scenario: string | null
+          sort_order: number | null
+          stage: number
+        }
+        Insert: {
+          buzzwords?: string[] | null
+          correct_index?: number | null
+          created_at?: string
+          difficulty?: string | null
+          explanation?: string | null
+          hero_problem?: string | null
+          hints?: Json | null
+          id?: string
+          is_active?: boolean | null
+          market_id: string
+          options?: Json | null
+          path?: string
+          persona_focus?: string | null
+          question: string
+          question_type?: string
+          reasonable_range?: string | null
+          sample_answer?: string | null
+          scenario?: string | null
+          sort_order?: number | null
+          stage?: number
+        }
+        Update: {
+          buzzwords?: string[] | null
+          correct_index?: number | null
+          created_at?: string
+          difficulty?: string | null
+          explanation?: string | null
+          hero_problem?: string | null
+          hints?: Json | null
+          id?: string
+          is_active?: boolean | null
+          market_id?: string
+          options?: Json | null
+          path?: string
+          persona_focus?: string | null
+          question?: string
+          question_type?: string
+          reasonable_range?: string | null
+          sample_answer?: string | null
+          scenario?: string | null
+          sort_order?: number | null
+          stage?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_questions_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       investment_attempts: {
         Row: {
           created_at: string
