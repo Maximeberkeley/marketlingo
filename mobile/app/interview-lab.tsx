@@ -13,6 +13,7 @@ import { COLORS, SHADOWS, TYPE } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { triggerHaptic } from '../lib/haptics';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getMarketName } from '../lib/markets';
 import { speakAsSophia, transcribeAudio, buildFeedbackNarration } from '../lib/interviewVoice';
 import {
