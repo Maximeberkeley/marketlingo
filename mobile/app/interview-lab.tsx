@@ -231,7 +231,7 @@ export default function InterviewLabScreen() {
     if (!user || !market || !fb) return;
     triggerHaptic('medium');
     try {
-      const content = `🎤 Mock Interview Feedback\n\nQ: ${questionText}\n\n📊 Score: ${fb.score}/10\n\n✅ What Went Well: ${fb.whatWentWell || ''}\n\n📈 Room for Improvement: ${fb.roomForImprovement || ''}\n\n💎 Pro Version: "${fb.betterVersion || ''}"`;
+      const content = `🎤 Mock Interview Feedback\n\nQ: ${questionText}\n\n📊 Score: ${Math.round((fb.score ?? 5) * 10)}/100\n\n✅ What Went Well: ${fb.whatWentWell || ''}\n\n📈 Room for Improvement: ${fb.roomForImprovement || ''}\n\n💎 Pro Version: "${fb.betterVersion || ''}"`;
       await supabase.from('notes').insert({
         user_id: user.id,
         content,
