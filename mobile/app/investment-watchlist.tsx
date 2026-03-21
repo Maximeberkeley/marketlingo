@@ -99,6 +99,14 @@ export default function InvestmentWatchlistScreen() {
   const watchlistIds = useMemo(() => new Set(watchlist.map((c) => c.id)), [watchlist]);
   const dueForReview = getDueForReview();
 
+  // Auto-prompt thesis review when there are due reviews
+  useEffect(() => {
+    if (dueForReview.length > 0 && !loading && !labLoading) {
+      const timer = setTimeout(() => setShowReviewOverlay(true), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [dueForReview.length, loading, labLoading]);
+
   // News intelligence
   const { relevantNews, loading: newsLoading, getNewsCountForCompany } = useWatchlistIntel(selectedMarket || undefined, watchlist);
 
