@@ -111,7 +111,7 @@ export default function InvestmentModuleScreen() {
     fetchMarket();
   }, [user]);
 
-  const { progress, scenarios, completedScenarioIds, loading: labLoading, recordAttempt, updateModuleScore, getResumeIndex } = useInvestmentLab(selectedMarket || undefined);
+  const { progress, scenarios, completedScenarioIds, loading: labLoading, recordAttempt, updateModuleScore, getResumeIndex, saveModuleProgress, addLearnedConcept, getLearnedConcepts } = useInvestmentLab(selectedMarket || undefined);
 
   const moduleConfig = MODULE_CONFIG[moduleId || 'valuation'];
   const moduleScenarios = useMemo(
@@ -121,6 +121,17 @@ export default function InvestmentModuleScreen() {
   const currentScenario = moduleScenarios[currentScenarioIndex];
   const completedInModule = moduleScenarios.filter((s) => completedScenarioIds.includes(s.id)).length;
   const moduleProgress = moduleScenarios.length > 0 ? Math.round((completedInModule / moduleScenarios.length) * 100) : 0;
+
+  // Cross-pollination concepts mapping
+  const CONCEPT_MAP: Record<string, string[]> = {
+    valuation: ['DCF Analysis', 'Comparable Analysis', 'Revenue Multiples'],
+    due_diligence: ['Financial Due Diligence', 'Market Analysis', 'Management Assessment'],
+    risk_assessment: ['Risk Quantification', 'Stop-Loss Strategy', 'Portfolio Hedging'],
+    portfolio: ['Diversification', 'Position Sizing', 'Rebalancing'],
+  };
+  const learnedConcepts = getLearnedConcepts();
+  const moduleConcepts = CONCEPT_MAP[moduleId || 'valuation'] || [];
+  const newConceptsToLearn = moduleConcepts.filter(c => !learnedConcepts.includes(c));
 
   // Resume from first incomplete scenario on initial load
   useEffect(() => {
@@ -134,13 +145,21 @@ export default function InvestmentModuleScreen() {
   const handleOptionSelect = async (index: number) => {
     if (selectedOption !== null || !currentScenario) return;
     setSelectedOption(index);
-    // Use the shuffled isCorrect flag — always authoritative after shuffle
     const isCorrect = currentScenario.options[index]?.isCorrect === true;
     await recordAttempt(currentScenario.id, index, isCorrect);
-    // Calculate score using current completedInModule + this result (avoids stale state)
     const newCount = completedInModule + (isCorrect ? 1 : 0);
     const newScore = moduleScenarios.length > 0 ? Math.round((newCount / moduleScenarios.length) * 100) : 0;
     await updateModuleScore(moduleConfig.scoreKey.replace('_score', '') as any, newScore);
+
+    // Save mid-session state
+    await saveModuleProgress(moduleId || 'valuation', { scenarioIndex: currentScenarioIndex, score: newScore });
+
+    // Learn concepts as user progresses
+    if (isCorrect && newConceptsToLearn.length > 0) {
+      const conceptIdx = Math.min(currentScenarioIndex, newConceptsToLearn.length - 1);
+      await addLearnedConcept(newConceptsToLearn[conceptIdx]);
+    }
+
     setShowFeedback(true);
   };
 

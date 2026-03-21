@@ -21,6 +21,7 @@ import { useWatchlistIntel, WatchlistNewsItem } from '../hooks/useWatchlistIntel
 import { useWatchlistThesis } from '../hooks/useWatchlistThesis';
 import { marketCompanies, defaultCompanies, Company } from '../data/keyPlayersData';
 import { CompanyDetailModal } from '../components/home/CompanyDetailModal';
+import { ThesisReviewOverlay } from '../components/investment/ThesisReviewOverlay';
 import { Feather } from '@expo/vector-icons';
 
 const LEO_STUDY = require('../assets/mascot/leo-study.png');
@@ -74,6 +75,7 @@ export default function InvestmentWatchlistScreen() {
   const [activeTab, setActiveTab] = useState<'companies' | 'news'>('companies');
   const [thesisModal, setThesisModal] = useState<{ companyId: string; companyName: string; ticker?: string } | null>(null);
   const [thesisText, setThesisText] = useState('');
+  const [showReviewOverlay, setShowReviewOverlay] = useState(false);
 
   useEffect(() => {
     const fetchMarket = async () => {
@@ -96,6 +98,14 @@ export default function InvestmentWatchlistScreen() {
   const watchlist = progress?.watchlist_companies || [];
   const watchlistIds = useMemo(() => new Set(watchlist.map((c) => c.id)), [watchlist]);
   const dueForReview = getDueForReview();
+
+  // Auto-prompt thesis review when there are due reviews
+  useEffect(() => {
+    if (dueForReview.length > 0 && !loading && !labLoading) {
+      const timer = setTimeout(() => setShowReviewOverlay(true), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [dueForReview.length, loading, labLoading]);
 
   // News intelligence
   const { relevantNews, loading: newsLoading, getNewsCountForCompany } = useWatchlistIntel(selectedMarket || undefined, watchlist);
@@ -296,13 +306,13 @@ export default function InvestmentWatchlistScreen() {
 
             {/* Thesis Review Banner */}
             {dueForReview.length > 0 && (
-              <View style={styles.reviewBanner}>
+              <TouchableOpacity style={styles.reviewBanner} onPress={() => setShowReviewOverlay(true)}>
                 <Image source={LEO_STUDY} style={{ width: 32, height: 32 }} resizeMode="contain" />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.reviewBannerTitle}>{dueForReview.length} {dueForReview.length === 1 ? 'thesis' : 'theses'} due for review</Text>
                   <Text style={styles.reviewBannerDesc}>Check if your investment reasoning still holds</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             )}
 
             {/* Tracked Companies */}
@@ -518,6 +528,15 @@ export default function InvestmentWatchlistScreen() {
         onClose={() => setSelectedCompany(null)}
         isOnWatchlist={selectedCompany ? watchlistIds.has(selectedCompany.id) : false}
         onToggleWatchlist={handleToggle}
+      />
+
+      {/* Thesis Review Overlay */}
+      <ThesisReviewOverlay
+        visible={showReviewOverlay}
+        onClose={() => setShowReviewOverlay(false)}
+        dueTheses={dueForReview}
+        onReview={reviewThesis}
+        onUpdateThesis={saveThesis}
       />
     </View>
   );

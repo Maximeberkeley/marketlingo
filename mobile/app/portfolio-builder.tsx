@@ -20,6 +20,7 @@ import { useInvestmentLab } from '../hooks/useInvestmentLab';
 import { usePortfolioSnapshots, PortfolioSnapshot } from '../hooks/usePortfolioSnapshots';
 import { marketCompanies, defaultCompanies, Company } from '../data/keyPlayersData';
 import { Feather } from '@expo/vector-icons';
+import { SnapshotCompare } from '../components/investment/SnapshotCompare';
 
 const LEO_CELEBRATING = require('../assets/mascot/leo-celebrating.png');
 const LEO_STUDY = require('../assets/mascot/leo-study.png');
@@ -48,7 +49,7 @@ export default function PortfolioBuilderScreen() {
   const [strategyNotes, setStrategyNotes] = useState('');
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const [compareIds, setCompareIds] = useState<[string, string] | null>(null);
+  const [showCompare, setShowCompare] = useState(false);
 
   useEffect(() => {
     const fetchMarket = async () => {
@@ -443,6 +444,14 @@ export default function PortfolioBuilderScreen() {
                 <Text style={styles.actionBtnText}>{snapshots.length}</Text>
               </TouchableOpacity>
             )}
+            {snapshots.length >= 2 && (
+              <TouchableOpacity
+                style={[styles.actionBtn, { backgroundColor: 'rgba(59,130,246,0.08)', borderWidth: 1, borderColor: 'rgba(59,130,246,0.3)' }]}
+                onPress={() => setShowCompare(true)}
+              >
+                <Feather name="git-pull-request" size={16} color="#3B82F6" />
+              </TouchableOpacity>
+            )}
           </View>
         )}
 
@@ -568,6 +577,13 @@ export default function PortfolioBuilderScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* Snapshot Comparison */}
+      <SnapshotCompare
+        visible={showCompare}
+        onClose={() => setShowCompare(false)}
+        snapshots={snapshots}
+      />
     </View>
   );
 }
