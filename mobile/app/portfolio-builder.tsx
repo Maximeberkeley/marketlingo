@@ -44,6 +44,11 @@ export default function PortfolioBuilderScreen() {
   const [positions, setPositions] = useState<PortfolioPosition[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<'core' | 'growth' | 'speculative'>('core');
+  const [snapshotName, setSnapshotName] = useState('');
+  const [strategyNotes, setStrategyNotes] = useState('');
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [compareIds, setCompareIds] = useState<[string, string] | null>(null);
 
   useEffect(() => {
     const fetchMarket = async () => {
