@@ -306,7 +306,7 @@ export default function InvestmentWatchlistScreen() {
 
             {/* Thesis Review Banner */}
             {dueForReview.length > 0 && (
-              <View style={styles.reviewBanner}>
+              <TouchableOpacity style={styles.reviewBanner} onPress={() => setShowReviewOverlay(true)}>
                 <Image source={LEO_STUDY} style={{ width: 32, height: 32 }} resizeMode="contain" />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.reviewBannerTitle}>{dueForReview.length} {dueForReview.length === 1 ? 'thesis' : 'theses'} due for review</Text>
