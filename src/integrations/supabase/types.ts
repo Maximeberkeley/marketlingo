@@ -900,6 +900,42 @@ export type Database = {
           },
         ]
       }
+      portfolio_snapshots: {
+        Row: {
+          category_breakdown: Json | null
+          created_at: string
+          id: string
+          market_id: string
+          positions: Json
+          snapshot_name: string
+          strategy_notes: string | null
+          total_allocation: number | null
+          user_id: string
+        }
+        Insert: {
+          category_breakdown?: Json | null
+          created_at?: string
+          id?: string
+          market_id: string
+          positions?: Json
+          snapshot_name?: string
+          strategy_notes?: string | null
+          total_allocation?: number | null
+          user_id: string
+        }
+        Update: {
+          category_breakdown?: Json | null
+          created_at?: string
+          id?: string
+          market_id?: string
+          positions?: Json
+          snapshot_name?: string
+          strategy_notes?: string | null
+          total_allocation?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1473,6 +1509,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      watchlist_theses: {
+        Row: {
+          company_id: string
+          company_name: string
+          created_at: string
+          id: string
+          last_reviewed_at: string | null
+          market_id: string
+          review_count: number | null
+          review_due_at: string
+          still_valid: boolean | null
+          thesis: string
+          ticker: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          company_name: string
+          created_at?: string
+          id?: string
+          last_reviewed_at?: string | null
+          market_id: string
+          review_count?: number | null
+          review_due_at?: string
+          still_valid?: boolean | null
+          thesis: string
+          ticker?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          company_name?: string
+          created_at?: string
+          id?: string
+          last_reviewed_at?: string | null
+          market_id?: string
+          review_count?: number | null
+          review_due_at?: string
+          still_valid?: boolean | null
+          thesis?: string
+          ticker?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       xp_transactions: {
         Row: {

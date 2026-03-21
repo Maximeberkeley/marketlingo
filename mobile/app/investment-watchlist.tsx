@@ -9,6 +9,7 @@ import {
   Alert,
   Image,
   TextInput,
+  Modal,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -17,9 +18,12 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useInvestmentLab } from '../hooks/useInvestmentLab';
 import { useWatchlistIntel, WatchlistNewsItem } from '../hooks/useWatchlistIntel';
+import { useWatchlistThesis } from '../hooks/useWatchlistThesis';
 import { marketCompanies, defaultCompanies, Company } from '../data/keyPlayersData';
 import { CompanyDetailModal } from '../components/home/CompanyDetailModal';
 import { Feather } from '@expo/vector-icons';
+
+const LEO_STUDY = require('../assets/mascot/leo-study.png');
 
 const segmentColors: Record<string, { bg: string; text: string }> = {
   commercial: { bg: 'rgba(59,130,246,0.2)', text: '#60A5FA' },
@@ -68,6 +72,8 @@ export default function InvestmentWatchlistScreen() {
   const [browseSearch, setBrowseSearch] = useState('');
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [activeTab, setActiveTab] = useState<'companies' | 'news'>('companies');
+  const [thesisModal, setThesisModal] = useState<{ companyId: string; companyName: string; ticker?: string } | null>(null);
+  const [thesisText, setThesisText] = useState('');
 
   useEffect(() => {
     const fetchMarket = async () => {
@@ -80,16 +86,16 @@ export default function InvestmentWatchlistScreen() {
   }, [user]);
 
   const { progress, loading: labLoading, removeFromWatchlist, addToWatchlist, refetch } = useInvestmentLab(selectedMarket || undefined);
+  const { theses, saveThesis, reviewThesis, getThesisForCompany, getDueForReview } = useWatchlistThesis(selectedMarket || undefined);
 
-  // Refetch watchlist data every time this screen mounts (handles cross-screen additions)
+  // Refetch watchlist data every time this screen mounts
   useEffect(() => {
-    if (selectedMarket && !labLoading) {
-      refetch();
-    }
+    if (selectedMarket && !labLoading) refetch();
   }, [selectedMarket]);
 
   const watchlist = progress?.watchlist_companies || [];
   const watchlistIds = useMemo(() => new Set(watchlist.map((c) => c.id)), [watchlist]);
+  const dueForReview = getDueForReview();
 
   // News intelligence
   const { relevantNews, loading: newsLoading, getNewsCountForCompany } = useWatchlistIntel(selectedMarket || undefined, watchlist);
@@ -117,7 +123,20 @@ export default function InvestmentWatchlistScreen() {
   };
 
   const handleAdd = async (company: { id: string; name: string; ticker?: string; segment?: string }) => {
+    // Open thesis modal before adding
+    setThesisText('');
+    setThesisModal({ companyId: company.id, companyName: company.name, ticker: company.ticker });
+  };
+
+  const confirmAddWithThesis = async () => {
+    if (!thesisModal) return;
+    const company = { id: thesisModal.companyId, name: thesisModal.companyName, ticker: thesisModal.ticker };
     await addToWatchlist(company);
+    if (thesisText.trim()) {
+      await saveThesis(thesisModal.companyId, thesisModal.companyName, thesisText.trim(), thesisModal.ticker);
+    }
+    setThesisModal(null);
+    setThesisText('');
   };
 
   const handleToggle = (company: Company) => {
@@ -275,6 +294,17 @@ export default function InvestmentWatchlistScreen() {
               </View>
             )}
 
+            {/* Thesis Review Banner */}
+            {dueForReview.length > 0 && (
+              <View style={styles.reviewBanner}>
+                <Image source={LEO_STUDY} style={{ width: 32, height: 32 }} resizeMode="contain" />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.reviewBannerTitle}>{dueForReview.length} {dueForReview.length === 1 ? 'thesis' : 'theses'} due for review</Text>
+                  <Text style={styles.reviewBannerDesc}>Check if your investment reasoning still holds</Text>
+                </View>
+              </View>
+            )}
+
             {/* Tracked Companies */}
             {watchlist.length > 0 ? (
               <View style={{ gap: 8, marginTop: 16 }}>
@@ -283,49 +313,83 @@ export default function InvestmentWatchlistScreen() {
                   const newsCount = getNewsCountForCompany(company.name);
                   const segStyle = segmentColors[(company as any).segment || ''] || null;
                   const fullCompany = findFullCompany(company.id);
+                  const thesis = getThesisForCompany(company.id);
+                  const isDue = thesis && new Date(thesis.review_due_at) <= new Date();
                   return (
-                    <TouchableOpacity
-                      key={company.id}
-                      style={styles.companyCard}
-                      onPress={() => fullCompany && setSelectedCompany(fullCompany)}
-                      activeOpacity={fullCompany ? 0.7 : 1}
-                    >
-                      <View style={styles.companyLogo}>
-                        {fullCompany?.logoUrl ? (
-                          <Image source={{ uri: fullCompany.logoUrl }} style={{ width: 28, height: 28 }} resizeMode="contain" />
-                        ) : (
-                          <Feather name="globe" size={16} color={COLORS.accent} />
-                        )}
-                      </View>
-                      <View style={{ flex: 1 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                          <Text style={styles.companyName} numberOfLines={1}>{company.name}</Text>
-                          {company.ticker && <Text style={styles.companyTicker}>${company.ticker}</Text>}
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                          {segStyle && (company as any).segment && (
-                            <View style={[styles.miniSegment, { backgroundColor: segStyle.bg }]}>
-                              <Text style={[styles.miniSegmentText, { color: segStyle.text }]}>{(company as any).segment}</Text>
-                            </View>
-                          )}
-                          {(company as any).addedAt && (
-                            <Text style={styles.addedDate}>Added {formatDate((company as any).addedAt)}</Text>
-                          )}
-                          {newsCount > 0 && (
-                            <View style={styles.newsCountBadge}>
-                              <Feather name="zap" size={9} color="#F59E0B" />
-                              <Text style={styles.newsCountText}>{newsCount}</Text>
-                            </View>
-                          )}
-                        </View>
-                      </View>
+                    <View key={company.id}>
                       <TouchableOpacity
-                        style={styles.removeBtn}
-                        onPress={() => handleRemove(company.id, company.name)}
+                        style={styles.companyCard}
+                        onPress={() => fullCompany && setSelectedCompany(fullCompany)}
+                        activeOpacity={fullCompany ? 0.7 : 1}
                       >
-                        <Feather name="x" size={14} color="#EF4444" />
+                        <View style={styles.companyLogo}>
+                          {fullCompany?.logoUrl ? (
+                            <Image source={{ uri: fullCompany.logoUrl }} style={{ width: 28, height: 28 }} resizeMode="contain" />
+                          ) : (
+                            <Feather name="globe" size={16} color={COLORS.accent} />
+                          )}
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                            <Text style={styles.companyName} numberOfLines={1}>{company.name}</Text>
+                            {company.ticker && <Text style={styles.companyTicker}>${company.ticker}</Text>}
+                          </View>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                            {segStyle && (company as any).segment && (
+                              <View style={[styles.miniSegment, { backgroundColor: segStyle.bg }]}>
+                                <Text style={[styles.miniSegmentText, { color: segStyle.text }]}>{(company as any).segment}</Text>
+                              </View>
+                            )}
+                            {(company as any).addedAt && (
+                              <Text style={styles.addedDate}>Added {formatDate((company as any).addedAt)}</Text>
+                            )}
+                            {newsCount > 0 && (
+                              <View style={styles.newsCountBadge}>
+                                <Feather name="zap" size={9} color="#F59E0B" />
+                                <Text style={styles.newsCountText}>{newsCount}</Text>
+                              </View>
+                            )}
+                          </View>
+                        </View>
+                        <TouchableOpacity
+                          style={styles.removeBtn}
+                          onPress={() => handleRemove(company.id, company.name)}
+                        >
+                          <Feather name="x" size={14} color="#EF4444" />
+                        </TouchableOpacity>
                       </TouchableOpacity>
-                    </TouchableOpacity>
+
+                      {/* Thesis row */}
+                      {thesis ? (
+                        <View style={styles.thesisRow}>
+                          <Feather name="file-text" size={12} color={COLORS.accent} />
+                          <Text style={styles.thesisText} numberOfLines={2}>{thesis.thesis}</Text>
+                          {isDue && (
+                            <View style={{ flexDirection: 'row', gap: 4 }}>
+                              <TouchableOpacity style={styles.reviewYes} onPress={() => reviewThesis(thesis.id, true)}>
+                                <Feather name="check" size={12} color="#22C55E" />
+                              </TouchableOpacity>
+                              <TouchableOpacity style={styles.reviewNo} onPress={() => reviewThesis(thesis.id, false)}>
+                                <Feather name="x" size={12} color="#EF4444" />
+                              </TouchableOpacity>
+                            </View>
+                          )}
+                          {!isDue && thesis.still_valid !== null && (
+                            <View style={[styles.validityBadge, { backgroundColor: thesis.still_valid ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)' }]}>
+                              <Feather name={thesis.still_valid ? 'check' : 'x'} size={10} color={thesis.still_valid ? '#22C55E' : '#EF4444'} />
+                            </View>
+                          )}
+                        </View>
+                      ) : (
+                        <TouchableOpacity
+                          style={styles.addThesisBtn}
+                          onPress={() => { setThesisText(''); setThesisModal({ companyId: company.id, companyName: company.name, ticker: company.ticker }); }}
+                        >
+                          <Feather name="edit-3" size={11} color={COLORS.accent} />
+                          <Text style={styles.addThesisText}>Add investment thesis</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
                   );
                 })}
               </View>
@@ -413,6 +477,40 @@ export default function InvestmentWatchlistScreen() {
           <Text style={styles.tipsItem}>• Each addition earns +10 Investment XP</Text>
         </View>
       </ScrollView>
+
+      {/* Thesis Modal */}
+      <Modal visible={!!thesisModal} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Image source={LEO_STUDY} style={{ width: 28, height: 28 }} resizeMode="contain" />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.modalTitle}>Investment Thesis</Text>
+                <Text style={styles.modalSubtitle}>Why are you tracking {thesisModal?.companyName}?</Text>
+              </View>
+              <TouchableOpacity onPress={() => setThesisModal(null)}>
+                <Feather name="x" size={20} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+            <TextInput
+              style={styles.thesisInput}
+              placeholder="e.g. Strong market position in EV charging, expecting 40% revenue growth..."
+              placeholderTextColor={COLORS.textMuted}
+              value={thesisText}
+              onChangeText={setThesisText}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+            <Text style={styles.thesisHint}>We'll remind you to review this in 7 days</Text>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <TouchableOpacity style={styles.skipBtn} onPress={() => { confirmAddWithThesis(); }}>
+                <Text style={styles.skipBtnText}>{thesisText.trim() ? 'Save & Add' : 'Skip & Add'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* Company Detail Modal */}
       <CompanyDetailModal
@@ -631,4 +729,68 @@ const styles = StyleSheet.create({
   tipsCard: { backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, marginTop: 20, borderWidth: 1, borderColor: COLORS.border },
   tipsTitle: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary },
   tipsItem: { fontSize: 12, color: COLORS.textMuted, lineHeight: 20 },
+
+  // Review banner
+  reviewBanner: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: 'rgba(249,115,22,0.08)', borderRadius: 14, padding: 14, marginTop: 12,
+    borderWidth: 1, borderColor: 'rgba(249,115,22,0.25)',
+  },
+  reviewBannerTitle: { fontSize: 13, fontWeight: '700', color: '#FB923C' },
+  reviewBannerDesc: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
+
+  // Thesis
+  thesisRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    paddingHorizontal: 14, paddingVertical: 8,
+    backgroundColor: 'rgba(139,92,246,0.04)',
+    borderBottomLeftRadius: 14, borderBottomRightRadius: 14,
+    borderWidth: 1, borderTopWidth: 0, borderColor: COLORS.border,
+  },
+  thesisText: { flex: 1, fontSize: 11, color: COLORS.textSecondary, fontStyle: 'italic' },
+  addThesisBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingHorizontal: 14, paddingVertical: 8,
+    backgroundColor: 'rgba(139,92,246,0.04)',
+    borderBottomLeftRadius: 14, borderBottomRightRadius: 14,
+    borderWidth: 1, borderTopWidth: 0, borderColor: COLORS.border,
+  },
+  addThesisText: { fontSize: 11, color: COLORS.accent },
+  reviewYes: {
+    width: 24, height: 24, borderRadius: 8,
+    backgroundColor: 'rgba(34,197,94,0.15)', alignItems: 'center', justifyContent: 'center',
+  },
+  reviewNo: {
+    width: 24, height: 24, borderRadius: 8,
+    backgroundColor: 'rgba(239,68,68,0.15)', alignItems: 'center', justifyContent: 'center',
+  },
+  validityBadge: {
+    width: 22, height: 22, borderRadius: 8, alignItems: 'center', justifyContent: 'center',
+  },
+
+  // Modal
+  modalOverlay: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: COLORS.bg1, borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    padding: 20, paddingBottom: 40,
+  },
+  modalHeader: {
+    flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16,
+  },
+  modalTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
+  modalSubtitle: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
+  thesisInput: {
+    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14,
+    fontSize: 14, color: COLORS.textPrimary, minHeight: 100,
+    borderWidth: 1, borderColor: COLORS.border,
+  },
+  thesisHint: { fontSize: 11, color: COLORS.textMuted, marginTop: 8, marginBottom: 16 },
+  skipBtn: {
+    flex: 1, alignItems: 'center', paddingVertical: 14,
+    backgroundColor: COLORS.accent, borderRadius: 14,
+  },
+  skipBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 });
