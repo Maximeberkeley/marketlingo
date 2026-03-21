@@ -529,6 +529,15 @@ export default function InvestmentWatchlistScreen() {
         isOnWatchlist={selectedCompany ? watchlistIds.has(selectedCompany.id) : false}
         onToggleWatchlist={handleToggle}
       />
+
+      {/* Thesis Review Overlay */}
+      <ThesisReviewOverlay
+        visible={showReviewOverlay}
+        onClose={() => setShowReviewOverlay(false)}
+        dueTheses={dueForReview}
+        onReview={reviewThesis}
+        onUpdateThesis={saveThesis}
+      />
     </View>
   );
 }
