@@ -444,6 +444,14 @@ export default function PortfolioBuilderScreen() {
                 <Text style={styles.actionBtnText}>{snapshots.length}</Text>
               </TouchableOpacity>
             )}
+            {snapshots.length >= 2 && (
+              <TouchableOpacity
+                style={[styles.actionBtn, { backgroundColor: 'rgba(59,130,246,0.08)', borderWidth: 1, borderColor: 'rgba(59,130,246,0.3)' }]}
+                onPress={() => setShowCompare(true)}
+              >
+                <Feather name="git-pull-request" size={16} color="#3B82F6" />
+              </TouchableOpacity>
+            )}
           </View>
         )}
 
