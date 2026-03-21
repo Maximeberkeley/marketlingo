@@ -65,6 +65,7 @@ export default function PortfolioBuilderScreen() {
   }, [user]);
 
   const { progress, addToWatchlist } = useInvestmentLab(selectedMarket || undefined);
+  const { snapshots, saveSnapshot, loading: snapshotsLoading } = usePortfolioSnapshots(selectedMarket || undefined);
   const watchlist = progress?.watchlist_companies || [];
 
   // Get suggested companies from Key Players data
