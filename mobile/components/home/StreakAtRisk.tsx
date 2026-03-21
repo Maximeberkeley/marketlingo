@@ -110,7 +110,8 @@ export function getStreakRiskHours(
   const expires = new Date(streakExpiresAt);
   const now = new Date();
   const hoursLeft = (expires.getTime() - now.getTime()) / (1000 * 60 * 60);
-  if (hoursLeft > 0 && hoursLeft <= 6) return hoursLeft;
+  // Show warning between 2-6 hours (critical timer handles < 2h)
+  if (hoursLeft > 2 && hoursLeft <= 6) return hoursLeft;
   return null;
 }
 
