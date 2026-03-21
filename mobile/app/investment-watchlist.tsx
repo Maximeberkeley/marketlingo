@@ -9,6 +9,7 @@ import {
   Alert,
   Image,
   TextInput,
+  Modal,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -17,9 +18,12 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useInvestmentLab } from '../hooks/useInvestmentLab';
 import { useWatchlistIntel, WatchlistNewsItem } from '../hooks/useWatchlistIntel';
+import { useWatchlistThesis } from '../hooks/useWatchlistThesis';
 import { marketCompanies, defaultCompanies, Company } from '../data/keyPlayersData';
 import { CompanyDetailModal } from '../components/home/CompanyDetailModal';
 import { Feather } from '@expo/vector-icons';
+
+const LEO_STUDY = require('../assets/mascot/leo-study.png');
 
 const segmentColors: Record<string, { bg: string; text: string }> = {
   commercial: { bg: 'rgba(59,130,246,0.2)', text: '#60A5FA' },
