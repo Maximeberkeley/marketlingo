@@ -230,6 +230,15 @@ export default function HomeScreen() {
   const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
   const [showProAd, setShowProAd] = useState(false);
+  const [showCriticalTimer, setShowCriticalTimer] = useState(true);
+
+  // Calculate if we're in the critical 2-hour window
+  const criticalTimerActive = (() => {
+    if (!progress?.streak_expires_at || streak === 0 || lessonCompletedToday) return false;
+    const expires = new Date(progress.streak_expires_at);
+    const hoursLeft = (expires.getTime() - Date.now()) / (1000 * 60 * 60);
+    return hoursLeft > 0 && hoursLeft <= 2;
+  })();
 
   // Daily quests
   const { quests, completedCount, totalBonusXP, allComplete } = useDailyQuests(dailyCompletion, streak);
