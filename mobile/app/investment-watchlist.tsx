@@ -478,6 +478,40 @@ export default function InvestmentWatchlistScreen() {
         </View>
       </ScrollView>
 
+      {/* Thesis Modal */}
+      <Modal visible={!!thesisModal} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Image source={LEO_STUDY} style={{ width: 28, height: 28 }} resizeMode="contain" />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.modalTitle}>Investment Thesis</Text>
+                <Text style={styles.modalSubtitle}>Why are you tracking {thesisModal?.companyName}?</Text>
+              </View>
+              <TouchableOpacity onPress={() => setThesisModal(null)}>
+                <Feather name="x" size={20} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+            <TextInput
+              style={styles.thesisInput}
+              placeholder="e.g. Strong market position in EV charging, expecting 40% revenue growth..."
+              placeholderTextColor={COLORS.textMuted}
+              value={thesisText}
+              onChangeText={setThesisText}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+            <Text style={styles.thesisHint}>We'll remind you to review this in 7 days</Text>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <TouchableOpacity style={styles.skipBtn} onPress={() => { confirmAddWithThesis(); }}>
+                <Text style={styles.skipBtnText}>{thesisText.trim() ? 'Save & Add' : 'Skip & Add'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       {/* Company Detail Modal */}
       <CompanyDetailModal
         company={selectedCompany}
