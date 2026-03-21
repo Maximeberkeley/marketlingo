@@ -294,6 +294,17 @@ export default function InvestmentWatchlistScreen() {
               </View>
             )}
 
+            {/* Thesis Review Banner */}
+            {dueForReview.length > 0 && (
+              <View style={styles.reviewBanner}>
+                <Image source={LEO_STUDY} style={{ width: 32, height: 32 }} resizeMode="contain" />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.reviewBannerTitle}>{dueForReview.length} {dueForReview.length === 1 ? 'thesis' : 'theses'} due for review</Text>
+                  <Text style={styles.reviewBannerDesc}>Check if your investment reasoning still holds</Text>
+                </View>
+              </View>
+            )}
+
             {/* Tracked Companies */}
             {watchlist.length > 0 ? (
               <View style={{ gap: 8, marginTop: 16 }}>
@@ -302,49 +313,83 @@ export default function InvestmentWatchlistScreen() {
                   const newsCount = getNewsCountForCompany(company.name);
                   const segStyle = segmentColors[(company as any).segment || ''] || null;
                   const fullCompany = findFullCompany(company.id);
+                  const thesis = getThesisForCompany(company.id);
+                  const isDue = thesis && new Date(thesis.review_due_at) <= new Date();
                   return (
-                    <TouchableOpacity
-                      key={company.id}
-                      style={styles.companyCard}
-                      onPress={() => fullCompany && setSelectedCompany(fullCompany)}
-                      activeOpacity={fullCompany ? 0.7 : 1}
-                    >
-                      <View style={styles.companyLogo}>
-                        {fullCompany?.logoUrl ? (
-                          <Image source={{ uri: fullCompany.logoUrl }} style={{ width: 28, height: 28 }} resizeMode="contain" />
-                        ) : (
-                          <Feather name="globe" size={16} color={COLORS.accent} />
-                        )}
-                      </View>
-                      <View style={{ flex: 1 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                          <Text style={styles.companyName} numberOfLines={1}>{company.name}</Text>
-                          {company.ticker && <Text style={styles.companyTicker}>${company.ticker}</Text>}
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                          {segStyle && (company as any).segment && (
-                            <View style={[styles.miniSegment, { backgroundColor: segStyle.bg }]}>
-                              <Text style={[styles.miniSegmentText, { color: segStyle.text }]}>{(company as any).segment}</Text>
-                            </View>
-                          )}
-                          {(company as any).addedAt && (
-                            <Text style={styles.addedDate}>Added {formatDate((company as any).addedAt)}</Text>
-                          )}
-                          {newsCount > 0 && (
-                            <View style={styles.newsCountBadge}>
-                              <Feather name="zap" size={9} color="#F59E0B" />
-                              <Text style={styles.newsCountText}>{newsCount}</Text>
-                            </View>
-                          )}
-                        </View>
-                      </View>
+                    <View key={company.id}>
                       <TouchableOpacity
-                        style={styles.removeBtn}
-                        onPress={() => handleRemove(company.id, company.name)}
+                        style={styles.companyCard}
+                        onPress={() => fullCompany && setSelectedCompany(fullCompany)}
+                        activeOpacity={fullCompany ? 0.7 : 1}
                       >
-                        <Feather name="x" size={14} color="#EF4444" />
+                        <View style={styles.companyLogo}>
+                          {fullCompany?.logoUrl ? (
+                            <Image source={{ uri: fullCompany.logoUrl }} style={{ width: 28, height: 28 }} resizeMode="contain" />
+                          ) : (
+                            <Feather name="globe" size={16} color={COLORS.accent} />
+                          )}
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                            <Text style={styles.companyName} numberOfLines={1}>{company.name}</Text>
+                            {company.ticker && <Text style={styles.companyTicker}>${company.ticker}</Text>}
+                          </View>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                            {segStyle && (company as any).segment && (
+                              <View style={[styles.miniSegment, { backgroundColor: segStyle.bg }]}>
+                                <Text style={[styles.miniSegmentText, { color: segStyle.text }]}>{(company as any).segment}</Text>
+                              </View>
+                            )}
+                            {(company as any).addedAt && (
+                              <Text style={styles.addedDate}>Added {formatDate((company as any).addedAt)}</Text>
+                            )}
+                            {newsCount > 0 && (
+                              <View style={styles.newsCountBadge}>
+                                <Feather name="zap" size={9} color="#F59E0B" />
+                                <Text style={styles.newsCountText}>{newsCount}</Text>
+                              </View>
+                            )}
+                          </View>
+                        </View>
+                        <TouchableOpacity
+                          style={styles.removeBtn}
+                          onPress={() => handleRemove(company.id, company.name)}
+                        >
+                          <Feather name="x" size={14} color="#EF4444" />
+                        </TouchableOpacity>
                       </TouchableOpacity>
-                    </TouchableOpacity>
+
+                      {/* Thesis row */}
+                      {thesis ? (
+                        <View style={styles.thesisRow}>
+                          <Feather name="file-text" size={12} color={COLORS.accent} />
+                          <Text style={styles.thesisText} numberOfLines={2}>{thesis.thesis}</Text>
+                          {isDue && (
+                            <View style={{ flexDirection: 'row', gap: 4 }}>
+                              <TouchableOpacity style={styles.reviewYes} onPress={() => reviewThesis(thesis.id, true)}>
+                                <Feather name="check" size={12} color="#22C55E" />
+                              </TouchableOpacity>
+                              <TouchableOpacity style={styles.reviewNo} onPress={() => reviewThesis(thesis.id, false)}>
+                                <Feather name="x" size={12} color="#EF4444" />
+                              </TouchableOpacity>
+                            </View>
+                          )}
+                          {!isDue && thesis.still_valid !== null && (
+                            <View style={[styles.validityBadge, { backgroundColor: thesis.still_valid ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)' }]}>
+                              <Feather name={thesis.still_valid ? 'check' : 'x'} size={10} color={thesis.still_valid ? '#22C55E' : '#EF4444'} />
+                            </View>
+                          )}
+                        </View>
+                      ) : (
+                        <TouchableOpacity
+                          style={styles.addThesisBtn}
+                          onPress={() => { setThesisText(''); setThesisModal({ companyId: company.id, companyName: company.name, ticker: company.ticker }); }}
+                        >
+                          <Feather name="edit-3" size={11} color={COLORS.accent} />
+                          <Text style={styles.addThesisText}>Add investment thesis</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
                   );
                 })}
               </View>
