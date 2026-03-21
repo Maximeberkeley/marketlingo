@@ -775,4 +775,44 @@ const styles = StyleSheet.create({
   },
   tipsTitle: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 8 },
   tipsItem: { fontSize: 12, color: COLORS.textMuted, lineHeight: 20 },
+
+  // Actions
+  actionBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    paddingVertical: 14, borderRadius: 14,
+  },
+  actionBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
+
+  // Snapshots
+  snapshotCard: {
+    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, marginBottom: 8,
+    borderWidth: 1, borderColor: COLORS.border,
+  },
+  snapshotName: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
+  snapshotDate: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
+  snapshotNotes: { fontSize: 11, color: COLORS.textSecondary, fontStyle: 'italic', marginTop: 6 },
+  deltaRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6,
+    paddingTop: 6, borderTopWidth: 1, borderTopColor: COLORS.border,
+  },
+  deltaText: { fontSize: 10, color: COLORS.textMuted },
+
+  // Modal
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+  modalContent: {
+    backgroundColor: COLORS.bg1, borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    padding: 20, paddingBottom: 40,
+  },
+  modalTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
+  inputLabel: { fontSize: 11, fontWeight: '600', color: COLORS.textMuted, letterSpacing: 0.5, marginBottom: 6, marginTop: 12 },
+  modalInput: {
+    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14,
+    fontSize: 14, color: COLORS.textPrimary,
+    borderWidth: 1, borderColor: COLORS.border,
+  },
+  saveBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 14, marginTop: 20,
+  },
+  saveBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 });
