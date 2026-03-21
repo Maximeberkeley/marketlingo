@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
   Alert,
   TextInput,
+  Image,
+  Modal,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -15,8 +17,12 @@ import { COLORS, SHADOWS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useInvestmentLab } from '../hooks/useInvestmentLab';
+import { usePortfolioSnapshots, PortfolioSnapshot } from '../hooks/usePortfolioSnapshots';
 import { marketCompanies, defaultCompanies, Company } from '../data/keyPlayersData';
 import { Feather } from '@expo/vector-icons';
+
+const LEO_CELEBRATING = require('../assets/mascot/leo-celebrating.png');
+const LEO_STUDY = require('../assets/mascot/leo-study.png');
 
 interface PortfolioPosition {
   company: { id: string; name: string; ticker?: string };
