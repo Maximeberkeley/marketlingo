@@ -668,7 +668,9 @@ export type Database = {
           id: string
           investment_certified: boolean | null
           investment_xp: number | null
+          learned_concepts: string[] | null
           market_id: string
+          module_progress: Json | null
           paper_trades_completed: number | null
           portfolio_construction_score: number | null
           risk_assessment_score: number | null
@@ -686,7 +688,9 @@ export type Database = {
           id?: string
           investment_certified?: boolean | null
           investment_xp?: number | null
+          learned_concepts?: string[] | null
           market_id: string
+          module_progress?: Json | null
           paper_trades_completed?: number | null
           portfolio_construction_score?: number | null
           risk_assessment_score?: number | null
@@ -704,7 +708,9 @@ export type Database = {
           id?: string
           investment_certified?: boolean | null
           investment_xp?: number | null
+          learned_concepts?: string[] | null
           market_id?: string
+          module_progress?: Json | null
           paper_trades_completed?: number | null
           portfolio_construction_score?: number | null
           risk_assessment_score?: number | null
