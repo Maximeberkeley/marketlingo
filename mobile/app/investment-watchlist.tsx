@@ -123,7 +123,20 @@ export default function InvestmentWatchlistScreen() {
   };
 
   const handleAdd = async (company: { id: string; name: string; ticker?: string; segment?: string }) => {
+    // Open thesis modal before adding
+    setThesisText('');
+    setThesisModal({ companyId: company.id, companyName: company.name, ticker: company.ticker });
+  };
+
+  const confirmAddWithThesis = async () => {
+    if (!thesisModal) return;
+    const company = { id: thesisModal.companyId, name: thesisModal.companyName, ticker: thesisModal.ticker };
     await addToWatchlist(company);
+    if (thesisText.trim()) {
+      await saveThesis(thesisModal.companyId, thesisModal.companyName, thesisText.trim(), thesisModal.ticker);
+    }
+    setThesisModal(null);
+    setThesisText('');
   };
 
   const handleToggle = (company: Company) => {
