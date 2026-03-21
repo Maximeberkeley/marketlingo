@@ -322,12 +322,41 @@ export function useInvestmentLab(marketId?: string) {
     return idx >= 0 ? idx : 0;
   };
 
+  /** Save mid-session module state so user can resume later */
+  const saveModuleProgress = async (moduleKey: string, state: { scenarioIndex: number; score: number }) => {
+    if (!user || !marketId) return;
+    await ensureProgress();
+    const current = progressRef.current;
+    const existing = (current as any)?.module_progress || {};
+    const updated = { ...existing, [moduleKey]: state };
+    await supabase.from('investment_lab_progress').update({ module_progress: updated }).eq('user_id', user.id).eq('market_id', marketId);
+  };
+
+  const getModuleProgress = (moduleKey: string): { scenarioIndex: number; score: number } | null => {
+    const current = progressRef.current as any;
+    return current?.module_progress?.[moduleKey] || null;
+  };
+
+  /** Track learned concepts for cross-pollination */
+  const addLearnedConcept = async (concept: string) => {
+    if (!user || !marketId) return;
+    await ensureProgress();
+    const current = (progressRef.current as any)?.learned_concepts || [];
+    if (current.includes(concept)) return;
+    const updated = [...current, concept];
+    await supabase.from('investment_lab_progress').update({ learned_concepts: updated }).eq('user_id', user.id).eq('market_id', marketId);
+  };
+
+  const getLearnedConcepts = (): string[] => {
+    return (progressRef.current as any)?.learned_concepts || [];
+  };
+
   return {
     progress, scenarios, completedScenarioIds, loading, isUnlocked,
     ensureProgress, recordAttempt, addInvestmentXP, updateModuleScore,
     addToWatchlist, removeFromWatchlist, checkCertificationEligibility,
     getOverallProgress, getScenariosByType, getResumeIndex, refetch: fetchData,
-    // Keep backward compat
+    saveModuleProgress, getModuleProgress, addLearnedConcept, getLearnedConcepts,
     initializeProgress: ensureProgress,
   };
 }
