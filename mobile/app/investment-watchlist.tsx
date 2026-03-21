@@ -312,7 +312,7 @@ export default function InvestmentWatchlistScreen() {
                   <Text style={styles.reviewBannerTitle}>{dueForReview.length} {dueForReview.length === 1 ? 'thesis' : 'theses'} due for review</Text>
                   <Text style={styles.reviewBannerDesc}>Check if your investment reasoning still holds</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             )}
 
             {/* Tracked Companies */}
