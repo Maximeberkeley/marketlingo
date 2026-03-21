@@ -577,6 +577,13 @@ export default function PortfolioBuilderScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* Snapshot Comparison */}
+      <SnapshotCompare
+        visible={showCompare}
+        onClose={() => setShowCompare(false)}
+        snapshots={snapshots}
+      />
     </View>
   );
 }
