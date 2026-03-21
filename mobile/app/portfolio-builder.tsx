@@ -49,7 +49,7 @@ export default function PortfolioBuilderScreen() {
   const [strategyNotes, setStrategyNotes] = useState('');
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const [compareIds, setCompareIds] = useState<[string, string] | null>(null);
+  const [showCompare, setShowCompare] = useState(false);
 
   useEffect(() => {
     const fetchMarket = async () => {
