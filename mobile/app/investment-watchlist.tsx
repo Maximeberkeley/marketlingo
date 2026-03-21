@@ -729,4 +729,68 @@ const styles = StyleSheet.create({
   tipsCard: { backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, marginTop: 20, borderWidth: 1, borderColor: COLORS.border },
   tipsTitle: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary },
   tipsItem: { fontSize: 12, color: COLORS.textMuted, lineHeight: 20 },
+
+  // Review banner
+  reviewBanner: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: 'rgba(249,115,22,0.08)', borderRadius: 14, padding: 14, marginTop: 12,
+    borderWidth: 1, borderColor: 'rgba(249,115,22,0.25)',
+  },
+  reviewBannerTitle: { fontSize: 13, fontWeight: '700', color: '#FB923C' },
+  reviewBannerDesc: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
+
+  // Thesis
+  thesisRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    paddingHorizontal: 14, paddingVertical: 8,
+    backgroundColor: 'rgba(139,92,246,0.04)',
+    borderBottomLeftRadius: 14, borderBottomRightRadius: 14,
+    borderWidth: 1, borderTopWidth: 0, borderColor: COLORS.border,
+  },
+  thesisText: { flex: 1, fontSize: 11, color: COLORS.textSecondary, fontStyle: 'italic' },
+  addThesisBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingHorizontal: 14, paddingVertical: 8,
+    backgroundColor: 'rgba(139,92,246,0.04)',
+    borderBottomLeftRadius: 14, borderBottomRightRadius: 14,
+    borderWidth: 1, borderTopWidth: 0, borderColor: COLORS.border,
+  },
+  addThesisText: { fontSize: 11, color: COLORS.accent },
+  reviewYes: {
+    width: 24, height: 24, borderRadius: 8,
+    backgroundColor: 'rgba(34,197,94,0.15)', alignItems: 'center', justifyContent: 'center',
+  },
+  reviewNo: {
+    width: 24, height: 24, borderRadius: 8,
+    backgroundColor: 'rgba(239,68,68,0.15)', alignItems: 'center', justifyContent: 'center',
+  },
+  validityBadge: {
+    width: 22, height: 22, borderRadius: 8, alignItems: 'center', justifyContent: 'center',
+  },
+
+  // Modal
+  modalOverlay: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: COLORS.bg1, borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    padding: 20, paddingBottom: 40,
+  },
+  modalHeader: {
+    flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16,
+  },
+  modalTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
+  modalSubtitle: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
+  thesisInput: {
+    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14,
+    fontSize: 14, color: COLORS.textPrimary, minHeight: 100,
+    borderWidth: 1, borderColor: COLORS.border,
+  },
+  thesisHint: { fontSize: 11, color: COLORS.textMuted, marginTop: 8, marginBottom: 16 },
+  skipBtn: {
+    flex: 1, alignItems: 'center', paddingVertical: 14,
+    backgroundColor: COLORS.accent, borderRadius: 14,
+  },
+  skipBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 });
