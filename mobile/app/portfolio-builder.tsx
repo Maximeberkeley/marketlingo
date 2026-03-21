@@ -20,6 +20,7 @@ import { useInvestmentLab } from '../hooks/useInvestmentLab';
 import { usePortfolioSnapshots, PortfolioSnapshot } from '../hooks/usePortfolioSnapshots';
 import { marketCompanies, defaultCompanies, Company } from '../data/keyPlayersData';
 import { Feather } from '@expo/vector-icons';
+import { SnapshotCompare } from '../components/investment/SnapshotCompare';
 
 const LEO_CELEBRATING = require('../assets/mascot/leo-celebrating.png');
 const LEO_STUDY = require('../assets/mascot/leo-study.png');
