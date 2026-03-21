@@ -72,6 +72,8 @@ export default function InvestmentWatchlistScreen() {
   const [browseSearch, setBrowseSearch] = useState('');
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [activeTab, setActiveTab] = useState<'companies' | 'news'>('companies');
+  const [thesisModal, setThesisModal] = useState<{ companyId: string; companyName: string; ticker?: string } | null>(null);
+  const [thesisText, setThesisText] = useState('');
 
   useEffect(() => {
     const fetchMarket = async () => {
