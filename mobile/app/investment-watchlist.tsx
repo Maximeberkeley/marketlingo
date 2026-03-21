@@ -86,16 +86,16 @@ export default function InvestmentWatchlistScreen() {
   }, [user]);
 
   const { progress, loading: labLoading, removeFromWatchlist, addToWatchlist, refetch } = useInvestmentLab(selectedMarket || undefined);
+  const { theses, saveThesis, reviewThesis, getThesisForCompany, getDueForReview } = useWatchlistThesis(selectedMarket || undefined);
 
-  // Refetch watchlist data every time this screen mounts (handles cross-screen additions)
+  // Refetch watchlist data every time this screen mounts
   useEffect(() => {
-    if (selectedMarket && !labLoading) {
-      refetch();
-    }
+    if (selectedMarket && !labLoading) refetch();
   }, [selectedMarket]);
 
   const watchlist = progress?.watchlist_companies || [];
   const watchlistIds = useMemo(() => new Set(watchlist.map((c) => c.id)), [watchlist]);
+  const dueForReview = getDueForReview();
 
   // News intelligence
   const { relevantNews, loading: newsLoading, getNewsCountForCompany } = useWatchlistIntel(selectedMarket || undefined, watchlist);
