@@ -21,6 +21,7 @@ import { useWatchlistIntel, WatchlistNewsItem } from '../hooks/useWatchlistIntel
 import { useWatchlistThesis } from '../hooks/useWatchlistThesis';
 import { marketCompanies, defaultCompanies, Company } from '../data/keyPlayersData';
 import { CompanyDetailModal } from '../components/home/CompanyDetailModal';
+import { ThesisReviewOverlay } from '../components/investment/ThesisReviewOverlay';
 import { Feather } from '@expo/vector-icons';
 
 const LEO_STUDY = require('../assets/mascot/leo-study.png');
