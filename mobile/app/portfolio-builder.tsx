@@ -424,23 +424,150 @@ export default function PortfolioBuilderScreen() {
           </View>
         )}
 
+        {/* Save & History Actions */}
+        {positions.length >= 2 && (
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 16 }}>
+            <TouchableOpacity
+              style={[styles.actionBtn, { flex: 1, backgroundColor: COLORS.accent }]}
+              onPress={() => { setSnapshotName(''); setStrategyNotes(''); setShowSaveModal(true); }}
+            >
+              <Feather name="save" size={16} color="#fff" />
+              <Text style={[styles.actionBtnText, { color: '#fff' }]}>Save Snapshot</Text>
+            </TouchableOpacity>
+            {snapshots.length > 0 && (
+              <TouchableOpacity
+                style={[styles.actionBtn, { backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border }]}
+                onPress={() => setShowHistory(!showHistory)}
+              >
+                <Feather name="clock" size={16} color={COLORS.accent} />
+                <Text style={styles.actionBtnText}>{snapshots.length}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+
+        {/* Snapshot History */}
+        {showHistory && snapshots.length > 0 && (
+          <View style={{ marginTop: 12 }}>
+            <Text style={styles.sectionTitle}>STRATEGY EVOLUTION</Text>
+            {snapshots.map((snap, i) => {
+              const bd = snap.category_breakdown || { core: 0, growth: 0, speculative: 0 };
+              const prevSnap = snapshots[i + 1];
+              return (
+                <View key={snap.id} style={styles.snapshotCard}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                    <Image source={i === 0 ? LEO_CELEBRATING : LEO_STUDY} style={{ width: 28, height: 28 }} resizeMode="contain" />
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.snapshotName}>{snap.snapshot_name}</Text>
+                      <Text style={styles.snapshotDate}>
+                        {new Date(snap.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        {' · '}{(snap.positions || []).length} positions · {snap.total_allocation}%
+                      </Text>
+                    </View>
+                  </View>
+                  {/* Mini allocation bar */}
+                  <View style={[styles.allocBar, { marginTop: 10, marginBottom: 4 }]}>
+                    <View style={[styles.allocFill, { width: `${bd.core}%`, backgroundColor: CATEGORY_CONFIG.core.color }]} />
+                    <View style={[styles.allocFill, { width: `${bd.growth}%`, backgroundColor: CATEGORY_CONFIG.growth.color }]} />
+                    <View style={[styles.allocFill, { width: `${bd.speculative}%`, backgroundColor: CATEGORY_CONFIG.speculative.color }]} />
+                  </View>
+                  <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
+                    <Text style={{ fontSize: 10, color: CATEGORY_CONFIG.core.color }}>Core {bd.core}%</Text>
+                    <Text style={{ fontSize: 10, color: CATEGORY_CONFIG.growth.color }}>Growth {bd.growth}%</Text>
+                    <Text style={{ fontSize: 10, color: CATEGORY_CONFIG.speculative.color }}>Spec {bd.speculative}%</Text>
+                  </View>
+                  {snap.strategy_notes && (
+                    <Text style={styles.snapshotNotes} numberOfLines={2}>{snap.strategy_notes}</Text>
+                  )}
+                  {/* Delta vs previous */}
+                  {prevSnap && (
+                    <View style={styles.deltaRow}>
+                      <Feather name="git-branch" size={11} color={COLORS.textMuted} />
+                      <Text style={styles.deltaText}>
+                        vs {prevSnap.snapshot_name}: Core {bd.core - ((prevSnap.category_breakdown as any)?.core || 0) >= 0 ? '+' : ''}{bd.core - ((prevSnap.category_breakdown as any)?.core || 0)}%
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              );
+            })}
+          </View>
+        )}
+
         {/* Tips */}
         <View style={styles.tipsCard}>
-          <Text style={styles.tipsTitle}>💡 Portfolio Tips</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <Image source={LEO_STUDY} style={{ width: 20, height: 20 }} resizeMode="contain" />
+            <Text style={styles.tipsTitle}>Portfolio Tips</Text>
+          </View>
           <Text style={styles.tipsItem}>
-            • Core (60-70%): Established leaders with proven track records
+            Core (60-70%): Established leaders with proven track records
           </Text>
           <Text style={styles.tipsItem}>
-            • Growth (20-30%): Companies with high expansion potential
+            Growth (20-30%): Companies with high expansion potential
           </Text>
           <Text style={styles.tipsItem}>
-            • Speculative (5-10%): Early-stage or turnaround plays
+            Speculative (5-10%): Early-stage or turnaround plays
           </Text>
           <Text style={styles.tipsItem}>
-            • Aim for 5-10 positions for optimal diversification
+            Aim for 5-10 positions for optimal diversification
           </Text>
         </View>
       </ScrollView>
+
+      {/* Save Snapshot Modal */}
+      <Modal visible={showSaveModal} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+              <Image source={LEO_CELEBRATING} style={{ width: 32, height: 32 }} resizeMode="contain" />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.modalTitle}>Save Strategy Snapshot</Text>
+                <Text style={{ fontSize: 12, color: COLORS.textMuted }}>Record your current portfolio for future comparison</Text>
+              </View>
+              <TouchableOpacity onPress={() => setShowSaveModal(false)}>
+                <Feather name="x" size={20} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.inputLabel}>Strategy Name</Text>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="e.g. Conservative Q1 Strategy"
+              placeholderTextColor={COLORS.textMuted}
+              value={snapshotName}
+              onChangeText={setSnapshotName}
+            />
+            <Text style={styles.inputLabel}>Strategy Notes (optional)</Text>
+            <TextInput
+              style={[styles.modalInput, { minHeight: 80 }]}
+              placeholder="Why did you choose this allocation?"
+              placeholderTextColor={COLORS.textMuted}
+              value={strategyNotes}
+              onChangeText={setStrategyNotes}
+              multiline
+              textAlignVertical="top"
+            />
+            <TouchableOpacity
+              style={[styles.saveBtn, !snapshotName.trim() && { opacity: 0.5 }]}
+              disabled={!snapshotName.trim()}
+              onPress={async () => {
+                await saveSnapshot(
+                  snapshotName.trim(),
+                  positions.map(p => ({ company: p.company, allocation: p.allocation, category: p.category })),
+                  totalAllocation,
+                  categoryBreakdown,
+                  strategyNotes.trim() || undefined,
+                );
+                setShowSaveModal(false);
+                Alert.alert('Snapshot Saved', 'You can compare strategies in the history section.');
+              }}
+            >
+              <Feather name="save" size={16} color="#fff" />
+              <Text style={styles.saveBtnText}>Save Snapshot</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
