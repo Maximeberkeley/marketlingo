@@ -14,7 +14,7 @@ type SettingsSection = "main" | "notifications" | "about";
 export default function Settings() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { isProUser, isLoading: subscriptionLoading, toggleProForTesting, isNative } = useSubscription();
+  const { isProUser, isLoading: subscriptionLoading, isNative } = useSubscription();
   const [activeSection, setActiveSection] = useState<SettingsSection>("main");
   const { theme, setTheme } = useTheme();
 
