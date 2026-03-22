@@ -209,27 +209,6 @@ export default function SettingsScreen() {
       .eq('id', user.id);
   };
 
-  // Send a local test notification with a deep-link payload
-  const handleTestNotification = async () => {
-    const { status } = await Notifications.getPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission required', 'Enable notifications first.');
-      return;
-    }
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: 'Leo: Your streak is at risk!',
-        body: "5 mins is all I ask… Don't lose your streak today!",
-        data: { type: 'streak_warning', route: '/(tabs)/home' },
-        sound: true,
-      },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-        seconds: 3,
-      },
-    });
-    Alert.alert('Test Sent', "You'll receive a notification in 3 seconds. Tap it to test deep-linking!");
-  };
 
   const handleResetPassword = async () => {
 
