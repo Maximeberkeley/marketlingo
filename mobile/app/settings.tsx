@@ -496,12 +496,4 @@ const styles = StyleSheet.create({
   },
   menuText: { flex: 1, fontSize: 15, fontWeight: '500', color: COLORS.textPrimary },
   chevron: { fontSize: 22, color: COLORS.textMuted },
-  testNotifBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: 'rgba(99,102,241,0.10)', borderRadius: 14, padding: 14, marginTop: 4,
-    borderWidth: 1, borderColor: 'rgba(99,102,241,0.25)',
-  },
-  testNotifIcon: { fontSize: 18 },
-  testNotifLabel: { fontSize: 15, fontWeight: '500', color: COLORS.textPrimary },
-  testNotifDesc: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
 });
