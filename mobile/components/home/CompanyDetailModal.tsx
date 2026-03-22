@@ -44,7 +44,7 @@ export function CompanyDetailModal({ company, onClose, isOnWatchlist, onToggleWa
   if (!company) return null;
 
   const totalSlides = company.slides.length + 1;
-  const segStyle = segmentColors[company.segment] || { bg: 'rgba(139,92,246,0.2)', text: '#A78BFA' };
+  const segStyle = getSegmentStyle(company.segment);
 
   const goToSlide = (index: number) => {
     if (index < 0 || index >= totalSlides) return;

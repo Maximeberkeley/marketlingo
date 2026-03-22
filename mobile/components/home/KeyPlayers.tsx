@@ -45,7 +45,7 @@ export function KeyPlayers({ marketId, watchlistIds, onToggleWatchlist }: KeyPla
         {showAll ? (
           <View style={styles.grid}>
             {displayedCompanies.map((company) => {
-              const segStyle = segmentColors[company.segment] || { bg: 'rgba(139,92,246,0.15)', text: '#A78BFA' };
+              const segStyle = getSegmentStyle(company.segment);
               const isWatched = watchlistSet.has(company.id);
               return (
                 <TouchableOpacity
@@ -109,7 +109,7 @@ export function KeyPlayers({ marketId, watchlistIds, onToggleWatchlist }: KeyPla
             contentContainerStyle={styles.horizontalList}
           >
             {displayedCompanies.map((company) => {
-              const segStyle = segmentColors[company.segment] || { bg: 'rgba(139,92,246,0.15)', text: '#A78BFA' };
+              const segStyle = getSegmentStyle(company.segment);
               const isWatched = watchlistSet.has(company.id);
               return (
                 <TouchableOpacity

@@ -244,7 +244,7 @@ export default function InvestmentWatchlistScreen() {
                 </View>
                 <ScrollView style={{ maxHeight: 280 }} showsVerticalScrollIndicator={false} nestedScrollEnabled>
                   {browsableCompanies.map((company) => {
-                    const segStyle = segmentColors[company.segment] || { bg: 'rgba(139,92,246,0.15)', text: '#A78BFA' };
+                    const segStyle = getSegmentStyle(company.segment);
                     return (
                       <TouchableOpacity
                         key={company.id}
@@ -300,7 +300,7 @@ export default function InvestmentWatchlistScreen() {
                 <Text style={styles.sectionTitle}>TRACKED COMPANIES</Text>
                 {watchlist.map((company) => {
                   const newsCount = getNewsCountForCompany(company.name);
-                  const segStyle = segmentColors[(company as any).segment || ''] || null;
+                  const segStyle = getSegmentStyle((company as any).segment || '');
                   const fullCompany = findFullCompany(company.id);
                   const thesis = getThesisForCompany(company.id);
                   const isDue = thesis && new Date(thesis.review_due_at) <= new Date();
