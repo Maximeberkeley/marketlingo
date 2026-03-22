@@ -106,11 +106,6 @@ export default function Subscription() {
     const pkg = getPackage(selectedPlan);
     
     if (!pkg) {
-      if (!isNative) {
-        toggleProForTesting();
-        toast.success("Pro activated for testing!");
-        return;
-      }
       toast.error("Subscription packages not available");
       return;
     }
