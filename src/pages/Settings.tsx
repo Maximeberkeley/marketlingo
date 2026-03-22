@@ -14,7 +14,7 @@ type SettingsSection = "main" | "notifications" | "about";
 export default function Settings() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { isProUser, isLoading: subscriptionLoading, toggleProForTesting, isNative } = useSubscription();
+  const { isProUser, isLoading: subscriptionLoading, isNative } = useSubscription();
   const [activeSection, setActiveSection] = useState<SettingsSection>("main");
   const { theme, setTheme } = useTheme();
 
@@ -256,17 +256,6 @@ export default function Settings() {
               </div>
             </div>
 
-            {/* Web Testing Toggle (only on web) */}
-            {!isNative && (
-              <button
-                onClick={toggleProForTesting}
-                className="w-full p-3 rounded-card bg-amber-500/10 border border-amber-500/20 text-center"
-              >
-                <p className="text-caption text-amber-400">
-                  🧪 Web Testing: Tap to toggle Pro status ({isProUser ? "ON" : "OFF"})
-                </p>
-              </button>
-            )}
 
             {/* Sign Out */}
             <button

@@ -77,7 +77,7 @@ export default function Subscription() {
     restorePurchases,
     getExpirationDate,
     willRenew,
-    toggleProForTesting,
+    
     isNative,
     trialStatus,
     canStartTrial,
@@ -106,11 +106,6 @@ export default function Subscription() {
     const pkg = getPackage(selectedPlan);
     
     if (!pkg) {
-      if (!isNative) {
-        toggleProForTesting();
-        toast.success("Pro activated for testing!");
-        return;
-      }
       toast.error("Subscription packages not available");
       return;
     }
@@ -503,22 +498,6 @@ export default function Subscription() {
           Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage subscriptions in your Apple ID settings.
         </p>
 
-        {/* Web Testing Toggle */}
-        {!isNative && (
-          <div className="pt-4 border-t border-border">
-            <p className="text-xs text-center text-muted-foreground mb-2">
-              ⚠️ Web Preview Mode
-            </p>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="w-full"
-              onClick={toggleProForTesting}
-            >
-              Toggle Pro Status (Testing)
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
