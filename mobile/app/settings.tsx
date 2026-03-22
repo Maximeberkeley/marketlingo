@@ -361,17 +361,6 @@ export default function SettingsScreen() {
             </View>
           )}
 
-          {/* Test deep-link notification */}
-          {pushEnabled && (
-            <TouchableOpacity style={styles.testNotifBtn} onPress={handleTestNotification}>
-              <Feather name="send" size={18} color={COLORS.accent} />
-              <View style={{ flex: 1 }}>
-                <Text style={styles.testNotifLabel}>Send Test Notification</Text>
-                <Text style={styles.testNotifDesc}>Fires in 3s — tap to test deep-linking</Text>
-              </View>
-              <Text style={styles.chevron}>›</Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         {/* Pro Features */}
