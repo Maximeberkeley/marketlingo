@@ -209,27 +209,6 @@ export default function SettingsScreen() {
       .eq('id', user.id);
   };
 
-  // Send a local test notification with a deep-link payload
-  const handleTestNotification = async () => {
-    const { status } = await Notifications.getPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission required', 'Enable notifications first.');
-      return;
-    }
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: 'Leo: Your streak is at risk!',
-        body: "5 mins is all I ask… Don't lose your streak today!",
-        data: { type: 'streak_warning', route: '/(tabs)/home' },
-        sound: true,
-      },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-        seconds: 3,
-      },
-    });
-    Alert.alert('Test Sent', "You'll receive a notification in 3 seconds. Tap it to test deep-linking!");
-  };
 
   const handleResetPassword = async () => {
 
@@ -382,17 +361,6 @@ export default function SettingsScreen() {
             </View>
           )}
 
-          {/* Test deep-link notification */}
-          {pushEnabled && (
-            <TouchableOpacity style={styles.testNotifBtn} onPress={handleTestNotification}>
-              <Feather name="send" size={18} color={COLORS.accent} />
-              <View style={{ flex: 1 }}>
-                <Text style={styles.testNotifLabel}>Send Test Notification</Text>
-                <Text style={styles.testNotifDesc}>Fires in 3s — tap to test deep-linking</Text>
-              </View>
-              <Text style={styles.chevron}>›</Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         {/* Pro Features */}
@@ -528,12 +496,4 @@ const styles = StyleSheet.create({
   },
   menuText: { flex: 1, fontSize: 15, fontWeight: '500', color: COLORS.textPrimary },
   chevron: { fontSize: 22, color: COLORS.textMuted },
-  testNotifBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: 'rgba(99,102,241,0.10)', borderRadius: 14, padding: 14, marginTop: 4,
-    borderWidth: 1, borderColor: 'rgba(99,102,241,0.25)',
-  },
-  testNotifIcon: { fontSize: 18 },
-  testNotifLabel: { fontSize: 15, fontWeight: '500', color: COLORS.textPrimary },
-  testNotifDesc: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
 });
