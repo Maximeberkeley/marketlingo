@@ -43,7 +43,7 @@ export default function SubscriptionScreen() {
   const insets = useSafeAreaInsets();
   const {
     isProUser, isLoading, purchasePackage, getPackage, restorePurchases,
-    getExpirationDate, willRenew, toggleProForTesting, isNative,
+    getExpirationDate, willRenew, isNative,
     trialStatus, canStartTrial, startFreeTrial, planType,
   } = useSubscription();
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
