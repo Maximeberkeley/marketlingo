@@ -77,7 +77,7 @@ export default function Subscription() {
     restorePurchases,
     getExpirationDate,
     willRenew,
-    toggleProForTesting,
+    
     isNative,
     trialStatus,
     canStartTrial,
