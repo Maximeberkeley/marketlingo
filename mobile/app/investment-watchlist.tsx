@@ -23,30 +23,9 @@ import { marketCompanies, defaultCompanies, Company } from '../data/keyPlayersDa
 import { CompanyDetailModal } from '../components/home/CompanyDetailModal';
 import { ThesisReviewOverlay } from '../components/investment/ThesisReviewOverlay';
 import { Feather } from '@expo/vector-icons';
+import { getSegmentStyle } from '../lib/segmentColors';
 
 const LEO_STUDY = require('../assets/mascot/leo-study.png');
-
-const segmentColors: Record<string, { bg: string; text: string }> = {
-  commercial: { bg: 'rgba(59,130,246,0.2)', text: '#60A5FA' },
-  defense: { bg: 'rgba(239,68,68,0.2)', text: '#F87171' },
-  space: { bg: 'rgba(139,92,246,0.2)', text: '#A78BFA' },
-  propulsion: { bg: 'rgba(249,115,22,0.2)', text: '#FB923C' },
-  suppliers: { bg: 'rgba(16,185,129,0.2)', text: '#34D399' },
-  services: { bg: 'rgba(6,182,212,0.2)', text: '#22D3EE' },
-  devices: { bg: 'rgba(167,139,250,0.2)', text: '#C4B5FD' },
-  therapeutics: { bg: 'rgba(236,72,153,0.2)', text: '#F472B6' },
-  pharma: { bg: 'rgba(99,102,241,0.2)', text: '#818CF8' },
-  models: { bg: 'rgba(16,185,129,0.2)', text: '#34D399' },
-  hardware: { bg: 'rgba(6,182,212,0.2)', text: '#22D3EE' },
-  enterprise: { bg: 'rgba(59,130,246,0.2)', text: '#60A5FA' },
-  payments: { bg: 'rgba(249,115,22,0.2)', text: '#FB923C' },
-  investing: { bg: 'rgba(139,92,246,0.2)', text: '#A78BFA' },
-  infrastructure: { bg: 'rgba(16,185,129,0.2)', text: '#34D399' },
-  lending: { bg: 'rgba(251,191,36,0.2)', text: '#FCD34D' },
-  neobank: { bg: 'rgba(59,130,246,0.2)', text: '#60A5FA' },
-  charging: { bg: 'rgba(16,185,129,0.2)', text: '#34D399' },
-  battery: { bg: 'rgba(99,102,241,0.2)', text: '#818CF8' },
-};
 
 function formatDate(iso?: string) {
   if (!iso) return '';
@@ -265,7 +244,7 @@ export default function InvestmentWatchlistScreen() {
                 </View>
                 <ScrollView style={{ maxHeight: 280 }} showsVerticalScrollIndicator={false} nestedScrollEnabled>
                   {browsableCompanies.map((company) => {
-                    const segStyle = segmentColors[company.segment] || { bg: 'rgba(139,92,246,0.15)', text: '#A78BFA' };
+                    const segStyle = getSegmentStyle(company.segment);
                     return (
                       <TouchableOpacity
                         key={company.id}
@@ -321,7 +300,7 @@ export default function InvestmentWatchlistScreen() {
                 <Text style={styles.sectionTitle}>TRACKED COMPANIES</Text>
                 {watchlist.map((company) => {
                   const newsCount = getNewsCountForCompany(company.name);
-                  const segStyle = segmentColors[(company as any).segment || ''] || null;
+                  const segStyle = getSegmentStyle((company as any).segment || '');
                   const fullCompany = findFullCompany(company.id);
                   const thesis = getThesisForCompany(company.id);
                   const isDue = thesis && new Date(thesis.review_due_at) <= new Date();

@@ -134,23 +134,43 @@ export function useInvestmentLab(marketId?: string) {
   const initializeProgress = async () => {
     if (!user || !marketId) return null;
 
+    // Use upsert to prevent duplicate row errors
     const { data, error } = await supabase
       .from("investment_lab_progress")
-      .insert({
-        user_id: user.id,
-        market_id: marketId,
-      })
+      .upsert(
+        { user_id: user.id, market_id: marketId },
+        { onConflict: "user_id,market_id" }
+      )
       .select()
       .single();
 
     if (error) {
       console.error("Error initializing investment progress:", error);
+      // Fallback: fetch existing
+      const { data: existing } = await supabase
+        .from("investment_lab_progress")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("market_id", marketId)
+        .maybeSingle();
+      if (existing) {
+        const parsed: InvestmentProgress = {
+          ...existing,
+          watchlist_companies: Array.isArray(existing.watchlist_companies)
+            ? existing.watchlist_companies as { id: string; name: string; ticker?: string }[]
+            : [],
+        };
+        setProgress(parsed);
+        return parsed;
+      }
       return null;
     }
 
     const newProgress: InvestmentProgress = {
       ...data,
-      watchlist_companies: [],
+      watchlist_companies: Array.isArray(data.watchlist_companies)
+        ? data.watchlist_companies as { id: string; name: string; ticker?: string }[]
+        : [],
     };
     setProgress(newProgress);
     return newProgress;

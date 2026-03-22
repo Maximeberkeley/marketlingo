@@ -12,36 +12,7 @@ import { Company, marketCompanies, defaultCompanies } from '../../data/keyPlayer
 import { CompanyDetailModal } from './CompanyDetailModal';
 import { COLORS } from '../../lib/constants';
 import { APP_ICONS } from '../../lib/icons';
-
-interface KeyPlayersProps {
-  marketId: string;
-  /** IDs of companies already on the watchlist */
-  watchlistIds?: Set<string>;
-  /** Callback when user taps add/remove watchlist on a company */
-  onToggleWatchlist?: (company: Company) => void;
-}
-
-const segmentColors: Record<string, { bg: string; text: string }> = {
-  commercial: { bg: 'rgba(59,130,246,0.2)', text: '#60A5FA' },
-  defense: { bg: 'rgba(239,68,68,0.2)', text: '#F87171' },
-  space: { bg: 'rgba(139,92,246,0.2)', text: '#A78BFA' },
-  propulsion: { bg: 'rgba(249,115,22,0.2)', text: '#FB923C' },
-  suppliers: { bg: 'rgba(16,185,129,0.2)', text: '#34D399' },
-  services: { bg: 'rgba(6,182,212,0.2)', text: '#22D3EE' },
-  devices: { bg: 'rgba(167,139,250,0.2)', text: '#C4B5FD' },
-  therapeutics: { bg: 'rgba(236,72,153,0.2)', text: '#F472B6' },
-  pharma: { bg: 'rgba(99,102,241,0.2)', text: '#818CF8' },
-  models: { bg: 'rgba(16,185,129,0.2)', text: '#34D399' },
-  hardware: { bg: 'rgba(6,182,212,0.2)', text: '#22D3EE' },
-  enterprise: { bg: 'rgba(59,130,246,0.2)', text: '#60A5FA' },
-  payments: { bg: 'rgba(249,115,22,0.2)', text: '#FB923C' },
-  investing: { bg: 'rgba(139,92,246,0.2)', text: '#A78BFA' },
-  infrastructure: { bg: 'rgba(16,185,129,0.2)', text: '#34D399' },
-  lending: { bg: 'rgba(251,191,36,0.2)', text: '#FCD34D' },
-  neobank: { bg: 'rgba(59,130,246,0.2)', text: '#60A5FA' },
-  charging: { bg: 'rgba(16,185,129,0.2)', text: '#34D399' },
-  battery: { bg: 'rgba(99,102,241,0.2)', text: '#818CF8' },
-};
+import { getSegmentStyle } from '../../lib/segmentColors';
 
 export function KeyPlayers({ marketId, watchlistIds, onToggleWatchlist }: KeyPlayersProps) {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
@@ -74,7 +45,7 @@ export function KeyPlayers({ marketId, watchlistIds, onToggleWatchlist }: KeyPla
         {showAll ? (
           <View style={styles.grid}>
             {displayedCompanies.map((company) => {
-              const segStyle = segmentColors[company.segment] || { bg: 'rgba(139,92,246,0.15)', text: '#A78BFA' };
+              const segStyle = getSegmentStyle(company.segment);
               const isWatched = watchlistSet.has(company.id);
               return (
                 <TouchableOpacity
@@ -138,7 +109,7 @@ export function KeyPlayers({ marketId, watchlistIds, onToggleWatchlist }: KeyPla
             contentContainerStyle={styles.horizontalList}
           >
             {displayedCompanies.map((company) => {
-              const segStyle = segmentColors[company.segment] || { bg: 'rgba(139,92,246,0.15)', text: '#A78BFA' };
+              const segStyle = getSegmentStyle(company.segment);
               const isWatched = watchlistSet.has(company.id);
               return (
                 <TouchableOpacity
