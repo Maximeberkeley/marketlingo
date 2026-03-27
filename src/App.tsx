@@ -49,7 +49,7 @@ function AnimatedRoutes() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Landing />} />
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
-        <Route path="/select-goal" element={<PageTransition><SelectGoal /></PageTransition>} />
+        <Route path="/select-market" element={<PageTransition><SelectMarket /></PageTransition>} />
         <Route path="/select-familiarity" element={<PageTransition><SelectFamiliarity /></PageTransition>} />
         <Route path="/passport" element={<PageTransition><Passport /></PageTransition>} />
         <Route path="/home" element={<PageTransition><Home /></PageTransition>} />
