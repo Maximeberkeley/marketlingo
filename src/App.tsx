@@ -36,6 +36,7 @@ import Subscription from "./pages/Subscription";
 import Practice from "./pages/Practice";
 import InterviewLab from "./pages/InterviewLab";
 import NotFound from "./pages/NotFound";
+import Landing from "./pages/Landing";
 import { PageTransition } from "@/components/layout/PageTransition";
 
 const queryClient = new QueryClient();
