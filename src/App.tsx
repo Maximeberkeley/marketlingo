@@ -36,6 +36,7 @@ import Subscription from "./pages/Subscription";
 import Practice from "./pages/Practice";
 import InterviewLab from "./pages/InterviewLab";
 import NotFound from "./pages/NotFound";
+import Landing from "./pages/Landing";
 import { PageTransition } from "@/components/layout/PageTransition";
 
 const queryClient = new QueryClient();
@@ -46,7 +47,8 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageTransition><Auth /></PageTransition>} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/select-market" element={<PageTransition><SelectMarket /></PageTransition>} />
         <Route path="/select-goal" element={<PageTransition><SelectGoal /></PageTransition>} />
         <Route path="/select-familiarity" element={<PageTransition><SelectFamiliarity /></PageTransition>} />
