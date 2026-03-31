@@ -151,9 +151,9 @@ export default function Landing() {
             >
               The{" "}
               <span className="bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
-                Duolingo
+                fastest way
               </span>{" "}
-              for business knowledge
+              to master any industry
             </motion.h1>
 
             <motion.p
@@ -235,7 +235,7 @@ export default function Landing() {
           </div>
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4" />
-            <span>Harvard + Duolingo Approach</span>
+            <span>University-Grade Curriculum</span>
           </div>
         </div>
       </section>
