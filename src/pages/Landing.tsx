@@ -151,9 +151,9 @@ export default function Landing() {
             >
               The{" "}
               <span className="bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
-                Duolingo
+                fastest way
               </span>{" "}
-              for business knowledge
+              to master any industry
             </motion.h1>
 
             <motion.p
