@@ -193,28 +193,6 @@ export default function Landing() {
             </motion.div>
           </div>
 
-          {/* Screenshot mockups */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="mt-16 flex justify-center gap-4 px-4"
-          >
-            {["screenshot-1-home.png", "screenshot-2-trainer.png", "screenshot-3-roadmap.png"].map((img, i) => (
-              <div
-                key={img}
-                className={`w-48 sm:w-56 md:w-64 rounded-3xl overflow-hidden shadow-2xl border border-border/50 
-                  ${i === 1 ? "scale-110 z-10" : "opacity-80 hidden sm:block"}`}
-              >
-                <img
-                  src={`/appstore/${img}`}
-                  alt={`MarketLingo screenshot ${i + 1}`}
-                  className="w-full h-auto"
-                  loading="lazy"
-                />
-              </div>
-            ))}
-          </motion.div>
         </div>
       </section>
 
@@ -357,53 +335,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Screenshot gallery */}
-      <section className="py-24 px-4 sm:px-6 bg-secondary/20">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            className="text-center mb-16"
-          >
-            <motion.h2 variants={fadeUp} custom={0} className="text-3xl sm:text-4xl font-bold mb-4">
-              Designed for your pocket
-            </motion.h2>
-            <motion.p variants={fadeUp} custom={1} className="text-muted-foreground text-lg max-w-xl mx-auto">
-              A beautiful, intuitive mobile experience that makes learning addictive.
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="flex justify-center gap-6 overflow-x-auto pb-4"
-          >
-            {[
-              "screenshot-1-home.png",
-              "screenshot-4-news.png",
-              "screenshot-2-trainer.png",
-              "screenshot-5-progress.png",
-              "screenshot-3-roadmap.png",
-            ].map((img, i) => (
-              <motion.div
-                key={img}
-                variants={fadeUp}
-                custom={i}
-                className="flex-shrink-0 w-44 sm:w-52 rounded-2xl overflow-hidden shadow-xl border border-border/50"
-              >
-                <img
-                  src={`/appstore/${img}`}
-                  alt={`App screenshot ${i + 1}`}
-                  className="w-full h-auto"
-                  loading="lazy"
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
 
       {/* Pricing */}
       <section id="pricing" className="py-24 px-4 sm:px-6">
@@ -542,7 +473,7 @@ export default function Landing() {
               <span className="font-bold text-foreground">MarketLingo</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <a href="mailto:hello@marketlingo.app" className="hover:text-foreground transition-colors">Contact</a>
+              <a href="mailto:contactus@marketlingo.net" className="hover:text-foreground transition-colors">Contact</a>
               <span>•</span>
               <span>© {new Date().getFullYear()} MarketLingo. All rights reserved.</span>
             </div>
