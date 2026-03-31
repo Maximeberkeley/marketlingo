@@ -473,7 +473,7 @@ export default function Landing() {
               <span className="font-bold text-foreground">MarketLingo</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <a href="mailto:hello@marketlingo.app" className="hover:text-foreground transition-colors">Contact</a>
+              <a href="mailto:contactus@marketlingo.net" className="hover:text-foreground transition-colors">Contact</a>
               <span>•</span>
               <span>© {new Date().getFullYear()} MarketLingo. All rights reserved.</span>
             </div>
