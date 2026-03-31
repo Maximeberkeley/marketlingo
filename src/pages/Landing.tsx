@@ -235,7 +235,7 @@ export default function Landing() {
           </div>
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4" />
-            <span>Harvard + Duolingo Approach</span>
+            <span>University-Grade Curriculum</span>
           </div>
         </div>
       </section>
