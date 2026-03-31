@@ -335,53 +335,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Screenshot gallery */}
-      <section className="py-24 px-4 sm:px-6 bg-secondary/20">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            className="text-center mb-16"
-          >
-            <motion.h2 variants={fadeUp} custom={0} className="text-3xl sm:text-4xl font-bold mb-4">
-              Designed for your pocket
-            </motion.h2>
-            <motion.p variants={fadeUp} custom={1} className="text-muted-foreground text-lg max-w-xl mx-auto">
-              A beautiful, intuitive mobile experience that makes learning addictive.
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="flex justify-center gap-6 overflow-x-auto pb-4"
-          >
-            {[
-              "screenshot-1-home.png",
-              "screenshot-4-news.png",
-              "screenshot-2-trainer.png",
-              "screenshot-5-progress.png",
-              "screenshot-3-roadmap.png",
-            ].map((img, i) => (
-              <motion.div
-                key={img}
-                variants={fadeUp}
-                custom={i}
-                className="flex-shrink-0 w-44 sm:w-52 rounded-2xl overflow-hidden shadow-xl border border-border/50"
-              >
-                <img
-                  src={`/appstore/${img}`}
-                  alt={`App screenshot ${i + 1}`}
-                  className="w-full h-auto"
-                  loading="lazy"
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
 
       {/* Pricing */}
       <section id="pricing" className="py-24 px-4 sm:px-6">
