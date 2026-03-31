@@ -193,28 +193,6 @@ export default function Landing() {
             </motion.div>
           </div>
 
-          {/* Screenshot mockups */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="mt-16 flex justify-center gap-4 px-4"
-          >
-            {["screenshot-1-home.png", "screenshot-2-trainer.png", "screenshot-3-roadmap.png"].map((img, i) => (
-              <div
-                key={img}
-                className={`w-48 sm:w-56 md:w-64 rounded-3xl overflow-hidden shadow-2xl border border-border/50 
-                  ${i === 1 ? "scale-110 z-10" : "opacity-80 hidden sm:block"}`}
-              >
-                <img
-                  src={`/appstore/${img}`}
-                  alt={`MarketLingo screenshot ${i + 1}`}
-                  className="w-full h-auto"
-                  loading="lazy"
-                />
-              </div>
-            ))}
-          </motion.div>
         </div>
       </section>
 
