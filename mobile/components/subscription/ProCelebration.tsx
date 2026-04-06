@@ -124,10 +124,11 @@ export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationP
 
   return (
     <Modal transparent animationType="fade" visible={visible}>
-      <View style={styles.overlay}>
-        <View style={StyleSheet.absoluteFill}>{confettiPieces}</View>
+      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onDismiss}>
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">{confettiPieces}</View>
 
         <Animated.View
+          pointerEvents="none"
           style={[
             styles.glowRing,
             {
@@ -144,43 +145,45 @@ export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationP
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
-          <Animated.View style={[styles.content, { transform: [{ scale: scaleAnim }] }]}>
-            <LeoCharacter size="lg" animation="celebrating" />
+          <TouchableOpacity activeOpacity={1}>
+            <Animated.View style={[styles.content, { transform: [{ scale: scaleAnim }] }]}>
+              <View style={{ height: 80 }}>
+                <LeoCharacter size="md" animation="celebrating" />
+              </View>
 
-            <Animated.View style={[styles.proBadgeBig, { transform: [{ scale: badgeScale }] }]}>
-              <Text style={styles.proBadgeText}>⚡ PRO</Text>
-            </Animated.View>
+              <Animated.View style={[styles.proBadgeBig, { transform: [{ scale: badgeScale }] }]}>
+                <Text style={styles.proBadgeText}>⚡ PRO</Text>
+              </Animated.View>
 
-            <Animated.View style={{ opacity: textOpacity, alignItems: 'center' }}>
-              <Text style={styles.title}>{title}</Text>
-              <Text style={styles.subtitle}>{subtitle}</Text>
-            </Animated.View>
+              <Animated.View style={{ opacity: textOpacity, alignItems: 'center' }}>
+                <Text style={styles.title}>{title}</Text>
+                <Text style={styles.subtitle}>{subtitle}</Text>
+              </Animated.View>
 
-            {/* Benefits List */}
-            <Animated.View style={[styles.benefitsContainer, { opacity: benefitsOpacity }]}>
-              <Text style={styles.benefitsTitle}>Here's what you unlocked:</Text>
-              {PRO_BENEFITS.map((b, i) => (
-                <View key={i} style={styles.benefitRow}>
-                  <View style={[styles.benefitIcon, b.icon === 'smile' && styles.benefitIconHighlight]}>
-                    <Feather name={b.icon} size={16} color={b.icon === 'smile' ? '#FDE68A' : '#C4B5FD'} />
+              {/* Benefits List */}
+              <Animated.View style={[styles.benefitsContainer, { opacity: benefitsOpacity }]}>
+                <Text style={styles.benefitsTitle}>Here's what you unlocked:</Text>
+                {PRO_BENEFITS.map((b, i) => (
+                  <View key={i} style={styles.benefitRow}>
+                    <View style={[styles.benefitIcon, b.icon === 'smile' && styles.benefitIconHighlight]}>
+                      <Feather name={b.icon} size={16} color={b.icon === 'smile' ? '#FDE68A' : '#C4B5FD'} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.benefitTitle}>{b.title}</Text>
+                      <Text style={styles.benefitDesc}>{b.desc}</Text>
+                    </View>
+                    <Feather name="check" size={14} color="#10B981" />
                   </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.benefitTitle}>{b.title}</Text>
-                    <Text style={styles.benefitDesc}>{b.desc}</Text>
-                  </View>
-                  <Feather name="check" size={14} color="#10B981" />
-                </View>
-              ))}
-            </Animated.View>
+                ))}
+              </Animated.View>
 
-            <Animated.View style={{ opacity: textOpacity }}>
               <TouchableOpacity style={styles.continueBtn} onPress={onDismiss} activeOpacity={0.85}>
                 <Text style={styles.continueBtnText}>Let's Go! 🚀</Text>
               </TouchableOpacity>
             </Animated.View>
-          </Animated.View>
+          </TouchableOpacity>
         </ScrollView>
-      </View>
+      </TouchableOpacity>
     </Modal>
   );
 }
