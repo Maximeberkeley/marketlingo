@@ -482,7 +482,21 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
         if (!dbError && data && data.length > 0) {
           setNews(data.map(mapDbItem));
           setLastFetched(new Date());
-          setIsLoading(false); setIsRefreshing(false); return;
+          setIsLoading(false); setIsRefreshing(false);
+          
+          // Background refresh: fetch fresh data (with images) without blocking UI
+          const hasAnyMissingImages = data.some((item: any) => !item.image_url);
+          if (hasAnyMissingImages) {
+            supabase.functions.invoke('fetch-market-news', { body: { marketId } }).then(async () => {
+              const { data: freshData } = await supabase
+                .from('news_items').select('*').eq('market_id', marketId)
+                .order('published_at', { ascending: false }).limit(10);
+              if (freshData && freshData.length > 0) {
+                setNews(freshData.map(mapDbItem));
+              }
+            }).catch(() => {});
+          }
+          return;
         }
       }
 
