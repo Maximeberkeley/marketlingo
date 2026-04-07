@@ -184,7 +184,8 @@ export default function TrainerPage() {
   // Award adaptive XP after a trainer answer is submitted
   const awardTrainerXP = async (isCorrect: boolean) => {
     if (!user || !selectedMarket) return;
-    const xpEarned = isCorrect ? 35 : 8;
+    const baseXP = isCorrect ? 35 : 8;
+    const xpEarned = getXPAmount(baseXP, isProUser);
     await supabase.from("xp_transactions").insert({
       user_id: user.id,
       market_id: selectedMarket,
