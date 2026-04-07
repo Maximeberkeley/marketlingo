@@ -405,7 +405,7 @@ export function ConceptCard({
         nestedScrollEnabled
       >
         <FormattedText text={displayContent} style={styles.conceptText} accentColor={accentColor} />
-        {isLong && !expanded && (
+        {isLongContent && !expanded && (
           <TouchableOpacity
             style={styles.readMoreBtn}
             onPress={() => setExpanded(true)}
@@ -414,7 +414,7 @@ export function ConceptCard({
             <Feather name="chevron-down" size={14} color={accentColor} />
           </TouchableOpacity>
         )}
-        {isLong && expanded && (
+        {isLongContent && expanded && (
           <TouchableOpacity
             style={styles.readMoreBtn}
             onPress={() => setExpanded(false)}
