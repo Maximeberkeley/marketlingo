@@ -377,6 +377,7 @@ export default function HomePage() {
 
           {/* Right: Leo with speech bubble */}
           <button
+            type="button"
             onClick={() => {
               setShowLeoVoiceChat(true);
               if (showLeoTooltip) {
@@ -384,7 +385,7 @@ export default function HomePage() {
                 localStorage.setItem('leo_chat_tooltip_shown', 'true');
               }
             }}
-            className="relative flex items-center gap-2"
+            className="relative flex items-center gap-2 z-10 cursor-pointer"
           >
             {/* One-time tooltip */}
             <AnimatePresence>
