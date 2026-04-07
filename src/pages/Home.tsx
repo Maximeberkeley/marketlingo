@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Zap, Loader2, CheckCircle2, BookOpen, Newspaper, MapPin, Flame } from "lucide-react";
-import leoSticker from "@/assets/leo-sticker.png";
+
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { XPBadge } from "@/components/ui/XPBadge";
