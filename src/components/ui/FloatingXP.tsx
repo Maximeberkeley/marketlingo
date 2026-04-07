@@ -19,7 +19,8 @@ export function FloatingXP({ amount, show, isPro = false }: FloatingXPProps) {
     }
   }, [show, amount]);
 
-  const displayAmount = isPro ? Math.round(amount * 1.5) : amount;
+  // amount is already adjusted by caller if Pro; isPro just shows badge
+  const displayAmount = amount;
 
   return (
     <AnimatePresence>

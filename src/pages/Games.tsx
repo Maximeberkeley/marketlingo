@@ -487,7 +487,7 @@ export default function GamesPage() {
       {/* Question - with bottom safe area for scroll content */}
       <div className="flex-1 screen-padding py-6 overflow-y-auto modal-bottom-safe relative">
         {/* Floating XP animation */}
-        <FloatingXP amount={floatingXP.amount} show={floatingXP.show} onComplete={() => setFloatingXP(prev => ({ ...prev, show: false }))} />
+        <FloatingXP amount={floatingXP.amount} show={floatingXP.show} />
         
         {/* Reactive Mascot - floats at bottom right during questions */}
         <MascotReaction
