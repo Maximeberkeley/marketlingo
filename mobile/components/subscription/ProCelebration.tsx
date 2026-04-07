@@ -213,6 +213,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 40,
+    alignSelf: 'center',
+    top: '50%',
+    left: '50%',
+    marginLeft: -150,
+    marginTop: -150,
+    pointerEvents: 'none',
   },
   content: {
     alignItems: 'center',

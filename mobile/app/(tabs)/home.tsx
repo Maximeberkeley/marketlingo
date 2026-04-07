@@ -49,6 +49,7 @@ import { FoxMascot } from '../../components/mascot/FoxMascot';
 import { LeoPopup } from '../../components/mascot/LeoPopup';
 import { useLeoPopups } from '../../hooks/useLeoPopups';
 import { useAchievements } from '../../hooks/useAchievements';
+import { AskLeoOverlay } from '../../components/ai/AskLeoOverlay';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -231,6 +232,7 @@ export default function HomeScreen() {
   const [showSocialNudge, setShowSocialNudge] = useState(true);
   const [showProAd, setShowProAd] = useState(false);
   const [showCriticalTimer, setShowCriticalTimer] = useState(true);
+  const [showLeoChat, setShowLeoChat] = useState(false);
 
   // Calculate if we're in the critical 2-hour window
   const criticalTimerActive = (() => {
@@ -340,6 +342,12 @@ export default function HomeScreen() {
       <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="lesson" />
       {/* Leo popup overlay */}
       <LeoPopup message={leoPopups.currentMessage} onDismiss={leoPopups.dismiss} />
+      {/* Leo voice chat */}
+      <AskLeoOverlay
+        visible={showLeoChat}
+        onClose={() => setShowLeoChat(false)}
+        lessonContext={`${getMarketName(selectedMarket || 'aerospace')} industry learning — Day ${currentDay}`}
+      />
 
       {session.showReader && session.activeStack ? (
         <SlideReader
@@ -399,13 +407,20 @@ export default function HomeScreen() {
 
           {/* ── Leo + Greeting ── */}
           <AnimatedSection delay={0}>
-            <View style={styles.leoSection}>
+            <TouchableOpacity
+              style={styles.leoSection}
+              activeOpacity={0.8}
+              onPress={() => {
+                triggerHaptic('light');
+                setShowLeoChat(true);
+              }}
+            >
               <FoxMascot industry={selectedMarket || 'aerospace'} size={200} />
               <View style={styles.speechBubble}>
                 <View style={styles.speechTail} />
                 <Text style={styles.speechText}>{greeting}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           </AnimatedSection>
 
           {/* ── Critical Timer (last 2 hours) ── */}
