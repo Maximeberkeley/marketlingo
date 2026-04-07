@@ -15,6 +15,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { FloatingXP } from "@/components/ui/FloatingXP";
+import { getXPAmount } from "@/hooks/useUserXP";
 
 interface TrainerScenarioPublic {
   id: string;
