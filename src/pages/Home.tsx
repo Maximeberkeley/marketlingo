@@ -15,7 +15,6 @@ import { SocialNudge } from "@/components/home/SocialNudge";
 import { NotificationOnboarding } from "@/components/onboarding/NotificationOnboarding";
 import { LeoVoiceChatOverlay } from "@/components/ai/LeoVoiceChatOverlay";
 import { LeoCharacter, LeoAnim } from "@/components/mascot/LeoStateMachine";
-import { Mentor, getMentorForContext } from "@/data/mentors";
 import { getMarketEmoji, getMarketName } from "@/data/markets";
 import { getMarketIllustration, getMarketAccent } from "@/data/marketIllustrations";
 import { toast } from "sonner";
