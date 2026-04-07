@@ -557,8 +557,8 @@ export function parseSlideIntoCards(
   let pendingText = "";
   let cardCount = 0;
 
-const MAX_CARD_CHARS = 550; // Increased for fuller, more readable cards
-    const WORD_SPLIT_THRESHOLD = 45; // More content per card before splitting
+const MAX_CARD_CHARS = 2000; // Show full content, rely on See More button
+    const WORD_SPLIT_THRESHOLD = 200; // Don't split into tiny cards anymore
 
   // Split text at sentence boundaries to avoid mid-sentence cutoff
   const splitAtSentence = (text: string, maxLen: number): [string, string] => {
