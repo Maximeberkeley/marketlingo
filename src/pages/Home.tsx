@@ -379,19 +379,7 @@ export default function HomePage() {
           {/* Right: Leo with speech bubble */}
           <button
             onClick={() => {
-              // Create a Leo mentor using leo sticker as avatar
-              const leoMentor: Mentor = {
-                id: "leo",
-                name: "Leo",
-                title: "Your Learning Buddy",
-                expertise: ["Industry Knowledge", "Learning Tips", "Market Insights"],
-                personality: "Friendly, curious, and always ready to help you learn. Leo is your personal learning companion who knows about all industries.",
-                avatar: leoSticker,
-                greeting: "Hey! 🦊 I'm Leo, your learning buddy. Ask me anything about your industry or lessons!",
-                specialties: ["Industry trends", "Lesson review", "Quick tips", "Study advice"],
-                voiceId: "JBFqnCBsd6RMkjVDRZzb",
-              };
-              setActiveMentor(leoMentor);
+              setShowLeoVoiceChat(true);
               if (showLeoTooltip) {
                 setShowLeoTooltip(false);
                 localStorage.setItem('leo_chat_tooltip_shown', 'true');
