@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { SlideMascotCard, getSlidePosition } from "@/components/mascot/SlideMascotCard";
 
@@ -36,6 +37,11 @@ export function SlideContentCard({
     ? sources.filter((s) => typeof s?.label === 'string' && typeof s?.url === 'string')
     : [];
   
+  const TRUNCATE_THRESHOLD = 300;
+  const isLong = safeBody.length > TRUNCATE_THRESHOLD;
+  const [expanded, setExpanded] = useState(!isLong);
+  const displayBody = expanded ? safeBody : safeBody.slice(0, TRUNCATE_THRESHOLD).replace(/\s+\S*$/, '') + '…';
+
   return (
     <div className="flex flex-col gap-4 pb-4">
       {/* Premium Mascot Card on strategic slides (first, middle, last) */}
@@ -52,8 +58,17 @@ export function SlideContentCard({
       <div className="card-elevated flex flex-col">
         <h3 className="text-h3 text-text-primary mb-3">{safeTitle}</h3>
         <p className="text-body text-text-secondary leading-relaxed whitespace-pre-wrap">
-          {safeBody}
+          {displayBody}
         </p>
+        
+        {isLong && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="mt-2 text-primary text-sm font-semibold hover:underline self-start flex items-center gap-1"
+          >
+            {expanded ? 'See less' : 'See more'}
+          </button>
+        )}
         
         {/* Sources */}
         {safeSources.length > 0 && (

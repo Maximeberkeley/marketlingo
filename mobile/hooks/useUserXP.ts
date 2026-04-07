@@ -12,6 +12,12 @@ export const XP_REWARDS = {
   STREAK_BONUS: 15,
 } as const;
 
+export const PRO_XP_MULTIPLIER = 1.5;
+
+export function getXPAmount(base: number, isPro: boolean): number {
+  return isPro ? Math.round(base * PRO_XP_MULTIPLIER) : base;
+}
+
 export const STARTUP_STAGES = [
   { stage: 1, name: 'Ideation', description: 'Exploring your market thesis', xpRequired: 0 },
   { stage: 2, name: 'Validation', description: 'Testing your assumptions', xpRequired: 500 },

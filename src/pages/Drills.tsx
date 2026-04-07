@@ -8,6 +8,7 @@ import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { LeoCelebration } from "@/components/mascot/LeoCelebration";
 import { MascotBreak, InlineMascot, MascotReaction, getRandomCharacter } from "@/components/mascot";
 import { DailyLimitGate, RemainingCount } from "@/components/subscription/DailyLimitGate";
+import { FloatingXP } from "@/components/ui/FloatingXP";
 import { mentors, Mentor } from "@/data/mentors";
 import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
 import { toast } from "sonner";
@@ -44,6 +45,7 @@ export default function DrillsPage() {
   const [showIntro, setShowIntro] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showLimitGate, setShowLimitGate] = useState(false);
+  const [floatingXP, setFloatingXP] = useState<{ amount: number; show: boolean }>({ amount: 0, show: false });
   const { state: mascotState, handleAnswer: triggerMascotReaction, setIdle } = useMascotState();
   
   // Get market config for theming
@@ -187,6 +189,8 @@ export default function DrillsPage() {
 
     if (isCorrect) {
       setScore((prev) => prev + 1);
+      setFloatingXP({ amount: 10, show: false });
+      setTimeout(() => setFloatingXP({ amount: 10, show: true }), 50);
     }
   };
 
@@ -464,6 +468,7 @@ export default function DrillsPage() {
 
   return (
     <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden">
+      <FloatingXP amount={floatingXP.amount} show={floatingXP.show} isPro={isProUser} />
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}

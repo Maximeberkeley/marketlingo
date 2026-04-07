@@ -230,6 +230,11 @@ export function ConceptCard({
   const slideUp = useRef(new Animated.Value(30)).current;
   const scale = useRef(new Animated.Value(0.96)).current;
 
+  // See More state — must be declared before any early returns
+  const TRUNCATE_THRESHOLD = 200;
+  const isLongContent = type === 'concept' && content.length > TRUNCATE_THRESHOLD;
+  const [expanded, setExpanded] = useState(!isLongContent);
+
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeIn, { toValue: 1, duration: 350, useNativeDriver: true }),
@@ -383,7 +388,8 @@ export function ConceptCard({
     );
   }
 
-  // ── Default concept card ────────────────────────────
+  const displayContent = expanded ? content : content.slice(0, TRUNCATE_THRESHOLD).replace(/\s+\S*$/, '') + '…';
+
   return (
     <Animated.View style={[styles.card, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
       {title && (
@@ -393,7 +399,31 @@ export function ConceptCard({
         </View>
       )}
       {title && <View style={styles.sectionDivider} />}
-      <FormattedText text={content} style={styles.conceptText} accentColor={accentColor} />
+      <ScrollView
+        style={expanded ? { maxHeight: MAX_CARD_CONTENT_HEIGHT } : undefined}
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled
+      >
+        <FormattedText text={displayContent} style={styles.conceptText} accentColor={accentColor} />
+        {isLongContent && !expanded && (
+          <TouchableOpacity
+            style={styles.readMoreBtn}
+            onPress={() => setExpanded(true)}
+          >
+            <Text style={[styles.readMoreText, { color: accentColor }]}>See more</Text>
+            <Feather name="chevron-down" size={14} color={accentColor} />
+          </TouchableOpacity>
+        )}
+        {isLongContent && expanded && (
+          <TouchableOpacity
+            style={styles.readMoreBtn}
+            onPress={() => setExpanded(false)}
+          >
+            <Text style={[styles.readMoreText, { color: accentColor }]}>See less</Text>
+            <Feather name="chevron-up" size={14} color={accentColor} />
+          </TouchableOpacity>
+        )}
+      </ScrollView>
     </Animated.View>
   );
 }
@@ -527,8 +557,8 @@ export function parseSlideIntoCards(
   let pendingText = "";
   let cardCount = 0;
 
-const MAX_CARD_CHARS = 550; // Increased for fuller, more readable cards
-    const WORD_SPLIT_THRESHOLD = 45; // More content per card before splitting
+const MAX_CARD_CHARS = 2000; // Show full content, rely on See More button
+    const WORD_SPLIT_THRESHOLD = 200; // Don't split into tiny cards anymore
 
   // Split text at sentence boundaries to avoid mid-sentence cutoff
   const splitAtSentence = (text: string, maxLen: number): [string, string] => {

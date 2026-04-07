@@ -12,6 +12,13 @@ export const XP_REWARDS = {
   STREAK_BONUS: 15, // per day of streak
 } as const;
 
+// Pro users earn 1.5x XP
+export const PRO_XP_MULTIPLIER = 1.5;
+
+export function getXPAmount(base: number, isPro: boolean): number {
+  return isPro ? Math.round(base * PRO_XP_MULTIPLIER) : base;
+}
+
 // Send milestone notification for level ups and streaks
 async function sendMilestoneNotification(
   userId: string,
