@@ -210,8 +210,9 @@ export default function DrillsPage() {
       const finalScore = score + (selectedAnswer !== null && selectedAnswer === question?.isTrue ? 1 : 0);
       const percentage = Math.round((finalScore / questions.length) * 100);
 
-      // Adaptive XP: more XP for higher accuracy
-      const xpEarned = percentage >= 80 ? 20 : percentage >= 60 ? 12 : 5;
+      // Adaptive XP: more XP for higher accuracy (Pro users get 1.5x)
+      const baseXP = percentage >= 80 ? 20 : percentage >= 60 ? 12 : 5;
+      const xpEarned = getXPAmount(baseXP, isProUser);
 
       // Save progress
       if (user && selectedMarket) {
