@@ -396,8 +396,9 @@ export default function TrainerPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1 }}
-        className="flex-1 screen-padding py-6 overflow-auto modal-bottom-safe"
+        className="flex-1 screen-padding py-6 overflow-auto modal-bottom-safe relative"
       >
+        <FloatingXP amount={floatingXP.amount} show={floatingXP.show} isPro={isProUser} />
         <TrainerCard
           scenario={cardScenario}
           onSaveToNotebook={handleSaveToNotebook}
