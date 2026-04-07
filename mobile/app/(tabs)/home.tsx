@@ -49,7 +49,7 @@ import { FoxMascot } from '../../components/mascot/FoxMascot';
 import { LeoPopup } from '../../components/mascot/LeoPopup';
 import { useLeoPopups } from '../../hooks/useLeoPopups';
 import { useAchievements } from '../../hooks/useAchievements';
-import { AskLeoOverlay } from '../../components/ai/AskLeoOverlay';
+import { LeoVoiceChatOverlay } from '../../components/ai/LeoVoiceChatOverlay';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
