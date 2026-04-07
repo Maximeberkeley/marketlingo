@@ -388,11 +388,6 @@ export function ConceptCard({
     );
   }
 
-  // ── Default concept card with See More ────────────────────────────
-  const TRUNCATE_THRESHOLD = 200;
-  const isLong = content.length > TRUNCATE_THRESHOLD;
-  const [expanded, setExpanded] = useState(!isLong);
-
   const displayContent = expanded ? content : content.slice(0, TRUNCATE_THRESHOLD).replace(/\s+\S*$/, '') + '…';
 
   return (
