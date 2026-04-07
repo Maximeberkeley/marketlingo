@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 
-interface FloatingXPProps {
+export interface FloatingXPProps {
   amount: number;
   show: boolean;
   isPro?: boolean;
@@ -19,7 +19,8 @@ export function FloatingXP({ amount, show, isPro = false }: FloatingXPProps) {
     }
   }, [show, amount]);
 
-  const displayAmount = isPro ? Math.round(amount * 1.5) : amount;
+  // amount is already adjusted by caller if Pro; isPro just shows badge
+  const displayAmount = amount;
 
   return (
     <AnimatePresence>

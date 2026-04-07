@@ -15,6 +15,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { FloatingXP } from "@/components/ui/FloatingXP";
+import { getXPAmount } from "@/hooks/useUserXP";
 
 interface TrainerScenarioPublic {
   id: string;
@@ -51,6 +53,7 @@ export default function TrainerPage() {
   const [showIntro, setShowIntro] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
+  const [floatingXP, setFloatingXP] = useState<{ amount: number; show: boolean }>({ amount: 0, show: false });
   
   // Get market config for theming
   const marketConfig = selectedMarket ? getMarketConfig(selectedMarket) : null;
@@ -181,7 +184,8 @@ export default function TrainerPage() {
   // Award adaptive XP after a trainer answer is submitted
   const awardTrainerXP = async (isCorrect: boolean) => {
     if (!user || !selectedMarket) return;
-    const xpEarned = isCorrect ? 35 : 8;
+    const baseXP = isCorrect ? 35 : 8;
+    const xpEarned = getXPAmount(baseXP, isProUser);
     await supabase.from("xp_transactions").insert({
       user_id: user.id,
       market_id: selectedMarket,
@@ -216,9 +220,12 @@ export default function TrainerPage() {
       follow_up_question: string | null;
     } | null;
 
-    // Award adaptive XP based on correctness
+    // Award adaptive XP based on correctness and show FloatingXP
     if (result) {
       await awardTrainerXP(result.isCorrect);
+      const xpGain = getXPAmount(result.isCorrect ? 35 : 8, isProUser);
+      setFloatingXP({ amount: xpGain, show: false });
+      setTimeout(() => setFloatingXP({ amount: xpGain, show: true }), 50);
     }
 
     return result || undefined;
@@ -389,8 +396,9 @@ export default function TrainerPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1 }}
-        className="flex-1 screen-padding py-6 overflow-auto modal-bottom-safe"
+        className="flex-1 screen-padding py-6 overflow-auto modal-bottom-safe relative"
       >
+        <FloatingXP amount={floatingXP.amount} show={floatingXP.show} isPro={isProUser} />
         <TrainerCard
           scenario={cardScenario}
           onSaveToNotebook={handleSaveToNotebook}

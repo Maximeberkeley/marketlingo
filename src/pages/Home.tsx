@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Zap, Loader2, CheckCircle2, BookOpen, Newspaper, MapPin, Flame } from "lucide-react";
+import leoSticker from "@/assets/leo-sticker.png";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { XPBadge } from "@/components/ui/XPBadge";
@@ -89,6 +90,9 @@ export default function HomePage() {
   const [socialNudge, setSocialNudge] = useState<{ name: string; xp: number } | null>(null);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
   const [userGoal, setUserGoal] = useState<string | null>(null);
+  const [showLeoTooltip, setShowLeoTooltip] = useState(() => {
+    return !localStorage.getItem('leo_chat_tooltip_shown');
+  });
   
   const { isSupported, isRegistered } = useNotifications();
   const { triggerAfterLesson, isProUser } = useProPromotionContext();
@@ -375,11 +379,41 @@ export default function HomePage() {
           {/* Right: Leo with speech bubble */}
           <button
             onClick={() => {
-              const mentor = getMentorForContext(selectedMarket || "aerospace", selectedMarket || undefined);
-              setActiveMentor(mentor);
+              // Create a Leo mentor using leo sticker as avatar
+              const leoMentor: Mentor = {
+                id: "leo",
+                name: "Leo",
+                title: "Your Learning Buddy",
+                expertise: ["Industry Knowledge", "Learning Tips", "Market Insights"],
+                personality: "Friendly, curious, and always ready to help you learn. Leo is your personal learning companion who knows about all industries.",
+                avatar: leoSticker,
+                greeting: "Hey! 🦊 I'm Leo, your learning buddy. Ask me anything about your industry or lessons!",
+                specialties: ["Industry trends", "Lesson review", "Quick tips", "Study advice"],
+                voiceId: "JBFqnCBsd6RMkjVDRZzb",
+              };
+              setActiveMentor(leoMentor);
+              if (showLeoTooltip) {
+                setShowLeoTooltip(false);
+                localStorage.setItem('leo_chat_tooltip_shown', 'true');
+              }
             }}
             className="relative flex items-center gap-2"
           >
+            {/* One-time tooltip */}
+            <AnimatePresence>
+              {showLeoTooltip && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.9 }}
+                  transition={{ delay: 1, type: "spring", stiffness: 300, damping: 20 }}
+                  className="absolute -bottom-10 right-0 z-30 bg-accent text-white px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap shadow-lg"
+                >
+                  Tap Leo to chat! 💬
+                  <div className="absolute -top-1 right-6 w-2 h-2 bg-accent rotate-45" />
+                </motion.div>
+              )}
+            </AnimatePresence>
             {/* Speech bubble */}
             <motion.div
               initial={{ opacity: 0, x: 10, scale: 0.85 }}

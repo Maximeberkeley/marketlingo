@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useContentAccess } from "@/hooks/useContentAccess";
+import { getXPAmount } from "@/hooks/useUserXP";
 import { smartTruncate } from "@/lib/text-utils";
 import { useMascotState } from "@/hooks/useMascotState";
 
@@ -189,8 +190,9 @@ export default function DrillsPage() {
 
     if (isCorrect) {
       setScore((prev) => prev + 1);
-      setFloatingXP({ amount: 10, show: false });
-      setTimeout(() => setFloatingXP({ amount: 10, show: true }), 50);
+      const xpGain = getXPAmount(10, isProUser);
+      setFloatingXP({ amount: xpGain, show: false });
+      setTimeout(() => setFloatingXP({ amount: xpGain, show: true }), 50);
     }
   };
 
@@ -208,8 +210,9 @@ export default function DrillsPage() {
       const finalScore = score + (selectedAnswer !== null && selectedAnswer === question?.isTrue ? 1 : 0);
       const percentage = Math.round((finalScore / questions.length) * 100);
 
-      // Adaptive XP: more XP for higher accuracy
-      const xpEarned = percentage >= 80 ? 20 : percentage >= 60 ? 12 : 5;
+      // Adaptive XP: more XP for higher accuracy (Pro users get 1.5x)
+      const baseXP = percentage >= 80 ? 20 : percentage >= 60 ? 12 : 5;
+      const xpEarned = getXPAmount(baseXP, isProUser);
 
       // Save progress
       if (user && selectedMarket) {

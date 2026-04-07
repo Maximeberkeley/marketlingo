@@ -9,6 +9,7 @@ import { LeoCelebration } from "@/components/mascot/LeoCelebration";
 import { MascotBreak, InlineMascot, MascotReaction, getRandomCharacter } from "@/components/mascot";
 import { LeoMascot, getRandomLeoMessage } from "@/components/mascot/LeoMascot";
 import { DailyLimitGate, RemainingCount } from "@/components/subscription/DailyLimitGate";
+import { FloatingXP } from "@/components/ui/FloatingXP";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { useMascotState } from "@/hooks/useMascotState";
 import { useContentAccess } from "@/hooks/useContentAccess";
@@ -18,6 +19,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { smartTruncate, shuffleOptions } from "@/lib/text-utils";
 import { useAuth } from "@/hooks/useAuth";
+import { getXPAmount, PRO_XP_MULTIPLIER } from "@/hooks/useUserXP";
 
 interface GameQuestion {
   id: string;
@@ -46,6 +48,7 @@ export default function GamesPage() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [leoMessage, setLeoMessage] = useState<string | null>(null);
   const [showLimitGate, setShowLimitGate] = useState(false);
+  const [floatingXP, setFloatingXP] = useState<{ amount: number; show: boolean }>({ amount: 0, show: false });
   const { play } = useSoundEffects();
   const { state: mascotState, handleAnswer: triggerMascotReaction, setIdle } = useMascotState();
   
@@ -180,6 +183,9 @@ export default function GamesPage() {
       setScore((prev) => prev + 1);
       play("correct");
       setLeoMessage(getRandomLeoMessage("correct"));
+      const xpGain = getXPAmount(25, isProUser);
+      setFloatingXP({ amount: xpGain, show: false });
+      setTimeout(() => setFloatingXP({ amount: xpGain, show: true }), 50);
     } else {
       play("incorrect");
       setLeoMessage(getRandomLeoMessage("incorrect"));
@@ -196,8 +202,9 @@ export default function GamesPage() {
       const finalScore = score + (selectedAnswer !== null && selectedAnswer === question?.correctAnswer ? 1 : 0);
       const percentage = Math.round((finalScore / questions.length) * 100);
 
-      // Adaptive XP: higher accuracy → more XP
-      const xpEarned = percentage >= 80 ? 30 : percentage >= 60 ? 18 : 8;
+      // Adaptive XP: higher accuracy → more XP (Pro users get 1.5x)
+      const baseXP = percentage >= 80 ? 30 : percentage >= 60 ? 18 : 8;
+      const xpEarned = getXPAmount(baseXP, isProUser);
 
       // Save progress to database
       if (user && selectedMarket) {
@@ -479,6 +486,9 @@ export default function GamesPage() {
 
       {/* Question - with bottom safe area for scroll content */}
       <div className="flex-1 screen-padding py-6 overflow-y-auto modal-bottom-safe relative">
+        {/* Floating XP animation */}
+        <FloatingXP amount={floatingXP.amount} show={floatingXP.show} />
+        
         {/* Reactive Mascot - floats at bottom right during questions */}
         <MascotReaction
           state={mascotState}
