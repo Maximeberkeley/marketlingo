@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { SlideMascotCard, getSlidePosition } from "@/components/mascot/SlideMascotCard";
 
