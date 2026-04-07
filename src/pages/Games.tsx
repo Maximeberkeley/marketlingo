@@ -48,6 +48,7 @@ export default function GamesPage() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [leoMessage, setLeoMessage] = useState<string | null>(null);
   const [showLimitGate, setShowLimitGate] = useState(false);
+  const [floatingXP, setFloatingXP] = useState<{ amount: number; show: boolean }>({ amount: 0, show: false });
   const { play } = useSoundEffects();
   const { state: mascotState, handleAnswer: triggerMascotReaction, setIdle } = useMascotState();
   
