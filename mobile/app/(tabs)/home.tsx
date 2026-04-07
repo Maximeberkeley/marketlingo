@@ -49,7 +49,7 @@ import { FoxMascot } from '../../components/mascot/FoxMascot';
 import { LeoPopup } from '../../components/mascot/LeoPopup';
 import { useLeoPopups } from '../../hooks/useLeoPopups';
 import { useAchievements } from '../../hooks/useAchievements';
-import { AskLeoOverlay } from '../../components/ai/AskLeoOverlay';
+import { LeoVoiceChatOverlay } from '../../components/ai/LeoVoiceChatOverlay';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -342,11 +342,13 @@ export default function HomeScreen() {
       <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="lesson" />
       {/* Leo popup overlay */}
       <LeoPopup message={leoPopups.currentMessage} onDismiss={leoPopups.dismiss} />
-      {/* Leo voice chat */}
-      <AskLeoOverlay
+      {/* Leo voice chat — fullscreen immersive */}
+      <LeoVoiceChatOverlay
         visible={showLeoChat}
         onClose={() => setShowLeoChat(false)}
+        marketId={selectedMarket || undefined}
         lessonContext={`${getMarketName(selectedMarket || 'aerospace')} industry learning — Day ${currentDay}`}
+      />
       />
 
       {session.showReader && session.activeStack ? (
