@@ -383,7 +383,13 @@ export function ConceptCard({
     );
   }
 
-  // ── Default concept card ────────────────────────────
+  // ── Default concept card with See More ────────────────────────────
+  const TRUNCATE_THRESHOLD = 200;
+  const isLong = content.length > TRUNCATE_THRESHOLD;
+  const [expanded, setExpanded] = useState(!isLong);
+
+  const displayContent = expanded ? content : content.slice(0, TRUNCATE_THRESHOLD).replace(/\s+\S*$/, '') + '…';
+
   return (
     <Animated.View style={[styles.card, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
       {title && (
@@ -393,7 +399,31 @@ export function ConceptCard({
         </View>
       )}
       {title && <View style={styles.sectionDivider} />}
-      <FormattedText text={content} style={styles.conceptText} accentColor={accentColor} />
+      <ScrollView
+        style={expanded ? { maxHeight: MAX_CARD_CONTENT_HEIGHT } : undefined}
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled
+      >
+        <FormattedText text={displayContent} style={styles.conceptText} accentColor={accentColor} />
+        {isLong && !expanded && (
+          <TouchableOpacity
+            style={styles.readMoreBtn}
+            onPress={() => setExpanded(true)}
+          >
+            <Text style={[styles.readMoreText, { color: accentColor }]}>See more</Text>
+            <Feather name="chevron-down" size={14} color={accentColor} />
+          </TouchableOpacity>
+        )}
+        {isLong && expanded && (
+          <TouchableOpacity
+            style={styles.readMoreBtn}
+            onPress={() => setExpanded(false)}
+          >
+            <Text style={[styles.readMoreText, { color: accentColor }]}>See less</Text>
+            <Feather name="chevron-up" size={14} color={accentColor} />
+          </TouchableOpacity>
+        )}
+      </ScrollView>
     </Animated.View>
   );
 }
