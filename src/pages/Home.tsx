@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Zap, Loader2, CheckCircle2, BookOpen, Newspaper, MapPin, Flame } from "lucide-react";
-import leoSticker from "@/assets/leo-sticker.png";
+
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { XPBadge } from "@/components/ui/XPBadge";
@@ -13,9 +13,8 @@ import { KeyPlayers } from "@/components/home/KeyPlayers";
 import { DailyNews } from "@/components/home/DailyNews";
 import { SocialNudge } from "@/components/home/SocialNudge";
 import { NotificationOnboarding } from "@/components/onboarding/NotificationOnboarding";
-import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
+import { LeoVoiceChatOverlay } from "@/components/ai/LeoVoiceChatOverlay";
 import { LeoCharacter, LeoAnim } from "@/components/mascot/LeoStateMachine";
-import { Mentor, getMentorForContext } from "@/data/mentors";
 import { getMarketEmoji, getMarketName } from "@/data/markets";
 import { getMarketIllustration, getMarketAccent } from "@/data/marketIllustrations";
 import { toast } from "sonner";
@@ -84,7 +83,7 @@ export default function HomePage() {
   const [newsStack, setNewsStack] = useState<StackWithSlides | null>(null);
   const [activeStack, setActiveStack] = useState<StackWithSlides | null>(null);
   const [showNotificationOnboarding, setShowNotificationOnboarding] = useState(false);
-  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
+  const [showLeoVoiceChat, setShowLeoVoiceChat] = useState(false);
   const [leoMessage, setLeoMessage] = useState<string>("");
   const [leoAnimation, setLeoAnimation] = useState<LeoAnim>("idle");
   const [socialNudge, setSocialNudge] = useState<{ name: string; xp: number } | null>(null);
@@ -379,19 +378,7 @@ export default function HomePage() {
           {/* Right: Leo with speech bubble */}
           <button
             onClick={() => {
-              // Create a Leo mentor using leo sticker as avatar
-              const leoMentor: Mentor = {
-                id: "leo",
-                name: "Leo",
-                title: "Your Learning Buddy",
-                expertise: ["Industry Knowledge", "Learning Tips", "Market Insights"],
-                personality: "Friendly, curious, and always ready to help you learn. Leo is your personal learning companion who knows about all industries.",
-                avatar: leoSticker,
-                greeting: "Hey! 🦊 I'm Leo, your learning buddy. Ask me anything about your industry or lessons!",
-                specialties: ["Industry trends", "Lesson review", "Quick tips", "Study advice"],
-                voiceId: "JBFqnCBsd6RMkjVDRZzb",
-              };
-              setActiveMentor(leoMentor);
+              setShowLeoVoiceChat(true);
               if (showLeoTooltip) {
                 setShowLeoTooltip(false);
                 localStorage.setItem('leo_chat_tooltip_shown', 'true');
@@ -651,10 +638,9 @@ export default function HomePage() {
         }}
       />
 
-      <MentorChatOverlay
-        mentor={activeMentor}
-        onClose={() => setActiveMentor(null)}
-        context={`${getMarketName(selectedMarket || "aerospace")} industry learning. Day ${currentDay} of 180.`}
+      <LeoVoiceChatOverlay
+        isOpen={showLeoVoiceChat}
+        onClose={() => setShowLeoVoiceChat(false)}
         marketId={selectedMarket || undefined}
       />
 
