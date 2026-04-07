@@ -401,13 +401,20 @@ export default function HomeScreen() {
 
           {/* ── Leo + Greeting ── */}
           <AnimatedSection delay={0}>
-            <View style={styles.leoSection}>
+            <TouchableOpacity
+              style={styles.leoSection}
+              activeOpacity={0.8}
+              onPress={() => {
+                triggerHaptic('light');
+                setShowLeoChat(true);
+              }}
+            >
               <FoxMascot industry={selectedMarket || 'aerospace'} size={200} />
               <View style={styles.speechBubble}>
                 <View style={styles.speechTail} />
                 <Text style={styles.speechText}>{greeting}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           </AnimatedSection>
 
           {/* ── Critical Timer (last 2 hours) ── */}
