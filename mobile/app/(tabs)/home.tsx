@@ -342,11 +342,13 @@ export default function HomeScreen() {
       <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="lesson" />
       {/* Leo popup overlay */}
       <LeoPopup message={leoPopups.currentMessage} onDismiss={leoPopups.dismiss} />
-      {/* Leo voice chat */}
-      <AskLeoOverlay
+      {/* Leo voice chat — fullscreen immersive */}
+      <LeoVoiceChatOverlay
         visible={showLeoChat}
         onClose={() => setShowLeoChat(false)}
+        marketId={selectedMarket || undefined}
         lessonContext={`${getMarketName(selectedMarket || 'aerospace')} industry learning — Day ${currentDay}`}
+      />
       />
 
       {session.showReader && session.activeStack ? (
