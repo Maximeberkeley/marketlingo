@@ -45,6 +45,7 @@ export default function DrillsPage() {
   const [showIntro, setShowIntro] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showLimitGate, setShowLimitGate] = useState(false);
+  const [floatingXP, setFloatingXP] = useState<{ amount: number; show: boolean }>({ amount: 0, show: false });
   const { state: mascotState, handleAnswer: triggerMascotReaction, setIdle } = useMascotState();
   
   // Get market config for theming
