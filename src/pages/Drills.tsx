@@ -468,6 +468,7 @@ export default function DrillsPage() {
 
   return (
     <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden">
+      <FloatingXP amount={floatingXP.amount} show={floatingXP.show} isPro={isProUser} />
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
