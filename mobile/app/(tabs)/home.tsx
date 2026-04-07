@@ -232,6 +232,7 @@ export default function HomeScreen() {
   const [showSocialNudge, setShowSocialNudge] = useState(true);
   const [showProAd, setShowProAd] = useState(false);
   const [showCriticalTimer, setShowCriticalTimer] = useState(true);
+  const [showLeoChat, setShowLeoChat] = useState(false);
 
   // Calculate if we're in the critical 2-hour window
   const criticalTimerActive = (() => {
