@@ -20,7 +20,6 @@
         "UIUserInterfaceStyle": "Dark",
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "MarketLingo needs microphone access to record your interview responses in the Mock Lab for AI feedback.",
-        "NSUserTrackingUsageDescription": "MarketLingo uses this to measure ad effectiveness and improve your learning experience.",
         "NSSpeechRecognitionUsageDescription": "MarketLingo uses speech recognition to transcribe your interview practice responses."
       }
     },
