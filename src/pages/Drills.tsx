@@ -189,6 +189,8 @@ export default function DrillsPage() {
 
     if (isCorrect) {
       setScore((prev) => prev + 1);
+      setFloatingXP({ amount: 10, show: false });
+      setTimeout(() => setFloatingXP({ amount: 10, show: true }), 50);
     }
   };
 
