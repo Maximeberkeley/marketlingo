@@ -639,10 +639,9 @@ export default function HomePage() {
         }}
       />
 
-      <MentorChatOverlay
-        mentor={activeMentor}
-        onClose={() => setActiveMentor(null)}
-        context={`${getMarketName(selectedMarket || "aerospace")} industry learning. Day ${currentDay} of 180.`}
+      <LeoVoiceChatOverlay
+        isOpen={showLeoVoiceChat}
+        onClose={() => setShowLeoVoiceChat(false)}
         marketId={selectedMarket || undefined}
       />
 
