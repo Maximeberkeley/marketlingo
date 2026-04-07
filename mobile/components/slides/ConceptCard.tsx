@@ -230,6 +230,11 @@ export function ConceptCard({
   const slideUp = useRef(new Animated.Value(30)).current;
   const scale = useRef(new Animated.Value(0.96)).current;
 
+  // See More state — must be declared before any early returns
+  const TRUNCATE_THRESHOLD = 200;
+  const isLongContent = type === 'concept' && content.length > TRUNCATE_THRESHOLD;
+  const [expanded, setExpanded] = useState(!isLongContent);
+
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeIn, { toValue: 1, duration: 350, useNativeDriver: true }),
