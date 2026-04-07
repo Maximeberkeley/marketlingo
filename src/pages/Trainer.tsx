@@ -53,6 +53,7 @@ export default function TrainerPage() {
   const [showIntro, setShowIntro] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
+  const [floatingXP, setFloatingXP] = useState<{ amount: number; show: boolean }>({ amount: 0, show: false });
   
   // Get market config for theming
   const marketConfig = selectedMarket ? getMarketConfig(selectedMarket) : null;
