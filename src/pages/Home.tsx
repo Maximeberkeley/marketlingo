@@ -84,7 +84,7 @@ export default function HomePage() {
   const [newsStack, setNewsStack] = useState<StackWithSlides | null>(null);
   const [activeStack, setActiveStack] = useState<StackWithSlides | null>(null);
   const [showNotificationOnboarding, setShowNotificationOnboarding] = useState(false);
-  const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
+  const [showLeoVoiceChat, setShowLeoVoiceChat] = useState(false);
   const [leoMessage, setLeoMessage] = useState<string>("");
   const [leoAnimation, setLeoAnimation] = useState<LeoAnim>("idle");
   const [socialNudge, setSocialNudge] = useState<{ name: string; xp: number } | null>(null);
