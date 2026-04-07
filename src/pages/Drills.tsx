@@ -190,8 +190,9 @@ export default function DrillsPage() {
 
     if (isCorrect) {
       setScore((prev) => prev + 1);
-      setFloatingXP({ amount: 10, show: false });
-      setTimeout(() => setFloatingXP({ amount: 10, show: true }), 50);
+      const xpGain = getXPAmount(10, isProUser);
+      setFloatingXP({ amount: xpGain, show: false });
+      setTimeout(() => setFloatingXP({ amount: xpGain, show: true }), 50);
     }
   };
 
