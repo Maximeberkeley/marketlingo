@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 
-interface FloatingXPProps {
+export interface FloatingXPProps {
   amount: number;
   show: boolean;
   isPro?: boolean;
