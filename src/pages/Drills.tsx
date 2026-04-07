@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useContentAccess } from "@/hooks/useContentAccess";
+import { getXPAmount } from "@/hooks/useUserXP";
 import { smartTruncate } from "@/lib/text-utils";
 import { useMascotState } from "@/hooks/useMascotState";
 
