@@ -183,6 +183,9 @@ export default function GamesPage() {
       setScore((prev) => prev + 1);
       play("correct");
       setLeoMessage(getRandomLeoMessage("correct"));
+      const xpGain = getXPAmount(25, isProUser);
+      setFloatingXP({ amount: xpGain, show: false });
+      setTimeout(() => setFloatingXP({ amount: xpGain, show: true }), 50);
     } else {
       play("incorrect");
       setLeoMessage(getRandomLeoMessage("incorrect"));
