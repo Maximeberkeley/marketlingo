@@ -89,6 +89,9 @@ export default function HomePage() {
   const [socialNudge, setSocialNudge] = useState<{ name: string; xp: number } | null>(null);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
   const [userGoal, setUserGoal] = useState<string | null>(null);
+  const [showLeoTooltip, setShowLeoTooltip] = useState(() => {
+    return !localStorage.getItem('leo_chat_tooltip_shown');
+  });
   
   const { isSupported, isRegistered } = useNotifications();
   const { triggerAfterLesson, isProUser } = useProPromotionContext();
