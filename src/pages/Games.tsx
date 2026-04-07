@@ -202,8 +202,9 @@ export default function GamesPage() {
       const finalScore = score + (selectedAnswer !== null && selectedAnswer === question?.correctAnswer ? 1 : 0);
       const percentage = Math.round((finalScore / questions.length) * 100);
 
-      // Adaptive XP: higher accuracy → more XP
-      const xpEarned = percentage >= 80 ? 30 : percentage >= 60 ? 18 : 8;
+      // Adaptive XP: higher accuracy → more XP (Pro users get 1.5x)
+      const baseXP = percentage >= 80 ? 30 : percentage >= 60 ? 18 : 8;
+      const xpEarned = getXPAmount(baseXP, isProUser);
 
       // Save progress to database
       if (user && selectedMarket) {
