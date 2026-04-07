@@ -13,7 +13,7 @@ import { KeyPlayers } from "@/components/home/KeyPlayers";
 import { DailyNews } from "@/components/home/DailyNews";
 import { SocialNudge } from "@/components/home/SocialNudge";
 import { NotificationOnboarding } from "@/components/onboarding/NotificationOnboarding";
-import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
+import { LeoVoiceChatOverlay } from "@/components/ai/LeoVoiceChatOverlay";
 import { LeoCharacter, LeoAnim } from "@/components/mascot/LeoStateMachine";
 import { Mentor, getMentorForContext } from "@/data/mentors";
 import { getMarketEmoji, getMarketName } from "@/data/markets";
