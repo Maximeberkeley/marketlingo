@@ -342,6 +342,12 @@ export default function HomeScreen() {
       <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="lesson" />
       {/* Leo popup overlay */}
       <LeoPopup message={leoPopups.currentMessage} onDismiss={leoPopups.dismiss} />
+      {/* Leo voice chat */}
+      <AskLeoOverlay
+        visible={showLeoChat}
+        onClose={() => setShowLeoChat(false)}
+        lessonContext={`${getMarketName(selectedMarket || 'aerospace')} industry learning — Day ${currentDay}`}
+      />
 
       {session.showReader && session.activeStack ? (
         <SlideReader
