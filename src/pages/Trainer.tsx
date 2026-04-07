@@ -220,9 +220,12 @@ export default function TrainerPage() {
       follow_up_question: string | null;
     } | null;
 
-    // Award adaptive XP based on correctness
+    // Award adaptive XP based on correctness and show FloatingXP
     if (result) {
       await awardTrainerXP(result.isCorrect);
+      const xpGain = getXPAmount(result.isCorrect ? 35 : 8, isProUser);
+      setFloatingXP({ amount: xpGain, show: false });
+      setTimeout(() => setFloatingXP({ amount: xpGain, show: true }), 50);
     }
 
     return result || undefined;
