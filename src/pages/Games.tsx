@@ -9,6 +9,7 @@ import { LeoCelebration } from "@/components/mascot/LeoCelebration";
 import { MascotBreak, InlineMascot, MascotReaction, getRandomCharacter } from "@/components/mascot";
 import { LeoMascot, getRandomLeoMessage } from "@/components/mascot/LeoMascot";
 import { DailyLimitGate, RemainingCount } from "@/components/subscription/DailyLimitGate";
+import { FloatingXP } from "@/components/ui/FloatingXP";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { useMascotState } from "@/hooks/useMascotState";
 import { useContentAccess } from "@/hooks/useContentAccess";
@@ -18,6 +19,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { smartTruncate, shuffleOptions } from "@/lib/text-utils";
 import { useAuth } from "@/hooks/useAuth";
+import { getXPAmount, PRO_XP_MULTIPLIER } from "@/hooks/useUserXP";
 
 interface GameQuestion {
   id: string;
