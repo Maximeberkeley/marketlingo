@@ -314,10 +314,10 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       if (hasLoadedOnce.current && user && !authLoading) {
-        fetchData();
+        void Promise.all([fetchData(), refetchXP()]);
       }
       hasLoadedOnce.current = true;
-    }, [user, authLoading, fetchData])
+    }, [user, authLoading, fetchData, refetchXP])
   );
 
   // Stable greeting (don't re-randomize on re-render)
@@ -348,7 +348,6 @@ export default function HomeScreen() {
         onClose={() => setShowLeoChat(false)}
         marketId={selectedMarket || undefined}
         lessonContext={`${getMarketName(selectedMarket || 'aerospace')} industry learning — Day ${currentDay}`}
-      />
       />
 
       {session.showReader && session.activeStack ? (

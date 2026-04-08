@@ -33,10 +33,11 @@ export function useUserXP(marketId?: string) {
   const [dailyCompletion, setDailyCompletion] = useState<DailyCompletion | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchXPData = useCallback(async () => {
-    if (!user || !marketId) {
-      setLoading(false);
-      return;
+  const ensureXPRecord = useCallback(async () => {
+    if (!user || !marketId) return null;
+
+    if (xpData && xpData.user_id === user.id && xpData.market_id === marketId) {
+      return xpData;
     }
 
     const { data: existingXP, error: xpError } = await supabase
@@ -48,31 +49,72 @@ export function useUserXP(marketId?: string) {
 
     if (xpError && xpError.code !== 'PGRST116') {
       console.error('Error fetching XP:', xpError);
+      return null;
     }
 
-    if (!existingXP) {
-      const { data: newXP, error: createError } = await supabase
-        .from('user_xp')
-        .insert({
-          user_id: user.id,
-          market_id: marketId,
-          total_xp: 0,
-          current_level: 1,
-          xp_to_next_level: 100,
-          startup_stage: 1,
-        })
-        .select()
-        .single();
-
-      if (!createError && newXP) {
-        setXpData(newXP);
-      }
-    } else {
+    if (existingXP) {
       setXpData(existingXP);
+      return existingXP;
+    }
+
+    const { data: newXP, error: createError } = await supabase
+      .from('user_xp')
+      .insert({
+        user_id: user.id,
+        market_id: marketId,
+        total_xp: 0,
+        current_level: 1,
+        xp_to_next_level: 100,
+        startup_stage: 1,
+      })
+      .select()
+      .single();
+
+    if (createError) {
+      const { data: recoveredXP, error: recoverError } = await supabase
+        .from('user_xp')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('market_id', marketId)
+        .maybeSingle();
+
+      if (recoverError && recoverError.code !== 'PGRST116') {
+        console.error('Error recovering XP:', recoverError);
+      }
+
+      if (recoveredXP) {
+        setXpData(recoveredXP);
+        return recoveredXP;
+      }
+
+      console.error('Error creating XP:', createError);
+      return null;
+    }
+
+    if (newXP) {
+      setXpData(newXP);
+    }
+
+    return newXP;
+  }, [user, marketId, xpData]);
+
+  const fetchXPData = useCallback(async () => {
+    if (!user || !marketId) {
+      setXpData(null);
+      setDailyCompletion(null);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+
+    const ensuredXP = await ensureXPRecord();
+    if (ensuredXP) {
+      setXpData(ensuredXP);
     }
 
     const today = new Date().toISOString().split('T')[0];
-    const { data: todayCompletion } = await supabase
+    const { data: todayCompletion, error: completionError } = await supabase
       .from('daily_completions')
       .select('*')
       .eq('user_id', user.id)
@@ -80,12 +122,14 @@ export function useUserXP(marketId?: string) {
       .eq('completion_date', today)
       .maybeSingle();
 
-    if (todayCompletion) {
-      setDailyCompletion(todayCompletion);
+    if (completionError && completionError.code !== 'PGRST116') {
+      console.error('Error fetching daily completion:', completionError);
     }
 
+    setDailyCompletion(todayCompletion || null);
+
     setLoading(false);
-  }, [user, marketId]);
+  }, [user, marketId, ensureXPRecord]);
 
   useEffect(() => {
     fetchXPData();
@@ -97,9 +141,12 @@ export function useUserXP(marketId?: string) {
     sourceId?: string,
     description?: string
   ) => {
-    if (!user || !marketId || !xpData) return null;
+    if (!user || !marketId) return null;
 
-    await supabase.from('xp_transactions').insert({
+    const ensuredXP = await ensureXPRecord();
+    if (!ensuredXP) return null;
+
+    const { error: transactionError } = await supabase.from('xp_transactions').insert({
       user_id: user.id,
       market_id: marketId,
       xp_amount: amount,
@@ -107,6 +154,10 @@ export function useUserXP(marketId?: string) {
       source_id: sourceId,
       description,
     });
+
+    if (transactionError) {
+      console.error('Error logging XP transaction:', transactionError);
+    }
 
     // Atomic XP increment to prevent race conditions
     const { data: updatedXP, error } = await supabase
@@ -116,30 +167,53 @@ export function useUserXP(marketId?: string) {
         p_amount: amount,
       });
 
+    if (error) {
+      console.error('Error incrementing XP:', error);
+    }
+
     if (!error && updatedXP) {
       setXpData(updatedXP);
     }
 
     const today = new Date().toISOString().split('T')[0];
-    if (dailyCompletion) {
-      await supabase
-        .from('daily_completions')
-        .update({ xp_earned: dailyCompletion.xp_earned + amount })
-        .eq('id', dailyCompletion.id);
-    } else {
-      const { data: newCompletion } = await supabase
-        .from('daily_completions')
-        .insert({
+    const { data: existingCompletion, error: completionFetchError } = await supabase
+      .from('daily_completions')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('market_id', marketId)
+      .eq('completion_date', today)
+      .maybeSingle();
+
+    if (completionFetchError && completionFetchError.code !== 'PGRST116') {
+      console.error('Error fetching daily completion for XP update:', completionFetchError);
+    }
+
+    const baseCompletion = existingCompletion || dailyCompletion;
+    const isGameReward = sourceType === 'game';
+    const isDrillReward = sourceType.startsWith('drill');
+
+    const { data: updatedCompletion, error: completionUpsertError } = await supabase
+      .from('daily_completions')
+      .upsert(
+        {
           user_id: user.id,
           market_id: marketId,
           completion_date: today,
-          xp_earned: amount,
-        })
-        .select()
-        .single();
-      if (newCompletion) {
-        setDailyCompletion(newCompletion);
-      }
+          lesson_completed: baseCompletion?.lesson_completed || false,
+          completed_stack_id: baseCompletion?.completed_stack_id || null,
+          games_completed: (baseCompletion?.games_completed || 0) + (isGameReward ? 1 : 0),
+          drills_completed: (baseCompletion?.drills_completed || 0) + (isDrillReward ? 1 : 0),
+          xp_earned: (baseCompletion?.xp_earned || 0) + amount,
+        },
+        { onConflict: 'user_id,market_id,completion_date' }
+      )
+      .select()
+      .single();
+
+    if (completionUpsertError) {
+      console.error('Error updating daily completion XP:', completionUpsertError);
+    } else if (updatedCompletion) {
+      setDailyCompletion(updatedCompletion);
     }
 
     return updatedXP;
@@ -158,7 +232,6 @@ export function useUserXP(marketId?: string) {
           completion_date: today,
           lesson_completed: true,
           completed_stack_id: stackId,
-          xp_earned: (dailyCompletion?.xp_earned || 0) + XP_REWARDS.LESSON_COMPLETE,
         },
         { onConflict: 'user_id,market_id,completion_date' }
       )
