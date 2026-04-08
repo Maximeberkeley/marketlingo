@@ -69,43 +69,45 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <AuthProvider>
-          <LeoProvider>
-            <StatusBar style="dark" />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: '#FFFFFF' },
-                animation: 'slide_from_right',
-              }}
-            >
-              <Stack.Screen name="index" />
-              <Stack.Screen name="auth" />
-              <Stack.Screen name="onboarding/index" />
-              <Stack.Screen name="onboarding/goal" options={{ gestureEnabled: false }} />
-              <Stack.Screen name="onboarding/familiarity" options={{ gestureEnabled: false }} />
-              <Stack.Screen name="(tabs)" options={{ animation: 'fade', gestureEnabled: false }} />
-              <Stack.Screen name="trainer" />
-              <Stack.Screen name="games" />
-              <Stack.Screen name="drills" />
-              <Stack.Screen name="summaries" />
-              <Stack.Screen name="achievements" />
-              <Stack.Screen name="leaderboard" />
-              <Stack.Screen name="settings" />
-              <Stack.Screen name="interview-lab" />
-              <Stack.Screen name="investment-lab" />
-              <Stack.Screen name="investment-module" />
-              <Stack.Screen name="investment-certificate" />
-              <Stack.Screen name="investment-watchlist" />
-              <Stack.Screen name="regulatory-hub" />
-              <Stack.Screen name="subscription" />
-              <Stack.Screen name="passport" />
-              <Stack.Screen name="certificate" />
-              <Stack.Screen name="friends" />
-              <Stack.Screen name="legal" />
-            </Stack>
-          </LeoProvider>
-        </AuthProvider>
+        <ErrorBoundary>
+          <AuthProvider>
+            <LeoProvider>
+              <StatusBar style="dark" />
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: '#FFFFFF' },
+                  animation: 'slide_from_right',
+                }}
+              >
+                <Stack.Screen name="index" />
+                <Stack.Screen name="auth" />
+                <Stack.Screen name="onboarding/index" />
+                <Stack.Screen name="onboarding/goal" options={{ gestureEnabled: false }} />
+                <Stack.Screen name="onboarding/familiarity" options={{ gestureEnabled: false }} />
+                <Stack.Screen name="(tabs)" options={{ animation: 'fade', gestureEnabled: false }} />
+                <Stack.Screen name="trainer" />
+                <Stack.Screen name="games" />
+                <Stack.Screen name="drills" />
+                <Stack.Screen name="summaries" />
+                <Stack.Screen name="achievements" />
+                <Stack.Screen name="leaderboard" />
+                <Stack.Screen name="settings" />
+                <Stack.Screen name="interview-lab" />
+                <Stack.Screen name="investment-lab" />
+                <Stack.Screen name="investment-module" />
+                <Stack.Screen name="investment-certificate" />
+                <Stack.Screen name="investment-watchlist" />
+                <Stack.Screen name="regulatory-hub" />
+                <Stack.Screen name="subscription" />
+                <Stack.Screen name="passport" />
+                <Stack.Screen name="certificate" />
+                <Stack.Screen name="friends" />
+                <Stack.Screen name="legal" />
+              </Stack>
+            </LeoProvider>
+          </AuthProvider>
+        </ErrorBoundary>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
