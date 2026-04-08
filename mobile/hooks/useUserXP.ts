@@ -36,7 +36,7 @@ export function useUserXP(marketId?: string) {
   const ensureXPRecord = useCallback(async () => {
     if (!user || !marketId) return null;
 
-    if (xpData) {
+    if (xpData && xpData.user_id === user.id && xpData.market_id === marketId) {
       return xpData;
     }
 
