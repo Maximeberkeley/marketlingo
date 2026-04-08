@@ -15,13 +15,12 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.marketlingo.aerospace",
-      "buildNumber": "91",
+      "buildNumber": "93",
       "infoPlist": {
         "UIUserInterfaceStyle": "Dark",
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "MarketLingo needs microphone access to record your interview responses in the Mock Lab for AI feedback.",
-        "NSSpeechRecognitionUsageDescription": "MarketLingo uses speech recognition to transcribe your interview practice responses.",
-        "MKDirectionsApplicationSupportedModes": []
+        "NSSpeechRecognitionUsageDescription": "MarketLingo uses speech recognition to transcribe your interview practice responses."
       }
     },
     "android": {
