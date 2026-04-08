@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import { COLORS } from "../lib/constants";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../hooks/useAuth";
+import { useUserXP, XP_REWARDS, getXPAmount } from "../hooks/useUserXP";
 import { ProgressBar } from "../components/ui/ProgressBar";
 import { triggerHaptic } from "../lib/haptics";
 import { playSound } from "../lib/sounds";
@@ -39,6 +40,7 @@ export default function GamesScreen() {
   const [showProAd, setShowProAd] = useState(false);
 
   const { isProUser } = useSubscription();
+  const { addXP } = useUserXP(selectedMarket || undefined);
   const [combo, setCombo] = useState<ComboState>(createComboState());
   const [fetchKey, setFetchKey] = useState(0);
 
@@ -278,6 +280,9 @@ export default function GamesScreen() {
           },
           { onConflict: "user_id,market_id,game_type" },
         );
+
+        const xpEarned = getXPAmount(XP_REWARDS.GAME_COMPLETE, isProUser);
+        await addXP(xpEarned, "game", undefined, "Completed game session");
       }
       triggerHaptic("success");
       playSound("levelUp");
