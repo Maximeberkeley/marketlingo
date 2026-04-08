@@ -20,7 +20,8 @@
         "UIUserInterfaceStyle": "Dark",
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "MarketLingo needs microphone access to record your interview responses in the Mock Lab for AI feedback.",
-        "NSSpeechRecognitionUsageDescription": "MarketLingo uses speech recognition to transcribe your interview practice responses."
+        "NSSpeechRecognitionUsageDescription": "MarketLingo uses speech recognition to transcribe your interview practice responses.",
+        "MKDirectionsApplicationSupportedModes": []
       }
     },
     "android": {
