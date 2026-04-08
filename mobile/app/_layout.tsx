@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Notifications from 'expo-notifications';
 import { AuthProvider } from '../hooks/useAuth';
 import { LeoProvider } from '../components/mascot/LeoCharacter';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 // Map notification data `route` or `type` to an Expo Router path
 function resolveRoute(data: Record<string, any>): string | null {
