@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { DemoLesson } from "@/components/demo/DemoLesson";
 import leoMascot from "@/assets/mascot/leo-reference.png";
 import leoCelebrating from "@/assets/mascot/leo-celebrating.png";
-import appIcon from "/appstore/app-icon-1024.png";
+import appIcon from "@/assets/app-icon.png";
 
 const APP_STORE_URL = "https://apps.apple.com/app/marketlingo/id6758534066";
 
@@ -116,7 +116,7 @@ export default function Landing() {
             <img src={appIcon} alt="MarketLingo" className="w-9 h-9 rounded-xl shadow-sm" />
             <span className="font-bold text-lg tracking-tight text-foreground">MarketLingo</span>
           </div>
-          <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
+          <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground ml-8">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
             <a href="#markets" className="hover:text-foreground transition-colors">Markets</a>
             <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
@@ -590,9 +590,11 @@ export default function Landing() {
               <img src={appIcon} alt="MarketLingo" className="w-8 h-8 rounded-lg shadow-sm" />
               <span className="font-bold text-foreground">MarketLingo</span>
             </div>
-            <div className="flex items-center gap-6 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-muted-foreground">
+              <a href="/legal?tab=privacy" className="hover:text-foreground transition-colors">Privacy Policy</a>
+              <a href="/legal?tab=terms" className="hover:text-foreground transition-colors">Terms of Service</a>
               <a href="mailto:contactus@marketlingo.net" className="hover:text-foreground transition-colors">Contact</a>
-              <span>•</span>
+              <span className="hidden sm:inline">•</span>
               <span>© {new Date().getFullYear()} MarketLingo. All rights reserved.</span>
             </div>
           </div>
