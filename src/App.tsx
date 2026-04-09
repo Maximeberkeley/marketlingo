@@ -77,6 +77,8 @@ function AnimatedRoutes() {
         <Route path="/interview-lab" element={<PageTransition><InterviewLab /></PageTransition>} />
         <Route path="/subscription" element={<PageTransition><Subscription /></PageTransition>} />
         <Route path="/legal" element={<PageTransition><Legal /></PageTransition>} />
+        <Route path="/terms" element={<PageTransition><TermsOfService /></PageTransition>} />
+        <Route path="/privacy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
