@@ -38,6 +38,8 @@ import InterviewLab from "./pages/InterviewLab";
 import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
 import Legal from "./pages/Legal";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { PageTransition } from "@/components/layout/PageTransition";
 
 const queryClient = new QueryClient();
@@ -75,6 +77,8 @@ function AnimatedRoutes() {
         <Route path="/interview-lab" element={<PageTransition><InterviewLab /></PageTransition>} />
         <Route path="/subscription" element={<PageTransition><Subscription /></PageTransition>} />
         <Route path="/legal" element={<PageTransition><Legal /></PageTransition>} />
+        <Route path="/terms" element={<PageTransition><TermsOfService /></PageTransition>} />
+        <Route path="/privacy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
