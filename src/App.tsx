@@ -38,6 +38,8 @@ import InterviewLab from "./pages/InterviewLab";
 import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
 import Legal from "./pages/Legal";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { PageTransition } from "@/components/layout/PageTransition";
 
 const queryClient = new QueryClient();
