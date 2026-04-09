@@ -591,8 +591,8 @@ export default function Landing() {
               <span className="font-bold text-foreground">MarketLingo</span>
             </div>
             <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-muted-foreground">
-              <a href="/legal?tab=privacy" className="hover:text-foreground transition-colors">Privacy Policy</a>
-              <a href="/legal?tab=terms" className="hover:text-foreground transition-colors">Terms of Service</a>
+              <a href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</a>
+              <a href="/terms" className="hover:text-foreground transition-colors">Terms of Service</a>
               <a href="mailto:contactus@marketlingo.net" className="hover:text-foreground transition-colors">Contact</a>
               <span className="hidden sm:inline">•</span>
               <span>© {new Date().getFullYear()} MarketLingo. All rights reserved.</span>
