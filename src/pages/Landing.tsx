@@ -1,11 +1,18 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
-  Rocket, BookOpen, Gamepad2, Newspaper, Target, TrendingUp,
+  BookOpen, Gamepad2, Newspaper, Target, TrendingUp,
   Trophy, ChevronRight, Sparkles, Shield, Zap, GraduationCap,
-  Check, ArrowRight, Globe, Users, Brain, Star
+  Check, ArrowRight, Globe, Users, Brain, Star, Download, Smartphone
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DemoLesson } from "@/components/demo/DemoLesson";
+import leoMascot from "@/assets/mascot/leo-reference.png";
+import leoCelebrating from "@/assets/mascot/leo-celebrating.png";
+import appIcon from "/appstore/app-icon-1024.png";
+
+const APP_STORE_URL = "https://apps.apple.com/app/marketlingo/id6758534066";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -98,16 +105,15 @@ const steps = [
 
 export default function Landing() {
   const navigate = useNavigate();
+  const [showDemo, setShowDemo] = useState(false);
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center">
-              <Rocket className="w-4 h-4 text-white" />
-            </div>
+          <div className="flex items-center gap-2.5">
+            <img src={appIcon} alt="MarketLingo" className="w-9 h-9 rounded-xl shadow-sm" />
             <span className="font-bold text-lg tracking-tight text-foreground">MarketLingo</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
@@ -119,8 +125,8 @@ export default function Landing() {
             <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
               Sign in
             </Button>
-            <Button size="sm" onClick={() => navigate("/auth")} className="bg-primary hover:bg-primary/90">
-              Get Started
+            <Button size="sm" onClick={() => setShowDemo(true)} className="bg-primary hover:bg-primary/90">
+              Try a Demo Lesson
             </Button>
           </div>
         </div>
@@ -128,11 +134,20 @@ export default function Landing() {
 
       {/* Hero */}
       <section className="pt-32 pb-20 px-4 sm:px-6 relative overflow-hidden">
-        {/* Background glow */}
         <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
         
         <div className="max-w-6xl mx-auto relative">
           <div className="text-center max-w-3xl mx-auto">
+            {/* Leo mascot */}
+            <motion.img
+              src={leoMascot}
+              alt="Leo — your AI learning companion"
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.6, type: "spring", damping: 15 }}
+              className="w-24 h-24 mx-auto mb-6 drop-shadow-xl"
+            />
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -174,25 +189,34 @@ export default function Landing() {
             >
               <Button
                 size="lg"
-                onClick={() => navigate("/auth")}
+                onClick={() => setShowDemo(true)}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-base rounded-2xl shadow-lg"
               >
-                Start Learning — Free
+                Try a Free Demo Lesson
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                onClick={() => {
-                  document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
-                }}
+                onClick={() => window.open(APP_STORE_URL, "_blank")}
                 className="px-8 py-6 text-base rounded-2xl"
               >
-                See how it works
+                <Download className="w-5 h-5 mr-2" />
+                Download the App
               </Button>
             </motion.div>
-          </div>
 
+            {/* Available on iOS badge */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="text-sm text-muted-foreground mt-4 flex items-center justify-center gap-1.5"
+            >
+              <Smartphone className="w-4 h-4" />
+              Available on iOS · Free to download
+            </motion.p>
+          </div>
         </div>
       </section>
 
@@ -258,6 +282,42 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Meet Leo section */}
+      <section className="py-20 px-4 sm:px-6 bg-gradient-to-b from-primary/5 to-transparent">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            className="flex flex-col md:flex-row items-center gap-10"
+          >
+            <motion.img
+              variants={fadeUp}
+              custom={0}
+              src={leoCelebrating}
+              alt="Leo celebrating"
+              className="w-40 h-40 md:w-52 md:h-52 drop-shadow-2xl flex-shrink-0"
+            />
+            <div>
+              <motion.h2 variants={fadeUp} custom={1} className="text-3xl sm:text-4xl font-bold mb-4">
+                Meet Leo, your AI companion
+              </motion.h2>
+              <motion.p variants={fadeUp} custom={2} className="text-muted-foreground text-lg mb-4">
+                Leo guides you through every lesson, celebrates your wins, and keeps you motivated with streaks and XP.
+                He's not just a mascot — he's your personal industry tutor.
+              </motion.p>
+              <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3">
+                {["Voice chat", "Quiz feedback", "Daily tips", "Streak reminders"].map((tag) => (
+                  <span key={tag} className="text-sm bg-primary/10 text-primary px-3 py-1.5 rounded-full font-medium">
+                    {tag}
+                  </span>
+                ))}
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Features */}
       <section id="features" className="py-24 px-4 sm:px-6 bg-secondary/20">
         <div className="max-w-6xl mx-auto">
@@ -297,8 +357,54 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* App Screenshots Preview */}
+      <section className="py-24 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            className="text-center mb-12"
+          >
+            <motion.h2 variants={fadeUp} custom={0} className="text-3xl sm:text-4xl font-bold mb-4">
+              See it in action
+            </motion.h2>
+            <motion.p variants={fadeUp} custom={1} className="text-muted-foreground text-lg max-w-xl mx-auto">
+              A premium mobile learning experience, designed for professionals.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide justify-center"
+          >
+            {[
+              { src: "/appstore/screenshot-1-home.png", label: "Daily lessons" },
+              { src: "/appstore/screenshot-2-trainer.png", label: "Trainer scenarios" },
+              { src: "/appstore/screenshot-3-roadmap.png", label: "Learning roadmap" },
+              { src: "/appstore/screenshot-4-news.png", label: "Industry news" },
+              { src: "/appstore/screenshot-5-progress.png", label: "Your progress" },
+            ].map((shot, i) => (
+              <motion.div
+                key={shot.label}
+                variants={fadeUp}
+                custom={i}
+                className="flex-shrink-0 snap-center"
+              >
+                <div className="w-48 sm:w-56 rounded-2xl overflow-hidden border border-border shadow-xl bg-card">
+                  <img src={shot.src} alt={shot.label} className="w-full aspect-[9/19.5] object-cover" />
+                </div>
+                <p className="text-sm text-muted-foreground text-center mt-3 font-medium">{shot.label}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
       {/* Markets */}
-      <section id="markets" className="py-24 px-4 sm:px-6">
+      <section id="markets" className="py-24 px-4 sm:px-6 bg-secondary/20">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial="hidden"
@@ -334,7 +440,6 @@ export default function Landing() {
           </motion.div>
         </div>
       </section>
-
 
       {/* Pricing */}
       <section id="pricing" className="py-24 px-4 sm:px-6">
@@ -385,9 +490,10 @@ export default function Landing() {
               <Button
                 variant="outline"
                 className="w-full rounded-xl py-5"
-                onClick={() => navigate("/auth")}
+                onClick={() => window.open(APP_STORE_URL, "_blank")}
               >
-                Get Started
+                <Download className="w-4 h-4 mr-2" />
+                Download Free
               </Button>
             </motion.div>
 
@@ -426,10 +532,12 @@ export default function Landing() {
               </ul>
               <Button
                 className="w-full rounded-xl py-5 bg-primary hover:bg-primary/90"
-                onClick={() => navigate("/auth")}
+                onClick={() => window.open(APP_STORE_URL, "_blank")}
               >
-                Start 7-Day Free Trial
+                <Download className="w-4 h-4 mr-2" />
+                Get Pro in the App
               </Button>
+              <p className="text-xs text-muted-foreground text-center mt-3">Subscribe via the App Store</p>
             </motion.div>
           </div>
         </div>
@@ -445,20 +553,32 @@ export default function Landing() {
           custom={0}
           className="max-w-3xl mx-auto text-center p-12 rounded-3xl bg-gradient-to-br from-primary/10 to-purple-500/10 border border-primary/20"
         >
+          <img src={leoMascot} alt="Leo" className="w-20 h-20 mx-auto mb-6 drop-shadow-lg" />
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
             Ready to become an industry insider?
           </h2>
           <p className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto">
-            Join thousands of professionals, students, and curious minds mastering new industries — 5 minutes at a time.
+            Join professionals, students, and curious minds mastering new industries — 5 minutes at a time.
           </p>
-          <Button
-            size="lg"
-            onClick={() => navigate("/auth")}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-base rounded-2xl shadow-lg"
-          >
-            Start Learning — It's Free
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button
+              size="lg"
+              onClick={() => setShowDemo(true)}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-base rounded-2xl shadow-lg"
+            >
+              Try a Demo Lesson
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => window.open(APP_STORE_URL, "_blank")}
+              className="px-8 py-6 text-base rounded-2xl"
+            >
+              <Download className="w-5 h-5 mr-2" />
+              Download on iOS
+            </Button>
+          </div>
         </motion.div>
       </section>
 
@@ -466,10 +586,8 @@ export default function Landing() {
       <footer className="py-12 px-4 sm:px-6 border-t border-border">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center">
-                <Rocket className="w-3.5 h-3.5 text-white" />
-              </div>
+            <div className="flex items-center gap-2.5">
+              <img src={appIcon} alt="MarketLingo" className="w-8 h-8 rounded-lg shadow-sm" />
               <span className="font-bold text-foreground">MarketLingo</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
@@ -480,6 +598,19 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+
+      {/* Demo Lesson Overlay */}
+      <AnimatePresence>
+        {showDemo && (
+          <DemoLesson
+            onSignUp={() => {
+              setShowDemo(false);
+              window.open(APP_STORE_URL, "_blank");
+            }}
+            onClose={() => setShowDemo(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

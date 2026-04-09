@@ -645,11 +645,14 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
               <div className="w-full max-w-sm space-y-3">
                 <Button variant="cta" size="full" onClick={onSignUp} className="text-base font-bold">
                   <Zap size={18} />
-                  Save Progress & Start for Free
+                  Download the App — Keep Learning
                 </Button>
                 <p className="text-caption text-text-muted">
-                  Free forever · No credit card · Choose any of 15 industries
+                  Available on iOS · Free to download
                 </p>
+                <button onClick={onClose} className="text-sm text-text-muted hover:text-text-secondary transition-colors block mx-auto mt-2">
+                  Back to website
+                </button>
               </div>
             </motion.div>
           )}
