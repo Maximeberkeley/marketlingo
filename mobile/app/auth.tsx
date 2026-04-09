@@ -16,10 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
-import { supabase } from '../lib/supabase';
 import { DemoLesson } from '../components/demo/DemoLesson';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri } from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DEMO_SEEN_KEY = 'ml_demo_seen';
@@ -46,38 +43,6 @@ export default function AuthScreen() {
     setDemoSeen(true);
   };
 
-  const handleGoogleAuth = async () => {
-    try {
-      const redirectUrl = makeRedirectUri({ scheme: 'marketlingo' });
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: redirectUrl },
-      });
-      if (data?.url) {
-        await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
-      }
-      if (error) Alert.alert('Error', error.message);
-    } catch (err: any) {
-      Alert.alert('Error', err.message || 'Google sign in failed');
-    }
-  };
-
-  const handleAppleAuth = async () => {
-    try {
-      const redirectUrl = makeRedirectUri({ scheme: 'marketlingo' });
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'apple',
-        options: { redirectTo: redirectUrl },
-      });
-      if (data?.url) {
-        await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
-      }
-      if (error) Alert.alert('Error', error.message);
-    } catch (err: any) {
-      Alert.alert('Error', err.message || 'Apple sign in failed');
-    }
-  };
-
   const handleSubmit = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert('Missing Fields', 'Please enter both email and password.');
@@ -92,6 +57,8 @@ export default function AuthScreen() {
 
       if (!result.success) {
         Alert.alert('Error', result.error || 'Something went wrong.');
+      } else if (mode === 'signup' && result.message) {
+        Alert.alert('Check your email', result.message);
       } else {
         router.replace('/(tabs)/home');
       }
@@ -126,7 +93,6 @@ export default function AuthScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Leo Graduation Mascot */}
         <View style={styles.leoSection}>
           <Image
             source={require('../assets/mascot/leo-reference.png')}
@@ -137,15 +103,12 @@ export default function AuthScreen() {
           <Text style={styles.tagline}>Master any industry in 6 months</Text>
         </View>
 
-        {/* Demo Lesson CTA — only show if not already done */}
         {!demoSeen && (
           <TouchableOpacity style={styles.demoBtn} onPress={handleStartDemo} activeOpacity={0.8}>
             <Text style={styles.demoBtnText}>Try a free lesson first →</Text>
           </TouchableOpacity>
         )}
 
-
-        {/* Form */}
         <View style={styles.form}>
           <Text style={styles.formTitle}>
             {mode === 'login' ? 'Welcome back' : 'Create account'}
@@ -191,26 +154,9 @@ export default function AuthScreen() {
             )}
           </TouchableOpacity>
 
-          {/* Divider */}
-          <View style={styles.dividerRow}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or continue with</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          {/* OAuth */}
-          <View style={styles.oauthRow}>
-            <TouchableOpacity style={styles.oauthButton} onPress={handleGoogleAuth}>
-              <Text style={styles.oauthEmoji}>G</Text>
-              <Text style={styles.oauthLabel}>Google</Text>
-            </TouchableOpacity>
-            {Platform.OS === 'ios' && (
-              <TouchableOpacity style={styles.oauthButton} onPress={handleAppleAuth}>
-                <Text style={styles.oauthEmoji}></Text>
-                <Text style={styles.oauthLabel}>Apple</Text>
-              </TouchableOpacity>
-            )}
-          </View>
+          <Text style={styles.helperText}>
+            Social sign-in has been removed from the mobile app until the native OAuth flow is fully configured.
+          </Text>
 
           <TouchableOpacity
             style={styles.switchMode}
@@ -249,20 +195,16 @@ const styles = StyleSheet.create({
     alignItems: 'center', marginTop: 8,
   },
   submitButtonText: { color: '#FFFFFF', fontWeight: '700', fontSize: 16 },
+  helperText: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: COLORS.textMuted,
+    textAlign: 'center',
+    marginTop: 16,
+  },
   switchMode: { alignItems: 'center', marginTop: 20 },
   switchText: { fontSize: 14, color: COLORS.textMuted },
   switchLink: { color: COLORS.accent, fontWeight: '600' },
-  dividerRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 20, gap: 12 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: COLORS.border },
-  dividerText: { fontSize: 12, color: COLORS.textMuted },
-  oauthRow: { flexDirection: 'row', gap: 12, marginBottom: 8 },
-  oauthButton: {
-    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    height: 50, backgroundColor: COLORS.bg2, borderRadius: 14,
-    borderWidth: 1, borderColor: COLORS.border,
-  },
-  oauthEmoji: { fontSize: 18, fontWeight: '700', color: COLORS.textPrimary },
-  oauthLabel: { fontSize: 14, fontWeight: '500', color: COLORS.textPrimary },
   demoBtn: {
     backgroundColor: 'rgba(139, 92, 246, 0.1)',
     borderWidth: 1,
