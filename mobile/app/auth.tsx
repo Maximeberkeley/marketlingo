@@ -96,7 +96,7 @@ export default function AuthScreen() {
           <Text style={styles.tagline}>Master any industry in 6 months</Text>
         </View>
 
-        {!demoSeen && (
+        {!showDemo && (
           <TouchableOpacity style={styles.demoBtn} onPress={handleStartDemo} activeOpacity={0.8}>
             <Text style={styles.demoBtnText}>Try a free lesson first →</Text>
           </TouchableOpacity>
