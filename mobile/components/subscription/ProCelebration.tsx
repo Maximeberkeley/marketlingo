@@ -83,7 +83,7 @@ interface ProCelebrationProps {
 
 export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationProps) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
+  
   const badgeScale = useRef(new Animated.Value(0)).current;
   const textOpacity = useRef(new Animated.Value(0)).current;
   const benefitsOpacity = useRef(new Animated.Value(0)).current;
@@ -95,12 +95,6 @@ export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationP
     Animated.sequence([
       Animated.spring(scaleAnim, { toValue: 1, tension: 40, friction: 6, useNativeDriver: true }),
       Animated.parallel([
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(glowAnim, { toValue: 1, duration: 1200, useNativeDriver: true }),
-            Animated.timing(glowAnim, { toValue: 0.3, duration: 1200, useNativeDriver: true }),
-          ])
-        ),
         Animated.spring(badgeScale, { toValue: 1, tension: 100, friction: 5, delay: 300, useNativeDriver: true }),
         Animated.timing(textOpacity, { toValue: 1, duration: 600, delay: 600, useNativeDriver: true }),
         Animated.timing(benefitsOpacity, { toValue: 1, duration: 800, delay: 1000, useNativeDriver: true }),
