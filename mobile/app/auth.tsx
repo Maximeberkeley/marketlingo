@@ -21,6 +21,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DEMO_SEEN_KEY = 'ml_demo_seen';
 
+function getDemoSeenKey(userId?: string) {
+  return userId ? `${DEMO_SEEN_KEY}_${userId}` : DEMO_SEEN_KEY;
+}
+
 export default function AuthScreen() {
   const insets = useSafeAreaInsets();
   const { signInWithEmail, signUpWithEmail } = useAuth();
@@ -30,17 +34,19 @@ export default function AuthScreen() {
   const [loading, setLoading] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
   const [demoSeen, setDemoSeen] = useState(false);
+  const [checkingDemo, setCheckingDemo] = useState(true);
 
+  // Always show demo for new users — the old device-level flag is ignored
+  // We only hide it per-user after they've seen it + signed up
   useEffect(() => {
-    AsyncStorage.getItem(DEMO_SEEN_KEY).then((val) => {
-      if (val === 'true') setDemoSeen(true);
-    });
+    setCheckingDemo(false);
+    // Demo is always available on auth screen for unauthenticated users
+    setDemoSeen(false);
   }, []);
 
   const handleStartDemo = () => {
     setShowDemo(true);
-    AsyncStorage.setItem(DEMO_SEEN_KEY, 'true');
-    setDemoSeen(true);
+    // Don't mark as seen until they actually complete it and sign up
   };
 
   const handleSubmit = async () => {
