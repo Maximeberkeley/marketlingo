@@ -311,11 +311,27 @@ export function useSubscription() {
 
   // ---------- Restore ----------
   const restorePurchases = useCallback(async (): Promise<RestoreResult> => {
-    if (isNative && revenueCatRef.current && rcReady) {
+    const rc = revenueCatRef.current;
+
+    // On native, attempt RevenueCat restore even if rcReady was false — 
+    // RC may have initialized since the last check
+    if (isNative && rc) {
       try {
-        const isConfigured = revenueCatRef.current.isConfigured?.() ?? false;
-        if (isConfigured) {
-          const customerInfo = await revenueCatRef.current.restorePurchases();
+        const isConfigured = rc.isConfigured?.() ?? false;
+        if (!isConfigured) {
+          // Try a late init
+          const apiKey = Platform.OS === 'ios'
+            ? process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY
+            : process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY;
+          if (apiKey) {
+            await rc.configure({ apiKey });
+            if (user?.id) await rc.logIn(user.id);
+          }
+        }
+
+        const configured = rc.isConfigured?.() ?? false;
+        if (configured) {
+          const customerInfo = await rc.restorePurchases();
           const isPro = customerInfo.entitlements?.active?.['MarketLingo Pro'] !== undefined;
 
           if (isPro && user) {
@@ -334,14 +350,14 @@ export function useSubscription() {
         }
       } catch (error: any) {
         console.error('Restore error:', error);
-        return { success: false, restored: false, error: error.message || 'Restore failed' };
+        return { success: false, restored: false, error: error.message || 'Restore failed. Please try again.' };
       }
     }
 
     // Web/testing fallback
     await fetchSubscriptionStatus();
     return { success: true, restored: isProUser, error: null };
-  }, [isNative, rcReady, user, fetchSubscriptionStatus, isProUser]);
+  }, [isNative, user, fetchSubscriptionStatus, isProUser]);
 
   // ---------- Testing toggle ----------
   const toggleProForTesting = useCallback(async () => {

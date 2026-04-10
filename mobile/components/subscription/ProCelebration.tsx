@@ -83,7 +83,7 @@ interface ProCelebrationProps {
 
 export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationProps) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
+  
   const badgeScale = useRef(new Animated.Value(0)).current;
   const textOpacity = useRef(new Animated.Value(0)).current;
   const benefitsOpacity = useRef(new Animated.Value(0)).current;
@@ -95,12 +95,6 @@ export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationP
     Animated.sequence([
       Animated.spring(scaleAnim, { toValue: 1, tension: 40, friction: 6, useNativeDriver: true }),
       Animated.parallel([
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(glowAnim, { toValue: 1, duration: 1200, useNativeDriver: true }),
-            Animated.timing(glowAnim, { toValue: 0.3, duration: 1200, useNativeDriver: true }),
-          ])
-        ),
         Animated.spring(badgeScale, { toValue: 1, tension: 100, friction: 5, delay: 300, useNativeDriver: true }),
         Animated.timing(textOpacity, { toValue: 1, duration: 600, delay: 600, useNativeDriver: true }),
         Animated.timing(benefitsOpacity, { toValue: 1, duration: 800, delay: 1000, useNativeDriver: true }),
@@ -126,19 +120,6 @@ export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationP
     <Modal transparent animationType="fade" visible={visible}>
       <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onDismiss}>
         <View style={StyleSheet.absoluteFill} pointerEvents="none">{confettiPieces}</View>
-
-        <Animated.View
-          pointerEvents="none"
-          style={[
-            styles.glowRing,
-            {
-              opacity: glowAnim,
-              transform: [
-                { scale: glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0.8, 1.3] }) },
-              ],
-            },
-          ]}
-        />
 
         <ScrollView
           contentContainerStyle={styles.scrollContent}
@@ -200,25 +181,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 40,
-  },
-  glowRing: {
-    position: 'absolute',
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: 'transparent',
-    borderWidth: 3,
-    borderColor: '#8B5CF6',
-    shadowColor: '#8B5CF6',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 40,
-    alignSelf: 'center',
-    top: '50%',
-    left: '50%',
-    marginLeft: -150,
-    marginTop: -150,
-    pointerEvents: 'none',
   },
   content: {
     alignItems: 'center',
