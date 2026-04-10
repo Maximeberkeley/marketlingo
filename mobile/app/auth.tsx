@@ -19,7 +19,6 @@ import { useAuth } from '../hooks/useAuth';
 import { DemoLesson } from '../components/demo/DemoLesson';
 
 const DEMO_SEEN_KEY = 'ml_demo_seen';
-}
 
 export default function AuthScreen() {
   const insets = useSafeAreaInsets();
