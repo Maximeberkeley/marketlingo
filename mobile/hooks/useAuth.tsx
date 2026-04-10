@@ -37,9 +37,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     // Then check for existing session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
+    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
       if (!mounted) return;
-      if (error) console.error('Error checking session:', error);
+      if (error) {
+        console.error('Error checking session:', error);
+        // If user no longer exists (deleted account), clear stale session
+        if (error.message?.includes('user_not_found') || error.code === 'user_not_found') {
+          console.warn('[Auth] Stale session detected (user deleted), signing out');
+          await supabase.auth.signOut();
+          await storage.clearAll();
+          setSession(null);
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+      }
+      // Also validate session by checking if user endpoint works
+      if (session) {
+        const { error: userError } = await supabase.auth.getUser();
+        if (userError) {
+          console.warn('[Auth] Session invalid, clearing:', userError.message);
+          await supabase.auth.signOut();
+          await storage.clearAll();
+          setSession(null);
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+      }
       setSession(session ?? null);
       setUser(session?.user ?? null);
       setLoading(false);
