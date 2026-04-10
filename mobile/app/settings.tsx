@@ -258,22 +258,34 @@ export default function SettingsScreen() {
                         Alert.alert('Error', 'You must be signed in to delete your account.');
                         return;
                       }
-                      const edgeUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-                      const response = await fetch(`${edgeUrl}/functions/v1/delete-account`, {
+                      const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+                      const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
+                      
+                      if (!supabaseUrl) {
+                        Alert.alert('Error', 'Configuration error. Please reinstall the app.');
+                        return;
+                      }
+
+                      const response = await fetch(`${supabaseUrl}/functions/v1/delete-account`, {
                         method: 'POST',
                         headers: {
                           'Authorization': `Bearer ${session.access_token}`,
                           'Content-Type': 'application/json',
-                          'apikey': process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '',
+                          'apikey': anonKey,
                         },
+                        body: JSON.stringify({}),
                       });
-                      if (!response.ok) {
-                        const body = await response.json().catch(() => ({}));
-                        throw new Error(body.error || 'Failed to delete account');
+                      
+                      const result = await response.json().catch(() => null);
+                      
+                      if (!response.ok || (result && !result.success)) {
+                        throw new Error(result?.error || `Server error (${response.status})`);
                       }
+                      
                       await signOut();
                       router.replace('/auth');
                     } catch (err: any) {
+                      console.error('Delete account error:', err);
                       Alert.alert('Error', err.message || 'Failed to delete account. Please try again.');
                     }
                   },

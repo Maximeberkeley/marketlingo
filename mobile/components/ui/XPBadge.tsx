@@ -9,35 +9,37 @@ interface XPBadgeProps {
 }
 
 export function XPBadge({ xp, level, showLevel = false }: XPBadgeProps) {
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
   const boltRotate = useRef(new Animated.Value(0)).current;
-  const countAnim = useRef(new Animated.Value(0)).current;
-  const [displayXP, setDisplayXP] = useState(0);
+  const prevXP = useRef(xp);
+  const [displayXP, setDisplayXP] = useState(xp);
+  const countAnim = useRef(new Animated.Value(xp)).current;
 
   useEffect(() => {
-    // Pop-in
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      friction: 5,
-      tension: 300,
-      useNativeDriver: true,
-    }).start();
+    const from = prevXP.current;
+    prevXP.current = xp;
+
+    // Skip animation if same value or first render
+    if (from === xp) return;
+
+    // Quick bounce
+    Animated.sequence([
+      Animated.timing(scaleAnim, { toValue: 1.15, duration: 100, useNativeDriver: true }),
+      Animated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 300, useNativeDriver: true }),
+    ]).start();
 
     // Bolt wiggle
     Animated.sequence([
-      Animated.delay(200),
-      Animated.timing(boltRotate, { toValue: 1, duration: 150, useNativeDriver: true }),
-      Animated.timing(boltRotate, { toValue: -1, duration: 150, useNativeDriver: true }),
-      Animated.timing(boltRotate, { toValue: 0, duration: 100, useNativeDriver: true }),
+      Animated.timing(boltRotate, { toValue: 1, duration: 100, useNativeDriver: true }),
+      Animated.timing(boltRotate, { toValue: -1, duration: 100, useNativeDriver: true }),
+      Animated.timing(boltRotate, { toValue: 0, duration: 80, useNativeDriver: true }),
     ]).start();
-  }, [xp]);
 
-  // Animated counter
-  useEffect(() => {
-    countAnim.setValue(0);
+    // Count from previous to new — fast
+    countAnim.setValue(from);
     Animated.timing(countAnim, {
       toValue: xp,
-      duration: 600,
+      duration: Math.min(400, Math.abs(xp - from) * 2),
       easing: Easing.out(Easing.cubic),
       useNativeDriver: false,
     }).start();
@@ -61,7 +63,6 @@ export function XPBadge({ xp, level, showLevel = false }: XPBadgeProps) {
     </Animated.View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
