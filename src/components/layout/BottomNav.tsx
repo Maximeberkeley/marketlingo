@@ -45,14 +45,6 @@ export function BottomNav() {
                   "transition-colors duration-150"
                 )}
               >
-                {/* Active indicator dot */}
-                {isActive && (
-                  <motion.div
-                    layoutId="nav-indicator"
-                    className="absolute -top-0.5 w-5 h-0.5 rounded-full bg-primary"
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                )}
 
                 <motion.div 
                   className="relative flex items-center justify-center"
