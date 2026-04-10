@@ -269,6 +269,9 @@ export default function Settings() {
               <LogOut size={18} />
               <span className="font-medium">Sign Out</span>
             </button>
+
+            {/* Delete Account */}
+            <DeleteAccountButton />
           </motion.div>
         );
     }
