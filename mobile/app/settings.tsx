@@ -210,26 +210,33 @@ export default function SettingsScreen() {
   };
 
 
-  const handleResetPassword = async () => {
-
-    if (!user?.email) return;
-    Alert.alert(
-      'Reset Password',
-      `Send a password reset email to ${user.email}?`,
+  const handleChangePassword = () => {
+    let currentPassword = '';
+    let newPassword = '';
+    
+    Alert.prompt(
+      'Change Password',
+      'Enter your new password (min 6 characters):',
       [
         { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Send',
-          onPress: async () => {
-            const { success, error } = await resetPassword(user.email!);
-            if (success) {
-              Alert.alert('Sent', 'Check your email for the reset link.');
-            } else {
-              Alert.alert('Error', error || 'Failed to send reset email.');
+          text: 'Update',
+          onPress: async (pwd) => {
+            if (!pwd || pwd.length < 6) {
+              Alert.alert('Error', 'Password must be at least 6 characters.');
+              return;
+            }
+            try {
+              const { error } = await supabase.auth.updateUser({ password: pwd });
+              if (error) throw error;
+              Alert.alert('Success', 'Your password has been updated.');
+            } catch (err: any) {
+              Alert.alert('Error', err.message || 'Failed to update password.');
             }
           },
         },
-      ]
+      ],
+      'secure-text'
     );
   };
 
