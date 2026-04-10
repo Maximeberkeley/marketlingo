@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, User, Bell, Info, LogOut, ChevronRight, Shield, Rocket, Wrench, Crown, Sparkles, Moon, Sun } from "lucide-react";
+import { DeleteAccountButton } from "@/components/settings/DeleteAccountButton";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { useAuth } from "@/hooks/useAuth";
