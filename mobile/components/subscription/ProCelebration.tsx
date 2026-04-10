@@ -127,19 +127,6 @@ export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationP
       <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onDismiss}>
         <View style={StyleSheet.absoluteFill} pointerEvents="none">{confettiPieces}</View>
 
-        <Animated.View
-          pointerEvents="none"
-          style={[
-            styles.glowRing,
-            {
-              opacity: glowAnim,
-              transform: [
-                { scale: glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0.8, 1.3] }) },
-              ],
-            },
-          ]}
-        />
-
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
