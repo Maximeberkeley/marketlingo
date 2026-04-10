@@ -258,8 +258,19 @@ export default function SettingsScreen() {
                         Alert.alert('Error', 'You must be signed in to delete your account.');
                         return;
                       }
-                      const { data, error } = await supabase.functions.invoke('delete-account');
-                      if (error) throw error;
+                      const edgeUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+                      const response = await fetch(`${edgeUrl}/functions/v1/delete-account`, {
+                        method: 'POST',
+                        headers: {
+                          'Authorization': `Bearer ${session.access_token}`,
+                          'Content-Type': 'application/json',
+                          'apikey': process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '',
+                        },
+                      });
+                      if (!response.ok) {
+                        const body = await response.json().catch(() => ({}));
+                        throw new Error(body.error || 'Failed to delete account');
+                      }
                       await signOut();
                       router.replace('/auth');
                     } catch (err: any) {
