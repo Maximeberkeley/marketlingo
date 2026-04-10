@@ -39,6 +39,33 @@ Deno.serve(async (req) => {
     // Use service role to delete user data and auth account
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
+    // Revoke RevenueCat subscription before deleting
+    const rcSecretKey = Deno.env.get("REVENUECAT_SECRET_KEY");
+    if (rcSecretKey) {
+      try {
+        // Delete the subscriber from RevenueCat (revokes all entitlements)
+        const rcResponse = await fetch(
+          `https://api.revenuecat.com/v1/subscribers/${user.id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Authorization": `Bearer ${rcSecretKey}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!rcResponse.ok) {
+          const rcErr = await rcResponse.text();
+          console.warn("RevenueCat subscriber deletion warning:", rcErr);
+          // Don't block account deletion if RC fails
+        } else {
+          console.log("RevenueCat subscriber deleted for user:", user.id);
+        }
+      } catch (rcError) {
+        console.warn("RevenueCat API error (non-blocking):", rcError);
+      }
+    }
+
     // Delete user's data from all tables (cascade will handle some, but be thorough)
     const tables = [
       'user_progress', 'user_xp', 'xp_transactions', 'daily_completions',
