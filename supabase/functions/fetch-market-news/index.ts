@@ -17,66 +17,150 @@ interface NewsItem {
   imageUrl: string | null;
 }
 
-// Market-specific search configurations
+// Market-specific search configurations — expanded sources
 const marketSearchConfig: Record<string, { queries: string[]; categories: string[] }> = {
   aerospace: {
-    queries: ['site:aviationweek.com aerospace', 'site:spacenews.com', 'site:flightglobal.com aviation'],
+    queries: [
+      'site:aviationweek.com aerospace',
+      'site:spacenews.com',
+      'site:flightglobal.com aviation',
+      'site:defensenews.com aerospace defense',
+      'aerospace industry news latest deals',
+    ],
     categories: ['Space', 'Aviation', 'Defense', 'Deals', 'Innovation'],
   },
   ai: {
-    queries: ['site:techcrunch.com artificial intelligence', 'site:wired.com AI machine learning', 'site:venturebeat.com AI'],
+    queries: [
+      'site:techcrunch.com artificial intelligence',
+      'site:wired.com AI machine learning',
+      'site:venturebeat.com AI',
+      'site:theverge.com artificial intelligence',
+      'AI startup funding latest news',
+    ],
     categories: ['Models', 'Hardware', 'Research', 'Startups', 'Enterprise'],
   },
   biotech: {
-    queries: ['site:fiercebiotech.com', 'site:biopharmadive.com', 'site:statnews.com biotech'],
+    queries: [
+      'site:fiercebiotech.com',
+      'site:biopharmadive.com',
+      'site:statnews.com biotech',
+      'site:endpoints.news biotech',
+      'biotech FDA approval clinical trial news',
+    ],
     categories: ['Clinical', 'FDA', 'Deals', 'Research', 'IPO'],
   },
   cleanenergy: {
-    queries: ['site:renewableenergyworld.com', 'site:utilitydive.com clean energy', 'site:greentechmedia.com'],
+    queries: [
+      'site:renewableenergyworld.com',
+      'site:utilitydive.com clean energy',
+      'site:canarymedia.com clean energy',
+      'clean energy solar wind investment news',
+    ],
     categories: ['Solar', 'Wind', 'Storage', 'Grid', 'Policy'],
   },
   climatetech: {
-    queries: ['site:canarymedia.com', 'site:greenbiz.com climate', 'site:climatechangenews.com'],
+    queries: [
+      'site:canarymedia.com',
+      'site:greenbiz.com climate',
+      'site:climatechangenews.com',
+      'climate tech startup carbon capture news',
+    ],
     categories: ['Carbon', 'Policy', 'Investment', 'Tech', 'Impact'],
   },
   cybersecurity: {
-    queries: ['site:darkreading.com', 'site:bleepingcomputer.com', 'site:therecord.media cybersecurity'],
+    queries: [
+      'site:darkreading.com',
+      'site:bleepingcomputer.com',
+      'site:therecord.media cybersecurity',
+      'site:securityweek.com',
+      'cybersecurity breach enterprise latest news',
+    ],
     categories: ['Threats', 'Defense', 'Enterprise', 'Breach', 'Policy'],
   },
   ev: {
-    queries: ['site:electrek.co', 'site:insideevs.com', 'site:chargedevs.com'],
+    queries: [
+      'site:electrek.co',
+      'site:insideevs.com',
+      'site:chargedevs.com',
+      'site:theverge.com electric vehicle',
+      'electric vehicle EV battery charging news',
+    ],
     categories: ['Vehicles', 'Charging', 'Battery', 'Policy', 'Deals'],
   },
   fintech: {
-    queries: ['site:fintechfutures.com', 'site:pymnts.com fintech', 'site:finextra.com'],
+    queries: [
+      'site:fintechfutures.com',
+      'site:pymnts.com fintech',
+      'site:finextra.com',
+      'site:tearsheet.co fintech',
+      'fintech payments banking startup news',
+    ],
     categories: ['Payments', 'Banking', 'Crypto', 'Lending', 'Deals'],
   },
   healthtech: {
-    queries: ['site:mobihealthnews.com', 'site:healthcareitnews.com', 'site:fiercehealthcare.com digital health'],
+    queries: [
+      'site:mobihealthnews.com',
+      'site:healthcareitnews.com',
+      'site:fiercehealthcare.com digital health',
+      'site:statnews.com digital health',
+      'healthtech telehealth AI medical device news',
+    ],
     categories: ['Telehealth', 'AI', 'Devices', 'FDA', 'Deals'],
   },
   logistics: {
-    queries: ['site:freightwaves.com', 'site:supplychaindive.com', 'site:dcvelocity.com logistics'],
+    queries: [
+      'site:freightwaves.com',
+      'site:supplychaindive.com',
+      'site:dcvelocity.com logistics',
+      'supply chain logistics automation robotics news',
+    ],
     categories: ['Shipping', 'Last-Mile', 'Automation', 'Supply Chain', 'Tech'],
   },
   neuroscience: {
-    queries: ['site:neuroscientistnews.com', 'site:neurosciencenews.com', 'site:statnews.com brain'],
+    queries: [
+      'site:neurosciencenews.com',
+      'site:statnews.com brain neuroscience',
+      'site:nature.com neuroscience',
+      'neuroscience brain-computer interface BCI therapeutics news',
+    ],
     categories: ['BCI', 'Research', 'FDA', 'Therapeutics', 'Devices'],
   },
   robotics: {
-    queries: ['site:therobotreport.com', 'site:roboticsandautomationnews.com', 'site:automationworld.com robots'],
+    queries: [
+      'site:therobotreport.com',
+      'site:roboticsandautomationnews.com',
+      'site:automationworld.com robots',
+      'robotics humanoid industrial automation startup news',
+    ],
     categories: ['Industrial', 'Service', 'AI', 'Humanoid', 'Deals'],
   },
   spacetech: {
-    queries: ['site:spacenews.com', 'site:arstechnica.com space', 'site:nasaspaceflight.com'],
+    queries: [
+      'site:spacenews.com',
+      'site:arstechnica.com space',
+      'site:nasaspaceflight.com',
+      'site:spacepolicyonline.com',
+      'space technology satellite launch commercial news',
+    ],
     categories: ['Launch', 'Satellites', 'Exploration', 'Commercial', 'Policy'],
   },
   agtech: {
-    queries: ['site:agfundernews.com', 'site:agweb.com technology', 'site:precisionag.com'],
+    queries: [
+      'site:agfundernews.com',
+      'site:agweb.com technology',
+      'site:precisionag.com',
+      'agtech precision agriculture robotics startup news',
+    ],
     categories: ['Precision', 'Biotech', 'Climate', 'Robotics', 'Deals'],
   },
   web3: {
-    queries: ['site:theblock.co', 'site:coindesk.com', 'site:decrypt.co blockchain'],
+    queries: [
+      'site:theblock.co',
+      'site:coindesk.com',
+      'site:decrypt.co blockchain',
+      'site:dlnews.com web3',
+      'web3 blockchain DeFi regulation startup news',
+    ],
     categories: ['DeFi', 'NFT', 'Layer2', 'Regulation', 'Deals'],
   },
 };
@@ -84,10 +168,9 @@ const marketSearchConfig: Record<string, { queries: string[]; categories: string
 function getCategoryFromContent(title: string, content: string, marketId: string): string {
   const combined = (title + ' ' + content).toLowerCase();
   const config = marketSearchConfig[marketId];
-  
+
   if (!config) return 'Industry';
-  
-  // Market-specific category detection
+
   if (marketId === 'aerospace') {
     if (combined.includes('spacex') || combined.includes('rocket') || combined.includes('launch')) return 'Space';
     if (combined.includes('boeing') || combined.includes('airbus') || combined.includes('airline')) return 'Aviation';
@@ -101,13 +184,23 @@ function getCategoryFromContent(title: string, content: string, marketId: string
     if (combined.includes('trial') || combined.includes('phase')) return 'Clinical';
     if (combined.includes('acquisition') || combined.includes('deal')) return 'Deals';
   }
-  
-  // Generic category detection
+
   if (combined.includes('funding') || combined.includes('raises') || combined.includes('investment')) return 'Deals';
   if (combined.includes('launch') || combined.includes('announces') || combined.includes('unveils')) return 'Launch';
   if (combined.includes('research') || combined.includes('study') || combined.includes('discovery')) return 'Research';
-  
+
   return config.categories[0] || 'Industry';
+}
+
+// Determine impact level based on content signals
+function getImpactLevel(title: string, summary: string): 'high' | 'medium' | 'low' {
+  const text = (title + ' ' + summary).toLowerCase();
+  const highSignals = ['billion', 'acquisition', 'merger', 'ipo', 'fda approval', 'breakthrough', 'banned', 'regulation', 'crisis', 'record'];
+  const mediumSignals = ['million', 'partnership', 'launch', 'raises', 'new', 'first', 'major', 'expands'];
+  
+  if (highSignals.some(s => text.includes(s))) return 'high';
+  if (mediumSignals.some(s => text.includes(s))) return 'medium';
+  return 'low';
 }
 
 Deno.serve(async (req) => {
@@ -121,7 +214,7 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { marketId } = await req.json();
-    
+
     if (!marketId) {
       return new Response(
         JSON.stringify({ success: false, error: 'marketId is required' }),
@@ -131,9 +224,8 @@ Deno.serve(async (req) => {
 
     const firecrawlKey = Deno.env.get('FIRECRAWL_API_KEY');
     const lovableKey = Deno.env.get('LOVABLE_API_KEY');
-    
+
     if (!firecrawlKey) {
-      console.error('FIRECRAWL_API_KEY not configured');
       return new Response(
         JSON.stringify({ success: false, error: 'Firecrawl connector not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -142,18 +234,17 @@ Deno.serve(async (req) => {
 
     const config = marketSearchConfig[marketId];
     if (!config) {
-      console.log(`No config for market: ${marketId}, using generic search`);
       return new Response(
         JSON.stringify({ success: false, error: `No search configuration for market: ${marketId}` }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log(`Fetching news for market: ${marketId}`);
+    console.log(`Fetching news for market: ${marketId} (${config.queries.length} queries)`);
 
     const allResults: any[] = [];
 
-    // Fetch from each configured source
+    // Fetch from each configured source — increased limit per query
     for (const query of config.queries) {
       try {
         const response = await fetch('https://api.firecrawl.dev/v1/search', {
@@ -164,8 +255,8 @@ Deno.serve(async (req) => {
           },
           body: JSON.stringify({
             query,
-            limit: 3,
-            tbs: 'qdr:d', // Last 24 hours
+            limit: 5,
+            tbs: 'qdr:d',
             scrapeOptions: { formats: ['markdown', 'html'] },
           }),
         });
@@ -192,15 +283,15 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Transform to news items
-    const newsItems: NewsItem[] = processedResults.slice(0, 10).map((item, index) => {
+    // Transform to news items — increased from 10 to 15
+    const newsItems: (NewsItem & { impact: string })[] = processedResults.slice(0, 15).map((item, index) => {
       let sourceName = 'News';
       try {
         const url = new URL(item.url);
         const hostname = url.hostname.replace('www.', '');
         sourceName = hostname.split('.')[0];
         sourceName = sourceName.charAt(0).toUpperCase() + sourceName.slice(1);
-      } catch (e) { /* keep default */ }
+      } catch { /* keep default */ }
 
       const categoryTag = getCategoryFromContent(item.title || '', item.markdown || '', marketId);
 
@@ -214,10 +305,8 @@ Deno.serve(async (req) => {
         summary = summary.substring(0, 200) + '...';
       }
 
-      // Extract image URL from metadata or HTML og:image
+      // Extract image URL
       let imageUrl: string | null = null;
-      
-      // Check metadata fields (varies by Firecrawl response)
       if (item.metadata?.ogImage) {
         imageUrl = item.metadata.ogImage;
       } else if (item.metadata?.image) {
@@ -225,32 +314,27 @@ Deno.serve(async (req) => {
       } else if (item.metadata?.['og:image']) {
         imageUrl = item.metadata['og:image'];
       }
-      
-      // Parse og:image from HTML content if available
+
       if (!imageUrl && item.html) {
         const ogMatch = item.html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
           || item.html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
-        if (ogMatch?.[1]) {
-          imageUrl = ogMatch[1];
-        }
+        if (ogMatch?.[1]) imageUrl = ogMatch[1];
       }
-      
-      // Fallback: twitter:image from HTML
+
       if (!imageUrl && item.html) {
         const twMatch = item.html.match(/<meta[^>]+(?:name|property)=["']twitter:image["'][^>]+content=["']([^"']+)["']/i)
           || item.html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:name|property)=["']twitter:image["']/i);
-        if (twMatch?.[1]) {
-          imageUrl = twMatch[1];
-        }
+        if (twMatch?.[1]) imageUrl = twMatch[1];
       }
 
-      // Fallback: extract first large image from markdown (skip icons/logos/avatars/favicons)
       if (!imageUrl && item.markdown) {
         const imgMatch = item.markdown.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/);
         if (imgMatch?.[1] && !imgMatch[1].match(/icon|logo|avatar|favicon|badge|sprite|pixel|1x1|tracking/i)) {
           imageUrl = imgMatch[1];
         }
       }
+
+      const impact = getImpactLevel(item.title || '', summary);
 
       return {
         id: `news-${marketId}-${index}`,
@@ -262,6 +346,7 @@ Deno.serve(async (req) => {
         summary,
         marketId,
         imageUrl,
+        impact,
       };
     });
 
@@ -331,7 +416,6 @@ Respond with a JSON array of insight strings only.`;
         published_at: new Date().toISOString(),
       }));
 
-      // Delete old news for this market (keep fresh)
       await supabase.from('news_items').delete().eq('market_id', marketId);
       const { error: insertError } = await supabase.from('news_items').insert(dbRows);
       if (insertError) {
