@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -18,8 +18,6 @@ import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { DemoLesson } from '../components/demo/DemoLesson';
 
-const DEMO_SEEN_KEY = 'ml_demo_seen';
-
 export default function AuthScreen() {
   const insets = useSafeAreaInsets();
   const { signInWithEmail, signUpWithEmail } = useAuth();
@@ -28,16 +26,6 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
-  const [demoSeen, setDemoSeen] = useState(false);
-  const [checkingDemo, setCheckingDemo] = useState(true);
-
-  // Always show demo for new users — the old device-level flag is ignored
-  // We only hide it per-user after they've seen it + signed up
-  useEffect(() => {
-    setCheckingDemo(false);
-    // Demo is always available on auth screen for unauthenticated users
-    setDemoSeen(false);
-  }, []);
 
   const handleStartDemo = () => {
     setShowDemo(true);
