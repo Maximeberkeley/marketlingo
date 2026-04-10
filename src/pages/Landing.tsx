@@ -382,10 +382,10 @@ export default function Landing() {
           >
             {[
               { src: "/appstore/screenshot-1-home.png", label: "Daily lessons" },
-              { src: "/appstore/screenshot-2-trainer.png", label: "Trainer scenarios" },
-              { src: "/appstore/screenshot-3-roadmap.png", label: "Learning roadmap" },
-              { src: "/appstore/screenshot-4-news.png", label: "Industry news" },
-              { src: "/appstore/screenshot-5-progress.png", label: "Your progress" },
+              { src: "/appstore/screenshot-2-trainer.png", label: "Practice & Labs" },
+              { src: "/appstore/screenshot-3-roadmap.png", label: "Interview Lab" },
+              { src: "/appstore/screenshot-4-news.png", label: "Industry Intel" },
+              { src: "/appstore/screenshot-5-progress.png", label: "Notebook" },
             ].map((shot, i) => (
               <motion.div
                 key={shot.label}
