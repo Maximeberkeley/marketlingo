@@ -65,8 +65,12 @@ export default function AuthScreen() {
         Alert.alert('Error', result.error || 'Something went wrong.');
       } else if (mode === 'signup' && result.message) {
         Alert.alert('Check your email', result.message);
+      } else if (mode === 'signup') {
+        // New signups go through onboarding
+        router.replace('/onboarding' as any);
       } else {
-        router.replace('/(tabs)/home');
+        // Existing users go to index which handles routing
+        router.replace('/');
       }
     } catch (err: any) {
       Alert.alert('Error', err.message || 'Something went wrong.');
