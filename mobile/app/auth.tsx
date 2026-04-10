@@ -17,12 +17,8 @@ import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { DemoLesson } from '../components/demo/DemoLesson';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DEMO_SEEN_KEY = 'ml_demo_seen';
-
-function getDemoSeenKey(userId?: string) {
-  return userId ? `${DEMO_SEEN_KEY}_${userId}` : DEMO_SEEN_KEY;
 }
 
 export default function AuthScreen() {
