@@ -39,7 +39,7 @@ function TabBarIcon({ name, focused }: { name: string; focused: boolean }) {
           color={focused ? COLORS.textPrimary : COLORS.textMuted}
         />
       </Animated.View>
-      {focused && <View style={styles.activeIndicator} />}
+      
     </View>
   );
 }
@@ -124,13 +124,5 @@ const styles = StyleSheet.create({
     height: 28,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  activeIndicator: {
-    position: 'absolute',
-    bottom: -6,
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    backgroundColor: COLORS.accent,
   },
 });
