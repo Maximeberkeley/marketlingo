@@ -113,7 +113,7 @@ export default function Landing() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <img src={appIcon} alt="MarketLingo" className="w-9 h-9 rounded-xl shadow-sm" />
+            <img src={appIcon} alt="MarketLingo" className="w-9 h-9 rounded-[22%] shadow-sm" />
             <span className="font-bold text-lg tracking-tight text-foreground">MarketLingo</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground ml-8">
@@ -587,7 +587,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2.5">
-              <img src={appIcon} alt="MarketLingo" className="w-8 h-8 rounded-lg shadow-sm" />
+              <img src={appIcon} alt="MarketLingo" className="w-8 h-8 rounded-[22%] shadow-sm" />
               <span className="font-bold text-foreground">MarketLingo</span>
             </div>
             <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-muted-foreground">
