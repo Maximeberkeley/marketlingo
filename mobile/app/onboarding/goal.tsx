@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
+import { storage } from '../../lib/storage';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { getMarketName } from '../../lib/markets';
 import { StickyBottomCTA } from '../../components/StickyBottomCTA';
