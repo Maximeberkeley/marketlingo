@@ -81,6 +81,98 @@ const GRADIENT_SETS = [
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const FEATURED_CARD_WIDTH = SCREEN_WIDTH * 0.75;
 
+type NewsQuizQuestion = {
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+};
+
+function buildFallbackQuiz(article: NewsItem): NewsQuizQuestion[] {
+  return [
+    {
+      question: `What is the clearest takeaway from "${article.title}"?`,
+      options: [
+        'It highlights a meaningful new development in the industry.',
+        'It is mostly unrelated background noise.',
+        'It only covers consumer entertainment trends.',
+        'It is purely a historical recap with no current relevance.',
+      ],
+      correctIndex: 0,
+      explanation: 'The article was surfaced because it points to a relevant development professionals should pay attention to.',
+    },
+    {
+      question: `Why could this story matter for people following the ${article.categoryTag || 'industry'} space?`,
+      options: [
+        'It can influence how people interpret market direction and competitive moves.',
+        'It has no practical impact beyond trivia.',
+        'It only matters to people outside the industry.',
+        'It is important only because of the headline wording.',
+      ],
+      correctIndex: 0,
+      explanation: 'Good news analysis connects the article to broader market direction, execution, or strategic implications.',
+    },
+  ];
+}
+
+function normalizeQuizQuestions(payload: unknown): NewsQuizQuestion[] | null {
+  const questionList = Array.isArray(payload)
+    ? payload
+    : payload && typeof payload === 'object' && Array.isArray((payload as { questions?: unknown[] }).questions)
+      ? (payload as { questions: unknown[] }).questions
+      : null;
+
+  if (!questionList) return null;
+
+  const normalized = questionList
+    .map((item) => {
+      if (!item || typeof item !== 'object') return null;
+
+      const candidate = item as {
+        question?: unknown;
+        options?: unknown;
+        correctIndex?: unknown;
+        explanation?: unknown;
+      };
+
+      const question = typeof candidate.question === 'string' ? candidate.question.trim() : '';
+      const options = Array.isArray(candidate.options)
+        ? candidate.options.filter((option): option is string => typeof option === 'string' && option.trim().length > 0).slice(0, 4)
+        : [];
+      const explanation = typeof candidate.explanation === 'string' && candidate.explanation.trim().length > 0
+        ? candidate.explanation.trim()
+        : 'Review the article again to reinforce the main takeaway.';
+      const rawCorrectIndex = typeof candidate.correctIndex === 'number'
+        ? candidate.correctIndex
+        : Number(candidate.correctIndex);
+
+      if (!question || options.length < 2) return null;
+
+      return {
+        question,
+        options,
+        correctIndex: Number.isInteger(rawCorrectIndex) && rawCorrectIndex >= 0 && rawCorrectIndex < options.length ? rawCorrectIndex : 0,
+        explanation,
+      };
+    })
+    .filter((item): item is NewsQuizQuestion => item !== null)
+    .slice(0, 2);
+
+  return normalized.length > 0 ? normalized : null;
+}
+
+function extractQuizResponseText(data: any) {
+  const rawContent =
+    data?.message ||
+    data?.reply ||
+    data?.response ||
+    data?.content ||
+    data?.choices?.[0]?.message?.content ||
+    '';
+
+  return typeof rawContent === 'string' ? rawContent.trim() : '';
+}
+
 // ── Impact dot helper ──
 function getImpactFromContent(title: string, summary?: string): 'high' | 'medium' | 'low' {
   const text = (title + ' ' + (summary || '')).toLowerCase();
@@ -291,7 +383,7 @@ function QuizModal({
   marketId: string;
   onClose: () => void;
 }) {
-  const [questions, setQuestions] = useState<{ question: string; options: string[]; correctIndex: number; explanation: string }[]>([]);
+  const [questions, setQuestions] = useState<NewsQuizQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentQ, setCurrentQ] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -336,26 +428,28 @@ No other text, just the JSON array.`,
       });
 
       if (error) throw error;
-      const content = data?.reply || data?.choices?.[0]?.message?.content || '';
-      const jsonMatch = content.match(/\[[\s\S]*\]/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        setQuestions(parsed);
+      const content = extractQuizResponseText(data);
+      const cleanedContent = content
+        .replace(/^```json\s*/i, '')
+        .replace(/^```\s*/i, '')
+        .replace(/\s*```$/i, '')
+        .trim();
+      const jsonCandidate = cleanedContent.match(/\[[\s\S]*\]/)?.[0] || cleanedContent;
+
+      let parsedQuestions: NewsQuizQuestion[] | null = null;
+
+      if (jsonCandidate) {
+        try {
+          parsedQuestions = normalizeQuizQuestions(JSON.parse(jsonCandidate));
+        } catch (parseError) {
+          console.warn('Failed to parse news quiz response:', parseError);
+        }
       }
-    } catch {
-      setQuestions([
-        {
-          question: `What is the main topic of the article "${article.title}"?`,
-          options: [
-            'A new development in the industry',
-            'A regulatory change',
-            'A financial event',
-            'A technological breakthrough',
-          ],
-          correctIndex: 0,
-          explanation: 'This question tests basic comprehension of the article.',
-        },
-      ]);
+
+      setQuestions(parsedQuestions || buildFallbackQuiz(article));
+    } catch (quizError) {
+      console.warn('Failed to generate news quiz:', quizError);
+      setQuestions(buildFallbackQuiz(article));
     } finally {
       setLoading(false);
     }

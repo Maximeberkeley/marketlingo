@@ -8,11 +8,13 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
+  Pressable,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { LeoCharacter } from '../mascot/LeoCharacter';
 import { triggerHaptic } from '../../lib/haptics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
@@ -82,6 +84,7 @@ interface ProCelebrationProps {
 }
 
 export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationProps) {
+  const insets = useSafeAreaInsets();
   const scaleAnim = useRef(new Animated.Value(0)).current;
   
   const badgeScale = useRef(new Animated.Value(0)).current;
@@ -117,16 +120,25 @@ export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationP
     : 'Welcome to the inner circle.\nAll features unlocked!';
 
   return (
-    <Modal transparent animationType="fade" visible={visible}>
-      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onDismiss}>
+    <Modal transparent animationType="fade" visible={visible} onRequestClose={onDismiss} statusBarTranslucent>
+      <View style={styles.overlay}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onDismiss} />
         <View style={StyleSheet.absoluteFill} pointerEvents="none">{confettiPieces}</View>
 
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          style={styles.scrollView}
+          contentContainerStyle={[
+            styles.scrollContent,
+            {
+              minHeight: height - insets.top - insets.bottom,
+              paddingTop: insets.top + 24,
+              paddingBottom: insets.bottom + 24,
+            },
+          ]}
           showsVerticalScrollIndicator={false}
-          bounces={false}
+          bounces
         >
-          <TouchableOpacity activeOpacity={1}>
+          <View style={styles.cardWrap}>
             <Animated.View style={[styles.content, { transform: [{ scale: scaleAnim }] }]}>
               <View style={{ height: 80 }}>
                 <LeoCharacter size="md" animation="celebrating" />
@@ -162,9 +174,9 @@ export function ProCelebration({ visible, onDismiss, planType }: ProCelebrationP
                 <Text style={styles.continueBtnText}>Let's Go! 🚀</Text>
               </TouchableOpacity>
             </Animated.View>
-          </TouchableOpacity>
+          </View>
         </ScrollView>
-      </TouchableOpacity>
+      </View>
     </Modal>
   );
 }
@@ -173,19 +185,27 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.92)',
-    alignItems: 'center',
-    justifyContent: 'center',
+  },
+  scrollView: {
+    flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 40,
+    paddingHorizontal: 16,
+  },
+  cardWrap: {
+    width: '100%',
+    maxWidth: 420,
+    alignSelf: 'center',
   },
   content: {
+    width: '100%',
     alignItems: 'center',
     gap: 16,
     paddingHorizontal: 24,
+    paddingTop: 12,
+    paddingBottom: 20,
   },
   proBadgeBig: {
     backgroundColor: '#8B5CF6',
