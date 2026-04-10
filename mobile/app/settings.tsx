@@ -446,9 +446,9 @@ export default function SettingsScreen() {
             <Text style={styles.infoValue}>{user?.email || 'Not signed in'}</Text>
           </View>
 
-          <TouchableOpacity style={styles.menuItem} onPress={handleResetPassword}>
+          <TouchableOpacity style={styles.menuItem} onPress={handleChangePassword}>
             <Feather name="lock" size={18} color={COLORS.textSecondary} />
-            <Text style={styles.menuText}>Reset Password</Text>
+            <Text style={styles.menuText}>Change Password</Text>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
