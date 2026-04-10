@@ -236,14 +236,39 @@ export default function SettingsScreen() {
   const handleDeleteAccount = () => {
     Alert.alert(
       'Delete Account',
-      'This will permanently delete your account and all data. This cannot be undone.',
+      'This will permanently delete your account and all data. This action cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
           onPress: () => {
-            Alert.alert('Contact Support', 'Please email support@marketlingo.app to delete your account.');
+            Alert.alert(
+              'Are you absolutely sure?',
+              'All your progress, XP, streaks, notes, and data will be permanently erased.',
+              [
+                { text: 'Go Back', style: 'cancel' },
+                {
+                  text: 'Yes, Delete Everything',
+                  style: 'destructive',
+                  onPress: async () => {
+                    try {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      if (!session) {
+                        Alert.alert('Error', 'You must be signed in to delete your account.');
+                        return;
+                      }
+                      const { data, error } = await supabase.functions.invoke('delete-account');
+                      if (error) throw error;
+                      await signOut();
+                      router.replace('/auth');
+                    } catch (err: any) {
+                      Alert.alert('Error', err.message || 'Failed to delete account. Please try again.');
+                    }
+                  },
+                },
+              ]
+            );
           },
         },
       ]
