@@ -15,6 +15,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
@@ -23,7 +24,8 @@ import { MentorChatOverlay } from '../ai/MentorChatOverlay';
 import { getMentorForContext } from '../../data/mentors';
 import type { Mentor } from '../../data/mentors';
 import { ImmersiveNewsOverlay } from './ImmersiveNewsOverlay';
-// LinearGradient replaced with View fallbacks (expo-linear-gradient not installed)
+import { useAuth } from '../../hooks/useAuth';
+import { triggerHaptic } from '../../lib/haptics';
 
 // ── Types ──
 interface NewsItem {
@@ -35,12 +37,20 @@ interface NewsItem {
   categoryTag: string;
   summary?: string;
   imageUrl?: string | null;
+  impact?: 'high' | 'medium' | 'low';
 }
 
 interface DailyNewsProps {
   marketId: string;
   learningGoal?: string;
 }
+
+// ── Impact indicator config ──
+const impactConfig = {
+  high: { icon: '🔴', label: 'High Impact', color: '#EF4444' },
+  medium: { icon: '🟡', label: 'Notable', color: '#F59E0B' },
+  low: { icon: '🟢', label: 'Update', color: '#10B981' },
+};
 
 // ── Category colors ──
 const categoryColors: Record<string, { bg: string; text: string }> = {
@@ -71,6 +81,16 @@ const GRADIENT_SETS = [
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const FEATURED_CARD_WIDTH = SCREEN_WIDTH * 0.75;
 
+// ── Impact dot helper ──
+function getImpactFromContent(title: string, summary?: string): 'high' | 'medium' | 'low' {
+  const text = (title + ' ' + (summary || '')).toLowerCase();
+  const highSignals = ['billion', 'acquisition', 'merger', 'ipo', 'fda approval', 'breakthrough', 'banned', 'regulation', 'crisis', 'record'];
+  const mediumSignals = ['million', 'partnership', 'launch', 'raises', 'new', 'first', 'major', 'expands'];
+  if (highSignals.some(s => text.includes(s))) return 'high';
+  if (mediumSignals.some(s => text.includes(s))) return 'medium';
+  return 'low';
+}
+
 // ── Featured Carousel ──
 function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (item: NewsItem) => void }) {
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -92,6 +112,8 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
           const inputRange = [(i - 1) * (FEATURED_CARD_WIDTH + 12), i * (FEATURED_CARD_WIDTH + 12), (i + 1) * (FEATURED_CARD_WIDTH + 12)];
           const scale = scrollX.interpolate({ inputRange, outputRange: [0.95, 1, 0.95], extrapolate: 'clamp' });
           const opacity = scrollX.interpolate({ inputRange, outputRange: [0.7, 1, 0.7], extrapolate: 'clamp' });
+          const impact = item.impact || getImpactFromContent(item.title, item.summary);
+          const impactInfo = impactConfig[impact];
 
           return (
             <Animated.View key={item.id} style={{ transform: [{ scale }], opacity, width: FEATURED_CARD_WIDTH }}>
@@ -101,13 +123,20 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
                 ) : (
                   <View style={[s.featuredImage, { backgroundColor: GRADIENT_SETS[i % GRADIENT_SETS.length][0] }]} />
                 )}
-                {/* Dark overlay for text readability */}
                 <View style={[s.featuredOverlay, { backgroundColor: 'rgba(0,0,0,0.45)' }]} />
                 <View style={s.featuredContent}>
-                  <View style={[s.featuredBadge, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
-                    <Text style={s.featuredBadgeText}>{item.categoryTag.toUpperCase()}</Text>
+                  <View style={s.featuredTopRow}>
+                    <View style={[s.featuredBadge, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                      <Text style={s.featuredBadgeText}>{item.categoryTag.toUpperCase()}</Text>
+                    </View>
+                    <View style={[s.impactDot, { backgroundColor: impactInfo.color + '30' }]}>
+                      <Text style={{ fontSize: 8 }}>{impactInfo.icon}</Text>
+                    </View>
                   </View>
                   <Text style={s.featuredTitle} numberOfLines={2}>{item.title}</Text>
+                  {item.summary ? (
+                    <Text style={s.featuredSummary} numberOfLines={1}>{item.summary}</Text>
+                  ) : null}
                   <View style={s.featuredMeta}>
                     <Text style={s.featuredSource}>{item.sourceName}</Text>
                     <Text style={s.featuredDate}>{item.publishedAt}</Text>
@@ -145,11 +174,17 @@ function NewsFeedCard({
   index,
   onSelect,
   onAiAction,
+  onSave,
+  onQuiz,
+  isSaved,
 }: {
   item: NewsItem;
   index: number;
   onSelect: (item: NewsItem) => void;
   onAiAction: (item: NewsItem, action: 'discuss' | 'summarize' | 'why') => void;
+  onSave: (item: NewsItem) => void;
+  onQuiz: (item: NewsItem) => void;
+  isSaved: boolean;
 }) {
   const slideAnim = useRef(new Animated.Value(24)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -162,6 +197,8 @@ function NewsFeedCard({
   }, []);
 
   const catColor = categoryColors[item.categoryTag] || categoryColors.default;
+  const impact = item.impact || getImpactFromContent(item.title, item.summary);
+  const impactInfo = impactConfig[impact];
 
   return (
     <Animated.View style={{ transform: [{ translateY: slideAnim }], opacity: opacityAnim }}>
@@ -172,31 +209,29 @@ function NewsFeedCard({
             <View style={[s.catBadge, { backgroundColor: catColor.bg }]}>
               <Text style={[s.catBadgeText, { color: catColor.text }]}>{item.categoryTag.toUpperCase()}</Text>
             </View>
+            <Text style={{ fontSize: 8 }}>{impactInfo.icon}</Text>
             <Text style={s.feedDate}>{item.publishedAt}</Text>
           </View>
           <Text style={s.feedTitle} numberOfLines={3}>{item.title}</Text>
+          {item.summary ? (
+            <Text style={s.feedSummary} numberOfLines={2}>{item.summary}</Text>
+          ) : null}
           <Text style={s.feedSource}>{item.sourceName}</Text>
         </View>
 
         {/* Image thumbnail on right */}
         <View style={s.feedThumb}>
           {item.imageUrl ? (
-            <Image
-              source={{ uri: item.imageUrl }}
-              style={s.feedThumbImage}
-              resizeMode="cover"
-            />
+            <Image source={{ uri: item.imageUrl }} style={s.feedThumbImage} resizeMode="cover" />
           ) : (
-            <View
-              style={[s.feedThumbImage, { alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.accentSoft }]}
-            >
+            <View style={[s.feedThumbImage, { alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.accentSoft }]}>
               <Feather name="file-text" size={20} color={COLORS.accent} style={{ opacity: 0.5 }} />
             </View>
           )}
         </View>
       </TouchableOpacity>
 
-      {/* AI action buttons */}
+      {/* Action buttons row */}
       <View style={s.aiActionsRow}>
         {([
           { action: 'discuss' as const, icon: 'message-circle' as const, label: 'Discuss' },
@@ -213,6 +248,27 @@ function NewsFeedCard({
             <Text style={s.aiActionText}>{label}</Text>
           </TouchableOpacity>
         ))}
+
+        {/* Save to notebook */}
+        <TouchableOpacity
+          style={s.aiActionBtn}
+          onPress={() => onSave(item)}
+          activeOpacity={0.7}
+        >
+          <Feather name={isSaved ? 'bookmark' : 'bookmark'} size={11} color={isSaved ? COLORS.accent : COLORS.textMuted} />
+          <Text style={[s.aiActionText, isSaved && { color: COLORS.accent }]}>{isSaved ? 'Saved' : 'Save'}</Text>
+        </TouchableOpacity>
+
+        {/* Quiz me */}
+        <TouchableOpacity
+          style={[s.aiActionBtn, s.quizBtn]}
+          onPress={() => onQuiz(item)}
+          activeOpacity={0.7}
+        >
+          <Feather name="help-circle" size={11} color={COLORS.accent} />
+          <Text style={[s.aiActionText, { color: COLORS.accent, fontWeight: '700' }]}>Quiz</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={[s.aiActionBtn, { marginLeft: 'auto' }]}
           onPress={() => Linking.openURL(item.sourceUrl).catch(() => {})}
@@ -222,6 +278,199 @@ function NewsFeedCard({
         </TouchableOpacity>
       </View>
     </Animated.View>
+  );
+}
+
+// ── Quiz Modal ──
+function QuizModal({
+  article,
+  marketId,
+  onClose,
+}: {
+  article: NewsItem | null;
+  marketId: string;
+  onClose: () => void;
+}) {
+  const [questions, setQuestions] = useState<{ question: string; options: string[]; correctIndex: number; explanation: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentQ, setCurrentQ] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [score, setScore] = useState(0);
+
+  useEffect(() => {
+    if (article) {
+      generateQuiz();
+    }
+  }, [article]);
+
+  const generateQuiz = async () => {
+    if (!article) return;
+    setLoading(true);
+    setCurrentQ(0);
+    setSelectedAnswer(null);
+    setScore(0);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('mentor-chat', {
+        body: {
+          messages: [
+            {
+              role: 'user',
+              content: `Generate exactly 2 quiz questions about this ${marketId} industry news article to test understanding.
+
+Article: "${article.title}"
+Summary: ${article.summary || 'N/A'}
+Source: ${article.sourceName}
+
+Respond ONLY with a valid JSON array of objects, each with:
+- "question": string
+- "options": array of 4 strings
+- "correctIndex": number (0-3)
+- "explanation": string (1 sentence explaining the correct answer)
+
+No other text, just the JSON array.`,
+            },
+          ],
+          systemPrompt: `You are a ${marketId} industry quiz master. Create questions that test comprehension and critical thinking about current events. Make them challenging but fair. Respond ONLY with valid JSON.`,
+        },
+      });
+
+      if (error) throw error;
+      const content = data?.reply || data?.choices?.[0]?.message?.content || '';
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        setQuestions(parsed);
+      }
+    } catch {
+      setQuestions([
+        {
+          question: `What is the main topic of the article "${article.title}"?`,
+          options: [
+            'A new development in the industry',
+            'A regulatory change',
+            'A financial event',
+            'A technological breakthrough',
+          ],
+          correctIndex: 0,
+          explanation: 'This question tests basic comprehension of the article.',
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!article) return null;
+
+  const q = questions[currentQ];
+  const isComplete = currentQ >= questions.length && questions.length > 0;
+
+  return (
+    <Modal visible={!!article} transparent animationType="slide" onRequestClose={onClose}>
+      <View style={qz.backdrop}>
+        <View style={qz.sheet}>
+          <View style={qz.handleRow}>
+            <View style={qz.handle} />
+          </View>
+
+          {/* Header */}
+          <View style={qz.header}>
+            <View style={qz.headerIcon}>
+              <Feather name="help-circle" size={16} color={COLORS.accent} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={qz.headerTitle}>News Quiz</Text>
+              <Text style={qz.headerSub} numberOfLines={1}>{article.title}</Text>
+            </View>
+            <TouchableOpacity onPress={onClose}>
+              <Feather name="x" size={20} color={COLORS.textMuted} />
+            </TouchableOpacity>
+          </View>
+
+          {loading ? (
+            <View style={qz.loadingBox}>
+              <ActivityIndicator size="small" color={COLORS.accent} />
+              <Text style={qz.loadingText}>Generating quiz from this article...</Text>
+            </View>
+          ) : isComplete ? (
+            <View style={qz.completeBox}>
+              <Text style={qz.completeEmoji}>{score === questions.length ? '🎉' : score > 0 ? '👏' : '📖'}</Text>
+              <Text style={qz.completeTitle}>
+                {score === questions.length ? 'Perfect!' : score > 0 ? 'Nice work!' : 'Keep learning!'}
+              </Text>
+              <Text style={qz.completeScore}>{score}/{questions.length} correct</Text>
+              <TouchableOpacity onPress={onClose} style={qz.doneBtn}>
+                <Text style={qz.doneBtnText}>Done</Text>
+              </TouchableOpacity>
+            </View>
+          ) : q ? (
+            <View style={qz.questionBox}>
+              <Text style={qz.qNumber}>Question {currentQ + 1} of {questions.length}</Text>
+              <Text style={qz.qText}>{q.question}</Text>
+
+              {q.options.map((opt, i) => {
+                const isSelected = selectedAnswer === i;
+                const isCorrect = i === q.correctIndex;
+                const showResult = selectedAnswer !== null;
+
+                return (
+                  <TouchableOpacity
+                    key={i}
+                    style={[
+                      qz.optionBtn,
+                      showResult && isCorrect && qz.optionCorrect,
+                      showResult && isSelected && !isCorrect && qz.optionWrong,
+                      !showResult && isSelected && qz.optionSelected,
+                    ]}
+                    onPress={() => {
+                      if (selectedAnswer !== null) return;
+                      setSelectedAnswer(i);
+                      if (i === q.correctIndex) setScore(s => s + 1);
+                      triggerHaptic(i === q.correctIndex ? 'success' : 'error');
+                    }}
+                    activeOpacity={0.7}
+                    disabled={selectedAnswer !== null}
+                  >
+                    <Text style={[
+                      qz.optionText,
+                      showResult && isCorrect && { color: '#059669', fontWeight: '700' },
+                      showResult && isSelected && !isCorrect && { color: '#EF4444' },
+                    ]}>
+                      {opt}
+                    </Text>
+                    {showResult && isCorrect && <Feather name="check-circle" size={16} color="#059669" />}
+                    {showResult && isSelected && !isCorrect && <Feather name="x-circle" size={16} color="#EF4444" />}
+                  </TouchableOpacity>
+                );
+              })}
+
+              {selectedAnswer !== null && (
+                <View style={qz.explainBox}>
+                  <Feather name="info" size={13} color={COLORS.accent} />
+                  <Text style={qz.explainText}>{q.explanation}</Text>
+                </View>
+              )}
+
+              {selectedAnswer !== null && (
+                <TouchableOpacity
+                  style={qz.nextBtn}
+                  onPress={() => {
+                    setSelectedAnswer(null);
+                    setCurrentQ(c => c + 1);
+                  }}
+                >
+                  <Text style={qz.nextBtnText}>
+                    {currentQ + 1 < questions.length ? 'Next Question' : 'See Results'}
+                  </Text>
+                  <Feather name="arrow-right" size={14} color="#fff" />
+                </TouchableOpacity>
+              )}
+            </View>
+          ) : null}
+        </View>
+      </View>
+    </Modal>
   );
 }
 
@@ -256,11 +505,7 @@ function ArticleDetailSheet({
     });
   }, [onClose]);
 
-  const resetAi = () => {
-    setAiMode(null);
-    setAiResponse('');
-    setChatMessages([]);
-  };
+  const resetAi = () => { setAiMode(null); setAiResponse(''); setChatMessages([]); };
 
   const handleAiAction = async (mode: 'discuss' | 'summarize' | 'why') => {
     if (!article) return;
@@ -321,10 +566,9 @@ function ArticleDetailSheet({
 
   if (!article) return null;
 
-  const translateY = slideAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, Dimensions.get('window').height],
-  });
+  const translateY = slideAnim.interpolate({ inputRange: [0, 1], outputRange: [0, Dimensions.get('window').height] });
+  const impact = article.impact || getImpactFromContent(article.title, article.summary);
+  const impactInfo = impactConfig[impact];
 
   return (
     <Modal visible={!!article} transparent animationType="none" onRequestClose={handleClose}>
@@ -332,13 +576,9 @@ function ArticleDetailSheet({
         <TouchableOpacity style={StyleSheet.absoluteFill} onPress={handleClose} activeOpacity={1} />
         <Animated.View style={[ds.sheet, { transform: [{ translateY }] }]}>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
-            {/* Handle */}
-            <View style={ds.handleRow}>
-              <View style={ds.handle} />
-            </View>
+            <View style={ds.handleRow}><View style={ds.handle} /></View>
 
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} bounces={true}>
-              {/* Hero image */}
               {article.imageUrl ? (
                 <View style={ds.heroContainer}>
                   <Image source={{ uri: article.imageUrl }} style={ds.heroImage} resizeMode="cover" />
@@ -347,28 +587,26 @@ function ArticleDetailSheet({
               ) : null}
 
               <View style={ds.contentPad}>
-                {/* Meta */}
                 <View style={ds.metaRow}>
                   <View style={[ds.badge, { backgroundColor: COLORS.accentSoft }]}>
                     <Text style={[ds.badgeText, { color: COLORS.accent }]}>{article.categoryTag.toUpperCase()}</Text>
+                  </View>
+                  <View style={[ds.impactPill, { backgroundColor: impactInfo.color + '15' }]}>
+                    <Text style={{ fontSize: 9 }}>{impactInfo.icon}</Text>
+                    <Text style={[ds.impactText, { color: impactInfo.color }]}>{impactInfo.label}</Text>
                   </View>
                   <Text style={ds.metaSource}>{article.sourceName}</Text>
                   <Text style={ds.metaDate}>{article.publishedAt}</Text>
                 </View>
 
-                {/* Title */}
                 <Text style={ds.title}>{article.title}</Text>
-
-                {/* Summary */}
                 {article.summary ? <Text style={ds.summary}>{article.summary}</Text> : null}
 
-                {/* Source link */}
                 <TouchableOpacity onPress={() => Linking.openURL(article.sourceUrl).catch(() => {})} style={ds.sourceLink}>
                   <Feather name="external-link" size={14} color={COLORS.accent} />
                   <Text style={ds.sourceLinkText}>Read full article</Text>
                 </TouchableOpacity>
 
-                {/* AI Insights section */}
                 <View style={ds.aiSection}>
                   <Text style={ds.aiSectionTitle}>AI-POWERED INSIGHTS</Text>
                   <View style={ds.aiButtonsRow}>
@@ -389,7 +627,6 @@ function ArticleDetailSheet({
                     ))}
                   </View>
 
-                  {/* AI response */}
                   {(aiLoading || aiResponse) ? (
                     <View style={ds.aiResponseBox}>
                       {aiLoading && !aiResponse ? (
@@ -400,9 +637,7 @@ function ArticleDetailSheet({
                       ) : aiMode === 'discuss' ? (
                         <View>
                           {chatMessages.map((msg, i) => (
-                            <Text key={i} style={[ds.chatMsg, msg.role === 'user' ? ds.chatMsgUser : ds.chatMsgAi]}>
-                              {msg.content}
-                            </Text>
+                            <Text key={i} style={[ds.chatMsg, msg.role === 'user' ? ds.chatMsgUser : ds.chatMsgAi]}>{msg.content}</Text>
                           ))}
                           {aiLoading && (
                             <View style={ds.aiLoadingRow}>
@@ -442,6 +677,7 @@ function ArticleDetailSheet({
 
 // ── Main Component ──
 export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
+  const { user } = useAuth();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -450,6 +686,8 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
   const [immersiveIndex, setImmersiveIndex] = useState(-1);
   const [chatNewsItem, setChatNewsItem] = useState<NewsItem | null>(null);
   const [chatContext, setChatContext] = useState('');
+  const [savedArticleIds, setSavedArticleIds] = useState<Set<string>>(new Set());
+  const [quizArticle, setQuizArticle] = useState<NewsItem | null>(null);
 
   const kaiMentor: Mentor = getMentorForContext('news') || {
     id: 'kai', name: 'Kai', title: 'Market Analyst', expertise: ['markets'],
@@ -466,6 +704,7 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
     categoryTag: item.category_tag || 'Industry',
     summary: item.summary || undefined,
     imageUrl: item.image_url || undefined,
+    impact: getImpactFromContent(item.title, item.summary),
   });
 
   const fetchNews = async (forceRefresh = false) => {
@@ -477,20 +716,20 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
       if (!forceRefresh) {
         const { data, error: dbError } = await supabase
           .from('news_items').select('*').eq('market_id', marketId)
-          .order('published_at', { ascending: false }).limit(10);
+          .order('published_at', { ascending: false }).limit(15);
 
         if (!dbError && data && data.length > 0) {
           setNews(data.map(mapDbItem));
           setLastFetched(new Date());
-          setIsLoading(false); setIsRefreshing(false);
-          
-          // Background refresh: fetch fresh data (with images) without blocking UI
+          setIsLoading(false);
+          setIsRefreshing(false);
+
           const hasAnyMissingImages = data.some((item: any) => !item.image_url);
           if (hasAnyMissingImages) {
             supabase.functions.invoke('fetch-market-news', { body: { marketId } }).then(async () => {
               const { data: freshData } = await supabase
                 .from('news_items').select('*').eq('market_id', marketId)
-                .order('published_at', { ascending: false }).limit(10);
+                .order('published_at', { ascending: false }).limit(15);
               if (freshData && freshData.length > 0) {
                 setNews(freshData.map(mapDbItem));
               }
@@ -508,12 +747,13 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
           sourceUrl: item.sourceUrl, publishedAt: item.publishedAt,
           categoryTag: item.categoryTag || 'Industry', summary: item.summary || undefined,
           imageUrl: item.imageUrl || undefined,
+          impact: item.impact || getImpactFromContent(item.title, item.summary),
         })));
         setLastFetched(new Date());
       } else {
         const { data: fallback } = await supabase
           .from('news_items').select('*').eq('market_id', marketId)
-          .order('published_at', { ascending: false }).limit(10);
+          .order('published_at', { ascending: false }).limit(15);
 
         if (fallback && fallback.length > 0) {
           setNews(fallback.map(mapDbItem));
@@ -529,6 +769,42 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
 
   useEffect(() => { fetchNews(); }, [marketId]);
 
+  // Save article to notebook
+  const handleSaveToNotebook = async (item: NewsItem) => {
+    if (!user) {
+      Alert.alert('Sign in required', 'Please sign in to save articles.');
+      return;
+    }
+
+    if (savedArticleIds.has(item.id)) {
+      triggerHaptic('light');
+      return;
+    }
+
+    try {
+      const noteContent = `📰 ${item.title}\n\n${item.summary || ''}\n\n🔗 Source: ${item.sourceName}\n${item.sourceUrl}`;
+      const { error: saveError } = await supabase.from('notes').insert({
+        user_id: user.id,
+        content: noteContent,
+        linked_label: `News · ${item.categoryTag}`,
+        market_id: marketId,
+      });
+
+      if (saveError) throw saveError;
+
+      setSavedArticleIds(prev => new Set([...prev, item.id]));
+      triggerHaptic('success');
+    } catch {
+      Alert.alert('Error', 'Failed to save article. Try again.');
+    }
+  };
+
+  // Quiz on article
+  const handleQuiz = (item: NewsItem) => {
+    triggerHaptic('medium');
+    setQuizArticle(item);
+  };
+
   const handleAiAction = (item: NewsItem, action: 'discuss' | 'summarize' | 'why') => {
     const contextMap: Record<string, string> = {
       discuss: `The user wants to discuss this ${marketId} industry news article:\n\nTitle: "${item.title}"\nSource: ${item.sourceName}\nSummary: ${item.summary ?? 'N/A'}\n\nHelp them understand the key implications.`,
@@ -539,8 +815,8 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
     setChatNewsItem(item);
   };
 
-  const featured = news.slice(0, 3);
-  const feed = news.slice(3);
+  const featured = news.length > 3 ? news.slice(0, 3) : [];
+  const feed = news.length > 3 ? news.slice(3) : news;
 
   return (
     <View style={s.container}>
@@ -552,7 +828,9 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
           </View>
           <View>
             <Text style={s.headerTitle}>Industry Intel</Text>
-            <Text style={s.headerSubtitle}>AI-analyzed insights</Text>
+            <Text style={s.headerSubtitle}>
+              {news.length > 0 ? `${news.length} stories · AI-analyzed` : 'AI-analyzed insights'}
+            </Text>
           </View>
         </View>
         <TouchableOpacity onPress={() => fetchNews(true)} disabled={isRefreshing} style={[s.refreshBtn, isRefreshing && { opacity: 0.5 }]}>
@@ -563,7 +841,7 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
       {/* Loading */}
       {isLoading && (
         <View style={s.loadingContainer}>
-          {[1, 2].map((i) => (
+          {[1, 2, 3].map((i) => (
             <View key={i} style={s.skeletonCard}>
               <View style={s.skeletonLine} />
               <View style={[s.skeletonLine, { width: '75%' }]} />
@@ -587,13 +865,15 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
       {!isLoading && !error && news.length > 0 && (
         <View>
           {/* Featured horizontal carousel */}
-          <FeaturedCarousel items={featured} onSelect={(item) => {
-            const idx = news.findIndex(n => n.id === item.id);
-            setImmersiveIndex(idx >= 0 ? idx : 0);
-          }} />
+          {featured.length > 0 && (
+            <FeaturedCarousel items={featured} onSelect={(item) => {
+              const idx = news.findIndex(n => n.id === item.id);
+              setImmersiveIndex(idx >= 0 ? idx : 0);
+            }} />
+          )}
 
           {/* Feed section label */}
-          {feed.length > 0 && (
+          {feed.length > 0 && featured.length > 0 && (
             <View style={s.feedSectionHeader}>
               <View style={s.feedSectionLine} />
               <Text style={s.feedSectionLabel}>LATEST</Text>
@@ -613,6 +893,9 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
                   setImmersiveIndex(idx >= 0 ? idx : 0);
                 }}
                 onAiAction={handleAiAction}
+                onSave={handleSaveToNotebook}
+                onQuiz={handleQuiz}
+                isSaved={savedArticleIds.has(item.id)}
               />
             ))}
           </View>
@@ -649,7 +932,14 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
         learningGoal={learningGoal}
       />
 
-      {/* AI Chat overlay (from AI action buttons) */}
+      {/* Quiz Modal */}
+      <QuizModal
+        article={quizArticle}
+        marketId={marketId}
+        onClose={() => setQuizArticle(null)}
+      />
+
+      {/* AI Chat overlay */}
       {chatNewsItem && (
         <MentorChatOverlay
           visible={!!chatNewsItem}
@@ -667,7 +957,6 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
 const s = StyleSheet.create({
   container: {},
 
-  // Header
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   headerIconBg: {
@@ -678,28 +967,27 @@ const s = StyleSheet.create({
   headerSubtitle: { fontSize: 11, color: COLORS.textMuted },
   refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
 
-  // Featured carousel
-  featuredCard: { height: 200, borderRadius: 20, overflow: 'hidden', ...SHADOWS.md },
+  featuredCard: { height: 220, borderRadius: 20, overflow: 'hidden', ...SHADOWS.md },
   featuredImage: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
   featuredOverlay: { ...StyleSheet.absoluteFillObject },
   featuredContent: { ...StyleSheet.absoluteFillObject, padding: 16, justifyContent: 'flex-end' },
-  featuredBadge: { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20, marginBottom: 8 },
+  featuredTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', position: 'absolute', top: 14, left: 14, right: 14 },
+  featuredBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
   featuredBadgeText: { fontSize: 9, fontWeight: '700', color: '#fff', letterSpacing: 0.8 },
-  featuredTitle: { fontSize: 16, fontWeight: '800', color: '#fff', lineHeight: 21, marginBottom: 6 },
+  featuredTitle: { fontSize: 17, fontWeight: '800', color: '#fff', lineHeight: 22, marginBottom: 4 },
+  featuredSummary: { fontSize: 11, color: 'rgba(255,255,255,0.75)', lineHeight: 15, marginBottom: 6 },
   featuredMeta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   featuredSource: { fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: '600' },
   featuredDate: { fontSize: 10, color: 'rgba(255,255,255,0.5)' },
+  impactDot: { width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
 
-  // Dots
   dotsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 10 },
   dot: { height: 3, borderRadius: 2, backgroundColor: COLORS.accent },
 
-  // Feed section
   feedSectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
   feedSectionLine: { flex: 1, height: 1, backgroundColor: COLORS.borderLight },
   feedSectionLabel: { ...TYPE.overline, color: COLORS.textMuted, fontSize: 10 },
 
-  // Feed card
   feedCard: {
     flexDirection: 'row', backgroundColor: COLORS.bg2, borderRadius: 16,
     padding: 12, gap: 12, borderWidth: 1, borderColor: COLORS.borderLight,
@@ -710,24 +998,25 @@ const s = StyleSheet.create({
   catBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 },
   catBadgeText: { fontSize: 8, fontWeight: '700', letterSpacing: 0.5 },
   feedDate: { fontSize: 10, color: COLORS.textMuted },
-  feedTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, lineHeight: 19, marginBottom: 4 },
+  feedTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, lineHeight: 19, marginBottom: 2 },
+  feedSummary: { fontSize: 11, color: COLORS.textSecondary, lineHeight: 15, marginBottom: 4 },
   feedSource: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
 
-  // Feed thumbnail (right side)
   feedThumb: { width: 80, height: 80, borderRadius: 12, overflow: 'hidden' },
   feedThumbImage: { width: '100%', height: '100%' },
 
-  // AI action buttons
   aiActionsRow: {
     flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 12,
-    paddingBottom: 10, paddingTop: 4,
+    paddingBottom: 10, paddingTop: 4, flexWrap: 'wrap',
   },
   aiActionBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 12,
   },
   aiActionText: { fontSize: 10, color: COLORS.textMuted, fontWeight: '500' },
+  quizBtn: {
+    backgroundColor: COLORS.accentSoft, borderWidth: 1, borderColor: COLORS.accentMedium,
+  },
 
-  // Loading / empty
   loadingContainer: { gap: 8 },
   skeletonCard: { padding: 14, backgroundColor: COLORS.bg1, borderRadius: 14, borderWidth: 1, borderColor: COLORS.borderLight, gap: 8 },
   skeletonLine: { height: 14, backgroundColor: COLORS.surfaceLight, borderRadius: 7, width: '100%' },
@@ -753,9 +1042,11 @@ const ds = StyleSheet.create({
   heroGradient: { ...StyleSheet.absoluteFillObject, top: '50%' },
 
   contentPad: { paddingHorizontal: 20, paddingBottom: 40 },
-  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, marginBottom: 10 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, marginBottom: 10, flexWrap: 'wrap' },
   badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 },
   badgeText: { fontSize: 9, fontWeight: '700', letterSpacing: 0.8 },
+  impactPill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 },
+  impactText: { fontSize: 9, fontWeight: '700' },
   metaSource: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
   metaDate: { fontSize: 10, color: COLORS.textMuted },
 
@@ -765,7 +1056,6 @@ const ds = StyleSheet.create({
   sourceLink: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 20 },
   sourceLinkText: { ...TYPE.bodyBold, color: COLORS.accent },
 
-  // AI section
   aiSection: { borderTopWidth: 1, borderTopColor: COLORS.borderLight, paddingTop: 16 },
   aiSectionTitle: { ...TYPE.overline, color: COLORS.textMuted, marginBottom: 12 },
   aiButtonsRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: 12 },
@@ -797,4 +1087,63 @@ const ds = StyleSheet.create({
     width: 36, height: 36, borderRadius: 12, backgroundColor: COLORS.accent,
     alignItems: 'center', justifyContent: 'center',
   },
+});
+
+// ── Quiz Modal Styles ──
+const qz = StyleSheet.create({
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  sheet: {
+    maxHeight: '85%', backgroundColor: COLORS.bg0, borderTopLeftRadius: 28, borderTopRightRadius: 28,
+    padding: 20, ...SHADOWS.lg,
+  },
+  handleRow: { alignItems: 'center', marginBottom: 12 },
+  handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: COLORS.border },
+
+  header: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 20 },
+  headerIcon: {
+    width: 36, height: 36, borderRadius: 12, backgroundColor: COLORS.accentSoft,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  headerTitle: { ...TYPE.h3, color: COLORS.textPrimary },
+  headerSub: { fontSize: 12, color: COLORS.textMuted },
+
+  loadingBox: { alignItems: 'center', paddingVertical: 40, gap: 12 },
+  loadingText: { ...TYPE.body, color: COLORS.textMuted },
+
+  questionBox: { paddingBottom: 20 },
+  qNumber: { ...TYPE.overline, color: COLORS.accent, marginBottom: 8 },
+  qText: { ...TYPE.h2, color: COLORS.textPrimary, marginBottom: 20, lineHeight: 28 },
+
+  optionBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    padding: 14, borderRadius: 14, marginBottom: 8,
+    backgroundColor: COLORS.bg1, borderWidth: 1.5, borderColor: COLORS.borderLight,
+  },
+  optionSelected: { borderColor: COLORS.accent, backgroundColor: COLORS.accentSoft },
+  optionCorrect: { borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.08)' },
+  optionWrong: { borderColor: '#EF4444', backgroundColor: 'rgba(239,68,68,0.08)' },
+  optionText: { ...TYPE.body, color: COLORS.textPrimary, flex: 1, paddingRight: 8 },
+
+  explainBox: {
+    flexDirection: 'row', gap: 8, alignItems: 'flex-start',
+    padding: 12, borderRadius: 12, backgroundColor: COLORS.accentSoft,
+    borderWidth: 1, borderColor: COLORS.accentMedium, marginTop: 8, marginBottom: 12,
+  },
+  explainText: { ...TYPE.caption, color: COLORS.textSecondary, flex: 1, lineHeight: 18 },
+
+  nextBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    paddingVertical: 14, borderRadius: 14, backgroundColor: COLORS.accent,
+  },
+  nextBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
+
+  completeBox: { alignItems: 'center', paddingVertical: 30, gap: 8 },
+  completeEmoji: { fontSize: 48 },
+  completeTitle: { ...TYPE.h2, color: COLORS.textPrimary },
+  completeScore: { ...TYPE.body, color: COLORS.textMuted, marginBottom: 16 },
+  doneBtn: {
+    paddingHorizontal: 32, paddingVertical: 14, borderRadius: 14,
+    backgroundColor: COLORS.accent,
+  },
+  doneBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 });
