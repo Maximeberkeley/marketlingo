@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -17,9 +17,6 @@ import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { DemoLesson } from '../components/demo/DemoLesson';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const DEMO_SEEN_KEY = 'ml_demo_seen';
 
 export default function AuthScreen() {
   const insets = useSafeAreaInsets();
@@ -29,18 +26,10 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
-  const [demoSeen, setDemoSeen] = useState(false);
-
-  useEffect(() => {
-    AsyncStorage.getItem(DEMO_SEEN_KEY).then((val) => {
-      if (val === 'true') setDemoSeen(true);
-    });
-  }, []);
 
   const handleStartDemo = () => {
     setShowDemo(true);
-    AsyncStorage.setItem(DEMO_SEEN_KEY, 'true');
-    setDemoSeen(true);
+    // Don't mark as seen until they actually complete it and sign up
   };
 
   const handleSubmit = async () => {
@@ -59,8 +48,12 @@ export default function AuthScreen() {
         Alert.alert('Error', result.error || 'Something went wrong.');
       } else if (mode === 'signup' && result.message) {
         Alert.alert('Check your email', result.message);
+      } else if (mode === 'signup') {
+        // New signups go through onboarding
+        router.replace('/onboarding' as any);
       } else {
-        router.replace('/(tabs)/home');
+        // Existing users go to index which handles routing
+        router.replace('/');
       }
     } catch (err: any) {
       Alert.alert('Error', err.message || 'Something went wrong.');
@@ -103,7 +96,7 @@ export default function AuthScreen() {
           <Text style={styles.tagline}>Master any industry in 6 months</Text>
         </View>
 
-        {!demoSeen && (
+        {!showDemo && (
           <TouchableOpacity style={styles.demoBtn} onPress={handleStartDemo} activeOpacity={0.8}>
             <Text style={styles.demoBtnText}>Try a free lesson first →</Text>
           </TouchableOpacity>

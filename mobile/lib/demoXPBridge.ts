@@ -56,18 +56,30 @@ export async function applyDemoXP(userId: string, marketId: string): Promise<num
     const { error } = await supabase.from('xp_transactions').insert({
       user_id: userId,
       market_id: marketId,
-      amount: xp,
-      source: 'demo_bridge',
+      xp_amount: xp,
+      source_type: 'demo_bridge',
       description: 'XP earned during demo lesson — welcome bonus!',
     });
 
     if (!error) {
-      // Update the total XP
-      await supabase.rpc('add_user_xp', {
+      // Ensure user_xp record exists first
+      await supabase.from('user_xp').upsert(
+        {
+          user_id: userId,
+          market_id: marketId,
+          total_xp: 0,
+          current_level: 1,
+          xp_to_next_level: 100,
+          startup_stage: 1,
+        },
+        { onConflict: 'user_id,market_id', ignoreDuplicates: true }
+      );
+
+      // Update the total XP atomically
+      await supabase.rpc('increment_user_xp', {
         p_user_id: userId,
         p_market_id: marketId,
         p_amount: xp,
-        p_source: 'demo_bridge',
       });
 
       // Clear stored demo XP
