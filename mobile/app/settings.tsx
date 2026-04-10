@@ -73,7 +73,7 @@ async function registerForPushNotifications(): Promise<string | null> {
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
-  const { user, resetPassword } = useAuth();
+  const { user, signOut } = useAuth();
   const { isProUser } = useSubscription();
   const [pushEnabled, setPushEnabled] = useState(false);
   const [dailyReminder, setDailyReminder] = useState(true);
