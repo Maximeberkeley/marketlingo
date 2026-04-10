@@ -109,10 +109,18 @@ export default function GoalScreen() {
 
   useEffect(() => {
     const fetchMarket = async () => {
-      if (!user) return;
-      const { data: profile } = await supabase
-        .from('profiles').select('selected_market').eq('id', user.id).single();
-      if (profile?.selected_market) setSelectedMarket(profile.selected_market);
+      // Try profile first, fall back to local storage
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles').select('selected_market').eq('id', user.id).single();
+        if (profile?.selected_market) {
+          setSelectedMarket(profile.selected_market);
+          return;
+        }
+      }
+      // Fallback: read from local storage (set in previous onboarding step)
+      const localMarket = await storage.getIndustry();
+      if (localMarket) setSelectedMarket(localMarket);
     };
     fetchMarket();
   }, [user]);
