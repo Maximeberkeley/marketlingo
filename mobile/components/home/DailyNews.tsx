@@ -45,12 +45,7 @@ interface DailyNewsProps {
   learningGoal?: string;
 }
 
-// ── Impact indicator config ──
-const impactConfig = {
-  high: { icon: '🔴', label: 'High Impact', color: '#EF4444' },
-  medium: { icon: '🟡', label: 'Notable', color: '#F59E0B' },
-  low: { icon: '🟢', label: 'Update', color: '#10B981' },
-};
+// ── Impact helper – only surfaces "high" items with an exclamation mark ──
 
 // ── Category colors ──
 const categoryColors: Record<string, { bg: string; text: string }> = {
@@ -204,8 +199,7 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
           const inputRange = [(i - 1) * (FEATURED_CARD_WIDTH + 12), i * (FEATURED_CARD_WIDTH + 12), (i + 1) * (FEATURED_CARD_WIDTH + 12)];
           const scale = scrollX.interpolate({ inputRange, outputRange: [0.95, 1, 0.95], extrapolate: 'clamp' });
           const opacity = scrollX.interpolate({ inputRange, outputRange: [0.7, 1, 0.7], extrapolate: 'clamp' });
-          const impact = item.impact || getImpactFromContent(item.title, item.summary);
-          const impactInfo = impactConfig[impact];
+          const isHighImpact = (item.impact || getImpactFromContent(item.title, item.summary)) === 'high';
 
           return (
             <Animated.View key={item.id} style={{ transform: [{ scale }], opacity, width: FEATURED_CARD_WIDTH }}>
@@ -221,9 +215,11 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
                     <View style={[s.featuredBadge, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
                       <Text style={s.featuredBadgeText}>{item.categoryTag.toUpperCase()}</Text>
                     </View>
-                    <View style={[s.impactDot, { backgroundColor: impactInfo.color + '30' }]}>
-                      <Text style={{ fontSize: 8 }}>{impactInfo.icon}</Text>
-                    </View>
+                    {isHighImpact && (
+                      <View style={s.highImpactBadge}>
+                        <Feather name="alert-circle" size={10} color="#FFF" />
+                      </View>
+                    )}
                   </View>
                   <Text style={s.featuredTitle} numberOfLines={2}>{item.title}</Text>
                   {item.summary ? (
@@ -289,8 +285,7 @@ function NewsFeedCard({
   }, []);
 
   const catColor = categoryColors[item.categoryTag] || categoryColors.default;
-  const impact = item.impact || getImpactFromContent(item.title, item.summary);
-  const impactInfo = impactConfig[impact];
+  const isHighImpact = (item.impact || getImpactFromContent(item.title, item.summary)) === 'high';
 
   return (
     <Animated.View style={{ transform: [{ translateY: slideAnim }], opacity: opacityAnim }}>
@@ -301,7 +296,11 @@ function NewsFeedCard({
             <View style={[s.catBadge, { backgroundColor: catColor.bg }]}>
               <Text style={[s.catBadgeText, { color: catColor.text }]}>{item.categoryTag.toUpperCase()}</Text>
             </View>
-            <Text style={{ fontSize: 8 }}>{impactInfo.icon}</Text>
+            {isHighImpact && (
+              <View style={s.highImpactInline}>
+                <Feather name="alert-circle" size={10} color="#EF4444" />
+              </View>
+            )}
             <Text style={s.feedDate}>{item.publishedAt}</Text>
           </View>
           <Text style={s.feedTitle} numberOfLines={3}>{item.title}</Text>
@@ -668,8 +667,7 @@ function ArticleDetailSheet({
   if (!article) return null;
 
   const translateY = slideAnim.interpolate({ inputRange: [0, 1], outputRange: [0, Dimensions.get('window').height] });
-  const impact = article.impact || getImpactFromContent(article.title, article.summary);
-  const impactInfo = impactConfig[impact];
+  const isHighImpact = (article.impact || getImpactFromContent(article.title, article.summary)) === 'high';
 
   return (
     <Modal visible={!!article} transparent animationType="none" onRequestClose={handleClose}>
@@ -692,10 +690,12 @@ function ArticleDetailSheet({
                   <View style={[ds.badge, { backgroundColor: COLORS.accentSoft }]}>
                     <Text style={[ds.badgeText, { color: COLORS.accent }]}>{article.categoryTag.toUpperCase()}</Text>
                   </View>
-                  <View style={[ds.impactPill, { backgroundColor: impactInfo.color + '15' }]}>
-                    <Text style={{ fontSize: 9 }}>{impactInfo.icon}</Text>
-                    <Text style={[ds.impactText, { color: impactInfo.color }]}>{impactInfo.label}</Text>
-                  </View>
+                  {isHighImpact && (
+                    <View style={ds.highImpactPill}>
+                      <Feather name="alert-circle" size={10} color="#EF4444" />
+                      <Text style={ds.highImpactText}>High Impact</Text>
+                    </View>
+                  )}
                   <Text style={ds.metaSource}>{article.sourceName}</Text>
                   <Text style={ds.metaDate}>{article.publishedAt}</Text>
                 </View>
@@ -1080,7 +1080,8 @@ const s = StyleSheet.create({
   featuredMeta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   featuredSource: { fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: '600' },
   featuredDate: { fontSize: 10, color: 'rgba(255,255,255,0.5)' },
-  impactDot: { width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+  highImpactBadge: { width: 22, height: 22, borderRadius: 11, backgroundColor: 'rgba(239,68,68,0.8)', alignItems: 'center', justifyContent: 'center' },
+  highImpactInline: { marginLeft: 2 },
 
   dotsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 10 },
   dot: { height: 3, borderRadius: 2, backgroundColor: COLORS.accent },
@@ -1146,8 +1147,8 @@ const ds = StyleSheet.create({
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, marginBottom: 10, flexWrap: 'wrap' },
   badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 },
   badgeText: { fontSize: 9, fontWeight: '700', letterSpacing: 0.8 },
-  impactPill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 },
-  impactText: { fontSize: 9, fontWeight: '700' },
+  highImpactPill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12, backgroundColor: 'rgba(239,68,68,0.1)' },
+  highImpactText: { fontSize: 9, fontWeight: '700', color: '#EF4444' },
   metaSource: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
   metaDate: { fontSize: 10, color: COLORS.textMuted },
 
