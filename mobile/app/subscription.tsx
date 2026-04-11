@@ -43,13 +43,12 @@ const TESTIMONIALS = [
 export default function SubscriptionScreen() {
   const insets = useSafeAreaInsets();
   const {
-    isProUser, isLoading, purchasePackage, getPackage, restorePurchases,
-    getExpirationDate, willRenew, isNative,
+    isProUser, isLoading, purchasePackage, getPackage,
+    getExpirationDate, willRenew,
     trialStatus, canStartTrial, startFreeTrial, planType,
   } = useSubscription();
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
   const [isPurchasing, setIsPurchasing] = useState(false);
-  const [isRestoring, setIsRestoring] = useState(false);
   const [showTestimonials, setShowTestimonials] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationType, setCelebrationType] = useState<'trial' | 'monthly' | 'annual'>('trial');
@@ -97,18 +96,6 @@ export default function SubscriptionScreen() {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
     setIsPurchasing(false);
-  };
-
-  const handleRestore = async () => {
-    setIsRestoring(true);
-    const result = await restorePurchases();
-    setIsRestoring(false);
-    if (result.success) {
-      if (result.restored) Alert.alert('Success', 'Subscription restored!');
-      else Alert.alert('Info', 'No active subscription found');
-    } else {
-      Alert.alert('Error', result.error || 'Restore failed');
-    }
   };
 
   const getPriceDisplay = (type: PlanType) => {
@@ -293,10 +280,6 @@ export default function SubscriptionScreen() {
           </View>
         )}
 
-        <TouchableOpacity style={styles.restoreButton} onPress={handleRestore} disabled={isRestoring}>
-          <Text style={styles.restoreText}>{isRestoring ? 'Restoring...' : 'Restore Purchases'}</Text>
-        </TouchableOpacity>
-
         {isProUser && planType !== 'trial' && (
           <TouchableOpacity
             style={styles.manageButton}
@@ -368,8 +351,6 @@ const styles = StyleSheet.create({
   featureDescription: { fontSize: 13, color: COLORS.textMuted, marginTop: 2, lineHeight: 18 },
   highlightBadge: { backgroundColor: 'rgba(139,92,246,0.12)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 },
   highlightText: { fontSize: 9, fontWeight: '700', color: COLORS.accent, letterSpacing: 0.3 },
-  restoreButton: { alignItems: 'center', paddingVertical: 12 },
-  restoreText: { fontSize: 14, color: COLORS.textMuted },
   manageButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, marginBottom: 8 },
   manageText: { fontSize: 14, fontWeight: '600', color: COLORS.accent },
   proCard: { borderRadius: 18, padding: 18, marginBottom: 24, borderWidth: 1 },

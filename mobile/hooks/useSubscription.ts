@@ -24,12 +24,6 @@ interface PurchaseResult {
   error: string | null;
 }
 
-interface RestoreResult {
-  success: boolean;
-  restored: boolean;
-  error: string | null;
-}
-
 /**
  * useSubscription — unified subscription hook.
  * On native (iOS/Android), delegates purchases to RevenueCat.
@@ -309,72 +303,6 @@ export function useSubscription() {
     }
   }, [user, isNative, rcReady, rcOfferings]);
 
-  // ---------- Restore ----------
-  const restorePurchases = useCallback(async (): Promise<RestoreResult> => {
-    let rc = revenueCatRef.current;
-
-    // Re-acquire ref in case it wasn't set yet
-    if (!rc && isNative) {
-      try {
-        rc = require('react-native-purchases').default;
-        revenueCatRef.current = rc;
-      } catch {
-        // SDK not available
-      }
-    }
-
-    if (isNative && rc) {
-      try {
-        // Safely check if configured — wrap in try/catch because
-        // calling isConfigured on an uninitialised SDK can throw
-        let configured = false;
-        try {
-          configured = typeof rc.isConfigured === 'function' ? rc.isConfigured() : false;
-        } catch {
-          configured = false;
-        }
-
-        if (!configured) {
-          const apiKey = Platform.OS === 'ios'
-            ? process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY
-            : process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY;
-          if (apiKey) {
-            await rc.configure({ apiKey });
-            if (user?.id) {
-              try { await rc.logIn(user.id); } catch { /* ignore */ }
-            }
-          } else {
-            return { success: false, restored: false, error: 'RevenueCat not configured. Please restart the app.' };
-          }
-        }
-
-        const customerInfo = await rc.restorePurchases();
-        const isPro = customerInfo.entitlements?.active?.['MarketLingo Pro'] !== undefined;
-
-        if (isPro && user) {
-          const activeEntitlement = customerInfo.entitlements?.active?.['MarketLingo Pro'];
-          const productId = activeEntitlement?.productIdentifier || '';
-          const restoredType = productId.includes('monthly') ? 'monthly' : 'annual';
-          await supabase.from('profiles').update({
-            is_pro_user: true,
-            pro_plan_type: restoredType,
-            pro_subscription_date: new Date().toISOString(),
-          }).eq('id', user.id);
-          setIsProUser(true);
-          setPlanType(restoredType as 'monthly' | 'annual');
-        }
-        return { success: true, restored: isPro, error: null };
-      } catch (error: any) {
-        console.error('Restore error:', error);
-        return { success: false, restored: false, error: 'Could not reach the App Store. Please try again later.' };
-      }
-    }
-
-    // Web/testing fallback
-    await fetchSubscriptionStatus();
-    return { success: true, restored: isProUser, error: null };
-  }, [isNative, user, fetchSubscriptionStatus, isProUser]);
-
   // ---------- Testing toggle ----------
   const toggleProForTesting = useCallback(async () => {
     if (!user) return;
@@ -449,7 +377,7 @@ export function useSubscription() {
 
   return {
     isProUser, isLoading, isNative, planType, trialStatus, canStartTrial,
-    purchasePackage, restorePurchases, getExpirationDate, willRenew, getPackage,
+    purchasePackage, getExpirationDate, willRenew, getPackage,
     startFreeTrial, toggleProForTesting, refreshStatus: fetchSubscriptionStatus,
     rcReady, // expose for UI to know if RevenueCat is available
   };
