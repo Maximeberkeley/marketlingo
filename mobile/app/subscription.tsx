@@ -9,6 +9,7 @@ import {
   Alert,
   Animated,
   Image,
+  Linking,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -296,6 +297,15 @@ export default function SubscriptionScreen() {
           <Text style={styles.restoreText}>{isRestoring ? 'Restoring...' : 'Restore Purchases'}</Text>
         </TouchableOpacity>
 
+        {isProUser && planType !== 'trial' && (
+          <TouchableOpacity
+            style={styles.manageButton}
+            onPress={() => Linking.openURL('https://apps.apple.com/account/subscriptions')}
+          >
+            <Feather name="external-link" size={14} color={COLORS.accent} />
+            <Text style={styles.manageText}>Manage Subscription in App Store</Text>
+          </TouchableOpacity>
+        )}
 
         <Text style={styles.legalText}>
           Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage subscriptions in your Apple ID settings.
