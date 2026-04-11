@@ -9,6 +9,7 @@ import {
   Alert,
   Animated,
   Image,
+  Linking,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -296,6 +297,15 @@ export default function SubscriptionScreen() {
           <Text style={styles.restoreText}>{isRestoring ? 'Restoring...' : 'Restore Purchases'}</Text>
         </TouchableOpacity>
 
+        {isProUser && planType !== 'trial' && (
+          <TouchableOpacity
+            style={styles.manageButton}
+            onPress={() => Linking.openURL('https://apps.apple.com/account/subscriptions')}
+          >
+            <Feather name="external-link" size={14} color={COLORS.accent} />
+            <Text style={styles.manageText}>Manage Subscription in App Store</Text>
+          </TouchableOpacity>
+        )}
 
         <Text style={styles.legalText}>
           Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage subscriptions in your Apple ID settings.
@@ -360,6 +370,8 @@ const styles = StyleSheet.create({
   highlightText: { fontSize: 9, fontWeight: '700', color: COLORS.accent, letterSpacing: 0.3 },
   restoreButton: { alignItems: 'center', paddingVertical: 12 },
   restoreText: { fontSize: 14, color: COLORS.textMuted },
+  manageButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, marginBottom: 8 },
+  manageText: { fontSize: 14, fontWeight: '600', color: COLORS.accent },
   proCard: { borderRadius: 18, padding: 18, marginBottom: 24, borderWidth: 1 },
   proCardTrial: { backgroundColor: 'rgba(245, 158, 11, 0.08)', borderColor: 'rgba(245, 158, 11, 0.3)' },
   proCardActive: { backgroundColor: 'rgba(139, 92, 246, 0.08)', borderColor: 'rgba(139, 92, 246, 0.3)' },

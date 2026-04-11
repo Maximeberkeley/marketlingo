@@ -311,46 +311,62 @@ export function useSubscription() {
 
   // ---------- Restore ----------
   const restorePurchases = useCallback(async (): Promise<RestoreResult> => {
-    const rc = revenueCatRef.current;
+    let rc = revenueCatRef.current;
 
-    // On native, attempt RevenueCat restore even if rcReady was false — 
-    // RC may have initialized since the last check
+    // Re-acquire ref in case it wasn't set yet
+    if (!rc && isNative) {
+      try {
+        rc = require('react-native-purchases').default;
+        revenueCatRef.current = rc;
+      } catch {
+        // SDK not available
+      }
+    }
+
     if (isNative && rc) {
       try {
-        const isConfigured = rc.isConfigured?.() ?? false;
-        if (!isConfigured) {
-          // Try a late init
+        // Safely check if configured — wrap in try/catch because
+        // calling isConfigured on an uninitialised SDK can throw
+        let configured = false;
+        try {
+          configured = typeof rc.isConfigured === 'function' ? rc.isConfigured() : false;
+        } catch {
+          configured = false;
+        }
+
+        if (!configured) {
           const apiKey = Platform.OS === 'ios'
             ? process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY
             : process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY;
           if (apiKey) {
             await rc.configure({ apiKey });
-            if (user?.id) await rc.logIn(user.id);
+            if (user?.id) {
+              try { await rc.logIn(user.id); } catch { /* ignore */ }
+            }
+          } else {
+            return { success: false, restored: false, error: 'RevenueCat not configured. Please restart the app.' };
           }
         }
 
-        const configured = rc.isConfigured?.() ?? false;
-        if (configured) {
-          const customerInfo = await rc.restorePurchases();
-          const isPro = customerInfo.entitlements?.active?.['MarketLingo Pro'] !== undefined;
+        const customerInfo = await rc.restorePurchases();
+        const isPro = customerInfo.entitlements?.active?.['MarketLingo Pro'] !== undefined;
 
-          if (isPro && user) {
-            const activeEntitlement = customerInfo.entitlements?.active?.['MarketLingo Pro'];
-            const productId = activeEntitlement?.productIdentifier || '';
-            const restoredType = productId.includes('monthly') ? 'monthly' : 'annual';
-            await supabase.from('profiles').update({
-              is_pro_user: true,
-              pro_plan_type: restoredType,
-              pro_subscription_date: new Date().toISOString(),
-            }).eq('id', user.id);
-            setIsProUser(true);
-            setPlanType(restoredType as 'monthly' | 'annual');
-          }
-          return { success: true, restored: isPro, error: null };
+        if (isPro && user) {
+          const activeEntitlement = customerInfo.entitlements?.active?.['MarketLingo Pro'];
+          const productId = activeEntitlement?.productIdentifier || '';
+          const restoredType = productId.includes('monthly') ? 'monthly' : 'annual';
+          await supabase.from('profiles').update({
+            is_pro_user: true,
+            pro_plan_type: restoredType,
+            pro_subscription_date: new Date().toISOString(),
+          }).eq('id', user.id);
+          setIsProUser(true);
+          setPlanType(restoredType as 'monthly' | 'annual');
         }
+        return { success: true, restored: isPro, error: null };
       } catch (error: any) {
         console.error('Restore error:', error);
-        return { success: false, restored: false, error: error.message || 'Restore failed. Please try again.' };
+        return { success: false, restored: false, error: 'Could not reach the App Store. Please try again later.' };
       }
     }
 
