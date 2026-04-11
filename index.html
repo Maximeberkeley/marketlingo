@@ -41,19 +41,9 @@
         --sab: env(safe-area-inset-bottom);
         --sal: env(safe-area-inset-left);
       }
-      /* Prevent overscroll white bands - force dark background everywhere */
+      /* Force dark background */
       html, body, #root {
         background-color: #0B1020 !important;
-        overscroll-behavior: none;
-        overscroll-behavior-y: none;
-      }
-      /* iOS-specific overscroll prevention */
-      @supports (-webkit-touch-callout: none) {
-        html, body {
-          height: 100%;
-          overflow: auto;
-          -webkit-overflow-scrolling: touch;
-        }
       }
     </style>
     <meta property="og:title" content="MarketLingo">
@@ -62,7 +52,7 @@
   <meta name="twitter:description" content="Master your desired industry before starting a startup and engage in interview prep and investment strategy to become the expert in your field!">
 </head>
 
-  <body style="background-color: #0B1020; margin: 0; padding: 0; overscroll-behavior: none;">
+  <body style="background-color: #0B1020; margin: 0; padding: 0;">
     <div id="root" style="background-color: #0B1020; min-height: 100vh; min-height: 100dvh;"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

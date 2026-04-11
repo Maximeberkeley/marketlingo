@@ -19,7 +19,7 @@ interface AppLayoutProps {
 export function AppLayout({ children, showNav = true }: AppLayoutProps) {
   return (
     <LayoutProvider hasBottomNav={showNav} isInModal={false}>
-      <div className="min-h-screen min-h-[100dvh] bg-background overflow-x-hidden w-full max-w-full">
+      <div className="min-h-screen min-h-[100dvh] bg-background overflow-x-hidden w-full">
         <Suspense fallback={<AppLayoutFallback showNav={showNav} />}>
           <main className={`overflow-x-hidden w-full ${showNav ? "safe-bottom" : ""}`}>
             {children}

@@ -162,10 +162,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
-    overflow-y: auto;
-    overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
-    height: 100%;
   }
 
   body {
@@ -174,12 +171,8 @@
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     min-height: 100vh;
     min-height: 100dvh;
-    min-height: -webkit-fill-available;
     overflow-x: hidden;
-    overflow-y: auto;
-    position: relative;
     width: 100%;
-    overscroll-behavior: none;
     /* Dynamic background based on theme */
     transition: background-color 0.3s ease, color 0.3s ease;
   }
