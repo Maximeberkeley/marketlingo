@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ExternalLink, MessageSquare, FileText, Lightbulb } from "lucide-react";
+import { ExternalLink, MessageSquare, FileText, Lightbulb, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NewsItem } from "./types";
 
@@ -17,6 +17,12 @@ const categoryColors: Record<string, string> = {
   default: "bg-muted text-muted-foreground",
 };
 
+function isHighImpact(title: string, summary?: string): boolean {
+  const text = (title + " " + (summary || "")).toLowerCase();
+  const signals = ["billion", "acquisition", "merger", "ipo", "fda approval", "breakthrough", "banned", "regulation", "crisis", "record"];
+  return signals.some((s) => text.includes(s));
+}
+
 interface NewsCardProps {
   item: NewsItem;
   index: number;
@@ -25,6 +31,8 @@ interface NewsCardProps {
 }
 
 export function NewsCard({ item, index, onSelect, onAiAction }: NewsCardProps) {
+  const high = isHighImpact(item.title, item.summary);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -62,6 +70,9 @@ export function NewsCard({ item, index, onSelect, onAiAction }: NewsCardProps) {
               )}>
                 {item.categoryTag}
               </span>
+              {high && (
+                <AlertCircle size={12} className="text-destructive" />
+              )}
               <span className="text-[10px] text-muted-foreground">{item.publishedAt}</span>
             </div>
             <h3 className="text-[13px] font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors">
