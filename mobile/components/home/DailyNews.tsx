@@ -78,7 +78,7 @@ const GRADIENT_SETS = [
   ['#D97706', '#F59E0B'],
 ];
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const FEATURED_CARD_WIDTH = SCREEN_WIDTH * 0.75;
 
 type NewsQuizQuestion = {
@@ -482,86 +482,93 @@ No other text, just the JSON array.`,
             </TouchableOpacity>
           </View>
 
-          {loading ? (
-            <View style={qz.loadingBox}>
-              <ActivityIndicator size="small" color={COLORS.accent} />
-              <Text style={qz.loadingText}>Generating quiz from this article...</Text>
-            </View>
-          ) : isComplete ? (
-            <View style={qz.completeBox}>
-              <Text style={qz.completeEmoji}>{score === questions.length ? '🎉' : score > 0 ? '👏' : '📖'}</Text>
-              <Text style={qz.completeTitle}>
-                {score === questions.length ? 'Perfect!' : score > 0 ? 'Nice work!' : 'Keep learning!'}
-              </Text>
-              <Text style={qz.completeScore}>{score}/{questions.length} correct</Text>
-              <TouchableOpacity onPress={onClose} style={qz.doneBtn}>
-                <Text style={qz.doneBtnText}>Done</Text>
-              </TouchableOpacity>
-            </View>
-          ) : q ? (
-            <View style={qz.questionBox}>
-              <Text style={qz.qNumber}>Question {currentQ + 1} of {questions.length}</Text>
-              <Text style={qz.qText}>{q.question}</Text>
-
-              {q.options.map((opt, i) => {
-                const isSelected = selectedAnswer === i;
-                const isCorrect = i === q.correctIndex;
-                const showResult = selectedAnswer !== null;
-
-                return (
-                  <TouchableOpacity
-                    key={i}
-                    style={[
-                      qz.optionBtn,
-                      showResult && isCorrect && qz.optionCorrect,
-                      showResult && isSelected && !isCorrect && qz.optionWrong,
-                      !showResult && isSelected && qz.optionSelected,
-                    ]}
-                    onPress={() => {
-                      if (selectedAnswer !== null) return;
-                      setSelectedAnswer(i);
-                      if (i === q.correctIndex) setScore(s => s + 1);
-                      triggerHaptic(i === q.correctIndex ? 'success' : 'error');
-                    }}
-                    activeOpacity={0.7}
-                    disabled={selectedAnswer !== null}
-                  >
-                    <Text style={[
-                      qz.optionText,
-                      showResult && isCorrect && { color: '#059669', fontWeight: '700' },
-                      showResult && isSelected && !isCorrect && { color: '#EF4444' },
-                    ]}>
-                      {opt}
-                    </Text>
-                    {showResult && isCorrect && <Feather name="check-circle" size={16} color="#059669" />}
-                    {showResult && isSelected && !isCorrect && <Feather name="x-circle" size={16} color="#EF4444" />}
-                  </TouchableOpacity>
-                );
-              })}
-
-              {selectedAnswer !== null && (
-                <View style={qz.explainBox}>
-                  <Feather name="info" size={13} color={COLORS.accent} />
-                  <Text style={qz.explainText}>{q.explanation}</Text>
-                </View>
-              )}
-
-              {selectedAnswer !== null && (
-                <TouchableOpacity
-                  style={qz.nextBtn}
-                  onPress={() => {
-                    setSelectedAnswer(null);
-                    setCurrentQ(c => c + 1);
-                  }}
-                >
-                  <Text style={qz.nextBtnText}>
-                    {currentQ + 1 < questions.length ? 'Next Question' : 'See Results'}
-                  </Text>
-                  <Feather name="arrow-right" size={14} color="#fff" />
+          <ScrollView
+            style={qz.bodyScroll}
+            contentContainerStyle={qz.bodyScrollContent}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          >
+            {loading ? (
+              <View style={qz.loadingBox}>
+                <ActivityIndicator size="small" color={COLORS.accent} />
+                <Text style={qz.loadingText}>Generating quiz from this article...</Text>
+              </View>
+            ) : isComplete ? (
+              <View style={qz.completeBox}>
+                <Text style={qz.completeEmoji}>{score === questions.length ? '🎉' : score > 0 ? '👏' : '📖'}</Text>
+                <Text style={qz.completeTitle}>
+                  {score === questions.length ? 'Perfect!' : score > 0 ? 'Nice work!' : 'Keep learning!'}
+                </Text>
+                <Text style={qz.completeScore}>{score}/{questions.length} correct</Text>
+                <TouchableOpacity onPress={onClose} style={qz.doneBtn}>
+                  <Text style={qz.doneBtnText}>Done</Text>
                 </TouchableOpacity>
-              )}
-            </View>
-          ) : null}
+              </View>
+            ) : q ? (
+              <View style={qz.questionBox}>
+                <Text style={qz.qNumber}>Question {currentQ + 1} of {questions.length}</Text>
+                <Text style={qz.qText}>{q.question}</Text>
+
+                {q.options.map((opt, i) => {
+                  const isSelected = selectedAnswer === i;
+                  const isCorrect = i === q.correctIndex;
+                  const showResult = selectedAnswer !== null;
+
+                  return (
+                    <TouchableOpacity
+                      key={i}
+                      style={[
+                        qz.optionBtn,
+                        showResult && isCorrect && qz.optionCorrect,
+                        showResult && isSelected && !isCorrect && qz.optionWrong,
+                        !showResult && isSelected && qz.optionSelected,
+                      ]}
+                      onPress={() => {
+                        if (selectedAnswer !== null) return;
+                        setSelectedAnswer(i);
+                        if (i === q.correctIndex) setScore(s => s + 1);
+                        triggerHaptic(i === q.correctIndex ? 'success' : 'error');
+                      }}
+                      activeOpacity={0.7}
+                      disabled={selectedAnswer !== null}
+                    >
+                      <Text style={[
+                        qz.optionText,
+                        showResult && isCorrect && { color: '#059669', fontWeight: '700' },
+                        showResult && isSelected && !isCorrect && { color: '#EF4444' },
+                      ]}>
+                        {opt}
+                      </Text>
+                      {showResult && isCorrect && <Feather name="check-circle" size={16} color="#059669" />}
+                      {showResult && isSelected && !isCorrect && <Feather name="x-circle" size={16} color="#EF4444" />}
+                    </TouchableOpacity>
+                  );
+                })}
+
+                {selectedAnswer !== null && (
+                  <View style={qz.explainBox}>
+                    <Feather name="info" size={13} color={COLORS.accent} />
+                    <Text style={qz.explainText}>{q.explanation}</Text>
+                  </View>
+                )}
+
+                {selectedAnswer !== null && (
+                  <TouchableOpacity
+                    style={qz.nextBtn}
+                    onPress={() => {
+                      setSelectedAnswer(null);
+                      setCurrentQ(c => c + 1);
+                    }}
+                  >
+                    <Text style={qz.nextBtnText}>
+                      {currentQ + 1 < questions.length ? 'Next Question' : 'See Results'}
+                    </Text>
+                    <Feather name="arrow-right" size={14} color="#fff" />
+                  </TouchableOpacity>
+                )}
+              </View>
+            ) : null}
+          </ScrollView>
         </View>
       </View>
     </Modal>
@@ -1187,8 +1194,15 @@ const ds = StyleSheet.create({
 const qz = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   sheet: {
-    maxHeight: '85%', backgroundColor: COLORS.bg0, borderTopLeftRadius: 28, borderTopRightRadius: 28,
-    padding: 20, ...SHADOWS.lg,
+    maxHeight: SCREEN_HEIGHT * 0.85,
+    backgroundColor: COLORS.bg0,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
+    overflow: 'hidden',
+    ...SHADOWS.lg,
   },
   handleRow: { alignItems: 'center', marginBottom: 12 },
   handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: COLORS.border },
@@ -1203,6 +1217,9 @@ const qz = StyleSheet.create({
 
   loadingBox: { alignItems: 'center', paddingVertical: 40, gap: 12 },
   loadingText: { ...TYPE.body, color: COLORS.textMuted },
+
+  bodyScroll: { flexShrink: 1, minHeight: 0 },
+  bodyScrollContent: { paddingBottom: 8 },
 
   questionBox: { paddingBottom: 20 },
   qNumber: { ...TYPE.overline, color: COLORS.accent, marginBottom: 8 },
