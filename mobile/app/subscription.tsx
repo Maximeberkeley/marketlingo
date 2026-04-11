@@ -43,13 +43,12 @@ const TESTIMONIALS = [
 export default function SubscriptionScreen() {
   const insets = useSafeAreaInsets();
   const {
-    isProUser, isLoading, purchasePackage, getPackage, restorePurchases,
+    isProUser, isLoading, purchasePackage, getPackage,
     getExpirationDate, willRenew, isNative,
     trialStatus, canStartTrial, startFreeTrial, planType,
   } = useSubscription();
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
   const [isPurchasing, setIsPurchasing] = useState(false);
-  const [isRestoring, setIsRestoring] = useState(false);
   const [showTestimonials, setShowTestimonials] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationType, setCelebrationType] = useState<'trial' | 'monthly' | 'annual'>('trial');

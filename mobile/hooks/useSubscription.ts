@@ -24,12 +24,6 @@ interface PurchaseResult {
   error: string | null;
 }
 
-interface RestoreResult {
-  success: boolean;
-  restored: boolean;
-  error: string | null;
-}
-
 /**
  * useSubscription — unified subscription hook.
  * On native (iOS/Android), delegates purchases to RevenueCat.
