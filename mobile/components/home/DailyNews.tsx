@@ -1080,7 +1080,8 @@ const s = StyleSheet.create({
   featuredMeta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   featuredSource: { fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: '600' },
   featuredDate: { fontSize: 10, color: 'rgba(255,255,255,0.5)' },
-  impactDot: { width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+  highImpactBadge: { width: 22, height: 22, borderRadius: 11, backgroundColor: 'rgba(239,68,68,0.8)', alignItems: 'center', justifyContent: 'center' },
+  highImpactInline: { marginLeft: 2 },
 
   dotsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 10 },
   dot: { height: 3, borderRadius: 2, backgroundColor: COLORS.accent },
@@ -1146,8 +1147,8 @@ const ds = StyleSheet.create({
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, marginBottom: 10, flexWrap: 'wrap' },
   badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 },
   badgeText: { fontSize: 9, fontWeight: '700', letterSpacing: 0.8 },
-  impactPill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 },
-  impactText: { fontSize: 9, fontWeight: '700' },
+  highImpactPill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12, backgroundColor: 'rgba(239,68,68,0.1)' },
+  highImpactText: { fontSize: 9, fontWeight: '700', color: '#EF4444' },
   metaSource: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
   metaDate: { fontSize: 10, color: COLORS.textMuted },
 
