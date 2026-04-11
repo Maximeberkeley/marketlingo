@@ -44,7 +44,7 @@ export default function SubscriptionScreen() {
   const insets = useSafeAreaInsets();
   const {
     isProUser, isLoading, purchasePackage, getPackage,
-    getExpirationDate, willRenew, isNative,
+    getExpirationDate, willRenew,
     trialStatus, canStartTrial, startFreeTrial, planType,
   } = useSubscription();
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
@@ -351,8 +351,6 @@ const styles = StyleSheet.create({
   featureDescription: { fontSize: 13, color: COLORS.textMuted, marginTop: 2, lineHeight: 18 },
   highlightBadge: { backgroundColor: 'rgba(139,92,246,0.12)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 },
   highlightText: { fontSize: 9, fontWeight: '700', color: COLORS.accent, letterSpacing: 0.3 },
-  restoreButton: { alignItems: 'center', paddingVertical: 12 },
-  restoreText: { fontSize: 14, color: COLORS.textMuted },
   manageButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, marginBottom: 8 },
   manageText: { fontSize: 14, fontWeight: '600', color: COLORS.accent },
   proCard: { borderRadius: 18, padding: 18, marginBottom: 24, borderWidth: 1 },
