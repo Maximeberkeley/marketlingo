@@ -98,18 +98,6 @@ export default function SubscriptionScreen() {
     setIsPurchasing(false);
   };
 
-  const handleRestore = async () => {
-    setIsRestoring(true);
-    const result = await restorePurchases();
-    setIsRestoring(false);
-    if (result.success) {
-      if (result.restored) Alert.alert('Success', 'Subscription restored!');
-      else Alert.alert('Info', 'No active subscription found');
-    } else {
-      Alert.alert('Error', result.error || 'Restore failed');
-    }
-  };
-
   const getPriceDisplay = (type: PlanType) => {
     const pkg = getPackage(type);
     return pkg?.product?.priceString || (type === 'monthly' ? '$9.99' : '$79.99');
@@ -291,10 +279,6 @@ export default function SubscriptionScreen() {
             ))}
           </View>
         )}
-
-        <TouchableOpacity style={styles.restoreButton} onPress={handleRestore} disabled={isRestoring}>
-          <Text style={styles.restoreText}>{isRestoring ? 'Restoring...' : 'Restore Purchases'}</Text>
-        </TouchableOpacity>
 
         {isProUser && planType !== 'trial' && (
           <TouchableOpacity
