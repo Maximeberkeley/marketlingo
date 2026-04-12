@@ -22,45 +22,56 @@ export function useUserProgress(marketId?: string) {
 
   const fetchProgress = useCallback(async () => {
     if (!user || !marketId) {
+      setProgress(null);
       setLoading(false);
       return;
     }
 
-    const { data, error } = await supabase
-      .from('user_progress')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('market_id', marketId)
-      .single();
+    setLoading(true);
 
-    if (error && error.code === 'PGRST116') {
-      const today = new Date().toISOString().split('T')[0];
-      const { data: newProgress, error: createError } = await supabase
+    try {
+      const { data, error } = await supabase
         .from('user_progress')
-        .insert({
-          user_id: user.id,
-          market_id: marketId,
-          current_day: 1,
-          current_streak: 0,
-          longest_streak: 0,
-          completed_stacks: [],
-          start_date: today,
-        })
-        .select()
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('market_id', marketId)
         .single();
 
-      if (!createError && newProgress) {
-        setProgress(newProgress as UserProgress);
-        setAvailableDay(1);
-      }
-    } else if (data) {
-      const progressData = data as UserProgress;
-      setProgress(progressData);
-      const calcDay = calculateAvailableDay(progressData.start_date);
-      setAvailableDay(calcDay);
-    }
+      if (error && error.code === 'PGRST116') {
+        const today = new Date().toISOString().split('T')[0];
+        const { data: newProgress, error: createError } = await supabase
+          .from('user_progress')
+          .insert({
+            user_id: user.id,
+            market_id: marketId,
+            current_day: 1,
+            current_streak: 0,
+            longest_streak: 0,
+            completed_stacks: [],
+            start_date: today,
+          })
+          .select()
+          .single();
 
-    setLoading(false);
+        if (!createError && newProgress) {
+          setProgress(newProgress as UserProgress);
+          setAvailableDay(1);
+        } else if (createError) {
+          console.warn('[UserProgress] Failed to create progress:', createError.message);
+        }
+      } else if (error) {
+        console.warn('[UserProgress] Failed to load progress:', error.message);
+      } else if (data) {
+        const progressData = data as UserProgress;
+        setProgress(progressData);
+        const calcDay = calculateAvailableDay(progressData.start_date);
+        setAvailableDay(calcDay);
+      }
+    } catch (error) {
+      console.warn('[UserProgress] Progress request failed:', error);
+    } finally {
+      setLoading(false);
+    }
   }, [user, marketId]);
 
   useEffect(() => {

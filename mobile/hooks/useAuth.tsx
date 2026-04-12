@@ -25,51 +25,83 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    // CRITICAL: Set up listener BEFORE getSession to avoid race conditions
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        if (!mounted) return;
-        setSession(session ?? null);
-        setUser(session?.user ?? null);
-        setLoading(false);
-        if (session?.user) await storage.setUserId(session.user.id);
-      }
-    );
+    const persistUserId = (nextUser: User | null) => {
+      if (!nextUser) return;
+      void storage.setUserId(nextUser.id).catch((storageError) => {
+        console.warn('[Auth] Failed to persist user id:', storageError);
+      });
+    };
 
-    // Then check for existing session
-    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
+    const applyAuthState = (nextSession: Session | null) => {
       if (!mounted) return;
-      if (error) {
-        console.error('Error checking session:', error);
-        // If user no longer exists (deleted account), clear stale session
-        if (error.message?.includes('user_not_found') || error.code === 'user_not_found') {
-          console.warn('[Auth] Stale session detected (user deleted), signing out');
-          await supabase.auth.signOut();
-          await storage.clearAll();
-          setSession(null);
-          setUser(null);
-          setLoading(false);
-          return;
-        }
-      }
-      // Also validate session by checking if user endpoint works
-      if (session) {
-        const { error: userError } = await supabase.auth.getUser();
-        if (userError) {
-          console.warn('[Auth] Session invalid, clearing:', userError.message);
-          await supabase.auth.signOut();
-          await storage.clearAll();
-          setSession(null);
-          setUser(null);
-          setLoading(false);
-          return;
-        }
-      }
-      setSession(session ?? null);
-      setUser(session?.user ?? null);
+      setSession(nextSession ?? null);
+      setUser(nextSession?.user ?? null);
       setLoading(false);
-      if (session?.user) storage.setUserId(session.user.id);
+      persistUserId(nextSession?.user ?? null);
+    };
+
+    const clearLocalSession = async () => {
+      await Promise.allSettled([supabase.auth.signOut(), storage.clearAll()]);
+      if (!mounted) return;
+      setSession(null);
+      setUser(null);
+      setLoading(false);
+    };
+
+    // Listener first to avoid missing restored sessions, but do not await inside callback.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      applyAuthState(nextSession ?? null);
     });
+
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: restoredSession }, error } = await supabase.auth.getSession();
+
+        if (!mounted) return;
+
+        if (error) {
+          console.error('Error checking session:', error);
+          if (error.message?.includes('user_not_found') || error.code === 'user_not_found') {
+            console.warn('[Auth] Stale session detected (user deleted), signing out');
+            await clearLocalSession();
+            return;
+          }
+
+          applyAuthState(null);
+          return;
+        }
+
+        if (!restoredSession) {
+          applyAuthState(null);
+          return;
+        }
+
+        try {
+          const { error: userError } = await supabase.auth.getUser();
+
+          if (userError) {
+            if (userError.message?.includes('user_not_found') || userError.code === 'user_not_found') {
+              console.warn('[Auth] Stale session detected during validation, signing out');
+              await clearLocalSession();
+              return;
+            }
+
+            console.warn('[Auth] Session validation skipped:', userError.message);
+          }
+        } catch (validationError) {
+          console.warn('[Auth] Session validation failed due to network issue:', validationError);
+        }
+
+        applyAuthState(restoredSession);
+      } catch (error) {
+        console.warn('[Auth] Failed to restore session:', error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void initializeAuth();
 
     return () => {
       mounted = false;
@@ -107,8 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     try {
-      await supabase.auth.signOut();
-      await storage.clearAll();
+      await Promise.allSettled([supabase.auth.signOut(), storage.clearAll()]);
       setUser(null);
       setSession(null);
       return { success: true, error: null };
@@ -139,9 +170,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signOut,
         resetPassword,
         refreshSession: async () => {
-          const { data: { session } } = await supabase.auth.getSession();
-          setSession(session ?? null);
-          setUser(session?.user ?? null);
+          try {
+            const { data: { session } } = await supabase.auth.getSession();
+            setSession(session ?? null);
+            setUser(session?.user ?? null);
+          } catch (error) {
+            console.warn('[Auth] Failed to refresh session:', error);
+          }
         },
       }}
     >
