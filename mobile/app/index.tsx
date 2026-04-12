@@ -12,45 +12,70 @@ export default function Index() {
   useEffect(() => {
     if (loading) return;
 
+    let isActive = true;
+    const safeReplace = (path: string) => {
+      if (!isActive) return;
+      router.replace(path as any);
+    };
+
     async function redirect() {
       if (!user) {
-        router.replace('/auth');
+        safeReplace('/auth');
         return;
       }
 
-      trackEvent('app_open');
-      identifyUser(user.id, { email: user.email || '' });
+      try {
+        trackEvent('app_open');
+        identifyUser(user.id, { email: user.email || '' });
 
-      // Check if user has selected a market
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('selected_market')
-        .eq('id', user.id)
-        .single();
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('selected_market')
+          .eq('id', user.id)
+          .maybeSingle();
 
-      if (!profile?.selected_market) {
-        router.replace('/onboarding' as any);
-        return;
-      }
+        if (profileError) {
+          console.warn('[Index] Failed to load profile during startup:', profileError.message);
+          safeReplace('/(tabs)/home');
+          return;
+        }
 
-      // Check goal + familiarity for selected market
-      const { data: progress } = await supabase
-        .from('user_progress')
-        .select('learning_goal, familiarity_level')
-        .eq('user_id', user.id)
-        .eq('market_id', profile.selected_market)
-        .maybeSingle();
+        if (!profile?.selected_market) {
+          safeReplace('/onboarding');
+          return;
+        }
 
-      if (!progress?.learning_goal) {
-        router.replace('/onboarding/goal' as any);
-      } else if (!progress?.familiarity_level) {
-        router.replace('/onboarding/familiarity' as any);
-      } else {
-        router.replace('/(tabs)/home');
+        const { data: progress, error: progressError } = await supabase
+          .from('user_progress')
+          .select('learning_goal, familiarity_level')
+          .eq('user_id', user.id)
+          .eq('market_id', profile.selected_market)
+          .maybeSingle();
+
+        if (progressError && progressError.code !== 'PGRST116') {
+          console.warn('[Index] Failed to load progress during startup:', progressError.message);
+          safeReplace('/(tabs)/home');
+          return;
+        }
+
+        if (!progress?.learning_goal) {
+          safeReplace('/onboarding/goal');
+        } else if (!progress?.familiarity_level) {
+          safeReplace('/onboarding/familiarity');
+        } else {
+          safeReplace('/(tabs)/home');
+        }
+      } catch (error) {
+        console.warn('[Index] Startup redirect failed:', error);
+        safeReplace('/(tabs)/home');
       }
     }
 
-    redirect();
+    void redirect();
+
+    return () => {
+      isActive = false;
+    };
   }, [user, loading]);
 
   return (

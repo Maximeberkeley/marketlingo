@@ -40,62 +40,67 @@ export function useUserXP(marketId?: string) {
       return xpData;
     }
 
-    const { data: existingXP, error: xpError } = await supabase
-      .from('user_xp')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('market_id', marketId)
-      .maybeSingle();
-
-    if (xpError && xpError.code !== 'PGRST116') {
-      console.error('Error fetching XP:', xpError);
-      return null;
-    }
-
-    if (existingXP) {
-      setXpData(existingXP);
-      return existingXP;
-    }
-
-    const { data: newXP, error: createError } = await supabase
-      .from('user_xp')
-      .insert({
-        user_id: user.id,
-        market_id: marketId,
-        total_xp: 0,
-        current_level: 1,
-        xp_to_next_level: 100,
-        startup_stage: 1,
-      })
-      .select()
-      .single();
-
-    if (createError) {
-      const { data: recoveredXP, error: recoverError } = await supabase
+    try {
+      const { data: existingXP, error: xpError } = await supabase
         .from('user_xp')
         .select('*')
         .eq('user_id', user.id)
         .eq('market_id', marketId)
         .maybeSingle();
 
-      if (recoverError && recoverError.code !== 'PGRST116') {
-        console.error('Error recovering XP:', recoverError);
+      if (xpError && xpError.code !== 'PGRST116') {
+        console.error('Error fetching XP:', xpError);
+        return null;
       }
 
-      if (recoveredXP) {
-        setXpData(recoveredXP);
-        return recoveredXP;
+      if (existingXP) {
+        setXpData(existingXP);
+        return existingXP;
       }
 
-      console.error('Error creating XP:', createError);
+      const { data: newXP, error: createError } = await supabase
+        .from('user_xp')
+        .insert({
+          user_id: user.id,
+          market_id: marketId,
+          total_xp: 0,
+          current_level: 1,
+          xp_to_next_level: 100,
+          startup_stage: 1,
+        })
+        .select()
+        .single();
+
+      if (createError) {
+        const { data: recoveredXP, error: recoverError } = await supabase
+          .from('user_xp')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('market_id', marketId)
+          .maybeSingle();
+
+        if (recoverError && recoverError.code !== 'PGRST116') {
+          console.error('Error recovering XP:', recoverError);
+        }
+
+        if (recoveredXP) {
+          setXpData(recoveredXP);
+          return recoveredXP;
+        }
+
+        console.error('Error creating XP:', createError);
+        return null;
+      }
+
+      if (newXP) {
+        setXpData(newXP);
+      }
+
+      return newXP;
+    } catch (error) {
+      console.warn('[UserXP] Failed to ensure XP record:', error);
       return null;
     }
-
-    if (newXP) {
-      setXpData(newXP);
-    }
-
-    return newXP;
   }, [user, marketId, xpData]);
 
   const fetchXPData = useCallback(async () => {
@@ -108,27 +113,31 @@ export function useUserXP(marketId?: string) {
 
     setLoading(true);
 
-    const ensuredXP = await ensureXPRecord();
-    if (ensuredXP) {
-      setXpData(ensuredXP);
+    try {
+      const ensuredXP = await ensureXPRecord();
+      if (ensuredXP) {
+        setXpData(ensuredXP);
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      const { data: todayCompletion, error: completionError } = await supabase
+        .from('daily_completions')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('market_id', marketId)
+        .eq('completion_date', today)
+        .maybeSingle();
+
+      if (completionError && completionError.code !== 'PGRST116') {
+        console.error('Error fetching daily completion:', completionError);
+      }
+
+      setDailyCompletion(todayCompletion || null);
+    } catch (error) {
+      console.warn('[UserXP] Failed to load XP data:', error);
+    } finally {
+      setLoading(false);
     }
-
-    const today = new Date().toISOString().split('T')[0];
-    const { data: todayCompletion, error: completionError } = await supabase
-      .from('daily_completions')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('market_id', marketId)
-      .eq('completion_date', today)
-      .maybeSingle();
-
-    if (completionError && completionError.code !== 'PGRST116') {
-      console.error('Error fetching daily completion:', completionError);
-    }
-
-    setDailyCompletion(todayCompletion || null);
-
-    setLoading(false);
   }, [user, marketId, ensureXPRecord]);
 
   useEffect(() => {
