@@ -283,7 +283,12 @@ export function useSubscription() {
       }
     }
 
-    // DB-only mock (web, testing, or RevenueCat unavailable)
+    // On native, never allow DB-only mock — must go through App Store
+    if (isNative) {
+      return { success: false, cancelled: false, error: 'In-App Purchase is not available right now. Please try again later.' };
+    }
+
+    // DB-only mock (web/testing only)
     try {
       const { error } = await supabase.from('profiles').update({
         is_pro_user: true,
@@ -375,10 +380,45 @@ export function useSubscription() {
     };
   }, [rcOfferings]);
 
+  // ---------- Restore Purchases ----------
+  const restorePurchases = useCallback(async (): Promise<{ success: boolean; restored: boolean; error: string | null }> => {
+    if (!user) return { success: false, restored: false, error: 'Not logged in' };
+
+    if (isNative && revenueCatRef.current) {
+      try {
+        const isConfigured = revenueCatRef.current.isConfigured?.() ?? false;
+        if (isConfigured) {
+          const customerInfo = await revenueCatRef.current.restorePurchases();
+          const isPro = customerInfo.entitlements?.active?.['MarketLingo Pro'] !== undefined;
+          if (isPro) {
+            const activeEntitlement = customerInfo.entitlements?.active?.['MarketLingo Pro'];
+            const productId = activeEntitlement?.productIdentifier || '';
+            const restoredPlan = productId.includes('monthly') ? 'monthly' : 'annual';
+            await supabase.from('profiles').update({
+              is_pro_user: true,
+              pro_plan_type: restoredPlan,
+              pro_subscription_date: new Date().toISOString(),
+            }).eq('id', user.id);
+            setIsProUser(true);
+            setPlanType(restoredPlan as 'monthly' | 'annual');
+          }
+          return { success: true, restored: isPro, error: null };
+        }
+      } catch (e: any) {
+        console.error('Restore error:', e);
+        return { success: false, restored: false, error: e.message || 'Restore failed' };
+      }
+    }
+
+    // Fallback: re-fetch DB
+    await fetchSubscriptionStatus();
+    return { success: true, restored: isProUser, error: null };
+  }, [user, isNative, fetchSubscriptionStatus, isProUser]);
+
   return {
     isProUser, isLoading, isNative, planType, trialStatus, canStartTrial,
-    purchasePackage, getExpirationDate, willRenew, getPackage,
+    purchasePackage, restorePurchases, getExpirationDate, willRenew, getPackage,
     startFreeTrial, toggleProForTesting, refreshStatus: fetchSubscriptionStatus,
-    rcReady, // expose for UI to know if RevenueCat is available
+    rcReady,
   };
 }
