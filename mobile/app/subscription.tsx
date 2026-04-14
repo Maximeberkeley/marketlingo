@@ -291,6 +291,56 @@ export default function SubscriptionScreen() {
           </TouchableOpacity>
         )}
 
+        {/* Restore Purchases — required by Apple */}
+        {!isProUser && (
+          <TouchableOpacity
+            style={styles.restoreButton}
+            onPress={async () => {
+              setIsRestoring(true);
+              try {
+                const result = await restorePurchases();
+                if (result.restored) {
+                  Alert.alert('Restored!', 'Your Pro subscription has been restored.');
+                } else {
+                  Alert.alert('No Purchases Found', 'We couldn\'t find any previous purchases to restore.');
+                }
+              } catch {
+                Alert.alert('Error', 'Could not restore purchases. Please try again.');
+              }
+              setIsRestoring(false);
+            }}
+            disabled={isRestoring}
+          >
+            {isRestoring ? (
+              <ActivityIndicator size="small" color={COLORS.accent} />
+            ) : (
+              <Text style={styles.restoreText}>Restore Purchases</Text>
+            )}
+          </TouchableOpacity>
+        )}
+
+        {/* Subscription details required by Apple */}
+        <View style={styles.subscriptionDetails}>
+          <Text style={styles.subscriptionDetailTitle}>Subscription Details</Text>
+          <Text style={styles.subscriptionDetailItem}>• MarketLingo Pro (Monthly): {getPriceDisplay('monthly')}/month</Text>
+          <Text style={styles.subscriptionDetailItem}>• MarketLingo Pro (Annual): {getPriceDisplay('annual')}/year</Text>
+          <Text style={styles.subscriptionDetailItem}>• Payment is charged to your Apple ID account at confirmation of purchase</Text>
+          <Text style={styles.subscriptionDetailItem}>• Subscription automatically renews unless cancelled at least 24 hours before the end of the current period</Text>
+          <Text style={styles.subscriptionDetailItem}>• Your account will be charged for renewal within 24 hours prior to the end of the current period</Text>
+          <Text style={styles.subscriptionDetailItem}>• Manage or cancel subscriptions in your Apple ID Account Settings</Text>
+        </View>
+
+        {/* Legal links — required by Apple for auto-renewable subscriptions */}
+        <View style={styles.legalLinks}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://marketlingo-marketverse.lovable.app/privacy')}>
+            <Text style={styles.legalLinkText}>Privacy Policy</Text>
+          </TouchableOpacity>
+          <Text style={styles.legalSeparator}>•</Text>
+          <TouchableOpacity onPress={() => Linking.openURL('https://marketlingo-marketverse.lovable.app/terms')}>
+            <Text style={styles.legalLinkText}>Terms of Use (EULA)</Text>
+          </TouchableOpacity>
+        </View>
+
         <Text style={styles.legalText}>
           Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage subscriptions in your Apple ID settings.
         </Text>
