@@ -13,6 +13,7 @@ import { router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { useSubscription, TRIAL_DURATION_DAYS } from '../../hooks/useSubscription';
+import { Linking } from 'react-native';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
