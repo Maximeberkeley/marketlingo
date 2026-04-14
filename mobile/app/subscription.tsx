@@ -435,4 +435,12 @@ const styles = StyleSheet.create({
   testimonialInitialsText: { fontSize: 12, fontWeight: '700' },
   testimonialAuthor: { fontSize: 12, color: COLORS.textMuted },
   legalText: { fontSize: 10, color: COLORS.textMuted, textAlign: 'center', lineHeight: 15, marginTop: 8, marginBottom: 20 },
+  restoreButton: { alignItems: 'center', paddingVertical: 14, marginTop: 8 },
+  restoreText: { fontSize: 14, fontWeight: '600', color: COLORS.accent },
+  subscriptionDetails: { marginTop: 16, padding: 14, backgroundColor: COLORS.bg2, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border },
+  subscriptionDetailTitle: { fontSize: 13, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 8 },
+  subscriptionDetailItem: { fontSize: 11, color: COLORS.textMuted, lineHeight: 17, marginBottom: 4 },
+  legalLinks: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 16, marginBottom: 4 },
+  legalLinkText: { fontSize: 12, color: COLORS.accent, fontWeight: '600', textDecorationLine: 'underline' },
+  legalSeparator: { fontSize: 12, color: COLORS.textMuted },
 });
