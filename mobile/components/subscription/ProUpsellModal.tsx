@@ -159,6 +159,17 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
             <TouchableOpacity style={styles.maybeLater} onPress={onClose}>
               <Text style={styles.maybeLaterText}>Maybe later</Text>
             </TouchableOpacity>
+
+            {/* Legal links */}
+            <View style={styles.legalRow}>
+              <TouchableOpacity onPress={() => Linking.openURL('https://marketlingo-marketverse.lovable.app/privacy')}>
+                <Text style={styles.legalLink}>Privacy Policy</Text>
+              </TouchableOpacity>
+              <Text style={styles.legalDot}>•</Text>
+              <TouchableOpacity onPress={() => Linking.openURL('https://marketlingo-marketverse.lovable.app/terms')}>
+                <Text style={styles.legalLink}>Terms of Use</Text>
+              </TouchableOpacity>
+            </View>
           </ScrollView>
         </Animated.View>
       </Animated.View>
@@ -276,4 +287,7 @@ const styles = StyleSheet.create({
   },
   maybeLater: { alignItems: 'center', paddingVertical: 8, marginTop: 4 },
   maybeLaterText: { fontSize: 13, color: COLORS.textMuted },
+  legalRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, marginTop: 8 },
+  legalLink: { fontSize: 11, color: COLORS.textMuted, textDecorationLine: 'underline' },
+  legalDot: { fontSize: 11, color: COLORS.textMuted },
 });
