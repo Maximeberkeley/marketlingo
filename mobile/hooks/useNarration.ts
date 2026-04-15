@@ -75,5 +75,26 @@ export function useNarration({ voiceId, enabled }: UseNarrationOptions) {
     }
   }, [enabled, voiceId, stop]);
 
+  // Stop narration when component unmounts (e.g. exiting lesson)
+  const stopRef = useRef(stop);
+  stopRef.current = stop;
+  
+  useState(() => {
+    // Return cleanup via useEffect below
+  });
+
+  // Using a separate useEffect for unmount cleanup
+  const unmountRef = useRef(false);
+  if (!unmountRef.current) {
+    unmountRef.current = true;
+  }
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      stopRef.current();
+    };
+  }, []);
+
   return { speak, stop, isPlaying, isLoading };
 }
