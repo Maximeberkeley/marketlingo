@@ -101,5 +101,17 @@ export function useNarration({ voiceId, enabled }: UseNarrationOptions) {
     [enabled, voiceId, stop]
   );
 
+  // Stop narration when component unmounts (e.g. exiting lesson)
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
   return { speak, stop, isPlaying, isLoading };
 }
