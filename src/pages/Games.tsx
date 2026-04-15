@@ -104,8 +104,7 @@ export default function GamesPage() {
         .from("stacks")
         .select("id, title, tags")
         .eq("market_id", market)
-        .contains("tags", [`day:${day}`])
-        .eq("stack_type", "lesson")
+        .contains("tags", ["MICRO_LESSON", `day-${day}`])
         .not("published_at", "is", null)
         .limit(1)
         .maybeSingle();
@@ -119,7 +118,7 @@ export default function GamesPage() {
         .from("stacks")
         .select(`id, title, tags, slides (id, slide_number, title, body)`)
         .eq("market_id", market)
-        .contains("tags", ["DAILY_GAME", `day:${day}`])
+        .contains("tags", ["DAILY_GAME", `day-${day}`])
         .not("published_at", "is", null)
         .limit(10);
 
