@@ -116,7 +116,7 @@ const LAB_CARDS: CardData[] = [
 ];
 
 // Feature flag — flip to false before App Store submission
-const SEMINARS_ENABLED = true;
+const SEMINARS_ENABLED = false;
 
 const RESOURCE_CARDS: CardData[] = [
   ...(SEMINARS_ENABLED ? [{
