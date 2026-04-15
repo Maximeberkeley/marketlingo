@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Timer, CheckCircle, XCircle, RotateCcw, Loader2, Target, TrendingUp, ChevronRight } from "lucide-react";
+import { ArrowLeft, Timer, CheckCircle, XCircle, RotateCcw, Loader2, Target, TrendingUp, ChevronRight, BookOpen, Flame } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
@@ -54,6 +54,11 @@ export default function DrillsPage() {
   const primaryMentorId = selectedMarket ? getPrimaryMentorForMarket(selectedMarket) : "alex";
   const primaryMentor = mentors.find(m => m.id === primaryMentorId) || mentors[1];
 
+  const [currentDay, setCurrentDay] = useState<number>(1);
+  const [currentStreak, setCurrentStreak] = useState<number>(0);
+  const [currentLessonTitle, setCurrentLessonTitle] = useState<string | null>(null);
+  const [bestAccuracy, setBestAccuracy] = useState<number | null>(null);
+
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
@@ -68,16 +73,43 @@ export default function DrillsPage() {
       const market = profile?.selected_market || "aerospace";
       setSelectedMarket(market);
 
-      // Get user's learning goal for goal-specific content
+      // Get user progress for current day, streak & goal
       const { data: progressData } = await supabase
         .from("user_progress")
-        .select("learning_goal")
+        .select("learning_goal, current_day, current_streak")
         .eq("user_id", user.id)
         .eq("market_id", market)
         .maybeSingle();
 
       const learningGoal = progressData?.learning_goal || "curiosity";
       const goalTag = `goal:${learningGoal}`;
+      const day = progressData?.current_day || 1;
+      setCurrentDay(day);
+      setCurrentStreak(progressData?.current_streak || 0);
+
+      // Get best previous accuracy
+      const { data: prevDrill } = await supabase
+        .from("drills_progress")
+        .select("completed_count, correct_count")
+        .eq("user_id", user.id)
+        .eq("market_id", market)
+        .eq("drill_type", "true_false")
+        .maybeSingle();
+      if (prevDrill?.completed_count && prevDrill?.correct_count) {
+        setBestAccuracy(Math.round((prevDrill.correct_count / (prevDrill.completed_count * 5)) * 100));
+      }
+
+      // Get current day's lesson title for context
+      const { data: currentStack } = await supabase
+        .from("stacks")
+        .select("title")
+        .eq("market_id", market)
+        .contains("tags", [`day:${day}`])
+        .eq("stack_type", "lesson")
+        .not("published_at", "is", null)
+        .limit(1)
+        .maybeSingle();
+      if (currentStack) setCurrentLessonTitle(currentStack.title);
 
       // Try goal-specific stacks first
       let { data: stacks, error } = await supabase
@@ -121,11 +153,9 @@ export default function DrillsPage() {
         
         slides.forEach((slide, index) => {
           if (slide.body && slide.body.length > 20 && drillQuestions.length < 10) {
-            // Create a true statement from the slide content
-            const isTrue = index % 2 === 0; // Alternate true/false
+            const isTrue = index % 2 === 0;
             let statement = slide.body;
             
-            // For false statements, slightly modify the content
             if (!isTrue) {
               statement = statement
                 .replace(/always/gi, "never")
@@ -133,9 +163,7 @@ export default function DrillsPage() {
                 .replace(/key/gi, "minor");
             }
 
-            // Use smart truncation to avoid mid-word/mid-sentence cuts
             const truncatedStatement = smartTruncate(statement, 280);
-
             const sources = slide.sources as any[] || [];
             const sourceLabel = sources[0]?.label || "Industry Analysis";
 
@@ -304,56 +332,110 @@ export default function DrillsPage() {
           )}
         </motion.div>
 
-        <div className="flex-1 flex items-center justify-center screen-padding py-6">
+        <div className="flex-1 screen-padding py-6 overflow-y-auto">
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="w-full max-w-md"
+            transition={{ duration: 0.4 }}
+            className="w-full max-w-md mx-auto"
           >
-            {/* Full-body Mascot Welcome */}
-            <MascotBreak
-              type="intro"
-              marketId={selectedMarket || undefined}
-              message="Let's test your instincts! 15 seconds per question — trust your gut! 🎯"
-              className="mb-6"
-            />
-
-            {/* Hero Card with Market-Specific Gradient */}
-            <div className={`relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-amber-600 via-orange-700 to-red-900'}`}>
-              <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5" />
-              <div className="relative p-6 pt-6 pb-5 flex flex-col justify-end">
-                <p className="text-white/80 text-caption font-medium mb-1">{marketConfig?.name || 'Industry'} Drills</p>
-                <h2 className="text-xl font-bold text-white mb-2">15-Second Challenges</h2>
-                <p className="text-white/80 text-body leading-relaxed">
+            {/* Hero Card */}
+            <div className={`relative overflow-hidden rounded-3xl mb-5 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-amber-600 via-orange-700 to-red-900'}`}>
+              <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'radial-gradient(circle at 70% 30%, white 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+              <div className="relative p-6 pb-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <Target size={16} className="text-white" />
+                  </div>
+                  <span className="text-white/70 text-xs font-semibold uppercase tracking-wider">{marketConfig?.name || 'Industry'} Drills</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-1.5">15-Second Challenges</h2>
+                <p className="text-white/75 text-sm leading-relaxed">
                   {marketConfig?.drillDescription || 'Rapid-fire True/False to build pattern recognition.'}
                 </p>
               </div>
             </div>
 
+            {/* Current Lesson Context */}
+            {currentLessonTitle && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="flex items-center gap-3 p-3.5 rounded-2xl bg-primary/5 border border-primary/15 mb-5"
+              >
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <BookOpen size={16} className="text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] font-semibold text-primary uppercase tracking-wide">Today's Lesson · Day {currentDay}</p>
+                  <p className="text-sm text-text-primary font-medium truncate">{currentLessonTitle}</p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Stats Row */}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="grid grid-cols-3 gap-3 mb-5"
+            >
+              <div className="rounded-2xl bg-bg-2 border border-border p-3 text-center">
+                <p className="text-lg font-bold text-text-primary">{questions.length}</p>
+                <p className="text-[11px] text-text-muted">Questions</p>
+              </div>
+              <div className="rounded-2xl bg-bg-2 border border-border p-3 text-center">
+                <div className="flex items-center justify-center gap-1">
+                  <Timer size={14} className="text-amber-400" />
+                  <p className="text-lg font-bold text-text-primary">15s</p>
+                </div>
+                <p className="text-[11px] text-text-muted">Per Question</p>
+              </div>
+              <div className="rounded-2xl bg-bg-2 border border-border p-3 text-center">
+                <p className="text-lg font-bold text-text-primary">{bestAccuracy !== null ? `${bestAccuracy}%` : '—'}</p>
+                <p className="text-[11px] text-text-muted">Best Accuracy</p>
+              </div>
+            </motion.div>
+
+            {/* Mascot */}
+            <MascotBreak
+              type="intro"
+              marketId={selectedMarket || undefined}
+              message="Let's test your instincts! 15 seconds per question — trust your gut! 🎯"
+              className="mb-5"
+            />
+
             {/* Features */}
-            <div className="card-elevated mb-6 p-5">
-              <h3 className="text-h3 text-text-primary mb-4">How it works</h3>
-              <ul className="space-y-3">
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="card-elevated mb-6 p-5"
+            >
+              <h3 className="text-h3 text-text-primary mb-3">How it works</h3>
+              <ul className="space-y-2.5">
                 {[
-                  "15 seconds per question",
-                  "True or False answers",
-                  "Based on real industry facts",
-                  "Build intuition fast"
+                  { icon: <Timer size={14} />, text: "15 seconds per question" },
+                  { icon: <CheckCircle size={14} />, text: "True or False answers" },
+                  { icon: <TrendingUp size={14} />, text: "Based on real industry facts" },
+                  { icon: <Target size={14} />, text: "Build intuition fast" },
                 ].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-body text-text-secondary">
-                    <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
-                    {feature}
+                  <li key={i} className="flex items-center gap-3 text-sm text-text-secondary">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 text-primary">
+                      {feature.icon}
+                    </div>
+                    {feature.text}
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
 
             {/* CTA */}
             <Button 
-              className="w-full" 
+              className="w-full h-14 text-base font-semibold rounded-2xl" 
               size="lg"
               onClick={() => {
-                // Check limit before starting
                 if (!drillsLimit.canAccess) {
                   setShowLimitGate(true);
                   return;

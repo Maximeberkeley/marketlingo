@@ -337,56 +337,112 @@ export default function GamesPage() {
           )}
         </motion.div>
 
-        <div className="flex-1 flex items-center justify-center screen-padding py-6">
+        <div className="flex-1 screen-padding py-6 overflow-y-auto">
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.4 }}
             className="w-full"
           >
-            {/* Full-body Mascot Welcome */}
-            <MascotBreak
-              type="intro"
-              marketId={selectedMarket || undefined}
-              message="Game time! Pick the right answers and learn the patterns! 🎮"
-              className="mb-6"
-            />
-
             {/* Hero Card with Market-Specific Gradient */}
-            <div className={`relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-purple-600 via-violet-700 to-indigo-900'}`}>
-              <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5" />
-              <div className="relative p-6 pt-6 pb-5 flex flex-col justify-end">
-                <p className="text-white/80 text-caption font-medium mb-1">{marketConfig?.name || 'Industry'} Games</p>
-                <h2 className="text-xl font-bold text-white mb-2">Test Your Knowledge</h2>
-                <p className="text-white/80 text-body leading-relaxed">
+            <div className={`relative overflow-hidden rounded-3xl mb-5 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-purple-600 via-violet-700 to-indigo-900'}`}>
+              <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, white 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+              <div className="relative p-6 pb-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <Gamepad2 size={16} className="text-white" />
+                  </div>
+                  <span className="text-white/70 text-xs font-semibold uppercase tracking-wider">{marketConfig?.name || 'Industry'} Games</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-1.5">Test Your Knowledge</h2>
+                <p className="text-white/75 text-sm leading-relaxed">
                   {marketConfig?.gameDescription || 'Quick MCQ challenges based on real industry patterns.'}
                 </p>
               </div>
             </div>
 
+            {/* Current Lesson Context Chip */}
+            {currentLessonTitle && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="flex items-center gap-3 p-3.5 rounded-2xl bg-primary/5 border border-primary/15 mb-5"
+              >
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <BookOpen size={16} className="text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] font-semibold text-primary uppercase tracking-wide">Today's Lesson · Day {currentDay}</p>
+                  <p className="text-sm text-text-primary font-medium truncate">{currentLessonTitle}</p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Stats Row */}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="grid grid-cols-3 gap-3 mb-5"
+            >
+              <div className="rounded-2xl bg-bg-2 border border-border p-3 text-center">
+                <p className="text-lg font-bold text-text-primary">{questions.length}</p>
+                <p className="text-[11px] text-text-muted">Questions</p>
+              </div>
+              <div className="rounded-2xl bg-bg-2 border border-border p-3 text-center">
+                <div className="flex items-center justify-center gap-1">
+                  <Flame size={14} className="text-accent" />
+                  <p className="text-lg font-bold text-text-primary">{currentStreak}</p>
+                </div>
+                <p className="text-[11px] text-text-muted">Streak</p>
+              </div>
+              <div className="rounded-2xl bg-bg-2 border border-border p-3 text-center">
+                <p className="text-lg font-bold text-text-primary">{bestScore !== null ? `${bestScore}` : '—'}</p>
+                <p className="text-[11px] text-text-muted">Best Score</p>
+              </div>
+            </motion.div>
+
+            {/* Mascot */}
+            <MascotBreak
+              type="intro"
+              marketId={selectedMarket || undefined}
+              message={currentLessonTitle 
+                ? `Let's see what you remember from "${smartTruncate(currentLessonTitle, 40)}"! 🎮` 
+                : "Game time! Pick the right answers and learn the patterns! 🎮"}
+              className="mb-5"
+            />
+
             {/* Features */}
-            <div className="card-elevated mb-6 p-5">
-              <h3 className="text-h3 text-text-primary mb-4">What to expect</h3>
-              <ul className="space-y-3">
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="card-elevated mb-6 p-5"
+            >
+              <h3 className="text-h3 text-text-primary mb-3">What to expect</h3>
+              <ul className="space-y-2.5">
                 {[
-                  "Multiple choice questions",
-                  "Instant feedback with explanations",
-                  "Startup application tips",
-                  "Track your score"
+                  { icon: <Target size={14} />, text: "Multiple choice questions" },
+                  { icon: <CheckCircle size={14} />, text: "Instant feedback with explanations" },
+                  { icon: <Briefcase size={14} />, text: "Real-world application tips" },
+                  { icon: <Trophy size={14} />, text: "Track your score & earn XP" },
                 ].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-body text-text-secondary">
-                    <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
-                    {feature}
+                  <li key={i} className="flex items-center gap-3 text-sm text-text-secondary">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 text-primary">
+                      {feature.icon}
+                    </div>
+                    {feature.text}
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
 
             {/* CTA */}
             <Button 
-              className="w-full" 
+              className="w-full h-14 text-base font-semibold rounded-2xl" 
               size="lg"
               onClick={() => {
-                // Check limit before starting
                 if (!gamesLimit.canAccess) {
                   setShowLimitGate(true);
                   return;

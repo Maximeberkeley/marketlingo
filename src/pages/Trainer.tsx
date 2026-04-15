@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Loader2, Brain, ChevronRight, Crown } from "lucide-react";
+import { ArrowLeft, Loader2, Brain, ChevronRight, Crown, BookOpen, Flame, Trophy, Lightbulb } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TrainerCard } from "@/components/trainer/TrainerCard";
 import { Button } from "@/components/ui/button";
