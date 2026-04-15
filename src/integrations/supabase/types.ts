@@ -1112,6 +1112,197 @@ export type Database = {
           },
         ]
       }
+      seminar_chat_messages: {
+        Row: {
+          created_at: string
+          id: string
+          is_pinned: boolean
+          message: string
+          seminar_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          message: string
+          seminar_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          message?: string
+          seminar_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seminar_chat_messages_seminar_id_fkey"
+            columns: ["seminar_id"]
+            isOneToOne: false
+            referencedRelation: "seminars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seminar_prep_modules: {
+        Row: {
+          content: string | null
+          correct_index: number | null
+          created_at: string
+          id: string
+          quiz_options: Json | null
+          quiz_question: string | null
+          seminar_id: string
+          sort_order: number
+          title: string
+          xp_reward: number
+        }
+        Insert: {
+          content?: string | null
+          correct_index?: number | null
+          created_at?: string
+          id?: string
+          quiz_options?: Json | null
+          quiz_question?: string | null
+          seminar_id: string
+          sort_order?: number
+          title: string
+          xp_reward?: number
+        }
+        Update: {
+          content?: string | null
+          correct_index?: number | null
+          created_at?: string
+          id?: string
+          quiz_options?: Json | null
+          quiz_question?: string | null
+          seminar_id?: string
+          sort_order?: number
+          title?: string
+          xp_reward?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seminar_prep_modules_seminar_id_fkey"
+            columns: ["seminar_id"]
+            isOneToOne: false
+            referencedRelation: "seminars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seminar_registrations: {
+        Row: {
+          attended: boolean
+          id: string
+          prep_completed: boolean
+          prep_modules_done: number
+          registered_at: string
+          seminar_id: string
+          user_id: string
+        }
+        Insert: {
+          attended?: boolean
+          id?: string
+          prep_completed?: boolean
+          prep_modules_done?: number
+          registered_at?: string
+          seminar_id: string
+          user_id: string
+        }
+        Update: {
+          attended?: boolean
+          id?: string
+          prep_completed?: boolean
+          prep_modules_done?: number
+          registered_at?: string
+          seminar_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seminar_registrations_seminar_id_fkey"
+            columns: ["seminar_id"]
+            isOneToOne: false
+            referencedRelation: "seminars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seminars: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_minutes: number
+          id: string
+          is_pro_only: boolean
+          key_takeaways: Json | null
+          market_id: string
+          mini_case: string | null
+          post_content_at: string | null
+          prep_start_at: string | null
+          scheduled_at: string
+          speaker_avatar_url: string | null
+          speaker_name: string | null
+          speaker_title: string | null
+          status: string
+          tags: string[] | null
+          title: string
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          is_pro_only?: boolean
+          key_takeaways?: Json | null
+          market_id: string
+          mini_case?: string | null
+          post_content_at?: string | null
+          prep_start_at?: string | null
+          scheduled_at: string
+          speaker_avatar_url?: string | null
+          speaker_name?: string | null
+          speaker_title?: string | null
+          status?: string
+          tags?: string[] | null
+          title: string
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          is_pro_only?: boolean
+          key_takeaways?: Json | null
+          market_id?: string
+          mini_case?: string | null
+          post_content_at?: string | null
+          prep_start_at?: string | null
+          scheduled_at?: string
+          speaker_avatar_url?: string | null
+          speaker_name?: string | null
+          speaker_title?: string | null
+          status?: string
+          tags?: string[] | null
+          title?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seminars_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       slides: {
         Row: {
           body: string
