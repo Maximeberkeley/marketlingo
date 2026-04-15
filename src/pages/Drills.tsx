@@ -104,82 +104,104 @@ export default function DrillsPage() {
         .from("stacks")
         .select("title")
         .eq("market_id", market)
-        .contains("tags", [`day:${day}`])
-        .eq("stack_type", "lesson")
+        .contains("tags", ["MICRO_LESSON", `day-${day}`])
         .not("published_at", "is", null)
         .limit(1)
         .maybeSingle();
       if (currentStack) setCurrentLessonTitle(currentStack.title);
 
-      // Try goal-specific stacks first
-      let { data: stacks, error } = await supabase
-        .from("stacks")
-        .select(`id, title, tags, slides (id, slide_number, title, body, sources)`)
-        .eq("market_id", market)
-        .contains("tags", [goalTag])
-        .not("published_at", "is", null)
-        .limit(20);
+      // Fetch drill questions from the dedicated drill_questions table
+      // Priority: current day → closest available day → any
+      let drillQuestions: DrillQuestion[] = [];
 
-      // Fallback: any stacks if no goal-specific ones
-      if (!stacks?.length) {
-        const fallback = await supabase
+      const { data: dayDrills } = await supabase
+        .from("drill_questions")
+        .select("id, category, statement, is_true, explanation, source_label")
+        .eq("market_id", market)
+        .eq("day_number", day)
+        .limit(10);
+
+      if (dayDrills?.length) {
+        drillQuestions = dayDrills.map((d: any) => ({
+          id: d.id,
+          category: d.category || "Market Insight",
+          statement: smartTruncate(d.statement, 280),
+          isTrue: d.is_true,
+          explanation: smartTruncate(d.explanation, 280),
+          source: d.source_label || "Industry Analysis",
+        }));
+      }
+
+      // Fallback: grab from nearby days
+      if (!drillQuestions.length) {
+        const { data: nearbyDrills } = await supabase
+          .from("drill_questions")
+          .select("id, category, statement, is_true, explanation, source_label")
+          .eq("market_id", market)
+          .lte("day_number", day)
+          .order("day_number", { ascending: false })
+          .limit(10);
+
+        if (nearbyDrills?.length) {
+          drillQuestions = nearbyDrills.map((d: any) => ({
+            id: d.id,
+            category: d.category || "Market Insight",
+            statement: smartTruncate(d.statement, 280),
+            isTrue: d.is_true,
+            explanation: smartTruncate(d.explanation, 280),
+            source: d.source_label || "Industry Analysis",
+          }));
+        }
+      }
+
+      // Final fallback: generate from slide content if no drill_questions exist
+      if (!drillQuestions.length) {
+        const { data: stacks } = await supabase
+          .from("stacks")
+          .select(`id, title, tags, slides (id, slide_number, title, body, sources)`)
+          .eq("market_id", market)
+          .contains("tags", ["MICRO_LESSON", `day-${day}`])
+          .not("published_at", "is", null)
+          .limit(5);
+
+        const allStacks = stacks?.length ? stacks : (await supabase
           .from("stacks")
           .select(`id, title, tags, slides (id, slide_number, title, body, sources)`)
           .eq("market_id", market)
           .not("published_at", "is", null)
-          .limit(20);
-        stacks = fallback.data;
-        error = fallback.error;
-      }
+          .limit(20)).data || [];
 
-      // Shuffle for variety
-      if (stacks?.length) {
-        stacks = [...stacks].sort(() => Math.random() - 0.5);
-      }
+        const shuffled = [...allStacks].sort(() => Math.random() - 0.5);
 
-      if (error) {
-        console.error("Error fetching drills:", error);
-        setLoading(false);
-        return;
-      }
-
-      // Transform slides into True/False drill questions
-      const drillQuestions: DrillQuestion[] = [];
-      
-      (stacks || []).forEach((stack) => {
-        const slides = (stack.slides as any[]) || [];
-        const tags = (stack.tags as string[]) || [];
-        const category = tags[0] || "Market Insight";
-        
-        slides.forEach((slide, index) => {
-          if (slide.body && slide.body.length > 20 && drillQuestions.length < 10) {
-            const isTrue = index % 2 === 0;
-            let statement = slide.body;
-            
-            if (!isTrue) {
-              statement = statement
-                .replace(/always/gi, "never")
-                .replace(/important/gi, "irrelevant")
-                .replace(/key/gi, "minor");
+        shuffled.forEach((stack: any) => {
+          const slides = (stack.slides as any[]) || [];
+          slides.forEach((slide: any, index: number) => {
+            if (slide.body && slide.body.length > 20 && drillQuestions.length < 10) {
+              const isTrue = index % 2 === 0;
+              let statement = slide.body;
+              if (!isTrue) {
+                statement = statement
+                  .replace(/always/gi, "never")
+                  .replace(/important/gi, "irrelevant")
+                  .replace(/key/gi, "minor");
+              }
+              const sources = slide.sources as any[] || [];
+              drillQuestions.push({
+                id: slide.id,
+                category: (stack.tags as string[])?.[0] || "Market Insight",
+                statement: smartTruncate(statement, 280),
+                isTrue,
+                explanation: smartTruncate(slide.body, 280),
+                source: sources[0]?.label || "Industry Analysis",
+              });
             }
-
-            const truncatedStatement = smartTruncate(statement, 280);
-            const sources = slide.sources as any[] || [];
-            const sourceLabel = sources[0]?.label || "Industry Analysis";
-
-            drillQuestions.push({
-              id: slide.id,
-              category,
-              statement: truncatedStatement,
-              isTrue,
-              explanation: smartTruncate(slide.body, 280),
-              source: sourceLabel,
-            });
-          }
+          });
         });
-      });
+      }
 
-      setQuestions(drillQuestions.slice(0, 5));
+      // Shuffle and limit to 5
+      drillQuestions = drillQuestions.sort(() => Math.random() - 0.5).slice(0, 5);
+      setQuestions(drillQuestions);
       setLoading(false);
     };
 
