@@ -115,7 +115,23 @@ const LAB_CARDS: CardData[] = [
   },
 ];
 
+// Feature flag — flip to false before App Store submission
+const SEMINARS_ENABLED = true;
+
 const RESOURCE_CARDS: CardData[] = [
+  ...(SEMINARS_ENABLED ? [{
+    id: 'seminars',
+    title: 'Seminars',
+    subtitle: 'Live Learning Events',
+    description: 'Weekly expert talks with prep modules and live chat.',
+    icon: 'video' as keyof typeof Feather.glyphMap,
+    iconColor: '#DDD6FE',
+    gradientColors: ['#4C1D95', '#6D28D9', '#8B5CF6'] as const,
+    accentGlow: 'rgba(139, 92, 246, 0.4)',
+    path: '/seminars',
+    isPro: true,
+    tag: 'PRO',
+  }] : []),
   {
     id: 'leaderboard',
     title: 'Leaderboard',
