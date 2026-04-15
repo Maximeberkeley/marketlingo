@@ -2,7 +2,7 @@
  * useNarration — web browser TTS via ElevenLabs edge function.
  * Uses fetch + Audio API (no expo-av needed).
  */
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
@@ -100,6 +100,18 @@ export function useNarration({ voiceId, enabled }: UseNarrationOptions) {
     },
     [enabled, voiceId, stop]
   );
+
+  // Stop narration when component unmounts (e.g. exiting lesson)
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   return { speak, stop, isPlaying, isLoading };
 }

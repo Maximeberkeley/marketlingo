@@ -3,7 +3,7 @@
  * Each mentor has a unique voice. Audio is fetched via the shared TTS utility.
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Audio } from 'expo-av';
 import { speakWithElevenLabs } from '../lib/tts';
 
@@ -74,6 +74,18 @@ export function useNarration({ voiceId, enabled }: UseNarrationOptions) {
       setIsLoading(false);
     }
   }, [enabled, voiceId, stop]);
+
+  // Stop narration when component unmounts (e.g. exiting lesson)
+  useEffect(() => {
+    return () => {
+      abortedRef.current = true;
+      if (soundRef.current) {
+        soundRef.current.stopAsync().catch(() => {});
+        soundRef.current.unloadAsync().catch(() => {});
+        soundRef.current = null;
+      }
+    };
+  }, []);
 
   return { speak, stop, isPlaying, isLoading };
 }
