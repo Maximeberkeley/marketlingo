@@ -104,6 +104,8 @@ export default function RootLayout() {
                 <Stack.Screen name="certificate" />
                 <Stack.Screen name="friends" />
                 <Stack.Screen name="legal" />
+                <Stack.Screen name="seminars" />
+                <Stack.Screen name="seminar-detail" />
               </Stack>
             </LeoProvider>
           </AuthProvider>
