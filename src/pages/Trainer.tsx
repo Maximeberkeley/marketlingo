@@ -54,6 +54,9 @@ export default function TrainerPage() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
   const [floatingXP, setFloatingXP] = useState<{ amount: number; show: boolean }>({ amount: 0, show: false });
+  const [currentDay, setCurrentDay] = useState<number>(1);
+  const [currentLessonTitle, setCurrentLessonTitle] = useState<string | null>(null);
+  const [completedCount, setCompletedCount] = useState<number>(0);
   
   // Get market config for theming
   const marketConfig = selectedMarket ? getMarketConfig(selectedMarket) : null;
@@ -74,10 +77,29 @@ export default function TrainerPage() {
       const market = profile?.selected_market || "aerospace";
       setSelectedMarket(market);
 
-      // Fetch trainer scenarios using direct table query
-      // Note: The view trainer_scenarios_public would be used in production
-      // but since types aren't generated for views, we query the table directly
-      // The RLS policy restricts access appropriately
+      // Get user progress
+      const { data: progressData } = await supabase
+        .from("user_progress")
+        .select("current_day")
+        .eq("user_id", user.id)
+        .eq("market_id", market)
+        .maybeSingle();
+      const day = progressData?.current_day || 1;
+      setCurrentDay(day);
+
+      // Get current lesson title
+      const { data: currentStack } = await supabase
+        .from("stacks")
+        .select("title")
+        .eq("market_id", market)
+        .contains("tags", [`day:${day}`])
+        .eq("stack_type", "lesson")
+        .not("published_at", "is", null)
+        .limit(1)
+        .maybeSingle();
+      if (currentStack) setCurrentLessonTitle(currentStack.title);
+
+      // Fetch trainer scenarios
       const { data: scenarioData, error: scenarioError } = await supabase
         .from("trainer_scenarios")
         .select("id, market_id, scenario, question, options, tags, sources, created_at")
@@ -90,24 +112,16 @@ export default function TrainerPage() {
         return;
       }
 
-      // Transform scenarios - we don't have correct_option_index on client side anymore
-      // The isCorrect will be determined by the server when submitting
       const formattedScenarios = (scenarioData || []).map((s) => {
-        // Handle both formats: objects with {label, isCorrect} or plain strings
         let options: { label: string; isCorrect: boolean }[] = [];
         
         if (Array.isArray(s.options)) {
           options = (s.options as unknown[]).map((opt, idx) => {
             if (typeof opt === 'string') {
-              // Plain string format - isCorrect is unknown on client, will be verified by server
               return { label: opt, isCorrect: false };
             } else if (typeof opt === 'object' && opt !== null && 'label' in opt) {
-              // Object format with label - strip isCorrect as server validates
               const optObj = opt as { label: string; isCorrect?: boolean };
-              return { 
-                label: optObj.label, 
-                isCorrect: false // Client doesn't know correct answer
-              };
+              return { label: optObj.label, isCorrect: false };
             }
             return { label: String(opt), isCorrect: false };
           });
@@ -122,32 +136,29 @@ export default function TrainerPage() {
           feedback_common_mistake: null,
           feedback_mental_model: null,
           follow_up_question: null,
-          correct_option_index: -1 // Unknown on client side
+          correct_option_index: -1
         } as TrainerScenario;
       });
       setScenarios(formattedScenarios);
 
-      // Fetch user's completed attempts to restore progress
+      // Fetch user's completed attempts
       const { data: attemptData } = await supabase
         .from("trainer_attempts")
         .select("scenario_id")
         .eq("user_id", user.id);
 
-      if (attemptData && attemptData.length > 0 && formattedScenarios.length > 0) {
-        // Get set of completed scenario IDs
-        const completedIds = new Set(attemptData.map(a => a.scenario_id));
-        
-        // Find the first uncompleted scenario
-        const firstUncompletedIndex = formattedScenarios.findIndex(
-          s => !completedIds.has(s.id)
-        );
-        
-        if (firstUncompletedIndex !== -1) {
-          // Resume from first uncompleted
-          setCurrentIndex(firstUncompletedIndex);
-        } else {
-          // All completed - start from beginning (user can review)
-          setCurrentIndex(0);
+      if (attemptData) {
+        setCompletedCount(attemptData.length);
+        if (attemptData.length > 0 && formattedScenarios.length > 0) {
+          const completedIds = new Set(attemptData.map(a => a.scenario_id));
+          const firstUncompletedIndex = formattedScenarios.findIndex(
+            s => !completedIds.has(s.id)
+          );
+          if (firstUncompletedIndex !== -1) {
+            setCurrentIndex(firstUncompletedIndex);
+          } else {
+            setCurrentIndex(0);
+          }
         }
       }
 
