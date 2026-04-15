@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Gamepad2, Trophy, Target, Zap, CheckCircle, Loader2, Briefcase, ChevronRight } from "lucide-react";
+import { ArrowLeft, Gamepad2, Trophy, Target, Zap, CheckCircle, Loader2, Briefcase, ChevronRight, BookOpen, Flame } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MentorAvatar } from "@/components/ai/MentorAvatar";
@@ -49,6 +49,10 @@ export default function GamesPage() {
   const [leoMessage, setLeoMessage] = useState<string | null>(null);
   const [showLimitGate, setShowLimitGate] = useState(false);
   const [floatingXP, setFloatingXP] = useState<{ amount: number; show: boolean }>({ amount: 0, show: false });
+  const [currentLessonTitle, setCurrentLessonTitle] = useState<string | null>(null);
+  const [currentDay, setCurrentDay] = useState<number>(1);
+  const [currentStreak, setCurrentStreak] = useState<number>(0);
+  const [bestScore, setBestScore] = useState<number | null>(null);
   const { play } = useSoundEffects();
   const { state: mascotState, handleAnswer: triggerMascotReaction, setIdle } = useMascotState();
   
@@ -71,30 +75,71 @@ export default function GamesPage() {
       const market = profile?.selected_market || "aerospace";
       setSelectedMarket(market);
 
-      // Get user's learning goal for goal-specific content
+      // Get user progress for current day & streak
       const { data: progressData } = await supabase
         .from("user_progress")
-        .select("learning_goal")
+        .select("learning_goal, current_day, current_streak")
         .eq("user_id", user.id)
         .eq("market_id", market)
         .maybeSingle();
 
       const learningGoal = progressData?.learning_goal || "curiosity";
       const goalTag = `goal:${learningGoal}`;
+      const day = progressData?.current_day || 1;
+      setCurrentDay(day);
+      setCurrentStreak(progressData?.current_streak || 0);
 
-      // Try goal-specific DAILY_GAME stacks first
+      // Get best previous score
+      const { data: prevScore } = await supabase
+        .from("games_progress")
+        .select("score")
+        .eq("user_id", user.id)
+        .eq("market_id", market)
+        .eq("game_type", "pattern_match")
+        .maybeSingle();
+      if (prevScore?.score) setBestScore(prevScore.score);
+
+      // Get current day's lesson stack for context
+      const { data: currentStack } = await supabase
+        .from("stacks")
+        .select("id, title, tags")
+        .eq("market_id", market)
+        .contains("tags", [`day:${day}`])
+        .eq("stack_type", "lesson")
+        .not("published_at", "is", null)
+        .limit(1)
+        .maybeSingle();
+
+      if (currentStack) {
+        setCurrentLessonTitle(currentStack.title);
+      }
+
+      // Try to get game stacks linked to current day first
       let { data: stacks, error } = await supabase
         .from("stacks")
         .select(`id, title, tags, slides (id, slide_number, title, body)`)
         .eq("market_id", market)
-        .contains("tags", ["DAILY_GAME", goalTag])
+        .contains("tags", ["DAILY_GAME", `day:${day}`])
         .not("published_at", "is", null)
-        .order("created_at", { ascending: true })
         .limit(10);
 
-      // Fallback: any DAILY_GAME stacks if no goal-specific ones
+      // Fallback: goal-specific DAILY_GAME stacks
       if (!stacks?.length) {
-        const fallback = await supabase
+        const fb = await supabase
+          .from("stacks")
+          .select(`id, title, tags, slides (id, slide_number, title, body)`)
+          .eq("market_id", market)
+          .contains("tags", ["DAILY_GAME", goalTag])
+          .not("published_at", "is", null)
+          .order("created_at", { ascending: true })
+          .limit(10);
+        stacks = fb.data;
+        error = fb.error;
+      }
+
+      // Fallback: any DAILY_GAME stacks
+      if (!stacks?.length) {
+        const fb2 = await supabase
           .from("stacks")
           .select(`id, title, tags, slides (id, slide_number, title, body)`)
           .eq("market_id", market)
@@ -102,8 +147,8 @@ export default function GamesPage() {
           .not("published_at", "is", null)
           .order("created_at", { ascending: true })
           .limit(10);
-        stacks = fallback.data;
-        error = fallback.error;
+        stacks = fb2.data;
+        error = fb2.error;
       }
 
       // Shuffle and pick 5 for variety
@@ -122,17 +167,14 @@ export default function GamesPage() {
         const slides = (stack.slides as any[]) || [];
         const sortedSlides = slides.sort((a, b) => a.slide_number - b.slide_number);
         
-        // Create question from stack content
         const questionSlide = sortedSlides[0]?.body || stack.title;
         const patternSlide = sortedSlides.find(s => s.body?.toLowerCase().includes("pattern:"));
         const pattern = patternSlide?.body?.replace(/pattern:\s*/i, "") || stack.title;
 
-        // Generate options from slides with smart truncation
         const rawOptions = sortedSlides.slice(1, 5).map(s => 
           smartTruncate(s.body || s.title, 80)
         );
         
-        // Ensure we have 4 options
         const baseOptions = rawOptions.length >= 4 ? rawOptions : [
           rawOptions[0] || "First key insight",
           rawOptions[1] || "Second consideration", 
@@ -140,13 +182,9 @@ export default function GamesPage() {
           rawOptions[3] || "Industry best practice"
         ];
         
-        // The correct answer is the first option (index 0) before shuffling
         const originalCorrectIndex = 0;
-        
-        // Shuffle options and get new correct index
         const { shuffledOptions, newCorrectIndex } = shuffleOptions(baseOptions, originalCorrectIndex);
         
-        // Determine question type based on position
         const types: Array<"match" | "timeline" | "predict"> = ["match", "timeline", "predict"];
         const type = types[index % 3];
 
