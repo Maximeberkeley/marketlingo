@@ -265,53 +265,108 @@ export default function TrainerPage() {
           <h1 className="text-h2 text-text-primary">Trainer</h1>
         </motion.div>
 
-        <div className="flex-1 flex items-center justify-center screen-padding py-6">
+        <div className="flex-1 screen-padding py-6 overflow-y-auto">
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.4 }}
             className="w-full"
           >
-            {/* Full-body Mascot Welcome */}
-            <MascotBreak
-              type="intro"
-              marketId={selectedMarket || undefined}
-              message="Time to level up! These scenarios will teach you to think like a pro 🧠"
-              className="mb-6"
-            />
-
-            {/* Hero Card with Market-Specific Gradient */}
-            <div className={`relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-red-600 via-rose-700 to-pink-900'}`}>
-              <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5" />
-              <div className="relative p-6 pt-6 pb-5 flex flex-col justify-end">
-                <p className="text-white/80 text-caption font-medium mb-1">{marketConfig?.name || 'Industry'} Trainer</p>
-                <h2 className="text-xl font-bold text-white mb-2">Think Like an Expert</h2>
-                <p className="text-white/80 text-body leading-relaxed">
+            {/* Hero Card */}
+            <div className={`relative overflow-hidden rounded-3xl mb-5 bg-gradient-to-br ${marketConfig?.heroGradient || 'from-red-600 via-rose-700 to-pink-900'}`}>
+              <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'radial-gradient(circle at 50% 80%, white 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+              <div className="relative p-6 pb-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <Brain size={16} className="text-white" />
+                  </div>
+                  <span className="text-white/70 text-xs font-semibold uppercase tracking-wider">{marketConfig?.name || 'Industry'} Trainer</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-1.5">Think Like an Expert</h2>
+                <p className="text-white/75 text-sm leading-relaxed">
                   {marketConfig?.trainerDescription || 'Complex scenarios with deep professional feedback.'}
                 </p>
               </div>
             </div>
 
+            {/* Current Lesson Context */}
+            {currentLessonTitle && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="flex items-center gap-3 p-3.5 rounded-2xl bg-primary/5 border border-primary/15 mb-5"
+              >
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <BookOpen size={16} className="text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] font-semibold text-primary uppercase tracking-wide">Today's Lesson · Day {currentDay}</p>
+                  <p className="text-sm text-text-primary font-medium truncate">{currentLessonTitle}</p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Stats Row */}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="grid grid-cols-3 gap-3 mb-5"
+            >
+              <div className="rounded-2xl bg-bg-2 border border-border p-3 text-center">
+                <p className="text-lg font-bold text-text-primary">{scenarios.length}</p>
+                <p className="text-[11px] text-text-muted">Scenarios</p>
+              </div>
+              <div className="rounded-2xl bg-bg-2 border border-border p-3 text-center">
+                <div className="flex items-center justify-center gap-1">
+                  <Trophy size={14} className="text-accent" />
+                  <p className="text-lg font-bold text-text-primary">{completedCount}</p>
+                </div>
+                <p className="text-[11px] text-text-muted">Completed</p>
+              </div>
+              <div className="rounded-2xl bg-bg-2 border border-border p-3 text-center">
+                <p className="text-lg font-bold text-text-primary">{Math.round((completedCount / Math.max(scenarios.length, 1)) * 100)}%</p>
+                <p className="text-[11px] text-text-muted">Progress</p>
+              </div>
+            </motion.div>
+
+            {/* Mascot */}
+            <MascotBreak
+              type="intro"
+              marketId={selectedMarket || undefined}
+              message="Time to level up! These scenarios will teach you to think like a pro 🧠"
+              className="mb-5"
+            />
+
             {/* Features */}
-            <div className="card-elevated mb-6 p-5">
-              <h3 className="text-h3 text-text-primary mb-4">What you'll learn</h3>
-              <ul className="space-y-3">
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="card-elevated mb-6 p-5"
+            >
+              <h3 className="text-h3 text-text-primary mb-3">What you'll learn</h3>
+              <ul className="space-y-2.5">
                 {[
-                  "Real-world decision scenarios",
-                  "Pro reasoning breakdowns",
-                  "Common mistake analysis",
-                  "Mental models for founders"
+                  { icon: <Brain size={14} />, text: "Real-world decision scenarios" },
+                  { icon: <Lightbulb size={14} />, text: "Pro reasoning breakdowns" },
+                  { icon: <Trophy size={14} />, text: "Common mistake analysis" },
+                  { icon: <Flame size={14} />, text: "Mental models for professionals" },
                 ].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-body text-text-secondary">
-                    <div className="w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
-                    {feature}
+                  <li key={i} className="flex items-center gap-3 text-sm text-text-secondary">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 text-primary">
+                      {feature.icon}
+                    </div>
+                    {feature.text}
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
 
             {/* CTA */}
             <Button 
-              className="w-full bg-gradient-to-r from-red-500 to-rose-400 hover:opacity-90" 
+              className="w-full h-14 text-base font-semibold rounded-2xl" 
               size="lg"
               onClick={() => setShowIntro(false)}
             >
