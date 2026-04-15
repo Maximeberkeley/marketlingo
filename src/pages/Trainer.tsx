@@ -92,8 +92,7 @@ export default function TrainerPage() {
         .from("stacks")
         .select("title")
         .eq("market_id", market)
-        .contains("tags", [`day:${day}`])
-        .eq("stack_type", "lesson")
+        .contains("tags", ["MICRO_LESSON", `day-${day}`])
         .not("published_at", "is", null)
         .limit(1)
         .maybeSingle();
