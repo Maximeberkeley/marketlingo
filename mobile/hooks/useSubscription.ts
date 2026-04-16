@@ -324,8 +324,19 @@ export function useSubscription() {
     }
   }, [user, isNative, rcReady, rcOfferings]);
 
+  // Keep ref in sync so startFreeTrial can route through StoreKit.
+  useEffect(() => {
+    purchasePackageRef.current = purchasePackage;
+  }, [purchasePackage]);
+
   // ---------- Testing toggle ----------
+  // HARD-DISABLED on native (iOS/Android) to prevent App Store rejection
+  // for granting subscriptions without a real purchase. Web only.
   const toggleProForTesting = useCallback(async () => {
+    if (isNative) {
+      console.warn('toggleProForTesting is disabled on native builds');
+      return;
+    }
     if (!user) return;
     const newValue = !isProUser;
     try {
