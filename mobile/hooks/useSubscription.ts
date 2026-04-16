@@ -190,6 +190,9 @@ export function useSubscription() {
   }, [fetchSubscriptionStatus]);
 
   // ---------- Trial ----------
+  // On native (iOS/Android), trials MUST go through StoreKit/Play Billing via
+  // RevenueCat (introductory offer attached to the subscription product).
+  // Apple rejects apps that grant entitlements without a real purchase flow.
   const canStartTrial = !trialStatus.hasUsedTrial && !isProUser;
 
   const startFreeTrial = useCallback(async () => {
@@ -206,6 +209,15 @@ export function useSubscription() {
       return false;
     }
 
+    // NATIVE: Trial must be triggered via the App Store / Play Store purchase
+    // sheet (Apple's intro offer shows "7 days free, then $X"). We route this
+    // through purchasePackage on the annual plan so StoreKit handles the trial.
+    if (isNative) {
+      const result = await purchasePackageRef.current?.('annual');
+      return !!result?.success;
+    }
+
+    // WEB-ONLY mock trial (development / web testing). Never runs on iOS/Android.
     const now = new Date();
     const endDate = new Date(now.getTime() + TRIAL_DURATION_DAYS * 24 * 60 * 60 * 1000);
 
@@ -239,7 +251,11 @@ export function useSubscription() {
       console.error('startFreeTrial error:', e);
       return false;
     }
-  }, [user, trialStatus.hasUsedTrial, isProUser]);
+  }, [user, trialStatus.hasUsedTrial, isProUser, isNative]);
+
+  // Forward-ref to purchasePackage so startFreeTrial can call it without
+  // creating a circular useCallback dependency.
+  const purchasePackageRef = useRef<((pkg: any) => Promise<PurchaseResult>) | null>(null);
 
   // ---------- Purchase ----------
   const purchasePackage = useCallback(async (pkg: any): Promise<PurchaseResult> => {
@@ -308,8 +324,19 @@ export function useSubscription() {
     }
   }, [user, isNative, rcReady, rcOfferings]);
 
+  // Keep ref in sync so startFreeTrial can route through StoreKit.
+  useEffect(() => {
+    purchasePackageRef.current = purchasePackage;
+  }, [purchasePackage]);
+
   // ---------- Testing toggle ----------
+  // HARD-DISABLED on native (iOS/Android) to prevent App Store rejection
+  // for granting subscriptions without a real purchase. Web only.
   const toggleProForTesting = useCallback(async () => {
+    if (isNative) {
+      console.warn('toggleProForTesting is disabled on native builds');
+      return;
+    }
     if (!user) return;
     const newValue = !isProUser;
     try {
