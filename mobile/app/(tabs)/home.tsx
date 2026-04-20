@@ -301,11 +301,23 @@ export default function HomeScreen() {
     return () => clearTimeout(timer);
   }, [loading, authLoading, selectedMarket, user]);
 
+  // Guard against onboarding redirect loops: only redirect once per mount.
+  // If the backend write from familiarity.tsx hasn't propagated yet, a second
+  // bounce back here would create an infinite loop. Stay on home and let the
+  // user retry from settings instead.
+  const onboardingRedirectAttempted = useRef(false);
   useEffect(() => {
     if (!authLoading && !user) { router.replace('/'); return; }
     fetchData().then((result) => {
-      if (result === 'onboarding') router.replace('/onboarding');
-      else if (result === 'familiarity') router.replace('/onboarding/familiarity');
+      if (result === 'onboarding' || result === 'familiarity') {
+        if (onboardingRedirectAttempted.current) {
+          console.warn('[Home] Skipping repeat onboarding redirect to avoid loop:', result);
+          return;
+        }
+        onboardingRedirectAttempted.current = true;
+        if (result === 'onboarding') router.replace('/onboarding');
+        else router.replace('/onboarding/familiarity');
+      }
     });
   }, [user, authLoading]);
 
