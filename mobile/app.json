@@ -2,7 +2,7 @@
   "expo": {
     "name": "MarketLingo",
     "slug": "marketlingo",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.marketlingo.aerospace",
-      "buildNumber": "94",
+      "buildNumber": "95",
       "infoPlist": {
         "UIUserInterfaceStyle": "Dark",
         "ITSAppUsesNonExemptEncryption": false,
