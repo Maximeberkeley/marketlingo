@@ -1117,7 +1117,10 @@ export type Database = {
           created_at: string
           id: string
           is_pinned: boolean
+          like_count: number
           message: string
+          parent_id: string | null
+          reply_count: number
           seminar_id: string
           user_id: string
         }
@@ -1125,7 +1128,10 @@ export type Database = {
           created_at?: string
           id?: string
           is_pinned?: boolean
+          like_count?: number
           message: string
+          parent_id?: string | null
+          reply_count?: number
           seminar_id: string
           user_id: string
         }
@@ -1133,11 +1139,21 @@ export type Database = {
           created_at?: string
           id?: string
           is_pinned?: boolean
+          like_count?: number
           message?: string
+          parent_id?: string | null
+          reply_count?: number
           seminar_id?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "seminar_chat_messages_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "seminar_chat_messages"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "seminar_chat_messages_seminar_id_fkey"
             columns: ["seminar_id"]
@@ -1147,14 +1163,49 @@ export type Database = {
           },
         ]
       }
+      seminar_message_likes: {
+        Row: {
+          created_at: string
+          id: string
+          message_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seminar_message_likes_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "seminar_chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seminar_prep_modules: {
         Row: {
           content: string | null
           correct_index: number | null
           created_at: string
+          estimated_minutes: number
+          flashcards: Json | null
           id: string
+          key_takeaways: Json | null
+          module_type: string
           quiz_options: Json | null
           quiz_question: string | null
+          reflection_prompt: string | null
+          scenario_brief: string | null
           seminar_id: string
           sort_order: number
           title: string
@@ -1164,9 +1215,15 @@ export type Database = {
           content?: string | null
           correct_index?: number | null
           created_at?: string
+          estimated_minutes?: number
+          flashcards?: Json | null
           id?: string
+          key_takeaways?: Json | null
+          module_type?: string
           quiz_options?: Json | null
           quiz_question?: string | null
+          reflection_prompt?: string | null
+          scenario_brief?: string | null
           seminar_id: string
           sort_order?: number
           title: string
@@ -1176,9 +1233,15 @@ export type Database = {
           content?: string | null
           correct_index?: number | null
           created_at?: string
+          estimated_minutes?: number
+          flashcards?: Json | null
           id?: string
+          key_takeaways?: Json | null
+          module_type?: string
           quiz_options?: Json | null
           quiz_question?: string | null
+          reflection_prompt?: string | null
+          scenario_brief?: string | null
           seminar_id?: string
           sort_order?: number
           title?: string
