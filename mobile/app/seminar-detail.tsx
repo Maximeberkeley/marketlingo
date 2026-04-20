@@ -19,8 +19,18 @@ export default function SeminarDetailScreen() {
   const [activeTab, setActiveTab] = useState<Tab>('prep');
   const [completedModules, setCompletedModules] = useState<Set<string>>(new Set());
 
+  // Restore completion progress from server count (best-effort: marks first N modules as done)
+  React.useEffect(() => {
+    if (!registration || prepModules.length === 0) return;
+    const done = registration.prep_modules_done || 0;
+    if (done > 0 && completedModules.size === 0) {
+      setCompletedModules(new Set(prepModules.slice(0, done).map(m => m.id)));
+    }
+  }, [registration?.id, prepModules.length]);
+
   const handleModuleComplete = useCallback((moduleId: string) => {
     setCompletedModules(prev => {
+      if (prev.has(moduleId)) return prev;
       const next = new Set(prev);
       next.add(moduleId);
       updatePrepProgress(next.size, prepModules.length);
