@@ -162,11 +162,11 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
 
             {/* Legal links */}
             <View style={styles.legalRow}>
-              <TouchableOpacity onPress={() => Linking.openURL('https://marketlingo-marketverse.lovable.app/privacy')}>
+              <TouchableOpacity onPress={() => Linking.openURL('https://market-verse.com/privacy')}>
                 <Text style={styles.legalLink}>Privacy Policy</Text>
               </TouchableOpacity>
               <Text style={styles.legalDot}>•</Text>
-              <TouchableOpacity onPress={() => Linking.openURL('https://marketlingo-marketverse.lovable.app/terms')}>
+              <TouchableOpacity onPress={() => Linking.openURL('https://market-verse.com/terms')}>
                 <Text style={styles.legalLink}>Terms of Use</Text>
               </TouchableOpacity>
             </View>

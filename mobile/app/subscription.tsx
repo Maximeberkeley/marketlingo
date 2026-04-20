@@ -332,11 +332,11 @@ export default function SubscriptionScreen() {
 
         {/* Legal links — required by Apple for auto-renewable subscriptions */}
         <View style={styles.legalLinks}>
-          <TouchableOpacity onPress={() => Linking.openURL('https://marketlingo-marketverse.lovable.app/privacy')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://market-verse.com/privacy')}>
             <Text style={styles.legalLinkText}>Privacy Policy</Text>
           </TouchableOpacity>
           <Text style={styles.legalSeparator}>•</Text>
-          <TouchableOpacity onPress={() => Linking.openURL('https://marketlingo-marketverse.lovable.app/terms')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://market-verse.com/terms')}>
             <Text style={styles.legalLinkText}>Terms of Use (EULA)</Text>
           </TouchableOpacity>
         </View>
