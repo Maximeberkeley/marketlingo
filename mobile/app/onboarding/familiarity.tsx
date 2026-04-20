@@ -64,34 +64,55 @@ export default function FamiliarityScreen() {
     if (!selectedLevel) return;
     triggerHaptic('success');
 
-    await storage.setFamiliarity(selectedLevel);
-    await storage.setOnboardingComplete(true);
+    try {
+      await storage.setFamiliarity(selectedLevel);
+      await storage.setOnboardingComplete(true);
+    } catch (e) {
+      console.warn('[Familiarity] local storage write failed:', e);
+    }
 
     if (user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('selected_market')
-        .eq('id', user.id)
-        .single();
+      try {
+        // maybeSingle so a missing profile row does not throw and break the flow
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('selected_market')
+          .eq('id', user.id)
+          .maybeSingle();
 
-      await supabase
-        .from('profiles')
-        .update({ familiarity_level: selectedLevel })
-        .eq('id', user.id);
+        // CRITICAL: profiles.familiarity_level is what /(tabs)/home reads to gate onboarding.
+        // If this write fails, home will bounce back here → infinite loop.
+        const { error: profileUpdateError } = await supabase
+          .from('profiles')
+          .update({ familiarity_level: selectedLevel })
+          .eq('id', user.id);
 
-      if (profile?.selected_market) {
-        await supabase
-          .from('user_progress')
-          .upsert(
-            {
-              user_id: user.id,
-              market_id: profile.selected_market,
-              familiarity_level: selectedLevel,
-            },
-            { onConflict: 'user_id,market_id' }
-          );
+        if (profileUpdateError) {
+          console.warn('[Familiarity] profile update failed:', profileUpdateError.message);
+        }
+
+        if (profile?.selected_market) {
+          const { error: progressError } = await supabase
+            .from('user_progress')
+            .upsert(
+              {
+                user_id: user.id,
+                market_id: profile.selected_market,
+                familiarity_level: selectedLevel,
+              },
+              { onConflict: 'user_id,market_id' }
+            );
+
+          if (progressError) {
+            console.warn('[Familiarity] user_progress upsert failed:', progressError.message);
+          }
+        }
+      } catch (e) {
+        // Never block navigation on a backend hiccup — onboarding must finish
+        console.warn('[Familiarity] backend write failed, continuing:', e);
       }
     }
+
     setShowNotifOnboarding(true);
   };
 
