@@ -137,24 +137,11 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
               ))}
             </View>
 
-            {/* CTA */}
-            {canStartTrial ? (
-              <>
-                <TouchableOpacity style={styles.ctaPrimary} onPress={handleStartTrial} activeOpacity={0.85}>
-                  <Text style={styles.ctaText}> Try {TRIAL_DURATION_DAYS} Days Free</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.ctaSecondary} onPress={handleViewPlans}>
-                  <Text style={styles.ctaSecondaryText}>View pricing plans</Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <TouchableOpacity style={styles.ctaUpgrade} onPress={handleViewPlans} activeOpacity={0.85}>
-                  <Text style={styles.ctaText}> Upgrade to Pro</Text>
-                </TouchableOpacity>
-                <Text style={styles.priceLabel}>Starting at {monthlyPrice} • Cancel anytime</Text>
-              </>
-            )}
+            {/* CTA — trial temporarily disabled */}
+            <TouchableOpacity style={styles.ctaUpgrade} onPress={handleViewPlans} activeOpacity={0.85}>
+              <Text style={styles.ctaText}> Upgrade to Pro</Text>
+            </TouchableOpacity>
+            <Text style={styles.priceLabel}>Starting at {monthlyPrice} • Cancel anytime</Text>
 
             <TouchableOpacity style={styles.maybeLater} onPress={onClose}>
               <Text style={styles.maybeLaterText}>Maybe later</Text>
