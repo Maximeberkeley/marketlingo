@@ -46,6 +46,7 @@ export default function SubscriptionScreen() {
     isProUser, isLoading, purchasePackage, restorePurchases, getPackage,
     getExpirationDate, willRenew,
     trialStatus, canStartTrial, startFreeTrial, planType,
+    isNative, rcReady,
   } = useSubscription();
   const [isRestoring, setIsRestoring] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
@@ -83,6 +84,11 @@ export default function SubscriptionScreen() {
   };
 
   const handlePurchase = async () => {
+    if (isNative && (!rcReady || !getPackage(selectedPlan)?._rcPackage)) {
+      Alert.alert('Subscriptions Loading', 'App Store subscriptions are not available yet. Please wait a moment and try again.');
+      return;
+    }
+
     setIsPurchasing(true);
     try {
       const result = await purchasePackage(selectedPlan);
@@ -105,6 +111,13 @@ export default function SubscriptionScreen() {
   };
 
   const expirationDate = getExpirationDate();
+  const selectedStorePackage = getPackage(selectedPlan)?._rcPackage;
+  const purchaseUnavailable = isNative && (!rcReady || !selectedStorePackage);
+  const purchaseButtonTitle = isPurchasing
+    ? 'Processing...'
+    : purchaseUnavailable
+      ? (rcReady ? 'Subscription unavailable' : 'Loading App Store prices...')
+      : `Subscribe — ${getPriceDisplay(selectedPlan)}${selectedPlan === 'monthly' ? '/mo' : '/yr'}`;
 
   if (isLoading) {
     return (
@@ -325,10 +338,10 @@ export default function SubscriptionScreen() {
 
       {!isProUser && (
         <StickyBottomCTA
-          title={isPurchasing ? 'Processing...' : `Subscribe — ${getPriceDisplay(selectedPlan)}${selectedPlan === 'monthly' ? '/mo' : '/yr'}`}
+          title={purchaseButtonTitle}
           onPress={handlePurchase}
           loading={isPurchasing}
-          disabled={isPurchasing}
+          disabled={isPurchasing || purchaseUnavailable}
         />
       )}
     </View>
