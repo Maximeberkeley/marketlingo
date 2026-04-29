@@ -167,30 +167,7 @@ export default function SubscriptionScreen() {
               <Text style={styles.heroSubtitle}>Master industries like a VC in 6 months</Text>
             </Animated.View>
 
-            {canStartTrial && (
-              <Animated.View style={[animStyle(cardsAnim)]}>
-                <View style={styles.trialCard}>
-                  <View style={styles.trialHeaderRow}>
-                    <Feather name="flag" size={18} color={COLORS.accent} />
-                    <Text style={styles.trialLabel}>Limited Time</Text>
-                  </View>
-                  <Text style={styles.trialTitle}>Try Pro Free for {TRIAL_DURATION_DAYS} Days</Text>
-                  <Text style={styles.trialDesc}>Full access to all Pro features. No credit card required.</Text>
-                  <TouchableOpacity style={styles.trialBtn} onPress={handleStartTrial}>
-                    <Text style={styles.trialBtnText}>Start Free Trial</Text>
-                  </TouchableOpacity>
-                  <Text style={styles.trialAfter}>Then {getPriceDisplay('annual')}/year or {getPriceDisplay('monthly')}/month</Text>
-                </View>
-              </Animated.View>
-            )}
-
-            {canStartTrial && (
-              <View style={styles.dividerRow}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>or subscribe now</Text>
-                <View style={styles.dividerLine} />
-              </View>
-            )}
+            {/* Free trial temporarily disabled */}
 
             <Animated.View style={[styles.pricingCards, animStyle(cardsAnim)]}>
               <TouchableOpacity
