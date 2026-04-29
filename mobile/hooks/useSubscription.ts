@@ -404,6 +404,7 @@ export function useSubscription() {
         identifier: PRODUCT_IDS[type.toUpperCase() as keyof typeof PRODUCT_IDS],
         ...prices[type],
       },
+      _rcPackage: null,
     };
   }, [rcOfferings]);
 
