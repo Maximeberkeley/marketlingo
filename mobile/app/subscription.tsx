@@ -73,16 +73,6 @@ export default function SubscriptionScreen() {
     transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
   });
 
-  const handleStartTrial = async () => {
-    const success = await startFreeTrial();
-    if (success) {
-      setCelebrationType('trial');
-      setShowCelebration(true);
-    } else {
-      Alert.alert('Error', 'Trial not available');
-    }
-  };
-
   const handlePurchase = async () => {
     if (isNative && (!rcReady || !getPackage(selectedPlan)?._rcPackage)) {
       Alert.alert('Subscriptions Loading', 'App Store subscriptions are not available yet. Please wait a moment and try again.');
