@@ -144,19 +144,12 @@ export default function SubscriptionScreen() {
                   </Text>
                   <Text style={styles.proCardSub}>
                     {expirationDate
-                      ? `${planType === 'trial' ? 'Ends' : (willRenew() ? 'Renews' : 'Expires')} ${expirationDate.toLocaleDateString()}`
+                      ? `${willRenew() ? 'Renews' : 'Expires'} ${expirationDate.toLocaleDateString()}`
                       : 'Full access activated'}
                   </Text>
                 </View>
               </View>
-              {planType === 'trial' && (
-                <TouchableOpacity style={styles.trialUpgradeBtn} onPress={handlePurchase}>
-                  <Text style={styles.trialUpgradeBtnText}>Subscribe - {getPriceDisplay('annual')}/year</Text>
-                </TouchableOpacity>
-              )}
-              {planType !== 'trial' && (
-                <Text style={styles.proThankYou}>Thank you for supporting MarketLingo! Full access to all Pro features.</Text>
-              )}
+              <Text style={styles.proThankYou}>Thank you for supporting MarketLingo! Full access to all Pro features.</Text>
             </View>
           </Animated.View>
         )}
