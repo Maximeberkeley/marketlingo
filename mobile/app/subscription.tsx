@@ -254,7 +254,7 @@ export default function SubscriptionScreen() {
           </View>
         )}
 
-        {isProUser && planType !== 'trial' && (
+        {isProUser && (
           <TouchableOpacity
             style={styles.manageButton}
             onPress={() => Linking.openURL('https://apps.apple.com/account/subscriptions')}
