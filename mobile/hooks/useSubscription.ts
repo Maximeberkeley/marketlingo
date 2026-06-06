@@ -189,13 +189,14 @@ export function useSubscription() {
     fetchSubscriptionStatus();
   }, [fetchSubscriptionStatus]);
 
-  // ---------- Trial ----------
-  // On native (iOS/Android), trials MUST go through StoreKit/Play Billing via
-  // RevenueCat (introductory offer attached to the subscription product).
-  // Apple rejects apps that grant entitlements without a real purchase flow.
-  const canStartTrial = !trialStatus.hasUsedTrial && !isProUser;
+  // ---------- Trial (disabled on native) ----------
+  // Free trial has been removed from the iOS/Android builds.
+  // Keep trial state reading for backward compatibility with existing trial users.
+  const canStartTrial = !isNative && !trialStatus.hasUsedTrial && !isProUser;
 
   const startFreeTrial = useCallback(async () => {
+    if (isNative) return false;
+
     if (!user) {
       console.error('Cannot start trial: no user');
       return false;
@@ -207,14 +208,6 @@ export function useSubscription() {
     if (isProUser) {
       console.warn('Already a Pro user');
       return false;
-    }
-
-    // NATIVE: Trial must be triggered via the App Store / Play Store purchase
-    // sheet (Apple's intro offer shows "7 days free, then $X"). We route this
-    // through purchasePackage on the annual plan so StoreKit handles the trial.
-    if (isNative) {
-      const result = await purchasePackageRef.current?.('annual');
-      return !!result?.success;
     }
 
     // WEB-ONLY mock trial (development / web testing). Never runs on iOS/Android.
