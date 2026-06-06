@@ -176,10 +176,10 @@ export function ProInterstitialAd({ visible, onClose, trigger = 'lesson' }: ProI
 
             {/* CTA */}
             <TouchableOpacity style={styles.ctaBtn} onPress={handleUpgrade} activeOpacity={0.8}>
-              <Text style={styles.ctaText}>Start 7-Day Free Trial</Text>
+              <Text style={styles.ctaText}>Upgrade to Pro</Text>
             </TouchableOpacity>
 
-            <Text style={styles.priceText}>Then $9.99/month · Cancel anytime</Text>
+            <Text style={styles.priceText}>Starting at $9.99/month · Cancel anytime</Text>
           </View>
         </Animated.View>
       </Animated.View>
