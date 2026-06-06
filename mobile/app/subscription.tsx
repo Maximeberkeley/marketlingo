@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { StickyBottomCTA } from '../components/StickyBottomCTA';
-import { useSubscription, TRIAL_DURATION_DAYS } from '../hooks/useSubscription';
+import { useSubscription } from '../hooks/useSubscription';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProCelebration } from '../components/subscription/ProCelebration';
 import { trackEvent } from '../lib/analytics';
@@ -45,7 +45,7 @@ export default function SubscriptionScreen() {
   const {
     isProUser, isLoading, purchasePackage, restorePurchases, getPackage,
     getExpirationDate, willRenew,
-    trialStatus, canStartTrial, startFreeTrial, planType,
+    planType,
     isNative, rcReady,
   } = useSubscription();
   const [isRestoring, setIsRestoring] = useState(false);
@@ -53,7 +53,7 @@ export default function SubscriptionScreen() {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [showTestimonials, setShowTestimonials] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [celebrationType, setCelebrationType] = useState<'trial' | 'monthly' | 'annual'>('trial');
+  const [celebrationType, setCelebrationType] = useState<'monthly' | 'annual'>('annual');
 
   const heroAnim = useRef(new Animated.Value(0)).current;
   const cardsAnim = useRef(new Animated.Value(0)).current;
@@ -72,16 +72,6 @@ export default function SubscriptionScreen() {
     opacity: anim,
     transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
   });
-
-  const handleStartTrial = async () => {
-    const success = await startFreeTrial();
-    if (success) {
-      setCelebrationType('trial');
-      setShowCelebration(true);
-    } else {
-      Alert.alert('Error', 'Trial not available');
-    }
-  };
 
   const handlePurchase = async () => {
     if (isNative && (!rcReady || !getPackage(selectedPlan)?._rcPackage)) {
@@ -154,19 +144,12 @@ export default function SubscriptionScreen() {
                   </Text>
                   <Text style={styles.proCardSub}>
                     {expirationDate
-                      ? `${planType === 'trial' ? 'Ends' : (willRenew() ? 'Renews' : 'Expires')} ${expirationDate.toLocaleDateString()}`
+                      ? `${willRenew() ? 'Renews' : 'Expires'} ${expirationDate.toLocaleDateString()}`
                       : 'Full access activated'}
                   </Text>
                 </View>
               </View>
-              {planType === 'trial' && (
-                <TouchableOpacity style={styles.trialUpgradeBtn} onPress={handlePurchase}>
-                  <Text style={styles.trialUpgradeBtnText}>Subscribe - {getPriceDisplay('annual')}/year</Text>
-                </TouchableOpacity>
-              )}
-              {planType !== 'trial' && (
-                <Text style={styles.proThankYou}>Thank you for supporting MarketLingo! Full access to all Pro features.</Text>
-              )}
+              <Text style={styles.proThankYou}>Thank you for supporting MarketLingo! Full access to all Pro features.</Text>
             </View>
           </Animated.View>
         )}
@@ -271,7 +254,7 @@ export default function SubscriptionScreen() {
           </View>
         )}
 
-        {isProUser && planType !== 'trial' && (
+        {isProUser && (
           <TouchableOpacity
             style={styles.manageButton}
             onPress={() => Linking.openURL('https://apps.apple.com/account/subscriptions')}

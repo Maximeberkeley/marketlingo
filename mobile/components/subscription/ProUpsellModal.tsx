@@ -106,7 +106,7 @@ export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureNam
             <View style={styles.floatingParticle1}><Feather name="star" size={14} color="rgba(255,255,255,0.5)" /></View>
             <View style={styles.floatingParticle2}><Feather name="zap" size={12} color="rgba(255,255,255,0.4)" /></View>
             <Animated.View style={[styles.iconWrap, { transform: [{ scale: iconScale }] }]}>
-              <Feather name={canStartTrial ? 'gift' : 'award'} size={36} color="#FFF" />
+              <Feather name="award" size={36} color="#FFF" />
             </Animated.View>
             <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
               <Text style={styles.closeBtnText}>✕</Text>

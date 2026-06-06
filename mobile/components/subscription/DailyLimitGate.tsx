@@ -2,8 +2,6 @@ import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { router } from 'expo-router';
 import { COLORS } from '../../lib/constants';
-import { useContentAccess } from '../../hooks/useContentAccess';
-import { useSubscription, TRIAL_DURATION_DAYS } from '../../hooks/useSubscription';
 
 interface DailyLimitGateProps {
   type: 'games' | 'drills' | 'trainer';
@@ -15,7 +13,6 @@ const typeLabels = { games: 'games', drills: 'drills', trainer: 'trainer scenari
 const typeIcons = { games: '', drills: '⚡', trainer: '' };
 
 export function DailyLimitGate({ type, limitInfo, onContinue }: DailyLimitGateProps) {
-  const { canStartTrial, startFreeTrial } = useSubscription();
   const scaleAnim = useRef(new Animated.Value(0.92)).current;
   const iconBounce = useRef(new Animated.Value(0)).current;
 
@@ -30,11 +27,6 @@ export function DailyLimitGate({ type, limitInfo, onContinue }: DailyLimitGatePr
       Animated.spring(iconBounce, { toValue: 0, damping: 8, useNativeDriver: true }),
     ]).start();
   }, []);
-
-  const handleStartTrial = async () => {
-    const success = await startFreeTrial();
-    if (success && onContinue) onContinue();
-  };
 
   return (
     <Animated.View style={[styles.container, { transform: [{ scale: scaleAnim }] }]}>
@@ -52,19 +44,13 @@ export function DailyLimitGate({ type, limitInfo, onContinue }: DailyLimitGatePr
         <Text style={styles.resetText}>Resets at midnight</Text>
       </View>
 
-      {canStartTrial ? (
-        <TouchableOpacity style={styles.trialBtn} onPress={handleStartTrial} activeOpacity={0.85}>
-          <Text style={styles.trialBtnText}>✨ Try {TRIAL_DURATION_DAYS} Days Free</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          style={styles.upgradeBtn}
-          onPress={() => router.push('/subscription')}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.upgradeBtnText}> Upgrade for Unlimited</Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity
+        style={styles.upgradeBtn}
+        onPress={() => router.push('/subscription')}
+        activeOpacity={0.85}
+      >
+        <Text style={styles.upgradeBtnText}> Upgrade for Unlimited</Text>
+      </TouchableOpacity>
 
       <Text style={styles.proNote}>Pro members get unlimited {label} every day</Text>
     </Animated.View>
@@ -124,16 +110,6 @@ const styles = StyleSheet.create({
   },
   resetIcon: { fontSize: 14 },
   resetText: { fontSize: 12, color: COLORS.textMuted },
-  trialBtn: {
-    backgroundColor: '#7C3AED',
-    borderRadius: 14,
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    width: '100%',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  trialBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   upgradeBtn: {
     backgroundColor: '#F59E0B',
     borderRadius: 14,

@@ -75,7 +75,6 @@ MarketLingo is an educational platform that provides industry-specific learning 
 • MarketLingo offers free and premium (Pro) tiers.
 • Pro subscriptions are billed through Apple's In-App Purchase system.
 • Subscription prices are displayed in the app before purchase.
-• Free trials, if offered, automatically convert to paid subscriptions unless cancelled before the trial period ends.
 • You may cancel your subscription at any time through your Apple ID settings.
 • Refunds are handled by Apple according to their refund policies.
 
