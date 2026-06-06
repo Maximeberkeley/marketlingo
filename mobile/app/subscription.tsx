@@ -45,7 +45,7 @@ export default function SubscriptionScreen() {
   const {
     isProUser, isLoading, purchasePackage, restorePurchases, getPackage,
     getExpirationDate, willRenew,
-    trialStatus, canStartTrial, startFreeTrial, planType,
+    planType,
     isNative, rcReady,
   } = useSubscription();
   const [isRestoring, setIsRestoring] = useState(false);
@@ -53,7 +53,7 @@ export default function SubscriptionScreen() {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [showTestimonials, setShowTestimonials] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [celebrationType, setCelebrationType] = useState<'trial' | 'monthly' | 'annual'>('trial');
+  const [celebrationType, setCelebrationType] = useState<'monthly' | 'annual'>('annual');
 
   const heroAnim = useRef(new Animated.Value(0)).current;
   const cardsAnim = useRef(new Animated.Value(0)).current;
