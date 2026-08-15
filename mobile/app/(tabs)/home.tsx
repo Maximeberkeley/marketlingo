@@ -374,6 +374,8 @@ export default function HomeScreen() {
           onSaveInsight={session.handleSaveInsight}
           onAddNote={session.handleAddNote}
           marketId={selectedMarket || undefined}
+          stackId={session.activeStack.id}
+
           isReview={lessonCompletedToday && session.activeStack.stack_type === 'LESSON'}
           isProUser={isProUser}
           onPaywallTrigger={() => { session.closeReader(); router.push('/subscription' as any); }}
