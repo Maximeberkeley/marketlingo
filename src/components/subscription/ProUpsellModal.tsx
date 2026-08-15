@@ -54,6 +54,8 @@ const compactBenefits = [
 ];
 
 export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureName }: ProUpsellModalProps) {
+  if (!MONETIZATION_ENABLED) return null;
+
   const { canStartTrial, startFreeTrial, getPackage } = useSubscription();
   const navigate = useNavigate();
   
