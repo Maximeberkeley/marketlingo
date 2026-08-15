@@ -313,7 +313,7 @@ export function useSubscription() {
     isNative,
     // Trial-specific
     trialStatus,
-    canStartTrial: canStartTrial(),
+    canStartTrial: MONETIZATION_ENABLED ? canStartTrial() : false,
     startFreeTrial,
     planType,
     getSubscriptionInfo,
