@@ -54,6 +54,11 @@ export function LessonDecisionModal({
       if (found.length === 0 && dayNumber) {
         found = await fetchScenarios({ marketId, dayNumber, surface: 'lesson', limit: 1 });
       }
+      if (found.length === 0) {
+        // Market-level flagship scenario (no stack or day binding)
+        found = await fetchScenarios({ marketId, surface: 'lesson', limit: 1 });
+      }
+
 
       if (cancelled) return;
       if (found.length === 0) {
