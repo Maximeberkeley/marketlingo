@@ -14,6 +14,7 @@ import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { useSubscription, TRIAL_DURATION_DAYS } from '../../hooks/useSubscription';
 import { Linking } from 'react-native';
+import { MONETIZATION_ENABLED } from '../../lib/monetization';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -62,6 +63,8 @@ const benefits = [
 ];
 
 export function ProUpsellModal({ isOpen, onClose, trigger = 'manual', featureName }: ProUpsellModalProps) {
+  if (!MONETIZATION_ENABLED) return null;
+
   const { canStartTrial, startFreeTrial, getPackage } = useSubscription();
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
