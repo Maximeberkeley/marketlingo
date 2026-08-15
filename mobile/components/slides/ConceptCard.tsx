@@ -13,6 +13,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { COLORS, TYPE, SHADOWS } from "../../lib/constants";
 import { FLUID, fluidFont, fluidLineHeight } from "../../lib/fluidType";
+import { splitSentences } from "../../lib/textUtils";
 
 interface Source {
   label: string;
