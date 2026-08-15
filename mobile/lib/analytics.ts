@@ -70,11 +70,20 @@ async function flushEvents() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Store events — for now just log. When analytics_events table exists, insert.
-    // This is a no-op storage until the table is created, keeping the tracking API stable.
+    const rows = batch.map((entry) => ({
+      user_id: user.id,
+      event: entry.event,
+      properties: entry.properties as Record<string, unknown>,
+      occurred_at: entry.timestamp,
+    }));
+
+    const { error } = await supabase.from('analytics_events').insert(rows);
+    if (error && __DEV__) console.warn('[Analytics] Insert failed:', error.message);
+
     if (__DEV__) {
       console.log(`[Analytics] Flushed ${batch.length} events`);
     }
+
   } catch (e) {
     // Non-critical — don't crash the app
     if (__DEV__) console.warn('[Analytics] Flush failed:', e);
