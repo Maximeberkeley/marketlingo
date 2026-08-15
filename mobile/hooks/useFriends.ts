@@ -91,7 +91,7 @@ export function useFriends(marketId?: string) {
     if (pending?.length) {
       const fromIds = pending.map((p) => p.user_id);
       const { data: fromProfiles } = await supabase
-        .from('profiles')
+        .from('public_profiles')
         .select('id, username')
         .in('id', fromIds);
 
@@ -115,7 +115,7 @@ export function useFriends(marketId?: string) {
 
     // Search by username (which may contain email) — case-insensitive partial match
     const { data: targetProfile } = await supabase
-      .from('profiles')
+      .from('public_profiles')
       .select('id, username')
       .or(`username.ilike.%${friendIdentifier}%`)
       .neq('id', user.id)
