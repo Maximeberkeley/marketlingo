@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { MONETIZATION_ENABLED } from "@/lib/monetization";
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from './useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -295,8 +296,9 @@ export function useSubscription() {
   }, [isProUser, trialStatus, getExpirationDate, willRenew, planType]);
 
   return {
-    isProUser,
-    isLoading,
+    // Monetization disabled: everyone gets full free access.
+    isProUser: MONETIZATION_ENABLED ? isProUser : true,
+    isLoading: MONETIZATION_ENABLED ? isLoading : false,
     error: null,
     offerings: null,
     customerInfo: null,
@@ -311,7 +313,7 @@ export function useSubscription() {
     isNative,
     // Trial-specific
     trialStatus,
-    canStartTrial: canStartTrial(),
+    canStartTrial: MONETIZATION_ENABLED ? canStartTrial() : false,
     startFreeTrial,
     planType,
     getSubscriptionInfo,

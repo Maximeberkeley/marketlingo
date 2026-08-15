@@ -8,6 +8,7 @@ import { COLORS, TYPE, SHADOWS } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { MONETIZATION_ENABLED } from '../../lib/monetization';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CLOSE_DELAY_SECONDS = 15;
@@ -21,6 +22,7 @@ let _sessionActivityCount = 0;
  * Returns true if interstitial should be shown.
  */
 export function shouldShowInterstitial(): boolean {
+  if (!MONETIZATION_ENABLED) return false;
   _sessionActivityCount++;
   return _sessionActivityCount % 3 === 0;
 }
@@ -32,7 +34,7 @@ export function resetInterstitialCounter() {
 
 /** Always show after lesson completion */
 export function shouldShowAfterLesson(): boolean {
-  return true;
+  return MONETIZATION_ENABLED;
 }
 
 interface ProInterstitialAdProps {
@@ -56,6 +58,8 @@ const GAME_FEATURES = [
 ];
 
 export function ProInterstitialAd({ visible, onClose, trigger = 'lesson' }: ProInterstitialAdProps) {
+  if (!MONETIZATION_ENABLED) return null;
+
   const [countdown, setCountdown] = useState(CLOSE_DELAY_SECONDS);
   const [canClose, setCanClose] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;

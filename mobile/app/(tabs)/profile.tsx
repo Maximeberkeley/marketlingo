@@ -12,6 +12,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, STARTUP_STAGES } from '../../hooks/useUserXP';
+import { MONETIZATION_ENABLED } from '../../lib/monetization';
 import { useSubscription } from '../../hooks/useSubscription';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { Feather } from '@expo/vector-icons';
@@ -228,21 +229,13 @@ export default function ProfileScreen() {
 
         {/* Pro Banner */}
         <Animated.View style={[{ marginBottom: 16 }, animStyle(statsAnim)]}>
-          {isProUser ? (
+          {MONETIZATION_ENABLED && isProUser ? (
             <Image
               source={require('../../assets/banners/pro-distinction-banner.png')}
               style={styles.proBanner}
               resizeMode="contain"
             />
-          ) : (
-            <TouchableOpacity onPress={() => router.push('/subscription')} activeOpacity={0.85}>
-              <Image
-                source={require('../../assets/banners/go-pro-banner.png')}
-                style={styles.proBanner}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          )}
+          ) : null}
         </Animated.View>
 
         {/* XP & Stage */}

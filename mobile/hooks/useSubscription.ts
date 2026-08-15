@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import { useAuth } from './useAuth';
 import { supabase } from '../lib/supabase';
 import { log } from '../lib/logger';
+import { MONETIZATION_ENABLED } from '../lib/monetization';
 
 export const PRODUCT_IDS = {
   MONTHLY: 'MarketLingo.pro.monthly',
@@ -438,7 +439,12 @@ export function useSubscription() {
   }, [user, isNative, fetchSubscriptionStatus, isProUser]);
 
   return {
-    isProUser, isLoading, isNative, planType, trialStatus, canStartTrial,
+    // While monetization is off, everyone gets full access for free.
+    isProUser: MONETIZATION_ENABLED ? isProUser : true,
+    isLoading: MONETIZATION_ENABLED ? isLoading : false,
+    isNative, planType,
+    trialStatus,
+    canStartTrial: MONETIZATION_ENABLED ? canStartTrial : false,
     purchasePackage, restorePurchases, getExpirationDate, willRenew, getPackage,
     startFreeTrial, toggleProForTesting, refreshStatus: fetchSubscriptionStatus,
     rcReady,
