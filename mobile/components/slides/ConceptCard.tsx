@@ -552,7 +552,9 @@ export function parseSlideIntoCards(
     });
   }
 
-  const paragraphs = body.split("\n").filter((p) => p.trim());
+  // Format inline Q&A content ("Q: ... A: ...") onto separate lines
+  const normalizedBody = body.replace(/\s+A:\s*/g, "\n\nA: ");
+  const paragraphs = normalizedBody.split("\n").filter((p) => p.trim());
   let currentBullets: string[] = [];
   let currentHeader: string | undefined;
   let pendingText = "";

@@ -47,8 +47,8 @@ export function extractSentences(text: string, count: number): string {
   if (!text) return '';
   
   // Split into sentences
-  const sentences = text.match(/[^.!?]*[.!?]+/g);
-  if (!sentences || sentences.length === 0) return text;
+  const sentences = splitSentences(text);
+  if (sentences.length === 0) return text;
   
   return sentences.slice(0, count).join(' ').trim();
 }
