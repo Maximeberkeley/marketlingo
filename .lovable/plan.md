@@ -39,18 +39,27 @@ Two parallel records:
 - `completion_progress` — what the learner consumed. Continues to drive the 180-day journey, streaks and XP exactly as today.
 - `concept_mastery` — what the learner demonstrated. Drives review recommendations and (later) the knowledge map.
 
-States: Unseen → Introduced → Practicing → Proficient → Mastered → Decaying. Computed from answer evidence by deterministic rules — never assigned by AI. Not surfaced as a visible progress replacement in 1.0.
+States: Unseen → Introduced → Practicing → Proficient → Mastered → Decaying.
+
+**Hard rule:** `concept_mastery` is written only by a deterministic scoring service, never by Leo. Initial model:
+
+```text
+mastery evidence = correctness × difficulty weight × confidence calibration × recency factor
+```
+
+Repetition count feeds the decay/confirmation schedule. Leo may explain a result or generate grounded practice, but never decides a concept is mastered. Mastery is not surfaced as a visible progress replacement in 1.0.
 
 ## Confidence: selective, three levels
 
 Asked only on: market predictions, the final lesson question, Interview Lab responses, and questions previously answered wrong. Input: **Guessing · Fairly sure · Certain**.
 
-| Result | Interpretation | Effect |
+| Answer | Interpretation | System response |
 | --- | --- | --- |
-| Correct + certain | Strong mastery evidence | advance state, long interval |
-| Correct + guessing | Fragile knowledge | short interval |
-| Wrong + certain | High-priority misconception | top of review queue, tag misconception |
-| Wrong + guessing | Normal gap | standard review |
+| Correct + certain | Strong mastery evidence | Increase mastery substantially; long review interval |
+| Correct + guessing | Fragile knowledge | Small increase; schedule a confirmation check |
+| Wrong + certain | High-priority misconception | Reduce mastery; prioritize review; tag misconception |
+| Wrong + guessing | Normal knowledge gap | Minor reduction; provide explanation |
+
 
 ## Contextual Leo: structured actions, no blank chat
 
