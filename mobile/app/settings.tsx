@@ -75,6 +75,8 @@ export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const { user, signOut } = useAuth();
   const { isProUser } = useSubscription();
+  const aiConsent = useAIConsent();
+
   const [pushEnabled, setPushEnabled] = useState(false);
   const [dailyReminder, setDailyReminder] = useState(true);
   const [streakAlerts, setStreakAlerts] = useState(true);
