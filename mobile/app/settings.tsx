@@ -19,6 +19,8 @@ import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { useSubscription } from '../hooks/useSubscription';
 import { supabase } from '../lib/supabase';
+import { useAIConsent } from '../hooks/useAIConsent';
+
 import { NotificationOnboarding } from '../components/onboarding/NotificationOnboarding';
 
 
