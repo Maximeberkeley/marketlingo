@@ -475,7 +475,7 @@ const KEY_TERMS_PER_CARD = 7;
 function breakIntoStorySequence(text: string, maxChars: number): string[] {
   if (text.length <= maxChars) return [text];
 
-  const sentences = text.match(/[^.!?]*[.!?]+/g) || [text];
+  const sentences = splitSentences(text);
   const chunks: string[] = [];
   let current = "";
 
