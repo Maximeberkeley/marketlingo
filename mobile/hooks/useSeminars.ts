@@ -150,7 +150,7 @@ async function attachProfilesAndLikes(messages: any[], currentUserId?: string): 
   const messageIds = messages.map((m: any) => m.id);
 
   const [profilesRes, myLikesRes] = await Promise.all([
-    supabase.from('profiles').select('id, username, avatar_url').in('id', userIds),
+    supabase.from('public_profiles').select('id, username, avatar_url').in('id', userIds),
     currentUserId
       ? supabase.from('seminar_message_likes').select('message_id').eq('user_id', currentUserId).in('message_id', messageIds)
       : Promise.resolve({ data: [] as any[] }),

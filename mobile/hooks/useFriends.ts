@@ -51,9 +51,9 @@ export function useFriends(marketId?: string) {
       );
 
       const [{ data: profiles }, { data: xpData }, { data: progressData }] = await Promise.all([
-        supabase.from('profiles').select('id, username, avatar_url').in('id', friendIds),
-        supabase.from('user_xp').select('user_id, total_xp, current_level').eq('market_id', marketId).in('user_id', friendIds),
-        supabase.from('user_progress').select('user_id, current_streak, last_activity_at').eq('market_id', marketId).in('user_id', friendIds),
+        supabase.from('public_profiles').select('id, username, avatar_url').in('id', friendIds),
+        supabase.from('leaderboard_xp').select('user_id, total_xp, current_level').eq('market_id', marketId).in('user_id', friendIds),
+        supabase.from('leaderboard_progress').select('user_id, current_streak, last_activity_at').eq('market_id', marketId).in('user_id', friendIds),
       ]);
 
       const friendList: Friend[] = friendIds.map((fId) => {

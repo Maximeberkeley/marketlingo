@@ -51,8 +51,8 @@ export default function LeaderboardScreen() {
     if (userIds.length === 0) { setLeaderboard([]); return; }
 
     const [{ data: profiles }, { data: progressData }] = await Promise.all([
-      supabase.from('profiles').select('id, username').in('id', userIds),
-      supabase.from('user_progress').select('user_id, current_streak').eq('market_id', market).in('user_id', userIds),
+      supabase.from('public_profiles').select('id, username').in('id', userIds),
+      supabase.from('leaderboard_progress').select('user_id, current_streak').eq('market_id', market).in('user_id', userIds),
     ]);
 
     const entries: LeaderboardEntry[] = xpData.map((xp, index) => {
@@ -82,7 +82,7 @@ export default function LeaderboardScreen() {
 
       if (timeFilter === 'all-time') {
         const { data: xpData } = await supabase
-          .from('user_xp').select('user_id, total_xp, current_level')
+          .from('leaderboard_xp').select('user_id, total_xp, current_level')
           .eq('market_id', market).order('total_xp', { ascending: false }).limit(50);
         if (xpData) await buildEntries(xpData, market);
       } else {
