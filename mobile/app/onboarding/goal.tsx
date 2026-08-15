@@ -21,6 +21,7 @@ import { getMarketName } from '../../lib/markets';
 import { StickyBottomCTA } from '../../components/StickyBottomCTA';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress';
 import { triggerHaptic } from '../../lib/haptics';
+import { log } from '../../lib/logger';
 
 export type LearningGoal = 'join_industry' | 'invest' | 'build_startup' | 'curiosity';
 
@@ -146,7 +147,7 @@ export default function GoalScreen() {
       );
       router.push('/onboarding/familiarity');
     } catch (err) {
-      console.error('Error saving learning goal:', err);
+      log.error('Error saving learning goal:', err);
     } finally {
       setIsSubmitting(false);
     }

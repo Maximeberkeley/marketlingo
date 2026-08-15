@@ -36,11 +36,16 @@ export function FoxMascot({ industry, size = 220 }: FoxMascotProps) {
   useEffect(() => {
     if (!user) return;
     supabase.from('profiles').select('use_industry_mascots').eq('id', user.id).single()
-      .then(({ data }) => {
-        if (data && typeof data.use_industry_mascots === 'boolean') {
-          setUseIndustryMascots(data.use_industry_mascots);
-        }
-      }).catch(() => {});
+      .then(
+        ({ data }) => {
+          if (data && typeof data.use_industry_mascots === 'boolean') {
+            setUseIndustryMascots(data.use_industry_mascots);
+          }
+        },
+        () => {
+          /* mascot preference is non-critical; keep the default */
+        },
+      );
   }, [user]);
 
   const key = industry?.toLowerCase().replace(/[\s\/]+/g, '');

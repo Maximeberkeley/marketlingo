@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { UserXP, DailyCompletion } from '../lib/types';
+import { log } from '../lib/logger';
 
 export const XP_REWARDS = {
   LESSON_COMPLETE: 50,
@@ -49,7 +50,7 @@ export function useUserXP(marketId?: string) {
         .maybeSingle();
 
       if (xpError && xpError.code !== 'PGRST116') {
-        console.error('Error fetching XP:', xpError);
+        log.error('Error fetching XP:', xpError);
         return null;
       }
 
@@ -80,7 +81,7 @@ export function useUserXP(marketId?: string) {
           .maybeSingle();
 
         if (recoverError && recoverError.code !== 'PGRST116') {
-          console.error('Error recovering XP:', recoverError);
+          log.error('Error recovering XP:', recoverError);
         }
 
         if (recoveredXP) {
@@ -88,7 +89,7 @@ export function useUserXP(marketId?: string) {
           return recoveredXP;
         }
 
-        console.error('Error creating XP:', createError);
+        log.error('Error creating XP:', createError);
         return null;
       }
 
@@ -98,7 +99,7 @@ export function useUserXP(marketId?: string) {
 
       return newXP;
     } catch (error) {
-      console.warn('[UserXP] Failed to ensure XP record:', error);
+      log.warn('[UserXP] Failed to ensure XP record:', error);
       return null;
     }
   }, [user, marketId, xpData]);
@@ -129,12 +130,12 @@ export function useUserXP(marketId?: string) {
         .maybeSingle();
 
       if (completionError && completionError.code !== 'PGRST116') {
-        console.error('Error fetching daily completion:', completionError);
+        log.error('Error fetching daily completion:', completionError);
       }
 
       setDailyCompletion(todayCompletion || null);
     } catch (error) {
-      console.warn('[UserXP] Failed to load XP data:', error);
+      log.warn('[UserXP] Failed to load XP data:', error);
     } finally {
       setLoading(false);
     }
@@ -165,7 +166,7 @@ export function useUserXP(marketId?: string) {
     });
 
     if (transactionError) {
-      console.error('Error logging XP transaction:', transactionError);
+      log.error('Error logging XP transaction:', transactionError);
     }
 
     // Atomic XP increment to prevent race conditions
@@ -177,7 +178,7 @@ export function useUserXP(marketId?: string) {
       });
 
     if (error) {
-      console.error('Error incrementing XP:', error);
+      log.error('Error incrementing XP:', error);
     }
 
     if (!error && updatedXP) {
@@ -194,7 +195,7 @@ export function useUserXP(marketId?: string) {
       .maybeSingle();
 
     if (completionFetchError && completionFetchError.code !== 'PGRST116') {
-      console.error('Error fetching daily completion for XP update:', completionFetchError);
+      log.error('Error fetching daily completion for XP update:', completionFetchError);
     }
 
     const baseCompletion = existingCompletion || dailyCompletion;
@@ -220,7 +221,7 @@ export function useUserXP(marketId?: string) {
       .single();
 
     if (completionUpsertError) {
-      console.error('Error updating daily completion XP:', completionUpsertError);
+      log.error('Error updating daily completion XP:', completionUpsertError);
     } else if (updatedCompletion) {
       setDailyCompletion(updatedCompletion);
     }

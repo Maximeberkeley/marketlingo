@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { storage, FamiliarityLevel, UserTier } from '../lib/storage';
+import { log } from '../lib/logger';
 
 interface StackMetadata {
   learning_objectives?: string[];
@@ -28,12 +29,31 @@ interface Slide {
   sources?: { label: string; url: string }[];
 }
 
+interface SlideRow {
+  slide_number: number;
+  title: string;
+  body: string;
+  sources?: { label: string; url: string }[] | null;
+}
+
+interface StackRow {
+  id: string;
+  title: string;
+  stack_type: string;
+  duration_minutes: number | null;
+  market_id: string;
+  tags: string[] | null;
+  metadata: unknown;
+  slides: SlideRow[] | null;
+}
+
 interface ContentFilters {
   industry: string;
   familiarity: FamiliarityLevel;
   userTier: UserTier;
   day: number;
 }
+
 
 export function useContent() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
@@ -47,15 +67,31 @@ export function useContent() {
       storage.getUserTier(),
     ]);
 
-    if (industry && familiarity) {
-      setFilters({
-        industry,
-        familiarity,
-        userTier,
-        day: 1, // TODO: Get from user progress
-      });
+    if (!industry || !familiarity) return;
+
+    // Resolve the learner's current day from their saved progress for this
+    // market. Falls back to day 1 when signed out or progress is missing.
+    let day = 1;
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      if (auth?.user) {
+        const { data } = await supabase
+          .from('user_progress')
+          .select('current_day')
+          .eq('user_id', auth.user.id)
+          .eq('market_id', industry)
+          .maybeSingle();
+        if (data?.current_day) {
+          day = Math.min(180, Math.max(1, data.current_day));
+        }
+      }
+    } catch (error) {
+      log.warn('[useContent] Could not resolve current day, defaulting to 1:', error);
     }
+
+    setFilters({ industry, familiarity, userTier, day });
   }, []);
+
 
   useEffect(() => {
     loadFilters();
@@ -90,7 +126,7 @@ export function useContent() {
         .order('created_at', { ascending: true });
 
       if (error) {
-        console.error('Error fetching lessons:', error);
+        log.error('Error fetching lessons:', error);
         return;
       }
 
@@ -105,21 +141,32 @@ export function useContent() {
         }
       };
 
-      const formattedLessons: Lesson[] = (stacks || []).map((stack: any) => ({
-        id: stack.id,
-        title: stack.title,
-        type: getStackType(stack.stack_type),
-        duration: stack.duration_minutes || 5,
-        xpReward: getXpReward(stack.stack_type),
-        stackType: stack.stack_type,
-        slides: (stack.slides || []).sort((a: any, b: any) => a.slide_number - b.slide_number),
-        requiresPro: stack.stack_type === 'game' || stack.stack_type === 'drill',
-        metadata: stack.metadata as StackMetadata | undefined,
-      }));
+      const formattedLessons: Lesson[] = (stacks ?? []).map((stack) => {
+        const row = stack as unknown as StackRow;
+        return {
+          id: row.id,
+          title: row.title,
+          type: getStackType(row.stack_type),
+          duration: row.duration_minutes ?? 5,
+          xpReward: getXpReward(row.stack_type),
+          stackType: row.stack_type,
+          slides: [...(row.slides ?? [])]
+            .sort((a, b) => a.slide_number - b.slide_number)
+            .map((s) => ({
+              slideNumber: s.slide_number,
+              title: s.title,
+              body: s.body,
+              sources: s.sources ?? undefined,
+            })),
+          requiresPro: row.stack_type === 'game' || row.stack_type === 'drill',
+          metadata: (row.metadata ?? undefined) as StackMetadata | undefined,
+        };
+      });
+
 
       setLessons(formattedLessons);
     } catch (error) {
-      console.error('Error in fetchLessonsForDay:', error);
+      log.error('Error in fetchLessonsForDay:', error);
     } finally {
       setIsLoading(false);
     }

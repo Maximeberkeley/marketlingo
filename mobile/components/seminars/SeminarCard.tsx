@@ -96,7 +96,7 @@ export function SeminarCard({ seminar, onPress, prepProgress }: Props) {
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: 20, overflow: 'hidden', ...SHADOWS.card },
+  card: { borderRadius: 20, overflow: 'hidden', ...SHADOWS.lg },
   gradient: { padding: 20, minHeight: 180 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
   statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },

@@ -30,6 +30,7 @@ import { BehavioralQA } from '../components/interview/BehavioralQA';
 import { InterviewGlossary } from '../components/interview/InterviewGlossary';
 import { useSubscription } from '../hooks/useSubscription';
 import { ProUpsellModal } from '../components/subscription/ProUpsellModal';
+import { log } from '../lib/logger';
 
 // Assets
 const SOPHIA_AVATAR = require('../assets/mascot/sophia-hernandez.png');
@@ -193,11 +194,13 @@ export default function InterviewLabScreen() {
   useEffect(() => {
     if (!user) return;
     supabase.from('profiles').select('selected_market').eq('id', user.id).single()
-      .then(({ data }) => {
-        if (data?.selected_market) setMarket(data.selected_market);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      .then(
+        ({ data }) => {
+          if (data?.selected_market) setMarket(data.selected_market);
+          setLoading(false);
+        },
+        () => setLoading(false),
+      );
   }, [user]);
 
   // ─── Load curriculum progress ───
@@ -249,7 +252,7 @@ export default function InterviewLabScreen() {
       });
       triggerHaptic('success');
     } catch (err) {
-      console.warn('Save feedback error:', err);
+      log.warn('Save feedback error:', err);
     }
   }, [user, market]);
 
@@ -316,7 +319,7 @@ export default function InterviewLabScreen() {
       recordingRef.current = recording;
       setIsRecording(true);
       triggerHaptic('medium');
-    } catch (err) { console.warn('Recording error:', err); }
+    } catch (err) { log.warn('Recording error:', err); }
   }, []);
 
   const stopRecording = useCallback(async () => {
@@ -332,7 +335,7 @@ export default function InterviewLabScreen() {
         const transcribed = await transcribeAudio(uri);
         if (transcribed) setUserResponse(transcribed);
       }
-    } catch (err) { console.warn('Stop recording error:', err); }
+    } catch (err) { log.warn('Stop recording error:', err); }
     finally {
       setSubmitting(false);
       await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
@@ -390,7 +393,7 @@ export default function InterviewLabScreen() {
 
       setTimeout(() => speakFeedback(data), 800);
     } catch (err) {
-      console.error('Mock submission error:', err);
+      log.error('Mock submission error:', err);
       setFeedback({
         score: 5, industryKnowledgeScore: 4, communicationScore: 5, personaFitScore: 5,
         whatWentWell: 'You tried — that takes courage!',

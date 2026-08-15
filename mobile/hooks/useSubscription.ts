@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 import { useAuth } from './useAuth';
 import { supabase } from '../lib/supabase';
+import { log } from '../lib/logger';
 
 export const PRODUCT_IDS = {
   MONTHLY: 'MarketLingo.pro.monthly',
@@ -92,7 +93,7 @@ export function useSubscription() {
         }
         setRcReady(true);
       } catch (e) {
-        console.warn('RevenueCat init skipped:', e);
+        log.warn('RevenueCat init skipped:', e);
         setRcReady(false);
       }
     };
@@ -120,7 +121,7 @@ export function useSubscription() {
         .single();
 
       if (error || !profile) {
-        console.error('Failed to fetch subscription status:', error?.message);
+        log.error('Failed to fetch subscription status:', error?.message);
         setIsLoading(false);
         return;
       }
@@ -179,7 +180,7 @@ export function useSubscription() {
         hasUsedTrial: !!profile.pro_trial_start_date,
       });
     } catch (error) {
-      console.error('Error in fetchSubscriptionStatus:', error);
+      log.error('Error in fetchSubscriptionStatus:', error);
     }
 
     setIsLoading(false);
@@ -198,15 +199,15 @@ export function useSubscription() {
     if (isNative) return false;
 
     if (!user) {
-      console.error('Cannot start trial: no user');
+      log.error('Cannot start trial: no user');
       return false;
     }
     if (trialStatus.hasUsedTrial) {
-      console.warn('Trial already used');
+      log.warn('Trial already used');
       return false;
     }
     if (isProUser) {
-      console.warn('Already a Pro user');
+      log.warn('Already a Pro user');
       return false;
     }
 
@@ -226,7 +227,7 @@ export function useSubscription() {
         .eq('id', user.id);
 
       if (error) {
-        console.error('Failed to start trial:', error.message);
+        log.error('Failed to start trial:', error.message);
         return false;
       }
 
@@ -241,7 +242,7 @@ export function useSubscription() {
       setPlanType('trial');
       return true;
     } catch (e) {
-      console.error('startFreeTrial error:', e);
+      log.error('startFreeTrial error:', e);
       return false;
     }
   }, [user, trialStatus.hasUsedTrial, isProUser, isNative]);
@@ -267,7 +268,7 @@ export function useSubscription() {
         );
 
         if (!realPackage) {
-          console.warn(`No RevenueCat package found for "${type}", falling back to DB mock`);
+          log.warn(`No RevenueCat package found for "${type}", falling back to DB mock`);
           // Fall through to DB mock below
         } else {
           const { customerInfo } = await revenueCatRef.current.purchasePackage(realPackage);
@@ -287,7 +288,7 @@ export function useSubscription() {
         }
       } catch (error: any) {
         if (error.userCancelled) return { success: false, cancelled: true, error: null };
-        console.error('RevenueCat purchase error:', error);
+        log.error('RevenueCat purchase error:', error);
         // Fall through to DB mock on error
       }
     }
@@ -306,7 +307,7 @@ export function useSubscription() {
       }).eq('id', user.id);
 
       if (error) {
-        console.error('DB purchase error:', error.message);
+        log.error('DB purchase error:', error.message);
         return { success: false, cancelled: false, error: error.message };
       }
       setIsProUser(true);
@@ -327,7 +328,7 @@ export function useSubscription() {
   // for granting subscriptions without a real purchase. Web only.
   const toggleProForTesting = useCallback(async () => {
     if (isNative) {
-      console.warn('toggleProForTesting is disabled on native builds');
+      log.warn('toggleProForTesting is disabled on native builds');
       return;
     }
     if (!user) return;
@@ -341,7 +342,7 @@ export function useSubscription() {
       }).eq('id', user.id);
       
       if (error) {
-        console.error('Toggle pro error:', error.message);
+        log.error('Toggle pro error:', error.message);
         return;
       }
       setIsProUser(newValue);
@@ -350,7 +351,7 @@ export function useSubscription() {
         setTrialStatus({ isInTrial: false, trialStartDate: null, trialEndDate: null, daysRemaining: 0, hasUsedTrial: false });
       }
     } catch (e) {
-      console.error('toggleProForTesting error:', e);
+      log.error('toggleProForTesting error:', e);
     }
   }, [user, isProUser]);
 
@@ -426,7 +427,7 @@ export function useSubscription() {
           return { success: true, restored: isPro, error: null };
         }
       } catch (e: any) {
-        console.error('Restore error:', e);
+        log.error('Restore error:', e);
         return { success: false, restored: false, error: e.message || 'Restore failed' };
       }
     }

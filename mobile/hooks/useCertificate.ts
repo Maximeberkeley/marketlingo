@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
+import { log } from '../lib/logger';
 
 interface CertificateData {
   userName: string;
@@ -94,7 +95,7 @@ export function useCertificate(marketId?: string) {
 
       setCertificateData(data);
     } catch (error) {
-      console.error('Error fetching certificate data:', error);
+      log.error('Error fetching certificate data:', error);
     } finally {
       setLoading(false);
     }

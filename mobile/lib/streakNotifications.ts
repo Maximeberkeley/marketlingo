@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { log } from './logger';
 
 const STREAK_NOTIF_KEY = 'ml_streak_notif_ids';
 
@@ -93,7 +94,7 @@ export async function scheduleStreakNotifications(
       await AsyncStorage.setItem(STREAK_NOTIF_KEY, JSON.stringify(ids));
     }
   } catch (error) {
-    console.warn('Failed to schedule streak notifications:', error);
+    log.warn('Failed to schedule streak notifications:', error);
   }
 }
 
@@ -124,6 +125,6 @@ export async function cancelStreakNotifications() {
       }
     }
   } catch (error) {
-    console.warn('Failed to cancel streak notifications:', error);
+    log.warn('Failed to cancel streak notifications:', error);
   }
 }

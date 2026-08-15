@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
+import { log } from '../lib/logger';
 
 export interface WatchlistCompany {
   id: string;
@@ -74,7 +75,7 @@ export function useWatchlistIntel(marketId?: string, watchlist?: WatchlistCompan
 
       setRelevantNews(matched.slice(0, 20)); // Cap at 20
     } catch (error) {
-      console.error('Error fetching watchlist news:', error);
+      log.error('Error fetching watchlist news:', error);
     } finally {
       setLoading(false);
     }

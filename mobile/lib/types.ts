@@ -68,11 +68,13 @@ export interface StackWithSlides {
   tags: string[];
   duration_minutes: number;
   slides: {
+    id?: string;
     slide_number: number;
     title: string;
     body: string;
     sources: { label: string; url: string }[];
   }[];
+
 }
 
 export interface Note {

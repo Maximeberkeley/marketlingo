@@ -10,6 +10,7 @@ import { StackWithSlides } from '../lib/types';
 import { getMarketName, getMarketEmoji } from '../lib/markets';
 import { triggerHaptic } from '../lib/haptics';
 import { trackEvent } from '../lib/analytics';
+import { log } from '../lib/logger';
 
 interface UseSessionFlowParams {
   user: any;
@@ -141,13 +142,13 @@ export function useSessionFlow({
         title: slide.title || 'Insight',
         content: slide.body,
         stack_id: activeStack.id,
-        slide_id: slide.id,
+        slide_id: slide.id ?? null,
       });
       if (error) throw error;
       triggerHaptic('success');
       Alert.alert('Saved!', 'Insight saved to your notebook.');
     } catch (err) {
-      console.error('Save insight error:', err);
+      log.error('Save insight error:', err);
       Alert.alert('Error', 'Could not save insight. Please try again.');
     }
   }, [user, activeStack]);
@@ -163,14 +164,14 @@ export function useSessionFlow({
         content: noteContent,
         linked_label: activeStack.title || `Slide ${slideNum}`,
         stack_id: activeStack.id,
-        slide_id: slide.id,
+        slide_id: slide.id ?? null,
         market_id: selectedMarket,
       });
       if (error) throw error;
       triggerHaptic('success');
       Alert.alert('Note added!', 'Your annotation has been saved.');
     } catch (err) {
-      console.error('Add note error:', err);
+      log.error('Add note error:', err);
       Alert.alert('Error', 'Could not save note. Please try again.');
     }
   }, [user, activeStack, selectedMarket]);

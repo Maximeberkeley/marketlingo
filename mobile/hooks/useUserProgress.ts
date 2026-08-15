@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { UserProgress } from '../lib/types';
+import { log } from '../lib/logger';
 
 function calculateAvailableDay(startDate: string): number {
   const start = new Date(startDate);
@@ -57,10 +58,10 @@ export function useUserProgress(marketId?: string) {
           setProgress(newProgress as UserProgress);
           setAvailableDay(1);
         } else if (createError) {
-          console.warn('[UserProgress] Failed to create progress:', createError.message);
+          log.warn('[UserProgress] Failed to create progress:', createError.message);
         }
       } else if (error) {
-        console.warn('[UserProgress] Failed to load progress:', error.message);
+        log.warn('[UserProgress] Failed to load progress:', error.message);
       } else if (data) {
         const progressData = data as UserProgress;
         setProgress(progressData);
@@ -68,7 +69,7 @@ export function useUserProgress(marketId?: string) {
         setAvailableDay(calcDay);
       }
     } catch (error) {
-      console.warn('[UserProgress] Progress request failed:', error);
+      log.warn('[UserProgress] Progress request failed:', error);
     } finally {
       setLoading(false);
     }

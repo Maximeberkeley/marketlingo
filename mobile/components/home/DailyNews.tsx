@@ -26,6 +26,7 @@ import type { Mentor } from '../../data/mentors';
 import { ImmersiveNewsOverlay } from './ImmersiveNewsOverlay';
 import { useAuth } from '../../hooks/useAuth';
 import { triggerHaptic } from '../../lib/haptics';
+import { log } from '../../lib/logger';
 
 // ── Types ──
 interface NewsItem {
@@ -441,13 +442,13 @@ No other text, just the JSON array.`,
         try {
           parsedQuestions = normalizeQuizQuestions(JSON.parse(jsonCandidate));
         } catch (parseError) {
-          console.warn('Failed to parse news quiz response:', parseError);
+          log.warn('Failed to parse news quiz response:', parseError);
         }
       }
 
       setQuestions(parsedQuestions || buildFallbackQuiz(article));
     } catch (quizError) {
-      console.warn('Failed to generate news quiz:', quizError);
+      log.warn('Failed to generate news quiz:', quizError);
       setQuestions(buildFallbackQuiz(article));
     } finally {
       setLoading(false);

@@ -6,6 +6,7 @@ import Purchases, {
   PurchasesOffering,
 } from 'react-native-purchases';
 import { storage } from '../lib/storage';
+import { log } from '../lib/logger';
 
 const REVENUECAT_API_KEY_IOS = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || '';
 const REVENUECAT_API_KEY_ANDROID = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || '';
@@ -28,7 +29,7 @@ export function useRevenueCat() {
       const apiKey = Platform.OS === 'ios' ? REVENUECAT_API_KEY_IOS : REVENUECAT_API_KEY_ANDROID;
       
       if (!apiKey) {
-        console.warn('RevenueCat API key not configured');
+        log.warn('RevenueCat API key not configured');
         setIsLoading(false);
         return;
       }
@@ -50,7 +51,7 @@ export function useRevenueCat() {
         setOfferings(offerings.current);
       }
     } catch (error) {
-      console.error('RevenueCat initialization error:', error);
+      log.error('RevenueCat initialization error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +67,7 @@ export function useRevenueCat() {
       return isPro;
     } catch (error: any) {
       if (!error.userCancelled) {
-        console.error('Purchase error:', error);
+        log.error('Purchase error:', error);
       }
       return false;
     }
@@ -81,7 +82,7 @@ export function useRevenueCat() {
       await storage.setUserTier(isPro ? 'pro' : 'free');
       return isPro;
     } catch (error) {
-      console.error('Restore error:', error);
+      log.error('Restore error:', error);
       return false;
     }
   };

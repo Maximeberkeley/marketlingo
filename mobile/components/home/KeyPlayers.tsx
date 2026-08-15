@@ -14,6 +14,13 @@ import { COLORS } from '../../lib/constants';
 import { APP_ICONS } from '../../lib/icons';
 import { getSegmentStyle } from '../../lib/segmentColors';
 
+interface KeyPlayersProps {
+  marketId: string;
+  watchlistIds?: Set<string>;
+  onToggleWatchlist?: (company: Company) => void;
+}
+
+
 export function KeyPlayers({ marketId, watchlistIds, onToggleWatchlist }: KeyPlayersProps) {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [showAll, setShowAll] = useState(false);

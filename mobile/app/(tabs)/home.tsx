@@ -50,6 +50,7 @@ import { LeoPopup } from '../../components/mascot/LeoPopup';
 import { useLeoPopups } from '../../hooks/useLeoPopups';
 import { useAchievements } from '../../hooks/useAchievements';
 import { LeoVoiceChatOverlay } from '../../components/ai/LeoVoiceChatOverlay';
+import { log } from '../../lib/logger';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -205,7 +206,7 @@ export default function HomeScreen() {
     (async () => {
       const { data: stack } = await supabase
         .from('stacks')
-        .select('id, title, stack_type, tags, duration_minutes, metadata, slides (slide_number, title, body, sources)')
+        .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
         .eq('id', openStackId)
         .not('published_at', 'is', null)
         .single();
@@ -311,7 +312,7 @@ export default function HomeScreen() {
     fetchData().then((result) => {
       if (result === 'onboarding' || result === 'familiarity') {
         if (onboardingRedirectAttempted.current) {
-          console.warn('[Home] Skipping repeat onboarding redirect to avoid loop:', result);
+          log.warn('[Home] Skipping repeat onboarding redirect to avoid loop:', result);
           return;
         }
         onboardingRedirectAttempted.current = true;

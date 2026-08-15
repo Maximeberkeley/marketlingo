@@ -26,6 +26,7 @@ import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { speakWithElevenLabs } from '../../lib/tts';
 import { triggerHaptic } from '../../lib/haptics';
+import { log } from '../../lib/logger';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
@@ -269,7 +270,7 @@ export function LeoVoiceChatOverlay({
         recordingRef.current = recording;
         setIsRecording(true);
       } catch (err) {
-        console.warn('Recording failed:', err);
+        log.warn('Recording failed:', err);
       }
     }
   }, [isRecording, sendToLeo]);

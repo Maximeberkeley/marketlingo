@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
+import { log } from '../lib/logger';
 
 export interface InvestmentProgress {
   id: string;
@@ -164,7 +165,7 @@ export function useInvestmentLab(marketId?: string) {
         updateCompleted(completed);
       }
     } catch (error) {
-      console.error('Error fetching investment lab data:', error);
+      log.error('Error fetching investment lab data:', error);
     } finally {
       setLoading(false);
     }
@@ -194,7 +195,7 @@ export function useInvestmentLab(marketId?: string) {
         .single();
 
       if (error) {
-        console.error('Error initializing investment progress:', error);
+        log.error('Error initializing investment progress:', error);
         // Fallback: try to fetch existing
         const { data: existing } = await supabase
           .from('investment_lab_progress')

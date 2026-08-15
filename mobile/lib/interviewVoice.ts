@@ -6,6 +6,7 @@ import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import { supabase } from './supabase';
 import { speakWithElevenLabs } from './tts';
+import { log } from './logger';
 
 // Sophia Hernández voice = Jessica (warm, professional)
 const SOPHIA_VOICE_ID = 'cgSgspJ2msm6clMCkdW9';
@@ -34,10 +35,10 @@ export async function speakAsSophia(text: string): Promise<Audio.Sound | null> {
   if (!text || text.trim().length === 0) return null;
 
   try {
-    console.log('[Sophia] Speaking:', text.substring(0, 60) + '...');
+    log.debug('[Sophia] Speaking:', text.substring(0, 60) + '...');
     return await speakWithElevenLabs(text, SOPHIA_VOICE_ID, 'sophia_interview');
   } catch (err) {
-    console.warn('Sophia TTS error:', err);
+    log.warn('Sophia TTS error:', err);
     return null;
   }
 }
@@ -66,14 +67,14 @@ export async function transcribeAudio(uri: string): Promise<string> {
     });
 
     if (!sttResponse.ok) {
-      console.warn('STT failed:', sttResponse.status);
+      log.warn('STT failed:', sttResponse.status);
       return '';
     }
 
     const data = await sttResponse.json();
     return data.text || '';
   } catch (err) {
-    console.warn('Transcription error:', err);
+    log.warn('Transcription error:', err);
     return '';
   }
 }

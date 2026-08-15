@@ -26,6 +26,7 @@ import { Feather } from '@expo/vector-icons';
 import { COLORS, TYPE } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { speakWithElevenLabs } from '../../lib/tts';
+import { log } from '../../lib/logger';
 
 // ── Types ──
 interface NewsItem {
@@ -101,18 +102,18 @@ Category: ${article.categoryTag}`;
 
 async function speakText(text: string, voiceId: string): Promise<Audio.Sound | null> {
   if (!text || text.trim().length < 5) {
-    console.warn('[Sophia TTS] Text too short to speak');
+    log.warn('[Sophia TTS] Text too short to speak');
     return null;
   }
   try {
-    console.log('[Sophia TTS] Calling speakWithElevenLabs, text length:', text.length);
+    log.debug('[Sophia TTS] Calling speakWithElevenLabs, text length:', text.length);
     const sound = await speakWithElevenLabs(text, voiceId, 'sophia_news');
     if (!sound) {
-      console.warn('[Sophia TTS] speakWithElevenLabs returned null — check env vars and edge function');
+      log.warn('[Sophia TTS] speakWithElevenLabs returned null — check env vars and edge function');
     }
     return sound;
   } catch (err) {
-    console.error('[Sophia TTS] Error:', err);
+    log.error('[Sophia TTS] Error:', err);
     return null;
   }
 }
@@ -228,7 +229,7 @@ export function ImmersiveNewsOverlay({
             }
           });
         } else {
-          console.warn('[Sophia News] No sound returned — skipping audio');
+          log.warn('[Sophia News] No sound returned — skipping audio');
           setIsSpeaking(false);
           setIsDoneSpeaking(true);
         }
@@ -441,7 +442,7 @@ User's goal: ${learningGoal}`;
       try {
         const permission = await Audio.requestPermissionsAsync();
         if (!permission.granted) {
-          console.warn('Recording failed: microphone permission not granted');
+          log.warn('Recording failed: microphone permission not granted');
           return;
         }
 
@@ -456,7 +457,7 @@ User's goal: ${learningGoal}`;
         recordingRef.current = recording;
         setIsRecording(true);
       } catch (err) {
-        console.warn('Recording failed:', err);
+        log.warn('Recording failed:', err);
       }
     }
   }, [isRecording, article, narrationText, marketId, learningGoal]);

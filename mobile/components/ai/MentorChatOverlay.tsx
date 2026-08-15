@@ -15,6 +15,7 @@ import { COLORS } from '../../lib/constants';
 import { Mentor } from '../../data/mentors';
 import { MentorAvatar } from './MentorAvatar';
 import { supabase } from '../../lib/supabase';
+import { log } from '../../lib/logger';
 
 interface ChatMessage {
   id: string;
@@ -108,7 +109,7 @@ ${context ? `Current context: ${context}` : ''}`;
         { id: (Date.now() + 1).toString(), role: 'mentor', content: reply },
       ]);
     } catch (err: any) {
-      console.error('Mentor chat error:', err);
+      log.error('Mentor chat error:', err);
       const errorMsg =
         err?.message?.includes('429') || err?.status === 429
           ? "I'm getting a lot of questions right now. Give me a moment and try again!"

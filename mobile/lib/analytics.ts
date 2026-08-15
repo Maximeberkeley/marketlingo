@@ -4,6 +4,7 @@
  * Drop-in replacement when Mixpanel/Amplitude is added later.
  */
 import { supabase } from './supabase';
+import { log } from './logger';
 
 export type AnalyticsEvent =
   | 'lesson_complete'
@@ -61,7 +62,7 @@ export function trackEvent(event: AnalyticsEvent, properties: EventProperties = 
   };
 
   if (__DEV__) {
-    console.log(`[Analytics] ${event}`, properties);
+    log.debug(`[Analytics] ${event}`, properties);
   }
 
   queue.push(entry);
@@ -96,15 +97,15 @@ async function flushEvents() {
     }));
 
     const { error } = await supabase.from('analytics_events').insert(rows);
-    if (error && __DEV__) console.warn('[Analytics] Insert failed:', error.message);
+    if (error && __DEV__) log.warn('[Analytics] Insert failed:', error.message);
 
     if (__DEV__) {
-      console.log(`[Analytics] Flushed ${batch.length} events`);
+      log.debug(`[Analytics] Flushed ${batch.length} events`);
     }
 
   } catch (e) {
     // Non-critical — don't crash the app
-    if (__DEV__) console.warn('[Analytics] Flush failed:', e);
+    if (__DEV__) log.warn('[Analytics] Flush failed:', e);
   }
 }
 
@@ -113,7 +114,7 @@ async function flushEvents() {
  */
 export function identifyUser(userId: string, traits: EventProperties = {}) {
   if (__DEV__) {
-    console.log(`[Analytics] Identify: ${userId}`, traits);
+    log.debug(`[Analytics] Identify: ${userId}`, traits);
   }
 }
 

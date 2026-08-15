@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, TouchableOpacity, View, Text, Image, StyleSheet } from 'react-native';
+import { Animated, TouchableOpacity, View, Text, Image, StyleSheet, ImageSourcePropType } from 'react-native';
 import { COLORS } from '../../lib/constants';
 
 interface QuickAction {
-  icon?: any;
+  icon?: ImageSourcePropType;
   label: string;
   onPress: () => void;
 }
@@ -20,13 +20,13 @@ export function QuickActionsGrid({ actions }: QuickActionsGridProps) {
 
   useEffect(() => {
     const animations = anims.map((anim, i) =>
-      Animated.delay(
-        i * 80,
+      Animated.sequence([
+        Animated.delay(i * 80),
         Animated.parallel([
           Animated.spring(anim.scale, { toValue: 1, tension: 120, friction: 10, useNativeDriver: true }),
           Animated.timing(anim.opacity, { toValue: 1, duration: 300, useNativeDriver: true }),
-        ])
-      )
+        ]),
+      ])
     );
     Animated.stagger(80, animations).start();
   }, []);

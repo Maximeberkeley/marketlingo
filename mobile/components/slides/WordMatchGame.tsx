@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   scoreChip: {
-    backgroundColor: COLORS.bg2 ?? COLORS.surface,
+    backgroundColor: COLORS.bg2,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
