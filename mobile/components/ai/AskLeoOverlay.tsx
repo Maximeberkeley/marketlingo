@@ -23,6 +23,9 @@ import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { Audio } from 'expo-av';
+import { useAIConsent } from '../../hooks/useAIConsent';
+import { isFeatureEnabled } from '../../hooks/useFeatureFlags';
+import { AIConsentModal } from './AIConsentModal';
 import * as FileSystem from 'expo-file-system';
 
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
@@ -50,6 +53,7 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const slideAnim = useRef(new Animated.Value(0)).current;
+  const { requireAI, modalProps } = useAIConsent();
 
   useEffect(() => {
     if (visible) {
@@ -67,6 +71,15 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
   const sendMessage = useCallback(async () => {
     const text = input.trim();
     if (!text || isLoading) return;
+
+    if (!(await isFeatureEnabled('ai_leo'))) {
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: 'Leo is temporarily unavailable. Your lessons, drills and reviews all still work.' },
+      ]);
+      return;
+    }
+    if (!(await requireAI())) return;
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const userMsg: Message = { role: 'user', content: text };
@@ -116,7 +129,7 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
     } finally {
       setIsLoading(false);
     }
-  }, [input, isLoading, messages, lessonContext]);
+  }, [input, isLoading, messages, lessonContext, requireAI]);
 
   const playTTS = useCallback(async (text: string) => {
     try {
@@ -304,6 +317,7 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
           </View>
         </Animated.View>
       </KeyboardAvoidingView>
+      <AIConsentModal {...modalProps} />
     </Modal>
   );
 }

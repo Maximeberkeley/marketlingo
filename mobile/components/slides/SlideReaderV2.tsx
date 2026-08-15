@@ -25,6 +25,7 @@ import { SwipeFlashcardDrill, generateFlashcardsFromSlides, FlashcardItem } from
 import { ComboBar } from './ComboBar';
 import { FeedbackBanner } from './FeedbackBanner';
 import { AnnotationModal } from './AnnotationModal';
+import { LessonDecisionModal } from '../decision/LessonDecisionModal';
 import { AskLeoOverlay } from '../ai/AskLeoOverlay';
 import { playSound } from '../../lib/sounds';
 import { useNarration } from '../../hooks/useNarration';
@@ -71,6 +72,7 @@ interface SlideReaderV2Props {
   onSaveInsight: (slideNumber: number) => void;
   onAddNote: (slideNumber: number, customContent?: string) => void;
   marketId?: string;
+  stackId?: string;
   isReview?: boolean;
   isProUser?: boolean;
   onPaywallTrigger?: () => void;
@@ -139,6 +141,7 @@ export function SlideReaderV2({
   onSaveInsight,
   onAddNote,
   marketId,
+  stackId,
   isReview = false,
   isProUser = true,
   onPaywallTrigger,
@@ -153,6 +156,7 @@ export function SlideReaderV2({
   const [startTime] = useState(() => Date.now());
   const [timeSpentSeconds, setTimeSpentSeconds] = useState(0);
   const [showCompletion, setShowCompletion] = useState(false);
+  const [showDecision, setShowDecision] = useState(false);
   const [showAskLeo, setShowAskLeo] = useState(false);
   const [showAnnotation, setShowAnnotation] = useState(false);
   const [narrationEnabled, setNarrationEnabled] = useState(false);
@@ -439,7 +443,7 @@ export function SlideReaderV2({
 
   const goNext = useCallback(() => {
     if (isLastCard) {
-      setShowCompletion(true);
+      setShowDecision(true);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       playSound('lessonComplete');
       return;
@@ -796,6 +800,19 @@ export function SlideReaderV2({
             }
           }}
           onCancel={() => setShowAnnotation(false)}
+        />
+
+        {/* Decision Engine — closing decision before completion */}
+        <LessonDecisionModal
+          visible={showDecision}
+          marketId={marketId}
+          stackId={stackId}
+          dayNumber={dayNumber}
+          lessonTitle={stackTitle}
+          onDone={() => {
+            setShowDecision(false);
+            setShowCompletion(true);
+          }}
         />
 
         {/* Completion Modal */}

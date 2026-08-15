@@ -22,7 +22,25 @@ export type AnalyticsEvent =
   | 'app_open'
   | 'onboarding_complete'
   | 'share_milestone'
-  | 'review_session';
+  | 'review_session'
+  // Decision Engine + AI funnel
+  | 'onboarding_started'
+  | 'first_lesson_started'
+  | 'first_lesson_completed'
+  | 'lesson_abandoned'
+  | 'decision_submitted'
+  | 'consequence_viewed'
+  | 'explanation_requested'
+  | 'ai_consent_prompted'
+  | 'ai_consent_accepted'
+  | 'ai_consent_declined'
+  | 'ai_failure'
+  | 'ai_latency'
+  | 'ai_cancelled'
+  | 'notification_permission_requested'
+  | 'notification_permission_accepted'
+  | 'session_return';
+
 
 interface EventProperties {
   [key: string]: string | number | boolean | null | undefined;
@@ -70,11 +88,20 @@ async function flushEvents() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Store events — for now just log. When analytics_events table exists, insert.
-    // This is a no-op storage until the table is created, keeping the tracking API stable.
+    const rows = batch.map((entry) => ({
+      user_id: user.id,
+      event: entry.event,
+      properties: entry.properties as Record<string, unknown>,
+      occurred_at: entry.timestamp,
+    }));
+
+    const { error } = await supabase.from('analytics_events').insert(rows);
+    if (error && __DEV__) console.warn('[Analytics] Insert failed:', error.message);
+
     if (__DEV__) {
       console.log(`[Analytics] Flushed ${batch.length} events`);
     }
+
   } catch (e) {
     // Non-critical — don't crash the app
     if (__DEV__) console.warn('[Analytics] Flush failed:', e);
