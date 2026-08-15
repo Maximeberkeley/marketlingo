@@ -593,7 +593,7 @@ const MAX_CARD_CHARS = 2000; // Show full content, rely on See More button
       return [{ text, seqLabel: undefined }];
     }
     // Split at sentence boundaries into chunks of ≤25 words
-    const sentences = text.match(/[^.!?]*[.!?]+/g) || [text];
+    const sentences = splitSentences(text) || [text];
     const chunks: string[] = [];
     let current = "";
     for (const sentence of sentences) {

@@ -14,6 +14,7 @@ import { createComboState, comboCorrect, comboWrong, ComboState } from "../lib/c
 import { Feather } from "@expo/vector-icons";
 import { useSubscription } from "../hooks/useSubscription";
 import { ProInterstitialAd, shouldShowInterstitial } from "../components/subscription/ProInterstitialAd";
+import { splitSentences } from '../lib/textUtils';
 
 interface GameQuestion {
   id: string;
@@ -110,7 +111,7 @@ export default function GamesScreen() {
               const text = s.body || s.title || "";
               // Truncate at sentence boundary
               if (text.length > 100) {
-                const sentences = text.match(/[^.!?]*[.!?]+/g);
+                const sentences = splitSentences(text);
                 return sentences?.[0]?.trim() || text.substring(0, 100) + "…";
               }
               return text;
@@ -139,7 +140,7 @@ export default function GamesScreen() {
             // Smart truncate question and explanation at sentence boundaries
             let questionText = `${stack.title}: ${questionSlide}`;
             if (questionText.length > 180) {
-              const sentences = questionText.match(/[^.!?]*[.!?]+/g);
+              const sentences = splitSentences(questionText);
               if (sentences) {
                 let result = stack.title + ": ";
                 for (const s of sentences) {
@@ -152,7 +153,7 @@ export default function GamesScreen() {
 
             let explanationText = sorted[sorted.length - 1]?.body || stack.title;
             if (explanationText.length > 300) {
-              const sentences = explanationText.match(/[^.!?]*[.!?]+/g);
+              const sentences = splitSentences(explanationText);
               if (sentences) {
                 let result = "";
                 for (const s of sentences) {
@@ -222,7 +223,7 @@ export default function GamesScreen() {
           options: shuffled.map((o) => {
             // Truncate at sentence boundary, not mid-word
             if (o.label.length > 140) {
-              const sentences = o.label.match(/[^.!?]*[.!?]+/g);
+              const sentences = splitSentences(o.label);
               return sentences?.[0]?.trim() || o.label.substring(0, 140) + "…";
             }
             return o.label;

@@ -20,6 +20,7 @@ import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
 import { useSubscription } from '../hooks/useSubscription';
 import { ProInterstitialAd } from '../components/subscription/ProInterstitialAd';
+import { splitSentences } from '../lib/textUtils';
 
 const LEO_HAPPY = require('../assets/mascot/leo-celebrating.png');
 const LEO_DIZZY = require('../assets/mascot/leo-dizzy.png');
@@ -113,7 +114,7 @@ function generateFallbackQuestions(stacks: any[]): DrillQuestion[] {
         if (!isTrue) statement = generateFalseStatement(statement);
 
         if (statement.length > 180) {
-          const sentences = statement.match(/[^.!?]*[.!?]+/g);
+          const sentences = splitSentences(statement);
           if (sentences && sentences.length > 0) {
             let result = '';
             for (const s of sentences) {
@@ -127,7 +128,7 @@ function generateFallbackQuestions(stacks: any[]): DrillQuestion[] {
 
         let explanation = slide.body;
         if (explanation.length > 200) {
-          const sentences = explanation.match(/[^.!?]*[.!?]+/g);
+          const sentences = splitSentences(explanation);
           if (sentences) {
             explanation = sentences.slice(0, 2).join(' ').trim();
           }
