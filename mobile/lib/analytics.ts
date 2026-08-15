@@ -22,7 +22,25 @@ export type AnalyticsEvent =
   | 'app_open'
   | 'onboarding_complete'
   | 'share_milestone'
-  | 'review_session';
+  | 'review_session'
+  // Decision Engine + AI funnel
+  | 'onboarding_started'
+  | 'first_lesson_started'
+  | 'first_lesson_completed'
+  | 'lesson_abandoned'
+  | 'decision_submitted'
+  | 'consequence_viewed'
+  | 'explanation_requested'
+  | 'ai_consent_prompted'
+  | 'ai_consent_accepted'
+  | 'ai_consent_declined'
+  | 'ai_failure'
+  | 'ai_latency'
+  | 'ai_cancelled'
+  | 'notification_permission_requested'
+  | 'notification_permission_accepted'
+  | 'session_return';
+
 
 interface EventProperties {
   [key: string]: string | number | boolean | null | undefined;
