@@ -437,7 +437,45 @@ export default function SettingsScreen() {
           </View>
         )}
 
+        {/* AI & Voice */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>AI & VOICE</Text>
+
+          <View style={styles.settingRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.settingLabel}>AI explanations (Leo)</Text>
+              <Text style={styles.settingDesc}>
+                Sends your question and lesson context to an external AI service. Lessons, drills
+                and reviews work fully without it.
+              </Text>
+            </View>
+            <Switch
+              value={aiConsent.consent.ai}
+              onValueChange={(v) => aiConsent.setAI(v)}
+              trackColor={{ false: COLORS.bg1, true: COLORS.accent }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
+
+          <View style={[styles.settingRow, !aiConsent.consent.ai && { opacity: 0.45 }]}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.settingLabel}>Voice mode</Text>
+              <Text style={styles.settingDesc}>
+                Records your microphone and sends audio for speech processing when you talk to Leo.
+              </Text>
+            </View>
+            <Switch
+              value={aiConsent.consent.voice}
+              onValueChange={(v) => aiConsent.setVoice(v)}
+              trackColor={{ false: COLORS.bg1, true: COLORS.accent }}
+              thumbColor="#FFFFFF"
+              disabled={!aiConsent.consent.ai}
+            />
+          </View>
+        </View>
+
         {/* Account */}
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>ACCOUNT</Text>
 
