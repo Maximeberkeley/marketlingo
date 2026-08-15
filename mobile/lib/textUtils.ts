@@ -83,3 +83,42 @@ export function shuffleOptions<T>(
   const newCorrectIndex = indices.indexOf(correctIndex);
   return { shuffledOptions, newCorrectIndex };
 }
+
+/**
+ * Abbreviations that must never end a sentence when splitting text.
+ */
+const ABBREVIATIONS = [
+  'e.g', 'i.e', 'etc', 'vs', 'approx', 'est', 'inc', 'ltd', 'co', 'corp',
+  'dr', 'mr', 'mrs', 'ms', 'prof', 'st', 'no', 'fig', 'al', 'u.s', 'u.k',
+];
+
+/**
+ * Splits text into sentences without breaking on abbreviations
+ * ("e.g.", "i.e.", "U.S.", initials) or decimal numbers.
+ */
+export function splitSentences(text: string): string[] {
+  if (!text) return [];
+  const raw = text.match(/[^.!?]*[.!?]+[)"'\]]*\s*|[^.!?]+$/g);
+  if (!raw) return [text];
+
+  const out: string[] = [];
+  let buffer = '';
+
+  for (let i = 0; i < raw.length; i++) {
+    buffer += raw[i];
+    const trimmed = buffer.trimEnd();
+    const lastWord = (trimmed.match(/([A-Za-z.]+)\.$/)?.[1] || '').toLowerCase();
+    const endsWithAbbrev = ABBREVIATIONS.includes(lastWord.replace(/\.$/, ''));
+    const endsWithInitial = /(^|[\s(])[A-Za-z]\.$/.test(trimmed);
+    const endsWithDecimal = /\d\.$/.test(trimmed);
+    const isLast = i === raw.length - 1;
+
+    if ((endsWithAbbrev || endsWithInitial || endsWithDecimal) && !isLast) continue;
+
+    if (trimmed) out.push(buffer.trim());
+    buffer = '';
+  }
+
+  if (buffer.trim()) out.push(buffer.trim());
+  return out.length ? out : [text];
+}
