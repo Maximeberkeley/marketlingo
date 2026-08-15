@@ -185,7 +185,7 @@ function FormattedText({
   
   // If still one big block, split at sentence boundaries (~3 sentences per paragraph)
   if (paragraphs.length === 1 && text.length > 200) {
-    const sentences = text.match(/[^.!?]*[.!?]+/g) || [text];
+    const sentences = splitSentences(text);
     const chunks: string[] = [];
     let current = "";
     const SENTENCES_PER_CHUNK = 3;
