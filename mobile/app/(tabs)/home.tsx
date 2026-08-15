@@ -39,6 +39,7 @@ import { useMilestoneSharing } from '../../hooks/useMilestoneSharing';
 import { useHomeData } from '../../hooks/useHomeData';
 import { useSessionFlow } from '../../hooks/useSessionFlow';
 import { ProInterstitialAd } from '../../components/subscription/ProInterstitialAd';
+import { MONETIZATION_ENABLED } from '../../lib/monetization';
 import { triggerHaptic } from '../../lib/haptics';
 import { useStreakFreeze } from '../../hooks/useStreakFreeze';
 import { playSound } from '../../lib/sounds';
@@ -413,7 +414,7 @@ export default function HomeScreen() {
             <StreakBadge count={streak} />
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} />
-              {isProUser && (
+              {MONETIZATION_ENABLED && isProUser && (
                 <View style={{ backgroundColor: 'rgba(139, 92, 246, 0.15)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.3)' }}>
                   <Text style={{ color: '#8B5CF6', fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>PRO</Text>
                 </View>

@@ -234,15 +234,7 @@ export default function ProfileScreen() {
               style={styles.proBanner}
               resizeMode="contain"
             />
-          ) : (
-            <TouchableOpacity onPress={() => router.push('/subscription')} activeOpacity={0.85}>
-              <Image
-                source={require('../../assets/banners/go-pro-banner.png')}
-                style={styles.proBanner}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          )}
+          ) : null}
         </Animated.View>
 
         {/* XP & Stage */}
