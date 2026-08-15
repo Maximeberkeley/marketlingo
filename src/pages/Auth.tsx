@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +18,19 @@ type AuthMode = "options" | "email-login" | "email-signup";
 
 const DEMO_SEEN_KEY = "ml_demo_seen";
 
+function safeNext(raw: string | null): string | null {
+  if (!raw) return null;
+  // Same-origin relative paths only.
+  if (!raw.startsWith("/") || raw.startsWith("//")) return null;
+  return raw;
+}
+
 export default function AuthPage() {
+  const [searchParams] = useSearchParams();
+  const nextPath = safeNext(searchParams.get("next"));
+  const returnUrl = nextPath
+    ? `${window.location.origin}/auth?next=${encodeURIComponent(nextPath)}`
+    : undefined;
   const [showDemo, setShowDemo] = useState(false);
   const hasSeenDemo = typeof window !== "undefined" && localStorage.getItem(DEMO_SEEN_KEY) === "true";
   const { user, loading, signIn, signUp, signInWithGoogle, signInWithApple } = useAuth();
@@ -29,17 +42,21 @@ export default function AuthPage() {
 
   useEffect(() => {
     if (!loading && user) {
+      if (nextPath) {
+        window.location.replace(nextPath);
+        return;
+      }
       routeToCorrectScreen(user.id);
     }
-  }, [user, loading, routeToCorrectScreen]);
+  }, [user, loading, routeToCorrectScreen, nextPath]);
 
   const handleGoogleSignIn = async () => {
-    const { error } = await signInWithGoogle();
+    const { error } = await signInWithGoogle(returnUrl);
     if (error) toast.error(error.message || "Failed to sign in with Google");
   };
 
   const handleAppleSignIn = async () => {
-    const { error } = await signInWithApple();
+    const { error } = await signInWithApple(returnUrl);
     if (error) toast.error(error.message || "Failed to sign in with Apple");
   };
 
@@ -57,7 +74,7 @@ export default function AuthPage() {
     setIsSubmitting(true);
     try {
       if (mode === "email-signup") {
-        const { error } = await signUp(email, password);
+        const { error } = await signUp(email, password, returnUrl);
         if (error) {
           if (error.message.includes("already registered")) {
             toast.error("This email is already registered. Please sign in instead.");

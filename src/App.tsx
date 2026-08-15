@@ -40,6 +40,7 @@ import Landing from "./pages/Landing";
 import Legal from "./pages/Legal";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import OAuthConsent from "./pages/OAuthConsent";
 import { PageTransition } from "@/components/layout/PageTransition";
 
 const queryClient = new QueryClient();
@@ -79,6 +80,7 @@ function AnimatedRoutes() {
         <Route path="/legal" element={<PageTransition><Legal /></PageTransition>} />
         <Route path="/terms" element={<PageTransition><TermsOfService /></PageTransition>} />
         <Route path="/privacy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
+        <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>

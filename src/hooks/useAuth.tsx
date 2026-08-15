@@ -8,10 +8,10 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, redirectTo?: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signInWithGoogle: () => Promise<{ error: Error | null }>;
-  signInWithApple: () => Promise<{ error: Error | null }>;
+  signInWithGoogle: (redirectTo?: string) => Promise<{ error: Error | null }>;
+  signInWithApple: (redirectTo?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -111,8 +111,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [restoreNativeSession, persistSession]);
 
-  const signUp = async (email: string, password: string) => {
-    const redirectUrl = `${window.location.origin}/`;
+  const signUp = async (email: string, password: string, redirectTo?: string) => {
+    const redirectUrl = redirectTo ?? `${window.location.origin}/`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -131,16 +131,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error as Error | null };
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (redirectTo?: string) => {
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: redirectTo ?? window.location.origin,
     });
     return { error: result.error ?? null };
   };
 
-  const signInWithApple = async () => {
+  const signInWithApple = async (redirectTo?: string) => {
     const result = await lovable.auth.signInWithOAuth("apple", {
-      redirect_uri: window.location.origin,
+      redirect_uri: redirectTo ?? window.location.origin,
     });
     return { error: result.error ?? null };
   };

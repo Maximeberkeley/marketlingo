@@ -1,0 +1,232 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.2",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://wahrcgvzarcgmktjleyr.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "marketlingo",
+      "version": "0.1.0",
+      "title": "MarketLingo"
+    },
+    "tools": [
+      {
+        "name": "list_markets",
+        "title": "List markets",
+        "description": "List the industry markets available in MarketLingo (id, name, description) so other tools can be called with a valid market id.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_my_progress",
+        "title": "Get my learning progress",
+        "description": "Get the signed-in learner's MarketLingo snapshot: selected market, current day of the 180-day track, streak, learning goal, familiarity level, XP and level.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_lessons",
+        "title": "List lessons",
+        "description": "Browse published MarketLingo lesson stacks for a market. Optionally filter by title keyword or stack type (for example lesson, news, drill).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "market_id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Market id from list_markets, e.g. 'ai'."
+            },
+            "search": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Optional keyword to match in the lesson title."
+            },
+            "stack_type": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Optional stack type filter."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Max lessons to return (default 20)."
+            }
+          },
+          "required": [
+            "market_id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_drills",
+        "title": "Get practice drills",
+        "description": "Fetch true/false practice drill questions for a market, optionally for a specific day of the 180-day track, including the explanation for each statement.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "market_id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Market id from list_markets."
+            },
+            "day_number": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365,
+              "description": "Optional day of the track."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30,
+              "description": "Max questions to return (default 10)."
+            }
+          },
+          "required": [
+            "market_id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_notes",
+        "title": "List my notes",
+        "description": "List the signed-in learner's saved MarketLingo notebook entries, newest first, with an optional keyword search and market filter.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "search": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Optional keyword to match in note content."
+            },
+            "market_id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Optional market id filter."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Max notes to return (default 25)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_note",
+        "title": "Create a note",
+        "description": "Save a note to the signed-in learner's MarketLingo notebook, optionally tagged to a market and given a short label.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 5000,
+              "description": "The note text to save."
+            },
+            "market_id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Optional market id to file the note under."
+            },
+            "linked_label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "description": "Optional short label or topic for the note."
+            }
+          },
+          "required": [
+            "content"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "delete_note",
+        "title": "Delete a note",
+        "description": "Permanently delete one of the signed-in learner's MarketLingo notebook entries by its id.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "note_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Id of the note to delete, from list_my_notes."
+            }
+          },
+          "required": [
+            "note_id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
