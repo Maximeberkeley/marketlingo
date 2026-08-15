@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          event: string
+          id: string
+          occurred_at: string
+          properties: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          id?: string
+          occurred_at?: string
+          properties?: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          id?: string
+          occurred_at?: string
+          properties?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       behavioral_stories: {
         Row: {
           action: string | null
@@ -63,6 +90,65 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "behavioral_stories_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      concept_mastery: {
+        Row: {
+          attempts: number
+          concept_key: string
+          concept_label: string | null
+          confident_wrong_count: number
+          correct_attempts: number
+          created_at: string
+          evidence_score: number
+          id: string
+          last_misconception: string | null
+          last_seen_at: string | null
+          market_id: string
+          state: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          concept_key: string
+          concept_label?: string | null
+          confident_wrong_count?: number
+          correct_attempts?: number
+          created_at?: string
+          evidence_score?: number
+          id?: string
+          last_misconception?: string | null
+          last_seen_at?: string | null
+          market_id: string
+          state?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          concept_key?: string
+          concept_label?: string | null
+          confident_wrong_count?: number
+          correct_attempts?: number
+          created_at?: string
+          evidence_score?: number
+          id?: string
+          last_misconception?: string | null
+          last_seen_at?: string | null
+          market_id?: string
+          state?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concept_mastery_market_id_fkey"
             columns: ["market_id"]
             isOneToOne: false
             referencedRelation: "markets"
@@ -161,6 +247,144 @@ export type Database = {
             columns: ["market_id"]
             isOneToOne: false
             referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decision_attempts: {
+        Row: {
+          concept_key: string
+          confidence: string
+          created_at: string
+          evidence_delta: number
+          id: string
+          is_correct: boolean
+          market_id: string
+          misconception_tag: string | null
+          scenario_id: string
+          selected_option: number
+          time_spent_seconds: number | null
+          user_id: string
+        }
+        Insert: {
+          concept_key: string
+          confidence?: string
+          created_at?: string
+          evidence_delta?: number
+          id?: string
+          is_correct: boolean
+          market_id: string
+          misconception_tag?: string | null
+          scenario_id: string
+          selected_option: number
+          time_spent_seconds?: number | null
+          user_id: string
+        }
+        Update: {
+          concept_key?: string
+          confidence?: string
+          created_at?: string
+          evidence_delta?: number
+          id?: string
+          is_correct?: boolean
+          market_id?: string
+          misconception_tag?: string | null
+          scenario_id?: string
+          selected_option?: number
+          time_spent_seconds?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_attempts_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_attempts_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "decision_scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decision_scenarios: {
+        Row: {
+          concept_key: string
+          concept_label: string | null
+          consequence: string
+          correct_option_index: number
+          created_at: string
+          day_number: number | null
+          difficulty: string
+          era_tag: string | null
+          id: string
+          is_active: boolean
+          market_id: string
+          mechanism: string
+          misconception_tags: Json | null
+          options: Json
+          prompt: string
+          situation: string | null
+          stack_id: string | null
+          surface: string
+        }
+        Insert: {
+          concept_key: string
+          concept_label?: string | null
+          consequence: string
+          correct_option_index: number
+          created_at?: string
+          day_number?: number | null
+          difficulty?: string
+          era_tag?: string | null
+          id?: string
+          is_active?: boolean
+          market_id: string
+          mechanism: string
+          misconception_tags?: Json | null
+          options: Json
+          prompt: string
+          situation?: string | null
+          stack_id?: string | null
+          surface?: string
+        }
+        Update: {
+          concept_key?: string
+          concept_label?: string | null
+          consequence?: string
+          correct_option_index?: number
+          created_at?: string
+          day_number?: number | null
+          difficulty?: string
+          era_tag?: string | null
+          id?: string
+          is_active?: boolean
+          market_id?: string
+          mechanism?: string
+          misconception_tags?: Json | null
+          options?: Json
+          prompt?: string
+          situation?: string | null
+          stack_id?: string | null
+          surface?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_scenarios_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_scenarios_stack_id_fkey"
+            columns: ["stack_id"]
+            isOneToOne: false
+            referencedRelation: "stacks"
             referencedColumns: ["id"]
           },
         ]
@@ -274,6 +498,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      feature_flags: {
+        Row: {
+          description: string | null
+          enabled: boolean
+          key: string
+          updated_at: string
+        }
+        Insert: {
+          description?: string | null
+          enabled?: boolean
+          key: string
+          updated_at?: string
+        }
+        Update: {
+          description?: string | null
+          enabled?: boolean
+          key?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       friendships: {
         Row: {
@@ -944,6 +1189,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          ai_consent_at: string | null
+          ai_consent_declined_at: string | null
           avatar_url: string | null
           created_at: string
           familiarity_level: string | null
@@ -959,8 +1206,11 @@ export type Database = {
           updated_at: string
           use_industry_mascots: boolean
           username: string | null
+          voice_consent_at: string | null
         }
         Insert: {
+          ai_consent_at?: string | null
+          ai_consent_declined_at?: string | null
           avatar_url?: string | null
           created_at?: string
           familiarity_level?: string | null
@@ -976,8 +1226,11 @@ export type Database = {
           updated_at?: string
           use_industry_mascots?: boolean
           username?: string | null
+          voice_consent_at?: string | null
         }
         Update: {
+          ai_consent_at?: string | null
+          ai_consent_declined_at?: string | null
           avatar_url?: string | null
           created_at?: string
           familiarity_level?: string | null
@@ -993,6 +1246,7 @@ export type Database = {
           updated_at?: string
           use_industry_mascots?: boolean
           username?: string | null
+          voice_consent_at?: string | null
         }
         Relationships: [
           {
@@ -1952,6 +2206,7 @@ export type Database = {
       }
       calculate_level: { Args: { xp: number }; Returns: number }
       calculate_startup_stage: { Args: { xp: number }; Returns: number }
+      decay_concept_mastery: { Args: never; Returns: number }
       get_available_day: { Args: { p_start_date: string }; Returns: number }
       has_role: {
         Args: {
@@ -1979,6 +2234,15 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      submit_decision_answer: {
+        Args: {
+          p_confidence?: string
+          p_scenario_id: string
+          p_selected_option: number
+          p_time_spent?: number
+        }
+        Returns: Json
       }
       submit_investment_answer: {
         Args: {
