@@ -1,60 +1,100 @@
-# MarketLingo: decision-training upgrade (release-safe)
+# MarketLingo: the Decision Engine (release-safe plan)
 
-Goal: keep the app's essence — Insider Handbook tone, 15 industry markets, 180-day track, Leo, XP/streaks — and add the missing piece from the vision: **predict → consequence → explanation**, plus mastery that reflects demonstrated knowledge.
+Keep the app's essence — Insider Handbook tone, 15 industry markets, 180-day track, Leo, XP/streaks — and add one shared system, internally the **Decision Engine**: predict → decide → consequence → explanation → evidence recorded. It powers lessons, Market of the Day, Trainer, Interview Lab and Investment Lab instead of being another exercise type.
 
-## What we already have (no rebuild needed)
+## What already exists (no rebuild)
 
-- 180-day curriculum, slides, drills, games, trainer scenarios, Interview & Investment Labs.
-- SM-2 spaced repetition (`review_queue`) with a home review session.
-- XP, levels, streaks + freezes, achievements, daily quests, friends/leaderboard.
-- Sound + haptics system, mascot/AI mentors, Ask Leo voice loop.
-- MCP server with 7 tools over OAuth.
-- Account deletion, legal routes, notification scheduling.
+180-day curriculum with slides/drills/games, SM-2 review queue, XP/levels/streaks/freezes, achievements, daily quests, friends and leaderboard, sound + haptics, Leo mascot and mentor overlays with TTS/STT, MCP server with 7 OAuth tools, in-app account deletion, legal routes, scheduled notifications.
 
-## Gaps vs. the vision
+## Gaps
 
-1. No decision-and-consequence loop (lessons still end in plain quiz feedback).
-2. No daily scenario ritual ("Market of the Day").
-3. No confidence scoring, so "confidently wrong" never feeds review.
-4. Progress = screens completed, not per-concept mastery states.
-5. AI is a tab/overlay, not contextual coaching at the moment of a mistake.
-6. No explicit in-app disclosure/consent for AI processing.
-7. MCP lacks retrieval/recommendation tools.
+Decision-and-consequence loop, daily scenario ritual, confidence signal, evidence-based mastery, Leo as contextual coach, explicit AI/voice disclosure, learning-funnel analytics.
 
-## Phase 1 — App Store blockers (do before submission)
+---
 
-- AI data disclosure + one-time consent gate before any Leo/mentor/TTS call; setting to revoke in Settings.
-- Audit every screen for loading / empty / offline / error states; fix placeholder or inconsistent screens.
-- Accessibility pass: Dynamic Type on lesson text, VoiceOver labels on icon-only buttons, contrast check.
-- Notification permission asked only after first completed lesson; preferences screen (study time, days/week, quiet hours, categories).
-- Verify in-app account deletion + review-account notes.
-- Remote kill switch / feature flag table for AI features.
+## Submission blockers (must be true to ship)
 
-## Phase 2 — Launch polish (ship if it lands cleanly)
+- AI and voice disclosure wherever learner data or audio leaves the app.
+- Working in-app account deletion (verify end to end).
+- Complete privacy labels and privacy policy matching actual data flows, including voice.
+- Functional App Review account with credentials.
+- No crashes, dead ends, placeholders or broken network states.
+- Remote kill switch for AI-dependent features.
+- App Review notes explaining Leo, voice processing and authentication.
 
-- **Decision loop in lessons**: after the concept slide, one "market reaction" question — pick direction/asset, then an animated consequence reveal and a one-sentence mechanism explanation. Reuses the existing slide reader and feedback banner.
-- **Confidence scoring**: 50/70/90 selector on questions. Confidently-wrong answers get pushed into `review_queue` with a low SM-2 grade; confidence stored per answer.
-- **Market of the Day**: one curated historical scenario per market per day (predict → confidence → reveal → AI-adapted explanation → streak credit). Content is curated/editorial, not live data.
-- **AI coach in context**: replace the generic entry point with action chips at the mistake moment — "Why was I wrong", "Explain simply", "Harder example", "Turn this into a 5-question drill". Model gets lesson text, mastery state, recent mistakes; correctness/XP stay deterministic server-side.
-- **Mastery model**: per-concept states (New → Introduced → Practiced → Applied → Mastered → Needs review) driven by answer history, surfaced as one mastery visualization on Roadmap/Profile.
-- Sound/haptic pass: distinct mastery cue, restrained error cue, separate effects/haptics toggles, silent-mode safe.
-- Vocabulary alignment (keep, don't rename everything): XP stays XP; add "Conviction" for confidence and skill ratings per theme.
+Accessibility and notification timing are launch-quality work, not gates: fix what is seriously broken, ship the rest in 1.0 polish.
 
-## Phase 3 — Post-launch
+## AI consent (precise, not a legal wall)
 
-- MCP additions: `search_course_content`, `get_recommended_action`, `get_mastery_map`, `get_due_reviews`, `generate_practice_set`, `create_study_plan`, `explain_progress`, `export_my_learning_data`. All read-only; no XP/mastery writes from assistants. Add per-tool rate limits, pagination, audit log the learner can see, and assistant revocation in Settings.
-- Weekly market missions, personal bests, entitlement/feature-flag plumbing for future paid tiers ("Founding Access" framing; earned progress and notes never paywalled).
-- Society-authored content pipeline (already planned) as the editorial source for scenarios.
-- Deferred: social feed, leagues, live market data, unreviewed AI-generated courses.
+Shown once, before the first Leo/mentor/AI action — not at launch:
+
+> Leo uses an external AI service to answer questions and personalize explanations. Your question and relevant lesson context may be sent for processing. Voice recordings are processed when you use voice mode.
+
+Buttons: **Continue** · **Not now** · **Learn more**. Voice gets its own explicit opt-in the first time voice mode is used. The full curriculum, drills and reviews stay usable without consent. Both toggles live in Settings and are revocable.
+
+## Mastery: dual-track, invisible at first
+
+Two parallel records:
+
+- `completion_progress` — what the learner consumed. Continues to drive the 180-day journey, streaks and XP exactly as today.
+- `concept_mastery` — what the learner demonstrated. Drives review recommendations and (later) the knowledge map.
+
+States: Unseen → Introduced → Practicing → Proficient → Mastered → Decaying. Computed from answer evidence by deterministic rules — never assigned by AI. Not surfaced as a visible progress replacement in 1.0.
+
+## Confidence: selective, three levels
+
+Asked only on: market predictions, the final lesson question, Interview Lab responses, and questions previously answered wrong. Input: **Guessing · Fairly sure · Certain**.
+
+| Result | Interpretation | Effect |
+| --- | --- | --- |
+| Correct + certain | Strong mastery evidence | advance state, long interval |
+| Correct + guessing | Fragile knowledge | short interval |
+| Wrong + certain | High-priority misconception | top of review queue, tag misconception |
+| Wrong + guessing | Normal gap | standard review |
+
+## Contextual Leo: structured actions, no blank chat
+
+After a mistake, show action chips instead of an open prompt: **Why?** · **Explain more simply** · **Show the market consequence** · **Give me another example** · **Challenge me again**. Each sends lesson text, the selected answer, the misconception tag and the learner level — bounded prompts, lower cost and hallucination risk. Correctness, XP, streaks and mastery stay deterministic server-side.
+
+## Analytics (instrument before launch)
+
+Onboarding started/completed; first lesson started/completed; decision submitted; consequence viewed; explanation requested; review completed; notification permission requested/accepted; D1/D7/D30 return; lesson abandonment screen; AI latency, failure, cancellation; confidently-wrong rate by concept.
+
+Success metrics: first-lesson completion, time to first meaningful action, second-session rate, review-session completion, daily-scenario return rate, crash-free sessions, AI success rate and latency.
+
+---
+
+## Release sequence
+
+**Version 1.0**
+- Privacy + AI/voice consent flow and Settings controls.
+- Reliability pass (loading, empty, offline, error states) and accessibility fixes.
+- Feature flags, remote kill switch, observability.
+- Notification timing and preferences (study time, days/week, quiet hours, categories).
+- Contextual Leo action chips.
+- Decision loop in a few flagship lessons per market.
+- Internal concept/mastery data model (written, not displayed).
+- Analytics events above.
+
+**Version 1.1**
+- Market of the Day: one curated historical scenario per market per day — predict, confidence, reveal, adapted explanation, streak credit.
+- Confidence scoring in the selective surfaces.
+- Visible mastery map.
+- Decision loop across more lessons.
+- Smarter review recommendations driven by mastery + misconception tags.
+- Additional read-only MCP tools: `search_course_content`, `get_recommended_action`, `get_mastery_map`, `get_due_reviews`, `generate_practice_set`, `explain_progress`, `export_my_learning_data`. No XP/mastery writes from assistants; per-tool rate limits, pagination, learner-visible audit log, assistant revocation in Settings.
+
+**Later**
+- Adaptive course sequencing; AI-generated drills under editorial review; live or recent market scenarios; collaborative challenges and deeper social mechanics.
 
 ## Technical notes
 
-- New tables: `concept_mastery` (user, market, concept_key, state, streak, last_seen), `scenarios` (market_id, day, prompt, options, outcome, mechanism, era tag), `user_scenario_attempts` (choice, confidence, correct, xp). All with RLS scoped to `auth.uid()` and explicit GRANTs.
-- Confidence extends the existing answer path; SM-2 grade = f(correct, confidence) so confident-wrong → grade 0.
-- Scenario reveal reuses `FeedbackBanner` + existing animation/haptics; `useNativeDriver: false` for width animations.
-- AI explanations go through the existing edge-function boundary; deterministic grading stays in the client/RPC path that already awards XP.
-- Feature flags read from a small `feature_flags` table so AI surfaces can be disabled without a new build.
+- New tables: `concept_mastery` (user, market, concept_key, state, evidence counters, last_seen), `decision_scenarios` (market, prompt, options, outcome, mechanism, era tag), `decision_attempts` (choice, confidence, correct, misconception_tag), `feature_flags`, `ai_consent` fields on profile. RLS scoped to `auth.uid()` with explicit GRANTs.
+- SM-2 grade becomes f(correct, confidence) so wrong+certain grades 0 and jumps the queue.
+- Decision reveal reuses `FeedbackBanner`, existing haptics and sounds; `useNativeDriver: false` for width animations.
+- AI calls stay behind the existing edge functions; kill switch and consent checked server-side too.
+- Mobile-first (Expo) with web parity, per project convention.
 
-## Suggested first build step
+## First build step
 
-Phase 1 blockers, then the decision loop + confidence scoring, since Market of the Day is built from the same components.
+The blocker list plus the 1.0 items in order: consent flow → feature flags/kill switch → reliability pass → contextual Leo → decision loop on flagship lessons → mastery model + analytics.
