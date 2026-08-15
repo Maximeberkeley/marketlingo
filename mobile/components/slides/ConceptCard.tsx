@@ -13,6 +13,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { COLORS, TYPE, SHADOWS } from "../../lib/constants";
 import { FLUID, fluidFont, fluidLineHeight } from "../../lib/fluidType";
+import { splitSentences } from "../../lib/textUtils";
 
 interface Source {
   label: string;
@@ -184,7 +185,7 @@ function FormattedText({
   
   // If still one big block, split at sentence boundaries (~3 sentences per paragraph)
   if (paragraphs.length === 1 && text.length > 200) {
-    const sentences = text.match(/[^.!?]*[.!?]+/g) || [text];
+    const sentences = splitSentences(text);
     const chunks: string[] = [];
     let current = "";
     const SENTENCES_PER_CHUNK = 3;
@@ -474,7 +475,7 @@ const KEY_TERMS_PER_CARD = 7;
 function breakIntoStorySequence(text: string, maxChars: number): string[] {
   if (text.length <= maxChars) return [text];
 
-  const sentences = text.match(/[^.!?]*[.!?]+/g) || [text];
+  const sentences = splitSentences(text);
   const chunks: string[] = [];
   let current = "";
 
@@ -551,7 +552,9 @@ export function parseSlideIntoCards(
     });
   }
 
-  const paragraphs = body.split("\n").filter((p) => p.trim());
+  // Format inline Q&A content ("Q: ... A: ...") onto separate lines
+  const normalizedBody = body.replace(/\s+A:\s*/g, "\n\nA: ");
+  const paragraphs = normalizedBody.split("\n").filter((p) => p.trim());
   let currentBullets: string[] = [];
   let currentHeader: string | undefined;
   let pendingText = "";
@@ -592,7 +595,7 @@ const MAX_CARD_CHARS = 2000; // Show full content, rely on See More button
       return [{ text, seqLabel: undefined }];
     }
     // Split at sentence boundaries into chunks of ≤25 words
-    const sentences = text.match(/[^.!?]*[.!?]+/g) || [text];
+    const sentences = splitSentences(text) || [text];
     const chunks: string[] = [];
     let current = "";
     for (const sentence of sentences) {
