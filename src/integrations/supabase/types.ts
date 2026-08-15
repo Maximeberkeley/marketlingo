@@ -2157,6 +2157,82 @@ export type Database = {
         }
         Relationships: []
       }
+      leaderboard_progress: {
+        Row: {
+          current_streak: number | null
+          last_activity_at: string | null
+          market_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          current_streak?: number | null
+          last_activity_at?: string | null
+          market_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          current_streak?: number | null
+          last_activity_at?: string | null
+          market_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_progress_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leaderboard_xp: {
+        Row: {
+          current_level: number | null
+          market_id: string | null
+          total_xp: number | null
+          user_id: string | null
+        }
+        Insert: {
+          current_level?: number | null
+          market_id?: string | null
+          total_xp?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          current_level?: number | null
+          market_id?: string | null
+          total_xp?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_xp_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          id: string | null
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          id?: string | null
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          id?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
       trainer_scenarios_public: {
         Row: {
           created_at: string | null
