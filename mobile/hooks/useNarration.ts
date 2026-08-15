@@ -6,6 +6,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Audio } from 'expo-av';
 import { speakWithElevenLabs } from '../lib/tts';
+import { log } from '../lib/logger';
 
 interface UseNarrationOptions {
   voiceId: string;
@@ -70,7 +71,7 @@ export function useNarration({ voiceId, enabled }: UseNarrationOptions) {
         }
       });
     } catch (err: any) {
-      console.warn('Narration error:', err);
+      log.warn('Narration error:', err);
       setIsLoading(false);
     }
   }, [enabled, voiceId, stop]);

@@ -5,16 +5,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../lib/constants';
-import { useAuth } from '../hooks/useAuth';
 import { useSeminars, Seminar } from '../hooks/useSeminars';
 import { SeminarCard } from '../components/seminars/SeminarCard';
-import { useSubscription } from '../hooks/useSubscription';
+import { useSelectedMarket } from '../hooks/useSelectedMarket';
 
 export default function SeminarsScreen() {
   const insets = useSafeAreaInsets();
-  const { profile } = useAuth();
-  const { isPro } = useSubscription();
-  const marketId = profile?.selected_market || 'aerospace';
+  const { marketId } = useSelectedMarket();
   const { seminars, loading } = useSeminars(marketId);
 
   const liveSeminars = seminars.filter(s => s.status === 'live');

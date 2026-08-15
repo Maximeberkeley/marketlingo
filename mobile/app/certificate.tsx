@@ -16,6 +16,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { getMarketName } from '../lib/markets';
 import { Feather } from '@expo/vector-icons';
+import { log } from '../lib/logger';
 
 interface CertificateData {
   userName: string;
@@ -82,7 +83,7 @@ export default function CertificateScreen() {
           skillAreas: determineSkillAreas(currentDay),
         });
       } catch (e) {
-        console.error('Certificate fetch error:', e);
+        log.error('Certificate fetch error:', e);
       } finally {
         setLoading(false);
       }

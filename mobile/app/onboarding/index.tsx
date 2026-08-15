@@ -23,6 +23,7 @@ import { getDemoXP } from '../../lib/demoXPBridge';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress';
 import { triggerHaptic } from '../../lib/haptics';
 import { Feather } from '@expo/vector-icons';
+import { log } from '../../lib/logger';
 
 const STEP_LABELS = ['Industry', 'Goal', 'Level'];
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -119,7 +120,7 @@ export default function OnboardingScreen() {
       }
       router.push('/onboarding/goal' as any);
     } catch (error) {
-      console.error('Error saving market selection:', error);
+      log.error('Error saving market selection:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -204,8 +205,11 @@ export default function OnboardingScreen() {
                     <Image source={illustration} style={styles.gridIllustration} resizeMode="contain" />
                   ) : (
                     <View style={[styles.gridIconFallback, { backgroundColor: market.color + '20' }]}>
-                      <Text style={{ fontSize: 28 }}>{market.emoji}</Text>
+                      <Text style={{ fontSize: 20, fontWeight: '800', color: market.color }}>
+                        {market.name.charAt(0).toUpperCase()}
+                      </Text>
                     </View>
+
                   )}
                   <Text style={styles.gridName}>{market.name}</Text>
                   {selectedIndustry === market.id && (

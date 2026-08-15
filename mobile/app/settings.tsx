@@ -22,6 +22,7 @@ import { supabase } from '../lib/supabase';
 import { useAIConsent } from '../hooks/useAIConsent';
 
 import { NotificationOnboarding } from '../components/onboarding/NotificationOnboarding';
+import { log } from '../lib/logger';
 
 
 // Deep-link route map (mirrors _layout.tsx)
@@ -68,7 +69,7 @@ async function registerForPushNotifications(): Promise<string | null> {
 
     return tokenData.data;
   } catch (e) {
-    console.warn('Could not get push token:', e);
+    log.warn('Could not get push token:', e);
     return null;
   }
 }
@@ -168,7 +169,7 @@ export default function SettingsScreen() {
 
         Alert.alert('Notifications Enabled', 'You\'ll receive daily reminders and streak alerts.');
       } catch (e) {
-        console.error('Push registration error:', e);
+        log.error('Push registration error:', e);
         setPushEnabled(false);
       } finally {
         setRegistering(false);
@@ -225,7 +226,7 @@ export default function SettingsScreen() {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Update',
-          onPress: async (pwd) => {
+          onPress: async (pwd?: string) => {
             if (!pwd || pwd.length < 6) {
               Alert.alert('Error', 'Password must be at least 6 characters.');
               return;
@@ -296,7 +297,7 @@ export default function SettingsScreen() {
                       await signOut();
                       router.replace('/auth');
                     } catch (err: any) {
-                      console.error('Delete account error:', err);
+                      log.error('Delete account error:', err);
                       Alert.alert('Error', err.message || 'Failed to delete account. Please try again.');
                     }
                   },

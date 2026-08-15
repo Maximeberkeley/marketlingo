@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase';
 import { StackWithSlides } from '../lib/types';
 import { getStreakRiskHours } from '../components/home/StreakAtRisk';
 import { scheduleStreakNotifications } from '../lib/streakNotifications';
+import { log } from '../lib/logger';
 
 interface NewsItem {
   id: string;
@@ -96,7 +97,7 @@ export function useHomeData(
         .maybeSingle();
 
       if (profileError) {
-        console.warn('[HomeData] Failed to load profile:', profileError.message);
+        log.warn('[HomeData] Failed to load profile:', profileError.message);
         setLoading(false);
         return null;
       }
@@ -124,7 +125,7 @@ export function useHomeData(
         .maybeSingle();
 
       if (progressError && progressError.code !== 'PGRST116') {
-        console.warn('[HomeData] Failed to load progress:', progressError.message);
+        log.warn('[HomeData] Failed to load progress:', progressError.message);
       }
 
       const learningGoalValue = userProgress?.learning_goal || 'curiosity';
@@ -153,7 +154,7 @@ export function useHomeData(
       // 4. Closest available day
       let { data: lessonStacks } = await supabase
         .from('stacks')
-        .select('id, title, stack_type, tags, duration_minutes, metadata, slides (slide_number, title, body, sources)')
+        .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
         .eq('market_id', market)
         .contains('tags', ['MICRO_LESSON', dayTag, goalTag, levelTag])
         .not('published_at', 'is', null)
@@ -166,7 +167,7 @@ export function useHomeData(
       if (!hasSlides(lessonStacks).length) {
         const { data: fb1 } = await supabase
           .from('stacks')
-          .select('id, title, stack_type, tags, duration_minutes, metadata, slides (slide_number, title, body, sources)')
+          .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
           .eq('market_id', market)
           .contains('tags', ['MICRO_LESSON', dayTag, goalTag])
           .not('published_at', 'is', null)
@@ -177,7 +178,7 @@ export function useHomeData(
       if (!hasSlides(lessonStacks).length) {
         const { data: fallback } = await supabase
           .from('stacks')
-          .select('id, title, stack_type, tags, duration_minutes, metadata, slides (slide_number, title, body, sources)')
+          .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
           .eq('market_id', market)
           .contains('tags', ['MICRO_LESSON', dayTag])
           .not('published_at', 'is', null)
@@ -188,7 +189,7 @@ export function useHomeData(
       if (!hasSlides(lessonStacks).length) {
         const { data: allLessons } = await supabase
           .from('stacks')
-          .select('id, title, stack_type, tags, duration_minutes, metadata, slides (slide_number, title, body, sources)')
+          .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
           .eq('market_id', market)
           .contains('tags', ['MICRO_LESSON'])
           .not('published_at', 'is', null);
@@ -227,7 +228,7 @@ export function useHomeData(
       // Fetch news/game stack
       const { data: newsStacks } = await supabase
         .from('stacks')
-        .select('id, title, stack_type, tags, duration_minutes, metadata, slides (slide_number, title, body, sources)')
+        .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
         .eq('market_id', market)
         .contains('tags', ['DAILY_GAME'])
         .not('published_at', 'is', null)
@@ -270,7 +271,7 @@ export function useHomeData(
             if (freshNews) setNewsItems(freshNews);
           }
         } catch (e) {
-          console.warn('Live news fetch failed:', e);
+          log.warn('Live news fetch failed:', e);
         }
       }
 
@@ -326,7 +327,7 @@ export function useHomeData(
       setLoading(false);
       return null;
     } catch (error) {
-      console.warn('[HomeData] Failed to load home data:', error);
+      log.warn('[HomeData] Failed to load home data:', error);
       setLoading(false);
       return null;
     }
@@ -353,7 +354,7 @@ export function useHomeData(
         .limit(10);
       if (freshNews) setNewsItems(freshNews);
     } catch (e) {
-      console.warn('News refresh failed:', e);
+      log.warn('News refresh failed:', e);
     } finally {
       setNewsRefreshing(false);
     }

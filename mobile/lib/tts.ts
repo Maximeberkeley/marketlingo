@@ -8,13 +8,14 @@
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system/legacy';
 import { supabase } from './supabase';
+import { log } from './logger';
 
 const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_KEY || '';
 
 // Log config once at import time
-console.log('[TTS] EDGE_URL:', EDGE_URL ? `${EDGE_URL.substring(0, 30)}...` : '⚠️ EMPTY');
-console.log('[TTS] ANON_KEY:', SUPABASE_ANON_KEY ? `${SUPABASE_ANON_KEY.substring(0, 10)}...` : '⚠️ EMPTY');
+log.debug('[TTS] EDGE_URL:', EDGE_URL ? `${EDGE_URL.substring(0, 30)}...` : '⚠️ EMPTY');
+log.debug('[TTS] ANON_KEY:', SUPABASE_ANON_KEY ? `${SUPABASE_ANON_KEY.substring(0, 10)}...` : '⚠️ EMPTY');
 
 async function getAuthToken(): Promise<string> {
   try {
@@ -33,7 +34,7 @@ async function getAuthToken(): Promise<string> {
 function fetchAudioAsBase64(text: string, voiceId: string, token: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const url = `${EDGE_URL}/functions/v1/elevenlabs-tts`;
-    console.log('[TTS] Fetching audio from:', url);
+    log.debug('[TTS] Fetching audio from:', url);
     
     if (!EDGE_URL) {
       reject(new Error('EDGE_URL is empty — check EXPO_PUBLIC_EDGE_FUNCTIONS_URL or EXPO_PUBLIC_SUPABASE_URL env vars'));
@@ -53,14 +54,14 @@ function fetchAudioAsBase64(text: string, voiceId: string, token: string): Promi
     xhr.responseType = 'blob';
 
     xhr.onload = () => {
-      console.log('[TTS] XHR response status:', xhr.status);
+      log.debug('[TTS] XHR response status:', xhr.status);
       if (xhr.status !== 200) {
         // Try to read error body
         const blob = xhr.response;
         if (blob) {
           const reader = new FileReader();
           reader.onloadend = () => {
-            console.warn('[TTS] Error response body:', reader.result);
+            log.warn('[TTS] Error response body:', reader.result);
           };
           reader.readAsText(blob);
         }
@@ -69,7 +70,7 @@ function fetchAudioAsBase64(text: string, voiceId: string, token: string): Promi
       }
 
       const blob = xhr.response;
-      console.log('[TTS] Blob received, size:', blob?.size || 0, 'type:', blob?.type || 'unknown');
+      log.debug('[TTS] Blob received, size:', blob?.size || 0, 'type:', blob?.type || 'unknown');
       if (!blob || blob.size === 0) {
         reject(new Error('Empty audio response'));
         return;
@@ -87,7 +88,7 @@ function fetchAudioAsBase64(text: string, voiceId: string, token: string): Promi
           reject(new Error(`Base64 data too short: ${base64?.length || 0} chars`));
           return;
         }
-        console.log('[TTS] Base64 audio ready, length:', base64.length);
+        log.debug('[TTS] Base64 audio ready, length:', base64.length);
         resolve(base64);
       };
       reader.onerror = () => reject(new Error('FileReader error'));
@@ -95,17 +96,17 @@ function fetchAudioAsBase64(text: string, voiceId: string, token: string): Promi
     };
 
     xhr.onerror = () => {
-      console.warn('[TTS] XHR network error — URL:', url);
+      log.warn('[TTS] XHR network error — URL:', url);
       reject(new Error('XHR network error'));
     };
     xhr.ontimeout = () => {
-      console.warn('[TTS] XHR timeout after 30s');
+      log.warn('[TTS] XHR timeout after 30s');
       reject(new Error('XHR timeout'));
     };
     xhr.timeout = 30000;
 
     const body = JSON.stringify({ text, voiceId });
-    console.log('[TTS] Sending XHR, body length:', body.length, 'voiceId:', voiceId);
+    log.debug('[TTS] Sending XHR, body length:', body.length, 'voiceId:', voiceId);
     xhr.send(body);
   });
 }
@@ -120,15 +121,15 @@ export async function speakWithElevenLabs(
   tag = 'tts',
 ): Promise<Audio.Sound | null> {
   if (!text || text.trim().length < 5) {
-    console.log('[TTS] Text too short, skipping');
+    log.debug('[TTS] Text too short, skipping');
     return null;
   }
 
-  console.log(`[TTS:${tag}] Starting TTS, text: "${text.substring(0, 50)}...", voice: ${voiceId}`);
+  log.debug(`[TTS:${tag}] Starting TTS, text: "${text.substring(0, 50)}...", voice: ${voiceId}`);
 
   try {
     const token = await getAuthToken();
-    console.log(`[TTS:${tag}] Auth token obtained:`, token ? `${token.substring(0, 10)}...` : '⚠️ EMPTY');
+    log.debug(`[TTS:${tag}] Auth token obtained:`, token ? `${token.substring(0, 10)}...` : '⚠️ EMPTY');
     
     const base64 = await fetchAudioAsBase64(text, voiceId, token);
 
@@ -141,10 +142,10 @@ export async function speakWithElevenLabs(
     // Verify file was written
     const info = await FileSystem.getInfoAsync(tempPath);
     if (!info.exists || (info as any).size < 100) {
-      console.warn(`[TTS:${tag}] Temp file too small or missing: ${tempPath}`);
+      log.warn(`[TTS:${tag}] Temp file too small or missing: ${tempPath}`);
       return null;
     }
-    console.log(`[TTS:${tag}] Audio file written: ${(info as any).size} bytes at ${tempPath}`);
+    log.debug(`[TTS:${tag}] Audio file written: ${(info as any).size} bytes at ${tempPath}`);
 
     // Configure audio mode for iOS
     await Audio.setAudioModeAsync({
@@ -158,7 +159,7 @@ export async function speakWithElevenLabs(
       { uri: tempPath },
       { shouldPlay: true },
     );
-    console.log(`[TTS:${tag}] Playback started`);
+    log.debug(`[TTS:${tag}] Playback started`);
 
     // Clean up temp file when done
     sound.setOnPlaybackStatusUpdate((status) => {
@@ -169,7 +170,7 @@ export async function speakWithElevenLabs(
 
     return sound;
   } catch (err) {
-    console.warn(`[TTS:${tag}] Error:`, err);
+    log.warn(`[TTS:${tag}] Error:`, err);
     return null;
   }
 }

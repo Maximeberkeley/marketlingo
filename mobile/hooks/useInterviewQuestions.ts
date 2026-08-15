@@ -4,6 +4,7 @@ import {
   MockPrompt, MCQQuestion, MentalMathQuestion, BigBossQuestion,
   dbToMockPrompt, dbToMCQ, dbToMentalMath, dbToBigBoss,
 } from '../lib/interviewLabData';
+import { log } from '../lib/logger';
 
 interface UseInterviewQuestionsResult {
   mockQuestions: MockPrompt[];
@@ -69,7 +70,7 @@ export function useInterviewQuestions(marketId: string | null, path: string): Us
         setBigBossQuestions(bosses.length > 0 ? bosses : getDefaultBigBoss());
         setHeroProblem(mocks[0]?.heroProblem || '');
       } catch (err) {
-        console.warn('Failed to fetch interview questions:', err);
+        log.warn('Failed to fetch interview questions:', err);
         setMockQuestions(getDefaultMocks());
         setMcqQuestions(getDefaultMCQs());
         setBigBossQuestions(getDefaultBigBoss());

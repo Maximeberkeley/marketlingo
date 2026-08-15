@@ -7,6 +7,7 @@
  */
 import { supabase } from './supabase';
 import { trackEvent } from './analytics';
+import { log } from './logger';
 
 export type Confidence = 'guessing' | 'fairly_sure' | 'certain';
 
@@ -86,7 +87,7 @@ export async function submitDecision(args: {
   });
 
   if (error || !data || (data as any).error) {
-    console.warn('[DecisionEngine] submit failed', error || (data as any)?.error);
+    log.warn('[DecisionEngine] submit failed', error || (data as any)?.error);
     return null;
   }
 

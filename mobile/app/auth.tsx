@@ -40,9 +40,10 @@ export default function AuthScreen() {
 
     setLoading(true);
     try {
-      const result = mode === 'login'
-        ? await signInWithEmail(email.trim(), password)
-        : await signUpWithEmail(email.trim(), password);
+      const result: { success: boolean; error: string | null; message?: string } =
+        mode === 'login'
+          ? await signInWithEmail(email.trim(), password)
+          : await signUpWithEmail(email.trim(), password);
 
       if (!result.success) {
         Alert.alert('Error', result.error || 'Something went wrong.');
@@ -55,11 +56,12 @@ export default function AuthScreen() {
         // Existing users go to index which handles routing
         router.replace('/');
       }
-    } catch (err: any) {
-      Alert.alert('Error', err.message || 'Something went wrong.');
+    } catch (err) {
+      Alert.alert('Error', err instanceof Error ? err.message : 'Something went wrong.');
     } finally {
       setLoading(false);
     }
+
   };
 
   if (showDemo) {

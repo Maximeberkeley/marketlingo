@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { trackEvent, identifyUser } from '../lib/analytics';
 import { COLORS } from '../lib/constants';
+import { log } from '../lib/logger';
 
 export default function Index() {
   const { user, loading } = useAuth();
@@ -35,7 +36,7 @@ export default function Index() {
           .maybeSingle();
 
         if (profileError) {
-          console.warn('[Index] Failed to load profile during startup:', profileError.message);
+          log.warn('[Index] Failed to load profile during startup:', profileError.message);
           safeReplace('/(tabs)/home');
           return;
         }
@@ -53,7 +54,7 @@ export default function Index() {
           .maybeSingle();
 
         if (progressError && progressError.code !== 'PGRST116') {
-          console.warn('[Index] Failed to load progress during startup:', progressError.message);
+          log.warn('[Index] Failed to load progress during startup:', progressError.message);
           safeReplace('/(tabs)/home');
           return;
         }
@@ -66,7 +67,7 @@ export default function Index() {
           safeReplace('/(tabs)/home');
         }
       } catch (error) {
-        console.warn('[Index] Startup redirect failed:', error);
+        log.warn('[Index] Startup redirect failed:', error);
         safeReplace('/(tabs)/home');
       }
     }

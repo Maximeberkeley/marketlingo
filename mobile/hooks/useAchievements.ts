@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { ACHIEVEMENTS, Achievement } from '../data/achievements';
+import { log } from '../lib/logger';
 
 interface UserAchievement {
   id: string;
@@ -24,7 +25,7 @@ async function sendMilestoneNotification(
       body: { userId, milestoneType, milestoneData },
     });
   } catch (error) {
-    console.error('Failed to send milestone notification:', error);
+    log.error('Failed to send milestone notification:', error);
   }
 }
 
@@ -136,7 +137,7 @@ export function useAchievements(progress?: AchievementProgress) {
               });
             }
           } catch (xpErr) {
-            console.error('Failed to add achievement XP:', xpErr);
+            log.error('Failed to add achievement XP:', xpErr);
           }
 
           // Send push notification for the achievement

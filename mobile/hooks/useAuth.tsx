@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, createContext, useContext, ReactNode 
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { storage } from '../lib/storage';
+import { log } from '../lib/logger';
 
 interface AuthContextType {
   user: User | null;
@@ -28,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const persistUserId = (nextUser: User | null) => {
       if (!nextUser) return;
       void storage.setUserId(nextUser.id).catch((storageError) => {
-        console.warn('[Auth] Failed to persist user id:', storageError);
+        log.warn('[Auth] Failed to persist user id:', storageError);
       });
     };
 
@@ -60,9 +61,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!mounted) return;
 
         if (error) {
-          console.error('Error checking session:', error);
+          log.error('Error checking session:', error);
           if (error.message?.includes('user_not_found') || error.code === 'user_not_found') {
-            console.warn('[Auth] Stale session detected (user deleted), signing out');
+            log.warn('[Auth] Stale session detected (user deleted), signing out');
             await clearLocalSession();
             return;
           }
@@ -81,20 +82,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           if (userError) {
             if (userError.message?.includes('user_not_found') || userError.code === 'user_not_found') {
-              console.warn('[Auth] Stale session detected during validation, signing out');
+              log.warn('[Auth] Stale session detected during validation, signing out');
               await clearLocalSession();
               return;
             }
 
-            console.warn('[Auth] Session validation skipped:', userError.message);
+            log.warn('[Auth] Session validation skipped:', userError.message);
           }
         } catch (validationError) {
-          console.warn('[Auth] Session validation failed due to network issue:', validationError);
+          log.warn('[Auth] Session validation failed due to network issue:', validationError);
         }
 
         applyAuthState(restoredSession);
       } catch (error) {
-        console.warn('[Auth] Failed to restore session:', error);
+        log.warn('[Auth] Failed to restore session:', error);
         if (mounted) {
           setLoading(false);
         }
@@ -124,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { data, error } = await supabase.auth.signUp({ email, password });
       if (error) {
-        console.error('[Auth] Signup error:', error.message, error.status);
+        log.error('[Auth] Signup error:', error.message, error.status);
         return { success: false, error: error.message };
       }
       if (data.user && !data.session) {
@@ -175,7 +176,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setSession(session ?? null);
             setUser(session?.user ?? null);
           } catch (error) {
-            console.warn('[Auth] Failed to refresh session:', error);
+            log.warn('[Auth] Failed to refresh session:', error);
           }
         },
       }}

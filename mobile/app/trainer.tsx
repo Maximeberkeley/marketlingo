@@ -23,6 +23,7 @@ import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
 import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
+import { log } from '../lib/logger';
 // shuffleOptions no longer needed — inline shuffle preserves originalIndex mapping
 
 
@@ -116,7 +117,7 @@ export default function TrainerScreen() {
         .order('created_at', { ascending: true });
 
       if (error) {
-        console.error('Error fetching scenarios:', error);
+        log.error('Error fetching scenarios:', error);
         setLoading(false);
         return;
       }
@@ -190,7 +191,7 @@ export default function TrainerScreen() {
     });
 
     if (error) {
-      console.error('Error submitting answer:', error);
+      log.error('Error submitting answer:', error);
       return;
     }
 
@@ -389,7 +390,7 @@ export default function TrainerScreen() {
                 p_selected_option: origIdx,
                 p_time_spent: null,
               });
-              if (error) { console.error(error); return undefined; }
+              if (error) { log.error(error); return undefined; }
               return data as any;
             }}
             marketId={selectedMarket || 'aerospace'}

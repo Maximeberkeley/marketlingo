@@ -27,6 +27,7 @@ import { useAIConsent } from '../../hooks/useAIConsent';
 import { isFeatureEnabled } from '../../hooks/useFeatureFlags';
 import { AIConsentModal } from './AIConsentModal';
 import * as FileSystem from 'expo-file-system';
+import { log } from '../../lib/logger';
 
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 const LEO_VOICE_ID = 'onwK4e9ZLuTAKqWW03F9'; // Daniel - friendly educator
@@ -121,7 +122,7 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
       // Auto-play TTS for Leo's response
       playTTS(assistantMsg.content);
     } catch (error) {
-      console.error('Ask Leo error:', error);
+      log.error('Ask Leo error:', error);
       setMessages(prev => [
         ...prev,
         { role: 'assistant', content: "Oops! I had trouble connecting. Try again?" },

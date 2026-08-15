@@ -21,6 +21,7 @@ import { applyDemoXP } from '../../lib/demoXPBridge';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress';
 import { MascotAvatar } from '../../components/mascot/MascotAvatar';
 import { triggerHaptic } from '../../lib/haptics';
+import { log } from '../../lib/logger';
 
 const STEP_LABELS = ['Industry', 'Goal', 'Level'];
 
@@ -68,7 +69,7 @@ export default function FamiliarityScreen() {
       await storage.setFamiliarity(selectedLevel);
       await storage.setOnboardingComplete(true);
     } catch (e) {
-      console.warn('[Familiarity] local storage write failed:', e);
+      log.warn('[Familiarity] local storage write failed:', e);
     }
 
     if (user) {
@@ -88,7 +89,7 @@ export default function FamiliarityScreen() {
           .eq('id', user.id);
 
         if (profileUpdateError) {
-          console.warn('[Familiarity] profile update failed:', profileUpdateError.message);
+          log.warn('[Familiarity] profile update failed:', profileUpdateError.message);
         }
 
         if (profile?.selected_market) {
@@ -104,12 +105,12 @@ export default function FamiliarityScreen() {
             );
 
           if (progressError) {
-            console.warn('[Familiarity] user_progress upsert failed:', progressError.message);
+            log.warn('[Familiarity] user_progress upsert failed:', progressError.message);
           }
         }
       } catch (e) {
         // Never block navigation on a backend hiccup — onboarding must finish
-        console.warn('[Familiarity] backend write failed, continuing:', e);
+        log.warn('[Familiarity] backend write failed, continuing:', e);
       }
     }
 
@@ -204,7 +205,10 @@ export default function FamiliarityScreen() {
                 activeOpacity={0.7}
               >
                 <View style={styles.cardContent}>
-                  <Text style={styles.cardEmoji}>{level.icon}</Text>
+                  <View style={styles.cardIndex}>
+                    <Text style={styles.cardIndexText}>{index + 1}</Text>
+                  </View>
+
                   <View style={styles.cardText}>
                     <Text style={styles.cardTitle}>{level.name}</Text>
                     <Text style={styles.cardDescription}>{level.description}</Text>
@@ -326,9 +330,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  cardEmoji: {
-    fontSize: 36,
+  cardIndex: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     marginRight: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.accentSoft,
+  },
+  cardIndexText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.accent,
   },
   cardText: {
     flex: 1,

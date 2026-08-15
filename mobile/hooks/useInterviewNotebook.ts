@@ -3,6 +3,7 @@ import { Alert } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { triggerHaptic } from '../lib/haptics';
+import { log } from '../lib/logger';
 
 /**
  * Hook to save Interview Lab content to the Notebook (notes table).
@@ -31,7 +32,7 @@ export function useInterviewNotebook(marketId: string) {
       Alert.alert('Saved! 📝', 'Added to your Notebook.');
       return true;
     } catch (err) {
-      console.warn('Save to notebook error:', err);
+      log.warn('Save to notebook error:', err);
       Alert.alert('Error', 'Could not save. Try again.');
       return false;
     } finally {

@@ -101,7 +101,7 @@ export function useOfflineCache(marketId?: string) {
         const dayTag = `day-${day}`;
         const { data: stacks } = await supabase
           .from('stacks')
-          .select('id, title, stack_type, tags, duration_minutes, slides (slide_number, title, body, sources)')
+          .select('id, title, stack_type, tags, duration_minutes, slides (id, slide_number, title, body, sources)')
           .eq('market_id', marketId)
           .contains('tags', ['MICRO_LESSON', dayTag])
           .not('published_at', 'is', null)

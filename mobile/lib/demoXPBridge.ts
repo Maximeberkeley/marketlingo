@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './supabase';
+import { log } from './logger';
 
 const DEMO_XP_KEY = 'ml_demo_xp';
 const DEMO_MARKET_KEY = 'ml_demo_market';
@@ -14,7 +15,7 @@ export async function saveDemoXP(xp: number) {
     const current = existing ? parseInt(existing, 10) : 0;
     await AsyncStorage.setItem(DEMO_XP_KEY, String(current + xp));
   } catch (e) {
-    console.warn('Failed to save demo XP:', e);
+    log.warn('Failed to save demo XP:', e);
   }
 }
 
@@ -25,7 +26,7 @@ export async function saveDemoMarket(market: string) {
   try {
     await AsyncStorage.setItem(DEMO_MARKET_KEY, market);
   } catch (e) {
-    console.warn('Failed to save demo market:', e);
+    log.warn('Failed to save demo market:', e);
   }
 }
 
@@ -88,7 +89,7 @@ export async function applyDemoXP(userId: string, marketId: string): Promise<num
 
     return xp;
   } catch (e) {
-    console.warn('Failed to apply demo XP:', e);
+    log.warn('Failed to apply demo XP:', e);
     return 0;
   }
 }

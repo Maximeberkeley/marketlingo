@@ -45,7 +45,7 @@ export default function SubscriptionScreen() {
   const {
     isProUser, isLoading, purchasePackage, restorePurchases, getPackage,
     getExpirationDate, willRenew,
-    planType,
+    planType, trialStatus,
     isNative, rcReady,
   } = useSubscription();
   const [isRestoring, setIsRestoring] = useState(false);

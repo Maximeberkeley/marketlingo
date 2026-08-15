@@ -6,6 +6,7 @@
 import { Platform } from 'react-native';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system/legacy';
+import { log } from './logger';
 
 type SoundType =
   | 'correct'
@@ -177,7 +178,7 @@ export async function playSound(type: SoundType) {
     });
   } catch (err) {
     // Silent fail — don't crash the app for a sound effect
-    console.warn('[SFX] playSound error:', err);
+    log.warn('[SFX] playSound error:', err);
   }
 }
 

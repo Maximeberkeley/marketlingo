@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
+import { log } from '../lib/logger';
 
 export interface NotificationPreferences {
   dailyReminder: boolean;
@@ -76,10 +77,10 @@ export function useNotifications() {
         .eq('id', user.id);
 
       if (error) {
-        console.error('Error saving push token:', error);
+        log.error('Error saving push token:', error);
       }
     } catch (error) {
-      console.error('Error saving push token:', error);
+      log.error('Error saving push token:', error);
     }
   }, [user]);
 
@@ -97,10 +98,10 @@ export function useNotifications() {
         .eq('id', user.id);
 
       if (error) {
-        console.error('Error saving notification preferences:', error);
+        log.error('Error saving notification preferences:', error);
       }
     } catch (error) {
-      console.error('Error saving notification preferences:', error);
+      log.error('Error saving notification preferences:', error);
     }
   }, [user]);
 
@@ -118,7 +119,7 @@ export function useNotifications() {
       }
 
       if (finalStatus !== 'granted') {
-        console.log('Push notification permission denied');
+        log.debug('Push notification permission denied');
         return false;
       }
 
@@ -132,7 +133,7 @@ export function useNotifications() {
 
       return true;
     } catch (error) {
-      console.error('Error registering push notifications:', error);
+      log.error('Error registering push notifications:', error);
       return false;
     }
   }, [isSupported, savePushToken]);
@@ -165,7 +166,7 @@ export function useNotifications() {
         },
       });
     } catch (error) {
-      console.error('Error scheduling daily reminder:', error);
+      log.error('Error scheduling daily reminder:', error);
     }
   }, [isSupported, preferences]);
 
@@ -189,7 +190,7 @@ export function useNotifications() {
         },
       });
     } catch (error) {
-      console.error('Error scheduling streak reminder:', error);
+      log.error('Error scheduling streak reminder:', error);
     }
   }, [isSupported, preferences.streakReminders]);
 
@@ -210,7 +211,7 @@ export function useNotifications() {
         },
       });
     } catch (error) {
-      console.error('Error sending local notification:', error);
+      log.error('Error sending local notification:', error);
     }
   }, [isSupported]);
 
