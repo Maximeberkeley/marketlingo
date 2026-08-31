@@ -257,7 +257,13 @@ export function useSubscription() {
 
   // ---------- Purchase ----------
   const purchasePackage = useCallback(async (pkg: any): Promise<PurchaseResult> => {
+    if (!MONETIZATION_ENABLED) {
+      // App is free — there is nothing to purchase.
+      return { success: true, cancelled: false, error: null };
+    }
     if (!user) return { success: false, cancelled: false, error: 'Not logged in' };
+
+
 
     const type = (pkg?.identifier || pkg) as 'monthly' | 'annual';
 
@@ -408,7 +414,13 @@ export function useSubscription() {
 
   // ---------- Restore Purchases ----------
   const restorePurchases = useCallback(async (): Promise<{ success: boolean; restored: boolean; error: string | null }> => {
+    if (!MONETIZATION_ENABLED) {
+      // App is free — everything is already unlocked, nothing to restore.
+      return { success: true, restored: true, error: null };
+    }
     if (!user) return { success: false, restored: false, error: 'Not logged in' };
+
+
 
     if (isNative && revenueCatRef.current) {
       try {
