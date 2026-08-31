@@ -20,6 +20,7 @@ import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { ProCelebration } from '../components/subscription/ProCelebration';
 import { trackEvent } from '../lib/analytics';
 import { Feather } from '@expo/vector-icons';
+import { MONETIZATION_ENABLED } from '../lib/monetization';
 
 type PlanType = 'monthly' | 'annual';
 
@@ -109,6 +110,26 @@ export default function SubscriptionScreen() {
       ? (rcReady ? 'Subscription unavailable' : 'Loading App Store prices...')
       : `Subscribe — ${getPriceDisplay(selectedPlan)}${selectedPlan === 'monthly' ? '/mo' : '/yr'}`;
 
+  // App is currently 100% free — no purchase surface at all.
+  if (!MONETIZATION_ENABLED) {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.scrollContent, { paddingTop: insets.top + 16, flex: 1, justifyContent: 'center', alignItems: 'center' }]}>
+          <LeoCharacter size="lg" animation="celebrating" />
+          <Text style={[styles.backButtonText, { fontSize: 22, fontWeight: '700', marginTop: 20, textAlign: 'center' }]}>
+            Everything is free
+          </Text>
+          <Text style={[styles.backButtonText, { marginTop: 10, textAlign: 'center', opacity: 0.7, paddingHorizontal: 24 }]}>
+            MarketLingo is fully unlocked — every lesson, lab, drill and mentor is included at no cost. There is nothing to buy.
+          </Text>
+          <TouchableOpacity style={[styles.backButton, { marginTop: 28 }]} onPress={() => router.back()}>
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   if (isLoading) {
     return (
       <View style={[styles.container, { alignItems: 'center', justifyContent: 'center' }]}>
@@ -116,6 +137,8 @@ export default function SubscriptionScreen() {
       </View>
     );
   }
+
+
 
   return (
     <View style={styles.container}>
