@@ -55,6 +55,7 @@ export function useSubscription() {
   const revenueCatRef = useRef<any>(null);
   
   useEffect(() => {
+    if (!MONETIZATION_ENABLED) return; // App is free: never load the StoreKit SDK
     if (!isNative) return;
     try {
       revenueCatRef.current = require('react-native-purchases').default;
@@ -66,7 +67,9 @@ export function useSubscription() {
 
   // ---------- RevenueCat init on native ----------
   useEffect(() => {
+    if (!MONETIZATION_ENABLED) return; // App is free: no StoreKit/RevenueCat calls at all
     if (!isNative) return;
+
     
     const initRC = async () => {
       const rc = revenueCatRef.current;
