@@ -30,7 +30,7 @@ export function useUserProgress(marketId?: string) {
         .single();
 
       if (error && error.code === 'PGRST116') {
-        const today = new Date().toISOString().split('T')[0];
+        const today = localDateString();
         const { data: newProgress, error: createError } = await supabase
           .from('user_progress')
           .insert({
