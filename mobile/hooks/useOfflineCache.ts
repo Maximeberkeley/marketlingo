@@ -25,6 +25,9 @@ export function useOfflineCache(marketId?: string) {
   const [cachedLessons, setCachedLessons] = useState<CachedLesson[]>([]);
   const [isOffline, setIsOffline] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const cachedLessonsRef = useRef<CachedLesson[]>([]);
+  cachedLessonsRef.current = cachedLessons;
+  const syncingRef = useRef(false);
 
   // Load cache from storage
   const loadCache = useCallback(async () => {
