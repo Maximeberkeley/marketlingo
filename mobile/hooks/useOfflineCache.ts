@@ -2,7 +2,7 @@
  * useOfflineCache — caches today's + tomorrow's lesson to AsyncStorage
  * for offline reading. Auto-syncs when online.
  */
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import { StackWithSlides } from '../lib/types';
@@ -80,6 +80,7 @@ export function useOfflineCache(marketId?: string) {
       cache.lastSyncAt = new Date().toISOString();
 
       await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+      cachedLessonsRef.current = cache.lessons;
       setCachedLessons(cache.lessons);
     } catch {
       // Storage full or error
