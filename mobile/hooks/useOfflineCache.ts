@@ -128,9 +128,11 @@ export function useOfflineCache(marketId?: string) {
     } catch {
       // Offline or error — that's fine
     } finally {
+      syncingRef.current = false;
       setSyncing(false);
     }
-  }, [marketId, syncing, cachedLessons, cacheLesson]);
+  }, [marketId, cacheLesson]);
+
 
   /**
    * Get a cached lesson by day number (for offline use)
