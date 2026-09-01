@@ -3,7 +3,7 @@
  * Predict → decide → consequence → explanation, then hand off to completion.
  * Auto-skips silently when the flag is off or no scenario exists for the day.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Modal, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
@@ -36,9 +36,22 @@ export function LessonDecisionModal({
   const [loading, setLoading] = useState(true);
   const [resolved, setResolved] = useState(false);
 
+  // Keep the latest onDone without making it an effect dependency (an unstable
+  // parent callback would otherwise re-run the fetch every render and flicker).
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
+  const loadedKeyRef = useRef<string | null>(null);
+
   useEffect(() => {
     let cancelled = false;
-    if (!visible) return;
+    if (!visible) {
+      loadedKeyRef.current = null;
+      return;
+    }
+
+    const key = `${marketId || ''}|${stackId || ''}|${dayNumber || ''}`;
+    if (loadedKeyRef.current === key) return;
+    loadedKeyRef.current = key;
 
     (async () => {
       setLoading(true);
@@ -46,7 +59,7 @@ export function LessonDecisionModal({
       setScenario(null);
 
       if (!marketId || !(await isFeatureEnabled('decision_engine'))) {
-        if (!cancelled) onDone();
+        if (!cancelled) onDoneRef.current();
         return;
       }
 
@@ -62,7 +75,7 @@ export function LessonDecisionModal({
 
       if (cancelled) return;
       if (found.length === 0) {
-        onDone();
+        onDoneRef.current();
         return;
       }
       setScenario(found[0]);
@@ -72,7 +85,7 @@ export function LessonDecisionModal({
     return () => {
       cancelled = true;
     };
-  }, [visible, marketId, stackId, dayNumber, onDone]);
+  }, [visible, marketId, stackId, dayNumber]);
 
   if (!visible || (!scenario && !loading)) return null;
 
