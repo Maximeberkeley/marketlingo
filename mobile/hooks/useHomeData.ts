@@ -3,7 +3,7 @@
  * Returns market config, lesson/news stacks, news items, social nudge, tomorrow preview.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { StackWithSlides } from '../lib/types';
 import { getStreakRiskHours } from '../components/home/StreakAtRisk';
@@ -346,7 +346,7 @@ export function useHomeData(
       setLoading(false);
       return null;
     }
-  }, [userId, progress, xpData, lessonCompletedToday]);
+  }, [userId]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
