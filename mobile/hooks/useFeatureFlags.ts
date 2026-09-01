@@ -26,7 +26,10 @@ const DEFAULTS: Record<FeatureFlagKey, boolean> = {
 
 const CACHE_KEY = 'feature_flags_v1';
 
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
 let memoryCache: Record<string, boolean> | null = null;
+let memoryCacheAt = 0;
 
 export async function fetchFeatureFlags(): Promise<Record<string, boolean>> {
   try {
@@ -37,6 +40,7 @@ export async function fetchFeatureFlags(): Promise<Record<string, boolean>> {
       map[row.key] = row.enabled;
     });
     memoryCache = map;
+    memoryCacheAt = Date.now();
     AsyncStorage.setItem(CACHE_KEY, JSON.stringify(map)).catch(() => {});
     return map;
   } catch {
@@ -51,9 +55,11 @@ export async function fetchFeatureFlags(): Promise<Record<string, boolean>> {
   }
 }
 
-/** Non-hook check for use inside async handlers. */
+/** Non-hook check for use inside async handlers. Cache expires so a remote
+ *  kill switch takes effect without a cold start. */
 export async function isFeatureEnabled(key: FeatureFlagKey): Promise<boolean> {
-  const flags = memoryCache || (await fetchFeatureFlags());
+  const fresh = memoryCache && Date.now() - memoryCacheAt < CACHE_TTL_MS;
+  const flags = fresh ? memoryCache! : await fetchFeatureFlags();
   return flags[key] ?? DEFAULTS[key];
 }
 

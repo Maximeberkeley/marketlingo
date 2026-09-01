@@ -84,6 +84,7 @@ export function useSessionFlow({
   const handleStackComplete = useCallback(async (isReviewMode: boolean, timeSpentSeconds: number) => {
     setShowReader(false);
     if (isReviewMode) {
+      setActiveStack(null);
       Alert.alert('Great review!', 'Keep up the good work.');
       return;
     }
@@ -95,24 +96,32 @@ export function useSessionFlow({
     triggerHaptic('success');
     let earnedXP = xpRewardLessonComplete;
 
-    if (progress && activeStack) {
-      await completeStack(activeStack.id);
-      const updatedProgress = await updateStreak();
-      await completeLessonForToday(activeStack.id);
-      if ((progress.current_streak || 0) > 0) {
-        const streakBonus = xpRewardStreakBonus * (progress.current_streak || 1);
-        await addXP(streakBonus, 'streak_bonus');
-        earnedXP += streakBonus;
-      }
+    try {
+      if (progress && activeStack) {
+        await completeStack(activeStack.id);
+        const updatedProgress = await updateStreak();
+        await completeLessonForToday(activeStack.id);
+        if ((progress.current_streak || 0) > 0) {
+          const streakBonus = xpRewardStreakBonus * (progress.current_streak || 1);
+          await addXP(streakBonus, 'streak_bonus');
+          earnedXP += streakBonus;
+        }
 
-      const mktName = getMarketName(selectedMarket || 'aerospace');
-      const mktEmoji = getMarketEmoji(selectedMarket || 'aerospace');
-      const newStreak = (updatedProgress as any)?.current_streak || progress.current_streak || 0;
-      checkStreakMilestone(newStreak, mktName, mktEmoji);
+        const mktName = getMarketName(selectedMarket || 'aerospace');
+        const mktEmoji = getMarketEmoji(selectedMarket || 'aerospace');
+        const newStreak = (updatedProgress as any)?.current_streak || progress.current_streak || 0;
+        checkStreakMilestone(newStreak, mktName, mktEmoji);
 
-      if (xpData) {
-        checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
+        if (xpData) {
+          checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
+        }
       }
+    } catch (err) {
+      log.error('Lesson completion error:', err);
+      Alert.alert(
+        'Saved locally',
+        'We had trouble syncing your progress. It will retry the next time you are online.',
+      );
     }
 
     trackEvent('lesson_complete', { stackId: activeStack?.id || '', xp: earnedXP, market: selectedMarket || '' });
@@ -120,16 +129,27 @@ export function useSessionFlow({
     setShowSessionComplete(true);
   }, [activeStack, progress, xpData, selectedMarket, completeStack, updateStreak, completeLessonForToday, addXP, checkStreakMilestone, checkLevelMilestone, xpRewardLessonComplete, xpRewardStreakBonus]);
 
-  const handleBiteComplete = useCallback((isReviewMode: boolean, _timeSpentSeconds: number) => {
+  const handleBiteComplete = useCallback(async (isReviewMode: boolean, _timeSpentSeconds: number) => {
     setShowReader(false);
     if (isReviewMode || activeBiteIndex === null) return;
-    triggerHaptic('success');
-    if (!completedBites.includes(activeBiteIndex)) {
-      setCompletedBites((prev) => [...prev, activeBiteIndex!]);
-    }
-    addXP(10, 'bite', undefined, `Quick Bite ${activeBiteIndex + 1}`);
-    Alert.alert('Bite Complete! ⚡', '+10 XP earned');
+    const biteIndex = activeBiteIndex;
     setActiveBiteIndex(null);
+
+    // Only award XP the first time a given bite is completed.
+    if (completedBites.includes(biteIndex)) {
+      Alert.alert('Bite reviewed', 'You already earned XP for this one.');
+      return;
+    }
+
+    triggerHaptic('success');
+    setCompletedBites((prev) => (prev.includes(biteIndex) ? prev : [...prev, biteIndex]));
+    try {
+      await addXP(10, 'bite', undefined, `Quick Bite ${biteIndex + 1}`);
+      Alert.alert('Bite Complete! ⚡', '+10 XP earned');
+    } catch (err) {
+      log.error('Bite XP error:', err);
+      Alert.alert('Bite Complete!', 'XP could not be saved right now.');
+    }
   }, [activeBiteIndex, completedBites, addXP]);
 
   const handleSaveInsight = useCallback(async (slideNum: number) => {
