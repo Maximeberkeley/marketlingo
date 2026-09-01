@@ -2,7 +2,7 @@
  * useOfflineCache — caches today's + tomorrow's lesson to AsyncStorage
  * for offline reading. Auto-syncs when online.
  */
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import { StackWithSlides } from '../lib/types';
@@ -25,6 +25,9 @@ export function useOfflineCache(marketId?: string) {
   const [cachedLessons, setCachedLessons] = useState<CachedLesson[]>([]);
   const [isOffline, setIsOffline] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const cachedLessonsRef = useRef<CachedLesson[]>([]);
+  cachedLessonsRef.current = cachedLessons;
+  const syncingRef = useRef(false);
 
   // Load cache from storage
   const loadCache = useCallback(async () => {
@@ -77,6 +80,7 @@ export function useOfflineCache(marketId?: string) {
       cache.lastSyncAt = new Date().toISOString();
 
       await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+      cachedLessonsRef.current = cache.lessons;
       setCachedLessons(cache.lessons);
     } catch {
       // Storage full or error
@@ -87,16 +91,19 @@ export function useOfflineCache(marketId?: string) {
    * Pre-fetch today + tomorrow's lessons for offline access
    */
   const syncLessons = useCallback(async (currentDay: number) => {
-    if (!marketId || syncing) return;
+    if (!marketId || syncingRef.current) return;
+    syncingRef.current = true;
     setSyncing(true);
 
     try {
       const daysToCache = [currentDay, currentDay + 1].filter((d) => d <= 180);
 
       for (const day of daysToCache) {
-        // Check if already cached
-        const alreadyCached = cachedLessons.find((l) => l.dayNumber === day);
+        // Check if already cached (read through a ref so callers holding an
+        // older closure still see the current cache)
+        const alreadyCached = cachedLessonsRef.current.find((l) => l.dayNumber === day);
         if (alreadyCached) continue;
+
 
         const dayTag = `day-${day}`;
         const { data: stacks } = await supabase
@@ -125,9 +132,11 @@ export function useOfflineCache(marketId?: string) {
     } catch {
       // Offline or error — that's fine
     } finally {
+      syncingRef.current = false;
       setSyncing(false);
     }
-  }, [marketId, syncing, cachedLessons, cacheLesson]);
+  }, [marketId, cacheLesson]);
+
 
   /**
    * Get a cached lesson by day number (for offline use)

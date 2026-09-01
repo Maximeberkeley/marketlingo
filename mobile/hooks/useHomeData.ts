@@ -3,7 +3,7 @@
  * Returns market config, lesson/news stacks, news items, social nudge, tomorrow preview.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { StackWithSlides } from '../lib/types';
 import { getStreakRiskHours } from '../components/home/StreakAtRisk';
@@ -83,11 +83,26 @@ export function useHomeData(
   const [currentDay, setCurrentDay] = useState(1);
   const [learningGoal, setLearningGoal] = useState('curiosity');
 
+  // Read progress/xp through refs so `fetchData` keeps a stable identity.
+  // Depending on those objects directly gave the callback a new reference on
+  // every XP update, which retriggered the Home screen's focus effect.
+  const progressRef = useRef(progress);
+  progressRef.current = progress;
+  const xpDataRef = useRef(xpData);
+  xpDataRef.current = xpData;
+  const lessonDoneRef = useRef(lessonCompletedToday);
+  lessonDoneRef.current = lessonCompletedToday;
+
   const fetchData = useCallback(async () => {
+    const progress = progressRef.current;
+    const xpData = xpDataRef.current;
+    const lessonCompletedToday = lessonDoneRef.current;
+
     if (!userId) {
       setLoading(false);
       return null;
     }
+
 
     try {
       const { data: profile, error: profileError } = await supabase
@@ -331,7 +346,7 @@ export function useHomeData(
       setLoading(false);
       return null;
     }
-  }, [userId, progress, xpData, lessonCompletedToday]);
+  }, [userId]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
