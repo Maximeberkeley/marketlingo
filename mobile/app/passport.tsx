@@ -16,6 +16,7 @@ import { getMarketName } from '../lib/markets';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { Feather } from '@expo/vector-icons';
+import { calculateAvailableDay } from '../lib/dayMath';
 
 interface StampData {
   month: number;
@@ -92,14 +93,7 @@ export default function PassportScreen() {
       .eq('market_id', mId)
       .single();
 
-    let day = 1;
-    if (progress?.start_date) {
-      const start = new Date(progress.start_date);
-      const today = new Date();
-      start.setHours(0, 0, 0, 0);
-      today.setHours(0, 0, 0, 0);
-      day = Math.min(180, Math.max(1, Math.floor((today.getTime() - start.getTime()) / 86400000) + 1));
-    }
+    const day = calculateAvailableDay(progress?.start_date);
     setCurrentDay(day);
     setLearningGoal(progress?.learning_goal || null);
 

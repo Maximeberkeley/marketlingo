@@ -3,17 +3,8 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { UserProgress } from '../lib/types';
 import { log } from '../lib/logger';
+import { calculateAvailableDay, localDateString } from '../lib/dayMath';
 
-function calculateAvailableDay(startDate: string): number {
-  const start = new Date(startDate);
-  const today = new Date();
-  start.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-  const diffTime = today.getTime() - start.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  const availableDay = diffDays + 1;
-  return Math.min(180, Math.max(1, availableDay));
-}
 
 export function useUserProgress(marketId?: string) {
   const { user } = useAuth();
@@ -39,7 +30,7 @@ export function useUserProgress(marketId?: string) {
         .single();
 
       if (error && error.code === 'PGRST116') {
-        const today = new Date().toISOString().split('T')[0];
+        const today = localDateString();
         const { data: newProgress, error: createError } = await supabase
           .from('user_progress')
           .insert({

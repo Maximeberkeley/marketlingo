@@ -17,6 +17,7 @@ import { storage } from '../../lib/storage';
 import { COLORS } from '../../lib/constants';
 import { markets } from '../../lib/markets';
 import { useAuth } from '../../hooks/useAuth';
+import { localDateString } from '../../lib/dayMath';
 import { supabase } from '../../lib/supabase';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { getDemoXP } from '../../lib/demoXPBridge';
@@ -114,6 +115,7 @@ export default function OnboardingScreen() {
               current_streak: 0,
               longest_streak: 0,
               completed_stacks: [],
+              start_date: localDateString(),
             },
             { onConflict: 'user_id,market_id' }
           );

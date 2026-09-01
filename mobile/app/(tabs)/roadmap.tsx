@@ -18,6 +18,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { triggerHaptic } from '../../lib/haptics';
 import { playSound } from '../../lib/sounds';
+import { calculateAvailableDay } from '../../lib/dayMath';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
@@ -127,15 +128,7 @@ export default function RoadmapScreen() {
     const goalTag = `goal:${learningGoal}`;
     const completed = (progress?.completed_stacks as string[]) || [];
 
-    let day = 1;
-    if (progress?.start_date) {
-      const start = new Date(progress.start_date);
-      const today = new Date();
-      start.setHours(0, 0, 0, 0);
-      today.setHours(0, 0, 0, 0);
-      const diffDays = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-      day = Math.min(180, Math.max(1, diffDays + 1));
-    }
+    const day = calculateAvailableDay(progress?.start_date);
     setCurrentDay(day);
 
     const { data: allStacks } = await supabase
