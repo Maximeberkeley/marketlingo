@@ -161,7 +161,7 @@ async function sendPushNotifications(
             body: topHeadline,
             data: { type: 'news', marketId, route: '/(tabs)/home' },
             sound: 'default',
-            badge: 1,
+            badge: 0,
           }),
         });
         sent++;

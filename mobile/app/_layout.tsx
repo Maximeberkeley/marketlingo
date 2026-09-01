@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { AppState } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -43,6 +44,19 @@ Notifications.setNotificationHandler({
 
 export default function RootLayout() {
   const notificationResponseListener = useRef<Notifications.EventSubscription | null>(null);
+
+  // Keep the iOS app icon free of any badge count (we never use badges).
+  useEffect(() => {
+    const clearBadge = () => {
+      Notifications.setBadgeCountAsync(0).catch(() => {});
+      Notifications.dismissAllNotificationsAsync().catch(() => {});
+    };
+    clearBadge();
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') clearBadge();
+    });
+    return () => sub.remove();
+  }, []);
 
   useEffect(() => {
     // Handle tap on notification (background → foreground / killed → open)
