@@ -87,16 +87,19 @@ export function useOfflineCache(marketId?: string) {
    * Pre-fetch today + tomorrow's lessons for offline access
    */
   const syncLessons = useCallback(async (currentDay: number) => {
-    if (!marketId || syncing) return;
+    if (!marketId || syncingRef.current) return;
+    syncingRef.current = true;
     setSyncing(true);
 
     try {
       const daysToCache = [currentDay, currentDay + 1].filter((d) => d <= 180);
 
       for (const day of daysToCache) {
-        // Check if already cached
-        const alreadyCached = cachedLessons.find((l) => l.dayNumber === day);
+        // Check if already cached (read through a ref so callers holding an
+        // older closure still see the current cache)
+        const alreadyCached = cachedLessonsRef.current.find((l) => l.dayNumber === day);
         if (alreadyCached) continue;
+
 
         const dayTag = `day-${day}`;
         const { data: stacks } = await supabase
