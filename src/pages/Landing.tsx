@@ -119,7 +119,7 @@ export default function Landing() {
           <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground ml-8">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
             <a href="#markets" className="hover:text-foreground transition-colors">Markets</a>
-            <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
+            <a href="#pricing" className="hover:text-foreground transition-colors">Free</a>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
@@ -441,105 +441,59 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Pricing */}
+      {/* Free */}
       <section id="pricing" className="py-24 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
-            className="text-center mb-16"
+            className="text-center mb-12"
           >
             <motion.h2 variants={fadeUp} custom={0} className="text-3xl sm:text-4xl font-bold mb-4">
-              Start free. Go Pro when ready.
+              Completely free.
             </motion.h2>
             <motion.p variants={fadeUp} custom={1} className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Everything you need to get started — for free. Unlock the full experience with Pro.
+              Every lesson, lab and feature is included. No subscriptions, no paid tiers, nothing to buy.
             </motion.p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Free */}
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              custom={0}
-              className="p-8 rounded-3xl bg-card border border-border"
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={0}
+            className="p-8 rounded-3xl bg-card border border-border max-w-md mx-auto"
+          >
+            <h3 className="text-xl font-bold mb-1">Everything included</h3>
+            <p className="text-muted-foreground text-sm mb-6">For every learner</p>
+            <div className="text-4xl font-extrabold mb-8">
+              $0<span className="text-lg font-normal text-muted-foreground">/mo</span>
+            </div>
+            <ul className="space-y-3 mb-8">
+              {[
+                "All industry markets",
+                "Daily micro-lessons, games & drills",
+                "Interview Lab with AI feedback",
+                "Investment Lab & simulations",
+                "AI mentor chat (Leo)",
+                "News feed, streaks & XP",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-3 text-sm">
+                  <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Button
+              className="w-full rounded-xl py-5 bg-primary hover:bg-primary/90"
+              onClick={() => window.open(APP_STORE_URL, "_blank")}
             >
-              <h3 className="text-xl font-bold mb-1">Free</h3>
-              <p className="text-muted-foreground text-sm mb-6">Get started with the basics</p>
-              <div className="text-4xl font-extrabold mb-8">
-                $0<span className="text-lg font-normal text-muted-foreground">/mo</span>
-              </div>
-              <ul className="space-y-3 mb-8">
-                {[
-                  "1 industry market",
-                  "Daily micro-lessons",
-                  "Basic games & drills",
-                  "News feed",
-                  "Streaks & XP",
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-sm">
-                    <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Button
-                variant="outline"
-                className="w-full rounded-xl py-5"
-                onClick={() => window.open(APP_STORE_URL, "_blank")}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download Free
-              </Button>
-            </motion.div>
-
-            {/* Pro */}
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              custom={1}
-              className="p-8 rounded-3xl bg-card border-2 border-primary relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-4 py-1 rounded-bl-xl">
-                POPULAR
-              </div>
-              <h3 className="text-xl font-bold mb-1">Pro</h3>
-              <p className="text-muted-foreground text-sm mb-6">Full insider experience</p>
-              <div className="text-4xl font-extrabold mb-8">
-                $9.99<span className="text-lg font-normal text-muted-foreground">/mo</span>
-              </div>
-              <ul className="space-y-3 mb-8">
-                {[
-                  "All 12+ industry markets",
-                  "Unlimited lessons & drills",
-                  "Interview Lab with AI feedback",
-                  "Investment Lab & simulations",
-                  "AI mentor chat (Leo)",
-                  "Regulatory hub access",
-                  "Priority content updates",
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-sm">
-                    <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Button
-                className="w-full rounded-xl py-5 bg-primary hover:bg-primary/90"
-                onClick={() => window.open(APP_STORE_URL, "_blank")}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Get Pro in the App
-              </Button>
-              <p className="text-xs text-muted-foreground text-center mt-3">Subscribe via the App Store</p>
-            </motion.div>
-          </div>
+              <Download className="w-4 h-4 mr-2" />
+              Download Free
+            </Button>
+          </motion.div>
         </div>
       </section>
 
