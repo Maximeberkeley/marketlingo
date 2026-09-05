@@ -424,10 +424,10 @@ export default function SettingsScreen() {
 
         </View>
 
-        {/* Pro Features */}
-        {isProUser && (
+        {/* Appearance */}
+        {true && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>PRO FEATURES</Text>
+            <Text style={styles.sectionTitle}>APPEARANCE</Text>
             <View style={styles.settingRow}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.settingLabel}>Use Industry Mascots</Text>
