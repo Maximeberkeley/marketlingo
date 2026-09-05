@@ -43,7 +43,7 @@ export default function PrivacyPolicy() {
             "To personalize your learning experience based on your selected industry and goals",
             "To track your progress, streaks, and achievements",
             "To send push notifications you've opted into (daily reminders, streak alerts, news)",
-            "To process subscription purchases through Apple's In-App Purchase system",
+            "To improve the app (MarketLingo is free — we never process payments)",
           ]} />
         </Section>
 
@@ -53,7 +53,7 @@ export default function PrivacyPolicy() {
 
         <Section title="Third-Party Services">
           <BulletList items={[
-            "Apple In-App Purchases: For subscription management",
+            "Cloud Hosting: For secure storage of your account and progress",
             "Push Notification Services: For delivering opted-in notifications",
             "AI Services: For generating personalized learning content (no personal data is sent to AI providers)",
           ]} />

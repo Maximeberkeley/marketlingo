@@ -45,29 +45,17 @@ export default function TermsOfService() {
           ]} />
         </Section>
 
-        <Section title="4. Subscriptions & Payments">
+        <Section title="4. Pricing">
           <BulletList items={[
-            "MarketLingo offers free and premium (Pro) tiers.",
-            "Pro subscriptions are billed through Apple's In-App Purchase system.",
-            "Subscription prices are displayed in the app before purchase.",
-            "Free trials, if offered, automatically convert to paid subscriptions unless cancelled before the trial period ends.",
-            "Subscriptions automatically renew unless cancelled at least 24 hours before the end of the current period.",
-            "Payment will be charged to your Apple ID account at confirmation of purchase.",
-            "You may cancel your subscription at any time through your Apple ID settings.",
-            "Refunds are handled by Apple according to their refund policies.",
+            "MarketLingo is completely free to use.",
+            "There are no paid tiers, subscriptions, or premium content.",
+            "We never ask for payment details.",
           ]} />
         </Section>
 
-        <Section title="5. Auto-Renewable Subscription Terms">
-          <p className="text-muted-foreground text-sm leading-relaxed mb-3">
-            MarketLingo Pro is available as an auto-renewable subscription with the following options:
-          </p>
-          <BulletList items={[
-            "Monthly: $9.99/month",
-            "Yearly: $79.99/year (equivalent to $6.67/month)",
-          ]} />
-          <p className="text-muted-foreground text-sm leading-relaxed mt-3">
-            Subscriptions automatically renew unless auto-renew is turned off at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.
+        <Section title="5. No In-App Purchases">
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            The app contains no in-app purchases and no subscriptions. All features and content are unlocked for every user at no cost.
           </p>
         </Section>
 
