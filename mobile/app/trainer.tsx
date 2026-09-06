@@ -406,7 +406,6 @@ export default function TrainerScreen() {
               style={styles.paywallCTA}
               onPress={() => {
                 setShowPaywallNudge(false);
-                router.push('/subscription' as any);
               }}
               activeOpacity={0.8}
             >

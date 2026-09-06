@@ -496,13 +496,6 @@ export default function SettingsScreen() {
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
-          {MONETIZATION_ENABLED && (
-            <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/subscription' as any)}>
-              <Feather name="star" size={18} color={COLORS.textSecondary} />
-              <Text style={styles.menuText}>Manage Subscription</Text>
-              <Text style={styles.chevron}>›</Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         {/* About */}
