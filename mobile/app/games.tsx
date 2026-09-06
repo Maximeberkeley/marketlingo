@@ -13,7 +13,6 @@ import { ComboCounter } from "../components/ui/ComboCounter";
 import { createComboState, comboCorrect, comboWrong, ComboState } from "../lib/combo";
 import { Feather } from "@expo/vector-icons";
 import { useSubscription } from "../hooks/useSubscription";
-import { ProInterstitialAd, shouldShowInterstitial } from "../components/subscription/ProInterstitialAd";
 import { splitSentences } from '../lib/textUtils';
 
 interface GameQuestion {
@@ -375,7 +374,6 @@ export default function GamesScreen() {
     const percentage = Math.round((score / questions.length) * 100);
     return (
       <View style={[styles.container, styles.centered]}>
-        <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="game" />
         <Image
           source={require("../assets/illustrations/achievements-hero.png")}
           style={{ width: 100, height: 100, marginBottom: 8 }}

@@ -38,7 +38,6 @@ import { useDailyQuests } from '../../hooks/useDailyQuests';
 import { useMilestoneSharing } from '../../hooks/useMilestoneSharing';
 import { useHomeData } from '../../hooks/useHomeData';
 import { useSessionFlow } from '../../hooks/useSessionFlow';
-import { ProInterstitialAd } from '../../components/subscription/ProInterstitialAd';
 import { MONETIZATION_ENABLED } from '../../lib/monetization';
 import { triggerHaptic } from '../../lib/haptics';
 import { useStreakFreeze } from '../../hooks/useStreakFreeze';
@@ -353,7 +352,6 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       {/* Pro interstitial ad */}
-      <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="lesson" />
       {/* Leo popup overlay */}
       <LeoPopup message={leoPopups.currentMessage} onDismiss={leoPopups.dismiss} />
       {/* Leo voice chat — fullscreen immersive */}

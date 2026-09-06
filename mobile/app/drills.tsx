@@ -19,7 +19,6 @@ import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
 import { useSubscription } from '../hooks/useSubscription';
-import { ProInterstitialAd } from '../components/subscription/ProInterstitialAd';
 import { splitSentences } from '../lib/textUtils';
 
 const LEO_HAPPY = require('../assets/mascot/leo-celebrating.png');
@@ -480,7 +479,6 @@ export default function DrillsScreen() {
     const isGoodScore = percentage >= 80;
     return (
       <View style={[styles.container, styles.centered]}>
-        <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="drill" />
         <ScoreMascot isGoodScore={isGoodScore} />
         <Text style={styles.completeTitle}>Set {currentSet} Complete!</Text>
         <Text style={styles.completeScore}>{score}/{questions.length} correct</Text>

@@ -22,7 +22,6 @@ import type { Mentor } from '../data/mentors';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
-import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
 import { log } from '../lib/logger';
 // shuffleOptions no longer needed — inline shuffle preserves originalIndex mapping
 
@@ -226,7 +225,7 @@ export default function TrainerScreen() {
     setSelectedOption(null);
     setFeedback(null);
     // Show pro interstitial every 2 scenarios for free users
-    if (!isProUser && shouldShowInterstitial()) {
+    if (!isProUser && false) {
       setShowProAd(true);
       return; // Will advance after ad closes
     }
