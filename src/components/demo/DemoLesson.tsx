@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronRight, ChevronLeft, Zap, CheckCircle2, XCircle, Star, Lock, Trophy, Brain, TrendingUp } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, Zap, CheckCircle2, XCircle, Star, Lock, Trophy, Brain, TrendingUp, BookOpen, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mentorMaya from "@/assets/mentors/mentor-maya.png";
 
@@ -191,7 +191,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
           {step === "intro" && (
             <motion.div key="intro" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ type: "tween", duration: 0.25 }}
-              className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
+              className="absolute inset-0 overflow-y-auto flex flex-col items-center [justify-content:safe_center] px-6 py-8 text-center"
             >
               <motion.div
                 initial={{ scale: 0, rotate: -15 }}
@@ -203,7 +203,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                <div className="chip mb-4 text-accent border-accent/30">🤖 AI Industry · Day 1</div>
+                <div className="chip mb-4 text-accent border-accent/30">AI Industry · Day 1</div>
                 <h1 className="text-h1 text-text-primary mb-3">The AI Market Crash Course</h1>
                 <p className="text-body text-text-secondary max-w-xs mx-auto mb-2">
                   In 4 minutes, you'll learn to think like an AI market analyst — and make better decisions because of it.
@@ -217,12 +217,12 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                 className="w-full max-w-sm space-y-2.5 mb-8 mt-6"
               >
                 {[
-                  { icon: "📖", label: "2 insider slides" },
-                  { icon: "🧠", label: "1 real market quiz" },
-                  { icon: "💼", label: "1 investor scenario" },
+                  { Icon: BookOpen, label: "2 insider slides" },
+                  { Icon: Brain, label: "1 real market quiz" },
+                  { Icon: Briefcase, label: "1 investor scenario" },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3 bg-bg-2 rounded-xl px-4 py-3 border border-border">
-                    <span className="text-lg">{item.icon}</span>
+                    <item.Icon size={18} className="text-accent" />
                     <span className="text-body text-text-secondary">{item.label}</span>
                     <div className="ml-auto flex items-center gap-1 text-yellow-400">
                       <Zap size={12} />
@@ -294,10 +294,12 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                 </div>
               </div>
 
-              <div className="sticky bottom-0 left-0 right-0 pt-4 pb-6 px-4 bg-gradient-to-t from-bg-0 to-transparent">
+              <div className="sticky bottom-0 left-0 right-0 pt-4 pb-6 bg-gradient-to-t from-bg-0 via-bg-0/90 to-transparent">
+                <div className="max-w-lg mx-auto">
                 <Button variant="cta" size="full" onClick={() => { setStep("slide2"); awardXP(10); }}>
                   Next Slide <ChevronRight size={18} />
                 </Button>
+                </div>
               </div>
             </motion.div>
           )}
@@ -349,10 +351,12 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                 </div>
               </div>
 
-              <div className="sticky bottom-0 left-0 right-0 pt-4 pb-6 px-4 bg-gradient-to-t from-bg-0 to-transparent">
+              <div className="sticky bottom-0 left-0 right-0 pt-4 pb-6 bg-gradient-to-t from-bg-0 via-bg-0/90 to-transparent">
+                <div className="max-w-lg mx-auto">
                 <Button variant="cta" size="full" onClick={() => { setStep("quiz"); awardXP(10); }}>
                   Test Your Knowledge <ChevronRight size={18} />
                 </Button>
+                </div>
               </div>
             </motion.div>
           )}
@@ -365,7 +369,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
             >
               <div className="max-w-lg mx-auto space-y-4">
                 <div className="flex items-center gap-2">
-                  <span className="chip bg-green-500/20 text-green-400 border-green-500/30">🧠 Market Quiz</span>
+                  <span className="chip bg-green-500/20 text-green-400 border-green-500/30">Market Quiz</span>
                 </div>
 
                 <div className="bg-bg-2 rounded-2xl p-4 border border-border">
@@ -435,7 +439,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
           {step === "quiz-result" && (
             <motion.div key="quiz-result" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ type: "tween", duration: 0.25 }}
-              className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
+              className="absolute inset-0 overflow-y-auto flex flex-col items-center [justify-content:safe_center] px-6 py-8 text-center"
             >
               {DEMO_QUIZ.options[selectedOption!]?.correct ? (
                 <>
@@ -443,7 +447,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                     className="w-20 h-20 rounded-full bg-green-500/20 border-2 border-green-500 flex items-center justify-center mb-5">
                     <CheckCircle2 size={40} className="text-green-400" />
                   </motion.div>
-                  <h2 className="text-h2 text-text-primary mb-2">Sharp thinking! 🎯</h2>
+                  <h2 className="text-h2 text-text-primary mb-2">Sharp thinking!</h2>
                   <p className="text-body text-text-secondary mb-2">You correctly identified the AI-native classification. Maya would be proud.</p>
                 </>
               ) : (
@@ -479,7 +483,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
             >
               <div className="max-w-lg mx-auto space-y-4">
                 <div className="flex items-center gap-2">
-                  <span className="chip bg-orange-500/20 text-orange-400 border-orange-500/30">💼 Investor Scenario</span>
+                  <span className="chip bg-orange-500/20 text-orange-400 border-orange-500/30">Investor Scenario</span>
                   <span className="text-caption text-text-muted">Expert level</span>
                 </div>
 
@@ -551,7 +555,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
           {step === "trainer-result" && (
             <motion.div key="trainer-result" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ type: "tween", duration: 0.25 }}
-              className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
+              className="absolute inset-0 overflow-y-auto flex flex-col items-center [justify-content:safe_center] px-6 py-8 text-center"
             >
               {DEMO_TRAINER.options[trainerOption!]?.correct ? (
                 <>
@@ -559,7 +563,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                     className="w-20 h-20 rounded-full bg-green-500/20 border-2 border-green-500 flex items-center justify-center mb-4">
                     <Trophy size={38} className="text-green-400" />
                   </motion.div>
-                  <h2 className="text-h2 text-text-primary mb-2">Investor-grade thinking! 🏆</h2>
+                  <h2 className="text-h2 text-text-primary mb-2">Investor-grade thinking!</h2>
                 </>
               ) : (
                 <>
@@ -585,7 +589,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
           {step === "gate" && (
             <motion.div key="gate" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ type: "tween", duration: 0.25 }}
-              className="absolute inset-0 overflow-y-auto flex flex-col items-center justify-center px-6 text-center py-8"
+              className="absolute inset-0 overflow-y-auto flex flex-col items-center [justify-content:safe_center] px-6 py-8 text-center"
             >
               {/* Confetti */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -619,12 +623,12 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
 
                 <div className="grid grid-cols-3 gap-3 mb-5">
                   {[
-                    { label: "Slides read", value: "2", icon: "📖" },
-                    { label: "Quiz score", value: DEMO_QUIZ.options[selectedOption!]?.correct ? "✓" : "~", icon: "🧠" },
-                    { label: "Scenario", value: DEMO_TRAINER.options[trainerOption!]?.correct ? "✓" : "~", icon: "💼" },
+                    { label: "Slides read", value: "2", Icon: BookOpen },
+                    { label: "Quiz score", value: DEMO_QUIZ.options[selectedOption!]?.correct ? "✓" : "~", Icon: Brain },
+                    { label: "Scenario", value: DEMO_TRAINER.options[trainerOption!]?.correct ? "✓" : "~", Icon: Briefcase },
                   ].map((stat, i) => (
                     <div key={i} className="bg-bg-0/60 rounded-xl p-2.5 border border-border">
-                      <p className="text-lg mb-0.5">{stat.icon}</p>
+                      <stat.Icon size={16} className="text-accent mx-auto mb-1" />
                       <p className="text-h3 text-text-primary">{stat.value}</p>
                       <p className="text-[10px] text-text-muted leading-tight">{stat.label}</p>
                     </div>

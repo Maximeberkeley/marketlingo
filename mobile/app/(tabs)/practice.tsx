@@ -287,9 +287,7 @@ function PremiumCard({ card, index }: { card: CardData; index: number }) {
 
   const onPress = () => {
     triggerHaptic('light');
-    if (locked) {
-      router.push('/subscription' as any);
-    } else {
+    if (!locked) {
       router.push(card.path as any);
     }
   };

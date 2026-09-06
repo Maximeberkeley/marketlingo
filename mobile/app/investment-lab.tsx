@@ -106,13 +106,6 @@ export default function InvestmentLabScreen() {
   };
 
   const handleModulePress = (moduleId: string) => {
-    if (!isProUser) {
-      Alert.alert('Pro Feature', 'Investment Lab requires Pro. Upgrade to access.', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Upgrade', onPress: () => router.push('/subscription') },
-      ]);
-      return;
-    }
     router.push({ pathname: '/investment-module', params: { moduleId } });
   };
 
@@ -220,19 +213,6 @@ export default function InvestmentLabScreen() {
 
           {/* Day gate removed — Pro users get instant access */}
 
-          {/* Not Pro */}
-          {!isProUser && (
-            <View style={styles.heroCard}>
-              <Feather name="trending-up" size={28} color={COLORS.accent} style={{ marginBottom: 8 }} />
-              <Text style={styles.heroTitle}>Real-World Investment Scenarios</Text>
-              <Text style={styles.heroDesc}>
-                Analyze companies, evaluate markets, and make investment decisions based on real industry data.
-              </Text>
-              <TouchableOpacity style={[styles.upgradeBtn, { backgroundColor: accentColor }]} onPress={() => router.push('/subscription')}>
-                <Text style={styles.upgradeBtnText}>Unlock with Pro</Text>
-              </TouchableOpacity>
-            </View>
-          )}
 
           {/* Modules */}
           <Text style={styles.sectionTitle}>INVESTMENT MODULES</Text>

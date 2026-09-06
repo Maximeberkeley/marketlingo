@@ -38,7 +38,6 @@ import { useDailyQuests } from '../../hooks/useDailyQuests';
 import { useMilestoneSharing } from '../../hooks/useMilestoneSharing';
 import { useHomeData } from '../../hooks/useHomeData';
 import { useSessionFlow } from '../../hooks/useSessionFlow';
-import { ProInterstitialAd } from '../../components/subscription/ProInterstitialAd';
 import { MONETIZATION_ENABLED } from '../../lib/monetization';
 import { triggerHaptic } from '../../lib/haptics';
 import { useStreakFreeze } from '../../hooks/useStreakFreeze';
@@ -232,7 +231,6 @@ export default function HomeScreen() {
 
   const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
-  const [showProAd, setShowProAd] = useState(false);
   const [showCriticalTimer, setShowCriticalTimer] = useState(true);
   const [showLeoChat, setShowLeoChat] = useState(false);
 
@@ -353,7 +351,6 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       {/* Pro interstitial ad */}
-      <ProInterstitialAd visible={showProAd} onClose={() => setShowProAd(false)} trigger="lesson" />
       {/* Leo popup overlay */}
       <LeoPopup message={leoPopups.currentMessage} onDismiss={leoPopups.dismiss} />
       {/* Leo voice chat — fullscreen immersive */}
@@ -380,7 +377,7 @@ export default function HomeScreen() {
 
           isReview={lessonCompletedToday && session.activeStack.stack_type === 'LESSON'}
           isProUser={isProUser}
-          onPaywallTrigger={() => { session.closeReader(); router.push('/subscription' as any); }}
+          onPaywallTrigger={() => session.closeReader()}
           dayNumber={currentDay}
           metadata={(session.activeStack as any).metadata}
         />
@@ -396,11 +393,9 @@ export default function HomeScreen() {
           stageName={currentStage.name}
           onContinue={() => {
             session.dismissSessionComplete();
-            if (!isProUser) setTimeout(() => setShowProAd(true), 500);
           }}
           onDismiss={() => {
             session.dismissSessionComplete();
-            if (!isProUser) setTimeout(() => setShowProAd(true), 500);
           }}
         />
       ) : (

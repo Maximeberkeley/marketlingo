@@ -15,7 +15,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
-import { MONETIZATION_ENABLED } from '../lib/monetization';
 import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { useSubscription } from '../hooks/useSubscription';
@@ -496,13 +495,6 @@ export default function SettingsScreen() {
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
-          {MONETIZATION_ENABLED && (
-            <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/subscription' as any)}>
-              <Feather name="star" size={18} color={COLORS.textSecondary} />
-              <Text style={styles.menuText}>Manage Subscription</Text>
-              <Text style={styles.chevron}>›</Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         {/* About */}

@@ -22,7 +22,6 @@ import type { Mentor } from '../data/mentors';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
-import { ProInterstitialAd, shouldShowInterstitial } from '../components/subscription/ProInterstitialAd';
 import { log } from '../lib/logger';
 // shuffleOptions no longer needed — inline shuffle preserves originalIndex mapping
 
@@ -93,7 +92,6 @@ export default function TrainerScreen() {
   const [isProUser, setIsProUser] = useState(false);
   const [showPaywallNudge, setShowPaywallNudge] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
-  const [showProAd, setShowProAd] = useState(false);
 
 
   useEffect(() => {
@@ -226,8 +224,7 @@ export default function TrainerScreen() {
     setSelectedOption(null);
     setFeedback(null);
     // Show pro interstitial every 2 scenarios for free users
-    if (!isProUser && shouldShowInterstitial()) {
-      setShowProAd(true);
+    if (!isProUser && false) {
       return; // Will advance after ad closes
     }
     advanceScenario();
@@ -344,11 +341,6 @@ export default function TrainerScreen() {
 
   return (
     <View style={styles.container}>
-      <ProInterstitialAd
-        visible={showProAd}
-        onClose={() => { setShowProAd(false); advanceScenario(); }}
-        trigger="trainer"
-      />
       <ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
         showsVerticalScrollIndicator={false}
@@ -412,7 +404,6 @@ export default function TrainerScreen() {
               style={styles.paywallCTA}
               onPress={() => {
                 setShowPaywallNudge(false);
-                router.push('/subscription' as any);
               }}
               activeOpacity={0.8}
             >
