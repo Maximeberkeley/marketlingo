@@ -628,7 +628,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                     { label: "Scenario", value: DEMO_TRAINER.options[trainerOption!]?.correct ? "✓" : "~", Icon: Briefcase },
                   ].map((stat, i) => (
                     <div key={i} className="bg-bg-0/60 rounded-xl p-2.5 border border-border">
-                      <p className="text-lg mb-0.5">{stat.icon}</p>
+                      <stat.Icon size={16} className="text-accent mx-auto mb-1" />
                       <p className="text-h3 text-text-primary">{stat.value}</p>
                       <p className="text-[10px] text-text-muted leading-tight">{stat.label}</p>
                     </div>
