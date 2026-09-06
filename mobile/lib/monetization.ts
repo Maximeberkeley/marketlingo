@@ -6,6 +6,6 @@
  * - no "Go Pro" banners, upsell modals or Pro interstitial ads
  * - the subscription screen is not reachable from the UI
  *
- * Flip to `true` to bring back the paid tier (RevenueCat logic is untouched).
+ * Flip to `true` to bring back the paid tier.
  */
 export const MONETIZATION_ENABLED = false;
