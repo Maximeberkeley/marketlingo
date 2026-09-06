@@ -369,7 +369,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
             >
               <div className="max-w-lg mx-auto space-y-4">
                 <div className="flex items-center gap-2">
-                  <span className="chip bg-green-500/20 text-green-400 border-green-500/30">🧠 Market Quiz</span>
+                  <span className="chip bg-green-500/20 text-green-400 border-green-500/30">Market Quiz</span>
                 </div>
 
                 <div className="bg-bg-2 rounded-2xl p-4 border border-border">
@@ -447,7 +447,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                     className="w-20 h-20 rounded-full bg-green-500/20 border-2 border-green-500 flex items-center justify-center mb-5">
                     <CheckCircle2 size={40} className="text-green-400" />
                   </motion.div>
-                  <h2 className="text-h2 text-text-primary mb-2">Sharp thinking! 🎯</h2>
+                  <h2 className="text-h2 text-text-primary mb-2">Sharp thinking!</h2>
                   <p className="text-body text-text-secondary mb-2">You correctly identified the AI-native classification. Maya would be proud.</p>
                 </>
               ) : (
@@ -483,7 +483,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
             >
               <div className="max-w-lg mx-auto space-y-4">
                 <div className="flex items-center gap-2">
-                  <span className="chip bg-orange-500/20 text-orange-400 border-orange-500/30">💼 Investor Scenario</span>
+                  <span className="chip bg-orange-500/20 text-orange-400 border-orange-500/30">Investor Scenario</span>
                   <span className="text-caption text-text-muted">Expert level</span>
                 </div>
 
@@ -563,7 +563,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                     className="w-20 h-20 rounded-full bg-green-500/20 border-2 border-green-500 flex items-center justify-center mb-4">
                     <Trophy size={38} className="text-green-400" />
                   </motion.div>
-                  <h2 className="text-h2 text-text-primary mb-2">Investor-grade thinking! 🏆</h2>
+                  <h2 className="text-h2 text-text-primary mb-2">Investor-grade thinking!</h2>
                 </>
               ) : (
                 <>
@@ -623,9 +623,9 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
 
                 <div className="grid grid-cols-3 gap-3 mb-5">
                   {[
-                    { label: "Slides read", value: "2", icon: "📖" },
-                    { label: "Quiz score", value: DEMO_QUIZ.options[selectedOption!]?.correct ? "✓" : "~", icon: "🧠" },
-                    { label: "Scenario", value: DEMO_TRAINER.options[trainerOption!]?.correct ? "✓" : "~", icon: "💼" },
+                    { label: "Slides read", value: "2", Icon: BookOpen },
+                    { label: "Quiz score", value: DEMO_QUIZ.options[selectedOption!]?.correct ? "✓" : "~", Icon: Brain },
+                    { label: "Scenario", value: DEMO_TRAINER.options[trainerOption!]?.correct ? "✓" : "~", Icon: Briefcase },
                   ].map((stat, i) => (
                     <div key={i} className="bg-bg-0/60 rounded-xl p-2.5 border border-border">
                       <p className="text-lg mb-0.5">{stat.icon}</p>
