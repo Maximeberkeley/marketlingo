@@ -343,11 +343,6 @@ export default function TrainerScreen() {
 
   return (
     <View style={styles.container}>
-      <ProInterstitialAd
-        visible={showProAd}
-        onClose={() => { setShowProAd(false); advanceScenario(); }}
-        trigger="trainer"
-      />
       <ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
         showsVerticalScrollIndicator={false}
