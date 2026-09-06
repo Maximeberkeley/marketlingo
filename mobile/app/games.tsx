@@ -37,7 +37,6 @@ export default function GamesScreen() {
   const [gameComplete, setGameComplete] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
-  const [showProAd, setShowProAd] = useState(false);
 
   const { isProUser } = useSubscription();
   const { addXP } = useUserXP(selectedMarket || undefined);
@@ -290,7 +289,6 @@ export default function GamesScreen() {
       // Show pro interstitial for free users when they don't get a perfect score
       const isPerfect = finalScore === questions.length;
       if (!isProUser && !isPerfect) {
-        setTimeout(() => setShowProAd(true), 800);
       }
     }
   };

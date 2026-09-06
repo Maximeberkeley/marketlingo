@@ -92,7 +92,6 @@ export default function TrainerScreen() {
   const [isProUser, setIsProUser] = useState(false);
   const [showPaywallNudge, setShowPaywallNudge] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
-  const [showProAd, setShowProAd] = useState(false);
 
 
   useEffect(() => {
@@ -226,7 +225,6 @@ export default function TrainerScreen() {
     setFeedback(null);
     // Show pro interstitial every 2 scenarios for free users
     if (!isProUser && false) {
-      setShowProAd(true);
       return; // Will advance after ad closes
     }
     advanceScenario();

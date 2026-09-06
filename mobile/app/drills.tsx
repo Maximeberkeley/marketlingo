@@ -164,7 +164,6 @@ export default function DrillsScreen() {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
-  const [showProAd, setShowProAd] = useState(false);
   const [currentSet, setCurrentSet] = useState(1);
   const [totalSets, setTotalSets] = useState(3);
   const [setsCompleted, setSetsCompleted] = useState(0);
@@ -329,7 +328,6 @@ export default function DrillsScreen() {
       setDrillComplete(true);
       const isPerfect = finalScore === questions.length;
       if (!isProUser && !isPerfect) {
-        setTimeout(() => setShowProAd(true), 800);
       }
     }
   };

@@ -231,7 +231,6 @@ export default function HomeScreen() {
 
   const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
-  const [showProAd, setShowProAd] = useState(false);
   const [showCriticalTimer, setShowCriticalTimer] = useState(true);
   const [showLeoChat, setShowLeoChat] = useState(false);
 
@@ -394,11 +393,9 @@ export default function HomeScreen() {
           stageName={currentStage.name}
           onContinue={() => {
             session.dismissSessionComplete();
-            if (!isProUser) setTimeout(() => setShowProAd(true), 500);
           }}
           onDismiss={() => {
             session.dismissSessionComplete();
-            if (!isProUser) setTimeout(() => setShowProAd(true), 500);
           }}
         />
       ) : (
