@@ -191,7 +191,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
           {step === "intro" && (
             <motion.div key="intro" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ type: "tween", duration: 0.25 }}
-              className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
+              className="absolute inset-0 overflow-y-auto flex flex-col items-center justify-center px-6 py-8 text-center"
             >
               <motion.div
                 initial={{ scale: 0, rotate: -15 }}
@@ -294,7 +294,8 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                 </div>
               </div>
 
-              <div className="sticky bottom-0 left-0 right-0 pt-4 pb-6 px-4 bg-gradient-to-t from-bg-0 to-transparent">
+              <div className="sticky bottom-0 left-0 right-0 pt-4 pb-6 bg-gradient-to-t from-bg-0 via-bg-0/90 to-transparent">
+                <div className="max-w-lg mx-auto">
                 <Button variant="cta" size="full" onClick={() => { setStep("slide2"); awardXP(10); }}>
                   Next Slide <ChevronRight size={18} />
                 </Button>
@@ -349,7 +350,8 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                 </div>
               </div>
 
-              <div className="sticky bottom-0 left-0 right-0 pt-4 pb-6 px-4 bg-gradient-to-t from-bg-0 to-transparent">
+              <div className="sticky bottom-0 left-0 right-0 pt-4 pb-6 bg-gradient-to-t from-bg-0 via-bg-0/90 to-transparent">
+                <div className="max-w-lg mx-auto">
                 <Button variant="cta" size="full" onClick={() => { setStep("quiz"); awardXP(10); }}>
                   Test Your Knowledge <ChevronRight size={18} />
                 </Button>
@@ -435,7 +437,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
           {step === "quiz-result" && (
             <motion.div key="quiz-result" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ type: "tween", duration: 0.25 }}
-              className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
+              className="absolute inset-0 overflow-y-auto flex flex-col items-center justify-center px-6 py-8 text-center"
             >
               {DEMO_QUIZ.options[selectedOption!]?.correct ? (
                 <>
@@ -551,7 +553,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
           {step === "trainer-result" && (
             <motion.div key="trainer-result" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ type: "tween", duration: 0.25 }}
-              className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
+              className="absolute inset-0 overflow-y-auto flex flex-col items-center justify-center px-6 py-8 text-center"
             >
               {DEMO_TRAINER.options[trainerOption!]?.correct ? (
                 <>
@@ -585,7 +587,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
           {step === "gate" && (
             <motion.div key="gate" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ type: "tween", duration: 0.25 }}
-              className="absolute inset-0 overflow-y-auto flex flex-col items-center justify-center px-6 text-center py-8"
+              className="absolute inset-0 overflow-y-auto flex flex-col items-center justify-center px-6 py-8 text-center"
             >
               {/* Confetti */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
