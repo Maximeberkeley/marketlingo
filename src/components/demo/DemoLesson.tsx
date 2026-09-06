@@ -299,6 +299,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                 <Button variant="cta" size="full" onClick={() => { setStep("slide2"); awardXP(10); }}>
                   Next Slide <ChevronRight size={18} />
                 </Button>
+                </div>
               </div>
             </motion.div>
           )}
@@ -355,6 +356,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                 <Button variant="cta" size="full" onClick={() => { setStep("quiz"); awardXP(10); }}>
                   Test Your Knowledge <ChevronRight size={18} />
                 </Button>
+                </div>
               </div>
             </motion.div>
           )}
