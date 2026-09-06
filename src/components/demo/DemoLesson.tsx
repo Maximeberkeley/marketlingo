@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronRight, ChevronLeft, Zap, CheckCircle2, XCircle, Star, Lock, Trophy, Brain, TrendingUp } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, Zap, CheckCircle2, XCircle, Star, Lock, Trophy, Brain, TrendingUp, BookOpen, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import mentorMaya from "@/assets/mentors/mentor-maya.png";
 
@@ -191,7 +191,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
           {step === "intro" && (
             <motion.div key="intro" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ type: "tween", duration: 0.25 }}
-              className="absolute inset-0 overflow-y-auto flex flex-col items-center justify-center px-6 py-8 text-center"
+              className="absolute inset-0 overflow-y-auto flex flex-col items-center [justify-content:safe_center] px-6 py-8 text-center"
             >
               <motion.div
                 initial={{ scale: 0, rotate: -15 }}
@@ -203,7 +203,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                <div className="chip mb-4 text-accent border-accent/30">🤖 AI Industry · Day 1</div>
+                <div className="chip mb-4 text-accent border-accent/30">AI Industry · Day 1</div>
                 <h1 className="text-h1 text-text-primary mb-3">The AI Market Crash Course</h1>
                 <p className="text-body text-text-secondary max-w-xs mx-auto mb-2">
                   In 4 minutes, you'll learn to think like an AI market analyst — and make better decisions because of it.
@@ -217,12 +217,12 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                 className="w-full max-w-sm space-y-2.5 mb-8 mt-6"
               >
                 {[
-                  { icon: "📖", label: "2 insider slides" },
-                  { icon: "🧠", label: "1 real market quiz" },
-                  { icon: "💼", label: "1 investor scenario" },
+                  { Icon: BookOpen, label: "2 insider slides" },
+                  { Icon: Brain, label: "1 real market quiz" },
+                  { Icon: Briefcase, label: "1 investor scenario" },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3 bg-bg-2 rounded-xl px-4 py-3 border border-border">
-                    <span className="text-lg">{item.icon}</span>
+                    <item.Icon size={18} className="text-accent" />
                     <span className="text-body text-text-secondary">{item.label}</span>
                     <div className="ml-auto flex items-center gap-1 text-yellow-400">
                       <Zap size={12} />
@@ -439,7 +439,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
           {step === "quiz-result" && (
             <motion.div key="quiz-result" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ type: "tween", duration: 0.25 }}
-              className="absolute inset-0 overflow-y-auto flex flex-col items-center justify-center px-6 py-8 text-center"
+              className="absolute inset-0 overflow-y-auto flex flex-col items-center [justify-content:safe_center] px-6 py-8 text-center"
             >
               {DEMO_QUIZ.options[selectedOption!]?.correct ? (
                 <>
@@ -555,7 +555,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
           {step === "trainer-result" && (
             <motion.div key="trainer-result" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ type: "tween", duration: 0.25 }}
-              className="absolute inset-0 overflow-y-auto flex flex-col items-center justify-center px-6 py-8 text-center"
+              className="absolute inset-0 overflow-y-auto flex flex-col items-center [justify-content:safe_center] px-6 py-8 text-center"
             >
               {DEMO_TRAINER.options[trainerOption!]?.correct ? (
                 <>
@@ -589,7 +589,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
           {step === "gate" && (
             <motion.div key="gate" variants={slideVariants} initial="enter" animate="center" exit="exit"
               transition={{ type: "tween", duration: 0.25 }}
-              className="absolute inset-0 overflow-y-auto flex flex-col items-center justify-center px-6 py-8 text-center"
+              className="absolute inset-0 overflow-y-auto flex flex-col items-center [justify-content:safe_center] px-6 py-8 text-center"
             >
               {/* Confetti */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
