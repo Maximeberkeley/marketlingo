@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Mic, Briefcase, Award,
-  Zap, ChevronRight, Crown, Lock, RotateCcw,
+  Zap, ChevronRight, RotateCcw,
   Send, Clock, Trophy, Users, Cpu, Palette,
   Lightbulb, Key, AlertTriangle, CheckCircle,
   BookOpen, Hash, MessageSquare, Layers,
