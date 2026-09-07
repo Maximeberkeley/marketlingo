@@ -377,7 +377,6 @@ export default function HomeScreen() {
 
           isReview={lessonCompletedToday && session.activeStack.stack_type === 'LESSON'}
           isProUser={isProUser}
-          onPaywallTrigger={() => session.closeReader()}
           dayNumber={currentDay}
           metadata={(session.activeStack as any).metadata}
         />

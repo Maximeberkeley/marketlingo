@@ -1,7 +1,7 @@
 /**
  * StreakCriticalTimer — live countdown for the last 2 hours before streak expires.
  * Shows mm:ss countdown with pulsing fire animation and urgent CTA.
- * Pro users get a "Leo added logs to your fire" option (1-day extension).
+ * Users get a "Leo added logs to your fire" option (1-day streak extension).
  */
 import React, { useState, useEffect, useRef } from 'react';
 import {

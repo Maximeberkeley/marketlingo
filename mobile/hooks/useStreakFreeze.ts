@@ -1,6 +1,6 @@
 /**
  * useStreakFreeze — manages streak freeze tokens.
- * Free users: 1 freeze per week. Pro users: unlimited.
+ * All users get streak freezes (app is fully free).
  */
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../lib/supabase';

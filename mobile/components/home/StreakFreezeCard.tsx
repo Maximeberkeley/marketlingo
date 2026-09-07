@@ -73,10 +73,6 @@ export function StreakFreezeCard({
           <Text style={styles.freezeBtnText}> Use Streak Freeze</Text>
         </TouchableOpacity>
       )}
-
-      {!isProUser && (
-        <Text style={styles.proHint}> Pro users get unlimited freezes</Text>
-      )}
     </Animated.View>
   );
 }
@@ -103,7 +99,4 @@ const styles = StyleSheet.create({
     alignItems: 'center', backgroundColor: '#0EA5E9',
   },
   freezeBtnText: { fontSize: 14, fontWeight: '700', color: '#FFFFFF' },
-  proHint: {
-    fontSize: 10, color: COLORS.textMuted, textAlign: 'center', paddingBottom: 10,
-  },
 });
