@@ -7,7 +7,6 @@ import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { LeoCelebration } from "@/components/mascot/LeoCelebration";
 import { MascotBreak, InlineMascot, MascotReaction, getRandomCharacter } from "@/components/mascot";
-import { DailyLimitGate, RemainingCount } from "@/components/subscription/DailyLimitGate";
 import { FloatingXP } from "@/components/ui/FloatingXP";
 import { mentors, Mentor } from "@/data/mentors";
 import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
@@ -45,7 +44,6 @@ export default function DrillsPage() {
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [showIntro, setShowIntro] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [showLimitGate, setShowLimitGate] = useState(false);
   const [floatingXP, setFloatingXP] = useState<{ amount: number; show: boolean }>({ amount: 0, show: false });
   const { state: mascotState, handleAnswer: triggerMascotReaction, setIdle } = useMascotState();
   
@@ -312,29 +310,6 @@ export default function DrillsPage() {
   // Check daily limit
   const drillsLimit = checkDailyLimit('drills');
 
-  // Daily limit gate
-  if (!isProUser && showLimitGate) {
-    return (
-      <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
-        >
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-            <ArrowLeft size={24} className="text-text-secondary" />
-          </button>
-          <h1 className="text-h2 text-text-primary">Drills</h1>
-        </motion.div>
-        <div className="flex-1 flex items-center justify-center screen-padding py-6">
-          <DailyLimitGate 
-            type="drills" 
-            onContinue={() => setShowLimitGate(false)} 
-          />
-        </div>
-      </div>
-    );
-  }
 
   // Intro screen
   if (showIntro && questions.length > 0) {
@@ -349,9 +324,6 @@ export default function DrillsPage() {
             <ArrowLeft size={24} className="text-text-secondary" />
           </button>
           <h1 className="text-h2 text-text-primary">Drills</h1>
-          {!isProUser && (
-            <RemainingCount type="drills" className="ml-auto" />
-          )}
         </motion.div>
 
         <div className="flex-1 screen-padding py-6 overflow-y-auto">
@@ -459,7 +431,7 @@ export default function DrillsPage() {
               size="lg"
               onClick={() => {
                 if (!drillsLimit.canAccess) {
-                  setShowLimitGate(true);
+                  // Daily limits removed — app is fully free
                   return;
                 }
                 incrementUsage('drills');

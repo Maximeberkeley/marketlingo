@@ -45,10 +45,7 @@ interface SlideReaderProps {
   onAddNote: (slideNumber: number) => void;
   marketId?: string;
   isReview?: boolean;
-  /** If false, free users hit paywall at slide 3→4 boundary */
   isProUser?: boolean;
-  /** Called when free user hits the slide 3 paywall */
-  onPaywallTrigger?: () => void;
   /** Open mentor chat with lesson context */
   onAskMentor?: () => void;
   /** Mentor first name for CTA label */
@@ -386,7 +383,6 @@ export function SlideReader({
   isReview = false,
   marketId,
   isProUser = true,
-  onPaywallTrigger,
   onAskMentor,
   mentorName,
 }: SlideReaderProps) {

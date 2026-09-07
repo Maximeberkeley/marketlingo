@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Mic, Briefcase, Award,
-  Zap, ChevronRight, Crown, Lock, RotateCcw,
+  Zap, ChevronRight, RotateCcw,
   Send, Clock, Trophy, Users, Cpu, Palette,
   Lightbulb, Key, AlertTriangle, CheckCircle,
   BookOpen, Hash, MessageSquare, Layers,
@@ -17,7 +17,6 @@ import { markets } from "@/data/markets";
 import { cn } from "@/lib/utils";
 import { hapticFeedback } from "@/lib/ios-utils";
 import { Button } from "@/components/ui/button";
-import { DailyLimitGate } from "@/components/subscription/DailyLimitGate";
 import { updateLeaderboard } from "@/lib/leaderboardUtils";
 import { StageTracker } from "@/components/interview-lab/StageTracker";
 import { ScoreBar } from "@/components/interview-lab/ScoreBar";
@@ -442,9 +441,7 @@ function LearnTab({ market, marketName, path, stage, setStage, persona, setPerso
         {/* ─── STAGE 4: Mock Lab ─── */}
         {stage === 4 && (
           <motion.div key="s4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-            {!isProUser && !interviewLimit.canAccess ? (
-              <DailyLimitGate type="trainer" onContinue={() => {}} />
-            ) : (
+            {(
               <>
                 <div className="flex items-center gap-2 mb-3">
                   <Mic size={18} className="text-primary" />
@@ -519,22 +516,8 @@ function LearnTab({ market, marketName, path, stage, setStage, persona, setPerso
             <div className="flex items-center gap-2 mb-3">
               <Briefcase size={18} className="text-primary" />
               <h3 className="text-base font-bold text-text-primary">Case Study Simulator</h3>
-              <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-primary text-white">
-                <Crown size={8} /> PRO
-              </span>
             </div>
-            {!isProUser ? (
-              <div className="bg-bg-2 rounded-2xl p-6 border border-border text-center">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <Lock size={24} className="text-primary" />
-                </div>
-                <h4 className="text-base font-bold text-text-primary mb-2">Unlock Multi-Turn Cases</h4>
-                <p className="text-sm text-text-muted mb-4">Practice McKinsey-style cases with Sophia guiding each turn.</p>
-                <Button onClick={() => navigate('/subscription')} className="bg-primary text-white">
-                  <Crown size={14} /> Upgrade to Pro
-                </Button>
-              </div>
-            ) : caseStudies.length > 0 ? (
+            {caseStudies.length > 0 ? (
               <>
                 <div className="grid gap-2 mb-4">
                   {caseStudies.map((cs: any, i: number) => (

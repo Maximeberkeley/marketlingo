@@ -8,7 +8,6 @@ import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { LeoCelebration } from "@/components/mascot/LeoCelebration";
 import { MascotBreak, InlineMascot, MascotReaction, getRandomCharacter } from "@/components/mascot";
 import { LeoMascot, getRandomLeoMessage } from "@/components/mascot/LeoMascot";
-import { DailyLimitGate, RemainingCount } from "@/components/subscription/DailyLimitGate";
 import { FloatingXP } from "@/components/ui/FloatingXP";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { useMascotState } from "@/hooks/useMascotState";
@@ -47,7 +46,6 @@ export default function GamesPage() {
   const [showIntro, setShowIntro] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
   const [leoMessage, setLeoMessage] = useState<string | null>(null);
-  const [showLimitGate, setShowLimitGate] = useState(false);
   const [floatingXP, setFloatingXP] = useState<{ amount: number; show: boolean }>({ amount: 0, show: false });
   const [currentLessonTitle, setCurrentLessonTitle] = useState<string | null>(null);
   const [currentDay, setCurrentDay] = useState<number>(1);
@@ -294,29 +292,6 @@ export default function GamesPage() {
   // Check daily limit before showing intro
   const gamesLimit = checkDailyLimit('games');
 
-  // Daily limit gate
-  if (!isProUser && showLimitGate) {
-    return (
-      <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden max-w-full">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="screen-padding pt-safe pb-4 flex items-center gap-4 border-b border-border"
-        >
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-            <ArrowLeft size={24} className="text-text-secondary" />
-          </button>
-          <h1 className="text-h2 text-text-primary">Games</h1>
-        </motion.div>
-        <div className="flex-1 flex items-center justify-center screen-padding py-6">
-          <DailyLimitGate 
-            type="games" 
-            onContinue={() => setShowLimitGate(false)} 
-          />
-        </div>
-      </div>
-    );
-  }
 
   // Intro screen
   if (showIntro && questions.length > 0) {
@@ -331,9 +306,6 @@ export default function GamesPage() {
             <ArrowLeft size={24} className="text-text-secondary" />
           </button>
           <h1 className="text-h2 text-text-primary">Games</h1>
-          {!isProUser && (
-            <RemainingCount type="games" className="ml-auto" />
-          )}
         </motion.div>
 
         <div className="flex-1 screen-padding py-6 overflow-y-auto">
@@ -443,7 +415,7 @@ export default function GamesPage() {
               size="lg"
               onClick={() => {
                 if (!gamesLimit.canAccess) {
-                  setShowLimitGate(true);
+                  // Daily limits removed — app is fully free
                   return;
                 }
                 incrementUsage('games');

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Loader2, Brain, ChevronRight, Crown, BookOpen, Flame, Trophy, Lightbulb } from "lucide-react";
+import { ArrowLeft, Loader2, Brain, ChevronRight, BookOpen, Flame, Trophy, Lightbulb } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TrainerCard } from "@/components/trainer/TrainerCard";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,6 @@ import { MentorAvatar } from "@/components/ai/MentorAvatar";
 import { MentorChatOverlay } from "@/components/ai/MentorChatOverlay";
 import { LeoCelebration } from "@/components/mascot/LeoCelebration";
 import { MascotBreak, InlineMascot } from "@/components/mascot";
-import { ProUpsellModal } from "@/components/subscription/ProUpsellModal";
 import { mentors, Mentor } from "@/data/mentors";
 import { getMarketConfig, getPrimaryMentorForMarket } from "@/data/marketConfig";
 import { toast } from "sonner";
@@ -52,7 +51,6 @@ export default function TrainerPage() {
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [showIntro, setShowIntro] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [showProModal, setShowProModal] = useState(false);
   const [floatingXP, setFloatingXP] = useState<{ amount: number; show: boolean }>({ amount: 0, show: false });
   const [currentDay, setCurrentDay] = useState<number>(1);
   const [currentLessonTitle, setCurrentLessonTitle] = useState<string | null>(null);
@@ -441,18 +439,9 @@ export default function TrainerPage() {
             size="sm"
             showPulse={false}
             onClick={() => {
-              if (isProUser) {
-                setActiveMentor(mentors.find(m => m.id === "sophia") || mentors[0]);
-              } else {
-                setShowProModal(true);
-              }
+              setActiveMentor(mentors.find(m => m.id === "sophia") || mentors[0]);
             }}
           />
-          {!isProUser && (
-            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-r from-accent to-purple-600 flex items-center justify-center">
-              <Crown size={8} className="text-white" />
-            </div>
-          )}
         </div>
       </motion.div>
 
@@ -468,20 +457,16 @@ export default function TrainerPage() {
           scenario={cardScenario}
           onSaveToNotebook={handleSaveToNotebook}
           onNext={handleNext}
-          onAskMentor={(question) => {
-            if (isProUser) {
-              setActiveMentor(mentors.find(m => m.id === "sophia") || mentors[0]);
-            } else {
-              setShowProModal(true);
-            }
+          onAskMentor={() => {
+            setActiveMentor(mentors.find(m => m.id === "sophia") || mentors[0]);
           }}
           onAttemptComplete={handleAttemptComplete}
           marketId={selectedMarket || undefined}
         />
       </motion.div>
 
-      {/* Mentor Chat Overlay - Only available for Pro users */}
-      {isProUser && (
+      {/* Mentor Chat Overlay */}
+      {activeMentor && (
         <MentorChatOverlay
           mentor={activeMentor}
           onClose={() => setActiveMentor(null)}
@@ -489,14 +474,6 @@ export default function TrainerPage() {
           marketId={selectedMarket || undefined}
         />
       )}
-
-      {/* Pro Upsell Modal */}
-      <ProUpsellModal
-        isOpen={showProModal}
-        onClose={() => setShowProModal(false)}
-        trigger="feature_gate"
-        featureName="AI Mentor"
-      />
 
       {/* Leo Celebration on completion */}
       <LeoCelebration

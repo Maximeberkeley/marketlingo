@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/useAuth";
-import { ProPromotionProvider } from "@/components/subscription/ProPromotionProvider";
 import { AdminGuard } from "@/components/admin/AdminGuard";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import Auth from "./pages/Auth";
@@ -32,7 +31,6 @@ import InvestmentLab from "./pages/InvestmentLab";
 import InvestmentModule from "./pages/InvestmentModule";
 import InvestmentCertificatePage from "./pages/InvestmentCertificatePage";
 import InvestmentWatchlist from "./pages/InvestmentWatchlist";
-import Subscription from "./pages/Subscription";
 import Practice from "./pages/Practice";
 import InterviewLab from "./pages/InterviewLab";
 import NotFound from "./pages/NotFound";
@@ -76,7 +74,6 @@ function AnimatedRoutes() {
         <Route path="/investment-lab/certificate" element={<PageTransition><InvestmentCertificatePage /></PageTransition>} />
         <Route path="/investment-lab/:moduleId" element={<PageTransition><InvestmentModule /></PageTransition>} />
         <Route path="/interview-lab" element={<PageTransition><InterviewLab /></PageTransition>} />
-        <Route path="/subscription" element={<PageTransition><Subscription /></PageTransition>} />
         <Route path="/legal" element={<PageTransition><Legal /></PageTransition>} />
         <Route path="/terms" element={<PageTransition><TermsOfService /></PageTransition>} />
         <Route path="/privacy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
@@ -114,9 +111,7 @@ const App = () => {
             <Sonner position="top-center" />
             <BrowserRouter>
               <ScrollToTop />
-              <ProPromotionProvider>
                 <AnimatedRoutes />
-              </ProPromotionProvider>
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>

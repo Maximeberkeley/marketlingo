@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { BarChart2, Trophy, Lock, Crown, Star } from "lucide-react";
+import { BarChart2, Trophy, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useSubscription } from "@/hooks/useSubscription";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScoreBar } from "./ScoreBar";
@@ -18,8 +16,6 @@ export function InterviewAnalytics({ userId, marketId, path }: InterviewAnalytic
   const [analytics, setAnalytics] = useState<any[]>([]);
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const { isProUser } = useSubscription();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!userId || !marketId) return;
@@ -107,16 +103,7 @@ export function InterviewAnalytics({ userId, marketId, path }: InterviewAnalytic
         <h3 className="text-base font-bold text-text-primary">Weekly Leaderboard</h3>
       </div>
 
-      {!isProUser ? (
-        <div className="bg-bg-2 rounded-2xl p-6 border border-border text-center">
-          <Lock size={24} className="text-violet-500 mx-auto mb-2" />
-          <p className="text-sm font-bold text-text-primary mb-1">Leaderboard is Pro-only</p>
-          <p className="text-xs text-text-muted mb-3">See how you rank against other candidates.</p>
-          <Button onClick={() => navigate('/subscription')} size="sm" className="bg-violet-600 text-white">
-            <Crown size={12} /> Upgrade
-          </Button>
-        </div>
-      ) : leaderboard.length > 0 ? (
+      {leaderboard.length > 0 ? (
         <div className="space-y-2">
           {leaderboard.map((entry, i) => (
             <div key={entry.id} className={cn(

@@ -20,7 +20,8 @@ LLC Marketverse ("we", "our", or "us") operates the MarketLingo mobile applicati
 • To personalize your learning experience based on your selected industry and goals
 • To track your progress, streaks, and achievements
 • To send push notifications you've opted into (daily reminders, streak alerts, news)
-• To process subscription purchases through Apple's In-App Purchase system
+
+MarketLingo is completely free. We do not process payments and we do not collect any payment or billing information.
 
 **Data Storage & Security**
 
@@ -28,7 +29,6 @@ Your data is stored securely using industry-standard encryption and hosted on se
 
 **Third-Party Services**
 
-• Apple In-App Purchases: For subscription management
 • Push Notification Services: For delivering opted-in notifications
 • AI Services: For generating personalized learning content (no personal data is sent to AI providers)
 
@@ -66,35 +66,20 @@ MarketLingo is an educational platform that provides industry-specific learning 
 • You are responsible for safeguarding your account credentials.
 • You must notify us immediately of any unauthorized access to your account.
 
-**4. Subscriptions & Payments**
+**4. Free Service — No Payments**
 
-• MarketLingo offers free and premium (Pro) tiers.
-• Pro subscriptions are billed through Apple's In-App Purchase system.
-• Subscription prices are displayed in the app before purchase.
-• Free trials, if offered, automatically convert to paid subscriptions unless cancelled before the trial period ends.
-• Subscriptions automatically renew unless cancelled at least 24 hours before the end of the current period.
-• Payment will be charged to your Apple ID account at confirmation of purchase.
-• You may cancel your subscription at any time through your Apple ID settings.
-• Refunds are handled by Apple according to their refund policies.
+MarketLingo is a completely free service. All lessons, labs, features, and content are available to every user at no cost. We do not offer paid tiers, subscriptions, in-app purchases, or trials, and we never charge your Apple ID or any other payment method. If this ever changes in a future version, these Terms will be updated before any paid feature is introduced.
 
-**5. Auto-Renewable Subscription Terms**
-
-MarketLingo Pro is available as an auto-renewable subscription with the following options:
-• Monthly: $9.99/month
-• Yearly: $79.99/year (equivalent to $6.67/month)
-
-Subscriptions automatically renew unless auto-renew is turned off at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.
-
-**6. Intellectual Property**
+**5. Intellectual Property**
 
 All content, features, and functionality of MarketLingo — including text, graphics, logos, and curriculum materials — are owned by MarketLingo and protected by intellectual property laws.
 
-**7. User Content**
+**6. User Content**
 
 • Notes, saved insights, and other content you create within the app remain yours.
 • By using the app, you grant us a license to store and display your content to provide the service.
 
-**8. Acceptable Use**
+**7. Acceptable Use**
 
 You agree not to:
 • Use the service for any illegal purpose
@@ -102,23 +87,23 @@ You agree not to:
 • Interfere with the proper working of the service
 • Share your account credentials with others
 
-**9. Educational Disclaimer**
+**8. Educational Disclaimer**
 
 MarketLingo provides educational content for informational purposes only. Content should not be construed as professional financial, investment, career, or legal advice. Always consult qualified professionals before making important decisions.
 
-**10. Limitation of Liability**
+**9. Limitation of Liability**
 
 MarketLingo shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the service.
 
-**11. Termination**
+**10. Termination**
 
 We may terminate or suspend your account at any time for violations of these Terms. You may delete your account at any time through the app's Settings page.
 
-**12. Changes to Terms**
+**11. Changes to Terms**
 
 We reserve the right to modify these Terms at any time. Continued use of the app after changes constitutes acceptance of the new Terms.
 
-**13. Governing Law**
+**12. Governing Law**
 
 These Terms shall be governed by the laws of the State of California, United States.
 

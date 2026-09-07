@@ -75,7 +75,6 @@ interface SlideReaderV2Props {
   stackId?: string;
   isReview?: boolean;
   isProUser?: boolean;
-  onPaywallTrigger?: () => void;
   onAskMentor?: () => void;
   mentorName?: string;
   dayNumber?: number;
@@ -144,7 +143,6 @@ export function SlideReaderV2({
   stackId,
   isReview = false,
   isProUser = true,
-  onPaywallTrigger,
   onAskMentor,
   mentorName,
   dayNumber,
@@ -421,9 +419,8 @@ export function SlideReaderV2({
   const currentSlide = slides[currentSlideIndex];
   const isLastCard = currentCard >= totalCards - 1;
 
-  // Paywall disabled — free users can complete full lessons
+  // All users can complete full lessons — the app is free
   // Pro ad is shown AFTER lesson completion instead
-  const paywallCardIndex = -1;
 
   const animateTransition = useCallback((direction: 'left' | 'right', callback: () => void) => {
     const toX = direction === 'left' ? -SCREEN_WIDTH * 0.3 : SCREEN_WIDTH * 0.3;
@@ -448,16 +445,12 @@ export function SlideReaderV2({
       playSound('lessonComplete');
       return;
     }
-    if (paywallCardIndex > 0 && currentCard + 1 >= paywallCardIndex) {
-      onPaywallTrigger?.();
-      return;
-    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     animateTransition('left', () => {
       cardKey.current++;
       setCurrentCard(prev => prev + 1);
     });
-  }, [isLastCard, currentCard, paywallCardIndex, onPaywallTrigger, animateTransition]);
+  }, [isLastCard, currentCard, animateTransition]);
 
   const goPrev = useCallback(() => {
     if (currentCard <= 0) return;

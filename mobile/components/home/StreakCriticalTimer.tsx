@@ -1,7 +1,7 @@
 /**
  * StreakCriticalTimer — live countdown for the last 2 hours before streak expires.
  * Shows mm:ss countdown with pulsing fire animation and urgent CTA.
- * Pro users get a "Leo added logs to your fire" option (1-day extension).
+ * Users get a "Leo added logs to your fire" option (1-day streak extension).
  */
 import React, { useState, useEffect, useRef } from 'react';
 import {
@@ -148,12 +148,6 @@ export function StreakCriticalTimer({
           </Text>
         </TouchableOpacity>
       )}
-
-      {!isProUser && (
-        <Text style={styles.proHint}>
-          🔒 Pro members can extend streaks with Leo's fire logs
-        </Text>
-      )}
     </Animated.View>
   );
 }
@@ -201,10 +195,6 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.3)',
   },
   leoLogsBtnText: { fontSize: 13, fontWeight: '700', color: '#8B5CF6' },
-  proHint: {
-    fontSize: 10, color: COLORS.textMuted, textAlign: 'center',
-    marginTop: 10,
-  },
   // Expired state
   expiredContainer: {
     backgroundColor: 'rgba(239, 68, 68, 0.08)',

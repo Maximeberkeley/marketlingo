@@ -6,7 +6,6 @@ import {
   TrendingUp, BookOpen, Crown, ChevronRight, Sparkles 
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { useSubscription } from "@/hooks/useSubscription";
 import { hapticFeedback } from "@/lib/ios-utils";
 import { cn } from "@/lib/utils";
 
@@ -142,7 +141,6 @@ const resourceCards: ResourceCard[] = [
 
 function SwipeableCarousel({ cards, title }: { cards: ResourceCard[]; title: string }) {
   const navigate = useNavigate();
-  const { isProUser } = useSubscription();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
@@ -194,7 +192,7 @@ function SwipeableCarousel({ cards, title }: { cards: ResourceCard[]; title: str
       >
         {cards.map((card, idx) => {
           const Icon = card.icon;
-          const locked = card.isPro && !isProUser;
+          const locked = false;
 
           return (
             <motion.button
@@ -205,8 +203,7 @@ function SwipeableCarousel({ cards, title }: { cards: ResourceCard[]; title: str
               whileTap={{ scale: 0.96 }}
               onClick={() => {
                 hapticFeedback("light");
-                if (locked) navigate("/subscription");
-                else navigate(card.path);
+                navigate(card.path);
               }}
               className="relative flex-shrink-0 snap-start rounded-[20px] overflow-hidden text-left"
               style={{ width: "82%", minWidth: "82%", aspectRatio: "4/3" }}

@@ -2,12 +2,11 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, User, Bell, Info, LogOut, ChevronRight, Shield, Rocket, Wrench, Crown, Sparkles, Moon, Sun } from "lucide-react";
+import { ArrowLeft, User, Bell, Info, LogOut, ChevronRight, Shield, Rocket, Wrench, Moon, Sun } from "lucide-react";
 import { DeleteAccountButton } from "@/components/settings/DeleteAccountButton";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { useAuth } from "@/hooks/useAuth";
-import { useSubscription } from "@/hooks/useSubscription";
 import { cn } from "@/lib/utils";
 
 type SettingsSection = "main" | "notifications" | "about";
@@ -15,7 +14,6 @@ type SettingsSection = "main" | "notifications" | "about";
 export default function Settings() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { isProUser, isLoading: subscriptionLoading, isNative } = useSubscription();
   const [activeSection, setActiveSection] = useState<SettingsSection>("main");
   const { theme, setTheme } = useTheme();
 
@@ -102,48 +100,14 @@ export default function Settings() {
                     <p className="text-body font-medium text-text-primary">
                       {user?.email || "User"}
                     </p>
-                    {isProUser && (
-                      <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-accent to-purple-600 text-white text-[10px] font-medium">
-                        <Crown size={10} />
-                        PRO
-                      </span>
-                    )}
                   </div>
                   <p className="text-caption text-text-muted">
-                    {isProUser ? "Pro Member" : "Free Plan"}
+                    All features included — free
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Subscription Section */}
-            <button
-              onClick={() => navigate("/subscription")}
-              className={cn(
-                "w-full flex items-center justify-between p-4 rounded-card",
-                isProUser 
-                  ? "bg-gradient-to-r from-accent/10 to-purple-600/10 border border-accent/30"
-                  : "bg-bg-2 border border-border hover:border-accent/30",
-                "transition-all"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                {isProUser ? (
-                  <Sparkles size={20} className="text-accent" />
-                ) : (
-                  <Crown size={20} className="text-amber-400" />
-                )}
-                <div className="text-left">
-                  <p className="text-body font-medium text-text-primary">
-                    {isProUser ? "Manage Subscription" : "Upgrade to Pro"}
-                  </p>
-                  <p className="text-caption text-text-muted">
-                    {isProUser ? "View plan & billing" : "Unlock all features"}
-                  </p>
-                </div>
-              </div>
-              <ChevronRight size={18} className="text-text-muted" />
-            </button>
 
             {/* Settings Options */}
             <div className="space-y-2">
