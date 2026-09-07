@@ -66,24 +66,9 @@ MarketLingo is an educational platform that provides industry-specific learning 
 • You are responsible for safeguarding your account credentials.
 • You must notify us immediately of any unauthorized access to your account.
 
-**4. Subscriptions & Payments**
+**4. Free Service — No Payments**
 
-• MarketLingo offers free and premium (Pro) tiers.
-• Pro subscriptions are billed through Apple's In-App Purchase system.
-• Subscription prices are displayed in the app before purchase.
-• Free trials, if offered, automatically convert to paid subscriptions unless cancelled before the trial period ends.
-• Subscriptions automatically renew unless cancelled at least 24 hours before the end of the current period.
-• Payment will be charged to your Apple ID account at confirmation of purchase.
-• You may cancel your subscription at any time through your Apple ID settings.
-• Refunds are handled by Apple according to their refund policies.
-
-**5. Auto-Renewable Subscription Terms**
-
-MarketLingo Pro is available as an auto-renewable subscription with the following options:
-• Monthly: $9.99/month
-• Yearly: $79.99/year (equivalent to $6.67/month)
-
-Subscriptions automatically renew unless auto-renew is turned off at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.
+MarketLingo is a completely free service. All lessons, labs, features, and content are available to every user at no cost. We do not offer paid tiers, subscriptions, in-app purchases, or trials, and we never charge your Apple ID or any other payment method. If this ever changes in a future version, these Terms will be updated before any paid feature is introduced.
 
 **6. Intellectual Property**
 
