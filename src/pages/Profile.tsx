@@ -149,32 +149,6 @@ export default function ProfilePage() {
           )}
         </motion.div>
 
-        {/* Pro Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="mb-6 w-full"
-        >
-          {isProUser ? (
-            <img
-              src={proDistinctionBanner}
-              alt="MarketLingo Pro Member"
-              className="w-full rounded-2xl"
-            />
-          ) : (
-            <button
-              onClick={() => navigate("/subscription")}
-              className="w-full block"
-            >
-              <img
-                src={goProBanner}
-                alt="Upgrade to MarketLingo Pro"
-                className="w-full rounded-2xl"
-              />
-            </button>
-          )}
-        </motion.div>
 
         {/* Industry Passport */}
         <motion.div
