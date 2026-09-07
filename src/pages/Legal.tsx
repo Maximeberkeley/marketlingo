@@ -70,16 +70,16 @@ MarketLingo is an educational platform that provides industry-specific learning 
 
 MarketLingo is a completely free service. All lessons, labs, features, and content are available to every user at no cost. We do not offer paid tiers, subscriptions, in-app purchases, or trials, and we never charge your Apple ID or any other payment method. If this ever changes in a future version, these Terms will be updated before any paid feature is introduced.
 
-**6. Intellectual Property**
+**5. Intellectual Property**
 
 All content, features, and functionality of MarketLingo — including text, graphics, logos, and curriculum materials — are owned by MarketLingo and protected by intellectual property laws.
 
-**7. User Content**
+**6. User Content**
 
 • Notes, saved insights, and other content you create within the app remain yours.
 • By using the app, you grant us a license to store and display your content to provide the service.
 
-**8. Acceptable Use**
+**7. Acceptable Use**
 
 You agree not to:
 • Use the service for any illegal purpose
@@ -87,23 +87,23 @@ You agree not to:
 • Interfere with the proper working of the service
 • Share your account credentials with others
 
-**9. Educational Disclaimer**
+**8. Educational Disclaimer**
 
 MarketLingo provides educational content for informational purposes only. Content should not be construed as professional financial, investment, career, or legal advice. Always consult qualified professionals before making important decisions.
 
-**10. Limitation of Liability**
+**9. Limitation of Liability**
 
 MarketLingo shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the service.
 
-**11. Termination**
+**10. Termination**
 
 We may terminate or suspend your account at any time for violations of these Terms. You may delete your account at any time through the app's Settings page.
 
-**12. Changes to Terms**
+**11. Changes to Terms**
 
 We reserve the right to modify these Terms at any time. Continued use of the app after changes constitutes acceptance of the new Terms.
 
-**13. Governing Law**
+**12. Governing Law**
 
 These Terms shall be governed by the laws of the State of California, United States.
 
