@@ -195,10 +195,6 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.3)',
   },
   leoLogsBtnText: { fontSize: 13, fontWeight: '700', color: '#8B5CF6' },
-  proHint: {
-    fontSize: 10, color: COLORS.textMuted, textAlign: 'center',
-    marginTop: 10,
-  },
   // Expired state
   expiredContainer: {
     backgroundColor: 'rgba(239, 68, 68, 0.08)',
