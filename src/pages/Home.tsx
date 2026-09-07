@@ -22,7 +22,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserProgress } from "@/hooks/useUserProgress";
 import { useUserXP, XP_REWARDS } from "@/hooks/useUserXP";
 import { useNotifications } from "@/hooks/useNotifications";
-import { useProPromotionContext } from "@/components/subscription/ProPromotionProvider";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { hapticFeedback } from "@/lib/ios-utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -94,7 +93,6 @@ export default function HomePage() {
   });
   
   const { isSupported, isRegistered } = useNotifications();
-  const { triggerAfterLesson, isProUser } = useProPromotionContext();
   const { play } = useSoundEffects();
   const { milestone, dismissMilestone, checkStreakMilestone, checkLevelMilestone } = useMilestoneSharing();
   const lessonCompletedToday = isLessonCompletedToday();
@@ -305,8 +303,6 @@ export default function HomePage() {
     }
     toast.success("Lesson complete!");
     navigate("/drills");
-    // Show Pro promo AFTER lesson is fully registered and user sees completion
-    if (!isProUser) setTimeout(() => triggerAfterLesson(progress?.current_day || 1), 1500);
   };
 
   const handleOpenStack = (stack: StackWithSlides) => { setActiveStack(stack); setActiveBiteIndex(null); setShowReader(true); };
