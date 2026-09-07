@@ -203,8 +203,7 @@ function SwipeableCarousel({ cards, title }: { cards: ResourceCard[]; title: str
               whileTap={{ scale: 0.96 }}
               onClick={() => {
                 hapticFeedback("light");
-                if (locked) navigate("/subscription");
-                else navigate(card.path);
+                navigate(card.path);
               }}
               className="relative flex-shrink-0 snap-start rounded-[20px] overflow-hidden text-left"
               style={{ width: "82%", minWidth: "82%", aspectRatio: "4/3" }}
