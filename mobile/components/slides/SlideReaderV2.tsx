@@ -419,7 +419,7 @@ export function SlideReaderV2({
   const currentSlide = slides[currentSlideIndex];
   const isLastCard = currentCard >= totalCards - 1;
 
-  // Paywall disabled — free users can complete full lessons
+  // All users can complete full lessons — the app is free
   // Pro ad is shown AFTER lesson completion instead
 
   const animateTransition = useCallback((direction: 'left' | 'right', callback: () => void) => {
