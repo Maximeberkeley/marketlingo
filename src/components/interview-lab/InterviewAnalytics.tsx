@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { BarChart2, Trophy, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -17,7 +16,6 @@ export function InterviewAnalytics({ userId, marketId, path }: InterviewAnalytic
   const [analytics, setAnalytics] = useState<any[]>([]);
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!userId || !marketId) return;
