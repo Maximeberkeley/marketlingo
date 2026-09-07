@@ -148,12 +148,6 @@ export function StreakCriticalTimer({
           </Text>
         </TouchableOpacity>
       )}
-
-      {!isProUser && (
-        <Text style={styles.proHint}>
-          🔒 Pro members can extend streaks with Leo's fire logs
-        </Text>
-      )}
     </Animated.View>
   );
 }
