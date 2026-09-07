@@ -20,7 +20,8 @@ LLC Marketverse ("we", "our", or "us") operates the MarketLingo mobile applicati
 • To personalize your learning experience based on your selected industry and goals
 • To track your progress, streaks, and achievements
 • To send push notifications you've opted into (daily reminders, streak alerts, news)
-• To process subscription purchases through Apple's In-App Purchase system
+
+MarketLingo is completely free. We do not process payments and we do not collect any payment or billing information.
 
 **Data Storage & Security**
 
@@ -28,7 +29,6 @@ Your data is stored securely using industry-standard encryption and hosted on se
 
 **Third-Party Services**
 
-• Apple In-App Purchases: For subscription management
 • Push Notification Services: For delivering opted-in notifications
 • AI Services: For generating personalized learning content (no personal data is sent to AI providers)
 
