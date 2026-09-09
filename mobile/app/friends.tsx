@@ -737,4 +737,35 @@ const styles = StyleSheet.create({
   },
   rankBannerText: { fontSize: 13, color: '#92400E', flex: 1 },
   rankBannerBold: { fontWeight: '800', color: '#B45309' },
+
+  // League
+  leagueHero: { borderRadius: 20, padding: 20, alignItems: 'center', marginBottom: 14, gap: 4 },
+  leagueTitle: { fontSize: 20, fontWeight: '800' },
+  leagueBlurb: { fontSize: 12, color: COLORS.textSecondary },
+  leagueTimer: { fontSize: 11, fontWeight: '700', color: COLORS.textMuted, marginTop: 4 },
+  resultBanner: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    backgroundColor: COLORS.accentSoft, borderRadius: 14, padding: 12, marginBottom: 12,
+  },
+  resultText: { flex: 1, fontSize: 12, color: COLORS.textPrimary },
+  zoneNote: { fontSize: 11, color: COLORS.textMuted, marginBottom: 10, textAlign: 'center' },
+  zoneDivider: { flexDirection: 'row', alignItems: 'center', gap: 8, marginVertical: 6 },
+  zoneLine: { flex: 1, height: 1, backgroundColor: COLORS.border },
+  zoneLabel: { fontSize: 10, fontWeight: '700', color: COLORS.textMuted, textTransform: 'uppercase' },
+
+  // Co-op quests
+  questSection: { marginTop: 24, gap: 10 },
+  sectionTitle: { fontSize: 16, fontWeight: '800', color: COLORS.textPrimary },
+  sectionSub: { fontSize: 12, color: COLORS.textMuted, marginTop: -6 },
+  questEmpty: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14,
+    borderWidth: 1, borderColor: COLORS.border, borderStyle: 'dashed',
+  },
+  questEmptyText: { flex: 1, fontSize: 12, color: COLORS.textMuted },
+  questBtn: {
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: COLORS.accent + '12', alignItems: 'center', justifyContent: 'center',
+  },
+
 });
