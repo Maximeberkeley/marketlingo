@@ -282,7 +282,7 @@ export default function HomeScreen() {
 
     const timer = setTimeout(() => {
       // First popup: based on most important user context
-      if (!lessonCompletedToday && streakRiskHours && streakRiskHours < 8) {
+      if (countdown.active && countdown.hoursLeft < 8) {
         leoPopups.triggerStreakProtect(streak, () => {
           if (lessonStack) session.handleOpenStack(lessonStack);
         });
