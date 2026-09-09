@@ -42,7 +42,7 @@ export function LeagueCard({
     <TouchableOpacity
       style={styles.card}
       activeOpacity={0.85}
-      onPress={() => { triggerHaptic('light'); router.push('/friends?tab=league' as never); }}
+      onPress={() => { triggerHaptic('light'); router.push('/friends?tab=league' as any); }}
     >
       <View style={[styles.badge, { backgroundColor: meta.soft }]}>
         <Feather name="award" size={20} color={meta.color} />
