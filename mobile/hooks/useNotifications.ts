@@ -57,6 +57,11 @@ export function useNotifications() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [preferences, setPreferences] = useState<NotificationPreferences>(DEFAULT_PREFERENCES);
+  const [smartTiming, setSmartTiming] = useState<{ active: boolean; time: string }>({
+    active: false,
+    time: DEFAULT_PREFERENCES.reminderTime,
+  });
+
   const notificationListener = useRef<Notifications.EventSubscription | null>(null);
 
   // Check platform support
