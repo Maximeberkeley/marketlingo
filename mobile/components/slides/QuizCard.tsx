@@ -26,10 +26,6 @@ interface QuizCardProps {
   accentColor: string;
 }
 
-const CORRECT_MSGS = ['Nailed it! 🎯', 'Exactly right! ⭐', 'Perfect! 💡', 'You got it! ✅'];
-const WRONG_MSGS = ['Not quite!', 'Close one!', 'Good try!', 'Almost!'];
-const rand = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
-
 export function QuizCard({ quiz, onAnswer, accentColor }: QuizCardProps) {
   const [selected, setSelected] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
@@ -116,7 +112,7 @@ export function QuizCard({ quiz, onAnswer, accentColor }: QuizCardProps) {
       {revealed && (
         <View style={[styles.feedback, { borderColor: isCorrect ? '#22C55E40' : '#EF444440' }]}>
           <Text style={styles.feedbackMsg}>
-            {isCorrect ? rand(CORRECT_MSGS) : rand(WRONG_MSGS)}
+            {isCorrect ? 'Signal identified' : 'Review the signal'}
           </Text>
           {quiz.explanation && (
             <Text style={styles.feedbackExplain}>{quiz.explanation}</Text>
@@ -131,60 +127,16 @@ export function QuizCard({ quiz, onAnswer, accentColor }: QuizCardProps) {
   );
 }
 
-/** Generate a simple quiz from slide content */
+/**
+ * Free-form prose cannot safely produce credible wrong answers on-device.
+ * Challenges now require authored or structured options instead of generic filler.
+ */
 export function generateQuizFromSlide(
-  slideTitle: string,
-  slideBody: string,
+  _slideTitle: string,
+  _slideBody: string,
   _slideIndex: number,
 ): QuizCardData | null {
-  // Only generate for slides with enough content
-  if (!slideBody || slideBody.length < 100) return null;
-
-  // Extract key sentences for quiz generation
-  const sentences = slideBody
-    .split(/[.!?]+/)
-    .map(s => s.trim())
-    .filter(s => s.length > 20 && s.length < 200);
-
-  if (sentences.length < 2) return null;
-
-  // Pick a key sentence as the "correct" answer concept
-  const keyIdx = Math.min(1, sentences.length - 1);
-  const keySentence = sentences[keyIdx];
-
-  // Create a fill-in/comprehension question
-  const question = `Based on "${slideTitle}", which of the following is accurate?`;
-
-  // The correct answer is a paraphrase of the key point
-  const correctOption = keySentence.length > 80
-    ? keySentence.substring(0, 80) + '...'
-    : keySentence;
-
-  // Generate plausible distractors by modifying the key sentence
-  const distractors = [
-    `The opposite of what was described in the lesson`,
-    `This topic is not covered in the current market analysis`,
-    `None of the concepts discussed apply to real-world scenarios`,
-  ];
-
-  const options = [correctOption, ...distractors.slice(0, 3)];
-
-  // Shuffle options
-  const shuffled = [...options];
-  let correctIndex = 0;
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    if (shuffled[i] === correctOption) correctIndex = i;
-    if (shuffled[j] === correctOption) correctIndex = j;
-  }
-
-  return {
-    question,
-    options: shuffled,
-    correctIndex,
-    explanation: `Key insight: ${keySentence}`,
-  };
+  return null;
 }
 
 /** Determine if a quiz should appear after this card index */

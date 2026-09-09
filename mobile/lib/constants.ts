@@ -106,12 +106,12 @@ export const SHADOWS = {
 
 // Typography scale (Brilliant-inspired)
 export const TYPE = {
-  hero: { fontSize: 28, fontWeight: '800' as const, letterSpacing: -0.6, lineHeight: 34 },
-  h1: { fontSize: 24, fontWeight: '800' as const, letterSpacing: -0.4, lineHeight: 30 },
-  h2: { fontSize: 20, fontWeight: '700' as const, letterSpacing: -0.3, lineHeight: 26 },
-  h3: { fontSize: 17, fontWeight: '700' as const, letterSpacing: -0.2, lineHeight: 22 },
-  body: { fontSize: 15, fontWeight: '400' as const, lineHeight: 22 },
-  bodyBold: { fontSize: 15, fontWeight: '600' as const, lineHeight: 22 },
-  caption: { fontSize: 12, fontWeight: '600' as const, letterSpacing: 0.3 },
-  overline: { fontSize: 10, fontWeight: '700' as const, letterSpacing: 1.2, textTransform: 'uppercase' as const },
+  hero: { fontSize: 28, fontFamily: 'ArchivoBlack', fontWeight: '400' as const, letterSpacing: 0, lineHeight: 34 },
+  h1: { fontSize: 24, fontFamily: 'ArchivoBlack', fontWeight: '400' as const, letterSpacing: 0, lineHeight: 30 },
+  h2: { fontSize: 20, fontFamily: 'ArchivoBlack', fontWeight: '400' as const, letterSpacing: 0, lineHeight: 26 },
+  h3: { fontSize: 17, fontFamily: 'ArchivoBlack', fontWeight: '400' as const, letterSpacing: 0, lineHeight: 22 },
+  body: { fontSize: 15, fontFamily: 'Hind', fontWeight: '400' as const, lineHeight: 22 },
+  bodyBold: { fontSize: 15, fontFamily: 'HindSemiBold', fontWeight: '600' as const, lineHeight: 22 },
+  caption: { fontSize: 12, fontFamily: 'HindSemiBold', fontWeight: '600' as const, letterSpacing: 0 },
+  overline: { fontSize: 10, fontFamily: 'HindSemiBold', fontWeight: '700' as const, letterSpacing: 0, textTransform: 'uppercase' as const },
 } as const;
