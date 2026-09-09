@@ -4,6 +4,10 @@ import * as Notifications from 'expo-notifications';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { log } from '../lib/logger';
+import { resolveReminderTime } from '../lib/smartTiming';
+
+const DAILY_REMINDER_ID = 'ml-daily-reminder';
+
 
 export interface NotificationPreferences {
   dailyReminder: boolean;
