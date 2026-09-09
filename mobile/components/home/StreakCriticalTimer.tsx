@@ -64,9 +64,12 @@ export function StreakCriticalTimer({
     ).start();
   }, []);
 
-  const minutes = Math.floor(secondsLeft / 60);
+  const hours = Math.floor(secondsLeft / 3600);
+  const minutes = Math.floor((secondsLeft % 3600) / 60);
   const secs = secondsLeft % 60;
-  const timeStr = `${minutes}:${secs.toString().padStart(2, '0')}`;
+  const timeStr = hours > 0
+    ? `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+    : `${minutes}:${secs.toString().padStart(2, '0')}`;
   const isUltraCritical = secondsLeft < 300; // < 5 min
 
   const handleLeoLogs = async () => {
