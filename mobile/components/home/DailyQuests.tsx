@@ -98,7 +98,7 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
   );
 }
 
-export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete }: DailyQuestsProps) {
+export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete, themeTitle, themeTagline }: DailyQuestsProps) {
   return (
     <View style={styles.container}>
       {/* Header row */}
@@ -138,6 +138,8 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   headerTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, flex: 1 },
+  tagline: { fontSize: 11, color: COLORS.textMuted, marginBottom: 4 },
+
   countBadge: {
     backgroundColor: COLORS.accentSoft, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8,
   },
