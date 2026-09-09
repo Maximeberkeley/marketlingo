@@ -398,13 +398,20 @@ export default function HomeScreen() {
           lessonTitle={session.activeStack?.title || lessonStack?.title || 'Lesson'}
           totalXP={xpData?.total_xp || 0}
           stageName={currentStage.name}
+          questsCompleted={completedCount}
+          questsTotal={quests.length}
+          leagueTier={league.tier}
+          leagueRank={league.myRank}
           onContinue={() => {
+            league.refresh();
             session.dismissSessionComplete();
           }}
           onDismiss={() => {
+            league.refresh();
             session.dismissSessionComplete();
           }}
         />
+
       ) : (
         <ScrollView
           contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 100 }]}
