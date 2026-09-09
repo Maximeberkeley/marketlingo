@@ -33,12 +33,18 @@ interface LeaderboardEntry {
 export default function FriendsScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const params = useLocalSearchParams<{ tab?: string }>();
   const [marketId, setMarketId] = useState<string | null>(null);
   const { friends, pendingRequests, loading, sendRequest, acceptRequest, declineRequest, removeFriend } = useFriends(marketId || undefined);
   const [addUsername, setAddUsername] = useState('');
   const [adding, setAdding] = useState(false);
-  const [activeTab, setActiveTab] = useState<'friends' | 'global'>('friends');
+  const [activeTab, setActiveTab] = useState<'friends' | 'league' | 'global'>(
+    params.tab === 'league' ? 'league' : params.tab === 'global' ? 'global' : 'friends'
+  );
   const [showAddInput, setShowAddInput] = useState(false);
+  const league = useLeagues(marketId);
+  const questHub = useFriendQuests(marketId);
+
 
   // Global leaderboard
   const [globalEntries, setGlobalEntries] = useState<LeaderboardEntry[]>([]);
