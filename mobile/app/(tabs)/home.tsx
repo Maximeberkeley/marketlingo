@@ -29,6 +29,7 @@ import { ProgressBar } from '../../components/ui/ProgressBar';
 import { SlideReaderV2 as SlideReader } from '../../components/slides/SlideReaderV2';
 import { StreakAtRisk } from '../../components/home/StreakAtRisk';
 import { StreakCriticalTimer } from '../../components/home/StreakCriticalTimer';
+import { useStreakCountdown } from '../../hooks/useStreakCountdown';
 import { SocialNudge } from '../../components/home/SocialNudge';
 import { Feather } from '@expo/vector-icons';
 import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
@@ -237,13 +238,13 @@ export default function HomeScreen() {
   const [showCriticalTimer, setShowCriticalTimer] = useState(true);
   const [showLeoChat, setShowLeoChat] = useState(false);
 
-  // Calculate if we're in the critical 2-hour window
-  const criticalTimerActive = (() => {
-    if (!progress?.streak_expires_at || streak === 0 || lessonCompletedToday) return false;
-    const expires = new Date(progress.streak_expires_at);
-    const hoursLeft = (expires.getTime() - Date.now()) / (1000 * 60 * 60);
-    return hoursLeft > 0 && hoursLeft <= 2;
-  })();
+  // Live countdown to the moment the streak breaks
+  const countdown = useStreakCountdown(
+    progress?.streak_expires_at,
+    streak,
+    lessonCompletedToday,
+  );
+  const criticalTimerActive = countdown.critical;
 
   // Daily quests (rotate by weekday theme)
   const { quests, completedCount, totalBonusXP, allComplete, themeTitle, themeTagline } =
@@ -281,7 +282,7 @@ export default function HomeScreen() {
 
     const timer = setTimeout(() => {
       // First popup: based on most important user context
-      if (!lessonCompletedToday && streakRiskHours && streakRiskHours < 8) {
+      if (countdown.active && countdown.hoursLeft < 8) {
         leoPopups.triggerStreakProtect(streak, () => {
           if (lessonStack) session.handleOpenStack(lessonStack);
         });
@@ -479,12 +480,13 @@ export default function HomeScreen() {
             </AnimatedSection>
           )}
 
-          {/* ── Streak Warning (2-6 hours left, non-critical) ── */}
-          {streakRiskHours !== null && !criticalTimerActive && showStreakWarning && !lessonCompletedToday && (
+          {/* ── Streak Warning (2-8 hours left, non-critical) ── */}
+          {countdown.atRisk && showStreakWarning && (
             <AnimatedSection delay={50}>
               <StreakAtRisk
                 streak={streak}
-                hoursLeft={streakRiskHours}
+                hoursLeft={countdown.hoursLeft}
+                countdownLabel={countdown.label}
                 onStartLesson={() => lessonStack && session.handleOpenStack(lessonStack)}
                 onDismiss={() => setShowStreakWarning(false)}
               />
