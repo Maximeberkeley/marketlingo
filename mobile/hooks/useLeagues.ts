@@ -84,7 +84,13 @@ export function useLeagues(marketId?: string | null): LeagueState {
         );
       }
 
-      const size = rows.length;
+      // True tier population (standings are capped at STANDINGS_LIMIT rows)
+      const { data: trueSize } = await supabase.rpc('league_group_size', {
+        p_market_id: marketId,
+        p_tier: myTier,
+      });
+      const size = typeof trueSize === 'number' && trueSize > 0 ? trueSize : rows.length;
+      setTrueGroupSize(size);
       setStandings(
         rows.map((r, i) => ({
           userId: r.user_id,
