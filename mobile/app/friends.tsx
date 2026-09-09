@@ -320,12 +320,52 @@ export default function FriendsScreen() {
                       isActive={isActive(friend)}
                       onNudge={() => handleNudge(friend)}
                       onRemove={() => handleRemove(friend)}
+                      onStartQuest={() => handleStartQuest(friend)}
                     />
                   ))}
                 </View>
               )}
+
+              {/* ── Co-op quests ── */}
+              {friends.length > 0 && (
+                <View style={styles.questSection}>
+                  <Text style={styles.sectionTitle}>Co-op quests</Text>
+                  <Text style={styles.sectionSub}>
+                    Team up for the week. Both of you earn the bonus when the shared target is hit.
+                  </Text>
+
+                  {questHub.pending.map(q => (
+                    <FriendQuestCard
+                      key={q.id}
+                      quest={q}
+                      onRespond={async (accept) => {
+                        await questHub.respond(q.id, accept);
+                        if (accept) triggerHaptic('success');
+                      }}
+                    />
+                  ))}
+                  {questHub.active.map(q => <FriendQuestCard key={q.id} quest={q} />)}
+                  {questHub.awaitingPartner.map(q => <FriendQuestCard key={q.id} quest={q} />)}
+                  {questHub.completed.map(q => <FriendQuestCard key={q.id} quest={q} />)}
+
+                  {!questHub.loading && questHub.quests.length === 0 && (
+                    <View style={styles.questEmpty}>
+                      <Feather name="target" size={16} color={COLORS.textMuted} />
+                      <Text style={styles.questEmptyText}>
+                        Tap the target icon on a friend to start this week's quest.
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              )}
             </>
           )}
+
+          {/* ── LEAGUE TAB ──────────────────────── */}
+          {activeTab === 'league' && (
+            <LeagueTab league={league} />
+          )}
+
 
           {/* ── GLOBAL TAB ──────────────────────── */}
           {activeTab === 'global' && (
