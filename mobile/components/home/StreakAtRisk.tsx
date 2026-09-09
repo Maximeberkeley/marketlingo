@@ -82,10 +82,12 @@ export function StreakAtRisk({ streak, hoursLeft, countdownLabel, onStartLesson,
             {urgencyLevel === 'critical' ? 'Your streak is dying!' : `${streak}-day streak at risk!`}
           </Text>
           <Text style={styles.subtext}>
-            {urgencyLevel === 'critical'
-              ? `Only ${timeText} left — do a quick lesson now!`
-              : `You have ${timeText} to keep your ${streak}-day streak alive`}
+            Finish today's lesson to keep your {streak}-day streak alive
           </Text>
+        </View>
+        <View style={styles.countdownPill}>
+          <Text style={[styles.countdownValue, { color: textColor }]}>{timeText}</Text>
+          <Text style={styles.countdownLabel}>LEFT</Text>
         </View>
       </View>
 
