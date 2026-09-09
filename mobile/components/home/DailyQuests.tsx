@@ -11,7 +11,10 @@ interface DailyQuestsProps {
   completedCount: number;
   totalBonusXP: number;
   allComplete: boolean;
+  themeTitle?: string;
+  themeTagline?: string;
 }
+
 
 const QUEST_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   lesson: 'book-open',
@@ -101,11 +104,13 @@ export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete 
       {/* Header row */}
       <View style={styles.header}>
         <Feather name="flag" size={14} color={COLORS.accent} />
-        <Text style={styles.headerTitle}>Daily Quests</Text>
+        <Text style={styles.headerTitle}>{themeTitle || 'Daily Quests'}</Text>
         <View style={styles.countBadge}>
           <Text style={styles.countText}>{completedCount}/{quests.length}</Text>
         </View>
       </View>
+      {!!themeTagline && <Text style={styles.tagline}>{themeTagline}</Text>}
+
 
       {/* All complete banner (compact) */}
       {allComplete && (
