@@ -57,7 +57,9 @@ export function StreakAtRisk({ streak, hoursLeft, countdownLabel, onStartLesson,
   const textColor =
     urgencyLevel === 'critical' ? COLORS.error : urgencyLevel === 'warning' ? COLORS.orange : COLORS.warning;
 
-  const timeText = hoursLeft < 1 ? 'less than an hour' : hoursLeft === 1 ? '1 hour' : `${Math.round(hoursLeft)} hours`;
+  const timeText =
+    countdownLabel ||
+    (hoursLeft < 1 ? 'less than an hour' : hoursLeft === 1 ? '1 hour' : `${Math.round(hoursLeft)} hours`);
 
   return (
     <Animated.View
