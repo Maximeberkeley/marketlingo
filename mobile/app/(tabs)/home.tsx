@@ -414,12 +414,16 @@ export default function HomeScreen() {
           questsTotal={quests.length}
           leagueTier={league.tier}
           leagueRank={league.myRank}
+          leveledUp={levelUp.up}
+          newLevel={levelUp.level}
           onContinue={() => {
             league.refresh();
+            setLevelUp({ up: false, level: levelUp.level });
             session.dismissSessionComplete();
           }}
           onDismiss={() => {
             league.refresh();
+            setLevelUp({ up: false, level: levelUp.level });
             session.dismissSessionComplete();
           }}
         />
