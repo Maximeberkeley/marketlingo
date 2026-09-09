@@ -9,6 +9,8 @@ import { useFonts } from 'expo-font';
 import { AuthProvider } from '../hooks/useAuth';
 import { LeoProvider } from '../components/mascot/LeoCharacter';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { recordAppOpen } from '../lib/smartTiming';
+
 
 // Map notification data `route` or `type` to an Expo Router path
 function resolveRoute(data: Record<string, any>): string | null {
