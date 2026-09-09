@@ -795,6 +795,11 @@ function CompletionOverlay({
   hasMetMinimumTime,
   timeSpentSeconds,
   marketId,
+  lessonTitle,
+  keyTakeaway,
+  nextPreview,
+  correctCount,
+  totalAnswered,
   onComplete,
   onKeepReading,
 }: {
@@ -802,6 +807,11 @@ function CompletionOverlay({
   hasMetMinimumTime: boolean;
   timeSpentSeconds: number;
   marketId?: string;
+  lessonTitle: string;
+  keyTakeaway?: string;
+  nextPreview?: string;
+  correctCount: number;
+  totalAnswered: number;
   onComplete: () => void;
   onKeepReading: () => void;
 }) {
@@ -846,11 +856,27 @@ function CompletionOverlay({
           </>
         ) : (
           <>
-            <Text style={compStyles.title}>Lesson Complete!</Text>
-            <View style={compStyles.xpBadge}>
-              <Feather name="activity" size={18} color={COLORS.accent} />
-              <Text style={compStyles.xpText}>+50 XP</Text>
+            <Text style={compStyles.kicker}>MISSION DEBRIEF</Text>
+            <Text style={compStyles.title}>{lessonTitle}</Text>
+            <Text style={compStyles.sub}>You reached the decision point and completed the route.</Text>
+            <View style={compStyles.resultRow}>
+              <View style={compStyles.resultCell}>
+                <Text style={compStyles.resultValue}>+50</Text>
+                <Text style={compStyles.resultLabel}>XP EARNED</Text>
+              </View>
+              <View style={compStyles.resultDivider} />
+              <View style={compStyles.resultCell}>
+                <Text style={compStyles.resultValue}>{totalAnswered > 0 ? `${correctCount}/${totalAnswered}` : 'Ready'}</Text>
+                <Text style={compStyles.resultLabel}>SIGNALS READ</Text>
+              </View>
             </View>
+            {keyTakeaway ? (
+              <View style={compStyles.takeaway}>
+                <Text style={compStyles.takeawayLabel}>FIELD NOTE</Text>
+                <Text style={compStyles.takeawayText}>{keyTakeaway}</Text>
+              </View>
+            ) : null}
+            {nextPreview ? <Text style={compStyles.nextPreview}>Next mission · {nextPreview}</Text> : null}
           </>
         )}
 
@@ -877,7 +903,7 @@ const compStyles = StyleSheet.create({
     borderRadius: 28,
     padding: 32,
     width: '100%',
-    alignItems: 'center',
+    alignItems: 'stretch',
     borderWidth: 1,
     borderColor: COLORS.border,
     ...SHADOWS.lg,
@@ -890,6 +916,7 @@ const compStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
+    alignSelf: 'center',
     borderWidth: 1,
     borderColor: COLORS.accentMedium,
   },
@@ -900,6 +927,16 @@ const compStyles = StyleSheet.create({
   },
   title: { ...TYPE.h1, color: COLORS.textPrimary, marginBottom: 6, textAlign: 'center' },
   sub: { ...TYPE.body, color: COLORS.textSecondary, textAlign: 'center', marginBottom: 16 },
+  kicker: { fontSize: 11, fontWeight: '900', color: COLORS.accent, textAlign: 'center', marginBottom: 8, letterSpacing: 0 },
+  resultRow: { flexDirection: 'row', alignItems: 'stretch', backgroundColor: COLORS.bg1, borderRadius: 16, borderWidth: 1, borderColor: COLORS.border, marginVertical: 16 },
+  resultCell: { flex: 1, alignItems: 'center', paddingVertical: 15, paddingHorizontal: 8 },
+  resultDivider: { width: 1, backgroundColor: COLORS.border },
+  resultValue: { fontSize: 20, fontWeight: '900', color: COLORS.textPrimary },
+  resultLabel: { marginTop: 3, fontSize: 9, fontWeight: '800', color: COLORS.textMuted, letterSpacing: 0 },
+  takeaway: { backgroundColor: COLORS.accentSoft, borderRadius: 14, borderWidth: 1, borderColor: COLORS.accentMedium, padding: 14, marginBottom: 12 },
+  takeawayLabel: { fontSize: 10, fontWeight: '900', color: COLORS.accent, marginBottom: 5, letterSpacing: 0 },
+  takeawayText: { fontSize: 14, lineHeight: 20, color: COLORS.textPrimary, fontWeight: '600' },
+  nextPreview: { fontSize: 12, lineHeight: 18, color: COLORS.textMuted, textAlign: 'center', marginBottom: 16 },
   xpBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -946,7 +983,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 10,
-    gap: 12,
+    gap: 8,
   },
   closeBtn: {
     width: 36,
@@ -965,6 +1002,7 @@ const styles = StyleSheet.create({
   },
   topBarCenter: {
     flex: 1,
+    minWidth: 0,
   },
   stackLabel: {
     ...TYPE.bodyBold,
@@ -999,6 +1037,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accentSoft,
     borderColor: COLORS.accentMedium,
   },
+  xpCounter: { minWidth: 42, height: 32, paddingHorizontal: 8, borderRadius: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 3, backgroundColor: COLORS.warningSoft, borderWidth: 1, borderColor: COLORS.goldSoft },
+  xpCounterText: { fontSize: 12, fontWeight: '800', color: COLORS.textSecondary },
   narrationImg: {
     width: 18,
     height: 18,
@@ -1006,34 +1046,11 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     paddingHorizontal: 16,
-    marginBottom: 4,
+    marginBottom: 8,
+    flexDirection: 'row',
+    gap: 5,
   },
-  progressBar: {
-    height: 10,
-    backgroundColor: '#E5E7EB',
-    borderRadius: 5,
-    overflow: 'visible',
-    position: 'relative',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: 5,
-  },
-  progressKnob: {
-    position: 'absolute',
-    top: -3,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    borderWidth: 3,
-    marginLeft: -8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 2,
-    elevation: 3,
-  },
+  progressSegment: { flex: 1, height: 6, borderRadius: 3, backgroundColor: COLORS.border },
   cardArea: {
     flex: 1,
     position: 'relative',
@@ -1044,7 +1061,7 @@ const styles = StyleSheet.create({
   cardContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 12,
+    paddingTop: 16,
     paddingBottom: 48, // pb-12 to clear Next button / home bar
   },
   edgeTapLeft: {
@@ -1101,8 +1118,8 @@ const styles = StyleSheet.create({
   dotUpcoming: { width: 5, backgroundColor: COLORS.border },
   nextBtn: {
     height: 44,
-    paddingHorizontal: 24,
-    borderRadius: 22,
+    paddingHorizontal: 18,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -1112,6 +1129,7 @@ const styles = StyleSheet.create({
   nextBtnText: {
     ...TYPE.bodyBold,
     color: '#fff',
+    fontWeight: '800',
   },
   backBtn: {
     width: 44,
