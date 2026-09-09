@@ -273,6 +273,8 @@ export function useNotifications() {
     isRegistered,
     pushToken,
     preferences,
+    smartTiming,
+
     registerPushNotifications,
     scheduleDailyReminder,
     scheduleStreakReminder,
