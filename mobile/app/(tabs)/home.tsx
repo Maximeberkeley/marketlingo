@@ -252,6 +252,18 @@ export default function HomeScreen() {
   // Weekly league standing
   const league = useLeagues(selectedMarketLocal || undefined);
 
+  // Detect a level-up so the finish screen can celebrate it
+  const prevLevelRef = useRef<number | null>(null);
+  const [levelUp, setLevelUp] = useState<{ up: boolean; level: number }>({ up: false, level: 1 });
+  useEffect(() => {
+    const lvl = xpData?.current_level;
+    if (typeof lvl !== 'number') return;
+    if (prevLevelRef.current !== null && lvl > prevLevelRef.current) {
+      setLevelUp({ up: true, level: lvl });
+    }
+    prevLevelRef.current = lvl;
+  }, [xpData?.current_level]);
+
 
   // Leo popup system
   const leoPopups = useLeoPopups({ cooldownMs: 45000, maxPerSession: 4 });
@@ -402,12 +414,16 @@ export default function HomeScreen() {
           questsTotal={quests.length}
           leagueTier={league.tier}
           leagueRank={league.myRank}
+          leveledUp={levelUp.up}
+          newLevel={levelUp.level}
           onContinue={() => {
             league.refresh();
+            setLevelUp({ up: false, level: levelUp.level });
             session.dismissSessionComplete();
           }}
           onDismiss={() => {
             league.refresh();
+            setLevelUp({ up: false, level: levelUp.level });
             session.dismissSessionComplete();
           }}
         />

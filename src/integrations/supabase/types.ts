@@ -2460,6 +2460,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      league_group_size: {
+        Args: { p_market_id: string; p_tier: string }
+        Returns: number
+      }
       next_league_tier: {
         Args: { p_direction: number; p_tier: string }
         Returns: string
@@ -2467,6 +2471,32 @@ export type Database = {
       record_app_open: {
         Args: { p_local_hour: number; p_utc_offset_minutes: number }
         Returns: number
+      }
+      respond_friend_quest: {
+        Args: { p_accept: boolean; p_quest_id: string }
+        Returns: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          initiator_id: string
+          initiator_progress: number
+          market_id: string
+          partner_id: string
+          partner_progress: number
+          quest_key: string
+          status: string
+          target: number
+          title: string
+          updated_at: string
+          week_of: string
+          xp_reward: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "friend_quests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       run_league_rollover: { Args: never; Returns: number }
       submit_decision_answer: {

@@ -146,10 +146,11 @@ export function useFriendQuests(marketId?: string | null) {
 
   const respond = useCallback(
     async (questId: string, accept: boolean) => {
-      const { error } = await supabase
-        .from('friend_quests')
-        .update({ status: accept ? 'active' : 'declined', updated_at: new Date().toISOString() })
-        .eq('id', questId);
+      // Status changes go through a server function — progress is never client-writable.
+      const { error } = await supabase.rpc('respond_friend_quest', {
+        p_quest_id: questId,
+        p_accept: accept,
+      });
       if (error) return { success: false, error: error.message };
       await load();
       return { success: true };

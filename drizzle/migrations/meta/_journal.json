@@ -8,6 +8,13 @@
       "when": 1788916360813,
       "tag": "0000_leagues_friend_quests_activity_patterns",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788918788834,
+      "tag": "0001_harden_leagues_quests",
+      "breakpoints": true
     }
   ]
 }
