@@ -39,6 +39,9 @@ import { useMilestoneSharing } from '../../hooks/useMilestoneSharing';
 import { useHomeData } from '../../hooks/useHomeData';
 import { useSessionFlow } from '../../hooks/useSessionFlow';
 import { MONETIZATION_ENABLED } from '../../lib/monetization';
+import { useLeagues } from '../../hooks/useLeagues';
+import { LeagueCard } from '../../components/social/LeagueCard';
+
 import { triggerHaptic } from '../../lib/haptics';
 import { useStreakFreeze } from '../../hooks/useStreakFreeze';
 import { playSound } from '../../lib/sounds';
@@ -575,8 +578,27 @@ export default function HomeScreen() {
               completedCount={completedCount}
               totalBonusXP={totalBonusXP}
               allComplete={allComplete}
+              themeTitle={themeTitle}
+              themeTagline={themeTagline}
             />
           </AnimatedSection>
+
+          {/* ── Weekly league ── */}
+          <AnimatedSection delay={250}>
+            <View style={{ marginTop: 12 }}>
+              <LeagueCard
+                tier={league.tier}
+                myRank={league.myRank}
+                myWeeklyXP={league.myWeeklyXP}
+                groupSize={league.groupSize}
+                promoteCutoff={league.promoteCutoff}
+                demoteCutoff={league.demoteCutoff}
+                msLeft={league.msLeft}
+                loading={league.loading}
+              />
+            </View>
+          </AnimatedSection>
+
 
           {/* ── Tomorrow preview (after lesson complete) ── */}
           {lessonCompletedToday && tomorrowLesson && (
