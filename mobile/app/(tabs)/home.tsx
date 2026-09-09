@@ -39,6 +39,9 @@ import { useMilestoneSharing } from '../../hooks/useMilestoneSharing';
 import { useHomeData } from '../../hooks/useHomeData';
 import { useSessionFlow } from '../../hooks/useSessionFlow';
 import { MONETIZATION_ENABLED } from '../../lib/monetization';
+import { useLeagues } from '../../hooks/useLeagues';
+import { LeagueCard } from '../../components/social/LeagueCard';
+
 import { triggerHaptic } from '../../lib/haptics';
 import { useStreakFreeze } from '../../hooks/useStreakFreeze';
 import { playSound } from '../../lib/sounds';
@@ -242,8 +245,13 @@ export default function HomeScreen() {
     return hoursLeft > 0 && hoursLeft <= 2;
   })();
 
-  // Daily quests
-  const { quests, completedCount, totalBonusXP, allComplete } = useDailyQuests(dailyCompletion, streak);
+  // Daily quests (rotate by weekday theme)
+  const { quests, completedCount, totalBonusXP, allComplete, themeTitle, themeTagline } =
+    useDailyQuests(dailyCompletion, streak);
+
+  // Weekly league standing
+  const league = useLeagues(selectedMarketLocal || undefined);
+
 
   // Leo popup system
   const leoPopups = useLeoPopups({ cooldownMs: 45000, maxPerSession: 4 });
@@ -390,13 +398,20 @@ export default function HomeScreen() {
           lessonTitle={session.activeStack?.title || lessonStack?.title || 'Lesson'}
           totalXP={xpData?.total_xp || 0}
           stageName={currentStage.name}
+          questsCompleted={completedCount}
+          questsTotal={quests.length}
+          leagueTier={league.tier}
+          leagueRank={league.myRank}
           onContinue={() => {
+            league.refresh();
             session.dismissSessionComplete();
           }}
           onDismiss={() => {
+            league.refresh();
             session.dismissSessionComplete();
           }}
         />
+
       ) : (
         <ScrollView
           contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 100 }]}
@@ -570,8 +585,27 @@ export default function HomeScreen() {
               completedCount={completedCount}
               totalBonusXP={totalBonusXP}
               allComplete={allComplete}
+              themeTitle={themeTitle}
+              themeTagline={themeTagline}
             />
           </AnimatedSection>
+
+          {/* ── Weekly league ── */}
+          <AnimatedSection delay={250}>
+            <View style={{ marginTop: 12 }}>
+              <LeagueCard
+                tier={league.tier}
+                myRank={league.myRank}
+                myWeeklyXP={league.myWeeklyXP}
+                groupSize={league.groupSize}
+                promoteCutoff={league.promoteCutoff}
+                demoteCutoff={league.demoteCutoff}
+                msLeft={league.msLeft}
+                loading={league.loading}
+              />
+            </View>
+          </AnimatedSection>
+
 
           {/* ── Tomorrow preview (after lesson complete) ── */}
           {lessonCompletedToday && tomorrowLesson && (
