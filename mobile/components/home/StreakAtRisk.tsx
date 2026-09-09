@@ -5,11 +5,13 @@ import { COLORS } from '../../lib/constants';
 interface StreakAtRiskProps {
   streak: number;
   hoursLeft: number;
+  /** Live "5h 12m" style countdown, updated by the home screen. */
+  countdownLabel?: string;
   onStartLesson: () => void;
   onDismiss: () => void;
 }
 
-export function StreakAtRisk({ streak, hoursLeft, onStartLesson, onDismiss }: StreakAtRiskProps) {
+export function StreakAtRisk({ streak, hoursLeft, countdownLabel, onStartLesson, onDismiss }: StreakAtRiskProps) {
   const shakeAnim = useRef(new Animated.Value(0)).current;
   const flameScale = useRef(new Animated.Value(1)).current;
   const slideAnim = useRef(new Animated.Value(-100)).current;

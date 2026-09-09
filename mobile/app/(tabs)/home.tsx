@@ -29,6 +29,7 @@ import { ProgressBar } from '../../components/ui/ProgressBar';
 import { SlideReaderV2 as SlideReader } from '../../components/slides/SlideReaderV2';
 import { StreakAtRisk } from '../../components/home/StreakAtRisk';
 import { StreakCriticalTimer } from '../../components/home/StreakCriticalTimer';
+import { useStreakCountdown } from '../../hooks/useStreakCountdown';
 import { SocialNudge } from '../../components/home/SocialNudge';
 import { Feather } from '@expo/vector-icons';
 import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
