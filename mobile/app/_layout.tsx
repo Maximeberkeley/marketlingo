@@ -51,18 +51,24 @@ export default function RootLayout() {
     HindSemiBold: require('../assets/fonts/Hind-SemiBold.ttf'),
   });
 
-  // Keep the iOS app icon free of any badge count (we never use badges).
+  // Keep the iOS app icon free of any badge count (we never use badges),
+  // and learn when this person usually opens the app so reminders land well.
   useEffect(() => {
     const clearBadge = () => {
       Notifications.setBadgeCountAsync(0).catch(() => {});
       Notifications.dismissAllNotificationsAsync().catch(() => {});
     };
     clearBadge();
+    recordAppOpen();
     const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'active') clearBadge();
+      if (state === 'active') {
+        clearBadge();
+        recordAppOpen();
+      }
     });
     return () => sub.remove();
   }, []);
+
 
   useEffect(() => {
     // Handle tap on notification (background → foreground / killed → open)
