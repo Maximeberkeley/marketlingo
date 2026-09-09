@@ -242,8 +242,13 @@ export default function HomeScreen() {
     return hoursLeft > 0 && hoursLeft <= 2;
   })();
 
-  // Daily quests
-  const { quests, completedCount, totalBonusXP, allComplete } = useDailyQuests(dailyCompletion, streak);
+  // Daily quests (rotate by weekday theme)
+  const { quests, completedCount, totalBonusXP, allComplete, themeTitle, themeTagline } =
+    useDailyQuests(dailyCompletion, streak);
+
+  // Weekly league standing
+  const league = useLeagues(selectedMarketLocal || undefined);
+
 
   // Leo popup system
   const leoPopups = useLeoPopups({ cooldownMs: 45000, maxPerSession: 4 });
