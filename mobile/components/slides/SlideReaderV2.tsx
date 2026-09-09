@@ -17,9 +17,7 @@ import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { mentors, LEO_VOICE_ID } from '../../data/mentors';
 import { getPrimaryMentorForMarket } from '../../data/marketConfig';
 import { ConceptCard, parseSlideIntoCards, ConceptCardType } from './ConceptCard';
-import { ObjectiveCard, RecapCard, ReflectionCard } from './ImmersiveCards';
-import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
-import { QuizCard, generateQuizFromSlide, shouldShowQuiz, QuizCardData } from './QuizCard';
+import { ReflectionCard } from './ImmersiveCards';
 import { WordMatchGame, extractTermPairs, shouldShowWordMatch, WordPair } from './WordMatchGame';
 import { SwipeFlashcardDrill, generateFlashcardsFromSlides, FlashcardItem } from './SwipeFlashcardDrill';
 import { ComboBar } from './ComboBar';
@@ -31,6 +29,7 @@ import { playSound } from '../../lib/sounds';
 import { useNarration } from '../../hooks/useNarration';
 import { ComboState, createComboState, comboCorrect, comboWrong, getComboMessage } from '../../lib/combo';
 import { Feather } from '@expo/vector-icons';
+import { KnowledgeUnlock, LessonStage, MissionBrief, StageLabel } from './LessonCampaign';
 
 const MENTOR_IMAGES: Record<string, any> = {
   maya: require('../../assets/mentors/mentor-maya.png'),
@@ -91,6 +90,10 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 type CardItem = {
+  type: 'mission';
+  goals: string[];
+  slideIndex: number;
+} | {
   type: 'concept';
   cardType: ConceptCardType;
   title?: string;
@@ -98,14 +101,6 @@ type CardItem = {
   bullets?: string[];
   sources?: Source[];
   keyTerms?: { term: string; definition: string }[];
-  slideIndex: number;
-} | {
-  type: 'leo';
-  leoType: 'encouragement' | 'fun-fact' | 'check-in' | 'celebration' | 'halfway';
-  slideIndex: number;
-} | {
-  type: 'quiz';
-  quiz: QuizCardData;
   slideIndex: number;
 } | {
   type: 'wordmatch';
@@ -158,6 +153,7 @@ export function SlideReaderV2({
   const [showAskLeo, setShowAskLeo] = useState(false);
   const [showAnnotation, setShowAnnotation] = useState(false);
   const [narrationEnabled, setNarrationEnabled] = useState(false);
+  const [earnedInsight, setEarnedInsight] = useState<string | null>(null);
   const cardKey = useRef(0);
 
   // Combo system state
@@ -219,25 +215,16 @@ export function SlideReaderV2({
   const allCards: CardItem[] = useMemo(() => {
     const items: CardItem[] = [];
 
-    // ── RECAP CARD: Use generated recap_bridge or fall back to previousLessonTitle ──
+    // One briefing replaces separate recap/objective cards and previews the full route.
     if (stackType === 'LESSON' && !isReview) {
-      const recapText = metadata?.recap_bridge || previousLessonTitle;
-      items.push({
-        type: 'recap',
-        previousTopic: recapText,
-        currentTopic: stackTitle,
-        slideIndex: 0,
-      });
-    }
-
-    // ── OBJECTIVE CARD: Use generated learning_objectives or fall back to slide titles ──
-    if (stackType === 'LESSON' && !isReview && slides.length >= 2) {
       const goals = metadata?.learning_objectives?.length
         ? metadata.learning_objectives.slice(0, 3)
         : slides.map(s => s.title).filter(t => t && t.length > 5).slice(0, 3);
-      if (goals.length > 0) {
-        items.push({ type: 'objective', goals, slideIndex: 0 });
-      }
+      items.push({
+        type: 'mission',
+        goals,
+        slideIndex: 0,
+      });
     }
 
     slides.forEach((slide, slideIdx) => {
@@ -357,39 +344,6 @@ export function SlideReaderV2({
       }
     }
 
-    // Insert Leo cards
-    const totalItems = items.length;
-    const leoPositions: { index: number; leoType: any }[] = [];
-    for (let i = 0; i < totalItems; i++) {
-      const leoType = shouldShowLeoCard(i, totalItems);
-      if (leoType) leoPositions.push({ index: i, leoType });
-    }
-    for (let i = leoPositions.length - 1; i >= 0; i--) {
-      const { index, leoType } = leoPositions[i];
-      const nearbyItem = items[index];
-      const slideIndex = nearbyItem && 'slideIndex' in nearbyItem ? nearbyItem.slideIndex : 0;
-      items.splice(index, 0, { type: 'leo', leoType, slideIndex });
-    }
-
-    // Insert quiz cards at strategic points
-    const quizInsertions: { index: number; quiz: QuizCardData; slideIndex: number }[] = [];
-    for (let i = 0; i < items.length; i++) {
-      if (shouldShowQuiz(i, items.length)) {
-        const item = items[i];
-        if (item.type === 'concept' && item.content) {
-          const slideData = slides[item.slideIndex];
-          if (slideData) {
-            const quiz = generateQuizFromSlide(slideData.title, slideData.body, item.slideIndex);
-            if (quiz) quizInsertions.push({ index: i + 1, quiz, slideIndex: item.slideIndex });
-          }
-        }
-      }
-    }
-    for (let i = quizInsertions.length - 1; i >= 0; i--) {
-      const { index, quiz, slideIndex } = quizInsertions[i];
-      items.splice(index, 0, { type: 'quiz', quiz, slideIndex });
-    }
-
     // Insert word-match games at strategic midpoints
     const wmInsertions: { index: number; pairs: WordPair[]; slideIndex: number }[] = [];
     for (let i = 0; i < items.length; i++) {
@@ -410,7 +364,7 @@ export function SlideReaderV2({
     }
 
     return items;
-  }, [slides, marketId, stackType, stackTitle, isReview, previousLessonTitle, dayNumber]);
+  }, [slides, marketId, stackType, stackTitle, isReview, dayNumber, metadata]);
 
   const totalCards = allCards.length;
   const progress = totalCards > 0 ? (currentCard + 1) / totalCards : 0;
@@ -418,6 +372,16 @@ export function SlideReaderV2({
   const currentSlideIndex = currentCardData ? ('slideIndex' in currentCardData ? currentCardData.slideIndex : 0) : 0;
   const currentSlide = slides[currentSlideIndex];
   const isLastCard = currentCard >= totalCards - 1;
+  const answeredXP = correctCount * 10;
+
+  const currentStage: LessonStage = useMemo(() => {
+    if (!currentCardData || currentCardData.type === 'mission') return 'Brief';
+    if (currentCardData.type === 'reflection') return 'Debrief';
+    if (currentCardData.type === 'wordmatch' || currentCardData.type === 'flashcard') return 'Apply';
+    if (currentCardData.type === 'concept' && currentCardData.cardType === 'example') return 'Predict';
+    if (currentCard <= Math.max(2, Math.floor(totalCards * 0.18))) return 'Recall';
+    return 'Discover';
+  }, [currentCardData, currentCard, totalCards]);
 
   // All users can complete full lessons — the app is free
   // Pro ad is shown AFTER lesson completion instead
@@ -447,10 +411,16 @@ export function SlideReaderV2({
     }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     animateTransition('left', () => {
+      const completed = allCards[currentCard];
+      if (completed?.type === 'concept' && completed.title) {
+        setEarnedInsight(completed.title);
+      } else {
+        setEarnedInsight(null);
+      }
       cardKey.current++;
       setCurrentCard(prev => prev + 1);
     });
-  }, [isLastCard, currentCard, animateTransition]);
+  }, [isLastCard, currentCard, animateTransition, allCards]);
 
   const goPrev = useCallback(() => {
     if (currentCard <= 0) return;
@@ -520,11 +490,7 @@ export function SlideReaderV2({
 
     // Combo message
     const comboMsg = getComboMessage(newCombo.streak);
-    const correctMsgs = ['Nailed it! 🎯', 'Exactly right! ⭐', 'Perfect! 💡', 'You got it! ✅'];
-    const wrongMsgs = ['Not quite!', 'Close one!', 'Good try!', 'Almost!'];
-    const baseMsg = correct
-      ? correctMsgs[Math.floor(Math.random() * correctMsgs.length)]
-      : wrongMsgs[Math.floor(Math.random() * wrongMsgs.length)];
+    const baseMsg = correct ? 'Signal identified' : 'Review the signal';
 
     setFeedbackCorrect(correct);
     setFeedbackMessage(comboMsg || baseMsg);
@@ -545,25 +511,17 @@ export function SlideReaderV2({
 
   const renderCard = () => {
     if (!currentCardData) return null;
-    if (currentCardData.type === 'leo') {
+    if (currentCardData.type === 'mission') {
       return (
-        <LeoInterstitial
-          key={`leo-${currentCard}`}
-          type={currentCardData.leoType}
-          progress={progress}
-          slideTitle={currentSlide?.title}
-        />
-      );
-    }
-    if (currentCardData.type === 'quiz') {
-      return (
-        <QuizCard
-          key={`quiz-${currentCard}`}
-          quiz={currentCardData.quiz}
-          onAnswer={(correct) => {
-            handleAnswer(correct, currentCardData.quiz.explanation);
-          }}
+        <MissionBrief
+          title={stackTitle}
+          goals={currentCardData.goals}
+          previousTopic={metadata?.recap_bridge || previousLessonTitle}
+          marketId={marketId}
+          dayNumber={dayNumber}
+          mentorName={mentorName || mentor.name}
           accentColor={accentColor}
+          estimatedMinutes={Math.max(4, Math.ceil(slides.reduce((sum, slide) => sum + slide.body.split(/\s+/).length, 0) / 180))}
         />
       );
     }
@@ -576,29 +534,6 @@ export function SlideReaderV2({
             handleAnswer(score === total, `You matched ${score}/${total} pairs correctly.`);
           }}
           accentColor={accentColor}
-        />
-      );
-    }
-    // ── Immersive cards ──
-    if (currentCardData.type === 'objective') {
-      return (
-        <ObjectiveCard
-          key={`obj-${currentCard}`}
-          goals={currentCardData.goals}
-          accentColor={accentColor}
-          marketId={marketId}
-        />
-      );
-    }
-    if (currentCardData.type === 'recap') {
-      return (
-        <RecapCard
-          key={`recap-${currentCard}`}
-          dayNumber={dayNumber}
-          previousTopic={currentCardData.previousTopic}
-          currentTopic={currentCardData.currentTopic}
-          accentColor={accentColor}
-          marketId={marketId}
         />
       );
     }
@@ -626,18 +561,21 @@ export function SlideReaderV2({
       );
     }
     return (
-      <ConceptCard
-        key={`card-${currentCard}`}
-        type={currentCardData.cardType}
-        title={currentCardData.title}
-        content={currentCardData.content}
-        bullets={currentCardData.bullets}
-        sources={currentCardData.sources}
-        keyTerms={currentCardData.keyTerms}
-        cardIndex={currentCard}
-        totalCards={totalCards}
-        accentColor={accentColor}
-      />
+      <View>
+        {earnedInsight ? <KnowledgeUnlock label={earnedInsight} accentColor={accentColor} /> : null}
+        <ConceptCard
+          key={`card-${currentCard}`}
+          type={currentCardData.cardType}
+          title={currentCardData.title}
+          content={currentCardData.content}
+          bullets={currentCardData.bullets}
+          sources={currentCardData.sources}
+          keyTerms={currentCardData.keyTerms}
+          cardIndex={currentCard}
+          totalCards={totalCards}
+          accentColor={accentColor}
+        />
+      </View>
     );
   };
 
@@ -652,7 +590,7 @@ export function SlideReaderV2({
           </TouchableOpacity>
 
           <View style={styles.topBarCenter}>
-            <Text style={styles.stackLabel} numberOfLines={1}>{stackTitle}</Text>
+            <StageLabel stage={currentStage} detail={stackTitle} accentColor={accentColor} />
           </View>
 
           {/* Ask Leo */}
@@ -672,15 +610,19 @@ export function SlideReaderV2({
               style={{ opacity: narrationEnabled ? 1 : 0.4 }}
             />
           </TouchableOpacity>
+
+          <View style={styles.xpCounter}>
+            <Feather name="zap" size={13} color={COLORS.warning} />
+            <Text style={styles.xpCounterText}>{answeredXP}</Text>
+          </View>
         </View>
 
-        {/* Progress Bar — Duolingo style */}
+        {/* Segmented campaign progress */}
         <View style={styles.progressBarContainer}>
-          <View style={styles.progressBar}>
-            <Animated.View style={[styles.progressFill, { backgroundColor: accentColor, width: `${progress * 100}%` }]} />
-            {/* Progress knob */}
-            <View style={[styles.progressKnob, { left: `${Math.min(progress * 100, 97)}%`, borderColor: accentColor }]} />
-          </View>
+          {Array.from({ length: Math.min(6, Math.max(4, Math.ceil(totalCards / 4))) }).map((_, index, arr) => {
+            const segmentProgress = Math.ceil(progress * arr.length);
+            return <View key={index} style={[styles.progressSegment, index < segmentProgress && { backgroundColor: accentColor }]} />;
+          })}
         </View>
 
         {/* Combo Bar — visible when user has answered questions */}
@@ -775,7 +717,7 @@ export function SlideReaderV2({
             >
               <Feather name={isLastCard ? 'check' : 'chevron-right'} size={18} color="#fff" style={{ marginRight: 4 }} />
               <Text style={styles.nextBtnText}>
-                {isLastCard ? 'Done' : 'Next'}
+                {currentCardData?.type === 'mission' ? 'Start mission' : isLastCard ? 'Make the call' : 'Continue'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -815,6 +757,11 @@ export function SlideReaderV2({
             hasMetMinimumTime={hasMetMinimumTime}
             timeSpentSeconds={timeSpentSeconds}
             marketId={marketId}
+            lessonTitle={stackTitle}
+            keyTakeaway={metadata?.key_takeaway}
+            nextPreview={metadata?.next_preview}
+            correctCount={correctCount}
+            totalAnswered={totalAnswered}
             onComplete={handleComplete}
             onKeepReading={() => setShowCompletion(false)}
           />
