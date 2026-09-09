@@ -45,6 +45,7 @@ export function useLeagues(marketId?: string | null): LeagueState {
   const [lastResult, setLastResult] = useState<LeagueState['lastResult']>(null);
   const [loading, setLoading] = useState(true);
   const [msLeft, setMsLeft] = useState(msUntilWeekEnd());
+  const [trueGroupSize, setTrueGroupSize] = useState(0);
   const inFlight = useRef(false);
   const weekOf = currentWeekStart();
 
@@ -135,7 +136,7 @@ export function useLeagues(marketId?: string | null): LeagueState {
   }, []);
 
   const myRank = standings.find((s) => s.isCurrentUser)?.rank ?? null;
-  const groupSize = standings.length;
+  const groupSize = Math.max(trueGroupSize, standings.length);
 
   return {
     tier,
