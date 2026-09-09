@@ -138,21 +138,24 @@ export function useNotifications() {
     }
   }, [isSupported, savePushToken]);
 
-  // Schedule daily reminder
+  // Schedule daily reminder — timed to when this learner usually opens the app
   const scheduleDailyReminder = useCallback(async () => {
     if (!isSupported) return;
 
     try {
-      // Cancel existing scheduled notifications
-      await Notifications.cancelAllScheduledNotificationsAsync();
+      // Only clear the previous daily reminder — streak warnings stay armed.
+      await Notifications.cancelScheduledNotificationAsync(DAILY_REMINDER_ID).catch(() => {});
 
       if (!preferences.dailyReminder) return;
 
-      const [hours, minutes] = preferences.reminderTime.split(':').map(Number);
+      const { time, smart } = await resolveReminderTime(preferences.reminderTime);
+      const [hours, minutes] = time.split(':').map(Number);
+      setSmartTiming({ active: smart, time });
 
       const template = pickRandom(DAILY_TEMPLATES);
 
       await Notifications.scheduleNotificationAsync({
+        identifier: DAILY_REMINDER_ID,
         content: {
           title: template.title,
           body: template.body,
@@ -161,14 +164,15 @@ export function useNotifications() {
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DAILY,
-          hour: hours,
-          minute: minutes,
+          hour: Number.isFinite(hours) ? hours : 9,
+          minute: Number.isFinite(minutes) ? minutes : 0,
         },
       });
     } catch (error) {
       log.error('Error scheduling daily reminder:', error);
     }
   }, [isSupported, preferences]);
+
 
   // Schedule streak warning notification
   const scheduleStreakReminder = useCallback(async (hoursUntilExpiry: number) => {
