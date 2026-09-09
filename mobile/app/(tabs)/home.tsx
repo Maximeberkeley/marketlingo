@@ -237,13 +237,13 @@ export default function HomeScreen() {
   const [showCriticalTimer, setShowCriticalTimer] = useState(true);
   const [showLeoChat, setShowLeoChat] = useState(false);
 
-  // Calculate if we're in the critical 2-hour window
-  const criticalTimerActive = (() => {
-    if (!progress?.streak_expires_at || streak === 0 || lessonCompletedToday) return false;
-    const expires = new Date(progress.streak_expires_at);
-    const hoursLeft = (expires.getTime() - Date.now()) / (1000 * 60 * 60);
-    return hoursLeft > 0 && hoursLeft <= 2;
-  })();
+  // Live countdown to the moment the streak breaks
+  const countdown = useStreakCountdown(
+    progress?.streak_expires_at,
+    streak,
+    lessonCompletedToday,
+  );
+  const criticalTimerActive = countdown.critical;
 
   // Daily quests (rotate by weekday theme)
   const { quests, completedCount, totalBonusXP, allComplete, themeTitle, themeTagline } =
@@ -479,12 +479,13 @@ export default function HomeScreen() {
             </AnimatedSection>
           )}
 
-          {/* ── Streak Warning (2-6 hours left, non-critical) ── */}
-          {streakRiskHours !== null && !criticalTimerActive && showStreakWarning && !lessonCompletedToday && (
+          {/* ── Streak Warning (2-8 hours left, non-critical) ── */}
+          {countdown.atRisk && showStreakWarning && (
             <AnimatedSection delay={50}>
               <StreakAtRisk
                 streak={streak}
-                hoursLeft={streakRiskHours}
+                hoursLeft={countdown.hoursLeft}
+                countdownLabel={countdown.label}
                 onStartLesson={() => lessonStack && session.handleOpenStack(lessonStack)}
                 onDismiss={() => setShowStreakWarning(false)}
               />
