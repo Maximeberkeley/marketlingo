@@ -150,6 +150,30 @@ export default function FriendsScreen() {
     Alert.alert('Nudge Sent!', `${friend.username} will get a notification!`);
   };
 
+  const handleStartQuest = (friend: Friend) => {
+    triggerHaptic('light');
+    Alert.alert(
+      `Co-op quest with ${friend.username}`,
+      'Your progress and theirs add up toward one shared target. Finish it before Sunday and you both earn the bonus XP.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        ...FRIEND_QUEST_TEMPLATES.map(t => ({
+          text: `${t.title} — ${t.description}`,
+          onPress: async () => {
+            const res = await questHub.createQuest(friend.id, t);
+            if (res.success) {
+              triggerHaptic('success');
+              trackEvent('friend_quest_created', { key: t.key });
+              Alert.alert('Invite sent', `${friend.username} needs to accept before it starts.`);
+            } else {
+              Alert.alert('Could not start quest', res.error || 'Try again later.');
+            }
+          },
+        })),
+      ]
+    );
+  };
+
   const handleRemove = (friend: Friend) => {
     Alert.alert('Remove Friend?', `Remove ${friend.username}?`, [
       { text: 'Cancel', style: 'cancel' },
@@ -212,23 +236,24 @@ export default function FriendsScreen() {
 
       {/* Tab Switcher */}
       <View style={styles.tabRow}>
-        {(['friends', 'global'] as const).map(tab => (
+        {(['friends', 'league', 'global'] as const).map(tab => (
           <TouchableOpacity
             key={tab}
             style={[styles.tab, activeTab === tab && styles.tabActive]}
             onPress={() => { triggerHaptic('light'); setActiveTab(tab); }}
           >
             <Feather
-              name={tab === 'friends' ? 'users' : 'globe'}
+              name={tab === 'friends' ? 'users' : tab === 'league' ? 'award' : 'globe'}
               size={14}
               color={activeTab === tab ? '#FFF' : COLORS.textMuted}
             />
             <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
-              {tab === 'friends' ? `Friends (${friends.length})` : 'Global'}
+              {tab === 'friends' ? `Friends (${friends.length})` : tab === 'league' ? 'League' : 'Global'}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
+
 
       <ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
