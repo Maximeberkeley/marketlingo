@@ -4,7 +4,7 @@ import {
   Alert, ActivityIndicator, Animated, Share, Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { COLORS, TYPE, SHADOWS } from '../lib/constants';
 import { useFriends, Friend } from '../hooks/useFriends';
 import { useAuth } from '../hooks/useAuth';
@@ -12,6 +12,11 @@ import { supabase } from '../lib/supabase';
 import { triggerHaptic } from '../lib/haptics';
 import { trackEvent } from '../lib/analytics';
 import { Feather } from '@expo/vector-icons';
+import { useLeagues } from '../hooks/useLeagues';
+import { useFriendQuests, FRIEND_QUEST_TEMPLATES } from '../hooks/useFriendQuests';
+import { FriendQuestCard } from '../components/social/FriendQuestCard';
+import { tierMeta, formatTimeLeft } from '../lib/leagues';
+
 
 // ── Types ───────────────────────────────────────────
 interface LeaderboardEntry {
