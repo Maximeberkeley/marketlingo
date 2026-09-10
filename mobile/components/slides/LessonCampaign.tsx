@@ -188,6 +188,19 @@ export function KnowledgeUnlock({ label, accentColor }: { label: string; accentC
 }
 
 const styles = StyleSheet.create({
+  header: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 10 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  stageChip: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 9 },
+  stageChipText: { fontSize: 10, fontWeight: '900', letterSpacing: 0.6 },
+  headerHint: { flex: 1, fontSize: 11, fontWeight: '600' },
+  xpPill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 9 },
+  xpPillText: { fontSize: 12, fontWeight: '900' },
+  track: { height: 5, borderRadius: 3, marginTop: 10, overflow: 'hidden' },
+  trackFill: { height: 5, borderRadius: 3 },
+  ideaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 9 },
+  ideaBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, maxWidth: '48%', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, borderWidth: 1 },
+  ideaText: { flexShrink: 1, fontSize: 10, fontWeight: '700' },
+
   mission: { flex: 1, paddingBottom: 24 },
   missionVisual: { minHeight: 172, borderRadius: 24, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
   illustration: { width: 176, height: 150, resizeMode: 'contain' },
