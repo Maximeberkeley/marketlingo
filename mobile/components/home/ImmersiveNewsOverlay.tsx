@@ -19,9 +19,7 @@ import {
   Linking,
   Platform,
   StatusBar,
-  ScrollView,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   RecordingPresets,
   requestRecordingPermissionsAsync,
@@ -166,7 +164,6 @@ export function ImmersiveNewsOverlay({
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [subtitlesExpanded, setSubtitlesExpanded] = useState(false);
-  const insets = useSafeAreaInsets();
 
   const soundRef = useRef<ManagedSound | null>(null);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -487,15 +484,6 @@ User's goal: ${learningGoal}`;
           <View style={st.bgOverlay} />
         </Animated.View>
 
-        {/* Story progress bars */}
-        <View style={[st.progressRow, { paddingTop: insets.top + 10 }]}>
-          {articles.map((_, i) => (
-            <View key={i} style={st.progressTrack}>
-              <View style={[st.progressFill, { width: i <= currentIndex ? '100%' : '0%' }]} />
-            </View>
-          ))}
-        </View>
-
         {/* Top bar */}
         <View style={st.topBar}>
           {/* Article counter */}
@@ -507,7 +495,7 @@ User's goal: ${learningGoal}`;
             {/* Discuss with AI */}
             <TouchableOpacity
               style={st.topBtn}
-              onPress={() => onOpenChat(article)}
+              onPress={() => { onClose(); setTimeout(() => onOpenChat(article), 300); }}
             >
               <Feather name="message-circle" size={20} color="#fff" />
             </TouchableOpacity>
@@ -520,11 +508,7 @@ User's goal: ${learningGoal}`;
         </View>
 
         {/* Sophia center stage */}
-        <ScrollView
-          style={st.centerScroll}
-          contentContainerStyle={st.centerStage}
-          showsVerticalScrollIndicator={false}
-        >
+        <View style={st.centerStage}>
           <Animated.View style={[st.sophiaRing, {
             transform: [{ scale: Animated.multiply(sophiaScale, pulseAnim) }],
             borderColor: isRecording ? '#EF4444' : isSpeaking ? COLORS.accent : 'rgba(255,255,255,0.3)',
@@ -582,38 +566,47 @@ User's goal: ${learningGoal}`;
               )}
             </TouchableOpacity>
           )}
-        </ScrollView>
+        </View>
 
-        {/* Pinned bottom block */}
-        <View style={[st.bottomBlock, { paddingBottom: insets.bottom + 14 }]}>
-          <Text style={st.articleTitle} numberOfLines={3}>{article.title}</Text>
+        {/* Article title */}
+        <View style={st.titleContainer}>
+          <Text style={st.articleTitle} numberOfLines={2}>{article.title}</Text>
           <Text style={st.articleMeta}>{article.sourceName} · {article.publishedAt}</Text>
+        </View>
 
-          <View style={st.actionRow}>
-            <TouchableOpacity
-              style={st.sourceBtn}
-              onPress={() => Linking.openURL(article.sourceUrl).catch(() => {})}
-            >
-              <Feather name="external-link" size={15} color="#fff" />
-              <Text style={st.sourceBtnText}>Read Full Article</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={st.ghostBtn} onPress={() => onOpenChat(article)}>
-              <Feather name="message-circle" size={15} color="#fff" />
-              <Text style={st.ghostBtnText}>Ask</Text>
-            </TouchableOpacity>
-          </View>
+        {/* Bottom bar */}
+        <View style={st.bottomBar}>
+          <TouchableOpacity
+            style={st.sourceBtn}
+            onPress={() => Linking.openURL(article.sourceUrl).catch(() => {})}
+          >
+            <Feather name="external-link" size={16} color="#fff" />
+            <Text style={st.sourceBtnText}>Read Full Article</Text>
+          </TouchableOpacity>
 
           {/* Swipe hints */}
           {isDoneSpeaking && hasNext && (
-            <Text style={st.swipeHint}>Swipe left for the next story →</Text>
+            <Text style={st.swipeHint}>Swipe left for next article →</Text>
           )}
+        </View>
+
+        {/* Navigation dots */}
+        <View style={st.dotsRow}>
+          {articles.map((_, i) => (
+            <View
+              key={i}
+              style={[st.dot, i === currentIndex && st.dotActive]}
+            />
+          ))}
         </View>
 
       </Animated.View>
     </Modal>
   );
 }
+
+const BOTTOM_PADDING = Platform.OS === 'ios' ? 40 : 24;
+const TOP_PADDING = Platform.OS === 'ios' ? 56 : 40;
 
 // ── Styles ──
 const st = StyleSheet.create({
@@ -634,32 +627,12 @@ const st = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.55)',
   },
 
-  // Story progress
-  progressRow: {
-    flexDirection: 'row',
-    gap: 4,
-    paddingHorizontal: 16,
-    zIndex: 10,
-  },
-  progressTrack: {
-    flex: 1,
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.25)',
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: 2,
-    backgroundColor: '#fff',
-  },
-
   // Top bar
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 12,
+    paddingTop: TOP_PADDING,
     paddingHorizontal: 20,
     zIndex: 10,
   },
@@ -688,16 +661,12 @@ const st = StyleSheet.create({
   },
 
   // Center Sophia
-  centerScroll: {
-    flex: 1,
-    zIndex: 10,
-  },
   centerStage: {
-    flexGrow: 1,
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 30,
-    paddingVertical: 24,
+    zIndex: 10,
   },
   sophiaRing: {
     width: 130,
@@ -774,37 +743,37 @@ const st = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // Pinned bottom block
-  bottomBlock: {
+  // Title
+  titleContainer: {
     paddingHorizontal: 24,
-    paddingTop: 16,
-    gap: 6,
-    zIndex: 10,
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    paddingBottom: 12,
   },
   articleTitle: {
-    fontSize: 19,
+    fontSize: 20,
     fontWeight: '800',
     color: '#fff',
-    lineHeight: 25,
+    lineHeight: 26,
+    marginBottom: 4,
   },
   articleMeta: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.55)',
+    color: 'rgba(255,255,255,0.5)',
     fontWeight: '500',
   },
-  actionRow: {
-    flexDirection: 'row',
+
+  // Bottom
+  bottomBar: {
+    paddingHorizontal: 24,
+    paddingBottom: 10,
     alignItems: 'center',
-    gap: 10,
-    marginTop: 8,
+    gap: 12,
+    zIndex: 10,
   },
   sourceBtn: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     gap: 8,
+    paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 28,
     backgroundColor: 'rgba(255,255,255,0.15)',
@@ -816,26 +785,28 @@ const st = StyleSheet.create({
     fontWeight: '700',
     color: '#fff',
   },
-  ghostBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderRadius: 28,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
-  },
-  ghostBtnText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#fff',
-  },
   swipeHint: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.45)',
+    color: 'rgba(255,255,255,0.4)',
     fontWeight: '500',
-    textAlign: 'center',
-    marginTop: 6,
+  },
+
+  // Dots
+  dotsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 4,
+    paddingBottom: BOTTOM_PADDING,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+  },
+  dotActive: {
+    backgroundColor: '#fff',
+    width: 18,
+    borderRadius: 3,
   },
 });

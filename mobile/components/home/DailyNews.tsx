@@ -809,7 +809,7 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
     impact: getImpactFromContent(item.title, item.summary),
   });
 
-  const fetchNews = async (forceRefresh = false, attempt = 0) => {
+  const fetchNews = async (forceRefresh = false) => {
     if (forceRefresh) setIsRefreshing(true);
     else setIsLoading(true);
     setError(null);
@@ -860,19 +860,9 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
         if (fallback && fallback.length > 0) {
           setNews(fallback.map(mapDbItem));
           setLastFetched(new Date());
-        } else if (attempt < 1) {
-          // The news service can still be warming up on a cold start — retry once.
-          await new Promise((resolve) => setTimeout(resolve, 1500));
-          return fetchNews(true, attempt + 1);
-        } else {
-          setNews([]);
-        }
+        } else { setNews([]); }
       }
     } catch {
-      if (attempt < 1) {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        return fetchNews(forceRefresh, attempt + 1);
-      }
       setError('Failed to connect to news service');
     } finally {
       setIsLoading(false); setIsRefreshing(false);
@@ -880,23 +870,6 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
   };
 
   useEffect(() => { fetchNews(); }, [marketId]);
-
-  const openStory = useCallback((index: number) => {
-    triggerHaptic('light');
-    setImmersiveIndex(index >= 0 ? index : 0);
-  }, []);
-
-  const openChatForArticle = useCallback((article: NewsItem, closeImmersive: boolean) => {
-    const ctx = `The user wants to discuss this ${marketId} industry news article:\n\nTitle: "${article.title}"\nSource: ${article.sourceName}\nSummary: ${article.summary ?? 'N/A'}\n\nHelp them understand the key implications.`;
-    setChatContext(ctx);
-    if (closeImmersive) {
-      setImmersiveIndex(-1);
-      // Let the fullscreen modal finish dismissing before mounting the chat sheet.
-      setTimeout(() => setChatNewsItem(article), 400);
-    } else {
-      setChatNewsItem(article);
-    }
-  }, [marketId]);
 
   // Save article to notebook
   const handleSaveToNotebook = async (item: NewsItem) => {
@@ -944,10 +917,8 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
     setChatNewsItem(item);
   };
 
-  // Always surface a lead story, even when the feed is sparse.
-  const featuredCount = news.length >= 4 ? 3 : Math.min(1, news.length);
-  const featured = news.slice(0, featuredCount);
-  const feed = news.slice(featuredCount);
+  const featured = news.length > 3 ? news.slice(0, 3) : [];
+  const feed = news.length > 3 ? news.slice(3) : news;
 
   return (
     <View style={s.container}>
@@ -998,8 +969,8 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
           {/* Featured horizontal carousel */}
           {featured.length > 0 && (
             <FeaturedCarousel items={featured} onSelect={(item) => {
-              const idx = featured.findIndex(n => n.id === item.id);
-              openStory(idx);
+              const idx = news.findIndex(n => n.id === item.id);
+              setImmersiveIndex(idx >= 0 ? idx : 0);
             }} />
           )}
 
@@ -1019,7 +990,10 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
                 key={item.id}
                 item={item}
                 index={index}
-                onSelect={() => openStory(featuredCount + index)}
+                onSelect={(item) => {
+                  const idx = news.findIndex(n => n.id === item.id);
+                  setImmersiveIndex(idx >= 0 ? idx : 0);
+                }}
                 onAiAction={handleAiAction}
                 onSave={handleSaveToNotebook}
                 onQuiz={handleQuiz}
@@ -1051,7 +1025,11 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
         articles={news}
         initialIndex={immersiveIndex >= 0 ? immersiveIndex : 0}
         onClose={() => setImmersiveIndex(-1)}
-        onOpenChat={(article) => openChatForArticle(article, true)}
+        onOpenChat={(article) => {
+          const ctx = `The user wants to discuss this ${marketId} industry news article:\n\nTitle: "${article.title}"\nSource: ${article.sourceName}\nSummary: ${article.summary ?? 'N/A'}\n\nHelp them understand the key implications.`;
+          setChatContext(ctx);
+          setChatNewsItem(article);
+        }}
         marketId={marketId}
         learningGoal={learningGoal}
       />
