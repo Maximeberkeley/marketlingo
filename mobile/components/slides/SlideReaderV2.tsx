@@ -415,8 +415,9 @@ export function SlideReaderV2({
     animateTransition('left', () => {
       const completed = allCards[currentCard];
       if (completed?.type === 'concept' && completed.title) {
-        setEarnedInsight(completed.title);
-        setCollectedIdeas(prev => (prev.includes(completed.title) ? prev : [...prev, completed.title]));
+        const ideaTitle: string = completed.title;
+        setEarnedInsight(ideaTitle);
+        setCollectedIdeas(prev => (prev.includes(ideaTitle) ? prev : [...prev, ideaTitle]));
       } else {
         setEarnedInsight(null);
       }
