@@ -178,7 +178,7 @@ export function LessonExperience({ lesson, onExit }: { lesson: Lesson; onExit?: 
 
         {ideas.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
-            {ideas.slice(-4).map((idea) => (
+            {ideas.slice(-2).map((idea) => (
               <motion.div
                 key={idea}
                 initial={{ scale: 0.6, opacity: 0 }}
