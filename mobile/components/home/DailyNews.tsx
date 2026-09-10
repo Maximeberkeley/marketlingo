@@ -944,8 +944,10 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
     setChatNewsItem(item);
   };
 
-  const featured = news.length > 3 ? news.slice(0, 3) : [];
-  const feed = news.length > 3 ? news.slice(3) : news;
+  // Always surface a lead story, even when the feed is sparse.
+  const featuredCount = news.length >= 4 ? 3 : Math.min(1, news.length);
+  const featured = news.slice(0, featuredCount);
+  const feed = news.slice(featuredCount);
 
   return (
     <View style={s.container}>
