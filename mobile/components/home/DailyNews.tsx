@@ -809,7 +809,7 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
     impact: getImpactFromContent(item.title, item.summary),
   });
 
-  const fetchNews = async (forceRefresh = false) => {
+  const fetchNews = async (forceRefresh = false, attempt = 0) => {
     if (forceRefresh) setIsRefreshing(true);
     else setIsLoading(true);
     setError(null);
