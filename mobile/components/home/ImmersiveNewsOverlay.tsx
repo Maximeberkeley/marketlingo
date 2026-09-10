@@ -487,6 +487,15 @@ User's goal: ${learningGoal}`;
           <View style={st.bgOverlay} />
         </Animated.View>
 
+        {/* Story progress bars */}
+        <View style={[st.progressRow, { paddingTop: insets.top + 10 }]}>
+          {articles.map((_, i) => (
+            <View key={i} style={st.progressTrack}>
+              <View style={[st.progressFill, { width: i <= currentIndex ? '100%' : '0%' }]} />
+            </View>
+          ))}
+        </View>
+
         {/* Top bar */}
         <View style={st.topBar}>
           {/* Article counter */}
@@ -498,7 +507,7 @@ User's goal: ${learningGoal}`;
             {/* Discuss with AI */}
             <TouchableOpacity
               style={st.topBtn}
-              onPress={() => { onClose(); setTimeout(() => onOpenChat(article), 300); }}
+              onPress={() => onOpenChat(article)}
             >
               <Feather name="message-circle" size={20} color="#fff" />
             </TouchableOpacity>
@@ -511,7 +520,11 @@ User's goal: ${learningGoal}`;
         </View>
 
         {/* Sophia center stage */}
-        <View style={st.centerStage}>
+        <ScrollView
+          style={st.centerScroll}
+          contentContainerStyle={st.centerStage}
+          showsVerticalScrollIndicator={false}
+        >
           <Animated.View style={[st.sophiaRing, {
             transform: [{ scale: Animated.multiply(sophiaScale, pulseAnim) }],
             borderColor: isRecording ? '#EF4444' : isSpeaking ? COLORS.accent : 'rgba(255,255,255,0.3)',
