@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
+    "postinstall": "node scripts/patch-expo-modules-jsi.js",
+    "patch:jsi": "node scripts/patch-expo-modules-jsi.js",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
