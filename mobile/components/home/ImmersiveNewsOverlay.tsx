@@ -774,37 +774,37 @@ const st = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // Title
-  titleContainer: {
+  // Pinned bottom block
+  bottomBlock: {
     paddingHorizontal: 24,
-    paddingBottom: 12,
+    paddingTop: 16,
+    gap: 6,
+    zIndex: 10,
+    backgroundColor: 'rgba(0,0,0,0.35)',
   },
   articleTitle: {
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: '800',
     color: '#fff',
-    lineHeight: 26,
-    marginBottom: 4,
+    lineHeight: 25,
   },
   articleMeta: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.5)',
+    color: 'rgba(255,255,255,0.55)',
     fontWeight: '500',
   },
-
-  // Bottom
-  bottomBar: {
-    paddingHorizontal: 24,
-    paddingBottom: 10,
-    alignItems: 'center',
-    gap: 12,
-    zIndex: 10,
-  },
-  sourceBtn: {
+  actionRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 10,
+    marginTop: 8,
+  },
+  sourceBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 8,
-    paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 28,
     backgroundColor: 'rgba(255,255,255,0.15)',
@@ -816,10 +816,27 @@ const st = StyleSheet.create({
     fontWeight: '700',
     color: '#fff',
   },
+  ghostBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
+  },
+  ghostBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#fff',
+  },
   swipeHint: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.4)',
+    color: 'rgba(255,255,255,0.45)',
     fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 6,
   },
 
   // Dots
