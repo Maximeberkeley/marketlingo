@@ -15,7 +15,6 @@ import { Feather } from '@expo/vector-icons';
 import { useLeagues } from '../hooks/useLeagues';
 import { useFriendQuests, FRIEND_QUEST_TEMPLATES } from '../hooks/useFriendQuests';
 import { FriendQuestCard } from '../components/social/FriendQuestCard';
-import { tierMeta, formatTimeLeft } from '../lib/leagues';
 import { LeagueBoard, LeagueRow } from '../components/social/LeagueBoard';
 
 
