@@ -107,7 +107,7 @@ export function LessonExperience({ lesson, onExit }: { lesson: Lesson; onExit?: 
   }, [choice, step]);
 
   return (
-    <div className="fixed inset-0 overflow-hidden text-white select-none">
+    <div className="lesson-scene fixed inset-0 select-none overflow-hidden text-white">
       {/* 3D stage */}
       <StageScene stage={stage} choice={choice} />
 
