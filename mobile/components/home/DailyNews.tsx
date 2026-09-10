@@ -998,8 +998,8 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
           {/* Featured horizontal carousel */}
           {featured.length > 0 && (
             <FeaturedCarousel items={featured} onSelect={(item) => {
-              const idx = news.findIndex(n => n.id === item.id);
-              setImmersiveIndex(idx >= 0 ? idx : 0);
+              const idx = featured.findIndex(n => n.id === item.id);
+              openStory(idx);
             }} />
           )}
 
