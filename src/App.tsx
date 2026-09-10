@@ -16,6 +16,7 @@ import SelectFamiliarity from "./pages/SelectFamiliarity";
 import SelectGoal from "./pages/SelectGoal";
 import Passport from "./pages/Passport";
 import Roadmap from "./pages/Roadmap";
+import LessonLab from "./pages/LessonLab";
 import Notebook from "./pages/Notebook";
 import Profile from "./pages/Profile";
 import Trainer from "./pages/Trainer";
