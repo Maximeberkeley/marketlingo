@@ -154,6 +154,7 @@ export function SlideReaderV2({
   const [showAnnotation, setShowAnnotation] = useState(false);
   const [narrationEnabled, setNarrationEnabled] = useState(false);
   const [earnedInsight, setEarnedInsight] = useState<string | null>(null);
+  const [collectedIdeas, setCollectedIdeas] = useState<string[]>([]);
   const cardKey = useRef(0);
 
   // Combo system state
