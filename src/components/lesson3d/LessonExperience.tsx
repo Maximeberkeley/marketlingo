@@ -115,7 +115,7 @@ export function LessonExperience({ lesson, onExit }: { lesson: Lesson; onExit?: 
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `radial-gradient(120% 80% at 50% 15%, transparent 30%, ${palette.bg[0]}CC 75%, ${palette.bg[0]} 100%)`,
+          background: `linear-gradient(180deg, ${palette.bg[0]}99 0%, transparent 22%, transparent 42%, ${palette.bg[0]}E6 62%, ${palette.bg[0]} 78%)`,
         }}
       />
 
