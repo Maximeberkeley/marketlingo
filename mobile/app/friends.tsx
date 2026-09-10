@@ -15,7 +15,7 @@ import { Feather } from '@expo/vector-icons';
 import { useLeagues } from '../hooks/useLeagues';
 import { useFriendQuests, FRIEND_QUEST_TEMPLATES } from '../hooks/useFriendQuests';
 import { FriendQuestCard } from '../components/social/FriendQuestCard';
-import { tierMeta, formatTimeLeft } from '../lib/leagues';
+import { LeagueBoard, LeagueRow } from '../components/social/LeagueBoard';
 
 
 // ── Types ───────────────────────────────────────────
@@ -256,7 +256,7 @@ export default function FriendsScreen() {
 
 
       <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + (activeTab === 'league' ? 110 : 40) }]}
         showsVerticalScrollIndicator={false}
       >
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }] }}>
@@ -445,112 +445,24 @@ export default function FriendsScreen() {
 
         </Animated.View>
       </ScrollView>
+
+      {/* Sticky self row — always visible while the standings scroll underneath */}
+      {activeTab === 'league' && !league.loading && (() => {
+        const me = league.standings.find(x => x.isCurrentUser);
+        if (!me) return null;
+        return (
+          <View style={[styles.stickySelf, { bottom: insets.bottom + 12 }]} pointerEvents="none">
+            <LeagueRow item={me} pinned />
+          </View>
+        );
+      })()}
     </View>
   );
 }
 
 // ── League Tab ──────────────────────────────────────
 function LeagueTab({ league }: { league: ReturnType<typeof useLeagues> }) {
-  const meta = tierMeta(league.tier);
-
-  if (league.loading) {
-    return <ActivityIndicator color={COLORS.accent} size="large" style={{ marginTop: 60 }} />;
-  }
-
-  return (
-    <>
-      <View style={[styles.leagueHero, { backgroundColor: meta.soft }]}>
-        <Feather name="award" size={26} color={meta.color} />
-        <Text style={[styles.leagueTitle, { color: meta.color }]}>{meta.name}</Text>
-        <Text style={styles.leagueBlurb}>{meta.blurb}</Text>
-        <Text style={styles.leagueTimer}>{formatTimeLeft(league.msLeft)}</Text>
-      </View>
-
-      {league.lastResult && (
-        <View style={styles.resultBanner}>
-          <Feather
-            name={league.lastResult.result === 'promoted' ? 'trending-up' : league.lastResult.result === 'demoted' ? 'trending-down' : 'minus'}
-            size={15}
-            color={COLORS.accent}
-          />
-          <Text style={styles.resultText}>
-            Last week you finished{league.lastResult.rank ? ` #${league.lastResult.rank}` : ''} and{' '}
-            {league.lastResult.result === 'promoted'
-              ? 'moved up a league'
-              : league.lastResult.result === 'demoted'
-              ? 'dropped a league'
-              : 'held your league'}.
-          </Text>
-        </View>
-      )}
-
-      <Text style={styles.zoneNote}>
-        Top {league.promoteCutoff || 1} move up
-        {league.demoteCutoff > 0 ? ` · bottom ${league.demoteCutoff} move down` : ''}
-      </Text>
-
-      {league.standings.length === 0 ? (
-        <View style={styles.emptyState}>
-          <View style={styles.emptyIconWrap}>
-            <Feather name="bar-chart-2" size={32} color={COLORS.textMuted} />
-          </View>
-          <Text style={styles.emptyTitle}>No standings yet</Text>
-          <Text style={styles.emptySub}>Earn XP this week to take your place in the league</Text>
-        </View>
-      ) : (
-        <View style={styles.friendsList}>
-          {league.standings.map((s, i) => {
-            const prevZone = i > 0 ? league.standings[i - 1].zone : null;
-            return (
-              <React.Fragment key={s.userId}>
-                {prevZone && prevZone !== s.zone && (
-                  <View style={styles.zoneDivider}>
-                    <View style={styles.zoneLine} />
-                    <Text style={styles.zoneLabel}>
-                      {s.zone === 'demotion' ? 'Relegation zone' : 'Safe zone'}
-                    </Text>
-                    <View style={styles.zoneLine} />
-                  </View>
-                )}
-                <View style={[styles.leaderRow, s.isCurrentUser && styles.leaderRowSelf]}>
-                  <View
-                    style={[
-                      styles.rankBadge,
-                      { backgroundColor: s.zone === 'promotion' ? '#DCFCE7' : s.zone === 'demotion' ? '#FEE2E2' : COLORS.bg2 },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.rankNum,
-                        { color: s.zone === 'promotion' ? '#15803D' : s.zone === 'demotion' ? '#B91C1C' : COLORS.textMuted },
-                      ]}
-                    >
-                      {s.rank}
-                    </Text>
-                  </View>
-                  <View style={styles.avatar}>
-                    <Text style={styles.avatarText}>{s.username.charAt(0).toUpperCase()}</Text>
-                  </View>
-                  <View style={styles.entryInfo}>
-                    <Text style={[styles.entryName, s.isCurrentUser && { color: COLORS.accent, fontWeight: '700' }]}>
-                      {s.isCurrentUser ? 'You' : s.username}
-                    </Text>
-                    <Text style={styles.entryMeta}>
-                      {s.zone === 'promotion' ? 'Promotion zone' : s.zone === 'demotion' ? 'At risk' : 'Holding'}
-                    </Text>
-                  </View>
-                  <View style={styles.xpBadge}>
-                    <Text style={styles.xpValue}>{s.weeklyXP.toLocaleString()}</Text>
-                    <Text style={styles.xpLabel}>XP</Text>
-                  </View>
-                </View>
-              </React.Fragment>
-            );
-          })}
-        </View>
-      )}
-    </>
-  );
+  return <LeagueBoard league={league} />;
 }
 
 // ── Friend Row Component ────────────────────────────
@@ -640,6 +552,7 @@ const styles = StyleSheet.create({
   tabTextActive: { color: '#FFF' },
 
   scrollContent: { paddingHorizontal: 16 },
+  stickySelf: { position: 'absolute', left: 16, right: 16 },
 
   // Add friend
   addFriendToggle: {

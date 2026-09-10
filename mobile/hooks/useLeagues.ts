@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { log } from '../lib/logger';
@@ -18,6 +19,22 @@ export interface LeagueStanding {
   rank: number;
   isCurrentUser: boolean;
   zone: 'promotion' | 'safe' | 'demotion';
+  /** Rank change since the previous day (positive = moved up). */
+  delta: number | null;
+}
+
+/** Yesterday's ranks, stored locally so we can show daily rank deltas without schema changes. */
+const RANK_SNAPSHOT_KEY = 'league_rank_snapshot_v1';
+
+interface RankSnapshot {
+  day: string;
+  weekOf: string;
+  tier: string;
+  ranks: Record<string, number>;
+}
+
+function todayKey(): string {
+  return new Date().toISOString().split('T')[0];
 }
 
 export interface LeagueState {
@@ -30,6 +47,10 @@ export interface LeagueState {
   promoteCutoff: number;
   demoteCutoff: number;
   msLeft: number;
+  /** XP needed to overtake the person one rank above. */
+  xpToNextRank: number | null;
+  /** My rank change since yesterday (positive = moved up). */
+  myDelta: number | null;
   lastResult: { tier: LeagueTier; result: string; rank: number | null } | null;
   loading: boolean;
   refresh: () => Promise<void>;
@@ -92,15 +113,42 @@ export function useLeagues(marketId?: string | null): LeagueState {
       });
       const size = typeof trueSize === 'number' && trueSize > 0 ? trueSize : rows.length;
       setTrueGroupSize(size);
+
+      // Daily rank deltas from a locally stored snapshot (no schema change needed).
+      let previousRanks: Record<string, number> = {};
+      const day = todayKey();
+      try {
+        const raw = await AsyncStorage.getItem(RANK_SNAPSHOT_KEY);
+        const snap: RankSnapshot | null = raw ? JSON.parse(raw) : null;
+        if (snap && snap.weekOf === weekOf && snap.tier === myTier && snap.day !== day) {
+          previousRanks = snap.ranks || {};
+        } else if (snap && snap.weekOf === weekOf && snap.tier === myTier) {
+          previousRanks = snap.ranks || {};
+        }
+        if (!snap || snap.day !== day || snap.weekOf !== weekOf || snap.tier !== myTier) {
+          const ranks = Object.fromEntries(rows.map((r, i) => [r.user_id, i + 1]));
+          await AsyncStorage.setItem(
+            RANK_SNAPSHOT_KEY,
+            JSON.stringify({ day, weekOf, tier: myTier, ranks } satisfies RankSnapshot)
+          );
+        }
+      } catch {
+        previousRanks = {};
+      }
+
       setStandings(
-        rows.map((r, i) => ({
-          userId: r.user_id,
-          username: names[r.user_id] || 'Analyst',
-          weeklyXP: r.weekly_xp ?? 0,
-          rank: i + 1,
-          isCurrentUser: r.user_id === user.id,
-          zone: zoneForRank(i + 1, size, myTier),
-        }))
+        rows.map((r, i) => {
+          const prevRank = previousRanks[r.user_id];
+          return {
+            userId: r.user_id,
+            username: names[r.user_id] || 'Analyst',
+            weeklyXP: r.weekly_xp ?? 0,
+            rank: i + 1,
+            isCurrentUser: r.user_id === user.id,
+            zone: zoneForRank(i + 1, size, myTier),
+            delta: typeof prevRank === 'number' ? prevRank - (i + 1) : null,
+          };
+        })
       );
 
       // Last completed week's outcome (for the promotion/relegation banner)
@@ -135,10 +183,15 @@ export function useLeagues(marketId?: string | null): LeagueState {
     return () => clearInterval(t);
   }, []);
 
-  const myRank = standings.find((s) => s.isCurrentUser)?.rank ?? null;
+  const me = standings.find((s) => s.isCurrentUser) || null;
+  const myRank = me?.rank ?? null;
   const groupSize = Math.max(trueGroupSize, standings.length);
+  const above = myRank && myRank > 1 ? standings[myRank - 2] : null;
+  const xpToNextRank = above ? Math.max(1, above.weeklyXP - (me?.weeklyXP ?? 0) + 1) : null;
 
   return {
+    xpToNextRank,
+    myDelta: me?.delta ?? null,
     tier,
     weekOf,
     myRank,

@@ -100,6 +100,74 @@ export function MissionBrief({
   );
 }
 
+/** Per-stage visual treatment: each scene owns the whole screen. */
+export interface StageTheme {
+  bg: [string, string];
+  onDark: boolean;
+  accent: string;
+  kicker: string;
+  hint: string;
+  icon: keyof typeof Feather.glyphMap;
+}
+
+export const STAGE_THEME: Record<LessonStage, StageTheme> = {
+  Brief: { bg: ['#FFFFFF', '#F4F6FF'], onDark: false, accent: '#4F46E5', kicker: 'MISSION BRIEF', hint: 'Your route for today', icon: 'compass' },
+  Recall: { bg: ['#0E1222', '#1B2140'], onDark: true, accent: '#8B5CF6', kicker: 'RECALL', hint: 'Fast memory check', icon: 'rotate-ccw' },
+  Discover: { bg: ['#FFFFFF', '#F6F3FF'], onDark: false, accent: '#4F46E5', kicker: 'DISCOVER', hint: 'The new idea', icon: 'search' },
+  Predict: { bg: ['#FFF7ED', '#FFEDD5'], onDark: false, accent: '#EA580C', kicker: 'PREDICT', hint: 'Commit before the answer', icon: 'crosshair' },
+  Apply: { bg: ['#0B1220', '#123049'], onDark: true, accent: '#06B6D4', kicker: 'APPLY', hint: 'Use it on a real case', icon: 'tool' },
+  Debrief: { bg: ['#0B1020', '#2E1065'], onDark: true, accent: '#A78BFA', kicker: 'DEBRIEF', hint: 'What you can reuse tomorrow', icon: 'flag' },
+};
+
+/** Persistent top bar: stage identity, XP, and the key ideas collected so far. */
+export function StageHeader({
+  stage,
+  progress,
+  xp,
+  ideas,
+}: {
+  stage: LessonStage;
+  progress: number;
+  xp: number;
+  ideas: string[];
+}) {
+  const theme = STAGE_THEME[stage];
+  const fg = theme.onDark ? '#FFFFFF' : COLORS.textPrimary;
+  const dim = theme.onDark ? 'rgba(255,255,255,0.6)' : COLORS.textMuted;
+  const track = theme.onDark ? 'rgba(255,255,255,0.16)' : COLORS.border;
+
+  return (
+    <View style={styles.header}>
+      <View style={styles.headerRow}>
+        <View style={[styles.stageChip, { backgroundColor: theme.accent + (theme.onDark ? '33' : '18') }]}>
+          <Feather name={theme.icon} size={12} color={theme.accent} />
+          <Text style={[styles.stageChipText, { color: theme.accent }]}>{theme.kicker}</Text>
+        </View>
+        <Text style={[styles.headerHint, { color: dim }]} numberOfLines={1}>{theme.hint}</Text>
+        <View style={[styles.xpPill, { backgroundColor: theme.onDark ? 'rgba(255,255,255,0.12)' : COLORS.warningSoft }]}>
+          <Feather name="zap" size={12} color={COLORS.warning} />
+          <Text style={[styles.xpPillText, { color: fg }]}>{xp}</Text>
+        </View>
+      </View>
+
+      <View style={[styles.track, { backgroundColor: track }]}>
+        <View style={[styles.trackFill, { width: `${Math.min(100, Math.max(4, progress * 100))}%`, backgroundColor: theme.accent }]} />
+      </View>
+
+      {ideas.length > 0 ? (
+        <View style={styles.ideaRow}>
+          {ideas.slice(-4).map((idea, i) => (
+            <View key={`${idea}-${i}`} style={[styles.ideaBadge, { borderColor: theme.accent + '55', backgroundColor: theme.accent + (theme.onDark ? '26' : '12') }]}>
+              <Feather name="check" size={10} color={theme.accent} />
+              <Text style={[styles.ideaText, { color: theme.onDark ? '#fff' : COLORS.textSecondary }]} numberOfLines={1}>{idea}</Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
 export function StageLabel({ stage, detail, accentColor }: { stage: LessonStage; detail?: string; accentColor: string }) {
   return (
     <View style={styles.stageLabel}>
@@ -120,6 +188,19 @@ export function KnowledgeUnlock({ label, accentColor }: { label: string; accentC
 }
 
 const styles = StyleSheet.create({
+  header: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 10 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  stageChip: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 9 },
+  stageChipText: { fontSize: 10, fontWeight: '900', letterSpacing: 0.6 },
+  headerHint: { flex: 1, fontSize: 11, fontWeight: '600' },
+  xpPill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 9 },
+  xpPillText: { fontSize: 12, fontWeight: '900' },
+  track: { height: 5, borderRadius: 3, marginTop: 10, overflow: 'hidden' },
+  trackFill: { height: 5, borderRadius: 3 },
+  ideaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 9 },
+  ideaBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, maxWidth: '48%', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, borderWidth: 1 },
+  ideaText: { flexShrink: 1, fontSize: 10, fontWeight: '700' },
+
   mission: { flex: 1, paddingBottom: 24 },
   missionVisual: { minHeight: 172, borderRadius: 24, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
   illustration: { width: 176, height: 150, resizeMode: 'contain' },

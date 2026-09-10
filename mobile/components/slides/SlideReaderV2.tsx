@@ -29,7 +29,8 @@ import { playSound } from '../../lib/sounds';
 import { useNarration } from '../../hooks/useNarration';
 import { ComboState, createComboState, comboCorrect, comboWrong, getComboMessage } from '../../lib/combo';
 import { Feather } from '@expo/vector-icons';
-import { KnowledgeUnlock, LessonStage, MissionBrief, StageLabel } from './LessonCampaign';
+import { KnowledgeUnlock, LessonStage, MissionBrief, StageHeader, STAGE_THEME } from './LessonCampaign';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const MENTOR_IMAGES: Record<string, any> = {
   maya: require('../../assets/mentors/mentor-maya.png'),
@@ -154,6 +155,7 @@ export function SlideReaderV2({
   const [showAnnotation, setShowAnnotation] = useState(false);
   const [narrationEnabled, setNarrationEnabled] = useState(false);
   const [earnedInsight, setEarnedInsight] = useState<string | null>(null);
+  const [collectedIdeas, setCollectedIdeas] = useState<string[]>([]);
   const cardKey = useRef(0);
 
   // Combo system state
@@ -413,7 +415,9 @@ export function SlideReaderV2({
     animateTransition('left', () => {
       const completed = allCards[currentCard];
       if (completed?.type === 'concept' && completed.title) {
-        setEarnedInsight(completed.title);
+        const ideaTitle: string = completed.title;
+        setEarnedInsight(ideaTitle);
+        setCollectedIdeas(prev => (prev.includes(ideaTitle) ? prev : [...prev, ideaTitle]));
       } else {
         setEarnedInsight(null);
       }
@@ -579,18 +583,26 @@ export function SlideReaderV2({
     );
   };
 
+  const stageTheme = STAGE_THEME[currentStage];
+
   return (
     <Modal visible animationType="slide" presentationStyle="fullScreen">
-      <View style={[styles.container, { paddingTop: insets.top }]}>
+      <LinearGradient colors={stageTheme.bg} style={[styles.container, { paddingTop: insets.top }]}>
+
 
         {/* Top Bar */}
         <View style={styles.topBar}>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-            <Text style={styles.closeIcon}>✕</Text>
+            <Text style={[styles.closeIcon, { color: stageTheme.onDark ? '#FFFFFF' : COLORS.textSecondary }]}>✕</Text>
           </TouchableOpacity>
 
           <View style={styles.topBarCenter}>
-            <StageLabel stage={currentStage} detail={stackTitle} accentColor={accentColor} />
+            <Text
+              style={[styles.topBarTitle, { color: stageTheme.onDark ? '#FFFFFF' : COLORS.textPrimary }]}
+              numberOfLines={1}
+            >
+              {stackTitle}
+            </Text>
           </View>
 
           {/* Ask Leo */}
@@ -611,19 +623,9 @@ export function SlideReaderV2({
             />
           </TouchableOpacity>
 
-          <View style={styles.xpCounter}>
-            <Feather name="zap" size={13} color={COLORS.warning} />
-            <Text style={styles.xpCounterText}>{answeredXP}</Text>
-          </View>
         </View>
 
-        {/* Segmented campaign progress */}
-        <View style={styles.progressBarContainer}>
-          {Array.from({ length: Math.min(6, Math.max(4, Math.ceil(totalCards / 4))) }).map((_, index, arr) => {
-            const segmentProgress = Math.ceil(progress * arr.length);
-            return <View key={index} style={[styles.progressSegment, index < segmentProgress && { backgroundColor: accentColor }]} />;
-          })}
-        </View>
+        <StageHeader stage={currentStage} progress={progress} xp={answeredXP} ideas={collectedIdeas} />
 
         {/* Combo Bar — visible when user has answered questions */}
         {totalAnswered > 0 && (
@@ -784,7 +786,7 @@ export function SlideReaderV2({
           comboMultiplier={comboState.multiplier}
           onContinue={handleFeedbackContinue}
         />
-      </View>
+      </LinearGradient>
     </Modal>
   );
 }
@@ -976,8 +978,8 @@ const compStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bg0,
   },
+  topBarTitle: { fontSize: 13, fontWeight: '800' },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
