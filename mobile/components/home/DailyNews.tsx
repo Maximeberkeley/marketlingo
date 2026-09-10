@@ -860,9 +860,19 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
         if (fallback && fallback.length > 0) {
           setNews(fallback.map(mapDbItem));
           setLastFetched(new Date());
-        } else { setNews([]); }
+        } else if (attempt < 1) {
+          // The news service can still be warming up on a cold start — retry once.
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          return fetchNews(true, attempt + 1);
+        } else {
+          setNews([]);
+        }
       }
     } catch {
+      if (attempt < 1) {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        return fetchNews(forceRefresh, attempt + 1);
+      }
       setError('Failed to connect to news service');
     } finally {
       setIsLoading(false); setIsRefreshing(false);
@@ -870,6 +880,23 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
   };
 
   useEffect(() => { fetchNews(); }, [marketId]);
+
+  const openStory = useCallback((index: number) => {
+    triggerHaptic('light');
+    setImmersiveIndex(index >= 0 ? index : 0);
+  }, []);
+
+  const openChatForArticle = useCallback((article: NewsItem, closeImmersive: boolean) => {
+    const ctx = `The user wants to discuss this ${marketId} industry news article:\n\nTitle: "${article.title}"\nSource: ${article.sourceName}\nSummary: ${article.summary ?? 'N/A'}\n\nHelp them understand the key implications.`;
+    setChatContext(ctx);
+    if (closeImmersive) {
+      setImmersiveIndex(-1);
+      // Let the fullscreen modal finish dismissing before mounting the chat sheet.
+      setTimeout(() => setChatNewsItem(article), 400);
+    } else {
+      setChatNewsItem(article);
+    }
+  }, [marketId]);
 
   // Save article to notebook
   const handleSaveToNotebook = async (item: NewsItem) => {
