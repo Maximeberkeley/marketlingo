@@ -552,6 +552,7 @@ const styles = StyleSheet.create({
   tabTextActive: { color: '#FFF' },
 
   scrollContent: { paddingHorizontal: 16 },
+  stickySelf: { position: 'absolute', left: 16, right: 16 },
 
   // Add friend
   addFriendToggle: {
