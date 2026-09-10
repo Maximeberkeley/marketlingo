@@ -196,7 +196,7 @@ export function LessonExperience({ lesson, onExit }: { lesson: Lesson; onExit?: 
       </div>
 
       {/* Scene content */}
-      <div className="absolute inset-x-0 bottom-0 top-[46vh] z-20 overflow-y-auto px-5 pb-8 pt-2">
+      <div className="absolute inset-x-0 bottom-0 top-[38vh] z-20 overflow-y-auto px-5 pb-8 pt-4">
         <AnimatePresence mode="wait">
           <motion.div
             key={index}
