@@ -414,6 +414,7 @@ export function SlideReaderV2({
       const completed = allCards[currentCard];
       if (completed?.type === 'concept' && completed.title) {
         setEarnedInsight(completed.title);
+        setCollectedIdeas(prev => (prev.includes(completed.title) ? prev : [...prev, completed.title]));
       } else {
         setEarnedInsight(null);
       }
