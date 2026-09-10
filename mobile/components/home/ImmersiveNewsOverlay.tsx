@@ -838,23 +838,5 @@ const st = StyleSheet.create({
     textAlign: 'center',
     marginTop: 6,
   },
-
-  // Dots
-  dotsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 4,
-    paddingBottom: BOTTOM_PADDING,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: 'rgba(255,255,255,0.25)',
-  },
-  dotActive: {
-    backgroundColor: '#fff',
-    width: 18,
-    borderRadius: 3,
   },
 });
