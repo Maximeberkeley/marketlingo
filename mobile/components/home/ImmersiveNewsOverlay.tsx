@@ -615,9 +615,6 @@ User's goal: ${learningGoal}`;
   );
 }
 
-const BOTTOM_PADDING = Platform.OS === 'ios' ? 40 : 24;
-const TOP_PADDING = Platform.OS === 'ios' ? 56 : 40;
-
 // ── Styles ──
 const st = StyleSheet.create({
   container: {
