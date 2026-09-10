@@ -183,10 +183,15 @@ export function useLeagues(marketId?: string | null): LeagueState {
     return () => clearInterval(t);
   }, []);
 
-  const myRank = standings.find((s) => s.isCurrentUser)?.rank ?? null;
+  const me = standings.find((s) => s.isCurrentUser) || null;
+  const myRank = me?.rank ?? null;
   const groupSize = Math.max(trueGroupSize, standings.length);
+  const above = myRank && myRank > 1 ? standings[myRank - 2] : null;
+  const xpToNextRank = above ? Math.max(1, above.weeklyXP - (me?.weeklyXP ?? 0) + 1) : null;
 
   return {
+    xpToNextRank,
+    myDelta: me?.delta ?? null,
     tier,
     weekOf,
     myRank,
