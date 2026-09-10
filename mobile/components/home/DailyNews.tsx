@@ -1051,11 +1051,7 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
         articles={news}
         initialIndex={immersiveIndex >= 0 ? immersiveIndex : 0}
         onClose={() => setImmersiveIndex(-1)}
-        onOpenChat={(article) => {
-          const ctx = `The user wants to discuss this ${marketId} industry news article:\n\nTitle: "${article.title}"\nSource: ${article.sourceName}\nSummary: ${article.summary ?? 'N/A'}\n\nHelp them understand the key implications.`;
-          setChatContext(ctx);
-          setChatNewsItem(article);
-        }}
+        onOpenChat={(article) => openChatForArticle(article, true)}
         marketId={marketId}
         learningGoal={learningGoal}
       />
