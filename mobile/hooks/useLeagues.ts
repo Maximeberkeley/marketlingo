@@ -47,6 +47,10 @@ export interface LeagueState {
   promoteCutoff: number;
   demoteCutoff: number;
   msLeft: number;
+  /** XP needed to overtake the person one rank above. */
+  xpToNextRank: number | null;
+  /** My rank change since yesterday (positive = moved up). */
+  myDelta: number | null;
   lastResult: { tier: LeagueTier; result: string; rank: number | null } | null;
   loading: boolean;
   refresh: () => Promise<void>;
