@@ -58,6 +58,7 @@ function AnimatedRoutes() {
         <Route path="/passport" element={<PageTransition><Passport /></PageTransition>} />
         <Route path="/home" element={<PageTransition><Home /></PageTransition>} />
         <Route path="/roadmap" element={<PageTransition><Roadmap /></PageTransition>} />
+        <Route path="/lesson-lab" element={<LessonLab />} />
         <Route path="/notebook" element={<PageTransition><Notebook /></PageTransition>} />
         <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
         <Route path="/practice" element={<PageTransition><Practice /></PageTransition>} />
