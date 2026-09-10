@@ -1019,10 +1019,7 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
                 key={item.id}
                 item={item}
                 index={index}
-                onSelect={(item) => {
-                  const idx = news.findIndex(n => n.id === item.id);
-                  setImmersiveIndex(idx >= 0 ? idx : 0);
-                }}
+                onSelect={() => openStory(featuredCount + index)}
                 onAiAction={handleAiAction}
                 onSave={handleSaveToNotebook}
                 onQuiz={handleQuiz}
