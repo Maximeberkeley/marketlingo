@@ -289,7 +289,7 @@ export function StageScene({
     <Canvas
       shadows
       dpr={[1, 1.75]}
-      camera={{ position: [0, 1.5, 9.5], fov: 42 }}
+      camera={{ position: [0, 0.6, 9.5], fov: 42 }}
       gl={{ antialias: true }}
       style={{ position: "absolute", inset: 0 }}
     >
@@ -307,7 +307,7 @@ export function StageScene({
       <pointLight position={[-5, -2, -4]} intensity={30} color={palette.glow} />
 
       <Suspense fallback={null}>
-        <group position={[0, 1.0, 0]} scale={0.6}>
+        <group position={[0, 0.3, 0]} scale={0.72}>
           <Artifact stage={stage} palette={palette} choice={choice} />
         </group>
         <ContactShadows position={[0, -0.6, 0]} opacity={0.5} scale={12} blur={2.6} far={5} color="#000000" />
