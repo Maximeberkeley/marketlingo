@@ -581,9 +581,12 @@ export function SlideReaderV2({
     );
   };
 
+  const stageTheme = STAGE_THEME[currentStage];
+
   return (
     <Modal visible animationType="slide" presentationStyle="fullScreen">
-      <View style={[styles.container, { paddingTop: insets.top }]}>
+      <LinearGradient colors={stageTheme.bg} style={[styles.container, { paddingTop: insets.top }]}>
+
 
         {/* Top Bar */}
         <View style={styles.topBar}>
