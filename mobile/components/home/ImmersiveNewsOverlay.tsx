@@ -688,12 +688,16 @@ const st = StyleSheet.create({
   },
 
   // Center Sophia
-  centerStage: {
+  centerScroll: {
     flex: 1,
+    zIndex: 10,
+  },
+  centerStage: {
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 30,
-    zIndex: 10,
+    paddingVertical: 24,
   },
   sophiaRing: {
     width: 130,
