@@ -838,5 +838,4 @@ const st = StyleSheet.create({
     textAlign: 'center',
     marginTop: 6,
   },
-  },
 });
