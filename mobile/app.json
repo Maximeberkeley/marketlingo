@@ -4,7 +4,6 @@
     "slug": "marketlingo",
     "version": "1.0.3",
     "sdkVersion": "57.0.0",
-    "newArchEnabled": true,
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
