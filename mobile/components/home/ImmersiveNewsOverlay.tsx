@@ -634,12 +634,32 @@ const st = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.55)',
   },
 
+  // Story progress
+  progressRow: {
+    flexDirection: 'row',
+    gap: 4,
+    paddingHorizontal: 16,
+    zIndex: 10,
+  },
+  progressTrack: {
+    flex: 1,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 2,
+    backgroundColor: '#fff',
+  },
+
   // Top bar
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: TOP_PADDING,
+    paddingTop: 12,
     paddingHorizontal: 20,
     zIndex: 10,
   },
