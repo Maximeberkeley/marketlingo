@@ -109,15 +109,42 @@ export function useLeagues(marketId?: string | null): LeagueState {
       });
       const size = typeof trueSize === 'number' && trueSize > 0 ? trueSize : rows.length;
       setTrueGroupSize(size);
+
+      // Daily rank deltas from a locally stored snapshot (no schema change needed).
+      let previousRanks: Record<string, number> = {};
+      const day = todayKey();
+      try {
+        const raw = await AsyncStorage.getItem(RANK_SNAPSHOT_KEY);
+        const snap: RankSnapshot | null = raw ? JSON.parse(raw) : null;
+        if (snap && snap.weekOf === weekOf && snap.tier === myTier && snap.day !== day) {
+          previousRanks = snap.ranks || {};
+        } else if (snap && snap.weekOf === weekOf && snap.tier === myTier) {
+          previousRanks = snap.ranks || {};
+        }
+        if (!snap || snap.day !== day || snap.weekOf !== weekOf || snap.tier !== myTier) {
+          const ranks = Object.fromEntries(rows.map((r, i) => [r.user_id, i + 1]));
+          await AsyncStorage.setItem(
+            RANK_SNAPSHOT_KEY,
+            JSON.stringify({ day, weekOf, tier: myTier, ranks } satisfies RankSnapshot)
+          );
+        }
+      } catch {
+        previousRanks = {};
+      }
+
       setStandings(
-        rows.map((r, i) => ({
-          userId: r.user_id,
-          username: names[r.user_id] || 'Analyst',
-          weeklyXP: r.weekly_xp ?? 0,
-          rank: i + 1,
-          isCurrentUser: r.user_id === user.id,
-          zone: zoneForRank(i + 1, size, myTier),
-        }))
+        rows.map((r, i) => {
+          const prevRank = previousRanks[r.user_id];
+          return {
+            userId: r.user_id,
+            username: names[r.user_id] || 'Analyst',
+            weeklyXP: r.weekly_xp ?? 0,
+            rank: i + 1,
+            isCurrentUser: r.user_id === user.id,
+            zone: zoneForRank(i + 1, size, myTier),
+            delta: typeof prevRank === 'number' ? prevRank - (i + 1) : null,
+          };
+        })
       );
 
       // Last completed week's outcome (for the promotion/relegation banner)
