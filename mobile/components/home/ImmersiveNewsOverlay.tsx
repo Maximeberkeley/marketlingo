@@ -19,7 +19,9 @@ import {
   Linking,
   Platform,
   StatusBar,
+  ScrollView,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   RecordingPresets,
   requestRecordingPermissionsAsync,
@@ -164,6 +166,7 @@ export function ImmersiveNewsOverlay({
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [subtitlesExpanded, setSubtitlesExpanded] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const soundRef = useRef<ManagedSound | null>(null);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
