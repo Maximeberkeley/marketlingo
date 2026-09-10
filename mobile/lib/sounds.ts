@@ -1,12 +1,12 @@
 /**
  * Sound Effects System for MarketLingo
- * Uses expo-av on native iOS/Android, Web Audio API on web.
+ * Uses expo-audio on native iOS/Android, Web Audio API on web.
  * Sounds are generated as tiny WAV files at runtime — no bundled assets needed.
  */
 import { Platform } from 'react-native';
-import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system/legacy';
 import { log } from './logger';
+import { createAndPlaySound } from './audio';
 
 type SoundType =
   | 'correct'
@@ -163,13 +163,10 @@ export async function playSound(type: SoundType) {
     return;
   }
 
-  // Native iOS / Android — use expo-av
+  // Native iOS / Android — use expo-audio
   try {
     const filePath = await getSoundFilePath(type);
-    const { sound } = await Audio.Sound.createAsync(
-      { uri: filePath },
-      { shouldPlay: true, volume: 1.0 },
-    );
+    const sound = await createAndPlaySound(filePath);
     // Auto-cleanup after playback
     sound.setOnPlaybackStatusUpdate((status) => {
       if ('didJustFinish' in status && status.didJustFinish) {
