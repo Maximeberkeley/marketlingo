@@ -32,11 +32,11 @@ function Shards({ palette }: { palette: StagePalette }) {
     () =>
       Array.from({ length: 7 }).map((_, i) => ({
         pos: [
-          Math.cos((i / 7) * Math.PI * 2) * 2.1,
+          Math.cos((i / 7) * Math.PI * 2) * 2.6,
           Math.sin(i * 1.7) * 0.7,
-          Math.sin((i / 7) * Math.PI * 2) * 2.1,
+          Math.sin((i / 7) * Math.PI * 2) * 2.6,
         ] as [number, number, number],
-        scale: 0.32 + (i % 3) * 0.12,
+        scale: 0.2 + (i % 3) * 0.07,
         speed: 0.3 + i * 0.07,
       })),
     []
@@ -289,7 +289,7 @@ export function StageScene({
     <Canvas
       shadows
       dpr={[1, 1.75]}
-      camera={{ position: [0, 1.4, 7.2], fov: 45 }}
+      camera={{ position: [0, 1.2, 9], fov: 42 }}
       gl={{ antialias: true }}
       style={{ position: "absolute", inset: 0 }}
     >
