@@ -16,6 +16,7 @@ import { useLeagues } from '../hooks/useLeagues';
 import { useFriendQuests, FRIEND_QUEST_TEMPLATES } from '../hooks/useFriendQuests';
 import { FriendQuestCard } from '../components/social/FriendQuestCard';
 import { tierMeta, formatTimeLeft } from '../lib/leagues';
+import { LeagueBoard, LeagueRow } from '../components/social/LeagueBoard';
 
 
 // ── Types ───────────────────────────────────────────
@@ -445,6 +446,17 @@ export default function FriendsScreen() {
 
         </Animated.View>
       </ScrollView>
+
+      {/* Sticky self row — always visible while the standings scroll underneath */}
+      {activeTab === 'league' && !league.loading && (() => {
+        const me = league.standings.find(x => x.isCurrentUser);
+        if (!me) return null;
+        return (
+          <View style={[styles.stickySelf, { bottom: insets.bottom + 12 }]} pointerEvents="none">
+            <LeagueRow item={me} pinned />
+          </View>
+        );
+      })()}
     </View>
   );
 }
