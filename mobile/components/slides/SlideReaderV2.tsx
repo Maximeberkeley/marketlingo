@@ -592,7 +592,7 @@ export function SlideReaderV2({
         {/* Top Bar */}
         <View style={styles.topBar}>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-            <Text style={styles.closeIcon}>✕</Text>
+            <Text style={[styles.closeIcon, { color: stageTheme.onDark ? '#FFFFFF' : COLORS.textSecondary }]}>✕</Text>
           </TouchableOpacity>
 
           <View style={styles.topBarCenter}>
@@ -622,10 +622,6 @@ export function SlideReaderV2({
             />
           </TouchableOpacity>
 
-          <View style={styles.xpCounter}>
-            <Feather name="zap" size={13} color={COLORS.warning} />
-            <Text style={styles.xpCounterText}>{answeredXP}</Text>
-          </View>
         </View>
 
         <StageHeader stage={currentStage} progress={progress} xp={answeredXP} ideas={collectedIdeas} />
@@ -981,8 +977,8 @@ const compStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bg0,
   },
+  topBarTitle: { fontSize: 13, fontWeight: '800' },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
