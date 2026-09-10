@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { log } from '../lib/logger';
@@ -18,6 +19,22 @@ export interface LeagueStanding {
   rank: number;
   isCurrentUser: boolean;
   zone: 'promotion' | 'safe' | 'demotion';
+  /** Rank change since the previous day (positive = moved up). */
+  delta: number | null;
+}
+
+/** Yesterday's ranks, stored locally so we can show daily rank deltas without schema changes. */
+const RANK_SNAPSHOT_KEY = 'league_rank_snapshot_v1';
+
+interface RankSnapshot {
+  day: string;
+  weekOf: string;
+  tier: string;
+  ranks: Record<string, number>;
+}
+
+function todayKey(): string {
+  return new Date().toISOString().split('T')[0];
 }
 
 export interface LeagueState {
