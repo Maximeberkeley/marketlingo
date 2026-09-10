@@ -52,11 +52,11 @@
           "ios": {
             "deploymentTarget": "16.4"
           },
-          "android": {
-          }
+          "android": {}
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-splash-screen"
     ],
     "owner": "maxime020707"
   }
