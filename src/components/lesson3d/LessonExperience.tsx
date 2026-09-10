@@ -108,14 +108,17 @@ export function LessonExperience({ lesson, onExit }: { lesson: Lesson; onExit?: 
 
   return (
     <div className="lesson-scene fixed inset-0 select-none overflow-hidden text-white">
-      {/* 3D stage */}
-      <StageScene stage={stage} choice={choice} />
+      {/* 3D stage occupies the upper half only */}
+      <div className="absolute inset-x-0 top-0 h-[52vh]" style={{ background: palette.bg[0] }}>
+        <StageScene stage={stage} choice={choice} />
+      </div>
+      <div className="absolute inset-x-0 bottom-0 top-[52vh]" style={{ background: palette.bg[0] }} />
 
-      {/* Vignette + readability gradient */}
+      {/* Readability gradient over the scene */}
       <div
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[56vh]"
         style={{
-          background: `linear-gradient(180deg, ${palette.bg[0]}99 0%, transparent 22%, transparent 42%, ${palette.bg[0]}E6 62%, ${palette.bg[0]} 78%)`,
+          background: `linear-gradient(180deg, ${palette.bg[0]}CC 0%, transparent 26%, transparent 62%, ${palette.bg[0]} 96%)`,
         }}
       />
 
@@ -193,7 +196,7 @@ export function LessonExperience({ lesson, onExit }: { lesson: Lesson; onExit?: 
       </div>
 
       {/* Scene content */}
-      <div className="absolute inset-x-0 bottom-0 z-20 px-5 pb-8">
+      <div className="absolute inset-x-0 bottom-0 top-[46vh] z-20 overflow-y-auto px-5 pb-8 pt-2">
         <AnimatePresence mode="wait">
           <motion.div
             key={index}
@@ -201,7 +204,7 @@ export function LessonExperience({ lesson, onExit }: { lesson: Lesson; onExit?: 
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -24, opacity: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 26 }}
-            className="mx-auto w-full max-w-xl"
+            className="mx-auto flex min-h-full w-full max-w-xl flex-col justify-end"
           >
             {step.kind === "recall" && (
               <div className="space-y-4">
