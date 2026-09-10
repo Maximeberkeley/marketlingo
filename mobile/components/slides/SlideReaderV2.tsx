@@ -29,7 +29,8 @@ import { playSound } from '../../lib/sounds';
 import { useNarration } from '../../hooks/useNarration';
 import { ComboState, createComboState, comboCorrect, comboWrong, getComboMessage } from '../../lib/combo';
 import { Feather } from '@expo/vector-icons';
-import { KnowledgeUnlock, LessonStage, MissionBrief, StageLabel } from './LessonCampaign';
+import { KnowledgeUnlock, LessonStage, MissionBrief, StageHeader, STAGE_THEME } from './LessonCampaign';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const MENTOR_IMAGES: Record<string, any> = {
   maya: require('../../assets/mentors/mentor-maya.png'),
@@ -595,7 +596,12 @@ export function SlideReaderV2({
           </TouchableOpacity>
 
           <View style={styles.topBarCenter}>
-            <StageLabel stage={currentStage} detail={stackTitle} accentColor={accentColor} />
+            <Text
+              style={[styles.topBarTitle, { color: stageTheme.onDark ? '#FFFFFF' : COLORS.textPrimary }]}
+              numberOfLines={1}
+            >
+              {stackTitle}
+            </Text>
           </View>
 
           {/* Ask Leo */}
@@ -622,13 +628,7 @@ export function SlideReaderV2({
           </View>
         </View>
 
-        {/* Segmented campaign progress */}
-        <View style={styles.progressBarContainer}>
-          {Array.from({ length: Math.min(6, Math.max(4, Math.ceil(totalCards / 4))) }).map((_, index, arr) => {
-            const segmentProgress = Math.ceil(progress * arr.length);
-            return <View key={index} style={[styles.progressSegment, index < segmentProgress && { backgroundColor: accentColor }]} />;
-          })}
-        </View>
+        <StageHeader stage={currentStage} progress={progress} xp={answeredXP} ideas={collectedIdeas} />
 
         {/* Combo Bar — visible when user has answered questions */}
         {totalAnswered > 0 && (
@@ -789,7 +789,7 @@ export function SlideReaderV2({
           comboMultiplier={comboState.multiplier}
           onContinue={handleFeedbackContinue}
         />
-      </View>
+      </LinearGradient>
     </Modal>
   );
 }
