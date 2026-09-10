@@ -582,38 +582,32 @@ User's goal: ${learningGoal}`;
               )}
             </TouchableOpacity>
           )}
-        </View>
+        </ScrollView>
 
-        {/* Article title */}
-        <View style={st.titleContainer}>
-          <Text style={st.articleTitle} numberOfLines={2}>{article.title}</Text>
+        {/* Pinned bottom block */}
+        <View style={[st.bottomBlock, { paddingBottom: insets.bottom + 14 }]}>
+          <Text style={st.articleTitle} numberOfLines={3}>{article.title}</Text>
           <Text style={st.articleMeta}>{article.sourceName} · {article.publishedAt}</Text>
-        </View>
 
-        {/* Bottom bar */}
-        <View style={st.bottomBar}>
-          <TouchableOpacity
-            style={st.sourceBtn}
-            onPress={() => Linking.openURL(article.sourceUrl).catch(() => {})}
-          >
-            <Feather name="external-link" size={16} color="#fff" />
-            <Text style={st.sourceBtnText}>Read Full Article</Text>
-          </TouchableOpacity>
+          <View style={st.actionRow}>
+            <TouchableOpacity
+              style={st.sourceBtn}
+              onPress={() => Linking.openURL(article.sourceUrl).catch(() => {})}
+            >
+              <Feather name="external-link" size={15} color="#fff" />
+              <Text style={st.sourceBtnText}>Read Full Article</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={st.ghostBtn} onPress={() => onOpenChat(article)}>
+              <Feather name="message-circle" size={15} color="#fff" />
+              <Text style={st.ghostBtnText}>Ask</Text>
+            </TouchableOpacity>
+          </View>
 
           {/* Swipe hints */}
           {isDoneSpeaking && hasNext && (
-            <Text style={st.swipeHint}>Swipe left for next article →</Text>
+            <Text style={st.swipeHint}>Swipe left for the next story →</Text>
           )}
-        </View>
-
-        {/* Navigation dots */}
-        <View style={st.dotsRow}>
-          {articles.map((_, i) => (
-            <View
-              key={i}
-              style={[st.dot, i === currentIndex && st.dotActive]}
-            />
-          ))}
         </View>
 
       </Animated.View>
