@@ -5,13 +5,21 @@ export interface Source {
   url: string;
 }
 
+export interface KeyTerm {
+  term: string;
+  definition: string;
+}
+
 /** A teaching card — no answer required, just "Continue". */
 export interface InfoExercise {
   kind: 'info';
   id: string;
+  /** Small uppercase label above the title. */
+  eyebrow?: string;
   title?: string;
   body: string;
   bullets?: string[];
+  keyTerms?: KeyTerm[];
   sources?: Source[];
 }
 

@@ -9,16 +9,31 @@ export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
     onChange({ canCheck: true, isCorrect: true });
   }, [exercise.id]);
 
+  const bodyIsEcho =
+    !!exercise.title &&
+    normalize(exercise.body) === normalize(exercise.title);
+
   return (
     <View style={styles.wrap}>
+      {!!exercise.eyebrow && <Text style={styles.eyebrow}>{exercise.eyebrow}</Text>}
       {!!exercise.title && <Text style={styles.title}>{exercise.title}</Text>}
-      <Text style={styles.body}>{exercise.body}</Text>
+
+      {!!exercise.body && !bodyIsEcho && <Text style={styles.body}>{exercise.body}</Text>}
+
       {exercise.bullets?.map((b, i) => (
         <View key={i} style={styles.bulletRow}>
           <View style={styles.dot} />
           <Text style={styles.bullet}>{b}</Text>
         </View>
       ))}
+
+      {exercise.keyTerms?.map((t, i) => (
+        <View key={`t${i}`} style={styles.termCard}>
+          <Text style={styles.term}>{t.term}</Text>
+          <Text style={styles.termDef}>{t.definition}</Text>
+        </View>
+      ))}
+
       {!!exercise.sources?.length && (
         <Text style={styles.sources}>
           Sources: {exercise.sources.map(s => s.label).join(' · ')}
@@ -28,9 +43,20 @@ export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
   );
 }
 
+function normalize(s: string) {
+  return (s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
 const styles = StyleSheet.create({
-  wrap: { gap: tokens.space.md },
-  title: { fontSize: tokens.font.title, fontWeight: '800', color: tokens.color.text },
+  wrap: { gap: tokens.space.md, alignSelf: 'stretch' },
+  eyebrow: {
+    fontSize: tokens.font.caption,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    color: tokens.color.accent,
+  },
+  title: { fontSize: tokens.font.title, fontWeight: '800', color: tokens.color.text, lineHeight: 32 },
   body: { fontSize: tokens.font.body + 1, lineHeight: 26, color: tokens.color.text },
   bulletRow: { flexDirection: 'row', gap: tokens.space.md, alignItems: 'flex-start' },
   dot: {
@@ -38,5 +64,15 @@ const styles = StyleSheet.create({
     backgroundColor: tokens.color.accent,
   },
   bullet: { flex: 1, fontSize: tokens.font.body, lineHeight: 24, color: tokens.color.textSecondary },
+  termCard: {
+    borderRadius: tokens.radius.lg,
+    borderWidth: 2,
+    borderColor: tokens.color.border,
+    backgroundColor: tokens.color.surface,
+    padding: tokens.space.lg,
+    gap: 4,
+  },
+  term: { fontSize: tokens.font.body, fontWeight: '800', color: tokens.color.text },
+  termDef: { fontSize: tokens.font.body - 1, lineHeight: 22, color: tokens.color.textSecondary },
   sources: { fontSize: tokens.font.caption, color: tokens.color.textMuted },
 });
