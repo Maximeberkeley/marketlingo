@@ -5,6 +5,7 @@ import {
   Check,
   Crosshair,
   Flag,
+  MessageCircle,
   RotateCcw,
   Search,
   Sparkles,
@@ -13,6 +14,7 @@ import {
   Zap,
 } from "lucide-react";
 import { StageScene, STAGE_PALETTE, StageKey } from "./StageScene";
+import leoMascot from "@/assets/mascot/leo-mascot.png";
 
 /* ── Lesson shape (mirrors the mobile curriculum fields) ───── */
 
