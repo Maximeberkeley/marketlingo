@@ -5,7 +5,6 @@ import { LessonScreen } from '../../lesson-kit/screens/LessonScreen';
 import { tokens } from '../../lesson-kit/theme/tokens';
 import { Exercise, Lesson } from '../../lesson-kit/types';
 import { parseSlideIntoCards } from './ConceptCard';
-import { generateQuizFromSlide, shouldShowQuiz } from './QuizCard';
 
 interface Source {
   label: string;
@@ -38,11 +37,69 @@ export interface LessonKitReaderProps {
   stackId?: string;
   isReview?: boolean;
   dayNumber?: number;
+  streakDays?: number;
   metadata?: StackMetadata;
   [key: string]: any;
 }
 
-/** Slide numbers aligned to each generated exercise, for Note / Save actions. */
+// ── Text helpers ────────────────────────────────────────────────────
+const normalize = (s?: string) => (s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+const isMeaningful = (s?: string) => !!s && s.trim().replace(/\s+/g, ' ').length >= 12;
+
+function sentencesOf(text: string): string[] {
+  return (text || '')
+    .replace(/\s+/g, ' ')
+    .split(/(?<=[.!?])\s+/)
+    .map(s => s.trim())
+    .filter(s => s.length >= 40 && s.length <= 180);
+}
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/**
+ * Comprehension question built from real lesson sentences:
+ * the correct answer comes from this slide, decoys from other slides.
+ */
+function buildQuiz(
+  slide: SlideData,
+  otherSentences: string[],
+  id: string,
+): Exercise | null {
+  const own = sentencesOf(slide.body);
+  if (!own.length) return null;
+  const correct = own[Math.floor(own.length / 2)] || own[0];
+
+  const decoys = shuffle(
+    otherSentences.filter(s => normalize(s) !== normalize(correct)),
+  ).slice(0, 3);
+  if (decoys.length < 2) return null;
+
+  const options = shuffle([correct, ...decoys]);
+  const correctIndex = options.findIndex(o => o === correct);
+  if (correctIndex < 0) return null;
+
+  // Every option must be distinct
+  const seen = new Set(options.map(normalize));
+  if (seen.size !== options.length) return null;
+
+  return {
+    kind: 'multipleChoice',
+    id,
+    prompt: `Which statement matches "${slide.title}"?`,
+    options,
+    correctIndex,
+    explanation: 'This is stated directly in the lesson you just read.',
+  };
+}
+
 function buildLesson(
   stackTitle: string,
   slides: SlideData[],
@@ -52,57 +109,97 @@ function buildLesson(
   const exercises: Exercise[] = [];
   const slideNumbers: number[] = [];
 
+  const push = (ex: Exercise, slideNumber: number) => {
+    exercises.push(ex);
+    slideNumbers.push(slideNumber);
+  };
+
   if (metadata?.learning_objectives?.length) {
-    exercises.push({
-      kind: 'info',
-      id: 'objectives',
-      title: 'What you will learn',
-      body: 'Here is what this lesson covers.',
-      bullets: metadata.learning_objectives.slice(0, 4),
-    });
-    slideNumbers.push(slides[0]?.slideNumber ?? 1);
+    const objectives = metadata.learning_objectives.filter(isMeaningful).slice(0, 4);
+    if (objectives.length) {
+      push(
+        {
+          kind: 'info',
+          id: 'objectives',
+          eyebrow: 'Lesson goals',
+          title: 'What you will learn',
+          body: '',
+          bullets: objectives,
+        },
+        slides[0]?.slideNumber ?? 1,
+      );
+    }
   }
+
+  // Sentence pool used for quiz decoys (from other slides).
+  const poolBySlide = slides.map(s => sentencesOf(s.body));
 
   slides.forEach((slide, slideIdx) => {
     const cards = parseSlideIntoCards(slide.title, slide.body, slide.sources || [], slideIdx, marketId);
+    let emittedForSlide = 0;
 
     cards.forEach((card, cardIdx) => {
-      exercises.push({
-        kind: 'info',
-        id: `s${slide.slideNumber}-c${cardIdx}`,
-        title: cardIdx === 0 ? slide.title : card.title,
-        body: card.content,
-        bullets: card.bullets,
-        sources: card.sources,
-      });
-      slideNumbers.push(slide.slideNumber);
+      const hasTerms = !!card.keyTerms?.length;
+      const bullets = (card.bullets || []).filter(isMeaningful);
+      const body = (card.content || '').trim();
+      const hasBody = isMeaningful(body);
+
+      // Drop empty cards entirely (headers with nothing, blank term groups, etc.)
+      if (!hasBody && !bullets.length && !hasTerms) {
+        // A sources-only card folds into the previous card instead of standing alone.
+        if (card.sources?.length && exercises.length) {
+          const prev = exercises[exercises.length - 1];
+          if (prev.kind === 'info' && !prev.sources?.length) prev.sources = card.sources;
+        }
+        return;
+      }
+
+      const rawTitle = cardIdx === 0 ? slide.title : card.title;
+      // Never repeat the slide/lesson title as a card heading twice in a row.
+      const titleIsEcho =
+        !!rawTitle &&
+        (normalize(rawTitle) === normalize(body) ||
+          (emittedForSlide > 0 && normalize(rawTitle) === normalize(slide.title)));
+
+      push(
+        {
+          kind: 'info',
+          id: `s${slide.slideNumber}-c${cardIdx}`,
+          eyebrow: emittedForSlide === 0 ? `Part ${slideIdx + 1} of ${slides.length}` : undefined,
+          title: titleIsEcho ? undefined : rawTitle,
+          body: hasBody ? body : '',
+          bullets: bullets.length ? bullets : undefined,
+          keyTerms: hasTerms ? card.keyTerms : undefined,
+          sources: card.sources?.length ? card.sources : undefined,
+        },
+        slide.slideNumber,
+      );
+      emittedForSlide += 1;
     });
 
-    if (shouldShowQuiz(slideIdx, slides.length)) {
-      const quiz = generateQuizFromSlide(slide.title, slide.body, slideIdx);
-      if (quiz) {
-        exercises.push({
-          kind: 'multipleChoice',
-          id: `s${slide.slideNumber}-quiz`,
-          prompt: quiz.question,
-          options: quiz.options,
-          correctIndex: quiz.correctIndex,
-          explanation: quiz.explanation,
-        });
-        slideNumbers.push(slide.slideNumber);
-      }
+    // A check after every second slide, never on the first or last.
+    const isCheckpoint = slideIdx > 0 && slideIdx < slides.length - 1 && slideIdx % 2 === 1;
+    if (isCheckpoint) {
+      const others = poolBySlide.filter((_, i) => i !== slideIdx).flat();
+      const quiz = buildQuiz(slide, others, `s${slide.slideNumber}-quiz`);
+      if (quiz) push(quiz, slide.slideNumber);
     }
   });
 
-  if (metadata?.key_takeaway) {
-    exercises.push({
-      kind: 'info',
-      id: 'takeaway',
-      title: 'Key takeaway',
-      body: metadata.key_takeaway,
-      bullets: metadata.next_preview ? [`Next up: ${metadata.next_preview}`] : undefined,
-    });
-    slideNumbers.push(slides[slides.length - 1]?.slideNumber ?? 1);
+  if (isMeaningful(metadata?.key_takeaway)) {
+    push(
+      {
+        kind: 'info',
+        id: 'takeaway',
+        eyebrow: 'Remember this',
+        title: 'Key takeaway',
+        body: metadata!.key_takeaway!,
+        bullets: isMeaningful(metadata?.next_preview)
+          ? [`Next up: ${metadata!.next_preview!}`]
+          : undefined,
+      },
+      slides[slides.length - 1]?.slideNumber ?? 1,
+    );
   }
 
   return {
@@ -120,6 +217,7 @@ export function LessonKitReader({
   onAddNote,
   marketId,
   isReview = false,
+  streakDays,
   metadata,
 }: LessonKitReaderProps) {
   const { lesson, slideNumbers } = useMemo(
@@ -152,6 +250,8 @@ export function LessonKitReader({
       onExit={onClose}
       onFinish={({ timeSpentSeconds }) => onComplete(isReview, timeSpentSeconds)}
       renderExtraActions={extraActions}
+      streakDays={streakDays}
+      confirmExit={!isReview}
     />
   );
 }

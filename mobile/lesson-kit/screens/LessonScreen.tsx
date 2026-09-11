@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, Modal, TouchableOpacity, Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 
@@ -13,6 +13,9 @@ import { ExerciseState } from '../exercises/types';
 import { LessonComplete } from './LessonComplete';
 import { tokens } from '../theme/tokens';
 import { Exercise, Lesson } from '../types';
+import { playSound } from '../../lib/sounds';
+
+const MAX_HEARTS = 3;
 
 export interface LessonScreenProps {
   lesson: Lesson;
@@ -23,6 +26,10 @@ export interface LessonScreenProps {
   /** Rendered above the action button (e.g. Note / Save buttons). */
   renderExtraActions?: (exerciseIndex: number) => React.ReactNode;
   doneLabel?: string;
+  /** Current daily streak, shown on the finish screen. */
+  streakDays?: number;
+  /** Skip the leave-confirmation prompt (e.g. review mode). */
+  confirmExit?: boolean;
 }
 
 export function LessonScreen({
@@ -32,25 +39,55 @@ export function LessonScreen({
   xpPerCorrect = 10,
   renderExtraActions,
   doneLabel,
+  streakDays,
+  confirmExit = true,
 }: LessonScreenProps) {
   const insets = useSafeAreaInsets();
+  const [queue, setQueue] = useState<Exercise[]>(lesson.exercises);
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<'answering' | 'feedback'>('answering');
   const [state, setState] = useState<ExerciseState>({ canCheck: false, isCorrect: false });
   const [correctCount, setCorrectCount] = useState(0);
   const [gradedCount, setGradedCount] = useState(0);
+  const [combo, setCombo] = useState(0);
+  const [bestCombo, setBestCombo] = useState(0);
+  const [hearts, setHearts] = useState(MAX_HEARTS);
+  const [missed, setMissed] = useState<Exercise[]>([]);
+  const [showExitPrompt, setShowExitPrompt] = useState(false);
+  const [showHeartsPrompt, setShowHeartsPrompt] = useState(false);
   const [finished, setFinished] = useState(false);
   const startedAt = useRef(Date.now());
 
-  const exercise = lesson.exercises[index];
+  // XP pop animation
+  const [pop, setPop] = useState<string | null>(null);
+  const popAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    setQueue(lesson.exercises);
+  }, [lesson]);
+
+  const exercise = queue[index];
   const isInfo = exercise?.kind === 'info';
-  const total = lesson.exercises.length;
+  const total = queue.length;
+  const hasGraded = useMemo(() => queue.some(e => e.kind !== 'info'), [queue]);
   const progress = total > 0 ? (index + (phase === 'feedback' ? 1 : 0)) / total : 0;
 
   const handleChange = useCallback((next: ExerciseState) => setState(next), []);
 
+  const firePop = useCallback((label: string) => {
+    setPop(label);
+    popAnim.setValue(0);
+    Animated.timing(popAnim, {
+      toValue: 1,
+      duration: 900,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: true,
+    }).start(() => setPop(null));
+  }, [popAnim]);
+
   const goNext = useCallback(() => {
     if (index >= total - 1) {
+      playSound('lessonComplete').catch(() => {});
       setFinished(true);
       return;
     }
@@ -67,18 +104,54 @@ export function LessonScreen({
     }
     if (phase === 'answering') {
       if (!state.canCheck) return;
-      Haptics.notificationAsync(
-        state.isCorrect
-          ? Haptics.NotificationFeedbackType.Success
-          : Haptics.NotificationFeedbackType.Error,
-      ).catch(() => {});
       setGradedCount(c => c + 1);
-      if (state.isCorrect) setCorrectCount(c => c + 1);
+      if (state.isCorrect) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+        playSound('correct').catch(() => {});
+        setCorrectCount(c => c + 1);
+        setCombo(c => {
+          const next = c + 1;
+          setBestCombo(b => Math.max(b, next));
+          return next;
+        });
+        firePop(`+${xpPerCorrect} XP`);
+      } else {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+        playSound('wrong').catch(() => {});
+        setCombo(0);
+        setMissed(m => (exercise ? [...m, exercise] : m));
+        setHearts(h => {
+          const next = Math.max(0, h - 1);
+          if (next === 0) setShowHeartsPrompt(true);
+          return next;
+        });
+      }
       setPhase('feedback');
       return;
     }
     goNext();
-  }, [isInfo, phase, state, goNext]);
+  }, [isInfo, phase, state, goNext, exercise, xpPerCorrect, firePop]);
+
+  const retryMissed = useCallback(() => {
+    setShowHeartsPrompt(false);
+    setHearts(MAX_HEARTS);
+    if (!missed.length) return;
+    const retryItems = missed.map((e, i) => ({ ...e, id: `${e.id}-retry${i}` } as Exercise));
+    setMissed([]);
+    setQueue(q => {
+      const next = [...q];
+      next.splice(index + 1, 0, ...retryItems);
+      return next;
+    });
+  }, [missed, index]);
+
+  const handleExitPress = useCallback(() => {
+    if (!confirmExit || finished) {
+      onExit();
+      return;
+    }
+    setShowExitPrompt(true);
+  }, [confirmExit, finished, onExit]);
 
   const correctAnswerText = useMemo(() => {
     if (!exercise) return undefined;
@@ -88,18 +161,23 @@ export function LessonScreen({
   }, [exercise]);
 
   if (finished || !exercise) {
+    const timeSpentSeconds = Math.round((Date.now() - startedAt.current) / 1000);
     return (
       <LessonComplete
         correct={correctCount}
         total={gradedCount}
-        xp={correctCount * xpPerCorrect}
+        baseXp={correctCount * xpPerCorrect}
+        bestCombo={bestCombo}
+        heartsLeft={hearts}
+        timeSpentSeconds={timeSpentSeconds}
+        streakDays={streakDays}
         doneLabel={doneLabel}
-        onDone={() =>
+        onDone={xp =>
           onFinish({
             correct: correctCount,
             total: gradedCount,
-            xp: correctCount * xpPerCorrect,
-            timeSpentSeconds: Math.round((Date.now() - startedAt.current) / 1000),
+            xp,
+            timeSpentSeconds,
           })
         }
       />
@@ -121,10 +199,33 @@ export function LessonScreen({
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <LessonHeader
         progress={progress}
-        onExit={onExit}
-        lives={lesson.lives}
+        onExit={handleExitPress}
+        lives={hasGraded ? hearts : undefined}
         label={lesson.title}
       />
+
+      {combo >= 2 && (
+        <View style={styles.comboRow}>
+          <Text style={styles.comboText}>🔥 {combo} in a row</Text>
+        </View>
+      )}
+
+      {!!pop && (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.pop,
+            {
+              opacity: popAnim.interpolate({ inputRange: [0, 0.15, 1], outputRange: [0, 1, 0] }),
+              transform: [
+                { translateY: popAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -46] }) },
+              ],
+            },
+          ]}
+        >
+          <Text style={styles.popText}>{pop}</Text>
+        </Animated.View>
+      )}
 
       <ScrollView
         style={styles.scroll}
@@ -146,6 +247,43 @@ export function LessonScreen({
         {renderExtraActions?.(index)}
         <PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant} />
       </View>
+
+      {/* Leave confirmation — loss aversion */}
+      <Modal visible={showExitPrompt} transparent animationType="fade" onRequestClose={() => setShowExitPrompt(false)}>
+        <View style={styles.backdrop}>
+          <View style={styles.sheet}>
+            <Text style={styles.sheetTitle}>Leave now?</Text>
+            <Text style={styles.sheetBody}>
+              You'll lose your progress in this lesson{typeof streakDays === 'number' && streakDays > 0
+                ? ` and put your ${streakDays}-day streak at risk`
+                : ''}.
+            </Text>
+            <PrimaryButton label="Keep learning" onPress={() => setShowExitPrompt(false)} />
+            <TouchableOpacity onPress={() => { setShowExitPrompt(false); onExit(); }} style={styles.ghost}>
+              <Text style={styles.ghostText}>Leave anyway</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Out of hearts — offer a retry instead of ending the lesson */}
+      <Modal visible={showHeartsPrompt} transparent animationType="fade" onRequestClose={() => setShowHeartsPrompt(false)}>
+        <View style={styles.backdrop}>
+          <View style={styles.sheet}>
+            <Text style={styles.sheetTitle}>Out of hearts</Text>
+            <Text style={styles.sheetBody}>
+              No problem — nothing is locked. Redo the questions you missed to lock the ideas in.
+            </Text>
+            <PrimaryButton label="Retry what I missed" onPress={retryMissed} />
+            <TouchableOpacity
+              onPress={() => { setShowHeartsPrompt(false); setHearts(MAX_HEARTS); }}
+              style={styles.ghost}
+            >
+              <Text style={styles.ghostText}>Keep going</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -174,6 +312,30 @@ const styles = StyleSheet.create({
     padding: tokens.space.lg,
     paddingBottom: tokens.space.xxl,
     gap: tokens.space.lg,
+    flexGrow: 1,
+    justifyContent: 'flex-start',
+  },
+  comboRow: { alignItems: 'center', paddingBottom: tokens.space.sm },
+  comboText: {
+    fontSize: tokens.font.caption,
+    fontWeight: '800',
+    color: tokens.color.accent,
+    backgroundColor: tokens.color.accentSoft,
+    paddingHorizontal: tokens.space.md,
+    paddingVertical: 4,
+    borderRadius: tokens.radius.pill,
+    overflow: 'hidden',
+  },
+  pop: {
+    position: 'absolute',
+    top: 64,
+    alignSelf: 'center',
+    zIndex: 30,
+  },
+  popText: {
+    fontSize: tokens.font.body,
+    fontWeight: '900',
+    color: tokens.color.correctDark,
   },
   footer: {
     paddingHorizontal: tokens.space.lg,
@@ -183,4 +345,21 @@ const styles = StyleSheet.create({
     borderTopColor: tokens.color.border,
     backgroundColor: tokens.color.bg,
   },
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(15,17,26,0.55)',
+    justifyContent: 'flex-end',
+  },
+  sheet: {
+    backgroundColor: tokens.color.card,
+    borderTopLeftRadius: tokens.radius.xl,
+    borderTopRightRadius: tokens.radius.xl,
+    padding: tokens.space.xl,
+    paddingBottom: tokens.space.xxl,
+    gap: tokens.space.md,
+  },
+  sheetTitle: { fontSize: tokens.font.prompt, fontWeight: '800', color: tokens.color.text },
+  sheetBody: { fontSize: tokens.font.body, lineHeight: 24, color: tokens.color.textSecondary },
+  ghost: { alignItems: 'center', paddingVertical: tokens.space.md },
+  ghostText: { fontSize: tokens.font.body, fontWeight: '700', color: tokens.color.textMuted },
 });
