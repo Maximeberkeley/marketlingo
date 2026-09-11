@@ -48,13 +48,18 @@ export interface Lesson {
   steps: LessonStep[];
 }
 
-const STAGE_UI: Record<StageKey, { label: string; hint: string; Icon: typeof Zap }> = {
-  recall: { label: "RECALL", hint: "Ten seconds. What stuck?", Icon: RotateCcw },
-  discover: { label: "DISCOVER", hint: "One new idea", Icon: Search },
-  predict: { label: "PREDICT", hint: "Call it before the answer", Icon: Crosshair },
-  apply: { label: "APPLY", hint: "Real case, your move", Icon: Wrench },
-  decide: { label: "DECIDE", hint: "This one has consequences", Icon: Flag },
-  debrief: { label: "DEBRIEF", hint: "Take this with you", Icon: Sparkles },
+const STAGE_UI: Record<StageKey, { label: string; hint: string; Icon: typeof Zap; leoLine: string }> = {
+  recall: { label: "RECALL", hint: "Ten seconds. What stuck?", Icon: RotateCcw, leoLine: "Quick — what stuck from yesterday?" },
+  discover: { label: "DISCOVER", hint: "One new idea", Icon: Search, leoLine: "Here's the one idea that changes the game." },
+  predict: { label: "PREDICT", hint: "Call it before the answer", Icon: Crosshair, leoLine: "Make the call before I reveal it." },
+  apply: { label: "APPLY", hint: "Real case, your move", Icon: Wrench, leoLine: "Real numbers. Real decision. What's your move?" },
+  decide: { label: "DECIDE", hint: "This one has consequences", Icon: Flag, leoLine: "Boss-level call. Consequences and all." },
+  debrief: { label: "DEBRIEF", hint: "Take this with you", Icon: Sparkles, leoLine: "Locked in. Here's what you just proved." },
+};
+
+const LEO_REACTIONS = {
+  correct: ["Nice read!", "That's the insight.", "Crushed it.", "Exactly right."],
+  wrong: ["Not quite — but now you know.", "Close. Here's why.", "Costly call. Lock this in."],
 };
 
 const stageOf = (step: LessonStep): StageKey =>
