@@ -155,3 +155,20 @@ export function LessonKitReader({
     />
   );
 }
+
+const styles = StyleSheet.create({
+  actions: { flexDirection: 'row', gap: tokens.space.md },
+  action: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    height: 42,
+    borderRadius: tokens.radius.md,
+    borderWidth: 2,
+    borderColor: tokens.color.border,
+    backgroundColor: tokens.color.card,
+  },
+  actionText: { fontSize: tokens.font.caption + 1, fontWeight: '700', color: tokens.color.textSecondary },
+});
