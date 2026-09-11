@@ -520,68 +520,6 @@ export type Database = {
         }
         Relationships: []
       }
-      friend_quests: {
-        Row: {
-          completed_at: string | null
-          created_at: string
-          id: string
-          initiator_id: string
-          initiator_progress: number
-          market_id: string
-          partner_id: string
-          partner_progress: number
-          quest_key: string
-          status: string
-          target: number
-          title: string
-          updated_at: string
-          week_of: string
-          xp_reward: number
-        }
-        Insert: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          initiator_id: string
-          initiator_progress?: number
-          market_id: string
-          partner_id: string
-          partner_progress?: number
-          quest_key: string
-          status?: string
-          target: number
-          title: string
-          updated_at?: string
-          week_of: string
-          xp_reward?: number
-        }
-        Update: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          initiator_id?: string
-          initiator_progress?: number
-          market_id?: string
-          partner_id?: string
-          partner_progress?: number
-          quest_key?: string
-          status?: string
-          target?: number
-          title?: string
-          updated_at?: string
-          week_of?: string
-          xp_reward?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "friend_quests_market_id_fkey"
-            columns: ["market_id"]
-            isOneToOne: false
-            referencedRelation: "markets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       friendships: {
         Row: {
           created_at: string
@@ -1080,53 +1018,6 @@ export type Database = {
           valuation_model?: string | null
         }
         Relationships: []
-      }
-      league_memberships: {
-        Row: {
-          created_at: string
-          final_rank: number | null
-          id: string
-          market_id: string
-          result: string | null
-          tier: string
-          updated_at: string
-          user_id: string
-          week_of: string
-          weekly_xp: number
-        }
-        Insert: {
-          created_at?: string
-          final_rank?: number | null
-          id?: string
-          market_id: string
-          result?: string | null
-          tier?: string
-          updated_at?: string
-          user_id: string
-          week_of: string
-          weekly_xp?: number
-        }
-        Update: {
-          created_at?: string
-          final_rank?: number | null
-          id?: string
-          market_id?: string
-          result?: string | null
-          tier?: string
-          updated_at?: string
-          user_id?: string
-          week_of?: string
-          weekly_xp?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "league_memberships_market_id_fkey"
-            columns: ["market_id"]
-            isOneToOne: false
-            referencedRelation: "markets"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       markets: {
         Row: {
@@ -2009,36 +1900,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_activity_patterns: {
-        Row: {
-          hour_counts: number[]
-          last_open_at: string | null
-          preferred_hour: number | null
-          sample_count: number
-          updated_at: string
-          user_id: string
-          utc_offset_minutes: number
-        }
-        Insert: {
-          hour_counts?: number[]
-          last_open_at?: string | null
-          preferred_hour?: number | null
-          sample_count?: number
-          updated_at?: string
-          user_id: string
-          utc_offset_minutes?: number
-        }
-        Update: {
-          hour_counts?: number[]
-          last_open_at?: string | null
-          preferred_hour?: number | null
-          sample_count?: number
-          updated_at?: string
-          user_id?: string
-          utc_offset_minutes?: number
-        }
-        Relationships: []
-      }
       user_progress: {
         Row: {
           completed_stacks: string[] | null
@@ -2421,17 +2282,7 @@ export type Database = {
       }
       calculate_level: { Args: { xp: number }; Returns: number }
       calculate_startup_stage: { Args: { xp: number }; Returns: number }
-      current_week_start: { Args: never; Returns: string }
       decay_concept_mastery: { Args: never; Returns: number }
-      friend_quest_progress: {
-        Args: {
-          p_key: string
-          p_market: string
-          p_user: string
-          p_week: string
-        }
-        Returns: number
-      }
       get_available_day: { Args: { p_start_date: string }; Returns: number }
       has_role: {
         Args: {
@@ -2460,45 +2311,6 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      league_group_size: {
-        Args: { p_market_id: string; p_tier: string }
-        Returns: number
-      }
-      next_league_tier: {
-        Args: { p_direction: number; p_tier: string }
-        Returns: string
-      }
-      record_app_open: {
-        Args: { p_local_hour: number; p_utc_offset_minutes: number }
-        Returns: number
-      }
-      respond_friend_quest: {
-        Args: { p_accept: boolean; p_quest_id: string }
-        Returns: {
-          completed_at: string | null
-          created_at: string
-          id: string
-          initiator_id: string
-          initiator_progress: number
-          market_id: string
-          partner_id: string
-          partner_progress: number
-          quest_key: string
-          status: string
-          target: number
-          title: string
-          updated_at: string
-          week_of: string
-          xp_reward: number
-        }
-        SetofOptions: {
-          from: "*"
-          to: "friend_quests"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
-      run_league_rollover: { Args: never; Returns: number }
       submit_decision_answer: {
         Args: {
           p_confidence?: string
@@ -2523,28 +2335,6 @@ export type Database = {
           p_time_spent?: number
         }
         Returns: Json
-      }
-      sync_friend_quests: { Args: { p_market_id: string }; Returns: number }
-      sync_my_league: {
-        Args: { p_market_id: string }
-        Returns: {
-          created_at: string
-          final_rank: number | null
-          id: string
-          market_id: string
-          result: string | null
-          tier: string
-          updated_at: string
-          user_id: string
-          week_of: string
-          weekly_xp: number
-        }
-        SetofOptions: {
-          from: "*"
-          to: "league_memberships"
-          isOneToOne: true
-          isSetofReturn: false
-        }
       }
     }
     Enums: {

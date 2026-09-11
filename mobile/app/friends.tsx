@@ -4,7 +4,7 @@ import {
   Alert, ActivityIndicator, Animated, Share, Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { COLORS, TYPE, SHADOWS } from '../lib/constants';
 import { useFriends, Friend } from '../hooks/useFriends';
 import { useAuth } from '../hooks/useAuth';
@@ -12,11 +12,6 @@ import { supabase } from '../lib/supabase';
 import { triggerHaptic } from '../lib/haptics';
 import { trackEvent } from '../lib/analytics';
 import { Feather } from '@expo/vector-icons';
-import { useLeagues } from '../hooks/useLeagues';
-import { useFriendQuests, FRIEND_QUEST_TEMPLATES } from '../hooks/useFriendQuests';
-import { FriendQuestCard } from '../components/social/FriendQuestCard';
-import { LeagueBoard, LeagueRow } from '../components/social/LeagueBoard';
-
 
 // ── Types ───────────────────────────────────────────
 interface LeaderboardEntry {
@@ -33,18 +28,12 @@ interface LeaderboardEntry {
 export default function FriendsScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
-  const params = useLocalSearchParams<{ tab?: string }>();
   const [marketId, setMarketId] = useState<string | null>(null);
   const { friends, pendingRequests, loading, sendRequest, acceptRequest, declineRequest, removeFriend } = useFriends(marketId || undefined);
   const [addUsername, setAddUsername] = useState('');
   const [adding, setAdding] = useState(false);
-  const [activeTab, setActiveTab] = useState<'friends' | 'league' | 'global'>(
-    params.tab === 'league' ? 'league' : params.tab === 'global' ? 'global' : 'friends'
-  );
+  const [activeTab, setActiveTab] = useState<'friends' | 'global'>('friends');
   const [showAddInput, setShowAddInput] = useState(false);
-  const league = useLeagues(marketId);
-  const questHub = useFriendQuests(marketId);
-
 
   // Global leaderboard
   const [globalEntries, setGlobalEntries] = useState<LeaderboardEntry[]>([]);
@@ -150,30 +139,6 @@ export default function FriendsScreen() {
     Alert.alert('Nudge Sent!', `${friend.username} will get a notification!`);
   };
 
-  const handleStartQuest = (friend: Friend) => {
-    triggerHaptic('light');
-    Alert.alert(
-      `Co-op quest with ${friend.username}`,
-      'Your progress and theirs add up toward one shared target. Finish it before Sunday and you both earn the bonus XP.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        ...FRIEND_QUEST_TEMPLATES.map(t => ({
-          text: `${t.title} — ${t.description}`,
-          onPress: async () => {
-            const res = await questHub.createQuest(friend.id, t);
-            if (res.success) {
-              triggerHaptic('success');
-              trackEvent('friend_quest_created', { key: t.key });
-              Alert.alert('Invite sent', `${friend.username} needs to accept before it starts.`);
-            } else {
-              Alert.alert('Could not start quest', res.error || 'Try again later.');
-            }
-          },
-        })),
-      ]
-    );
-  };
-
   const handleRemove = (friend: Friend) => {
     Alert.alert('Remove Friend?', `Remove ${friend.username}?`, [
       { text: 'Cancel', style: 'cancel' },
@@ -236,27 +201,26 @@ export default function FriendsScreen() {
 
       {/* Tab Switcher */}
       <View style={styles.tabRow}>
-        {(['friends', 'league', 'global'] as const).map(tab => (
+        {(['friends', 'global'] as const).map(tab => (
           <TouchableOpacity
             key={tab}
             style={[styles.tab, activeTab === tab && styles.tabActive]}
             onPress={() => { triggerHaptic('light'); setActiveTab(tab); }}
           >
             <Feather
-              name={tab === 'friends' ? 'users' : tab === 'league' ? 'award' : 'globe'}
+              name={tab === 'friends' ? 'users' : 'globe'}
               size={14}
               color={activeTab === tab ? '#FFF' : COLORS.textMuted}
             />
             <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
-              {tab === 'friends' ? `Friends (${friends.length})` : tab === 'league' ? 'League' : 'Global'}
+              {tab === 'friends' ? `Friends (${friends.length})` : 'Global'}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-
       <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + (activeTab === 'league' ? 110 : 40) }]}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
         showsVerticalScrollIndicator={false}
       >
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }] }}>
@@ -320,52 +284,12 @@ export default function FriendsScreen() {
                       isActive={isActive(friend)}
                       onNudge={() => handleNudge(friend)}
                       onRemove={() => handleRemove(friend)}
-                      onStartQuest={() => handleStartQuest(friend)}
                     />
                   ))}
-                </View>
-              )}
-
-              {/* ── Co-op quests ── */}
-              {friends.length > 0 && (
-                <View style={styles.questSection}>
-                  <Text style={styles.sectionTitle}>Co-op quests</Text>
-                  <Text style={styles.sectionSub}>
-                    Team up for the week. Both of you earn the bonus when the shared target is hit.
-                  </Text>
-
-                  {questHub.pending.map(q => (
-                    <FriendQuestCard
-                      key={q.id}
-                      quest={q}
-                      onRespond={async (accept) => {
-                        await questHub.respond(q.id, accept);
-                        if (accept) triggerHaptic('success');
-                      }}
-                    />
-                  ))}
-                  {questHub.active.map(q => <FriendQuestCard key={q.id} quest={q} />)}
-                  {questHub.awaitingPartner.map(q => <FriendQuestCard key={q.id} quest={q} />)}
-                  {questHub.completed.map(q => <FriendQuestCard key={q.id} quest={q} />)}
-
-                  {!questHub.loading && questHub.quests.length === 0 && (
-                    <View style={styles.questEmpty}>
-                      <Feather name="target" size={16} color={COLORS.textMuted} />
-                      <Text style={styles.questEmptyText}>
-                        Tap the target icon on a friend to start this week's quest.
-                      </Text>
-                    </View>
-                  )}
                 </View>
               )}
             </>
           )}
-
-          {/* ── LEAGUE TAB ──────────────────────── */}
-          {activeTab === 'league' && (
-            <LeagueTab league={league} />
-          )}
-
 
           {/* ── GLOBAL TAB ──────────────────────── */}
           {activeTab === 'global' && (
@@ -445,32 +369,16 @@ export default function FriendsScreen() {
 
         </Animated.View>
       </ScrollView>
-
-      {/* Sticky self row — always visible while the standings scroll underneath */}
-      {activeTab === 'league' && !league.loading && (() => {
-        const me = league.standings.find(x => x.isCurrentUser);
-        if (!me) return null;
-        return (
-          <View style={[styles.stickySelf, { bottom: insets.bottom + 12 }]} pointerEvents="none">
-            <LeagueRow item={me} pinned />
-          </View>
-        );
-      })()}
     </View>
   );
 }
 
-// ── League Tab ──────────────────────────────────────
-function LeagueTab({ league }: { league: ReturnType<typeof useLeagues> }) {
-  return <LeagueBoard league={league} />;
-}
-
 // ── Friend Row Component ────────────────────────────
 function FriendRow({
-  friend, rank, isActive, onNudge, onRemove, onStartQuest,
+  friend, rank, isActive, onNudge, onRemove,
 }: {
   friend: Friend; rank: number; isActive: boolean;
-  onNudge: () => void; onRemove: () => void; onStartQuest?: () => void;
+  onNudge: () => void; onRemove: () => void;
 }) {
   return (
     <View style={styles.friendRow}>
@@ -493,11 +401,6 @@ function FriendRow({
       </View>
 
       {/* Actions */}
-      {onStartQuest && (
-        <TouchableOpacity style={styles.questBtn} onPress={onStartQuest} accessibilityLabel="Start co-op quest">
-          <Feather name="target" size={14} color={COLORS.accent} />
-        </TouchableOpacity>
-      )}
       <TouchableOpacity style={styles.nudgeBtn} onPress={onNudge}>
         <Feather name="send" size={14} color={COLORS.accent} />
       </TouchableOpacity>
@@ -507,8 +410,6 @@ function FriendRow({
     </View>
   );
 }
-
-
 
 // ── Styles ──────────────────────────────────────────
 const styles = StyleSheet.create({
@@ -552,7 +453,6 @@ const styles = StyleSheet.create({
   tabTextActive: { color: '#FFF' },
 
   scrollContent: { paddingHorizontal: 16 },
-  stickySelf: { position: 'absolute', left: 16, right: 16 },
 
   // Add friend
   addFriendToggle: {
@@ -650,35 +550,4 @@ const styles = StyleSheet.create({
   },
   rankBannerText: { fontSize: 13, color: '#92400E', flex: 1 },
   rankBannerBold: { fontWeight: '800', color: '#B45309' },
-
-  // League
-  leagueHero: { borderRadius: 20, padding: 20, alignItems: 'center', marginBottom: 14, gap: 4 },
-  leagueTitle: { fontSize: 20, fontWeight: '800' },
-  leagueBlurb: { fontSize: 12, color: COLORS.textSecondary },
-  leagueTimer: { fontSize: 11, fontWeight: '700', color: COLORS.textMuted, marginTop: 4 },
-  resultBanner: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: COLORS.accentSoft, borderRadius: 14, padding: 12, marginBottom: 12,
-  },
-  resultText: { flex: 1, fontSize: 12, color: COLORS.textPrimary },
-  zoneNote: { fontSize: 11, color: COLORS.textMuted, marginBottom: 10, textAlign: 'center' },
-  zoneDivider: { flexDirection: 'row', alignItems: 'center', gap: 8, marginVertical: 6 },
-  zoneLine: { flex: 1, height: 1, backgroundColor: COLORS.border },
-  zoneLabel: { fontSize: 10, fontWeight: '700', color: COLORS.textMuted, textTransform: 'uppercase' },
-
-  // Co-op quests
-  questSection: { marginTop: 24, gap: 10 },
-  sectionTitle: { fontSize: 16, fontWeight: '800', color: COLORS.textPrimary },
-  sectionSub: { fontSize: 12, color: COLORS.textMuted, marginTop: -6 },
-  questEmpty: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14,
-    borderWidth: 1, borderColor: COLORS.border, borderStyle: 'dashed',
-  },
-  questEmptyText: { flex: 1, fontSize: 12, color: COLORS.textMuted },
-  questBtn: {
-    width: 32, height: 32, borderRadius: 16,
-    backgroundColor: COLORS.accent + '12', alignItems: 'center', justifyContent: 'center',
-  },
-
 });

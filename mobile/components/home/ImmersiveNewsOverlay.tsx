@@ -20,19 +20,13 @@ import {
   Platform,
   StatusBar,
 } from 'react-native';
-import {
-  RecordingPresets,
-  requestRecordingPermissionsAsync,
-  setAudioModeAsync,
-  useAudioRecorder,
-} from 'expo-audio';
+import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, TYPE } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { speakWithElevenLabs } from '../../lib/tts';
 import { log } from '../../lib/logger';
-import type { ManagedSound } from '../../lib/audio';
 
 // ── Types ──
 interface NewsItem {
@@ -106,7 +100,7 @@ Category: ${article.categoryTag}`;
   return data?.message || "I couldn't generate insights for this article right now.";
 }
 
-async function speakText(text: string, voiceId: string): Promise<ManagedSound | null> {
+async function speakText(text: string, voiceId: string): Promise<Audio.Sound | null> {
   if (!text || text.trim().length < 5) {
     log.warn('[Sophia TTS] Text too short to speak');
     return null;
@@ -165,8 +159,8 @@ export function ImmersiveNewsOverlay({
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [subtitlesExpanded, setSubtitlesExpanded] = useState(false);
 
-  const soundRef = useRef<ManagedSound | null>(null);
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const soundRef = useRef<Audio.Sound | null>(null);
+  const recordingRef = useRef<Audio.Recording | null>(null);
   const currentIndexRef = useRef(currentIndex);
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
@@ -274,9 +268,10 @@ export function ImmersiveNewsOverlay({
       soundRef.current?.stopAsync().catch(() => {});
       soundRef.current?.unloadAsync().catch(() => {});
       soundRef.current = null;
-      if (recorder.isRecording) recorder.stop().catch(() => {});
+      recordingRef.current?.stopAndUnloadAsync().catch(() => {});
+      recordingRef.current = null;
     }
-  }, [visible, recorder]);
+  }, [visible]);
 
   // Navigate to article
   const goTo = useCallback((index: number) => {
@@ -373,8 +368,11 @@ export function ImmersiveNewsOverlay({
       setIsTranscribing(true);
 
       try {
-        await recorder.stop();
-        const uri = recorder.uri;
+        const recording = recordingRef.current;
+        if (!recording) return;
+        await recording.stopAndUnloadAsync();
+        const uri = recording.getURI();
+        recordingRef.current = null;
 
         if (!uri) { setIsTranscribing(false); return; }
 
@@ -442,25 +440,27 @@ User's goal: ${learningGoal}`;
 
       // Start recording
       try {
-        const permission = await requestRecordingPermissionsAsync();
+        const permission = await Audio.requestPermissionsAsync();
         if (!permission.granted) {
           log.warn('Recording failed: microphone permission not granted');
           return;
         }
 
-        await setAudioModeAsync({
-          allowsRecording: true,
-          playsInSilentMode: true,
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: true,
+          playsInSilentModeIOS: true,
         });
 
-        await recorder.prepareToRecordAsync();
-        recorder.record();
+        const { recording } = await Audio.Recording.createAsync(
+          Audio.RecordingOptionsPresets.HIGH_QUALITY,
+        );
+        recordingRef.current = recording;
         setIsRecording(true);
       } catch (err) {
         log.warn('Recording failed:', err);
       }
     }
-  }, [isRecording, article, narrationText, marketId, learningGoal, recorder]);
+  }, [isRecording, article, narrationText, marketId, learningGoal]);
 
   if (!visible || !article) return null;
 

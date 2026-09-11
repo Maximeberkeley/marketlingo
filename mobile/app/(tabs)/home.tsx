@@ -29,7 +29,6 @@ import { ProgressBar } from '../../components/ui/ProgressBar';
 import { SlideReaderV2 as SlideReader } from '../../components/slides/SlideReaderV2';
 import { StreakAtRisk } from '../../components/home/StreakAtRisk';
 import { StreakCriticalTimer } from '../../components/home/StreakCriticalTimer';
-import { useStreakCountdown } from '../../hooks/useStreakCountdown';
 import { SocialNudge } from '../../components/home/SocialNudge';
 import { Feather } from '@expo/vector-icons';
 import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
@@ -40,9 +39,6 @@ import { useMilestoneSharing } from '../../hooks/useMilestoneSharing';
 import { useHomeData } from '../../hooks/useHomeData';
 import { useSessionFlow } from '../../hooks/useSessionFlow';
 import { MONETIZATION_ENABLED } from '../../lib/monetization';
-import { useLeagues } from '../../hooks/useLeagues';
-import { LeagueCard } from '../../components/social/LeagueCard';
-
 import { triggerHaptic } from '../../lib/haptics';
 import { useStreakFreeze } from '../../hooks/useStreakFreeze';
 import { playSound } from '../../lib/sounds';
@@ -238,33 +234,16 @@ export default function HomeScreen() {
   const [showCriticalTimer, setShowCriticalTimer] = useState(true);
   const [showLeoChat, setShowLeoChat] = useState(false);
 
-  // Live countdown to the moment the streak breaks
-  const countdown = useStreakCountdown(
-    progress?.streak_expires_at,
-    streak,
-    lessonCompletedToday,
-  );
-  const criticalTimerActive = countdown.critical;
+  // Calculate if we're in the critical 2-hour window
+  const criticalTimerActive = (() => {
+    if (!progress?.streak_expires_at || streak === 0 || lessonCompletedToday) return false;
+    const expires = new Date(progress.streak_expires_at);
+    const hoursLeft = (expires.getTime() - Date.now()) / (1000 * 60 * 60);
+    return hoursLeft > 0 && hoursLeft <= 2;
+  })();
 
-  // Daily quests (rotate by weekday theme)
-  const { quests, completedCount, totalBonusXP, allComplete, themeTitle, themeTagline } =
-    useDailyQuests(dailyCompletion, streak);
-
-  // Weekly league standing
-  const league = useLeagues(selectedMarketLocal || undefined);
-
-  // Detect a level-up so the finish screen can celebrate it
-  const prevLevelRef = useRef<number | null>(null);
-  const [levelUp, setLevelUp] = useState<{ up: boolean; level: number }>({ up: false, level: 1 });
-  useEffect(() => {
-    const lvl = xpData?.current_level;
-    if (typeof lvl !== 'number') return;
-    if (prevLevelRef.current !== null && lvl > prevLevelRef.current) {
-      setLevelUp({ up: true, level: lvl });
-    }
-    prevLevelRef.current = lvl;
-  }, [xpData?.current_level]);
-
+  // Daily quests
+  const { quests, completedCount, totalBonusXP, allComplete } = useDailyQuests(dailyCompletion, streak);
 
   // Leo popup system
   const leoPopups = useLeoPopups({ cooldownMs: 45000, maxPerSession: 4 });
@@ -282,7 +261,7 @@ export default function HomeScreen() {
 
     const timer = setTimeout(() => {
       // First popup: based on most important user context
-      if (countdown.active && countdown.hoursLeft < 8) {
+      if (!lessonCompletedToday && streakRiskHours && streakRiskHours < 8) {
         leoPopups.triggerStreakProtect(streak, () => {
           if (lessonStack) session.handleOpenStack(lessonStack);
         });
@@ -411,24 +390,13 @@ export default function HomeScreen() {
           lessonTitle={session.activeStack?.title || lessonStack?.title || 'Lesson'}
           totalXP={xpData?.total_xp || 0}
           stageName={currentStage.name}
-          questsCompleted={completedCount}
-          questsTotal={quests.length}
-          leagueTier={league.tier}
-          leagueRank={league.myRank}
-          leveledUp={levelUp.up}
-          newLevel={levelUp.level}
           onContinue={() => {
-            league.refresh();
-            setLevelUp({ up: false, level: levelUp.level });
             session.dismissSessionComplete();
           }}
           onDismiss={() => {
-            league.refresh();
-            setLevelUp({ up: false, level: levelUp.level });
             session.dismissSessionComplete();
           }}
         />
-
       ) : (
         <ScrollView
           contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 100 }]}
@@ -480,13 +448,12 @@ export default function HomeScreen() {
             </AnimatedSection>
           )}
 
-          {/* ── Streak Warning (2-8 hours left, non-critical) ── */}
-          {countdown.atRisk && showStreakWarning && (
+          {/* ── Streak Warning (2-6 hours left, non-critical) ── */}
+          {streakRiskHours !== null && !criticalTimerActive && showStreakWarning && !lessonCompletedToday && (
             <AnimatedSection delay={50}>
               <StreakAtRisk
                 streak={streak}
-                hoursLeft={countdown.hoursLeft}
-                countdownLabel={countdown.label}
+                hoursLeft={streakRiskHours}
                 onStartLesson={() => lessonStack && session.handleOpenStack(lessonStack)}
                 onDismiss={() => setShowStreakWarning(false)}
               />
@@ -603,27 +570,8 @@ export default function HomeScreen() {
               completedCount={completedCount}
               totalBonusXP={totalBonusXP}
               allComplete={allComplete}
-              themeTitle={themeTitle}
-              themeTagline={themeTagline}
             />
           </AnimatedSection>
-
-          {/* ── Weekly league ── */}
-          <AnimatedSection delay={250}>
-            <View style={{ marginTop: 12 }}>
-              <LeagueCard
-                tier={league.tier}
-                myRank={league.myRank}
-                myWeeklyXP={league.myWeeklyXP}
-                groupSize={league.groupSize}
-                promoteCutoff={league.promoteCutoff}
-                demoteCutoff={league.demoteCutoff}
-                msLeft={league.msLeft}
-                loading={league.loading}
-              />
-            </View>
-          </AnimatedSection>
-
 
           {/* ── Tomorrow preview (after lesson complete) ── */}
           {lessonCompletedToday && tomorrowLesson && (

@@ -4,9 +4,9 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { Audio } from 'expo-av';
 import { speakWithElevenLabs } from '../lib/tts';
 import { log } from '../lib/logger';
-import type { ManagedSound } from '../lib/audio';
 
 interface UseNarrationOptions {
   voiceId: string;
@@ -16,7 +16,7 @@ interface UseNarrationOptions {
 export function useNarration({ voiceId, enabled }: UseNarrationOptions) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const soundRef = useRef<ManagedSound | null>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
   const abortedRef = useRef(false);
 
   const stop = useCallback(async () => {

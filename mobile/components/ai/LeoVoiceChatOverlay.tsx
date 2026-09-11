@@ -19,12 +19,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
-import {
-  RecordingPresets,
-  requestRecordingPermissionsAsync,
-  setAudioModeAsync,
-  useAudioRecorder,
-} from 'expo-audio';
+import { Audio } from 'expo-av';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
@@ -32,7 +27,6 @@ import { supabase } from '../../lib/supabase';
 import { speakWithElevenLabs } from '../../lib/tts';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
-import type { ManagedSound } from '../../lib/audio';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
@@ -93,8 +87,8 @@ export function LeoVoiceChatOverlay({
   const [textInput, setTextInput] = useState('');
   const [showTextInput, setShowTextInput] = useState(false);
 
-  const soundRef = useRef<ManagedSound | null>(null);
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const soundRef = useRef<Audio.Sound | null>(null);
+  const recordingRef = useRef<Audio.Recording | null>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const leoScale = useRef(new Animated.Value(0)).current;
@@ -161,9 +155,10 @@ export function LeoVoiceChatOverlay({
       soundRef.current?.stopAsync().catch(() => {});
       soundRef.current?.unloadAsync().catch(() => {});
       soundRef.current = null;
-      if (recorder.isRecording) recorder.stop().catch(() => {});
+      recordingRef.current?.stopAndUnloadAsync().catch(() => {});
+      recordingRef.current = null;
     }
-  }, [visible, recorder]);
+  }, [visible]);
 
   const speakResponse = useCallback(async (text: string) => {
     try {
@@ -235,8 +230,11 @@ export function LeoVoiceChatOverlay({
       setIsTranscribing(true);
 
       try {
-        await recorder.stop();
-        const uri = recorder.uri;
+        const recording = recordingRef.current;
+        if (!recording) { setIsTranscribing(false); return; }
+        await recording.stopAndUnloadAsync();
+        const uri = recording.getURI();
+        recordingRef.current = null;
 
         if (!uri) { setIsTranscribing(false); return; }
 
@@ -258,22 +256,24 @@ export function LeoVoiceChatOverlay({
 
       // Start recording
       try {
-        const permission = await requestRecordingPermissionsAsync();
+        const permission = await Audio.requestPermissionsAsync();
         if (!permission.granted) return;
 
-        await setAudioModeAsync({
-          allowsRecording: true,
-          playsInSilentMode: true,
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: true,
+          playsInSilentModeIOS: true,
         });
 
-        await recorder.prepareToRecordAsync();
-        recorder.record();
+        const { recording } = await Audio.Recording.createAsync(
+          Audio.RecordingOptionsPresets.HIGH_QUALITY,
+        );
+        recordingRef.current = recording;
         setIsRecording(true);
       } catch (err) {
         log.warn('Recording failed:', err);
       }
     }
-  }, [isRecording, recorder, sendToLeo]);
+  }, [isRecording, sendToLeo]);
 
   const handleSendText = useCallback(async () => {
     const text = textInput.trim();
@@ -289,13 +289,16 @@ export function LeoVoiceChatOverlay({
       soundRef.current.unloadAsync().catch(() => {});
       soundRef.current = null;
     }
-    if (recorder.isRecording) recorder.stop().catch(() => {});
+    if (recordingRef.current) {
+      recordingRef.current.stopAndUnloadAsync().catch(() => {});
+      recordingRef.current = null;
+    }
     setIsRecording(false);
     setIsSpeaking(false);
     setMessages([]);
     setNarrationText('');
     onClose();
-  }, [onClose, recorder]);
+  }, [onClose]);
 
   if (!visible) return null;
 

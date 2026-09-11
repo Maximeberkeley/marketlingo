@@ -22,6 +22,7 @@ import { speakWithElevenLabs } from '../../lib/tts';
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
+import { Audio } from 'expo-av';
 import { useAIConsent } from '../../hooks/useAIConsent';
 import { isFeatureEnabled } from '../../hooks/useFeatureFlags';
 import { AIConsentModal } from './AIConsentModal';

@@ -3,12 +3,12 @@
  *
  * Uses XMLHttpRequest with responseType='blob' which is more reliable
  * than fetch().blob() on React Native iOS. Then converts via FileReader
- * and writes to a temp file for expo-audio playback.
+ * and writes to temp file for expo-av playback.
  */
+import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system/legacy';
 import { supabase } from './supabase';
 import { log } from './logger';
-import { configurePlaybackAsync, createAndPlaySound, type ManagedSound } from './audio';
 
 const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_KEY || '';
@@ -113,13 +113,13 @@ function fetchAudioAsBase64(text: string, voiceId: string, token: string): Promi
 
 /**
  * Speaks text using ElevenLabs TTS via the edge function.
- * Returns a managed sound instance (caller manages cleanup) or null on failure.
+ * Returns an Audio.Sound instance (caller manages cleanup) or null on failure.
  */
 export async function speakWithElevenLabs(
   text: string,
   voiceId: string,
   tag = 'tts',
-): Promise<ManagedSound | null> {
+): Promise<Audio.Sound | null> {
   if (!text || text.trim().length < 5) {
     log.debug('[TTS] Text too short, skipping');
     return null;
@@ -148,10 +148,17 @@ export async function speakWithElevenLabs(
     log.debug(`[TTS:${tag}] Audio file written: ${(info as any).size} bytes at ${tempPath}`);
 
     // Configure audio mode for iOS
-    await configurePlaybackAsync();
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: false,
+    });
 
     // Create and play sound
-    const sound = await createAndPlaySound(tempPath);
+    const { sound } = await Audio.Sound.createAsync(
+      { uri: tempPath },
+      { shouldPlay: true },
+    );
     log.debug(`[TTS:${tag}] Playback started`);
 
     // Clean up temp file when done

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -231,6 +231,11 @@ export function ConceptCard({
   const slideUp = useRef(new Animated.Value(30)).current;
   const scale = useRef(new Animated.Value(0.96)).current;
 
+  // See More state — must be declared before any early returns
+  const TRUNCATE_THRESHOLD = 200;
+  const isLongContent = type === 'concept' && content.length > TRUNCATE_THRESHOLD;
+  const [expanded, setExpanded] = useState(!isLongContent);
+
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeIn, { toValue: 1, duration: 350, useNativeDriver: true }),
@@ -384,6 +389,8 @@ export function ConceptCard({
     );
   }
 
+  const displayContent = expanded ? content : content.slice(0, TRUNCATE_THRESHOLD).replace(/\s+\S*$/, '') + '…';
+
   return (
     <Animated.View style={[styles.card, { opacity: fadeIn, transform: [{ translateY: slideUp }, { scale }] }]}>
       {title && (
@@ -394,11 +401,29 @@ export function ConceptCard({
       )}
       {title && <View style={styles.sectionDivider} />}
       <ScrollView
-        style={{ maxHeight: MAX_CARD_CONTENT_HEIGHT }}
+        style={expanded ? { maxHeight: MAX_CARD_CONTENT_HEIGHT } : undefined}
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled
       >
-        <FormattedText text={content} style={styles.conceptText} accentColor={accentColor} />
+        <FormattedText text={displayContent} style={styles.conceptText} accentColor={accentColor} />
+        {isLongContent && !expanded && (
+          <TouchableOpacity
+            style={styles.readMoreBtn}
+            onPress={() => setExpanded(true)}
+          >
+            <Text style={[styles.readMoreText, { color: accentColor }]}>See more</Text>
+            <Feather name="chevron-down" size={14} color={accentColor} />
+          </TouchableOpacity>
+        )}
+        {isLongContent && expanded && (
+          <TouchableOpacity
+            style={styles.readMoreBtn}
+            onPress={() => setExpanded(false)}
+          >
+            <Text style={[styles.readMoreText, { color: accentColor }]}>See less</Text>
+            <Feather name="chevron-up" size={14} color={accentColor} />
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </Animated.View>
   );
@@ -693,30 +718,32 @@ const MAX_CARD_CHARS = 2000; // Show full content, rely on See More button
 const styles = StyleSheet.create({
   /* Base card — immersive, borderless, generous spacing */
   card: {
-    backgroundColor: COLORS.bg0,
-    paddingHorizontal: 2,
-    paddingTop: 8,
-    paddingBottom: 28,
+    backgroundColor: COLORS.bg2,
+    borderRadius: 24,
+    padding: 24,
+    paddingHorizontal: 24,
+    paddingBottom: 32,
     flexDirection: "column",
+    ...SHADOWS.md,
   },
 
   /* Header card — immersive full-height */
   headerCard: {
-    backgroundColor: COLORS.bg0,
-    paddingVertical: 28,
-    paddingHorizontal: 8,
-    alignItems: "flex-start",
-    justifyContent: "flex-end",
-    minHeight: 300,
+    backgroundColor: COLORS.bg1,
+    borderRadius: 24,
+    padding: 36,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 320,
     overflow: "hidden",
+    ...SHADOWS.md,
   },
   headerIllustration: {
-    width: 170,
-    height: 150,
+    width: 80,
+    height: 80,
     resizeMode: "contain",
-    alignSelf: "center",
-    marginBottom: 22,
-    opacity: 1,
+    marginBottom: 12,
+    opacity: 0.85,
   },
   headerAccent: {
     position: "absolute",
@@ -724,12 +751,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 4,
-    borderRadius: 2,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
   headerIconWrap: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,

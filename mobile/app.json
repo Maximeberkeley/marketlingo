@@ -3,11 +3,15 @@
     "name": "MarketLingo",
     "slug": "marketlingo",
     "version": "1.0.3",
-    "sdkVersion": "57.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "scheme": "marketlingo",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B1020"
+    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.marketlingo.aerospace",
@@ -45,21 +49,13 @@
         "expo-build-properties",
         {
           "ios": {
-            "deploymentTarget": "16.4",
-            "buildReactNativeFromSource": true
+            "deploymentTarget": "15.1"
           },
-          "android": {}
+          "android": {
+          }
         }
       ],
-      "expo-web-browser",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/splash-icon.png",
-          "resizeMode": "contain",
-          "backgroundColor": "#0B1020"
-        }
-      ]
+      "expo-web-browser"
     ],
     "owner": "maxime020707"
   }

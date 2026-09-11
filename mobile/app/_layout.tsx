@@ -5,12 +5,9 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Notifications from 'expo-notifications';
-import { useFonts } from 'expo-font';
 import { AuthProvider } from '../hooks/useAuth';
 import { LeoProvider } from '../components/mascot/LeoCharacter';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import { recordAppOpen } from '../lib/smartTiming';
-
 
 // Map notification data `route` or `type` to an Expo Router path
 function resolveRoute(data: Record<string, any>): string | null {
@@ -47,30 +44,19 @@ Notifications.setNotificationHandler({
 
 export default function RootLayout() {
   const notificationResponseListener = useRef<Notifications.EventSubscription | null>(null);
-  const [fontsLoaded] = useFonts({
-    ArchivoBlack: require('../assets/fonts/ArchivoBlack-Regular.ttf'),
-    Hind: require('../assets/fonts/Hind-Regular.ttf'),
-    HindSemiBold: require('../assets/fonts/Hind-SemiBold.ttf'),
-  });
 
-  // Keep the iOS app icon free of any badge count (we never use badges),
-  // and learn when this person usually opens the app so reminders land well.
+  // Keep the iOS app icon free of any badge count (we never use badges).
   useEffect(() => {
     const clearBadge = () => {
       Notifications.setBadgeCountAsync(0).catch(() => {});
       Notifications.dismissAllNotificationsAsync().catch(() => {});
     };
     clearBadge();
-    recordAppOpen();
     const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'active') {
-        clearBadge();
-        recordAppOpen();
-      }
+      if (state === 'active') clearBadge();
     });
     return () => sub.remove();
   }, []);
-
 
   useEffect(() => {
     // Handle tap on notification (background → foreground / killed → open)
@@ -93,8 +79,6 @@ export default function RootLayout() {
       notificationResponseListener.current?.remove();
     };
   }, []);
-
-  if (!fontsLoaded) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

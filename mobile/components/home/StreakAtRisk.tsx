@@ -5,13 +5,11 @@ import { COLORS } from '../../lib/constants';
 interface StreakAtRiskProps {
   streak: number;
   hoursLeft: number;
-  /** Live "5h 12m" style countdown, updated by the home screen. */
-  countdownLabel?: string;
   onStartLesson: () => void;
   onDismiss: () => void;
 }
 
-export function StreakAtRisk({ streak, hoursLeft, countdownLabel, onStartLesson, onDismiss }: StreakAtRiskProps) {
+export function StreakAtRisk({ streak, hoursLeft, onStartLesson, onDismiss }: StreakAtRiskProps) {
   const shakeAnim = useRef(new Animated.Value(0)).current;
   const flameScale = useRef(new Animated.Value(1)).current;
   const slideAnim = useRef(new Animated.Value(-100)).current;
@@ -57,9 +55,7 @@ export function StreakAtRisk({ streak, hoursLeft, countdownLabel, onStartLesson,
   const textColor =
     urgencyLevel === 'critical' ? COLORS.error : urgencyLevel === 'warning' ? COLORS.orange : COLORS.warning;
 
-  const timeText =
-    countdownLabel ||
-    (hoursLeft < 1 ? 'less than an hour' : hoursLeft === 1 ? '1 hour' : `${Math.round(hoursLeft)} hours`);
+  const timeText = hoursLeft < 1 ? 'less than an hour' : hoursLeft === 1 ? '1 hour' : `${Math.round(hoursLeft)} hours`;
 
   return (
     <Animated.View
@@ -82,12 +78,10 @@ export function StreakAtRisk({ streak, hoursLeft, countdownLabel, onStartLesson,
             {urgencyLevel === 'critical' ? 'Your streak is dying!' : `${streak}-day streak at risk!`}
           </Text>
           <Text style={styles.subtext}>
-            Finish today's lesson to keep your {streak}-day streak alive
+            {urgencyLevel === 'critical'
+              ? `Only ${timeText} left — do a quick lesson now!`
+              : `You have ${timeText} to keep your ${streak}-day streak alive`}
           </Text>
-        </View>
-        <View style={styles.countdownPill}>
-          <Text style={[styles.countdownValue, { color: textColor }]}>{timeText}</Text>
-          <Text style={styles.countdownLabel}>LEFT</Text>
         </View>
       </View>
 
@@ -129,10 +123,7 @@ const styles = StyleSheet.create({
   flameContainer: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
   flame: { fontSize: 36 },
   flameDying: { fontSize: 14, position: 'absolute', bottom: -2, right: -2 },
-  messageColumn: { flex: 1, paddingRight: 8 },
-  countdownPill: { alignItems: 'center', minWidth: 62, paddingTop: 6 },
-  countdownValue: { fontSize: 16, fontWeight: '900', fontVariant: ['tabular-nums'] },
-  countdownLabel: { fontSize: 9, fontWeight: '800', color: COLORS.textMuted, letterSpacing: 1 },
+  messageColumn: { flex: 1, paddingRight: 20 },
   headline: { fontSize: 15, fontWeight: '700', marginBottom: 2 },
   subtext: { fontSize: 12, color: COLORS.textSecondary, lineHeight: 16 },
   ctaBtn: { marginHorizontal: 14, marginBottom: 14, paddingVertical: 12, borderRadius: 12, alignItems: 'center' },

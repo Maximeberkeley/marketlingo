@@ -4,10 +4,6 @@ import * as Notifications from 'expo-notifications';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { log } from '../lib/logger';
-import { resolveReminderTime } from '../lib/smartTiming';
-
-const DAILY_REMINDER_ID = 'ml-daily-reminder';
-
 
 export interface NotificationPreferences {
   dailyReminder: boolean;
@@ -57,11 +53,6 @@ export function useNotifications() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [preferences, setPreferences] = useState<NotificationPreferences>(DEFAULT_PREFERENCES);
-  const [smartTiming, setSmartTiming] = useState<{ active: boolean; time: string }>({
-    active: false,
-    time: DEFAULT_PREFERENCES.reminderTime,
-  });
-
   const notificationListener = useRef<Notifications.EventSubscription | null>(null);
 
   // Check platform support
@@ -147,24 +138,21 @@ export function useNotifications() {
     }
   }, [isSupported, savePushToken]);
 
-  // Schedule daily reminder — timed to when this learner usually opens the app
+  // Schedule daily reminder
   const scheduleDailyReminder = useCallback(async () => {
     if (!isSupported) return;
 
     try {
-      // Only clear the previous daily reminder — streak warnings stay armed.
-      await Notifications.cancelScheduledNotificationAsync(DAILY_REMINDER_ID).catch(() => {});
+      // Cancel existing scheduled notifications
+      await Notifications.cancelAllScheduledNotificationsAsync();
 
       if (!preferences.dailyReminder) return;
 
-      const { time, smart } = await resolveReminderTime(preferences.reminderTime);
-      const [hours, minutes] = time.split(':').map(Number);
-      setSmartTiming({ active: smart, time });
+      const [hours, minutes] = preferences.reminderTime.split(':').map(Number);
 
       const template = pickRandom(DAILY_TEMPLATES);
 
       await Notifications.scheduleNotificationAsync({
-        identifier: DAILY_REMINDER_ID,
         content: {
           title: template.title,
           body: template.body,
@@ -173,15 +161,14 @@ export function useNotifications() {
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DAILY,
-          hour: Number.isFinite(hours) ? hours : 9,
-          minute: Number.isFinite(minutes) ? minutes : 0,
+          hour: hours,
+          minute: minutes,
         },
       });
     } catch (error) {
       log.error('Error scheduling daily reminder:', error);
     }
   }, [isSupported, preferences]);
-
 
   // Schedule streak warning notification
   const scheduleStreakReminder = useCallback(async (hoursUntilExpiry: number) => {
@@ -273,8 +260,6 @@ export function useNotifications() {
     isRegistered,
     pushToken,
     preferences,
-    smartTiming,
-
     registerPushNotifications,
     scheduleDailyReminder,
     scheduleStreakReminder,

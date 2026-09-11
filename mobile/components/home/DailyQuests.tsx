@@ -11,10 +11,7 @@ interface DailyQuestsProps {
   completedCount: number;
   totalBonusXP: number;
   allComplete: boolean;
-  themeTitle?: string;
-  themeTagline?: string;
 }
-
 
 const QUEST_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   lesson: 'book-open',
@@ -98,19 +95,17 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
   );
 }
 
-export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete, themeTitle, themeTagline }: DailyQuestsProps) {
+export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete }: DailyQuestsProps) {
   return (
     <View style={styles.container}>
       {/* Header row */}
       <View style={styles.header}>
         <Feather name="flag" size={14} color={COLORS.accent} />
-        <Text style={styles.headerTitle}>{themeTitle || 'Daily Quests'}</Text>
+        <Text style={styles.headerTitle}>Daily Quests</Text>
         <View style={styles.countBadge}>
           <Text style={styles.countText}>{completedCount}/{quests.length}</Text>
         </View>
       </View>
-      {!!themeTagline && <Text style={styles.tagline}>{themeTagline}</Text>}
-
 
       {/* All complete banner (compact) */}
       {allComplete && (
@@ -138,8 +133,6 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   headerTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, flex: 1 },
-  tagline: { fontSize: 11, color: COLORS.textMuted, marginBottom: 4 },
-
   countBadge: {
     backgroundColor: COLORS.accentSoft, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8,
   },

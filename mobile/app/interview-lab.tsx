@@ -8,12 +8,7 @@ import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import {
-  RecordingPresets,
-  requestRecordingPermissionsAsync,
-  setAudioModeAsync,
-  useAudioRecorder,
-} from 'expo-audio';
+import { Audio } from 'expo-av';
 import { COLORS, SHADOWS, TYPE } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
@@ -35,7 +30,6 @@ import { BehavioralQA } from '../components/interview/BehavioralQA';
 import { InterviewGlossary } from '../components/interview/InterviewGlossary';
 import { useSubscription } from '../hooks/useSubscription';
 import { log } from '../lib/logger';
-import type { ManagedSound } from '../lib/audio';
 
 // Assets
 const SOPHIA_AVATAR = require('../assets/mascot/sophia-hernandez.png');
@@ -186,8 +180,8 @@ export default function InterviewLabScreen() {
   const [isNarrating, setIsNarrating] = useState(false);
   const [isSophiaSpeaking, setIsSophiaSpeaking] = useState(false);
   const [voiceMode, setVoiceMode] = useState(false);
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
-  const soundRef = useRef<ManagedSound | null>(null);
+  const recordingRef = useRef<Audio.Recording | null>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
   const scrollRef = useRef<ScrollView>(null);
 
   const {
@@ -316,24 +310,25 @@ export default function InterviewLabScreen() {
 
   const startRecording = useCallback(async () => {
     try {
-      const permission = await requestRecordingPermissionsAsync();
+      const permission = await Audio.requestPermissionsAsync();
       if (!permission.granted) return;
-      await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
-      await recorder.prepareToRecordAsync();
-      recorder.record();
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
+      const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+      recordingRef.current = recording;
       setIsRecording(true);
       triggerHaptic('medium');
     } catch (err) { log.warn('Recording error:', err); }
-  }, [recorder]);
+  }, []);
 
   const stopRecording = useCallback(async () => {
-    if (!isRecording) return;
+    if (!recordingRef.current) return;
     setIsRecording(false);
     setSubmitting(true);
     triggerHaptic('light');
     try {
-      await recorder.stop();
-      const uri = recorder.uri;
+      await recordingRef.current.stopAndUnloadAsync();
+      const uri = recordingRef.current.getURI();
+      recordingRef.current = null;
       if (uri) {
         const transcribed = await transcribeAudio(uri);
         if (transcribed) setUserResponse(transcribed);
@@ -341,16 +336,16 @@ export default function InterviewLabScreen() {
     } catch (err) { log.warn('Stop recording error:', err); }
     finally {
       setSubmitting(false);
-      await setAudioModeAsync({ allowsRecording: false });
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
     }
-  }, [isRecording, recorder]);
+  }, []);
 
   useEffect(() => {
     return () => {
       if (soundRef.current) { soundRef.current.stopAsync().catch(() => {}); soundRef.current.unloadAsync().catch(() => {}); }
-      if (recorder.isRecording) { recorder.stop().catch(() => {}); }
+      if (recordingRef.current) { recordingRef.current.stopAndUnloadAsync().catch(() => {}); }
     };
-  }, [recorder]);
+  }, []);
 
   // ─── Submit mock answer ───
   const submitMock = useCallback(async () => {

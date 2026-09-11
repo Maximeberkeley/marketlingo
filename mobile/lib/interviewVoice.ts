@@ -2,11 +2,11 @@
 // Uses existing elevenlabs-tts edge function with Sophia's voice (Jessica)
 // ======================================================================
 
+import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import { supabase } from './supabase';
 import { speakWithElevenLabs } from './tts';
 import { log } from './logger';
-import type { ManagedSound } from './audio';
 
 // Sophia Hernández voice = Jessica (warm, professional)
 const SOPHIA_VOICE_ID = 'cgSgspJ2msm6clMCkdW9';
@@ -31,7 +31,7 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
  * Play TTS audio using Sophia's voice.
  * Uses static import of speakWithElevenLabs for reliable native bundling.
  */
-export async function speakAsSophia(text: string): Promise<ManagedSound | null> {
+export async function speakAsSophia(text: string): Promise<Audio.Sound | null> {
   if (!text || text.trim().length === 0) return null;
 
   try {

@@ -16,7 +16,6 @@ import SelectFamiliarity from "./pages/SelectFamiliarity";
 import SelectGoal from "./pages/SelectGoal";
 import Passport from "./pages/Passport";
 import Roadmap from "./pages/Roadmap";
-import LessonLab from "./pages/LessonLab";
 import Notebook from "./pages/Notebook";
 import Profile from "./pages/Profile";
 import Trainer from "./pages/Trainer";
@@ -58,7 +57,6 @@ function AnimatedRoutes() {
         <Route path="/passport" element={<PageTransition><Passport /></PageTransition>} />
         <Route path="/home" element={<PageTransition><Home /></PageTransition>} />
         <Route path="/roadmap" element={<PageTransition><Roadmap /></PageTransition>} />
-        <Route path="/lesson-lab" element={<LessonLab />} />
         <Route path="/notebook" element={<PageTransition><Notebook /></PageTransition>} />
         <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
         <Route path="/practice" element={<PageTransition><Practice /></PageTransition>} />

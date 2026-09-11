@@ -189,15 +189,6 @@
     background-color: #0B1020 !important;
   }
   
-  /* Immersive lesson stage: inherit colour from the scene shell */
-  .lesson-scene h1,
-  .lesson-scene h2,
-  .lesson-scene h3,
-  .lesson-scene p,
-  .lesson-scene span {
-    color: inherit;
-  }
-
   /* Typography Scale */
   h1 {
     @apply text-[28px] font-bold leading-[34px] tracking-[-0.5px];
