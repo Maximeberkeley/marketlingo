@@ -26,7 +26,7 @@ import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
 import { StreakBadge } from '../../components/ui/StreakBadge';
 import { XPBadge } from '../../components/ui/XPBadge';
 import { ProgressBar } from '../../components/ui/ProgressBar';
-import { SlideReaderV2 as SlideReader } from '../../components/slides/SlideReaderV2';
+import { LessonKitReader as SlideReader } from '../../components/slides/LessonKitReader';
 import { StreakAtRisk } from '../../components/home/StreakAtRisk';
 import { StreakCriticalTimer } from '../../components/home/StreakCriticalTimer';
 import { SocialNudge } from '../../components/home/SocialNudge';
