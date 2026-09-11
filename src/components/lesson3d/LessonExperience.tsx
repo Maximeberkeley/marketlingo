@@ -5,6 +5,7 @@ import {
   Check,
   Crosshair,
   Flag,
+  MessageCircle,
   RotateCcw,
   Search,
   Sparkles,
@@ -13,6 +14,7 @@ import {
   Zap,
 } from "lucide-react";
 import { StageScene, STAGE_PALETTE, StageKey } from "./StageScene";
+import leoMascot from "@/assets/mascot/leo-mascot.png";
 
 /* ── Lesson shape (mirrors the mobile curriculum fields) ───── */
 
@@ -46,13 +48,18 @@ export interface Lesson {
   steps: LessonStep[];
 }
 
-const STAGE_UI: Record<StageKey, { label: string; hint: string; Icon: typeof Zap }> = {
-  recall: { label: "RECALL", hint: "Ten seconds. What stuck?", Icon: RotateCcw },
-  discover: { label: "DISCOVER", hint: "One new idea", Icon: Search },
-  predict: { label: "PREDICT", hint: "Call it before the answer", Icon: Crosshair },
-  apply: { label: "APPLY", hint: "Real case, your move", Icon: Wrench },
-  decide: { label: "DECIDE", hint: "This one has consequences", Icon: Flag },
-  debrief: { label: "DEBRIEF", hint: "Take this with you", Icon: Sparkles },
+const STAGE_UI: Record<StageKey, { label: string; hint: string; Icon: typeof Zap; leoLine: string }> = {
+  recall: { label: "RECALL", hint: "Ten seconds. What stuck?", Icon: RotateCcw, leoLine: "Quick — what stuck from yesterday?" },
+  discover: { label: "DISCOVER", hint: "One new idea", Icon: Search, leoLine: "Here's the one idea that changes the game." },
+  predict: { label: "PREDICT", hint: "Call it before the answer", Icon: Crosshair, leoLine: "Make the call before I reveal it." },
+  apply: { label: "APPLY", hint: "Real case, your move", Icon: Wrench, leoLine: "Real numbers. Real decision. What's your move?" },
+  decide: { label: "DECIDE", hint: "This one has consequences", Icon: Flag, leoLine: "Boss-level call. Consequences and all." },
+  debrief: { label: "DEBRIEF", hint: "Take this with you", Icon: Sparkles, leoLine: "Locked in. Here's what you just proved." },
+};
+
+const LEO_REACTIONS = {
+  correct: ["Nice read!", "That's the insight.", "Crushed it.", "Exactly right."],
+  wrong: ["Not quite — but now you know.", "Close. Here's why.", "Costly call. Lock this in."],
 };
 
 const stageOf = (step: LessonStep): StageKey =>
@@ -76,6 +83,15 @@ export function LessonExperience({ lesson, onExit }: { lesson: Lesson; onExit?: 
   const palette = STAGE_PALETTE[stage];
   const ui = STAGE_UI[stage];
   const progress = (index + 1) / lesson.steps.length;
+
+  const leoMessage = useMemo(() => {
+    if (step.kind === "debrief") return ui.leoLine;
+    if (feedback) {
+      const pool = feedback.correct ? LEO_REACTIONS.correct : LEO_REACTIONS.wrong;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+    return ui.leoLine;
+  }, [ui.leoLine, feedback, step.kind]);
 
   const advance = useCallback(() => {
     setChoice(null);
