@@ -84,6 +84,15 @@ export function LessonExperience({ lesson, onExit }: { lesson: Lesson; onExit?: 
   const ui = STAGE_UI[stage];
   const progress = (index + 1) / lesson.steps.length;
 
+  const leoMessage = useMemo(() => {
+    if (step.kind === "debrief") return ui.leoLine;
+    if (feedback) {
+      const pool = feedback.correct ? LEO_REACTIONS.correct : LEO_REACTIONS.wrong;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+    return ui.leoLine;
+  }, [ui.leoLine, feedback, step.kind]);
+
   const advance = useCallback(() => {
     setChoice(null);
     setRevealed(false);
