@@ -22,13 +22,31 @@ export interface DrillRow {
   explanation: string | null;
 }
 
+/** A real, sourced industry number with its trend. */
+export interface IndustryStatRow {
+  id: string;
+  metric_key: string;
+  label: string;
+  value: number;
+  unit: string | null;
+  min_value: number;
+  max_value: number;
+  period_label: string | null;
+  trend: 'up' | 'down' | 'flat';
+  trend_note: string | null;
+  insight: string | null;
+  source_name: string | null;
+  is_approximate: boolean;
+}
+
 export interface IndustryContent {
   trainer: TrainerScenarioRow[];
   drills: DrillRow[];
+  stats: IndustryStatRow[];
   isLoading: boolean;
 }
 
-const EMPTY: IndustryContent = { trainer: [], drills: [], isLoading: false };
+const EMPTY: IndustryContent = { trainer: [], drills: [], stats: [], isLoading: false };
 
 function parseOptions(raw: unknown): { label: string; isCorrect?: boolean }[] {
   if (!Array.isArray(raw)) return [];
