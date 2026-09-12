@@ -73,8 +73,7 @@ const styles = StyleSheet.create({
   node: {
     width: '78%',
     borderRadius: tokens.radius.lg,
-    borderWidth 
-: 2,
+    borderWidth: 2,
     borderColor: tokens.color.borderStrong,
     backgroundColor: tokens.color.card,
     padding: tokens.space.md,
