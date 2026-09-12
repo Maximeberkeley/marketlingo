@@ -9,6 +9,17 @@ import { FeedbackFooter } from '../components/FeedbackFooter';
 import { InfoCard } from '../exercises/InfoCard';
 import { MultipleChoice } from '../exercises/MultipleChoice';
 import { WordBank } from '../exercises/WordBank';
+import { ColdOpen } from '../modules/ColdOpen';
+import { MicroInsight } from '../modules/MicroInsight';
+import { SortSignal } from '../modules/SortSignal';
+import { BuildChain } from '../modules/BuildChain';
+import { FaceOff } from '../modules/FaceOff';
+import { SpeedRound } from '../modules/SpeedRound';
+import { NumberSense } from '../modules/NumberSense';
+import { SpotTheFake } from '../modules/SpotTheFake';
+import { MapMarket } from '../modules/MapMarket';
+import { ChartRead } from '../modules/ChartRead';
+import { TheCall } from '../modules/TheCall';
 import { ExerciseState } from '../exercises/types';
 import { LessonComplete } from './LessonComplete';
 import { tokens } from '../theme/tokens';
@@ -16,6 +27,10 @@ import { Exercise, Lesson } from '../types';
 import { playSound } from '../../lib/sounds';
 
 const MAX_HEARTS = 3;
+
+/** Beats that need no answer — the button just says Continue. */
+const PASSIVE_KINDS = ['info', 'coldOpen', 'microInsight'] as const;
+const isPassiveKind = (kind?: string) => PASSIVE_KINDS.includes(kind as (typeof PASSIVE_KINDS)[number]);
 
 export interface LessonScreenProps {
   lesson: Lesson;
@@ -67,9 +82,9 @@ export function LessonScreen({
   }, [lesson]);
 
   const exercise = queue[index];
-  const isInfo = exercise?.kind === 'info';
+  const isInfo = isPassiveKind(exercise?.kind);
   const total = queue.length;
-  const hasGraded = useMemo(() => queue.some(e => e.kind !== 'info'), [queue]);
+  const hasGraded = useMemo(() => queue.some(e => !isPassiveKind(e.kind)), [queue]);
   const progress = total > 0 ? (index + (phase === 'feedback' ? 1 : 0)) / total : 0;
 
   const handleChange = useCallback((next: ExerciseState) => setState(next), []);
@@ -157,6 +172,11 @@ export function LessonScreen({
     if (!exercise) return undefined;
     if (exercise.kind === 'multipleChoice') return exercise.options[exercise.correctIndex];
     if (exercise.kind === 'wordBank') return exercise.answer.join(' ');
+    if (exercise.kind === 'theCall') return exercise.options[exercise.correctIndex];
+    if (exercise.kind === 'faceOff')
+      return exercise.correctIndex === 0 ? exercise.left.name : exercise.right.name;
+    if (exercise.kind === 'spotFake') return exercise.statements[exercise.fakeIndex];
+    if (exercise.kind === 'mapMarket') return exercise.nodes[exercise.correctIndex]?.label;
     return undefined;
   }, [exercise]);
 
@@ -206,7 +226,7 @@ export function LessonScreen({
 
       {combo >= 2 && (
         <View style={styles.comboRow}>
-          <Text style={styles.comboText}>🔥 {combo} in a row</Text>
+          <Text style={styles.comboText}>{combo} in a row</Text>
         </View>
       )}
 
@@ -300,6 +320,28 @@ function renderExercise(
       return <MultipleChoice exercise={exercise} phase={phase} onChange={onChange} />;
     case 'wordBank':
       return <WordBank exercise={exercise} phase={phase} onChange={onChange} />;
+    case 'coldOpen':
+      return <ColdOpen exercise={exercise} phase={phase} onChange={onChange} />;
+    case 'microInsight':
+      return <MicroInsight exercise={exercise} phase={phase} onChange={onChange} />;
+    case 'sortSignal':
+      return <SortSignal exercise={exercise} phase={phase} onChange={onChange} />;
+    case 'buildChain':
+      return <BuildChain exercise={exercise} phase={phase} onChange={onChange} />;
+    case 'faceOff':
+      return <FaceOff exercise={exercise} phase={phase} onChange={onChange} />;
+    case 'speedRound':
+      return <SpeedRound exercise={exercise} phase={phase} onChange={onChange} />;
+    case 'numberSense':
+      return <NumberSense exercise={exercise} phase={phase} onChange={onChange} />;
+    case 'spotFake':
+      return <SpotTheFake exercise={exercise} phase={phase} onChange={onChange} />;
+    case 'mapMarket':
+      return <MapMarket exercise={exercise} phase={phase} onChange={onChange} />;
+    case 'chartRead':
+      return <ChartRead exercise={exercise} phase={phase} onChange={onChange} />;
+    case 'theCall':
+      return <TheCall exercise={exercise} phase={phase} onChange={onChange} />;
     default:
       return null;
   }
