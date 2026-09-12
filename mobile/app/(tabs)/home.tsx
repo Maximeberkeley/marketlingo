@@ -55,6 +55,7 @@ import { SundayRecapCard } from '../../components/home/SundayRecapCard';
 import { LeagueCeremonyModal } from '../../components/league/LeagueCeremonyModal';
 import { useLeague, TIER_META } from '../../hooks/useLeague';
 import { useWeeklyRecap } from '../../hooks/useWeeklyRecap';
+import { WorldBanner } from '../../components/world/WorldBanner';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -428,6 +429,12 @@ export default function HomeScreen() {
           </View>
 
           {/* ── Leo + Greeting ── */}
+          <AnimatedSection delay={0}>
+            <TouchableOpacity onPress={() => router.push('/collection' as any)} activeOpacity={0.88} style={{ marginBottom: 14 }}>
+              <WorldBanner marketId={selectedMarket} day={currentDay} compact />
+            </TouchableOpacity>
+          </AnimatedSection>
+
           <AnimatedSection delay={0}>
             <TouchableOpacity
               style={styles.leoSection}

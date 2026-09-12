@@ -9,9 +9,10 @@ interface Props {
   onExit: () => void;
   lives?: number;
   label?: string;
+  accentColor?: string;
 }
 
-export function LessonHeader({ progress, onExit, lives, label }: Props) {
+export function LessonHeader({ progress, onExit, lives, label, accentColor }: Props) {
   return (
     <View style={styles.wrap}>
       <View style={styles.row}>
@@ -19,7 +20,7 @@ export function LessonHeader({ progress, onExit, lives, label }: Props) {
           <Feather name="x" size={24} color={tokens.color.textMuted} />
         </TouchableOpacity>
 
-        <ProgressBar progress={progress} />
+        <ProgressBar progress={progress} accentColor={accentColor} />
 
         {typeof lives === 'number' ? (
           <View style={styles.lives}>
