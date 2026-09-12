@@ -146,6 +146,18 @@ const RESOURCE_CARDS: CardData[] = [
     tag: 'SOCIAL',
   },
   {
+    id: 'league',
+    title: 'Weekly League',
+    subtitle: 'Promotion Race',
+    description: 'Weekly XP puts you against rivals. Finish top to move up a tier.',
+    icon: 'award',
+    iconColor: '#BFDBFE',
+    gradientColors: ['#1E3A8A', '#1D4ED8', '#3B82F6'] as const,
+    accentGlow: 'rgba(59, 130, 246, 0.4)',
+    path: '/league',
+    tag: 'WEEKLY',
+  },
+  {
     id: 'summaries',
     title: 'Summaries',
     subtitle: 'Market Digests',

@@ -10,6 +10,8 @@
  * explanation always states the range, never a false precision.
  */
 
+import { EXTENDED_PACKS } from './packsExtended';
+
 export interface PackFaceOff {
   prompt: string;
   left: { name: string; note?: string };
@@ -838,7 +840,10 @@ const web3: IndustryPack = {
   },
 };
 
-const PACKS: IndustryPack[] = [fintech, ai, logistics, cybersecurity, robotics, web3];
+const PACKS: IndustryPack[] = [
+  fintech, ai, logistics, cybersecurity, robotics, web3,
+  ...EXTENDED_PACKS,
+];
 
 export function getIndustryPack(marketId?: string): IndustryPack | null {
   if (!marketId) return null;

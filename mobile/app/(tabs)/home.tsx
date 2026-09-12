@@ -51,6 +51,10 @@ import { useLeoPopups } from '../../hooks/useLeoPopups';
 import { useAchievements } from '../../hooks/useAchievements';
 import { LeoVoiceChatOverlay } from '../../components/ai/LeoVoiceChatOverlay';
 import { log } from '../../lib/logger';
+import { SundayRecapCard } from '../../components/home/SundayRecapCard';
+import { LeagueCeremonyModal } from '../../components/league/LeagueCeremonyModal';
+import { useLeague, TIER_META } from '../../hooks/useLeague';
+import { useWeeklyRecap } from '../../hooks/useWeeklyRecap';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -144,6 +148,12 @@ export default function HomeScreen() {
   const { canFreeze, freezesUsedThisWeek, maxFreezes, useFreeze } = useStreakFreeze(
     selectedMarketLocal || undefined, isProUser
   );
+
+  // Weekly league + Sunday recap
+  const league = useLeague(selectedMarketLocal || undefined);
+  const recap = useWeeklyRecap(selectedMarketLocal || undefined);
+  const [recapDismissed, setRecapDismissed] = useState(false);
+  const showRecap = recap.isRecapDay && !recap.loading && !recap.seen && !recapDismissed && recap.xpThisWeek >= 0;
 
   useEffect(() => {
     if (selectedMarket) setSelectedMarketLocal(selectedMarket);
@@ -461,6 +471,33 @@ export default function HomeScreen() {
             </AnimatedSection>
           )}
 
+          {/* ── Rescue round: a second chance when the streak is on the line ── */}
+          {(criticalTimerActive || streakRiskHours !== null) && !lessonCompletedToday && streak > 0 && (
+            <TouchableOpacity
+              style={styles.rescueLink}
+              onPress={() => { triggerHaptic('medium'); router.push('/streak-rescue'); }}
+              activeOpacity={0.85}
+            >
+              <Feather name="shield" size={14} color={COLORS.streak} />
+              <Text style={styles.rescueLinkText}>No time? Take the 3-question rescue round</Text>
+              <Feather name="chevron-right" size={14} color={COLORS.streak} />
+            </TouchableOpacity>
+          )}
+
+          {/* ── Sunday recap ── */}
+          {showRecap && (
+            <AnimatedSection delay={60}>
+              <SundayRecapCard
+                recap={recap}
+                accent={marketAccent}
+                tierLabel={TIER_META[league.tier]?.label}
+                rank={league.myRank}
+                onDismiss={() => { setRecapDismissed(true); recap.markSeen(); }}
+                onOpenLeague={() => { recap.markSeen(); router.push('/league'); }}
+              />
+            </AnimatedSection>
+          )}
+
           {/* ── THE Lesson Card — the ONE thing ── */}
           <AnimatedSection delay={100}>
             <TouchableOpacity
@@ -610,6 +647,17 @@ export default function HomeScreen() {
         achievement={achievementPopup}
         onDismiss={() => setAchievementPopup(null)}
       />
+
+      {league.lastWeek && (
+        <LeagueCeremonyModal
+          visible={league.ceremonyPending && !session.showReader}
+          tier={league.lastWeek.tier}
+          result={league.lastWeek.result}
+          finalRank={league.lastWeek.finalRank}
+          onClose={league.dismissCeremony}
+          onViewLeague={() => { league.dismissCeremony(); router.push('/league'); }}
+        />
+      )}
     </View>
   );
 }
@@ -617,6 +665,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   scrollContent: { paddingHorizontal: 20 },
+  rescueLink: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    borderWidth: 1, borderColor: 'rgba(249,115,22,0.3)', backgroundColor: COLORS.orangeSoft,
+    borderRadius: 14, paddingVertical: 12, marginBottom: 16,
+  },
+  rescueLinkText: { fontSize: 13, fontWeight: '700', color: COLORS.streak },
 
   // Top bar
   topBar: {
