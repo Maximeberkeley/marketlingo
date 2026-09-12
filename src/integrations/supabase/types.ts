@@ -656,6 +656,77 @@ export type Database = {
           },
         ]
       }
+      industry_stats: {
+        Row: {
+          created_at: string
+          id: string
+          insight: string | null
+          is_active: boolean
+          is_approximate: boolean
+          label: string
+          market_id: string
+          max_value: number
+          metric_key: string
+          min_value: number
+          period_label: string | null
+          source_name: string | null
+          source_url: string | null
+          trend: string
+          trend_note: string | null
+          unit: string | null
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          insight?: string | null
+          is_active?: boolean
+          is_approximate?: boolean
+          label: string
+          market_id: string
+          max_value: number
+          metric_key: string
+          min_value: number
+          period_label?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          trend?: string
+          trend_note?: string | null
+          unit?: string | null
+          updated_at?: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          insight?: string | null
+          is_active?: boolean
+          is_approximate?: boolean
+          label?: string
+          market_id?: string
+          max_value?: number
+          metric_key?: string
+          min_value?: number
+          period_label?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          trend?: string
+          trend_note?: string | null
+          unit?: string | null
+          updated_at?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "industry_stats_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interview_analytics: {
         Row: {
           avg_content_score: number | null

@@ -22,13 +22,31 @@ export interface DrillRow {
   explanation: string | null;
 }
 
+/** A real, sourced industry number with its trend. */
+export interface IndustryStatRow {
+  id: string;
+  metric_key: string;
+  label: string;
+  value: number;
+  unit: string | null;
+  min_value: number;
+  max_value: number;
+  period_label: string | null;
+  trend: 'up' | 'down' | 'flat';
+  trend_note: string | null;
+  insight: string | null;
+  source_name: string | null;
+  is_approximate: boolean;
+}
+
 export interface IndustryContent {
   trainer: TrainerScenarioRow[];
   drills: DrillRow[];
+  stats: IndustryStatRow[];
   isLoading: boolean;
 }
 
-const EMPTY: IndustryContent = { trainer: [], drills: [], isLoading: false };
+const EMPTY: IndustryContent = { trainer: [], drills: [], stats: [], isLoading: false };
 
 function parseOptions(raw: unknown): { label: string; isCorrect?: boolean }[] {
   if (!Array.isArray(raw)) return [];
@@ -61,13 +79,21 @@ export function useIndustryContent(marketId?: string, dayNumber?: number): Indus
         .eq('market_id', market)
         .limit(12);
 
-      const [trainerRes, drillRes] = await Promise.all([
+      const [trainerRes, drillRes, statRes] = await Promise.all([
         dayTag ? trainerQuery.contains('tags', [dayTag]) : trainerQuery,
         supabase
           .from('drill_questions')
           .select('id, statement, is_true, explanation')
           .eq('market_id', market)
           .limit(40),
+        supabase
+          .from('industry_stats')
+          .select(
+            'id, metric_key, label, value, unit, min_value, max_value, period_label, trend, trend_note, insight, source_name, is_approximate',
+          )
+          .eq('market_id', market)
+          .eq('is_active', true)
+          .limit(20),
       ]);
 
       let trainerRows = trainerRes.data ?? [];
@@ -110,7 +136,34 @@ export function useIndustryContent(marketId?: string, dayNumber?: number): Indus
         }))
         .filter(r => r.statement.length > 20);
 
-      setContent({ trainer, drills, isLoading: false });
+      const stats: IndustryStatRow[] = (statRes.data ?? [])
+        .map(r => ({
+          id: String(r.id),
+          metric_key: String(r.metric_key ?? ''),
+          label: String(r.label ?? ''),
+          value: Number(r.value),
+          unit: r.unit ?? null,
+          min_value: Number(r.min_value),
+          max_value: Number(r.max_value),
+          period_label: r.period_label ?? null,
+          trend: (r.trend === 'up' || r.trend === 'down' ? r.trend : 'flat') as 'up' | 'down' | 'flat',
+          trend_note: r.trend_note ?? null,
+          insight: r.insight ?? null,
+          source_name: r.source_name ?? null,
+          is_approximate: r.is_approximate !== false,
+        }))
+        .filter(
+          s =>
+            s.label.length > 5 &&
+            Number.isFinite(s.value) &&
+            Number.isFinite(s.min_value) &&
+            Number.isFinite(s.max_value) &&
+            s.max_value > s.min_value &&
+            s.value >= s.min_value &&
+            s.value <= s.max_value,
+        );
+
+      setContent({ trainer, drills, stats, isLoading: false });
     } catch (error) {
       log.error('useIndustryContent: failed to load market content', error);
       setContent({ ...EMPTY, isLoading: false });

@@ -8,6 +8,7 @@
  */
 import {
   BuildChainExercise,
+  ColdOpenExercise,
   Exercise,
   FaceOffExercise,
   MapMarketExercise,
@@ -17,7 +18,7 @@ import {
   TheCallExercise,
 } from '../types';
 import { IndustryPack } from './packs';
-import type { DrillRow, TrainerScenarioRow } from '../../hooks/useIndustryContent';
+import type { DrillRow, IndustryStatRow, TrainerScenarioRow } from '../../hooks/useIndustryContent';
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -147,5 +148,88 @@ export function drillTrueFalse(drills: DrillRow[], id: string): Exercise | null 
     options,
     correctIndex: row.is_true ? 0 : 1,
     explanation: row.explanation?.trim() || undefined,
+  };
+}
+
+// ── Real industry numbers (industry_stats) ─────────────────────────
+
+function fmtStat(s: IndustryStatRow): string {
+  const v = s.value >= 100 ? Math.round(s.value).toLocaleString('en-US') : String(s.value);
+  return s.unit ? `${v} ${s.unit}` : v;
+}
+
+/** Source credit line, so every number on screen is attributable. */
+export function statCredit(s: IndustryStatRow): string {
+  const bits = [s.source_name, s.period_label].filter(Boolean).join(', ');
+  const approx = s.is_approximate ? 'approx. ' : '';
+  return bits ? `${approx}${fmtStat(s)} — ${bits}` : `${approx}${fmtStat(s)}`;
+}
+
+/** Leo quoting a real number instead of a generic pep line. */
+export function statLeoLine(s: IndustryStatRow): string {
+  if (s.insight && s.insight.trim().length > 20) return s.insight.trim();
+  return `${s.label}: ${statCredit(s)}.`;
+}
+
+/** Guess the real figure on a dial, then see the sourced answer. */
+export function statNumberSense(stats: IndustryStatRow[], id: string): NumberSenseExercise | null {
+  const s = pick(stats);
+  if (!s) return null;
+  return {
+    kind: 'numberSense',
+    id,
+    prompt: s.label,
+    min: s.min_value,
+    max: s.max_value,
+    value: s.value,
+    unit: s.unit || undefined,
+    tolerance: 0.15,
+    explanation: `${statCredit(s)}${s.trend_note ? `. ${s.trend_note}` : ''}`,
+  };
+}
+
+/** Read the direction of a real trend — rising, falling or flat. */
+export function statTrend(stats: IndustryStatRow[], id: string): Exercise | null {
+  const s = pick(stats);
+  if (!s) return null;
+  const options = ['Rising', 'Falling', 'Roughly flat'];
+  const correctIndex = s.trend === 'up' ? 0 : s.trend === 'down' ? 1 : 2;
+  return {
+    kind: 'multipleChoice',
+    id,
+    prompt: `${s.label} is ${fmtStat(s)}${s.period_label ? ` (${s.period_label})` : ''}. Which way is it moving?`,
+    options,
+    correctIndex,
+    explanation: `${s.trend_note || 'That is the direction the data has been going.'} Source: ${s.source_name || 'industry data'}.`,
+  };
+}
+
+/** Which of two real figures is the bigger one? */
+export function statFaceOff(stats: IndustryStatRow[], id: string): FaceOffExercise | null {
+  const two = shuffle(stats).slice(0, 2);
+  if (two.length < 2 || two[0].value === two[1].value) return null;
+  const [a, b] = two;
+  const bigger = a.value > b.value ? 0 : 1;
+  return {
+    kind: 'faceOff',
+    id,
+    prompt: 'Which number is the bigger one?',
+    left: { name: a.label, note: a.unit || undefined },
+    right: { name: b.label, note: b.unit || undefined },
+    correctIndex: bigger as 0 | 1,
+    explanation: `${statCredit(a)} vs ${statCredit(b)}.`,
+  };
+}
+
+/** Open on a real, sourced figure from this market. */
+export function statColdOpen(stats: IndustryStatRow[], id: string, eyebrow?: string): ColdOpenExercise | null {
+  const s = pick(stats.filter(x => !!x.insight));
+  if (!s) return null;
+  return {
+    kind: 'coldOpen',
+    id,
+    eyebrow: eyebrow || 'By the numbers',
+    headline: `${s.label}: ${fmtStat(s)}.`,
+    kicker: `${s.insight}${s.source_name ? ` (${s.source_name}${s.period_label ? `, ${s.period_label}` : ''})` : ''}`,
   };
 }
