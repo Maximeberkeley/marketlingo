@@ -136,7 +136,34 @@ export function useIndustryContent(marketId?: string, dayNumber?: number): Indus
         }))
         .filter(r => r.statement.length > 20);
 
-      setContent({ trainer, drills, isLoading: false });
+      const stats: IndustryStatRow[] = (statRes.data ?? [])
+        .map(r => ({
+          id: String(r.id),
+          metric_key: String(r.metric_key ?? ''),
+          label: String(r.label ?? ''),
+          value: Number(r.value),
+          unit: r.unit ?? null,
+          min_value: Number(r.min_value),
+          max_value: Number(r.max_value),
+          period_label: r.period_label ?? null,
+          trend: (r.trend === 'up' || r.trend === 'down' ? r.trend : 'flat') as 'up' | 'down' | 'flat',
+          trend_note: r.trend_note ?? null,
+          insight: r.insight ?? null,
+          source_name: r.source_name ?? null,
+          is_approximate: r.is_approximate !== false,
+        }))
+        .filter(
+          s =>
+            s.label.length > 5 &&
+            Number.isFinite(s.value) &&
+            Number.isFinite(s.min_value) &&
+            Number.isFinite(s.max_value) &&
+            s.max_value > s.min_value &&
+            s.value >= s.min_value &&
+            s.value <= s.max_value,
+        );
+
+      setContent({ trainer, drills, stats, isLoading: false });
     } catch (error) {
       log.error('useIndustryContent: failed to load market content', error);
       setContent({ ...EMPTY, isLoading: false });
