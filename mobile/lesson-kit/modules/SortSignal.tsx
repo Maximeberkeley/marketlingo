@@ -16,7 +16,15 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
   const [wrongs, setWrongs] = useState(0);
   const [why, setWhy] = useState<string | null>(null);
   const bucketRects = useRef<(LayoutRectangle | null)[]>([]);
+  const bucketRefs = useRef<(View | null)[]>([]);
   const cardRect = useRef<LayoutRectangle | null>(null);
+  const cardRef = useRef<View | null>(null);
+
+  const measure = (node: View | null, store: (r: LayoutRectangle) => void) => {
+    node?.measureInWindow?.((x, y, width, height) => {
+      if (width && height) store({ x, y, width, height });
+    });
+  };
   const [hover, setHover] = useState<number | null>(null);
   const pan = useRef(new Animated.ValueXY()).current;
   const { shake, translateX } = useShake();
@@ -94,9 +102,10 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
         {!done && item ? (
           <Animated.View
             {...responder.panHandlers}
-            onLayout={e => e.currentTarget.measure?.((x, y, width, height, pageX, pageY) => {
-              cardRect.current = { x: pageX, y: pageY, width, height };
-            })}
+            ref={node => {
+              cardRef.current = node as unknown as View | null;
+            }}
+            onLayout={() => measure(cardRef.current, r => (cardRect.current = r))}
             style={[
               styles.card,
               { transform: [{ translateX: Animated.add(pan.x, translateX) }, { translateY: pan.y }] },
@@ -123,11 +132,10 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
           return (
             <View
               key={b}
-              onLayout={e =>
-                e.currentTarget.measure?.((x, y, width, height, pageX, pageY) => {
-                  bucketRects.current[i] = { x: pageX, y: pageY, width, height };
-                })
-              }
+              ref={node => {
+                bucketRefs.current[i] = node;
+              }}
+              onLayout={() => measure(bucketRefs.current[i], r => (bucketRects.current[i] = r))}
               style={[styles.bucket, active && styles.bucketActive]}
             >
               <Text style={[styles.bucketLabel, active && styles.bucketLabelActive]}>{b}</Text>
