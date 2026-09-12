@@ -306,7 +306,7 @@ const ai: IndustryPack = {
 
 const logistics: IndustryPack = {
   marketId: 'logistics',
-  label: 'Logistics & Commerce',
+  label: 'Logistics, Retail & Commerce',
   eyebrow: 'Inside logistics',
   coldOpen: {
     headline: 'The product on the shelf spent most of its life sitting still, waiting.',
@@ -334,6 +334,20 @@ const logistics: IndustryPack = {
       correctIndex: 0,
       explanation: 'Turns show how fast cash cycles back. Revenue can grow while stock quietly ties up all the working capital.',
     },
+    {
+      prompt: 'A store and an online shop sell the same jacket. Which one usually keeps more of the price?',
+      left: { name: 'Physical store', note: 'Rent, staff, no shipping' },
+      right: { name: 'Online order', note: 'Pick, pack, ship, return' },
+      correctIndex: 0,
+      explanation: 'Shipping and returns eat the online ticket. Stores pay rent once and let the shopper do the last mile for free.',
+    },
+    {
+      prompt: 'Which retail move protects margin without touching the price tag?',
+      left: { name: 'Cut markdowns', note: 'Sell it before it ages' },
+      right: { name: 'Wider assortment', note: 'More choices on the shelf' },
+      correctIndex: 0,
+      explanation: 'Markdowns are pure margin loss. Wider assortment adds stock, slows turns and usually makes markdowns worse.',
+    },
   ],
   chains: [
     {
@@ -357,6 +371,17 @@ const logistics: IndustryPack = {
         'Reinvest in the next order',
       ],
       explanation: 'The gap between paying and collecting is working capital. Shorten it and you can grow without raising money.',
+    },
+    {
+      prompt: 'Order the life of a returned online order',
+      steps: [
+        'Customer requests a return label',
+        'Parcel travels back to a returns hub',
+        'Item is inspected and graded',
+        'Stock is relisted, discounted or written off',
+        'Refund settles against the original sale',
+      ],
+      explanation: 'A return is a second full delivery plus handling. That is why free returns are a marketing cost, not a shipping detail.',
     },
   ],
   maps: [
@@ -383,6 +408,17 @@ const logistics: IndustryPack = {
       correctIndex: 0,
       explanation: 'Stops, not distance, drive last-mile cost. That is why density beats reach in delivery economics.',
     },
+    {
+      prompt: 'Tap the line that decides whether a retailer survives a bad season',
+      nodes: [
+        { label: 'Markdown rate', sub: 'Price cuts to clear stock' },
+        { label: 'Store count', sub: 'Number of locations' },
+        { label: 'Footfall', sub: 'Visitors per day' },
+        { label: 'Loyalty sign-ups', sub: 'Members added' },
+      ],
+      correctIndex: 0,
+      explanation: 'Unsold stock forces markdowns, and markdowns come straight off gross margin. Traffic means nothing if it only buys clearance.',
+    },
   ],
   numbers: [
     {
@@ -403,6 +439,15 @@ const logistics: IndustryPack = {
       tolerance: 0.15,
       explanation: 'Apparel returns commonly run in the 20–30% band, which is why reverse logistics decides the category\'s margin.',
     },
+    {
+      prompt: 'Fill the gap: a typical supermarket runs a gross margin of roughly _____ of sales.',
+      min: 0,
+      max: 60,
+      value: 25,
+      unit: '%',
+      tolerance: 0.15,
+      explanation: 'Grocery gross margin usually sits in the low-to-mid twenties, and net margin is often only a couple of percent. Volume is the whole game.',
+    },
   ],
   jargon: [
     { term: 'Lead time', definition: 'The total wait from placing an order to receiving the goods' },
@@ -411,6 +456,10 @@ const logistics: IndustryPack = {
     { term: 'Reverse logistics', definition: 'Everything involved in taking returned goods back' },
     { term: 'Working capital', definition: 'Cash tied up between paying suppliers and collecting from customers' },
     { term: 'Demurrage', definition: 'Fees charged when a container sits too long at the port' },
+    { term: 'Markdown', definition: 'A price cut taken to clear stock that is not selling' },
+    { term: 'Sell-through', definition: 'The share of received stock sold within a period' },
+    { term: 'Basket size', definition: 'The average value of one customer order' },
+    { term: 'Shrinkage', definition: 'Stock lost to theft, damage or error' },
   ],
   leo: {
     open: [
