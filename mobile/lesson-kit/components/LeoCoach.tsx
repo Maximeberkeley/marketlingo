@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 import { tokens } from '../theme/tokens';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { ColorText } from './ColorText';
 
 export type LeoMood = 'idle' | 'thinking' | 'celebrate' | 'correct' | 'incorrect';
 
@@ -43,7 +44,7 @@ export function LeoCoach({ line, mood = 'idle' }: Props) {
     <Animated.View style={[styles.wrap, { opacity: enter, transform: [{ translateX }] }]}>
       <LeoCharacter animation={ANIM[mood]} size="sm" />
       <View style={[styles.bubble, { borderColor: tint + '55', backgroundColor: tint + '10' }]}>
-        <Text style={styles.text}>{line}</Text>
+        <ColorText text={line} style={styles.text} maxSentences={2} maxLength={120} />
       </View>
     </Animated.View>
   );

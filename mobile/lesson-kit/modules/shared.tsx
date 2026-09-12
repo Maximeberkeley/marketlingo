@@ -3,13 +3,15 @@ import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 import { tokens } from '../theme/tokens';
 import { triggerHaptic } from '../../lib/haptics';
 import { playSound } from '../../lib/sounds';
+import { ColorText } from '../components/ColorText';
+import { shortLabel, shortPrompt } from '../text';
 
 /** Big prompt line used at the top of every game module. */
 export function Prompt({ text, eyebrow }: { text: string; eyebrow?: string }) {
   return (
     <View style={styles.promptWrap}>
-      {!!eyebrow && <Text style={styles.eyebrow}>{eyebrow.toUpperCase()}</Text>}
-      <Text style={styles.prompt}>{text}</Text>
+      {!!eyebrow && <Text style={styles.eyebrow}>{shortLabel(eyebrow).toUpperCase()}</Text>}
+      <ColorText text={shortPrompt(text)} style={styles.prompt} maxLength={120} />
     </View>
   );
 }

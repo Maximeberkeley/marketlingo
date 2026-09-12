@@ -4,6 +4,8 @@ import { tokens } from '../theme/tokens';
 import { MicroInsightExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { useEnter } from './shared';
+import { ColorText } from '../components/ColorText';
+import { shortLabel, shortText } from '../text';
 
 /** Micro-insight — two lines max, big type, one idea to carry forward. */
 export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightExercise>) {
@@ -17,17 +19,17 @@ export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightE
 
   return (
     <Animated.View style={[styles.wrap, { opacity: enter, transform: [{ translateY }] }]}>
-      {!!exercise.eyebrow && <Text style={styles.eyebrow}>{exercise.eyebrow.toUpperCase()}</Text>}
-      <Text style={styles.text}>{exercise.text}</Text>
+      {!!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow).toUpperCase()}</Text>}
+      <ColorText text={exercise.text} style={styles.text} maxSentences={2} maxLength={150} />
       {!!exercise.highlight && (
         <View style={styles.highlight}>
-          <Text style={styles.highlightText}>{exercise.highlight}</Text>
+          <ColorText text={exercise.highlight} style={styles.highlightText} maxSentences={1} maxLength={100} />
         </View>
       )}
       {!!exercise.keyTerm && (
         <View style={styles.term}>
-          <Text style={styles.termWord}>{exercise.keyTerm.term}</Text>
-          <Text style={styles.termDef}>{exercise.keyTerm.definition}</Text>
+          <Text style={styles.termWord}>{shortLabel(exercise.keyTerm.term)}</Text>
+          <ColorText text={shortText(exercise.keyTerm.definition, 1, 100)} style={styles.termDef} maxSentences={1} maxLength={100} />
         </View>
       )}
       {!!exercise.sources?.length && (
@@ -46,7 +48,7 @@ export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightE
 const styles = StyleSheet.create({
   wrap: { flex: 1, justifyContent: 'center', gap: tokens.space.lg },
   eyebrow: { fontSize: 11, fontWeight: '900', letterSpacing: 1.4, color: tokens.color.accent },
-  text: { fontSize: 24, fontWeight: '800', color: tokens.color.text, lineHeight: 32, letterSpacing: -0.3 },
+  text: { fontSize: 24, fontWeight: '800', color: tokens.color.text, lineHeight: 32 },
   highlight: {
     borderLeftWidth: 4,
     borderLeftColor: tokens.color.accent,

@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { tokens } from '../theme/tokens';
+import { ColorText } from './ColorText';
+import { shortLabel } from '../text';
 
 interface Props {
   isCorrect: boolean;
@@ -20,9 +22,9 @@ export function FeedbackFooter({ isCorrect, explanation, correctAnswer }: Props)
         </Text>
       </View>
       {!isCorrect && !!correctAnswer && (
-        <Text style={styles.body}>Answer: {correctAnswer}</Text>
+        <ColorText text={`Answer: ${shortLabel(correctAnswer)}`} style={styles.body} maxSentences={1} maxLength={96} />
       )}
-      {!!explanation && <Text style={styles.body}>{explanation}</Text>}
+      {!!explanation && <ColorText text={explanation} style={styles.body} maxSentences={2} maxLength={150} />}
     </View>
   );
 }
