@@ -471,6 +471,33 @@ export default function HomeScreen() {
             </AnimatedSection>
           )}
 
+          {/* ── Rescue round: a second chance when the streak is on the line ── */}
+          {(criticalTimerActive || streakRiskHours !== null) && !lessonCompletedToday && streak > 0 && (
+            <TouchableOpacity
+              style={styles.rescueLink}
+              onPress={() => { triggerHaptic('medium'); router.push('/streak-rescue'); }}
+              activeOpacity={0.85}
+            >
+              <Feather name="shield" size={14} color={COLORS.streak} />
+              <Text style={styles.rescueLinkText}>No time? Take the 3-question rescue round</Text>
+              <Feather name="chevron-right" size={14} color={COLORS.streak} />
+            </TouchableOpacity>
+          )}
+
+          {/* ── Sunday recap ── */}
+          {showRecap && (
+            <AnimatedSection delay={60}>
+              <SundayRecapCard
+                recap={recap}
+                accent={marketAccent}
+                tierLabel={TIER_META[league.tier]?.label}
+                rank={league.myRank}
+                onDismiss={() => { setRecapDismissed(true); recap.markSeen(); }}
+                onOpenLeague={() => { recap.markSeen(); router.push('/league'); }}
+              />
+            </AnimatedSection>
+          )}
+
           {/* ── THE Lesson Card — the ONE thing ── */}
           <AnimatedSection delay={100}>
             <TouchableOpacity
