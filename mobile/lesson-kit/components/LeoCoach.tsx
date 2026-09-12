@@ -41,7 +41,7 @@ export function LeoCoach({ line, mood = 'idle' }: Props) {
 
   return (
     <Animated.View style={[styles.wrap, { opacity: enter, transform: [{ translateX }] }]}>
-      <LeoCharacter anim={ANIM[mood]} size="sm" />
+      <LeoCharacter animation={ANIM[mood]} size="sm" />
       <View style={[styles.bubble, { borderColor: tint + '55', backgroundColor: tint + '10' }]}>
         <Text style={styles.text}>{line}</Text>
       </View>
