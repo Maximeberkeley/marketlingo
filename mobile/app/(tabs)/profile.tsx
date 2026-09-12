@@ -395,6 +395,17 @@ export default function ProfileScreen() {
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/collection' as any)}>
+            <View style={[styles.menuIcon, { backgroundColor: 'rgba(6, 182, 212, 0.15)' }]}>
+              <Feather name="layers" size={18} color="#0891B2" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Insider Collection</Text>
+              <Text style={styles.menuSubtitle}>Archetype cards from every market</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={[styles.menuItem, { backgroundColor: 'rgba(239, 68, 68, 0.08)', borderColor: 'rgba(239, 68, 68, 0.2)' }]}
             onPress={handleSignOut}

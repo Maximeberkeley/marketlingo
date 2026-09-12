@@ -19,6 +19,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { triggerHaptic } from '../../lib/haptics';
 import { playSound } from '../../lib/sounds';
 import { calculateAvailableDay } from '../../lib/dayMath';
+import { WorldBanner } from '../../components/world/WorldBanner';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
@@ -83,6 +84,7 @@ export default function RoadmapScreen() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [currentDay, setCurrentDay] = useState(1);
+  const [selectedMarket, setSelectedMarket] = useState('aerospace');
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [expandedSeason, setExpandedSeason] = useState<number | null>(null);
@@ -116,6 +118,7 @@ export default function RoadmapScreen() {
       .single();
 
     const market = profile?.selected_market || 'aerospace';
+    setSelectedMarket(market);
 
     const { data: progress } = await supabase
       .from('user_progress')
@@ -278,6 +281,10 @@ export default function RoadmapScreen() {
           <Text style={styles.pageSubtitle}>
             Day {currentDay} · Week {currentWeek}
           </Text>
+        </Animated.View>
+
+        <Animated.View style={[{ marginBottom: 16 }, animStyle(statsAnim)]}>
+          <WorldBanner marketId={selectedMarket} day={currentDay} compact />
         </Animated.View>
 
         {/* ─── Stats row ────────────────────────── */}
