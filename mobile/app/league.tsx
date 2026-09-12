@@ -13,7 +13,7 @@ import { getMarketName } from '../lib/markets';
 
 export default function LeagueScreen() {
   const insets = useSafeAreaInsets();
-  const { selectedMarket } = useSelectedMarket();
+  const { marketId: selectedMarket } = useSelectedMarket();
   const league = useLeague(selectedMarket || undefined);
   const meta = TIER_META[league.tier];
 
