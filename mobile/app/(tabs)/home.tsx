@@ -149,6 +149,12 @@ export default function HomeScreen() {
     selectedMarketLocal || undefined, isProUser
   );
 
+  // Weekly league + Sunday recap
+  const league = useLeague(selectedMarketLocal || undefined);
+  const recap = useWeeklyRecap(selectedMarketLocal || undefined);
+  const [recapDismissed, setRecapDismissed] = useState(false);
+  const showRecap = recap.isRecapDay && !recap.loading && !recap.seen && !recapDismissed && recap.xpThisWeek >= 0;
+
   useEffect(() => {
     if (selectedMarket) setSelectedMarketLocal(selectedMarket);
   }, [selectedMarket]);
