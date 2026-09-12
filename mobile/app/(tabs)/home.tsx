@@ -51,6 +51,10 @@ import { useLeoPopups } from '../../hooks/useLeoPopups';
 import { useAchievements } from '../../hooks/useAchievements';
 import { LeoVoiceChatOverlay } from '../../components/ai/LeoVoiceChatOverlay';
 import { log } from '../../lib/logger';
+import { SundayRecapCard } from '../../components/home/SundayRecapCard';
+import { LeagueCeremonyModal } from '../../components/league/LeagueCeremonyModal';
+import { useLeague, TIER_META } from '../../hooks/useLeague';
+import { useWeeklyRecap } from '../../hooks/useWeeklyRecap';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
