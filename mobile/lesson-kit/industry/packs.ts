@@ -10,6 +10,8 @@
  * explanation always states the range, never a false precision.
  */
 
+import { EXTENDED_PACKS } from './packsExtended';
+
 export interface PackFaceOff {
   prompt: string;
   left: { name: string; note?: string };
