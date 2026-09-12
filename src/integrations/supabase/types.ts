@@ -97,6 +97,68 @@ export type Database = {
           },
         ]
       }
+      collectible_catalog: {
+        Row: {
+          created_at: string
+          fluency: number
+          id: string
+          insight: string
+          judgment: number
+          market_id: string
+          name: string
+          power: number
+          rarity: string
+          role: string
+          set_name: string
+          sort_order: number
+          specialty: string
+          unlock_threshold: number
+          unlock_type: string
+        }
+        Insert: {
+          created_at?: string
+          fluency?: number
+          id: string
+          insight: string
+          judgment?: number
+          market_id: string
+          name: string
+          power?: number
+          rarity: string
+          role: string
+          set_name: string
+          sort_order?: number
+          specialty: string
+          unlock_threshold?: number
+          unlock_type: string
+        }
+        Update: {
+          created_at?: string
+          fluency?: number
+          id?: string
+          insight?: string
+          judgment?: number
+          market_id?: string
+          name?: string
+          power?: number
+          rarity?: string
+          role?: string
+          set_name?: string
+          sort_order?: number
+          specialty?: string
+          unlock_threshold?: number
+          unlock_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collectible_catalog_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       concept_mastery: {
         Row: {
           attempts: number
@@ -1374,6 +1436,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           familiarity_level: string | null
+          featured_collectible_id: string | null
           id: string
           is_pro_user: boolean
           notification_preferences: Json | null
@@ -1394,6 +1457,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           familiarity_level?: string | null
+          featured_collectible_id?: string | null
           id: string
           is_pro_user?: boolean
           notification_preferences?: Json | null
@@ -1414,6 +1478,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           familiarity_level?: string | null
+          featured_collectible_id?: string | null
           id?: string
           is_pro_user?: boolean
           notification_preferences?: Json | null
@@ -1429,6 +1494,13 @@ export type Database = {
           voice_consent_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_featured_collectible_id_fkey"
+            columns: ["featured_collectible_id"]
+            isOneToOne: false
+            referencedRelation: "collectible_catalog"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_selected_market_fkey"
             columns: ["selected_market"]
@@ -1497,6 +1569,44 @@ export type Database = {
             columns: ["stack_id"]
             isOneToOne: false
             referencedRelation: "stacks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reward_evaluations: {
+        Row: {
+          activity_type: string
+          created_at: string
+          id: string
+          market_id: string
+          result: Json
+          source_key: string
+          user_id: string
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string
+          id?: string
+          market_id: string
+          result?: Json
+          source_key: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string
+          id?: string
+          market_id?: string
+          result?: Json
+          source_key?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reward_evaluations_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
             referencedColumns: ["id"]
           },
         ]
@@ -2110,6 +2220,89 @@ export type Database = {
         }
         Relationships: []
       }
+      user_collectibles: {
+        Row: {
+          collectible_id: string
+          id: string
+          market_id: string
+          reward_source_key: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          collectible_id: string
+          id?: string
+          market_id: string
+          reward_source_key: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          collectible_id?: string
+          id?: string
+          market_id?: string
+          reward_source_key?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_collectibles_collectible_id_fkey"
+            columns: ["collectible_id"]
+            isOneToOne: false
+            referencedRelation: "collectible_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_collectibles_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_market_milestones: {
+        Row: {
+          description: string
+          id: string
+          market_id: string
+          milestone_key: string
+          reward_source_key: string
+          title: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          description: string
+          id?: string
+          market_id: string
+          milestone_key: string
+          reward_source_key: string
+          title: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          description?: string
+          id?: string
+          market_id?: string
+          milestone_key?: string
+          reward_source_key?: string
+          title?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_market_milestones_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_progress: {
         Row: {
           completed_stacks: string[] | null
@@ -2494,6 +2687,15 @@ export type Database = {
       calculate_startup_stage: { Args: { xp: number }; Returns: number }
       current_week_start: { Args: never; Returns: string }
       decay_concept_mastery: { Args: never; Returns: number }
+      evaluate_market_rewards: {
+        Args: {
+          p_accuracy?: number
+          p_activity_type: string
+          p_market_id: string
+          p_source_key: string
+        }
+        Returns: Json
+      }
       friend_quest_progress: {
         Args: {
           p_key: string
@@ -2570,6 +2772,10 @@ export type Database = {
         }
       }
       run_league_rollover: { Args: never; Returns: number }
+      set_featured_collectible: {
+        Args: { p_collectible_id: string }
+        Returns: undefined
+      }
       submit_decision_answer: {
         Args: {
           p_confidence?: string

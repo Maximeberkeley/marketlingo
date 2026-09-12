@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { LessonScreen } from '../../lesson-kit/screens/LessonScreen';
@@ -7,6 +7,8 @@ import { buildBeats, IndustryInput } from '../../lesson-kit/sequencer/buildBeats
 import { SlideLike } from '../../lesson-kit/sequencer/extract';
 import { useIndustryContent } from '../../hooks/useIndustryContent';
 import { parseSlideIntoCards } from './ConceptCard';
+import { useCollectibles, CollectibleCard } from '../../hooks/useCollectibles';
+import { CardRevealModal } from '../collectibles/CardRevealModal';
 
 
 interface Source {
@@ -33,7 +35,7 @@ export interface LessonKitReaderProps {
   stackType: 'NEWS' | 'HISTORY' | 'LESSON';
   slides: SlideData[];
   onClose: () => void;
-  onComplete: (isReview: boolean, timeSpentSeconds: number) => void;
+  onComplete: (isReview: boolean, timeSpentSeconds: number) => void | Promise<void>;
   onSaveInsight: (slideNumber: number) => void;
   onAddNote: (slideNumber: number, customContent?: string) => void;
   marketId?: string;
@@ -86,6 +88,8 @@ export function LessonKitReader({
   metadata,
 }: LessonKitReaderProps) {
   const { trainer, drills, stats } = useIndustryContent(marketId, dayNumber);
+  const { evaluateRewards } = useCollectibles(marketId);
+  const [revealedCard, setRevealedCard] = useState<Partial<CollectibleCard> | null>(null);
 
   const { lesson, slideNumbers } = useMemo(
     () =>
@@ -119,14 +123,25 @@ export function LessonKitReader({
   );
 
   return (
-    <LessonScreen
-      lesson={lesson}
-      onExit={onClose}
-      onFinish={({ timeSpentSeconds }) => onComplete(isReview, timeSpentSeconds)}
-      renderExtraActions={extraActions}
-      streakDays={streakDays}
-      confirmExit={!isReview}
-    />
+    <>
+      <LessonScreen
+        lesson={lesson}
+        marketId={marketId}
+        onExit={onClose}
+        onFinish={async ({ timeSpentSeconds, correct, total }) => {
+          await onComplete(isReview, timeSpentSeconds);
+          if (!isReview && marketId && stackId) {
+            const accuracy = total > 0 ? Math.round((correct / total) * 100) : 100;
+            const result = await evaluateRewards('lesson', `lesson:${stackId}`, accuracy);
+            if (result?.collectibles?.[0]) setRevealedCard(result.collectibles[0]);
+          }
+        }}
+        renderExtraActions={extraActions}
+        streakDays={streakDays}
+        confirmExit={!isReview}
+      />
+      <CardRevealModal card={revealedCard} marketId={marketId} onClose={() => setRevealedCard(null)} />
+    </>
   );
 }
 

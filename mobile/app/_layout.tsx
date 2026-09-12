@@ -105,6 +105,7 @@ export default function RootLayout() {
                 <Stack.Screen name="drills" />
                 <Stack.Screen name="summaries" />
                 <Stack.Screen name="achievements" />
+                <Stack.Screen name="collection" />
                 <Stack.Screen name="leaderboard" />
                 <Stack.Screen name="settings" />
                 <Stack.Screen name="interview-lab" />

@@ -17,6 +17,8 @@ import { useSubscription } from '../../hooks/useSubscription';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { Feather } from '@expo/vector-icons';
 import { triggerHaptic } from '../../lib/haptics';
+import { useCollectibles } from '../../hooks/useCollectibles';
+import { getMarketWorld } from '../../data/marketWorlds';
 
 // Market illustrations for profile
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
@@ -63,6 +65,8 @@ export default function ProfileScreen() {
 
   const { progress, availableDay } = useUserProgress(selectedMarket || undefined);
   const { xpData, getCurrentStage, getProgressToNextStage } = useUserXP(selectedMarket || undefined);
+  const { cards, featuredId } = useCollectibles(selectedMarket || undefined);
+  const featuredCard = cards.find(card => card.id === featuredId);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -293,6 +297,20 @@ export default function ProfileScreen() {
 
         {/* Learning Preferences */}
         <View style={styles.section}>
+          <Text style={styles.sectionTitle}>INSIDER COLLECTION</Text>
+          <TouchableOpacity style={styles.collectionCard} onPress={() => router.push('/collection' as any)}>
+            <View style={[styles.collectionIcon, { backgroundColor: getMarketWorld(selectedMarket).colors[0] }]}>
+              <Feather name={featuredCard ? 'award' : 'layers'} size={24} color="#FFFFFF" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>{featuredCard?.name || 'Choose your featured card'}</Text>
+              <Text style={styles.menuSubtitle}>{featuredCard?.specialty || `${cards.filter(card => card.owned).length} cards discovered`}</Text>
+            </View>
+            <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>LEARNING PREFERENCES</Text>
           <TouchableOpacity style={styles.menuItem} onPress={() => setShowGoalPicker(true)}>
             <View style={[styles.menuIcon, { backgroundColor: currentGoal ? (GOAL_OPTIONS.find(g => g.id === currentGoal)?.color || COLORS.accent) + '20' : COLORS.bg1 }]}>
@@ -391,6 +409,17 @@ export default function ProfileScreen() {
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Achievements</Text>
               <Text style={styles.menuSubtitle}>Badges & milestones</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/collection' as any)}>
+            <View style={[styles.menuIcon, { backgroundColor: 'rgba(6, 182, 212, 0.15)' }]}>
+              <Feather name="layers" size={18} color="#0891B2" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Insider Collection</Text>
+              <Text style={styles.menuSubtitle}>Archetype cards from every market</Text>
             </View>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
@@ -546,6 +575,8 @@ const styles = StyleSheet.create({
   stageDesc: { fontSize: 11, color: COLORS.textMuted },
   xpText: { fontSize: 12, fontWeight: '700', color: '#EAB308' },
   section: { marginBottom: 20 },
+  collectionCard: { backgroundColor: COLORS.bg2, borderRadius: 16, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderColor: COLORS.border },
+  collectionIcon: { width: 48, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   sectionTitle: { fontSize: 11, fontWeight: '600', color: COLORS.textMuted, letterSpacing: 1, marginBottom: 10 },
   certCard: { backgroundColor: COLORS.bg2, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: COLORS.border },
   certRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },

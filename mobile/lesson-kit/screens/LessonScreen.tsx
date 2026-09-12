@@ -27,6 +27,7 @@ import { LessonComplete } from './LessonComplete';
 import { tokens } from '../theme/tokens';
 import { Exercise, Lesson } from '../types';
 import { playSound } from '../../lib/sounds';
+import { getMarketWorld } from '../../data/marketWorlds';
 
 const MAX_HEARTS = 3;
 
@@ -47,6 +48,7 @@ export interface LessonScreenProps {
   streakDays?: number;
   /** Skip the leave-confirmation prompt (e.g. review mode). */
   confirmExit?: boolean;
+  marketId?: string;
 }
 
 export function LessonScreen({
@@ -58,6 +60,7 @@ export function LessonScreen({
   doneLabel,
   streakDays,
   confirmExit = true,
+  marketId,
 }: LessonScreenProps) {
   const insets = useSafeAreaInsets();
   const [queue, setQueue] = useState<Exercise[]>(lesson.exercises);
@@ -74,6 +77,7 @@ export function LessonScreen({
   const [showHeartsPrompt, setShowHeartsPrompt] = useState(false);
   const [finished, setFinished] = useState(false);
   const startedAt = useRef(Date.now());
+  const world = getMarketWorld(marketId);
 
   // XP pop animation
   const [pop, setPop] = useState<string | null>(null);
@@ -239,7 +243,8 @@ export function LessonScreen({
         progress={progress}
         onExit={handleExitPress}
         lives={hasGraded ? hearts : undefined}
-        label={lesson.title}
+        label={`${world.worldName} · ${lesson.title}`}
+        accentColor={world.colors[0]}
       />
 
       {combo >= 2 && (
@@ -265,6 +270,7 @@ export function LessonScreen({
         </Animated.View>
       )}
 
+      <View style={[styles.worldRail, { backgroundColor: world.colors[0] }]} />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
@@ -369,6 +375,7 @@ function renderExercise(
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: tokens.color.bg },
+  worldRail: { height: 3, marginHorizontal: tokens.space.lg, borderRadius: 2 },
   scroll: { flex: 1 },
   content: {
     padding: tokens.space.lg,
