@@ -252,8 +252,10 @@ export function LessonScreen({
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
+        {!!leoCoach && <LeoCoach line={leoCoach.line} mood={leoCoach.mood} />}
         {renderExercise(exercise, phase, handleChange)}
       </ScrollView>
+
 
       {phase === 'feedback' && !isInfo && (
         <FeedbackFooter
