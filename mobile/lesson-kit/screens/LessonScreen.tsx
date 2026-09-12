@@ -21,6 +21,8 @@ import { MapMarket } from '../modules/MapMarket';
 import { ChartRead } from '../modules/ChartRead';
 import { TheCall } from '../modules/TheCall';
 import { ExerciseState } from '../exercises/types';
+import { LeoCoach, LeoMood } from '../components/LeoCoach';
+
 import { LessonComplete } from './LessonComplete';
 import { tokens } from '../theme/tokens';
 import { Exercise, Lesson } from '../types';
@@ -168,7 +170,23 @@ export function LessonScreen({
     setShowExitPrompt(true);
   }, [confirmExit, finished, onExit]);
 
+  /** Leo coaches the beat, then reacts to the answer. */
+  const leoCoach = useMemo(() => {
+    if (phase === 'feedback' && !isInfo) {
+      const pool = state.isCorrect ? lesson.leoReactions?.win : lesson.leoReactions?.miss;
+      if (pool?.length) {
+        const line = pool[index % pool.length];
+        return { line, mood: (state.isCorrect ? 'correct' : 'incorrect') as LeoMood };
+      }
+      return null;
+    }
+    const line = exercise?.leo?.line;
+    if (!line) return null;
+    return { line, mood: (exercise?.leo?.mood ?? 'idle') as LeoMood };
+  }, [phase, isInfo, state.isCorrect, lesson.leoReactions, index, exercise]);
+
   const correctAnswerText = useMemo(() => {
+
     if (!exercise) return undefined;
     if (exercise.kind === 'multipleChoice') return exercise.options[exercise.correctIndex];
     if (exercise.kind === 'wordBank') return exercise.answer.join(' ');
