@@ -79,13 +79,21 @@ export function useIndustryContent(marketId?: string, dayNumber?: number): Indus
         .eq('market_id', market)
         .limit(12);
 
-      const [trainerRes, drillRes] = await Promise.all([
+      const [trainerRes, drillRes, statRes] = await Promise.all([
         dayTag ? trainerQuery.contains('tags', [dayTag]) : trainerQuery,
         supabase
           .from('drill_questions')
           .select('id, statement, is_true, explanation')
           .eq('market_id', market)
           .limit(40),
+        supabase
+          .from('industry_stats')
+          .select(
+            'id, metric_key, label, value, unit, min_value, max_value, period_label, trend, trend_note, insight, source_name, is_approximate',
+          )
+          .eq('market_id', market)
+          .eq('is_active', true)
+          .limit(20),
       ]);
 
       let trainerRows = trainerRes.data ?? [];
