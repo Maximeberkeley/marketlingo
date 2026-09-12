@@ -4,6 +4,8 @@ import { tokens } from '../theme/tokens';
 import { FaceOffExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { Prompt, tap, useEnter } from './shared';
+import { ColorText } from '../components/ColorText';
+import { shortLabel } from '../text';
 
 /** Company Face-Off — two players enter, you pick one. */
 export function FaceOff({ exercise, phase, onChange }: ExerciseProps<FaceOffExercise>) {
@@ -50,8 +52,8 @@ export function FaceOff({ exercise, phase, onChange }: ExerciseProps<FaceOffExer
                 ]}
               >
                 <Text style={styles.badge}>{i === 0 ? 'A' : 'B'}</Text>
-                <Text style={styles.name}>{side.name}</Text>
-                {!!side.note && <Text style={styles.note}>{side.note}</Text>}
+                <ColorText text={shortLabel(side.name)} style={styles.name} maxSentences={1} maxLength={60} />
+                {!!side.note && <ColorText text={side.note} style={styles.note} maxSentences={1} maxLength={72} />}
               </TouchableOpacity>
             </Animated.View>
           );

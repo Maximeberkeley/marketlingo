@@ -4,6 +4,8 @@ import { tokens } from '../theme/tokens';
 import { SortSignalExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { Prompt, shuffle, tick, useShake } from './shared';
+import { ColorText } from '../components/ColorText';
+import { shortLabel } from '../text';
 
 /**
  * Sort the Signal — drag each headline into the bucket it belongs to.
@@ -111,7 +113,7 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
               { transform: [{ translateX: Animated.add(pan.x, translateX) }, { translateY: pan.y }] },
             ]}
           >
-            <Text style={styles.cardText}>{item.text}</Text>
+            <ColorText text={item.text} style={styles.cardText} maxSentences={1} maxLength={90} />
             <Text style={styles.hint}>Drag me</Text>
           </Animated.View>
         ) : (
@@ -138,7 +140,7 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
               onLayout={() => measure(bucketRefs.current[i], r => (bucketRects.current[i] = r))}
               style={[styles.bucket, active && styles.bucketActive]}
             >
-              <Text style={[styles.bucketLabel, active && styles.bucketLabelActive]}>{b}</Text>
+              <Text style={[styles.bucketLabel, active && styles.bucketLabelActive]}>{shortLabel(b)}</Text>
               <Text style={styles.bucketCount}>{count > 0 ? `${count}` : ''}</Text>
             </View>
           );

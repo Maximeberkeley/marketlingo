@@ -4,6 +4,7 @@ import { tokens } from '../theme/tokens';
 import { SpeedRoundExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { Prompt, tick } from './shared';
+import { ColorText } from '../components/ColorText';
 
 /** Beat the Clock — rapid-fire term matching against a shrinking bar. */
 export function SpeedRound({ exercise, phase, onChange }: ExerciseProps<SpeedRoundExercise>) {
@@ -78,7 +79,7 @@ export function SpeedRound({ exercise, phase, onChange }: ExerciseProps<SpeedRou
             {hits} / {exercise.rounds.length} right
           </Text>
         ) : (
-          <Text style={styles.question}>{round.question}</Text>
+          <ColorText text={round.question} style={styles.question} maxSentences={1} maxLength={90} />
         )}
       </View>
 
@@ -86,7 +87,7 @@ export function SpeedRound({ exercise, phase, onChange }: ExerciseProps<SpeedRou
         <View style={styles.options}>
           {round.options.map((o, i) => (
             <TouchableOpacity key={i} activeOpacity={0.85} style={styles.option} onPress={() => answer(i)}>
-              <Text style={styles.optionText}>{o}</Text>
+              <ColorText text={o} style={styles.optionText} maxSentences={1} maxLength={64} />
             </TouchableOpacity>
           ))}
         </View>
