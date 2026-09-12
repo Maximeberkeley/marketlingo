@@ -1,9 +1,25 @@
 /**
- * Beat sequencer — turns a stack of slides into a rhythm of short beats:
- * cold open, insight, game, insight, game, boss round, takeaway.
- * Never more than one text beat in a row.
+ * Beat sequencer — turns a stack of slides plus the market's own content into a
+ * rhythm of short beats: cold open, insight, industry game, insight, game,
+ * boss call, takeaway. Leo speaks over every beat.
+ *
+ * Industry-specific material (authored packs, trainer scenarios, fact-checked
+ * drills) is always preferred; slide-derived games are the fallback so any
+ * market still plays.
  */
 import { Exercise, KeyTerm, Lesson } from '../types';
+import { IndustryPack, getIndustryPack } from '../industry/packs';
+import type { DrillRow, TrainerScenarioRow } from '../../hooks/useIndustryContent';
+import {
+  drillSpotFake,
+  drillTrueFalse,
+  packChain,
+  packFaceOff,
+  packMap,
+  packNumber,
+  packSpeedRound,
+  trainerCall,
+} from '../industry/build';
 import {
   SlideLike,
   makeBuildChain,
@@ -27,22 +43,42 @@ export interface StackMetadataLike {
   next_preview?: string;
 }
 
+export interface IndustryInput {
+  marketId?: string;
+  marketName?: string;
+  trainer?: TrainerScenarioRow[];
+  drills?: DrillRow[];
+}
+
 export interface BeatBuildResult {
   lesson: Lesson;
   /** Slide number behind each beat, for Note / Save actions. */
   slideNumbers: number[];
 }
 
+const rotate = <T,>(list: T[]) => shuffle(list);
+
+function leoLine(pool: string[] | undefined, i: number): string | undefined {
+  if (!pool?.length) return undefined;
+  return pool[i % pool.length];
+}
+
 export function buildBeats(
   stackTitle: string,
   slides: SlideLike[],
   metadata?: StackMetadataLike,
+  industry?: IndustryInput,
 ): BeatBuildResult {
+  const pack: IndustryPack | null = getIndustryPack(industry?.marketId);
+  const marketLabel = pack?.label || industry?.marketName || 'your market';
+  const trainerRows = industry?.trainer ?? [];
+  const drills = industry?.drills ?? [];
+
   const exercises: Exercise[] = [];
   const slideNumbers: number[] = [];
-  const push = (ex: Exercise | null, slideNumber: number) => {
+  const push = (ex: Exercise | null, slideNumber: number, leo?: Exercise['leo']) => {
     if (!ex) return false;
-    exercises.push(ex);
+    exercises.push(leo ? { ...ex, leo } : ex);
     slideNumbers.push(slideNumber);
     return true;
   };
@@ -52,11 +88,44 @@ export function buildBeats(
   const allTerms: KeyTerm[] = slides.flatMap(s => s.keyTerms || []);
   const bodyPool = slides.map(s => sentences(s.body));
 
-  // 1. Cold open — a number that earns attention.
-  push(makeColdOpen(slides, 'beat-open', metadata?.recap_bridge ? 'Picking up where you left off' : undefined), firstSlide);
+  // 1. Cold open — the day's own number, or the market's signature hook.
+  const opened = push(
+    makeColdOpen(slides, 'beat-open', pack ? pack.eyebrow : undefined),
+    firstSlide,
+    { line: leoLine(pack?.leo.open, 0) || `Two minutes inside ${marketLabel}. Let's go.`, mood: 'idle' },
+  );
+  if (!opened && pack) {
+    push(
+      {
+        kind: 'coldOpen',
+        id: 'beat-open-pack',
+        eyebrow: pack.eyebrow,
+        headline: pack.coldOpen.headline,
+        kicker: pack.coldOpen.kicker,
+      },
+      firstSlide,
+      { line: leoLine(pack.leo.open, 0), mood: 'idle' },
+    );
+  }
 
-  // 2. Game generators, rotated so no two lessons feel the same.
-  const gameFactories: ((slideIdx: number) => Exercise | null)[] = shuffle([
+  // 2. Games — industry-specific first, slide-derived as backup.
+  const industryFactories: (() => Exercise | null)[] = pack
+    ? rotate([
+        () => packMap(pack, `ind-map-${exercises.length}`),
+        () => packFaceOff(pack, `ind-face-${exercises.length}`),
+        () => packChain(pack, `ind-chain-${exercises.length}`),
+        () => packNumber(pack, `ind-num-${exercises.length}`),
+        () => packSpeedRound(pack, `ind-speed-${exercises.length}`),
+      ])
+    : [];
+  if (drills.length >= 3) {
+    industryFactories.push(() =>
+      drillSpotFake(drills, `ind-fake-${exercises.length}`, `One of these ${marketLabel} facts is false. Which one?`),
+    );
+    industryFactories.push(() => drillTrueFalse(drills, `ind-tf-${exercises.length}`));
+  }
+
+  const slideFactories: ((slideIdx: number) => Exercise | null)[] = rotate([
     () => makeMapMarket(allTerms, `beat-map-${exercises.length}`),
     () => makeSpeedRound(allTerms, `beat-speed-${exercises.length}`),
     () => makeSortSignal(slides, `beat-sort-${exercises.length}`),
@@ -69,36 +138,58 @@ export function buildBeats(
       ),
     () => makeChartRead(slides, `beat-chart-${exercises.length}`),
   ]);
-  let gameCursor = 0;
+
+  let industryCursor = 0;
+  let slideCursor = 0;
 
   const nextGame = (slideIdx: number): Exercise | null => {
-    for (let tries = 0; tries < gameFactories.length; tries++) {
-      const factory = gameFactories[(gameCursor + tries) % gameFactories.length];
-      const built = factory(slideIdx);
+    // Prefer the market's own material.
+    for (let tries = 0; tries < industryFactories.length; tries++) {
+      const factory = industryFactories[(industryCursor + tries) % industryFactories.length];
+      const built = factory();
       if (built) {
-        gameCursor = (gameCursor + tries + 1) % gameFactories.length;
+        industryCursor = (industryCursor + tries + 1) % industryFactories.length;
         return built;
       }
     }
-    // Last resort: a recall question built from real sentences.
+    for (let tries = 0; tries < slideFactories.length; tries++) {
+      const factory = slideFactories[(slideCursor + tries) % slideFactories.length];
+      const built = factory(slideIdx);
+      if (built) {
+        slideCursor = (slideCursor + tries + 1) % slideFactories.length;
+        return built;
+      }
+    }
     const others = bodyPool.filter((_, i) => i !== slideIdx).flat();
     return slides[slideIdx] ? makeRecall(slides[slideIdx], others, `beat-recall-${exercises.length}`) : null;
   };
 
   // 3. Alternate insight → game across the slides.
+  let gameCount = 0;
   slides.forEach((slide, slideIdx) => {
-    push(
-      makeMicroInsight(slide, `beat-insight-${slide.slideNumber}`, slide.title),
-      slide.slideNumber,
-    );
+    push(makeMicroInsight(slide, `beat-insight-${slide.slideNumber}`, slide.title), slide.slideNumber, {
+      line: undefined,
+      mood: 'idle',
+    });
     const isLast = slideIdx === slides.length - 1;
     if (!isLast || slides.length === 1) {
-      push(nextGame(slideIdx), slide.slideNumber);
+      const added = push(nextGame(slideIdx), slide.slideNumber, {
+        line: leoLine(pack?.leo.game, gameCount),
+        mood: 'thinking',
+      });
+      if (added) gameCount += 1;
     }
   });
 
-  // 4. Boss round — tamper detection over everything just covered.
-  push(makeSpotFake(slides, 'beat-boss'), lastSlide);
+  // 4. Boss beat — a real scenario from this market, or tamper detection.
+  const boss =
+    trainerCall(shuffle(trainerRows)[0], 'beat-boss-call') ||
+    drillSpotFake(drills, 'beat-boss-fake', `One of these ${marketLabel} facts is false. Which one?`) ||
+    makeSpotFake(slides, 'beat-boss');
+  push(boss, lastSlide, {
+    line: pack?.leo.boss || `Your call. Read it the way an insider in ${marketLabel} would.`,
+    mood: 'thinking',
+  });
 
   // 5. Takeaway, plus a cliffhanger for tomorrow.
   const takeaway = (metadata?.key_takeaway || '').trim();
@@ -109,13 +200,23 @@ export function buildBeats(
         id: 'beat-takeaway',
         eyebrow: 'Lock it in',
         text: takeaway,
-        highlight: metadata?.next_preview?.trim()
-          ? `Tomorrow: ${metadata.next_preview.trim()}`
-          : undefined,
+        highlight: metadata?.next_preview?.trim() ? `Tomorrow: ${metadata.next_preview.trim()}` : undefined,
       },
       lastSlide,
+      { line: pack?.leo.takeaway, mood: 'celebrate' },
     );
   }
 
-  return { lesson: { id: stackTitle, title: stackTitle, exercises }, slideNumbers };
+  return {
+    lesson: {
+      id: stackTitle,
+      title: stackTitle,
+      exercises,
+      leoReactions: {
+        win: ['That is exactly how an insider reads it.', 'Clean. You are building real instinct.', 'Yes — you followed the money.'],
+        miss: ['Not it, but now you know where to look.', 'Close. Re-read who carries the risk.', 'Wrong turn — this is the one people get wrong.'],
+      },
+    },
+    slideNumbers,
+  };
 }

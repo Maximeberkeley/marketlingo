@@ -6,3 +6,9 @@
 - [x] Phase 2 — beat sequencer: cold open, insight, game, boss round, takeaway
 - [ ] Phase 3 — streak rescue, comeback flow, rival nudges, league reveal, smarter notifications
 - [ ] Phase 4 — market worlds, collectible player cards, insider milestones, weekly recap
+
+## Lesson kit — industry content (done)
+- Industry packs: fintech (finance), ai (tech), logistics (commerce)
+- Real trainer scenarios power The Call; fact-checked drills power Spot the Fake
+- Leo coaches every beat and reacts to answers
+- Next: packs for the remaining 12 markets (no retail market exists yet)

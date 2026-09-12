@@ -167,7 +167,15 @@ export interface TheCallExercise {
   explanation?: string;
 }
 
-export type Exercise =
+/** A short in-character line from Leo, shown above the beat. */
+export interface LeoBeat {
+  /** What Leo says while the learner is working on this beat. */
+  line?: string;
+  /** Leo's mood for the coach strip. Defaults to 'idle'. */
+  mood?: 'idle' | 'thinking' | 'celebrate';
+}
+
+type AnyExercise =
   | ColdOpenExercise
   | MicroInsightExercise
   | InfoExercise
@@ -183,11 +191,17 @@ export type Exercise =
   | ChartReadExercise
   | TheCallExercise;
 
+/** Every beat can carry a Leo line, whatever its kind. */
+export type Exercise = AnyExercise & { leo?: LeoBeat };
+
 export interface Lesson {
   id: string;
   title: string;
   subtitle?: string;
   exercises: Exercise[];
+  /** Leo's reaction lines for this market, used on feedback. */
+  leoReactions?: { win: string[]; miss: string[] };
   /** Optional hearts/lives mode. Omit to hide lives entirely. */
   lives?: number;
+
 }
