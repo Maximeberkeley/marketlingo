@@ -85,7 +85,7 @@ export function LessonKitReader({
   dayNumber,
   metadata,
 }: LessonKitReaderProps) {
-  const { trainer, drills } = useIndustryContent(marketId, dayNumber);
+  const { trainer, drills, stats } = useIndustryContent(marketId, dayNumber);
 
   const { lesson, slideNumbers } = useMemo(
     () =>
@@ -93,8 +93,9 @@ export function LessonKitReader({
         marketId,
         trainer,
         drills,
+        stats,
       }),
-    [stackTitle, slides, marketId, metadata, trainer, drills],
+    [stackTitle, slides, marketId, metadata, trainer, drills, stats],
   );
 
 

@@ -9,7 +9,7 @@
  */
 import { Exercise, KeyTerm, Lesson } from '../types';
 import { IndustryPack, getIndustryPack } from '../industry/packs';
-import type { DrillRow, TrainerScenarioRow } from '../../hooks/useIndustryContent';
+import type { DrillRow, IndustryStatRow, TrainerScenarioRow } from '../../hooks/useIndustryContent';
 import {
   drillSpotFake,
   drillTrueFalse,
@@ -18,6 +18,11 @@ import {
   packMap,
   packNumber,
   packSpeedRound,
+  statColdOpen,
+  statFaceOff,
+  statLeoLine,
+  statNumberSense,
+  statTrend,
   trainerCall,
 } from '../industry/build';
 import {
@@ -48,6 +53,8 @@ export interface IndustryInput {
   marketName?: string;
   trainer?: TrainerScenarioRow[];
   drills?: DrillRow[];
+  /** Real, sourced industry numbers and trends for this market. */
+  stats?: IndustryStatRow[];
 }
 
 export interface BeatBuildResult {
@@ -73,6 +80,9 @@ export function buildBeats(
   const marketLabel = pack?.label || industry?.marketName || 'your market';
   const trainerRows = industry?.trainer ?? [];
   const drills = industry?.drills ?? [];
+  const stats = industry?.stats ?? [];
+  // Leo speaks with real figures whenever the market has them.
+  const statLines = shuffle(stats).map(statLeoLine);
 
   const exercises: Exercise[] = [];
   const slideNumbers: number[] = [];
@@ -90,9 +100,13 @@ export function buildBeats(
 
   // 1. Cold open — the day's own number, or the market's signature hook.
   const opened = push(
-    makeColdOpen(slides, 'beat-open', pack ? pack.eyebrow : undefined),
+    makeColdOpen(slides, 'beat-open', pack ? pack.eyebrow : undefined) ||
+      statColdOpen(stats, 'beat-open-stat', pack?.eyebrow),
     firstSlide,
-    { line: leoLine(pack?.leo.open, 0) || `Two minutes inside ${marketLabel}. Let's go.`, mood: 'idle' },
+    {
+      line: statLines[0] || leoLine(pack?.leo.open, 0) || `Two minutes inside ${marketLabel}. Let's go.`,
+      mood: 'idle',
+    },
   );
   if (!opened && pack) {
     push(
@@ -118,6 +132,13 @@ export function buildBeats(
         () => packSpeedRound(pack, `ind-speed-${exercises.length}`),
       ])
     : [];
+  if (stats.length >= 1) {
+    industryFactories.unshift(() => statNumberSense(stats, `stat-num-${exercises.length}`));
+    industryFactories.push(() => statTrend(stats, `stat-trend-${exercises.length}`));
+  }
+  if (stats.length >= 2) {
+    industryFactories.push(() => statFaceOff(stats, `stat-face-${exercises.length}`));
+  }
   if (drills.length >= 3) {
     industryFactories.push(() =>
       drillSpotFake(drills, `ind-fake-${exercises.length}`, `One of these ${marketLabel} facts is false. Which one?`),
@@ -174,7 +195,9 @@ export function buildBeats(
     const isLast = slideIdx === slides.length - 1;
     if (!isLast || slides.length === 1) {
       const added = push(nextGame(slideIdx), slide.slideNumber, {
-        line: leoLine(pack?.leo.game, gameCount),
+        line: statLines.length
+          ? statLines[gameCount % statLines.length]
+          : leoLine(pack?.leo.game, gameCount),
         mood: 'thinking',
       });
       if (added) gameCount += 1;
