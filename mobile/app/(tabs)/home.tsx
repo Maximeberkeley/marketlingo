@@ -647,6 +647,17 @@ export default function HomeScreen() {
         achievement={achievementPopup}
         onDismiss={() => setAchievementPopup(null)}
       />
+
+      {league.lastWeek && (
+        <LeagueCeremonyModal
+          visible={league.ceremonyPending && !session.showReader}
+          tier={league.lastWeek.tier}
+          result={league.lastWeek.result}
+          finalRank={league.lastWeek.finalRank}
+          onClose={league.dismissCeremony}
+          onViewLeague={() => { league.dismissCeremony(); router.push('/league'); }}
+        />
+      )}
     </View>
   );
 }
@@ -654,6 +665,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   scrollContent: { paddingHorizontal: 20 },
+  rescueLink: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    borderWidth: 1, borderColor: 'rgba(249,115,22,0.3)', backgroundColor: COLORS.orangeSoft,
+    borderRadius: 14, paddingVertical: 12, marginBottom: 16,
+  },
+  rescueLinkText: { fontSize: 13, fontWeight: '700', color: COLORS.streak },
 
   // Top bar
   topBar: {
