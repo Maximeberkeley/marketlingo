@@ -4,6 +4,8 @@ import { tokens } from '../theme/tokens';
 import { ColdOpenExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { useEnter } from './shared';
+import { ColorText } from '../components/ColorText';
+import { shortLabel } from '../text';
 
 /** Cold open — one arresting line, full bleed, then tap on. */
 export function ColdOpen({ exercise, onChange }: ExerciseProps<ColdOpenExercise>) {
@@ -19,9 +21,9 @@ export function ColdOpen({ exercise, onChange }: ExerciseProps<ColdOpenExercise>
   return (
     <View style={styles.wrap}>
       <Animated.View style={[styles.card, { opacity: enter, transform: [{ translateY }, { scale }] }]}>
-        {!!exercise.eyebrow && <Text style={styles.eyebrow}>{exercise.eyebrow.toUpperCase()}</Text>}
-        <Text style={styles.headline}>{exercise.headline}</Text>
-        {!!exercise.kicker && <Text style={styles.kicker}>{exercise.kicker}</Text>}
+        {!!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow).toUpperCase()}</Text>}
+        <ColorText text={exercise.headline} style={styles.headline} maxSentences={2} maxLength={140} />
+        {!!exercise.kicker && <ColorText text={exercise.kicker} style={styles.kicker} maxSentences={1} maxLength={80} />}
       </Animated.View>
     </View>
   );
@@ -39,9 +41,9 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '900',
     letterSpacing: 1.6,
-    color: '#FFFFFF',
+    color: tokens.color.textOnAccent,
     opacity: 0.6,
   },
-  headline: { fontSize: 30, fontWeight: '900', color: '#FFFFFF', lineHeight: 36, letterSpacing: -0.5 },
-  kicker: { fontSize: tokens.font.body, color: '#FFFFFF', opacity: 0.75, lineHeight: 23 },
+  headline: { fontSize: 30, fontWeight: '900', color: tokens.color.textOnAccent, lineHeight: 36 },
+  kicker: { fontSize: tokens.font.body, color: tokens.color.textOnAccent, opacity: 0.75, lineHeight: 23 },
 });

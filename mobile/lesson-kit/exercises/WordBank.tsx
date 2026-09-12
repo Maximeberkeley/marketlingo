@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { tokens } from '../theme/tokens';
 import { WordBankExercise } from '../types';
 import { ExerciseProps } from './types';
+import { ColorText } from '../components/ColorText';
 
 interface Tile {
   key: string;
@@ -63,7 +64,7 @@ export function WordBank({ exercise, phase, onChange }: ExerciseProps<WordBankEx
 
   return (
     <View style={styles.wrap}>
-      <Text style={styles.prompt}>{exercise.prompt}</Text>
+      <ColorText text={exercise.prompt} style={styles.prompt} maxSentences={2} maxLength={120} />
 
       <View style={styles.answerArea}>
         {placed.length === 0 ? (

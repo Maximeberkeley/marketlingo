@@ -4,6 +4,7 @@ import { ChoiceCard, ChoiceState } from '../components/ChoiceCard';
 import { tokens } from '../theme/tokens';
 import { MultipleChoiceExercise } from '../types';
 import { ExerciseProps } from './types';
+import { ColorText } from '../components/ColorText';
 
 export function MultipleChoice({ exercise, phase, onChange }: ExerciseProps<MultipleChoiceExercise>) {
   const [selected, setSelected] = useState<number | null>(null);
@@ -30,7 +31,7 @@ export function MultipleChoice({ exercise, phase, onChange }: ExerciseProps<Mult
 
   return (
     <View style={styles.wrap}>
-      <Text style={styles.prompt}>{exercise.prompt}</Text>
+      <ColorText text={exercise.prompt} style={styles.prompt} maxSentences={2} maxLength={120} />
       <View style={styles.options}>
         {exercise.options.map((option, i) => (
           <ChoiceCard

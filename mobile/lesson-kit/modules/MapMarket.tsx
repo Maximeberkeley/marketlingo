@@ -4,6 +4,8 @@ import { tokens } from '../theme/tokens';
 import { MapMarketExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { Prompt, tap, useEnter } from './shared';
+import { ColorText } from '../components/ColorText';
+import { shortLabel } from '../text';
 
 /** Map the Market — a stylised value-chain board; tap the node that fits. */
 export function MapMarket({ exercise, phase, onChange }: ExerciseProps<MapMarketExercise>) {
@@ -46,8 +48,8 @@ export function MapMarket({ exercise, phase, onChange }: ExerciseProps<MapMarket
                   reveal && picked === i && !right && styles.nodeWrong,
                 ]}
               >
-                <Text style={styles.nodeLabel}>{n.label}</Text>
-                {!!n.sub && <Text style={styles.nodeSub}>{n.sub}</Text>}
+                <Text style={styles.nodeLabel}>{shortLabel(n.label)}</Text>
+                {!!n.sub && <ColorText text={n.sub} style={styles.nodeSub} maxSentences={1} maxLength={70} />}
               </TouchableOpacity>
             </Animated.View>
           );

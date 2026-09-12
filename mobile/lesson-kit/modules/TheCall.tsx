@@ -5,6 +5,8 @@ import { tokens } from '../theme/tokens';
 import { TheCallExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { tap, useEnter } from './shared';
+import { ColorText } from '../components/ColorText';
+import { shortLabel } from '../text';
 
 /**
  * The Call — the boss beat. Read the situation, commit, then watch the
@@ -46,10 +48,10 @@ export function TheCall({ exercise, phase, onChange }: ExerciseProps<TheCallExer
           <Feather name="radio" size={13} color={tokens.color.textOnAccent} />
           <Text style={styles.briefHeadText}>THE CALL</Text>
         </View>
-        <Text style={styles.situation}>{exercise.situation}</Text>
+        <ColorText text={exercise.situation} style={styles.situation} maxSentences={2} maxLength={150} />
       </Animated.View>
 
-      <Text style={styles.prompt}>{exercise.prompt}</Text>
+      <ColorText text={exercise.prompt} style={styles.prompt} maxSentences={2} maxLength={110} />
 
       <View style={styles.options}>
         {exercise.options.map((o, i) => {
@@ -67,7 +69,7 @@ export function TheCall({ exercise, phase, onChange }: ExerciseProps<TheCallExer
                 reveal && picked === i && !right && styles.optionWrong,
               ]}
             >
-              <Text style={styles.optionText}>{o}</Text>
+              <ColorText text={shortLabel(o)} style={styles.optionText} maxSentences={1} maxLength={72} />
             </TouchableOpacity>
           );
         })}
@@ -78,7 +80,7 @@ export function TheCall({ exercise, phase, onChange }: ExerciseProps<TheCallExer
           {exercise.consequences.slice(0, beats).map((c, i) => (
             <View key={i} style={styles.wireRow}>
               <View style={styles.wireDot} />
-              <Text style={styles.wireText}>{c}</Text>
+              <ColorText text={c} style={styles.wireText} maxSentences={1} maxLength={90} />
             </View>
           ))}
         </View>
@@ -103,7 +105,7 @@ const styles = StyleSheet.create({
     color: tokens.color.textOnAccent,
     opacity: 0.75,
   },
-  situation: { fontSize: tokens.font.body + 1, fontWeight: '700', color: '#FFFFFF', lineHeight: 24 },
+  situation: { fontSize: tokens.font.body + 1, fontWeight: '700', color: tokens.color.textOnAccent, lineHeight: 24 },
   prompt: {
     fontSize: tokens.font.prompt,
     fontWeight: '900',

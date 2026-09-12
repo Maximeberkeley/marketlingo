@@ -5,6 +5,8 @@ import { tokens } from '../theme/tokens';
 import { BuildChainExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { Prompt, shuffle, tap, tick, useShake } from './shared';
+import { ColorText } from '../components/ColorText';
+import { shortLabel } from '../text';
 
 /**
  * Build the Chain — tap the steps in the real order.
@@ -63,9 +65,13 @@ export function BuildChain({ exercise, phase, onChange }: ExerciseProps<BuildCha
             <View key={slot} style={styles.slotRow}>
               <View style={[styles.slot, filled && styles.slotFilled]}>
                 <Text style={[styles.slotNum, filled && styles.slotNumFilled]}>{slot + 1}</Text>
-                <Text style={[styles.slotText, filled && styles.slotTextFilled]} numberOfLines={2}>
-                  {filled ? exercise.steps[used[slot]] : 'Tap the next step'}
-                </Text>
+                <ColorText
+                  text={filled ? exercise.steps[used[slot]] : 'Tap the next step'}
+                  style={[styles.slotText, filled && styles.slotTextFilled]}
+                  maxSentences={1}
+                  maxLength={64}
+                  numberOfLines={2}
+                />
               </View>
               {slot < exercise.steps.length - 1 && (
                 <Feather
@@ -93,7 +99,7 @@ export function BuildChain({ exercise, phase, onChange }: ExerciseProps<BuildCha
               }}
               style={[styles.tile, spent && styles.tileSpent]}
             >
-              <Text style={[styles.tileText, spent && styles.tileTextSpent]}>{label}</Text>
+              <Text style={[styles.tileText, spent && styles.tileTextSpent]}>{shortLabel(label)}</Text>
             </TouchableOpacity>
           );
         })}

@@ -1,5 +1,6 @@
 // Slide Components for React Native
-export { SlideReader } from './SlideReader';
+export { LessonKitReader as SlideReader } from './LessonKitReader';
+export { LessonKitReader } from './LessonKitReader';
 export { SlideContentCard } from './SlideContentCard';
 export { SlideIntroCard } from './SlideIntroCard';
 export { MentorGuide } from './MentorGuide';

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { tokens } from '../theme/tokens';
+import { ColorText } from './ColorText';
 
 export type ChoiceState = 'idle' | 'selected' | 'correct' | 'incorrect';
 
@@ -40,7 +41,7 @@ export function ChoiceCard({ label, state, onPress, disabled }: Props) {
       onPress={onPress}
       style={[styles.card, { backgroundColor: BG[state], borderColor: BORDER[state] }]}
     >
-      <Text style={[styles.label, { color: TEXT[state] }]}>{label}</Text>
+      <ColorText text={label} style={[styles.label, { color: TEXT[state] }]} maxSentences={1} maxLength={80} />
     </TouchableOpacity>
   );
 }

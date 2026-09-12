@@ -3,6 +3,8 @@ import { View, Text, StyleSheet } from 'react-native';
 import { tokens } from '../theme/tokens';
 import { InfoExercise } from '../types';
 import { ExerciseProps } from './types';
+import { ColorText } from '../components/ColorText';
+import { shortLabel, shortText } from '../text';
 
 export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
   useEffect(() => {
@@ -15,22 +17,22 @@ export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
 
   return (
     <View style={styles.wrap}>
-      {!!exercise.eyebrow && <Text style={styles.eyebrow}>{exercise.eyebrow}</Text>}
-      {!!exercise.title && <Text style={styles.title}>{exercise.title}</Text>}
+      {!!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow)}</Text>}
+      {!!exercise.title && <ColorText text={exercise.title} style={styles.title} maxSentences={1} maxLength={80} />}
 
-      {!!exercise.body && !bodyIsEcho && <Text style={styles.body}>{exercise.body}</Text>}
+      {!!exercise.body && !bodyIsEcho && <ColorText text={exercise.body} style={styles.body} maxSentences={2} maxLength={150} />}
 
-      {exercise.bullets?.map((b, i) => (
+      {exercise.bullets?.slice(0, 2).map((b, i) => (
         <View key={i} style={styles.bulletRow}>
           <View style={styles.dot} />
-          <Text style={styles.bullet}>{b}</Text>
+          <ColorText text={shortText(b, 1, 90)} style={styles.bullet} maxSentences={1} maxLength={90} />
         </View>
       ))}
 
-      {exercise.keyTerms?.map((t, i) => (
+      {exercise.keyTerms?.slice(0, 1).map((t, i) => (
         <View key={`t${i}`} style={styles.termCard}>
-          <Text style={styles.term}>{t.term}</Text>
-          <Text style={styles.termDef}>{t.definition}</Text>
+          <Text style={styles.term}>{shortLabel(t.term)}</Text>
+          <ColorText text={t.definition} style={styles.termDef} maxSentences={1} maxLength={100} />
         </View>
       ))}
 

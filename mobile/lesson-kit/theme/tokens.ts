@@ -19,6 +19,11 @@ export const tokens = {
     accentDark: '#7C3AED',
     accentSoft: 'rgba(139, 92, 246, 0.10)',
 
+    signalData: '#0EA5E9',
+    signalUp: '#16A34A',
+    signalDown: '#E11D48',
+    signalEnergy: '#F59E0B',
+
     correct: '#22C55E',
     correctDark: '#16A34A',
     correctSoft: 'rgba(34, 197, 94, 0.12)',

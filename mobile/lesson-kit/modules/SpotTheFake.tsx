@@ -5,6 +5,7 @@ import { tokens } from '../theme/tokens';
 import { SpotFakeExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { Prompt, tap, useEnter } from './shared';
+import { ColorText } from '../components/ColorText';
 
 /** Spot the Fake — three statements, one is a plant. Tap the lie. */
 export function SpotTheFake({ exercise, phase, onChange }: ExerciseProps<SpotFakeExercise>) {
@@ -54,7 +55,7 @@ export function SpotTheFake({ exercise, phase, onChange }: ExerciseProps<SpotFak
                   <Text style={styles.rowNum}>{i + 1}</Text>
                 )}
               </View>
-              <Text style={styles.rowText}>{s}</Text>
+              <ColorText text={s} style={styles.rowText} maxSentences={1} maxLength={90} />
             </TouchableOpacity>
           </Animated.View>
         );
