@@ -3,9 +3,11 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { LessonScreen } from '../../lesson-kit/screens/LessonScreen';
 import { tokens } from '../../lesson-kit/theme/tokens';
-import { buildBeats } from '../../lesson-kit/sequencer/buildBeats';
+import { buildBeats, IndustryInput } from '../../lesson-kit/sequencer/buildBeats';
 import { SlideLike } from '../../lesson-kit/sequencer/extract';
+import { useIndustryContent } from '../../hooks/useIndustryContent';
 import { parseSlideIntoCards } from './ConceptCard';
+
 
 interface Source {
   label: string;
@@ -53,6 +55,7 @@ function buildLesson(
   slides: SlideData[],
   marketId: string | undefined,
   metadata: StackMetadata | undefined,
+  industry: IndustryInput,
 ) {
   const enriched: SlideLike[] = slides.map((slide, slideIdx) => {
     const cards = parseSlideIntoCards(slide.title, slide.body, slide.sources || [], slideIdx, marketId);
@@ -66,7 +69,7 @@ function buildLesson(
     };
   });
 
-  return buildBeats(stackTitle, enriched, metadata);
+  return buildBeats(stackTitle, enriched, metadata, industry);
 }
 
 export function LessonKitReader({
@@ -79,12 +82,21 @@ export function LessonKitReader({
   marketId,
   isReview = false,
   streakDays,
+  dayNumber,
   metadata,
 }: LessonKitReaderProps) {
+  const { trainer, drills } = useIndustryContent(marketId, dayNumber);
+
   const { lesson, slideNumbers } = useMemo(
-    () => buildLesson(stackTitle, slides, marketId, metadata),
-    [stackTitle, slides, marketId, metadata],
+    () =>
+      buildLesson(stackTitle, slides, marketId, metadata, {
+        marketId,
+        trainer,
+        drills,
+      }),
+    [stackTitle, slides, marketId, metadata, trainer, drills],
   );
+
 
   const extraActions = useCallback(
     (exerciseIndex: number) => {
