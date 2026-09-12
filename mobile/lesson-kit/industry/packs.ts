@@ -475,7 +475,370 @@ const logistics: IndustryPack = {
   },
 };
 
-const PACKS: IndustryPack[] = [fintech, ai, logistics];
+const cybersecurity: IndustryPack = {
+  marketId: 'cybersecurity',
+  label: 'Cybersecurity',
+  eyebrow: 'Inside security',
+  coldOpen: {
+    headline: 'Most breaches do not break the lock. Someone hands over the key.',
+    kicker: 'Follow the identity, not the firewall, and the industry makes sense.',
+  },
+  faceOffs: [
+    {
+      prompt: 'Which one actually stops a stolen password from working?',
+      left: { name: 'Longer password rules', note: 'More characters' },
+      right: { name: 'Second factor', note: 'Device or key check' },
+      correctIndex: 1,
+      explanation: 'A stolen password is still a valid password. A second factor breaks the attack because the attacker lacks the device.',
+    },
+    {
+      prompt: 'Which buyer signs the biggest security budgets?',
+      left: { name: 'Security engineer', note: 'Uses the tool daily' },
+      right: { name: 'Chief information security officer', note: 'Owns risk and budget' },
+      correctIndex: 1,
+      explanation: 'Engineers pick favourites, but the CISO owns audit exposure and the spend. Security selling is risk selling.',
+    },
+    {
+      prompt: 'Which failure hurts a security vendor more?',
+      left: { name: 'Missed attack', note: 'False negative' },
+      right: { name: 'Too many alerts', note: 'False positives' },
+      correctIndex: 0,
+      explanation: 'Alert noise burns the team, but a missed intrusion ends the contract and often the reputation.',
+    },
+  ],
+  chains: [
+    {
+      prompt: 'Order how a real intrusion unfolds',
+      steps: [
+        'Attacker phishes or buys a valid credential',
+        'They log in and look normal',
+        'They escalate to higher privileges',
+        'They move sideways to valuable systems',
+        'They exfiltrate data or deploy ransomware',
+      ],
+      explanation: 'Detection lives in the middle steps. By the time data leaves, you are doing incident response, not defence.',
+    },
+    {
+      prompt: 'Order how a company responds to a breach',
+      steps: [
+        'Detect and confirm the incident',
+        'Contain the affected accounts and hosts',
+        'Eradicate the attacker access',
+        'Recover systems from clean backups',
+        'Report to regulators and customers',
+      ],
+      explanation: 'Containment before cleanup. Rushing to restore without eradication invites the attacker straight back in.',
+    },
+  ],
+  maps: [
+    {
+      prompt: 'Tap the layer attackers target most often',
+      nodes: [
+        { label: 'Identity', sub: 'Accounts & access' },
+        { label: 'Network', sub: 'Firewalls & routing' },
+        { label: 'Endpoint', sub: 'Laptops & servers' },
+        { label: 'Application', sub: 'Code & APIs' },
+      ],
+      correctIndex: 0,
+      explanation: 'Identity is the modern perimeter. Stolen or over-permissioned accounts open more doors than software exploits.',
+    },
+    {
+      prompt: 'Tap the control that limits how far an attacker can travel inside',
+      nodes: [
+        { label: 'Least privilege', sub: 'Only the access needed' },
+        { label: 'Antivirus scan', sub: 'Known malware' },
+        { label: 'Security training', sub: 'Staff awareness' },
+        { label: 'Encrypted backups', sub: 'Recovery copies' },
+      ],
+      correctIndex: 0,
+      explanation: 'Least privilege caps blast radius. Backups help you recover, but they do nothing to slow lateral movement.',
+    },
+  ],
+  numbers: [
+    {
+      prompt: 'Fill the gap: attackers often sit inside a network for around _____ days before anyone notices.',
+      min: 0,
+      max: 200,
+      value: 60,
+      unit: 'days',
+      tolerance: 0.25,
+      explanation: 'Industry dwell-time studies land in the tens of days. That gap, not the initial break-in, is what makes breaches expensive.',
+    },
+    {
+      prompt: 'Fill the gap: roughly _____ of breaches involve a human element such as phishing or misuse.',
+      min: 0,
+      max: 100,
+      value: 70,
+      unit: '%',
+      tolerance: 0.2,
+      explanation: 'Most incident reports attribute the majority of breaches to people, not exotic zero-days.',
+    },
+  ],
+  jargon: [
+    { term: 'Zero trust', definition: 'Verifying every request instead of trusting anything inside the network' },
+    { term: 'Lateral movement', definition: 'An attacker travelling from one system to another after entry' },
+    { term: 'Dwell time', definition: 'How long an intruder stays undetected' },
+    { term: 'Blast radius', definition: 'How much can be reached once one account is compromised' },
+    { term: 'Privilege escalation', definition: 'Gaining higher access rights than originally granted' },
+    { term: 'Attack surface', definition: 'Every entry point exposed to the outside world' },
+  ],
+  leo: {
+    open: [
+      'Security is not about walls. It is about who is allowed to walk in.',
+      'Follow the identity. That is where the money and the mistakes are.',
+    ],
+    game: [
+      'Ask what an attacker gains, not what a tool promises.',
+      'Blast radius first. Always.',
+    ],
+    boss: 'Your call. In security the cost of being wrong is measured in headlines.',
+    takeaway: 'You can now read a breach report and spot the step that actually failed.',
+  },
+};
+
+const robotics: IndustryPack = {
+  marketId: 'robotics',
+  label: 'Robotics & Automation',
+  eyebrow: 'Inside robotics',
+  coldOpen: {
+    headline: 'Robots are cheap to demo and brutally expensive to keep running.',
+    kicker: 'Uptime, not intelligence, decides who wins this market.',
+  },
+  faceOffs: [
+    {
+      prompt: 'Which cost usually kills a robotics deployment?',
+      left: { name: 'Hardware price', note: 'One-off purchase' },
+      right: { name: 'Service & downtime', note: 'Every year, forever' },
+      correctIndex: 1,
+      explanation: 'Buyers care about cost per hour of work delivered. Maintenance and downtime dominate the lifetime bill.',
+    },
+    {
+      prompt: 'Which task is easier to automate today?',
+      left: { name: 'Moving pallets on a flat floor', note: 'Structured space' },
+      right: { name: 'Folding random laundry', note: 'Soft, unpredictable objects' },
+      correctIndex: 0,
+      explanation: 'Structure is everything. Rigid objects and predictable paths are solved; deformable, unseen objects still are not.',
+    },
+    {
+      prompt: 'Which sales model gets a factory to say yes faster?',
+      left: { name: 'Robot as a service', note: 'Monthly fee per output' },
+      right: { name: 'Large upfront purchase', note: 'Capital approval needed' },
+      correctIndex: 0,
+      explanation: 'Selling output as an operating expense skips capital committees and lets buyers compare to a wage.',
+    },
+  ],
+  chains: [
+    {
+      prompt: 'Order the loop inside every robot',
+      steps: [
+        'Sense the environment',
+        'Build a model of what is there',
+        'Plan a path or action',
+        'Actuate the motors',
+        'Check the result and correct',
+      ],
+      explanation: 'Sense, model, plan, act, correct. Every failure in the field is one of these five steps degrading.',
+    },
+    {
+      prompt: 'Order how automation actually enters a factory',
+      steps: [
+        'Pick one repetitive, measurable task',
+        'Run a paid pilot on a single line',
+        'Prove cost per unit against manual work',
+        'Roll out across similar lines',
+        'Standardise service and spare parts',
+      ],
+      explanation: 'Robotics scales line by line. The pilot exists to prove economics, not to impress anyone.',
+    },
+  ],
+  maps: [
+    {
+      prompt: 'Tap the metric an operations buyer judges a robot on',
+      nodes: [
+        { label: 'Cost per unit handled', sub: 'Output economics' },
+        { label: 'Number of sensors', sub: 'Spec sheet' },
+        { label: 'Top speed', sub: 'Peak performance' },
+        { label: 'Model accuracy', sub: 'Lab benchmark' },
+      ],
+      correctIndex: 0,
+      explanation: 'The floor manager compares your robot to a wage per unit of work. Specs only matter if they move that number.',
+    },
+    {
+      prompt: 'Tap the part of the stack that is hardest to copy',
+      nodes: [
+        { label: 'Field data & fleet learning', sub: 'Years of real runs' },
+        { label: 'Chassis design', sub: 'Metal and wheels' },
+        { label: 'Off-the-shelf sensors', sub: 'Bought parts' },
+        { label: 'Demo video', sub: 'Marketing' },
+      ],
+      correctIndex: 0,
+      explanation: 'Hardware can be sourced. Millions of real operating hours and the failure data behind them cannot be bought.',
+    },
+  ],
+  numbers: [
+    {
+      prompt: 'Fill the gap: a serious industrial deployment usually needs uptime above _____ to be accepted.',
+      min: 0,
+      max: 100,
+      value: 95,
+      unit: '%',
+      tolerance: 0.06,
+      explanation: 'Production lines are judged on availability. Below roughly 95% the robot becomes the bottleneck it was meant to remove.',
+    },
+    {
+      prompt: 'Fill the gap: a full industrial robot cell often costs several times the arm itself, roughly _____ x.',
+      min: 1,
+      max: 10,
+      value: 3,
+      unit: 'x',
+      tolerance: 0.25,
+      explanation: 'Integration, tooling, safety fencing and programming typically multiply the arm price a few times over.',
+    },
+  ],
+  jargon: [
+    { term: 'Uptime', definition: 'The share of scheduled time a machine is actually available to work' },
+    { term: 'Integration', definition: 'All the work needed to make a robot fit a real workflow' },
+    { term: 'Payload', definition: 'The maximum weight a robot can handle' },
+    { term: 'Teleoperation', definition: 'A human taking remote control when autonomy fails' },
+    { term: 'Cycle time', definition: 'How long one complete task takes' },
+    { term: 'Cobot', definition: 'A robot designed to work safely next to people' },
+  ],
+  leo: {
+    open: [
+      'Anyone can film a robot doing a trick once. Doing it 10,000 times is the business.',
+      'Robotics is an uptime industry wearing a science-fiction costume.',
+    ],
+    game: [
+      'Ask what happens on the bad day, not the demo day.',
+      'Compare the robot to a wage. That is how the buyer sees it.',
+    ],
+    boss: 'Your call. On a production line, downtime is the only number anyone remembers.',
+    takeaway: 'You can now judge a robotics pitch on economics instead of the highlight reel.',
+  },
+};
+
+const web3: IndustryPack = {
+  marketId: 'web3',
+  label: 'Web3 & Digital Assets',
+  eyebrow: 'Inside web3',
+  coldOpen: {
+    headline: 'A blockchain is a slow database that nobody has to trust.',
+    kicker: 'Once you accept that trade, every design choice starts to make sense.',
+  },
+  faceOffs: [
+    {
+      prompt: 'Which one holds your assets if you lose the phrase?',
+      left: { name: 'Self-custody wallet', note: 'You keep the keys' },
+      right: { name: 'Custodial account', note: 'A company keeps the keys' },
+      correctIndex: 1,
+      explanation: 'Self-custody means no recovery: lose the phrase, lose the assets. Custodians can reset access, and that is the trade.',
+    },
+    {
+      prompt: 'Which layer is optimised for cheap, high-volume transactions?',
+      left: { name: 'Layer 2 rollup', note: 'Batches then posts proof' },
+      right: { name: 'Base layer', note: 'Settles everything directly' },
+      correctIndex: 0,
+      explanation: 'Rollups batch activity off the base chain and post compressed data back, cutting cost per transaction sharply.',
+    },
+    {
+      prompt: 'Which token design actually earns its holders something?',
+      left: { name: 'Fee-sharing token', note: 'Claim on protocol revenue' },
+      right: { name: 'Governance-only token', note: 'Voting rights alone' },
+      correctIndex: 0,
+      explanation: 'Cash flow beats voting. A governance-only token has value only if governance can eventually direct real revenue.',
+    },
+  ],
+  chains: [
+    {
+      prompt: 'Order what happens to a transaction on chain',
+      steps: [
+        'Wallet signs the transaction with a private key',
+        'It is broadcast to the network mempool',
+        'A validator includes it in a block',
+        'The block is validated and appended',
+        'Enough confirmations make it practically final',
+      ],
+      explanation: 'Broadcast is not settlement. Finality is a confidence curve, which is why exchanges wait for confirmations.',
+    },
+    {
+      prompt: 'Order how a protocol usually bootstraps liquidity',
+      steps: [
+        'Ship the contracts and an audit',
+        'Seed pools with incentives',
+        'Attract mercenary yield seekers',
+        'Watch what stays when rewards taper',
+        'Live on real fee revenue',
+      ],
+      explanation: 'Incentives rent users. The only honest metric is what is left after the rewards stop.',
+    },
+  ],
+  maps: [
+    {
+      prompt: 'Tap the layer that decides whether a transaction is final',
+      nodes: [
+        { label: 'Consensus layer', sub: 'Validators agree' },
+        { label: 'Wallet', sub: 'Signs the message' },
+        { label: 'Front-end app', sub: 'Buttons and charts' },
+        { label: 'Indexer', sub: 'Reads chain data' },
+      ],
+      correctIndex: 0,
+      explanation: 'Apps and wallets only ask. Consensus decides what is true, and that is where the security budget lives.',
+    },
+    {
+      prompt: 'Tap where most user losses actually happen',
+      nodes: [
+        { label: 'Key handling & approvals', sub: 'Phishing, leaked phrases' },
+        { label: 'Consensus failure', sub: 'Chain halts' },
+        { label: 'Block explorers', sub: 'Data views' },
+        { label: 'Node hosting', sub: 'Infrastructure' },
+      ],
+      correctIndex: 0,
+      explanation: 'Chains rarely break. Users sign malicious approvals or leak phrases, and irreversibility does the rest.',
+    },
+  ],
+  numbers: [
+    {
+      prompt: 'Fill the gap: a rollup can cut cost per transaction versus its base chain by roughly _____ x.',
+      min: 1,
+      max: 100,
+      value: 20,
+      unit: 'x',
+      tolerance: 0.4,
+      explanation: 'Batching amortises base-layer cost across many transactions, commonly an order of magnitude or more.',
+    },
+    {
+      prompt: 'Fill the gap: a seed phrase is usually _____ words long.',
+      min: 3,
+      max: 36,
+      value: 12,
+      unit: 'words',
+      tolerance: 0.1,
+      explanation: 'The common standard is 12 words (sometimes 24). Those words are the account, which is why storage discipline matters.',
+    },
+  ],
+  jargon: [
+    { term: 'Self-custody', definition: 'Holding your own keys with no company able to recover them' },
+    { term: 'Rollup', definition: 'A chain that batches transactions and posts them to a base layer' },
+    { term: 'Finality', definition: 'The point where a transaction is practically irreversible' },
+    { term: 'Gas', definition: 'The fee paid for computation and space on chain' },
+    { term: 'Total value locked', definition: 'Assets deposited in a protocol at a point in time' },
+    { term: 'Token approval', definition: 'Permission given to a contract to move your tokens' },
+  ],
+  leo: {
+    open: [
+      'Strip the hype and web3 is one question: who has to be trusted here?',
+      'Keys, fees, finality. Learn those three and the jargon stops working on you.',
+    ],
+    game: [
+      'Ask who holds the keys. That answer decides the risk.',
+      'If the yield needs rewards to exist, it is rented, not earned.',
+    ],
+    boss: 'Your call. On chain, a wrong click is final, so decide like there is no undo.',
+    takeaway: 'You can now separate real protocol revenue from incentive theatre.',
+  },
+};
+
+const PACKS: IndustryPack[] = [fintech, ai, logistics, cybersecurity, robotics, web3];
 
 export function getIndustryPack(marketId?: string): IndustryPack | null {
   if (!marketId) return null;
