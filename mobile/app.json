@@ -5,7 +5,7 @@
     "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "scheme": "marketlingo",
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -15,9 +15,8 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.marketlingo.aerospace",
-      "buildNumber": "97",
+      "buildNumber": "98",
       "infoPlist": {
-        "UIUserInterfaceStyle": "Dark",
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "MarketLingo needs microphone access to record your interview responses in the Mock Lab for AI feedback.",
         "NSSpeechRecognitionUsageDescription": "MarketLingo uses speech recognition to transcribe your interview practice responses."

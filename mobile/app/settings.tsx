@@ -20,6 +20,8 @@ import { useAuth } from '../hooks/useAuth';
 import { useSubscription } from '../hooks/useSubscription';
 import { supabase } from '../lib/supabase';
 import { useAIConsent } from '../hooks/useAIConsent';
+import { ThemeMode, loadThemeMode, saveThemeMode } from '../lib/theme';
+import { triggerHaptic } from '../lib/haptics';
 
 import { NotificationOnboarding } from '../components/onboarding/NotificationOnboarding';
 import { log } from '../lib/logger';
@@ -74,8 +76,25 @@ async function registerForPushNotifications(): Promise<string | null> {
   }
 }
 
+const THEME_OPTIONS: { mode: ThemeMode; label: string; icon: keyof typeof Feather.glyphMap }[] = [
+  { mode: 'light', label: 'Light', icon: 'sun' },
+  { mode: 'dark', label: 'Dark', icon: 'moon' },
+  { mode: 'system', label: 'Auto', icon: 'smartphone' },
+];
+
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
+  const [themeMode, setThemeModeState] = useState<ThemeMode>('system');
+
+  useEffect(() => {
+    loadThemeMode().then(setThemeModeState).catch(() => {});
+  }, []);
+
+  const handleThemeChange = (mode: ThemeMode) => {
+    triggerHaptic('light');
+    setThemeModeState(mode);
+    saveThemeMode(mode).catch(() => {});
+  };
   const { user, signOut } = useAuth();
   const { isProUser } = useSubscription();
   const aiConsent = useAIConsent();
@@ -427,6 +446,34 @@ export default function SettingsScreen() {
         {true && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>APPEARANCE</Text>
+
+            <View style={styles.themeCard}>
+              <Text style={styles.settingLabel}>Theme</Text>
+              <Text style={styles.settingDesc}>Choose light, dark, or follow your device</Text>
+              <View style={styles.themeRow}>
+                {THEME_OPTIONS.map((opt) => {
+                  const active = themeMode === opt.mode;
+                  return (
+                    <TouchableOpacity
+                      key={opt.mode}
+                      style={[styles.themeOption, active && styles.themeOptionActive]}
+                      onPress={() => handleThemeChange(opt.mode)}
+                      activeOpacity={0.85}
+                    >
+                      <Feather
+                        name={opt.icon}
+                        size={16}
+                        color={active ? COLORS.accent : COLORS.textMuted}
+                      />
+                      <Text style={[styles.themeOptionText, active && styles.themeOptionTextActive]}>
+                        {opt.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
             <View style={styles.settingRow}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.settingLabel}>Use Industry Mascots</Text>
@@ -562,6 +609,19 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: COLORS.border,
   },
   settingLabel: { fontSize: 15, fontWeight: '500', color: COLORS.textPrimary },
+  themeCard: {
+    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, marginBottom: 8,
+    borderWidth: 1, borderColor: COLORS.border,
+  },
+  themeRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
+  themeOption: {
+    flex: 1, alignItems: 'center', justifyContent: 'center', gap: 6,
+    paddingVertical: 12, borderRadius: 12,
+    backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border,
+  },
+  themeOptionActive: { backgroundColor: COLORS.accentSoft, borderColor: COLORS.accentMedium },
+  themeOptionText: { fontSize: 12, fontWeight: '600', color: COLORS.textMuted },
+  themeOptionTextActive: { color: COLORS.accent },
   settingDesc: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
   notifSetupBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 12,

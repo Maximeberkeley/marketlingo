@@ -20,49 +20,51 @@ export const FAMILIARITY_LEVELS = [
   },
 ] as const;
 
-// Light-first Brilliant-inspired color palette
+// Adaptive palette — neutrals follow light/dark appearance automatically.
+import { dyn } from './theme';
+
 export const COLORS = {
   // Backgrounds
-  bg0: '#FFFFFF',           // Primary background — clean white
-  bg1: '#F8F9FB',           // Elevated surfaces (softer than gray-100)
-  bg2: '#FFFFFF',           // Cards
+  bg0: dyn('#FFFFFF', '#0F1116'),   // Primary background
+  bg1: dyn('#F8F9FB', '#181B22'),   // Elevated surfaces
+  bg2: dyn('#FFFFFF', '#181B22'),   // Cards
 
   // Text
-  textPrimary: '#1A1F36',   // Near-black for headings
-  textSecondary: '#6B7280', // Gray-500
-  textMuted: '#9CA3AF',     // Gray-400
+  textPrimary: dyn('#1A1F36', '#F4F6FA'),
+  textSecondary: dyn('#6B7280', '#AAB2C0'),
+  textMuted: dyn('#9CA3AF', '#7E8797'),
 
-  // Accent / Brand
-  accent: '#8B5CF6',        // Brand purple
-  accentDark: '#7C3AED',    // Darker purple for gradients
-  accentSoft: 'rgba(139, 92, 246, 0.08)',
-  accentMedium: 'rgba(139, 92, 246, 0.15)',
+  // Accent / Brand (brand purple reads well on both themes)
+  accent: '#8B5CF6',
+  accentDark: '#7C3AED',
+  accentSoft: dyn('rgba(139, 92, 246, 0.08)', 'rgba(139, 92, 246, 0.16)'),
+  accentMedium: dyn('rgba(139, 92, 246, 0.15)', 'rgba(139, 92, 246, 0.28)'),
 
   // Status / Semantic
   success: '#22C55E',
-  successSoft: 'rgba(34, 197, 94, 0.08)',
+  successSoft: dyn('rgba(34, 197, 94, 0.08)', 'rgba(34, 197, 94, 0.18)'),
   warning: '#F59E0B',
-  warningSoft: 'rgba(245, 158, 11, 0.08)',
+  warningSoft: dyn('rgba(245, 158, 11, 0.08)', 'rgba(245, 158, 11, 0.18)'),
   error: '#EF4444',
-  errorSoft: 'rgba(239, 68, 68, 0.08)',
+  errorSoft: dyn('rgba(239, 68, 68, 0.08)', 'rgba(239, 68, 68, 0.18)'),
   info: '#3B82F6',
-  infoSoft: 'rgba(59, 130, 246, 0.08)',
+  infoSoft: dyn('rgba(59, 130, 246, 0.08)', 'rgba(59, 130, 246, 0.18)'),
 
   // Borders & Surfaces
   streak: '#F97316',
-  border: '#E8EAF0',        // Slightly blue-tinted gray
-  borderLight: '#F3F4F6',
-  cardShadow: 'rgba(0,0,0,0.06)',
+  border: dyn('#E8EAF0', '#2A2F3A'),
+  borderLight: dyn('#F3F4F6', '#222732'),
+  cardShadow: dyn('rgba(0,0,0,0.06)', 'rgba(0,0,0,0.5)'),
 
   // Misc
   orange: '#FB923C',
-  orangeSoft: 'rgba(251, 146, 60, 0.08)',
+  orangeSoft: dyn('rgba(251, 146, 60, 0.08)', 'rgba(251, 146, 60, 0.18)'),
   gold: '#FBBF24',
-  goldSoft: 'rgba(251, 191, 36, 0.08)',
+  goldSoft: dyn('rgba(251, 191, 36, 0.08)', 'rgba(251, 191, 36, 0.18)'),
 
-  // Surface tints for light mode
-  surfaceSubtle: 'rgba(0, 0, 0, 0.02)',
-  surfaceLight: 'rgba(0, 0, 0, 0.04)',
+  // Surface tints
+  surfaceSubtle: dyn('rgba(0, 0, 0, 0.02)', 'rgba(255, 255, 255, 0.04)'),
+  surfaceLight: dyn('rgba(0, 0, 0, 0.04)', 'rgba(255, 255, 255, 0.08)'),
 };
 
 // Premium shadow presets (Brilliant-style depth)
