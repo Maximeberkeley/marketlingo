@@ -143,28 +143,24 @@ export function LessonScreen({
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
         playSound('correct').catch(() => {});
         setCorrectCount(c => c + 1);
-        setCombo(c => {
-          const next = c + 1;
-          setBestCombo(b => Math.max(b, next));
-          return next;
-        });
+        const nextCombo = combo + 1;
+        setCombo(nextCombo);
+        setBestCombo(previous => Math.max(previous, nextCombo));
         firePop(`+${xpPerCorrect} XP`);
       } else {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
         playSound('wrong').catch(() => {});
         setCombo(0);
         setMissed(m => (exercise ? [...m, exercise] : m));
-        setHearts(h => {
-          const next = Math.max(0, h - 1);
-          if (next === 0) setShowHeartsPrompt(true);
-          return next;
-        });
+        const nextHearts = Math.max(0, hearts - 1);
+        setHearts(nextHearts);
+        if (nextHearts === 0) setShowHeartsPrompt(true);
       }
       setPhase('feedback');
       return;
     }
     goNext();
-  }, [isInfo, phase, state, goNext, exercise, xpPerCorrect, firePop]);
+  }, [isInfo, phase, state, goNext, exercise, xpPerCorrect, firePop, combo, hearts]);
 
   const retryMissed = useCallback(() => {
     setShowHeartsPrompt(false);
