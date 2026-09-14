@@ -40,16 +40,18 @@ export function LeagueCeremonyModal({ visible, tier, result, finalRank, onClose,
       rise.setValue(0);
       return;
     }
-    Animated.sequence([
+    const riseAnimation = Animated.sequence([
       Animated.timing(rise, { toValue: 1, duration: 700, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-    ]).start();
+    ]);
+    riseAnimation.start();
 
-    Animated.loop(
+    const glowAnimation = Animated.loop(
       Animated.sequence([
         Animated.timing(glow, { toValue: 1, duration: 1200, useNativeDriver: true }),
         Animated.timing(glow, { toValue: 0.4, duration: 1200, useNativeDriver: true }),
       ]),
-    ).start();
+    );
+    glowAnimation.start();
 
     if (result === 'promoted') {
       triggerCelebration();
@@ -60,7 +62,11 @@ export function LeagueCeremonyModal({ visible, tier, result, finalRank, onClose,
       triggerHaptic('light');
       playSound('unlock');
     }
-  }, [visible, result]);
+    return () => {
+      riseAnimation.stop();
+      glowAnimation.stop();
+    };
+  }, [visible, result, glow, rise]);
 
   const headline =
     result === 'promoted' ? 'Promoted' : result === 'demoted' ? 'Relegated' : 'Position held';
@@ -75,6 +81,7 @@ export function LeagueCeremonyModal({ visible, tier, result, finalRank, onClose,
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <View style={styles.card}>
+          <View style={[styles.topBand, { backgroundColor: meta.color }]} />
           <Text style={styles.eyebrow}>WEEK CLOSED</Text>
 
           <Animated.View
@@ -91,7 +98,7 @@ export function LeagueCeremonyModal({ visible, tier, result, finalRank, onClose,
               },
             ]}
           >
-            <Animated.View style={{ opacity: glow }}>
+            <Animated.View style={[styles.badgeCore, { backgroundColor: meta.color + '18' }, { opacity: glow }] }>
               <Feather
                 name={result === 'demoted' ? 'arrow-down-circle' : result === 'promoted' ? 'award' : 'shield'}
                 size={56}
@@ -102,6 +109,7 @@ export function LeagueCeremonyModal({ visible, tier, result, finalRank, onClose,
           </Animated.View>
 
           <Text style={styles.headline}>{headline}</Text>
+          {finalRank && <Text style={[styles.rank, { color: meta.color }]}>#{finalRank}</Text>}
           <Text style={styles.subline}>{subline}</Text>
           <Text style={styles.blurb}>{meta.blurb}</Text>
 
@@ -127,11 +135,14 @@ export function LeagueCeremonyModal({ visible, tier, result, finalRank, onClose,
 
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(15,23,42,0.55)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  card: { width: '100%', backgroundColor: COLORS.bg2, borderRadius: 24, padding: 24, alignItems: 'center', ...SHADOWS.md },
+  card: { width: '100%', backgroundColor: COLORS.bg2, borderRadius: 24, padding: 24, alignItems: 'center', overflow: 'hidden', ...SHADOWS.md },
+  topBand: { position: 'absolute', top: 0, left: 0, right: 0, height: 7 },
   eyebrow: { fontSize: 11, fontWeight: '800', letterSpacing: 1.2, color: COLORS.textMuted, marginBottom: 16 },
   badgeWrap: { width: 150, height: 150, borderRadius: 75, borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginBottom: 20, gap: 6 },
+  badgeCore: { width: 84, height: 84, borderRadius: 42, alignItems: 'center', justifyContent: 'center' },
   tierLabel: { fontSize: 13, fontWeight: '800', letterSpacing: 1.2 },
   headline: { fontSize: 24, fontWeight: '800', color: COLORS.textPrimary, marginBottom: 8 },
+  rank: { fontSize: 44, lineHeight: 48, fontWeight: '900', marginBottom: 8 },
   subline: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 20, marginBottom: 6 },
   blurb: { fontSize: 12, color: COLORS.textMuted, textAlign: 'center', marginBottom: 22 },
   primaryBtn: { alignSelf: 'stretch', paddingVertical: 14, borderRadius: 14, alignItems: 'center' },

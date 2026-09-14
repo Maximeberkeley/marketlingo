@@ -54,6 +54,7 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
   const opacity = useRef(new Animated.Value(0)).current;
   const leoScale = useRef(new Animated.Value(0.5)).current;
   const leoBounce = useRef(new Animated.Value(0)).current;
+  const bounceLoop = useRef<Animated.CompositeAnimation | null>(null);
   const dismissTimer = useRef<NodeJS.Timeout | null>(null);
 
   const animateIn = useCallback(() => {
@@ -64,12 +65,13 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
       Animated.spring(leoScale, { toValue: 1, tension: 150, friction: 8, useNativeDriver: true }),
     ]).start(() => {
       // Subtle bounce loop
-      Animated.loop(
+      bounceLoop.current = Animated.loop(
         Animated.sequence([
           Animated.timing(leoBounce, { toValue: -4, duration: 800, useNativeDriver: true }),
           Animated.timing(leoBounce, { toValue: 0, duration: 800, useNativeDriver: true }),
         ]),
-      ).start();
+      );
+      bounceLoop.current.start();
     });
   }, []);
 
@@ -99,6 +101,7 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
 
     return () => {
       if (dismissTimer.current) clearTimeout(dismissTimer.current);
+      bounceLoop.current?.stop();
     };
   }, [message?.id]);
 
@@ -122,6 +125,7 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
         }}
         style={styles.touchable}
       >
+        <View style={[styles.accentRail, { backgroundColor: config.color }]} />
         {/* Leo avatar */}
         <Animated.View style={[styles.leoWrap, { transform: [{ scale: leoScale }, { translateY: leoBounce }] }]}>
           <View style={[styles.leoGlow, { backgroundColor: config.color + '25' }]} />
@@ -156,6 +160,7 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
             </TouchableOpacity>
           )}
         </View>
+        <View style={[styles.cornerMark, { borderColor: config.color + '55' }]} />
       </TouchableOpacity>
     </Animated.View>
   );
@@ -172,8 +177,8 @@ const styles = StyleSheet.create({
   touchable: {
     flexDirection: 'row',
     backgroundColor: COLORS.bg2,
-    borderRadius: 20,
-    padding: 14,
+    borderRadius: 18,
+    padding: 16,
     borderWidth: 1,
     borderColor: COLORS.border,
     ...SHADOWS.lg,
@@ -183,6 +188,8 @@ const styles = StyleSheet.create({
     shadowRadius: 24,
     elevation: 10,
   },
+  accentRail: { position: 'absolute', left: 0, top: 14, bottom: 14, width: 4, borderTopRightRadius: 4, borderBottomRightRadius: 4 },
+  cornerMark: { position: 'absolute', right: 10, bottom: 10, width: 14, height: 14, borderRightWidth: 2, borderBottomWidth: 2 },
   leoWrap: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -190,13 +197,13 @@ const styles = StyleSheet.create({
   },
   leoGlow: {
     position: 'absolute',
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 68,
+    height: 68,
+    borderRadius: 34,
   },
   leoImage: {
-    width: 48,
-    height: 48,
+    width: 60,
+    height: 60,
     resizeMode: 'contain',
   },
   content: {
