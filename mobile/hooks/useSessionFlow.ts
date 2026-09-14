@@ -81,21 +81,22 @@ export function useSessionFlow({
     setShowReader(true);
   }, [lessonStack]);
 
-  const handleStackComplete = useCallback(async (isReviewMode: boolean, timeSpentSeconds: number) => {
+  const handleStackComplete = useCallback(async (isReviewMode: boolean, timeSpentSeconds: number): Promise<boolean> => {
     setShowReader(false);
     if (isReviewMode) {
       setActiveStack(null);
       Alert.alert('Great review!', 'Keep up the good work.');
-      return;
+      return false;
     }
     if (timeSpentSeconds < 10) {
       Alert.alert('Too fast!', 'Take a moment to read through the slides.');
-      return;
+      return false;
     }
 
     triggerHaptic('success');
     let earnedXP = xpRewardLessonComplete;
 
+    let synced = false;
     try {
       if (progress && activeStack) {
         await completeStack(activeStack.id);
@@ -115,6 +116,7 @@ export function useSessionFlow({
         if (xpData) {
           checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
         }
+        synced = true;
       }
     } catch (err) {
       log.error('Lesson completion error:', err);
@@ -127,6 +129,7 @@ export function useSessionFlow({
     trackEvent('lesson_complete', { stackId: activeStack?.id || '', xp: earnedXP, market: selectedMarket || '' });
     setSessionXPEarned(earnedXP);
     setShowSessionComplete(true);
+    return synced;
   }, [activeStack, progress, xpData, selectedMarket, completeStack, updateStreak, completeLessonForToday, addXP, checkStreakMilestone, checkLevelMilestone, xpRewardLessonComplete, xpRewardStreakBonus]);
 
   const handleBiteComplete = useCallback(async (isReviewMode: boolean, _timeSpentSeconds: number) => {

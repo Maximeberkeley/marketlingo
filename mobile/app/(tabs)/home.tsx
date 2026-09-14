@@ -56,6 +56,8 @@ import { LeagueCeremonyModal } from '../../components/league/LeagueCeremonyModal
 import { useLeague, TIER_META } from '../../hooks/useLeague';
 import { useWeeklyRecap } from '../../hooks/useWeeklyRecap';
 import { WorldBanner } from '../../components/world/WorldBanner';
+import { useCollectibles, CollectibleCard } from '../../hooks/useCollectibles';
+import { CardRevealModal } from '../../components/collectibles/CardRevealModal';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -128,6 +130,7 @@ export default function HomeScreen() {
   const { openStackId } = useLocalSearchParams<{ openStackId?: string }>();
 
   const [selectedMarketLocal, setSelectedMarketLocal] = useState<string | null>(null);
+  const [revealedCard, setRevealedCard] = useState<Partial<CollectibleCard> | null>(null);
   const { progress, completeStack, updateStreak } = useUserProgress(selectedMarketLocal || undefined);
   const {
     xpData, dailyCompletion, completeLessonForToday,
@@ -145,6 +148,7 @@ export default function HomeScreen() {
     streakRiskHours, socialNudge, tomorrowLesson,
     loading, refreshing, currentDay, learningGoal, fetchData, onRefresh,
   } = homeData;
+  const { evaluateRewards } = useCollectibles(selectedMarket || undefined);
 
   const { canFreeze, freezesUsedThisWeek, maxFreezes, useFreeze } = useStreakFreeze(
     selectedMarketLocal || undefined, isProUser
@@ -371,6 +375,7 @@ export default function HomeScreen() {
         marketId={selectedMarket || undefined}
         lessonContext={`${getMarketName(selectedMarket || 'aerospace')} industry learning — Day ${currentDay}`}
       />
+      <CardRevealModal card={revealedCard} marketId={selectedMarket || undefined} onClose={() => setRevealedCard(null)} />
 
       {session.showReader && session.activeStack ? (
         <SlideReader
@@ -380,7 +385,18 @@ export default function HomeScreen() {
             slideNumber: s.slide_number, title: s.title, body: s.body, sources: s.sources,
           }))}
           onClose={session.closeReader}
-          onComplete={session.activeBiteIndex !== null ? session.handleBiteComplete : session.handleStackComplete}
+          onComplete={session.activeBiteIndex !== null
+            ? session.handleBiteComplete
+            : async (reviewMode, timeSpentSeconds, accuracy) => {
+                const synced = await session.handleStackComplete(reviewMode, timeSpentSeconds);
+                if (!synced || reviewMode || !selectedMarket || !session.activeStack?.id) return;
+                const rewards = await evaluateRewards(
+                  'lesson',
+                  `lesson:${selectedMarket}:${session.activeStack.id}`,
+                  accuracy,
+                );
+                if (rewards?.collectibles?.[0]) setRevealedCard(rewards.collectibles[0]);
+              }}
           onSaveInsight={session.handleSaveInsight}
           onAddNote={session.handleAddNote}
           marketId={selectedMarket || undefined}

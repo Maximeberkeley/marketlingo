@@ -52,6 +52,15 @@ interface AchievementDisplay {
   unlocked_at: string | null;
 }
 
+interface MarketMilestone {
+  id: string;
+  market_id: string;
+  milestone_key: string;
+  title: string;
+  milestone_day: number | null;
+  unlocked_at: string;
+}
+
 function AchievementCard({ item, index }: { item: AchievementDisplay; index: number }) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const tc = TIER_CONFIG[item.tier as keyof typeof TIER_CONFIG] || TIER_CONFIG.bronze;
@@ -112,6 +121,7 @@ export default function AchievementsScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [achievements, setAchievements] = useState<AchievementDisplay[]>([]);
+  const [marketMilestones, setMarketMilestones] = useState<MarketMilestone[]>([]);
   const [loading, setLoading] = useState(true);
   const progressAnim = useRef(new Animated.Value(0)).current;
 
@@ -119,10 +129,10 @@ export default function AchievementsScreen() {
     const fetchData = async () => {
       if (!user) return;
 
-      const { data: userAchievements } = await supabase
-        .from('user_achievements')
-        .select('achievement_id, unlocked_at')
-        .eq('user_id', user.id);
+      const [{ data: userAchievements }, { data: milestoneRows }] = await Promise.all([
+        supabase.from('user_achievements').select('achievement_id, unlocked_at').eq('user_id', user.id),
+        supabase.from('user_market_milestones').select('id, market_id, milestone_key, title, milestone_day, unlocked_at').eq('user_id', user.id).order('unlocked_at', { ascending: false }),
+      ]);
 
       const unlockedMap = new Map(
         (userAchievements || []).map((a) => [a.achievement_id, a.unlocked_at])
@@ -140,6 +150,7 @@ export default function AchievementsScreen() {
       }));
 
       setAchievements(merged);
+      setMarketMilestones((milestoneRows || []) as MarketMilestone[]);
       setLoading(false);
 
       const pct = merged.length > 0 ? merged.filter(a => a.unlocked).length / merged.length : 0;
@@ -214,6 +225,25 @@ export default function AchievementsScreen() {
             }]} />
           </View>
         </View>
+
+        {marketMilestones.length > 0 && (
+          <View style={styles.milestoneSection}>
+            <View style={styles.milestoneHeading}>
+              <Text style={styles.tierLabel}>MARKET JOURNEY</Text>
+              <Text style={styles.milestoneCount}>{marketMilestones.length} reached</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.milestoneRow}>
+              {marketMilestones.map((milestone) => (
+                <View key={milestone.id} style={styles.milestoneCard}>
+                  <View style={styles.milestoneIcon}><Feather name="flag" size={18} color={COLORS.accent} /></View>
+                  <Text style={styles.milestoneMarket}>{milestone.market_id.toUpperCase()}</Text>
+                  <Text style={styles.milestoneTitle} numberOfLines={2}>{milestone.title}</Text>
+                  <Text style={styles.milestoneDay}>{milestone.milestone_day ? `DAY ${milestone.milestone_day}` : 'MASTERED'}</Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
 
         {/* Tier Sections with 2-col Grid */}
         {tierOrder.map((tier) => {
@@ -324,6 +354,15 @@ const styles = StyleSheet.create({
   },
 
   // Tier sections
+  milestoneSection: { marginBottom: 24 },
+  milestoneHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  milestoneCount: { fontSize: 11, fontWeight: '700', color: COLORS.accent, marginBottom: 10 },
+  milestoneRow: { gap: 10 },
+  milestoneCard: { width: 142, minHeight: 132, padding: 14, borderRadius: 14, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.accentMedium },
+  milestoneIcon: { width: 34, height: 34, borderRadius: 10, backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
+  milestoneMarket: { fontSize: 9, fontWeight: '800', color: COLORS.textMuted, marginBottom: 4 },
+  milestoneTitle: { fontSize: 13, lineHeight: 17, fontWeight: '800', color: COLORS.textPrimary, flex: 1 },
+  milestoneDay: { fontSize: 9, fontWeight: '900', color: COLORS.accent, marginTop: 8 },
   tierSection: { marginBottom: 24 },
   tierLabel: {
     ...TYPE.overline,
