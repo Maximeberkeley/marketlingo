@@ -50,7 +50,8 @@ export default function ArenaRoute() {
     try {
       await recordArenaRun(result.score);
       await addXP(result.xp, 'arena', undefined, 'Daily Arena run');
-      await evaluateRewards();
+      const accuracy = result.total > 0 ? result.correct / result.total : 0;
+      await evaluateRewards('arena', `arena:${new Date().toISOString().slice(0, 10)}`, accuracy);
     } catch (error) {
       log.warn('[Arena] Could not bank the run:', error);
     }

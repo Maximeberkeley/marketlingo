@@ -57,7 +57,8 @@ export default function DeepCaseRoute() {
     try {
       await recordCaseRun(result.grade);
       await addXP(result.xp, 'deep_case', deepCase.id, `Deep Case graded ${result.grade}`);
-      await evaluateRewards();
+      const accuracy = result.total > 0 ? result.correct / result.total : 0;
+      await evaluateRewards('deep_case', `case:${deepCase.id}`, accuracy);
     } catch (error) {
       log.warn('[DeepCase] Could not bank the case:', error);
     }
