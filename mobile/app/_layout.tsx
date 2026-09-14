@@ -8,6 +8,8 @@ import * as Notifications from 'expo-notifications';
 import { AuthProvider } from '../hooks/useAuth';
 import { LeoProvider } from '../components/mascot/LeoCharacter';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { initTheme } from '../lib/theme';
+import { COLORS } from '../lib/constants';
 
 // Map notification data `route` or `type` to an Expo Router path
 function resolveRoute(data: Record<string, any>): string | null {
@@ -44,6 +46,11 @@ Notifications.setNotificationHandler({
 
 export default function RootLayout() {
   const notificationResponseListener = useRef<Notifications.EventSubscription | null>(null);
+
+  // Restore the saved appearance (light / dark / system) before screens render
+  useEffect(() => {
+    initTheme().catch(() => {});
+  }, []);
 
   // Keep the iOS app icon free of any badge count (we never use badges).
   useEffect(() => {
@@ -86,11 +93,11 @@ export default function RootLayout() {
         <ErrorBoundary>
           <AuthProvider>
             <LeoProvider>
-              <StatusBar style="dark" />
+              <StatusBar style="auto" />
               <Stack
                 screenOptions={{
                   headerShown: false,
-                  contentStyle: { backgroundColor: '#FFFFFF' },
+                  contentStyle: { backgroundColor: COLORS.bg0 },
                   animation: 'slide_from_right',
                 }}
               >
@@ -100,6 +107,8 @@ export default function RootLayout() {
                 <Stack.Screen name="onboarding/goal" options={{ gestureEnabled: false }} />
                 <Stack.Screen name="onboarding/familiarity" options={{ gestureEnabled: false }} />
                 <Stack.Screen name="(tabs)" options={{ animation: 'fade', gestureEnabled: false }} />
+                <Stack.Screen name="arena" />
+                <Stack.Screen name="deep-case" />
                 <Stack.Screen name="trainer" />
                 <Stack.Screen name="games" />
                 <Stack.Screen name="drills" />

@@ -907,7 +907,7 @@ const styles = StyleSheet.create({
   },
   paragraphDivider: {
     height: 1,
-    backgroundColor: COLORS.border + '40',
+    backgroundColor: 'rgba(148,163,184,0.28)',
     marginBottom: 10,
     marginHorizontal: 4,
   },

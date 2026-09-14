@@ -24,7 +24,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
 import { StreakBadge } from '../../components/ui/StreakBadge';
-import { XPBadge } from '../../components/ui/XPBadge';
+import { WelcomeBackModal } from '../../components/home/WelcomeBackModal';
+import { useReturnVisit } from '../../hooks/useReturnVisit';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { LessonKitReader as SlideReader } from '../../components/slides/LessonKitReader';
 import { StreakAtRisk } from '../../components/home/StreakAtRisk';
@@ -262,6 +263,9 @@ export default function HomeScreen() {
 
   // Leo popup system
   const leoPopups = useLeoPopups({ cooldownMs: 45000, maxPerSession: 4 });
+
+  // Level / XP recap shows as a pop-up on return after 4h+, not on the home screen
+  const returnVisit = useReturnVisit(!!xpData && !loading);
   const hasTriggeredWelcome = useRef(false);
 
   useEffect(() => {
@@ -368,6 +372,17 @@ export default function HomeScreen() {
       {/* Pro interstitial ad */}
       {/* Leo popup overlay */}
       <LeoPopup message={leoPopups.currentMessage} onDismiss={leoPopups.dismiss} />
+
+      <WelcomeBackModal
+        visible={returnVisit.isReturningVisit && !session.showReader}
+        level={xpData?.current_level || 1}
+        xp={xpData?.total_xp || 0}
+        xpToNextLevel={(xpData as any)?.xp_to_next_level}
+        streak={streak}
+        marketId={selectedMarket || 'aerospace'}
+        marketName={getMarketName(selectedMarket || 'aerospace')}
+        onClose={returnVisit.dismiss}
+      />
       {/* Leo voice chat — fullscreen immersive */}
       <LeoVoiceChatOverlay
         visible={showLeoChat}
@@ -435,7 +450,6 @@ export default function HomeScreen() {
           <View style={styles.topBar}>
             <StreakBadge count={streak} />
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} />
               {MONETIZATION_ENABLED && isProUser && (
                 <View style={{ backgroundColor: 'rgba(139, 92, 246, 0.15)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.3)' }}>
                   <Text style={{ color: '#8B5CF6', fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>PRO</Text>
@@ -598,7 +612,7 @@ export default function HomeScreen() {
             <AnimatedSection delay={180}>
               <TouchableOpacity
                 style={styles.reviewBanner}
-                onPress={() => router.push('/trainer' as any)}
+                onPress={() => router.push('/arena' as any)}
                 activeOpacity={0.8}
               >
                 <Feather name="refresh-cw" size={18} color={COLORS.accent} />

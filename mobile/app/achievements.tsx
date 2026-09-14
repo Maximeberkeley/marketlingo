@@ -17,6 +17,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { ACHIEVEMENTS, tierColors } from '../data/achievements';
 import { Feather } from '@expo/vector-icons';
+import { getMarketName } from '../lib/markets';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_GAP = 10;
@@ -122,6 +123,8 @@ export default function AchievementsScreen() {
   const { user } = useAuth();
   const [achievements, setAchievements] = useState<AchievementDisplay[]>([]);
   const [marketMilestones, setMarketMilestones] = useState<MarketMilestone[]>([]);
+  const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
+  const [showAllMarkets, setShowAllMarkets] = useState(false);
   const [loading, setLoading] = useState(true);
   const progressAnim = useRef(new Animated.Value(0)).current;
 
@@ -129,10 +132,13 @@ export default function AchievementsScreen() {
     const fetchData = async () => {
       if (!user) return;
 
-      const [{ data: userAchievements }, { data: milestoneRows }] = await Promise.all([
+      const [{ data: userAchievements }, { data: milestoneRows }, { data: profileRow }] = await Promise.all([
         supabase.from('user_achievements').select('achievement_id, unlocked_at').eq('user_id', user.id),
         supabase.from('user_market_milestones').select('id, market_id, milestone_key, title, milestone_day, unlocked_at').eq('user_id', user.id).order('unlocked_at', { ascending: false }),
+        supabase.from('profiles').select('selected_market').eq('id', user.id).maybeSingle(),
       ]);
+
+      setSelectedMarket(profileRow?.selected_market || null);
 
       const unlockedMap = new Map(
         (userAchievements || []).map((a) => [a.achievement_id, a.unlocked_at])
@@ -162,6 +168,16 @@ export default function AchievementsScreen() {
     };
     fetchData();
   }, [user]);
+
+  // Milestones are scoped to the industry you're studying; other industries roll
+  // up into a single "+N elsewhere" chip so the screen stays focused.
+  const industryMilestones = selectedMarket
+    ? marketMilestones.filter((m) => m.market_id === selectedMarket)
+    : marketMilestones;
+  const otherMilestones = selectedMarket
+    ? marketMilestones.filter((m) => m.market_id !== selectedMarket)
+    : [];
+  const visibleMilestones = showAllMarkets ? marketMilestones : industryMilestones;
 
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
   const progressPercent = achievements.length > 0 ? Math.round((unlockedCount / achievements.length) * 100) : 0;
@@ -229,11 +245,22 @@ export default function AchievementsScreen() {
         {marketMilestones.length > 0 && (
           <View style={styles.milestoneSection}>
             <View style={styles.milestoneHeading}>
-              <Text style={styles.tierLabel}>MARKET JOURNEY</Text>
-              <Text style={styles.milestoneCount}>{marketMilestones.length} reached</Text>
+              <Text style={styles.tierLabel}>
+                {selectedMarket && !showAllMarkets ? `${getMarketName(selectedMarket).toUpperCase()} JOURNEY` : 'MARKET JOURNEY'}
+              </Text>
+              {otherMilestones.length > 0 ? (
+                <TouchableOpacity onPress={() => setShowAllMarkets((v) => !v)} style={styles.otherChip} activeOpacity={0.85}>
+                  <Feather name={showAllMarkets ? 'chevron-up' : 'plus'} size={11} color={COLORS.accent} />
+                  <Text style={styles.otherChipText}>
+                    {showAllMarkets ? 'Show only my industry' : `${otherMilestones.length} in other industries`}
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <Text style={styles.milestoneCount}>{visibleMilestones.length} reached</Text>
+              )}
             </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.milestoneRow}>
-              {marketMilestones.map((milestone) => (
+              {visibleMilestones.map((milestone) => (
                 <View key={milestone.id} style={styles.milestoneCard}>
                   <View style={styles.milestoneIcon}><Feather name="flag" size={18} color={COLORS.accent} /></View>
                   <Text style={styles.milestoneMarket}>{milestone.market_id.toUpperCase()}</Text>
@@ -297,6 +324,12 @@ const styles = StyleSheet.create({
     borderColor: COLORS.accentMedium,
   },
   countText: { ...TYPE.caption, color: COLORS.accent },
+  otherChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 9, paddingVertical: 4, borderRadius: 20,
+    backgroundColor: COLORS.accentSoft, borderWidth: 1, borderColor: COLORS.accentMedium,
+  },
+  otherChipText: { fontSize: 10, fontWeight: '700', color: COLORS.accent, letterSpacing: 0.2 },
 
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 

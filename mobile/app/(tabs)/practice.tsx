@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,687 +6,389 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
-  ActivityIndicator,
-  Dimensions,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-  ImageBackground,
-  Platform,
+  Image,
+  Easing,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
+
 import { triggerHaptic } from '../../lib/haptics';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
-import { useAuth } from '../../hooks/useAuth';
-import { useSubscription } from '../../hooks/useSubscription';
-import { supabase } from '../../lib/supabase';
 import { getMarketName } from '../../lib/markets';
+import { useSelectedMarket } from '../../hooks/useSelectedMarket';
+import { usePracticeRewards } from '../../hooks/usePracticeRewards';
+import { getMarketWorld } from '../../data/marketWorlds';
+import { ARENA_RANKS, rankForScore } from '../../lesson-kit/arena/buildArena';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH - 40; // Full width with 20px padding each side
-const CARD_GAP = 16;
-const SNAP_WIDTH = CARD_WIDTH + CARD_GAP;
-
-interface CardData {
-  id: string;
-  title: string;
-  subtitle: string;
-  description: string;
+const SECONDARY_LINKS: {
+  label: string;
+  sub: string;
   icon: keyof typeof Feather.glyphMap;
-  iconColor: string;
-  gradientColors: readonly [string, string, string];
-  accentGlow: string;
   path: string;
-  isPro?: boolean;
-  heroImage?: any;
-  tag?: string;
-}
-
-const ACTIVITY_CARDS: CardData[] = [
-  {
-    id: 'trainer',
-    title: 'Trainer',
-    subtitle: 'Scenario Analysis',
-    description: 'Real-world case studies with expert feedback.',
-    icon: 'target',
-    iconColor: '#E9D5FF',
-    gradientColors: ['#5B21B6', '#7C3AED', '#A78BFA'] as const,
-    accentGlow: 'rgba(167, 139, 250, 0.4)',
-    path: '/trainer',
-    heroImage: require('../../assets/cards/trainer-hero.jpg'),
-    tag: 'FEATURED',
-  },
-  {
-    id: 'games',
-    title: 'Games',
-    subtitle: 'Test Your Knowledge',
-    description: 'Quick MCQ challenges on real patterns.',
-    icon: 'play-circle',
-    iconColor: '#C7D2FE',
-    gradientColors: ['#312E81', '#4338CA', '#6366F1'] as const,
-    accentGlow: 'rgba(99, 102, 241, 0.4)',
-    path: '/games',
-    heroImage: require('../../assets/cards/games-hero.jpg'),
-  },
-  {
-    id: 'drills',
-    title: 'Drills',
-    subtitle: '15-Second Challenges',
-    description: 'Rapid-fire True/False for pattern recognition.',
-    icon: 'zap',
-    iconColor: '#FDE68A',
-    gradientColors: ['#92400E', '#B45309', '#D97706'] as const,
-    accentGlow: 'rgba(217, 119, 6, 0.4)',
-    path: '/drills',
-    heroImage: require('../../assets/cards/drills-hero.jpg'),
-  },
+}[] = [
+  { label: 'Insider Collection', sub: 'Cards you have earned', icon: 'layers', path: '/collection' },
+  { label: 'Summaries', sub: 'Weekly and monthly recaps', icon: 'file-text', path: '/summaries' },
+  { label: 'Passport', sub: 'Your industry credentials', icon: 'globe', path: '/passport' },
+  { label: 'Regulatory Hub', sub: 'Rules shaping your market', icon: 'shield', path: '/regulatory-hub' },
 ];
 
-const LAB_CARDS: CardData[] = [
-  {
-    id: 'interview-lab',
-    title: 'Interview Lab',
-    subtitle: 'Case Prep Simulator',
-    description: 'Mock interviews with AI coach Sophia Hernández.',
-    icon: 'mic',
-    iconColor: '#C4B5FD',
-    gradientColors: ['#1E1B4B', '#4338CA', '#7C3AED'] as const,
-    accentGlow: 'rgba(124, 58, 237, 0.5)',
-    path: '/interview-lab',
-    heroImage: require('../../assets/illustrations/interview-lab-hero.png'),
-    tag: 'PRO',
-    isPro: true,
-  },
-  {
-    id: 'investment',
-    title: 'Investment Lab',
-    subtitle: 'With Sophia Hernández',
-    description: 'Real-world analysis and portfolio building.',
-    icon: 'trending-up',
-    iconColor: '#A7F3D0',
-    gradientColors: ['#064E3B', '#047857', '#059669'] as const,
-    accentGlow: 'rgba(5, 150, 105, 0.4)',
-    path: '/investment-lab',
-    isPro: true,
-    tag: 'PRO',
-    heroImage: require('../../assets/cards/investment-lab-hero.jpg'),
-  },
-];
-
-// Feature flag — flip to false before App Store submission
-const SEMINARS_ENABLED = false;
-
-const RESOURCE_CARDS: CardData[] = [
-  ...(SEMINARS_ENABLED ? [{
-    id: 'seminars',
-    title: 'Seminars',
-    subtitle: 'Live Learning Events',
-    description: 'Weekly expert talks with prep modules and live chat.',
-    icon: 'video' as keyof typeof Feather.glyphMap,
-    iconColor: '#DDD6FE',
-    gradientColors: ['#4C1D95', '#6D28D9', '#8B5CF6'] as const,
-    accentGlow: 'rgba(139, 92, 246, 0.4)',
-    path: '/seminars',
-    isPro: true,
-    tag: 'PRO',
-  }] : []),
-  {
-    id: 'leaderboard',
-    title: 'Leaderboard',
-    subtitle: 'Friends & Rivals',
-    description: 'Compete with friends and climb the rankings.',
-    icon: 'users',
-    iconColor: '#FDE68A',
-    gradientColors: ['#7C2D12', '#B45309', '#F59E0B'] as const,
-    accentGlow: 'rgba(245, 158, 11, 0.4)',
-    path: '/friends',
-    heroImage: require('../../assets/illustrations/leaderboard-hero.png'),
-    tag: 'SOCIAL',
-  },
-  {
-    id: 'league',
-    title: 'Weekly League',
-    subtitle: 'Promotion Race',
-    description: 'Weekly XP puts you against rivals. Finish top to move up a tier.',
-    icon: 'award',
-    iconColor: '#BFDBFE',
-    gradientColors: ['#1E3A8A', '#1D4ED8', '#3B82F6'] as const,
-    accentGlow: 'rgba(59, 130, 246, 0.4)',
-    path: '/league',
-    tag: 'WEEKLY',
-  },
-  {
-    id: 'summaries',
-    title: 'Summaries',
-    subtitle: 'Market Digests',
-    description: 'Daily and weekly recaps of your learnings.',
-    icon: 'file-text',
-    iconColor: '#FED7AA',
-    gradientColors: ['#9A3412', '#C2410C', '#EA580C'] as const,
-    accentGlow: 'rgba(234, 88, 12, 0.4)',
-    path: '/summaries',
-    heroImage: require('../../assets/illustrations/summaries-hero.png'),
-  },
-  {
-    id: 'regulatory',
-    title: 'Regulatory Hub',
-    subtitle: 'Compliance & Policy',
-    description: 'Key regulations shaping your industry.',
-    icon: 'shield',
-    iconColor: '#BFDBFE',
-    gradientColors: ['#1E3A5F', '#1D4ED8', '#3B82F6'] as const,
-    accentGlow: 'rgba(59, 130, 246, 0.4)',
-    path: '/regulatory-hub',
-    heroImage: require('../../assets/illustrations/regulatory-hero.png'),
-  },
-  {
-    id: 'notebook',
-    title: 'Notebook',
-    subtitle: 'Your Insights',
-    description: 'Captured notes and key takeaways.',
-    icon: 'edit-3',
-    iconColor: '#FECDD3',
-    gradientColors: ['#9F1239', '#BE123C', '#E11D48'] as const,
-    accentGlow: 'rgba(225, 29, 72, 0.4)',
-    path: '/(tabs)/notebook',
-    heroImage: require('../../assets/cards/notebook-hero.jpg'),
-  },
-  {
-    id: 'passport',
-    title: 'Passport',
-    subtitle: 'Industry Credentials',
-    description: 'Track verified expertise across industries.',
-    icon: 'globe',
-    iconColor: '#99F6E4',
-    gradientColors: ['#134E4A', '#0F766E', '#0D9488'] as const,
-    accentGlow: 'rgba(13, 148, 136, 0.4)',
-    path: '/passport',
-    heroImage: require('../../assets/illustrations/passport-hero.png'),
-  },
-];
-
-/* ─── Premium Carousel ─── */
-function PremiumCarousel({ cards, title }: { cards: CardData[]; title: string }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const scrollRef = useRef<ScrollView>(null);
-
-  const handleScroll = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const offsetX = e.nativeEvent.contentOffset.x;
-      const idx = Math.round(offsetX / SNAP_WIDTH);
-      setCurrentIndex(Math.min(Math.max(idx, 0), cards.length - 1));
-    },
-    [cards.length],
-  );
-
-  const scrollToIndex = useCallback((idx: number) => {
-    scrollRef.current?.scrollTo({ x: idx * SNAP_WIDTH, animated: true });
-    setCurrentIndex(idx);
-  }, []);
-
-  return (
-    <View style={styles.carouselWrap}>
-      {/* Section header */}
-      <View style={styles.sectionHeader}>
-        <View style={styles.sectionTitleRow}>
-          <View style={styles.sectionDot} />
-          <Text style={styles.sectionTitle}>{title}</Text>
-        </View>
-        {/* Pill-style page indicator */}
-        <View style={styles.pageIndicator}>
-          {cards.map((_, i) => (
-            <TouchableOpacity
-              key={i}
-              onPress={() => scrollToIndex(i)}
-              hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}
-            >
-              <Animated.View
-                style={[
-                  styles.indicatorDot,
-                  i === currentIndex && styles.indicatorDotActive,
-                ]}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-
-      {/* Cards */}
-      <ScrollView
-        ref={scrollRef}
-        horizontal
-        pagingEnabled={false}
-        showsHorizontalScrollIndicator={false}
-        snapToInterval={SNAP_WIDTH}
-        decelerationRate="fast"
-        contentContainerStyle={styles.scrollContent}
-        onMomentumScrollEnd={handleScroll}
-      >
-        {cards.map((card, index) => (
-          <PremiumCard key={card.id} card={card} index={index} />
-        ))}
-      </ScrollView>
-    </View>
-  );
-}
-
-/* ─── Premium Card ─── */
-function PremiumCard({ card, index }: { card: CardData; index: number }) {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const { isProUser: isPro } = useSubscription();
-
-  const locked = card.isPro && !isPro;
-
-  const onPressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.97,
-      useNativeDriver: true,
-      tension: 400,
-      friction: 25,
-    }).start();
-  };
-
-  const onPressOut = () => {
-    Animated.spring(scaleAnim, {
+function useEntrance(delay: number) {
+  const anim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(anim, {
       toValue: 1,
+      duration: 480,
+      delay,
+      easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
-      tension: 400,
-      friction: 25,
     }).start();
+  }, [anim, delay]);
+  return {
+    opacity: anim,
+    transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [18, 0] }) }],
   };
-
-  const onPress = () => {
-    triggerHaptic('light');
-    if (!locked) {
-      router.push(card.path as any);
-    }
-  };
-
-  const cardContent = (
-    <View style={styles.cardInner}>
-      {/* Top section: hero image full-bleed */}
-      {card.heroImage ? (
-        <ImageBackground
-          source={card.heroImage}
-          style={styles.heroImageBg}
-          imageStyle={styles.heroImageStyle}
-          resizeMode="cover"
-        >
-          {/* Dark gradient overlay for readability */}
-          <View style={styles.heroOverlay} />
-          
-          {/* Floating tag */}
-          {card.tag && (
-            <View style={[styles.floatingTag, locked && styles.floatingTagPro]}>
-              {locked && <Feather name="lock" size={9} color="#FFF" />}
-              <Text style={styles.floatingTagText}>{card.tag}</Text>
-            </View>
-          )}
-        </ImageBackground>
-      ) : (
-        <View style={[styles.heroPlaceholder, { backgroundColor: card.gradientColors[1] }]}>
-          <Feather name={card.icon} size={48} color="rgba(255,255,255,0.15)" />
-          {card.tag && (
-            <View style={[styles.floatingTag, locked && styles.floatingTagPro]}>
-              {locked && <Feather name="lock" size={9} color="#FFF" />}
-              <Text style={styles.floatingTagText}>{card.tag}</Text>
-            </View>
-          )}
-        </View>
-      )}
-
-      {/* Bottom content — glass-style panel */}
-      <View style={styles.contentPanel}>
-        {/* Icon + subtitle row */}
-        <View style={styles.metaRow}>
-          <View style={[styles.iconPill, { backgroundColor: `${card.gradientColors[1]}18` }]}>
-            <Feather name={card.icon} size={13} color={card.gradientColors[1]} />
-          </View>
-          <Text style={[styles.subtitleText, { color: card.gradientColors[1] }]}>
-            {card.subtitle}
-          </Text>
-        </View>
-
-        {/* Title */}
-        <Text style={styles.cardTitle}>{card.title}</Text>
-
-        {/* Description */}
-        <Text style={styles.cardDesc}>{card.description}</Text>
-
-        {/* Arrow CTA */}
-        <View style={styles.ctaRow}>
-          <Text style={[styles.ctaText, { color: card.gradientColors[1] }]}>
-            {locked ? 'Unlock' : 'Start'}
-          </Text>
-          <View style={[styles.ctaArrow, { backgroundColor: `${card.gradientColors[1]}12` }]}>
-            <Feather
-              name={locked ? 'lock' : 'arrow-right'}
-              size={14}
-              color={card.gradientColors[1]}
-            />
-          </View>
-        </View>
-      </View>
-
-      {/* Accent border at top */}
-      <View style={[styles.accentStripe, { backgroundColor: card.gradientColors[1] }]} />
-    </View>
-  );
-
-  return (
-    <Animated.View style={[styles.cardOuter, { transform: [{ scale: scaleAnim }] }]}>
-      <TouchableOpacity
-        activeOpacity={0.92}
-        onPressIn={onPressIn}
-        onPressOut={onPressOut}
-        onPress={onPress}
-        style={styles.cardTouch}
-      >
-        {cardContent}
-      </TouchableOpacity>
-    </Animated.View>
-  );
 }
 
-/* ─── Main Screen ─── */
 export default function PracticeScreen() {
   const insets = useSafeAreaInsets();
-  const { user } = useAuth();
-  const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const headerAnim = useRef(new Animated.Value(0)).current;
+  const { marketId } = useSelectedMarket();
+  const world = getMarketWorld(marketId);
+  const { rewards, playedArenaToday, playedCaseToday, refresh } = usePracticeRewards();
 
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from('profiles')
-      .select('selected_market')
-      .eq('id', user.id)
-      .single()
-      .then(({ data }) => {
-        if (data?.selected_market) setSelectedMarket(data.selected_market);
-        setLoading(false);
-      });
-  }, [user]);
+  // Rewards are written on the run screens — refresh whenever we come back.
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh]),
+  );
 
-  useEffect(() => {
-    if (!loading) {
-      Animated.spring(headerAnim, {
-        toValue: 1,
-        tension: 80,
-        friction: 12,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [loading]);
+  const rank = rankForScore(rewards.arenaBestScore);
+  const nextRank = [...ARENA_RANKS].reverse().find(r => r.min > rewards.arenaBestScore);
+  const toNext = nextRank ? Math.max(0, nextRank.min - rewards.arenaBestScore) : 0;
+  const lastGrade = rewards.caseGrades[0];
 
-  if (loading) {
-    return (
-      <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color={COLORS.accent} />
-      </View>
-    );
-  }
+  const heroAnim = useEntrance(0);
+  const arenaAnim = useEntrance(90);
+  const caseAnim = useEntrance(180);
+  const extrasAnim = useEntrance(270);
+
+  const go = (path: string) => {
+    triggerHaptic('light');
+    router.push(path as any);
+  };
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={{
-          paddingTop: insets.top + 12,
-          paddingBottom: insets.bottom + 100,
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <Animated.View
-          style={[
-            styles.header,
-            {
-              opacity: headerAnim,
-              transform: [
-                {
-                  translateY: headerAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [20, 0],
-                  }),
-                },
-              ],
-            },
-          ]}
-        >
-          <View>
-            <Text style={styles.headerTitle}>Practice</Text>
-            {selectedMarket && (
-              <View style={styles.marketBadge}>
-                <View style={styles.marketDot} />
-                <Text style={styles.marketBadgeText}>{getMarketName(selectedMarket)}</Text>
+    <ScrollView
+      style={styles.root}
+      contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: insets.bottom + 110 }}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Header + reward ledger */}
+      <Animated.View style={[styles.headerWrap, heroAnim]}>
+        <Text style={styles.title}>Practice</Text>
+        <Text style={styles.subtitle}>
+          Two ways to train {getMarketName(marketId)} — one fast, one deep.
+        </Text>
+
+        <View style={styles.ledger}>
+          <LedgerStat icon="award" label={rank.label} value={`${rewards.arenaBestScore}`} tint={rank.color} />
+          <View style={styles.ledgerDivider} />
+          <LedgerStat
+            icon="activity"
+            label="Practice streak"
+            value={`${rewards.practiceStreak}d`}
+            tint={COLORS.streak}
+          />
+          <View style={styles.ledgerDivider} />
+          <LedgerStat
+            icon="briefcase"
+            label="Cases closed"
+            value={`${rewards.caseRuns}`}
+            tint={COLORS.accent}
+          />
+        </View>
+        {!!nextRank && (
+          <Text style={styles.ledgerHint}>
+            {toNext} more arena points to reach {nextRank.label}.
+          </Text>
+        )}
+      </Animated.View>
+
+      {/* ── Daily Arena ── */}
+      <Animated.View style={arenaAnim}>
+        <TouchableOpacity activeOpacity={0.92} onPress={() => go('/arena')} style={styles.modeCard}>
+          <LinearGradient
+            colors={[world.colors[0], world.colors[1], world.colors[2]]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.modeGradient}
+          >
+            <Image source={world.illustration} style={styles.modeArt} resizeMode="contain" />
+            <View style={styles.modeTop}>
+              <View style={styles.modeTag}>
+                <Feather name="zap" size={11} color="#FFFFFF" />
+                <Text style={styles.modeTagText}>DAILY ARENA</Text>
               </View>
-            )}
-          </View>
-        </Animated.View>
+              {playedArenaToday ? (
+                <View style={styles.donePill}>
+                  <Feather name="check" size={10} color="#FFFFFF" />
+                  <Text style={styles.donePillText}>PLAYED TODAY</Text>
+                </View>
+              ) : (
+                <View style={styles.livePill}>
+                  <Text style={styles.livePillText}>OPEN NOW</Text>
+                </View>
+              )}
+            </View>
 
-        {/* Activities */}
-        <PremiumCarousel cards={ACTIVITY_CARDS} title="Activities" />
+            <Text style={styles.modeTitle}>Three waves. One clock.</Text>
+            <Text style={styles.modeBody}>
+              Fast calls on real {getMarketName(marketId)} numbers. Combos multiply, shields absorb
+              misses, sudden death ends it.
+            </Text>
 
-        {/* Labs */}
-        <PremiumCarousel cards={LAB_CARDS} title="Labs" />
+            <View style={styles.chipRow}>
+              <Chip icon="clock" text="~4 min" />
+              <Chip icon="shield" text="2 shields" />
+              <Chip icon="star" text="Up to x3 points" />
+            </View>
 
-        {/* Resources */}
-        <PremiumCarousel cards={RESOURCE_CARDS} title="Resources" />
-      </ScrollView>
+            <View style={styles.modeCta}>
+              <Text style={styles.modeCtaText}>
+                {playedArenaToday ? 'Beat your best run' : 'Enter the arena'}
+              </Text>
+              <Feather name="arrow-right" size={17} color={world.colors[0]} />
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
+
+      {/* ── Deep Case ── */}
+      <Animated.View style={caseAnim}>
+        <TouchableOpacity activeOpacity={0.92} onPress={() => go('/deep-case')} style={styles.modeCard}>
+          <LinearGradient
+            colors={['#111827', '#1F2937', '#312E81']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.modeGradient}
+          >
+            <View style={styles.modeTop}>
+              <View style={styles.modeTag}>
+                <Feather name="briefcase" size={11} color="#FFFFFF" />
+                <Text style={styles.modeTagText}>DEEP CASE</Text>
+              </View>
+              {lastGrade ? (
+                <View style={styles.gradePill}>
+                  <Text style={styles.gradePillText}>LAST GRADE {lastGrade}</Text>
+                </View>
+              ) : (
+                <View style={styles.livePill}>
+                  <Text style={styles.livePillText}>NEW</Text>
+                </View>
+              )}
+            </View>
+
+            <Text style={styles.modeTitle}>Four stages. One verdict.</Text>
+            <Text style={styles.modeBody}>
+              Brief, evidence, numbers, then the call — with a conviction level. Leo grades your
+              reasoning, not just your answer.
+            </Text>
+
+            <View style={styles.chipRow}>
+              <Chip icon="layers" text="4 stages" />
+              <Chip icon="target" text="Graded A–D" />
+              <Chip icon="compass" text="Mental models" />
+            </View>
+
+            <View style={styles.modeCta}>
+              <Text style={[styles.modeCtaText, { color: '#111827' }]}>
+                {playedCaseToday ? 'Take another case' : 'Open today’s case'}
+              </Text>
+              <Feather name="arrow-right" size={17} color="#111827" />
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
+
+      {/* ── Secondary shelves ── */}
+      <Animated.View style={[styles.extras, extrasAnim]}>
+        <Text style={styles.extrasLabel}>YOUR RECORD</Text>
+        {SECONDARY_LINKS.map(link => (
+          <TouchableOpacity
+            key={link.path}
+            style={styles.linkRow}
+            activeOpacity={0.85}
+            onPress={() => go(link.path)}
+          >
+            <View style={styles.linkIcon}>
+              <Feather name={link.icon} size={16} color={COLORS.accent} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.linkLabel}>{link.label}</Text>
+              <Text style={styles.linkSub}>{link.sub}</Text>
+            </View>
+            <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
+          </TouchableOpacity>
+        ))}
+      </Animated.View>
+    </ScrollView>
+  );
+}
+
+function Chip({ icon, text }: { icon: keyof typeof Feather.glyphMap; text: string }) {
+  return (
+    <View style={styles.chip}>
+      <Feather name={icon} size={11} color="#FFFFFF" />
+      <Text style={styles.chipText}>{text}</Text>
     </View>
   );
 }
 
-/* ─── Styles ─── */
+function LedgerStat({
+  icon,
+  label,
+  value,
+  tint,
+}: {
+  icon: keyof typeof Feather.glyphMap;
+  label: string;
+  value: string;
+  tint: string;
+}) {
+  return (
+    <View style={styles.ledgerStat}>
+      <Feather name={icon} size={14} color={tint} />
+      <Text style={styles.ledgerValue}>{value}</Text>
+      <Text style={styles.ledgerLabel} numberOfLines={1}>
+        {label}
+      </Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.bg0 },
-  centered: { alignItems: 'center', justifyContent: 'center' },
+  root: { flex: 1, backgroundColor: COLORS.bg0 },
 
-  /* Header */
-  header: { paddingHorizontal: 20, marginBottom: 20 },
-  headerTitle: {
-    ...TYPE.hero,
-    fontSize: 32,
-    color: COLORS.textPrimary,
-    letterSpacing: -0.8,
-  },
-  marketBadge: {
+  headerWrap: { paddingHorizontal: 20, marginBottom: 18 },
+  title: { ...TYPE.hero, color: COLORS.textPrimary },
+  subtitle: { ...TYPE.body, color: COLORS.textMuted, marginTop: 2 },
+
+  ledger: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginTop: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    backgroundColor: COLORS.accentSoft,
+    marginTop: 16,
+    paddingVertical: 14,
     borderRadius: 20,
-    alignSelf: 'flex-start',
-  },
-  marketDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLORS.accent,
-  },
-  marketBadgeText: {
-    ...TYPE.caption,
-    color: COLORS.accent,
-    fontSize: 11,
-  },
-
-  /* Carousel */
-  carouselWrap: { marginBottom: 28 },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 14,
-  },
-  sectionTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  sectionDot: {
-    width: 4,
-    height: 16,
-    borderRadius: 2,
-    backgroundColor: COLORS.accent,
-  },
-  sectionTitle: {
-    ...TYPE.h3,
-    color: COLORS.textPrimary,
-  },
-  pageIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
     backgroundColor: COLORS.bg1,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  indicatorDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLORS.borderLight,
-  },
-  indicatorDotActive: {
-    width: 18,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLORS.accent,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    gap: CARD_GAP,
-  },
-
-  /* Card */
-  cardOuter: {
-    width: CARD_WIDTH,
-    borderRadius: 22,
-    ...SHADOWS.lg,
-  },
-  cardTouch: {
-    width: '100%',
-    borderRadius: 22,
-    overflow: 'hidden',
-  },
-  cardInner: {
-    backgroundColor: COLORS.bg2,
-    borderRadius: 22,
-    overflow: 'hidden',
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  accentStripe: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 3,
-    borderTopLeftRadius: 22,
-    borderTopRightRadius: 22,
-  },
+  ledgerStat: { flex: 1, alignItems: 'center', gap: 3, paddingHorizontal: 4 },
+  ledgerDivider: { width: 1, height: 34, backgroundColor: COLORS.border },
+  ledgerValue: { fontSize: 17, fontWeight: '800', color: COLORS.textPrimary },
+  ledgerLabel: { fontSize: 9, fontWeight: '700', color: COLORS.textMuted, letterSpacing: 0.4 },
+  ledgerHint: { fontSize: 11, color: COLORS.textMuted, marginTop: 8, textAlign: 'center' },
 
-  /* Hero image area */
-  heroImageBg: {
-    height: 160,
-    justifyContent: 'flex-end',
+  modeCard: { marginHorizontal: 20, marginBottom: 18, borderRadius: 28, overflow: 'hidden', ...SHADOWS.lg },
+  modeGradient: { padding: 22, gap: 10, overflow: 'hidden' },
+  modeArt: {
+    position: 'absolute',
+    right: -22,
+    bottom: -18,
+    width: 170,
+    height: 170,
+    opacity: 0.22,
   },
-  heroImageStyle: {
-    borderTopLeftRadius: 21,
-    borderTopRightRadius: 21,
-  },
-  heroOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.08)',
-    borderTopLeftRadius: 21,
-    borderTopRightRadius: 21,
-  },
-  heroPlaceholder: {
-    height: 160,
+  modeTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  modeTag: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    borderTopLeftRadius: 21,
-    borderTopRightRadius: 21,
+    gap: 5,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
   },
-
-  /* Floating tag */
-  floatingTag: {
-    position: 'absolute',
-    top: 14,
-    right: 14,
+  modeTagText: { fontSize: 10, fontWeight: '900', color: '#FFFFFF', letterSpacing: 1.1 },
+  livePill: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 20,
+  },
+  livePillText: { fontSize: 9, fontWeight: '900', color: '#111827', letterSpacing: 0.8 },
+  donePill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
+    backgroundColor: 'rgba(34,197,94,0.85)',
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 20,
+  },
+  donePillText: { fontSize: 9, fontWeight: '900', color: '#FFFFFF', letterSpacing: 0.6 },
+  gradePill: {
     backgroundColor: 'rgba(255,255,255,0.9)',
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 20,
   },
-  floatingTagPro: {
-    backgroundColor: 'rgba(139, 92, 246, 0.9)',
-  },
-  floatingTagText: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-    letterSpacing: 1,
-  },
+  gradePillText: { fontSize: 9, fontWeight: '900', color: '#111827', letterSpacing: 0.8 },
 
-  /* Content panel */
-  contentPanel: {
-    padding: 18,
-  },
-  metaRow: {
+  modeTitle: { fontSize: 24, fontWeight: '900', color: '#FFFFFF', letterSpacing: -0.5, marginTop: 6 },
+  modeBody: { fontSize: 13, lineHeight: 20, color: 'rgba(255,255,255,0.88)', maxWidth: '92%' },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 },
+  chip: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(255,255,255,0.16)',
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    borderRadius: 20,
+  },
+  chipText: { fontSize: 10, fontWeight: '700', color: '#FFFFFF' },
+  modeCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 8,
+    marginTop: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingVertical: 15,
+  },
+  modeCtaText: { fontSize: 15, fontWeight: '800', color: '#111827' },
+
+  extras: { paddingHorizontal: 20, marginTop: 4 },
+  extrasLabel: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+    color: COLORS.textMuted,
     marginBottom: 10,
   },
-  iconPill: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  subtitleText: {
-    ...TYPE.overline,
-    fontSize: 10,
-  },
-  cardTitle: {
-    ...TYPE.h1,
-    color: COLORS.textPrimary,
-    marginBottom: 4,
-  },
-  cardDesc: {
-    ...TYPE.body,
-    fontSize: 13,
-    color: COLORS.textSecondary,
-    lineHeight: 19,
-    marginBottom: 14,
-  },
-  ctaRow: {
+  linkRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 12,
+    padding: 14,
+    borderRadius: 16,
+    backgroundColor: COLORS.bg2,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: 8,
   },
-  ctaText: {
-    ...TYPE.bodyBold,
-    fontSize: 13,
-  },
-  ctaArrow: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
+  linkIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: COLORS.accentSoft,
   },
+  linkLabel: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary },
+  linkSub: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
 });
