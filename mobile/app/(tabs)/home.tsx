@@ -24,6 +24,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
 import { StreakBadge } from '../../components/ui/StreakBadge';
+import { XPBadge } from '../../components/ui/XPBadge';
 import { WelcomeBackModal } from '../../components/home/WelcomeBackModal';
 import { useReturnVisit } from '../../hooks/useReturnVisit';
 import { ProgressBar } from '../../components/ui/ProgressBar';
@@ -39,7 +40,6 @@ import { useDailyQuests } from '../../hooks/useDailyQuests';
 import { useMilestoneSharing } from '../../hooks/useMilestoneSharing';
 import { useHomeData } from '../../hooks/useHomeData';
 import { useSessionFlow } from '../../hooks/useSessionFlow';
-import { MONETIZATION_ENABLED } from '../../lib/monetization';
 import { triggerHaptic } from '../../lib/haptics';
 import { useStreakFreeze } from '../../hooks/useStreakFreeze';
 import { playSound } from '../../lib/sounds';
@@ -56,7 +56,6 @@ import { SundayRecapCard } from '../../components/home/SundayRecapCard';
 import { LeagueCeremonyModal } from '../../components/league/LeagueCeremonyModal';
 import { useLeague, TIER_META } from '../../hooks/useLeague';
 import { useWeeklyRecap } from '../../hooks/useWeeklyRecap';
-import { WorldBanner } from '../../components/world/WorldBanner';
 import { useCollectibles, CollectibleCard } from '../../hooks/useCollectibles';
 import { CardRevealModal } from '../../components/collectibles/CardRevealModal';
 
@@ -264,7 +263,7 @@ export default function HomeScreen() {
   // Leo popup system
   const leoPopups = useLeoPopups({ cooldownMs: 45000, maxPerSession: 4 });
 
-  // Level / XP recap shows as a pop-up on return after 4h+, not on the home screen
+  // The level recap appears after 4h away; XP remains visible in the top bar.
   const returnVisit = useReturnVisit(!!xpData && !loading);
   const hasTriggeredWelcome = useRef(false);
 
@@ -446,24 +445,13 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.accent} />}
         >
-          {/* ── Top bar: Streak + XP + Pro ── */}
+          {/* ── Top bar: streak + XP ── */}
           <View style={styles.topBar}>
             <StreakBadge count={streak} />
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              {MONETIZATION_ENABLED && isProUser && (
-                <View style={{ backgroundColor: 'rgba(139, 92, 246, 0.15)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.3)' }}>
-                  <Text style={{ color: '#8B5CF6', fontSize: 11, fontWeight: '800', letterSpacing: 1 }}>PRO</Text>
-                </View>
-              )}
-            </View>
+            <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} />
           </View>
 
           {/* ── Leo + Greeting ── */}
-          <AnimatedSection delay={0}>
-            <TouchableOpacity onPress={() => router.push('/collection' as any)} activeOpacity={0.88} style={{ marginBottom: 14 }}>
-              <WorldBanner marketId={selectedMarket} day={currentDay} compact />
-            </TouchableOpacity>
-          </AnimatedSection>
 
           <AnimatedSection delay={0}>
             <TouchableOpacity
