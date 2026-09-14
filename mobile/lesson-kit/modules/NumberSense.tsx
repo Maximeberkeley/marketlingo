@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, PanResponder, Animated } from 'react-native';
 import { tokens } from '../theme/tokens';
 import { NumberSenseExercise } from '../types';
@@ -21,6 +21,9 @@ export function NumberSense({ exercise, phase, onChange }: ExerciseProps<NumberS
   const [ratio, setRatio] = useState(0.5);
   const [touched, setTouched] = useState(false);
   const startRatio = useRef(0.5);
+  const ratioRef = useRef(0.5);
+  const widthRef = useRef(0);
+  const phaseRef = useRef(phase);
   const reveal = useRef(new Animated.Value(0)).current;
   const [shown, setShown] = useState(exercise.min);
 
@@ -28,6 +31,10 @@ export function NumberSense({ exercise, phase, onChange }: ExerciseProps<NumberS
   const guess = exercise.min + ratio * (exercise.max - exercise.min);
   const off = Math.abs(guess - exercise.value) / (exercise.max - exercise.min);
   const correct = off <= tolerance;
+
+  ratioRef.current = ratio;
+  widthRef.current = width;
+  phaseRef.current = phase;
 
   useEffect(() => {
     setRatio(0.5);
@@ -45,27 +52,30 @@ export function NumberSense({ exercise, phase, onChange }: ExerciseProps<NumberS
     return () => reveal.removeListener(id);
   }, [phase]);
 
-  const responder = useMemo(
-    () =>
+  const responder = useRef(
       PanResponder.create({
-        onStartShouldSetPanResponder: () => phase === 'answering',
+        onStartShouldSetPanResponder: () => phaseRef.current === 'answering',
+        onMoveShouldSetPanResponder: (_event, gesture) =>
+          phaseRef.current === 'answering' && Math.abs(gesture.dx) > Math.abs(gesture.dy),
+        onMoveShouldSetPanResponderCapture: (_event, gesture) =>
+          phaseRef.current === 'answering' && Math.abs(gesture.dx) > 3 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
         onPanResponderGrant: () => {
-          startRatio.current = ratio;
+          startRatio.current = ratioRef.current;
           tap();
         },
         onPanResponderMove: (_e, g) => {
-          if (!width) return;
-          const next = Math.min(1, Math.max(0, startRatio.current + g.dx / width));
+          if (!widthRef.current) return;
+          const next = Math.min(1, Math.max(0, startRatio.current + g.dx / widthRef.current));
+          ratioRef.current = next;
           setRatio(next);
-          if (!touched) setTouched(true);
+          setTouched(true);
         },
         onPanResponderRelease: () => {
           setTouched(true);
-          onChange({ canCheck: true, isCorrect: correct });
         },
+        onPanResponderTerminationRequest: () => false,
       }),
-    [phase, ratio, width, correct, touched],
-  );
+  ).current;
 
   useEffect(() => {
     if (touched) onChange({ canCheck: true, isCorrect: correct });
@@ -86,7 +96,14 @@ export function NumberSense({ exercise, phase, onChange }: ExerciseProps<NumberS
         </Text>
       </View>
 
-      <View style={styles.trackWrap} onLayout={e => setWidth(e.nativeEvent.layout.width)} {...responder.panHandlers}>
+      <View
+        style={styles.trackWrap}
+        onLayout={e => {
+          widthRef.current = e.nativeEvent.layout.width;
+          setWidth(e.nativeEvent.layout.width);
+        }}
+        {...responder.panHandlers}
+      >
         <View style={styles.track} />
         {phase === 'feedback' && (
           <View style={[styles.target, { left: `${targetRatio * 100}%` }]} />

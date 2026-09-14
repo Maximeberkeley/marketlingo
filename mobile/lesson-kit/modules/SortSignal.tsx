@@ -30,6 +30,17 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
   const [hover, setHover] = useState<number | null>(null);
   const pan = useRef(new Animated.ValueXY()).current;
   const { shake, translateX } = useShake();
+  const phaseRef = useRef(phase);
+  const doneRef = useRef(false);
+  const itemRef = useRef(item);
+  const bucketsRef = useRef(exercise.buckets);
+  const shakeRef = useRef(shake);
+
+  phaseRef.current = phase;
+  doneRef.current = done;
+  itemRef.current = item;
+  bucketsRef.current = exercise.buckets;
+  shakeRef.current = shake;
 
   useEffect(() => {
     setCursor(0);
@@ -49,7 +60,7 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
   }, [done, wrongs]);
 
   const bucketAt = (pageX: number, pageY: number) => {
-    for (let i = 0; i < exercise.buckets.length; i++) {
+    for (let i = 0; i < bucketsRef.current.length; i++) {
       const r = bucketRects.current[i];
       if (!r) continue;
       if (pageX >= r.x && pageX <= r.x + r.width && pageY >= r.y && pageY <= r.y + r.height) return i;
@@ -57,10 +68,12 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
     return null;
   };
 
-  const responder = useMemo(
-    () =>
+  const responder = useRef(
       PanResponder.create({
-        onStartShouldSetPanResponder: () => phase === 'answering' && !done,
+        onStartShouldSetPanResponder: () => phaseRef.current === 'answering' && !doneRef.current,
+        onMoveShouldSetPanResponder: (_event, gesture) =>
+          phaseRef.current === 'answering' && !doneRef.current && (Math.abs(gesture.dx) > 3 || Math.abs(gesture.dy) > 3),
+        onPanResponderGrant: () => pan.stopAnimation(),
         onPanResponderMove: (e, g) => {
           pan.setValue({ x: g.dx, y: g.dy });
           const base = cardRect.current;
@@ -78,7 +91,9 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
             Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false }).start();
             return;
           }
-          const right = target === item.bucket;
+          const currentItem = itemRef.current;
+          if (!currentItem) return;
+          const right = target === currentItem.bucket;
           tick(right);
           if (right) {
             setPlaced(p => [...p, target]);
@@ -87,14 +102,14 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
             setCursor(c => c + 1);
           } else {
             setWrongs(w => w + 1);
-            setWhy(item.why || `That one belongs in "${exercise.buckets[item.bucket]}".`);
-            shake();
+            setWhy(currentItem.why || `That one belongs in "${bucketsRef.current[currentItem.bucket]}".`);
+            shakeRef.current();
             Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false }).start();
           }
         },
+        onPanResponderTerminationRequest: () => false,
       }),
-    [phase, done, item, exercise.buckets, shake],
-  );
+  ).current;
 
   return (
     <View style={styles.wrap}>

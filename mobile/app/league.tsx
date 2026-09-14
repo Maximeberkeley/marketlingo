@@ -10,12 +10,16 @@ import { COLORS, SHADOWS } from '../lib/constants';
 import { useSelectedMarket } from '../hooks/useSelectedMarket';
 import { TIER_META, useLeague } from '../hooks/useLeague';
 import { getMarketName } from '../lib/markets';
+import { LinearGradient } from 'expo-linear-gradient';
+import { getMarketWorld } from '../data/marketWorlds';
 
 export default function LeagueScreen() {
   const insets = useSafeAreaInsets();
   const { marketId: selectedMarket } = useSelectedMarket();
   const league = useLeague(selectedMarket || undefined);
   const meta = TIER_META[league.tier];
+  const world = getMarketWorld(selectedMarket);
+  const topXp = Math.max(1, ...league.rivals.map(rival => rival.weeklyXp));
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -33,20 +37,33 @@ export default function LeagueScreen() {
         </View>
       ) : (
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 40 }}>
-          <View style={[styles.hero, { backgroundColor: meta.color + '12', borderColor: meta.color + '40' }]}>
-            <Feather name="award" size={40} color={meta.color} />
-            <Text style={[styles.tier, { color: meta.color }]}>{meta.label.toUpperCase()} LEAGUE</Text>
-            <Text style={styles.heroSub}>
-              {getMarketName(selectedMarket || 'aerospace')} · {league.daysLeft === 0 ? 'Results tonight' : `${league.daysLeft} day${league.daysLeft === 1 ? '' : 's'} left`}
-            </Text>
-            <Text style={styles.heroLine}>
-              {league.myRank
-                ? league.myRank <= league.promotionCutoff
-                  ? `You are #${league.myRank} — inside the promotion zone.`
-                  : `You are #${league.myRank}. ${league.xpToPromotion} XP moves you into the promotion zone.`
-                : 'Earn XP today to enter this week\'s table.'}
-            </Text>
-          </View>
+          <LinearGradient colors={[world.colors[0], world.colors[1]]} style={styles.hero}>
+            <View style={styles.heroTop}>
+              <View style={styles.crestOuter}>
+                <View style={styles.crestInner}><Feather name="award" size={30} color={meta.color} /></View>
+              </View>
+              <View style={styles.heroCopy}>
+                <Text style={styles.heroEyebrow}>{world.worldName.toUpperCase()}</Text>
+                <Text style={styles.tier}>{meta.label} League</Text>
+                <Text style={styles.heroSub}>{getMarketName(selectedMarket || 'aerospace')}</Text>
+              </View>
+              <View style={styles.countdown}>
+                <Text style={styles.countdownValue}>{league.daysLeft}</Text>
+                <Text style={styles.countdownLabel}>{league.daysLeft === 1 ? 'DAY' : 'DAYS'}</Text>
+              </View>
+            </View>
+            <View style={styles.heroRule} />
+            <View style={styles.heroStatus}>
+              <Feather name={league.myRank && league.myRank <= league.promotionCutoff ? 'trending-up' : 'target'} size={16} color={COLORS.bg2} />
+              <Text style={styles.heroLine}>
+                {league.myRank
+                  ? league.myRank <= league.promotionCutoff
+                    ? `Rank #${league.myRank}. You are in the promotion zone.`
+                    : `${league.xpToPromotion} XP to promotion.`
+                  : 'Earn XP to enter this week’s table.'}
+              </Text>
+            </View>
+          </LinearGradient>
 
           <View style={styles.legend}>
             <LegendDot color={COLORS.success} label={`Top ${league.promotionCutoff} promote`} />
@@ -61,7 +78,7 @@ export default function LeagueScreen() {
               const promote = r.rank <= league.promotionCutoff;
               const relegate = !!league.demotionCutoff && r.rank > league.demotionCutoff;
               return (
-                <View key={r.userId} style={[styles.row, r.isMe && { backgroundColor: meta.color + '10' }]}>
+                <View key={r.userId} style={[styles.row, r.isMe && styles.myRow]}> 
                   <View
                     style={[
                       styles.rankPill,
@@ -82,7 +99,10 @@ export default function LeagueScreen() {
                   <Text style={[styles.name, r.isMe && { fontWeight: '800', color: COLORS.textPrimary }]} numberOfLines={1}>
                     {r.isMe ? 'You' : r.username}
                   </Text>
-                  <Text style={styles.xp}>{r.weeklyXp} XP</Text>
+                  <View style={styles.rivalData}>
+                    <Text style={styles.xp}>{r.weeklyXp} XP</Text>
+                    <View style={styles.xpTrack}><View style={[styles.xpFill, { width: `${Math.max(3, (r.weeklyXp / topXp) * 100)}%`, backgroundColor: r.isMe ? meta.color : COLORS.textMuted }]} /></View>
+                  </View>
                 </View>
               );
             })}
@@ -111,20 +131,34 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 },
   headerTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  hero: { borderWidth: 1, borderRadius: 20, padding: 20, alignItems: 'center', gap: 6, marginBottom: 16 },
-  tier: { fontSize: 13, fontWeight: '800', letterSpacing: 1.2 },
-  heroSub: { fontSize: 12, color: COLORS.textMuted },
-  heroLine: { fontSize: 13, color: COLORS.textSecondary, textAlign: 'center', marginTop: 6, lineHeight: 19 },
+  hero: { borderRadius: 20, padding: 18, marginBottom: 16, overflow: 'hidden', ...SHADOWS.md },
+  heroTop: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  crestOuter: { width: 64, height: 72, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.35)', alignItems: 'center', justifyContent: 'center' },
+  crestInner: { width: 48, height: 48, borderRadius: 24, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
+  heroCopy: { flex: 1 },
+  heroEyebrow: { fontSize: 9, fontWeight: '900', color: 'rgba(255,255,255,0.72)' },
+  tier: { fontSize: 24, lineHeight: 28, fontWeight: '900', color: COLORS.bg2 },
+  heroSub: { fontSize: 12, color: 'rgba(255,255,255,0.76)', marginTop: 2 },
+  countdown: { alignItems: 'center', minWidth: 42 },
+  countdownValue: { fontSize: 26, fontWeight: '900', color: COLORS.bg2 },
+  countdownLabel: { fontSize: 8, fontWeight: '900', color: 'rgba(255,255,255,0.7)' },
+  heroRule: { height: 1, backgroundColor: 'rgba(255,255,255,0.24)', marginVertical: 14 },
+  heroStatus: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  heroLine: { flex: 1, fontSize: 13, fontWeight: '700', color: COLORS.bg2, lineHeight: 18 },
   legend: { flexDirection: 'row', gap: 16, marginBottom: 10, paddingHorizontal: 4 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   dot: { width: 8, height: 8, borderRadius: 4 },
   legendText: { fontSize: 11, color: COLORS.textMuted, fontWeight: '600' },
   table: { backgroundColor: COLORS.bg2, borderRadius: 16, borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden', ...SHADOWS.sm },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, paddingHorizontal: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.borderLight },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 62, paddingVertical: 10, paddingHorizontal: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.borderLight },
+  myRow: { backgroundColor: COLORS.accentSoft, borderLeftWidth: 4, borderLeftColor: COLORS.accent },
   rankPill: { width: 30, height: 30, borderRadius: 15, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
   rankText: { fontSize: 12, fontWeight: '800', color: COLORS.textSecondary },
   name: { flex: 1, fontSize: 14, color: COLORS.textSecondary, fontWeight: '600' },
-  xp: { fontSize: 13, fontWeight: '700', color: COLORS.textPrimary },
+  rivalData: { width: 84, alignItems: 'flex-end', gap: 5 },
+  xp: { fontSize: 13, fontWeight: '800', color: COLORS.textPrimary },
+  xpTrack: { width: '100%', height: 3, borderRadius: 2, overflow: 'hidden', backgroundColor: COLORS.borderLight },
+  xpFill: { height: '100%', borderRadius: 2 },
   empty: { padding: 20, textAlign: 'center', color: COLORS.textMuted, fontSize: 13 },
   footnote: { fontSize: 11, color: COLORS.textMuted, marginTop: 14, lineHeight: 16 },
 });

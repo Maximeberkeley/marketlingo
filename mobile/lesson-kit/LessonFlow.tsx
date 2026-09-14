@@ -41,6 +41,7 @@ export function LessonFlow({ onExit }: { onExit?: () => void }) {
   return (
     <LessonScreen
       lesson={demoLesson}
+      marketId="fintech"
       onExit={() => onExit?.()}
       onFinish={() => onExit?.()}
     />

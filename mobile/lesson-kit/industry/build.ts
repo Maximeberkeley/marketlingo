@@ -92,10 +92,14 @@ export function packSpeedRound(pack: IndustryPack, id: string): SpeedRoundExerci
  */
 export function trainerCall(row: TrainerScenarioRow | undefined, id: string): TheCallExercise | null {
   if (!row) return null;
-  const options = row.options.map(o => o.label.trim()).filter(Boolean);
+  const normalized = row.options
+    .map((option, originalIndex) => ({ ...option, label: option.label.trim(), originalIndex }))
+    .filter(option => option.label.length > 0);
+  const options = normalized.map(option => option.label);
   if (options.length < 2) return null;
-  const flagged = row.options.findIndex(o => o.isCorrect);
-  const correctIndex = flagged >= 0 ? flagged : row.correct_option_index;
+  const flagged = normalized.findIndex(option => option.isCorrect);
+  const fallback = normalized.findIndex(option => option.originalIndex === row.correct_option_index);
+  const correctIndex = flagged >= 0 ? flagged : fallback;
   if (correctIndex < 0 || correctIndex >= options.length) return null;
 
   const consequences = [
