@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.marketlingo.aerospace",
-      "buildNumber": "96",
+      "buildNumber": "97",
       "infoPlist": {
         "UIUserInterfaceStyle": "Dark",
         "ITSAppUsesNonExemptEncryption": false,
