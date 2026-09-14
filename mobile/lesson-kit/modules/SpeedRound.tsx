@@ -14,6 +14,7 @@ export function SpeedRound({ exercise, phase, onChange }: ExerciseProps<SpeedRou
   const [flash, setFlash] = useState<'none' | 'good' | 'bad'>('none');
   const [left, setLeft] = useState(total);
   const bar = useRef(new Animated.Value(1)).current;
+  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const finished = index >= exercise.rounds.length || left <= 0;
 
   useEffect(() => {
@@ -23,7 +24,12 @@ export function SpeedRound({ exercise, phase, onChange }: ExerciseProps<SpeedRou
     setFlash('none');
     bar.setValue(1);
     onChange({ canCheck: false, isCorrect: false });
-    Animated.timing(bar, { toValue: 0, duration: total * 1000, useNativeDriver: false }).start();
+    const animation = Animated.timing(bar, { toValue: 0, duration: total * 1000, useNativeDriver: false });
+    animation.start();
+    return () => {
+      animation.stop();
+      if (flashTimer.current) clearTimeout(flashTimer.current);
+    };
   }, [exercise.id]);
 
   useEffect(() => {
@@ -47,7 +53,8 @@ export function SpeedRound({ exercise, phase, onChange }: ExerciseProps<SpeedRou
     tick(right);
     if (right) setHits(h => h + 1);
     setFlash(right ? 'good' : 'bad');
-    setTimeout(() => setFlash('none'), 220);
+    if (flashTimer.current) clearTimeout(flashTimer.current);
+    flashTimer.current = setTimeout(() => setFlash('none'), 220);
     setIndex(n => n + 1);
   };
 

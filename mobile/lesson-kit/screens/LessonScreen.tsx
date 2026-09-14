@@ -85,7 +85,20 @@ export function LessonScreen({
 
   useEffect(() => {
     setQueue(lesson.exercises);
-  }, [lesson]);
+    setIndex(0);
+    setPhase('answering');
+    setState({ canCheck: false, isCorrect: false });
+    setCorrectCount(0);
+    setGradedCount(0);
+    setCombo(0);
+    setBestCombo(0);
+    setHearts(MAX_HEARTS);
+    setMissed([]);
+    setShowExitPrompt(false);
+    setShowHeartsPrompt(false);
+    setFinished(false);
+    startedAt.current = Date.now();
+  }, [lesson.id]);
 
   const exercise = queue[index];
   const isInfo = isPassiveKind(exercise?.kind);
