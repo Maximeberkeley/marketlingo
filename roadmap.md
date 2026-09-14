@@ -5,7 +5,9 @@
       Beat the Clock, Number Sense, Spot the Fake, Map the Market, Chart Read, The Call)
 - [x] Phase 2 — beat sequencer: cold open, insight, game, boss round, takeaway
 - [ ] Phase 3 — streak rescue, comeback flow, rival nudges, league reveal, smarter notifications
-- [ ] Phase 4 — 15 market worlds, collectible industry-archetype cards, hybrid milestone badges, full LessonKit coverage
+- [ ] Phase 4 — market worlds, collectibles, milestones, and full LessonKit coverage
+  - [x] 15 world identities, 60 cards, secure unlocks, reveal ceremony, collection, featured card, journey milestones
+  - [ ] Adapt Trainer, Games, Drills, Investment Lab, Seminar Prep, Notebook, and Summaries to LessonKit
 
 ## Lesson kit — industry content (done)
 - Industry packs: fintech (finance), ai (tech), logistics (commerce)
