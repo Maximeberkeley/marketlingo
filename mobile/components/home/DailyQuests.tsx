@@ -23,8 +23,8 @@ const QUEST_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
 
 const QUEST_ROUTES: Record<string, string> = {
   lesson: '/(tabs)/home',
-  drill: '/drills',
-  game: '/games',
+  drill: '/arena',
+  game: '/arena',
   combo: '/(tabs)/practice',
   streak: '/(tabs)/home',
 };

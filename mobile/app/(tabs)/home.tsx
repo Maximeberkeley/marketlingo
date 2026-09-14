@@ -612,7 +612,7 @@ export default function HomeScreen() {
             <AnimatedSection delay={180}>
               <TouchableOpacity
                 style={styles.reviewBanner}
-                onPress={() => router.push('/trainer' as any)}
+                onPress={() => router.push('/deep-case' as any)}
                 activeOpacity={0.8}
               >
                 <Feather name="refresh-cw" size={18} color={COLORS.accent} />
