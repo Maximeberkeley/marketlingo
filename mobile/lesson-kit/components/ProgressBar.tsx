@@ -5,9 +5,10 @@ import { tokens } from '../theme/tokens';
 interface Props {
   /** 0 -> 1 */
   progress: number;
+  accentColor?: string;
 }
 
-export function ProgressBar({ progress }: Props) {
+export function ProgressBar({ progress, accentColor }: Props) {
   const clamped = Math.max(0, Math.min(1, progress));
   const anim = useRef(new Animated.Value(clamped)).current;
 
@@ -26,7 +27,7 @@ export function ProgressBar({ progress }: Props) {
 
   return (
     <View style={styles.track}>
-      <Animated.View style={[styles.fill, { width }]} />
+      <Animated.View style={[styles.fill, { width }, accentColor ? { backgroundColor: accentColor } : null]} />
     </View>
   );
 }
