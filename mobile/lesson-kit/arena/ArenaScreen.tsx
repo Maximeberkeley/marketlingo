@@ -236,7 +236,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
       <View style={[styles.root, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 20 }]}>
         <ScrollView contentContainerStyle={styles.summaryScroll} showsVerticalScrollIndicator={false}>
           <LinearGradient
-            colors={[rank.color, world?.accent || tokens.color.accent]}
+            colors={[rank.color, world.colors[1]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.summaryHero}
@@ -402,7 +402,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
       <Modal visible={showWaveIntro} transparent animationType="fade">
         <View style={styles.waveBackdrop}>
           <LinearGradient
-            colors={[world?.accent || '#7C3AED', tokens.color.accent]}
+            colors={[world.colors[0], world.colors[1]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.waveCard}
