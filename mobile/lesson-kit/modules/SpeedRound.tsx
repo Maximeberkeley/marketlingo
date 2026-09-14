@@ -24,13 +24,18 @@ export function SpeedRound({ exercise, phase, onChange }: ExerciseProps<SpeedRou
     setFlash('none');
     bar.setValue(1);
     onChange({ canCheck: false, isCorrect: false });
-    const animation = Animated.timing(bar, { toValue: 0, duration: total * 1000, useNativeDriver: false });
-    animation.start();
     return () => {
-      animation.stop();
       if (flashTimer.current) clearTimeout(flashTimer.current);
     };
   }, [exercise.id]);
+
+  useEffect(() => {
+    Animated.timing(bar, {
+      toValue: Math.max(0, left / total),
+      duration: 220,
+      useNativeDriver: false,
+    }).start();
+  }, [bar, left, total]);
 
   useEffect(() => {
     if (phase === 'feedback' || finished) return;
