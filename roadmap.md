@@ -6,6 +6,8 @@
 - [x] Phase 2 — beat sequencer: cold open, insight, game, boss round, takeaway
 - [ ] Phase 3 — streak rescue, comeback flow, rival nudges, league reveal, smarter notifications
 - [ ] Phase 4 — market worlds, collectibles, milestones, and full LessonKit coverage
+- [x] Phase 5 — Practice rebuilt as two modes (Daily Arena, Deep Case), dark mode in
+      Settings, level/XP moved to a 4h return pop-up, achievements scoped to your industry
   - [x] 15 world identities, 60 cards, secure unlocks, reveal ceremony, collection, featured card, journey milestones
   - [ ] Adapt Trainer, Games, Drills, Investment Lab, Seminar Prep, Notebook, and Summaries to LessonKit
 
