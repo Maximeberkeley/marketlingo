@@ -11,6 +11,7 @@ import { DemoLesson } from "@/components/demo/DemoLesson";
 import leoMascot from "@/assets/mascot/leo-reference.png";
 import leoCelebrating from "@/assets/mascot/leo-celebrating.png";
 import appIcon from "@/assets/app-icon.png";
+import maximePortrait from "@/assets/maxime-lucas-founder.jpg.asset.json";
 
 const APP_STORE_URL = "https://apps.apple.com/app/marketlingo/id6758534066";
 
@@ -487,10 +488,14 @@ export default function Landing() {
                 So we created it.
               </p>
             </div>
-            <div className="mt-8 pt-6 border-t border-border flex items-center gap-4">
-              <img src={appIcon} alt="MarketLingo" className="w-12 h-12 rounded-[22%] shadow-sm" />
+            <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+              <img
+                src={maximePortrait.url}
+                alt="Maxime Lucas, Founder & CEO of MarketLingo"
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-primary/20 shadow-md"
+              />
               <div>
-                <p className="font-bold text-foreground">Maxime Lucas</p>
+                <p className="font-bold text-foreground text-lg">Maxime Lucas</p>
                 <p className="text-sm text-muted-foreground">Founder & CEO, MarketLingo</p>
               </div>
             </div>
