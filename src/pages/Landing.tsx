@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   BookOpen, Gamepad2, Newspaper, Target, TrendingUp,
   Trophy, ChevronRight, Sparkles, Shield, Zap, GraduationCap,
-  Check, ArrowRight, Globe, Users, Brain, Star, Download, Smartphone
+  Check, ArrowRight, Globe, Users, Brain, Star, Download, Smartphone, Quote
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DemoLesson } from "@/components/demo/DemoLesson";
@@ -119,6 +119,7 @@ export default function Landing() {
           <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground ml-8">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
             <a href="#markets" className="hover:text-foreground transition-colors">Markets</a>
+            <a href="#about" className="hover:text-foreground transition-colors">About</a>
             <a href="#pricing" className="hover:text-foreground transition-colors">Free</a>
           </div>
           <div className="flex items-center gap-3">
@@ -437,6 +438,62 @@ export default function Landing() {
                 <p className="text-sm font-medium">{m.name}</p>
               </motion.div>
             ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* About / Founder story */}
+      <section id="about" className="py-24 px-4 sm:px-6">
+        <div className="max-w-3xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            className="text-center mb-12"
+          >
+            <motion.h2 variants={fadeUp} custom={0} className="text-3xl sm:text-4xl font-bold mb-4">
+              Why we built MarketLingo
+            </motion.h2>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={0}
+            className="relative p-8 sm:p-12 rounded-3xl bg-card border border-border"
+          >
+            <Quote className="absolute -top-5 left-8 w-10 h-10 text-primary bg-background rounded-full p-2 border border-border" />
+            <div className="space-y-5 text-lg leading-relaxed text-muted-foreground">
+              <p>
+                I went to UC Berkeley — economy class, at Newspace. One day I asked my professor
+                a simple question:{" "}
+                <span className="text-foreground font-medium">
+                  "How do we find the idea for a startup? There are so many of them already."
+                </span>
+              </p>
+              <p>
+                He said:{" "}
+                <span className="text-foreground font-medium">
+                  "You need to speak, breathe, eat and sleep your industry every single day —
+                  until you become fluent enough to come up with your own idea."
+                </span>
+              </p>
+              <p>
+                No simple, fun and addictive tool existed for that.
+              </p>
+              <p className="text-foreground font-semibold text-xl">
+                So we created it.
+              </p>
+            </div>
+            <div className="mt-8 pt-6 border-t border-border flex items-center gap-4">
+              <img src={appIcon} alt="MarketLingo" className="w-12 h-12 rounded-[22%] shadow-sm" />
+              <div>
+                <p className="font-bold text-foreground">Maxime Lucas</p>
+                <p className="text-sm text-muted-foreground">Founder & CEO, MarketLingo</p>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
