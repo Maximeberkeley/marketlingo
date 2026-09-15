@@ -489,7 +489,11 @@ export default function Landing() {
               </p>
             </div>
             <div className="mt-8 pt-6 border-t border-border flex items-center gap-4">
-              <img src={appIcon} alt="MarketLingo" className="w-12 h-12 rounded-[22%] shadow-sm" />
+              <img
+                src={maximePortrait.url}
+                alt="Maxime Lucas, Founder & CEO of MarketLingo"
+                className="w-14 h-14 rounded-full object-cover border-2 border-primary/20 shadow-sm"
+              />
               <div>
                 <p className="font-bold text-foreground">Maxime Lucas</p>
                 <p className="text-sm text-muted-foreground">Founder & CEO, MarketLingo</p>
