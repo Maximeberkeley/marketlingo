@@ -100,7 +100,10 @@ private func mood(for entry: LeoEntry) -> LeoMood {
 }
 
 private func leoImage(_ name: String) -> Image {
-    UIImage(named: name) != nil ? Image(name) : Image(systemName: "hare.fill")
+    guard let image = UIImage(named: name) else {
+        return Image(systemName: "hare.fill")
+    }
+    return Image(uiImage: image)
 }
 
 struct LeoAccessoryView: View {
