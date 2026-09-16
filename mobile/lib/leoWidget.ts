@@ -3,7 +3,6 @@ import { ExtensionStorage } from '@bacons/apple-targets';
 import { log } from './logger';
 
 const APP_GROUP = 'group.app.marketlingo.aerospace.shared';
-const WIDGET_KIND = 'LeoWidget';
 
 interface LeoWidgetSnapshot {
   streak: number;
@@ -28,7 +27,7 @@ export function syncLeoWidget(snapshot: LeoWidgetSnapshot): void {
       Math.floor((Number.isFinite(parsedExpiry) ? parsedExpiry : fallbackExpiry.getTime()) / 1000),
     );
     storage.set('leo_widget_market', snapshot.market || 'Your market');
-    ExtensionStorage.reloadWidget(WIDGET_KIND);
+    ExtensionStorage.reloadWidget();
   } catch (error) {
     log.warn('[LeoWidget] Could not sync widget state:', error);
   }
