@@ -447,94 +447,132 @@ export default function Landing() {
 
       {/* About / Founder story */}
       <section id="about" className="py-24 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
-            className="text-center mb-12"
+            className="text-center mb-16"
           >
             <motion.h2 variants={fadeUp} custom={0} className="text-3xl sm:text-4xl font-bold mb-4">
               Why we built MarketLingo
             </motion.h2>
+            <motion.p variants={fadeUp} custom={1} className="text-muted-foreground text-lg max-w-xl mx-auto">
+              Three different takes. One obsession: helping you speak your industry like an insider.
+            </motion.p>
           </motion.div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            custom={0}
-            className="relative p-8 sm:p-12 rounded-3xl bg-card border border-border"
-          >
-            <Quote className="absolute -top-5 left-8 w-10 h-10 text-primary bg-background rounded-full p-2 border border-border" />
-            <div className="space-y-5 text-lg leading-relaxed text-muted-foreground">
-              <p>
-                I went to Newspace Economy class, at Berkeley. One day I asked my professor
-                a simple question:{" "}
-                <span className="text-foreground font-medium">
-                  "How do we find the idea for a startup? There are so many of them already."
-                </span>
-              </p>
-              <p>
-                He said:{" "}
-                <span className="text-foreground font-medium">
-                  "You need to speak, breathe, eat and sleep your industry every single day —
-                  until you become fluent enough to come up with your own idea."
-                </span>
-              </p>
-              <p>
-                No simple, fun and addictive tool existed for that.
-              </p>
-              <p>
-                <span className="text-foreground font-medium">
-                  "Right after our Newspace Economy class, Maxime came up to me and told me he had an idea. He pitched it to me, and I was in!"
-                </span>
-              </p>
-              <p className="text-sm text-muted-foreground">— Sophia Hernández, Co-founder</p>
-              <p className="text-foreground font-semibold text-xl">
-                So we created it.
-              </p>
-            </div>
-            <div className="mt-8 pt-6 border-t border-border grid sm:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center text-center gap-4">
-                <img
-                  src={maximePortrait.url}
-                  alt="Maxime Lucas, Founder & CEO of MarketLingo"
-                  className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover border-2 border-primary/20 shadow-md"
-                />
-                <div>
-                  <p className="font-bold text-foreground text-lg">Maxime Lucas</p>
-                  <p className="text-sm text-muted-foreground">Founder & CEO, MarketLingo</p>
-                  <p className="text-xs text-muted-foreground mt-1">Aerospace major, UC Berkeley</p>
+          <div className="space-y-10">
+            {/* Maxime post */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              variants={fadeUp}
+              custom={0}
+              className="rounded-3xl bg-card border border-border p-8 sm:p-10 overflow-hidden relative"
+            >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+              <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-10">
+                <div className="flex-shrink-0">
+                  <img
+                    src={maximePortrait.url}
+                    alt="Maxime Lucas, Founder & CEO of MarketLingo"
+                    className="w-36 h-36 sm:w-44 sm:h-44 rounded-full object-cover border-4 border-background shadow-xl ring-2 ring-primary/10"
+                  />
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                  <Quote className="w-8 h-8 text-blue-500 mb-3 mx-auto md:mx-0" />
+                  <p className="text-lg sm:text-xl leading-relaxed text-foreground font-medium mb-4">
+                    "How do we find the idea for a startup? There are so many of them already."
+                  </p>
+                  <p className="text-muted-foreground mb-5">
+                    Newspace Economy class, at Berkeley. The professor's answer was simple: speak, breathe, eat and sleep your industry until you become fluent enough to come up with your own idea.
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                    <span className="font-bold text-foreground">Maxime Lucas</span>
+                    <span className="text-muted-foreground">·</span>
+                    <span className="text-sm text-muted-foreground">Founder & CEO</span>
+                    <span className="text-xs bg-blue-500/10 text-blue-600 dark:text-blue-400 px-2.5 py-1 rounded-full">Aerospace, UC Berkeley</span>
+                  </div>
                 </div>
               </div>
-              <div className="flex flex-col items-center text-center gap-4">
-                <img
-                  src={sophiaPortrait.url}
-                  alt="Sophia Hernández, Co-founder of MarketLingo"
-                  className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover border-2 border-primary/20 shadow-md"
-                />
-                <div>
-                  <p className="font-bold text-foreground text-lg">Sophia Hernández</p>
-                  <p className="text-sm text-muted-foreground">Co-founder, MarketLingo</p>
-                  <p className="text-xs text-muted-foreground mt-1">Premed Neuroscience major, UC Berkeley</p>
+            </motion.div>
+
+            {/* Sophia post */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              variants={fadeUp}
+              custom={1}
+              className="rounded-3xl bg-card border border-border p-8 sm:p-10 overflow-hidden relative"
+            >
+              <div className="absolute top-0 left-0 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/3" />
+              <div className="relative flex flex-col md:flex-row-reverse items-center gap-8 md:gap-10">
+                <div className="flex-shrink-0">
+                  <img
+                    src={sophiaPortrait.url}
+                    alt="Sophia Hernández, Co-founder of MarketLingo"
+                    className="w-36 h-36 sm:w-44 sm:h-44 rounded-full object-cover border-4 border-background shadow-xl ring-2 ring-primary/10"
+                  />
+                </div>
+                <div className="flex-1 text-center md:text-right">
+                  <Quote className="w-8 h-8 text-purple-500 mb-3 mx-auto md:ml-auto" />
+                  <p className="text-lg sm:text-xl leading-relaxed text-foreground font-medium mb-4">
+                    "Right after our Newspace Economy class, Maxime came up to me and told me he had an idea. He pitched it to me, and I was in!"
+                  </p>
+                  <p className="text-muted-foreground mb-5">
+                    A premed neuroscience student and an aerospace engineer walked out of the same class with the same problem. So we decided to build the tool we wished we'd had.
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center md:justify-end gap-3">
+                    <span className="text-xs bg-purple-500/10 text-purple-600 dark:text-purple-400 px-2.5 py-1 rounded-full">Premed Neuroscience, UC Berkeley</span>
+                    <span className="text-sm text-muted-foreground">Co-founder</span>
+                    <span className="text-muted-foreground">·</span>
+                    <span className="font-bold text-foreground">Sophia Hernández</span>
+                  </div>
                 </div>
               </div>
-              <div className="flex flex-col items-center text-center gap-4">
-                <img
-                  src={leoCelebrating}
-                  alt="Leo, Chief Fluency Officer of MarketLingo"
-                  className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-contain border-2 border-primary/20 shadow-md bg-primary/5"
-                />
-                <div>
-                  <p className="font-bold text-foreground text-lg">Leo</p>
-                  <p className="text-sm text-muted-foreground">Chief Fluency Officer, MarketLingo</p>
-                  <p className="text-xs text-muted-foreground mt-1">Fox. Speaks, breathes, eats and sleeps all 15 industries so you don't have to. (Kidding — you do.)</p>
+            </motion.div>
+
+            {/* Leo post */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              variants={fadeUp}
+              custom={2}
+              className="rounded-3xl bg-card border border-border p-8 sm:p-10 overflow-hidden relative"
+            >
+              <div className="absolute bottom-0 left-1/2 w-72 h-72 bg-orange-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+              <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-10">
+                <div className="flex-shrink-0">
+                  <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 dark:from-orange-900/30 dark:to-amber-900/20 border-4 border-background shadow-xl ring-2 ring-primary/10 flex items-center justify-center p-2">
+                    <img
+                      src={leoSticker}
+                      alt="Leo, Chief Fluency Officer of MarketLingo"
+                      className="w-full h-full object-contain drop-shadow-md"
+                    />
+                  </div>
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                  <Quote className="w-8 h-8 text-orange-500 mb-3 mx-auto md:mx-0" />
+                  <p className="text-lg sm:text-xl leading-relaxed text-foreground font-medium mb-4">
+                    "I speak, breathe, eat and sleep all 15 industries. You probably shouldn't do that. Let me handle the obsession part."
+                  </p>
+                  <p className="text-muted-foreground mb-5">
+                    Leo is your AI companion inside the app: he coaches every lesson, reacts to your answers, celebrates streaks, and nudges you back when you slip. He's basically the fox version of that professor.
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                    <span className="font-bold text-foreground">Leo</span>
+                    <span className="text-muted-foreground">·</span>
+                    <span className="text-sm text-muted-foreground">Chief Fluency Officer</span>
+                    <span className="text-xs bg-orange-500/10 text-orange-600 dark:text-orange-400 px-2.5 py-1 rounded-full">Fox mascot & AI tutor</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
