@@ -469,7 +469,7 @@ export default function Landing() {
             <Quote className="absolute -top-5 left-8 w-10 h-10 text-primary bg-background rounded-full p-2 border border-border" />
             <div className="space-y-5 text-lg leading-relaxed text-muted-foreground">
               <p>
-                I went to Newspace economy class, at Berkeley. One day I asked my professor
+                I went to Newspace Economy class, at Berkeley. One day I asked my professor
                 a simple question:{" "}
                 <span className="text-foreground font-medium">
                   "How do we find the idea for a startup? There are so many of them already."
@@ -485,19 +485,40 @@ export default function Landing() {
               <p>
                 No simple, fun and addictive tool existed for that.
               </p>
+              <p>
+                <span className="text-foreground font-medium">
+                  "Right after our Newspace Economy class, Maxime came up to me and told me he had an idea. He pitched it to me, and I was in!"
+                </span>
+              </p>
+              <p className="text-sm text-muted-foreground">— Sophia Hernández, Co-founder</p>
               <p className="text-foreground font-semibold text-xl">
                 So we created it.
               </p>
             </div>
-            <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-              <img
-                src={maximePortrait.url}
-                alt="Maxime Lucas, Founder & CEO of MarketLingo"
-                className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-primary/20 shadow-md"
-              />
-              <div>
-                <p className="font-bold text-foreground text-lg">Maxime Lucas</p>
-                <p className="text-sm text-muted-foreground">Founder & CEO, MarketLingo</p>
+            <div className="mt-8 pt-6 border-t border-border grid sm:grid-cols-2 gap-6">
+              <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+                <img
+                  src={maximePortrait.url}
+                  alt="Maxime Lucas, Founder & CEO of MarketLingo"
+                  className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-primary/20 shadow-md"
+                />
+                <div>
+                  <p className="font-bold text-foreground text-lg">Maxime Lucas</p>
+                  <p className="text-sm text-muted-foreground">Founder & CEO, MarketLingo</p>
+                  <p className="text-xs text-muted-foreground mt-1">Aerospace major, UC Berkeley</p>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+                <img
+                  src={sophiaPortrait.url}
+                  alt="Sophia Hernández, Co-founder of MarketLingo"
+                  className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-primary/20 shadow-md"
+                />
+                <div>
+                  <p className="font-bold text-foreground text-lg">Sophia Hernández</p>
+                  <p className="text-sm text-muted-foreground">Co-founder, MarketLingo</p>
+                  <p className="text-xs text-muted-foreground mt-1">Premed Neuroscience major, UC Berkeley</p>
+                </div>
               </div>
             </div>
           </motion.div>
