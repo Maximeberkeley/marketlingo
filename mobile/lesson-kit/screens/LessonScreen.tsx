@@ -28,6 +28,19 @@ import { tokens } from '../theme/tokens';
 import { Exercise, Lesson } from '../types';
 import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
+import { AskLeoOverlay } from '../../components/ai/AskLeoOverlay';
+
+/** Flatten the current beat's visible text into a context string for Leo. */
+function exerciseContext(exercise?: Exercise): string {
+  if (!exercise) return '';
+  const e = exercise as unknown as Record<string, unknown>;
+  const parts: string[] = [];
+  for (const key of ['title', 'headline', 'prompt', 'text', 'body', 'question']) {
+    const v = e[key];
+    if (typeof v === 'string' && v.trim()) parts.push(v.trim());
+  }
+  return parts.join('\n');
+}
 
 const MAX_HEARTS = 3;
 
@@ -75,6 +88,7 @@ export function LessonScreen({
   const [missed, setMissed] = useState<Exercise[]>([]);
   const [showExitPrompt, setShowExitPrompt] = useState(false);
   const [showHeartsPrompt, setShowHeartsPrompt] = useState(false);
+  const [showAskLeo, setShowAskLeo] = useState(false);
   const [finished, setFinished] = useState(false);
   const startedAt = useRef(Date.now());
   const world = getMarketWorld(marketId);
