@@ -98,13 +98,8 @@ private func mood(for entry: LeoEntry) -> LeoMood {
     return LeoMood(image: "leoStern", headline: "LESSON. NOW.", line: lines[seed % lines.count], top: Color(red: 0.98, green: 0.39, blue: 0.08), bottom: Color(red: 0.86, green: 0.16, blue: 0.08))
 }
 
-@ViewBuilder
 private func leoImage(_ name: String) -> Image {
-    if UIImage(named: name) != nil {
-        Image(name)
-    } else {
-        Image(systemName: "hare.fill")
-    }
+    UIImage(named: name) != nil ? Image(name) : Image(systemName: "hare.fill")
 }
 
 struct LeoAccessoryView: View {
