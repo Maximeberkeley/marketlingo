@@ -12,6 +12,8 @@ const KEYS = {
   ONBOARDING_COMPLETE: '@marketlingo/onboarding_complete',
   LEARNING_GOAL: '@marketlingo/learning_goal',
   FEATURE_TOUR_SEEN: '@marketlingo/feature_tour_seen',
+  WIDGET_ADDED: '@marketlingo/widget_added',
+  WIDGET_NUDGE_AT: '@marketlingo/widget_nudge_at',
 };
 
 export const storage = {
@@ -89,6 +91,24 @@ export const storage = {
 
   async hasSeenFeatureTour(): Promise<boolean> {
     return (await AsyncStorage.getItem(KEYS.FEATURE_TOUR_SEEN)) === 'true';
+  },
+
+  // Home-screen widget nudge
+  async setWidgetAdded(): Promise<void> {
+    await AsyncStorage.setItem(KEYS.WIDGET_ADDED, 'true');
+  },
+
+  async hasWidgetAdded(): Promise<boolean> {
+    return (await AsyncStorage.getItem(KEYS.WIDGET_ADDED)) === 'true';
+  },
+
+  async getWidgetNudgeAt(): Promise<number> {
+    const value = await AsyncStorage.getItem(KEYS.WIDGET_NUDGE_AT);
+    return value ? Number(value) : 0;
+  },
+
+  async setWidgetNudgeAt(timestamp: number): Promise<void> {
+    await AsyncStorage.setItem(KEYS.WIDGET_NUDGE_AT, String(timestamp));
   },
 
   // Clear all

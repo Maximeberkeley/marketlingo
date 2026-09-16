@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import WidgetKit
 
 private let appGroup = "group.app.marketlingo.aerospace.shared"
@@ -98,6 +99,56 @@ private func mood(for entry: LeoEntry) -> LeoMood {
     return LeoMood(image: "leoStern", headline: "LESSON. NOW.", line: lines[seed % lines.count], top: Color(red: 0.98, green: 0.39, blue: 0.08), bottom: Color(red: 0.86, green: 0.16, blue: 0.08))
 }
 
+private func leoImage(_ name: String) -> Image {
+    UIImage(named: name) != nil ? Image(name) : Image(systemName: "hare.fill")
+}
+
+struct LeoAccessoryView: View {
+    @Environment(\.widgetFamily) private var family
+    let entry: LeoEntry
+
+    var body: some View {
+        switch family {
+        case .accessoryCircular:
+            ZStack {
+                AccessoryWidgetBackground()
+                VStack(spacing: 0) {
+                    Image(systemName: entry.lessonComplete ? "checkmark.seal.fill" : "flame.fill")
+                        .font(.system(size: 13, weight: .black))
+                    Text("\(entry.streak)")
+                        .font(.system(size: 15, weight: .black, design: .rounded))
+                }
+            }
+            .widgetURL(URL(string: "marketlingo://"))
+        case .accessoryInline:
+            if entry.lessonComplete {
+                Text("Leo: streak \(entry.streak) secured")
+            } else {
+                Text("Leo: \(entry.streak) day streak at risk")
+            }
+        default:
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 4) {
+                    Image(systemName: "flame.fill")
+                    Text("\(entry.streak) DAY STREAK")
+                        .font(.system(size: 12, weight: .black, design: .rounded))
+                }
+                if entry.lessonComplete {
+                    Text("Done. I had doubts.")
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                } else {
+                    Text(entry.expiresAt, style: .timer)
+                        .font(.system(size: 18, weight: .black, design: .rounded))
+                        .monospacedDigit()
+                    Text("left. No pressure.")
+                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                }
+            }
+            .widgetURL(URL(string: "marketlingo://"))
+        }
+    }
+}
+
 struct LeoWidgetView: View {
     @Environment(\.widgetFamily) private var family
     let entry: LeoEntry
@@ -143,7 +194,7 @@ struct LeoWidgetView: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                Image(state.image)
+                leoImage(state.image)
                     .resizable()
                     .scaledToFit()
                     .frame(width: family == .systemSmall ? 78 : 145, height: family == .systemSmall ? 115 : 155, alignment: .bottom)
@@ -156,16 +207,31 @@ struct LeoWidgetView: View {
     }
 }
 
+struct LeoWidgetRoot: View {
+    @Environment(\.widgetFamily) private var family
+    let entry: LeoEntry
+
+    var body: some View {
+        switch family {
+        case .accessoryCircular, .accessoryInline, .accessoryRectangular:
+            LeoAccessoryView(entry: entry)
+                .containerBackground(for: .widget) { Color.clear }
+        default:
+            LeoWidgetView(entry: entry)
+        }
+    }
+}
+
 struct LeoWidget: Widget {
     let kind = widgetKind
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: LeoProvider()) { entry in
-            LeoWidgetView(entry: entry)
+            LeoWidgetRoot(entry: entry)
         }
         .configurationDisplayName("Leo Streak")
         .description("Leo keeps your market fluency and streak honest.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular, .accessoryCircular, .accessoryInline])
         .contentMarginsDisabled()
     }
 }
