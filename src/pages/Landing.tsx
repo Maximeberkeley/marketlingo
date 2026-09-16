@@ -495,12 +495,12 @@ export default function Landing() {
                 So we created it.
               </p>
             </div>
-            <div className="mt-8 pt-6 border-t border-border grid sm:grid-cols-2 gap-6">
-              <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+            <div className="mt-8 pt-6 border-t border-border grid sm:grid-cols-2 gap-8">
+              <div className="flex flex-col items-center text-center gap-4">
                 <img
                   src={maximePortrait.url}
                   alt="Maxime Lucas, Founder & CEO of MarketLingo"
-                  className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-primary/20 shadow-md"
+                  className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover border-2 border-primary/20 shadow-md"
                 />
                 <div>
                   <p className="font-bold text-foreground text-lg">Maxime Lucas</p>
@@ -508,11 +508,11 @@ export default function Landing() {
                   <p className="text-xs text-muted-foreground mt-1">Aerospace major, UC Berkeley</p>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+              <div className="flex flex-col items-center text-center gap-4">
                 <img
                   src={sophiaPortrait.url}
                   alt="Sophia Hernández, Co-founder of MarketLingo"
-                  className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-primary/20 shadow-md"
+                  className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover border-2 border-primary/20 shadow-md"
                 />
                 <div>
                   <p className="font-bold text-foreground text-lg">Sophia Hernández</p>
