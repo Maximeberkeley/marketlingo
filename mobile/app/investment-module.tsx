@@ -119,7 +119,7 @@ export default function InvestmentModuleScreen() {
       {phase === 'verdict' && <>
         <LinearGradient colors={correct ? [COLORS.success, world.colors[1]] : [COLORS.error, world.colors[1]]} style={styles.verdict}><Feather name={correct ? 'trending-up' : 'activity'} size={32} color={COLORS.bg0} /><Text style={styles.verdictTitle}>{correct ? 'Thesis survived.' : 'Thesis cracked.'}</Text><Text style={styles.verdictSub}>{correct ? `+${confidence === 'high' ? 80 : 60} XP pending` : '25 XP for the rep'}</Text></LinearGradient>
         <Coach text={correct ? 'Good call. Now explain it without hiding behind jargon.' : 'Cheap mistakes belong here, not in a portfolio. Read the post-mortem.'} />
-        <Debrief label="WHY" body={compact(scenario.explanation, 175)} color={world.colors[0]} />
+        <Debrief label="WHY" body={compact(scenario.explanation || undefined, 175)} color={world.colors[0]} />
         {scenario.real_world_example && <Debrief label="REAL WORLD" body={compact(scenario.real_world_example, 175)} color={COLORS.info} />}
         <View style={styles.calibration}><Text style={styles.calibrationLabel}>CALIBRATION</Text><Text style={styles.calibrationText}>{correct && confidence === 'high' ? 'Right and bold. Senior-investor signal.' : !correct && confidence === 'high' ? 'Wrong and overconfident. That is the expensive combination.' : correct ? 'Right call. Build conviction with stronger evidence.' : 'Wrong call, controlled conviction. Recoverable.'}</Text></View>
         <Action label={index < scenarios.length - 1 ? 'Bank result · next case' : 'Complete module'} color={world.colors[0]} onPress={finish} />

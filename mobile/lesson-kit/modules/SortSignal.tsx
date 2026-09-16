@@ -30,6 +30,9 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
   const [hover, setHover] = useState<number | null>(null);
   const pan = useRef(new Animated.ValueXY()).current;
   const { shake, translateX } = useShake();
+  const itemIndex = order[cursor];
+  const item = exercise.items[itemIndex];
+  const done = cursor >= order.length;
   const phaseRef = useRef(phase);
   const doneRef = useRef(false);
   const itemRef = useRef(item);
@@ -50,10 +53,6 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
     pan.setValue({ x: 0, y: 0 });
     onChange({ canCheck: false, isCorrect: false });
   }, [exercise.id]);
-
-  const itemIndex = order[cursor];
-  const item = exercise.items[itemIndex];
-  const done = cursor >= order.length;
 
   useEffect(() => {
     if (done) onChange({ canCheck: true, isCorrect: wrongs === 0 });

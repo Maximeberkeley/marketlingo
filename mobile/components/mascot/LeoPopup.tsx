@@ -55,7 +55,7 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
   const leoScale = useRef(new Animated.Value(0.5)).current;
   const leoBounce = useRef(new Animated.Value(0)).current;
   const bounceLoop = useRef<Animated.CompositeAnimation | null>(null);
-  const dismissTimer = useRef<NodeJS.Timeout | null>(null);
+  const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const animateIn = useCallback(() => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

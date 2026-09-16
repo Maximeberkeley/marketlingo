@@ -36,7 +36,7 @@ interface UseMascotStateReturn {
 export function useMascotState(options: UseMascotStateOptions = {}): UseMascotStateReturn {
   const { idleTimeout = 2500, initialState = 'idle' } = options;
   const [state, setStateInternal] = useState<MascotState>(initialState);
-  const timeoutRef = useRef<NodeJS.Timeout>(undefined);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const clearTimer = useCallback(() => {
     if (timeoutRef.current) {
