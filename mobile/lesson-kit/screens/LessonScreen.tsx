@@ -354,6 +354,12 @@ export function LessonScreen({
           </View>
         </View>
       </Modal>
+      {/* Ask Leo — mid-lesson questions */}
+      <AskLeoOverlay
+        visible={showAskLeo}
+        onClose={() => setShowAskLeo(false)}
+        lessonContext={`Lesson: ${lesson.title}\nWorld: ${world.worldName}\nCurrent beat: ${exerciseContext(exercise)}`}
+      />
     </View>
   );
 }
