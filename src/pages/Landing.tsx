@@ -558,7 +558,7 @@ export default function Landing() {
                 <div className="flex-1 text-center md:text-left">
                   <Quote className="w-8 h-8 text-orange-500 mb-3 mx-auto md:mx-0" />
                   <p className="text-lg sm:text-xl leading-relaxed text-foreground font-medium mb-4">
-                    "I speak, breathe, eat and sleep all 15 industries. You probably shouldn't do that. Let me handle the obsession part."
+                    "Fox. I speak, breathe, eat and sleep all 15 industries so you don't have to. (Kidding — you do.)"
                   </p>
                   <p className="text-muted-foreground mb-5">
                     Leo is your AI companion inside the app: he coaches every lesson, reacts to your answers, celebrates streaks, and nudges you back when you slip. He's basically the fox version of that professor.
