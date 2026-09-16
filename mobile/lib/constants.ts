@@ -20,51 +20,48 @@ export const FAMILIARITY_LEVELS = [
   },
 ] as const;
 
-// Adaptive palette — neutrals follow light/dark appearance automatically.
-import { dyn } from './theme';
-
 export const COLORS = {
   // Backgrounds
-  bg0: dyn('#FFFFFF', '#0F1116'),   // Primary background
-  bg1: dyn('#F8F9FB', '#181B22'),   // Elevated surfaces
-  bg2: dyn('#FFFFFF', '#181B22'),   // Cards
+  bg0: '#FFFFFF',   // Primary background
+  bg1: '#F8F9FB',   // Elevated surfaces
+  bg2: '#FFFFFF',   // Cards
 
   // Text
-  textPrimary: dyn('#1A1F36', '#F4F6FA'),
-  textSecondary: dyn('#6B7280', '#AAB2C0'),
-  textMuted: dyn('#9CA3AF', '#7E8797'),
+  textPrimary: '#1A1F36',
+  textSecondary: '#6B7280',
+  textMuted: '#9CA3AF',
 
   // Accent / Brand (brand purple reads well on both themes)
   accent: '#8B5CF6',
   accentDark: '#7C3AED',
-  accentSoft: dyn('rgba(139, 92, 246, 0.08)', 'rgba(139, 92, 246, 0.16)'),
-  accentMedium: dyn('rgba(139, 92, 246, 0.15)', 'rgba(139, 92, 246, 0.28)'),
+  accentSoft: 'rgba(139, 92, 246, 0.08)',
+  accentMedium: 'rgba(139, 92, 246, 0.15)',
 
   // Status / Semantic
   success: '#22C55E',
-  successSoft: dyn('rgba(34, 197, 94, 0.08)', 'rgba(34, 197, 94, 0.18)'),
+  successSoft: 'rgba(34, 197, 94, 0.08)',
   warning: '#F59E0B',
-  warningSoft: dyn('rgba(245, 158, 11, 0.08)', 'rgba(245, 158, 11, 0.18)'),
+  warningSoft: 'rgba(245, 158, 11, 0.08)',
   error: '#EF4444',
-  errorSoft: dyn('rgba(239, 68, 68, 0.08)', 'rgba(239, 68, 68, 0.18)'),
+  errorSoft: 'rgba(239, 68, 68, 0.08)',
   info: '#3B82F6',
-  infoSoft: dyn('rgba(59, 130, 246, 0.08)', 'rgba(59, 130, 246, 0.18)'),
+  infoSoft: 'rgba(59, 130, 246, 0.08)',
 
   // Borders & Surfaces
   streak: '#F97316',
-  border: dyn('#E8EAF0', '#2A2F3A'),
-  borderLight: dyn('#F3F4F6', '#222732'),
-  cardShadow: dyn('rgba(0,0,0,0.06)', 'rgba(0,0,0,0.5)'),
+  border: '#E8EAF0',
+  borderLight: '#F3F4F6',
+  cardShadow: 'rgba(0,0,0,0.06)',
 
   // Misc
   orange: '#FB923C',
-  orangeSoft: dyn('rgba(251, 146, 60, 0.08)', 'rgba(251, 146, 60, 0.18)'),
+  orangeSoft: 'rgba(251, 146, 60, 0.08)',
   gold: '#FBBF24',
-  goldSoft: dyn('rgba(251, 191, 36, 0.08)', 'rgba(251, 191, 36, 0.18)'),
+  goldSoft: 'rgba(251, 191, 36, 0.08)',
 
   // Surface tints
-  surfaceSubtle: dyn('rgba(0, 0, 0, 0.02)', 'rgba(255, 255, 255, 0.04)'),
-  surfaceLight: dyn('rgba(0, 0, 0, 0.04)', 'rgba(255, 255, 255, 0.08)'),
+  surfaceSubtle: 'rgba(0, 0, 0, 0.02)',
+  surfaceLight: 'rgba(0, 0, 0, 0.04)',
 };
 
 // Premium shadow presets (Brilliant-style depth)

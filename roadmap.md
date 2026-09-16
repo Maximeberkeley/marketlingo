@@ -8,7 +8,7 @@
 - [ ] Phase 3 — streak rescue, comeback flow, rival nudges, league reveal, smarter notifications
 - [ ] Phase 4 — market worlds, collectibles, milestones, and full LessonKit coverage
 - [x] Phase 5 — Daily Arena and Deep Case replace the Practice activity cards; Labs and Resources remain.
-      Dark mode is in Settings; level uses a 4h return pop-up while XP stays on Home; achievements are industry-scoped
+      Light appearance is fixed app-wide; level uses a 4h return pop-up while XP stays on Home; achievements are industry-scoped
   - [x] 15 world identities, 60 cards, secure unlocks, reveal ceremony, collection, featured card, journey milestones
   - [ ] Adapt Trainer, Games, Drills, Investment Lab, Seminar Prep, Notebook, and Summaries to LessonKit
 
