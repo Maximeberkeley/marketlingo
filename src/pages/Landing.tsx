@@ -495,7 +495,7 @@ export default function Landing() {
                 So we created it.
               </p>
             </div>
-            <div className="mt-8 pt-6 border-t border-border grid sm:grid-cols-2 gap-8">
+            <div className="mt-8 pt-6 border-t border-border grid sm:grid-cols-3 gap-8">
               <div className="flex flex-col items-center text-center gap-4">
                 <img
                   src={maximePortrait.url}
