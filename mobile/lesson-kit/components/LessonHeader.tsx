@@ -34,6 +34,17 @@ export function LessonHeader({ progress, onExit, lives, label, accentColor, onAs
         ) : (
           <View style={styles.spacer} />
         )}
+
+        {onAskLeo ? (
+          <TouchableOpacity
+            onPress={onAskLeo}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            accessibilityLabel="Ask Leo a question"
+            style={styles.askLeoBtn}
+          >
+            <Image source={LEO_IMAGE} style={styles.askLeoImage} />
+          </TouchableOpacity>
+        ) : null}
       </View>
       {!!label && <Text style={styles.label} numberOfLines={1}>{label}</Text>}
     </View>
@@ -48,6 +59,16 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: 'row', alignItems: 'center', gap: tokens.space.md },
   lives: { flexDirection: 'row', alignItems: 'center', gap: 4, minWidth: 34 },
+  askLeoBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: tokens.color.accent + '55',
+    backgroundColor: tokens.color.surface,
+  },
+  askLeoImage: { width: '100%', height: '100%' },
   livesText: { color: tokens.color.heart, fontWeight: '700', fontSize: tokens.font.caption },
   spacer: { width: 8 },
   label: {
