@@ -17,6 +17,10 @@
 - Leo coaches every beat and reacts to answers
 - Next: packs for the remaining 12 markets (no retail market exists yet)
 
+## Website About — 3 founder posts (in progress)
+- Maxime, Sophia, and Leo each get their own spotlight "post" card in #about
+- Use the sitting/sat Leo sticker image for Leo's card
+
 ## Retention — streak rescue + weekly league (done, mobile)
 - Streak rescue round: 3 market drill statements, 2 right saves the streak (spends a freeze, else extends the clock)
 - Rescue entry appears on Home whenever the streak is at risk and today's lesson isn't done
