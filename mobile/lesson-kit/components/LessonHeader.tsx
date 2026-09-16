@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { ProgressBar } from './ProgressBar';
 import { tokens } from '../theme/tokens';
+
+const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 
 interface Props {
   progress: number;
@@ -10,9 +12,11 @@ interface Props {
   lives?: number;
   label?: string;
   accentColor?: string;
+  /** Opens the Ask Leo chat overlay. */
+  onAskLeo?: () => void;
 }
 
-export function LessonHeader({ progress, onExit, lives, label, accentColor }: Props) {
+export function LessonHeader({ progress, onExit, lives, label, accentColor, onAskLeo }: Props) {
   return (
     <View style={styles.wrap}>
       <View style={styles.row}>
@@ -30,6 +34,17 @@ export function LessonHeader({ progress, onExit, lives, label, accentColor }: Pr
         ) : (
           <View style={styles.spacer} />
         )}
+
+        {onAskLeo ? (
+          <TouchableOpacity
+            onPress={onAskLeo}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            accessibilityLabel="Ask Leo a question"
+            style={styles.askLeoBtn}
+          >
+            <Image source={LEO_IMAGE} style={styles.askLeoImage} />
+          </TouchableOpacity>
+        ) : null}
       </View>
       {!!label && <Text style={styles.label} numberOfLines={1}>{label}</Text>}
     </View>
@@ -44,6 +59,16 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: 'row', alignItems: 'center', gap: tokens.space.md },
   lives: { flexDirection: 'row', alignItems: 'center', gap: 4, minWidth: 34 },
+  askLeoBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: tokens.color.accent + '55',
+    backgroundColor: tokens.color.surface,
+  },
+  askLeoImage: { width: '100%', height: '100%' },
   livesText: { color: tokens.color.heart, fontWeight: '700', fontSize: tokens.font.caption },
   spacer: { width: 8 },
   label: {
