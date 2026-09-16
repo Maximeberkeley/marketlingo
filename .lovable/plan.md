@@ -1,24 +1,29 @@
-# Leo home-screen widget
+# Short lessons, first-use tour, and rebuilt labs
 
-## Goal
-Create an iPhone home-screen widget like the reference: a bold countdown or accountability message paired with one of the five uploaded Leo expressions.
+## 1. Lesson goal preview
+- Insert a lightweight preview before every full lesson, regardless of whether it starts from Home, a streak prompt, or a deep link.
+- Show no more than three compact outcomes, preferring the lesson’s authored objectives and falling back to its section titles.
+- Use the market’s visual identity, a clear estimated effort, Leo, and one Start button; leaving returns safely to Home.
+- Keep the existing hearts, exercises, Ask Leo, scoring, XP, streak, and completion flow unchanged.
 
-## What will change
-- Add a real iOS home-screen widget, not an in-app popup.
-- Use the sleepy, stern, pleading, anxious, and sly Leo PNGs as rotating visual states, cropped and centered for the widget format.
-- Create a pool of short, funny, slightly antagonistic lines in Leo’s voice for streak risk, inactivity, daily lessons, comeback moments, and completed goals.
-- Show useful live information where available: streak, time remaining, today’s completion state, or a concise return prompt.
-- Make tapping the widget open the relevant place in MarketLingo.
+## 2. First-use app tour and learning promise
+- After industry, goal, and level onboarding, show one personalized promise explaining what the learner will master for their chosen goal.
+- Follow it with a skippable, lightweight tour of Home, Courses, Practice, Notes, and You.
+- Keep the full sequence under three minutes, with one idea and no more than two short sentences per screen.
+- Save completion locally so it appears once, remains easy to skip, and never creates another onboarding loop.
 
-## Visual direction
-- Large Leo expression occupying roughly half the widget.
-- High-contrast warm red/orange backgrounds for urgency, with calmer colors for completed states.
-- One large number or headline, one short supporting line, and no clutter.
-- Copy stays playful and sharp, never insulting or discouraging.
+## 3. Interview Lab rebuild
+- Preserve the interview paths, industry questions, frameworks, mental math, glossary, written answers, recording, transcription, and Sophia coaching.
+- Replace the dense multi-tab experience with short mission runs: Brief, Framework Pick, Pressure Question, Recorded Response, Verdict.
+- Use compact copy, visual timers, streak/combo feedback, confidence choices, letter grades, and clear improvement targets.
+- Award normal app XP and practice rewards without any paid or locked state.
 
-## Technical details
-- Add an iOS WidgetKit extension compatible with the project’s Expo setup.
-- Bundle the five transparent PNGs with the widget extension.
-- Share the latest streak/completion snapshot with the widget through an iOS App Group, with a useful static fallback before the app has synced.
-- Keep the existing in-app Leo popup system unchanged.
-- Validate generated iOS configuration and mobile source before delivery.
+## 4. Investment Lab rebuild
+- Keep the four modules, watchlist, portfolio builder, guide, certificate, scenarios, and Sophia mentor access.
+- Turn each module into short case runs: Brief, Evidence, Numbers, The Call, Debrief.
+- Trim scenario and feedback text into revealable pieces, add conviction choices, grades, streaks, XP, and collectible evaluation.
+- Retain existing scenario progress and certification requirements while using the current market-world visual system.
+
+## Validation
+- Check every lesson entry path, first-use skip/finish paths, interview text/voice paths, and all four investment modules.
+- Verify mobile source checks, live diagnostics, and clean iPhone project generation remain healthy.

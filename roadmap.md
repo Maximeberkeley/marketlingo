@@ -1,5 +1,5 @@
 # Roadmap
-- [ ] iOS home-screen Leo widget — rotating streak countdowns and funny accountability messages using five expression PNGs
+- [x] iOS home-screen Leo widget — rotating streak countdowns and funny accountability messages using five expression PNGs
 - [x] Website About — 3 founder posts (Maxime, Sophia, Leo) with large headshots and sitting/sat Leo sticker image
 - [x] Remove all purchase/IAP code from mobile + iOS (Apple rejection)
 - [x] Fix broken demo lesson on the website (src/components/demo/DemoLesson.tsx)
@@ -33,3 +33,8 @@
 
 ## Industry packs — all 15 markets (done)
 - Added: aerospace, agtech, biotech, cleanenergy, climatetech, ev, healthtech, neuroscience, spacetech
+
+- [ ] Add concise goal preview before every lesson
+- [ ] Add skippable three-minute first-use app tour and one-time chosen-goal learning promise
+- [ ] Rebuild Interview Lab to current short-copy, visual, retention, and reward standards
+- [ ] Rebuild Investment Lab to current short-copy, visual, retention, and reward standards

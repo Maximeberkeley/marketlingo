@@ -16,6 +16,11 @@
       "supportsTablet": false,
       "bundleIdentifier": "app.marketlingo.aerospace",
       "buildNumber": "99",
+      "entitlements": {
+        "com.apple.security.application-groups": [
+          "group.app.marketlingo.aerospace.shared"
+        ]
+      },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "MarketLingo needs microphone access to record your interview responses in the Mock Lab for AI feedback.",
@@ -43,6 +48,7 @@
     },
     "plugins": [
       "expo-router",
+      "@bacons/apple-targets",
       "expo-secure-store",
       [
         "expo-build-properties",
