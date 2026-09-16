@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { DemoLesson } from "@/components/demo/DemoLesson";
 import leoMascot from "@/assets/mascot/leo-reference.png";
 import leoCelebrating from "@/assets/mascot/leo-celebrating.png";
+import leoSticker from "@/assets/leo-sticker.png";
 import appIcon from "@/assets/app-icon.png";
 import maximePortrait from "@/assets/maxime-lucas-founder.jpg.asset.json";
 import sophiaPortrait from "@/assets/sophia-hernandez-cofounder.png.asset.json";
