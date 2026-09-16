@@ -59,6 +59,7 @@ import { useWeeklyRecap } from '../../hooks/useWeeklyRecap';
 import { useCollectibles, CollectibleCard } from '../../hooks/useCollectibles';
 import { CardRevealModal } from '../../components/collectibles/CardRevealModal';
 import { syncLeoWidget } from '../../lib/leoWidget';
+import { LessonGoalsScreen } from '../../components/home/LessonGoalsScreen';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -402,7 +403,17 @@ export default function HomeScreen() {
       />
       <CardRevealModal card={revealedCard} marketId={selectedMarket || undefined} onClose={() => setRevealedCard(null)} />
 
-      {session.showReader && session.activeStack ? (
+      {session.showGoals && session.activeStack ? (
+        <LessonGoalsScreen
+          title={session.activeStack.title}
+          slides={session.activeStack.slides}
+          objectives={(session.activeStack as any).metadata?.learning_objectives}
+          marketId={selectedMarket || undefined}
+          isBite={session.activeBiteIndex !== null}
+          onStart={session.beginLesson}
+          onBack={session.closeReader}
+        />
+      ) : session.showReader && session.activeStack ? (
         <SlideReader
           stackTitle={session.activeStack.title}
           stackType={session.activeStack.stack_type as 'NEWS' | 'HISTORY' | 'LESSON'}
