@@ -1,5 +1,5 @@
 # Roadmap
-- [x] iOS home-screen Leo widget — rotating streak countdowns and funny accountability messages using five expression PNGs
+- [x] iOS home-screen Leo widget — rotating streak countdowns and funny accountability messages using five memory-safe expression PNGs; placeholder crash fixed in build 101
 - [x] Website About — 3 founder posts (Maxime, Sophia, Leo) with large headshots and sitting/sat Leo sticker image
 - [x] Remove all purchase/IAP code from mobile + iOS (Apple rejection)
 - [x] Fix broken demo lesson on the website (src/components/demo/DemoLesson.tsx)
