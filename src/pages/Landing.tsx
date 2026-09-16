@@ -468,7 +468,7 @@ export default function Landing() {
             <Quote className="absolute -top-5 left-8 w-10 h-10 text-primary bg-background rounded-full p-2 border border-border" />
             <div className="space-y-5 text-lg leading-relaxed text-muted-foreground">
               <p>
-                I went to UC Berkeley — economy class, at Newspace. One day I asked my professor
+                I went to Newspace economy class, at Berkeley. One day I asked my professor
                 a simple question:{" "}
                 <span className="text-foreground font-medium">
                   "How do we find the idea for a startup? There are so many of them already."
