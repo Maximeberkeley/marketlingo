@@ -10,6 +10,8 @@ const KEYS = {
   AUTH_TOKEN: '@marketlingo/auth_token',
   USER_ID: '@marketlingo/user_id',
   ONBOARDING_COMPLETE: '@marketlingo/onboarding_complete',
+  LEARNING_GOAL: '@marketlingo/learning_goal',
+  FEATURE_TOUR_SEEN: '@marketlingo/feature_tour_seen',
 };
 
 export const storage = {
@@ -71,6 +73,22 @@ export const storage = {
   async isOnboardingComplete(): Promise<boolean> {
     const value = await AsyncStorage.getItem(KEYS.ONBOARDING_COMPLETE);
     return value === 'true';
+  },
+
+  async setLearningGoal(goal: string): Promise<void> {
+    await AsyncStorage.setItem(KEYS.LEARNING_GOAL, goal);
+  },
+
+  async getLearningGoal(): Promise<string | null> {
+    return AsyncStorage.getItem(KEYS.LEARNING_GOAL);
+  },
+
+  async setFeatureTourSeen(): Promise<void> {
+    await AsyncStorage.setItem(KEYS.FEATURE_TOUR_SEEN, 'true');
+  },
+
+  async hasSeenFeatureTour(): Promise<boolean> {
+    return (await AsyncStorage.getItem(KEYS.FEATURE_TOUR_SEEN)) === 'true';
   },
 
   // Clear all

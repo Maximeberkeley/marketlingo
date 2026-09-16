@@ -16,7 +16,6 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { useInvestmentLab, CERTIFICATION_THRESHOLDS } from '../hooks/useInvestmentLab';
-import { useSubscription } from '../hooks/useSubscription';
 import { MentorChatOverlay } from '../components/ai/MentorChatOverlay';
 import { getMentorForContext } from '../data/mentors';
 import type { Mentor } from '../data/mentors';
@@ -72,7 +71,6 @@ const MODULES = [
 export default function InvestmentLabScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
-  const { isProUser } = useSubscription();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [marketLoading, setMarketLoading] = useState(true);
   const [mentorChatVisible, setMentorChatVisible] = useState(false);
@@ -151,11 +149,6 @@ export default function InvestmentLabScreen() {
               </View>
               <View style={styles.heroBannerTitleRow}>
                 <Text style={styles.heroBannerTitle}>Investment Lab</Text>
-                {!isProUser && (
-                   <View style={styles.proChip}>
-                     <Text style={styles.proChipText}>PRO</Text>
-                  </View>
-                )}
               </View>
               <Text style={styles.heroBannerSubtitle}>Master real-world investment decisions</Text>
               <View style={styles.heroBannerStats}>
@@ -357,8 +350,6 @@ const styles = StyleSheet.create({
   heroBannerDivider: { width: 1, height: 28, backgroundColor: 'rgba(255,255,255,0.3)' },
   heroBannerStatNum: { fontSize: 18, fontWeight: '700', color: '#FFFFFF' },
   heroBannerStatLabel: { fontSize: 10, color: 'rgba(255,255,255,0.65)', marginTop: 2 },
-  proChip: { backgroundColor: 'rgba(139,92,246,0.85)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
-  proChipText: { fontSize: 10, fontWeight: '700', color: '#FFFFFF' },
   // Existing styles
   progressCard: {
     backgroundColor: COLORS.bg2, borderRadius: 16, padding: 16, marginBottom: 16,

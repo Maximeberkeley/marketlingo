@@ -1,360 +1,143 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  Image,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router, useLocalSearchParams } from 'expo-router';
-import { COLORS } from '../lib/constants';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../hooks/useAuth';
-import { useInvestmentLab, InvestmentScenario } from '../hooks/useInvestmentLab';
-import { ProgressBar } from '../components/ui/ProgressBar';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { COLORS } from '../lib/constants';
+import { useSelectedMarket } from '../hooks/useSelectedMarket';
+import { InvestmentScenario, useInvestmentLab } from '../hooks/useInvestmentLab';
+import { useUserXP } from '../hooks/useUserXP';
+import { usePracticeRewards } from '../hooks/usePracticeRewards';
+import { useCollectibles } from '../hooks/useCollectibles';
+import { getMarketName } from '../lib/markets';
+import { getMarketWorld } from '../data/marketWorlds';
+import { triggerHaptic } from '../lib/haptics';
+import { log } from '../lib/logger';
 
-const SOPHIA_AVATAR = require('../assets/mentors/mentor-sophia.png');
-
-const SOPHIA_TIPS: Record<string, string[]> = {
-  valuation: [
-    "Think about what drives value in this specific sector — revenue multiples differ widely across industries.",
-    "Compare the implied valuation with recent comparable transactions for a reality check.",
-    "Don't forget to consider the stage of the company — early-stage firms rarely fit traditional DCF models.",
-    "Always ask: what assumptions would need to be true for this valuation to hold?",
-  ],
-  due_diligence: [
-    "Great investors verify claims independently — never rely solely on management presentations.",
-    "Look for consistency between financial statements, customer data, and market positioning.",
-    "Red flags in due diligence often hide in the footnotes and off-balance-sheet items.",
-    "Think about what questions a skeptical LP would ask about this deal.",
-  ],
-  risk: [
-    "Quantify risks whenever possible — 'high risk' means different things to different people.",
-    "Consider second-order effects: how does one risk factor cascade into others?",
-    "The biggest risks are often the ones nobody is talking about — regulatory shifts, key-person dependency.",
-    "Build your risk framework around probability AND magnitude of impact.",
-  ],
-  portfolio: [
-    "Diversification isn't just about quantity — think about correlation between your holdings.",
-    "Consider how each new position changes the overall risk profile of the portfolio.",
-    "Rebalancing discipline separates good portfolio managers from great ones.",
-    "Think about liquidity needs — not every position can be exited quickly.",
-  ],
+const SOPHIA = require('../assets/mentors/mentor-sophia.png');
+type Phase = 'brief' | 'evidence' | 'conviction' | 'verdict';
+type ModuleKey = 'valuation' | 'due_diligence' | 'risk_assessment' | 'portfolio_construction';
+const CONFIG: Record<string, { title: string; type: InvestmentScenario['scenario_type']; scoreKey: ModuleKey; icon: keyof typeof Feather.glyphMap; prompt: string }> = {
+  valuation: { title: 'Valuation', type: 'valuation', scoreKey: 'valuation', icon: 'bar-chart-2', prompt: 'What is the story worth?' },
+  due_diligence: { title: 'Due Diligence', type: 'due_diligence', scoreKey: 'due_diligence', icon: 'search', prompt: 'What claim breaks first?' },
+  risk_assessment: { title: 'Risk', type: 'risk', scoreKey: 'risk_assessment', icon: 'shield', prompt: 'Where can this thesis fail?' },
+  portfolio: { title: 'Portfolio', type: 'portfolio', scoreKey: 'portfolio_construction', icon: 'pie-chart', prompt: 'How much deserves a seat?' },
 };
-
-function SophiaTipBubble({ moduleId, scenarioIndex }: { moduleId: string; scenarioIndex: number }) {
-  const tips = SOPHIA_TIPS[moduleId] || SOPHIA_TIPS.valuation;
-  const tip = tips[scenarioIndex % tips.length];
-
-  return (
-    <View style={styles.sophiaBubble}>
-      <Image source={SOPHIA_AVATAR} style={styles.sophiaAvatar} />
-      <View style={styles.sophiaBubbleContent}>
-        <View style={styles.sophiaBubbleHeader}>
-          <Text style={styles.sophiaName}>Sophia</Text>
-          <View style={styles.sophiaOnlineDot} />
-        </View>
-        <Text style={styles.sophiaTipText}>{tip}</Text>
-      </View>
-    </View>
-  );
-}
-
-const MODULE_CONFIG: Record<string, {
-  title: string;
-  description: string;
-  featherIcon: keyof typeof Feather.glyphMap;
-  color: string;
-  scenarioType: InvestmentScenario['scenario_type'];
-  scoreKey: 'valuation_score' | 'due_diligence_score' | 'risk_assessment_score' | 'portfolio_construction_score';
-}> = {
-  valuation: {
-    title: 'Valuation Mastery', description: 'Master industry-specific valuation methodologies',
-    featherIcon: 'bar-chart-2', color: '#10B981', scenarioType: 'valuation', scoreKey: 'valuation_score',
-  },
-  due_diligence: {
-    title: 'Due Diligence', description: 'Systematic investment evaluation',
-    featherIcon: 'search', color: '#3B82F6', scenarioType: 'due_diligence', scoreKey: 'due_diligence_score',
-  },
-  risk_assessment: {
-    title: 'Risk Assessment', description: 'Identify and quantify investment risks',
-    featherIcon: 'shield', color: '#F59E0B', scenarioType: 'risk', scoreKey: 'risk_assessment_score',
-  },
-  portfolio: {
-    title: 'Portfolio Construction', description: 'Build balanced investment portfolios',
-    featherIcon: 'layers', color: '#8B5CF6', scenarioType: 'portfolio', scoreKey: 'portfolio_construction_score',
-  },
+const compact = (value?: string, max = 175) => {
+  const clean = (value || '').replace(/\s+/g, ' ').trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max);
+  return `${cut.slice(0, Math.max(cut.lastIndexOf(' '), 80))}…`;
 };
 
 export default function InvestmentModuleScreen() {
   const insets = useSafeAreaInsets();
-  const { moduleId } = useLocalSearchParams<{ moduleId: string }>();
-  const { user } = useAuth();
-  const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [currentScenarioIndex, setCurrentScenarioIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [hasResumed, setHasResumed] = useState(false);
+  const { moduleId = 'valuation' } = useLocalSearchParams<{ moduleId: string }>();
+  const config = CONFIG[moduleId] || CONFIG.valuation;
+  const { marketId, loading: marketLoading } = useSelectedMarket();
+  const world = getMarketWorld(marketId);
+  const marketName = getMarketName(marketId);
+  const lab = useInvestmentLab(marketId);
+  const { addXP } = useUserXP(marketId);
+  const { recordCaseRun } = usePracticeRewards();
+  const { evaluateRewards } = useCollectibles(marketId);
+  const scenarios = useMemo(() => lab.scenarios.filter(item => item.scenario_type === config.type), [lab.scenarios, config.type]);
+  const [index, setIndex] = useState(0);
+  const [phase, setPhase] = useState<Phase>('brief');
+  const [selected, setSelected] = useState<number | null>(null);
+  const [confidence, setConfidence] = useState<'low' | 'medium' | 'high'>('medium');
+  const [saving, setSaving] = useState(false);
+  const scenario = scenarios[index];
+  const correct = selected === scenario?.correct_option_index;
+  const completed = scenarios.filter(item => lab.completedScenarioIds.includes(item.id)).length;
+  const score = scenarios.length ? Math.round((completed / scenarios.length) * 100) : 0;
 
   useEffect(() => {
-    const fetchMarket = async () => {
-      if (!user) return;
-      const { data: profile } = await supabase.from('profiles').select('selected_market').eq('id', user.id).single();
-      if (profile?.selected_market) setSelectedMarket(profile.selected_market);
-      setLoading(false);
-    };
-    fetchMarket();
-  }, [user]);
+    if (!lab.loading && scenarios.length) setIndex(lab.getResumeIndex(scenarios));
+  }, [lab.loading, scenarios.length]);
 
-  const { progress, scenarios, completedScenarioIds, loading: labLoading, recordAttempt, updateModuleScore, getResumeIndex, saveModuleProgress, addLearnedConcept, getLearnedConcepts } = useInvestmentLab(selectedMarket || undefined);
-
-  const moduleConfig = MODULE_CONFIG[moduleId || 'valuation'];
-  const moduleScenarios = useMemo(
-    () => scenarios.filter((s) => s.scenario_type === moduleConfig?.scenarioType),
-    [scenarios, moduleConfig?.scenarioType]
-  );
-  const currentScenario = moduleScenarios[currentScenarioIndex];
-  const completedInModule = moduleScenarios.filter((s) => completedScenarioIds.includes(s.id)).length;
-  const moduleProgress = moduleScenarios.length > 0 ? Math.round((completedInModule / moduleScenarios.length) * 100) : 0;
-
-  // Cross-pollination concepts mapping
-  const CONCEPT_MAP: Record<string, string[]> = {
-    valuation: ['DCF Analysis', 'Comparable Analysis', 'Revenue Multiples'],
-    due_diligence: ['Financial Due Diligence', 'Market Analysis', 'Management Assessment'],
-    risk_assessment: ['Risk Quantification', 'Stop-Loss Strategy', 'Portfolio Hedging'],
-    portfolio: ['Diversification', 'Position Sizing', 'Rebalancing'],
+  const choose = (choice: number) => { setSelected(choice); triggerHaptic('light'); };
+  const commit = async () => {
+    if (!scenario || selected === null || saving) return;
+    setSaving(true);
+    try {
+      await lab.recordAttempt(scenario.id, selected, correct);
+      const nextScore = Math.round(((completed + (correct ? 1 : 0)) / scenarios.length) * 100);
+      await Promise.all([
+        lab.updateModuleScore(config.scoreKey, nextScore),
+        lab.saveModuleProgress(moduleId, { scenarioIndex: index, score: nextScore }),
+      ]);
+      if (correct) await lab.addLearnedConcept(scenario.tags[0] || config.title);
+      triggerHaptic(correct ? 'success' : 'error');
+      setPhase('verdict');
+    } catch (error) { log.warn('[Investment] Could not save decision:', error); }
+    finally { setSaving(false); }
   };
-  const learnedConcepts = getLearnedConcepts();
-  const moduleConcepts = CONCEPT_MAP[moduleId || 'valuation'] || [];
-  const newConceptsToLearn = moduleConcepts.filter(c => !learnedConcepts.includes(c));
-
-  // Resume from first incomplete scenario on initial load
-  useEffect(() => {
-    if (!hasResumed && !labLoading && moduleScenarios.length > 0) {
-      const resumeIdx = getResumeIndex(moduleScenarios);
-      if (resumeIdx > 0) setCurrentScenarioIndex(resumeIdx);
-      setHasResumed(true);
-    }
-  }, [labLoading, moduleScenarios, hasResumed]);
-
-  const handleOptionSelect = async (index: number) => {
-    if (selectedOption !== null || !currentScenario) return;
-    setSelectedOption(index);
-    const isCorrect = currentScenario.options[index]?.isCorrect === true;
-    await recordAttempt(currentScenario.id, index, isCorrect);
-    const newCount = completedInModule + (isCorrect ? 1 : 0);
-    const newScore = moduleScenarios.length > 0 ? Math.round((newCount / moduleScenarios.length) * 100) : 0;
-    await updateModuleScore(moduleConfig.scoreKey.replace('_score', '') as any, newScore);
-
-    // Save mid-session state
-    await saveModuleProgress(moduleId || 'valuation', { scenarioIndex: currentScenarioIndex, score: newScore });
-
-    // Learn concepts as user progresses
-    if (isCorrect && newConceptsToLearn.length > 0) {
-      const conceptIdx = Math.min(currentScenarioIndex, newConceptsToLearn.length - 1);
-      await addLearnedConcept(newConceptsToLearn[conceptIdx]);
-    }
-
-    setShowFeedback(true);
+  const finish = async () => {
+    if (!scenario) return router.back();
+    const calibrated = correct && confidence === 'high';
+    const grade = correct ? (calibrated ? 'A' : 'B') : confidence === 'high' ? 'D' : 'C';
+    const xp = correct ? (calibrated ? 80 : 60) : 25;
+    try {
+      await Promise.all([
+        addXP(xp, 'investment_lab', scenario.id, `${config.title} decision graded ${grade}`),
+        recordCaseRun(grade),
+        evaluateRewards('investment_lab', `investment:${scenario.id}`, correct ? 1 : 0),
+      ]);
+    } catch (error) { log.warn('[Investment] Rewards failed:', error); }
+    if (index < scenarios.length - 1) { setIndex(index + 1); setSelected(null); setConfidence('medium'); setPhase('brief'); }
+    else router.back();
   };
 
-  const handleNext = () => {
-    if (currentScenarioIndex < moduleScenarios.length - 1) {
-      setCurrentScenarioIndex((prev) => prev + 1);
-      setSelectedOption(null);
-      setShowFeedback(false);
-    } else {
-      router.back();
-    }
-  };
+  if (marketLoading || lab.loading) return <View style={styles.center}><ActivityIndicator size="large" color={COLORS.accent} /></View>;
+  if (!scenario) return <View style={styles.center}><Feather name={config.icon} size={38} color={world.colors[0]} /><Text style={styles.emptyTitle}>No case ready</Text><Text style={styles.emptyText}>Your next {marketName} case is still being prepared.</Text><TouchableOpacity onPress={() => router.back()}><Text style={[styles.backLink, { color: world.colors[0] }]}>Back to lab</Text></TouchableOpacity></View>;
 
-  if (loading || labLoading) {
-    return (
-      <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color={COLORS.accent} />
-      </View>
-    );
-  }
-
-  if (!moduleConfig) {
-    return (
-      <View style={[styles.container, styles.centered]}>
-        <Text style={styles.emptyTitle}>Module not found</Text>
-        <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
-          <Text style={styles.ctaText}>Back to Lab</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  if (moduleScenarios.length === 0) {
-    return (
-      <View style={[styles.container, styles.centered]}>
-        <View style={[styles.emptyIcon, { backgroundColor: moduleConfig.color + '20' }]}>
-          <Feather name={moduleConfig.featherIcon} size={24} color={moduleConfig.color} />
-        </View>
-        <Text style={styles.emptyTitle}>Coming Soon</Text>
-        <Text style={styles.emptySubtitle}>Scenarios for this module are being developed</Text>
-        <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
-          <Text style={styles.ctaText}>Back to Lab</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  return (
-    <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Text style={styles.backText}>← Back</Text>
-          </TouchableOpacity>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.headerTitle}>{moduleConfig.title}</Text>
-            <Text style={styles.headerSub}>Scenario {currentScenarioIndex + 1} of {moduleScenarios.length}</Text>
-          </View>
-          <Image source={SOPHIA_AVATAR} style={{ width: 36, height: 36, borderRadius: 18, borderWidth: 2, borderColor: 'rgba(139,92,246,0.3)' }} />
-        </View>
-
-        <ProgressBar progress={moduleProgress} height={4} />
-
-        {currentScenario && (
-          <View style={{ gap: 12, marginTop: 16 }}>
-            {/* Difficulty badge */}
-            <View style={styles.diffBadge}>
-              <Text style={[styles.diffText, {
-                color: currentScenario.difficulty === 'expert' ? '#EF4444' : currentScenario.difficulty === 'advanced' ? '#F59E0B' : '#3B82F6',
-              }]}>{currentScenario.difficulty.toUpperCase()}</Text>
-              {currentScenario.valuation_model && (
-                <View style={styles.modelBadge}><Text style={styles.modelText}>{currentScenario.valuation_model}</Text></View>
-              )}
-            </View>
-
-            {/* Scenario */}
-            <View style={styles.scenarioCard}>
-              <Text style={styles.scenarioTitle}>{currentScenario.title}</Text>
-              <Text style={styles.scenarioBody}>{currentScenario.scenario}</Text>
-            </View>
-
-            {/* Sophia's mentor tip */}
-            <SophiaTipBubble moduleId={moduleId || 'valuation'} scenarioIndex={currentScenarioIndex} />
-
-            {/* Question */}
-            <View style={styles.questionCard}>
-              <Text style={styles.questionText}>{currentScenario.question}</Text>
-            </View>
-
-            {/* Options */}
-            {currentScenario.options.map((option, index) => {
-              const isSelected = selectedOption === index;
-              const isCorrect = option.isCorrect || index === currentScenario.correct_option_index;
-              const showResult = showFeedback;
-              return (
-                <TouchableOpacity
-                  key={index}
-                  style={[styles.optionCard,
-                    showResult && isCorrect && styles.optionCorrect,
-                    showResult && isSelected && !isCorrect && styles.optionWrong,
-                    isSelected && !showResult && styles.optionSelected,
-                  ]}
-                  onPress={() => handleOptionSelect(index)}
-                  disabled={selectedOption !== null}
-                >
-                  <View style={[styles.optionCircle,
-                    showResult && isCorrect && { backgroundColor: '#22C55E', borderColor: '#22C55E' },
-                    showResult && isSelected && !isCorrect && { backgroundColor: '#EF4444', borderColor: '#EF4444' },
-                    isSelected && !showResult && { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
-                  ]}>
-                    <Text style={[styles.optionLetter,
-                      (isSelected || (showResult && isCorrect)) && { color: '#FFFFFF' },
-                    ]}>
-                      {showResult && isCorrect ? '✓' : showResult && isSelected ? '✗' : String.fromCharCode(65 + index)}
-                    </Text>
-                  </View>
-                  <Text style={[styles.optionText,
-                    showResult && isCorrect && { color: '#22C55E' },
-                  ]}>{option.text}</Text>
-                </TouchableOpacity>
-              );
-            })}
-
-            {/* Feedback */}
-            {showFeedback && currentScenario.explanation && (
-              <View style={{ gap: 10 }}>
-                <View style={styles.insightCard}>
-                  <Text style={styles.insightLabel}>Investment Insight</Text>
-                  <Text style={styles.insightBody}>{currentScenario.explanation}</Text>
-                </View>
-                {currentScenario.real_world_example && (
-                  <View style={styles.exampleCard}>
-                    <Text style={styles.exampleLabel}>Real World Example</Text>
-                    <Text style={styles.insightBody}>{currentScenario.real_world_example}</Text>
-                  </View>
-                )}
-                <TouchableOpacity style={styles.ctaButton} onPress={handleNext}>
-                  <Text style={styles.ctaText}>
-                    {currentScenarioIndex < moduleScenarios.length - 1 ? 'Next Scenario →' : 'Complete Module'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-        )}
-      </ScrollView>
-    </View>
-  );
+  const phaseIndex = ['brief', 'evidence', 'conviction', 'verdict'].indexOf(phase);
+  return <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+    <View style={styles.header}><TouchableOpacity onPress={() => router.back()} style={styles.iconButton}><Feather name="x" size={22} color={COLORS.textPrimary} /></TouchableOpacity><View style={{ flex: 1 }}><Text style={styles.headerTitle}>{config.title} Room</Text><Text style={styles.headerSub}>Case {index + 1}/{scenarios.length} · {score}% mastery</Text></View><Image source={SOPHIA} style={styles.sophiaSmall} /></View>
+    <View style={styles.progress}>{[0,1,2,3].map(item => <View key={item} style={[styles.progressPart, { backgroundColor: item <= phaseIndex ? world.colors[0] : COLORS.border }]} />)}</View>
+    <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 28 }]} showsVerticalScrollIndicator={false}>
+      <Text style={[styles.eyebrow, { color: world.colors[0] }]}>{phase.toUpperCase()} · {phaseIndex + 1}/4</Text>
+      {phase === 'brief' && <>
+        <Text style={styles.title}>{scenario.title}</Text><Text style={styles.subtitle}>{config.prompt}</Text>
+        <LinearGradient colors={[world.colors[0], world.colors[1]]} style={styles.brief}><Text style={styles.briefTag}>{scenario.difficulty.toUpperCase()} CASE</Text><Text style={styles.briefText}>{compact(scenario.scenario, 210)}</Text>{scenario.valuation_model && <Text style={styles.model}>{scenario.valuation_model}</Text>}</LinearGradient>
+        <Coach text="Do not fall in love with the pitch. Find the assumption carrying the weight." />
+        <Action label="Reveal the evidence" color={world.colors[0]} onPress={() => setPhase('evidence')} />
+      </>}
+      {phase === 'evidence' && <>
+        <Text style={styles.title}>What does the evidence say?</Text><Text style={styles.question}>{compact(scenario.question, 190)}</Text>
+        <View style={styles.options}>{scenario.options.map((option, choice) => <TouchableOpacity key={choice} onPress={() => choose(choice)} style={[styles.option, selected === choice && { borderColor: world.colors[0], backgroundColor: `${world.colors[0]}10` }]}><Text style={[styles.optionLetter, { color: world.colors[0] }]}>{String.fromCharCode(65 + choice)}</Text><Text style={styles.optionText}>{compact(option.text, 110)}</Text>{selected === choice && <Feather name="check-circle" size={19} color={world.colors[0]} />}</TouchableOpacity>)}</View>
+        <Action label="Set conviction" color={world.colors[0]} disabled={selected === null} onPress={() => setPhase('conviction')} />
+      </>}
+      {phase === 'conviction' && <>
+        <Text style={styles.title}>How hard would you defend it?</Text><Text style={styles.subtitle}>Confidence changes the grade. Bluffing is expensive.</Text>
+        <View style={styles.convictions}>{(['low','medium','high'] as const).map((value, i) => <TouchableOpacity key={value} onPress={() => setConfidence(value)} style={[styles.conviction, confidence === value && { borderColor: world.colors[0], backgroundColor: `${world.colors[0]}10` }]}><View style={styles.signal}>{[0,1,2].map(bar => <View key={bar} style={[styles.signalBar, { height: 9 + bar * 7, backgroundColor: bar <= i ? world.colors[0] : COLORS.border }]} />)}</View><Text style={styles.convictionTitle}>{value[0].toUpperCase() + value.slice(1)}</Text></TouchableOpacity>)}</View>
+        <View style={styles.lockedChoice}><Text style={styles.lockedLabel}>YOUR CALL</Text><Text style={styles.lockedText}>{compact(scenario.options[selected || 0]?.text, 120)}</Text></View>
+        <Action label={saving ? 'Banking decision…' : 'Commit capital'} color={world.colors[0]} disabled={saving} onPress={commit} />
+      </>}
+      {phase === 'verdict' && <>
+        <LinearGradient colors={correct ? [COLORS.success, world.colors[1]] : [COLORS.error, world.colors[1]]} style={styles.verdict}><Feather name={correct ? 'trending-up' : 'activity'} size={32} color={COLORS.bg0} /><Text style={styles.verdictTitle}>{correct ? 'Thesis survived.' : 'Thesis cracked.'}</Text><Text style={styles.verdictSub}>{correct ? `+${confidence === 'high' ? 80 : 60} XP pending` : '25 XP for the rep'}</Text></LinearGradient>
+        <Coach text={correct ? 'Good call. Now explain it without hiding behind jargon.' : 'Cheap mistakes belong here, not in a portfolio. Read the post-mortem.'} />
+        <Debrief label="WHY" body={compact(scenario.explanation, 175)} color={world.colors[0]} />
+        {scenario.real_world_example && <Debrief label="REAL WORLD" body={compact(scenario.real_world_example, 175)} color={COLORS.info} />}
+        <View style={styles.calibration}><Text style={styles.calibrationLabel}>CALIBRATION</Text><Text style={styles.calibrationText}>{correct && confidence === 'high' ? 'Right and bold. Senior-investor signal.' : !correct && confidence === 'high' ? 'Wrong and overconfident. That is the expensive combination.' : correct ? 'Right call. Build conviction with stronger evidence.' : 'Wrong call, controlled conviction. Recoverable.'}</Text></View>
+        <Action label={index < scenarios.length - 1 ? 'Bank result · next case' : 'Complete module'} color={world.colors[0]} onPress={finish} />
+      </>}
+    </ScrollView>
+  </View>;
 }
 
+function Coach({ text }: { text: string }) { return <View style={styles.coach}><Image source={SOPHIA} style={styles.coachImage} /><Text style={styles.coachText}>{text}</Text></View>; }
+function Action({ label, color, onPress, disabled }: { label: string; color: string; onPress: () => void; disabled?: boolean }) { return <TouchableOpacity disabled={disabled} onPress={onPress} style={[styles.action, { backgroundColor: color }, disabled && styles.disabled]}><Text style={styles.actionText}>{label}</Text><Feather name="arrow-right" size={18} color={COLORS.bg0} /></TouchableOpacity>; }
+function Debrief({ label, body, color }: { label: string; body: string; color: string }) { return <View style={[styles.debrief, { borderLeftColor: color }]}><Text style={[styles.debriefLabel, { color }]}>{label}</Text><Text style={styles.debriefText}>{body}</Text></View>; }
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.bg0 },
-  centered: { alignItems: 'center', justifyContent: 'center', padding: 24 },
-  scrollContent: { paddingHorizontal: 16 },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
-  backText: { fontSize: 15, color: COLORS.textSecondary },
-  headerTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary },
-  headerSub: { fontSize: 11, color: COLORS.textMuted },
-  moduleIcon: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  emptyIcon: { width: 64, height: 64, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
-  emptyTitle: { fontSize: 20, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 8 },
-  emptySubtitle: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center', marginBottom: 20 },
-  ctaButton: { backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center', width: '100%' },
-  ctaText: { color: '#FFFFFF', fontWeight: '700', fontSize: 16 },
-  diffBadge: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  diffText: { fontSize: 10, fontWeight: '600', letterSpacing: 0.5 },
-  modelBadge: { backgroundColor: COLORS.bg2, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  modelText: { fontSize: 10, color: COLORS.textMuted },
-  scenarioCard: { backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.border },
-  scenarioTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 6 },
-  scenarioBody: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20 },
-  questionCard: { backgroundColor: 'rgba(139,92,246,0.06)', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: 'rgba(139,92,246,0.2)' },
-  questionText: { fontSize: 14, fontWeight: '500', color: COLORS.textPrimary, lineHeight: 22 },
-  optionCard: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.border },
-  optionCorrect: { backgroundColor: 'rgba(34,197,94,0.08)', borderColor: 'rgba(34,197,94,0.3)' },
-  optionWrong: { backgroundColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.3)' },
-  optionSelected: { backgroundColor: 'rgba(139,92,246,0.08)', borderColor: COLORS.accent },
-  optionCircle: { width: 24, height: 24, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
-  optionLetter: { fontSize: 10, color: COLORS.textMuted, fontWeight: '500' },
-  optionText: { flex: 1, fontSize: 13, color: COLORS.textPrimary, lineHeight: 20 },
-  insightCard: { backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.border },
-  insightLabel: { fontSize: 12, fontWeight: '600', color: COLORS.accent, marginBottom: 6 },
-  insightBody: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20 },
-  exampleCard: { backgroundColor: 'rgba(139,92,246,0.05)', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: 'rgba(139,92,246,0.2)' },
-  exampleLabel: { fontSize: 12, fontWeight: '600', color: '#A78BFA', marginBottom: 6 },
-  // Sophia tip bubble
-  sophiaBubble: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: 'rgba(139,92,246,0.06)', borderRadius: 16, padding: 12, borderWidth: 1, borderColor: 'rgba(139,92,246,0.15)' },
-  sophiaAvatar: { width: 34, height: 34, borderRadius: 17, borderWidth: 1.5, borderColor: 'rgba(139,92,246,0.4)' },
-  sophiaBubbleContent: { flex: 1 },
-  sophiaBubbleHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
-  sophiaName: { fontSize: 12, fontWeight: '700', color: '#8B5CF6' },
-  sophiaOnlineDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#22C55E' },
-  sophiaTipText: { fontSize: 12, color: COLORS.textSecondary, lineHeight: 18, fontStyle: 'italic' },
+  root: { flex: 1, backgroundColor: COLORS.bg0 }, center: { flex: 1, backgroundColor: COLORS.bg0, alignItems: 'center', justifyContent: 'center', padding: 28, gap: 10 }, emptyTitle: { fontSize: 22, fontWeight: '900', color: COLORS.textPrimary }, emptyText: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center' }, backLink: { fontSize: 15, fontWeight: '800', marginTop: 8 },
+  header: { height: 58, paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center', gap: 8 }, iconButton: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' }, headerTitle: { fontSize: 15, fontWeight: '900', color: COLORS.textPrimary }, headerSub: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 }, sophiaSmall: { width: 38, height: 38, borderRadius: 19, marginRight: 6 }, progress: { flexDirection: 'row', gap: 4, paddingHorizontal: 16 }, progressPart: { flex: 1, height: 5, borderRadius: 3 },
+  scroll: { padding: 20, gap: 14 }, eyebrow: { fontSize: 11, fontWeight: '900', letterSpacing: 1 }, title: { fontSize: 28, lineHeight: 33, fontWeight: '900', color: COLORS.textPrimary }, subtitle: { fontSize: 15, lineHeight: 21, color: COLORS.textSecondary }, brief: { minHeight: 235, borderRadius: 20, padding: 22, justifyContent: 'flex-end' }, briefTag: { color: COLORS.bg0, fontSize: 10, fontWeight: '900', letterSpacing: 1 }, briefText: { color: COLORS.bg0, fontSize: 22, lineHeight: 29, fontWeight: '900', marginTop: 8 }, model: { alignSelf: 'flex-start', color: COLORS.bg0, fontSize: 11, fontWeight: '800', borderWidth: 1, borderColor: COLORS.bg0, borderRadius: 7, paddingHorizontal: 8, paddingVertical: 4, marginTop: 12 },
+  coach: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 13, borderRadius: 15, backgroundColor: COLORS.accentSoft }, coachImage: { width: 42, height: 42, borderRadius: 21 }, coachText: { flex: 1, fontSize: 13, lineHeight: 18, fontWeight: '600', color: COLORS.textPrimary }, action: { height: 56, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }, actionText: { color: COLORS.bg0, fontSize: 16, fontWeight: '900' }, disabled: { opacity: 0.38 },
+  question: { fontSize: 19, lineHeight: 26, color: COLORS.textPrimary, fontWeight: '700', padding: 18, borderRadius: 16, backgroundColor: COLORS.bg1 }, options: { gap: 9 }, option: { minHeight: 66, flexDirection: 'row', alignItems: 'center', gap: 11, padding: 13, borderRadius: 15, borderWidth: 2, borderColor: COLORS.border }, optionLetter: { width: 26, fontSize: 15, fontWeight: '900' }, optionText: { flex: 1, fontSize: 14, lineHeight: 19, color: COLORS.textPrimary, fontWeight: '600' },
+  convictions: { flexDirection: 'row', gap: 8 }, conviction: { flex: 1, minHeight: 110, borderRadius: 15, borderWidth: 2, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center', gap: 10 }, signal: { height: 26, flexDirection: 'row', alignItems: 'flex-end', gap: 3 }, signalBar: { width: 6, borderRadius: 3 }, convictionTitle: { fontSize: 13, fontWeight: '800', color: COLORS.textPrimary }, lockedChoice: { padding: 16, borderRadius: 15, backgroundColor: COLORS.bg1 }, lockedLabel: { fontSize: 10, color: COLORS.textMuted, fontWeight: '900', letterSpacing: 1 }, lockedText: { fontSize: 15, lineHeight: 20, color: COLORS.textPrimary, fontWeight: '700', marginTop: 5 },
+  verdict: { minHeight: 215, borderRadius: 20, alignItems: 'center', justifyContent: 'center', gap: 8 }, verdictTitle: { color: COLORS.bg0, fontSize: 29, fontWeight: '900' }, verdictSub: { color: COLORS.bg0, opacity: 0.85, fontSize: 14, fontWeight: '700' }, debrief: { borderLeftWidth: 4, borderRadius: 4, padding: 15, backgroundColor: COLORS.bg1 }, debriefLabel: { fontSize: 10, fontWeight: '900', letterSpacing: 1 }, debriefText: { fontSize: 14, lineHeight: 20, color: COLORS.textPrimary, marginTop: 5 }, calibration: { padding: 16, borderRadius: 15, borderWidth: 1, borderColor: COLORS.border }, calibrationLabel: { fontSize: 10, fontWeight: '900', color: COLORS.textMuted, letterSpacing: 1 }, calibrationText: { fontSize: 15, lineHeight: 21, color: COLORS.textPrimary, fontWeight: '700', marginTop: 5 },
 });

@@ -51,6 +51,7 @@ export function useSessionFlow({
 }: UseSessionFlowParams) {
   const [activeStack, setActiveStack] = useState<StackWithSlides | null>(null);
   const [showReader, setShowReader] = useState(false);
+  const [showGoals, setShowGoals] = useState(false);
   const [showSessionComplete, setShowSessionComplete] = useState(false);
   const [sessionXPEarned, setSessionXPEarned] = useState(0);
   const [completedBites, setCompletedBites] = useState<number[]>([]);
@@ -61,7 +62,7 @@ export function useSessionFlow({
     trackEvent('lesson_start', { stackId: stack.id, type: stack.stack_type });
     setActiveStack(stack);
     setActiveBiteIndex(null);
-    setShowReader(true);
+    setShowGoals(true);
   }, []);
 
   const handleOpenBite = useCallback((biteIndex: number) => {
@@ -78,7 +79,7 @@ export function useSessionFlow({
     };
     setActiveStack(biteStack);
     setActiveBiteIndex(biteIndex);
-    setShowReader(true);
+    setShowGoals(true);
   }, [lessonStack]);
 
   const handleStackComplete = useCallback(async (isReviewMode: boolean, timeSpentSeconds: number): Promise<boolean> => {
@@ -206,12 +207,19 @@ export function useSessionFlow({
 
   const closeReader = useCallback(() => {
     setShowReader(false);
+    setShowGoals(false);
     setActiveBiteIndex(null);
+  }, []);
+
+  const beginLesson = useCallback(() => {
+    setShowGoals(false);
+    setShowReader(true);
   }, []);
 
   return {
     activeStack,
     showReader,
+    showGoals,
     showSessionComplete,
     sessionXPEarned,
     completedBites,
@@ -224,5 +232,6 @@ export function useSessionFlow({
     handleAddNote,
     dismissSessionComplete,
     closeReader,
+    beginLesson,
   };
 }

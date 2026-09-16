@@ -22,6 +22,8 @@ import { OnboardingProgress } from '../../components/onboarding/OnboardingProgre
 import { MascotAvatar } from '../../components/mascot/MascotAvatar';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
+import { FeatureTour } from '../../components/onboarding/FeatureTour';
+import type { LearningGoal } from './goal';
 
 const STEP_LABELS = ['Industry', 'Goal', 'Level'];
 
@@ -36,6 +38,9 @@ export default function FamiliarityScreen() {
   const { user } = useAuth();
   const [selectedLevel, setSelectedLevel] = useState<FamiliarityLevel | null>(null);
   const [showNotifOnboarding, setShowNotifOnboarding] = useState(false);
+  const [showFeatureTour, setShowFeatureTour] = useState(false);
+  const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
+  const [learningGoal, setLearningGoal] = useState<LearningGoal>('curiosity');
 
   // Animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -120,6 +125,14 @@ export default function FamiliarityScreen() {
   const handleNotifComplete = async (_enabled: boolean) => {
     setShowNotifOnboarding(false);
 
+    const [seenTour, storedGoal, storedMarket] = await Promise.all([
+      storage.hasSeenFeatureTour().catch(() => false),
+      storage.getLearningGoal().catch(() => null),
+      storage.getIndustry().catch(() => null),
+    ]);
+    if (storedGoal) setLearningGoal(storedGoal as LearningGoal);
+    if (storedMarket) setSelectedMarket(storedMarket);
+
     if (user) {
       try {
         const { data: profile } = await supabase
@@ -129,6 +142,7 @@ export default function FamiliarityScreen() {
           .single();
 
         if (profile?.selected_market) {
+          setSelectedMarket(profile.selected_market);
           const demoXP = await applyDemoXP(user.id, profile.selected_market);
           if (demoXP > 0) {
             Alert.alert(
@@ -141,7 +155,13 @@ export default function FamiliarityScreen() {
         // Non-critical
       }
     }
+    if (seenTour) router.replace('/(tabs)/home');
+    else setShowFeatureTour(true);
+  };
 
+  const handleTourComplete = async () => {
+    setShowFeatureTour(false);
+    await storage.setFeatureTourSeen().catch(() => {});
     router.replace('/(tabs)/home');
   };
 
@@ -249,6 +269,12 @@ export default function FamiliarityScreen() {
       <NotificationOnboarding
         visible={showNotifOnboarding}
         onComplete={handleNotifComplete}
+      />
+      <FeatureTour
+        visible={showFeatureTour}
+        marketId={selectedMarket}
+        goal={learningGoal}
+        onComplete={handleTourComplete}
       />
     </View>
   );

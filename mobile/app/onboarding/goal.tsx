@@ -141,6 +141,7 @@ export default function GoalScreen() {
     triggerHaptic('medium');
     setIsSubmitting(true);
     try {
+      await storage.setLearningGoal(selectedGoal);
       await supabase.from('user_progress').upsert(
         { user_id: user.id, market_id: selectedMarket, learning_goal: selectedGoal },
         { onConflict: 'user_id,market_id' }

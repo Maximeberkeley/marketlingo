@@ -34,7 +34,7 @@
 ## Industry packs — all 15 markets (done)
 - Added: aerospace, agtech, biotech, cleanenergy, climatetech, ev, healthtech, neuroscience, spacetech
 
-- [ ] Add concise goal preview before every lesson
-- [ ] Add skippable three-minute first-use app tour and one-time chosen-goal learning promise
-- [ ] Rebuild Interview Lab to current short-copy, visual, retention, and reward standards
-- [ ] Rebuild Investment Lab to current short-copy, visual, retention, and reward standards
+- [x] Add concise goal preview before every lesson
+- [x] Add skippable three-minute first-use app tour and one-time chosen-goal learning promise
+- [x] Rebuild Interview Lab to current short-copy, visual, retention, and reward standards
+- [x] Rebuild Investment Lab to current short-copy, visual, retention, and reward standards
