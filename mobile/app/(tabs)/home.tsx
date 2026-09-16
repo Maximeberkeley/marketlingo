@@ -58,6 +58,7 @@ import { useLeague, TIER_META } from '../../hooks/useLeague';
 import { useWeeklyRecap } from '../../hooks/useWeeklyRecap';
 import { useCollectibles, CollectibleCard } from '../../hooks/useCollectibles';
 import { CardRevealModal } from '../../components/collectibles/CardRevealModal';
+import { syncLeoWidget } from '../../lib/leoWidget';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -163,6 +164,16 @@ export default function HomeScreen() {
   useEffect(() => {
     if (selectedMarket) setSelectedMarketLocal(selectedMarket);
   }, [selectedMarket]);
+
+  useEffect(() => {
+    if (!selectedMarketLocal || !progress) return;
+    syncLeoWidget({
+      streak,
+      lessonComplete: lessonCompletedToday,
+      expiresAt: progress.streak_expires_at,
+      market: getMarketName(selectedMarketLocal),
+    });
+  }, [selectedMarketLocal, progress?.current_streak, progress?.streak_expires_at, lessonCompletedToday]);
 
   const { dueCount } = useSpacedRepetition(selectedMarketLocal || undefined);
   const { syncLessons } = useOfflineCache(selectedMarketLocal || undefined);
