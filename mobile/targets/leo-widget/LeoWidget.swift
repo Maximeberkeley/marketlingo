@@ -215,6 +215,7 @@ struct LeoWidgetRoot: View {
         switch family {
         case .accessoryCircular, .accessoryInline, .accessoryRectangular:
             LeoAccessoryView(entry: entry)
+                .containerBackground(for: .widget) { Color.clear }
         default:
             LeoWidgetView(entry: entry)
         }
