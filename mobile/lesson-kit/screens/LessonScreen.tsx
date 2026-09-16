@@ -268,6 +268,7 @@ export function LessonScreen({
         lives={hasGraded ? hearts : undefined}
         label={`${world.worldName} · ${lesson.title}`}
         accentColor={world.colors[0]}
+        onAskLeo={() => setShowAskLeo(true)}
       />
 
       {combo >= 2 && (
