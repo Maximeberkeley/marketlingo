@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../../lib/constants';
-import { triggerHaptic } from '../../lib/sensory';
+import { triggerHaptic } from '../../lib/haptics';
 
 interface WidgetNudgeCardProps {
   streak: number;

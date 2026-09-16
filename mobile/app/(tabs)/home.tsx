@@ -53,6 +53,8 @@ import { useAchievements } from '../../hooks/useAchievements';
 import { LeoVoiceChatOverlay } from '../../components/ai/LeoVoiceChatOverlay';
 import { log } from '../../lib/logger';
 import { SundayRecapCard } from '../../components/home/SundayRecapCard';
+import { WidgetNudgeCard } from '../../components/home/WidgetNudgeCard';
+import { useWidgetNudge } from '../../hooks/useWidgetNudge';
 import { LeagueCeremonyModal } from '../../components/league/LeagueCeremonyModal';
 import { useLeague, TIER_META } from '../../hooks/useLeague';
 import { useWeeklyRecap } from '../../hooks/useWeeklyRecap';
@@ -160,6 +162,7 @@ export default function HomeScreen() {
   const league = useLeague(selectedMarketLocal || undefined);
   const recap = useWeeklyRecap(selectedMarketLocal || undefined);
   const [recapDismissed, setRecapDismissed] = useState(false);
+  const widgetNudge = useWidgetNudge();
   const showRecap = recap.isRecapDay && !recap.loading && !recap.seen && !recapDismissed && recap.xpThisWeek >= 0;
 
   useEffect(() => {
@@ -529,6 +532,17 @@ export default function HomeScreen() {
               <Text style={styles.rescueLinkText}>No time? Take the 3-question rescue round</Text>
               <Feather name="chevron-right" size={14} color={COLORS.streak} />
             </TouchableOpacity>
+          )}
+
+          {/* ── Weekly nudge: put Leo on the home screen ── */}
+          {widgetNudge.visible && !session.showReader && (
+            <AnimatedSection delay={55}>
+              <WidgetNudgeCard
+                streak={streak}
+                onAdded={widgetNudge.markAdded}
+                onSnooze={widgetNudge.snooze}
+              />
+            </AnimatedSection>
           )}
 
           {/* ── Sunday recap ── */}
