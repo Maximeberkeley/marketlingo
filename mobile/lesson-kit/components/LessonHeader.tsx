@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { ProgressBar } from './ProgressBar';
 import { tokens } from '../theme/tokens';
+
+const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 
 interface Props {
   progress: number;
@@ -10,9 +12,11 @@ interface Props {
   lives?: number;
   label?: string;
   accentColor?: string;
+  /** Opens the Ask Leo chat overlay. */
+  onAskLeo?: () => void;
 }
 
-export function LessonHeader({ progress, onExit, lives, label, accentColor }: Props) {
+export function LessonHeader({ progress, onExit, lives, label, accentColor, onAskLeo }: Props) {
   return (
     <View style={styles.wrap}>
       <View style={styles.row}>
