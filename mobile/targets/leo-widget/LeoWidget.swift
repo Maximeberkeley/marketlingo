@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import WidgetKit
 
 private let appGroup = "group.app.marketlingo.aerospace.shared"
