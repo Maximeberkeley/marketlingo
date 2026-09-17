@@ -38,6 +38,7 @@ import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
 import { MilestoneShareCard } from '../../components/sharing/MilestoneShareCard';
 import { DailyQuests } from '../../components/home/DailyQuests';
 import { useDailyQuests } from '../../hooks/useDailyQuests';
+import { useQuestRewards } from '../../hooks/useQuestRewards';
 import { useMilestoneSharing } from '../../hooks/useMilestoneSharing';
 import { useHomeData } from '../../hooks/useHomeData';
 import { useSessionFlow } from '../../hooks/useSessionFlow';
@@ -301,6 +302,8 @@ export default function HomeScreen() {
 
   // Daily quests
   const { quests, completedCount, totalBonusXP, allComplete } = useDailyQuests(dailyCompletion, streak);
+  // Bonus XP is banked as soon as a quest flips to complete (once per day).
+  useQuestRewards(quests, selectedMarketLocal || selectedMarket, addXP);
 
   // Leo popup system
   const leoPopups = useLeoPopups({ cooldownMs: 45000, maxPerSession: 4 });
@@ -696,6 +699,7 @@ export default function HomeScreen() {
               completedCount={completedCount}
               totalBonusXP={totalBonusXP}
               allComplete={allComplete}
+              onStartLesson={() => lessonStack && session.handleOpenStack(lessonStack)}
             />
           </AnimatedSection>
 
