@@ -199,8 +199,9 @@ export function useUserXP(marketId?: string) {
     }
 
     const baseCompletion = existingCompletion || dailyCompletion;
-    const isGameReward = sourceType === 'game';
-    const isDrillReward = sourceType.startsWith('drill');
+    // Current modules: Deep Case verdicts count as "games", Arena runs as "drills".
+    const isGameReward = sourceType === 'game' || sourceType === 'deep_case';
+    const isDrillReward = sourceType.startsWith('drill') || sourceType === 'arena';
 
     const { data: updatedCompletion, error: completionUpsertError } = await supabase
       .from('daily_completions')
