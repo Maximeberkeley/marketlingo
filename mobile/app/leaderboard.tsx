@@ -152,8 +152,8 @@ export default function LeaderboardScreen() {
           <View style={{ flex: 1 }}>
             <Text style={styles.prizeTitle}>Become the Industry Master</Text>
             <Text style={styles.prizeDesc}>
-              The <Text style={styles.prizeHighlight}>#1 ranked user</Text> in each industry every 6 months wins{' '}
-              <Text style={styles.prizeHighlight}>1 Full Year of MarketLingo Premium!</Text>
+              Hold <Text style={styles.prizeHighlight}>#1 in your industry</Text> and you top the board every
+              analyst here is climbing. Every point is earned in lessons.
             </Text>
           </View>
         </View>
@@ -163,6 +163,13 @@ export default function LeaderboardScreen() {
           <View style={styles.marketPill}>
             <Text style={styles.marketPillText}>{marketName} Rankings</Text>
           </View>
+          {leaderboard.length > 0 && (
+            <View style={styles.filterBadge}>
+              <Text style={styles.filterBadgeText}>
+                {leaderboard.length} ranked
+              </Text>
+            </View>
+          )}
           <View style={styles.filterBadge}>
             <Text style={styles.filterBadgeText}>
               {timeFilter === 'all-time' ? 'All Time' : timeFilter === 'weekly' ? 'This Week' : 'This Month'}
@@ -176,7 +183,7 @@ export default function LeaderboardScreen() {
           <View style={styles.emptyState}>
             <Image source={require('../assets/illustrations/leaderboard-hero.png')} style={{ width: 120, height: 120, marginBottom: 16 }} resizeMode="contain" />
             <Text style={styles.emptyTitle}>No one on the leaderboard yet!</Text>
-            <Text style={styles.emptySub}>Complete lessons to earn XP</Text>
+            <Text style={styles.emptySub}>Finish a lesson and you take first place.</Text>
           </View>
         ) : (
           <View style={styles.entriesContainer}>
