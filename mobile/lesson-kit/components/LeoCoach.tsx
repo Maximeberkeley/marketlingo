@@ -3,6 +3,7 @@ import { View, StyleSheet, Animated, Easing, Image, ImageSourcePropType } from '
 import { tokens } from '../theme/tokens';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { ColorText } from './ColorText';
+import { SpeechBubble } from '../../components/ui/SpeechBubble';
 
 export type LeoMood = 'idle' | 'thinking' | 'celebrate' | 'correct' | 'incorrect';
 
@@ -93,11 +94,9 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
               { opacity: enter, transform: [{ scale: pop }, { translateY: rise }] },
             ]}
           >
-            <View style={[styles.tailOutline, { borderColor: moodTint }]} />
-            <View style={styles.tailFill} />
-            <View style={[styles.bubble, { borderColor: moodTint }]}>
+            <SpeechBubble tail="left" tone="neutral" style={styles.bubble}>
               <ColorText text={line} style={styles.text} maxSentences={2} maxLength={110} />
-            </View>
+            </SpeechBubble>
           </Animated.View>
         ) : (
           <View style={styles.bubbleWrap} pointerEvents="none" />
@@ -136,41 +135,7 @@ const styles = StyleSheet.create({
     // Always above Leo — even if his artwork overhangs, the words stay readable.
     zIndex: 2,
   },
-  bubble: {
-    backgroundColor: tokens.color.card,
-    borderWidth: 2,
-    borderRadius: 20,
-    paddingHorizontal: tokens.space.md,
-    paddingVertical: 10,
-    shadowColor: tokens.color.text,
-    shadowOpacity: 0.07,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 1,
-  },
-  tailOutline: {
-    position: 'absolute',
-    left: -7,
-    top: '50%',
-    width: 17,
-    height: 17,
-    backgroundColor: tokens.color.card,
-    borderLeftWidth: 2,
-    borderBottomWidth: 2,
-    borderRadius: 3,
-    transform: [{ translateY: -8 }, { rotate: '45deg' }],
-    zIndex: 0,
-  },
-  tailFill: {
-    position: 'absolute',
-    left: 1,
-    top: '50%',
-    width: 12,
-    height: 22,
-    backgroundColor: tokens.color.card,
-    transform: [{ translateY: -11 }],
-    zIndex: 1,
-  },
+  bubble: { width: '100%' },
   text: {
     fontSize: tokens.font.caption,
     lineHeight: 18,

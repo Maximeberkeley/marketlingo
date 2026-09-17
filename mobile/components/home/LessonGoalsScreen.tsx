@@ -5,6 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../../lib/constants';
 import { getMarketWorld } from '../../data/marketWorlds';
+import { SpeechBubble } from '../ui/SpeechBubble';
 
 interface Props {
   title: string;
@@ -67,7 +68,7 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, isBite,
 
         <View style={styles.leoRow}>
           <Image source={require('../../assets/mascot/leo-reference.png')} style={styles.leo} />
-          <Text style={styles.leoLine}>Know the mission. Then earn the bragging rights.</Text>
+          <SpeechBubble text="Know the mission. Then earn the bragging rights." tail="left" compact style={styles.leoBalloon} textStyle={styles.leoLine} />
         </View>
       </ScrollView>
 
@@ -97,9 +98,10 @@ const styles = StyleSheet.create({
   number: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   numberText: { color: COLORS.bg0, fontSize: 14, fontWeight: '900' },
   goalText: { flex: 1, fontSize: 16, lineHeight: 21, color: COLORS.textPrimary, fontWeight: '700' },
-  leoRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 24, padding: 12, borderRadius: 14, backgroundColor: COLORS.bg1 },
+  leoRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 24 },
   leo: { width: 44, height: 44, resizeMode: 'contain' },
-  leoLine: { flex: 1, color: COLORS.textSecondary, fontSize: 13, lineHeight: 18, fontWeight: '600' },
+  leoBalloon: { flex: 1 },
+  leoLine: { color: COLORS.textSecondary, fontSize: 13, lineHeight: 18, fontWeight: '600' },
   start: { height: 56, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
   startText: { color: COLORS.bg0, fontSize: 17, fontWeight: '900' },
 });

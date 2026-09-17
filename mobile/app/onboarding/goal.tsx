@@ -17,6 +17,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { storage } from '../../lib/storage';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { SpeechBubble } from '../../components/ui/SpeechBubble';
 import { getMarketName } from '../../lib/markets';
 import { StickyBottomCTA } from '../../components/StickyBottomCTA';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress';
@@ -179,7 +180,7 @@ export default function GoalScreen() {
         {selectedGoal && (
           <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}>
             <Image source={require('../../assets/mascot/leo-reference.png')} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
-            <Text style={styles.reactionText}>{LEO_REACTIONS[selectedGoal]}</Text>
+            <SpeechBubble text={LEO_REACTIONS[selectedGoal]} tail="left" compact style={styles.reactionBalloon} textStyle={styles.reactionText} />
           </Animated.View>
         )}
 
@@ -266,10 +267,10 @@ const styles = StyleSheet.create({
   subtitle: { ...TYPE.body, color: COLORS.textSecondary, textAlign: 'center', marginTop: 4 },
   reactionBubble: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: COLORS.accent + '12', borderWidth: 1, borderColor: COLORS.accent + '25',
-    borderRadius: 14, padding: 12, marginBottom: 16,
+    marginBottom: 16,
   },
-  reactionText: { flex: 1, fontSize: 13, color: COLORS.textSecondary, lineHeight: 18 },
+  reactionBalloon: { flex: 1 },
+  reactionText: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 18 },
   cardsContainer: { gap: 12 },
   card: {
     backgroundColor: COLORS.bg2, borderRadius: 18, padding: 14,
