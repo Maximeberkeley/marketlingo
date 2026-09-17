@@ -79,18 +79,16 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
 
   return (
     <View style={styles.wrap}>
-      {/* A clean, quiet stage: Leo and his bubble stay visually dominant. */}
-      <View style={[styles.scene, { backgroundColor: moodTint + '14' }]}>
+      {/* A clean, quiet stage: no tint, no aura — Leo and his bubble only. */}
+      <View style={styles.scene}>
         {scene ? (
           <Image source={scene} style={StyleSheet.absoluteFill} resizeMode="cover" />
-        ) : (
-          <View style={[styles.ground, { backgroundColor: moodTint + '14' }]} />
-        )}
+        ) : null}
 
-        {/* Leo, standing in the scene */}
-        <Animated.View style={[styles.leo, { transform: [{ translateY: bobY }] }]}>
+        {/* Leo, anchored in place — no bobbing */}
+        <View style={styles.leo}>
           <LeoCharacter animation={ANIM[mood]} size="sm" />
-        </Animated.View>
+        </View>
 
         {/* Speech bubble with a comic tail pointing at Leo */}
         <Animated.View
