@@ -14,6 +14,7 @@
     },
     "ios": {
       "supportsTablet": false,
+      "appleTeamId": "PM32G4952G",
       "bundleIdentifier": "app.marketlingo.aerospace",
       "buildNumber": "103",
       "entitlements": {
