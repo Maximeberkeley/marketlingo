@@ -79,16 +79,12 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
 
   return (
     <View style={styles.wrap}>
-      {/* The scene itself — soft sky, sun glow, ground line in the world color */}
+      {/* A clean, quiet stage: Leo and his bubble stay visually dominant. */}
       <View style={[styles.scene, { backgroundColor: moodTint + '14' }]}>
         {scene ? (
           <Image source={scene} style={StyleSheet.absoluteFill} resizeMode="cover" />
         ) : (
-          <>
-            <View style={[styles.sun, { backgroundColor: moodTint + '22' }]} />
-            <View style={[styles.hillBack, { backgroundColor: moodTint + '1A' }]} />
-            <View style={[styles.hillFront, { backgroundColor: moodTint + '26' }]} />
-          </>
+          <View style={[styles.ground, { backgroundColor: moodTint + '14' }]} />
         )}
 
         {/* Leo, standing in the scene */}
@@ -127,36 +123,20 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     flexDirection: 'row',
     alignItems: 'flex-end',
+    borderWidth: 1,
+    borderColor: tokens.color.border,
   },
-  sun: {
+  ground: {
     position: 'absolute',
-    top: -26,
-    right: 18,
-    width: 84,
-    height: 84,
-    borderRadius: 42,
-  },
-  hillBack: {
-    position: 'absolute',
-    bottom: -34,
-    left: -40,
-    width: 220,
-    height: 90,
-    borderRadius: 60,
-    transform: [{ scaleX: 1.6 }],
-  },
-  hillFront: {
-    position: 'absolute',
-    bottom: -44,
-    right: -60,
-    width: 260,
-    height: 100,
-    borderRadius: 70,
-    transform: [{ scaleX: 1.6 }],
+    right: 0,
+    bottom: 0,
+    left: 0,
+    height: 30,
   },
   leo: {
-    marginLeft: tokens.space.sm,
-    marginBottom: -4,
+    width: 82,
+    marginLeft: 4,
+    marginBottom: -6,
     zIndex: 2,
   },
   bubbleWrap: {
@@ -169,14 +149,9 @@ const styles = StyleSheet.create({
   bubble: {
     backgroundColor: tokens.color.card,
     borderWidth: 1.5,
-    borderRadius: tokens.radius.lg,
+    borderRadius: tokens.radius.md,
     paddingHorizontal: tokens.space.md,
     paddingVertical: tokens.space.sm + 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 2,
   },
   tail: {
     position: 'absolute',
