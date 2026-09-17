@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -51,7 +51,7 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, isBite,
         </View>
       </LinearGradient>
 
-      <View style={styles.body}>
+      <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false}>
         <Text style={styles.heading}>Your mission</Text>
         <Text style={styles.subheading}>Finish this run and you’ll be able to:</Text>
         <View style={styles.goals}>
@@ -69,7 +69,7 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, isBite,
           <Image source={require('../../assets/mascot/leo-reference.png')} style={styles.leo} />
           <Text style={styles.leoLine}>Know the mission. Then earn the bragging rights.</Text>
         </View>
-      </View>
+      </ScrollView>
 
       <TouchableOpacity style={[styles.start, { backgroundColor: world.colors[0] }]} onPress={onStart} activeOpacity={0.86}>
         <Text style={styles.startText}>Start mission</Text>
@@ -88,7 +88,8 @@ const styles = StyleSheet.create({
   title: { color: COLORS.bg0, fontSize: 27, lineHeight: 31, fontWeight: '900', maxWidth: '75%', marginTop: 8 },
   timeChip: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 14 },
   timeText: { color: COLORS.bg0, fontSize: 13, fontWeight: '700' },
-  body: { flex: 1, paddingTop: 24 },
+  body: { flex: 1 },
+  bodyContent: { paddingTop: 24, paddingBottom: 20 },
   heading: { fontSize: 24, fontWeight: '900', color: COLORS.textPrimary },
   subheading: { marginTop: 4, fontSize: 15, color: COLORS.textSecondary },
   goals: { gap: 12, marginTop: 20 },
