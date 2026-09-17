@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, Image, ImageSourcePropType } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, Animated, Easing, Image, ImageSourcePropType } from 'react-native';
 import { tokens } from '../theme/tokens';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { ColorText } from './ColorText';
@@ -17,8 +17,7 @@ const ANIM: Record<LeoMood, 'idle' | 'thinking' | 'success' | 'failure' | 'celeb
 /**
  * Optional painted scene backdrops. Drop PNGs into mobile/assets/scenes/
  * (wide, ~1200x420, soft flat illustration) and they light up per mood.
- * Missing files fall back to the built-in layered-color scene, so the
- * banner always renders.
+ * Missing files fall back to the clean white stage, so the banner always renders.
  */
 const SCENES: Partial<Record<LeoMood, ImageSourcePropType>> = {
   // idle: require('../../../assets/scenes/leo-scene-idle.png'),
@@ -35,25 +34,34 @@ interface Props {
   accent?: string;
 }
 
+/** Leo speaks up a beat after the card lands — it feels like him, not a caption. */
+const BUBBLE_DELAY_MS = 2000;
+
 /**
- * Leo's in-lesson home: a light top scene banner. A slim illustrated strip
- * with Leo standing in it and a comic speech bubble tailing toward him.
- * He reacts, he never crowds — one short line, then quiet.
+ * Leo's in-lesson stage: he stands large on the left, still and present.
+ * Two seconds into each card his comic bubble pops in with one short line.
  */
 export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: Props) {
   const enter = useRef(new Animated.Value(0)).current;
+  const [speaking, setSpeaking] = useState(false);
 
   useEffect(() => {
+    setSpeaking(false);
     enter.setValue(0);
-    Animated.timing(enter, {
-      toValue: 1,
-      duration: 260,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
+    const timer = setTimeout(() => {
+      setSpeaking(true);
+      Animated.timing(enter, {
+        toValue: 1,
+        duration: 280,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start();
+    }, BUBBLE_DELAY_MS);
+    return () => clearTimeout(timer);
   }, [line, mood, enter]);
 
-  const pop = enter.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] });
+  const pop = enter.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] });
+  const lift = enter.interpolate({ inputRange: [0, 1], outputRange: [6, 0] });
 
   const moodTint =
     mood === 'correct' || mood === 'celebrate'
@@ -72,35 +80,39 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
           <Image source={scene} style={StyleSheet.absoluteFill} resizeMode="cover" />
         ) : null}
 
-        {/* Leo, anchored in place — no bobbing */}
-        <View style={styles.leo}>
-          <LeoCharacter animation={ANIM[mood]} size="sm" />
+        {/* Leo — large, anchored, completely still */}
+        <View style={styles.leo} pointerEvents="none">
+          <LeoCharacter animation={ANIM[mood]} size="lg" still />
         </View>
 
-        {/* Speech bubble with a comic tail pointing at Leo */}
-        <Animated.View
-          style={[
-            styles.bubbleWrap,
-            { opacity: enter, transform: [{ scale: pop }] },
-          ]}
-        >
-          <View style={[styles.bubble, { borderColor: moodTint + '66' }]}>
-            <ColorText text={line} style={styles.text} maxSentences={2} maxLength={120} />
-          </View>
-          <View style={[styles.tail, { borderRightColor: moodTint + '66' }]} />
-          <View style={styles.tailFill} />
-        </Animated.View>
+        {/* Speech bubble with a comic tail — pops in ~2s after the card */}
+        {speaking ? (
+          <Animated.View
+            style={[
+              styles.bubbleWrap,
+              { opacity: enter, transform: [{ scale: pop }, { translateY: lift }] },
+            ]}
+          >
+            <View style={[styles.bubble, { borderColor: moodTint + '66' }]}>
+              <ColorText text={line} style={styles.text} maxSentences={2} maxLength={110} />
+            </View>
+            <View style={[styles.tail, { borderRightColor: moodTint + '66' }]} />
+            <View style={styles.tailFill} />
+          </Animated.View>
+        ) : (
+          <View style={styles.bubbleWrap} pointerEvents="none" />
+        )}
       </View>
     </View>
   );
 }
 
-const SCENE_H = 138;
+const SCENE_H = 168;
 
 const styles = StyleSheet.create({
   wrap: {
     paddingHorizontal: tokens.space.lg,
-    marginBottom: tokens.space.md,
+    marginBottom: tokens.space.sm,
   },
   scene: {
     height: SCENE_H,
@@ -108,15 +120,15 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   leo: {
-    width: 124,
-    marginLeft: 2,
-    marginBottom: -8,
+    width: 150,
+    marginLeft: -6,
+    marginBottom: -14,
     zIndex: 2,
   },
   bubbleWrap: {
     flex: 1,
     alignSelf: 'center',
-    marginRight: tokens.space.md,
+    marginRight: tokens.space.sm,
     marginLeft: 2,
     position: 'relative',
   },
@@ -124,8 +136,8 @@ const styles = StyleSheet.create({
     backgroundColor: tokens.color.card,
     borderWidth: 2,
     borderRadius: tokens.radius.lg,
-    paddingHorizontal: tokens.space.lg,
-    paddingVertical: tokens.space.md,
+    paddingHorizontal: tokens.space.md,
+    paddingVertical: tokens.space.sm + 2,
   },
   tail: {
     position: 'absolute',
@@ -153,8 +165,8 @@ const styles = StyleSheet.create({
     borderRightColor: tokens.color.card,
   },
   text: {
-    fontSize: tokens.font.body + 2,
-    lineHeight: 24,
+    fontSize: tokens.font.body,
+    lineHeight: 21,
     fontWeight: '600',
     color: tokens.color.text,
   },

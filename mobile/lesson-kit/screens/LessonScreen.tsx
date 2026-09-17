@@ -82,6 +82,7 @@ export function LessonScreen({
   const insets = useSafeAreaInsets();
   const [queue, setQueue] = useState<Exercise[]>(lesson.exercises);
   const [index, setIndex] = useState(0);
+  const [maxIndexReached, setMaxIndexReached] = useState(0);
   const [phase, setPhase] = useState<'answering' | 'feedback'>('answering');
   const [state, setState] = useState<ExerciseState>({ canCheck: false, isCorrect: false });
   const [correctCount, setCorrectCount] = useState(0);
@@ -90,6 +91,9 @@ export function LessonScreen({
   const [bestCombo, setBestCombo] = useState(0);
   const [hearts, setHearts] = useState(MAX_HEARTS);
   const [missed, setMissed] = useState<Exercise[]>([]);
+  /** Per-beat outcome (exercise id -> was correct) so back/forward navigation
+   *  restores the real previous result instead of resetting the card. */
+  const [results, setResults] = useState<Record<string, boolean>>({});
   const [showExitPrompt, setShowExitPrompt] = useState(false);
   const [showHeartsPrompt, setShowHeartsPrompt] = useState(false);
   const [showAskLeo, setShowAskLeo] = useState(false);
@@ -116,6 +120,7 @@ export function LessonScreen({
     setBestCombo(0);
     setHearts(MAX_HEARTS);
     setMissed([]);
+    setResults({});
     setShowExitPrompt(false);
     setShowHeartsPrompt(false);
     setFinished(false);
@@ -176,16 +181,36 @@ export function LessonScreen({
     }).start(() => setPop(null));
   }, [popAnim]);
 
+  /** Moves to a beat, restoring its real previous state: graded cards show
+   *  their original feedback (no re-answering, no double scoring), fresh or
+   *  passive cards start clean. */
+  const goToBeat = useCallback((target: number) => {
+    const beat = queue[target];
+    setIndex(target);
+    setNudge(null);
+    const graded = beat && !isPassiveKind(beat.kind) ? results[beat.id] : undefined;
+    if (graded !== undefined) {
+      setPhase('feedback');
+      setState({ canCheck: true, isCorrect: graded });
+    } else {
+      setPhase('answering');
+      setState({ canCheck: false, isCorrect: false });
+    }
+  }, [queue, results]);
+
+  const handleBack = useCallback(() => {
+    if (index > 0) goToBeat(index - 1);
+  }, [index, goToBeat]);
+
   const goNext = useCallback(() => {
     if (index >= total - 1) {
       playSound('lessonComplete').catch(() => {});
       setFinished(true);
       return;
     }
-    setIndex(i => i + 1);
-    setPhase('answering');
-    setState({ canCheck: false, isCorrect: false });
-  }, [index, total]);
+    setMaxIndexReached(prev => Math.max(prev, index + 1));
+    goToBeat(index + 1);
+  }, [index, total, goToBeat]);
 
   const onAction = useCallback(() => {
     if (isInfo) {
@@ -195,23 +220,26 @@ export function LessonScreen({
     }
     if (phase === 'answering') {
       if (!state.canCheck) return;
-      setGradedCount(c => c + 1);
-      if (state.isCorrect) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
-        playSound('correct').catch(() => {});
-        setCorrectCount(c => c + 1);
-        const nextCombo = combo + 1;
-        setCombo(nextCombo);
-        setBestCombo(previous => Math.max(previous, nextCombo));
-        firePop(`+${xpPerCorrect} XP`);
-      } else {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
-        playSound('wrong').catch(() => {});
-        setCombo(0);
-        setMissed(m => (exercise ? [...m, exercise] : m));
-        const nextHearts = Math.max(0, hearts - 1);
-        setHearts(nextHearts);
-        if (nextHearts === 0) setShowHeartsPrompt(true);
+      if (exercise) setResults(r => ({ ...r, [exercise.id]: state.isCorrect }));
+      if (index >= maxIndexReached) {
+        setGradedCount(c => c + 1);
+        if (state.isCorrect) {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+          playSound('correct').catch(() => {});
+          setCorrectCount(c => c + 1);
+          const nextCombo = combo + 1;
+          setCombo(nextCombo);
+          setBestCombo(previous => Math.max(previous, nextCombo));
+          firePop(`+${xpPerCorrect} XP`);
+        } else {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+          playSound('wrong').catch(() => {});
+          setCombo(0);
+          setMissed(m => (exercise ? [...m, exercise] : m));
+          const nextHearts = Math.max(0, hearts - 1);
+          setHearts(nextHearts);
+          if (nextHearts === 0) setShowHeartsPrompt(true);
+        }
       }
       setPhase('feedback');
       return;
@@ -309,6 +337,7 @@ export function LessonScreen({
       <LessonHeader
         progress={progress}
         onExit={handleExitPress}
+        onBack={index > 0 ? handleBack : undefined}
         lives={hasGraded ? hearts : undefined}
         label={`${world.worldName} · ${lesson.title}`}
         accentColor={world.colors[0]}

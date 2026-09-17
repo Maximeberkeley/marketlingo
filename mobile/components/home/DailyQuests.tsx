@@ -17,17 +17,17 @@ interface DailyQuestsProps {
 
 const QUEST_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   lesson: 'book-open',
-  drill: 'zap',
-  game: 'play-circle',
+  arena: 'zap',
+  case: 'briefcase',
   combo: 'target',
   streak: 'activity',
 };
 
-// Only real, reachable screens. Lesson/streak quests start the lesson in place.
+// Only real, current modules. Lesson/streak quests start the lesson in place.
 const QUEST_ROUTES: Record<string, string | null> = {
   lesson: null,
-  drill: '/drills',
-  game: '/games',
+  arena: '/arena',
+  case: '/deep-case',
   combo: '/(tabs)/practice',
   streak: null,
 };

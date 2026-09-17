@@ -1,5 +1,7 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { DailyCompletion } from '../lib/types';
+
+export type QuestType = 'lesson' | 'arena' | 'case' | 'combo' | 'streak';
 
 export interface DailyQuest {
   id: string;
@@ -12,15 +14,20 @@ export interface DailyQuest {
   /** XP multiplier applied when quest is completed (e.g., 1.5 = 50% bonus) */
   multiplier: number;
   isCompleted: boolean;
-  type: 'lesson' | 'drill' | 'game' | 'combo' | 'streak';
+  type: QuestType;
 }
 
-// Deterministic quest pool — rotated daily based on date seed
+/**
+ * Quest pool — built only on the current modules: today's lesson,
+ * the Daily Arena, and the Deep Case. No legacy drills or games.
+ * Arena runs are counted via daily_completions.drills_completed and
+ * Deep Case verdicts via games_completed (see useUserXP.addXP).
+ */
 const QUEST_POOL: Omit<DailyQuest, 'current' | 'isCompleted'>[] = [
   {
     id: 'complete_lesson',
     title: 'Scholar',
-    description: 'Complete today\'s lesson',
+    description: "Complete today's lesson",
     emoji: '',
     target: 1,
     xpBonus: 25,
@@ -28,39 +35,39 @@ const QUEST_POOL: Omit<DailyQuest, 'current' | 'isCompleted'>[] = [
     type: 'lesson',
   },
   {
-    id: 'finish_2_drills',
-    title: 'Drill Master',
-    description: 'Finish 2 drills',
-    emoji: '',
-    target: 2,
-    xpBonus: 20,
-    multiplier: 1.3,
-    type: 'drill',
-  },
-  {
-    id: 'finish_1_game',
-    title: 'Game On',
-    description: 'Complete 1 game',
+    id: 'arena_call',
+    title: 'Arena Call',
+    description: 'Complete one Daily Arena run',
     emoji: '',
     target: 1,
-    xpBonus: 15,
+    xpBonus: 20,
     multiplier: 1.3,
-    type: 'game',
+    type: 'arena',
   },
   {
-    id: 'lesson_plus_drill',
-    title: 'Power Combo',
-    description: 'Complete a lesson + 1 drill',
-    emoji: '⚡',
+    id: 'case_closed',
+    title: 'Case Closed',
+    description: 'Defend one Deep Case verdict',
+    emoji: '',
+    target: 1,
+    xpBonus: 30,
+    multiplier: 1.5,
+    type: 'case',
+  },
+  {
+    id: 'double_shift',
+    title: 'Double Shift',
+    description: 'Lesson + Arena in one day',
+    emoji: '',
     target: 2,
     xpBonus: 40,
     multiplier: 2.0,
     type: 'combo',
   },
   {
-    id: 'triple_threat',
-    title: 'Triple Threat',
-    description: 'Lesson + Game + Drill in one day',
+    id: 'full_stack',
+    title: 'Full Stack',
+    description: 'Lesson + Arena + Case today',
     emoji: '',
     target: 3,
     xpBonus: 60,
@@ -68,34 +75,34 @@ const QUEST_POOL: Omit<DailyQuest, 'current' | 'isCompleted'>[] = [
     type: 'combo',
   },
   {
-    id: 'finish_3_drills',
-    title: 'Sharpshooter',
-    description: 'Finish 3 drills',
+    id: 'back_in_the_ring',
+    title: 'Back in the Ring',
+    description: 'Run the Arena twice today',
     emoji: '',
-    target: 3,
-    xpBonus: 30,
-    multiplier: 1.5,
-    type: 'drill',
+    target: 2,
+    xpBonus: 35,
+    multiplier: 1.6,
+    type: 'arena',
+  },
+  {
+    id: 'practice_pair',
+    title: 'Practice Pair',
+    description: 'Arena + Deep Case today',
+    emoji: '',
+    target: 2,
+    xpBonus: 35,
+    multiplier: 1.8,
+    type: 'combo',
   },
   {
     id: 'speed_learner',
     title: 'Speed Learner',
     description: 'Complete lesson in under 5 min',
-    emoji: '⏱️',
+    emoji: '',
     target: 1,
     xpBonus: 35,
     multiplier: 1.8,
     type: 'lesson',
-  },
-  {
-    id: 'finish_2_games',
-    title: 'Gamer',
-    description: 'Complete 2 games',
-    emoji: '',
-    target: 2,
-    xpBonus: 25,
-    multiplier: 1.4,
-    type: 'game',
   },
 ];
 
@@ -129,8 +136,10 @@ export function useDailyQuests(dailyCompletion: DailyCompletion | null, streak?:
   const quests = useMemo<DailyQuest[]>(() => {
     const templates = getDayQuests(today);
     const lesson = dailyCompletion?.lesson_completed || false;
-    const drills = dailyCompletion?.drills_completed || 0;
-    const games = dailyCompletion?.games_completed || 0;
+    // Current modules write into the existing daily counters:
+    // Arena runs -> drills_completed, Deep Case verdicts -> games_completed.
+    const arenaRuns = dailyCompletion?.drills_completed || 0;
+    const caseRuns = dailyCompletion?.games_completed || 0;
 
     return templates.map((t) => {
       let current = 0;
@@ -139,17 +148,19 @@ export function useDailyQuests(dailyCompletion: DailyCompletion | null, streak?:
         case 'lesson':
           current = lesson ? 1 : 0;
           break;
-        case 'drill':
-          current = Math.min(drills, t.target);
+        case 'arena':
+          current = Math.min(arenaRuns, t.target);
           break;
-        case 'game':
-          current = Math.min(games, t.target);
+        case 'case':
+          current = Math.min(caseRuns, t.target);
           break;
         case 'combo':
-          if (t.id === 'lesson_plus_drill') {
-            current = (lesson ? 1 : 0) + Math.min(drills, 1);
-          } else if (t.id === 'triple_threat') {
-            current = (lesson ? 1 : 0) + (games > 0 ? 1 : 0) + (drills > 0 ? 1 : 0);
+          if (t.id === 'double_shift') {
+            current = (lesson ? 1 : 0) + Math.min(arenaRuns, 1);
+          } else if (t.id === 'practice_pair') {
+            current = Math.min(arenaRuns, 1) + Math.min(caseRuns, 1);
+          } else if (t.id === 'full_stack') {
+            current = (lesson ? 1 : 0) + (arenaRuns > 0 ? 1 : 0) + (caseRuns > 0 ? 1 : 0);
           }
           break;
         case 'streak':

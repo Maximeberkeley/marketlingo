@@ -79,6 +79,8 @@ interface LeoCharacterProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   animation?: LeoAnim;
   variant?: LeoVariant;
+  /** Disables breathing/bounce motion — a fully still mascot. */
+  still?: boolean;
 }
 
 const LEO_IMAGES: Record<string, any> = {
@@ -99,11 +101,13 @@ const LEO_IMAGES: Record<string, any> = {
 export function LeoCharacter({
   size = 'md',
   animation = 'idle',
+  still = false,
 }: LeoCharacterProps) {
   const px = sizeMap[size];
   const breatheAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
+    if (still) return;
     const breathing = Animated.loop(
       Animated.sequence([
         Animated.timing(breatheAnim, {
@@ -120,11 +124,12 @@ export function LeoCharacter({
     );
     breathing.start();
     return () => breathing.stop();
-  }, [breatheAnim]);
+  }, [breatheAnim, still]);
 
   const bounceAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    if (still) return;
     if (animation === 'celebrating' || animation === 'success' || animation === 'waving') {
       Animated.sequence([
         Animated.timing(bounceAnim, { toValue: -10, duration: 150, useNativeDriver: true }),
@@ -148,7 +153,7 @@ export function LeoCharacter({
       >
         <Image
           source={imageSource}
-          style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
+          style={{ width: '100%', height: '100%', resizeMode: 'contain', alignSelf: 'center' }}
         />
       </Animated.View>
     </View>
