@@ -11,6 +11,8 @@ interface DailyQuestsProps {
   completedCount: number;
   totalBonusXP: number;
   allComplete: boolean;
+  /** Starts today's lesson in place (quests that need the lesson). */
+  onStartLesson?: () => void;
 }
 
 const QUEST_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
@@ -21,15 +23,20 @@ const QUEST_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   streak: 'activity',
 };
 
-const QUEST_ROUTES: Record<string, string> = {
-  lesson: '/(tabs)/home',
-  drill: '/arena',
-  game: '/arena',
+// Only real, reachable screens. Lesson/streak quests start the lesson in place.
+const QUEST_ROUTES: Record<string, string | null> = {
+  lesson: null,
+  drill: '/drills',
+  game: '/games',
   combo: '/(tabs)/practice',
-  streak: '/(tabs)/home',
+  streak: null,
 };
 
-function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
+function QuestRow({
+  quest,
+  index,
+  onStartLesson,
+}: { quest: DailyQuest; index: number; onStartLesson?: () => void }) {
   const slideAnim = useRef(new Animated.Value(20)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const checkScale = useRef(new Animated.Value(0)).current;
@@ -48,13 +55,16 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
   }, [quest.isCompleted]);
 
   const iconName = QUEST_ICONS[quest.type] || 'book-open';
-  const route = QUEST_ROUTES[quest.type] || '/(tabs)/home';
+  const route = QUEST_ROUTES[quest.type] ?? null;
 
   const handlePress = () => {
     triggerHaptic('light');
-    if (!quest.isCompleted) {
+    if (quest.isCompleted) return;
+    if (route) {
       router.push(route as any);
+      return;
     }
+    onStartLesson?.();
   };
 
   return (
@@ -95,7 +105,7 @@ function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
   );
 }
 
-export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete }: DailyQuestsProps) {
+export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete, onStartLesson }: DailyQuestsProps) {
   return (
     <View style={styles.container}>
       {/* Header row */}
@@ -117,7 +127,7 @@ export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete 
 
       {/* Quest rows */}
       {quests.map((quest, idx) => (
-        <QuestRow key={quest.id} quest={quest} index={idx} />
+        <QuestRow key={quest.id} quest={quest} index={idx} onStartLesson={onStartLesson} />
       ))}
     </View>
   );
