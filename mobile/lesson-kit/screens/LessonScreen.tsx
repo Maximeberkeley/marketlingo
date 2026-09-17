@@ -77,6 +77,7 @@ export function LessonScreen({
   streakDays,
   confirmExit = true,
   marketId,
+  onSaveLeoAnswer,
 }: LessonScreenProps) {
   const insets = useSafeAreaInsets();
   const [queue, setQueue] = useState<Exercise[]>(lesson.exercises);
