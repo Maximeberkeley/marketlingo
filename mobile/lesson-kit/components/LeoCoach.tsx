@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   leo: {
-    width: 72,
+    width: 80,
     height: SCENE_H,
     justifyContent: 'flex-end',
     alignItems: 'center',
