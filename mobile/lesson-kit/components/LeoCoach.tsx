@@ -50,18 +50,18 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
     enter.setValue(0);
     const timer = setTimeout(() => {
       setSpeaking(true);
-      Animated.timing(enter, {
+      Animated.spring(enter, {
         toValue: 1,
-        duration: 420,
-        easing: Easing.out(Easing.back(1.9)),
+        friction: 7,
+        tension: 90,
         useNativeDriver: true,
       }).start();
     }, BUBBLE_DELAY_MS);
     return () => clearTimeout(timer);
   }, [line, mood, enter]);
 
-  const pop = enter.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] });
-  const wobble = enter.interpolate({ inputRange: [0, 1], outputRange: [-4, -1.5] });
+  const pop = enter.interpolate({ inputRange: [0, 1], outputRange: [0.72, 1] });
+  const rise = enter.interpolate({ inputRange: [0, 1], outputRange: [6, 0] });
 
   const moodTint =
     mood === 'correct' || mood === 'celebrate'
