@@ -50,18 +50,18 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
     enter.setValue(0);
     const timer = setTimeout(() => {
       setSpeaking(true);
-      Animated.timing(enter, {
+      Animated.spring(enter, {
         toValue: 1,
-        duration: 420,
-        easing: Easing.out(Easing.back(1.9)),
+        friction: 7,
+        tension: 90,
         useNativeDriver: true,
       }).start();
     }, BUBBLE_DELAY_MS);
     return () => clearTimeout(timer);
   }, [line, mood, enter]);
 
-  const pop = enter.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] });
-  const wobble = enter.interpolate({ inputRange: [0, 1], outputRange: [-4, -1.5] });
+  const pop = enter.interpolate({ inputRange: [0, 1], outputRange: [0.72, 1] });
+  const rise = enter.interpolate({ inputRange: [0, 1], outputRange: [6, 0] });
 
   const moodTint =
     mood === 'correct' || mood === 'celebrate'
@@ -90,7 +90,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
           <Animated.View
             style={[
               styles.bubbleWrap,
-              { opacity: enter, transform: [{ scale: pop }, { rotate: `${wobble}deg` }] },
+              { opacity: enter, transform: [{ scale: pop }, { translateY: rise }] },
             ]}
           >
             <View style={[styles.bubble, { borderColor: moodTint }]}>
@@ -141,47 +141,45 @@ const styles = StyleSheet.create({
   },
   bubble: {
     backgroundColor: tokens.color.card,
-    borderWidth: 2.5,
-    borderRadius: 18,
-    // Slightly squared top corners + fully round bottom = classic comic balloon
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 20,
-    paddingHorizontal: tokens.space.md,
-    paddingVertical: tokens.space.sm,
+    borderWidth: 3,
+    // One smooth, fully rounded balloon — no mismatched corners
+    borderRadius: 26,
+    paddingHorizontal: tokens.space.md + 2,
+    paddingVertical: tokens.space.sm + 2,
     shadowColor: tokens.color.text,
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   tailCircleBig: {
     position: 'absolute',
-    left: -13,
-    bottom: 20,
-    width: 16,
-    height: 16,
+    left: -14,
+    bottom: 22,
+    width: 15,
+    height: 15,
     borderRadius: 8,
-    borderWidth: 2.5,
+    borderWidth: 3,
     backgroundColor: tokens.color.card,
   },
   tailCircleSmall: {
     position: 'absolute',
-    left: -24,
-    bottom: 8,
+    left: -25,
+    bottom: 11,
     width: 10,
     height: 10,
     borderRadius: 5,
-    borderWidth: 2,
+    borderWidth: 2.5,
     backgroundColor: tokens.color.card,
   },
   tailDot: {
     position: 'absolute',
     left: -32,
-    bottom: 0,
+    bottom: 4,
     width: 6,
     height: 6,
     borderRadius: 3,
-    borderWidth: 1.5,
+    borderWidth: 2,
     backgroundColor: tokens.color.card,
   },
   text: {
