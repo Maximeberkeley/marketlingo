@@ -9,6 +9,7 @@ import { AuthProvider } from '../hooks/useAuth';
 import { LeoProvider } from '../components/mascot/LeoCharacter';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { COLORS } from '../lib/constants';
+import { isDark } from '../lib/theme';
 
 // Map notification data `route` or `type` to an Expo Router path
 function resolveRoute(data: Record<string, any>): string | null {
@@ -87,7 +88,7 @@ export default function RootLayout() {
         <ErrorBoundary>
           <AuthProvider>
             <LeoProvider>
-              <StatusBar style="dark" />
+              <StatusBar style={isDark ? 'light' : 'dark'} />
               <Stack
                 screenOptions={{
                   headerShown: false,

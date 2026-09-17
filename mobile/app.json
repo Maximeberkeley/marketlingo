@@ -5,7 +5,7 @@
     "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "scheme": "marketlingo",
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -57,8 +57,7 @@
           "ios": {
             "deploymentTarget": "15.1"
           },
-          "android": {
-          }
+          "android": {}
         }
       ],
       "expo-web-browser"

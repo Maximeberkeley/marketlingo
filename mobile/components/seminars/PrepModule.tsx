@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   body: { paddingHorizontal: 16, paddingBottom: 16, gap: 12 },
   contentScroll: { maxHeight: 220 },
   content: { fontSize: 14, lineHeight: 22, color: COLORS.textSecondary },
-  takeawaysBox: { backgroundColor: '#F9FAFB', borderRadius: 12, padding: 12, gap: 8, borderWidth: 1, borderColor: COLORS.border },
+  takeawaysBox: { backgroundColor: COLORS.bg1, borderRadius: 12, padding: 12, gap: 8, borderWidth: 1, borderColor: COLORS.border },
   takeawaysTitle: { fontSize: 11, fontWeight: '800', color: COLORS.textMuted, letterSpacing: 0.5 },
   takeawayItem: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
   bulletDot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: '#4338CA', marginTop: 7 },
