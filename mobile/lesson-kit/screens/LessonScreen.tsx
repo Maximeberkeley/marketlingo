@@ -280,6 +280,7 @@ export function LessonScreen({
         timeSpentSeconds={timeSpentSeconds}
         streakDays={streakDays}
         doneLabel={doneLabel}
+        leoQuestions={leoMessages.filter(m => m.role === 'user').length}
         onDone={xp =>
           onFinish({
             correct: correctCount,
@@ -311,7 +312,9 @@ export function LessonScreen({
         lives={hasGraded ? hearts : undefined}
         label={`${world.worldName} · ${lesson.title}`}
         accentColor={world.colors[0]}
-        onAskLeo={() => setShowAskLeo(true)}
+        onAskLeo={() => openLeo()}
+        showLeoHint={showLeoHint}
+        onDismissLeoHint={() => setShowLeoHint(false)}
       />
 
       {combo >= 2 && (
@@ -349,11 +352,36 @@ export function LessonScreen({
 
 
       {phase === 'feedback' && !isInfo && (
-        <FeedbackFooter
-          isCorrect={state.isCorrect}
-          explanation={'explanation' in exercise ? exercise.explanation : undefined}
-          correctAnswer={state.isCorrect ? undefined : correctAnswerText}
-        />
+        <>
+          <FeedbackFooter
+            isCorrect={state.isCorrect}
+            explanation={'explanation' in exercise ? exercise.explanation : undefined}
+            correctAnswer={state.isCorrect ? undefined : correctAnswerText}
+          />
+          <TouchableOpacity
+            style={[styles.leoPrompt, { borderColor: world.colors[0] + '55' }]}
+            onPress={() =>
+              openLeo(
+                state.isCorrect
+                  ? 'Explain this card to me.'
+                  : 'Why is that the right answer?',
+              )
+            }
+          >
+            <Text style={[styles.leoPromptText, { color: world.colors[0] }]}>
+              {state.isCorrect ? 'Explain this' : 'Ask Leo why'}
+            </Text>
+          </TouchableOpacity>
+        </>
+      )}
+
+      {!!nudge && phase === 'answering' && (
+        <TouchableOpacity
+          style={[styles.leoPrompt, { borderColor: world.colors[0] + '55' }]}
+          onPress={() => openLeo('Explain this simpler.')}
+        >
+          <Text style={[styles.leoPromptText, { color: world.colors[0] }]}>{nudge}</Text>
+        </TouchableOpacity>
       )}
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + tokens.space.lg }]}>
@@ -400,8 +428,14 @@ export function LessonScreen({
       {/* Ask Leo — mid-lesson questions */}
       <AskLeoOverlay
         visible={showAskLeo}
-        onClose={() => setShowAskLeo(false)}
+        onClose={() => { setShowAskLeo(false); setLeoAutoAsk(null); }}
         lessonContext={`Lesson: ${lesson.title}\nWorld: ${world.worldName}\nCurrent beat: ${exerciseContext(exercise)}`}
+        contextLabel={exerciseContext(exercise).split('\n')[0] || lesson.title}
+        accentColor={world.colors[0]}
+        messages={leoMessages}
+        onMessagesChange={setLeoMessages}
+        autoAsk={leoAutoAsk}
+        onSaveAnswer={onSaveLeoAnswer ? text => onSaveLeoAnswer(text, index) : undefined}
       />
     </View>
   );
@@ -479,6 +513,16 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: tokens.color.correctDark,
   },
+  leoPrompt: {
+    alignSelf: 'center',
+    marginBottom: tokens.space.sm,
+    paddingHorizontal: tokens.space.lg,
+    paddingVertical: tokens.space.sm,
+    borderRadius: tokens.radius.pill,
+    borderWidth: 1.5,
+    backgroundColor: tokens.color.surface,
+  },
+  leoPromptText: { fontSize: tokens.font.caption, fontWeight: '800' },
   footer: {
     paddingHorizontal: tokens.space.lg,
     paddingTop: tokens.space.md,
