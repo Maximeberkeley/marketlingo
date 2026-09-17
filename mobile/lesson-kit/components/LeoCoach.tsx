@@ -42,7 +42,6 @@ interface Props {
  */
 export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: Props) {
   const enter = useRef(new Animated.Value(0)).current;
-  const bob = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     enter.setValue(0);
@@ -54,19 +53,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
     }).start();
   }, [line, mood, enter]);
 
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(bob, { toValue: 1, duration: 1400, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-        Animated.timing(bob, { toValue: 0, duration: 1400, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [bob]);
-
   const pop = enter.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] });
-  const bobY = bob.interpolate({ inputRange: [0, 1], outputRange: [0, -3] });
 
   const moodTint =
     mood === 'correct' || mood === 'celebrate'
