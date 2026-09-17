@@ -33,7 +33,9 @@ const styles = StyleSheet.create({
   wrap: { flex: 1, justifyContent: 'center' },
   card: {
     borderRadius: tokens.radius.xl,
-    backgroundColor: tokens.color.text,
+    // Always the dark ink card — in dark mode tokens.color.text flips light,
+    // which made this white-on-white. The cold open stays dramatic in both themes.
+    backgroundColor: '#171B26',
     padding: tokens.space.xl,
     gap: tokens.space.md,
   },
@@ -41,9 +43,9 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '900',
     letterSpacing: 1.6,
-    color: tokens.color.textOnAccent,
+    color: '#FFFFFF',
     opacity: 0.6,
   },
-  headline: { fontSize: 30, fontWeight: '900', color: tokens.color.textOnAccent, lineHeight: 36 },
-  kicker: { fontSize: tokens.font.body, color: tokens.color.textOnAccent, opacity: 0.75, lineHeight: 23 },
+  headline: { fontSize: 30, fontWeight: '900', color: '#FFFFFF', lineHeight: 36 },
+  kicker: { fontSize: tokens.font.body, color: '#FFFFFF', opacity: 0.75, lineHeight: 23 },
 });

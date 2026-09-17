@@ -93,7 +93,8 @@ const styles = StyleSheet.create({
   wrap: { flex: 1 },
   brief: {
     borderRadius: tokens.radius.lg,
-    backgroundColor: tokens.color.text,
+    // Fixed dark ink — same dark-mode white-on-white trap as the cold open.
+    backgroundColor: '#171B26',
     padding: tokens.space.lg,
     gap: tokens.space.sm,
   },
@@ -102,10 +103,10 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '900',
     letterSpacing: 1.6,
-    color: tokens.color.textOnAccent,
+    color: '#FFFFFF',
     opacity: 0.75,
   },
-  situation: { fontSize: tokens.font.body + 1, fontWeight: '700', color: tokens.color.textOnAccent, lineHeight: 24 },
+  situation: { fontSize: tokens.font.body + 1, fontWeight: '700', color: '#FFFFFF', lineHeight: 24 },
   prompt: {
     fontSize: tokens.font.prompt,
     fontWeight: '900',
