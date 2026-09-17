@@ -28,7 +28,8 @@ import { tokens } from '../theme/tokens';
 import { Exercise, Lesson } from '../types';
 import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
-import { AskLeoOverlay } from '../../components/ai/AskLeoOverlay';
+import { AskLeoOverlay, LeoMessage } from '../../components/ai/AskLeoOverlay';
+import { storage } from '../../lib/storage';
 
 /** Flatten the current beat's visible text into a context string for Leo. */
 function exerciseContext(exercise?: Exercise): string {
