@@ -38,3 +38,11 @@
 - [x] Add skippable three-minute first-use app tour and one-time chosen-goal learning promise
 - [x] Rebuild Interview Lab to current short-copy, visual, retention, and reward standards
 - [x] Rebuild Investment Lab to current short-copy, visual, retention, and reward standards
+
+## Social + widget accuracy (done)
+- Widget reads the same App Group the app writes to (group id no longer derived), streak/expiry written as number + text, and resyncs whenever the app returns to the foreground
+- Global tab now reads the public leaderboard views (RLS-safe), so every industry rank is real instead of showing only you
+- Global tab has This week / All time scopes plus a real cohort count
+- Friends tab ranks you against your friends in one list
+- League standings show display names, not raw emails
+- Removed paid-reward wording from the leaderboard banner

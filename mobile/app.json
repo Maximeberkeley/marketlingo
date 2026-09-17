@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.marketlingo.aerospace",
-      "buildNumber": "101",
+      "buildNumber": "102",
       "entitlements": {
         "com.apple.security.application-groups": [
           "group.app.marketlingo.aerospace.shared"
