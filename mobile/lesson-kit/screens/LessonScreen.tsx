@@ -93,6 +93,10 @@ export function LessonScreen({
   const [showExitPrompt, setShowExitPrompt] = useState(false);
   const [showHeartsPrompt, setShowHeartsPrompt] = useState(false);
   const [showAskLeo, setShowAskLeo] = useState(false);
+  const [leoMessages, setLeoMessages] = useState<LeoMessage[]>([]);
+  const [leoAutoAsk, setLeoAutoAsk] = useState<string | null>(null);
+  const [showLeoHint, setShowLeoHint] = useState(false);
+  const [nudge, setNudge] = useState<string | null>(null);
   const [finished, setFinished] = useState(false);
   const startedAt = useRef(Date.now());
   const world = getMarketWorld(marketId);
