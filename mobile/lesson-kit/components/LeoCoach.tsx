@@ -106,7 +106,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
           <View style={[styles.bubble, { borderColor: moodTint + '66' }]}>
             <ColorText text={line} style={styles.text} maxSentences={2} maxLength={120} />
           </View>
-          <View style={[styles.tail, { borderBottomColor: moodTint + '66' }]} />
+          <View style={[styles.tail, { borderRightColor: moodTint + '66' }]} />
           <View style={styles.tailFill} />
         </Animated.View>
       </View>
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   },
   tail: {
     position: 'absolute',
-    left: -8,
+    left: -9,
     bottom: 14,
     width: 0,
     height: 0,
@@ -188,13 +188,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 7,
     borderRightWidth: 9,
     borderTopColor: 'transparent',
-    borderRightColor: 'transparent',
-    transform: [{ rotate: '180deg' }],
+    borderBottomColor: 'transparent',
   },
   tailFill: {
     position: 'absolute',
-    left: -5,
-    bottom: 16,
+    left: -6,
+    bottom: 16.5,
     width: 0,
     height: 0,
     borderTopWidth: 5,
