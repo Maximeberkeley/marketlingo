@@ -63,6 +63,8 @@ export interface LessonScreenProps {
   /** Skip the leave-confirmation prompt (e.g. review mode). */
   confirmExit?: boolean;
   marketId?: string;
+  /** Saves one of Leo's answers to the learner's notes. */
+  onSaveLeoAnswer?: (text: string, exerciseIndex: number) => void;
 }
 
 export function LessonScreen({
