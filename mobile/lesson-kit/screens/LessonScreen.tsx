@@ -181,13 +181,26 @@ export function LessonScreen({
     }).start(() => setPop(null));
   }, [popAnim]);
 
-  const handleBack = useCallback(() => {
-    if (index > 0) {
-      setIndex(i => i - 1);
-      setPhase("answering");
-      setState({ canCheck: true, isCorrect: true }); // Assume previously finished beat is "ready"
+  /** Moves to a beat, restoring its real previous state: graded cards show
+   *  their original feedback (no re-answering, no double scoring), fresh or
+   *  passive cards start clean. */
+  const goToBeat = useCallback((target: number) => {
+    const beat = queue[target];
+    setIndex(target);
+    setNudge(null);
+    const graded = beat && !isPassiveKind(beat.kind) ? results[beat.id] : undefined;
+    if (graded !== undefined) {
+      setPhase('feedback');
+      setState({ canCheck: true, isCorrect: graded });
+    } else {
+      setPhase('answering');
+      setState({ canCheck: false, isCorrect: false });
     }
-  }, [index]);
+  }, [queue, results]);
+
+  const handleBack = useCallback(() => {
+    if (index > 0) goToBeat(index - 1);
+  }, [index, goToBeat]);
 
   const goNext = useCallback(() => {
     if (index >= total - 1) {
@@ -195,11 +208,9 @@ export function LessonScreen({
       setFinished(true);
       return;
     }
-    setIndex(i => i + 1);
     setMaxIndexReached(prev => Math.max(prev, index + 1));
-    setPhase('answering');
-    setState({ canCheck: false, isCorrect: false });
-  }, [index, total]);
+    goToBeat(index + 1);
+  }, [index, total, goToBeat]);
 
   const onAction = useCallback(() => {
     if (isInfo) {
@@ -209,6 +220,7 @@ export function LessonScreen({
     }
     if (phase === 'answering') {
       if (!state.canCheck) return;
+      if (exercise) setResults(r => ({ ...r, [exercise.id]: state.isCorrect }));
       if (index >= maxIndexReached) {
         setGradedCount(c => c + 1);
         if (state.isCorrect) {
