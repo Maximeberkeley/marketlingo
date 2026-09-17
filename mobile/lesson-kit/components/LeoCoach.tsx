@@ -95,7 +95,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
   );
 }
 
-const SCENE_H = 92;
+const SCENE_H = 138;
 
 const styles = StyleSheet.create({
   wrap: {
@@ -104,24 +104,13 @@ const styles = StyleSheet.create({
   },
   scene: {
     height: SCENE_H,
-    borderRadius: tokens.radius.lg,
-    overflow: 'hidden',
     flexDirection: 'row',
     alignItems: 'flex-end',
-    borderWidth: 1,
-    borderColor: tokens.color.border,
-  },
-  ground: {
-    position: 'absolute',
-    right: 0,
-    bottom: 0,
-    left: 0,
-    height: 30,
   },
   leo: {
-    width: 82,
-    marginLeft: 4,
-    marginBottom: -6,
+    width: 124,
+    marginLeft: 2,
+    marginBottom: -8,
     zIndex: 2,
   },
   bubbleWrap: {
