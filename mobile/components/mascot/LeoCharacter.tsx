@@ -82,14 +82,14 @@ interface LeoCharacterProps {
 }
 
 const LEO_IMAGES: Record<string, any> = {
-  idle: require('../../assets/mascot/leo-reference.png'),
-  thinking: require('../../assets/mascot/leo-reference.png'),
-  waving: require('../../assets/mascot/leo-reference.png'),
-  success: require('../../assets/mascot/leo-celebrating.png'),
+  idle: require('../../assets/mascot/leo-idle.png'),
+  thinking: require('../../assets/mascot/leo-thinking.png'),
+  waving: require('../../assets/mascot/leo-waving.png'),
+  success: require('../../assets/mascot/leo-success.png'),
   celebrating: require('../../assets/mascot/leo-celebrating.png'),
-  failure: require('../../assets/mascot/leo-dizzy.png'),
-  urgent: require('../../assets/mascot/leo-dizzy.png'),
-  sleeping: require('../../assets/mascot/leo-reference.png'),
+  failure: require('../../assets/mascot/leo-failure.png'),
+  urgent: require('../../assets/mascot/leo-rain.png'),
+  sleeping: require('../../assets/mascot/leo-sleeping.png'),
 };
 
 export function LeoCharacter({
