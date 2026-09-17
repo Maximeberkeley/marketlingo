@@ -1,10 +1,5 @@
 /** @type {import('@bacons/apple-targets/app.plugin').ConfigFunction} */
-const path = require('path');
-
-// Local files — the widget must never depend on a network fetch at runtime.
-const img = (name) => path.join(__dirname, name);
-
-module.exports = () => ({
+module.exports = (config) => ({
   type: 'widget',
   name: 'LeoWidget',
   displayName: 'Leo Streak',
@@ -12,19 +7,21 @@ module.exports = () => ({
   deploymentTarget: '17.0',
   frameworks: ['WidgetKit', 'SwiftUI'],
   entitlements: {
-    'com.apple.security.application-groups': [
-      'group.app.marketlingo.aerospace.shared',
-    ],
+    // Inherit the app's exact group so the two targets cannot drift apart.
+    'com.apple.security.application-groups':
+      config.ios.entitlements['com.apple.security.application-groups'],
   },
   colors: {
     $accent: '#1A1F36',
     $widgetBackground: '#F97316',
   },
   images: {
-    leoSleepy: img('leo-sleepy.png'),
-    leoStern: img('leo-stern.png'),
-    leoPleading: img('leo-pleading.png'),
-    leoWorried: img('leo-worried.png'),
-    leoSly: img('leo-sly.png'),
+    // Paths are relative to this target. Absolute paths are incorrectly
+    // prefixed by apple-targets during prebuild and silently skip the images.
+    leoSleepy: './leo-sleepy.png',
+    leoStern: './leo-stern.png',
+    leoPleading: './leo-pleading.png',
+    leoWorried: './leo-worried.png',
+    leoSly: './leo-sly.png',
   },
 });

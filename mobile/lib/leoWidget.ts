@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { ExtensionStorage } from '@bacons/apple-targets';
+import { LeoWidgetStorage } from '../modules/leo-widget-storage/src';
 import { log } from './logger';
 
 const APP_GROUP = 'group.app.marketlingo.aerospace.shared';
@@ -33,7 +33,7 @@ export function syncLeoWidget(snapshot: LeoWidgetSnapshot): void {
   if (Platform.OS !== 'ios') return;
 
   try {
-    const storage = new ExtensionStorage(APP_GROUP);
+    const storage = new LeoWidgetStorage(APP_GROUP);
     const parsedExpiry = snapshot.expiresAt ? Date.parse(snapshot.expiresAt) : Number.NaN;
     const fallbackExpiry = new Date();
     fallbackExpiry.setHours(23, 59, 59, 999);
@@ -54,7 +54,7 @@ export function syncLeoWidget(snapshot: LeoWidgetSnapshot): void {
     storage.set('leo_widget_written_at', String(Date.now()));
     // Reload every WidgetKit timeline. Passing the display name can miss a
     // generated extension whose internal kind differs after prebuild.
-    ExtensionStorage.reloadWidget();
+    LeoWidgetStorage.reloadWidget('LeoWidget');
 
     // The bridge silently no-ops when the native module is missing, so read the
     // value back: if it doesn't come home, the widget will show defaults.
@@ -81,7 +81,7 @@ export type LeoWidgetLinkStatus = 'ok' | 'unlinked' | 'unsupported';
 export function getLeoWidgetLinkStatus(): LeoWidgetLinkStatus {
   if (Platform.OS !== 'ios') return 'unsupported';
   try {
-    const storage = new ExtensionStorage(APP_GROUP);
+    const storage = new LeoWidgetStorage(APP_GROUP);
     storage.set('leo_widget_probe', 'ok');
     return storage.get('leo_widget_probe') === 'ok' ? 'ok' : 'unlinked';
   } catch {
@@ -108,13 +108,13 @@ export async function runLeoWidgetSelfTest(
   }
 
   try {
-    const storage = new ExtensionStorage(APP_GROUP);
+    const storage = new LeoWidgetStorage(APP_GROUP);
     const token = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
     syncLeoWidget(snapshot);
     storage.set('leo_widget_sync_token', token);
     storage.set('leo_widget_last_read_token', '');
-    ExtensionStorage.reloadWidget();
+    LeoWidgetStorage.reloadWidget('LeoWidget');
 
     const appReadBack =
       String(storage.get('leo_widget_streak_text')) === String(streak)

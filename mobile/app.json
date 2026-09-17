@@ -16,7 +16,7 @@
       "supportsTablet": false,
       "appleTeamId": "PM32G4952G",
       "bundleIdentifier": "app.marketlingo.aerospace",
-      "buildNumber": "106",
+      "buildNumber": "107",
       "entitlements": {
         "com.apple.security.application-groups": [
           "group.app.marketlingo.aerospace.shared"
