@@ -46,6 +46,7 @@ struct LeoProvider: TimelineProvider {
         if let token = store?.string(forKey: "leo_widget_sync_token"), !token.isEmpty {
             store?.set(token, forKey: "leo_widget_last_read_token")
             store?.set(Date().timeIntervalSince1970, forKey: "leo_widget_last_read_at")
+            store?.synchronize()
         }
 
         let defaultExpiry = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: Date()) ?? Date()
