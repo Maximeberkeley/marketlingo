@@ -327,7 +327,7 @@ export function AskLeoOverlay({
         setIsLoading(false);
       }
     },
-    [isLoading, messages, setMessages, requireAI, lessonContext, typeOut, playTTS],
+    [isLoading, messages, setMessages, requireAI, lessonContext, typeOut, playTTS, collapseModes],
   );
 
   // Auto-ask (e.g. "Explain this" from a wrong answer) so the sheet opens on an answer.
