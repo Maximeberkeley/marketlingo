@@ -42,7 +42,6 @@ interface Props {
  */
 export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: Props) {
   const enter = useRef(new Animated.Value(0)).current;
-  const bob = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     enter.setValue(0);
@@ -54,19 +53,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
     }).start();
   }, [line, mood, enter]);
 
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(bob, { toValue: 1, duration: 1400, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-        Animated.timing(bob, { toValue: 0, duration: 1400, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [bob]);
-
   const pop = enter.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] });
-  const bobY = bob.interpolate({ inputRange: [0, 1], outputRange: [0, -3] });
 
   const moodTint =
     mood === 'correct' || mood === 'celebrate'
@@ -79,18 +66,16 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
 
   return (
     <View style={styles.wrap}>
-      {/* A clean, quiet stage: Leo and his bubble stay visually dominant. */}
-      <View style={[styles.scene, { backgroundColor: moodTint + '14' }]}>
+      {/* A clean, quiet stage: no tint, no aura — Leo and his bubble only. */}
+      <View style={styles.scene}>
         {scene ? (
           <Image source={scene} style={StyleSheet.absoluteFill} resizeMode="cover" />
-        ) : (
-          <View style={[styles.ground, { backgroundColor: moodTint + '14' }]} />
-        )}
+        ) : null}
 
-        {/* Leo, standing in the scene */}
-        <Animated.View style={[styles.leo, { transform: [{ translateY: bobY }] }]}>
+        {/* Leo, anchored in place — no bobbing */}
+        <View style={styles.leo}>
           <LeoCharacter animation={ANIM[mood]} size="sm" />
-        </Animated.View>
+        </View>
 
         {/* Speech bubble with a comic tail pointing at Leo */}
         <Animated.View
@@ -110,7 +95,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
   );
 }
 
-const SCENE_H = 92;
+const SCENE_H = 138;
 
 const styles = StyleSheet.create({
   wrap: {
@@ -119,24 +104,13 @@ const styles = StyleSheet.create({
   },
   scene: {
     height: SCENE_H,
-    borderRadius: tokens.radius.lg,
-    overflow: 'hidden',
     flexDirection: 'row',
     alignItems: 'flex-end',
-    borderWidth: 1,
-    borderColor: tokens.color.border,
-  },
-  ground: {
-    position: 'absolute',
-    right: 0,
-    bottom: 0,
-    left: 0,
-    height: 30,
   },
   leo: {
-    width: 82,
-    marginLeft: 4,
-    marginBottom: -6,
+    width: 124,
+    marginLeft: 2,
+    marginBottom: -8,
     zIndex: 2,
   },
   bubbleWrap: {
@@ -148,39 +122,39 @@ const styles = StyleSheet.create({
   },
   bubble: {
     backgroundColor: tokens.color.card,
-    borderWidth: 1.5,
-    borderRadius: tokens.radius.md,
-    paddingHorizontal: tokens.space.md,
-    paddingVertical: tokens.space.sm + 2,
+    borderWidth: 2,
+    borderRadius: tokens.radius.lg,
+    paddingHorizontal: tokens.space.lg,
+    paddingVertical: tokens.space.md,
   },
   tail: {
     position: 'absolute',
-    left: -9,
-    bottom: 14,
+    left: -13,
+    bottom: 20,
     width: 0,
     height: 0,
-    borderTopWidth: 7,
-    borderBottomWidth: 7,
-    borderRightWidth: 9,
+    borderTopWidth: 10,
+    borderBottomWidth: 10,
+    borderRightWidth: 13,
     borderTopColor: 'transparent',
     borderBottomColor: 'transparent',
   },
   tailFill: {
     position: 'absolute',
-    left: -6,
-    bottom: 16.5,
+    left: -9,
+    bottom: 23,
     width: 0,
     height: 0,
-    borderTopWidth: 5,
-    borderBottomWidth: 5,
-    borderRightWidth: 7,
+    borderTopWidth: 7,
+    borderBottomWidth: 7,
+    borderRightWidth: 10,
     borderTopColor: 'transparent',
     borderBottomColor: 'transparent',
     borderRightColor: tokens.color.card,
   },
   text: {
-    fontSize: tokens.font.caption + 1,
-    lineHeight: 19,
+    fontSize: tokens.font.body + 2,
+    lineHeight: 24,
     fontWeight: '600',
     color: tokens.color.text,
   },
