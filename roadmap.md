@@ -52,3 +52,4 @@
 
 - [x] Widget shows 0 streak after completing a lesson (app shows 2) — sync on lesson completion, not just Home mount
 - [x] Recut Leo's lesson PNGs to remove neighboring-sheet fragments and simplify the coach strip without aura circles
+- [ ] Replace lesson Leo poses with the new 10-pose sheet and contour every transparent cut cleanly
