@@ -62,10 +62,16 @@ const MARKET_ACCENT_COLORS: Record<string, string> = {
 };
 
 const MODULES = [
-  { id: 'valuation', title: 'Valuation Mastery', desc: 'Master industry-specific valuation methodologies', featherIcon: 'bar-chart-2' as const, color: '#10B981', scoreKey: 'valuation_score' as const },
-  { id: 'due_diligence', title: 'Due Diligence', desc: 'Systematic investment evaluation', featherIcon: 'search' as const, color: '#3B82F6', scoreKey: 'due_diligence_score' as const },
-  { id: 'risk_assessment', title: 'Risk Assessment', desc: 'Identify and quantify investment risks', featherIcon: 'shield' as const, color: '#F59E0B', scoreKey: 'risk_assessment_score' as const },
-  { id: 'portfolio', title: 'Portfolio Construction', desc: 'Build balanced investment portfolios', featherIcon: 'layers' as const, color: '#8B5CF6', scoreKey: 'portfolio_construction_score' as const },
+  { id: 'valuation', title: 'Valuation', desc: 'Price it like an insider.', featherIcon: 'bar-chart-2' as const, color: '#10B981', scoreKey: 'valuation_score' as const },
+  { id: 'due_diligence', title: 'Due Diligence', desc: 'Find what the deck hides.', featherIcon: 'search' as const, color: '#3B82F6', scoreKey: 'due_diligence_score' as const },
+  { id: 'risk_assessment', title: 'Risk', desc: 'Name the way this breaks.', featherIcon: 'shield' as const, color: '#F59E0B', scoreKey: 'risk_assessment_score' as const },
+  { id: 'portfolio', title: 'Portfolio', desc: 'Spread the bets that pay.', featherIcon: 'layers' as const, color: '#8B5CF6', scoreKey: 'portfolio_construction_score' as const },
+];
+
+const EXTRAS = [
+  { path: '/portfolio-guide', icon: 'map' as const, color: '#10B981', title: 'Portfolio Guide', desc: '5 steps to your first portfolio' },
+  { path: '/investment-watchlist', icon: 'bookmark' as const, color: '#0EA5E9', title: 'Watchlist', desc: 'Companies you track' },
+  { path: '/portfolio-builder', icon: 'pie-chart' as const, color: '#F59E0B', title: 'Portfolio Builder', desc: 'Allocate and balance positions' },
 ];
 
 export default function InvestmentLabScreen() {
