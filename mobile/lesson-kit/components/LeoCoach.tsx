@@ -122,12 +122,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   leo: {
-    width: 96,
+    width: 100,
     height: SCENE_H,
     justifyContent: 'flex-end',
     alignItems: 'center',
     overflow: 'hidden',
-    transform: [{ scale: 0.92 }],
+    transform: [{ scale: 0.96 }],
     zIndex: 1,
   },
   bubbleWrap: {

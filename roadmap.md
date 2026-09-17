@@ -64,4 +64,5 @@
 - [x] Leo presence: enlarge Leo himself (not bubble/text), bubble appears ~2s into each slide with a gentle pop so he feels alive
 - [x] Dark mode (v2): premium dark greys, Settings > Appearance toggle, boot-time palette + restart, hardcoded whites removed
 
-- [ ] Widget self-test red: app-side readback failed on installed build -> clean rebuild required (module not linked)
+- [x] Widget self-test red — replace the silently missing third-party bridge with a local iOS App Group module; fix broken target artwork paths
+- [x] Increase in-lesson Leo slightly without enlarging or overlapping the speech bubble
