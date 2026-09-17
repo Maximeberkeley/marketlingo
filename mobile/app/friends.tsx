@@ -39,6 +39,7 @@ export default function FriendsScreen() {
   const [globalEntries, setGlobalEntries] = useState<LeaderboardEntry[]>([]);
   const [globalLoading, setGlobalLoading] = useState(false);
   const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
+  const [globalScope, setGlobalScope] = useState<'week' | 'all'>('week');
 
   // Animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -62,43 +63,73 @@ export default function FriendsScreen() {
     if (!marketId || !user) return;
     if (activeTab !== 'global') return;
     fetchGlobalLeaderboard();
-  }, [marketId, user, activeTab]);
+  }, [marketId, user, activeTab, globalScope]);
 
   const fetchGlobalLeaderboard = async () => {
     if (!marketId || !user) return;
     setGlobalLoading(true);
     try {
-      const { data: xpData } = await supabase
-        .from('user_xp')
-        .select('user_id, total_xp, current_level')
-        .eq('market_id', marketId)
-        .order('total_xp', { ascending: false })
-        .limit(50);
+      let ranked: { user_id: string; total_xp: number; current_level: number }[] = [];
 
-      if (xpData?.length) {
-        const userIds = xpData.map(x => x.user_id);
-        const [{ data: profiles }, { data: progressData }] = await Promise.all([
-          supabase.from('profiles').select('id, username').in('id', userIds),
-          supabase.from('user_progress').select('user_id, current_streak').eq('market_id', marketId).in('user_id', userIds),
-        ]);
+      if (globalScope === 'all') {
+        const { data } = await supabase
+          .from('leaderboard_xp')
+          .select('user_id, total_xp, current_level')
+          .eq('market_id', marketId)
+          .order('total_xp', { ascending: false })
+          .limit(50);
+        ranked = data ?? [];
+      } else {
+        const monday = new Date();
+        const day = monday.getDay();
+        monday.setDate(monday.getDate() - (day === 0 ? 6 : day - 1));
+        monday.setHours(0, 0, 0, 0);
 
-        const entries: LeaderboardEntry[] = xpData.map((x, idx) => {
-          const profile = profiles?.find(p => p.id === x.user_id);
-          const prog = progressData?.find(p => p.user_id === x.user_id);
-          return {
-            rank: idx + 1,
-            user_id: x.user_id,
-            username: profile?.username?.split('@')[0] || `Player ${idx + 1}`,
-            total_xp: x.total_xp,
-            current_level: x.current_level,
-            current_streak: prog?.current_streak || 0,
-            isCurrentUser: x.user_id === user.id,
-          };
-        });
-        setGlobalEntries(entries);
-        const myRank = entries.find(e => e.isCurrentUser)?.rank || null;
-        setCurrentUserRank(myRank);
+        const { data: txns } = await supabase
+          .from('xp_transactions')
+          .select('user_id, xp_amount')
+          .eq('market_id', marketId)
+          .gte('created_at', monday.toISOString());
+
+        const weekly = new Map<string, number>();
+        (txns ?? []).forEach((t) => weekly.set(t.user_id, (weekly.get(t.user_id) || 0) + (t.xp_amount || 0)));
+        ranked = Array.from(weekly.entries())
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 50)
+          .map(([uid, xp]) => ({ user_id: uid, total_xp: xp, current_level: 1 }));
       }
+
+      if (!ranked.length) {
+        setGlobalEntries([]);
+        setCurrentUserRank(null);
+        setGlobalLoading(false);
+        return;
+      }
+
+      const userIds = ranked.map((x) => x.user_id);
+      const [{ data: profiles }, { data: progressData }, { data: levels }] = await Promise.all([
+        supabase.from('public_profiles').select('id, username').in('id', userIds),
+        supabase.from('leaderboard_progress').select('user_id, current_streak').eq('market_id', marketId).in('user_id', userIds),
+        supabase.from('leaderboard_xp').select('user_id, current_level').eq('market_id', marketId).in('user_id', userIds),
+      ]);
+
+      const entries: LeaderboardEntry[] = ranked.map((x, idx) => {
+        const profile = profiles?.find((p) => p.id === x.user_id);
+        const prog = progressData?.find((p) => p.user_id === x.user_id);
+        const lvl = levels?.find((l) => l.user_id === x.user_id);
+        return {
+          rank: idx + 1,
+          user_id: x.user_id,
+          username: profile?.username?.split('@')[0] || 'Analyst',
+          total_xp: x.total_xp,
+          current_level: lvl?.current_level || x.current_level,
+          current_streak: prog?.current_streak || 0,
+          isCurrentUser: x.user_id === user.id,
+        };
+      });
+
+      setGlobalEntries(entries);
+      setCurrentUserRank(entries.find((e) => e.isCurrentUser)?.rank || null);
     } catch (e) { /* non-critical */ }
     setGlobalLoading(false);
   };
@@ -294,6 +325,26 @@ export default function FriendsScreen() {
           {/* ── GLOBAL TAB ──────────────────────── */}
           {activeTab === 'global' && (
             <>
+              {/* Scope switch */}
+              <View style={styles.scopeRow}>
+                {([['week', 'This week'], ['all', 'All time']] as const).map(([key, label]) => (
+                  <TouchableOpacity
+                    key={key}
+                    style={[styles.scopeChip, globalScope === key && styles.scopeChipActive]}
+                    onPress={() => { triggerHaptic('light'); setGlobalScope(key); }}
+                  >
+                    <Text style={[styles.scopeText, globalScope === key && styles.scopeTextActive]}>{label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {globalEntries.length > 0 && (
+                <Text style={styles.cohortLine}>
+                  {globalEntries.length} {globalEntries.length === 1 ? 'analyst' : 'analysts'} in your industry
+                  {globalScope === 'week' ? ' earned XP this week' : ' ranked all time'}
+                </Text>
+              )}
+
               {/* User rank banner */}
               {currentUserRank && (
                 <View style={styles.rankBanner}>
@@ -311,8 +362,10 @@ export default function FriendsScreen() {
                   <View style={styles.emptyIconWrap}>
                     <Feather name="globe" size={32} color={COLORS.textMuted} />
                   </View>
-                  <Text style={styles.emptyTitle}>No players yet</Text>
-                  <Text style={styles.emptySub}>Complete lessons to appear on the leaderboard</Text>
+                  <Text style={styles.emptyTitle}>
+                    {globalScope === 'week' ? 'Nobody has scored this week' : 'No rankings yet'}
+                  </Text>
+                  <Text style={styles.emptySub}>Finish a lesson and you take first place.</Text>
                 </View>
               ) : (
                 <View style={styles.friendsList}>
@@ -541,6 +594,16 @@ const styles = StyleSheet.create({
     width: 32, height: 32, borderRadius: 16,
     backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center',
   },
+
+  scopeRow: { flexDirection: 'row', gap: 8, marginBottom: 10 },
+  scopeChip: {
+    paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20,
+    backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border,
+  },
+  scopeChipActive: { backgroundColor: COLORS.accent + '14', borderColor: COLORS.accent + '40' },
+  scopeText: { fontSize: 12, fontWeight: '600', color: COLORS.textMuted },
+  scopeTextActive: { color: COLORS.accent },
+  cohortLine: { fontSize: 11, color: COLORS.textMuted, marginBottom: 12 },
 
   // Rank banner
   rankBanner: {
