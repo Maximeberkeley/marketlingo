@@ -176,6 +176,14 @@ export function LessonScreen({
     }).start(() => setPop(null));
   }, [popAnim]);
 
+  const handleBack = useCallback(() => {
+    if (index > 0) {
+      setIndex(i => i - 1);
+      setPhase("answering");
+      setState({ canCheck: true, isCorrect: true }); // Assume previously finished beat is "ready"
+    }
+  }, [index]);
+
   const goNext = useCallback(() => {
     if (index >= total - 1) {
       playSound('lessonComplete').catch(() => {});
@@ -309,6 +317,7 @@ export function LessonScreen({
       <LessonHeader
         progress={progress}
         onExit={handleExitPress}
+        onBack={index > 0 ? handleBack : undefined}
         lives={hasGraded ? hearts : undefined}
         label={`${world.worldName} · ${lesson.title}`}
         accentColor={world.colors[0]}

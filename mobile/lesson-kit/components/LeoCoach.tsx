@@ -103,13 +103,12 @@ const styles = StyleSheet.create({
     marginBottom: tokens.space.md,
   },
   scene: {
-    height: SCENE_H,
+    minHeight: SCENE_H,
     flexDirection: 'row',
     alignItems: 'flex-end',
   },
   leo: {
-    width: 124,
-    marginLeft: 2,
+    marginRight: tokens.space.sm,
     marginBottom: -8,
     zIndex: 2,
   },
@@ -117,7 +116,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'center',
     marginRight: tokens.space.md,
-    marginLeft: 2,
+    marginRight: tokens.space.sm,
     position: 'relative',
   },
   bubble: {

@@ -60,3 +60,4 @@
 - [ ] Replace legacy daily quests with Daily Arena, Deep Case, and lesson quests; verify one-time XP banking
 - [ ] Add safe backward navigation inside lessons
 - [ ] Restore Leo's natural image proportions and make every speech line fit cleanly
+- [ ] Leo presence: enlarge Leo himself (not bubble/text), bubble appears ~2s into each slide with a gentle pop so he feels alive

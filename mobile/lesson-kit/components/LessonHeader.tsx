@@ -9,6 +9,7 @@ const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 interface Props {
   progress: number;
   onExit: () => void;
+  onBack?: () => void;
   lives?: number;
   label?: string;
   accentColor?: string;
@@ -33,6 +34,11 @@ export function LessonHeader({
   return (
     <View style={styles.wrap}>
       <View style={styles.row}>
+        {onBack ? (
+          <TouchableOpacity onPress={onBack} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+            <Feather name="chevron-left" size={24} color={tokens.color.textMuted} />
+          </TouchableOpacity>
+        ) : null}
         <TouchableOpacity onPress={onExit} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
           <Feather name="x" size={24} color={tokens.color.textMuted} />
         </TouchableOpacity>
