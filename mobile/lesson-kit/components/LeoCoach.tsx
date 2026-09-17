@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, Image, ImageSourcePropType } from 'react-native';
 import { tokens } from '../theme/tokens';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { ColorText } from './ColorText';
@@ -14,17 +14,35 @@ const ANIM: Record<LeoMood, 'idle' | 'thinking' | 'success' | 'failure' | 'celeb
   incorrect: 'failure',
 };
 
+/**
+ * Optional painted scene backdrops. Drop PNGs into mobile/assets/scenes/
+ * (wide, ~1200x420, soft flat illustration) and they light up per mood.
+ * Missing files fall back to the built-in layered-color scene, so the
+ * banner always renders.
+ */
+const SCENES: Partial<Record<LeoMood, ImageSourcePropType>> = {
+  // idle: require('../../../assets/scenes/leo-scene-idle.png'),
+  // thinking: require('../../../assets/scenes/leo-scene-thinking.png'),
+  // celebrate: require('../../../assets/scenes/leo-scene-celebrate.png'),
+  // correct: require('../../../assets/scenes/leo-scene-correct.png'),
+  // incorrect: require('../../../assets/scenes/leo-scene-incorrect.png'),
+};
+
 interface Props {
   line: string;
   mood?: LeoMood;
+  /** World/accent color so the scene matches the current market. */
+  accent?: string;
 }
 
 /**
- * Leo, present in the lesson itself: a small speech strip that coaches the
- * learner through each beat and reacts when they answer.
+ * Leo's in-lesson home: a light top scene banner. A slim illustrated strip
+ * with Leo standing in it and a comic speech bubble tailing toward him.
+ * He reacts, he never crowds — one short line, then quiet.
  */
-export function LeoCoach({ line, mood = 'idle' }: Props) {
+export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: Props) {
   const enter = useRef(new Animated.Value(0)).current;
+  const bob = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     enter.setValue(0);
@@ -36,34 +54,154 @@ export function LeoCoach({ line, mood = 'idle' }: Props) {
     }).start();
   }, [line, mood, enter]);
 
-  const translateX = enter.interpolate({ inputRange: [0, 1], outputRange: [-14, 0] });
-  const tint =
-    mood === 'correct' ? tokens.color.correct : mood === 'incorrect' ? tokens.color.incorrect : tokens.color.accent;
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(bob, { toValue: 1, duration: 1400, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(bob, { toValue: 0, duration: 1400, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [bob]);
+
+  const pop = enter.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] });
+  const bobY = bob.interpolate({ inputRange: [0, 1], outputRange: [0, -3] });
+
+  const moodTint =
+    mood === 'correct' || mood === 'celebrate'
+      ? tokens.color.correct
+      : mood === 'incorrect'
+        ? tokens.color.incorrect
+        : accent;
+
+  const scene = SCENES[mood];
 
   return (
-    <Animated.View style={[styles.wrap, { opacity: enter, transform: [{ translateX }] }]}>
-      <LeoCharacter animation={ANIM[mood]} size="sm" />
-      <View style={[styles.bubble, { borderColor: tint + '55', backgroundColor: tint + '10' }]}>
-        <ColorText text={line} style={styles.text} maxSentences={2} maxLength={120} />
+    <View style={styles.wrap}>
+      {/* The scene itself — soft sky, sun glow, ground line in the world color */}
+      <View style={[styles.scene, { backgroundColor: moodTint + '14' }]}>
+        {scene ? (
+          <Image source={scene} style={StyleSheet.absoluteFill} resizeMode="cover" />
+        ) : (
+          <>
+            <View style={[styles.sun, { backgroundColor: moodTint + '22' }]} />
+            <View style={[styles.hillBack, { backgroundColor: moodTint + '1A' }]} />
+            <View style={[styles.hillFront, { backgroundColor: moodTint + '26' }]} />
+          </>
+        )}
+
+        {/* Leo, standing in the scene */}
+        <Animated.View style={[styles.leo, { transform: [{ translateY: bobY }] }]}>
+          <LeoCharacter animation={ANIM[mood]} size="sm" />
+        </Animated.View>
+
+        {/* Speech bubble with a comic tail pointing at Leo */}
+        <Animated.View
+          style={[
+            styles.bubbleWrap,
+            { opacity: enter, transform: [{ scale: pop }] },
+          ]}
+        >
+          <View style={[styles.bubble, { borderColor: moodTint + '66' }]}>
+            <ColorText text={line} style={styles.text} maxSentences={2} maxLength={120} />
+          </View>
+          <View style={[styles.tail, { borderRightColor: moodTint + '66' }]} />
+          <View style={styles.tailFill} />
+        </Animated.View>
       </View>
-    </Animated.View>
+    </View>
   );
 }
 
+const SCENE_H = 92;
+
 const styles = StyleSheet.create({
   wrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: tokens.space.sm,
     paddingHorizontal: tokens.space.lg,
     marginBottom: tokens.space.md,
   },
-  bubble: {
+  scene: {
+    height: SCENE_H,
+    borderRadius: tokens.radius.lg,
+    overflow: 'hidden',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  sun: {
+    position: 'absolute',
+    top: -26,
+    right: 18,
+    width: 84,
+    height: 84,
+    borderRadius: 42,
+  },
+  hillBack: {
+    position: 'absolute',
+    bottom: -34,
+    left: -40,
+    width: 220,
+    height: 90,
+    borderRadius: 60,
+    transform: [{ scaleX: 1.6 }],
+  },
+  hillFront: {
+    position: 'absolute',
+    bottom: -44,
+    right: -60,
+    width: 260,
+    height: 100,
+    borderRadius: 70,
+    transform: [{ scaleX: 1.6 }],
+  },
+  leo: {
+    marginLeft: tokens.space.sm,
+    marginBottom: -4,
+    zIndex: 2,
+  },
+  bubbleWrap: {
     flex: 1,
+    alignSelf: 'center',
+    marginRight: tokens.space.md,
+    marginLeft: 2,
+    position: 'relative',
+  },
+  bubble: {
+    backgroundColor: tokens.color.card,
     borderWidth: 1.5,
     borderRadius: tokens.radius.lg,
     paddingHorizontal: tokens.space.md,
-    paddingVertical: tokens.space.sm,
+    paddingVertical: tokens.space.sm + 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
+  },
+  tail: {
+    position: 'absolute',
+    left: -9,
+    bottom: 14,
+    width: 0,
+    height: 0,
+    borderTopWidth: 7,
+    borderBottomWidth: 7,
+    borderRightWidth: 9,
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+  },
+  tailFill: {
+    position: 'absolute',
+    left: -6,
+    bottom: 16.5,
+    width: 0,
+    height: 0,
+    borderTopWidth: 5,
+    borderBottomWidth: 5,
+    borderRightWidth: 7,
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderRightColor: tokens.color.card,
   },
   text: {
     fontSize: tokens.font.caption + 1,
