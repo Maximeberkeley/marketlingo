@@ -20,7 +20,7 @@ function readModeSync(): ThemeMode {
   try {
     const f = themeFile();
     if (!f.exists) return 'light';
-    const raw = f.text();
+    const raw = f.textSync();
     const parsed = JSON.parse(raw);
     return parsed?.mode === 'dark' ? 'dark' : 'light';
   } catch {
