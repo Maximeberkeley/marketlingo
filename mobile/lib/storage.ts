@@ -14,6 +14,7 @@ const KEYS = {
   FEATURE_TOUR_SEEN: '@marketlingo/feature_tour_seen',
   WIDGET_ADDED: '@marketlingo/widget_added',
   WIDGET_NUDGE_AT: '@marketlingo/widget_nudge_at',
+  LEO_HINT_COUNT: '@marketlingo/leo_hint_count',
 };
 
 export const storage = {
