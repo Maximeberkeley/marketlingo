@@ -1,5 +1,5 @@
 /** @type {import('@bacons/apple-targets/app.plugin').ConfigFunction} */
-module.exports = (config) => ({
+module.exports = () => ({
   type: 'widget',
   name: 'LeoWidget',
   displayName: 'Leo Streak',
@@ -7,9 +7,11 @@ module.exports = (config) => ({
   deploymentTarget: '17.0',
   frameworks: ['WidgetKit', 'SwiftUI'],
   entitlements: {
-    // Inherit the app's exact group so the two targets cannot drift apart.
-    'com.apple.security.application-groups':
-      config.ios.entitlements['com.apple.security.application-groups'],
+    // Keep this explicit and identical to app.json. This avoids a generated
+    // target ever inheriting an empty entitlement during a clean prebuild.
+    'com.apple.security.application-groups': [
+      'group.app.marketlingo.aerospace.shared',
+    ],
   },
   colors: {
     $accent: '#1A1F36',
