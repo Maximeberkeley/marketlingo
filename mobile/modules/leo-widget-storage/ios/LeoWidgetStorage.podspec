@@ -5,8 +5,8 @@ Pod::Spec.new do |s|
   s.description    = 'Writes MarketLingo streak data to the Leo widget App Group and reloads WidgetKit.'
   s.author         = 'MarketLingo'
   s.homepage       = 'https://market-verse.com'
-  s.platform       = :ios, '16.4'
-  s.source         = { :git => 'https://github.com/Maximeberkeley/marketlingo.git' }
+  s.platform       = :ios, '15.1'
+  s.source         = { :path => '.' }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
