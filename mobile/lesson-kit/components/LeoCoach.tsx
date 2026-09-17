@@ -109,7 +109,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
   );
 }
 
-const SCENE_H = 104;
+const SCENE_H = 112;
 
 const styles = StyleSheet.create({
   wrap: {
@@ -122,19 +122,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   leo: {
-    width: 76,
+    width: 96,
     height: SCENE_H,
     justifyContent: 'flex-end',
     alignItems: 'center',
     overflow: 'hidden',
-    transform: [{ scale: 0.85 }],
+    transform: [{ scale: 0.92 }],
     zIndex: 1,
   },
   bubbleWrap: {
     flex: 1,
     alignSelf: 'center',
     marginRight: tokens.space.sm,
-    marginLeft: 12,
+    marginLeft: 22,
     position: 'relative',
     // Always above Leo — even if his artwork overhangs, the words stay readable.
     zIndex: 2,
