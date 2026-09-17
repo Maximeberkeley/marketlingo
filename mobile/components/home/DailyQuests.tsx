@@ -11,6 +11,8 @@ interface DailyQuestsProps {
   completedCount: number;
   totalBonusXP: number;
   allComplete: boolean;
+  /** Starts today's lesson in place (quests that need the lesson). */
+  onStartLesson?: () => void;
 }
 
 const QUEST_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
