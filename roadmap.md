@@ -54,3 +54,9 @@
 - [x] Recut Leo's lesson PNGs to remove neighboring-sheet fragments and simplify the coach strip without aura circles
 - [x] Replace lesson Leo poses with the new 10-pose sheet and contour every transparent cut cleanly
 - [x] Provide the exact clean iOS rebuild and widget reinstall commands for build 103
+
+## Current fixes
+- [ ] Make the Leo iOS widget read and refresh real streak data reliably
+- [ ] Replace legacy daily quests with Daily Arena, Deep Case, and lesson quests; verify one-time XP banking
+- [ ] Add safe backward navigation inside lessons
+- [ ] Restore Leo's natural image proportions and make every speech line fit cleanly
