@@ -149,6 +149,22 @@ export function LessonScreen({
 
   const handleChange = useCallback((next: ExerciseState) => setState(next), []);
 
+  /** Opens the chat, optionally with a question Leo answers straight away. */
+  const openLeo = useCallback((question?: string) => {
+    setLeoAutoAsk(question ?? null);
+    setNudge(null);
+    setShowLeoHint(false);
+    setShowAskLeo(true);
+  }, []);
+
+  // Leo offers help when the learner sits on the same card for a while.
+  useEffect(() => {
+    setNudge(null);
+    if (phase !== 'answering' || isInfo || showAskLeo) return;
+    const timer = setTimeout(() => setNudge("This one's dense. Want it simpler?"), 22000);
+    return () => clearTimeout(timer);
+  }, [index, phase, isInfo, showAskLeo]);
+
   const firePop = useCallback((label: string) => {
     setPop(label);
     popAnim.setValue(0);
