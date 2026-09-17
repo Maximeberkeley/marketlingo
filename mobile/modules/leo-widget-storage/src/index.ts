@@ -31,4 +31,9 @@ export class LeoWidgetStorage {
   static reloadWidget(kind?: string): void {
     native?.reloadWidget(kind);
   }
+
+  /** False when the installed build was compiled without the widget bridge. */
+  static get isAvailable(): boolean {
+    return native != null;
+  }
 }

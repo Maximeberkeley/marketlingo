@@ -107,6 +107,13 @@ export async function runLeoWidgetSelfTest(
     };
   }
 
+  if (!LeoWidgetStorage.isAvailable) {
+    return {
+      status: 'unlinked', streak, market, appReadBack: false, widgetReadBack: false,
+      detail: 'This installed build was made before the widget bridge existed. Rebuild the app in Xcode (build 107 or later) and reinstall it.',
+    };
+  }
+
   try {
     const storage = new LeoWidgetStorage(APP_GROUP);
     const token = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
