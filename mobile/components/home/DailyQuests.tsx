@@ -55,13 +55,16 @@ function QuestRow({
   }, [quest.isCompleted]);
 
   const iconName = QUEST_ICONS[quest.type] || 'book-open';
-  const route = QUEST_ROUTES[quest.type] || '/(tabs)/home';
+  const route = QUEST_ROUTES[quest.type] ?? null;
 
   const handlePress = () => {
     triggerHaptic('light');
-    if (!quest.isCompleted) {
+    if (quest.isCompleted) return;
+    if (route) {
       router.push(route as any);
+      return;
     }
+    onStartLesson?.();
   };
 
   return (
@@ -102,7 +105,7 @@ function QuestRow({
   );
 }
 
-export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete }: DailyQuestsProps) {
+export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete, onStartLesson }: DailyQuestsProps) {
   return (
     <View style={styles.container}>
       {/* Header row */}
@@ -124,7 +127,7 @@ export function DailyQuests({ quests, completedCount, totalBonusXP, allComplete 
 
       {/* Quest rows */}
       {quests.map((quest, idx) => (
-        <QuestRow key={quest.id} quest={quest} index={idx} />
+        <QuestRow key={quest.id} quest={quest} index={idx} onStartLesson={onStartLesson} />
       ))}
     </View>
   );
