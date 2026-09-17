@@ -90,7 +90,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
           <Animated.View
             style={[
               styles.bubbleWrap,
-              { opacity: enter, transform: [{ scale: pop }, { rotate: `${wobble}deg` }] },
+              { opacity: enter, transform: [{ scale: pop }, { translateY: rise }] },
             ]}
           >
             <View style={[styles.bubble, { borderColor: moodTint }]}>
