@@ -1,3 +1,5 @@
+import { isDark } from './theme';
+
 // Industries are now sourced from mobile/lib/markets.ts
 // This constant is kept for backward compat but markets.ts is the source of truth
 export { markets as INDUSTRIES } from './markets';
@@ -107,23 +109,23 @@ export const COLORS = isDark ? DARK_COLORS : LIGHT_COLORS;
 // Premium shadow presets (Brilliant-style depth)
 export const SHADOWS = {
   sm: {
-    shadowColor: '#1A1F36',
+    shadowColor: isDark ? '#000000' : '#1A1F36',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
+    shadowOpacity: isDark ? 0.35 : 0.04,
     shadowRadius: 3,
     elevation: 1,
   },
   md: {
-    shadowColor: '#1A1F36',
+    shadowColor: isDark ? '#000000' : '#1A1F36',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
+    shadowOpacity: isDark ? 0.45 : 0.06,
     shadowRadius: 12,
     elevation: 3,
   },
   lg: {
-    shadowColor: '#1A1F36',
+    shadowColor: isDark ? '#000000' : '#1A1F36',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
+    shadowOpacity: isDark ? 0.55 : 0.08,
     shadowRadius: 24,
     elevation: 6,
   },
@@ -141,7 +143,7 @@ export const SHADOWS = {
     shadowRadius: 12,
     elevation: 4,
   },
-} as const;
+};
 
 // Typography scale (Brilliant-inspired)
 export const TYPE = {
