@@ -173,12 +173,11 @@ export function AskLeoOverlay({
 
   const collapseModes = useCallback(() => {
     if (!modesExpanded) return;
-    setModesExpanded(false);
     Animated.timing(modesAnim, {
       toValue: 0,
       duration: 220,
       useNativeDriver: true,
-    }).start();
+    }).start(() => setModesExpanded(false));
   }, [modesExpanded, modesAnim]);
 
   const stopAudio = useCallback(async () => {
