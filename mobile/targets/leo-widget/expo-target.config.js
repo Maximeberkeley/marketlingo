@@ -1,11 +1,8 @@
 /** @type {import('@bacons/apple-targets/app.plugin').ConfigFunction} */
-const sleepy = require('./leo-sleepy.png.asset.json');
-const stern = require('./leo-stern.png.asset.json');
-const pleading = require('./leo-pleading.png.asset.json');
-const worried = require('./leo-worried.png.asset.json');
-const sly = require('./leo-sly.png.asset.json');
+const path = require('path');
 
-const assetUrl = (asset) => `https://marketlingo-marketverse.lovable.app${asset.url}`;
+// Local files — the widget must never depend on a network fetch at runtime.
+const img = (name) => path.join(__dirname, name);
 
 module.exports = () => ({
   type: 'widget',
@@ -24,10 +21,10 @@ module.exports = () => ({
     $widgetBackground: '#F97316',
   },
   images: {
-    leoSleepy: assetUrl(sleepy),
-    leoStern: assetUrl(stern),
-    leoPleading: assetUrl(pleading),
-    leoWorried: assetUrl(worried),
-    leoSly: assetUrl(sly),
+    leoSleepy: img('leo-sleepy.png'),
+    leoStern: img('leo-stern.png'),
+    leoPleading: img('leo-pleading.png'),
+    leoWorried: img('leo-worried.png'),
+    leoSly: img('leo-sly.png'),
   },
 });
