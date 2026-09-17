@@ -156,14 +156,14 @@ export default function FamiliarityScreen() {
         // Non-critical
       }
     }
-    if (seenTour) router.replace('/(tabs)/home');
+    if (seenTour) router.replace('/daily-leo');
     else setShowFeatureTour(true);
   };
 
   const handleTourComplete = async () => {
     setShowFeatureTour(false);
     await storage.setFeatureTourSeen().catch(() => {});
-    router.replace('/(tabs)/home');
+    router.replace('/daily-leo');
   };
 
   const handleBack = () => {

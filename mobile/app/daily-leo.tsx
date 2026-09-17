@@ -99,7 +99,7 @@ export default function DailyLeoScreen() {
           onPress={() => { triggerHaptic('medium'); router.replace('/(tabs)/home'); }}
         >
           <Text style={styles.continueText}>Continue</Text>
-          <Feather name="arrow-right" size={20} color={COLORS.bg0} />
+          <Feather name="arrow-right" size={20} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
     </View>
@@ -118,5 +118,5 @@ const styles = StyleSheet.create({
   footer: { gap: 14 },
   caption: { color: COLORS.textSecondary, fontSize: 13, lineHeight: 19, textAlign: 'center', fontWeight: '600' },
   continueButton: { height: 58, borderRadius: 18, backgroundColor: COLORS.accent, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, ...SHADOWS.accent },
-  continueText: { color: COLORS.bg0, fontSize: 17, fontWeight: '900' },
+  continueText: { color: '#FFFFFF', fontSize: 17, fontWeight: '900' },
 });
