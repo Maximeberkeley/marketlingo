@@ -52,16 +52,16 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
       setSpeaking(true);
       Animated.timing(enter, {
         toValue: 1,
-        duration: 280,
-        easing: Easing.out(Easing.cubic),
+        duration: 420,
+        easing: Easing.out(Easing.back(1.9)),
         useNativeDriver: true,
       }).start();
     }, BUBBLE_DELAY_MS);
     return () => clearTimeout(timer);
   }, [line, mood, enter]);
 
-  const pop = enter.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] });
-  const lift = enter.interpolate({ inputRange: [0, 1], outputRange: [6, 0] });
+  const pop = enter.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] });
+  const wobble = enter.interpolate({ inputRange: [0, 1], outputRange: [-4, -1.5] });
 
   const moodTint =
     mood === 'correct' || mood === 'celebrate'
