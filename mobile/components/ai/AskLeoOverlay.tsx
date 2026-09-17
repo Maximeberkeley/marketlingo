@@ -132,8 +132,12 @@ export function AskLeoOverlay({
   const [isRecording, setIsRecording] = useState(false);
   const [typed, setTyped] = useState<string | null>(null);
   const [saved, setSaved] = useState<number[]>([]);
+  // Mode cards open BIG on every entry, then collapse to compact chips once
+  // the learner picks one or types a question. Reopening the sheet resets it.
+  const [modesExpanded, setModesExpanded] = useState(true);
   const scrollRef = useRef<ScrollView>(null);
   const slideAnim = useRef(new Animated.Value(0)).current;
+  const modesAnim = useRef(new Animated.Value(1)).current;
   const recording = useRef<Audio.Recording | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
   const typingTimer = useRef<ReturnType<typeof setInterval> | null>(null);
