@@ -1,7 +1,7 @@
 import React, { useState, createContext, useContext, useCallback, useEffect, useRef } from 'react';
 import { View, Image, Animated, StyleSheet } from 'react-native';
 
-export type LeoAnim = 'idle' | 'thinking' | 'success' | 'failure' | 'waving' | 'celebrating' | 'urgent' | 'sleeping';
+export type LeoAnim = 'idle' | 'thinking' | 'success' | 'failure' | 'waving' | 'celebrating' | 'urgent' | 'sleeping' | 'sassy' | 'licking' | 'reading' | 'trophy';
 export type LeoVariant = 'normal' | 'sick' | 'happy' | 'sleepy';
 
 interface LeoContextType {
@@ -90,6 +90,10 @@ const LEO_IMAGES: Record<string, any> = {
   failure: require('../../assets/mascot/leo-failure.png'),
   urgent: require('../../assets/mascot/leo-rain.png'),
   sleeping: require('../../assets/mascot/leo-sleeping.png'),
+  sassy: require('../../assets/mascot/leo-sassy.png'),
+  licking: require('../../assets/mascot/leo-licking.png'),
+  reading: require('../../assets/mascot/leo-reading.png'),
+  trophy: require('../../assets/mascot/leo-trophy.png'),
 };
 
 export function LeoCharacter({
