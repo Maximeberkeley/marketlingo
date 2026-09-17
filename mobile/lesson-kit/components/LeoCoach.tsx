@@ -85,19 +85,21 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
           <LeoCharacter animation={ANIM[mood]} size="lg" still />
         </View>
 
-        {/* Speech bubble with a comic tail — pops in ~2s after the card */}
+        {/* Comic speech bubble — pops in ~2s after the card with a springy wobble */}
         {speaking ? (
           <Animated.View
             style={[
               styles.bubbleWrap,
-              { opacity: enter, transform: [{ scale: pop }, { translateY: lift }] },
+              { opacity: enter, transform: [{ scale: pop }, { rotate: `${wobble}deg` }] },
             ]}
           >
-            <View style={[styles.bubble, { borderColor: moodTint + '66' }]}>
+            <View style={[styles.bubble, { borderColor: moodTint }]}>
               <ColorText text={line} style={styles.text} maxSentences={2} maxLength={110} />
             </View>
-            <View style={[styles.tail, { borderRightColor: moodTint + '66' }]} />
-            <View style={styles.tailFill} />
+            {/* Comic tail: two overlapping circles shrinking toward Leo, plus a dot */}
+            <View style={[styles.tailCircleBig, { borderColor: moodTint }]} />
+            <View style={[styles.tailCircleSmall, { borderColor: moodTint }]} />
+            <View style={[styles.tailDot, { borderColor: moodTint }]} />
           </Animated.View>
         ) : (
           <View style={styles.bubbleWrap} pointerEvents="none" />
