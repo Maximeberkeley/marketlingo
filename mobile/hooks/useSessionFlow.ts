@@ -117,8 +117,7 @@ export function useSessionFlow({
         if (xpData) {
           checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
         }
-        // Refresh shared widget data before showing the completion screen.
-        // Waiting for that screen to be dismissed left WidgetKit stale.
+        // Refresh progress before showing the completion screen.
         await onDataRefresh();
         synced = true;
       }
