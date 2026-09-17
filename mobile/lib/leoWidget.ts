@@ -39,6 +39,17 @@ export function syncLeoWidget(snapshot: LeoWidgetSnapshot): void {
     storage.set('leo_widget_expires_text', String(expiresAt));
     storage.set('leo_widget_market', market);
     ExtensionStorage.reloadWidget();
+
+    // The bridge silently no-ops when the native module is missing, so read the
+    // value back: if it doesn't come home, the widget will show defaults.
+    const readBack = storage.get('leo_widget_streak_text');
+    if (readBack == null) {
+      log.warn(
+        '[LeoWidget] Shared storage returned nothing after writing — the widget will show defaults. Rebuild the native app so the widget bridge is linked.',
+      );
+    } else {
+      log.info(`[LeoWidget] Synced streak=${streak} complete=${snapshot.lessonComplete} market=${market}`);
+    }
   } catch (error) {
     log.warn('[LeoWidget] Could not sync widget state:', error);
   }
