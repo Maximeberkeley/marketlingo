@@ -49,11 +49,14 @@ struct LeoProvider: TimelineProvider {
             store?.synchronize()
         }
 
+        let completeNumber = store?.object(forKey: "leo_widget_complete") as? NSNumber
+        let completeText = store?.string(forKey: "leo_widget_complete_text")
+        let lessonComplete = completeNumber?.boolValue ?? (completeText == "true")
         let defaultExpiry = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: Date()) ?? Date()
         return LeoEntry(
             date: Date(),
             streak: streak,
-            lessonComplete: store?.bool(forKey: "leo_widget_complete") ?? false,
+            lessonComplete: lessonComplete,
             expiresAt: expirySeconds > 0 ? Date(timeIntervalSince1970: expirySeconds) : defaultExpiry,
             market: store?.string(forKey: "leo_widget_market")?.uppercased() ?? "YOUR MARKET"
         )
@@ -147,7 +150,7 @@ struct LeoAccessoryView: View {
             } else {
                 Text("Leo: \(entry.streak) day streak at risk")
             }
-        default:
+        case .accessoryRectangular:
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 4) {
                     Image(systemName: "flame.fill")
@@ -166,6 +169,8 @@ struct LeoAccessoryView: View {
                 }
             }
             .widgetURL(URL(string: "marketlingo://"))
+        default:
+            EmptyView()
         }
     }
 }

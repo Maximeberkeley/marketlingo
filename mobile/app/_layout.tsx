@@ -5,11 +5,16 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Notifications from 'expo-notifications';
-import { AuthProvider } from '../hooks/useAuth';
+import { AuthProvider, useAuth } from '../hooks/useAuth';
 import { LeoProvider } from '../components/mascot/LeoCharacter';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { COLORS } from '../lib/constants';
 import { isDark } from '../lib/theme';
+import { supabase } from '../lib/supabase';
+import { storage } from '../lib/storage';
+import { syncLeoWidget } from '../lib/leoWidget';
+import { getMarketName } from '../lib/markets';
+import { log } from '../lib/logger';
 
 // Map notification data `route` or `type` to an Expo Router path
 function resolveRoute(data: Record<string, any>): string | null {
@@ -43,6 +48,66 @@ Notifications.setNotificationHandler({
     shouldShowList: true,
   }),
 });
+
+/** Keeps both Home Screen and Lock Screen widgets fresh from any app screen. */
+function WidgetSyncBridge() {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+
+    const pushLatest = async () => {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('selected_market')
+          .eq('id', user.id)
+          .maybeSingle();
+        const marketId = profile?.selected_market || await storage.getIndustry();
+        if (!marketId || !active) return;
+
+        const today = new Date().toISOString().split('T')[0];
+        const [{ data: progress }, { data: daily }] = await Promise.all([
+          supabase
+            .from('user_progress')
+            .select('current_streak, streak_expires_at')
+            .eq('user_id', user.id)
+            .eq('market_id', marketId)
+            .maybeSingle(),
+          supabase
+            .from('daily_completions')
+            .select('lesson_completed')
+            .eq('user_id', user.id)
+            .eq('market_id', marketId)
+            .eq('completion_date', today)
+            .maybeSingle(),
+        ]);
+        if (!active) return;
+
+        syncLeoWidget({
+          streak: progress?.current_streak ?? 0,
+          lessonComplete: daily?.lesson_completed ?? false,
+          expiresAt: progress?.streak_expires_at,
+          market: getMarketName(marketId),
+        });
+      } catch (error) {
+        log.warn('[LeoWidget] Foreground sync failed:', error);
+      }
+    };
+
+    void pushLatest();
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void pushLatest();
+    });
+    return () => {
+      active = false;
+      sub.remove();
+    };
+  }, [user]);
+
+  return null;
+}
 
 export default function RootLayout() {
   const notificationResponseListener = useRef<Notifications.EventSubscription | null>(null);
@@ -87,6 +152,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <ErrorBoundary>
           <AuthProvider>
+             <WidgetSyncBridge />
             <LeoProvider>
               <StatusBar style={isDark ? 'light' : 'dark'} />
               <Stack

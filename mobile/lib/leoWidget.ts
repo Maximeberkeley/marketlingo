@@ -47,6 +47,7 @@ export function syncLeoWidget(snapshot: LeoWidgetSnapshot): void {
     storage.set('leo_widget_streak', streak);
     storage.set('leo_widget_streak_text', String(streak));
     storage.set('leo_widget_complete', snapshot.lessonComplete ? 1 : 0);
+    storage.set('leo_widget_complete_text', snapshot.lessonComplete ? 'true' : 'false');
     storage.set('leo_widget_expires_at', expiresAt);
     storage.set('leo_widget_expires_text', String(expiresAt));
     storage.set('leo_widget_market', market);
