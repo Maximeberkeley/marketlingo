@@ -40,6 +40,7 @@ export default function FriendsScreen() {
   const [globalLoading, setGlobalLoading] = useState(false);
   const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
   const [globalScope, setGlobalScope] = useState<'week' | 'all'>('week');
+  const [myStats, setMyStats] = useState<{ xp: number; level: number; streak: number }>({ xp: 0, level: 1, streak: 0 });
 
   // Animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -57,6 +58,22 @@ export default function FriendsScreen() {
       setMarketId(data?.selected_market || 'aerospace');
     });
   }, [user]);
+
+  // My own stats, so the friends list is a real head-to-head
+  useEffect(() => {
+    if (!marketId || !user) return;
+    (async () => {
+      const [{ data: xp }, { data: prog }] = await Promise.all([
+        supabase.from('leaderboard_xp').select('total_xp, current_level').eq('market_id', marketId).eq('user_id', user.id).maybeSingle(),
+        supabase.from('leaderboard_progress').select('current_streak').eq('market_id', marketId).eq('user_id', user.id).maybeSingle(),
+      ]);
+      setMyStats({
+        xp: xp?.total_xp || 0,
+        level: xp?.current_level || 1,
+        streak: prog?.current_streak || 0,
+      });
+    })();
+  }, [marketId, user]);
 
   // Fetch global leaderboard
   useEffect(() => {
@@ -307,16 +324,39 @@ export default function FriendsScreen() {
                 </View>
               ) : (
                 <View style={styles.friendsList}>
-                  {friends.map((friend, idx) => (
-                    <FriendRow
-                      key={friend.id}
-                      friend={friend}
-                      rank={idx + 1}
-                      isActive={isActive(friend)}
-                      onNudge={() => handleNudge(friend)}
-                      onRemove={() => handleRemove(friend)}
-                    />
-                  ))}
+                  {[
+                    { kind: 'me' as const, xp: myStats.xp },
+                    ...friends.map((f) => ({ kind: 'friend' as const, friend: f, xp: f.totalXP })),
+                  ]
+                    .sort((a, b) => b.xp - a.xp)
+                    .map((row, idx) =>
+                      row.kind === 'me' ? (
+                        <View key="me" style={[styles.friendRow, styles.leaderRowSelf]}>
+                          <Text style={[styles.friendRank, { color: COLORS.accent }]}>#{idx + 1}</Text>
+                          <View style={[styles.avatar, { borderColor: COLORS.accent }]}>
+                            <Text style={styles.avatarText}>
+                              {(user?.email || 'Y').charAt(0).toUpperCase()}
+                            </Text>
+                          </View>
+                          <View style={styles.entryInfo}>
+                            <Text style={[styles.entryName, { color: COLORS.accent, fontWeight: '700' }]}>You</Text>
+                            <Text style={styles.entryMeta}>
+                              {myStats.xp.toLocaleString()} XP · Lv.{myStats.level}
+                              {myStats.streak > 0 ? ` · ${myStats.streak}d` : ''}
+                            </Text>
+                          </View>
+                        </View>
+                      ) : (
+                        <FriendRow
+                          key={row.friend.id}
+                          friend={row.friend}
+                          rank={idx + 1}
+                          isActive={isActive(row.friend)}
+                          onNudge={() => handleNudge(row.friend)}
+                          onRemove={() => handleRemove(row.friend)}
+                        />
+                      )
+                    )}
                 </View>
               )}
             </>
