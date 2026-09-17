@@ -153,8 +153,8 @@ const styles = StyleSheet.create({
     borderRightColor: tokens.color.card,
   },
   text: {
-    fontSize: tokens.font.caption + 1,
-    lineHeight: 19,
+    fontSize: tokens.font.body + 2,
+    lineHeight: 24,
     fontWeight: '600',
     color: tokens.color.text,
   },
