@@ -35,11 +35,11 @@ interface Props {
 }
 
 /** Leo speaks up a beat after the card lands — it feels like him, not a caption. */
-const BUBBLE_DELAY_MS = 2000;
+const BUBBLE_DELAY_MS = 900;
 
 /**
- * Leo's in-lesson stage: he stands large on the left, still and present.
- * Two seconds into each card his comic bubble pops in with one short line.
+ * Leo's in-lesson stage: he stays quietly present on the left.
+ * Just under a second into each card his comic bubble pops in with one short line.
  */
 export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: Props) {
   const enter = useRef(new Animated.Value(0)).current;
@@ -85,7 +85,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
           <LeoCharacter animation={ANIM[mood]} size="sm" still />
         </View>
 
-        {/* Comic speech bubble — pops in ~2s after the card with a springy wobble */}
+        {/* Comic speech bubble — pops in shortly after the card with a springy wobble */}
         {speaking ? (
           <Animated.View
             style={[
@@ -109,7 +109,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
   );
 }
 
-const SCENE_H = 118;
+const SCENE_H = 104;
 
 const styles = StyleSheet.create({
   wrap: {
@@ -122,27 +122,29 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   leo: {
-    width: 84,
+    width: 80,
     height: SCENE_H,
     justifyContent: 'flex-end',
+    alignItems: 'center',
     overflow: 'hidden',
+    transform: [{ scale: 0.85 }],
   },
   bubbleWrap: {
     flex: 1,
     alignSelf: 'center',
     marginRight: tokens.space.sm,
-    marginLeft: 14,
+    marginLeft: 10,
     position: 'relative',
   },
   bubble: {
     backgroundColor: tokens.color.card,
     borderWidth: 2.5,
-    borderRadius: 22,
+    borderRadius: 18,
     // Slightly squared top corners + fully round bottom = classic comic balloon
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 20,
     paddingHorizontal: tokens.space.md,
-    paddingVertical: tokens.space.sm + 2,
+    paddingVertical: tokens.space.sm,
     shadowColor: tokens.color.text,
     shadowOpacity: 0.12,
     shadowRadius: 6,
