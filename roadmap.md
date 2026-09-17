@@ -46,3 +46,6 @@
 - Friends tab ranks you against your friends in one list
 - League standings show display names, not raw emails
 - Removed paid-reward wording from the leaderboard banner
+
+## Investment Lab landing screen
+- [ ] Revise Investment Lab landing page (short copy, gamified visuals, new app standards)
