@@ -46,6 +46,16 @@ export default function ArenaRoute() {
     );
   }
 
+  // Never leave the user on a blank, unresponsive screen.
+  if (!waves || waves.length === 0) {
+    return (
+      <View style={styles.loading}>
+        <Text style={styles.loadingText}>No arena rounds ready for this market yet.</Text>
+        <Text style={styles.backLink} onPress={() => router.back()}>Go back</Text>
+      </View>
+    );
+  }
+
   const handleFinish = async (result: ArenaResult) => {
     try {
       await recordArenaRun(result.score);
@@ -73,5 +83,6 @@ export default function ArenaRoute() {
 
 const styles = StyleSheet.create({
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, backgroundColor: COLORS.bg0 },
-  loadingText: { ...TYPE.caption, color: COLORS.textMuted },
+  loadingText: { ...TYPE.caption, color: COLORS.textMuted, textAlign: 'center', paddingHorizontal: 32 },
+  backLink: { ...TYPE.caption, color: COLORS.accent, fontWeight: '700' },
 });
