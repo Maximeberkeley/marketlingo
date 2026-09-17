@@ -20,6 +20,7 @@ import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { useAIConsent } from '../hooks/useAIConsent';
 import { isDark, applyThemeMode } from '../lib/theme';
+import { getLeoWidgetLinkStatus, LeoWidgetLinkStatus } from '../lib/leoWidget';
 
 import { NotificationOnboarding } from '../components/onboarding/NotificationOnboarding';
 import { log } from '../lib/logger';
@@ -89,6 +90,7 @@ export default function SettingsScreen() {
   const [showNotifOnboarding, setShowNotifOnboarding] = useState(false);
   const [useIndustryMascots, setUseIndustryMascots] = useState(true);
   const [darkModeOn, setDarkModeOn] = useState(isDark);
+  const [widgetLink] = useState<LeoWidgetLinkStatus>(() => getLeoWidgetLinkStatus());
   const notificationListener = useRef<any>(null);
 
   // Load saved preferences from profile
@@ -468,6 +470,31 @@ export default function SettingsScreen() {
               onValueChange={handleToggleIndustryMascots}
               trackColor={{ false: COLORS.bg1, true: COLORS.accent }}
               thumbColor="#FFFFFF"
+            />
+          </View>
+          <View style={styles.settingRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.settingLabel}>Home-screen widget</Text>
+              <Text style={styles.settingDesc}>
+                {widgetLink === 'ok'
+                  ? 'Connected — Leo Streak can read your live streak.'
+                  : widgetLink === 'unlinked'
+                    ? 'Not linked. Rebuild the app and make sure the widget uses the same team as the app.'
+                    : 'Widgets are only available on iPhone.'}
+              </Text>
+            </View>
+            <View
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: 6,
+                backgroundColor:
+                  widgetLink === 'ok'
+                    ? COLORS.success
+                    : widgetLink === 'unlinked'
+                      ? COLORS.error
+                      : COLORS.textMuted,
+              }}
             />
           </View>
         </View>

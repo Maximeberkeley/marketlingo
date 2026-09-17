@@ -80,9 +80,9 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
           <Image source={scene} style={StyleSheet.absoluteFill} resizeMode="cover" />
         ) : null}
 
-        {/* Leo — large, anchored, completely still */}
+        {/* Leo — anchored, completely still, never overlapping his bubble */}
         <View style={styles.leo} pointerEvents="none">
-          <LeoCharacter animation={ANIM[mood]} size="lg" still />
+          <LeoCharacter animation={ANIM[mood]} size="sm" still />
         </View>
 
         {/* Comic speech bubble — pops in ~2s after the card with a springy wobble */}
@@ -122,16 +122,16 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   leo: {
-    width: 100,
-    marginLeft: -4,
-    marginBottom: -10,
-    zIndex: 2,
+    width: 84,
+    height: SCENE_H,
+    justifyContent: 'flex-end',
+    overflow: 'hidden',
   },
   bubbleWrap: {
     flex: 1,
     alignSelf: 'center',
     marginRight: tokens.space.sm,
-    marginLeft: 2,
+    marginLeft: 14,
     position: 'relative',
   },
   bubble: {
