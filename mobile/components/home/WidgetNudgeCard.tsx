@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   },
   primary: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.bg2,
     borderRadius: 14,
     paddingVertical: 12,
     alignItems: 'center',

@@ -290,7 +290,7 @@ function ReflectionContent({ module, isCompleted, onComplete }: { module: PrepMo
 }
 
 const styles = StyleSheet.create({
-  container: { backgroundColor: '#FFF', borderRadius: 16, borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden' },
+  container: { backgroundColor: COLORS.bg2, borderRadius: 16, borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden' },
   completedContainer: { borderColor: '#D1FAE5' },
   header: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 },
   numberBadge: { width: 28, height: 28, borderRadius: 14, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
