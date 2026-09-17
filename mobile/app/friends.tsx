@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput,
   Alert, ActivityIndicator, Animated, Share, Image,
@@ -6,12 +6,16 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { COLORS, TYPE, SHADOWS } from '../lib/constants';
+import { getMarketName } from '../lib/markets';
 import { useFriends, Friend } from '../hooks/useFriends';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { triggerHaptic } from '../lib/haptics';
 import { trackEvent } from '../lib/analytics';
 import { Feather } from '@expo/vector-icons';
+
+const LEO_TROPHY = require('../assets/mascot/leo-trophy.png');
+const LEO_SASSY = require('../assets/mascot/leo-sassy.png');
 
 // ── Types ───────────────────────────────────────────
 interface LeaderboardEntry {
@@ -22,6 +26,20 @@ interface LeaderboardEntry {
   current_level: number;
   current_streak: number;
   isCurrentUser: boolean;
+}
+
+const MEDALS = [
+  { bg: '#FEF3C7', ring: '#F59E0B', text: '#B45309' },
+  { bg: '#EEF2F7', ring: '#9CA3AF', text: '#4B5563' },
+  { bg: '#FFEDD5', ring: '#FB923C', text: '#C2410C' },
+];
+
+function startOfWeek() {
+  const monday = new Date();
+  const day = monday.getDay();
+  monday.setDate(monday.getDate() - (day === 0 ? 6 : day - 1));
+  monday.setHours(0, 0, 0, 0);
+  return monday;
 }
 
 // ── Main Screen ─────────────────────────────────────
@@ -38,9 +56,9 @@ export default function FriendsScreen() {
   // Global leaderboard
   const [globalEntries, setGlobalEntries] = useState<LeaderboardEntry[]>([]);
   const [globalLoading, setGlobalLoading] = useState(false);
-  const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
   const [globalScope, setGlobalScope] = useState<'week' | 'all'>('week');
-  const [myStats, setMyStats] = useState<{ xp: number; level: number; streak: number }>({ xp: 0, level: 1, streak: 0 });
+  const [myStats, setMyStats] = useState<{ xp: number; level: number; streak: number; weekXP: number }>({ xp: 0, level: 1, streak: 0, weekXP: 0 });
+  const [friendWeekXP, setFriendWeekXP] = useState<Record<string, number>>({});
 
   // Animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -59,21 +77,39 @@ export default function FriendsScreen() {
     });
   }, [user]);
 
-  // My own stats, so the friends list is a real head-to-head
+  // My own real stats (all time + this week)
   useEffect(() => {
     if (!marketId || !user) return;
     (async () => {
-      const [{ data: xp }, { data: prog }] = await Promise.all([
+      const [{ data: xp }, { data: prog }, { data: week }] = await Promise.all([
         supabase.from('leaderboard_xp').select('total_xp, current_level').eq('market_id', marketId).eq('user_id', user.id).maybeSingle(),
         supabase.from('leaderboard_progress').select('current_streak').eq('market_id', marketId).eq('user_id', user.id).maybeSingle(),
+        supabase.from('xp_transactions').select('xp_amount').eq('market_id', marketId).eq('user_id', user.id).gte('created_at', startOfWeek().toISOString()),
       ]);
       setMyStats({
         xp: xp?.total_xp || 0,
         level: xp?.current_level || 1,
         streak: prog?.current_streak || 0,
+        weekXP: (week ?? []).reduce((s: number, t: any) => s + (t.xp_amount || 0), 0),
       });
     })();
   }, [marketId, user]);
+
+  // Real weekly XP for friends (head-to-head this week)
+  useEffect(() => {
+    if (!marketId || !friends.length) { setFriendWeekXP({}); return; }
+    (async () => {
+      const { data } = await supabase
+        .from('xp_transactions')
+        .select('user_id, xp_amount')
+        .eq('market_id', marketId)
+        .in('user_id', friends.map((f) => f.id))
+        .gte('created_at', startOfWeek().toISOString());
+      const map: Record<string, number> = {};
+      (data ?? []).forEach((t: any) => { map[t.user_id] = (map[t.user_id] || 0) + (t.xp_amount || 0); });
+      setFriendWeekXP(map);
+    })();
+  }, [marketId, friends]);
 
   // Fetch global leaderboard
   useEffect(() => {
@@ -97,16 +133,11 @@ export default function FriendsScreen() {
           .limit(50);
         ranked = data ?? [];
       } else {
-        const monday = new Date();
-        const day = monday.getDay();
-        monday.setDate(monday.getDate() - (day === 0 ? 6 : day - 1));
-        monday.setHours(0, 0, 0, 0);
-
         const { data: txns } = await supabase
           .from('xp_transactions')
           .select('user_id, xp_amount')
           .eq('market_id', marketId)
-          .gte('created_at', monday.toISOString());
+          .gte('created_at', startOfWeek().toISOString());
 
         const weekly = new Map<string, number>();
         (txns ?? []).forEach((t) => weekly.set(t.user_id, (weekly.get(t.user_id) || 0) + (t.xp_amount || 0)));
@@ -118,7 +149,6 @@ export default function FriendsScreen() {
 
       if (!ranked.length) {
         setGlobalEntries([]);
-        setCurrentUserRank(null);
         setGlobalLoading(false);
         return;
       }
@@ -146,10 +176,33 @@ export default function FriendsScreen() {
       });
 
       setGlobalEntries(entries);
-      setCurrentUserRank(entries.find((e) => e.isCurrentUser)?.rank || null);
     } catch (e) { /* non-critical */ }
     setGlobalLoading(false);
   };
+
+  const currentUserRank = globalEntries.find((e) => e.isCurrentUser)?.rank ?? null;
+  const marketName = marketId ? getMarketName(marketId) : '';
+
+  const initial = (user?.email || 'Y').charAt(0).toUpperCase();
+
+  // Friends board = me + friends, ranked on real XP
+  const friendsBoard = useMemo(() => {
+    const rows = [
+      {
+        id: 'me', isMe: true, name: 'You', initial,
+        xp: myStats.xp, weekXP: myStats.weekXP, level: myStats.level, streak: myStats.streak,
+        friend: null as Friend | null,
+      },
+      ...friends.map((f) => ({
+        id: f.id, isMe: false, name: f.username, initial: f.username.charAt(0).toUpperCase(),
+        xp: f.totalXP, weekXP: friendWeekXP[f.id] || 0, level: f.currentLevel, streak: f.currentStreak,
+        friend: f,
+      })),
+    ];
+    return rows.sort((a, b) => b.xp - a.xp);
+  }, [friends, friendWeekXP, myStats, initial]);
+
+  const myFriendRank = friendsBoard.findIndex((r) => r.isMe) + 1;
 
   const handleAddFriend = async () => {
     if (!addUsername.trim()) return;
@@ -159,7 +212,7 @@ export default function FriendsScreen() {
     setAdding(false);
     if (result.success) {
       trackEvent('friend_request_sent', { to: addUsername.trim() });
-      Alert.alert('Request Sent!', `Friend request sent to "${addUsername}"`);
+      Alert.alert('Request sent', `Friend request sent to "${addUsername}"`);
       setAddUsername('');
       setShowAddInput(false);
     } else {
@@ -184,11 +237,11 @@ export default function FriendsScreen() {
         });
       }
     } catch (e) { /* non-critical */ }
-    Alert.alert('Nudge Sent!', `${friend.username} will get a notification!`);
+    Alert.alert('Nudge sent', `${friend.username} just got a ping.`);
   };
 
   const handleRemove = (friend: Friend) => {
-    Alert.alert('Remove Friend?', `Remove ${friend.username}?`, [
+    Alert.alert('Remove friend?', `Remove ${friend.username}?`, [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Remove', style: 'destructive', onPress: () => removeFriend(friend.friendshipId) },
     ]);
@@ -206,13 +259,6 @@ export default function FriendsScreen() {
     return (Date.now() - new Date(friend.lastActivityAt).getTime()) / (1000 * 60 * 60) < 24;
   };
 
-  const getRankStyle = (rank: number) => {
-    if (rank === 1) return { bg: '#FEF3C7', color: '#B45309', icon: 'award' as const };
-    if (rank === 2) return { bg: '#F3F4F6', color: '#6B7280', icon: 'award' as const };
-    if (rank === 3) return { bg: '#FED7AA', color: '#C2410C', icon: 'award' as const };
-    return { bg: COLORS.bg2, color: COLORS.textMuted, icon: null };
-  };
-
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
@@ -220,8 +266,10 @@ export default function FriendsScreen() {
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <Feather name="arrow-left" size={18} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Social</Text>
-        <View style={{ flex: 1 }} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.headerTitle}>Standings</Text>
+          {!!marketName && <Text style={styles.headerSub}>{marketName}</Text>}
+        </View>
         {pendingRequests.length > 0 && (
           <TouchableOpacity
             style={styles.requestsBadge}
@@ -276,13 +324,29 @@ export default function FriendsScreen() {
           {/* ── FRIENDS TAB ─────────────────────── */}
           {activeTab === 'friends' && (
             <>
+              {/* My real week card */}
+              <View style={styles.heroCard}>
+                <Image source={LEO_TROPHY} style={styles.heroLeo} resizeMode="contain" />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.heroKicker}>THIS WEEK</Text>
+                  <Text style={styles.heroValue}>
+                    {myStats.weekXP.toLocaleString()}<Text style={styles.heroUnit}> XP</Text>
+                  </Text>
+                  <Text style={styles.heroLine}>
+                    {friends.length === 0
+                      ? 'Add a friend and this becomes a race.'
+                      : <>You sit <Text style={styles.heroAccent}>#{myFriendRank}</Text> of {friendsBoard.length}.</>}
+                  </Text>
+                </View>
+              </View>
+
               {/* Add Friend Toggle */}
               <TouchableOpacity
                 style={styles.addFriendToggle}
-                onPress={() => setShowAddInput(!showAddInput)}
+                onPress={() => { triggerHaptic('light'); setShowAddInput(!showAddInput); }}
               >
                 <Feather name="user-plus" size={16} color={COLORS.accent} />
-                <Text style={styles.addFriendToggleText}>Add Friend</Text>
+                <Text style={styles.addFriendToggleText}>Add friend</Text>
               </TouchableOpacity>
 
               {showAddInput && (
@@ -312,51 +376,30 @@ export default function FriendsScreen() {
                 <ActivityIndicator color={COLORS.accent} size="large" style={{ marginTop: 60 }} />
               ) : friends.length === 0 ? (
                 <View style={styles.emptyState}>
-                  <View style={styles.emptyIconWrap}>
-                    <Feather name="users" size={32} color={COLORS.textMuted} />
-                  </View>
-                  <Text style={styles.emptyTitle}>No friends yet</Text>
-                  <Text style={styles.emptySub}>Add friends to compete and track each other's progress</Text>
+                  <Image source={LEO_SASSY} style={styles.emptyLeo} resizeMode="contain" />
+                  <Text style={styles.emptyTitle}>Racing alone is easy.</Text>
+                  <Text style={styles.emptySub}>Invite one friend. Beat them weekly.</Text>
                   <TouchableOpacity style={styles.inviteBtn} onPress={handleShareInvite}>
                     <Feather name="share-2" size={14} color="#FFF" />
-                    <Text style={styles.inviteBtnText}>Invite Friends</Text>
+                    <Text style={styles.inviteBtnText}>Invite friends</Text>
                   </TouchableOpacity>
                 </View>
               ) : (
-                <View style={styles.friendsList}>
-                  {[
-                    { kind: 'me' as const, xp: myStats.xp },
-                    ...friends.map((f) => ({ kind: 'friend' as const, friend: f, xp: f.totalXP })),
-                  ]
-                    .sort((a, b) => b.xp - a.xp)
-                    .map((row, idx) =>
-                      row.kind === 'me' ? (
-                        <View key="me" style={[styles.friendRow, styles.leaderRowSelf]}>
-                          <Text style={[styles.friendRank, { color: COLORS.accent }]}>#{idx + 1}</Text>
-                          <View style={[styles.avatar, { borderColor: COLORS.accent }]}>
-                            <Text style={styles.avatarText}>
-                              {(user?.email || 'Y').charAt(0).toUpperCase()}
-                            </Text>
-                          </View>
-                          <View style={styles.entryInfo}>
-                            <Text style={[styles.entryName, { color: COLORS.accent, fontWeight: '700' }]}>You</Text>
-                            <Text style={styles.entryMeta}>
-                              {myStats.xp.toLocaleString()} XP · Lv.{myStats.level}
-                              {myStats.streak > 0 ? ` · ${myStats.streak}d` : ''}
-                            </Text>
-                          </View>
-                        </View>
-                      ) : (
-                        <FriendRow
-                          key={row.friend.id}
-                          friend={row.friend}
-                          rank={idx + 1}
-                          isActive={isActive(row.friend)}
-                          onNudge={() => handleNudge(row.friend)}
-                          onRemove={() => handleRemove(row.friend)}
-                        />
-                      )
-                    )}
+                <View style={styles.list}>
+                  {friendsBoard.map((row, idx) => (
+                    <BoardRow
+                      key={row.id}
+                      rank={idx + 1}
+                      name={row.name}
+                      initial={row.initial}
+                      xp={row.xp}
+                      meta={`Lv.${row.level}${row.streak > 0 ? ` · ${row.streak}d streak` : ''}${row.weekXP > 0 ? ` · +${row.weekXP} this week` : ''}`}
+                      isMe={row.isMe}
+                      online={row.friend ? isActive(row.friend) : false}
+                      onNudge={row.friend ? () => handleNudge(row.friend!) : undefined}
+                      onMore={row.friend ? () => handleRemove(row.friend!) : undefined}
+                    />
+                  ))}
                 </View>
               )}
             </>
@@ -378,20 +421,48 @@ export default function FriendsScreen() {
                 ))}
               </View>
 
-              {globalEntries.length > 0 && (
-                <Text style={styles.cohortLine}>
-                  {globalEntries.length} {globalEntries.length === 1 ? 'analyst' : 'analysts'} in your industry
-                  {globalScope === 'week' ? ' earned XP this week' : ' ranked all time'}
-                </Text>
+              {/* Rank hero with real numbers */}
+              {!globalLoading && globalEntries.length > 0 && (
+                <View style={styles.heroCard}>
+                  <Image source={currentUserRank === 1 ? LEO_TROPHY : LEO_SASSY} style={styles.heroLeo} resizeMode="contain" />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.heroKicker}>{marketName.toUpperCase()}</Text>
+                    <Text style={styles.heroValue}>
+                      {currentUserRank ? <>#{currentUserRank}<Text style={styles.heroUnit}> of {globalEntries.length}</Text></> : 'Unranked'}
+                    </Text>
+                    <Text style={styles.heroLine}>
+                      {currentUserRank === 1
+                        ? <>Top of the market. <Text style={styles.heroAccent}>Hold it.</Text></>
+                        : currentUserRank
+                          ? <>Next spot costs <Text style={styles.heroAccent}>
+                              {Math.max(1, (globalEntries[currentUserRank - 2]?.total_xp || 0) - (globalEntries[currentUserRank - 1]?.total_xp || 0) + 1)} XP
+                            </Text>.</>
+                          : 'One lesson puts you on the board.'}
+                    </Text>
+                  </View>
+                </View>
               )}
 
-              {/* User rank banner */}
-              {currentUserRank && (
-                <View style={styles.rankBanner}>
-                  <Feather name="award" size={18} color="#B45309" />
-                  <Text style={styles.rankBannerText}>
-                    You're ranked <Text style={styles.rankBannerBold}>#{currentUserRank}</Text> in your industry
-                  </Text>
+              {/* Podium */}
+              {!globalLoading && globalEntries.length >= 3 && (
+                <View style={styles.podium}>
+                  {[1, 0, 2].map((i) => {
+                    const e = globalEntries[i];
+                    const m = MEDALS[i];
+                    const h = i === 0 ? 76 : i === 1 ? 60 : 50;
+                    return (
+                      <View key={e.user_id} style={styles.podiumCol}>
+                        <View style={[styles.podiumAvatar, { borderColor: m.ring }]}>
+                          <Text style={styles.podiumInitial}>{e.username.charAt(0).toUpperCase()}</Text>
+                        </View>
+                        <Text style={styles.podiumName} numberOfLines={1}>{e.isCurrentUser ? 'You' : e.username}</Text>
+                        <View style={[styles.podiumBlock, { height: h, backgroundColor: m.bg, borderColor: m.ring + '55' }]}>
+                          <Text style={[styles.podiumRank, { color: m.text }]}>{i + 1}</Text>
+                          <Text style={[styles.podiumXP, { color: m.text }]}>{e.total_xp.toLocaleString()}</Text>
+                        </View>
+                      </View>
+                    );
+                  })}
                 </View>
               )}
 
@@ -399,62 +470,25 @@ export default function FriendsScreen() {
                 <ActivityIndicator color={COLORS.accent} size="large" style={{ marginTop: 60 }} />
               ) : globalEntries.length === 0 ? (
                 <View style={styles.emptyState}>
-                  <View style={styles.emptyIconWrap}>
-                    <Feather name="globe" size={32} color={COLORS.textMuted} />
-                  </View>
+                  <Image source={LEO_SASSY} style={styles.emptyLeo} resizeMode="contain" />
                   <Text style={styles.emptyTitle}>
-                    {globalScope === 'week' ? 'Nobody has scored this week' : 'No rankings yet'}
+                    {globalScope === 'week' ? 'Nobody scored this week.' : 'No rankings yet.'}
                   </Text>
-                  <Text style={styles.emptySub}>Finish a lesson and you take first place.</Text>
+                  <Text style={styles.emptySub}>Finish one lesson and you take first place.</Text>
                 </View>
               ) : (
-                <View style={styles.friendsList}>
-                  {globalEntries.map(entry => {
-                    const rankStyle = getRankStyle(entry.rank);
-                    return (
-                      <View
-                        key={entry.user_id}
-                        style={[
-                          styles.leaderRow,
-                          entry.isCurrentUser && styles.leaderRowSelf,
-                          entry.rank <= 3 && { borderColor: rankStyle.color + '30' },
-                        ]}
-                      >
-                        {/* Rank */}
-                        <View style={[styles.rankBadge, { backgroundColor: rankStyle.bg }]}>
-                          {entry.rank <= 3 ? (
-                            <Feather name="award" size={14} color={rankStyle.color} />
-                          ) : (
-                            <Text style={[styles.rankNum, { color: rankStyle.color }]}>{entry.rank}</Text>
-                          )}
-                        </View>
-
-                        {/* Avatar */}
-                        <View style={[styles.avatar, entry.isCurrentUser && { borderColor: COLORS.accent }]}>
-                          <Text style={styles.avatarText}>
-                            {entry.username.charAt(0).toUpperCase()}
-                          </Text>
-                        </View>
-
-                        {/* Info */}
-                        <View style={styles.entryInfo}>
-                          <Text style={[styles.entryName, entry.isCurrentUser && { color: COLORS.accent, fontWeight: '700' }]}>
-                            {entry.isCurrentUser ? 'You' : entry.username}
-                          </Text>
-                          <Text style={styles.entryMeta}>
-                            Lv.{entry.current_level}
-                            {entry.current_streak > 0 ? ` · ${entry.current_streak}d streak` : ''}
-                          </Text>
-                        </View>
-
-                        {/* XP */}
-                        <View style={styles.xpBadge}>
-                          <Text style={styles.xpValue}>{entry.total_xp.toLocaleString()}</Text>
-                          <Text style={styles.xpLabel}>XP</Text>
-                        </View>
-                      </View>
-                    );
-                  })}
+                <View style={styles.list}>
+                  {globalEntries.map((entry) => (
+                    <BoardRow
+                      key={entry.user_id}
+                      rank={entry.rank}
+                      name={entry.isCurrentUser ? 'You' : entry.username}
+                      initial={entry.username.charAt(0).toUpperCase()}
+                      xp={entry.total_xp}
+                      meta={`Lv.${entry.current_level}${entry.current_streak > 0 ? ` · ${entry.current_streak}d streak` : ''}`}
+                      isMe={entry.isCurrentUser}
+                    />
+                  ))}
                 </View>
               )}
             </>
@@ -466,40 +500,47 @@ export default function FriendsScreen() {
   );
 }
 
-// ── Friend Row Component ────────────────────────────
-function FriendRow({
-  friend, rank, isActive, onNudge, onRemove,
+// ── Board Row ───────────────────────────────────────
+function BoardRow({
+  rank, name, initial, xp, meta, isMe, online, onNudge, onMore,
 }: {
-  friend: Friend; rank: number; isActive: boolean;
-  onNudge: () => void; onRemove: () => void;
+  rank: number; name: string; initial: string; xp: number; meta: string;
+  isMe?: boolean; online?: boolean;
+  onNudge?: () => void; onMore?: () => void;
 }) {
+  const medal = rank <= 3 ? MEDALS[rank - 1] : null;
   return (
-    <View style={styles.friendRow}>
-      {/* Rank */}
-      <Text style={styles.friendRank}>#{rank}</Text>
-
-      {/* Avatar */}
-      <View style={styles.avatar}>
-        <Text style={styles.avatarText}>{friend.username.charAt(0).toUpperCase()}</Text>
-        {isActive && <View style={styles.onlineDot} />}
+    <View style={[styles.row, isMe && styles.rowSelf, medal && { borderColor: medal.ring + '45' }]}>
+      <View style={[styles.rankBadge, { backgroundColor: medal ? medal.bg : COLORS.bg1 }]}>
+        <Text style={[styles.rankNum, { color: medal ? medal.text : COLORS.textMuted }]}>{rank}</Text>
       </View>
 
-      {/* Info */}
-      <View style={styles.entryInfo}>
-        <Text style={styles.entryName}>{friend.username}</Text>
-        <Text style={styles.entryMeta}>
-          {friend.totalXP.toLocaleString()} XP · Lv.{friend.currentLevel}
-          {friend.currentStreak > 0 ? ` · ${friend.currentStreak}d` : ''}
-        </Text>
+      <View style={[styles.avatar, isMe && { borderColor: COLORS.accent }]}>
+        <Text style={styles.avatarText}>{initial}</Text>
+        {online && <View style={styles.onlineDot} />}
       </View>
 
-      {/* Actions */}
-      <TouchableOpacity style={styles.nudgeBtn} onPress={onNudge}>
-        <Feather name="send" size={14} color={COLORS.accent} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.moreBtn} onPress={onRemove}>
-        <Feather name="more-horizontal" size={14} color={COLORS.textMuted} />
-      </TouchableOpacity>
+      <View style={styles.rowInfo}>
+        <Text style={[styles.rowName, isMe && { color: COLORS.accent }]} numberOfLines={1}>{name}</Text>
+        <Text style={styles.rowMeta} numberOfLines={1}>{meta}</Text>
+      </View>
+
+      {onNudge && (
+        <TouchableOpacity style={styles.nudgeBtn} onPress={onNudge}>
+          <Feather name="send" size={14} color={COLORS.accent} />
+        </TouchableOpacity>
+      )}
+      {onMore && (
+        <TouchableOpacity style={styles.moreBtn} onPress={onMore}>
+          <Feather name="more-horizontal" size={14} color={COLORS.textMuted} />
+        </TouchableOpacity>
+      )}
+      {!onNudge && !onMore && (
+        <View style={styles.xpBadge}>
+          <Text style={[styles.xpValue, isMe && { color: COLORS.accent }]}>{xp.toLocaleString()}</Text>
+          <Text style={styles.xpLabel}>XP</Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -513,144 +554,140 @@ const styles = StyleSheet.create({
   },
   backBtn: {
     width: 36, height: 36, borderRadius: 18,
-    backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center',
   },
   headerTitle: { ...TYPE.hero, fontSize: 22, color: COLORS.textPrimary },
+  headerSub: { fontSize: 11, fontWeight: '700', color: COLORS.accent, letterSpacing: 0.4, marginTop: 1 },
   requestsBadge: {
     width: 36, height: 36, borderRadius: 18,
-    backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center',
   },
   badgeDot: {
     position: 'absolute', top: -2, right: -2,
-    backgroundColor: '#EF4444', borderRadius: 8, minWidth: 16, height: 16,
+    backgroundColor: COLORS.error, borderRadius: 8, minWidth: 16, height: 16,
     alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4,
   },
   badgeDotText: { fontSize: 9, fontWeight: '700', color: '#FFF' },
   shareBtn: {
     width: 36, height: 36, borderRadius: 18,
-    backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center',
   },
 
   // Tabs
-  tabRow: {
-    flexDirection: 'row', gap: 8,
-    paddingHorizontal: 16, marginBottom: 16,
-  },
+  tabRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, marginBottom: 14 },
   tab: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 6, paddingVertical: 10, borderRadius: 14,
-    backgroundColor: COLORS.bg2,
+    gap: 6, paddingVertical: 10, borderRadius: 14, backgroundColor: COLORS.bg1,
   },
   tabActive: { backgroundColor: COLORS.accent },
-  tabText: { fontSize: 13, fontWeight: '600', color: COLORS.textMuted },
+  tabText: { fontSize: 13, fontWeight: '700', color: COLORS.textMuted },
   tabTextActive: { color: '#FFF' },
 
   scrollContent: { paddingHorizontal: 16 },
 
+  // Hero card
+  heroCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: COLORS.accentSoft, borderRadius: 22, padding: 14,
+    borderWidth: 1.5, borderColor: COLORS.accentMedium, marginBottom: 14,
+  },
+  heroLeo: { width: 66, height: 66 },
+  heroKicker: { fontSize: 10, fontWeight: '800', letterSpacing: 1, color: COLORS.accent },
+  heroValue: { fontSize: 28, fontWeight: '800', color: COLORS.textPrimary, marginTop: 2 },
+  heroUnit: { fontSize: 14, fontWeight: '700', color: COLORS.textSecondary },
+  heroLine: { fontSize: 12, color: COLORS.textSecondary, marginTop: 3, lineHeight: 17 },
+  heroAccent: { color: COLORS.accent, fontWeight: '800' },
+
+  // Podium
+  podium: { flexDirection: 'row', alignItems: 'flex-end', gap: 8, marginBottom: 14 },
+  podiumCol: { flex: 1, alignItems: 'center' },
+  podiumAvatar: {
+    width: 42, height: 42, borderRadius: 21, borderWidth: 2.5,
+    backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center',
+  },
+  podiumInitial: { fontSize: 16, fontWeight: '800', color: COLORS.textPrimary },
+  podiumName: { fontSize: 11, fontWeight: '700', color: COLORS.textPrimary, marginTop: 4, marginBottom: 4, maxWidth: '95%' },
+  podiumBlock: {
+    width: '100%', borderRadius: 16, borderWidth: 1.5,
+    alignItems: 'center', justifyContent: 'center', gap: 1,
+  },
+  podiumRank: { fontSize: 18, fontWeight: '800' },
+  podiumXP: { fontSize: 11, fontWeight: '700' },
+
   // Add friend
   addFriendToggle: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 8, paddingVertical: 12, borderRadius: 14,
-    backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border,
+    gap: 8, paddingVertical: 12, borderRadius: 16,
+    backgroundColor: COLORS.bg1, borderWidth: 1.5, borderColor: COLORS.border,
     borderStyle: 'dashed', marginBottom: 12,
   },
-  addFriendToggleText: { fontSize: 13, fontWeight: '600', color: COLORS.accent },
+  addFriendToggleText: { fontSize: 13, fontWeight: '700', color: COLORS.accent },
   addRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
   addInput: {
-    flex: 1, height: 44, backgroundColor: COLORS.bg2, borderRadius: 12, paddingHorizontal: 14,
+    flex: 1, height: 46, backgroundColor: COLORS.bg1, borderRadius: 14, paddingHorizontal: 14,
     fontSize: 14, color: COLORS.textPrimary, borderWidth: 1, borderColor: COLORS.border,
   },
   sendBtn: {
-    width: 44, height: 44, borderRadius: 12, backgroundColor: COLORS.accent,
+    width: 46, height: 46, borderRadius: 14, backgroundColor: COLORS.accent,
     alignItems: 'center', justifyContent: 'center',
   },
 
   // Empty state
-  emptyState: { alignItems: 'center', paddingTop: 60 },
-  emptyIconWrap: {
-    width: 72, height: 72, borderRadius: 36,
-    backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center',
-    marginBottom: 16,
-  },
-  emptyTitle: { ...TYPE.bodyBold, color: COLORS.textPrimary, marginBottom: 6 },
-  emptySub: { ...TYPE.caption, color: COLORS.textMuted, textAlign: 'center', paddingHorizontal: 40, marginBottom: 20 },
+  emptyState: { alignItems: 'center', paddingTop: 24 },
+  emptyLeo: { width: 130, height: 130, marginBottom: 8 },
+  emptyTitle: { fontSize: 17, fontWeight: '800', color: COLORS.textPrimary, marginBottom: 4 },
+  emptySub: { fontSize: 13, color: COLORS.textSecondary, textAlign: 'center', marginBottom: 18 },
   inviteBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: COLORS.accent, borderRadius: 14,
+    backgroundColor: COLORS.accent, borderRadius: 16,
     paddingHorizontal: 24, paddingVertical: 14,
   },
-  inviteBtnText: { fontSize: 14, fontWeight: '700', color: '#FFF' },
+  inviteBtnText: { fontSize: 14, fontWeight: '800', color: '#FFF' },
 
-  // Friend row
-  friendsList: { gap: 6 },
-  friendRow: {
+  // Rows
+  list: { gap: 8 },
+  row: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 12,
-    borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: COLORS.bg2, borderRadius: 18, padding: 12,
+    borderWidth: 1.5, borderColor: COLORS.border,
   },
-  friendRank: { ...TYPE.caption, color: COLORS.textMuted, fontWeight: '700', width: 24, textAlign: 'center' },
-
-  // Leaderboard row
-  leaderRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 12,
-    borderWidth: 1, borderColor: COLORS.border,
-  },
-  leaderRowSelf: {
-    backgroundColor: COLORS.accent + '08',
-    borderColor: COLORS.accent + '30',
-  },
-  rankBadge: {
-    width: 28, height: 28, borderRadius: 14,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  rankNum: { fontSize: 12, fontWeight: '700' },
-
-  // Shared
+  rowSelf: { backgroundColor: COLORS.accentSoft, borderColor: COLORS.accentMedium },
+  rankBadge: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
+  rankNum: { fontSize: 13, fontWeight: '800' },
   avatar: {
-    width: 38, height: 38, borderRadius: 19,
+    width: 40, height: 40, borderRadius: 20,
     backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center',
     borderWidth: 2, borderColor: COLORS.border,
   },
-  avatarText: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
+  avatarText: { fontSize: 15, fontWeight: '800', color: COLORS.textPrimary },
   onlineDot: {
     position: 'absolute', bottom: 0, right: 0,
-    width: 10, height: 10, borderRadius: 5,
-    backgroundColor: '#22C55E', borderWidth: 2, borderColor: COLORS.bg2,
+    width: 11, height: 11, borderRadius: 6,
+    backgroundColor: COLORS.success, borderWidth: 2, borderColor: COLORS.bg2,
   },
-  entryInfo: { flex: 1 },
-  entryName: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
-  entryMeta: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
+  rowInfo: { flex: 1 },
+  rowName: { fontSize: 14, fontWeight: '800', color: COLORS.textPrimary },
+  rowMeta: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
 
   xpBadge: { alignItems: 'flex-end' },
-  xpValue: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary },
-  xpLabel: { fontSize: 9, fontWeight: '600', color: COLORS.textMuted, textTransform: 'uppercase' },
+  xpValue: { fontSize: 15, fontWeight: '800', color: COLORS.textPrimary },
+  xpLabel: { fontSize: 9, fontWeight: '700', color: COLORS.textMuted, textTransform: 'uppercase' },
 
   nudgeBtn: {
     width: 32, height: 32, borderRadius: 16,
-    backgroundColor: COLORS.accent + '12', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.accentMedium, alignItems: 'center', justifyContent: 'center',
   },
   moreBtn: {
     width: 32, height: 32, borderRadius: 16,
     backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center',
   },
 
-  scopeRow: { flexDirection: 'row', gap: 8, marginBottom: 10 },
+  scopeRow: { flexDirection: 'row', gap: 8, marginBottom: 14 },
   scopeChip: {
-    paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20,
-    backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border,
+    paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
+    backgroundColor: COLORS.bg1, borderWidth: 1.5, borderColor: COLORS.border,
   },
-  scopeChipActive: { backgroundColor: COLORS.accent + '14', borderColor: COLORS.accent + '40' },
-  scopeText: { fontSize: 12, fontWeight: '600', color: COLORS.textMuted },
+  scopeChipActive: { backgroundColor: COLORS.accentSoft, borderColor: COLORS.accentMedium },
+  scopeText: { fontSize: 12, fontWeight: '700', color: COLORS.textMuted },
   scopeTextActive: { color: COLORS.accent },
-  cohortLine: { fontSize: 11, color: COLORS.textMuted, marginBottom: 12 },
-
-  // Rank banner
-  rankBanner: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: '#FEF3C7', borderRadius: 14, padding: 14,
-    marginBottom: 16,
-  },
-  rankBannerText: { fontSize: 13, color: '#92400E', flex: 1 },
-  rankBannerBold: { fontWeight: '800', color: '#B45309' },
 });
