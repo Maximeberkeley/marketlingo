@@ -132,8 +132,12 @@ export function AskLeoOverlay({
   const [isRecording, setIsRecording] = useState(false);
   const [typed, setTyped] = useState<string | null>(null);
   const [saved, setSaved] = useState<number[]>([]);
+  // Mode cards open BIG on every entry, then collapse to compact chips once
+  // the learner picks one or types a question. Reopening the sheet resets it.
+  const [modesExpanded, setModesExpanded] = useState(true);
   const scrollRef = useRef<ScrollView>(null);
   const slideAnim = useRef(new Animated.Value(0)).current;
+  const modesAnim = useRef(new Animated.Value(1)).current;
   const recording = useRef<Audio.Recording | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
   const typingTimer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -152,6 +156,9 @@ export function AskLeoOverlay({
 
   useEffect(() => {
     if (visible) {
+      // Every entry starts with the big mode cards.
+      setModesExpanded(true);
+      modesAnim.setValue(1);
       Animated.spring(slideAnim, {
         toValue: 1,
         tension: 190,
@@ -162,7 +169,16 @@ export function AskLeoOverlay({
       slideAnim.setValue(0);
       autoAsked.current = false;
     }
-  }, [visible, slideAnim]);
+  }, [visible, slideAnim, modesAnim]);
+
+  const collapseModes = useCallback(() => {
+    if (!modesExpanded) return;
+    Animated.timing(modesAnim, {
+      toValue: 0,
+      duration: 220,
+      useNativeDriver: true,
+    }).start(() => setModesExpanded(false));
+  }, [modesExpanded, modesAnim]);
 
   const stopAudio = useCallback(async () => {
     try {
@@ -269,6 +285,7 @@ export function AskLeoOverlay({
       if (!(await requireAI())) return;
 
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      collapseModes();
       const next: LeoMessage[] = [...messages, { role: 'user', content: question }];
       setMessages(next);
       setInput('');
@@ -309,7 +326,7 @@ export function AskLeoOverlay({
         setIsLoading(false);
       }
     },
-    [isLoading, messages, setMessages, requireAI, lessonContext, typeOut, playTTS],
+    [isLoading, messages, setMessages, requireAI, lessonContext, typeOut, playTTS, collapseModes],
   );
 
   // Auto-ask (e.g. "Explain this" from a wrong answer) so the sheet opens on an answer.
@@ -520,25 +537,63 @@ export function AskLeoOverlay({
             )}
           </ScrollView>
 
-          {/* Modes */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.modeRow}
-            keyboardShouldPersistTaps="handled"
-          >
-            {MODES.map(mode => (
-              <TouchableOpacity
-                key={mode.id}
-                style={[styles.modeChip, { borderColor: mode.color + '55', backgroundColor: mode.color + '12' }]}
-                onPress={() => ask(mode.ask, mode.instruction)}
-                disabled={isLoading}
+          {/* Modes — big cards on entry, compact chips once a question is asked */}
+          {modesExpanded ? (
+            <Animated.View style={{ opacity: modesAnim }}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.modeRowBig}
+                keyboardShouldPersistTaps="handled"
               >
-                <Feather name={mode.icon} size={14} color={mode.color} />
-                <Text style={[styles.modeText, { color: mode.color }]}>{mode.label}</Text>
+                {MODES.map(mode => (
+                  <TouchableOpacity
+                    key={mode.id}
+                    style={[styles.modeCard, { borderColor: mode.color + '66', backgroundColor: mode.color + '14' }]}
+                    onPress={() => ask(mode.ask, mode.instruction)}
+                    disabled={isLoading}
+                    activeOpacity={0.85}
+                  >
+                    <View style={[styles.modeCardIcon, { backgroundColor: mode.color + '22' }]}>
+                      <Feather name={mode.icon} size={22} color={mode.color} />
+                    </View>
+                    <Text style={[styles.modeCardText, { color: mode.color }]}>{mode.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </Animated.View>
+          ) : (
+            <View style={styles.modeRowSmallWrap}>
+              <TouchableOpacity
+                style={styles.modeExpandBtn}
+                onPress={() => {
+                  setModesExpanded(true);
+                  Animated.timing(modesAnim, { toValue: 1, duration: 180, useNativeDriver: true }).start();
+                }}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Feather name="grid" size={14} color={tokens.color.textMuted} />
               </TouchableOpacity>
-            ))}
-          </ScrollView>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.modeRow}
+                keyboardShouldPersistTaps="handled"
+              >
+                {MODES.map(mode => (
+                  <TouchableOpacity
+                    key={mode.id}
+                    style={[styles.modeChip, { borderColor: mode.color + '55', backgroundColor: mode.color + '12' }]}
+                    onPress={() => ask(mode.ask, mode.instruction)}
+                    disabled={isLoading}
+                  >
+                    <Feather name={mode.icon} size={13} color={mode.color} />
+                    <Text style={[styles.modeText, { color: mode.color }]}>{mode.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
 
           {/* Input */}
           <View style={styles.inputRow}>
@@ -673,7 +728,24 @@ const styles = StyleSheet.create({
     borderColor: tokens.color.border,
   },
   answerBtnText: { fontSize: 12, fontWeight: '700', color: tokens.color.textSecondary },
-  modeRow: { paddingHorizontal: 16, paddingBottom: 10, gap: 8 },
+  modeRow: { paddingRight: 16, paddingBottom: 10, gap: 8 },
+  modeRowSmallWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 16,
+    gap: 8,
+  },
+  modeExpandBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: tokens.color.surface,
+    borderWidth: 1,
+    borderColor: tokens.color.border,
+    marginBottom: 10,
+  },
   modeChip: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -684,6 +756,23 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
   },
   modeText: { fontSize: 13, fontWeight: '800' },
+  modeRowBig: { paddingHorizontal: 16, paddingBottom: 12, gap: 10 },
+  modeCard: {
+    width: 148,
+    height: 132,
+    borderRadius: 22,
+    borderWidth: 2,
+    padding: 14,
+    justifyContent: 'space-between',
+  },
+  modeCardIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modeCardText: { fontSize: 15, fontWeight: '800', lineHeight: 20 },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
