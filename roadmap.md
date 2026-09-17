@@ -56,6 +56,7 @@
 - [x] Provide the exact clean iOS rebuild and widget reinstall commands for build 103
 
 ## Current fixes
+- [x] Add a tappable end-to-end widget self-test that writes the real streak, reloads WidgetKit, and waits for extension acknowledgement; confirm Lock Screen families
 - [ ] Make the Leo iOS widget read and refresh real streak data reliably
 - [ ] Replace legacy daily quests with Daily Arena, Deep Case, and lesson quests; verify one-time XP banking
 - [ ] Add safe backward navigation inside lessons
