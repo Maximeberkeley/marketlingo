@@ -120,6 +120,25 @@ export function LessonScreen({
     setShowHeartsPrompt(false);
     setFinished(false);
     startedAt.current = Date.now();
+    setLeoMessages([]);
+    setLeoAutoAsk(null);
+    setNudge(null);
+  }, [lesson.id]);
+
+  // Show the "tap me" hint only for the learner's first two lessons.
+  useEffect(() => {
+    let cancelled = false;
+    let hide: ReturnType<typeof setTimeout> | undefined;
+    storage.getLeoHintCount().then(count => {
+      if (cancelled || count >= 2) return;
+      setShowLeoHint(true);
+      storage.bumpLeoHintCount().catch(() => {});
+      hide = setTimeout(() => setShowLeoHint(false), 6000);
+    });
+    return () => {
+      cancelled = true;
+      if (hide) clearTimeout(hide);
+    };
   }, [lesson.id]);
 
   const exercise = queue[index];
