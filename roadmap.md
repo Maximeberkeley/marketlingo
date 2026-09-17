@@ -63,3 +63,5 @@
 - [ ] Restore Leo's natural image proportions and make every speech line fit cleanly
 - [x] Leo presence: enlarge Leo himself (not bubble/text), bubble appears ~2s into each slide with a gentle pop so he feels alive
 - [x] Dark mode (v2): premium dark greys, Settings > Appearance toggle, boot-time palette + restart, hardcoded whites removed
+
+- [ ] Widget self-test red: app-side readback failed on installed build -> clean rebuild required (module not linked)
