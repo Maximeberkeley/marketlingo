@@ -30,11 +30,21 @@ struct LeoProvider: TimelineProvider {
 
     private func loadEntry() -> LeoEntry {
         let store = UserDefaults(suiteName: appGroup)
-        let expirySeconds = store?.double(forKey: "leo_widget_expires_at") ?? 0
+
+        var streak = store?.integer(forKey: "leo_widget_streak") ?? 0
+        if streak == 0, let text = store?.string(forKey: "leo_widget_streak_text"), let parsed = Int(text) {
+            streak = parsed
+        }
+
+        var expirySeconds = store?.double(forKey: "leo_widget_expires_at") ?? 0
+        if expirySeconds <= 0, let text = store?.string(forKey: "leo_widget_expires_text"), let parsed = Double(text) {
+            expirySeconds = parsed
+        }
+
         let defaultExpiry = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: Date()) ?? Date()
         return LeoEntry(
             date: Date(),
-            streak: store?.integer(forKey: "leo_widget_streak") ?? 0,
+            streak: streak,
             lessonComplete: store?.bool(forKey: "leo_widget_complete") ?? false,
             expiresAt: expirySeconds > 0 ? Date(timeIntervalSince1970: expirySeconds) : defaultExpiry,
             market: store?.string(forKey: "leo_widget_market")?.uppercased() ?? "YOUR MARKET"
