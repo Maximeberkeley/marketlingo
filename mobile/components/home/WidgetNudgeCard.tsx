@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   primaryText: {
-    color: COLORS.text,
+    color: COLORS.textPrimary,
     fontSize: 14,
     fontWeight: '900',
   },
