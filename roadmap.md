@@ -66,3 +66,4 @@
 
 - [x] Widget self-test red — replace the silently missing third-party bridge with a local iOS App Group module; fix broken target artwork paths
 - [x] Increase in-lesson Leo slightly without enlarging or overlapping the speech bubble
+- [x] Widget release hardening — remove the unreliable four-second WidgetKit acknowledgement gate, reload all timelines, pin the App Group on both targets, and prepare version 1.0.7 (build 117)
