@@ -54,3 +54,21 @@ export function syncLeoWidget(snapshot: LeoWidgetSnapshot): void {
     log.warn('[LeoWidget] Could not sync widget state:', error);
   }
 }
+
+export type LeoWidgetLinkStatus = 'ok' | 'unlinked' | 'unsupported';
+
+/**
+ * Self-test: write a probe to the shared App Group and read it back.
+ * 'unlinked' means the native bridge or App Group isn't live on this build —
+ * almost always a signing/team mismatch or a stale install.
+ */
+export function getLeoWidgetLinkStatus(): LeoWidgetLinkStatus {
+  if (Platform.OS !== 'ios') return 'unsupported';
+  try {
+    const storage = new ExtensionStorage(APP_GROUP);
+    storage.set('leo_widget_probe', 'ok');
+    return storage.get('leo_widget_probe') === 'ok' ? 'ok' : 'unlinked';
+  } catch {
+    return 'unlinked';
+  }
+}
