@@ -1,4 +1,4 @@
-import { requireNativeModule } from 'expo';
+import { requireOptionalNativeModule } from 'expo';
 
 type LeoWidgetStorageNative = {
   setInt(key: string, value: number, group: string): boolean;
@@ -8,26 +8,27 @@ type LeoWidgetStorageNative = {
   reloadWidget(kind?: string): void;
 };
 
-const native = requireNativeModule<LeoWidgetStorageNative>('LeoWidgetStorage');
+const native = requireOptionalNativeModule<LeoWidgetStorageNative>('LeoWidgetStorage');
 
 export class LeoWidgetStorage {
   constructor(private readonly appGroup: string) {}
 
   set(key: string, value: string | number): boolean {
+    if (!native) return false;
     return typeof value === 'number'
       ? native.setInt(key, value, this.appGroup)
       : native.setString(key, value, this.appGroup);
   }
 
   get(key: string): string | null {
-    return native.getString(key, this.appGroup);
+    return native?.getString(key, this.appGroup) ?? null;
   }
 
   remove(key: string): boolean {
-    return native.remove(key, this.appGroup);
+    return native?.remove(key, this.appGroup) ?? false;
   }
 
   static reloadWidget(kind?: string): void {
-    native.reloadWidget(kind);
+    native?.reloadWidget(kind);
   }
 }

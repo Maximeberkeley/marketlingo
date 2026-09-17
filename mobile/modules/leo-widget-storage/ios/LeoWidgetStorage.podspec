@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.author         = 'MarketLingo'
   s.homepage       = 'https://market-verse.com'
   s.platform       = :ios, '16.4'
-  s.source         = { :path => '.' }
+  s.source         = { :git => 'https://github.com/Maximeberkeley/marketlingo.git' }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
