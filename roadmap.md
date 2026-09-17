@@ -65,3 +65,4 @@
 - [x] Dark mode (v2): premium dark greys, Settings > Appearance toggle, boot-time palette + restart, hardcoded whites removed
 
 - [ ] Widget self-test red: app-side readback failed on installed build -> clean rebuild required (module not linked)
+- [ ] Increase in-lesson Leo slightly without enlarging or overlapping the speech bubble
