@@ -231,7 +231,24 @@ export default function HomeScreen() {
     checkStreakMilestone, checkLevelMilestone,
     xpRewardLessonComplete: XP_REWARDS.LESSON_COMPLETE,
     xpRewardStreakBonus: XP_REWARDS.STREAK_BONUS,
-    onDataRefresh: async () => { await Promise.all([fetchData(), refetchXP()]); },
+    onDataRefresh: async () => {
+      await Promise.all([fetchData(), refetchXP()]);
+      // Push the fresh streak straight to the widget the moment a lesson lands,
+      // reading it from the database so it is never one lesson behind.
+      if (user?.id) {
+        const { data: fresh } = await supabase
+          .from('user_progress')
+          .select('current_streak, streak_expires_at')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        syncLeoWidget({
+          streak: fresh?.current_streak ?? progress?.current_streak ?? 0,
+          lessonComplete: true,
+          expiresAt: fresh?.streak_expires_at ?? progress?.streak_expires_at,
+          market: getMarketName(selectedMarketLocal || selectedMarket || 'aerospace'),
+        });
+      }
+    },
   });
 
   // Handle deep-link from roadmap: open a specific stack by ID

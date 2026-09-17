@@ -49,3 +49,5 @@
 
 ## Investment Lab landing screen
 - [ ] Revise Investment Lab landing page (short copy, gamified visuals, new app standards)
+
+- [x] Widget shows 0 streak after completing a lesson (app shows 2) — sync on lesson completion, not just Home mount

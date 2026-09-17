@@ -17,6 +17,8 @@ interface Props {
   /** Receives the final XP total (base + bonus). */
   onDone: (xp: number) => void;
   doneLabel?: string;
+  /** How many things the learner asked Leo during the lesson. */
+  leoQuestions?: number;
 }
 
 interface Bonus {
@@ -57,6 +59,7 @@ export function LessonComplete({
   streakDays,
   onDone,
   doneLabel = 'Continue',
+  leoQuestions = 0,
 }: Props) {
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 100;
   const bonuses = useRef(computeBonuses(accuracy, bestCombo, heartsLeft, timeSpentSeconds)).current;
@@ -112,6 +115,12 @@ export function LessonComplete({
         ))}
       </View>
 
+      {leoQuestions > 0 && (
+        <Text style={styles.leoLine}>
+          You asked Leo {leoQuestions} {leoQuestions === 1 ? 'thing' : 'things'}. That's how it sticks.
+        </Text>
+      )}
+
       <View style={styles.stats}>
         <Stat label="Accuracy" value={`${accuracy}%`} />
         <Stat label="Correct" value={`${correct}/${total}`} />
@@ -154,6 +163,13 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: tokens.color.accent,
     marginTop: tokens.space.md,
+  },
+  leoLine: {
+    fontSize: tokens.font.caption,
+    fontWeight: '700',
+    color: tokens.color.accent,
+    textAlign: 'center',
+    marginBottom: tokens.space.md,
   },
   bonusList: { alignSelf: 'stretch', gap: 6, marginTop: tokens.space.sm },
   bonusRow: {

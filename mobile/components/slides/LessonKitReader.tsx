@@ -129,6 +129,9 @@ export function LessonKitReader({
           total > 0 ? Math.round((correct / total) * 100) : 100,
         )}
         renderExtraActions={extraActions}
+        onSaveLeoAnswer={(text, exerciseIndex) =>
+          onAddNote(slideNumbers[exerciseIndex] ?? 1, `Leo explained: ${text}`)
+        }
         streakDays={streakDays}
         confirmExit={!isReview}
       />

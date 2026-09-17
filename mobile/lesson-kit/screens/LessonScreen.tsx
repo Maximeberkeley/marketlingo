@@ -28,7 +28,8 @@ import { tokens } from '../theme/tokens';
 import { Exercise, Lesson } from '../types';
 import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
-import { AskLeoOverlay } from '../../components/ai/AskLeoOverlay';
+import { AskLeoOverlay, LeoMessage } from '../../components/ai/AskLeoOverlay';
+import { storage } from '../../lib/storage';
 
 /** Flatten the current beat's visible text into a context string for Leo. */
 function exerciseContext(exercise?: Exercise): string {
@@ -62,6 +63,8 @@ export interface LessonScreenProps {
   /** Skip the leave-confirmation prompt (e.g. review mode). */
   confirmExit?: boolean;
   marketId?: string;
+  /** Saves one of Leo's answers to the learner's notes. */
+  onSaveLeoAnswer?: (text: string, exerciseIndex: number) => void;
 }
 
 export function LessonScreen({
@@ -74,6 +77,7 @@ export function LessonScreen({
   streakDays,
   confirmExit = true,
   marketId,
+  onSaveLeoAnswer,
 }: LessonScreenProps) {
   const insets = useSafeAreaInsets();
   const [queue, setQueue] = useState<Exercise[]>(lesson.exercises);
@@ -89,6 +93,10 @@ export function LessonScreen({
   const [showExitPrompt, setShowExitPrompt] = useState(false);
   const [showHeartsPrompt, setShowHeartsPrompt] = useState(false);
   const [showAskLeo, setShowAskLeo] = useState(false);
+  const [leoMessages, setLeoMessages] = useState<LeoMessage[]>([]);
+  const [leoAutoAsk, setLeoAutoAsk] = useState<string | null>(null);
+  const [showLeoHint, setShowLeoHint] = useState(false);
+  const [nudge, setNudge] = useState<string | null>(null);
   const [finished, setFinished] = useState(false);
   const startedAt = useRef(Date.now());
   const world = getMarketWorld(marketId);
@@ -112,6 +120,25 @@ export function LessonScreen({
     setShowHeartsPrompt(false);
     setFinished(false);
     startedAt.current = Date.now();
+    setLeoMessages([]);
+    setLeoAutoAsk(null);
+    setNudge(null);
+  }, [lesson.id]);
+
+  // Show the "tap me" hint only for the learner's first two lessons.
+  useEffect(() => {
+    let cancelled = false;
+    let hide: ReturnType<typeof setTimeout> | undefined;
+    storage.getLeoHintCount().then(count => {
+      if (cancelled || count >= 2) return;
+      setShowLeoHint(true);
+      storage.bumpLeoHintCount().catch(() => {});
+      hide = setTimeout(() => setShowLeoHint(false), 6000);
+    });
+    return () => {
+      cancelled = true;
+      if (hide) clearTimeout(hide);
+    };
   }, [lesson.id]);
 
   const exercise = queue[index];
@@ -121,6 +148,22 @@ export function LessonScreen({
   const progress = total > 0 ? (index + (phase === 'feedback' ? 1 : 0)) / total : 0;
 
   const handleChange = useCallback((next: ExerciseState) => setState(next), []);
+
+  /** Opens the chat, optionally with a question Leo answers straight away. */
+  const openLeo = useCallback((question?: string) => {
+    setLeoAutoAsk(question ?? null);
+    setNudge(null);
+    setShowLeoHint(false);
+    setShowAskLeo(true);
+  }, []);
+
+  // Leo offers help when the learner sits on the same card for a while.
+  useEffect(() => {
+    setNudge(null);
+    if (phase !== 'answering' || isInfo || showAskLeo) return;
+    const timer = setTimeout(() => setNudge("This one's dense. Want it simpler?"), 22000);
+    return () => clearTimeout(timer);
+  }, [index, phase, isInfo, showAskLeo]);
 
   const firePop = useCallback((label: string) => {
     setPop(label);
@@ -237,6 +280,7 @@ export function LessonScreen({
         timeSpentSeconds={timeSpentSeconds}
         streakDays={streakDays}
         doneLabel={doneLabel}
+        leoQuestions={leoMessages.filter(m => m.role === 'user').length}
         onDone={xp =>
           onFinish({
             correct: correctCount,
@@ -268,7 +312,9 @@ export function LessonScreen({
         lives={hasGraded ? hearts : undefined}
         label={`${world.worldName} · ${lesson.title}`}
         accentColor={world.colors[0]}
-        onAskLeo={() => setShowAskLeo(true)}
+        onAskLeo={() => openLeo()}
+        showLeoHint={showLeoHint}
+        onDismissLeoHint={() => setShowLeoHint(false)}
       />
 
       {combo >= 2 && (
@@ -306,11 +352,36 @@ export function LessonScreen({
 
 
       {phase === 'feedback' && !isInfo && (
-        <FeedbackFooter
-          isCorrect={state.isCorrect}
-          explanation={'explanation' in exercise ? exercise.explanation : undefined}
-          correctAnswer={state.isCorrect ? undefined : correctAnswerText}
-        />
+        <>
+          <FeedbackFooter
+            isCorrect={state.isCorrect}
+            explanation={'explanation' in exercise ? exercise.explanation : undefined}
+            correctAnswer={state.isCorrect ? undefined : correctAnswerText}
+          />
+          <TouchableOpacity
+            style={[styles.leoPrompt, { borderColor: world.colors[0] + '55' }]}
+            onPress={() =>
+              openLeo(
+                state.isCorrect
+                  ? 'Explain this card to me.'
+                  : 'Why is that the right answer?',
+              )
+            }
+          >
+            <Text style={[styles.leoPromptText, { color: world.colors[0] }]}>
+              {state.isCorrect ? 'Explain this' : 'Ask Leo why'}
+            </Text>
+          </TouchableOpacity>
+        </>
+      )}
+
+      {!!nudge && phase === 'answering' && (
+        <TouchableOpacity
+          style={[styles.leoPrompt, { borderColor: world.colors[0] + '55' }]}
+          onPress={() => openLeo('Explain this simpler.')}
+        >
+          <Text style={[styles.leoPromptText, { color: world.colors[0] }]}>{nudge}</Text>
+        </TouchableOpacity>
       )}
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + tokens.space.lg }]}>
@@ -357,8 +428,14 @@ export function LessonScreen({
       {/* Ask Leo — mid-lesson questions */}
       <AskLeoOverlay
         visible={showAskLeo}
-        onClose={() => setShowAskLeo(false)}
+        onClose={() => { setShowAskLeo(false); setLeoAutoAsk(null); }}
         lessonContext={`Lesson: ${lesson.title}\nWorld: ${world.worldName}\nCurrent beat: ${exerciseContext(exercise)}`}
+        contextLabel={exerciseContext(exercise).split('\n')[0] || lesson.title}
+        accentColor={world.colors[0]}
+        messages={leoMessages}
+        onMessagesChange={setLeoMessages}
+        autoAsk={leoAutoAsk}
+        onSaveAnswer={onSaveLeoAnswer ? text => onSaveLeoAnswer(text, index) : undefined}
       />
     </View>
   );
@@ -436,6 +513,16 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: tokens.color.correctDark,
   },
+  leoPrompt: {
+    alignSelf: 'center',
+    marginBottom: tokens.space.sm,
+    paddingHorizontal: tokens.space.lg,
+    paddingVertical: tokens.space.sm,
+    borderRadius: tokens.radius.pill,
+    borderWidth: 1.5,
+    backgroundColor: tokens.color.surface,
+  },
+  leoPromptText: { fontSize: tokens.font.caption, fontWeight: '800' },
   footer: {
     paddingHorizontal: tokens.space.lg,
     paddingTop: tokens.space.md,
