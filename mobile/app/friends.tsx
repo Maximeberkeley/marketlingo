@@ -525,21 +525,19 @@ function BoardRow({
         <Text style={styles.rowMeta} numberOfLines={1}>{meta}</Text>
       </View>
 
+      <View style={styles.xpBadge}>
+        <Text style={[styles.xpValue, isMe && { color: COLORS.accent }]}>{xp.toLocaleString()}</Text>
+        <Text style={styles.xpLabel}>XP</Text>
+      </View>
       {onNudge && (
         <TouchableOpacity style={styles.nudgeBtn} onPress={onNudge}>
           <Feather name="send" size={14} color={COLORS.accent} />
         </TouchableOpacity>
       )}
       {onMore && (
-        <TouchableOpacity style={styles.moreBtn} onPress={onMore}>
+        <TouchableOpacity style={styles.moreBtn} onPress={onMore} onLongPress={onMore}>
           <Feather name="more-horizontal" size={14} color={COLORS.textMuted} />
         </TouchableOpacity>
-      )}
-      {!onNudge && !onMore && (
-        <View style={styles.xpBadge}>
-          <Text style={[styles.xpValue, isMe && { color: COLORS.accent }]}>{xp.toLocaleString()}</Text>
-          <Text style={styles.xpLabel}>XP</Text>
-        </View>
       )}
     </View>
   );
