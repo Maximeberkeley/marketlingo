@@ -148,7 +148,7 @@ export function LeoCharacter({
       >
         <Image
           source={imageSource}
-          style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
+          style={{ width: '100%', height: '100%', resizeMode: 'contain', alignSelf: 'center' }}
         />
       </Animated.View>
     </View>

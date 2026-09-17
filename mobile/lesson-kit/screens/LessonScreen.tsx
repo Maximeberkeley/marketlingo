@@ -82,6 +82,7 @@ export function LessonScreen({
   const insets = useSafeAreaInsets();
   const [queue, setQueue] = useState<Exercise[]>(lesson.exercises);
   const [index, setIndex] = useState(0);
+  const [maxIndexReached, setMaxIndexReached] = useState(0);
   const [phase, setPhase] = useState<'answering' | 'feedback'>('answering');
   const [state, setState] = useState<ExerciseState>({ canCheck: false, isCorrect: false });
   const [correctCount, setCorrectCount] = useState(0);
@@ -191,6 +192,7 @@ export function LessonScreen({
       return;
     }
     setIndex(i => i + 1);
+    setMaxIndexReached(prev => Math.max(prev, index + 1));
     setPhase('answering');
     setState({ canCheck: false, isCorrect: false });
   }, [index, total]);
@@ -203,23 +205,25 @@ export function LessonScreen({
     }
     if (phase === 'answering') {
       if (!state.canCheck) return;
-      setGradedCount(c => c + 1);
-      if (state.isCorrect) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
-        playSound('correct').catch(() => {});
-        setCorrectCount(c => c + 1);
-        const nextCombo = combo + 1;
-        setCombo(nextCombo);
-        setBestCombo(previous => Math.max(previous, nextCombo));
-        firePop(`+${xpPerCorrect} XP`);
-      } else {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
-        playSound('wrong').catch(() => {});
-        setCombo(0);
-        setMissed(m => (exercise ? [...m, exercise] : m));
-        const nextHearts = Math.max(0, hearts - 1);
-        setHearts(nextHearts);
-        if (nextHearts === 0) setShowHeartsPrompt(true);
+      if (index >= maxIndexReached) {
+        setGradedCount(c => c + 1);
+        if (state.isCorrect) {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+          playSound('correct').catch(() => {});
+          setCorrectCount(c => c + 1);
+          const nextCombo = combo + 1;
+          setCombo(nextCombo);
+          setBestCombo(previous => Math.max(previous, nextCombo));
+          firePop(`+${xpPerCorrect} XP`);
+        } else {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+          playSound('wrong').catch(() => {});
+          setCombo(0);
+          setMissed(m => (exercise ? [...m, exercise] : m));
+          const nextHearts = Math.max(0, hearts - 1);
+          setHearts(nextHearts);
+          if (nextHearts === 0) setShowHeartsPrompt(true);
+        }
       }
       setPhase('feedback');
       return;

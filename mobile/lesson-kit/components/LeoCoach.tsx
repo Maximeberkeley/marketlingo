@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   leo: {
     marginRight: tokens.space.sm,
-    marginBottom: -8,
+    marginBottom: -4,
     zIndex: 2,
   },
   bubbleWrap: {
