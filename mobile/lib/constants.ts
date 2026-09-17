@@ -20,7 +20,7 @@ export const FAMILIARITY_LEVELS = [
   },
 ] as const;
 
-export const COLORS = {
+const LIGHT_COLORS = {
   // Backgrounds
   bg0: '#FFFFFF',   // Primary background
   bg1: '#F8F9FB',   // Elevated surfaces
@@ -63,6 +63,46 @@ export const COLORS = {
   surfaceSubtle: 'rgba(0, 0, 0, 0.02)',
   surfaceLight: 'rgba(0, 0, 0, 0.04)',
 };
+
+// Premium dark: warm-neutral greys in layered shades, never pure black.
+const DARK_COLORS: typeof LIGHT_COLORS = {
+  bg0: '#15171B',   // App background — deep grey
+  bg1: '#1D2126',   // Elevated surfaces
+  bg2: '#23272E',   // Cards (one shade lighter than surfaces)
+
+  textPrimary: '#F2F4F8',
+  textSecondary: '#AAB1BC',
+  textMuted: '#7C848F',
+
+  accent: '#A78BFA',
+  accentDark: '#8B5CF6',
+  accentSoft: 'rgba(167, 139, 250, 0.14)',
+  accentMedium: 'rgba(167, 139, 250, 0.26)',
+
+  success: '#34D399',
+  successSoft: 'rgba(52, 211, 153, 0.16)',
+  warning: '#FBBF24',
+  warningSoft: 'rgba(251, 191, 36, 0.16)',
+  error: '#F87171',
+  errorSoft: 'rgba(248, 113, 113, 0.16)',
+  info: '#60A5FA',
+  infoSoft: 'rgba(96, 165, 250, 0.16)',
+
+  streak: '#FB923C',
+  border: '#31373F',
+  borderLight: '#272C33',
+  cardShadow: 'rgba(0,0,0,0.55)',
+
+  orange: '#FDBA74',
+  orangeSoft: 'rgba(253, 186, 116, 0.16)',
+  gold: '#FCD34D',
+  goldSoft: 'rgba(252, 211, 77, 0.16)',
+
+  surfaceSubtle: 'rgba(255, 255, 255, 0.04)',
+  surfaceLight: 'rgba(255, 255, 255, 0.08)',
+};
+
+export const COLORS = isDark ? DARK_COLORS : LIGHT_COLORS;
 
 // Premium shadow presets (Brilliant-style depth)
 export const SHADOWS = {
