@@ -112,6 +112,17 @@ export const storage = {
     await AsyncStorage.setItem(KEYS.WIDGET_NUDGE_AT, String(timestamp));
   },
 
+  // Ask Leo hint — shown for the first two lessons only
+  async getLeoHintCount(): Promise<number> {
+    const value = await AsyncStorage.getItem(KEYS.LEO_HINT_COUNT);
+    return value ? Number(value) : 0;
+  },
+
+  async bumpLeoHintCount(): Promise<void> {
+    const current = await storage.getLeoHintCount();
+    await AsyncStorage.setItem(KEYS.LEO_HINT_COUNT, String(current + 1));
+  },
+
   // Clear all
   async clearAll(): Promise<void> {
     await AsyncStorage.multiRemove(Object.values(KEYS));
