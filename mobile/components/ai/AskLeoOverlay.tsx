@@ -1,8 +1,11 @@
 /**
- * AskLeoOverlay — Chat overlay for asking Leo questions about the current lesson.
- * Supports text input with AI-powered responses + TTS playback.
+ * AskLeoOverlay — Leo's in-lesson study partner.
+ *
+ * More than a chat: one-tap modes (simpler, example, why it matters, quiz me),
+ * a visible "you're asking about…" strip, animated Leo, typed-out answers,
+ * voice input, and save-to-notes so help becomes revision material.
  */
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,208 +15,424 @@ import {
   Modal,
   Animated,
   ScrollView,
-  Image,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
 import { speakWithElevenLabs } from '../../lib/tts';
 import * as Haptics from 'expo-haptics';
-import { COLORS } from '../../lib/constants';
+import { tokens } from '../../lesson-kit/theme/tokens';
 import { supabase } from '../../lib/supabase';
 import { Audio } from 'expo-av';
 import { useAIConsent } from '../../hooks/useAIConsent';
 import { isFeatureEnabled } from '../../hooks/useFeatureFlags';
 import { AIConsentModal } from './AIConsentModal';
-import * as FileSystem from 'expo-file-system';
+import { transcribeAudio } from '../../lib/interviewVoice';
+import { LeoCharacter } from '../mascot/LeoCharacter';
 import { log } from '../../lib/logger';
 
-const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 const LEO_VOICE_ID = 'onwK4e9ZLuTAKqWW03F9'; // Daniel - friendly educator
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-interface Message {
+export interface LeoMessage {
   role: 'user' | 'assistant';
   content: string;
 }
 
+type ModeId = 'simpler' | 'example' | 'why' | 'quiz';
+
+interface Mode {
+  id: ModeId;
+  label: string;
+  icon: keyof typeof Feather.glyphMap;
+  color: string;
+  /** What the learner is shown as having asked. */
+  ask: string;
+  /** Extra instruction appended for Leo. */
+  instruction: string;
+}
+
+const MODES: Mode[] = [
+  {
+    id: 'simpler',
+    label: 'Explain simpler',
+    icon: 'feather',
+    color: tokens.color.accent,
+    ask: 'Explain this simpler.',
+    instruction:
+      'Re-explain the current card at a 9th-grade level in two short sentences, using one everyday comparison.',
+  },
+  {
+    id: 'example',
+    label: 'Give an example',
+    icon: 'briefcase',
+    color: tokens.color.signalData,
+    ask: 'Give me a real example.',
+    instruction:
+      'Give one concrete example from this industry — a real company, deal or number — in two short sentences.',
+  },
+  {
+    id: 'why',
+    label: 'Why it matters',
+    icon: 'target',
+    color: tokens.color.signalEnergy,
+    ask: 'Why does this matter?',
+    instruction:
+      'In two short sentences, say where this shows up in a real job, interview or investment call.',
+  },
+  {
+    id: 'quiz',
+    label: 'Quiz me',
+    icon: 'zap',
+    color: tokens.color.correctDark,
+    ask: 'Quiz me on this.',
+    instruction:
+      'Ask exactly one short question about the current card, with three lettered options (A, B, C). Do not reveal the answer yet. When the learner replies, say if they are right in one sentence and why.',
+  },
+];
+
 interface AskLeoOverlayProps {
   visible: boolean;
   onClose: () => void;
-  lessonContext: string; // Current lesson title + content summary
+  /** Current lesson title + card content summary. */
+  lessonContext: string;
+  /** One-line label of the card the learner is on, shown in the context strip. */
+  contextLabel?: string;
+  /** Market accent colour so the sheet matches the lesson world. */
+  accentColor?: string;
+  /** Conversation lifted to the lesson so it survives closing the sheet. */
+  messages?: LeoMessage[];
+  onMessagesChange?: (messages: LeoMessage[]) => void;
+  /** A question asked automatically the first time the sheet opens. */
+  autoAsk?: string | null;
+  /** Save one of Leo's answers to the notebook. */
+  onSaveAnswer?: (text: string) => void;
 }
 
-export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlayProps) {
+export function AskLeoOverlay({
+  visible,
+  onClose,
+  lessonContext,
+  contextLabel,
+  accentColor,
+  messages: externalMessages,
+  onMessagesChange,
+  autoAsk,
+  onSaveAnswer,
+}: AskLeoOverlayProps) {
   const insets = useSafeAreaInsets();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [internalMessages, setInternalMessages] = useState<LeoMessage[]>([]);
+  const messages = externalMessages ?? internalMessages;
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [typed, setTyped] = useState<string | null>(null);
+  const [saved, setSaved] = useState<number[]>([]);
   const scrollRef = useRef<ScrollView>(null);
   const slideAnim = useRef(new Animated.Value(0)).current;
+  const recording = useRef<Audio.Recording | null>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
+  const typingTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoAsked = useRef(false);
   const { requireAI, modalProps } = useAIConsent();
+
+  const accent = accentColor || tokens.color.accent;
+
+  const setMessages = useCallback(
+    (next: LeoMessage[]) => {
+      if (onMessagesChange) onMessagesChange(next);
+      else setInternalMessages(next);
+    },
+    [onMessagesChange],
+  );
 
   useEffect(() => {
     if (visible) {
       Animated.spring(slideAnim, {
         toValue: 1,
-        tension: 200,
-        friction: 20,
+        tension: 190,
+        friction: 22,
         useNativeDriver: true,
       }).start();
     } else {
       slideAnim.setValue(0);
+      autoAsked.current = false;
     }
-  }, [visible]);
+  }, [visible, slideAnim]);
 
-  const sendMessage = useCallback(async () => {
-    const text = input.trim();
-    if (!text || isLoading) return;
-
-    if (!(await isFeatureEnabled('ai_leo'))) {
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', content: 'Leo is temporarily unavailable. Your lessons, drills and reviews all still work.' },
-      ]);
-      return;
-    }
-    if (!(await requireAI())) return;
-
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const userMsg: Message = { role: 'user', content: text };
-    const newMessages = [...messages, userMsg];
-    setMessages(newMessages);
-    setInput('');
-    setIsLoading(true);
-
+  const stopAudio = useCallback(async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
+      await soundRef.current?.stopAsync();
+      await soundRef.current?.unloadAsync();
+    } catch {
+      /* already gone */
+    }
+    soundRef.current = null;
+    setIsPlayingAudio(false);
+  }, []);
 
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/leo-voice-chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token || SUPABASE_ANON_KEY}`,
-          'apikey': SUPABASE_ANON_KEY || '',
-        },
-        body: JSON.stringify({
-          messages: newMessages,
-          lessonContext,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
+  const playTTS = useCallback(
+    async (text: string) => {
+      if (isPlayingAudio) {
+        await stopAudio();
+        return;
       }
+      try {
+        setIsPlayingAudio(true);
+        if (Platform.OS === 'web') {
+          const { data: { session } } = await supabase.auth.getSession();
+          const authHeader = session?.access_token
+            ? `Bearer ${session.access_token}`
+            : `Bearer ${SUPABASE_ANON_KEY}`;
+          const response = await fetch(`${SUPABASE_URL}/functions/v1/elevenlabs-tts`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              apikey: SUPABASE_ANON_KEY || '',
+              Authorization: authHeader,
+            },
+            body: JSON.stringify({ text, voiceId: LEO_VOICE_ID }),
+          });
+          if (!response.ok) throw new Error('TTS failed');
+          const audioBlob = await response.blob();
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const webAudio = new window.Audio(audioUrl);
+          webAudio.onended = () => setIsPlayingAudio(false);
+          await webAudio.play();
+        } else {
+          const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_chat');
+          soundRef.current = sound ?? null;
+          if (sound) {
+            sound.setOnPlaybackStatusUpdate((status: any) => {
+              if (status.didJustFinish) {
+                setIsPlayingAudio(false);
+                sound.unloadAsync().catch(() => {});
+                soundRef.current = null;
+              }
+            });
+          } else {
+            setIsPlayingAudio(false);
+          }
+        }
+      } catch {
+        setIsPlayingAudio(false);
+      }
+    },
+    [isPlayingAudio, stopAudio],
+  );
 
-      const data = await response.json();
-      const assistantMsg: Message = {
-        role: 'assistant',
-        content: data.message || "Hmm, I couldn't respond. Try again!",
-      };
+  /** Types Leo's answer out word by word so it feels like he's talking. */
+  const typeOut = useCallback((text: string) => {
+    if (typingTimer.current) clearInterval(typingTimer.current);
+    const words = text.split(' ');
+    let i = 0;
+    setTyped('');
+    typingTimer.current = setInterval(() => {
+      i += 1;
+      setTyped(words.slice(0, i).join(' '));
+      if (i >= words.length) {
+        if (typingTimer.current) clearInterval(typingTimer.current);
+        typingTimer.current = null;
+        setTyped(null);
+      }
+    }, 45);
+  }, []);
 
-      setMessages(prev => [...prev, assistantMsg]);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  useEffect(
+    () => () => {
+      if (typingTimer.current) clearInterval(typingTimer.current);
+      soundRef.current?.unloadAsync().catch(() => {});
+    },
+    [],
+  );
 
-      // Auto-play TTS for Leo's response
-      playTTS(assistantMsg.content);
-    } catch (error) {
-      log.error('Ask Leo error:', error);
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', content: "Oops! I had trouble connecting. Try again?" },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [input, isLoading, messages, lessonContext, requireAI]);
+  const ask = useCallback(
+    async (text: string, instruction?: string) => {
+      const question = text.trim();
+      if (!question || isLoading) return;
 
-  const playTTS = useCallback(async (text: string) => {
-    try {
-      setIsPlayingAudio(true);
+      if (!(await isFeatureEnabled('ai_leo'))) {
+        setMessages([
+          ...messages,
+          {
+            role: 'assistant',
+            content:
+              'Leo is taking a short break. Your lessons, drills and reviews all still work.',
+          },
+        ]);
+        return;
+      }
+      if (!(await requireAI())) return;
 
-      if (Platform.OS === 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      const next: LeoMessage[] = [...messages, { role: 'user', content: question }];
+      setMessages(next);
+      setInput('');
+      setIsLoading(true);
+
+      try {
         const { data: { session } } = await supabase.auth.getSession();
-        const authHeader = session?.access_token
-          ? `Bearer ${session.access_token}`
-          : `Bearer ${SUPABASE_ANON_KEY}`;
-        const response = await fetch(`${SUPABASE_URL}/functions/v1/elevenlabs-tts`, {
+        const token = session?.access_token;
+        const payload = instruction
+          ? [...next.slice(0, -1), { role: 'user' as const, content: `${question}\n\n${instruction}` }]
+          : next;
+
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/leo-voice-chat`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'apikey': SUPABASE_ANON_KEY || '',
-            'Authorization': authHeader,
+            Authorization: `Bearer ${token || SUPABASE_ANON_KEY}`,
+            apikey: SUPABASE_ANON_KEY || '',
           },
-          body: JSON.stringify({ text, voiceId: LEO_VOICE_ID }),
+          body: JSON.stringify({ messages: payload, lessonContext }),
         });
-        if (!response.ok) throw new Error('TTS failed');
-        const audioBlob = await response.blob();
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const webAudio = new window.Audio(audioUrl);
-        webAudio.onended = () => setIsPlayingAudio(false);
-        await webAudio.play();
-      } else {
-        // Native: use shared TTS utility with XHR for reliable binary handling
-        const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_chat');
-        if (sound) {
-          sound.setOnPlaybackStatusUpdate((status: any) => {
-            if (status.didJustFinish) {
-              setIsPlayingAudio(false);
-              sound.unloadAsync();
-            }
-          });
-        } else {
-          setIsPlayingAudio(false);
-        }
+
+        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+
+        const data = await response.json();
+        const answer: string = data.message || "Hmm, that one lost me. Ask me again?";
+        setMessages([...next, { role: 'assistant', content: answer }]);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+        typeOut(answer);
+        playTTS(answer);
+      } catch (error) {
+        log.error('Ask Leo error:', error);
+        setMessages([
+          ...next,
+          { role: 'assistant', content: "I lost the connection there. Try that once more?" },
+        ]);
+      } finally {
+        setIsLoading(false);
       }
-    } catch {
-      setIsPlayingAudio(false);
+    },
+    [isLoading, messages, setMessages, requireAI, lessonContext, typeOut, playTTS],
+  );
+
+  // Auto-ask (e.g. "Explain this" from a wrong answer) so the sheet opens on an answer.
+  useEffect(() => {
+    if (visible && autoAsk && !autoAsked.current) {
+      autoAsked.current = true;
+      ask(autoAsk);
+    }
+  }, [visible, autoAsk, ask]);
+
+  const startRecording = useCallback(async () => {
+    try {
+      const perm = await Audio.requestPermissionsAsync();
+      if (!perm.granted) return;
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
+      const { recording: rec } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY,
+      );
+      recording.current = rec;
+      setIsRecording(true);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    } catch (err) {
+      log.warn('Leo voice record error:', err);
+      setIsRecording(false);
     }
   }, []);
 
+  const stopRecording = useCallback(async () => {
+    const rec = recording.current;
+    recording.current = null;
+    setIsRecording(false);
+    if (!rec) return;
+    try {
+      await rec.stopAndUnloadAsync();
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
+      const uri = rec.getURI();
+      if (!uri) return;
+      setIsLoading(true);
+      const text = await transcribeAudio(uri);
+      setIsLoading(false);
+      if (text?.trim()) ask(text.trim());
+    } catch (err) {
+      setIsLoading(false);
+      log.warn('Leo transcription error:', err);
+    }
+  }, [ask]);
+
   useEffect(() => {
-    // Scroll to bottom on new message
-    setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
-  }, [messages]);
+    const t = setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 120);
+    return () => clearTimeout(t);
+  }, [messages, typed]);
+
+  const lastIndex = messages.length - 1;
+  const leoMood = useMemo(() => {
+    if (isLoading) return 'thinking' as const;
+    if (typed !== null || isPlayingAudio) return 'waving' as const;
+    return 'idle' as const;
+  }, [isLoading, typed, isPlayingAudio]);
+
+  const handleSave = useCallback(
+    (idx: number, text: string) => {
+      onSaveAnswer?.(text);
+      setSaved(s => [...s, idx]);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    },
+    [onSaveAnswer],
+  );
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" transparent>
+    <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
       <KeyboardAvoidingView
         style={styles.overlay}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
       >
+        <TouchableOpacity style={styles.dismissArea} activeOpacity={1} onPress={onClose} />
         <Animated.View
           style={[
             styles.container,
             {
-              paddingBottom: insets.bottom + 12,
-              transform: [{
-                translateY: slideAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [600, 0],
-                }),
-              }],
+              paddingBottom: insets.bottom + 10,
+              transform: [
+                {
+                  translateY: slideAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [700, 0],
+                  }),
+                },
+              ],
             },
           ]}
         >
+          <View style={styles.grabber} />
+
           {/* Header */}
           <View style={styles.header}>
-            <Image source={LEO_IMAGE} style={styles.leoAvatar} />
+            <View style={styles.headerLeo}>
+              <LeoCharacter size="sm" animation={leoMood} />
+            </View>
             <View style={styles.headerText}>
-              <Text style={styles.headerTitle}>Ask Leo</Text>
+              <Text style={styles.headerTitle}>Leo</Text>
               <Text style={styles.headerSub}>
-                {isPlayingAudio ? 'Speaking...' : 'Ask anything about this lesson'}
+                {isLoading
+                  ? 'Thinking it through…'
+                  : isPlayingAudio
+                  ? 'Talking'
+                  : 'Your study partner for this card'}
               </Text>
             </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <Text style={styles.closeText}>✕</Text>
+            <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+              <Feather name="x" size={18} color={tokens.color.textSecondary} />
             </TouchableOpacity>
           </View>
+
+          {/* Context strip — what he's answering about */}
+          {!!contextLabel && (
+            <View style={[styles.contextStrip, { borderLeftColor: accent }]}>
+              <Text style={styles.contextLabel}>You're asking about</Text>
+              <Text style={styles.contextText} numberOfLines={2}>
+                {contextLabel}
+              </Text>
+            </View>
+          )}
 
           {/* Messages */}
           <ScrollView
@@ -221,78 +440,104 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
             style={styles.messagesScroll}
             contentContainerStyle={styles.messagesContent}
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            {messages.length === 0 && (
+            {messages.length === 0 && !isLoading && (
               <View style={styles.emptyState}>
-                <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(251,191,36,0.15)', alignItems: 'center', justifyContent: 'center' }}><Text style={{ fontSize: 18, fontWeight: '700', color: '#FCD34D' }}>?</Text></View>
+                <Text style={styles.emptyTitle}>Stuck on this one?</Text>
                 <Text style={styles.emptyText}>
-                  Ask me anything about the lesson! I'll explain it simply and read it aloud.
+                  Pick a shortcut below, type it, or hold the mic and just say it.
                 </Text>
-                <View style={styles.suggestions}>
-                  {['Explain this simply', 'Give me an example', 'Why does this matter?'].map(
-                    (suggestion) => (
-                      <TouchableOpacity
-                        key={suggestion}
-                        style={styles.suggestionChip}
-                        onPress={() => {
-                          setInput(suggestion);
-                        }}
-                      >
-                        <Text style={styles.suggestionText}>{suggestion}</Text>
-                      </TouchableOpacity>
-                    )
-                  )}
-                </View>
               </View>
             )}
 
-            {messages.map((msg, idx) => (
-              <View
-                key={idx}
-                style={[
-                  styles.messageBubble,
-                  msg.role === 'user' ? styles.userBubble : styles.leoBubble,
-                ]}
-              >
-                {msg.role === 'assistant' && (
-                  <Image source={LEO_IMAGE} style={styles.bubbleAvatar} />
-                )}
+            {messages.map((msg, idx) => {
+              const isTyping = idx === lastIndex && msg.role === 'assistant' && typed !== null;
+              const body = isTyping ? typed || '' : msg.content;
+              return (
                 <View
-                  style={[
-                    styles.bubbleContent,
-                    msg.role === 'user' ? styles.userBubbleContent : styles.leoBubbleContent,
-                  ]}
+                  key={idx}
+                  style={[styles.row, msg.role === 'user' ? styles.rowUser : styles.rowLeo]}
                 >
-                  <Text
+                  <View
                     style={[
-                      styles.bubbleText,
-                      msg.role === 'user' ? styles.userBubbleText : styles.leoBubbleText,
+                      styles.bubble,
+                      msg.role === 'user'
+                        ? [styles.userBubble, { backgroundColor: accent }]
+                        : styles.leoBubble,
                     ]}
                   >
-                    {msg.content}
-                  </Text>
+                    <Text style={msg.role === 'user' ? styles.userText : styles.leoText}>
+                      {body}
+                      {isTyping ? ' ▍' : ''}
+                    </Text>
+                  </View>
+                  {msg.role === 'assistant' && !isTyping && (
+                    <View style={styles.answerActions}>
+                      <TouchableOpacity style={styles.answerBtn} onPress={() => playTTS(msg.content)}>
+                        <Feather
+                          name={isPlayingAudio ? 'pause' : 'volume-2'}
+                          size={14}
+                          color={tokens.color.textSecondary}
+                        />
+                        <Text style={styles.answerBtnText}>
+                          {isPlayingAudio ? 'Stop' : 'Listen'}
+                        </Text>
+                      </TouchableOpacity>
+                      {!!onSaveAnswer && (
+                        <TouchableOpacity
+                          style={styles.answerBtn}
+                          onPress={() => handleSave(idx, msg.content)}
+                          disabled={saved.includes(idx)}
+                        >
+                          <Feather
+                            name={saved.includes(idx) ? 'check' : 'bookmark'}
+                            size={14}
+                            color={saved.includes(idx) ? tokens.color.correctDark : tokens.color.textSecondary}
+                          />
+                          <Text
+                            style={[
+                              styles.answerBtnText,
+                              saved.includes(idx) && { color: tokens.color.correctDark },
+                            ]}
+                          >
+                            {saved.includes(idx) ? 'In Notes' : 'Save to Notes'}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  )}
                 </View>
-                {msg.role === 'assistant' && (
-                  <TouchableOpacity
-                    style={styles.replayBtn}
-                    onPress={() => playTTS(msg.content)}
-                    disabled={isPlayingAudio}
-                  >
-                    <Text style={styles.replayIcon}>{isPlayingAudio ? '...' : '▶'}</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            ))}
+              );
+            })}
 
             {isLoading && (
-              <View style={[styles.messageBubble, styles.leoBubble]}>
-                <Image source={LEO_IMAGE} style={styles.bubbleAvatar} />
-                <View style={styles.leoBubbleContent}>
-                  <ActivityIndicator size="small" color={COLORS.accent} />
-                  <Text style={styles.thinkingText}>Leo is thinking...</Text>
+              <View style={[styles.row, styles.rowLeo]}>
+                <View style={[styles.bubble, styles.leoBubble, styles.thinkingBubble]}>
+                  <Text style={styles.thinkingText}>Leo is thinking…</Text>
                 </View>
               </View>
             )}
+          </ScrollView>
+
+          {/* Modes */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.modeRow}
+            keyboardShouldPersistTaps="handled"
+          >
+            {MODES.map(mode => (
+              <TouchableOpacity
+                key={mode.id}
+                style={[styles.modeChip, { borderColor: mode.color + '55', backgroundColor: mode.color + '12' }]}
+                onPress={() => ask(mode.ask, mode.instruction)}
+                disabled={isLoading}
+              >
+                <Feather name={mode.icon} size={14} color={mode.color} />
+                <Text style={[styles.modeText, { color: mode.color }]}>{mode.label}</Text>
+              </TouchableOpacity>
+            ))}
           </ScrollView>
 
           {/* Input */}
@@ -301,21 +546,33 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
               style={styles.textInput}
               value={input}
               onChangeText={setInput}
-              placeholder="Ask Leo a question..."
-              placeholderTextColor={COLORS.textMuted}
+              placeholder={isRecording ? 'Listening…' : 'Ask Leo anything…'}
+              placeholderTextColor={tokens.color.textMuted}
               multiline
               maxLength={500}
               returnKeyType="send"
-              onSubmitEditing={sendMessage}
+              onSubmitEditing={() => ask(input)}
             />
-            <TouchableOpacity
-              style={[styles.sendBtn, (!input.trim() || isLoading) && styles.sendBtnDisabled]}
-              onPress={sendMessage}
-              disabled={!input.trim() || isLoading}
-            >
-              <Text style={styles.sendText}>↑</Text>
-            </TouchableOpacity>
+            {input.trim().length === 0 ? (
+              <TouchableOpacity
+                style={[styles.micBtn, isRecording && { backgroundColor: tokens.color.incorrect }]}
+                onPressIn={startRecording}
+                onPressOut={stopRecording}
+                disabled={isLoading}
+              >
+                <Feather name="mic" size={20} color={isRecording ? '#fff' : accent} />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[styles.sendBtn, { backgroundColor: accent }, isLoading && styles.disabled]}
+                onPress={() => ask(input)}
+                disabled={isLoading}
+              >
+                <Feather name="arrow-up" size={20} color="#fff" />
+              </TouchableOpacity>
+            )}
           </View>
+          {isRecording && <Text style={styles.micHint}>Hold to talk, release to send</Text>}
         </Animated.View>
       </KeyboardAvoidingView>
       <AIConsentModal {...modalProps} />
@@ -324,197 +581,146 @@ export function AskLeoOverlay({ visible, onClose, lessonContext }: AskLeoOverlay
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
+  overlay: { flex: 1, backgroundColor: 'rgba(15,17,26,0.55)', justifyContent: 'flex-end' },
+  dismissArea: { flex: 1 },
   container: {
-    backgroundColor: COLORS.bg0,
+    backgroundColor: tokens.color.bg,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
-    maxHeight: '85%',
-    minHeight: '50%',
+    maxHeight: '88%',
+    minHeight: '62%',
+    shadowColor: '#0F111A',
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 24,
+    elevation: 12,
+  },
+  grabber: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: tokens.color.borderStrong,
+    alignSelf: 'center',
+    marginTop: 10,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    gap: 12,
+    paddingHorizontal: 16,
+    paddingTop: 6,
+    paddingBottom: 12,
+    gap: 10,
   },
-  leoAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    resizeMode: 'contain',
-  },
-  headerText: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 17,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-  },
-  headerSub: {
-    fontSize: 12,
-    color: COLORS.textMuted,
-    marginTop: 2,
-  },
+  headerLeo: { width: 52, height: 52, alignItems: 'center', justifyContent: 'center' },
+  headerText: { flex: 1 },
+  headerTitle: { fontSize: 18, fontWeight: '800', color: tokens.color.text },
+  headerSub: { fontSize: 12, color: tokens.color.textMuted, marginTop: 2 },
   closeBtn: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: tokens.color.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  closeText: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
+  contextStrip: {
+    marginHorizontal: 16,
+    marginBottom: 10,
+    paddingLeft: 12,
+    paddingVertical: 8,
+    borderLeftWidth: 3,
+    backgroundColor: tokens.color.surface,
+    borderRadius: 10,
   },
-  messagesScroll: {
-    flex: 1,
+  contextLabel: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    color: tokens.color.textMuted,
   },
-  messagesContent: {
-    padding: 16,
-    gap: 12,
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: 32,
-    paddingHorizontal: 20,
-  },
-  emptyEmoji: {
-    fontSize: 48,
-    marginBottom: 16,
-  },
-  emptyText: {
-    fontSize: 15,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 20,
-  },
-  suggestions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    justifyContent: 'center',
-  },
-  suggestionChip: {
-    backgroundColor: 'rgba(139,92,246,0.1)',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(139,92,246,0.2)',
-  },
-  suggestionText: {
-    fontSize: 13,
-    color: COLORS.accent,
-    fontWeight: '600',
-  },
-  messageBubble: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: 8,
-  },
-  userBubble: {
-    justifyContent: 'flex-end',
-  },
+  contextText: { fontSize: 14, fontWeight: '700', color: tokens.color.text, marginTop: 2 },
+  messagesScroll: { flex: 1 },
+  messagesContent: { paddingHorizontal: 16, paddingBottom: 12, gap: 14 },
+  emptyState: { paddingVertical: 24, paddingHorizontal: 8 },
+  emptyTitle: { fontSize: 18, fontWeight: '800', color: tokens.color.text, marginBottom: 6 },
+  emptyText: { fontSize: 15, lineHeight: 22, color: tokens.color.textSecondary },
+  row: { maxWidth: '92%' },
+  rowUser: { alignSelf: 'flex-end', alignItems: 'flex-end' },
+  rowLeo: { alignSelf: 'flex-start' },
+  bubble: { borderRadius: 18, paddingHorizontal: 14, paddingVertical: 12 },
+  userBubble: { borderBottomRightRadius: 6 },
   leoBubble: {
-    justifyContent: 'flex-start',
-  },
-  bubbleAvatar: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    resizeMode: 'contain',
-  },
-  bubbleContent: {
-    maxWidth: '75%',
-    borderRadius: 18,
-    padding: 14,
-  },
-  userBubbleContent: {
-    backgroundColor: COLORS.accent,
-    borderBottomRightRadius: 4,
-    marginLeft: 'auto',
-  },
-  leoBubbleContent: {
-    backgroundColor: COLORS.bg2,
-    borderBottomLeftRadius: 4,
+    backgroundColor: tokens.color.surface,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: tokens.color.border,
+    borderBottomLeftRadius: 6,
+  },
+  thinkingBubble: { paddingVertical: 10 },
+  userText: { fontSize: 15, lineHeight: 22, color: '#fff', fontWeight: '600' },
+  leoText: { fontSize: 15, lineHeight: 23, color: tokens.color.text },
+  thinkingText: { fontSize: 14, color: tokens.color.textMuted, fontStyle: 'italic' },
+  answerActions: { flexDirection: 'row', gap: 8, marginTop: 8 },
+  answerBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    flexWrap: 'wrap',
-  },
-  bubbleText: {
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  userBubbleText: {
-    color: '#fff',
-  },
-  leoBubbleText: {
-    color: COLORS.textPrimary,
-  },
-  thinkingText: {
-    fontSize: 13,
-    color: COLORS.textMuted,
-    fontStyle: 'italic',
-  },
-  replayBtn: {
-    width: 28,
-    height: 28,
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: tokens.color.surface,
+    borderWidth: 1,
+    borderColor: tokens.color.border,
+  },
+  answerBtnText: { fontSize: 12, fontWeight: '700', color: tokens.color.textSecondary },
+  modeRow: { paddingHorizontal: 16, paddingBottom: 10, gap: 8 },
+  modeChip: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 20,
+    borderWidth: 1.5,
   },
-  replayIcon: {
-    fontSize: 14,
-  },
+  modeText: { fontSize: 13, fontWeight: '800' },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingTop: 10,
     gap: 8,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: tokens.color.border,
   },
   textInput: {
     flex: 1,
-    backgroundColor: COLORS.bg2,
+    backgroundColor: tokens.color.surface,
     borderRadius: 22,
     paddingHorizontal: 18,
     paddingVertical: 12,
-    fontSize: 15,
-    color: COLORS.textPrimary,
-    maxHeight: 100,
+    fontSize: 16,
+    color: tokens.color.text,
+    maxHeight: 110,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: tokens.color.border,
   },
-  sendBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: COLORS.accent,
+  sendBtn: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center' },
+  micBtn: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: tokens.color.surface,
+    borderWidth: 1.5,
+    borderColor: tokens.color.border,
   },
-  sendBtnDisabled: {
-    opacity: 0.4,
+  micHint: {
+    textAlign: 'center',
+    fontSize: 12,
+    color: tokens.color.textMuted,
+    paddingTop: 6,
   },
-  sendText: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#fff',
-  },
+  disabled: { opacity: 0.5 },
 });
