@@ -426,6 +426,18 @@ export default function SettingsScreen() {
           <Text style={styles.sectionTitle}>APPEARANCE</Text>
           <View style={styles.settingRow}>
             <View style={{ flex: 1 }}>
+              <Text style={styles.settingLabel}>Dark Mode</Text>
+              <Text style={styles.settingDesc}>Soft dark greys. The app restarts to apply.</Text>
+            </View>
+            <Switch
+              value={darkModeOn}
+              onValueChange={handleToggleDarkMode}
+              trackColor={{ false: COLORS.bg1, true: COLORS.accent }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
+          <View style={styles.settingRow}>
+            <View style={{ flex: 1 }}>
               <Text style={styles.settingLabel}>Use Industry Mascots</Text>
               <Text style={styles.settingDesc}>Show industry-themed Leo on home screen</Text>
             </View>
