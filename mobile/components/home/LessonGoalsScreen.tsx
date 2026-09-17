@@ -18,8 +18,10 @@ interface Props {
 
 const compact = (text: string) => {
   const clean = text.replace(/^[\s•\-–—]+/, '').replace(/\s+/g, ' ').trim();
-  const first = clean.split(/(?<=[.!?])\s/)[0] || clean;
-  return first.length > 78 ? `${first.slice(0, 75).trim()}…` : first;
+  // Split only on real sentence ends (punctuation + space + capital), so "Zelle vs. Venmo" stays intact.
+  const parts = clean.split(/(?<=[.!?])\s+(?=[A-Z])/);
+  const first = (parts[0] && parts[0].length > 24 ? parts[0] : clean) || clean;
+  return first.length > 72 ? `${first.slice(0, 69).trim()}…` : first;
 };
 
 export function LessonGoalsScreen({ title, slides, objectives, marketId, isBite, onStart, onBack }: Props) {
