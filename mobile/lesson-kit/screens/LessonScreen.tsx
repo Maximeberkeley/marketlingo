@@ -91,6 +91,9 @@ export function LessonScreen({
   const [bestCombo, setBestCombo] = useState(0);
   const [hearts, setHearts] = useState(MAX_HEARTS);
   const [missed, setMissed] = useState<Exercise[]>([]);
+  /** Per-beat outcome (exercise id -> was correct) so back/forward navigation
+   *  restores the real previous result instead of resetting the card. */
+  const [results, setResults] = useState<Record<string, boolean>>({});
   const [showExitPrompt, setShowExitPrompt] = useState(false);
   const [showHeartsPrompt, setShowHeartsPrompt] = useState(false);
   const [showAskLeo, setShowAskLeo] = useState(false);
@@ -117,6 +120,7 @@ export function LessonScreen({
     setBestCombo(0);
     setHearts(MAX_HEARTS);
     setMissed([]);
+    setResults({});
     setShowExitPrompt(false);
     setShowHeartsPrompt(false);
     setFinished(false);
