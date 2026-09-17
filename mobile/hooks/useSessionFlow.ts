@@ -117,6 +117,9 @@ export function useSessionFlow({
         if (xpData) {
           checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
         }
+        // Refresh shared widget data before showing the completion screen.
+        // Waiting for that screen to be dismissed left WidgetKit stale.
+        await onDataRefresh();
         synced = true;
       }
     } catch (err) {
@@ -131,7 +134,7 @@ export function useSessionFlow({
     setSessionXPEarned(earnedXP);
     setShowSessionComplete(true);
     return synced;
-  }, [activeStack, progress, xpData, selectedMarket, completeStack, updateStreak, completeLessonForToday, addXP, checkStreakMilestone, checkLevelMilestone, xpRewardLessonComplete, xpRewardStreakBonus]);
+  }, [activeStack, progress, xpData, selectedMarket, completeStack, updateStreak, completeLessonForToday, addXP, checkStreakMilestone, checkLevelMilestone, xpRewardLessonComplete, xpRewardStreakBonus, onDataRefresh]);
 
   const handleBiteComplete = useCallback(async (isReviewMode: boolean, _timeSpentSeconds: number) => {
     setShowReader(false);

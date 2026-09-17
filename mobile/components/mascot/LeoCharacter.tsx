@@ -139,7 +139,6 @@ export function LeoCharacter({
 
   return (
     <View style={[styles.container, { width: px, height: px }]}>
-      <View style={[styles.shadow, { width: px * 0.5, left: px * 0.25, bottom: px * 0.05 }]} />
       <Animated.View
         style={{
           width: '100%',
@@ -161,12 +160,5 @@ const styles = StyleSheet.create({
     position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  shadow: {
-    position: 'absolute',
-    height: 6,
-    backgroundColor: 'rgba(0,0,0,0.12)',
-    borderRadius: 50,
-    bottom: 0,
   },
 });
