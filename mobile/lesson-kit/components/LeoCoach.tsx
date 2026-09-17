@@ -122,19 +122,22 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   leo: {
-    width: 80,
+    width: 76,
     height: SCENE_H,
     justifyContent: 'flex-end',
     alignItems: 'center',
     overflow: 'hidden',
     transform: [{ scale: 0.85 }],
+    zIndex: 1,
   },
   bubbleWrap: {
     flex: 1,
     alignSelf: 'center',
     marginRight: tokens.space.sm,
-    marginLeft: 10,
+    marginLeft: 12,
     position: 'relative',
+    // Always above Leo — even if his artwork overhangs, the words stay readable.
+    zIndex: 2,
   },
   bubble: {
     backgroundColor: tokens.color.card,
