@@ -23,15 +23,20 @@ const QUEST_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   streak: 'activity',
 };
 
-const QUEST_ROUTES: Record<string, string> = {
-  lesson: '/(tabs)/home',
-  drill: '/arena',
-  game: '/arena',
+// Only real, reachable screens. Lesson/streak quests start the lesson in place.
+const QUEST_ROUTES: Record<string, string | null> = {
+  lesson: null,
+  drill: '/drills',
+  game: '/games',
   combo: '/(tabs)/practice',
-  streak: '/(tabs)/home',
+  streak: null,
 };
 
-function QuestRow({ quest, index }: { quest: DailyQuest; index: number }) {
+function QuestRow({
+  quest,
+  index,
+  onStartLesson,
+}: { quest: DailyQuest; index: number; onStartLesson?: () => void }) {
   const slideAnim = useRef(new Animated.Value(20)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const checkScale = useRef(new Animated.Value(0)).current;
