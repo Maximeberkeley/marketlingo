@@ -286,6 +286,7 @@ export function AskLeoOverlay({
       if (!(await requireAI())) return;
 
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      collapseModes();
       const next: LeoMessage[] = [...messages, { role: 'user', content: question }];
       setMessages(next);
       setInput('');
