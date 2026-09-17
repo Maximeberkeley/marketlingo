@@ -107,7 +107,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
   );
 }
 
-const SCENE_H = 168;
+const SCENE_H = 118;
 
 const styles = StyleSheet.create({
   wrap: {
@@ -120,9 +120,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   leo: {
-    width: 150,
-    marginLeft: -6,
-    marginBottom: -14,
+    width: 100,
+    marginLeft: -4,
+    marginBottom: -10,
     zIndex: 2,
   },
   bubbleWrap: {
@@ -134,39 +134,39 @@ const styles = StyleSheet.create({
   },
   bubble: {
     backgroundColor: tokens.color.card,
-    borderWidth: 2,
-    borderRadius: tokens.radius.lg,
-    paddingHorizontal: tokens.space.md,
-    paddingVertical: tokens.space.sm + 2,
+    borderWidth: 1.5,
+    borderRadius: tokens.radius.md,
+    paddingHorizontal: tokens.space.sm + 4,
+    paddingVertical: tokens.space.sm,
   },
   tail: {
     position: 'absolute',
-    left: -13,
-    bottom: 20,
+    left: -9,
+    bottom: 14,
     width: 0,
     height: 0,
-    borderTopWidth: 10,
-    borderBottomWidth: 10,
-    borderRightWidth: 13,
+    borderTopWidth: 7,
+    borderBottomWidth: 7,
+    borderRightWidth: 9,
     borderTopColor: 'transparent',
     borderBottomColor: 'transparent',
   },
   tailFill: {
     position: 'absolute',
-    left: -9,
-    bottom: 23,
+    left: -6,
+    bottom: 16,
     width: 0,
     height: 0,
-    borderTopWidth: 7,
-    borderBottomWidth: 7,
-    borderRightWidth: 10,
+    borderTopWidth: 5,
+    borderBottomWidth: 5,
+    borderRightWidth: 7,
     borderTopColor: 'transparent',
     borderBottomColor: 'transparent',
     borderRightColor: tokens.color.card,
   },
   text: {
-    fontSize: tokens.font.body,
-    lineHeight: 21,
+    fontSize: tokens.font.caption + 1,
+    lineHeight: 18,
     fontWeight: '600',
     color: tokens.color.text,
   },
