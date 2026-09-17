@@ -10,6 +10,7 @@ import {
   Image,
   Animated,
   Alert,
+  AppState,
 } from 'react-native';
 import { AchievementPopup } from '../../components/achievements/AchievementPopup';
 import { DailyNews } from '../../components/home/DailyNews';
@@ -171,12 +172,19 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (!selectedMarketLocal || !progress) return;
-    syncLeoWidget({
-      streak,
+
+    const push = () => syncLeoWidget({
+      streak: progress.current_streak || 0,
       lessonComplete: lessonCompletedToday,
       expiresAt: progress.streak_expires_at,
       market: getMarketName(selectedMarketLocal),
     });
+
+    push();
+    const sub = AppState.addEventListener('change', (next) => {
+      if (next === 'active') push();
+    });
+    return () => sub.remove();
   }, [selectedMarketLocal, progress?.current_streak, progress?.streak_expires_at, lessonCompletedToday]);
 
   const { dueCount } = useSpacedRepetition(selectedMarketLocal || undefined);

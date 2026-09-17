@@ -119,9 +119,9 @@ export function useLeague(marketId?: string) {
 
       const rivals: Rival[] = rows.map((r, i) => ({
         userId: r.user_id,
-        username:
-          profiles?.find((p) => p.id === r.user_id)?.username ||
-          (r.user_id === user.id ? 'You' : 'Analyst'),
+        username: r.user_id === user.id
+          ? 'You'
+          : (profiles?.find((p) => p.id === r.user_id)?.username?.split('@')[0] || 'Analyst'),
         weeklyXp: r.weekly_xp ?? 0,
         rank: i + 1,
         isMe: r.user_id === user.id,

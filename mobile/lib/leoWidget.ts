@@ -11,6 +11,12 @@ interface LeoWidgetSnapshot {
   market?: string | null;
 }
 
+/**
+ * Pushes the learner's live streak state into the shared App Group so the
+ * home-screen / lock-screen widget shows real numbers instead of defaults.
+ * Values are written twice (native type + string) so the widget can still read
+ * them if the bridge coerces numbers unexpectedly.
+ */
 export function syncLeoWidget(snapshot: LeoWidgetSnapshot): void {
   if (Platform.OS !== 'ios') return;
 
@@ -20,13 +26,18 @@ export function syncLeoWidget(snapshot: LeoWidgetSnapshot): void {
     const fallbackExpiry = new Date();
     fallbackExpiry.setHours(23, 59, 59, 999);
 
-    storage.set('leo_widget_streak', Math.max(0, snapshot.streak));
-    storage.set('leo_widget_complete', snapshot.lessonComplete ? 1 : 0);
-    storage.set(
-      'leo_widget_expires_at',
-      Math.floor((Number.isFinite(parsedExpiry) ? parsedExpiry : fallbackExpiry.getTime()) / 1000),
+    const streak = Math.max(0, Math.round(snapshot.streak || 0));
+    const expiresAt = Math.floor(
+      (Number.isFinite(parsedExpiry) ? parsedExpiry : fallbackExpiry.getTime()) / 1000,
     );
-    storage.set('leo_widget_market', snapshot.market || 'Your market');
+    const market = snapshot.market || 'Your market';
+
+    storage.set('leo_widget_streak', streak);
+    storage.set('leo_widget_streak_text', String(streak));
+    storage.set('leo_widget_complete', snapshot.lessonComplete ? 1 : 0);
+    storage.set('leo_widget_expires_at', expiresAt);
+    storage.set('leo_widget_expires_text', String(expiresAt));
+    storage.set('leo_widget_market', market);
     ExtensionStorage.reloadWidget();
   } catch (error) {
     log.warn('[LeoWidget] Could not sync widget state:', error);

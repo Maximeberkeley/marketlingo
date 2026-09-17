@@ -7,7 +7,7 @@ const sly = require('./leo-sly.png.asset.json');
 
 const assetUrl = (asset) => `https://marketlingo-marketverse.lovable.app${asset.url}`;
 
-module.exports = (config) => ({
+module.exports = () => ({
   type: 'widget',
   name: 'LeoWidget',
   displayName: 'Leo Streak',
@@ -16,7 +16,7 @@ module.exports = (config) => ({
   frameworks: ['WidgetKit', 'SwiftUI'],
   entitlements: {
     'com.apple.security.application-groups': [
-      `group.${config.ios.bundleIdentifier}.shared`,
+      'group.app.marketlingo.aerospace.shared',
     ],
   },
   colors: {
