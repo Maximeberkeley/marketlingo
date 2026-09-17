@@ -350,7 +350,7 @@ export default function SettingsScreen() {
   const handleWidgetSelfTest = async () => {
     if (!user || testingWidget) return;
     setTestingWidget(true);
-    setWidgetTestDetail('Writing your current streak and waiting for Leo…');
+      setWidgetTestDetail('Writing your current streak…');
     try {
       const { data, error } = await supabase
         .from('user_progress')
@@ -614,7 +614,7 @@ export default function SettingsScreen() {
 
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Version</Text>
-            <Text style={styles.infoValue}>1.0.0</Text>
+            <Text style={styles.infoValue}>{Constants.expoConfig?.version || '1.0.7'}</Text>
           </View>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/legal?type=terms' as any)}>

@@ -85,7 +85,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
           <LeoCharacter animation={ANIM[mood]} size="sm" still />
         </View>
 
-        {/* Comic speech bubble — pops in shortly after the card with a springy wobble */}
+        {/* Clean illustrated speech balloon — one shape and one integrated tail. */}
         {speaking ? (
           <Animated.View
             style={[
@@ -93,13 +93,11 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
               { opacity: enter, transform: [{ scale: pop }, { translateY: rise }] },
             ]}
           >
+            <View style={[styles.tailOutline, { borderColor: moodTint }]} />
+            <View style={styles.tailFill} />
             <View style={[styles.bubble, { borderColor: moodTint }]}>
               <ColorText text={line} style={styles.text} maxSentences={2} maxLength={110} />
             </View>
-            {/* Comic tail: two overlapping circles shrinking toward Leo, plus a dot */}
-            <View style={[styles.tailCircleBig, { borderColor: moodTint }]} />
-            <View style={[styles.tailCircleSmall, { borderColor: moodTint }]} />
-            <View style={[styles.tailDot, { borderColor: moodTint }]} />
           </Animated.View>
         ) : (
           <View style={styles.bubbleWrap} pointerEvents="none" />
@@ -122,71 +120,61 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   leo: {
-    width: 100,
+    width: 94,
     height: SCENE_H,
     justifyContent: 'flex-end',
     alignItems: 'center',
     overflow: 'hidden',
-    transform: [{ scale: 0.96 }],
     zIndex: 1,
   },
   bubbleWrap: {
     flex: 1,
     alignSelf: 'center',
     marginRight: tokens.space.sm,
-    marginLeft: 22,
+    marginLeft: 14,
     position: 'relative',
     // Always above Leo — even if his artwork overhangs, the words stay readable.
     zIndex: 2,
   },
   bubble: {
     backgroundColor: tokens.color.card,
-    borderWidth: 3,
-    // One smooth, fully rounded balloon — no mismatched corners
-    borderRadius: 26,
-    paddingHorizontal: tokens.space.md + 2,
-    paddingVertical: tokens.space.sm + 2,
-    shadowColor: tokens.color.text,
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
-  },
-  tailCircleBig: {
-    position: 'absolute',
-    left: -14,
-    bottom: 22,
-    width: 15,
-    height: 15,
-    borderRadius: 8,
-    borderWidth: 3,
-    backgroundColor: tokens.color.card,
-  },
-  tailCircleSmall: {
-    position: 'absolute',
-    left: -25,
-    bottom: 11,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    borderWidth: 2.5,
-    backgroundColor: tokens.color.card,
-  },
-  tailDot: {
-    position: 'absolute',
-    left: -32,
-    bottom: 4,
-    width: 6,
-    height: 6,
-    borderRadius: 3,
     borderWidth: 2,
+    borderRadius: 20,
+    paddingHorizontal: tokens.space.md,
+    paddingVertical: 10,
+    shadowColor: tokens.color.text,
+    shadowOpacity: 0.07,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 1,
+  },
+  tailOutline: {
+    position: 'absolute',
+    left: -7,
+    top: '50%',
+    width: 17,
+    height: 17,
     backgroundColor: tokens.color.card,
+    borderLeftWidth: 2,
+    borderBottomWidth: 2,
+    borderRadius: 3,
+    transform: [{ translateY: -8 }, { rotate: '45deg' }],
+    zIndex: 0,
+  },
+  tailFill: {
+    position: 'absolute',
+    left: 1,
+    top: '50%',
+    width: 12,
+    height: 22,
+    backgroundColor: tokens.color.card,
+    transform: [{ translateY: -11 }],
+    zIndex: 1,
   },
   text: {
-    fontSize: tokens.font.caption + 1,
+    fontSize: tokens.font.caption,
     lineHeight: 18,
-    fontWeight: '700',
-    letterSpacing: 0.1,
+    fontWeight: '800',
     color: tokens.color.text,
   },
 });
