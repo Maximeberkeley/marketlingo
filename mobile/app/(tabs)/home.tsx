@@ -237,7 +237,8 @@ export default function HomeScreen() {
       // Push the fresh streak straight to the widget the moment a lesson lands,
       // reading it from the database so it is never one lesson behind.
       if (user?.id) {
-        const widgetMarket = selectedMarketLocal || selectedMarket || 'aerospace';
+        const widgetMarket = selectedMarketLocal || selectedMarket;
+        if (!widgetMarket) return;
         const { data: fresh } = await supabase
           .from('user_progress')
           .select('current_streak, streak_expires_at')
