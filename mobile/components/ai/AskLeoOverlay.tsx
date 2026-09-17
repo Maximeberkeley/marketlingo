@@ -156,6 +156,9 @@ export function AskLeoOverlay({
 
   useEffect(() => {
     if (visible) {
+      // Every entry starts with the big mode cards.
+      setModesExpanded(true);
+      modesAnim.setValue(1);
       Animated.spring(slideAnim, {
         toValue: 1,
         tension: 190,
@@ -166,7 +169,17 @@ export function AskLeoOverlay({
       slideAnim.setValue(0);
       autoAsked.current = false;
     }
-  }, [visible, slideAnim]);
+  }, [visible, slideAnim, modesAnim]);
+
+  const collapseModes = useCallback(() => {
+    if (!modesExpanded) return;
+    setModesExpanded(false);
+    Animated.timing(modesAnim, {
+      toValue: 0,
+      duration: 220,
+      useNativeDriver: true,
+    }).start();
+  }, [modesExpanded, modesAnim]);
 
   const stopAudio = useCallback(async () => {
     try {
