@@ -1,9 +1,6 @@
-/**
- * Lesson Kit design tokens — the single reskin point.
- * Change values here and the whole lesson UI follows.
- */
-export const tokens = {
-  color: {
+import { isDark } from '../../lib/theme';
+
+const LIGHT_COLOR = {
     bg: '#FFFFFF',
     surface: '#F8F9FB',
     card: '#FFFFFF',
@@ -37,7 +34,50 @@ export const tokens = {
 
     track: '#EDEFF4',
     heart: '#FB7185',
-  },
+  } as const;
+
+const DARK_COLOR = {
+    bg: '#15171B',
+    surface: '#1D2126',
+    card: '#23272E',
+    border: '#31373F',
+    borderStrong: '#3C434D',
+
+    text: '#F2F4F8',
+    textSecondary: '#AAB1BC',
+    textMuted: '#7C848F',
+    textOnAccent: '#FFFFFF',
+
+    accent: '#A78BFA',
+    accentDark: '#8B5CF6',
+    accentSoft: 'rgba(167, 139, 250, 0.16)',
+
+    signalData: '#38BDF8',
+    signalUp: '#34D399',
+    signalDown: '#FB7185',
+    signalEnergy: '#FBBF24',
+
+    correct: '#34D399',
+    correctDark: '#10B981',
+    correctSoft: 'rgba(52, 211, 153, 0.18)',
+
+    incorrect: '#F87171',
+    incorrectDark: '#EF4444',
+    incorrectSoft: 'rgba(248, 113, 113, 0.18)',
+
+    disabled: '#2B3037',
+    disabledText: '#6B7380',
+
+    track: '#2A2F36',
+    heart: '#FB7185',
+  } as const;
+
+/**
+ * Lesson Kit design tokens — the single reskin point.
+ * Change values here and the whole lesson UI follows.
+ */
+export const tokens = {
+  color: isDark ? DARK_COLOR : LIGHT_COLOR,
   radius: {
     sm: 8,
     md: 12,

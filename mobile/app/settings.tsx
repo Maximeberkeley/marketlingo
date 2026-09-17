@@ -19,6 +19,7 @@ import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { useAIConsent } from '../hooks/useAIConsent';
+import { isDark, applyThemeMode } from '../lib/theme';
 
 import { NotificationOnboarding } from '../components/onboarding/NotificationOnboarding';
 import { log } from '../lib/logger';
@@ -87,6 +88,7 @@ export default function SettingsScreen() {
   const [prefsLoaded, setPrefsLoaded] = useState(false);
   const [showNotifOnboarding, setShowNotifOnboarding] = useState(false);
   const [useIndustryMascots, setUseIndustryMascots] = useState(true);
+  const [darkModeOn, setDarkModeOn] = useState(isDark);
   const notificationListener = useRef<any>(null);
 
   // Load saved preferences from profile
@@ -308,6 +310,26 @@ export default function SettingsScreen() {
     );
   };
 
+  const handleToggleDarkMode = (value: boolean) => {
+    setDarkModeOn(value);
+    Alert.alert(
+      value ? 'Turn on dark mode?' : 'Turn off dark mode?',
+      'MarketLingo restarts so the new colors apply everywhere.',
+      [
+        { text: 'Not now', style: 'cancel', onPress: () => setDarkModeOn(!value) },
+        {
+          text: 'Restart',
+          onPress: async () => {
+            const restarted = await applyThemeMode(value ? 'dark' : 'light');
+            if (!restarted) {
+              Alert.alert('Saved', 'Close and reopen MarketLingo to see the new look.');
+            }
+          },
+        },
+      ],
+    );
+  };
+
   const handleToggleIndustryMascots = async (value: boolean) => {
     setUseIndustryMascots(value);
     if (!user) return;
@@ -424,6 +446,18 @@ export default function SettingsScreen() {
         {/* Appearance */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>APPEARANCE</Text>
+          <View style={styles.settingRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.settingLabel}>Dark Mode</Text>
+              <Text style={styles.settingDesc}>Soft dark greys. The app restarts to apply.</Text>
+            </View>
+            <Switch
+              value={darkModeOn}
+              onValueChange={handleToggleDarkMode}
+              trackColor={{ false: COLORS.bg1, true: COLORS.accent }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
           <View style={styles.settingRow}>
             <View style={{ flex: 1 }}>
               <Text style={styles.settingLabel}>Use Industry Mascots</Text>

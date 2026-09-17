@@ -5,6 +5,7 @@ import * as Haptics from 'expo-haptics';
 import { CollectibleCard } from '../../hooks/useCollectibles';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { playSound } from '../../lib/sounds';
+import { COLORS } from '../../lib/constants';
 
 export function CardRevealModal({ card, marketId, onClose }: { card: Partial<CollectibleCard> | null; marketId?: string; onClose: () => void }) {
   const scale = useRef(new Animated.Value(0.7)).current;
@@ -37,7 +38,7 @@ export function CardRevealModal({ card, marketId, onClose }: { card: Partial<Col
 
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(15,23,42,0.82)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  card: { width: '100%', backgroundColor: '#FFFFFF', borderRadius: 20, borderWidth: 3, padding: 24, alignItems: 'center' },
+  card: { width: '100%', backgroundColor: COLORS.bg2, borderRadius: 20, borderWidth: 3, padding: 24, alignItems: 'center' },
   rarity: { fontSize: 11, fontWeight: '900' }, icon: { width: 72, height: 72, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginVertical: 18 },
   name: { fontSize: 27, fontWeight: '900', color: '#111827', textAlign: 'center' }, role: { fontSize: 13, fontWeight: '800', color: '#64748B', marginTop: 4 },
   insight: { fontSize: 15, lineHeight: 22, color: '#334155', textAlign: 'center', marginTop: 18 }, leo: { fontSize: 13, lineHeight: 19, color: '#64748B', fontStyle: 'italic', marginTop: 14, textAlign: 'center' },

@@ -5,7 +5,7 @@
     "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "scheme": "marketlingo",
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -16,7 +16,7 @@
       "supportsTablet": false,
       "appleTeamId": "PM32G4952G",
       "bundleIdentifier": "app.marketlingo.aerospace",
-      "buildNumber": "103",
+      "buildNumber": "104",
       "entitlements": {
         "com.apple.security.application-groups": [
           "group.app.marketlingo.aerospace.shared"
@@ -57,8 +57,7 @@
           "ios": {
             "deploymentTarget": "15.1"
           },
-          "android": {
-          }
+          "android": {}
         }
       ],
       "expo-web-browser"

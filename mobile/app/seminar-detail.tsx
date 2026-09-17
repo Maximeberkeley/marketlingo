@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   lockedTab: { alignItems: 'center', justifyContent: 'center', paddingVertical: 60, gap: 8 },
   lockedTitle: { fontSize: 18, fontWeight: '700', color: COLORS.textPrimary },
   lockedSubtitle: { fontSize: 14, color: COLORS.textMuted, textAlign: 'center', lineHeight: 20, paddingHorizontal: 20 },
-  takeawayCard: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, padding: 16, backgroundColor: '#FFF', borderRadius: 14, borderWidth: 1, borderColor: COLORS.border },
+  takeawayCard: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, padding: 16, backgroundColor: COLORS.bg2, borderRadius: 14, borderWidth: 1, borderColor: COLORS.border },
   takeawayNumber: { width: 24, height: 24, borderRadius: 12, backgroundColor: '#EEF2FF', alignItems: 'center', justifyContent: 'center' },
   takeawayNumberText: { fontSize: 12, fontWeight: '800', color: '#4338CA' },
   takeawayText: { flex: 1, fontSize: 14, lineHeight: 20, color: COLORS.textSecondary },

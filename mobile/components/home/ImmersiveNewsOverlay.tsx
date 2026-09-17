@@ -805,7 +805,7 @@ const st = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.25)',
   },
   dotActive: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.bg2,
     width: 18,
     borderRadius: 3,
   },

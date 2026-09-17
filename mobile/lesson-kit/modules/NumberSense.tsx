@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     height: 30,
     marginLeft: -15,
     borderRadius: tokens.radius.pill,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: tokens.color.card,
     borderWidth: 3,
     borderColor: tokens.color.accent,
     shadowColor: '#1A1F36',

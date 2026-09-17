@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 16,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.bg2,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

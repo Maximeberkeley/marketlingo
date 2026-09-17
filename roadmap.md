@@ -61,3 +61,4 @@
 - [ ] Add safe backward navigation inside lessons
 - [ ] Restore Leo's natural image proportions and make every speech line fit cleanly
 - [x] Leo presence: enlarge Leo himself (not bubble/text), bubble appears ~2s into each slide with a gentle pop so he feels alive
+- [x] Dark mode (v2): premium dark greys, Settings > Appearance toggle, boot-time palette + restart, hardcoded whites removed

@@ -538,7 +538,7 @@ const styles = StyleSheet.create({
   waveMetaText: { fontSize: 11, fontWeight: '700', color: '#FFFFFF' },
   waveBtn: {
     marginTop: 18,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: tokens.color.card,
     borderRadius: 16,
     paddingVertical: 15,
     paddingHorizontal: 28,
