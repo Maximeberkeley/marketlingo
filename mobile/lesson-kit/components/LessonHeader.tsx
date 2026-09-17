@@ -23,6 +23,7 @@ interface Props {
 export function LessonHeader({
   progress,
   onExit,
+  onBack,
   lives,
   label,
   accentColor,
