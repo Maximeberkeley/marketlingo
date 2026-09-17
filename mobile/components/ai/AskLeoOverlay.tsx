@@ -538,25 +538,63 @@ export function AskLeoOverlay({
             )}
           </ScrollView>
 
-          {/* Modes */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.modeRow}
-            keyboardShouldPersistTaps="handled"
-          >
-            {MODES.map(mode => (
-              <TouchableOpacity
-                key={mode.id}
-                style={[styles.modeChip, { borderColor: mode.color + '55', backgroundColor: mode.color + '12' }]}
-                onPress={() => ask(mode.ask, mode.instruction)}
-                disabled={isLoading}
+          {/* Modes — big cards on entry, compact chips once a question is asked */}
+          {modesExpanded ? (
+            <Animated.View style={{ opacity: modesAnim }}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.modeRowBig}
+                keyboardShouldPersistTaps="handled"
               >
-                <Feather name={mode.icon} size={14} color={mode.color} />
-                <Text style={[styles.modeText, { color: mode.color }]}>{mode.label}</Text>
+                {MODES.map(mode => (
+                  <TouchableOpacity
+                    key={mode.id}
+                    style={[styles.modeCard, { borderColor: mode.color + '66', backgroundColor: mode.color + '14' }]}
+                    onPress={() => ask(mode.ask, mode.instruction)}
+                    disabled={isLoading}
+                    activeOpacity={0.85}
+                  >
+                    <View style={[styles.modeCardIcon, { backgroundColor: mode.color + '22' }]}>
+                      <Feather name={mode.icon} size={22} color={mode.color} />
+                    </View>
+                    <Text style={[styles.modeCardText, { color: mode.color }]}>{mode.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </Animated.View>
+          ) : (
+            <View style={styles.modeRowSmallWrap}>
+              <TouchableOpacity
+                style={styles.modeExpandBtn}
+                onPress={() => {
+                  setModesExpanded(true);
+                  Animated.timing(modesAnim, { toValue: 1, duration: 180, useNativeDriver: true }).start();
+                }}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Feather name="grid" size={14} color={tokens.color.textMuted} />
               </TouchableOpacity>
-            ))}
-          </ScrollView>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.modeRow}
+                keyboardShouldPersistTaps="handled"
+              >
+                {MODES.map(mode => (
+                  <TouchableOpacity
+                    key={mode.id}
+                    style={[styles.modeChip, { borderColor: mode.color + '55', backgroundColor: mode.color + '12' }]}
+                    onPress={() => ask(mode.ask, mode.instruction)}
+                    disabled={isLoading}
+                  >
+                    <Feather name={mode.icon} size={13} color={mode.color} />
+                    <Text style={[styles.modeText, { color: mode.color }]}>{mode.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
 
           {/* Input */}
           <View style={styles.inputRow}>
