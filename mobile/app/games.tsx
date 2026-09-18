@@ -15,6 +15,8 @@ import { Feather } from "@expo/vector-icons";
 import { useSubscription } from "../hooks/useSubscription";
 import { splitSentences } from '../lib/textUtils';
 import { goalContentTag } from '../lib/goals';
+import { useStudiedLessons } from '../hooks/useStudiedLessons';
+import { lessonQuestions } from '../lesson-kit/practice/lessonQuestions';
 
 interface GameQuestion {
   id: string;
