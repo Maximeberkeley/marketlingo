@@ -77,16 +77,26 @@ export function buildCase(input: CaseInput): DeepCase | null {
   const lessonSlides = studiedSlides(input.studied);
   const lead = input.studied?.[0];
 
+  // The call tests the lesson first: a claim from what the learner actually read.
+  // A real market scenario only stands in when no studied lesson can carry it.
   const call =
-    trainerCall(scenario, 'case-call') || checkClaim(lessonSlides, 'case-call-claim');
+    checkClaim(lessonSlides, 'case-call-claim') || trainerCall(scenario, 'case-call');
   if (!call) return null;
 
   const stages: CaseStage[] = [];
 
-  const briefHeadline = scenario
-    ? caseLead(scenario.scenario, scenario.question)
-    : `You are back on ${lead?.title || `${input.marketName} fundamentals`}. Time to use it.`;
-  const briefDetail = scenario?.question || lead?.title || `${input.marketName} case`;
+  // The brief is framed by the learner's own lesson whenever there is one, so the
+  // case reads as a continuation of what they studied rather than market trivia.
+  const briefHeadline = lead
+    ? caseLead(
+        lead.slides?.[0]?.body || lead.title,
+        `You are back on ${lead.title}. Time to use it.`,
+      )
+    : scenario
+      ? caseLead(scenario.scenario, scenario.question)
+      : `You are back on ${input.marketName} fundamentals. Time to use it.`;
+  const briefDetail = lead?.title || scenario?.question || `${input.marketName} case`;
+
 
   stages.push({
     key: 'brief',
