@@ -142,7 +142,7 @@ export function LessonComplete({
           onPress={() => {
             triggerHaptic('medium');
             onDone(totalXp);
-            router.push({ pathname: '/(tabs)/home', params: { intel: '1' } });
+            router.push({ pathname: '/(tabs)/roadmap', params: { autoOpen: '1' } });
           }}
         >
           <Image source={require('../../assets/leo-sticker.png')} style={styles.intelLeo} resizeMode="contain" />

@@ -22,7 +22,7 @@ function resolveRoute(data: Record<string, any>): string | null {
     case 'leaderboard':
       return '/leaderboard';
     case 'news':
-      return '/(tabs)/home';
+      return '/(tabs)/roadmap';
     case 'achievement':
       return '/achievements';
     case 'investment':
@@ -103,6 +103,7 @@ export default function RootLayout() {
                 <Stack.Screen name="onboarding/familiarity" options={{ gestureEnabled: false }} />
                 <Stack.Screen name="daily-leo" options={{ animation: 'fade', gestureEnabled: false }} />
                 <Stack.Screen name="(tabs)" options={{ animation: 'fade', gestureEnabled: false }} />
+                <Stack.Screen name="notes" />
                 <Stack.Screen name="arena" />
                 <Stack.Screen name="deep-case" />
                 <Stack.Screen name="trainer" />

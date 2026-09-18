@@ -16,6 +16,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import { COLORS, SHADOWS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
@@ -366,6 +367,10 @@ export default function NotebookScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+          <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(tabs)/home')} activeOpacity={0.75}>
+            <Feather name="arrow-left" size={20} color={COLORS.textPrimary} />
+            <Text style={styles.backText}>Course</Text>
+          </TouchableOpacity>
         {/* ── Header ── */}
         <Animated.View
           style={[
@@ -377,9 +382,9 @@ export default function NotebookScreen() {
           ]}
         >
           <View style={{ flex: 1 }}>
-            <Text style={styles.title}>Notebook</Text>
+            <Text style={styles.title}>Your notes</Text>
             <Text style={styles.subtitle}>
-              {notes.length === 0 ? 'Start capturing insights' : `${notes.length} insight${notes.length !== 1 ? 's' : ''} captured`}
+              {notes.length === 0 ? 'Keep the ideas worth owning' : `${notes.length} idea${notes.length !== 1 ? 's' : ''} worth keeping`}
             </Text>
           </View>
           <TouchableOpacity
@@ -396,7 +401,7 @@ export default function NotebookScreen() {
             <Feather name="search" size={16} color={COLORS.textMuted} />
             <TextInput
               style={styles.searchInput}
-              placeholder="Search notes… (multiple words to compare)"
+              placeholder="Search your notes"
               placeholderTextColor={COLORS.textMuted}
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -409,9 +414,6 @@ export default function NotebookScreen() {
             )}
           </View>
         )}
-
-        {/* ── Streak Card ── */}
-        <StreakWeekView streak={streak} thisWeek={thisWeek} totalNotes={notes.length} />
 
         {/* ── Category Tabs ── */}
         <ScrollView
@@ -494,7 +496,7 @@ export default function NotebookScreen() {
             <Text style={styles.emptySubtitle}>
               {searchQuery
                 ? 'Try a different search or category'
-                : 'Capture insights while learning.\nStudies show writing helps retention by 30%.'}
+                : 'Write one clear line in your own words. It will stay connected to your course.'}
             </Text>
             {!searchQuery && (
               <TouchableOpacity
@@ -689,6 +691,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: 'center', justifyContent: 'center' },
   scrollContent: { paddingHorizontal: 16 },
+  backButton: { flexDirection: 'row', alignItems: 'center', gap: 7, alignSelf: 'flex-start', paddingVertical: 8, marginBottom: 8 },
+  backText: { fontSize: 13, fontWeight: '700', color: COLORS.textPrimary },
 
   // Header
   header: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },

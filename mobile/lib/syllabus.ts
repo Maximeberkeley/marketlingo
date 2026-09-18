@@ -9,7 +9,7 @@
  *   - every 7th day of the programme consolidates instead of adding an idea
  */
 
-import { MARKETS } from './markets';
+import { markets } from './markets';
 
 export const TOTAL_DAYS = 180;
 export const DAYS_PER_SEASON = 30;
@@ -46,7 +46,7 @@ export interface SyllabusDay {
 export const isConsolidationDay = (day: number) => day > 0 && day % 7 === 0;
 
 export function seasonThemes(marketId: string): string[] {
-  const market = MARKETS.find(m => m.id === marketId);
+  const market = markets.find(m => m.id === marketId);
   const themes = market?.themes ?? [];
   if (themes.length >= 6) return themes.slice(0, 6);
   return [...themes, ...Array(6 - themes.length).fill('Advanced Topics')];

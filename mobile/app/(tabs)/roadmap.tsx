@@ -1,838 +1,103 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  Modal,
-  Animated,
-  Dimensions,
-} from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
-import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
-import { supabase } from '../../lib/supabase';
+import { DailyNews } from '../../components/home/DailyNews';
 import { useAuth } from '../../hooks/useAuth';
+import { supabase } from '../../lib/supabase';
+import { COLORS, TYPE } from '../../lib/constants';
+import { getMarketName } from '../../lib/markets';
 import { triggerHaptic } from '../../lib/haptics';
-import { playSound } from '../../lib/sounds';
-import { calculateAvailableDay } from '../../lib/dayMath';
-import { WorldBanner } from '../../components/world/WorldBanner';
-import { goalContentTag } from '../../lib/goals';
-import { dayPromise, seasonThemes, syllabusDay, DAYS_PER_BLOCK, DAYS_PER_SEASON } from '../../lib/syllabus';
 
-const { width: SCREEN_W } = Dimensions.get('window');
-
-// ── Types ──────────────────────────────────────────────
-interface Lesson {
-  day: number;
-  title: string;
-  completed: boolean;
-  current?: boolean;
-  stackId?: string;
-  /** What this day is for: the angle it takes, or a consolidation day. */
-  promise: string;
-}
-
-interface Week {
-  weekNumber: number;
-  title: string;
-  dayRange: string;
-  lessons: Lesson[];
-  status: 'locked' | 'current' | 'completed' | 'available';
-  completedCount: number;
-}
-
-interface Season {
-  seasonNumber: number;
-  title: string;
-  subtitle: string;
-  icon: keyof typeof Feather.glyphMap;
-  color: string;
-  colorSoft: string;
-  weeks: Week[];
-  isExpanded: boolean;
-  totalLessons: number;
-  completedLessons: number;
-}
-
-// ── Season styling — titles come from the market's own themes ──
-const SEASON_STYLE: { icon: keyof typeof Feather.glyphMap; color: string; colorSoft: string }[] = [
-  { icon: 'layers', color: '#3B82F6', colorSoft: 'rgba(59,130,246,0.08)' },
-  { icon: 'trending-up', color: '#8B5CF6', colorSoft: 'rgba(139,92,246,0.08)' },
-  { icon: 'zap', color: '#F59E0B', colorSoft: 'rgba(245,158,11,0.08)' },
-  { icon: 'users', color: '#10B981', colorSoft: 'rgba(16,185,129,0.08)' },
-  { icon: 'eye', color: '#EC4899', colorSoft: 'rgba(236,72,153,0.08)' },
-  { icon: 'award', color: '#F97316', colorSoft: 'rgba(249,115,22,0.08)' },
-];
-
-const SEASON_SUBTITLE = 'Five territories, six angles each';
-
-/** A block is the six days spent on one territory. */
-function getDayBlock(day: number) { return Math.ceil(day / DAYS_PER_BLOCK); }
-
-// ── Main Screen ───────────────────────────────────────
-export default function RoadmapScreen() {
+export default function IntelScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { autoOpen } = useLocalSearchParams<{ autoOpen?: string }>();
+  const [marketId, setMarketId] = useState<string | null>(null);
+  const [learningGoal, setLearningGoal] = useState('curiosity');
   const [loading, setLoading] = useState(true);
-  const [currentDay, setCurrentDay] = useState(1);
-  const [selectedMarket, setSelectedMarket] = useState('aerospace');
-  const [seasons, setSeasons] = useState<Season[]>([]);
-  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
-  const [expandedSeason, setExpandedSeason] = useState<number | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Entrance animations
-  const headerAnim = useRef(new Animated.Value(0)).current;
-  const statsAnim = useRef(new Animated.Value(0)).current;
-  const cardsAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    fetchProgress();
-  }, [user]);
-
-  useEffect(() => {
-    if (!loading) {
-      Animated.stagger(120, [
-        Animated.spring(headerAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }),
-        Animated.spring(statsAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }),
-        Animated.spring(cardsAnim, { toValue: 1, tension: 80, friction: 12, useNativeDriver: true }),
-      ]).start();
+  const loadContext = useCallback(async () => {
+    if (!user) {
+      setLoading(false);
+      return;
     }
-  }, [loading]);
-
-  const fetchProgress = async () => {
-    if (!user) return;
-
     const { data: profile } = await supabase
       .from('profiles')
       .select('selected_market')
       .eq('id', user.id)
-      .single();
-
-    const market = profile?.selected_market || 'aerospace';
-    setSelectedMarket(market);
-
+      .maybeSingle();
+    const selectedMarket = profile?.selected_market || 'aerospace';
     const { data: progress } = await supabase
       .from('user_progress')
-      .select('start_date, completed_stacks, learning_goal')
+      .select('learning_goal')
       .eq('user_id', user.id)
-      .eq('market_id', market)
-      .single();
-
-    const learningGoal = progress?.learning_goal || 'curiosity';
-    const goalTag = goalContentTag(learningGoal);
-    const completed = (progress?.completed_stacks as string[]) || [];
-
-    const day = calculateAvailableDay(progress?.start_date);
-    setCurrentDay(day);
-
-    const { data: allStacks } = await supabase
-      .from('stacks')
-      .select('id, title, tags')
-      .eq('market_id', market)
-      .contains('tags', ['MICRO_LESSON'])
-      .not('published_at', 'is', null);
-
-    const dayLessonMap = new Map<number, { title: string; stackId: string }>();
-    // Track ALL stack IDs per day so we can match completed stacks even if a different variant was used
-    const dayAllStackIds = new Map<number, string[]>();
-    allStacks?.forEach((stack: any) => {
-      const tags = stack.tags as string[];
-      const dayTag = tags?.find((t: string) => t.startsWith('day-'));
-      if (!dayTag) return;
-      const dayNum = parseInt(dayTag.replace('day-', ''), 10);
-      if (isNaN(dayNum)) return;
-
-      // Collect all stack IDs for this day
-      const existing = dayAllStackIds.get(dayNum) || [];
-      existing.push(stack.id);
-      dayAllStackIds.set(dayNum, existing);
-
-      const hasGoalTag = tags.includes(goalTag);
-      const existingLesson = dayLessonMap.get(dayNum);
-      if (!existingLesson || hasGoalTag) {
-        dayLessonMap.set(dayNum, { title: stack.title, stackId: stack.id });
-      }
-    });
-
-    const currentBlock = getDayBlock(day);
-    const themes = seasonThemes(market);
-
-    // Seasons follow the market's own six themes; each season holds five
-    // territories of six days, matching the syllabus the lessons are written to.
-    const builtSeasons: Season[] = SEASON_STYLE.map((meta, sIdx) => {
-      const blocksPerSeason = DAYS_PER_SEASON / DAYS_PER_BLOCK;
-      const startBlock = sIdx * blocksPerSeason + 1;
-      let totalLessons = 0;
-      let completedLessons = 0;
-
-      const weeks: Week[] = [];
-      for (let w = 0; w < blocksPerSeason; w++) {
-        const blockNum = startBlock + w;
-        const startDay = (blockNum - 1) * DAYS_PER_BLOCK + 1;
-        const days = Array.from({ length: DAYS_PER_BLOCK }, (_, i) => startDay + i);
-
-        let status: Week['status'] = 'available';
-        if (blockNum === currentBlock) status = 'current';
-
-        const lessons: Lesson[] = days.map((d) => {
-          const dbLesson = dayLessonMap.get(d);
-          const allIdsForDay = dayAllStackIds.get(d) || [];
-          const isCompleted = dbLesson
-            ? (completed.includes(dbLesson.stackId) || allIdsForDay.some(id => completed.includes(id)))
-            : false;
-          totalLessons++;
-          if (isCompleted) completedLessons++;
-          return {
-            day: d,
-            title: dbLesson?.title || `Day ${d}`,
-            completed: isCompleted,
-            current: d === day,
-            stackId: dbLesson?.stackId,
-            promise: dayPromise(market, d),
-          };
-        });
-
-        const plan = syllabusDay(market, startDay);
-        weeks.push({
-          weekNumber: blockNum,
-          title: `${plan.seasonTheme} · Part ${plan.block}`,
-          dayRange: `Days ${days[0]}–${days[days.length - 1]}`,
-          lessons,
-          status,
-          completedCount: lessons.filter((l) => l.completed).length,
-        });
-      }
-
-      const isCurrent = weeks.some((w) => w.status === 'current');
-
-      return {
-        seasonNumber: sIdx + 1,
-        title: themes[sIdx] ?? `Season ${sIdx + 1}`,
-        subtitle: SEASON_SUBTITLE,
-        icon: meta.icon,
-        color: meta.color,
-        colorSoft: meta.colorSoft,
-        weeks,
-        isExpanded: isCurrent,
-        totalLessons,
-        completedLessons,
-      };
-    });
-
-    // Auto-expand current season
-    const currentSeasonIdx = builtSeasons.findIndex((s) => s.isExpanded);
-    if (currentSeasonIdx >= 0) setExpandedSeason(currentSeasonIdx);
-
-    setSeasons(builtSeasons);
+      .eq('market_id', selectedMarket)
+      .maybeSingle();
+    setMarketId(selectedMarket);
+    setLearningGoal(progress?.learning_goal || 'curiosity');
     setLoading(false);
-  };
+  }, [user]);
 
-  const handleSeasonToggle = (idx: number) => {
+  useEffect(() => { void loadContext(); }, [loadContext]);
+  useFocusEffect(useCallback(() => { void loadContext(); }, [loadContext]));
+
+  const refresh = async () => {
     triggerHaptic('selection');
-    setExpandedSeason(expandedSeason === idx ? null : idx);
+    setRefreshing(true);
+    await loadContext();
+    setRefreshing(false);
   };
 
-  const handleLessonClick = (lesson: Lesson) => {
-    // Allow clicking any lesson that has content (stackId), regardless of completion status
-    if (lesson.stackId) {
-      triggerHaptic('light');
-      setSelectedLesson(lesson);
-    }
-  };
-
-  const animStyle = (anim: Animated.Value) => ({
-    opacity: anim,
-    transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [24, 0] }) }],
-  });
-
-  if (loading) {
+  if (loading || !marketId) {
     return (
-      <View style={[styles.container, styles.centered]}>
+      <View style={styles.loading}>
         <ActivityIndicator size="large" color={COLORS.accent} />
       </View>
     );
   }
 
-  const totalCompleted = seasons.reduce((a, s) => a + s.completedLessons, 0);
-  const totalLessons = seasons.reduce((a, s) => a + s.totalLessons, 0);
-  const completionPct = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
-  const journeyPct = Math.round(((currentDay - 1) / 179) * 100);
-  const overallPct = Math.max(journeyPct, completionPct);
-
   return (
-    <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 100 },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* ─── Header ───────────────────────────── */}
-        <Animated.View style={[styles.header, animStyle(headerAnim)]}>
-          <Text style={styles.pageTitle}>Courses</Text>
-          <Text style={styles.pageSubtitle}>
-            Day {currentDay} · {dayPromise(selectedMarket || 'ai', currentDay)}
-          </Text>
-        </Animated.View>
-
-        <Animated.View style={[{ marginBottom: 16 }, animStyle(statsAnim)]}>
-          <WorldBanner marketId={selectedMarket} day={currentDay} compact />
-        </Animated.View>
-
-        {/* ─── Stats row ────────────────────────── */}
-        <Animated.View style={[styles.statsRow, animStyle(statsAnim)]}>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{totalCompleted}</Text>
-            <Text style={styles.statLabel}>Completed</Text>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: insets.bottom + 100 }}
+      showsVerticalScrollIndicator={false}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={COLORS.accent} />}
+    >
+      <View style={styles.masthead}>
+        <View style={styles.mastheadTop}>
+          <View>
+            <Text style={styles.eyebrow}>LIVE FROM YOUR INDUSTRY</Text>
+            <Text style={styles.title}>Intel</Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{overallPct}%</Text>
-            <Text style={styles.statLabel}>Progress</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{seasons.length}</Text>
-            <Text style={styles.statLabel}>Chapters</Text>
-          </View>
-        </Animated.View>
-
-        {/* ─── Overall progress bar ─────────────── */}
-        <Animated.View style={animStyle(statsAnim)}>
-          <View style={styles.overallProgress}>
-            <View style={styles.progressTrack}>
-              <View style={[styles.progressFill, { width: `${overallPct}%` as any }]} />
-            </View>
-            <Text style={styles.progressLabel}>{overallPct}% of 180-day journey</Text>
-          </View>
-        </Animated.View>
-
-        {/* ─── Season Cards — Brilliant Style ──── */}
-        <Animated.View style={animStyle(cardsAnim)}>
-          {seasons.map((season, sIdx) => {
-            const isExpanded = expandedSeason === sIdx;
-            const seasonPct = season.totalLessons > 0
-              ? Math.round((season.completedLessons / season.totalLessons) * 100) : 0;
-            const isComplete = seasonPct === 100;
-            const isCurrent = season.weeks.some((w) => w.status === 'current');
-            const isLocked = season.weeks.every((w) => w.status === 'locked');
-
-            return (
-              <View key={sIdx} style={styles.seasonCard}>
-                {/* Season header card */}
-                <TouchableOpacity
-                  style={[
-                    styles.seasonHeader,
-                    isExpanded && { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 },
-                  ]}
-                  onPress={() => handleSeasonToggle(sIdx)}
-                  activeOpacity={0.75}
-                >
-                  {/* Color accent bar */}
-                  <View style={[styles.seasonAccentBar, { backgroundColor: season.color }]} />
-
-                  <View style={styles.seasonHeaderContent}>
-                    {/* Icon */}
-                    <View style={[styles.seasonIconWrap, { backgroundColor: season.colorSoft }]}>
-                      {isLocked ? (
-                        <Feather name="lock" size={20} color={COLORS.textMuted} />
-                      ) : isComplete ? (
-                        <Feather name="check-circle" size={20} color={season.color} />
-                      ) : (
-                        <Feather name={season.icon} size={20} color={season.color} />
-                      )}
-                    </View>
-
-                    {/* Text */}
-                    <View style={styles.seasonTextWrap}>
-                      <View style={styles.seasonTitleRow}>
-                        <Text style={[
-                          styles.seasonTitle,
-                          isLocked && { opacity: 0.45 },
-                        ]}>{season.title}</Text>
-                        {isCurrent && (
-                          <View style={[styles.currentBadge, { backgroundColor: season.color }]}>
-                            <Text style={styles.currentBadgeText}>CURRENT</Text>
-                          </View>
-                        )}
-                        {isComplete && (
-                          <View style={[styles.currentBadge, { backgroundColor: COLORS.success }]}>
-                            <Text style={styles.currentBadgeText}>DONE</Text>
-                          </View>
-                        )}
-                      </View>
-                      <Text style={[
-                        styles.seasonSubtitle,
-                        isLocked && { opacity: 0.35 },
-                      ]}>{season.subtitle}</Text>
-
-                      {/* Mini progress */}
-                      {!isLocked && (
-                        <View style={styles.miniProgressRow}>
-                          <View style={styles.miniProgressTrack}>
-                            <View style={[
-                              styles.miniProgressFill,
-                              { width: `${seasonPct}%` as any, backgroundColor: season.color },
-                            ]} />
-                          </View>
-                          <Text style={styles.miniProgressText}>
-                            {season.completedLessons}/{season.totalLessons}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-
-                    {/* Chevron */}
-                    <Feather
-                      name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                      size={18}
-                      color={COLORS.textMuted}
-                    />
-                  </View>
-                </TouchableOpacity>
-
-                {/* Expanded weeks */}
-                {isExpanded && (
-                  <View style={styles.weeksWrap}>
-                    {season.weeks.map((week) => (
-                      <WeekCard
-                        key={week.weekNumber}
-                        week={week}
-                        seasonColor={season.color}
-                        seasonColorSoft={season.colorSoft}
-                        onLessonClick={handleLessonClick}
-                      />
-                    ))}
-                  </View>
-                )}
-              </View>
-            );
-          })}
-        </Animated.View>
-      </ScrollView>
-
-      {/* ─── Lesson Detail Modal ─────────────── */}
-      <Modal visible={!!selectedLesson} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-            <View style={styles.modalHeader}>
-              <View style={[
-                styles.modalDayBadge,
-                selectedLesson?.completed
-                  ? { backgroundColor: COLORS.success }
-                  : { backgroundColor: COLORS.accentSoft },
-              ]}>
-                {selectedLesson?.completed ? (
-                  <Feather name="check" size={18} color="#fff" />
-                ) : (
-                  <Text style={styles.modalDayNum}>{selectedLesson?.day}</Text>
-                )}
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.modalTitle} numberOfLines={2}>
-                  {selectedLesson?.title}
-                </Text>
-                <Text style={[
-                  styles.modalStatus,
-                  { color: selectedLesson?.completed ? COLORS.success : COLORS.accent },
-                ]}>
-                  {selectedLesson?.completed ? 'Completed' : 'Current lesson'}
-                </Text>
-                {!!selectedLesson?.promise && (
-                  <Text style={styles.modalPromise}>{selectedLesson.promise}</Text>
-                )}
-              </View>
-            </View>
-
-            <TouchableOpacity
-              style={styles.modalCTA}
-              onPress={() => {
-                triggerHaptic('light');
-                const stackId = selectedLesson?.stackId;
-                setSelectedLesson(null);
-                if (stackId) {
-                  router.push({ pathname: '/(tabs)/home', params: { openStackId: stackId } });
-                } else {
-                  router.push('/(tabs)/home');
-                }
-              }}
-              activeOpacity={0.85}
-            >
-              <Feather
-                name={selectedLesson?.completed ? 'rotate-ccw' : 'play'}
-                size={18}
-                color="#fff"
-                style={{ marginRight: 8 }}
-              />
-              <Text style={styles.modalCTAText}>
-                {selectedLesson?.completed ? 'Review Lesson' : 'Start Lesson'}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.modalCancel} onPress={() => setSelectedLesson(null)}>
-              <Text style={styles.modalCancelText}>Close</Text>
-            </TouchableOpacity>
+          <View style={styles.signalMark}>
+            <Feather name="radio" size={22} color={COLORS.textPrimary} />
+            <View style={styles.liveDot} />
           </View>
         </View>
-      </Modal>
-    </View>
+        <Text style={styles.market}>{getMarketName(marketId)}</Text>
+        <Text style={styles.subtitle}>Three stories a day. Know what changed, why it matters, and what insiders are watching.</Text>
+      </View>
+
+      <View style={styles.feed}>
+        <DailyNews marketId={marketId} learningGoal={learningGoal} autoOpen={autoOpen === '1'} />
+      </View>
+    </ScrollView>
   );
 }
 
-// ── Week Card — Brilliant-style collapsible ──────────
-function WeekCard({
-  week,
-  seasonColor,
-  seasonColorSoft,
-  onLessonClick,
-}: {
-  week: Week;
-  seasonColor: string;
-  seasonColorSoft: string;
-  onLessonClick: (lesson: Lesson) => void;
-}) {
-  const [expanded, setExpanded] = useState(week.status === 'current');
-  const isLocked = week.status === 'locked';
-  const isComplete = week.status === 'completed';
-  const isCurrent = week.status === 'current';
-
-  return (
-    <View style={[
-      styles.weekCard,
-      isCurrent && { borderColor: seasonColor, borderWidth: 1.5 },
-    ]}>
-      <TouchableOpacity
-        style={styles.weekHeader}
-        onPress={() => {
-          if (!isLocked) {
-            triggerHaptic('selection');
-            setExpanded(!expanded);
-          }
-        }}
-        activeOpacity={isLocked ? 1 : 0.7}
-      >
-        {/* Week icon */}
-        <View style={[
-          styles.weekIcon,
-          isComplete && { backgroundColor: `${seasonColor}18` },
-          isCurrent && { backgroundColor: seasonColorSoft },
-          isLocked && { opacity: 0.35 },
-        ]}>
-          {isLocked ? (
-            <Feather name="lock" size={14} color={COLORS.textMuted} />
-          ) : isComplete ? (
-            <Feather name="check" size={14} color={seasonColor} />
-          ) : (
-            <Text style={[styles.weekNum, { color: isCurrent ? seasonColor : COLORS.textPrimary }]}>
-              {week.weekNumber}
-            </Text>
-          )}
-        </View>
-
-        <View style={styles.weekTextWrap}>
-          <Text style={[styles.weekTitle, isLocked && { opacity: 0.4 }]} numberOfLines={1}>
-            {week.title}
-          </Text>
-          <Text style={[styles.weekDays, isLocked && { opacity: 0.3 }]}>{week.dayRange}</Text>
-        </View>
-
-        {/* Completion dots */}
-        {!isLocked && (
-          <View style={styles.dotsRow}>
-            {week.lessons.map((l, i) => (
-              <View
-                key={i}
-                style={[
-                  styles.dot,
-                  l.completed && { backgroundColor: seasonColor },
-                  l.current && { backgroundColor: seasonColor, opacity: 0.5 },
-                ]}
-              />
-            ))}
-          </View>
-        )}
-
-        {isCurrent && (
-          <View style={[styles.nowChip, { backgroundColor: seasonColor }]}>
-            <Text style={styles.nowChipText}>NOW</Text>
-          </View>
-        )}
-      </TouchableOpacity>
-
-      {/* Expanded lessons */}
-      {expanded && !isLocked && (
-        <View style={styles.lessonsWrap}>
-          {week.lessons.map((lesson) => {
-            // All lessons with content are accessible
-            const isAccessible = !!lesson.stackId;
-            return (
-              <TouchableOpacity
-                key={lesson.day}
-                style={[
-                  styles.lessonRow,
-                  lesson.completed && { backgroundColor: `${seasonColor}08` },
-                  lesson.current && { backgroundColor: seasonColorSoft, borderColor: seasonColor, borderWidth: 1 },
-                ]}
-                onPress={() => isAccessible && onLessonClick(lesson)}
-                disabled={!isAccessible}
-                activeOpacity={0.7}
-              >
-                <View style={[
-                  styles.lessonDot,
-                  lesson.completed && { backgroundColor: seasonColor },
-                  lesson.current && { backgroundColor: seasonColor, opacity: 0.6 },
-                  (!lesson.completed && !lesson.current && isAccessible) && { backgroundColor: COLORS.textMuted, opacity: 0.4 },
-                ]}>
-                  {lesson.completed && <Feather name="check" size={10} color="#fff" />}
-                  {lesson.current && <Feather name="play" size={8} color="#fff" />}
-                </View>
-
-                <View style={{ flex: 1 }}>
-                  <Text style={[
-                    styles.lessonTitle,
-                    !isAccessible && { opacity: 0.4 },
-                  ]} numberOfLines={1}>
-                    {lesson.title}
-                  </Text>
-                  <Text style={styles.lessonDay} numberOfLines={1}>
-                    Day {lesson.day} · {lesson.promise}
-                  </Text>
-                </View>
-
-                {isAccessible && (
-                  <Feather name="chevron-right" size={14} color={COLORS.textMuted} />
-                )}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      )}
-    </View>
-  );
-}
-
-// ── Styles ────────────────────────────────────────────
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
-  centered: { alignItems: 'center', justifyContent: 'center' },
-  scrollContent: { paddingHorizontal: 20 },
-
-  // Header
-  header: { marginBottom: 20 },
-  pageTitle: { ...TYPE.hero, color: COLORS.textPrimary },
-  pageSubtitle: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 4 },
-
-  // Stats row
-  statsRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 16,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: COLORS.bg2,
-    borderRadius: 16,
-    paddingVertical: 14,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  statValue: { ...TYPE.h2, color: COLORS.textPrimary },
-  statLabel: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 2 },
-
-  // Overall progress
-  overallProgress: { marginBottom: 24 },
-  progressTrack: {
-    height: 6,
-    backgroundColor: COLORS.borderLight,
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: 6,
-    backgroundColor: COLORS.accent,
-    borderRadius: 3,
-  },
-  progressLabel: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 6, textAlign: 'center' },
-
-  // Season card
-  seasonCard: {
-    marginBottom: 12,
-    borderRadius: 20,
-    overflow: 'hidden',
-    backgroundColor: COLORS.bg2,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    ...SHADOWS.sm,
-  },
-  seasonHeader: {
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  seasonAccentBar: {
-    height: 3,
-    width: '100%',
-  },
-  seasonHeaderContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    gap: 14,
-  },
-  seasonIconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  seasonTextWrap: { flex: 1 },
-  seasonTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  seasonTitle: { ...TYPE.h3, color: COLORS.textPrimary },
-  seasonSubtitle: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 2 },
-  currentBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  currentBadgeText: { fontSize: 9, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
-
-  // Mini progress
-  miniProgressRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 8,
-  },
-  miniProgressTrack: {
-    flex: 1,
-    height: 4,
-    backgroundColor: COLORS.borderLight,
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  miniProgressFill: {
-    height: 4,
-    borderRadius: 2,
-  },
-  miniProgressText: { ...TYPE.caption, color: COLORS.textMuted, fontSize: 10 },
-
-  // Weeks
-  weeksWrap: {
-    paddingHorizontal: 12,
-    paddingBottom: 12,
-    gap: 6,
-  },
-  weekCard: {
-    borderRadius: 14,
-    backgroundColor: COLORS.bg1,
-    overflow: 'hidden',
-  },
-  weekHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    gap: 10,
-  },
-  weekIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
-    backgroundColor: COLORS.bg2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  weekNum: { fontSize: 13, fontWeight: '700' },
-  weekTextWrap: { flex: 1, minWidth: 0 },
-  weekTitle: { ...TYPE.bodyBold, fontSize: 13, color: COLORS.textPrimary },
-  weekDays: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
-  dotsRow: { flexDirection: 'row', gap: 3 },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLORS.borderLight,
-  },
-  nowChip: {
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  nowChipText: { fontSize: 8, fontWeight: '800', color: '#fff', letterSpacing: 0.5 },
-
-  // Lessons
-  lessonsWrap: {
-    paddingHorizontal: 12,
-    paddingBottom: 10,
-    gap: 4,
-  },
-  lessonRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: COLORS.bg2,
-    gap: 10,
-  },
-  lessonDot: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: COLORS.borderLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  lessonTitle: { fontSize: 13, fontWeight: '500', color: COLORS.textPrimary },
-  lessonDay: { fontSize: 10, color: COLORS.textMuted, marginTop: 1 },
-
-  // Modal
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-  },
-  modalCard: {
-    backgroundColor: COLORS.bg2,
-    borderRadius: 24,
-    padding: 24,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    ...SHADOWS.lg,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    marginBottom: 24,
-  },
-  modalDayBadge: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalDayNum: { ...TYPE.h3, color: COLORS.accent },
-  modalTitle: { ...TYPE.h2, color: COLORS.textPrimary, marginBottom: 4 },
-  modalStatus: { ...TYPE.caption },
-  modalPromise: { ...TYPE.caption, color: COLORS.textSecondary, marginTop: 2 },
-  modalCTA: {
-    backgroundColor: COLORS.accent,
-    paddingVertical: 16,
-    borderRadius: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-    ...SHADOWS.accent,
-  },
-  modalCTAText: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  modalCancel: { alignItems: 'center', paddingVertical: 10 },
-  modalCancelText: { color: COLORS.textMuted, fontSize: 14 },
+  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg0 },
+  masthead: { paddingHorizontal: 20, paddingBottom: 20, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border },
+  mastheadTop: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
+  eyebrow: { ...TYPE.overline, color: COLORS.accent },
+  title: { fontSize: 38, lineHeight: 42, fontWeight: '900', color: COLORS.textPrimary, marginTop: 3 },
+  signalMark: { width: 52, height: 52, borderRadius: 26, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
+  liveDot: { position: 'absolute', right: 7, top: 7, width: 9, height: 9, borderRadius: 5, backgroundColor: COLORS.error, borderWidth: 2, borderColor: COLORS.bg0 },
+  market: { ...TYPE.h3, color: COLORS.textPrimary, marginTop: 18 },
+  subtitle: { ...TYPE.body, color: COLORS.textSecondary, marginTop: 5, maxWidth: 340 },
+  feed: { paddingHorizontal: 16, paddingTop: 20 },
 });
