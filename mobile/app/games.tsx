@@ -45,6 +45,29 @@ export default function GamesScreen() {
   const { addXP } = useUserXP(selectedMarket || undefined);
   const [combo, setCombo] = useState<ComboState>(createComboState());
   const [fetchKey, setFetchKey] = useState(0);
+  const studied = useStudiedLessons(selectedMarket || undefined);
+
+  // Games must illustrate the lessons this learner actually read. While the
+  // session has not started, questions generated from their own studied slides
+  // replace the market-wide scenarios fetched below.
+  useEffect(() => {
+    if (!showIntro || studied.isLoading || !studied.lessons.length) return;
+    const built = lessonQuestions(studied.lessons, 5);
+    if (built.length < 3) return;
+    const types: Array<'match' | 'timeline' | 'predict'> = ['match', 'timeline', 'predict'];
+    setQuestions(
+      built.map((q, i) => ({
+        id: q.id,
+        type: types[i % 3],
+        question: q.question,
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        explanation: q.explanation,
+        pattern: q.pattern,
+      })),
+    );
+  }, [showIntro, studied.isLoading, studied.lessons, fetchKey]);
+
 
   useEffect(() => {
     const fetchData = async () => {
