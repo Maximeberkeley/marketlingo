@@ -468,7 +468,7 @@ async function callGateway(apiKey: string, system: string, user: string) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'google/gemini-2.5-pro',
+      model: 'openai/gpt-6-astra',
       messages: [
         { role: 'system', content: system },
         { role: 'user', content: user },
@@ -767,7 +767,7 @@ async function generateSummary(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'google/gemini-2.5-pro',
+      model: 'openai/gpt-6-astra',
       messages: [
         { 
           role: 'system', 
