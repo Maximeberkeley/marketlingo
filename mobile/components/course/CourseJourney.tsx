@@ -343,7 +343,7 @@ export function CourseJourney({
         style={[styles.notesButton, { bottom: 18 }]}
         onPress={() => {
           triggerHaptic('selection');
-          router.push('/(tabs)/notebook');
+          router.push('/notes');
         }}
         activeOpacity={0.82}
         accessibilityLabel="Open notes"

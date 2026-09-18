@@ -260,6 +260,8 @@ export default function HomeScreen() {
             })),
         };
         session.handleOpenStack(formatted as any);
+        router.setParams({ openStackId: undefined });
+        openStackHandled.current = null;
       }
     })();
   }, [openStackId, selectedMarket, user]);
