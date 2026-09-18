@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { DailyQuest } from './useDailyQuests';
+import { localDateString } from '../lib/dayMath';
 import { log } from '../lib/logger';
 
 /**
@@ -19,7 +20,7 @@ export function useQuestRewards(
   const loadedFor = useRef<string | null>(null);
   const inFlight = useRef<Set<string>>(new Set());
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = localDateString();
 
   // Load today's already-paid quests
   useEffect(() => {

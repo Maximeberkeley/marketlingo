@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { DailyCompletion } from '../lib/types';
+import { localDateString } from '../lib/dayMath';
 
 export type QuestType = 'lesson' | 'arena' | 'case' | 'combo' | 'streak';
 
@@ -131,7 +132,7 @@ function getDayQuests(dateStr: string): typeof QUEST_POOL {
 }
 
 export function useDailyQuests(dailyCompletion: DailyCompletion | null, streak?: number) {
-  const today = new Date().toISOString().split('T')[0];
+  const today = localDateString();
 
   const quests = useMemo<DailyQuest[]>(() => {
     const templates = getDayQuests(today);

@@ -61,6 +61,9 @@ import { useCollectibles, CollectibleCard } from '../../hooks/useCollectibles';
 import { CardRevealModal } from '../../components/collectibles/CardRevealModal';
 import { LessonGoalsScreen } from '../../components/home/LessonGoalsScreen';
 import { SpeechBubble } from '../../components/ui/SpeechBubble';
+import { InsiderIdentityCard } from '../../components/home/InsiderIdentityCard';
+import { useDeliverable } from '../../hooks/useDeliverable';
+
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -175,6 +178,8 @@ export default function HomeScreen() {
   }, [selectedMarket]);
 
   const { dueCount } = useSpacedRepetition(selectedMarketLocal || undefined);
+  const deliverable = useDeliverable(selectedMarketLocal || undefined, learningGoal);
+
   const { syncLessons } = useOfflineCache(selectedMarketLocal || undefined);
 
   useEffect(() => {
@@ -664,18 +669,27 @@ export default function HomeScreen() {
             />
           </AnimatedSection>
 
-          {/* ── Tomorrow preview (after lesson complete) ── */}
-          {lessonCompletedToday && tomorrowLesson && (
-            <AnimatedSection delay={280}>
-              <View style={styles.tomorrowCard}>
-                <Feather name="sunrise" size={18} color={COLORS.accent} />
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.tomorrowLabel}>Coming tomorrow</Text>
-                  <Text style={styles.tomorrowTitle} numberOfLines={1}>{tomorrowLesson.title}</Text>
-                </View>
-              </View>
-            </AnimatedSection>
-          )}
+          {/* ── Streak as identity + the open loops that pull tomorrow ── */}
+          <AnimatedSection delay={260}>
+            <InsiderIdentityCard
+              marketName={getMarketName(selectedMarket || 'aerospace')}
+              streak={streak}
+              longestStreak={progress?.longest_streak || 0}
+              lessonCompletedToday={lessonCompletedToday}
+              focus={learningGoal}
+              deliverableTitle={deliverable.template.title}
+              deliverableCompletion={deliverable.completion}
+              reviewDueCount={dueCount}
+              tomorrowTitle={tomorrowLesson?.title || null}
+              rescueAvailable={!lessonCompletedToday && streak > 0}
+              accent={marketAccent}
+              onStartLesson={() => lessonStack && session.handleOpenStack(lessonStack)}
+              onOpenDeliverable={() => router.push('/deliverable' as any)}
+              onOpenReview={() => router.push('/arena' as any)}
+              onRescue={() => { triggerHaptic('medium'); router.push('/streak-rescue'); }}
+            />
+          </AnimatedSection>
+
 
           {/* ── News (compact) ── */}
           {selectedMarket && (

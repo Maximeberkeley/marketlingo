@@ -5,17 +5,20 @@ import { router } from 'expo-router';
 import { ArenaScreen, ArenaResult } from '../lesson-kit/arena/ArenaScreen';
 import { buildArena } from '../lesson-kit/arena/buildArena';
 import { useIndustryContent } from '../hooks/useIndustryContent';
+import { useStudiedLessons } from '../hooks/useStudiedLessons';
 import { useSelectedMarket } from '../hooks/useSelectedMarket';
 import { usePracticeRewards } from '../hooks/usePracticeRewards';
 import { useUserXP } from '../hooks/useUserXP';
 import { useCollectibles } from '../hooks/useCollectibles';
 import { getMarketName } from '../lib/markets';
+import { localDateString } from '../lib/dayMath';
 import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
 
 export default function ArenaRoute() {
   const { marketId, loading: marketLoading } = useSelectedMarket();
   const content = useIndustryContent(marketId);
+  const studied = useStudiedLessons(marketId);
   const { rewards, loading: rewardsLoading, recordArenaRun } = usePracticeRewards();
   const { addXP } = useUserXP(marketId);
   const { evaluateRewards } = useCollectibles(marketId);
@@ -29,13 +32,14 @@ export default function ArenaRoute() {
         trainer: content.trainer,
         drills: content.drills,
         stats: content.stats,
+        studied: studied.lessons,
       }),
     // A new runKey reshuffles the run.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [marketId, content.trainer, content.drills, content.stats, runKey],
+    [marketId, content.trainer, content.drills, content.stats, studied.lessons, runKey],
   );
 
-  const busy = marketLoading || content.isLoading || rewardsLoading;
+  const busy = marketLoading || content.isLoading || rewardsLoading || studied.isLoading;
 
   if (busy) {
     return (
@@ -61,7 +65,7 @@ export default function ArenaRoute() {
       await recordArenaRun(result.score);
       await addXP(result.xp, 'arena', undefined, 'Daily Arena run');
       const accuracy = result.total > 0 ? result.correct / result.total : 0;
-      await evaluateRewards('arena', `arena:${new Date().toISOString().slice(0, 10)}`, accuracy);
+      await evaluateRewards('arena', `arena:${localDateString()}`, accuracy);
     } catch (error) {
       log.warn('[Arena] Could not bank the run:', error);
     }

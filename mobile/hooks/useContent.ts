@@ -123,7 +123,8 @@ export function useContent() {
         `)
         .eq('market_id', filters.industry)
         .contains('tags', [`day-${day}`])
-        .order('created_at', { ascending: true });
+        // Newest authored lesson for a day wins, so a rewritten (v2) day replaces the old one.
+        .order('created_at', { ascending: false });
 
       if (error) {
         log.error('Error fetching lessons:', error);

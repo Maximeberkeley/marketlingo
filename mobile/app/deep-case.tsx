@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { CaseScreen, CaseResult } from '../lesson-kit/case/CaseScreen';
 import { buildCase } from '../lesson-kit/case/buildCase';
 import { useIndustryContent } from '../hooks/useIndustryContent';
+import { useStudiedLessons } from '../hooks/useStudiedLessons';
 import { useSelectedMarket } from '../hooks/useSelectedMarket';
 import { usePracticeRewards } from '../hooks/usePracticeRewards';
 import { useUserXP } from '../hooks/useUserXP';
@@ -16,6 +17,7 @@ import { log } from '../lib/logger';
 export default function DeepCaseRoute() {
   const { marketId, loading: marketLoading } = useSelectedMarket();
   const content = useIndustryContent(marketId);
+  const studied = useStudiedLessons(marketId);
   const { recordCaseRun, loading: rewardsLoading } = usePracticeRewards();
   const { addXP } = useUserXP(marketId);
   const { evaluateRewards } = useCollectibles(marketId);
@@ -29,11 +31,12 @@ export default function DeepCaseRoute() {
         trainer: content.trainer,
         drills: content.drills,
         stats: content.stats,
+        studied: studied.lessons,
       }),
-    [marketId, marketName, content.trainer, content.drills, content.stats],
+    [marketId, marketName, content.trainer, content.drills, content.stats, studied.lessons],
   );
 
-  if (marketLoading || content.isLoading || rewardsLoading) {
+  if (marketLoading || content.isLoading || rewardsLoading || studied.isLoading) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color={COLORS.accent} />

@@ -1,16 +1,27 @@
 /**
- * Arena builder — three escalating waves of the market's own material.
+ * Arena builder — three escalating waves built on the lessons this learner has
+ * already studied, in EVERY market.
  *
- * Wave 1 "Warm-up": recognition beats (face-offs, true/false).
- * Wave 2 "Pressure": mechanics (chains, maps, number sense, spot the fake).
- * Wave 3 "Sudden death": the hardest beats, double points, no second chances.
+ * Wave 1 "Warm-up": recognition of what the lessons defined and claimed.
+ * Wave 2 "Pressure": the mechanisms and figures those lessons taught.
+ * Wave 3 "Sudden death": tampered claims and a real call from the market.
  *
- * Nothing is invented: every beat comes from an authored industry pack, a real
- * trainer scenario, a fact-checked drill or a sourced industry statistic.
+ * Studied-lesson material always comes first; authored packs, trainer
+ * scenarios, fact-checked drills and sourced statistics fill any gap so a
+ * market with thin lesson text still plays.
  */
 import { Exercise } from '../types';
 import { getIndustryPack } from '../industry/packs';
 import type { DrillRow, IndustryStatRow, TrainerScenarioRow } from '../../hooks/useIndustryContent';
+import type { SlideLike } from '../sequencer/extract';
+import {
+  checkClaim,
+  checkDefinition,
+  checkFigure,
+  checkMechanism,
+  checkTamper,
+  termsFromSlides,
+} from '../sequencer/lessonChecks';
 import {
   drillSpotFake,
   drillTrueFalse,
@@ -36,12 +47,21 @@ export interface ArenaWave {
   exercises: Exercise[];
 }
 
+/** A lesson the learner has already read, used as practice material. */
+export interface StudiedLessonInput {
+  title: string;
+  day?: number | null;
+  slides: SlideLike[];
+}
+
 export interface ArenaInput {
   marketId?: string;
   marketName?: string;
   trainer: TrainerScenarioRow[];
   drills: DrillRow[];
   stats: IndustryStatRow[];
+  /** Lessons behind the learner, newest first. */
+  studied?: StudiedLessonInput[];
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -56,33 +76,49 @@ function shuffle<T>(arr: T[]): T[] {
 const clean = (list: (Exercise | null)[], limit: number): Exercise[] =>
   shuffle(list.filter((e): e is Exercise => !!e)).slice(0, limit);
 
+type LessonCheck = (slides: SlideLike[], id: string) => Exercise | null;
+
+/**
+ * One beat per studied lesson, tagged with the lesson it came from so the
+ * learner recognises the material as their own.
+ */
+function fromStudied(
+  studied: StudiedLessonInput[] | undefined,
+  build: LessonCheck,
+  prefix: string,
+): (Exercise | null)[] {
+  if (!studied?.length) return [];
+  return studied.slice(0, 4).map((lesson, i) => build(lesson.slides, `${prefix}-${i}`));
+}
+
 export function buildArena(input: ArenaInput): ArenaWave[] {
   const pack = getIndustryPack(input.marketId);
-  const { trainer, drills, stats } = input;
+  const { trainer, drills, stats, studied } = input;
   const trainerPool = shuffle(trainer);
 
-  // ── Wave 1 — recognition, generous clock ──
+  // ── Wave 1 — recognition of what the lessons taught ──
   const wave1 = clean(
     [
+      ...fromStudied(studied, (slides, id) => checkDefinition(termsFromSlides(slides), id), 'a1-def'),
+      ...fromStudied(studied, checkClaim, 'a1-claim'),
       pack ? packFaceOff(pack, 'a1-faceoff') : null,
       statFaceOff(stats, 'a1-statface'),
       drillTrueFalse(drills, 'a1-tf1'),
-      drillTrueFalse(drills, 'a1-tf2'),
       statTrend(stats, 'a1-trend'),
-      pack ? packFaceOff(pack, 'a1-faceoff2') : null,
     ],
     4,
   );
 
-  // ── Wave 2 — mechanics under pressure ──
+  // ── Wave 2 — the mechanisms and figures from those lessons ──
   const wave2 = clean(
     [
+      ...fromStudied(studied, checkMechanism, 'a2-mech'),
+      ...fromStudied(studied, checkFigure, 'a2-fig'),
       pack ? packChain(pack, 'a2-chain') : null,
-      pack ? packMap(pack, 'a2-map') : null,
       statNumberSense(stats, 'a2-number'),
-      pack ? packNumber(pack, 'a2-packnumber') : null,
       drillSpotFake(drills, 'a2-fake', 'One of these is not true. Find it.'),
-      pack ? packSpeedRound(pack, 'a2-speed') : null,
+      pack ? packMap(pack, 'a2-map') : null,
+      pack ? packNumber(pack, 'a2-packnumber') : null,
     ],
     4,
   );
@@ -90,6 +126,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   // ── Wave 3 — sudden death, double points ──
   const wave3 = clean(
     [
+      ...fromStudied(studied, checkTamper, 'a3-tamper'),
       trainerCall(trainerPool[0], 'a3-call1'),
       trainerCall(trainerPool[1], 'a3-call2'),
       drillSpotFake(drills, 'a3-fake', 'Sudden death. Spot the false claim.'),
