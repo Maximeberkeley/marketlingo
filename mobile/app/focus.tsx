@@ -24,7 +24,7 @@ import { useSelectedMarket } from '../hooks/useSelectedMarket';
 import { useUserProgress } from '../hooks/useUserProgress';
 import { useFocusTopic } from '../hooks/useFocusTopic';
 import { FocusOption } from '../lib/focusTopics';
-import { tapFeedback } from '../lib/haptics';
+import { triggerHaptic } from '../lib/haptics';
 
 export default function FocusScreen() {
   const insets = useSafeAreaInsets();
@@ -34,7 +34,7 @@ export default function FocusScreen() {
   const marketName = getMarketName(marketId);
 
   const pick = async (option: FocusOption) => {
-    tapFeedback();
+    triggerHaptic('light');
     const ok = await focus.choose(option);
     if (ok) router.back();
   };
@@ -90,7 +90,7 @@ export default function FocusScreen() {
         <TouchableOpacity
           style={styles.clear}
           onPress={async () => {
-            tapFeedback();
+            triggerHaptic('light');
             await focus.clear();
           }}
         >
@@ -102,8 +102,8 @@ export default function FocusScreen() {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: COLORS.background },
-  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.background },
+  flex: { flex: 1, backgroundColor: COLORS.bg0 },
+  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg0 },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -111,23 +111,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 8,
   },
-  headerTitle: { ...TYPE.subtitle, color: COLORS.textPrimary, fontWeight: '700' },
+  headerTitle: { ...TYPE.h3, color: COLORS.textPrimary },
   intro: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 20 },
-  title: { ...TYPE.title, color: COLORS.textPrimary, fontWeight: '800', marginBottom: 8 },
-  subtitle: { ...TYPE.body, color: COLORS.textSecondary, lineHeight: 22 },
+  title: { ...TYPE.h1, color: COLORS.textPrimary, marginBottom: 8 },
+  subtitle: { ...TYPE.body, color: COLORS.textSecondary },
   card: {
     marginHorizontal: 20,
     marginBottom: 12,
     padding: 16,
     borderRadius: 18,
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.bg2,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
   cardActive: { borderColor: COLORS.accent, borderWidth: 2 },
   cardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
-  cardLabel: { ...TYPE.subtitle, color: COLORS.textPrimary, fontWeight: '700', flex: 1, paddingRight: 8 },
-  cardPayoff: { ...TYPE.body, color: COLORS.textSecondary, lineHeight: 20 },
+  cardLabel: { ...TYPE.h3, color: COLORS.textPrimary, flex: 1, paddingRight: 8 },
+  cardPayoff: { ...TYPE.body, color: COLORS.textSecondary },
   clear: { alignItems: 'center', paddingVertical: 18 },
   clearText: { ...TYPE.body, color: COLORS.textSecondary, textDecorationLine: 'underline' },
 });
