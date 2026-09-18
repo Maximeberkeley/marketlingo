@@ -94,32 +94,42 @@ export function useSessionFlow({
       return false;
     }
 
+    // A second lesson on the same day is EXTRA PRACTICE: a smaller flat bonus,
+    // no streak re-bank, no day movement, no second lesson reward.
+    const isExtraPractice = lessonCompletedToday;
+
     triggerHaptic('success');
-    let earnedXP = xpRewardLessonComplete;
+    let earnedXP = isExtraPractice ? 15 : xpRewardLessonComplete;
 
     let synced = false;
     try {
       if (progress && activeStack) {
-        await completeStack(activeStack.id);
-        const updatedProgress = await updateStreak();
-        await completeLessonForToday(activeStack.id);
-        if ((progress.current_streak || 0) > 0) {
-          const streakBonus = xpRewardStreakBonus * (progress.current_streak || 1);
-          await addXP(streakBonus, 'streak_bonus');
-          earnedXP += streakBonus;
-        }
+        if (isExtraPractice) {
+          await addXP(earnedXP, 'extra_practice', activeStack.id, 'Extra lesson today');
+          await onDataRefresh();
+          synced = true;
+        } else {
+          await completeStack(activeStack.id);
+          const updatedProgress = await updateStreak();
+          await completeLessonForToday(activeStack.id);
+          if ((progress.current_streak || 0) > 0) {
+            const streakBonus = xpRewardStreakBonus * (progress.current_streak || 1);
+            await addXP(streakBonus, 'streak_bonus');
+            earnedXP += streakBonus;
+          }
 
-        const mktName = getMarketName(selectedMarket || 'aerospace');
-        const mktEmoji = getMarketEmoji(selectedMarket || 'aerospace');
-        const newStreak = (updatedProgress as any)?.current_streak || progress.current_streak || 0;
-        checkStreakMilestone(newStreak, mktName, mktEmoji);
+          const mktName = getMarketName(selectedMarket || 'aerospace');
+          const mktEmoji = getMarketEmoji(selectedMarket || 'aerospace');
+          const newStreak = (updatedProgress as any)?.current_streak || progress.current_streak || 0;
+          checkStreakMilestone(newStreak, mktName, mktEmoji);
 
-        if (xpData) {
-          checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
+          if (xpData) {
+            checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
+          }
+          // Refresh progress before showing the completion screen.
+          await onDataRefresh();
+          synced = true;
         }
-        // Refresh progress before showing the completion screen.
-        await onDataRefresh();
-        synced = true;
       }
     } catch (err) {
       log.error('Lesson completion error:', err);
@@ -129,11 +139,16 @@ export function useSessionFlow({
       );
     }
 
-    trackEvent('lesson_complete', { stackId: activeStack?.id || '', xp: earnedXP, market: selectedMarket || '' });
+    trackEvent('lesson_complete', {
+      stackId: activeStack?.id || '',
+      xp: earnedXP,
+      market: selectedMarket || '',
+      extraPractice: isExtraPractice,
+    });
     setSessionXPEarned(earnedXP);
     setShowSessionComplete(true);
     return synced;
-  }, [activeStack, progress, xpData, selectedMarket, completeStack, updateStreak, completeLessonForToday, addXP, checkStreakMilestone, checkLevelMilestone, xpRewardLessonComplete, xpRewardStreakBonus, onDataRefresh]);
+  }, [activeStack, progress, xpData, selectedMarket, lessonCompletedToday, completeStack, updateStreak, completeLessonForToday, addXP, checkStreakMilestone, checkLevelMilestone, xpRewardLessonComplete, xpRewardStreakBonus, onDataRefresh]);
 
   const handleBiteComplete = useCallback(async (isReviewMode: boolean, _timeSpentSeconds: number) => {
     setShowReader(false);

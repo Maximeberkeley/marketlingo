@@ -142,6 +142,13 @@ export default function HomeScreen() {
   } = useUserXP(selectedMarketLocal || undefined);
 
   const lessonCompletedToday = isLessonCompletedToday();
+
+  /** Day number a stack belongs to, from its own `day-N` tag. */
+  const stackDayNumber = (stack: any): number | null => {
+    const tag = ((stack?.tags as string[]) || []).find((t) => t.startsWith('day-'));
+    const parsed = tag ? parseInt(tag.replace('day-', ''), 10) : NaN;
+    return Number.isFinite(parsed) ? parsed : null;
+  };
   const currentStage = getCurrentStage();
   const streak = progress?.current_streak || 0;
 
@@ -433,7 +440,12 @@ export default function HomeScreen() {
           marketId={selectedMarket || undefined}
           stackId={session.activeStack.id}
 
-          isReview={lessonCompletedToday && session.activeStack.stack_type === 'LESSON'}
+          // A lesson from another day is revision (no rewards, no day movement).
+          // A repeat of TODAY's lesson runs as extra practice instead.
+          isReview={(() => {
+            const day = stackDayNumber(session.activeStack);
+            return day !== null && day !== currentDay;
+          })()}
           isProUser={isProUser}
           streakDays={streak}
           dayNumber={currentDay}

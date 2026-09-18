@@ -20,6 +20,7 @@ import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
 import { useSubscription } from '../hooks/useSubscription';
 import { splitSentences } from '../lib/textUtils';
+import { goalContentTag } from '../lib/goals';
 
 const LEO_HAPPY = require('../assets/mascot/leo-celebrating.png');
 const LEO_DIZZY = require('../assets/mascot/leo-dizzy.png');
@@ -225,7 +226,7 @@ export default function DrillsScreen() {
       } else {
         // Fallback: generate from slides (legacy behavior)
         const learningGoal = progressData?.learning_goal || 'curiosity';
-        const goalTag = `goal:${learningGoal}`;
+        const goalTag = goalContentTag(learningGoal);
 
         let { data: stacks } = await supabase
           .from('stacks')

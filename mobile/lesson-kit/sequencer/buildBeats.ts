@@ -40,6 +40,7 @@ import {
   sentences,
   shuffle,
 } from './extract';
+import { checkClaim, checkTamper, lessonCheckFactories } from './lessonChecks';
 
 export interface StackMetadataLike {
   learning_objectives?: string[];
@@ -160,29 +161,55 @@ export function buildBeats(
     () => makeChartRead(slides, `beat-chart-${exercises.length}`),
   ]);
 
-  let industryCursor = 0;
-  let slideCursor = 0;
+  // Checks built from THIS lesson's own figures, definitions, mechanism and
+  // claims. These come first: the check must test the lesson.
+  let checkSeq = 0;
+  const checkFactories = lessonCheckFactories(slides, allTerms, () => `beat-check-${(checkSeq += 1)}`);
+
+  // No learner should meet the same question twice in one lesson: each factory
+  // is spent after it produces a beat, and identical prompts are rejected.
+  const spentChecks = new Set<number>();
+  const spentSlideGames = new Set<number>();
+  const spentIndustry = new Set<number>();
+  const seenPrompts = new Set<string>();
+
+  const signature = (ex: Exercise): string => {
+    const text = (ex as any).prompt || (ex as any).situation || (ex as any).text || '';
+    return `${ex.kind}|${String(text).toLowerCase().slice(0, 90)}`;
+  };
+
+  const take = (built: Exercise | null): Exercise | null => {
+    if (!built) return null;
+    const key = signature(built);
+    if (seenPrompts.has(key)) return null;
+    seenPrompts.add(key);
+    return built;
+  };
 
   const nextGame = (slideIdx: number): Exercise | null => {
-    // Prefer the market's own material.
-    for (let tries = 0; tries < industryFactories.length; tries++) {
-      const factory = industryFactories[(industryCursor + tries) % industryFactories.length];
-      const built = factory();
-      if (built) {
-        industryCursor = (industryCursor + tries + 1) % industryFactories.length;
-        return built;
-      }
+    // 1. The lesson's own material — a question only a reader can answer.
+    for (let i = 0; i < checkFactories.length; i++) {
+      if (spentChecks.has(i)) continue;
+      const built = take(checkFactories[i]());
+      spentChecks.add(i);
+      if (built) return built;
     }
-    for (let tries = 0; tries < slideFactories.length; tries++) {
-      const factory = slideFactories[(slideCursor + tries) % slideFactories.length];
-      const built = factory(slideIdx);
-      if (built) {
-        slideCursor = (slideCursor + tries + 1) % slideFactories.length;
-        return built;
-      }
+    // 2. Slide-derived play (sorting, chains, charts) — still this lesson.
+    for (let i = 0; i < slideFactories.length; i++) {
+      if (spentSlideGames.has(i)) continue;
+      const built = take(slideFactories[i](slideIdx));
+      spentSlideGames.add(i);
+      if (built) return built;
+    }
+    // 3. Market-wide material — only when the lesson can't support a question.
+    for (let i = 0; i < industryFactories.length; i++) {
+      if (spentIndustry.has(i)) continue;
+      const built = take(industryFactories[i]());
+      spentIndustry.add(i);
+      if (built) return built;
     }
     const others = bodyPool.filter((_, i) => i !== slideIdx).flat();
-    return slides[slideIdx] ? makeRecall(slides[slideIdx], others, `beat-recall-${exercises.length}`) : null;
+    return slides[slideIdx] ? take(makeRecall(slides[slideIdx], others, `beat-recall-${exercises.length}`)) : null;
   };
 
   // 3. Alternate insight → game across the slides.
@@ -204,11 +231,14 @@ export function buildBeats(
     }
   });
 
-  // 4. Boss beat — a real scenario from this market, or tamper detection.
+  // 4. Boss beat — the lesson's own claim under pressure first, then a real
+  // scenario from this market as backup. Never a repeat of an earlier beat.
   const boss =
-    trainerCall(shuffle(trainerRows)[0], 'beat-boss-call') ||
-    drillSpotFake(drills, 'beat-boss-fake', `One of these ${marketLabel} facts is false. Which one?`) ||
-    makeSpotFake(slides, 'beat-boss');
+    take(checkClaim(slides, 'beat-boss-claim')) ||
+    take(checkTamper(slides, 'beat-boss-tamper')) ||
+    take(trainerCall(shuffle(trainerRows)[0], 'beat-boss-call')) ||
+    take(drillSpotFake(drills, 'beat-boss-fake', `One of these ${marketLabel} facts is false. Which one?`)) ||
+    take(makeSpotFake(slides, 'beat-boss'));
   push(boss, lastSlide, {
     line: pack?.leo.boss || `Your call. Read it the way an insider in ${marketLabel} would.`,
     mood: 'thinking',

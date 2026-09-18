@@ -14,6 +14,7 @@ import { createComboState, comboCorrect, comboWrong, ComboState } from "../lib/c
 import { Feather } from "@expo/vector-icons";
 import { useSubscription } from "../hooks/useSubscription";
 import { splitSentences } from '../lib/textUtils';
+import { goalContentTag } from '../lib/goals';
 
 interface GameQuestion {
   id: string;
@@ -75,7 +76,7 @@ export default function GamesScreen() {
         .from("trainer_scenarios")
         .select("id, scenario, question, options, correct_option_index, feedback_pro_reasoning, tags")
         .eq("market_id", market)
-        .contains("tags", [`goal:${learningGoal}`])
+        .contains("tags", [goalContentTag(learningGoal)])
         .limit(30);
 
       // Fallback: any trainer scenarios if no goal-specific ones

@@ -20,6 +20,7 @@ import { triggerHaptic } from '../../lib/haptics';
 import { playSound } from '../../lib/sounds';
 import { calculateAvailableDay } from '../../lib/dayMath';
 import { WorldBanner } from '../../components/world/WorldBanner';
+import { goalContentTag } from '../../lib/goals';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
@@ -128,7 +129,7 @@ export default function RoadmapScreen() {
       .single();
 
     const learningGoal = progress?.learning_goal || 'curiosity';
-    const goalTag = `goal:${learningGoal}`;
+    const goalTag = goalContentTag(learningGoal);
     const completed = (progress?.completed_stacks as string[]) || [];
 
     const day = calculateAvailableDay(progress?.start_date);
