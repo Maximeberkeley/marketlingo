@@ -70,57 +70,56 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
       if (auth?.user) {
         const { data: progress } = await supabase
           .from('user_progress')
-          .select('start_date')
+          .select('start_date, completed_stacks')
           .eq('user_id', auth.user.id)
           .eq('market_id', marketId)
           .maybeSingle();
         availableDay = calculateAvailableDay(progress?.start_date ?? null);
-      }
+        const completedIds = Array.isArray(progress?.completed_stacks)
+          ? progress.completed_stacks.filter((id): id is string => typeof id === 'string')
+          : [];
+        if (completedIds.length === 0) {
+          setLessons([]);
+          return;
+        }
 
-      // Every day the learner's local calendar has reached, newest first.
-      const days = Array.from({ length: Math.min(availableDay, WINDOW) }, (_, i) => availableDay - i).filter(
-        d => d >= 1,
-      );
+        const { data, error } = await supabase
+          .from('stacks')
+          .select('id, title, tags, created_at, slides (slide_number, title, body)')
+          .eq('market_id', marketId)
+          .in('id', completedIds.slice(-40))
+          .order('created_at', { ascending: false });
 
-      const { data, error } = await supabase
-        .from('stacks')
-        .select('id, title, tags, created_at, slides (slide_number, title, body)')
-        .eq('market_id', marketId)
-        .overlaps('tags', days.map(d => `day-${d}`))
-        .order('created_at', { ascending: false })
-        .limit(40);
+        if (error) {
+          log.warn('[useStudiedLessons] Could not load studied lessons:', error.message);
+          setLessons([]);
+          return;
+        }
 
-      if (error) {
-        log.warn('[useStudiedLessons] Could not load studied lessons:', error.message);
-        setLessons([]);
+        const byDay = new Map<number, StudiedLesson>();
+        for (const row of (data ?? []) as unknown as StackRow[]) {
+          const day = dayFromTags(row.tags);
+          if (day === null || day > availableDay) continue;
+          if (byDay.has(day)) continue;
+          const slides = [...(row.slides ?? [])]
+            .sort((a, b) => a.slide_number - b.slide_number)
+            .map(s => ({ slideNumber: s.slide_number, title: s.title, body: s.body }));
+          if (!slides.length) continue;
+          byDay.set(day, { stackId: row.id, title: row.title, day, slides });
+        }
+
+        const byRecency = [...byDay.values()].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
+        const keywords = focusSignature ? focusSignature.split('|').filter(Boolean) : [];
+        if (keywords.length) {
+          const preferred = byRecency.filter(l => matchesFocus(l, keywords));
+          const rest = byRecency.filter(l => !preferred.includes(l));
+          setLessons([...preferred, ...rest]);
+        } else {
+          setLessons(byRecency);
+        }
         return;
       }
-
-      const byDay = new Map<number, StudiedLesson>();
-      for (const row of (data ?? []) as unknown as StackRow[]) {
-        const day = dayFromTags(row.tags);
-        if (day === null || day > availableDay) continue;
-        // Newest authored lesson for a day wins (rows arrive newest first).
-        if (byDay.has(day)) continue;
-        const slides = [...(row.slides ?? [])]
-          .sort((a, b) => a.slide_number - b.slide_number)
-          .map(s => ({ slideNumber: s.slide_number, title: s.title, body: s.body }));
-        if (!slides.length) continue;
-        byDay.set(day, { stackId: row.id, title: row.title, day, slides });
-      }
-
-      const byRecency = [...byDay.values()].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
-
-      // A chosen focus is a tilt, not a filter: lessons touching that corner
-      // come first, everything studied stays available behind them.
-      const keywords = focusSignature ? focusSignature.split('|').filter(Boolean) : [];
-      if (keywords.length) {
-        const preferred = byRecency.filter(l => matchesFocus(l, keywords));
-        const rest = byRecency.filter(l => !preferred.includes(l));
-        setLessons([...preferred, ...rest]);
-      } else {
-        setLessons(byRecency);
-      }
+      setLessons([]);
     } catch (err) {
       log.warn('[useStudiedLessons] Lookup failed:', err);
       setLessons([]);

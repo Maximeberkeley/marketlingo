@@ -17,6 +17,7 @@ import { goalContentTag } from '../../lib/goals';
 import { getMarketName } from '../../lib/markets';
 import { dayPromise, seasonThemes, syllabusDay, TOTAL_DAYS } from '../../lib/syllabus';
 import { triggerHaptic } from '../../lib/haptics';
+import { playSound } from '../../lib/sounds';
 import { StreakBadge } from '../ui/StreakBadge';
 import { XPBadge } from '../ui/XPBadge';
 
@@ -194,6 +195,7 @@ export function CourseJourney({
     const canOpen = lesson.day <= currentDay;
     if (!canOpen || !lesson.stackId) return;
     triggerHaptic(lesson.day === currentDay ? 'medium' : 'light');
+    playSound('tap').catch(() => {});
     onOpenLesson(lesson.stackId);
   };
 
@@ -221,6 +223,8 @@ export function CourseJourney({
     const palette = COURSE_COLORS[plan.season - 1] ?? COURSE_COLORS[0];
     const isToday = item.day === currentDay;
     const isFuture = item.day > currentDay;
+    const isMissed = item.day < currentDay && !item.completed;
+    const isUnavailable = !item.stackId;
     const isReview = plan.isConsolidation;
     const isMilestone = item.day % 15 === 0 && !isReview;
     const x = dayPosition(item.day);
@@ -252,10 +256,11 @@ export function CourseJourney({
           )}
 
           <TouchableOpacity
-            activeOpacity={isFuture ? 1 : 0.8}
+            activeOpacity={isFuture || isUnavailable ? 1 : 0.8}
             onPress={() => openLesson(item)}
             accessibilityRole="button"
-            accessibilityLabel={`${isToday ? 'Today, ' : ''}Day ${item.day}: ${item.title}`}
+            accessibilityLabel={`${isToday ? 'Today, ' : ''}Day ${item.day}: ${item.title}${isUnavailable ? ', unavailable' : isFuture ? ', locked' : ''}`}
+            accessibilityState={{ disabled: isFuture || isUnavailable }}
             style={[
               styles.node,
               {
@@ -263,8 +268,8 @@ export function CourseJourney({
                 width: nodeSize,
                 height: nodeSize,
                 borderRadius: nodeSize / 2,
-                backgroundColor: item.completed || isToday ? palette.main : COLORS.bg2,
-                borderColor: isFuture ? COLORS.border : palette.deep,
+                backgroundColor: item.completed || (isToday && !isUnavailable) ? palette.main : isMissed ? palette.soft : COLORS.bg2,
+                borderColor: isFuture || isUnavailable ? COLORS.border : isMissed ? palette.main : palette.deep,
                 shadowColor: item.completed || isToday ? palette.deep : COLORS.cardShadow,
               },
               isToday && styles.todayNode,
@@ -272,7 +277,9 @@ export function CourseJourney({
           >
             <View style={[styles.nodeHighlight, { width: nodeSize * 0.56 }]} />
             {item.completed ? (
-              <Feather name="check" size={isToday ? 28 : 23} color="#FFFFFF" />
+              <Feather name="check" size={isToday ? 28 : 23} color={COLORS.textOnAccent} />
+            ) : isUnavailable ? (
+              <Feather name="clock" size={18} color={COLORS.textMuted} />
             ) : isReview ? (
               <Feather name="refresh-cw" size={isToday ? 27 : 21} color={isToday ? '#FFFFFF' : COLORS.textMuted} />
             ) : isMilestone ? (
@@ -280,13 +287,13 @@ export function CourseJourney({
             ) : isFuture ? (
               <Feather name="lock" size={18} color={COLORS.textMuted} />
             ) : (
-              <Feather name="play" size={27} color="#FFFFFF" style={{ marginLeft: 3 }} />
+              <Feather name={isMissed ? 'corner-up-left' : 'play'} size={isMissed ? 22 : 27} color={isMissed ? palette.main : COLORS.textOnAccent} style={isMissed ? undefined : { marginLeft: 3 }} />
             )}
           </TouchableOpacity>
 
           {isToday && (
             <View style={[styles.todayLabel, x > SCREEN_WIDTH * 0.56 ? styles.todayLabelLeft : styles.todayLabelRight]}>
-              <Text style={[styles.todayEyebrow, { color: palette.main }]}>{lessonCompletedToday ? 'OWNED TODAY' : 'YOUR NEXT MOVE'}</Text>
+                <Text style={[styles.todayEyebrow, { color: palette.main }]}>{isUnavailable ? 'BEING PREPARED' : lessonCompletedToday ? 'OWNED TODAY' : 'YOUR NEXT MOVE'}</Text>
               <Text style={styles.todayTitle} numberOfLines={3}>{item.title}</Text>
               <Text style={styles.todayMeta}>Day {item.day} · {dayPromise(marketId, item.day)}</Text>
             </View>
