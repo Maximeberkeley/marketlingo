@@ -24,8 +24,9 @@
 - [ ] Curriculum rewrite, market by market (AI and aerospace first, then fintech), with expert spot-review per market.
 - [ ] Six-month syllabus per market (one concept per day, no overload).
 - [ ] Focus topic as one optional tap after the first week.
-- [ ] Goal-specific deliverable (founder idea dossier / fluency proof).
-- [ ] Streak identity, loss aversion, personality, open loops.
+- [x] Practice tied to the lessons the learner actually studied (Daily Arena waves and Deep Case evidence/numbers now come from their own studied slides, not unrelated packs), framed by the local calendar day, not completion time.
+- [x] Goal-specific deliverable: one living document per learner (Interview Brief / Idea Dossier / Thesis Sheet / Market Map), written in their own words, completion percentage, shareable export, and the weekly consolidation day asks for one line.
+- [x] Streak identity on Home: identity label instead of a bare number, countdown to local midnight while today is unfinished, escalating Leo moods, one rescue round, and open loops (document %, concepts awaiting review, tomorrow's lesson).
 
 ## Release
 - Version 1.0.8 / iOS build 119. Widgets deferred to a future update.
