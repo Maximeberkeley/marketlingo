@@ -121,6 +121,102 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
             />
           ))}
 
+          {!!stackId && !deepDive && (
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel="Go deeper on this concept"
+              activeOpacity={0.85}
+              style={styles.deepButton}
+              disabled={deepLoading}
+              onPress={() => {
+                Haptics.selectionAsync().catch(() => {});
+                loadDeepDive();
+              }}
+            >
+              {deepLoading ? (
+                <ActivityIndicator size="small" color={tokens.color.accent} />
+              ) : (
+                <Feather name="layers" size={16} color={tokens.color.accent} />
+              )}
+              <Text style={styles.deepButtonText}>
+                {deepLoading ? 'Writing the deep layer…' : 'Go deeper on this concept'}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {!!deepError && !deepDive && <Text style={styles.deepError}>{deepError}</Text>}
+
+          {!!deepDive && (
+            <View style={styles.deep}>
+              <Text style={styles.sectionLabel}>DEEP LAYER</Text>
+              <Text style={styles.deepConcept}>{deepDive.concept}</Text>
+              <Text style={styles.body}>{deepDive.summary}</Text>
+
+              {!!deepDive.mechanism?.length && (
+                <View style={styles.deepBlock}>
+                  <Text style={styles.deepHeading}>How it works</Text>
+                  {deepDive.mechanism.map((step, index) => (
+                    <View key={`${index}-${step.step}`} style={styles.stepRow}>
+                      <Text style={styles.stepIndex}>{index + 1}</Text>
+                      <View style={styles.stepCopy}>
+                        <Text style={styles.stepLabel}>{step.step}</Text>
+                        <Text style={styles.stepDetail}>{step.detail}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              )}
+
+              {!!deepDive.case_study?.company && (
+                <View style={styles.deepBlock}>
+                  <Text style={styles.deepHeading}>In the real world</Text>
+                  <Text style={styles.caseCompany}>{deepDive.case_study.company}</Text>
+                  {!!deepDive.case_study.situation && (
+                    <Text style={styles.stepDetail}>{deepDive.case_study.situation}</Text>
+                  )}
+                  {deepDive.case_study.figures?.map((figure, index) => (
+                    <View key={`${index}-fig`} style={styles.figureRow}>
+                      <View style={styles.signalDot} />
+                      <Text style={styles.figureText}>{figure}</Text>
+                    </View>
+                  ))}
+                  {!!deepDive.case_study.outcome && (
+                    <Text style={styles.stepDetail}>{deepDive.case_study.outcome}</Text>
+                  )}
+                </View>
+              )}
+
+              {!!deepDive.key_terms?.length && (
+                <View style={styles.deepBlock}>
+                  <Text style={styles.deepHeading}>Words to own</Text>
+                  {deepDive.key_terms.map(term => (
+                    <View key={term.term} style={styles.term}>
+                      <Text style={styles.termWord}>{term.term}</Text>
+                      <Text style={styles.termDefinition}>{term.definition}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+
+              {!!deepDive.sources?.length && (
+                <View style={styles.deepBlock}>
+                  <Text style={styles.deepHeading}>Where this comes from</Text>
+                  {deepDive.sources.map((source, index) => (
+                    <TouchableOpacity
+                      key={`${source.url}-${index}`}
+                      accessibilityRole="link"
+                      style={styles.source}
+                      onPress={() => Linking.openURL(source.url).catch(() => {})}
+                    >
+                      <Text style={styles.sourceText}>{source.label}</Text>
+                      <Feather name="external-link" size={14} color={tokens.color.textMuted} />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </View>
+          )}
+
           {!!keyTerms?.length && (
             <View style={styles.terms}>
               <Text style={styles.sectionLabel}>KEY TERMS</Text>
