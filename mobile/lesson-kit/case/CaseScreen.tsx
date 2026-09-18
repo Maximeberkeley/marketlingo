@@ -14,6 +14,7 @@ import { ExerciseState } from '../exercises/types';
 import { DeepCase, CaseGrade, gradeCase } from './buildCase';
 import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
+import { BriefingReader } from '../components/BriefingReader';
 
 type Confidence = 'low' | 'medium' | 'high';
 
@@ -355,14 +356,25 @@ function DebriefBlock({
   body: string;
   tint: string;
 }) {
+  const [showDetail, setShowDetail] = useState(false);
+  const long = body.length > 180;
   return (
-    <View style={styles.debriefBlock}>
-      <View style={styles.debriefHead}>
-        <Feather name={icon} size={14} color={tint} />
-        <Text style={[styles.debriefTitle, { color: tint }]}>{title}</Text>
+    <>
+      <View style={styles.debriefBlock}>
+        <View style={styles.debriefHead}>
+          <Feather name={icon} size={14} color={tint} />
+          <Text style={[styles.debriefTitle, { color: tint }]}>{title}</Text>
+        </View>
+        <Text style={styles.debriefBody} numberOfLines={long ? 3 : undefined}>{body}</Text>
+        {long && (
+          <TouchableOpacity accessibilityRole="button" style={styles.debriefMore} onPress={() => setShowDetail(true)}>
+            <Text style={[styles.debriefMoreText, { color: tint }]}>Read full reasoning</Text>
+            <Feather name="arrow-up-right" size={14} color={tint} />
+          </TouchableOpacity>
+        )}
       </View>
-      <Text style={styles.debriefBody}>{body}</Text>
-    </View>
+      <BriefingReader visible={showDetail} eyebrow="CASE DEBRIEF" title={title} text={body} onClose={() => setShowDetail(false)} />
+    </>
   );
 }
 
@@ -473,4 +485,6 @@ const styles = StyleSheet.create({
   debriefHead: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   debriefTitle: { fontSize: 12, fontWeight: '800', letterSpacing: 0.4 },
   debriefBody: { fontSize: 14, lineHeight: 21, color: tokens.color.textSecondary },
+  debriefMore: { minHeight: 36, flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start' },
+  debriefMoreText: { fontSize: 13, fontWeight: '800' },
 });

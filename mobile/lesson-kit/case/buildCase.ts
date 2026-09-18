@@ -55,6 +55,13 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+function caseLead(text: string, fallback: string): string {
+  const first = text.replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/)[0]?.trim();
+  if (first && first.length <= 190) return first;
+  const clause = first?.slice(0, 190).split(/[,;:]/)[0]?.trim();
+  return clause && clause.length >= 55 ? `${clause}.` : fallback;
+}
+
 export function buildCase(input: CaseInput): DeepCase | null {
   const pack = getIndustryPack(input.marketId);
   const scenario = shuffle(input.trainer)[0];
@@ -73,8 +80,10 @@ export function buildCase(input: CaseInput): DeepCase | null {
       kind: 'coldOpen',
       id: 'case-brief',
       eyebrow: `${input.marketName.toUpperCase()} CASE`,
-      headline: scenario.scenario,
+      headline: caseLead(scenario.scenario, scenario.question),
       kicker: 'Four stages. One call at the end.',
+      fullText: scenario.scenario,
+      detailTitle: scenario.question,
       leo: { line: 'Take the brief slowly. The trap is usually in the first sentence.', mood: 'thinking' },
     } as Exercise,
   });

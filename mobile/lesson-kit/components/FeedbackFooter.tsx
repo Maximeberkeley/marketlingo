@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { tokens } from '../theme/tokens';
 import { ColorText } from './ColorText';
@@ -12,7 +12,9 @@ interface Props {
 }
 
 export function FeedbackFooter({ isCorrect, explanation, correctAnswer }: Props) {
+  const [expanded, setExpanded] = useState(false);
   const tint = isCorrect ? tokens.color.correctDark : tokens.color.incorrectDark;
+  const hasMore = Boolean(explanation && explanation.length > 150);
   return (
     <View style={[styles.wrap, { backgroundColor: isCorrect ? tokens.color.correctSoft : tokens.color.incorrectSoft }]}>
       <View style={styles.headRow}>
@@ -24,7 +26,13 @@ export function FeedbackFooter({ isCorrect, explanation, correctAnswer }: Props)
       {!isCorrect && !!correctAnswer && (
         <ColorText text={`Answer: ${shortLabel(correctAnswer)}`} style={styles.body} maxSentences={1} maxLength={96} />
       )}
-      {!!explanation && <ColorText text={explanation} style={styles.body} maxSentences={2} maxLength={150} />}
+      {!!explanation && <ColorText text={explanation} style={styles.body} maxSentences={expanded ? 100 : 2} maxLength={expanded ? 10000 : 150} />}
+      {hasMore && (
+        <TouchableOpacity accessibilityRole="button" accessibilityState={{ expanded }} style={styles.more} onPress={() => setExpanded(value => !value)}>
+          <Text style={[styles.moreText, { color: tint }]}>{expanded ? 'Show less' : 'Read full reasoning'}</Text>
+          <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={15} color={tint} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -45,4 +53,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: tokens.color.textSecondary,
   },
+  more: { minHeight: 36, flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start' },
+  moreText: { fontSize: 13, fontWeight: '800' },
 });

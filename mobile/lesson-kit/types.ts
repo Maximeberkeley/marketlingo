@@ -17,6 +17,11 @@ export interface ColdOpenExercise {
   eyebrow?: string;
   headline: string;
   kicker?: string;
+  /** Complete authored context opened in the focused reading layer. */
+  fullText?: string;
+  detailTitle?: string;
+  keyTerms?: KeyTerm[];
+  sources?: Source[];
 }
 
 /** Max two lines of text, huge type, one idea. */
@@ -27,7 +32,11 @@ export interface MicroInsightExercise {
   text: string;
   highlight?: string;
   keyTerm?: KeyTerm;
+  keyTerms?: KeyTerm[];
   sources?: Source[];
+  /** Complete source copy retained behind progressive disclosure. */
+  fullText?: string;
+  detailTitle?: string;
 }
 
 /** A teaching card — no answer required, just "Continue". */
@@ -41,6 +50,9 @@ export interface InfoExercise {
   bullets?: string[];
   keyTerms?: KeyTerm[];
   sources?: Source[];
+  /** Complete source copy retained behind progressive disclosure. */
+  fullText?: string;
+  detailTitle?: string;
 }
 
 /** Classic single-answer multiple choice. */
