@@ -128,7 +128,6 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
         <View style={[styles.accentRail, { backgroundColor: config.color }]} />
         {/* Leo avatar */}
         <Animated.View style={[styles.leoWrap, { transform: [{ scale: leoScale }, { translateY: leoBounce }] }]}>
-          <View style={[styles.leoGlow, { backgroundColor: config.color + '25' }]} />
           <Image source={LEO_IMAGE} style={styles.leoImage} />
         </Animated.View>
 
@@ -177,7 +176,7 @@ const styles = StyleSheet.create({
   touchable: {
     flexDirection: 'row',
     backgroundColor: COLORS.bg2,
-    borderRadius: 18,
+    borderRadius: 26,
     padding: 16,
     borderWidth: 1,
     borderColor: COLORS.border,
@@ -194,12 +193,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
-  },
-  leoGlow: {
-    position: 'absolute',
-    width: 68,
-    height: 68,
-    borderRadius: 34,
   },
   leoImage: {
     width: 60,

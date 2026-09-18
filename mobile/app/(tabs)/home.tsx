@@ -723,17 +723,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', marginBottom: 16,
   },
   speechBubble: {
-    backgroundColor: COLORS.bg1, borderRadius: 20,
-    paddingHorizontal: 20, paddingVertical: 12, marginTop: 8,
-    borderWidth: 1, borderColor: COLORS.border,
-    maxWidth: '85%', position: 'relative',
-  },
-  speechTail: {
-    position: 'absolute', top: -7, alignSelf: 'center', left: '50%', marginLeft: -7,
-    width: 0, height: 0,
-    borderLeftWidth: 7, borderRightWidth: 7, borderBottomWidth: 7,
-    borderLeftColor: 'transparent', borderRightColor: 'transparent',
-    borderBottomColor: COLORS.bg1,
+    maxWidth: '85%', marginTop: 8,
   },
   speechText: {
     ...TYPE.body, color: COLORS.textPrimary, textAlign: 'center', fontWeight: '500',

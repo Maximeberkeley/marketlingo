@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Image, StyleSheet, Animated } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { COLORS } from '../../lib/constants';
+import { SpeechBubble } from '../ui/SpeechBubble';
 import { Feather } from '@expo/vector-icons';
 
 const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
@@ -113,7 +114,7 @@ export function LeoInterstitial({ type, progress, slideTitle, customMessage }: L
       </View>
 
       {/* Message */}
-      <Text style={[styles.message, { color: accent }]}>{message}</Text>
+      <SpeechBubble text={message} tail="top-center" tone="purple" style={styles.messageBubble} textStyle={[styles.message, { color: accent }]} />
 
       {/* Progress indicator */}
       <View style={styles.progressContainer}>
@@ -178,6 +179,7 @@ const styles = StyleSheet.create({
     height: 110,
     resizeMode: 'contain',
   },
+  messageBubble: { maxWidth: 300, marginBottom: 18 },
   iconCircle: {
     width: 56,
     height: 56,
