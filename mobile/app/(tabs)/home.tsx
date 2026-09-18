@@ -317,7 +317,7 @@ export default function HomeScreen() {
         });
       } else {
         leoPopups.triggerWriteNote(() => {
-          router.push('/(tabs)/notebook' as any);
+          router.push('/notes' as any);
         });
       }
 

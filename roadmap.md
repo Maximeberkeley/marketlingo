@@ -42,3 +42,8 @@
 - [x] Streak is a LOCAL calendar-day fact: recomputed from the learner's own completed days (`sync_local_streak`), not a UTC date with a rolling 48h window.
 - [~] Curriculum rewrite for ALL 15 markets, days 1-15, all four goals (900 lessons) — durable queue + scheduled worker, self-stopping on drain.
 - [x] In-app games illustrate the lesson they follow: Games + Drills hubs, Deep Case brief/call now generated from studied lesson slides (mobile/lesson-kit/practice/lessonQuestions.ts); market packs are fallback only.
+
+## New (Sept 18, 23:00)
+- [x] Mobile navigation simplified to Course, Intel, Practice, You; Notes remains a full-page destination from the Course pen.
+- [x] Course rebuilt as one continuous 180-day learning path with wavy lesson nodes, local-day state, changing season colors, Leo beside today, consolidation markers, and access through the final lesson.
+- [x] Industry Intel moved into its own tab while preserving the three-story habit, article actions, quizzes, and post-lesson handoff.

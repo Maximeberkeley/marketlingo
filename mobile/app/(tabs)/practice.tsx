@@ -158,7 +158,7 @@ const RESOURCE_CARDS: CardData[] = [
     iconColor: '#FECDD3',
     gradientColors: ['#9F1239', '#BE123C', '#E11D48'] as const,
     accentGlow: 'rgba(225, 29, 72, 0.4)',
-    path: '/(tabs)/notebook',
+    path: '/notes',
     heroImage: require('../../assets/cards/notebook-hero.jpg'),
   },
   {

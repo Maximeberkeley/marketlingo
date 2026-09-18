@@ -382,9 +382,9 @@ export default function NotebookScreen() {
           ]}
         >
           <View style={{ flex: 1 }}>
-            <Text style={styles.title}>Notebook</Text>
+            <Text style={styles.title}>Your notes</Text>
             <Text style={styles.subtitle}>
-              {notes.length === 0 ? 'Start capturing insights' : `${notes.length} insight${notes.length !== 1 ? 's' : ''} captured`}
+              {notes.length === 0 ? 'Keep the ideas worth owning' : `${notes.length} idea${notes.length !== 1 ? 's' : ''} worth keeping`}
             </Text>
           </View>
           <TouchableOpacity
@@ -401,7 +401,7 @@ export default function NotebookScreen() {
             <Feather name="search" size={16} color={COLORS.textMuted} />
             <TextInput
               style={styles.searchInput}
-              placeholder="Search notes… (multiple words to compare)"
+              placeholder="Search your notes"
               placeholderTextColor={COLORS.textMuted}
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -496,7 +496,7 @@ export default function NotebookScreen() {
             <Text style={styles.emptySubtitle}>
               {searchQuery
                 ? 'Try a different search or category'
-                : 'Capture insights while learning.\nStudies show writing helps retention by 30%.'}
+                : 'Write one clear line in your own words. It will stay connected to your course.'}
             </Text>
             {!searchQuery && (
               <TouchableOpacity
