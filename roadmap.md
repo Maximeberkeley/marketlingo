@@ -68,3 +68,4 @@
 - [x] Increase in-lesson Leo slightly without enlarging or overlapping the speech bubble
 - [x] Widget release hardening — remove the unreliable four-second WidgetKit acknowledgement gate, reload all timelines, pin the App Group on both targets, and prepare version 1.0.7 (build 117)
 - [x] Release candidate 1.0.8 (build 119) — remove widgets and standardize Leo's smooth illustrated balloons
+- [x] Release startup hardening — local 1.0.8/build 119 is authoritative and startup data checks fail safely instead of hanging

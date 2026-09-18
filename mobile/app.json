@@ -54,7 +54,9 @@
           "android": {}
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-font",
+      "./plugins/withIosReleaseVersion"
     ],
     "owner": "maxime020707"
   }

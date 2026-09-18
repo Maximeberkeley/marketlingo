@@ -7,6 +7,17 @@ import { trackEvent, identifyUser } from '../lib/analytics';
 import { COLORS } from '../lib/constants';
 import { log } from '../lib/logger';
 
+const STARTUP_TIMEOUT_MS = 6000;
+
+function withStartupTimeout<T>(request: PromiseLike<T>): Promise<T> {
+  return Promise.race([
+    Promise.resolve(request),
+    new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Startup request timed out')), STARTUP_TIMEOUT_MS);
+    }),
+  ]);
+}
+
 export default function Index() {
   const { user, loading } = useAuth();
 
@@ -29,11 +40,9 @@ export default function Index() {
         trackEvent('app_open');
         identifyUser(user.id, { email: user.email || '' });
 
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('selected_market')
-          .eq('id', user.id)
-          .maybeSingle();
+        const { data: profile, error: profileError } = await withStartupTimeout(
+          supabase.from('profiles').select('selected_market').eq('id', user.id).maybeSingle()
+        );
 
         if (profileError) {
           log.warn('[Index] Failed to load profile during startup:', profileError.message);
@@ -46,12 +55,14 @@ export default function Index() {
           return;
         }
 
-        const { data: progress, error: progressError } = await supabase
-          .from('user_progress')
-          .select('learning_goal, familiarity_level')
-          .eq('user_id', user.id)
-          .eq('market_id', profile.selected_market)
-          .maybeSingle();
+        const { data: progress, error: progressError } = await withStartupTimeout(
+          supabase
+            .from('user_progress')
+            .select('learning_goal, familiarity_level')
+            .eq('user_id', user.id)
+            .eq('market_id', profile.selected_market)
+            .maybeSingle()
+        );
 
         if (progressError && progressError.code !== 'PGRST116') {
           log.warn('[Index] Failed to load progress during startup:', progressError.message);
