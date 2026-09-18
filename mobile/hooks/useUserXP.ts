@@ -273,6 +273,15 @@ export function useUserXP(marketId?: string) {
     if (!alreadyDone) {
       await addXP(XP_REWARDS.LESSON_COMPLETE, 'lesson', stackId, 'Completed daily lesson');
     }
+
+    // Streak is recomputed from local calendar days, so finishing a lesson at
+    // 23:50 and again at 00:10 counts as two separate days — and nothing else.
+    const { error: streakError } = await supabase.rpc('sync_local_streak', {
+      p_market_id: marketId,
+      p_today: today,
+    });
+    if (streakError) log.warn('Streak sync after lesson failed:', streakError.message);
+
     return data;
   };
 
