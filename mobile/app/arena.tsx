@@ -6,6 +6,7 @@ import { ArenaScreen, ArenaResult } from '../lesson-kit/arena/ArenaScreen';
 import { buildArena } from '../lesson-kit/arena/buildArena';
 import { useIndustryContent } from '../hooks/useIndustryContent';
 import { useStudiedLessons } from '../hooks/useStudiedLessons';
+import { useFocusTopic } from '../hooks/useFocusTopic';
 import { useSelectedMarket } from '../hooks/useSelectedMarket';
 import { usePracticeRewards } from '../hooks/usePracticeRewards';
 import { useUserXP } from '../hooks/useUserXP';
@@ -18,7 +19,9 @@ import { log } from '../lib/logger';
 export default function ArenaRoute() {
   const { marketId, loading: marketLoading } = useSelectedMarket();
   const content = useIndustryContent(marketId);
-  const studied = useStudiedLessons(marketId);
+  // A chosen focus topic tilts which studied lessons the waves come from.
+  const focus = useFocusTopic(marketId, 1);
+  const studied = useStudiedLessons(marketId, focus.keywords);
   const { rewards, loading: rewardsLoading, recordArenaRun } = usePracticeRewards();
   const { addXP } = useUserXP(marketId);
   const { evaluateRewards } = useCollectibles(marketId);
