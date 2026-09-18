@@ -18,8 +18,6 @@ import { ProgressBar } from '../components/ui/ProgressBar';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
-import { splitSentences } from '../lib/textUtils';
-import { goalContentTag } from '../lib/goals';
 import { useStudiedLessons } from '../hooks/useStudiedLessons';
 import { lessonStatements } from '../lesson-kit/practice/lessonQuestions';
 
@@ -64,91 +62,6 @@ interface DrillQuestion {
   source_label: string;
   set_number: number;
   question_number: number;
-}
-
-// ── Fallback negation engine (used when no AI-generated drills exist) ──
-const NEGATION_PATTERNS: Array<{ match: RegExp; replace: string }> = [
-  { match: /\bis the largest\b/gi, replace: 'is the smallest' },
-  { match: /\bincreased by\b/gi, replace: 'decreased by' },
-  { match: /\bgrew by\b/gi, replace: 'declined by' },
-  { match: /\bmore than\b/gi, replace: 'less than' },
-  { match: /\babove\b/gi, replace: 'below' },
-  { match: /\bhighest\b/gi, replace: 'lowest' },
-  { match: /\bleading\b/gi, replace: 'trailing' },
-  { match: /\bincreases\b/gi, replace: 'decreases' },
-  { match: /\bprofitable\b/gi, replace: 'unprofitable' },
-  { match: /\bexpanded\b/gi, replace: 'contracted' },
-  { match: /\brequires\b/gi, replace: 'does not require' },
-  { match: /\benables\b/gi, replace: 'prevents' },
-  { match: /\balways\b/gi, replace: 'rarely' },
-  { match: /\bnever\b/gi, replace: 'frequently' },
-];
-
-function generateFalseStatement(original: string): string {
-  for (const pattern of NEGATION_PATTERNS) {
-    if (pattern.match.test(original)) {
-      pattern.match.lastIndex = 0;
-      return original.replace(pattern.match, pattern.replace);
-    }
-  }
-  const numberMatch = original.match(/\$?(\d+[\.\d]*)\s*(billion|million|trillion|B|M|T|%)/i);
-  if (numberMatch) {
-    const num = parseFloat(numberMatch[1]);
-    const fakeNum = num > 10 ? Math.round(num * 0.3) : Math.round(num * 3);
-    return original.replace(numberMatch[0], numberMatch[0].replace(numberMatch[1], String(fakeNum)));
-  }
-  return original.replace(/\b(is|are|was|were)\b/i, '$1 not');
-}
-
-function generateFallbackQuestions(stacks: any[]): DrillQuestion[] {
-  const questions: DrillQuestion[] = [];
-  (stacks || []).forEach((stack) => {
-    const slides = ((stack as any).slides as any[]) || [];
-    const tags = (stack.tags as string[]) || [];
-    const category = tags[0] || 'Market Insight';
-
-    slides.forEach((slide: any) => {
-      if (slide.body && slide.body.length > 30 && questions.length < 21) {
-        const hash = slide.body.split('').reduce((acc: number, ch: string) => acc + ch.charCodeAt(0), 0);
-        const isTrue = hash % 2 === 0;
-        let statement = slide.body;
-        if (!isTrue) statement = generateFalseStatement(statement);
-
-        if (statement.length > 180) {
-          const sentences = splitSentences(statement);
-          if (sentences && sentences.length > 0) {
-            let result = '';
-            for (const s of sentences) {
-              if ((result + s).length > 200) break;
-              result += s;
-              if (result.length >= 60) break;
-            }
-            statement = result.trim() || sentences[0].trim();
-          }
-        }
-
-        let explanation = slide.body;
-        if (explanation.length > 200) {
-          const sentences = splitSentences(explanation);
-          if (sentences) {
-            explanation = sentences.slice(0, 2).join(' ').trim();
-          }
-        }
-
-        questions.push({
-          id: slide.id,
-          category,
-          statement,
-          is_true: isTrue,
-          explanation,
-          source_label: 'Lesson Content',
-          set_number: Math.ceil(questions.length / 7) || 1,
-          question_number: (questions.length % 7) + 1,
-        });
-      }
-    });
-  });
-  return questions;
 }
 
 export default function DrillsScreen() {
