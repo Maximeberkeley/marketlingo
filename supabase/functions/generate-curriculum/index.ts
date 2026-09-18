@@ -11,6 +11,7 @@ import {
   type CurriculumStructure,
   type LearningGoal,
 } from '../_shared/curriculum-structures.ts';
+import { syllabusDay, type SyllabusDay } from '../_shared/syllabus.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -225,7 +226,8 @@ Deno.serve(async (req) => {
         week: Math.ceil(d / 7),
         type: WEEK_PATTERN[(d - 1) % 7],
         theme: CURRICULUM_STRUCTURE.months[Math.ceil(d / 30) - 1]?.theme,
-        topic: getTopic(d, CURRICULUM_STRUCTURE),
+        topic: getTopic(d, marketId),
+        facet: syllabusDay(marketId, d).facetLabel,
       }));
 
       const goalStats = Object.fromEntries(
@@ -268,17 +270,18 @@ Deno.serve(async (req) => {
           const monthIndex = Math.ceil(dayNum / 30) - 1;
           const monthInfo = CURRICULUM_STRUCTURE.months[monthIndex];
           const dayType = WEEK_PATTERN[(dayNum - 1) % 7];
-          const topic = getTopic(dayNum, CURRICULUM_STRUCTURE);
+          const plan = syllabusDay(marketId, dayNum);
 
           const content = await generateDayContent(
             LOVABLE_API_KEY,
             dayNum,
             monthInfo.month,
             monthInfo.theme,
-            topic,
+            plan.topic,
             dayType,
             marketId,
-            goalKey
+            goalKey,
+            plan
           );
 
           if (content) {
@@ -319,16 +322,15 @@ Deno.serve(async (req) => {
   }
 });
 
-function getTopic(day: number, curriculum: CurriculumStructure): string {
-  const monthIndex = Math.ceil(day / 30) - 1;
-  const monthInfo = curriculum.months[monthIndex];
-  if (!monthInfo) return "Industry fundamentals";
-  
-  // Rotate through topics within the month
-  const dayInMonth = ((day - 1) % 30) + 1;
-  const topicIndex = Math.floor((dayInMonth - 1) / 6) % monthInfo.topics.length;
-  return monthInfo.topics[topicIndex];
+/**
+ * The day's territory now comes from the 180-day syllabus, which also decides
+ * the angle taken on it, so six consecutive days on one topic are six
+ * different concepts rather than one repeated.
+ */
+function getTopic(day: number, marketId: string): string {
+  return syllabusDay(marketId, day).topic;
 }
+
 
 /** The v2 contract: one concept per day, taught in six named beats, no ceilings. */
 const BEATS = [
@@ -386,15 +388,24 @@ function dayLessonPrompt(
   dayType: string,
   marketContext: string,
   persona: { label: string; slideGuidance: string },
+  plan?: SyllabusDay,
 ): { system: string; user: string } {
-  const isConsolidation = day % 7 === 0;
-  const angle = isConsolidation
-    ? `This is a CONSOLIDATION day. Introduce NO new concept. Take the single most important idea of this week's theme ("${theme}") and make the learner retrieve and connect it: restate it precisely, show it working in a second real case, and have them synthesise.`
+  const isConsolidation = plan?.isConsolidation ?? day % 7 === 0;
+  // The syllabus decides today's angle on the topic, so consecutive days on the
+  // same territory teach genuinely different concepts.
+  const planAngle = plan
+    ? `TODAY'S ANGLE — "${plan.facetLabel}": ${plan.angle}`
+    : isConsolidation
+      ? `This is a CONSOLIDATION day. Introduce NO new concept. Take the single most important idea of this week's theme ("${theme}") and make the learner retrieve and connect it.`
+      : 'Teach one core operating concept of this industry.';
+  const flavour = isConsolidation
+    ? ''
     : dayType === 'DAILY_GAME'
-      ? 'Anchor the concept in a real, recent development — a named deal, filing, launch, or price move — but the lesson is still ONE concept, not a news roundup.'
+      ? ' Anchor it in a real, recent development — a named deal, filing, launch or price move — but it is still ONE concept, not a news roundup.'
       : dayType === 'BOOK_SNAPSHOT'
-        ? 'Anchor the concept in a real historical episode with dates and actors, but the lesson is still ONE concept.'
-        : 'Teach one core operating concept of this industry.';
+        ? ' Anchor it in a real historical episode with dates and actors, but it is still ONE concept.'
+        : '';
+  const angle = `${planAngle}${flavour}`;
 
   const system = `You are a veteran ${marketContext} insider writing one day of a six-month curriculum for ${persona.label.toUpperCase()} learners.
 
@@ -457,7 +468,7 @@ async function callGateway(apiKey: string, system: string, user: string) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'google/gemini-2.5-pro',
+      model: 'openai/gpt-6-astra',
       messages: [
         { role: 'system', content: system },
         { role: 'user', content: user },
@@ -485,7 +496,8 @@ async function generateDayContent(
   topic: string,
   dayType: string,
   marketId: string,
-  goal: LearningGoal
+  goal: LearningGoal,
+  plan?: SyllabusDay,
 ) {
   const marketContext = getMarketContext(marketId);
   const persona = GOAL_PERSONAS[goal];
@@ -528,7 +540,7 @@ async function generateDayContent(
     return await callGateway(apiKey, system, user);
   }
 
-  const { system, user } = dayLessonPrompt(day, month, theme, topic, dayType, marketContext, persona);
+  const { system, user } = dayLessonPrompt(day, month, theme, topic, dayType, marketContext, persona, plan);
 
   // Up to three attempts: a day that fails the contract is rewritten, never saved thin.
   let lastProblems: string[] = [];
@@ -755,7 +767,7 @@ async function generateSummary(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'google/gemini-2.5-pro',
+      model: 'openai/gpt-6-astra',
       messages: [
         { 
           role: 'system', 

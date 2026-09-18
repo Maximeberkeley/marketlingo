@@ -21,6 +21,7 @@ import { playSound } from '../../lib/sounds';
 import { calculateAvailableDay } from '../../lib/dayMath';
 import { WorldBanner } from '../../components/world/WorldBanner';
 import { goalContentTag } from '../../lib/goals';
+import { dayPromise, seasonThemes, syllabusDay, DAYS_PER_BLOCK, DAYS_PER_SEASON } from '../../lib/syllabus';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
@@ -31,6 +32,8 @@ interface Lesson {
   completed: boolean;
   current?: boolean;
   stackId?: string;
+  /** What this day is for: the angle it takes, or a consolidation day. */
+  promise: string;
 }
 
 interface Week {
@@ -55,29 +58,20 @@ interface Season {
   completedLessons: number;
 }
 
-// ── Season config — Brilliant-style chapters ──────────
-const SEASON_META: { title: string; subtitle: string; icon: keyof typeof Feather.glyphMap; color: string; colorSoft: string }[] = [
-  { title: 'Foundations', subtitle: 'Core market fundamentals', icon: 'layers', color: '#3B82F6', colorSoft: 'rgba(59,130,246,0.08)' },
-  { title: 'Forces & Cycles', subtitle: 'Market forces and timing', icon: 'trending-up', color: '#8B5CF6', colorSoft: 'rgba(139,92,246,0.08)' },
-  { title: 'Startup Patterns', subtitle: 'Building in this market', icon: 'zap', color: '#F59E0B', colorSoft: 'rgba(245,158,11,0.08)' },
-  { title: 'Key Players', subtitle: 'Industry deep dives', icon: 'users', color: '#10B981', colorSoft: 'rgba(16,185,129,0.08)' },
-  { title: 'Investment Lens', subtitle: 'Investor perspective', icon: 'eye', color: '#EC4899', colorSoft: 'rgba(236,72,153,0.08)' },
-  { title: 'Builder Mode', subtitle: 'Apply everything', icon: 'award', color: '#F97316', colorSoft: 'rgba(249,115,22,0.08)' },
+// ── Season styling — titles come from the market's own themes ──
+const SEASON_STYLE: { icon: keyof typeof Feather.glyphMap; color: string; colorSoft: string }[] = [
+  { icon: 'layers', color: '#3B82F6', colorSoft: 'rgba(59,130,246,0.08)' },
+  { icon: 'trending-up', color: '#8B5CF6', colorSoft: 'rgba(139,92,246,0.08)' },
+  { icon: 'zap', color: '#F59E0B', colorSoft: 'rgba(245,158,11,0.08)' },
+  { icon: 'users', color: '#10B981', colorSoft: 'rgba(16,185,129,0.08)' },
+  { icon: 'eye', color: '#EC4899', colorSoft: 'rgba(236,72,153,0.08)' },
+  { icon: 'award', color: '#F97316', colorSoft: 'rgba(249,115,22,0.08)' },
 ];
 
-const WEEK_TITLES = [
-  'Market Structure', 'Certification Reality', 'Business Dynamics', 'Execution Patterns',
-  'Regulation Deep Dive', 'Capital Flows', 'Talent Dynamics', 'Technology Waves',
-  'Moat Building', 'GTM Strategies', 'Failure Modes', 'Success Stories',
-  'Commercial Giants', 'Defense Primes', 'Space Innovators', 'Supply Chain',
-  'Public Markets', 'Private Markets', 'Due Diligence', 'Portfolio Strategy',
-  'Thesis Building', 'Analysis Project', 'Future Scenarios', 'Graduation',
-  'Advanced Topics I', 'Advanced Topics II', 'Case Studies I', 'Case Studies II',
-  'Emerging Trends', 'Cross-Market', 'Synthesis I', 'Synthesis II',
-  'Capstone I', 'Capstone II', 'Capstone III', 'Final Review',
-];
+const SEASON_SUBTITLE = 'Five territories, six angles each';
 
-function getDayWeek(day: number) { return Math.ceil(day / 5); }
+/** A block is the six days spent on one territory. */
+function getDayBlock(day: number) { return Math.ceil(day / DAYS_PER_BLOCK); }
 
 // ── Main Screen ───────────────────────────────────────
 export default function RoadmapScreen() {
@@ -164,24 +158,25 @@ export default function RoadmapScreen() {
       }
     });
 
-    const currentWeek = getDayWeek(day);
+    const currentBlock = getDayBlock(day);
+    const themes = seasonThemes(market);
 
-    const builtSeasons: Season[] = SEASON_META.map((meta, sIdx) => {
-      const weeksPerMonth = 6;
-      const startWeek = sIdx * weeksPerMonth + 1;
+    // Seasons follow the market's own six themes; each season holds five
+    // territories of six days, matching the syllabus the lessons are written to.
+    const builtSeasons: Season[] = SEASON_STYLE.map((meta, sIdx) => {
+      const blocksPerSeason = DAYS_PER_SEASON / DAYS_PER_BLOCK;
+      const startBlock = sIdx * blocksPerSeason + 1;
       let totalLessons = 0;
       let completedLessons = 0;
 
       const weeks: Week[] = [];
-      for (let w = 0; w < weeksPerMonth; w++) {
-        const weekNum = startWeek + w;
-        const startDay = (weekNum - 1) * 5 + 1;
-        const days = [startDay, startDay + 1, startDay + 2, startDay + 3, startDay + 4];
+      for (let w = 0; w < blocksPerSeason; w++) {
+        const blockNum = startBlock + w;
+        const startDay = (blockNum - 1) * DAYS_PER_BLOCK + 1;
+        const days = Array.from({ length: DAYS_PER_BLOCK }, (_, i) => startDay + i);
 
-        let status: Week['status'] = 'locked';
-        if (weekNum < currentWeek) status = 'available'; // Past weeks are reviewable
-        else if (weekNum === currentWeek) status = 'current';
-        else status = 'available'; // All future weeks with content are browsable
+        let status: Week['status'] = 'available';
+        if (blockNum === currentBlock) status = 'current';
 
         const lessons: Lesson[] = days.map((d) => {
           const dbLesson = dayLessonMap.get(d);
@@ -197,12 +192,14 @@ export default function RoadmapScreen() {
             completed: isCompleted,
             current: d === day,
             stackId: dbLesson?.stackId,
+            promise: dayPromise(market, d),
           };
         });
 
+        const plan = syllabusDay(market, startDay);
         weeks.push({
-          weekNumber: weekNum,
-          title: WEEK_TITLES[weekNum - 1] || `Week ${weekNum}`,
+          weekNumber: blockNum,
+          title: `${plan.seasonTheme} · Part ${plan.block}`,
           dayRange: `Days ${days[0]}–${days[days.length - 1]}`,
           lessons,
           status,
@@ -214,8 +211,8 @@ export default function RoadmapScreen() {
 
       return {
         seasonNumber: sIdx + 1,
-        title: meta.title,
-        subtitle: meta.subtitle,
+        title: themes[sIdx] ?? `Season ${sIdx + 1}`,
+        subtitle: SEASON_SUBTITLE,
         icon: meta.icon,
         color: meta.color,
         colorSoft: meta.colorSoft,
@@ -265,7 +262,6 @@ export default function RoadmapScreen() {
   const completionPct = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
   const journeyPct = Math.round(((currentDay - 1) / 179) * 100);
   const overallPct = Math.max(journeyPct, completionPct);
-  const currentWeek = getDayWeek(currentDay);
 
   return (
     <View style={styles.container}>
@@ -280,7 +276,7 @@ export default function RoadmapScreen() {
         <Animated.View style={[styles.header, animStyle(headerAnim)]}>
           <Text style={styles.pageTitle}>Courses</Text>
           <Text style={styles.pageSubtitle}>
-            Day {currentDay} · Week {currentWeek}
+            Day {currentDay} · {dayPromise(selectedMarket || 'ai', currentDay)}
           </Text>
         </Animated.View>
 
@@ -445,6 +441,9 @@ export default function RoadmapScreen() {
                 ]}>
                   {selectedLesson?.completed ? 'Completed' : 'Current lesson'}
                 </Text>
+                {!!selectedLesson?.promise && (
+                  <Text style={styles.modalPromise}>{selectedLesson.promise}</Text>
+                )}
               </View>
             </View>
 
@@ -598,7 +597,9 @@ function WeekCard({
                   ]} numberOfLines={1}>
                     {lesson.title}
                   </Text>
-                  <Text style={styles.lessonDay}>Day {lesson.day}</Text>
+                  <Text style={styles.lessonDay} numberOfLines={1}>
+                    Day {lesson.day} · {lesson.promise}
+                  </Text>
                 </View>
 
                 {isAccessible && (
@@ -820,6 +821,7 @@ const styles = StyleSheet.create({
   modalDayNum: { ...TYPE.h3, color: COLORS.accent },
   modalTitle: { ...TYPE.h2, color: COLORS.textPrimary, marginBottom: 4 },
   modalStatus: { ...TYPE.caption },
+  modalPromise: { ...TYPE.caption, color: COLORS.textSecondary, marginTop: 2 },
   modalCTA: {
     backgroundColor: COLORS.accent,
     paddingVertical: 16,
