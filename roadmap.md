@@ -47,3 +47,8 @@
 - [x] Mobile navigation simplified to Course, Intel, Practice, You; Notes remains a full-page destination from the Course pen.
 - [x] Course rebuilt as one continuous 180-day learning path with wavy lesson nodes, local-day state, changing season colors, Leo beside today, consolidation markers, and access through the final lesson.
 - [x] Industry Intel moved into its own tab while preserving the three-story habit, article actions, quizzes, and post-lesson handoff.
+
+## New (Sept 18, 23:11) — app-wide game-quality standard
+- [ ] Make every mobile surface meet the upgraded in-lesson game standard: lesson-grounded purpose, one obvious action, immediate sensory feedback, clear progression, concise concrete copy, polished state transitions, and complete loading/error/empty states.
+- [ ] Restore the Phase 4–6 retention loops displaced by the Course map without rebuilding a dashboard: focus, deliverable progress, insider streak identity, review/open loops, and Intel handoff must live naturally on the path.
+- [ ] Complete a screen-by-screen visual, interaction, dark-mode, safe-area, and navigation audit before marking the next mobile release green.
