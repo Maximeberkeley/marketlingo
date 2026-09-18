@@ -41,6 +41,8 @@ export interface LessonKitReaderProps {
   isReview?: boolean;
   dayNumber?: number;
   streakDays?: number;
+  /** Stored learning goal, so the deep layer is written through the right lens. */
+  learningGoal?: string | null;
   metadata?: StackMetadata;
   [key: string]: any;
 }
