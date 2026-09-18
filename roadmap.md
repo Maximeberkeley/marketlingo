@@ -49,6 +49,6 @@
 - [x] Industry Intel moved into its own tab while preserving the three-story habit, article actions, quizzes, and post-lesson handoff.
 
 ## New (Sept 18, 23:11) — app-wide game-quality standard
-- [ ] Make every mobile surface meet the upgraded in-lesson game standard: lesson-grounded purpose, one obvious action, immediate sensory feedback, clear progression, concise concrete copy, polished state transitions, and complete loading/error/empty states.
-- [ ] Restore the Phase 4–6 retention loops displaced by the Course map without rebuilding a dashboard: focus, deliverable progress, insider streak identity, review/open loops, and Intel handoff must live naturally on the path.
+- [~] Make every mobile surface meet the upgraded in-lesson game standard: the core Course/Practice/Arena/Deep Case/rescue loop is now completed-lesson grounded with sensory feedback and explicit states; peripheral Labs, Resources, Notes, and You still need the same full treatment.
+- [x] Restore the Phase 4–6 retention loops displaced by the Course map without rebuilding a dashboard: focus, deliverable progress, insider streak/rescue, review, Intel progress, and tomorrow's open loop now live on the path.
 - [ ] Complete a screen-by-screen visual, interaction, dark-mode, safe-area, and navigation audit before marking the next mobile release green.

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 
 interface StreakBadgeProps {
@@ -42,9 +43,9 @@ export function StreakBadge({ count }: StreakBadgeProps) {
 
   return (
     <Animated.View style={[styles.container, { transform: [{ scale: scaleAnim }] }]}>
-      <Animated.Text style={[styles.emoji, isOnFire && { transform: [{ rotate: rotation }] }]}>
-        🔥
-      </Animated.Text>
+      <Animated.View style={isOnFire ? { transform: [{ rotate: rotation }] } : undefined}>
+        <Feather name="zap" size={15} color={COLORS.streak} />
+      </Animated.View>
       <Text style={styles.count}>{count}</Text>
     </Animated.View>
   );
@@ -59,9 +60,6 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 20,
     gap: 4,
-  },
-  emoji: {
-    fontSize: 14,
   },
   count: {
     fontSize: 13,

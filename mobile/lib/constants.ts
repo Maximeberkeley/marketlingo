@@ -32,6 +32,7 @@ const LIGHT_COLORS = {
   textPrimary: '#1A1F36',
   textSecondary: '#6B7280',
   textMuted: '#9CA3AF',
+  textOnAccent: '#FFFFFF',
 
   // Accent / Brand (brand purple reads well on both themes)
   accent: '#8B5CF6',
@@ -64,6 +65,7 @@ const LIGHT_COLORS = {
   // Surface tints
   surfaceSubtle: 'rgba(0, 0, 0, 0.02)',
   surfaceLight: 'rgba(0, 0, 0, 0.04)',
+  imageScrim: 'rgba(0, 0, 0, 0.08)',
 };
 
 // Premium dark: warm-neutral greys in layered shades, never pure black.
@@ -75,6 +77,7 @@ const DARK_COLORS: typeof LIGHT_COLORS = {
   textPrimary: '#F2F4F8',
   textSecondary: '#AAB1BC',
   textMuted: '#7C848F',
+  textOnAccent: '#FFFFFF',
 
   accent: '#A78BFA',
   accentDark: '#8B5CF6',
@@ -102,6 +105,7 @@ const DARK_COLORS: typeof LIGHT_COLORS = {
 
   surfaceSubtle: 'rgba(255, 255, 255, 0.04)',
   surfaceLight: 'rgba(255, 255, 255, 0.08)',
+  imageScrim: 'rgba(0, 0, 0, 0.28)',
 };
 
 export const COLORS = isDark ? DARK_COLORS : LIGHT_COLORS;

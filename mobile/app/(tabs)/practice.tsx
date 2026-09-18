@@ -18,6 +18,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { triggerHaptic } from '../../lib/haptics';
+import { playSound } from '../../lib/sounds';
+import { useStudiedLessons } from '../../hooks/useStudiedLessons';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
@@ -264,6 +266,7 @@ function PremiumCard({ card, index }: { card: CardData; index: number }) {
 
   const onPress = () => {
     triggerHaptic('light');
+    playSound('tap').catch(() => {});
     router.push(card.path as any);
   };
 
@@ -357,6 +360,7 @@ export default function PracticeScreen() {
   const { user } = useAuth();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const studied = useStudiedLessons(selectedMarket || undefined);
   const headerAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -428,8 +432,28 @@ export default function PracticeScreen() {
           </View>
         </Animated.View>
 
-        {/* Activities */}
-        <PremiumCarousel cards={ACTIVITY_CARDS} title="Activities" />
+        <View style={styles.groundedBand}>
+          <View style={styles.groundedIcon}>
+            <Feather name={studied.lessons.length > 0 ? 'check-circle' : 'book-open'} size={18} color={studied.lessons.length > 0 ? COLORS.success : COLORS.accent} />
+          </View>
+          <View style={styles.groundedCopy}>
+            <Text style={styles.groundedLabel}>BUILT FROM YOUR COURSE</Text>
+            <Text style={styles.groundedTitle} numberOfLines={2}>
+              {studied.isLoading
+                ? 'Finding the concepts you own…'
+                : studied.lessons.length > 0
+                  ? `Practice ${studied.lessons[0].title}`
+                  : 'Complete your first lesson to unlock practice'}
+            </Text>
+            <Text style={styles.groundedBody}>
+              {studied.lessons.length > 0
+                ? `${studied.lessons.length} completed lesson${studied.lessons.length === 1 ? '' : 's'} can appear. Nothing random.`
+                : 'Arena and Deep Case stay locked until they can test something you actually studied.'}
+            </Text>
+          </View>
+        </View>
+
+        {studied.lessons.length > 0 ? <PremiumCarousel cards={ACTIVITY_CARDS} title="From your lessons" /> : null}
 
         {/* Labs */}
         <PremiumCarousel cards={LAB_CARDS} title="Labs" />
@@ -476,6 +500,12 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
     fontSize: 11,
   },
+  groundedBand: { marginHorizontal: 20, marginBottom: 22, paddingVertical: 14, borderTopWidth: 2, borderBottomWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.accent, borderBottomColor: COLORS.border, flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
+  groundedIcon: { width: 40, height: 40, borderRadius: 12, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
+  groundedCopy: { flex: 1 },
+  groundedLabel: { ...TYPE.overline, color: COLORS.accent },
+  groundedTitle: { ...TYPE.h3, color: COLORS.textPrimary, marginTop: 3 },
+  groundedBody: { ...TYPE.caption, color: COLORS.textSecondary, marginTop: 4, lineHeight: 17 },
 
   /* Carousel */
   carouselWrap: { marginBottom: 28 },
@@ -566,7 +596,7 @@ const styles = StyleSheet.create({
   },
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.08)',
+    backgroundColor: COLORS.imageScrim,
     borderTopLeftRadius: 21,
     borderTopRightRadius: 21,
   },

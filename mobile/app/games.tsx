@@ -12,7 +12,6 @@ import { playSound } from "../lib/sounds";
 import { ComboCounter } from "../components/ui/ComboCounter";
 import { createComboState, comboCorrect, comboWrong, ComboState } from "../lib/combo";
 import { Feather } from "@expo/vector-icons";
-import { useSubscription } from "../hooks/useSubscription";
 import { splitSentences } from '../lib/textUtils';
 import { goalContentTag } from '../lib/goals';
 import { useStudiedLessons } from '../hooks/useStudiedLessons';
@@ -40,8 +39,8 @@ export default function GamesScreen() {
   const [gameComplete, setGameComplete] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const [lessonGrounded, setLessonGrounded] = useState(false);
 
-  const { isProUser } = useSubscription();
   const { addXP } = useUserXP(selectedMarket || undefined);
   const [combo, setCombo] = useState<ComboState>(createComboState());
   const [fetchKey, setFetchKey] = useState(0);
@@ -51,7 +50,7 @@ export default function GamesScreen() {
   // session has not started, questions generated from their own studied slides
   // replace the market-wide scenarios fetched below.
   useEffect(() => {
-    if (!showIntro || studied.isLoading || !studied.lessons.length) return;
+    if (studied.isLoading || !studied.lessons.length) return;
     const built = lessonQuestions(studied.lessons, 5);
     if (built.length < 3) return;
     const types: Array<'match' | 'timeline' | 'predict'> = ['match', 'timeline', 'predict'];
@@ -66,7 +65,9 @@ export default function GamesScreen() {
         pattern: q.pattern,
       })),
     );
-  }, [showIntro, studied.isLoading, studied.lessons, fetchKey]);
+    setLessonGrounded(true);
+    setLoading(false);
+  }, [studied.isLoading, studied.lessons, fetchKey]);
 
 
   useEffect(() => {
@@ -74,192 +75,8 @@ export default function GamesScreen() {
       if (!user) return;
 
       const { data: profile } = await supabase.from("profiles").select("selected_market").eq("id", user.id).single();
-
       const market = profile?.selected_market || "aerospace";
       setSelectedMarket(market);
-
-      // Fetch trainer_scenarios that the user hasn't completed yet for variety
-      const { data: completedAttempts } = await supabase
-        .from("trainer_attempts")
-        .select("scenario_id")
-        .eq("user_id", user.id);
-
-      const completedIds = new Set((completedAttempts || []).map((a) => a.scenario_id));
-
-      // Get learning goal for goal-specific content
-      const { data: progressData } = await supabase
-        .from("user_progress")
-        .select("learning_goal")
-        .eq("user_id", user.id)
-        .eq("market_id", market)
-        .maybeSingle();
-
-      const learningGoal = progressData?.learning_goal || "curiosity";
-
-      // Try goal-specific trainer scenarios first (tags contain goal:career etc.)
-      let { data: scenarios, error } = await supabase
-        .from("trainer_scenarios")
-        .select("id, scenario, question, options, correct_option_index, feedback_pro_reasoning, tags")
-        .eq("market_id", market)
-        .contains("tags", [goalContentTag(learningGoal)])
-        .limit(30);
-
-      // Fallback: any trainer scenarios if no goal-specific ones
-      if (!scenarios?.length) {
-        const fallback = await supabase
-          .from("trainer_scenarios")
-          .select("id, scenario, question, options, correct_option_index, feedback_pro_reasoning, tags")
-          .eq("market_id", market)
-          .limit(30);
-        scenarios = fallback.data;
-        error = fallback.error;
-      }
-
-      if (error || !scenarios?.length) {
-        // Fallback: try game stacks but parse correct answer from content
-        const { data: stacks } = await supabase
-          .from("stacks")
-          .select("id, title, tags, slides (id, slide_number, title, body)")
-          .eq("market_id", market)
-          .contains("tags", ["DAILY_GAME"])
-          .not("published_at", "is", null)
-          .order("created_at", { ascending: true })
-          .limit(5);
-
-        if (stacks?.length) {
-          const gameQuestions: GameQuestion[] = stacks.map((stack, index) => {
-            const slides = ((stack as any).slides as any[]) || [];
-            const sorted = slides.sort((a: any, b: any) => a.slide_number - b.slide_number);
-            const questionSlide = sorted[0]?.body || stack.title;
-            const rawOptions = sorted.slice(1, 5).map((s: any) => {
-              const text = s.body || s.title || "";
-              // Truncate at sentence boundary
-              if (text.length > 100) {
-                const sentences = splitSentences(text);
-                return sentences?.[0]?.trim() || text.substring(0, 100) + "…";
-              }
-              return text;
-            });
-            const baseOptions =
-              rawOptions.length >= 4
-                ? rawOptions
-                : [
-                    rawOptions[0] || "First key insight",
-                    rawOptions[1] || "Second consideration",
-                    rawOptions[2] || "Alternative perspective",
-                    rawOptions[3] || "Industry best practice",
-                  ];
-
-            // Try to find correct answer tag e.g. "correct:2", default to random
-            const correctTag = (stack.tags as string[])?.find((t: string) => t.startsWith("correct:"));
-            const correctIdx = correctTag
-              ? parseInt(correctTag.split(":")[1], 10)
-              : Math.floor(Math.random() * baseOptions.length);
-
-            // Shuffle options and track correct answer position
-            const indexedOptions = baseOptions.map((opt: string, i: number) => ({ opt, i }));
-            const shuffledOpts = [...indexedOptions].sort(() => Math.random() - 0.5);
-            const newCorrectIdx = shuffledOpts.findIndex((o) => o.i === Math.min(correctIdx, baseOptions.length - 1));
-
-            // Smart truncate question and explanation at sentence boundaries
-            let questionText = `${stack.title}: ${questionSlide}`;
-            if (questionText.length > 180) {
-              const sentences = splitSentences(questionText);
-              if (sentences) {
-                let result = stack.title + ": ";
-                for (const s of sentences) {
-                  if ((result + s).length > 200) break;
-                  result += s;
-                }
-                questionText = result.trim();
-              }
-            }
-
-            let explanationText = sorted[sorted.length - 1]?.body || stack.title;
-            if (explanationText.length > 300) {
-              const sentences = splitSentences(explanationText);
-              if (sentences) {
-                let result = "";
-                for (const s of sentences) {
-                  if ((result + s).length > 350) break;
-                  result += s;
-                }
-                explanationText = result.trim() || sentences.slice(0, 2).join(" ").trim();
-              }
-            }
-
-            const types: Array<"match" | "timeline" | "predict"> = ["match", "timeline", "predict"];
-            return {
-              id: stack.id,
-              type: types[index % 3],
-              question: questionText,
-              options: shuffledOpts.map((o) => o.opt),
-              correctAnswer: newCorrectIdx >= 0 ? newCorrectIdx : 0,
-              explanation: explanationText,
-              pattern: (
-                sorted.find((s: any) => s.body?.toLowerCase().includes("pattern:"))?.body || stack.title
-              ).substring(0, 60),
-            };
-          });
-          setQuestions(gameQuestions);
-        }
-
-        setLoading(false);
-        return;
-      }
-
-      // Map trainer_scenarios to game questions — filter out completed, shuffle for variety
-      const types: Array<"match" | "timeline" | "predict"> = ["match", "timeline", "predict"];
-      const uncompleted = scenarios.filter((s) => !completedIds.has(s.id));
-      // If all completed, allow replay but shuffle
-      const pool = uncompleted.length >= 5 ? uncompleted : scenarios;
-      // Shuffle pool
-      const shuffled = [...pool].sort(() => Math.random() - 0.5);
-      const selected = shuffled.slice(0, 5);
-
-      const gameQuestions: GameQuestion[] = selected.map((scenario, index) => {
-        // Options are objects with {label, isCorrect} — extract label strings
-        const rawOpts = Array.isArray(scenario.options)
-          ? (scenario.options as any[]).map((o: any, i: number) => {
-              const label =
-                typeof o === "string"
-                  ? o
-                  : typeof o === "object" && o !== null && "label" in o
-                    ? String(o.label)
-                    : String(o);
-              return { label, originalIndex: i };
-            })
-          : [
-              { label: "Option A", originalIndex: 0 },
-              { label: "Option B", originalIndex: 1 },
-              { label: "Option C", originalIndex: 2 },
-              { label: "Option D", originalIndex: 3 },
-            ];
-
-        // CRITICAL: Shuffle options so correct answer isn't always in the same position
-        const shuffled = [...rawOpts].sort(() => Math.random() - 0.5);
-        const newCorrectIndex = shuffled.findIndex((o) => o.originalIndex === scenario.correct_option_index);
-
-        return {
-          id: scenario.id,
-          type: types[index % 3],
-          question: scenario.question || scenario.scenario,
-          options: shuffled.map((o) => {
-            // Truncate at sentence boundary, not mid-word
-            if (o.label.length > 140) {
-              const sentences = splitSentences(o.label);
-              return sentences?.[0]?.trim() || o.label.substring(0, 140) + "…";
-            }
-            return o.label;
-          }),
-          correctAnswer: newCorrectIndex >= 0 ? newCorrectIndex : 0,
-          explanation: scenario.feedback_pro_reasoning || scenario.scenario,
-          pattern: ((scenario.tags as string[]) || [])[0] || "Industry Pattern",
-        };
-      });
-
-      setQuestions(gameQuestions);
-      setLoading(false);
     };
     fetchData();
   }, [user, fetchKey]);
@@ -306,26 +123,36 @@ export default function GamesScreen() {
           { onConflict: "user_id,market_id,game_type" },
         );
 
-        const xpEarned = getXPAmount(XP_REWARDS.GAME_COMPLETE, isProUser);
+        const xpEarned = getXPAmount(XP_REWARDS.GAME_COMPLETE, false);
         await addXP(xpEarned, "game", undefined, "Completed game session");
       }
       triggerHaptic("success");
       playSound("levelUp");
       setGameComplete(true);
-      // Show pro interstitial for free users when they don't get a perfect score
-      const isPerfect = finalScore === questions.length;
-      if (!isProUser && !isPerfect) {
-      }
     }
   };
 
-  if (loading) {
+  if (loading || studied.isLoading) {
     return (
       <View style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color={COLORS.accent} />
       </View>
     );
   }
+
+  if (!studied.lessons.length) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <Text style={styles.heroTitle}>Games unlock from your lessons</Text>
+        <Text style={styles.heroDesc}>Complete a course lesson first. Every challenge here will illustrate what you studied.</Text>
+        <TouchableOpacity style={styles.ctaButton} onPress={() => router.replace('/(tabs)/home')}>
+          <Text style={styles.ctaText}>GO TO COURSE</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (!lessonGrounded) return null;
 
   if (showIntro && questions.length > 0) {
     return (
@@ -345,9 +172,9 @@ export default function GamesScreen() {
             <Text style={styles.introMsg}>Pick the right answers and learn the patterns!</Text>
           </View>
           <View style={styles.heroCard}>
-            <Text style={styles.heroLabel}>Industry Games</Text>
-            <Text style={styles.heroTitle}>Test Your Knowledge</Text>
-            <Text style={styles.heroDesc}>Quick MCQ challenges based on real industry patterns.</Text>
+            <Text style={styles.heroLabel}>FROM YOUR COMPLETED LESSONS</Text>
+            <Text style={styles.heroTitle}>Prove What Landed</Text>
+            <Text style={styles.heroDesc}>Every challenge uses a claim, definition, or figure you already studied.</Text>
           </View>
           <View style={styles.featuresCard}>
             <Text style={styles.featuresTitle}>What to expect</Text>

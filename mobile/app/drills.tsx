@@ -18,7 +18,6 @@ import { ProgressBar } from '../components/ui/ProgressBar';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
-import { useSubscription } from '../hooks/useSubscription';
 import { splitSentences } from '../lib/textUtils';
 import { goalContentTag } from '../lib/goals';
 import { useStudiedLessons } from '../hooks/useStudiedLessons';
@@ -172,8 +171,8 @@ export default function DrillsScreen() {
   const [setsCompleted, setSetsCompleted] = useState(0);
   /** True while the questions on screen are not drawn from a studied lesson. */
   const [needsLessonQuestions, setNeedsLessonQuestions] = useState(false);
+  const [lessonGrounded, setLessonGrounded] = useState(false);
 
-  const { isProUser } = useSubscription();
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const studied = useStudiedLessons(selectedMarket || undefined);
 
@@ -181,7 +180,7 @@ export default function DrillsScreen() {
   // drills are missing, statements are generated from their own studied slides
   // rather than from random market stacks.
   useEffect(() => {
-    if (!needsLessonQuestions || studied.isLoading || !studied.lessons.length) return;
+    if (studied.isLoading || !studied.lessons.length) return;
     const built = lessonStatements(studied.lessons, 21);
     if (built.length < 7) return;
     const mapped: DrillQuestion[] = built.map((s, i) => ({
@@ -198,6 +197,8 @@ export default function DrillsScreen() {
     setTotalSets(Math.max(1, Math.ceil(mapped.length / 7)));
     setQuestions(mapped.slice(0, 7));
     setNeedsLessonQuestions(false);
+    setLessonGrounded(true);
+    setLoading(false);
   }, [needsLessonQuestions, studied.isLoading, studied.lessons]);
 
   useEffect(() => {
@@ -212,86 +213,6 @@ export default function DrillsScreen() {
 
       const market = profile?.selected_market || 'aerospace';
       setSelectedMarket(market);
-
-      // Get current day
-      const { data: progressData } = await supabase
-        .from('user_progress')
-        .select('current_day, learning_goal')
-        .eq('user_id', user.id)
-        .eq('market_id', market)
-        .maybeSingle();
-
-      const currentDay = progressData?.current_day || 1;
-
-      // Try fetching AI-generated drill questions for today + recent days
-      const dayRange = [];
-      for (let d = Math.max(1, currentDay - 2); d <= currentDay; d++) {
-        dayRange.push(d);
-      }
-
-      const { data: drillData } = await supabase
-        .from('drill_questions')
-        .select('*')
-        .eq('market_id', market)
-        .in('day_number', dayRange)
-        .order('set_number', { ascending: true })
-        .order('question_number', { ascending: true });
-
-      if (drillData && drillData.length >= 7) {
-        // Use AI-generated questions — group by set
-        const sets = new Set(drillData.map(q => `${q.day_number}-${q.set_number}`));
-        setTotalSets(Math.min(sets.size, 5));
-        setAllQuestions(drillData);
-
-        // Pick first available set
-        const firstSet = drillData.filter(q => q.set_number === 1 && q.day_number === currentDay);
-        if (firstSet.length >= 7) {
-          setQuestions(firstSet.slice(0, 7).sort(() => Math.random() - 0.5));
-        } else {
-          // Take any 7
-          setQuestions(drillData.slice(0, 7).sort(() => Math.random() - 0.5));
-        }
-      } else {
-        // Fallback: generate from slides (legacy behavior)
-        const learningGoal = progressData?.learning_goal || 'curiosity';
-        const goalTag = goalContentTag(learningGoal);
-
-        let { data: stacks } = await supabase
-          .from('stacks')
-          .select('id, title, tags, slides (id, slide_number, title, body, sources)')
-          .eq('market_id', market)
-          .contains('tags', [goalTag])
-          .not('published_at', 'is', null)
-          .limit(20);
-
-        if (!stacks?.length) {
-          const fallback = await supabase
-            .from('stacks')
-            .select('id, title, tags, slides (id, slide_number, title, body, sources)')
-            .eq('market_id', market)
-            .not('published_at', 'is', null)
-            .limit(20);
-          stacks = fallback.data;
-        }
-
-        const fallbackQs = generateFallbackQuestions(stacks || []);
-        setAllQuestions(fallbackQs);
-        setTotalSets(Math.ceil(fallbackQs.length / 7));
-        setQuestions(fallbackQs.slice(0, 7).sort(() => Math.random() - 0.5));
-        // Prefer statements built from the learner's studied lessons as soon as
-        // those slides are available.
-        setNeedsLessonQuestions(true);
-
-
-        // Trigger async generation for future sessions
-        if (market && currentDay) {
-          supabase.functions.invoke('generate-drill-questions', {
-            body: { market_id: market, day_number: currentDay },
-          }).catch(() => {}); // Fire and forget
-        }
-      }
-
-      setLoading(false);
     };
     fetchData();
   }, [user]);
@@ -359,9 +280,6 @@ export default function DrillsScreen() {
       triggerHaptic('success');
       setSetsCompleted(prev => prev + 1);
       setDrillComplete(true);
-      const isPerfect = finalScore === questions.length;
-      if (!isProUser && !isPerfect) {
-      }
     }
   };
 
@@ -395,13 +313,27 @@ export default function DrillsScreen() {
     setIsTimerActive(true);
   };
 
-  if (loading) {
+  if (loading || studied.isLoading) {
     return (
       <View style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color={COLORS.accent} />
       </View>
     );
   }
+
+  if (!studied.lessons.length) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <Text style={styles.heroTitle}>Drills unlock from your lessons</Text>
+        <Text style={styles.heroDesc}>Complete a course lesson first. Your speed round will use only material you studied.</Text>
+        <TouchableOpacity style={styles.ctaButton} onPress={() => router.replace('/(tabs)/home')}>
+          <Text style={styles.ctaText}>GO TO COURSE</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (!lessonGrounded) return null;
 
   if (showIntro && questions.length > 0) {
     return (
@@ -418,8 +350,8 @@ export default function DrillsScreen() {
             <Text style={styles.introMsg}>15 seconds per question — trust your instincts!</Text>
           </View>
           <View style={styles.heroCard}>
-            <Text style={styles.heroLabel}>Speed Drills</Text>
-            <Text style={styles.heroTitle}>True or False</Text>
+            <Text style={styles.heroLabel}>FROM YOUR COMPLETED LESSONS</Text>
+            <Text style={styles.heroTitle}>Catch the Altered Claim</Text>
             <Text style={styles.heroDesc}>
               {totalSets >= 3
                 ? `${totalSets} sets available today — test your understanding from different angles.`
