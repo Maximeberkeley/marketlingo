@@ -53,6 +53,11 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
   const [progress, setProgress] = useState(0);
   const [openTerm, setOpenTerm] = useState<string | null>(null);
   const sections = useMemo(() => paragraphs(text), [text]);
+  const { stackId, learningGoal } = useDeepDiveTarget();
+  const { deepDive, loading: deepLoading, error: deepError, load: loadDeepDive } = useDeepDive(
+    stackId,
+    learningGoal,
+  );
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
