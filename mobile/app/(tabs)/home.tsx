@@ -61,6 +61,9 @@ import { useCollectibles, CollectibleCard } from '../../hooks/useCollectibles';
 import { CardRevealModal } from '../../components/collectibles/CardRevealModal';
 import { LessonGoalsScreen } from '../../components/home/LessonGoalsScreen';
 import { SpeechBubble } from '../../components/ui/SpeechBubble';
+import { InsiderIdentityCard } from '../../components/home/InsiderIdentityCard';
+import { useDeliverable } from '../../hooks/useDeliverable';
+
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
