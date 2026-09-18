@@ -439,6 +439,7 @@ export default function HomeScreen() {
           onAddNote={session.handleAddNote}
           marketId={selectedMarket || undefined}
           stackId={session.activeStack.id}
+          learningGoal={learningGoal}
 
           // A lesson from another day is revision (no rewards, no day movement).
           // A repeat of TODAY's lesson runs as extra practice instead.
