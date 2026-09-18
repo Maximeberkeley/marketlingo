@@ -498,6 +498,7 @@ export default function HomeScreen() {
           intelReadToday={intelHabit.readToday}
           intelTarget={intelHabit.target}
           tomorrowTitle={tomorrowLesson?.title || null}
+          rescueAvailable={showStreakWarning || criticalTimerActive}
           safeTop={insets.top}
           onOpenLesson={(stackId) => router.setParams({ openStackId: stackId })}
           onAskLeo={() => setShowLeoChat(true)}

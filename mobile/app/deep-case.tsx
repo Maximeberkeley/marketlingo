@@ -48,6 +48,16 @@ export default function DeepCaseRoute() {
     );
   }
 
+  if (studied.lessons.length === 0) {
+    return (
+      <View style={styles.loading}>
+        <Text style={styles.emptyTitle}>Your first case starts in the course</Text>
+        <Text style={styles.loadingText}>Complete a lesson first. Your case will use its real claims, mechanisms, and numbers.</Text>
+        <Text style={styles.backLink} onPress={() => router.replace('/(tabs)/home')}>Go to Course</Text>
+      </View>
+    );
+  }
+
   if (!deepCase) {
     return (
       <View style={styles.loading}>
@@ -93,4 +103,5 @@ const styles = StyleSheet.create({
   },
   loadingText: { ...TYPE.caption, color: COLORS.textMuted, textAlign: 'center' },
   emptyTitle: { ...TYPE.h2, color: COLORS.textPrimary },
+  backLink: { ...TYPE.bodyBold, color: COLORS.accent, marginTop: 4 },
 });

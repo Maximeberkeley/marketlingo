@@ -18,12 +18,14 @@ import { COLORS, SHADOWS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useSelectedMarket } from '../hooks/useSelectedMarket';
+import { useStudiedLessons } from '../hooks/useStudiedLessons';
 import { useStreakFreeze } from '../hooks/useStreakFreeze';
 import { useUserProgress } from '../hooks/useUserProgress';
 import { triggerCelebration, triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { log } from '../lib/logger';
 import { getMarketName } from '../lib/markets';
+import { lessonStatements } from '../lesson-kit/practice/lessonQuestions';
 
 interface RescueQuestion {
   id: string;
@@ -38,6 +40,7 @@ export default function StreakRescueScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { marketId } = useSelectedMarket();
+  const studied = useStudiedLessons(marketId || undefined);
   const { progress, refetch: refetchProgress } = useUserProgress(marketId || undefined);
   const { canFreeze, useFreeze, freezesUsedThisWeek, maxFreezes } = useStreakFreeze(marketId || undefined);
 
@@ -64,30 +67,16 @@ export default function StreakRescueScreen() {
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      if (!marketId) return;
-      const { data } = await supabase
-        .from('drill_questions')
-        .select('id, statement, is_true, explanation')
-        .eq('market_id', marketId)
-        .limit(40);
-
-      if (cancelled) return;
-      const rows = (data ?? []).filter((r) => r.statement && r.explanation);
-      const shuffled = [...rows].sort(() => Math.random() - 0.5).slice(0, 3);
-      setQuestions(
-        shuffled.map((r) => ({
-          id: r.id as string,
-          statement: r.statement as string,
-          isTrue: !!r.is_true,
-          explanation: r.explanation as string,
-        })),
-      );
-      setLoading(false);
-    })();
-    return () => { cancelled = true; };
-  }, [marketId]);
+    if (studied.isLoading) return;
+    const rows = lessonStatements(studied.lessons, 8);
+    setQuestions(
+      [...rows]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+        .map(row => ({ id: row.id, statement: row.statement, isTrue: row.isTrue, explanation: row.explanation })),
+    );
+    setLoading(false);
+  }, [studied.isLoading, studied.lessons]);
 
   const finish = useCallback(async (finalCorrect: number) => {
     setSaving(true);

@@ -59,6 +59,7 @@ interface CourseJourneyProps {
   intelReadToday: number;
   intelTarget: number;
   tomorrowTitle?: string | null;
+  rescueAvailable?: boolean;
   safeTop: number;
   onOpenLesson: (stackId: string) => void;
   onAskLeo: () => void;
@@ -99,6 +100,7 @@ export function CourseJourney({
   intelReadToday,
   intelTarget,
   tomorrowTitle,
+  rescueAvailable = false,
   safeTop,
   onOpenLesson,
   onAskLeo,
@@ -360,7 +362,14 @@ export function CourseJourney({
                 <Text style={styles.marketName}>{getMarketName(marketId)}</Text>
               </View>
               <View style={styles.badges}>
-                <StreakBadge count={streak} />
+          <TouchableOpacity
+            disabled={!rescueAvailable}
+            onPress={() => { triggerHaptic('warning'); router.push('/streak-rescue'); }}
+            accessibilityRole={rescueAvailable ? 'button' : undefined}
+            accessibilityLabel={rescueAvailable ? `Rescue your ${streak} day streak` : undefined}
+          >
+            <StreakBadge count={streak} />
+          </TouchableOpacity>
                 <XPBadge xp={totalXp} level={level} />
               </View>
             </View>

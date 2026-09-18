@@ -42,9 +42,6 @@ const dayFromTags = (tags: string[] | null): number | null => {
   return hit ? Number(hit.slice(4)) : null;
 };
 
-/** How many recent lessons practice draws from. */
-const WINDOW = 6;
-
 /** Does this lesson touch the corner of the market the learner chose? */
 const matchesFocus = (lesson: StudiedLesson, keywords: string[]) => {
   if (!keywords.length) return false;
