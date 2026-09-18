@@ -595,7 +595,9 @@ function WeekCard({
                   ]} numberOfLines={1}>
                     {lesson.title}
                   </Text>
-                  <Text style={styles.lessonDay}>Day {lesson.day}</Text>
+                  <Text style={styles.lessonDay} numberOfLines={1}>
+                    Day {lesson.day} · {lesson.promise}
+                  </Text>
                 </View>
 
                 {isAccessible && (
