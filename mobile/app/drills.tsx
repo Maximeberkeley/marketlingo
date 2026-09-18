@@ -278,6 +278,10 @@ export default function DrillsScreen() {
         setAllQuestions(fallbackQs);
         setTotalSets(Math.ceil(fallbackQs.length / 7));
         setQuestions(fallbackQs.slice(0, 7).sort(() => Math.random() - 0.5));
+        // Prefer statements built from the learner's studied lessons as soon as
+        // those slides are available.
+        setNeedsLessonQuestions(true);
+
 
         // Trigger async generation for future sessions
         if (market && currentDay) {
