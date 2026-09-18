@@ -57,7 +57,7 @@ export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightE
           <Feather name="chevron-right" size={17} color={tokens.color.textMuted} />
         </TouchableOpacity>
       )}
-      {!!exercise.fullText && <BriefingReader visible={showBriefing} title={exercise.detailTitle || exercise.eyebrow || 'Lesson briefing'} text={exercise.fullText} keyTerms={exercise.keyTerm ? [exercise.keyTerm] : undefined} sources={exercise.sources} onClose={() => setShowBriefing(false)} />}
+      {!!exercise.fullText && <BriefingReader visible={showBriefing} title={exercise.detailTitle || exercise.eyebrow || 'Lesson briefing'} text={exercise.fullText} keyTerms={exercise.keyTerms || (exercise.keyTerm ? [exercise.keyTerm] : undefined)} sources={exercise.sources} onClose={() => setShowBriefing(false)} />}
     </Animated.View>
   );
 }

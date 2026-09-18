@@ -91,8 +91,9 @@ export function makeMicroInsight(
   eyebrow?: string,
 ): MicroInsightExercise | null {
   const list = sentences(slide.body, 30, 190);
-  if (!list.length) return null;
-  const text = leadSentence(slide.body, list[0]);
+  const normalized = slide.body.replace(/\s+/g, ' ').trim();
+  if (!normalized) return null;
+  const text = leadSentence(slide.body, slide.title);
   return {
     kind: 'microInsight',
     id,
@@ -100,6 +101,7 @@ export function makeMicroInsight(
     text,
     highlight: list[1],
     keyTerm: slide.keyTerms?.[0],
+    keyTerms: slide.keyTerms,
     sources: slide.sources?.length ? slide.sources : undefined,
     fullText: slide.body,
     detailTitle: slide.title,

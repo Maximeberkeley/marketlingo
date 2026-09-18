@@ -32,6 +32,7 @@ export interface MicroInsightExercise {
   text: string;
   highlight?: string;
   keyTerm?: KeyTerm;
+  keyTerms?: KeyTerm[];
   sources?: Source[];
   /** Complete source copy retained behind progressive disclosure. */
   fullText?: string;
