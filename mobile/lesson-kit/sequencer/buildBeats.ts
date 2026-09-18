@@ -224,6 +224,11 @@ export function buildBeats(
         eyebrow: 'Lock it in',
         text: takeaway,
         highlight: metadata?.next_preview?.trim() ? `Tomorrow: ${metadata.next_preview.trim()}` : undefined,
+        fullText: [metadata?.recap_bridge, metadata?.key_takeaway, metadata?.next_preview]
+          .filter((value): value is string => Boolean(value?.trim()))
+          .map(value => value.trim())
+          .join('\n\n'),
+        detailTitle: 'What to remember',
       },
       lastSlide,
       { line: pack?.leo.takeaway, mood: 'celebrate' },

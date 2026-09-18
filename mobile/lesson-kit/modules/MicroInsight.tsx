@@ -1,15 +1,20 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, Linking, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { tokens } from '../theme/tokens';
 import { MicroInsightExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { useEnter } from './shared';
 import { ColorText } from '../components/ColorText';
 import { shortLabel, shortText } from '../text';
+import { BriefingReader } from '../components/BriefingReader';
 
 /** Micro-insight — two lines max, big type, one idea to carry forward. */
 export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightExercise>) {
   const enter = useEnter(exercise.id);
+  const [showBriefing, setShowBriefing] = useState(false);
+  const [showTerm, setShowTerm] = useState(false);
 
   useEffect(() => {
     onChange({ canCheck: true, isCorrect: true });
@@ -27,20 +32,32 @@ export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightE
         </View>
       )}
       {!!exercise.keyTerm && (
-        <View style={styles.term}>
-          <Text style={styles.termWord}>{shortLabel(exercise.keyTerm.term)}</Text>
-          <ColorText text={shortText(exercise.keyTerm.definition, 1, 100)} style={styles.termDef} maxSentences={1} maxLength={100} />
-        </View>
+        <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityState={{ expanded: showTerm }}
+          accessibilityLabel={`${showTerm ? 'Hide' : 'Show'} definition for ${exercise.keyTerm.term}`}
+          activeOpacity={0.84}
+          style={styles.term}
+          onPress={() => {
+            Haptics.selectionAsync().catch(() => {});
+            setShowTerm(current => !current);
+          }}
+        >
+          <View style={styles.termHead}>
+            <Text style={styles.termWord}>{shortLabel(exercise.keyTerm.term)}</Text>
+            <Feather name={showTerm ? 'minus' : 'plus'} size={17} color={tokens.color.accent} />
+          </View>
+          {showTerm && <ColorText text={exercise.keyTerm.definition} style={styles.termDef} maxSentences={100} maxLength={10000} />}
+        </TouchableOpacity>
       )}
-      {!!exercise.sources?.length && (
-        <View style={styles.sources}>
-          {exercise.sources.map((s, i) => (
-            <TouchableOpacity key={i} onPress={() => Linking.openURL(s.url).catch(() => {})}>
-              <Text style={styles.source}>{s.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+      {!!exercise.fullText && exercise.fullText.trim() !== exercise.text.trim() && (
+        <TouchableOpacity accessibilityRole="button" style={styles.goDeeper} activeOpacity={0.82} onPress={() => setShowBriefing(true)}>
+          <Feather name="book-open" size={16} color={tokens.color.accent} />
+          <Text style={styles.goDeeperText}>Go deeper</Text>
+          <Feather name="chevron-right" size={17} color={tokens.color.textMuted} />
+        </TouchableOpacity>
       )}
+      {!!exercise.fullText && <BriefingReader visible={showBriefing} title={exercise.detailTitle || exercise.eyebrow || 'Lesson briefing'} text={exercise.fullText} keyTerms={exercise.keyTerm ? [exercise.keyTerm] : undefined} sources={exercise.sources} onClose={() => setShowBriefing(false)} />}
     </Animated.View>
   );
 }
@@ -64,7 +81,8 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   termWord: { fontSize: tokens.font.caption + 1, fontWeight: '900', color: tokens.color.accentDark },
-  termDef: { fontSize: tokens.font.caption + 1, color: tokens.color.textSecondary, lineHeight: 19 },
-  sources: { flexDirection: 'row', flexWrap: 'wrap', gap: tokens.space.sm },
-  source: { fontSize: tokens.font.caption - 1, color: tokens.color.textMuted, textDecorationLine: 'underline' },
+  termHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  termDef: { marginTop: 7, fontSize: tokens.font.body, color: tokens.color.textSecondary, lineHeight: 24 },
+  goDeeper: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 14, borderRadius: tokens.radius.md, backgroundColor: tokens.color.surface, borderWidth: 1, borderColor: tokens.color.border },
+  goDeeperText: { flex: 1, fontSize: 15, fontWeight: '800', color: tokens.color.text },
 });

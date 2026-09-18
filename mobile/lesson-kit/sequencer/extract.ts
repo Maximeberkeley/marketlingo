@@ -39,6 +39,15 @@ export function sentences(text: string, min = 40, max = 200): string[] {
     .filter(s => s.length >= min && s.length <= max);
 }
 
+/** A concise first-layer lead. The complete copy is always retained separately. */
+function leadSentence(text: string, fallback: string): string {
+  const first = (text || '').replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/)[0]?.trim();
+  if (!first) return fallback;
+  if (first.length <= 180) return first;
+  const clause = first.slice(0, 180).split(/[,;:]/)[0]?.trim();
+  return clause && clause.length >= 45 ? `${clause}.` : fallback;
+}
+
 export function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -59,15 +68,19 @@ export function makeColdOpen(
   id: string,
   eyebrow?: string,
 ): ColdOpenExercise | null {
-  const pool = slides.flatMap(s => numericSentences(s.body));
-  const headline = pool.sort((a, b) => a.length - b.length)[0];
-  if (!headline) return null;
+  const candidates = slides.flatMap(slide => numericSentences(slide.body).map(headline => ({ headline, slide })));
+  const selected = candidates.sort((a, b) => a.headline.length - b.headline.length)[0];
+  if (!selected) return null;
   return {
     kind: 'coldOpen',
     id,
     eyebrow: eyebrow || 'Today in your market',
-    headline,
+    headline: selected.headline,
     kicker: "Here's why that number matters.",
+    fullText: selected.slide.body,
+    detailTitle: selected.slide.title,
+    keyTerms: selected.slide.keyTerms,
+    sources: selected.slide.sources,
   };
 }
 
@@ -79,7 +92,7 @@ export function makeMicroInsight(
 ): MicroInsightExercise | null {
   const list = sentences(slide.body, 30, 190);
   if (!list.length) return null;
-  const text = list[0];
+  const text = leadSentence(slide.body, list[0]);
   return {
     kind: 'microInsight',
     id,
@@ -88,6 +101,8 @@ export function makeMicroInsight(
     highlight: list[1],
     keyTerm: slide.keyTerms?.[0],
     sources: slide.sources?.length ? slide.sources : undefined,
+    fullText: slide.body,
+    detailTitle: slide.title,
   };
 }
 
