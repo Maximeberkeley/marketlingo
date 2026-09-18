@@ -158,24 +158,25 @@ export default function RoadmapScreen() {
       }
     });
 
-    const currentWeek = getDayWeek(day);
+    const currentBlock = getDayBlock(day);
+    const themes = seasonThemes(market);
 
-    const builtSeasons: Season[] = SEASON_META.map((meta, sIdx) => {
-      const weeksPerMonth = 6;
-      const startWeek = sIdx * weeksPerMonth + 1;
+    // Seasons follow the market's own six themes; each season holds five
+    // territories of six days, matching the syllabus the lessons are written to.
+    const builtSeasons: Season[] = SEASON_STYLE.map((meta, sIdx) => {
+      const blocksPerSeason = DAYS_PER_SEASON / DAYS_PER_BLOCK;
+      const startBlock = sIdx * blocksPerSeason + 1;
       let totalLessons = 0;
       let completedLessons = 0;
 
       const weeks: Week[] = [];
-      for (let w = 0; w < weeksPerMonth; w++) {
-        const weekNum = startWeek + w;
-        const startDay = (weekNum - 1) * 5 + 1;
-        const days = [startDay, startDay + 1, startDay + 2, startDay + 3, startDay + 4];
+      for (let w = 0; w < blocksPerSeason; w++) {
+        const blockNum = startBlock + w;
+        const startDay = (blockNum - 1) * DAYS_PER_BLOCK + 1;
+        const days = Array.from({ length: DAYS_PER_BLOCK }, (_, i) => startDay + i);
 
-        let status: Week['status'] = 'locked';
-        if (weekNum < currentWeek) status = 'available'; // Past weeks are reviewable
-        else if (weekNum === currentWeek) status = 'current';
-        else status = 'available'; // All future weeks with content are browsable
+        let status: Week['status'] = 'available';
+        if (blockNum === currentBlock) status = 'current';
 
         const lessons: Lesson[] = days.map((d) => {
           const dbLesson = dayLessonMap.get(d);
@@ -191,12 +192,14 @@ export default function RoadmapScreen() {
             completed: isCompleted,
             current: d === day,
             stackId: dbLesson?.stackId,
+            promise: dayPromise(market, d),
           };
         });
 
+        const plan = syllabusDay(market, startDay);
         weeks.push({
-          weekNumber: weekNum,
-          title: WEEK_TITLES[weekNum - 1] || `Week ${weekNum}`,
+          weekNumber: blockNum,
+          title: `${plan.seasonTheme} · Part ${plan.block}`,
           dayRange: `Days ${days[0]}–${days[days.length - 1]}`,
           lessons,
           status,
@@ -208,8 +211,8 @@ export default function RoadmapScreen() {
 
       return {
         seasonNumber: sIdx + 1,
-        title: meta.title,
-        subtitle: meta.subtitle,
+        title: themes[sIdx] ?? `Season ${sIdx + 1}`,
+        subtitle: SEASON_SUBTITLE,
         icon: meta.icon,
         color: meta.color,
         colorSoft: meta.colorSoft,
