@@ -277,7 +277,7 @@ export default function RoadmapScreen() {
         <Animated.View style={[styles.header, animStyle(headerAnim)]}>
           <Text style={styles.pageTitle}>Courses</Text>
           <Text style={styles.pageSubtitle}>
-            Day {currentDay} · Week {currentWeek}
+            Day {currentDay} · {dayPromise(selectedMarket || 'ai', currentDay)}
           </Text>
         </Animated.View>
 
