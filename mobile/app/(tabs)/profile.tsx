@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Share,
   ActivityIndicator, Modal, Animated, Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,8 +12,6 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, STARTUP_STAGES } from '../../hooks/useUserXP';
-import { MONETIZATION_ENABLED } from '../../lib/monetization';
-import { useSubscription } from '../../hooks/useSubscription';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { Feather } from '@expo/vector-icons';
 import { triggerHaptic } from '../../lib/haptics';
@@ -52,7 +50,6 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, signOut, loading: authLoading } = useAuth();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
-  const { isProUser } = useSubscription();
   const [showChangeWarning, setShowChangeWarning] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -122,10 +119,11 @@ export default function ProfileScreen() {
     triggerHaptic('medium');
     setSavingPreference(true);
     try {
-      await supabase.from('user_progress').upsert(
+      const { error } = await supabase.from('user_progress').upsert(
         { user_id: user.id, market_id: selectedMarket, learning_goal: goal },
         { onConflict: 'user_id,market_id' }
       );
+      if (error) throw error;
       setCurrentGoal(goal);
       setShowGoalPicker(false);
       Alert.alert('Goal Updated', 'Your lessons will now be tailored to this goal. Go back to Home to see updated content.');
@@ -141,13 +139,14 @@ export default function ProfileScreen() {
     triggerHaptic('medium');
     setSavingPreference(true);
     try {
-      await Promise.all([
+      const results = await Promise.all([
         supabase.from('profiles').update({ familiarity_level: level }).eq('id', user.id),
         supabase.from('user_progress').upsert(
           { user_id: user.id, market_id: selectedMarket, familiarity_level: level },
           { onConflict: 'user_id,market_id' }
         ),
       ]);
+      if (results.some(result => result.error)) throw new Error('Preference update failed');
       setCurrentLevel(level);
       setShowLevelPicker(false);
       Alert.alert('Level Updated', 'Content difficulty will adjust to your new experience level.');
@@ -166,7 +165,10 @@ export default function ProfileScreen() {
       Alert.alert('No Notes', 'No notes to export yet.');
       return;
     }
-    Alert.alert('Export', `${notes.length} notes ready. Share feature coming soon!`);
+    await Share.share({
+      title: 'My MarketLingo notes',
+      message: notes.map((note, index) => `${index + 1}. ${note.content}`).join('\n\n'),
+    });
   };
 
   const handleSignOut = () => {
@@ -222,24 +224,7 @@ export default function ProfileScreen() {
             <Text style={styles.title}>Profile</Text>
             {user && <Text style={styles.email}>{user.email}</Text>}
           </View>
-          <View style={styles.headerRight}>
-            {isProUser && (
-              <View style={styles.proBadge}>
-                <Text style={styles.proBadgeText}>PRO</Text>
-              </View>
-            )}
-          </View>
-        </Animated.View>
-
-        {/* Pro Banner */}
-        <Animated.View style={[{ marginBottom: 16 }, animStyle(statsAnim)]}>
-          {MONETIZATION_ENABLED && isProUser ? (
-            <Image
-              source={require('../../assets/banners/pro-distinction-banner.png')}
-              style={styles.proBanner}
-              resizeMode="contain"
-            />
-          ) : null}
+          <View style={styles.headerRight} />
         </Animated.View>
 
         {/* XP & Stage */}
@@ -435,7 +420,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.versionText}>MarketLingo v1.0.0</Text>
+        <Text style={styles.versionText}>MarketLingo v1.0.8</Text>
         </Animated.View>
       </ScrollView>
 
