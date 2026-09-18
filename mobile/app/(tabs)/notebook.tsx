@@ -367,7 +367,7 @@ export default function NotebookScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()} activeOpacity={0.75}>
+          <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(tabs)/home')} activeOpacity={0.75}>
             <Feather name="arrow-left" size={20} color={COLORS.textPrimary} />
             <Text style={styles.backText}>Course</Text>
           </TouchableOpacity>
@@ -414,9 +414,6 @@ export default function NotebookScreen() {
             )}
           </View>
         )}
-
-        {/* ── Streak Card ── */}
-        <StreakWeekView streak={streak} thisWeek={thisWeek} totalNotes={notes.length} />
 
         {/* ── Category Tabs ── */}
         <ScrollView
@@ -694,6 +691,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: 'center', justifyContent: 'center' },
   scrollContent: { paddingHorizontal: 16 },
+  backButton: { flexDirection: 'row', alignItems: 'center', gap: 7, alignSelf: 'flex-start', paddingVertical: 8, marginBottom: 8 },
+  backText: { fontSize: 13, fontWeight: '700', color: COLORS.textPrimary },
 
   // Header
   header: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },

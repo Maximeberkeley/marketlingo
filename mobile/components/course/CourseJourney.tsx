@@ -51,6 +51,7 @@ interface CourseJourneyProps {
   totalXp: number;
   level: number;
   lessonCompletedToday: boolean;
+  safeTop: number;
   onOpenLesson: (stackId: string) => void;
   onAskLeo: () => void;
 }
@@ -83,6 +84,7 @@ export function CourseJourney({
   totalXp,
   level,
   lessonCompletedToday,
+  safeTop,
   onOpenLesson,
   onAskLeo,
 }: CourseJourneyProps) {
@@ -302,7 +304,7 @@ export function CourseJourney({
           listRef.current?.scrollToOffset({ offset: Math.max(0, index * NODE_ROW_HEIGHT), animated: false });
         }}
         ListHeaderComponent={(
-          <View style={styles.header}>
+          <View style={[styles.header, { paddingTop: safeTop + 10 }]}>
             <View style={styles.topBar}>
               <View>
                 <Text style={styles.courseLabel}>MY COURSE</Text>

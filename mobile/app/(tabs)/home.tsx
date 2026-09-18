@@ -12,7 +12,6 @@ import {
   Alert,
 } from 'react-native';
 import { AchievementPopup } from '../../components/achievements/AchievementPopup';
-import { DailyNews } from '../../components/home/DailyNews';
 import { HomeSkeleton } from '../../components/home/HomeSkeleton';
 import { AnimatedSection } from '../../components/home/AnimatedSection';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -65,6 +64,7 @@ import { InsiderIdentityCard } from '../../components/home/InsiderIdentityCard';
 import { useDeliverable } from '../../hooks/useDeliverable';
 import { useFocusTopic } from '../../hooks/useFocusTopic';
 import { FocusTopicCard } from '../../components/home/FocusTopicCard';
+import { CourseJourney } from '../../components/course/CourseJourney';
 
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
@@ -135,7 +135,7 @@ function getRandomGreeting(key: keyof typeof LEO_GREETINGS): string {
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { user, loading: authLoading } = useAuth();
-  const { openStackId, intel } = useLocalSearchParams<{ openStackId?: string; intel?: string }>();
+  const { openStackId } = useLocalSearchParams<{ openStackId?: string }>();
 
   const [selectedMarketLocal, setSelectedMarketLocal] = useState<string | null>(null);
   const [revealedCard, setRevealedCard] = useState<Partial<CollectibleCard> | null>(null);
@@ -477,243 +477,22 @@ export default function HomeScreen() {
             session.dismissSessionComplete();
           }}
         />
+      ) : selectedMarket ? (
+        <CourseJourney
+          marketId={selectedMarket}
+          currentDay={currentDay}
+          learningGoal={learningGoal}
+          completedStackIds={(progress?.completed_stacks as string[]) || []}
+          streak={streak}
+          totalXp={xpData?.total_xp || 0}
+          level={xpData?.current_level || 1}
+          lessonCompletedToday={lessonCompletedToday}
+          safeTop={insets.top}
+          onOpenLesson={(stackId) => router.setParams({ openStackId: stackId })}
+          onAskLeo={() => setShowLeoChat(true)}
+        />
       ) : (
-        <ScrollView
-          contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 100 }]}
-          showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.accent} />}
-        >
-          {/* ── Top bar: streak + XP ── */}
-          <View style={styles.topBar}>
-            <StreakBadge count={streak} />
-            <XPBadge xp={xpData?.total_xp || 0} level={xpData?.current_level || 1} />
-          </View>
-
-          {/* ── Leo + Greeting ── */}
-
-          <AnimatedSection delay={0}>
-            <TouchableOpacity
-              style={styles.leoSection}
-              activeOpacity={0.8}
-              onPress={() => {
-                triggerHaptic('light');
-                setShowLeoChat(true);
-              }}
-            >
-              <FoxMascot industry={selectedMarket || 'aerospace'} size={200} />
-              <SpeechBubble text={greeting} tail="left" tone="purple" style={styles.speechBubble} textStyle={styles.speechText} />
-            </TouchableOpacity>
-          </AnimatedSection>
-
-          {/* ── Critical Timer (last 2 hours) ── */}
-          {criticalTimerActive && showCriticalTimer && progress?.streak_expires_at && (
-            <AnimatedSection delay={30}>
-              <StreakCriticalTimer
-                streak={streak}
-                expiresAt={progress.streak_expires_at}
-                onStartLesson={() => lessonStack && session.handleOpenStack(lessonStack)}
-                isProUser={isProUser}
-                canUseLeoLogs={canFreeze}
-                onUseLeoLogs={useFreeze}
-              />
-            </AnimatedSection>
-          )}
-
-          {/* ── Streak Warning (2-6 hours left, non-critical) ── */}
-          {streakRiskHours !== null && !criticalTimerActive && showStreakWarning && !lessonCompletedToday && (
-            <AnimatedSection delay={50}>
-              <StreakAtRisk
-                streak={streak}
-                hoursLeft={streakRiskHours}
-                onStartLesson={() => lessonStack && session.handleOpenStack(lessonStack)}
-                onDismiss={() => setShowStreakWarning(false)}
-              />
-            </AnimatedSection>
-          )}
-
-          {/* ── Rescue round: a second chance when the streak is on the line ── */}
-          {(criticalTimerActive || streakRiskHours !== null) && !lessonCompletedToday && streak > 0 && (
-            <TouchableOpacity
-              style={styles.rescueLink}
-              onPress={() => { triggerHaptic('medium'); router.push('/streak-rescue'); }}
-              activeOpacity={0.85}
-            >
-              <Feather name="shield" size={14} color={COLORS.streak} />
-              <Text style={styles.rescueLinkText}>No time? Take the 3-question rescue round</Text>
-              <Feather name="chevron-right" size={14} color={COLORS.streak} />
-            </TouchableOpacity>
-          )}
-
-          {/* ── Sunday recap ── */}
-          {showRecap && (
-            <AnimatedSection delay={60}>
-              <SundayRecapCard
-                recap={recap}
-                accent={marketAccent}
-                tierLabel={TIER_META[league.tier]?.label}
-                rank={league.myRank}
-                onDismiss={() => { setRecapDismissed(true); recap.markSeen(); }}
-                onOpenLeague={() => { recap.markSeen(); router.push('/league'); }}
-              />
-            </AnimatedSection>
-          )}
-
-          {/* ── THE Lesson Card — the ONE thing ── */}
-          <AnimatedSection delay={100}>
-            <TouchableOpacity
-              style={[styles.lessonCard, { borderColor: marketAccent + '30' }]}
-              onPress={() => {
-                triggerHaptic('medium');
-                if (lessonStack) session.handleOpenStack(lessonStack);
-              }}
-              activeOpacity={0.92}
-            >
-              {/* Hero illustration area with market-colored gradient */}
-              <View style={[styles.lessonHero, { backgroundColor: marketAccent + '12' }]}>
-                {/* Gradient orbs for depth */}
-                <View style={[styles.heroOrb, styles.heroOrbLeft, { backgroundColor: marketAccent + '18' }]} />
-                <View style={[styles.heroOrb, styles.heroOrbRight, { backgroundColor: marketGradient[1] + '15' }]} />
-                
-                {/* Large illustration */}
-                <Image source={marketIllustration} style={styles.lessonIllustration} resizeMode="contain" />
-                
-                {/* Day badge overlay */}
-                <View style={[styles.dayBadge, { backgroundColor: marketAccent }]}>
-                  <Text style={styles.dayBadgeText}>DAY {currentDay}</Text>
-                </View>
-              </View>
-
-              {/* Content */}
-              <View style={styles.lessonContent}>
-                <Text style={[styles.lessonOverline, { color: marketAccent }]}>
-                  {lessonCompletedToday ? '✓ COMPLETED' : getMarketName(selectedMarket || 'aerospace').toUpperCase()}
-                </Text>
-                <Text style={styles.lessonTitle} numberOfLines={2}>
-                  {lessonStack?.title || 'Loading lesson...'}
-                </Text>
-                <View style={styles.lessonMeta}>
-                  <View style={styles.lessonMetaItem}>
-                    <Feather name="clock" size={12} color={COLORS.textMuted} />
-                    <Text style={styles.lessonMetaText}>~5 min</Text>
-                  </View>
-                  <View style={styles.lessonMetaItem}>
-                    <Feather name="layers" size={12} color={COLORS.textMuted} />
-                    <Text style={styles.lessonMetaText}>{lessonStack?.slides?.length || 6} slides</Text>
-                  </View>
-                  <View style={[styles.xpChip, { backgroundColor: marketAccent + '15' }]}>
-                    <Feather name="zap" size={12} color={marketAccent} />
-                    <Text style={[styles.xpChipText, { color: marketAccent }]}>
-                      +{XP_REWARDS.LESSON_COMPLETE} XP
-                    </Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* CTA */}
-              <View style={[styles.lessonCTA, { backgroundColor: lessonCompletedToday ? COLORS.success : marketAccent }]}>
-                <Text style={styles.lessonCTAText}>
-                  {lessonCompletedToday ? 'Review Lesson' : 'Start Today\'s Lesson'}
-                </Text>
-                <Feather name={lessonCompletedToday ? "refresh-cw" : "arrow-right"} size={18} color="#FFFFFF" />
-              </View>
-            </TouchableOpacity>
-          </AnimatedSection>
-
-          {/* ── Progress bar (minimal) ── */}
-          <AnimatedSection delay={150}>
-            <View style={styles.progressSection}>
-              <View style={styles.progressHeader}>
-                <Text style={styles.progressLabel}>Day {currentDay} of 180</Text>
-                <Text style={styles.progressPct}>{Math.round(journeyProgress)}%</Text>
-              </View>
-              <ProgressBar progress={journeyProgress} height={4} />
-            </View>
-          </AnimatedSection>
-
-          {/* ── Review prompt (if due) ── */}
-          {dueCount > 0 && (
-            <AnimatedSection delay={180}>
-              <TouchableOpacity
-                style={styles.reviewBanner}
-                onPress={() => router.push('/arena' as any)}
-                activeOpacity={0.8}
-              >
-                <Feather name="refresh-cw" size={18} color={COLORS.accent} />
-                <Text style={styles.reviewText}>
-                  {dueCount} concept{dueCount !== 1 ? 's' : ''} ready for review
-                </Text>
-                <Feather name="chevron-right" size={16} color={COLORS.textMuted} />
-              </TouchableOpacity>
-            </AnimatedSection>
-          )}
-
-          {/* ── Social Nudge (rival competition) ── */}
-          {socialNudge && showSocialNudge && !lessonCompletedToday && (
-            <AnimatedSection delay={210}>
-              <SocialNudge
-                rivalName={socialNudge.name?.split('@')[0] || 'Someone'}
-                rivalXP={socialNudge.xp}
-                userXP={xpData?.total_xp || 0}
-                marketName={getMarketName(selectedMarket || 'aerospace')}
-                onViewLeaderboard={() => router.push('/leaderboard' as any)}
-                onDismiss={() => setShowSocialNudge(false)}
-              />
-            </AnimatedSection>
-          )}
-
-          {/* ── Daily Quests ── */}
-          <AnimatedSection delay={220}>
-            <DailyQuests
-              quests={quests}
-              completedCount={completedCount}
-              totalBonusXP={totalBonusXP}
-              allComplete={allComplete}
-              onStartLesson={() => lessonStack && session.handleOpenStack(lessonStack)}
-            />
-          </AnimatedSection>
-
-          {/* ── Streak as identity + the open loops that pull tomorrow ── */}
-          <AnimatedSection delay={260}>
-            <InsiderIdentityCard
-              marketName={getMarketName(selectedMarket || 'aerospace')}
-              streak={streak}
-              longestStreak={progress?.longest_streak || 0}
-              lessonCompletedToday={lessonCompletedToday}
-              focus={learningGoal}
-              deliverableTitle={deliverable.template.title}
-              deliverableCompletion={deliverable.completion}
-              reviewDueCount={dueCount}
-              tomorrowTitle={tomorrowLesson?.title || null}
-              rescueAvailable={!lessonCompletedToday && streak > 0}
-              accent={marketAccent}
-              onStartLesson={() => lessonStack && session.handleOpenStack(lessonStack)}
-              onOpenDeliverable={() => router.push('/deliverable' as any)}
-              onOpenReview={() => router.push('/arena' as any)}
-              onRescue={() => { triggerHaptic('medium'); router.push('/streak-rescue'); }}
-            />
-          </AnimatedSection>
-
-          {/* ── One optional tap after the foundations week: the focus topic ── */}
-          <AnimatedSection delay={280}>
-            <FocusTopicCard
-              marketName={getMarketName(selectedMarket || 'aerospace')}
-              focusLabel={focusTopic.focusLabel}
-              unlocked={focusTopic.unlocked}
-            />
-          </AnimatedSection>
-
-
-
-
-          {/* ── News (compact) ── */}
-          {selectedMarket && (
-            <AnimatedSection delay={320}>
-              <View style={{ marginTop: 12 }}>
-                <DailyNews marketId={selectedMarket} learningGoal={learningGoal} autoOpen={intel === '1'} />
-              </View>
-            </AnimatedSection>
-          )}
-        </ScrollView>
+        <HomeSkeleton />
       )}
 
       <MilestoneShareCard
