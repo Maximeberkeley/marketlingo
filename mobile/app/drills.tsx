@@ -18,7 +18,6 @@ import { ProgressBar } from '../components/ui/ProgressBar';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { Feather } from '@expo/vector-icons';
-import { useSubscription } from '../hooks/useSubscription';
 import { splitSentences } from '../lib/textUtils';
 import { goalContentTag } from '../lib/goals';
 import { useStudiedLessons } from '../hooks/useStudiedLessons';
@@ -174,7 +173,6 @@ export default function DrillsScreen() {
   const [needsLessonQuestions, setNeedsLessonQuestions] = useState(false);
   const [lessonGrounded, setLessonGrounded] = useState(false);
 
-  const { isProUser } = useSubscription();
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const studied = useStudiedLessons(selectedMarket || undefined);
 
@@ -362,9 +360,6 @@ export default function DrillsScreen() {
       triggerHaptic('success');
       setSetsCompleted(prev => prev + 1);
       setDrillComplete(true);
-      const isPerfect = finalScore === questions.length;
-      if (!isProUser && !isPerfect) {
-      }
     }
   };
 
@@ -411,8 +406,8 @@ export default function DrillsScreen() {
       <View style={[styles.container, styles.centered]}>
         <Text style={styles.heroTitle}>Drills unlock from your lessons</Text>
         <Text style={styles.heroDesc}>Complete a course lesson first. Your speed round will use only material you studied.</Text>
-        <TouchableOpacity style={styles.primaryButton} onPress={() => router.replace('/(tabs)/home')}>
-          <Text style={styles.primaryButtonText}>GO TO COURSE</Text>
+        <TouchableOpacity style={styles.ctaButton} onPress={() => router.replace('/(tabs)/home')}>
+          <Text style={styles.ctaText}>GO TO COURSE</Text>
         </TouchableOpacity>
       </View>
     );

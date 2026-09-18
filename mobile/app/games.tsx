@@ -12,7 +12,6 @@ import { playSound } from "../lib/sounds";
 import { ComboCounter } from "../components/ui/ComboCounter";
 import { createComboState, comboCorrect, comboWrong, ComboState } from "../lib/combo";
 import { Feather } from "@expo/vector-icons";
-import { useSubscription } from "../hooks/useSubscription";
 import { splitSentences } from '../lib/textUtils';
 import { goalContentTag } from '../lib/goals';
 import { useStudiedLessons } from '../hooks/useStudiedLessons';
@@ -42,7 +41,6 @@ export default function GamesScreen() {
   const [showIntro, setShowIntro] = useState(true);
   const [lessonGrounded, setLessonGrounded] = useState(false);
 
-  const { isProUser } = useSubscription();
   const { addXP } = useUserXP(selectedMarket || undefined);
   const [combo, setCombo] = useState<ComboState>(createComboState());
   const [fetchKey, setFetchKey] = useState(0);
@@ -309,16 +307,12 @@ export default function GamesScreen() {
           { onConflict: "user_id,market_id,game_type" },
         );
 
-        const xpEarned = getXPAmount(XP_REWARDS.GAME_COMPLETE, isProUser);
+        const xpEarned = getXPAmount(XP_REWARDS.GAME_COMPLETE, false);
         await addXP(xpEarned, "game", undefined, "Completed game session");
       }
       triggerHaptic("success");
       playSound("levelUp");
       setGameComplete(true);
-      // Show pro interstitial for free users when they don't get a perfect score
-      const isPerfect = finalScore === questions.length;
-      if (!isProUser && !isPerfect) {
-      }
     }
   };
 
@@ -335,8 +329,8 @@ export default function GamesScreen() {
       <View style={[styles.container, styles.centered]}>
         <Text style={styles.heroTitle}>Games unlock from your lessons</Text>
         <Text style={styles.heroDesc}>Complete a course lesson first. Every challenge here will illustrate what you studied.</Text>
-        <TouchableOpacity style={styles.primaryButton} onPress={() => router.replace('/(tabs)/home')}>
-          <Text style={styles.primaryButtonText}>GO TO COURSE</Text>
+        <TouchableOpacity style={styles.ctaButton} onPress={() => router.replace('/(tabs)/home')}>
+          <Text style={styles.ctaText}>GO TO COURSE</Text>
         </TouchableOpacity>
       </View>
     );
