@@ -46,6 +46,8 @@ interface ImmersiveNewsOverlayProps {
   initialIndex: number;
   onClose: () => void;
   onOpenChat: (article: NewsItem) => void;
+  /** Fires for each story the learner actually lands on. */
+  onArticleView?: (article: NewsItem) => void;
   marketId: string;
   learningGoal?: string;
 }
@@ -147,6 +149,7 @@ export function ImmersiveNewsOverlay({
   initialIndex,
   onClose,
   onOpenChat,
+  onArticleView,
   marketId,
   learningGoal = 'curiosity',
 }: ImmersiveNewsOverlayProps) {
@@ -172,6 +175,11 @@ export function ImmersiveNewsOverlay({
   useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
 
   const article = articles[currentIndex];
+
+  // Count every story the learner lands on toward their daily intel reads.
+  useEffect(() => {
+    if (visible && article && onArticleView) onArticleView(article);
+  }, [visible, article?.id]);
 
   // Reset state when index or visibility changes
   useEffect(() => {

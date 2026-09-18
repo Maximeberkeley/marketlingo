@@ -135,7 +135,7 @@ function getRandomGreeting(key: keyof typeof LEO_GREETINGS): string {
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { user, loading: authLoading } = useAuth();
-  const { openStackId } = useLocalSearchParams<{ openStackId?: string }>();
+  const { openStackId, intel } = useLocalSearchParams<{ openStackId?: string; intel?: string }>();
 
   const [selectedMarketLocal, setSelectedMarketLocal] = useState<string | null>(null);
   const [revealedCard, setRevealedCard] = useState<Partial<CollectibleCard> | null>(null);
@@ -709,7 +709,7 @@ export default function HomeScreen() {
           {selectedMarket && (
             <AnimatedSection delay={320}>
               <View style={{ marginTop: 12 }}>
-                <DailyNews marketId={selectedMarket} learningGoal={learningGoal} />
+                <DailyNews marketId={selectedMarket} learningGoal={learningGoal} autoOpen={intel === '1'} />
               </View>
             </AnimatedSection>
           )}

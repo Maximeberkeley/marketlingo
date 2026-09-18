@@ -8,8 +8,9 @@
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator, Animated, Easing, ScrollView, StyleSheet, Text, TouchableOpacity, View,
+  ActivityIndicator, Animated, Easing, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
@@ -22,6 +23,7 @@ import { useUserProgress } from '../hooks/useUserProgress';
 import { triggerCelebration, triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { log } from '../lib/logger';
+import { getMarketName } from '../lib/markets';
 
 interface RescueQuestion {
   id: string;
@@ -46,9 +48,11 @@ export default function StreakRescueScreen() {
   const [answer, setAnswer] = useState<null | boolean>(null);
   const [outcome, setOutcome] = useState<null | 'saved' | 'lost'>(null);
   const [saving, setSaving] = useState(false);
+  const [started, setStarted] = useState(false);
 
   const heart = useRef(new Animated.Value(1)).current;
   const streak = progress?.current_streak ?? 0;
+  const marketName = marketId ? getMarketName(marketId) : 'your industry';
 
   useEffect(() => {
     Animated.loop(
@@ -164,22 +168,66 @@ export default function StreakRescueScreen() {
   if (outcome) {
     const saved = outcome === 'saved';
     return (
-      <View style={[styles.screen, styles.center, { padding: 24 }]}>
-        <Animated.View style={{ transform: [{ scale: heart }] }}>
-          <Feather name={saved ? 'shield' : 'alert-triangle'} size={64} color={saved ? COLORS.success : COLORS.error} />
-        </Animated.View>
-        <Text style={styles.title}>{saved ? 'Streak rescued' : 'Streak lost'}</Text>
-        <Text style={styles.body}>
-          {saved
-            ? `You got ${correct} of ${questions.length} right. Your ${streak}-day streak is safe — now bank today's lesson so it never comes to this.`
-            : `Only ${correct} of ${questions.length} right this time. Start a fresh streak today: day one is always the easiest one to win.`}
-        </Text>
-        <TouchableOpacity style={[styles.primary, saved && { backgroundColor: COLORS.success }]} onPress={() => router.replace('/(tabs)/home')}>
-          <Text style={styles.primaryText}>{saved ? 'Go do today\'s lesson' : 'Start again today'}</Text>
-        </TouchableOpacity>
-      </View>
+      <LinearGradient
+        colors={saved ? ['#F59E0B', '#EA580C', '#C2410C'] : ['#475569', '#334155', '#1E293B']}
+        style={styles.full}
+      >
+        <View style={[styles.fullInner, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 24 }]}>
+          <Text style={styles.fullEyebrow}>{saved ? 'STREAK RESCUED' : 'STREAK LOST'}</Text>
+          <Animated.View style={[styles.bigNumberWrap, { transform: [{ scale: heart }] }]}>
+            <Feather name="zap" size={44} color="#FFFFFF" />
+            <Text style={styles.bigNumber}>{saved ? streak : 0}</Text>
+          </Animated.View>
+          <Text style={styles.fullTitle}>
+            {saved ? `${streak} days of ${marketName}, still yours` : 'Day one starts today'}
+          </Text>
+          <Text style={styles.fullBody}>
+            {saved
+              ? `${correct} of ${questions.length} right. You kept it — now bank today's lesson so it never comes to this again.`
+              : `Only ${correct} of ${questions.length} right this time. Nothing you learned is gone, just the count. Day one is the easiest day to win.`}
+          </Text>
+          <Image source={require('../assets/leo-sticker.png')} style={styles.fullLeo} resizeMode="contain" />
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity style={styles.whiteCta} onPress={() => router.replace('/(tabs)/home')} activeOpacity={0.9}>
+            <Text style={[styles.whiteCtaText, { color: saved ? '#C2410C' : '#1E293B' }]}>
+              {saved ? "GO DO TODAY'S LESSON" : 'START AGAIN TODAY'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
     );
   }
+
+  if (!started) {
+    return (
+      <LinearGradient colors={['#F59E0B', '#EA580C', '#C2410C']} style={styles.full}>
+        <View style={[styles.fullInner, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 24 }]}>
+          <Text style={styles.fullEyebrow}>YOUR STREAK IS ON THE LINE</Text>
+          <View style={styles.bigNumberWrap}>
+            <Feather name="zap" size={44} color="#FFFFFF" />
+            <Text style={styles.bigNumber}>{streak}</Text>
+          </View>
+          <Text style={styles.fullTitle}>Rescue your {streak}-day streak</Text>
+          <Text style={styles.fullBody}>
+            Three fast true-or-false calls from {marketName}. Get {NEEDED_CORRECT} right and the streak stays yours.
+          </Text>
+          <Image source={require('../assets/leo-sticker.png')} style={styles.fullLeo} resizeMode="contain" />
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity
+            style={styles.whiteCta}
+            onPress={() => { triggerHaptic('medium'); setStarted(true); }}
+            activeOpacity={0.9}
+          >
+            <Text style={[styles.whiteCtaText, { color: '#C2410C' }]}>RESCUE MY STREAK</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.ghostCta} onPress={() => router.back()} activeOpacity={0.8}>
+            <Text style={styles.ghostCtaText}>NOT NOW</Text>
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
+    );
+  }
+
 
   const q = questions[index];
   const answered = answer !== null;
@@ -280,4 +328,19 @@ const styles = StyleSheet.create({
   footer: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 20, paddingTop: 12, backgroundColor: COLORS.bg0, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.border },
   primary: { backgroundColor: COLORS.streak, borderRadius: 16, paddingVertical: 16, alignItems: 'center', marginTop: 8, paddingHorizontal: 28 },
   primaryText: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
+  full: { flex: 1 },
+  fullInner: { flex: 1, alignItems: 'center', paddingHorizontal: 28 },
+  fullEyebrow: { fontSize: 11, fontWeight: '900', letterSpacing: 1.6, color: 'rgba(255,255,255,0.85)' },
+  bigNumberWrap: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 18 },
+  bigNumber: { fontSize: 92, lineHeight: 100, fontWeight: '900', color: '#FFFFFF' },
+  fullTitle: { fontSize: 26, fontWeight: '900', color: '#FFFFFF', textAlign: 'center', marginTop: 6 },
+  fullBody: { fontSize: 15, lineHeight: 23, color: 'rgba(255,255,255,0.92)', textAlign: 'center', marginTop: 12 },
+  fullLeo: { width: 150, height: 150, marginTop: 18 },
+  whiteCta: {
+    alignSelf: 'stretch', backgroundColor: '#FFFFFF', borderRadius: 18,
+    paddingVertical: 17, alignItems: 'center', ...SHADOWS.sm,
+  },
+  whiteCtaText: { fontSize: 15, fontWeight: '900', letterSpacing: 0.6 },
+  ghostCta: { alignSelf: 'stretch', paddingVertical: 15, alignItems: 'center', marginTop: 4 },
+  ghostCtaText: { fontSize: 14, fontWeight: '900', letterSpacing: 0.6, color: 'rgba(255,255,255,0.85)' },
 });
