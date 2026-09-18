@@ -388,15 +388,24 @@ function dayLessonPrompt(
   dayType: string,
   marketContext: string,
   persona: { label: string; slideGuidance: string },
+  plan?: SyllabusDay,
 ): { system: string; user: string } {
-  const isConsolidation = day % 7 === 0;
-  const angle = isConsolidation
-    ? `This is a CONSOLIDATION day. Introduce NO new concept. Take the single most important idea of this week's theme ("${theme}") and make the learner retrieve and connect it: restate it precisely, show it working in a second real case, and have them synthesise.`
+  const isConsolidation = plan?.isConsolidation ?? day % 7 === 0;
+  // The syllabus decides today's angle on the topic, so consecutive days on the
+  // same territory teach genuinely different concepts.
+  const planAngle = plan
+    ? `TODAY'S ANGLE — "${plan.facetLabel}": ${plan.angle}`
+    : isConsolidation
+      ? `This is a CONSOLIDATION day. Introduce NO new concept. Take the single most important idea of this week's theme ("${theme}") and make the learner retrieve and connect it.`
+      : 'Teach one core operating concept of this industry.';
+  const flavour = isConsolidation
+    ? ''
     : dayType === 'DAILY_GAME'
-      ? 'Anchor the concept in a real, recent development — a named deal, filing, launch, or price move — but the lesson is still ONE concept, not a news roundup.'
+      ? ' Anchor it in a real, recent development — a named deal, filing, launch or price move — but it is still ONE concept, not a news roundup.'
       : dayType === 'BOOK_SNAPSHOT'
-        ? 'Anchor the concept in a real historical episode with dates and actors, but the lesson is still ONE concept.'
-        : 'Teach one core operating concept of this industry.';
+        ? ' Anchor it in a real historical episode with dates and actors, but it is still ONE concept.'
+        : '';
+  const angle = `${planAngle}${flavour}`;
 
   const system = `You are a veteran ${marketContext} insider writing one day of a six-month curriculum for ${persona.label.toUpperCase()} learners.
 
