@@ -55,7 +55,8 @@
         }
       ],
       "expo-web-browser",
-      "expo-font"
+      "expo-font",
+      "./plugins/withIosReleaseVersion"
     ],
     "owner": "maxime020707"
   }
