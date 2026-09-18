@@ -70,20 +70,35 @@ export function useUserProgress(marketId?: string) {
     fetchProgress();
   }, [fetchProgress]);
 
-  const updateStreak = async () => {
-    if (!progress) return;
-    const { data, error } = await supabase
-      .from('user_progress')
-      .update({ last_activity_at: new Date().toISOString() })
-      .eq('id', progress.id)
-      .select()
-      .single();
-
-    if (!error && data) {
-      setProgress(data as UserProgress);
+  /**
+   * Recompute the streak from the learner's LOCAL calendar days.
+   * The server counts consecutive `daily_completions` rows (whose dates are
+   * already local dates), so a day is only lost after the learner's own
+   * midnight passes unfinished — never 24h after the last lesson.
+   */
+  const syncStreak = useCallback(async () => {
+    if (!user || !marketId) return null;
+    const { data, error } = await supabase.rpc('sync_local_streak', {
+      p_market_id: marketId,
+      p_today: localDateString(),
+    });
+    if (error) {
+      log.warn('[UserProgress] Streak sync failed:', error.message);
+      return null;
     }
+    if (data) setProgress(data as UserProgress);
     return data;
-  };
+  }, [user, marketId]);
+
+  // Keep the streak honest every time the app reads progress for a market.
+  useEffect(() => {
+    if (!loading && progress) {
+      syncStreak();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, progress?.id]);
+
+  const updateStreak = syncStreak;
 
   const completeStack = async (stackId: string) => {
     if (!progress) return;
