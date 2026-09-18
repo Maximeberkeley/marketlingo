@@ -15,6 +15,17 @@ import { log } from '../lib/logger';
 
 type Reminder = { market: string; streak: number; expiresAt: string | null };
 
+const STARTUP_TIMEOUT_MS = 6000;
+
+function withStartupTimeout<T>(request: PromiseLike<T>): Promise<T> {
+  return Promise.race([
+    Promise.resolve(request),
+    new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Daily check-in timed out')), STARTUP_TIMEOUT_MS);
+    }),
+  ]);
+}
+
 function presentation(data: Reminder) {
   const hour = new Date().getHours();
   const expiry = data.expiresAt ? new Date(data.expiresAt).getTime() : NaN;
@@ -47,16 +58,21 @@ export default function DailyLeoScreen() {
         return;
       }
       try {
-        const { data: profile } = await supabase.from('profiles').select('selected_market').eq('id', user.id).maybeSingle();
+        const { data: profile, error: profileError } = await withStartupTimeout(
+          supabase.from('profiles').select('selected_market').eq('id', user.id).maybeSingle()
+        );
+        if (profileError) throw profileError;
         const market = profile?.selected_market;
         if (!market) {
           router.replace('/(tabs)/home');
           return;
         }
-        const [{ data: daily }, { data: progress }] = await Promise.all([
+        const [{ data: daily, error: dailyError }, { data: progress, error: progressError }] = await withStartupTimeout(Promise.all([
           supabase.from('daily_completions').select('lesson_completed').eq('user_id', user.id).eq('market_id', market).eq('completion_date', localDateString()).maybeSingle(),
           supabase.from('user_progress').select('current_streak, streak_expires_at').eq('user_id', user.id).eq('market_id', market).maybeSingle(),
-        ]);
+        ]));
+        if (dailyError) throw dailyError;
+        if (progressError) throw progressError;
         if (!active) return;
         if (daily?.lesson_completed) {
           router.replace('/(tabs)/home');
