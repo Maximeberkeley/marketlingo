@@ -8,7 +8,7 @@ import { triggerHaptic } from '../../lib/haptics';
 
 const TAB_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   home: 'home',
-  roadmap: 'bar-chart-2',
+  roadmap: 'radio',
   practice: 'zap',
   notebook: 'edit-3',
   profile: 'user',
@@ -77,7 +77,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Home',
+          title: 'Course',
           tabBarIcon: ({ focused }) => <TabBarIcon name="home" focused={focused} />,
         }}
         listeners={{ tabPress: () => triggerHaptic('selection') }}
@@ -85,7 +85,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="roadmap"
         options={{
-          title: 'Courses',
+          title: 'Intel',
           tabBarIcon: ({ focused }) => <TabBarIcon name="roadmap" focused={focused} />,
         }}
         listeners={{ tabPress: () => triggerHaptic('selection') }}
@@ -101,10 +101,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="notebook"
         options={{
-          title: 'Notes',
-          tabBarIcon: ({ focused }) => <TabBarIcon name="notebook" focused={focused} />,
+          href: null,
         }}
-        listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
       <Tabs.Screen
         name="profile"

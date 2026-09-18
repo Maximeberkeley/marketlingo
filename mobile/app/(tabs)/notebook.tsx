@@ -16,6 +16,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import { COLORS, SHADOWS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
@@ -366,6 +367,10 @@ export default function NotebookScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+          <TouchableOpacity style={styles.backButton} onPress={() => router.back()} activeOpacity={0.75}>
+            <Feather name="arrow-left" size={20} color={COLORS.textPrimary} />
+            <Text style={styles.backText}>Course</Text>
+          </TouchableOpacity>
         {/* ── Header ── */}
         <Animated.View
           style={[

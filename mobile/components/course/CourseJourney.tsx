@@ -68,7 +68,8 @@ function connectorStyle(day: number) {
   const angle = `${Math.atan2(NODE_ROW_HEIGHT, delta) * (180 / Math.PI)}deg`;
   return {
     width: length,
-    left: from,
+    left: (from + to - length) / 2,
+    top: (NODE_ROW_HEIGHT - 7) / 2,
     transform: [{ rotate: angle }],
   };
 }
@@ -380,7 +381,7 @@ const styles = StyleSheet.create({
   seasonSubtitle: { ...TYPE.caption, color: 'rgba(255,255,255,0.76)', marginTop: 6 },
   seasonSeal: { width: 54, height: 54, borderRadius: 27, borderWidth: 3, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '8deg' }] },
   nodeRow: { height: NODE_ROW_HEIGHT, position: 'relative', overflow: 'visible' },
-  connector: { position: 'absolute', top: NODE_ROW_HEIGHT / 2, height: 7, borderRadius: 4, transformOrigin: 'left center', opacity: 0.7 },
+  connector: { position: 'absolute', height: 7, borderRadius: 4, opacity: 0.7 },
   pulseRing: { position: 'absolute', top: (NODE_ROW_HEIGHT - 96) / 2, borderWidth: 3 },
   node: { position: 'absolute', top: 24, borderWidth: 3, alignItems: 'center', justifyContent: 'center', zIndex: 4, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.28, shadowRadius: 0, elevation: 5 },
   todayNode: { top: 18, borderWidth: 4 },
