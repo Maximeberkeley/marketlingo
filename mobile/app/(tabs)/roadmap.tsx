@@ -21,6 +21,7 @@ import { playSound } from '../../lib/sounds';
 import { calculateAvailableDay } from '../../lib/dayMath';
 import { WorldBanner } from '../../components/world/WorldBanner';
 import { goalContentTag } from '../../lib/goals';
+import { dayPromise, seasonThemes, syllabusDay, DAYS_PER_BLOCK, DAYS_PER_SEASON } from '../../lib/syllabus';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
@@ -31,6 +32,8 @@ interface Lesson {
   completed: boolean;
   current?: boolean;
   stackId?: string;
+  /** What this day is for: the angle it takes, or a consolidation day. */
+  promise: string;
 }
 
 interface Week {
