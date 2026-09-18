@@ -40,6 +40,7 @@ export default function GamesScreen() {
   const [gameComplete, setGameComplete] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const [lessonGrounded, setLessonGrounded] = useState(false);
 
   const { isProUser } = useSubscription();
   const { addXP } = useUserXP(selectedMarket || undefined);
@@ -51,7 +52,7 @@ export default function GamesScreen() {
   // session has not started, questions generated from their own studied slides
   // replace the market-wide scenarios fetched below.
   useEffect(() => {
-    if (!showIntro || studied.isLoading || !studied.lessons.length) return;
+    if (studied.isLoading || !studied.lessons.length) return;
     const built = lessonQuestions(studied.lessons, 5);
     if (built.length < 3) return;
     const types: Array<'match' | 'timeline' | 'predict'> = ['match', 'timeline', 'predict'];
@@ -66,7 +67,9 @@ export default function GamesScreen() {
         pattern: q.pattern,
       })),
     );
-  }, [showIntro, studied.isLoading, studied.lessons, fetchKey]);
+    setLessonGrounded(true);
+    setLoading(false);
+  }, [studied.isLoading, studied.lessons, fetchKey]);
 
 
   useEffect(() => {
@@ -319,13 +322,27 @@ export default function GamesScreen() {
     }
   };
 
-  if (loading) {
+  if (loading || studied.isLoading) {
     return (
       <View style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color={COLORS.accent} />
       </View>
     );
   }
+
+  if (!studied.lessons.length) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <Text style={styles.heroTitle}>Games unlock from your lessons</Text>
+        <Text style={styles.heroDesc}>Complete a course lesson first. Every challenge here will illustrate what you studied.</Text>
+        <TouchableOpacity style={styles.primaryButton} onPress={() => router.replace('/(tabs)/home')}>
+          <Text style={styles.primaryButtonText}>GO TO COURSE</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (!lessonGrounded) return null;
 
   if (showIntro && questions.length > 0) {
     return (
@@ -345,9 +362,9 @@ export default function GamesScreen() {
             <Text style={styles.introMsg}>Pick the right answers and learn the patterns!</Text>
           </View>
           <View style={styles.heroCard}>
-            <Text style={styles.heroLabel}>Industry Games</Text>
-            <Text style={styles.heroTitle}>Test Your Knowledge</Text>
-            <Text style={styles.heroDesc}>Quick MCQ challenges based on real industry patterns.</Text>
+            <Text style={styles.heroLabel}>FROM YOUR COMPLETED LESSONS</Text>
+            <Text style={styles.heroTitle}>Prove What Landed</Text>
+            <Text style={styles.heroDesc}>Every challenge uses a claim, definition, or figure you already studied.</Text>
           </View>
           <View style={styles.featuresCard}>
             <Text style={styles.featuresTitle}>What to expect</Text>

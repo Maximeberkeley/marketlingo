@@ -172,6 +172,7 @@ export default function DrillsScreen() {
   const [setsCompleted, setSetsCompleted] = useState(0);
   /** True while the questions on screen are not drawn from a studied lesson. */
   const [needsLessonQuestions, setNeedsLessonQuestions] = useState(false);
+  const [lessonGrounded, setLessonGrounded] = useState(false);
 
   const { isProUser } = useSubscription();
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -181,7 +182,7 @@ export default function DrillsScreen() {
   // drills are missing, statements are generated from their own studied slides
   // rather than from random market stacks.
   useEffect(() => {
-    if (!needsLessonQuestions || studied.isLoading || !studied.lessons.length) return;
+    if (studied.isLoading || !studied.lessons.length) return;
     const built = lessonStatements(studied.lessons, 21);
     if (built.length < 7) return;
     const mapped: DrillQuestion[] = built.map((s, i) => ({
@@ -198,6 +199,8 @@ export default function DrillsScreen() {
     setTotalSets(Math.max(1, Math.ceil(mapped.length / 7)));
     setQuestions(mapped.slice(0, 7));
     setNeedsLessonQuestions(false);
+    setLessonGrounded(true);
+    setLoading(false);
   }, [needsLessonQuestions, studied.isLoading, studied.lessons]);
 
   useEffect(() => {
@@ -395,13 +398,27 @@ export default function DrillsScreen() {
     setIsTimerActive(true);
   };
 
-  if (loading) {
+  if (loading || studied.isLoading) {
     return (
       <View style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color={COLORS.accent} />
       </View>
     );
   }
+
+  if (!studied.lessons.length) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <Text style={styles.heroTitle}>Drills unlock from your lessons</Text>
+        <Text style={styles.heroDesc}>Complete a course lesson first. Your speed round will use only material you studied.</Text>
+        <TouchableOpacity style={styles.primaryButton} onPress={() => router.replace('/(tabs)/home')}>
+          <Text style={styles.primaryButtonText}>GO TO COURSE</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (!lessonGrounded) return null;
 
   if (showIntro && questions.length > 0) {
     return (
@@ -418,8 +435,8 @@ export default function DrillsScreen() {
             <Text style={styles.introMsg}>15 seconds per question — trust your instincts!</Text>
           </View>
           <View style={styles.heroCard}>
-            <Text style={styles.heroLabel}>Speed Drills</Text>
-            <Text style={styles.heroTitle}>True or False</Text>
+            <Text style={styles.heroLabel}>FROM YOUR COMPLETED LESSONS</Text>
+            <Text style={styles.heroTitle}>Catch the Altered Claim</Text>
             <Text style={styles.heroDesc}>
               {totalSets >= 3
                 ? `${totalSets} sets available today — test your understanding from different angles.`
