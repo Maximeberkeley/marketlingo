@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   Linking,
   Modal,
   NativeScrollEvent,
@@ -18,6 +19,8 @@ import { KeyTerm, Source } from '../types';
 import { tokens } from '../theme/tokens';
 import { ColorText } from './ColorText';
 import { dropIncompleteTail } from '../../lib/textUtils';
+import { useDeepDiveTarget } from './DeepDiveContext';
+import { useDeepDive } from '../../hooks/useDeepDive';
 
 interface Props {
   visible: boolean;
@@ -50,6 +53,11 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
   const [progress, setProgress] = useState(0);
   const [openTerm, setOpenTerm] = useState<string | null>(null);
   const sections = useMemo(() => paragraphs(text), [text]);
+  const { stackId, learningGoal } = useDeepDiveTarget();
+  const { deepDive, loading: deepLoading, error: deepError, load: loadDeepDive } = useDeepDive(
+    stackId,
+    learningGoal,
+  );
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
@@ -112,6 +120,102 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
               maxLength={10000}
             />
           ))}
+
+          {!!stackId && !deepDive && (
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel="Go deeper on this concept"
+              activeOpacity={0.85}
+              style={styles.deepButton}
+              disabled={deepLoading}
+              onPress={() => {
+                Haptics.selectionAsync().catch(() => {});
+                loadDeepDive();
+              }}
+            >
+              {deepLoading ? (
+                <ActivityIndicator size="small" color={tokens.color.accent} />
+              ) : (
+                <Feather name="layers" size={16} color={tokens.color.accent} />
+              )}
+              <Text style={styles.deepButtonText}>
+                {deepLoading ? 'Writing the deep layer…' : 'Go deeper on this concept'}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {!!deepError && !deepDive && <Text style={styles.deepError}>{deepError}</Text>}
+
+          {!!deepDive && (
+            <View style={styles.deep}>
+              <Text style={styles.sectionLabel}>DEEP LAYER</Text>
+              <Text style={styles.deepConcept}>{deepDive.concept}</Text>
+              <Text style={styles.body}>{deepDive.summary}</Text>
+
+              {!!deepDive.mechanism?.length && (
+                <View style={styles.deepBlock}>
+                  <Text style={styles.deepHeading}>How it works</Text>
+                  {deepDive.mechanism.map((step, index) => (
+                    <View key={`${index}-${step.step}`} style={styles.stepRow}>
+                      <Text style={styles.stepIndex}>{index + 1}</Text>
+                      <View style={styles.stepCopy}>
+                        <Text style={styles.stepLabel}>{step.step}</Text>
+                        <Text style={styles.stepDetail}>{step.detail}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              )}
+
+              {!!deepDive.case_study?.company && (
+                <View style={styles.deepBlock}>
+                  <Text style={styles.deepHeading}>In the real world</Text>
+                  <Text style={styles.caseCompany}>{deepDive.case_study.company}</Text>
+                  {!!deepDive.case_study.situation && (
+                    <Text style={styles.stepDetail}>{deepDive.case_study.situation}</Text>
+                  )}
+                  {deepDive.case_study.figures?.map((figure, index) => (
+                    <View key={`${index}-fig`} style={styles.figureRow}>
+                      <View style={styles.signalDot} />
+                      <Text style={styles.figureText}>{figure}</Text>
+                    </View>
+                  ))}
+                  {!!deepDive.case_study.outcome && (
+                    <Text style={styles.stepDetail}>{deepDive.case_study.outcome}</Text>
+                  )}
+                </View>
+              )}
+
+              {!!deepDive.key_terms?.length && (
+                <View style={styles.deepBlock}>
+                  <Text style={styles.deepHeading}>Words to own</Text>
+                  {deepDive.key_terms.map(term => (
+                    <View key={term.term} style={styles.term}>
+                      <Text style={styles.termWord}>{term.term}</Text>
+                      <Text style={styles.termDefinition}>{term.definition}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+
+              {!!deepDive.sources?.length && (
+                <View style={styles.deepBlock}>
+                  <Text style={styles.deepHeading}>Where this comes from</Text>
+                  {deepDive.sources.map((source, index) => (
+                    <TouchableOpacity
+                      key={`${source.url}-${index}`}
+                      accessibilityRole="link"
+                      style={styles.source}
+                      onPress={() => Linking.openURL(source.url).catch(() => {})}
+                    >
+                      <Text style={styles.sourceText}>{source.label}</Text>
+                      <Feather name="external-link" size={14} color={tokens.color.textMuted} />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </View>
+          )}
 
           {!!keyTerms?.length && (
             <View style={styles.terms}>
@@ -198,6 +302,45 @@ const styles = StyleSheet.create({
   termWord: { flex: 1, fontSize: 16, fontWeight: '800', color: tokens.color.text },
   termDefinition: { marginTop: 10, fontSize: 16, lineHeight: 25, color: tokens.color.textSecondary },
   sources: { marginTop: 28, gap: 8 },
+  deepButton: {
+    minHeight: 52,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    marginTop: 4,
+    marginBottom: 12,
+    paddingHorizontal: 18,
+    borderRadius: tokens.radius.md,
+    borderWidth: 2,
+    borderColor: tokens.color.accent,
+    backgroundColor: tokens.color.surface,
+  },
+  deepButtonText: { fontSize: 15, fontWeight: '800', color: tokens.color.accent },
+  deepError: { fontSize: 14, color: tokens.color.textMuted, marginBottom: 12 },
+  deep: { marginTop: 8, gap: 10 },
+  deepConcept: { fontSize: 22, lineHeight: 29, fontWeight: '900', color: tokens.color.text },
+  deepBlock: { marginTop: 14, gap: 10 },
+  deepHeading: { fontSize: 13, fontWeight: '900', letterSpacing: 0.8, textTransform: 'uppercase', color: tokens.color.textSecondary },
+  stepRow: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
+  stepIndex: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    textAlign: 'center',
+    lineHeight: 26,
+    fontSize: 13,
+    fontWeight: '900',
+    color: tokens.color.textOnAccent,
+    backgroundColor: tokens.color.accent,
+    overflow: 'hidden',
+  },
+  stepCopy: { flex: 1, gap: 4 },
+  stepLabel: { fontSize: 16, fontWeight: '800', color: tokens.color.text },
+  stepDetail: { fontSize: 16, lineHeight: 25, color: tokens.color.textSecondary },
+  caseCompany: { fontSize: 17, fontWeight: '900', color: tokens.color.text },
+  figureRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  figureText: { flex: 1, fontSize: 15, fontWeight: '700', color: tokens.color.text },
   source: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, borderRadius: tokens.radius.md, backgroundColor: tokens.color.surface },
   sourceText: { flex: 1, fontSize: 14, fontWeight: '700', color: tokens.color.textSecondary },
   footer: { paddingHorizontal: 18, paddingTop: 12, borderTopWidth: 1, borderTopColor: tokens.color.border, backgroundColor: tokens.color.bg },

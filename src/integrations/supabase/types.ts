@@ -1261,6 +1261,69 @@ export type Database = {
           },
         ]
       }
+      lesson_deep_dives: {
+        Row: {
+          case_study: Json
+          concept: string
+          created_at: string
+          goal_key: string
+          id: string
+          key_terms: Json
+          market_id: string
+          mechanism: Json
+          model: string | null
+          sources: Json
+          stack_id: string
+          summary: string
+          updated_at: string
+        }
+        Insert: {
+          case_study?: Json
+          concept: string
+          created_at?: string
+          goal_key?: string
+          id?: string
+          key_terms?: Json
+          market_id: string
+          mechanism?: Json
+          model?: string | null
+          sources?: Json
+          stack_id: string
+          summary: string
+          updated_at?: string
+        }
+        Update: {
+          case_study?: Json
+          concept?: string
+          created_at?: string
+          goal_key?: string
+          id?: string
+          key_terms?: Json
+          market_id?: string
+          mechanism?: Json
+          model?: string | null
+          sources?: Json
+          stack_id?: string
+          summary?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_deep_dives_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_deep_dives_stack_id_fkey"
+            columns: ["stack_id"]
+            isOneToOne: false
+            referencedRelation: "stacks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       markets: {
         Row: {
           created_at: string

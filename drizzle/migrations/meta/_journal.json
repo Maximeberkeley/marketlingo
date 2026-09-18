@@ -15,6 +15,13 @@
       "when": 1789255773185,
       "tag": "0001_phase4_collectibles_and_milestones",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789759469285,
+      "tag": "0002_create_lesson_deep_dives",
+      "breakpoints": true
     }
   ]
 }

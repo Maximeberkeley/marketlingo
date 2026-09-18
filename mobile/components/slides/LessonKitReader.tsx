@@ -7,6 +7,7 @@ import { buildBeats, IndustryInput } from '../../lesson-kit/sequencer/buildBeats
 import { SlideLike } from '../../lesson-kit/sequencer/extract';
 import { useIndustryContent } from '../../hooks/useIndustryContent';
 import { parseSlideIntoCards } from './ConceptCard';
+import { DeepDiveProvider } from '../../lesson-kit/components/DeepDiveContext';
 
 
 interface Source {
@@ -41,6 +42,8 @@ export interface LessonKitReaderProps {
   isReview?: boolean;
   dayNumber?: number;
   streakDays?: number;
+  /** Stored learning goal, so the deep layer is written through the right lens. */
+  learningGoal?: string | null;
   metadata?: StackMetadata;
   [key: string]: any;
 }
@@ -84,6 +87,8 @@ export function LessonKitReader({
   streakDays,
   dayNumber,
   metadata,
+  stackId,
+  learningGoal,
 }: LessonKitReaderProps) {
   const { trainer, drills, stats } = useIndustryContent(marketId, dayNumber);
 
@@ -119,6 +124,7 @@ export function LessonKitReader({
   );
 
   return (
+    <DeepDiveProvider stackId={stackId} learningGoal={learningGoal}>
       <LessonScreen
         lesson={lesson}
         marketId={marketId}
@@ -135,6 +141,7 @@ export function LessonKitReader({
         streakDays={streakDays}
         confirmExit={!isReview}
       />
+    </DeepDiveProvider>
   );
 }
 
