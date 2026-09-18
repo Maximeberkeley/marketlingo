@@ -110,7 +110,7 @@ export function buildCase(input: CaseInput): DeepCase | null {
       kicker: lead?.day
         ? `Built on what you studied — day ${lead.day}. Four stages, one call.`
         : 'Four stages. One call at the end.',
-      fullText: scenario?.scenario || lead?.slides?.[1]?.body || lead?.slides?.[0]?.body,
+      fullText: lead?.slides?.[1]?.body || lead?.slides?.[0]?.body || scenario?.scenario,
       detailTitle: briefDetail,
       leo: { line: 'Take the brief slowly. The trap is usually in the first sentence.', mood: 'thinking' },
     } as Exercise,
