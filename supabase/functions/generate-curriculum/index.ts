@@ -11,6 +11,7 @@ import {
   type CurriculumStructure,
   type LearningGoal,
 } from '../_shared/curriculum-structures.ts';
+import { syllabusDay, type SyllabusDay } from '../_shared/syllabus.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -319,16 +320,15 @@ Deno.serve(async (req) => {
   }
 });
 
-function getTopic(day: number, curriculum: CurriculumStructure): string {
-  const monthIndex = Math.ceil(day / 30) - 1;
-  const monthInfo = curriculum.months[monthIndex];
-  if (!monthInfo) return "Industry fundamentals";
-  
-  // Rotate through topics within the month
-  const dayInMonth = ((day - 1) % 30) + 1;
-  const topicIndex = Math.floor((dayInMonth - 1) / 6) % monthInfo.topics.length;
-  return monthInfo.topics[topicIndex];
+/**
+ * The day's territory now comes from the 180-day syllabus, which also decides
+ * the angle taken on it, so six consecutive days on one topic are six
+ * different concepts rather than one repeated.
+ */
+function getTopic(day: number, marketId: string): string {
+  return syllabusDay(marketId, day).topic;
 }
+
 
 /** The v2 contract: one concept per day, taught in six named beats, no ceilings. */
 const BEATS = [
