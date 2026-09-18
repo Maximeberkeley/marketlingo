@@ -49,6 +49,7 @@ export interface ArenaWave {
 
 /** A lesson the learner has already read, used as practice material. */
 export interface StudiedLessonInput {
+  stackId?: string;
   title: string;
   day?: number | null;
   slides: SlideLike[];

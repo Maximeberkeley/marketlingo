@@ -37,3 +37,8 @@
 - [x] Daily intel habit: 3 stories a day, Leo sends learners there right after the lesson, +20 XP
 - [x] Restyled streak rescue + result to the Duolingo-grade reference (full-bleed gradient, giant streak number, white CTA, "Not now")
 - [~] AI curriculum rewrite batch running again (ai + aerospace, days 1-14, all four goals; 3 attempts per lesson)
+
+## New (Sept 18, 22:08)
+- [x] Streak is a LOCAL calendar-day fact: recomputed from the learner's own completed days (`sync_local_streak`), not a UTC date with a rolling 48h window.
+- [~] Curriculum rewrite for ALL 15 markets, days 1-15, all four goals (900 lessons) — durable queue + scheduled worker, self-stopping on drain.
+- [x] In-app games illustrate the lesson they follow: Games + Drills hubs, Deep Case brief/call now generated from studied lesson slides (mobile/lesson-kit/practice/lessonQuestions.ts); market packs are fallback only.
