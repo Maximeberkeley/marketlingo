@@ -1308,6 +1308,39 @@ export type Database = {
           },
         ]
       }
+      learner_focus: {
+        Row: {
+          chosen_day: number | null
+          created_at: string
+          focus_key: string
+          focus_label: string
+          id: string
+          market_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chosen_day?: number | null
+          created_at?: string
+          focus_key: string
+          focus_label: string
+          id?: string
+          market_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chosen_day?: number | null
+          created_at?: string
+          focus_key?: string
+          focus_label?: string
+          id?: string
+          market_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       lesson_deep_dives: {
         Row: {
           case_study: Json
