@@ -12,8 +12,6 @@ import { playSound } from "../lib/sounds";
 import { ComboCounter } from "../components/ui/ComboCounter";
 import { createComboState, comboCorrect, comboWrong, ComboState } from "../lib/combo";
 import { Feather } from "@expo/vector-icons";
-import { splitSentences } from '../lib/textUtils';
-import { goalContentTag } from '../lib/goals';
 import { useStudiedLessons } from '../hooks/useStudiedLessons';
 import { lessonQuestions } from '../lesson-kit/practice/lessonQuestions';
 
@@ -46,9 +44,7 @@ export default function GamesScreen() {
   const [fetchKey, setFetchKey] = useState(0);
   const studied = useStudiedLessons(selectedMarket || undefined);
 
-  // Games must illustrate the lessons this learner actually read. While the
-  // session has not started, questions generated from their own studied slides
-  // replace the market-wide scenarios fetched below.
+  // Games illustrate only lessons this learner actually completed.
   useEffect(() => {
     if (studied.isLoading || !studied.lessons.length) return;
     const built = lessonQuestions(studied.lessons, 5);
