@@ -170,9 +170,35 @@ export default function DrillsScreen() {
   const [currentSet, setCurrentSet] = useState(1);
   const [totalSets, setTotalSets] = useState(3);
   const [setsCompleted, setSetsCompleted] = useState(0);
+  /** True while the questions on screen are not drawn from a studied lesson. */
+  const [needsLessonQuestions, setNeedsLessonQuestions] = useState(false);
 
   const { isProUser } = useSubscription();
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const studied = useStudiedLessons(selectedMarket || undefined);
+
+  // Drills must test the lessons this learner read. When the day's authored
+  // drills are missing, statements are generated from their own studied slides
+  // rather than from random market stacks.
+  useEffect(() => {
+    if (!needsLessonQuestions || studied.isLoading || !studied.lessons.length) return;
+    const built = lessonStatements(studied.lessons, 21);
+    if (built.length < 7) return;
+    const mapped: DrillQuestion[] = built.map((s, i) => ({
+      id: s.id,
+      category: s.category,
+      statement: s.statement,
+      is_true: s.isTrue,
+      explanation: s.explanation,
+      source_label: s.category,
+      set_number: Math.floor(i / 7) + 1,
+      question_number: (i % 7) + 1,
+    }));
+    setAllQuestions(mapped);
+    setTotalSets(Math.max(1, Math.ceil(mapped.length / 7)));
+    setQuestions(mapped.slice(0, 7));
+    setNeedsLessonQuestions(false);
+  }, [needsLessonQuestions, studied.isLoading, studied.lessons]);
 
   useEffect(() => {
     const fetchData = async () => {
