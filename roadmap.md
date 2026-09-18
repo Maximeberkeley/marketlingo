@@ -23,7 +23,7 @@
 - [x] Deep layer on demand: `lesson_deep_dives` cache + `generate-deep-dive` edge function + "Go deeper on this concept" inside the reading view (one concept, mechanism chain, named case with figures, terms, sources; cached per lesson and goal; failure never blocks a lesson).
 - [ ] Curriculum rewrite, market by market (AI and aerospace first, then fintech), with expert spot-review per market.
 - [ ] Six-month syllabus per market (one concept per day, no overload).
-- [ ] Focus topic as one optional tap after the first week.
+- [x] Focus topic as one optional tap after the first week: from day 7 Home offers one corner of the market (`learner_focus` + `/focus`), derived from the market's own themes. It is a tilt, never a filter — Daily Arena and Deep Case prefer studied lessons touching that corner, the daily concept is unchanged, and it can be changed or dropped.
 - [x] Practice tied to the lessons the learner actually studied (Daily Arena waves and Deep Case evidence/numbers now come from their own studied slides, not unrelated packs), framed by the local calendar day, not completion time.
 - [x] Goal-specific deliverable: one living document per learner (Interview Brief / Idea Dossier / Thesis Sheet / Market Map), written in their own words, completion percentage, shareable export, and the weekly consolidation day asks for one line.
 - [x] Streak identity on Home: identity label instead of a bare number, countdown to local midnight while today is unfinished, escalating Leo moods, one rescue round, and open loops (document %, concepts awaiting review, tomorrow's lesson).
