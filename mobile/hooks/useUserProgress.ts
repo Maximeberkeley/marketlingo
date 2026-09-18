@@ -139,6 +139,7 @@ export function useUserProgress(marketId?: string) {
     loading,
     availableDay,
     updateStreak,
+    syncStreak,
     completeStack,
     isTodayLessonCompleted,
     isStreakActive,
