@@ -23,6 +23,13 @@ export function localDateString(date: Date = new Date()): string {
   return `${y}-${m}-${d}`;
 }
 
+/** The next boundary at which today's local-calendar commitment is judged. */
+export function nextLocalMidnightISOString(date: Date = new Date()): string {
+  const next = new Date(date);
+  next.setHours(24, 0, 0, 0);
+  return next.toISOString();
+}
+
 /**
  * Day number (1-180) available to the learner, based on local calendar days
  * elapsed since start_date. Rolls over at local midnight anywhere in the world.

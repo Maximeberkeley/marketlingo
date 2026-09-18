@@ -5,6 +5,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
+import { nextLocalMidnightISOString } from '../lib/dayMath';
 
 interface StreakFreezeState {
   canFreeze: boolean;
@@ -66,11 +67,12 @@ export function useStreakFreeze(marketId?: string, isProUser = false) {
       return false;
     }
 
-    // Also extend the streak expiration by 24h
+    // A rescue owns the current local calendar day. It never starts a rolling
+    // 24/48-hour window from the moment the learner tapped the button.
     await supabase
       .from('user_progress')
       .update({
-        streak_expires_at: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+        streak_expires_at: nextLocalMidnightISOString(),
       })
       .eq('user_id', user.id)
       .eq('market_id', marketId);

@@ -26,6 +26,7 @@ import { playSound } from '../lib/sounds';
 import { log } from '../lib/logger';
 import { getMarketName } from '../lib/markets';
 import { lessonStatements } from '../lesson-kit/practice/lessonQuestions';
+import { nextLocalMidnightISOString } from '../lib/dayMath';
 
 interface RescueQuestion {
   id: string;
@@ -86,10 +87,10 @@ export default function StreakRescueScreen() {
         saved = await useFreeze();
       }
       if (!saved && user && marketId) {
-        // No freeze left: still extend the clock so the round is never a dead end.
+        // No rolling timer: the rescue owns only this local calendar day.
         const { error } = await supabase
           .from('user_progress')
-          .update({ streak_expires_at: new Date(Date.now() + 36 * 60 * 60 * 1000).toISOString() })
+          .update({ streak_expires_at: nextLocalMidnightISOString() })
           .eq('user_id', user.id)
           .eq('market_id', marketId);
         if (error) log.warn('Rescue clock extension failed', error);
