@@ -442,6 +442,9 @@ export default function RoadmapScreen() {
                 ]}>
                   {selectedLesson?.completed ? 'Completed' : 'Current lesson'}
                 </Text>
+                {!!selectedLesson?.promise && (
+                  <Text style={styles.modalPromise}>{selectedLesson.promise}</Text>
+                )}
               </View>
             </View>
 
