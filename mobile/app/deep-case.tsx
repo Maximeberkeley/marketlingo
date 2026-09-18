@@ -6,6 +6,7 @@ import { CaseScreen, CaseResult } from '../lesson-kit/case/CaseScreen';
 import { buildCase } from '../lesson-kit/case/buildCase';
 import { useIndustryContent } from '../hooks/useIndustryContent';
 import { useStudiedLessons } from '../hooks/useStudiedLessons';
+import { useFocusTopic } from '../hooks/useFocusTopic';
 import { useSelectedMarket } from '../hooks/useSelectedMarket';
 import { usePracticeRewards } from '../hooks/usePracticeRewards';
 import { useUserXP } from '../hooks/useUserXP';
@@ -17,7 +18,9 @@ import { log } from '../lib/logger';
 export default function DeepCaseRoute() {
   const { marketId, loading: marketLoading } = useSelectedMarket();
   const content = useIndustryContent(marketId);
-  const studied = useStudiedLessons(marketId);
+  // A chosen focus topic tilts which studied lesson the case is built from.
+  const focus = useFocusTopic(marketId, 1);
+  const studied = useStudiedLessons(marketId, focus.keywords);
   const { recordCaseRun, loading: rewardsLoading } = usePracticeRewards();
   const { addXP } = useUserXP(marketId);
   const { evaluateRewards } = useCollectibles(marketId);
