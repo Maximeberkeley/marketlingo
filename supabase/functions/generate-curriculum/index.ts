@@ -270,17 +270,18 @@ Deno.serve(async (req) => {
           const monthIndex = Math.ceil(dayNum / 30) - 1;
           const monthInfo = CURRICULUM_STRUCTURE.months[monthIndex];
           const dayType = WEEK_PATTERN[(dayNum - 1) % 7];
-          const topic = getTopic(dayNum, CURRICULUM_STRUCTURE);
+          const plan = syllabusDay(marketId, dayNum);
 
           const content = await generateDayContent(
             LOVABLE_API_KEY,
             dayNum,
             monthInfo.month,
             monthInfo.theme,
-            topic,
+            plan.topic,
             dayType,
             marketId,
-            goalKey
+            goalKey,
+            plan
           );
 
           if (content) {
