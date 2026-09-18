@@ -109,14 +109,25 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
         byDay.set(day, { stackId: row.id, title: row.title, day, slides });
       }
 
-      setLessons([...byDay.values()].sort((a, b) => (b.day ?? 0) - (a.day ?? 0)));
+      const byRecency = [...byDay.values()].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
+
+      // A chosen focus is a tilt, not a filter: lessons touching that corner
+      // come first, everything studied stays available behind them.
+      const keywords = focusSignature ? focusSignature.split('|').filter(Boolean) : [];
+      if (keywords.length) {
+        const preferred = byRecency.filter(l => matchesFocus(l, keywords));
+        const rest = byRecency.filter(l => !preferred.includes(l));
+        setLessons([...preferred, ...rest]);
+      } else {
+        setLessons(byRecency);
+      }
     } catch (err) {
       log.warn('[useStudiedLessons] Lookup failed:', err);
       setLessons([]);
     } finally {
       setIsLoading(false);
     }
-  }, [marketId]);
+  }, [marketId, focusSignature]);
 
   useEffect(() => {
     load();
