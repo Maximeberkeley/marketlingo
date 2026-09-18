@@ -263,6 +263,75 @@ export type Database = {
         }
         Relationships: []
       }
+      curriculum_rewrite_queue: {
+        Row: {
+          attempts: number
+          claimed_at: string | null
+          completed_at: string | null
+          created_at: string
+          day_number: number
+          goal: string
+          id: string
+          last_error: string | null
+          market_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          claimed_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          day_number: number
+          goal: string
+          id?: string
+          last_error?: string | null
+          market_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          claimed_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          day_number?: number
+          goal?: string
+          id?: string
+          last_error?: string | null
+          market_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      curriculum_rewrite_state: {
+        Row: {
+          id: boolean
+          last_run_at: string | null
+          lease_until: string | null
+          pause_reason: string | null
+          paused: boolean
+          updated_at: string
+        }
+        Insert: {
+          id?: boolean
+          last_run_at?: string | null
+          lease_until?: string | null
+          pause_reason?: string | null
+          paused?: boolean
+          updated_at?: string
+        }
+        Update: {
+          id?: boolean
+          last_run_at?: string | null
+          lease_until?: string | null
+          pause_reason?: string | null
+          paused?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       daily_completions: {
         Row: {
           completed_stack_id: string | null
@@ -2845,6 +2914,28 @@ export type Database = {
       }
       calculate_level: { Args: { xp: number }; Returns: number }
       calculate_startup_stage: { Args: { xp: number }; Returns: number }
+      claim_curriculum_rewrite_batch: {
+        Args: { p_lease_seconds?: number; p_limit?: number }
+        Returns: {
+          attempts: number
+          claimed_at: string | null
+          completed_at: string | null
+          created_at: string
+          day_number: number
+          goal: string
+          id: string
+          last_error: string | null
+          market_id: string
+          status: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "curriculum_rewrite_queue"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       current_week_start: { Args: never; Returns: string }
       decay_concept_mastery: { Args: never; Returns: number }
       evaluate_market_rewards: {
@@ -2905,6 +2996,10 @@ export type Database = {
         Args: { p_local_hour: number; p_utc_offset_minutes: number }
         Returns: number
       }
+      release_curriculum_rewrite_lease: {
+        Args: { p_pause_reason?: string }
+        Returns: undefined
+      }
       respond_friend_quest: {
         Args: { p_accept: boolean; p_quest_id: string }
         Returns: {
@@ -2936,6 +3031,7 @@ export type Database = {
         Args: { p_collectible_id: string }
         Returns: undefined
       }
+      stop_curriculum_rewrite_schedule: { Args: never; Returns: boolean }
       submit_decision_answer: {
         Args: {
           p_confidence?: string
