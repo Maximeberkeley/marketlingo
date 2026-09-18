@@ -12,24 +12,35 @@
 
 ## The tension we are deliberately resolving
 
-"Deep enough to be knowledge" and "light enough to do every day" pull against each other. The resolution is **narrower, not longer**: the same five to seven minutes, spent on **one** concept instead of six half-ideas, with extra depth strictly opt-in behind one tap. A beginner finishes in the same time as today. Nothing about the daily loop gets heavier.
+"Deep enough to be knowledge" and "light enough to do every day" pull against each other. The resolution is **narrower, not longer**: the same five to seven minutes on **one** concept instead of six half-ideas, with extra depth strictly opt-in behind one tap. Nothing about the daily loop gets heavier.
 
-The tester's sharpest line was "I don't know who this is for." That is positioning, not depth — so this plan reduces configuration rather than adding knobs, and names one primary user.
+The tester's sharpest line was "I don't know who this is for." That is positioning, so this plan removes configuration rather than adding knobs, and names one primary user.
 
-## Phase 0 — ship the two fixes that move the verdict (first)
+## Two judges, not one
 
-Small, safe, and they address the complaint directly:
+The complaint had two separate signals, and one kind of tester cannot give both:
 
-1. **No truncated content anywhere.** Remove the character ceilings that cut sentences; the reading view always shows the complete authored text.
-2. **The check is generated from the lesson it tests** — its own mechanism, figures, terms and the trap a beginner falls into. A wrong answer explains the real misconception and points to the passage. Market packs, statistics and drills stay, but move to Practice and spaced review where mixed recall belongs.
-3. **One primary user, named.** We pick the person the whole app speaks to (proposal: the ambitious non-expert breaking into an industry — career switcher, student, first-time founder — *not* the sector professional). The commitment screen, tone and difficulty default are written for them.
-4. **Day and session logic fix** (true blocker): one source of truth for "which day am I on, what is left today", so a second lesson counts as extra practice without double-advancing the day or double-paying XP, a future day resumes or previews explicitly, and a half-finished lesson resumes at the same beat without re-awarding XP or hearts.
+- **Target users** (ambitious non-experts: career switchers, students, first-time founders) certify **fit and felt learning** — is it for me, did I learn something, would I come back.
+- **A domain expert** certifies it is **actually knowledge** — that a confident sentence isn't a hollow generalization.
 
-**Then re-run the exact same test with about five people who match that primary user, before building anything below.** If "it's not knowledge" persists for the target user, depth is the problem. If it doesn't, the rest of this plan is optional polish and we spend the effort elsewhere.
+Both must pass. Five happy beginners reciting a plausible-but-empty sentence is a false pass, and it is the exact failure mode: our own commitment screen promises they can "hold their own in a hiring conversation", and the person on the other side of that conversation is the expert. He is not off-target; he is a preview of our user's worst moment.
 
-Note: the criticism came from an AI-market lesson, so the first curriculum rewrite covers **AI and aerospace together** — otherwise a re-test on AI shows nothing.
+Expert review is cheap in aerospace (we red-pen our own). AI and fintech need a borrowed expert per market before that market's rewrite ships.
 
-## Phase 1 — one concept a day, properly taught
+## Phase 0 — fixes that stand on their own merit
+
+These are correct regardless of the depth question, and none of them is presented as an answer to it:
+
+1. **No truncated content anywhere.** Remove the ceilings that cut sentences; the reading view shows the complete authored text.
+2. **The check is generated from the lesson it tests** — its own mechanism, figures, terms, and the trap a beginner falls into. Wrong answers explain the real misconception and point to the passage. Market packs, statistics and drills move to Practice and spaced review, where mixed recall belongs.
+3. **Day and session logic fix** (true blocker): one source of truth for "which day am I on, what is left today", so a second lesson counts as extra practice without double-advancing the day or double-paying XP, a future day resumes or previews explicitly, and a half-finished lesson resumes at the same beat without re-awarding XP or hearts.
+4. **One primary user, named**, with the commitment line, tone and default difficulty written for them.
+
+Phase 0 does **not** rewrite content, so it cannot and will not be used to settle the depth question. Existing text stays 274 characters — complete now, still thin.
+
+## Phase 1 — the exemplar spike (the real gate)
+
+Before any batch rewrite: **hand-author one lesson** to the new one-concept contract, end to end, in aerospace and in AI. An afternoon of work, not a curriculum.
 
 ```text
 Recap        the one thing you owned yesterday          ~15s
@@ -40,58 +51,65 @@ Check        questions written from today's own material ~1.5 min
 Takeaway     the sentence you keep, and tomorrow's hook  ~15s
 ```
 
-Substance arrives in two waves:
+Test that exemplar against **both judges**:
 
-1. **Deep layer on demand** — opening a lesson requests a substantive, sourced explanation of that single concept (mechanism chain, named case with figures, key terms, sources, links back and forward). Cached, written once, instant afterwards, opt-in.
-2. **Curriculum rewrite, market by market** — AI and aerospace first, then fintech. Generated against a stricter contract: one concept per day, no ceilings that cut sentences, mandatory objectives, mandatory recap and next-hook, mandatory named case with real figures, mandatory sources.
+- Target users: can they restate the concept and its mechanism unprompted a day later, does it still feel light, would they do it again tomorrow.
+- Domain expert: is every claim true, non-hollow, and would a candidate saying this sound informed rather than parroting.
+
+Only if the exemplar passes both do we commit to the rewrite. If it fails on the expert side, the contract gets fixed and re-spiked — not scaled.
+
+## Phase 2 — substance at scale (gated on Phase 1)
+
+1. **Deep layer on demand** — opening a lesson can fetch a substantive, sourced explanation of that single concept (mechanism chain, named case with figures, key terms, sources, links back and forward). Cached, written once, opt-in.
+2. **Curriculum rewrite, market by market** — AI and aerospace first (the criticism came from an AI lesson, so a re-test there must be able to show improvement), then fintech. Generated against the exemplar's contract: one concept per day, no ceilings, mandatory objectives, mandatory recap and next-hook, mandatory named case with real figures, mandatory sources. Each market's batch ships only after expert spot-review of a sample.
 
 Three real objectives before every lesson; one earned takeaway after.
 
-## Phase 2 — spread across six months
+## Phase 3 — spread across six months
 
-180 days sequenced as a real syllabus per market: foundations → how value and money move → players and power → economics and numbers → regulation and risk → frontier and gaps. Each week a theme, each day one concept, every seventh day consolidation with no new idea — retrieval and synthesis only.
+180 days sequenced as a syllabus per market: foundations → how value and money move → players and power → economics and numbers → regulation and risk → frontier and gaps. Each week a theme, each day one concept, every seventh day consolidation with no new idea — retrieval and synthesis only.
 
-## Phase 3 — focus, without more knobs
-
-Instead of goal × focus topic × level multiplying the surface area:
+## Phase 4 — focus, without more knobs
 
 - The existing goal stays the single lens.
-- A **focus topic** is offered as one optional tap ("go deeper on launch economics?") after the first week, once the learner has context to choose — not another onboarding gate. Shipped for one market first and only extended if it's used.
-- The commitment screen states one concrete destination in the learner's words: "In 30 days you'll hold your own on this in a hiring conversation."
+- A **focus topic** is one optional tap ("go deeper on launch economics?") offered after the first week, once the learner has context to choose — not a second onboarding gate. One market first; extended only if used.
+- The commitment screen states one concrete destination in the learner's words.
 
-## Phase 4 — a deliverable worth finishing
+## Phase 5 — a deliverable worth finishing
 
-One living document per learner, built from their own answers and notes, shaped by their goal: idea dossier (found), interview brief (career), thesis sheet (invest), market map (explore). Completion percentage, grows daily, exportable. The weekly consolidation day asks for one line in their own words. Built only if the re-test says depth and outcome are what's missing.
+One living document per learner from their own answers and notes, shaped by their goal: idea dossier (found), interview brief (career), thesis sheet (invest), market map (explore). Completion percentage, grows daily, exportable; the weekly consolidation day asks for one line in their own words.
 
-## Phase 5 — streak that sells the identity
+## Phase 6 — streak that sells the identity
 
-- **Identity**: "Commit to becoming fluent"; the streak reads as proof of becoming an insider, not a counter.
-- **Loss**: framed as owned — countdown when today is unfinished, escalating Leo moods through the evening, one rescue.
+- **Identity**: "Commit to becoming fluent"; the streak reads as proof of becoming an insider.
+- **Loss**: framed as owned — countdown when today is unfinished, escalating Leo moods, one rescue.
 - **Personality**: Leo remembers the market, the focus, and what they got wrong, and reacts to absence with attitude.
 - **Open loops**: deliverable percentage, one concept awaiting review, "tomorrow: the company that proved everyone wrong".
 
 ## Technical notes
 
-- Day resolution consolidated into one module used by home, roadmap and the session flow, driven by start date plus completion records; XP and streak writes made idempotent per day and per lesson.
+- Day resolution consolidated into one module used by home, roadmap and the session flow, driven by start date plus completion records; XP and streak writes idempotent per day and per lesson.
 - New tables: cached deep-dive per lesson and goal; generated checks linked to their source passage; deliverable documents with per-goal sections and entries; optional focus topics per market. Row-level security scoped to the owner, grants for the app roles.
 - Deep-dive and check generation in an edge function against a strict schema, cached by lesson and goal; failure falls back to existing content so a lesson never blocks.
-- Curriculum rewrite reuses the existing batch generation job with the new one-concept-per-day contract and per-market progress tracking.
+- The exemplar lessons are authored rows, not generated — they double as the reference the rewrite contract is measured against.
+- Curriculum rewrite reuses the existing batch generation job with the one-concept-per-day contract and per-market progress tracking.
 - Existing reading view, exercise renderer and Leo coaching are reused; the layered reader finally receives full text.
-- League, notes, review scheduling and the no-purchase constraints unchanged.
+- League, notes, review scheduling and no-purchase constraints unchanged.
 
-## Validation — outcome, not just QA
+## Validation
 
 Feature checks:
 
-- Two lessons in one day, and day 2 opened during day 1: day counter, streak, XP and completion all stay correct.
+- Two lessons in one day, and day 2 opened during day 1: day counter, streak, XP and completion stay correct.
 - No text ends mid-sentence anywhere; day N recaps N-1 and hooks N+1; day 7 introduces nothing new.
+- The check is answerable only from the lesson it belongs to.
 
-Outcome checks (the ones that decide whether this worked):
+Outcome checks:
 
-- Five testers matching the primary user run the same lesson-and-quiz test. Target: they can restate the concept and its mechanism unprompted afterwards, the quiz is answerable only from the lesson, and nobody says "I don't know who this is for".
-- Session length does not grow: the daily run still finishes in about five to seven minutes.
-- Daily completion and streak retention do not fall after the depth change.
+- Exemplar passes both judges: target users retain and return; expert finds no hollow or wrong claims.
+- **Load, not clock**: watch lesson completion rate, next-day return rate, and drop-off point within the run on the cohort that gets the new format. Minutes are not the measure — two six-minute lessons can feel completely different.
+- No fall in daily completion or streak retention after the depth change.
 
-## Open question
+## Open question, still open
 
-How many testers actually reported "too vague / not knowledge"? If it is one intermediate-level sector expert, Phase 0 plus the re-test is the right aggression and Phases 2 to 5 wait. If several target-profile users say it, we run the whole sequence.
+**What is n?** One screenshot from one intermediate-level sector expert, so far. If that is the whole signal, Phase 0 plus the exemplar spike is the right aggression and Phases 3 to 6 wait for evidence. Before writing another revision of this plan, we find out how many target-profile users say the same thing.
