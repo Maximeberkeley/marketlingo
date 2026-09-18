@@ -58,29 +58,20 @@ interface Season {
   completedLessons: number;
 }
 
-// ── Season config — Brilliant-style chapters ──────────
-const SEASON_META: { title: string; subtitle: string; icon: keyof typeof Feather.glyphMap; color: string; colorSoft: string }[] = [
-  { title: 'Foundations', subtitle: 'Core market fundamentals', icon: 'layers', color: '#3B82F6', colorSoft: 'rgba(59,130,246,0.08)' },
-  { title: 'Forces & Cycles', subtitle: 'Market forces and timing', icon: 'trending-up', color: '#8B5CF6', colorSoft: 'rgba(139,92,246,0.08)' },
-  { title: 'Startup Patterns', subtitle: 'Building in this market', icon: 'zap', color: '#F59E0B', colorSoft: 'rgba(245,158,11,0.08)' },
-  { title: 'Key Players', subtitle: 'Industry deep dives', icon: 'users', color: '#10B981', colorSoft: 'rgba(16,185,129,0.08)' },
-  { title: 'Investment Lens', subtitle: 'Investor perspective', icon: 'eye', color: '#EC4899', colorSoft: 'rgba(236,72,153,0.08)' },
-  { title: 'Builder Mode', subtitle: 'Apply everything', icon: 'award', color: '#F97316', colorSoft: 'rgba(249,115,22,0.08)' },
+// ── Season styling — titles come from the market's own themes ──
+const SEASON_STYLE: { icon: keyof typeof Feather.glyphMap; color: string; colorSoft: string }[] = [
+  { icon: 'layers', color: '#3B82F6', colorSoft: 'rgba(59,130,246,0.08)' },
+  { icon: 'trending-up', color: '#8B5CF6', colorSoft: 'rgba(139,92,246,0.08)' },
+  { icon: 'zap', color: '#F59E0B', colorSoft: 'rgba(245,158,11,0.08)' },
+  { icon: 'users', color: '#10B981', colorSoft: 'rgba(16,185,129,0.08)' },
+  { icon: 'eye', color: '#EC4899', colorSoft: 'rgba(236,72,153,0.08)' },
+  { icon: 'award', color: '#F97316', colorSoft: 'rgba(249,115,22,0.08)' },
 ];
 
-const WEEK_TITLES = [
-  'Market Structure', 'Certification Reality', 'Business Dynamics', 'Execution Patterns',
-  'Regulation Deep Dive', 'Capital Flows', 'Talent Dynamics', 'Technology Waves',
-  'Moat Building', 'GTM Strategies', 'Failure Modes', 'Success Stories',
-  'Commercial Giants', 'Defense Primes', 'Space Innovators', 'Supply Chain',
-  'Public Markets', 'Private Markets', 'Due Diligence', 'Portfolio Strategy',
-  'Thesis Building', 'Analysis Project', 'Future Scenarios', 'Graduation',
-  'Advanced Topics I', 'Advanced Topics II', 'Case Studies I', 'Case Studies II',
-  'Emerging Trends', 'Cross-Market', 'Synthesis I', 'Synthesis II',
-  'Capstone I', 'Capstone II', 'Capstone III', 'Final Review',
-];
+const SEASON_SUBTITLE = 'Five territories, six angles each';
 
-function getDayWeek(day: number) { return Math.ceil(day / 5); }
+/** A block is the six days spent on one territory. */
+function getDayBlock(day: number) { return Math.ceil(day / DAYS_PER_BLOCK); }
 
 // ── Main Screen ───────────────────────────────────────
 export default function RoadmapScreen() {
