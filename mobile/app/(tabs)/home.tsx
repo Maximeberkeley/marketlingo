@@ -65,6 +65,7 @@ import { useDeliverable } from '../../hooks/useDeliverable';
 import { useFocusTopic } from '../../hooks/useFocusTopic';
 import { FocusTopicCard } from '../../components/home/FocusTopicCard';
 import { CourseJourney } from '../../components/course/CourseJourney';
+import { useIntelHabit } from '../../hooks/useIntelHabit';
 
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
@@ -182,6 +183,7 @@ export default function HomeScreen() {
   const { dueCount } = useSpacedRepetition(selectedMarketLocal || undefined);
   const deliverable = useDeliverable(selectedMarketLocal || undefined, learningGoal);
   const focusTopic = useFocusTopic(selectedMarketLocal || undefined, currentDay || 1);
+  const intelHabit = useIntelHabit(selectedMarketLocal || undefined);
 
   const { syncLessons } = useOfflineCache(selectedMarketLocal || undefined);
 
@@ -489,6 +491,13 @@ export default function HomeScreen() {
           totalXp={xpData?.total_xp || 0}
           level={xpData?.current_level || 1}
           lessonCompletedToday={lessonCompletedToday}
+          deliverableTitle={deliverable.template.title}
+          deliverableCompletion={deliverable.completion}
+          reviewDueCount={dueCount}
+          focusLabel={focusTopic.focusLabel}
+          intelReadToday={intelHabit.readToday}
+          intelTarget={intelHabit.target}
+          tomorrowTitle={tomorrowLesson?.title || null}
           safeTop={insets.top}
           onOpenLesson={(stackId) => router.setParams({ openStackId: stackId })}
           onAskLeo={() => setShowLeoChat(true)}

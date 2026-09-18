@@ -51,6 +51,13 @@ interface CourseJourneyProps {
   totalXp: number;
   level: number;
   lessonCompletedToday: boolean;
+  deliverableTitle: string;
+  deliverableCompletion: number;
+  reviewDueCount: number;
+  focusLabel?: string | null;
+  intelReadToday: number;
+  intelTarget: number;
+  tomorrowTitle?: string | null;
   safeTop: number;
   onOpenLesson: (stackId: string) => void;
   onAskLeo: () => void;
@@ -84,6 +91,13 @@ export function CourseJourney({
   totalXp,
   level,
   lessonCompletedToday,
+  deliverableTitle,
+  deliverableCompletion,
+  reviewDueCount,
+  focusLabel,
+  intelReadToday,
+  intelTarget,
+  tomorrowTitle,
   safeTop,
   onOpenLesson,
   onAskLeo,
@@ -92,6 +106,8 @@ export function CourseJourney({
   const pulse = useRef(new Animated.Value(0)).current;
   const [lessons, setLessons] = useState<CourseLesson[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [loadKey, setLoadKey] = useState(0);
 
   const themes = useMemo(() => seasonThemes(marketId), [marketId]);
   const activePlan = syllabusDay(marketId, currentDay);
@@ -114,7 +130,8 @@ export function CourseJourney({
     let active = true;
     const load = async () => {
       setLoading(true);
-      const { data } = await supabase
+      setLoadError(false);
+      const { data, error } = await supabase
         .from('stacks')
         .select('id, title, tags, created_at')
         .eq('market_id', marketId)
@@ -123,6 +140,12 @@ export function CourseJourney({
         .order('created_at', { ascending: false });
 
       if (!active) return;
+      if (error) {
+        setLoadError(true);
+        setLessons([]);
+        setLoading(false);
+        return;
+      }
       const goalTag = goalContentTag(learningGoal);
       const byDay = new Map<number, { id: string; title: string; goalMatch: boolean }>();
       const completedByDay = new Map<number, boolean>();
@@ -155,7 +178,7 @@ export function CourseJourney({
     };
     void load();
     return () => { active = false; };
-  }, [marketId, learningGoal, completedStackIds]);
+  }, [marketId, learningGoal, completedStackIds, loadKey]);
 
   useEffect(() => {
     if (loading || lessons.length === 0) return;
@@ -291,6 +314,23 @@ export function CourseJourney({
     );
   }
 
+  if (loadError) {
+    return (
+      <View style={styles.loading}>
+        <Feather name="wifi-off" size={28} color={COLORS.textMuted} />
+        <Text style={styles.emptyTitle}>Your course could not load</Text>
+        <Text style={styles.loadingText}>Your progress is safe. Reconnect and try again.</Text>
+        <TouchableOpacity
+          style={[styles.retryButton, { backgroundColor: activeColor.main }]}
+          onPress={() => { triggerHaptic('selection'); setLoadKey(key => key + 1); }}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.retryText}>Try again</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -332,6 +372,38 @@ export function CourseJourney({
                 })}
               </View>
             </View>
+            <View style={styles.missionRail}>
+              <TouchableOpacity style={styles.missionPrimary} onPress={() => router.push('/deliverable')} activeOpacity={0.82}>
+                <View style={[styles.missionIcon, { backgroundColor: activeColor.soft }]}>
+                  <Feather name="file-text" size={17} color={activeColor.main} />
+                </View>
+                <View style={styles.missionCopy}>
+                  <Text style={styles.missionLabel}>YOUR {deliverableTitle.toUpperCase()}</Text>
+                  <Text style={styles.missionValue}>{deliverableCompletion}% built in your own words</Text>
+                </View>
+                <View style={styles.miniTrack}>
+                  <View style={[styles.miniFill, { width: `${deliverableCompletion}%`, backgroundColor: activeColor.main }]} />
+                </View>
+                <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
+              </TouchableOpacity>
+              <View style={styles.missionLinks}>
+                {focusLabel ? (
+                  <TouchableOpacity style={styles.missionLink} onPress={() => router.push('/focus')} activeOpacity={0.78}>
+                    <Feather name="crosshair" size={14} color={activeColor.main} />
+                    <Text style={styles.missionLinkText} numberOfLines={1}>{focusLabel}</Text>
+                  </TouchableOpacity>
+                ) : null}
+                <TouchableOpacity style={styles.missionLink} onPress={() => router.push('/(tabs)/practice')} activeOpacity={0.78}>
+                  <Feather name="rotate-ccw" size={14} color={reviewDueCount > 0 ? COLORS.warning : COLORS.textMuted} />
+                  <Text style={styles.missionLinkText}>{reviewDueCount > 0 ? `${reviewDueCount} to review` : 'Review clear'}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.missionLink} onPress={() => router.push('/(tabs)/roadmap')} activeOpacity={0.78}>
+                  <Feather name="radio" size={14} color={intelReadToday >= intelTarget ? COLORS.success : activeColor.main} />
+                  <Text style={styles.missionLinkText}>{intelReadToday}/{intelTarget} Intel</Text>
+                </TouchableOpacity>
+              </View>
+              {tomorrowTitle ? <Text style={styles.tomorrow} numberOfLines={1}>Tomorrow · {tomorrowTitle}</Text> : null}
+            </View>
             <View style={styles.scrollCue}>
               <Feather name="arrow-up" size={12} color={COLORS.textMuted} />
               <Text style={styles.scrollCueText}>Past lessons above · the full course continues below</Text>
@@ -363,6 +435,9 @@ const styles = StyleSheet.create({
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg0 },
   loadingNode: { width: 72, height: 72, borderRadius: 36, marginBottom: 16 },
   loadingText: { ...TYPE.bodyBold, color: COLORS.textSecondary },
+  emptyTitle: { ...TYPE.h2, color: COLORS.textPrimary, marginTop: 4 },
+  retryButton: { minHeight: 48, minWidth: 140, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginTop: 8 },
+  retryText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
   header: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 12 },
   topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 },
   courseLabel: { ...TYPE.overline, color: COLORS.textMuted },
@@ -376,6 +451,18 @@ const styles = StyleSheet.create({
   weekPromise: { ...TYPE.body, color: COLORS.textSecondary, marginTop: 2 },
   weekTicks: { flexDirection: 'row', gap: 5, marginTop: 12 },
   weekTick: { flex: 1, height: 4, borderRadius: 2, backgroundColor: COLORS.border },
+  missionRail: { paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border },
+  missionPrimary: { minHeight: 56, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  missionIcon: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  missionCopy: { flex: 1, minWidth: 0 },
+  missionLabel: { ...TYPE.overline, color: COLORS.textMuted },
+  missionValue: { ...TYPE.bodyBold, color: COLORS.textPrimary, marginTop: 2 },
+  miniTrack: { width: 42, height: 5, borderRadius: 3, backgroundColor: COLORS.border, overflow: 'hidden' },
+  miniFill: { height: 5, borderRadius: 3 },
+  missionLinks: { flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginTop: 8 },
+  missionLink: { minHeight: 36, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, borderRadius: 10, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border },
+  missionLinkText: { ...TYPE.caption, color: COLORS.textSecondary, maxWidth: 118 },
+  tomorrow: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 9 },
   scrollCue: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, paddingTop: 12 },
   scrollCueText: { fontSize: 11, color: COLORS.textMuted, fontWeight: '600' },
   seasonHeader: { height: SEASON_HEADER_HEIGHT, paddingHorizontal: 22, paddingVertical: 22, flexDirection: 'row', alignItems: 'center', overflow: 'hidden' },
