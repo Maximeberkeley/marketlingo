@@ -822,6 +822,7 @@ const styles = StyleSheet.create({
   modalDayNum: { ...TYPE.h3, color: COLORS.accent },
   modalTitle: { ...TYPE.h2, color: COLORS.textPrimary, marginBottom: 4 },
   modalStatus: { ...TYPE.caption },
+  modalPromise: { ...TYPE.caption, color: COLORS.textSecondary, marginTop: 2 },
   modalCTA: {
     backgroundColor: COLORS.accent,
     paddingVertical: 16,
