@@ -496,7 +496,8 @@ async function generateDayContent(
   topic: string,
   dayType: string,
   marketId: string,
-  goal: LearningGoal
+  goal: LearningGoal,
+  plan?: SyllabusDay,
 ) {
   const marketContext = getMarketContext(marketId);
   const persona = GOAL_PERSONAS[goal];
@@ -539,7 +540,7 @@ async function generateDayContent(
     return await callGateway(apiKey, system, user);
   }
 
-  const { system, user } = dayLessonPrompt(day, month, theme, topic, dayType, marketContext, persona);
+  const { system, user } = dayLessonPrompt(day, month, theme, topic, dayType, marketContext, persona, plan);
 
   // Up to three attempts: a day that fails the contract is rewritten, never saved thin.
   let lastProblems: string[] = [];
