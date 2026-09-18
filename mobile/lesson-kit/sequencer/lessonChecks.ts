@@ -22,6 +22,38 @@ import { SlideLike, norm, sentences, shuffle } from './extract';
 const UP = ['grow', 'growing', 'growth', 'rise', 'rising', 'increase', 'increasing', 'surge', 'expand', 'expanding'];
 const DOWN = ['fall', 'falling', 'decline', 'declining', 'drop', 'dropping', 'shrink', 'shrinking', 'slow', 'slowing'];
 
+/**
+ * Direction words paired with a counterpart in the SAME grammatical form, so an
+ * altered sentence still reads like English ("growth" becomes "decline", never
+ * "fallth"). Swaps only ever happen on whole words.
+ */
+const OPPOSITES: Array<[string, string]> = [
+  ['grow', 'shrink'],
+  ['grows', 'shrinks'],
+  ['growing', 'shrinking'],
+  ['growth', 'decline'],
+  ['rise', 'fall'],
+  ['rises', 'falls'],
+  ['rising', 'falling'],
+  ['increase', 'decrease'],
+  ['increases', 'decreases'],
+  ['increasing', 'decreasing'],
+  ['surge', 'collapse'],
+  ['surges', 'collapses'],
+  ['expand', 'contract'],
+  ['expands', 'contracts'],
+  ['expanding', 'contracting'],
+  ['accelerate', 'slow'],
+  ['accelerating', 'slowing'],
+  ['cheaper', 'more expensive'],
+  ['higher', 'lower'],
+  ['more', 'less'],
+  ['most', 'least'],
+  ['largest', 'smallest'],
+  ['fastest', 'slowest'],
+  ['always', 'never'],
+];
+
 const clean = (s: string) => s.replace(/\s+/g, ' ').trim();
 
 /** "From this lesson:" framing — the learner can always find the answer again. */
