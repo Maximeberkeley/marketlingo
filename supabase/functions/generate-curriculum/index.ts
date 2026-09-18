@@ -226,7 +226,8 @@ Deno.serve(async (req) => {
         week: Math.ceil(d / 7),
         type: WEEK_PATTERN[(d - 1) % 7],
         theme: CURRICULUM_STRUCTURE.months[Math.ceil(d / 30) - 1]?.theme,
-        topic: getTopic(d, CURRICULUM_STRUCTURE),
+        topic: getTopic(d, marketId),
+        facet: syllabusDay(marketId, d).facetLabel,
       }));
 
       const goalStats = Object.fromEntries(
