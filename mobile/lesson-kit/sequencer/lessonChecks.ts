@@ -173,11 +173,11 @@ function falsify(sentence: string): string | null {
     if (next === raw || isYear(next)) continue;
     return sentence.slice(0, at) + String(next) + sentence.slice(at + token.length);
   }
-  const lower = sentence.toLowerCase();
-  for (const [from, to] of [[UP, DOWN], [DOWN, UP]] as const) {
-    for (let i = 0; i < from.length; i++) {
-      const at = lower.indexOf(from[i]);
-      if (at >= 0) return sentence.slice(0, at) + to[i % to.length] + sentence.slice(at + from[i].length);
+  // Whole-word direction swaps, in both directions, keeping the same form.
+  for (const [a, b] of OPPOSITES) {
+    for (const [from, to] of [[a, b], [b, a]] as const) {
+      const re = new RegExp(`\\b${from.replace(/ /g, '\\s+')}\\b`, 'i');
+      if (re.test(sentence)) return sentence.replace(re, to);
     }
   }
   return null;
