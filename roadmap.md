@@ -20,7 +20,8 @@
 - [ ] Find out n — how many learners actually reported "too vague / not knowledge" (currently one intermediate-level sector expert).
 
 ### Phases 2–6 — gated on the exemplar passing both judges
-- [ ] Deep layer on demand + curriculum rewrite, market by market (AI and aerospace first, then fintech), with expert spot-review per market.
+- [x] Deep layer on demand: `lesson_deep_dives` cache + `generate-deep-dive` edge function + "Go deeper on this concept" inside the reading view (one concept, mechanism chain, named case with figures, terms, sources; cached per lesson and goal; failure never blocks a lesson).
+- [ ] Curriculum rewrite, market by market (AI and aerospace first, then fintech), with expert spot-review per market.
 - [ ] Six-month syllabus per market (one concept per day, no overload).
 - [ ] Focus topic as one optional tap after the first week.
 - [ ] Goal-specific deliverable (founder idea dossier / fluency proof).
