@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   Linking,
   Modal,
   NativeScrollEvent,
@@ -18,6 +19,8 @@ import { KeyTerm, Source } from '../types';
 import { tokens } from '../theme/tokens';
 import { ColorText } from './ColorText';
 import { dropIncompleteTail } from '../../lib/textUtils';
+import { useDeepDiveTarget } from './DeepDiveContext';
+import { useDeepDive } from '../../hooks/useDeepDive';
 
 interface Props {
   visible: boolean;
