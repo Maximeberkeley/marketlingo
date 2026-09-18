@@ -22,6 +22,13 @@
       "when": 1789759469285,
       "tag": "0002_create_lesson_deep_dives",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789761033181,
+      "tag": "0003_create_deliverable_entries",
+      "breakpoints": true
     }
   ]
 }

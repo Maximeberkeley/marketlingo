@@ -33,7 +33,7 @@ serve(async (req) => {
     if (type === "stack") {
       systemPrompt = `You are a market intelligence expert creating educational content for market analysts. 
       Generate a 6-slide stack following the exact template structure.
-      Each slide body MUST be under 450 characters.
+      Each slide body MUST be complete prose of roughly 350-1200 characters — never trimmed, never ending mid-sentence.
       Each slide title MUST be under 6 words.
       Include credible sources for slides 1-5.
       CRITICAL: Each slide should teach ONE clear idea with a real example or data point.
@@ -79,7 +79,7 @@ serve(async (req) => {
           {
             "slide_number": 1,
             "title": "Slide title",
-            "body": "Slide content under 450 chars",
+            "body": "Complete prose, 350-1200 characters, ending in a finished sentence",
             "sources": [{"label": "Source Name", "url": "https://..."}]
           }
         ],
@@ -89,7 +89,7 @@ serve(async (req) => {
       RULES:
       - learning_objectives: Write as outcomes, not topics. "How SpaceX cut launch costs by 90%" NOT "Launch costs"
       - key_takeaway: Write as an insight, not a summary. Should feel like a revelation.
-      - Create exactly 6 slides. Each body under 450 characters.`;
+      - Create exactly 6 slides. Every body at least 350 characters and ending in a complete sentence. Never cut a sentence to fit a length.`;
     } else if (type === "trainer") {
       systemPrompt = `You are a market reasoning coach. Create challenging scenarios that test market analysis skills.
       Focus on real-world decision-making situations.

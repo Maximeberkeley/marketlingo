@@ -6,12 +6,16 @@
  * Stage 3 Numbers    — size the thing before deciding.
  * Stage 4 The Call   — commit, with a confidence level.
  *
- * All material is real: trainer scenarios and fact-checked drills come from the
- * database, statistics are sourced, pack material is hand-authored.
+ * Evidence and Numbers are drawn from the lessons the learner has already
+ * studied in this market, so the case rewards what they read rather than
+ * general market trivia. Drills, statistics and authored pack material fill any
+ * gap. Nothing is invented.
  */
 import { Exercise } from '../types';
 import { getIndustryPack } from '../industry/packs';
 import type { DrillRow, IndustryStatRow, TrainerScenarioRow } from '../../hooks/useIndustryContent';
+import type { StudiedLessonInput } from '../arena/buildArena';
+import { checkClaim, checkFigure, checkMechanism } from '../sequencer/lessonChecks';
 import {
   drillSpotFake,
   packChain,
@@ -44,6 +48,8 @@ export interface CaseInput {
   trainer: TrainerScenarioRow[];
   drills: DrillRow[];
   stats: IndustryStatRow[];
+  /** Lessons the learner has already studied, newest first. */
+  studied?: StudiedLessonInput[];
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -62,15 +68,25 @@ function caseLead(text: string, fallback: string): string {
   return clause && clause.length >= 55 ? `${clause}.` : fallback;
 }
 
+/** Slides from the lessons the learner has studied, newest lesson first. */
+const studiedSlides = (studied?: StudiedLessonInput[]) => (studied ?? []).flatMap(l => l.slides);
+
 export function buildCase(input: CaseInput): DeepCase | null {
   const pack = getIndustryPack(input.marketId);
   const scenario = shuffle(input.trainer)[0];
-  if (!scenario) return null;
+  const lessonSlides = studiedSlides(input.studied);
+  const lead = input.studied?.[0];
 
-  const call = trainerCall(scenario, 'case-call');
+  const call =
+    trainerCall(scenario, 'case-call') || checkClaim(lessonSlides, 'case-call-claim');
   if (!call) return null;
 
   const stages: CaseStage[] = [];
+
+  const briefHeadline = scenario
+    ? caseLead(scenario.scenario, scenario.question)
+    : `You are back on ${lead?.title || `${input.marketName} fundamentals`}. Time to use it.`;
+  const briefDetail = scenario?.question || lead?.title || `${input.marketName} case`;
 
   stages.push({
     key: 'brief',
@@ -80,15 +96,19 @@ export function buildCase(input: CaseInput): DeepCase | null {
       kind: 'coldOpen',
       id: 'case-brief',
       eyebrow: `${input.marketName.toUpperCase()} CASE`,
-      headline: caseLead(scenario.scenario, scenario.question),
-      kicker: 'Four stages. One call at the end.',
-      fullText: scenario.scenario,
-      detailTitle: scenario.question,
+      headline: briefHeadline,
+      kicker: lead?.day
+        ? `Built on what you studied — day ${lead.day}. Four stages, one call.`
+        : 'Four stages. One call at the end.',
+      fullText: scenario?.scenario || lead?.slides?.[1]?.body || lead?.slides?.[0]?.body,
+      detailTitle: briefDetail,
       leo: { line: 'Take the brief slowly. The trap is usually in the first sentence.', mood: 'thinking' },
     } as Exercise,
   });
 
+  // Evidence and Numbers come from the learner's own lessons first.
   const evidence =
+    checkMechanism(lessonSlides, 'case-evidence-lesson') ||
     drillSpotFake(input.drills, 'case-evidence', 'One of these claims does not hold. Which one?') ||
     (pack ? packMap(pack, 'case-evidence-map') : null) ||
     (pack ? packChain(pack, 'case-evidence-chain') : null);
@@ -103,7 +123,9 @@ export function buildCase(input: CaseInput): DeepCase | null {
   }
 
   const numbers =
-    statNumberSense(input.stats, 'case-numbers') || (pack ? packNumber(pack, 'case-numbers-pack') : null);
+    checkFigure(lessonSlides, 'case-numbers-lesson') ||
+    statNumberSense(input.stats, 'case-numbers') ||
+    (pack ? packNumber(pack, 'case-numbers-pack') : null);
 
   if (numbers) {
     stages.push({
@@ -122,13 +144,13 @@ export function buildCase(input: CaseInput): DeepCase | null {
   });
 
   return {
-    id: scenario.id,
-    title: scenario.question,
-    situation: scenario.scenario,
+    id: scenario?.id || `lesson-case-${lead?.day ?? 1}`,
+    title: scenario?.question || briefDetail,
+    situation: scenario?.scenario || lead?.slides?.[0]?.body || briefHeadline,
     stages,
-    proReasoning: scenario.feedback_pro_reasoning,
-    commonMistake: scenario.feedback_common_mistake,
-    mentalModel: scenario.feedback_mental_model,
+    proReasoning: scenario?.feedback_pro_reasoning ?? null,
+    commonMistake: scenario?.feedback_common_mistake ?? null,
+    mentalModel: scenario?.feedback_mental_model ?? null,
   };
 }
 

@@ -451,6 +451,53 @@ export type Database = {
           },
         ]
       }
+      deliverable_entries: {
+        Row: {
+          content: string
+          created_at: string
+          day_number: number | null
+          goal_key: string
+          id: string
+          market_id: string
+          section_key: string
+          source: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          day_number?: number | null
+          goal_key?: string
+          id?: string
+          market_id: string
+          section_key: string
+          source?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          day_number?: number | null
+          goal_key?: string
+          id?: string
+          market_id?: string
+          section_key?: string
+          source?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deliverable_entries_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       drill_questions: {
         Row: {
           category: string

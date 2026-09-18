@@ -26,6 +26,8 @@ interface GenerateRequest {
   dryRun?: boolean;
   generateSummaries?: boolean;
   batchSize?: number;
+  /** Rewrite days that already have content (v2 curriculum rewrite). */
+  force?: boolean;
 }
 
 Deno.serve(async (req) => {
@@ -88,7 +90,8 @@ Deno.serve(async (req) => {
       goal,
       dryRun = false, 
       generateSummaries = false,
-      batchSize = 5 
+      batchSize = 5,
+      force = false
     } = await req.json() as GenerateRequest;
 
     // Determine which goals to generate for
@@ -205,7 +208,7 @@ Deno.serve(async (req) => {
     const toGenerate: { day: number; goal: LearningGoal }[] = [];
     for (const dayNum of daysToGenerate) {
       for (const g of goalsToGenerate) {
-        if (!existingByGoal[g].has(dayNum)) {
+        if (force || !existingByGoal[g].has(dayNum)) {
           toGenerate.push({ day: dayNum, goal: g });
         }
       }
@@ -324,6 +327,153 @@ function getTopic(day: number, curriculum: CurriculumStructure): string {
   return monthInfo.topics[topicIndex];
 }
 
+/** The v2 contract: one concept per day, taught in six named beats, no ceilings. */
+const BEATS = [
+  { n: 1, name: 'Recap', brief: 'One short paragraph linking what they owned yesterday to today. No new idea here.' },
+  { n: 2, name: 'Concept', brief: "Today's single idea, named and defined in plain words a smart outsider understands." },
+  { n: 3, name: 'Mechanism', brief: 'How it actually works, cause by cause, in order. Name who pays, who decides, what moves.' },
+  { n: 4, name: 'Case', brief: 'ONE real, named company or programme with real figures (dollars, percentages, dates) and the outcome.' },
+  { n: 5, name: 'Check', brief: 'The trap a beginner falls into on this exact concept, stated and corrected, with the real reason.' },
+  { n: 6, name: 'Takeaway', brief: "The one sentence they keep, plus why tomorrow's idea follows from it." },
+];
+
+const MIN_BODY = 350;
+const MAX_BODY = 1200;
+
+function endsMidSentence(text: string): boolean {
+  const t = (text || '').trim();
+  if (!t) return true;
+  return !/[.!?"'’”)]$/.test(t);
+}
+
+/** Rejects a day that would ship thin, cut, or unsourced. */
+function validateDayContent(content: any): string[] {
+  const problems: string[] = [];
+  if (!content) return ['no content'];
+  if (!content.title || String(content.title).trim().length < 6) problems.push('missing title');
+  if (!content.concept || String(content.concept).trim().length < 6) problems.push('missing concept name');
+  const objectives = Array.isArray(content.learning_objectives) ? content.learning_objectives.filter((o: any) => String(o || '').trim().length > 8) : [];
+  if (objectives.length < 3) problems.push('needs 3 real learning objectives');
+  for (const field of ['key_takeaway', 'recap_bridge', 'next_preview']) {
+    if (!content[field] || String(content[field]).trim().length < 12) problems.push(`missing ${field}`);
+  }
+  const slides = Array.isArray(content.slides) ? content.slides : [];
+  if (slides.length !== 6) problems.push(`needs exactly 6 beats, got ${slides.length}`);
+  slides.forEach((slide: any, i: number) => {
+    const body = String(slide?.body || '').trim();
+    if (body.length < MIN_BODY) problems.push(`beat ${i + 1} too thin (${body.length} chars)`);
+    if (body.length > MAX_BODY + 400) problems.push(`beat ${i + 1} too long (${body.length} chars)`);
+    if (endsMidSentence(body)) problems.push(`beat ${i + 1} ends mid-sentence`);
+    if (!slide?.title || String(slide.title).trim().length < 3) problems.push(`beat ${i + 1} missing title`);
+  });
+  const caseBeat = slides[3];
+  const caseText = String(caseBeat?.body || '');
+  if (!/\d/.test(caseText)) problems.push('case beat has no figures');
+  const allSources = slides.flatMap((s: any) => (Array.isArray(s?.sources) ? s.sources : []));
+  const usableSources = allSources.filter((s: any) => typeof s?.url === 'string' && /^https?:\/\/[^\s]+\.[^\s]+/.test(s.url) && !/example\.com/.test(s.url));
+  if (usableSources.length < 2) problems.push('needs at least 2 real sources with links');
+  return problems;
+}
+
+function dayLessonPrompt(
+  day: number,
+  month: number,
+  theme: string,
+  topic: string,
+  dayType: string,
+  marketContext: string,
+  persona: { label: string; slideGuidance: string },
+): { system: string; user: string } {
+  const isConsolidation = day % 7 === 0;
+  const angle = isConsolidation
+    ? `This is a CONSOLIDATION day. Introduce NO new concept. Take the single most important idea of this week's theme ("${theme}") and make the learner retrieve and connect it: restate it precisely, show it working in a second real case, and have them synthesise.`
+    : dayType === 'DAILY_GAME'
+      ? 'Anchor the concept in a real, recent development — a named deal, filing, launch, or price move — but the lesson is still ONE concept, not a news roundup.'
+      : dayType === 'BOOK_SNAPSHOT'
+        ? 'Anchor the concept in a real historical episode with dates and actors, but the lesson is still ONE concept.'
+        : 'Teach one core operating concept of this industry.';
+
+  const system = `You are a veteran ${marketContext} insider writing one day of a six-month curriculum for ${persona.label.toUpperCase()} learners.
+
+THE CONTRACT — follow it exactly:
+- ONE concept for the whole day. Name it. Do not skim several angles.
+- Teach it to the point of ownership: after today the learner can explain the mechanism to someone else without notes.
+- Write complete prose. Never abbreviate to fit a length. Never end a sentence or a beat mid-thought.
+- Every figure must be real and checkable: actual companies, programmes, dollar amounts, percentages, dates.
+- No hollow generalities ("innovation is key", "the market is growing fast"). A domain expert will read this and reject buzz sentences.
+- 9th-grade reading level, professional insider tone, no emojis, no hype.
+- Each beat body runs roughly ${MIN_BODY}-${MAX_BODY} characters of real substance.
+
+Month ${month} theme: ${theme}. Today's territory: ${topic}. ${angle}`;
+
+  const beatSpec = BEATS.map(b => `Beat ${b.n} — ${b.name}: ${b.brief}`).join('\n');
+
+  const user = `Write day ${day} for ${marketContext}, for ${persona.label.toUpperCase()} learners.
+
+Pick ONE concept inside "${topic}" that this learner genuinely needs, and teach only that.
+
+The six beats, in this order:
+${beatSpec}
+
+Keep the ${persona.label} lens throughout (what they should do with this):
+${persona.slideGuidance}
+
+Return valid JSON only:
+{
+  "title": "The concept, stated as a title (max 8 words)",
+  "concept": "The single concept in 3-8 words",
+  "learning_objectives": [
+    "A specific thing they can do or explain afterwards",
+    "A second distinct outcome",
+    "A third distinct outcome"
+  ],
+  "key_takeaway": "The one sentence they keep",
+  "recap_bridge": "One sentence tying yesterday's idea to today's",
+  "next_preview": "One sentence making tomorrow's idea feel necessary",
+  "slides": [
+    {
+      "slide_number": 1,
+      "title": "Beat title (max 7 words)",
+      "body": "Complete prose, ${MIN_BODY}-${MAX_BODY} characters, ending in a finished sentence",
+      "sources": [{"label": "Publication or filing", "url": "https://real-url"}]
+    }
+  ],
+  "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "${theme.toLowerCase().replace(/\s+/g, '-')}"]
+}
+
+Rules that cause rejection if broken: exactly 6 beats; every body at least ${MIN_BODY} characters and ending in a complete sentence; beat 4 contains real figures; at least two real source links across the day (never example.com); all three objectives written as outcomes.`;
+
+  return { system, user };
+}
+
+async function callGateway(apiKey: string, system: string, user: string) {
+  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'google/gemini-2.5-pro',
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: user },
+      ],
+      response_format: { type: 'json_object' },
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`AI API error: ${response.status} - ${errorText}`);
+  }
+
+  const aiResponse = await response.json();
+  const content = aiResponse.choices?.[0]?.message?.content;
+  if (!content) throw new Error('No content generated');
+  return JSON.parse(content.replace(/^```json\s*/i, '').replace(/```\s*$/, ''));
+}
+
 async function generateDayContent(
   apiKey: string,
   day: number,
@@ -338,79 +488,22 @@ async function generateDayContent(
   const persona = GOAL_PERSONAS[goal];
 
   const isTrainer = dayType === 'TRAINER';
-  
-  // Goal-specific slide structure for non-trainer content
-  const typePrompts: Record<string, string> = {
-    DAILY_GAME: `Create a NEWS stack about a REAL, SPECIFIC, VERIFIABLE current event or development in ${marketContext} related to "${topic}".
-      
-      YOU ARE WRITING EXCLUSIVELY FOR: ${persona.label.toUpperCase()} learners.
-      
-      CRITICAL REQUIREMENTS:
-      - Reference REAL companies, executives, deals, and dollar amounts
-      - Include actual dates, announcement details, or market data
-      - Every slide must be framed through the ${persona.label} lens
-      
-      Slide structure (6 slides, each body UNDER 280 characters):
-      ${persona.slideGuidance}`,
-    
-    MICRO_LESSON: `Create a LESSON stack teaching a core concept about "${topic}" in ${marketContext}.
-      
-      YOU ARE WRITING EXCLUSIVELY FOR: ${persona.label.toUpperCase()} learners.
-      
-      CRITICAL REQUIREMENTS:
-      - Teach like an industry veteran speaking to someone with THIS specific goal
-      - Use REAL numbers, percentages, timelines, and benchmarks
-      - Reference actual companies, deals, and case studies
-      - ALL 6 slides must serve the ${persona.label} perspective — not generic content
-      
-      Slide structure (6 slides, each body UNDER 280 characters):
-      ${persona.slideGuidance}`,
-    
-    TRAINER: `Create a decision-making SCENARIO about "${topic}" in ${marketContext}.
-      
-      Frame this scenario for a ${persona.label.toUpperCase()} learner.
-      
-      CRITICAL REQUIREMENTS:
-      - Base on REAL situations a ${persona.label} professional would face
-      - Include realistic numbers, timelines, and trade-offs
-      - The correct answer should reflect what an expert ${persona.label} professional would choose
-      - Feedback should explain reasoning from the ${persona.label} perspective
-      
-      The scenario should be 400-600 characters, presenting a genuine dilemma.
-      All 4 options should seem plausible to someone new to the industry.
-      Only one option should be clearly best to an experienced professional.`,
-    
-    BOOK_SNAPSHOT: `Create a HISTORY stack about a pivotal past event related to "${topic}" in ${marketContext}.
-      
-      YOU ARE WRITING EXCLUSIVELY FOR: ${persona.label.toUpperCase()} learners.
-      
-      CRITICAL REQUIREMENTS:
-      - Reference REAL historical events with specific dates and actors
-      - Frame the lessons through the ${persona.label} lens
-      - Every slide should help someone with this specific goal
-      
-      Slide structure (6 slides, each body UNDER 280 characters):
-      ${persona.slideGuidance}`,
-  };
 
-  const systemPrompt = isTrainer
-    ? `${persona.systemPrompt}
-       
+  if (isTrainer) {
+    const system = `${persona.systemPrompt}
+
        You create challenging decision scenarios for ${marketContext} that test strategic thinking.
-       Your scenarios are based on REAL situations — framed for someone whose goal is: ${persona.label}.`
-    : `${persona.systemPrompt}
-       
-       You are creating educational content about ${marketContext}.
-       Each slide body MUST be UNDER 450 characters - be concise but insightful.
-       Each slide title MUST be 6 words or fewer.
-       Month ${month} theme: ${theme}
-       
-       Style: Professional, direct, insight-dense. No fluff. Real examples only.
-       CRITICAL: Each slide should teach ONE clear idea with a real example or data point.`;
+       Your scenarios are based on REAL situations — framed for someone whose goal is: ${persona.label}.`;
 
-  const userPrompt = isTrainer
-    ? `${typePrompts[dayType]}
-       
+    const user = `Create a decision-making SCENARIO about "${topic}" in ${marketContext}.
+
+       Frame this scenario for a ${persona.label.toUpperCase()} learner.
+       - Base it on REAL situations a ${persona.label} professional would face
+       - Include realistic numbers, timelines, and trade-offs
+       - Only one option should be clearly best to an experienced professional
+
+       The scenario should be 400-600 characters, presenting a genuine dilemma.
+
        Return valid JSON:
        {
          "scenario": "Detailed scenario description (400-600 chars) framed for ${persona.label} learners",
@@ -427,61 +520,26 @@ async function generateDayContent(
          "follow_up_question": "A deeper question for ${persona.label} learners",
          "sources": [{"label": "Industry Source", "url": "https://example.com"}],
          "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "strategy"]
-       }`
-    : `${typePrompts[dayType]}
-       
-       ${IMMERSIVE_METADATA_PROMPT}
-       
-       Return valid JSON:
-       {
-         "title": "Compelling stack title for ${persona.label} learners (max 6 words)",
-         "learning_objectives": ["Outcome 1 (max 60 chars)", "Outcome 2 (max 60 chars)", "Outcome 3 (max 60 chars)"],
-         "key_takeaway": "The single most important insight (max 120 chars)",
-         "recap_bridge": "Connection to previous day's topic (max 100 chars)",
-         "next_preview": "Teaser for what comes next (max 100 chars)",
-         "slides": [
-           {
-             "slide_number": 1,
-             "title": "Slide title (max 6 words)",
-             "body": "Insight-dense content under 450 characters with real data",
-             "sources": [{"label": "Source Name", "url": "https://example.com"}]
-           }
-         ],
-         "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "${theme.toLowerCase().replace(/\\s+/g, '-')}"]
-       }
-       
-       IMPORTANT: Create exactly 6 slides. Each body MUST be under 450 characters.
-       ALL slides must serve the ${persona.label} perspective — this content is ONLY for ${persona.label} learners.`;
+       }`;
 
-  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'google/gemini-2.5-pro',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      response_format: { type: 'json_object' },
-    }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`AI API error: ${response.status} - ${errorText}`);
+    return await callGateway(apiKey, system, user);
   }
 
-  const aiResponse = await response.json();
-  const content = aiResponse.choices?.[0]?.message?.content;
-  
-  if (!content) {
-    throw new Error('No content generated');
+  const { system, user } = dayLessonPrompt(day, month, theme, topic, dayType, marketContext, persona);
+
+  // One retry: a day that fails the contract is regenerated, never saved thin.
+  let lastProblems: string[] = [];
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const retryNote = attempt === 0
+      ? ''
+      : `\n\nYour previous attempt was REJECTED for: ${lastProblems.join('; ')}. Fix every one of these and write the day again in full.`;
+    const content = await callGateway(apiKey, system, user + retryNote);
+    lastProblems = validateDayContent(content);
+    if (lastProblems.length === 0) return content;
+    console.warn(`Day ${day} (${goal}) attempt ${attempt + 1} rejected:`, lastProblems.join('; '));
   }
 
-  return JSON.parse(content);
+  throw new Error(`Contract violation after retry: ${lastProblems.join('; ')}`);
 }
 
 async function saveContent(
@@ -495,7 +553,7 @@ async function saveContent(
 ) {
   const goalTag = getGoalTag(goal);
   const levelTag = getLevelTag(day);
-  const baseTags = [dayType, `day-${day}`, `month-${month}`, 'MICRO_LESSON', goalTag, levelTag];
+  const baseTags = [dayType, `day-${day}`, `month-${month}`, 'MICRO_LESSON', goalTag, levelTag, 'contract-v2'];
 
   if (dayType === 'TRAINER') {
     const correctIndex = content.options?.findIndex((o: any) => o.isCorrect) ?? 1;
@@ -532,6 +590,9 @@ async function saveContent(
       stack_type: stackTypeMap[dayType] || 'LESSON',
       tags: [...baseTags, ...(content.tags || [])],
       metadata: {
+        contract: 'v2',
+        concept: content.concept || '',
+        consolidation: day % 7 === 0,
         learning_objectives: content.learning_objectives || [],
         key_takeaway: content.key_takeaway || '',
         recap_bridge: content.recap_bridge || '',
@@ -551,7 +612,8 @@ async function saveContent(
       stack_id: stack.id,
       slide_number: slide.slide_number || index + 1,
       title: (slide.title || `Slide ${index + 1}`).substring(0, 100),
-      body: (slide.body || '').substring(0, 450),
+      // No ceiling: the v2 contract forbids trimming, which is what cut sentences before.
+      body: (slide.body || '').trim(),
       sources: slide.sources || [],
     }));
 
