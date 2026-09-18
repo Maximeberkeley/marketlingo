@@ -166,7 +166,9 @@ export function CourseJourney({
   }, [currentDay, lessons.length, loading]);
 
   const openLesson = (lesson: CourseLesson) => {
-    const canOpen = lesson.completed || lesson.day === currentDay;
+    // Calendar days unlock permanently at local midnight. Completion never
+    // controls access, so a learner can catch up without corrupting "today".
+    const canOpen = lesson.day <= currentDay;
     if (!canOpen || !lesson.stackId) return;
     triggerHaptic(lesson.day === currentDay ? 'medium' : 'light');
     onOpenLesson(lesson.stackId);
