@@ -63,6 +63,8 @@ import { LessonGoalsScreen } from '../../components/home/LessonGoalsScreen';
 import { SpeechBubble } from '../../components/ui/SpeechBubble';
 import { InsiderIdentityCard } from '../../components/home/InsiderIdentityCard';
 import { useDeliverable } from '../../hooks/useDeliverable';
+import { useFocusTopic } from '../../hooks/useFocusTopic';
+import { FocusTopicCard } from '../../components/home/FocusTopicCard';
 
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
@@ -179,6 +181,7 @@ export default function HomeScreen() {
 
   const { dueCount } = useSpacedRepetition(selectedMarketLocal || undefined);
   const deliverable = useDeliverable(selectedMarketLocal || undefined, learningGoal);
+  const focusTopic = useFocusTopic(selectedMarketLocal || undefined, currentDay || 1);
 
   const { syncLessons } = useOfflineCache(selectedMarketLocal || undefined);
 
@@ -689,6 +692,17 @@ export default function HomeScreen() {
               onRescue={() => { triggerHaptic('medium'); router.push('/streak-rescue'); }}
             />
           </AnimatedSection>
+
+          {/* ── One optional tap after the foundations week: the focus topic ── */}
+          <AnimatedSection delay={280}>
+            <FocusTopicCard
+              marketName={getMarketName(selectedMarket || 'aerospace')}
+              focusLabel={focusTopic.focusLabel}
+              unlocked={focusTopic.unlocked}
+            />
+          </AnimatedSection>
+
+
 
 
           {/* ── News (compact) ── */}
