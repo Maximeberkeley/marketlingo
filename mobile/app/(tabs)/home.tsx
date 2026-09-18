@@ -178,6 +178,8 @@ export default function HomeScreen() {
   }, [selectedMarket]);
 
   const { dueCount } = useSpacedRepetition(selectedMarketLocal || undefined);
+  const deliverable = useDeliverable(selectedMarketLocal || undefined, learningGoal);
+
   const { syncLessons } = useOfflineCache(selectedMarketLocal || undefined);
 
   useEffect(() => {
