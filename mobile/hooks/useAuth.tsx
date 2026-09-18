@@ -18,6 +18,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const AUTH_STARTUP_TIMEOUT_MS = 6000;
+
+function withAuthTimeout<T>(request: PromiseLike<T>): Promise<T> {
+  return Promise.race([
+    Promise.resolve(request),
+    new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Authentication startup timed out')), AUTH_STARTUP_TIMEOUT_MS);
+    }),
+  ]);
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -56,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const initializeAuth = async () => {
       try {
-        const { data: { session: restoredSession }, error } = await supabase.auth.getSession();
+        const { data: { session: restoredSession }, error } = await withAuthTimeout(supabase.auth.getSession());
 
         if (!mounted) return;
 
@@ -78,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         try {
-          const { error: userError } = await supabase.auth.getUser();
+          const { error: userError } = await withAuthTimeout(supabase.auth.getUser());
 
           if (userError) {
             if (userError.message?.includes('user_not_found') || userError.code === 'user_not_found') {
