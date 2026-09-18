@@ -21,6 +21,8 @@ import { Feather } from '@expo/vector-icons';
 import { useSubscription } from '../hooks/useSubscription';
 import { splitSentences } from '../lib/textUtils';
 import { goalContentTag } from '../lib/goals';
+import { useStudiedLessons } from '../hooks/useStudiedLessons';
+import { lessonStatements } from '../lesson-kit/practice/lessonQuestions';
 
 const LEO_HAPPY = require('../assets/mascot/leo-celebrating.png');
 const LEO_DIZZY = require('../assets/mascot/leo-dizzy.png');
