@@ -154,9 +154,9 @@ export function buildCase(input: CaseInput): DeepCase | null {
   });
 
   return {
-    id: scenario?.id || `lesson-case-${lead?.day ?? 1}`,
-    title: scenario?.question || briefDetail,
-    situation: scenario?.scenario || lead?.slides?.[0]?.body || briefHeadline,
+    id: lead ? `lesson-case-${lead.day ?? 1}-${lead.stackId ?? 'x'}` : scenario?.id || 'market-case',
+    title: briefDetail,
+    situation: lead?.slides?.[0]?.body || scenario?.scenario || briefHeadline,
     stages,
     proReasoning: scenario?.feedback_pro_reasoning ?? null,
     commonMistake: scenario?.feedback_common_mistake ?? null,
