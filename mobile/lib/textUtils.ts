@@ -1,43 +1,48 @@
 /**
- * Smart text truncation utilities.
- * Truncates at sentence boundaries instead of cutting mid-word/mid-sentence.
+ * Text utilities.
+ *
+ * Rule for the whole app: a learner never sees a sentence that stops
+ * mid-thought. Shortening happens at sentence boundaries only. When one
+ * complete sentence is longer than the requested budget we show that whole
+ * sentence — a slightly longer card beats a mutilated idea.
  */
 
 /**
- * Truncates text to maxLength at the nearest sentence boundary.
- * Falls back to word boundary if no sentence fits.
+ * Shortens text to whole sentences within maxLength.
+ * Never cuts mid-sentence: the first complete sentence is always kept whole.
  */
 export function truncateAtSentence(text: string, maxLength: number): string {
-  if (!text || text.length <= maxLength) return text;
+  if (!text) return text;
+  const clean = text.trim();
+  if (clean.length <= maxLength) return clean;
 
-  // Try to find a sentence break within the limit
-  const sentenceBreaks = /[.!?]\s+/g;
-  let lastGoodIndex = -1;
-  let match: RegExpExecArray | null;
+  const parts = splitSentences(clean);
+  if (!parts.length) return clean;
 
-  while ((match = sentenceBreaks.exec(text)) !== null) {
-    // Include the punctuation but not the trailing space
-    const endIndex = match.index + 1;
-    if (endIndex <= maxLength) {
-      lastGoodIndex = endIndex;
-    } else {
-      break;
-    }
+  let out = '';
+  for (const part of parts) {
+    const next = out ? `${out} ${part.trim()}` : part.trim();
+    if (next.length > maxLength) break;
+    out = next;
   }
 
-  // Found a sentence boundary
-  if (lastGoodIndex > maxLength * 0.4) {
-    return text.substring(0, lastGoodIndex);
-  }
+  // Nothing fit — keep the first sentence in full rather than cutting it.
+  return (out || parts[0].trim()).trim();
+}
 
-  // Fallback: break at word boundary
-  const truncated = text.substring(0, maxLength);
-  const lastSpace = truncated.lastIndexOf(' ');
-  if (lastSpace > maxLength * 0.6) {
-    return truncated.substring(0, lastSpace) + '…';
-  }
+/**
+ * Drops a trailing fragment that has no sentence ending, so authored text
+ * that was itself stored truncated never renders as "…that's where innovation of".
+ */
+export function dropIncompleteTail(text: string): string {
+  const clean = (text || '').trim();
+  if (!clean) return clean;
+  if (/[.!?)"'\]]$/.test(clean)) return clean;
 
-  return truncated + '…';
+  const parts = splitSentences(clean);
+  if (parts.length < 2) return clean;
+  const complete = parts.filter(p => /[.!?)"'\]]$/.test(p.trim()));
+  return (complete.length ? complete.join(' ') : parts.slice(0, -1).join(' ')).trim() || clean;
 }
 
 /**

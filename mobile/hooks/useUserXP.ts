@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { UserXP, DailyCompletion } from '../lib/types';
 import { log } from '../lib/logger';
+import { localDateString } from '../lib/dayMath';
 
 export const XP_REWARDS = {
   LESSON_COMPLETE: 50,
@@ -120,7 +121,7 @@ export function useUserXP(marketId?: string) {
         setXpData(ensuredXP);
       }
 
-      const today = new Date().toISOString().split('T')[0];
+      const today = localDateString();
       const { data: todayCompletion, error: completionError } = await supabase
         .from('daily_completions')
         .select('*')
@@ -185,7 +186,7 @@ export function useUserXP(marketId?: string) {
       setXpData(updatedXP);
     }
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = localDateString();
     const { data: existingCompletion, error: completionFetchError } = await supabase
       .from('daily_completions')
       .select('*')
@@ -230,10 +231,26 @@ export function useUserXP(marketId?: string) {
     return updatedXP;
   };
 
+  /**
+   * Records today's lesson. Idempotent: the daily lesson reward is paid once
+   * per local day. A second lesson on the same day is extra practice — it is
+   * recorded, but it does not re-pay the lesson XP or re-mark the day.
+   */
   const completeLessonForToday = async (stackId: string) => {
     if (!user || !marketId) return;
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = localDateString();
+
+    const { data: existing } = await supabase
+      .from('daily_completions')
+      .select('lesson_completed, completed_stack_id')
+      .eq('user_id', user.id)
+      .eq('market_id', marketId)
+      .eq('completion_date', today)
+      .maybeSingle();
+
+    const alreadyDone = Boolean(existing?.lesson_completed);
+
     const { data, error } = await supabase
       .from('daily_completions')
       .upsert(
@@ -242,7 +259,7 @@ export function useUserXP(marketId?: string) {
           market_id: marketId,
           completion_date: today,
           lesson_completed: true,
-          completed_stack_id: stackId,
+          completed_stack_id: existing?.completed_stack_id || stackId,
         },
         { onConflict: 'user_id,market_id,completion_date' }
       )
@@ -253,7 +270,9 @@ export function useUserXP(marketId?: string) {
       setDailyCompletion(data);
     }
 
-    await addXP(XP_REWARDS.LESSON_COMPLETE, 'lesson', stackId, 'Completed daily lesson');
+    if (!alreadyDone) {
+      await addXP(XP_REWARDS.LESSON_COMPLETE, 'lesson', stackId, 'Completed daily lesson');
+    }
     return data;
   };
 

@@ -17,6 +17,7 @@ import {
   SpotFakeExercise,
   Source,
 } from '../types';
+import { splitSentences } from '../../lib/textUtils';
 
 export interface SlideLike {
   slideNumber: number;
@@ -32,16 +33,15 @@ const DOWN_WORDS = ['fall', 'falling', 'decline', 'declining', 'drop', 'dropping
 export const norm = (s?: string) => (s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
 export function sentences(text: string, min = 40, max = 200): string[] {
-  return (text || '')
-    .replace(/\s+/g, ' ')
-    .split(/(?<=[.!?])\s+/)
+  // Abbreviation-aware: "the U.S. Air Force" is one sentence, not two.
+  return splitSentences((text || '').replace(/\s+/g, ' '))
     .map(s => s.trim())
     .filter(s => s.length >= min && s.length <= max);
 }
 
 /** A concise first-layer lead. The complete copy is always retained separately. */
 function leadSentence(text: string, fallback: string): string {
-  const first = (text || '').replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/)[0]?.trim();
+  const first = splitSentences((text || '').replace(/\s+/g, ' ').trim())[0]?.trim();
   if (!first) return fallback;
   if (first.length <= 180) return first;
   const clause = first.slice(0, 180).split(/[,;:]/)[0]?.trim();

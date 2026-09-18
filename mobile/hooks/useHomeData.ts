@@ -9,6 +9,8 @@ import { StackWithSlides } from '../lib/types';
 import { getStreakRiskHours } from '../components/home/StreakAtRisk';
 import { scheduleStreakNotifications } from '../lib/streakNotifications';
 import { log } from '../lib/logger';
+import { calculateAvailableDay } from '../lib/dayMath';
+import { goalContentTag } from '../lib/goals';
 
 interface NewsItem {
   id: string;
@@ -145,20 +147,15 @@ export function useHomeData(
 
       const learningGoalValue = userProgress?.learning_goal || 'curiosity';
       setLearningGoal(learningGoalValue);
-      const goalTag = `goal:${learningGoalValue}`;
+      const goalTag = goalContentTag(learningGoalValue);
       // Use market-specific familiarity if set, otherwise profile-level
       const effectiveLevel = userProgress?.familiarity_level || familiarityLevel;
       const levelTag = `level:${effectiveLevel}`;
 
-      let calcDay = 1;
-      if (userProgress?.start_date) {
-        const start = new Date(userProgress.start_date);
-        const today = new Date();
-        start.setHours(0, 0, 0, 0);
-        today.setHours(0, 0, 0, 0);
-        const diffDays = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-        calcDay = Math.min(180, Math.max(1, diffDays + 1));
-      }
+      // One source of truth for the day: local calendar days since start_date.
+      // (Parsing start_date with `new Date()` treated it as UTC midnight and
+      // shifted the day by one west of UTC, so Home and progress disagreed.)
+      const calcDay = calculateAvailableDay(userProgress?.start_date);
       setCurrentDay(calcDay);
       const dayTag = `day-${calcDay}`;
 
@@ -173,6 +170,8 @@ export function useHomeData(
         .eq('market_id', market)
         .contains('tags', ['MICRO_LESSON', dayTag, goalTag, levelTag])
         .not('published_at', 'is', null)
+        // Newest authored version of a day wins.
+        .order('created_at', { ascending: false })
         .limit(5);
 
       // Filter out stacks with no slides at every fallback level
@@ -186,6 +185,7 @@ export function useHomeData(
           .eq('market_id', market)
           .contains('tags', ['MICRO_LESSON', dayTag, goalTag])
           .not('published_at', 'is', null)
+          .order('created_at', { ascending: false })
           .limit(5);
         lessonStacks = fb1;
       }
@@ -197,6 +197,7 @@ export function useHomeData(
           .eq('market_id', market)
           .contains('tags', ['MICRO_LESSON', dayTag])
           .not('published_at', 'is', null)
+          .order('created_at', { ascending: false })
           .limit(5);
         lessonStacks = fallback;
       }

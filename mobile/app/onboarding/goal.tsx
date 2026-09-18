@@ -82,6 +82,17 @@ const LEO_REACTIONS: Record<LearningGoal, string> = {
   curiosity: "Curiosity is a superpower — let's explore together!",
 };
 
+/**
+ * The promise, in the learner's own words. One concrete destination per goal —
+ * this is the identity they are buying into, not a list of topics.
+ */
+const DESTINATIONS: Record<LearningGoal, string> = {
+  join_industry: 'In 30 days you’ll hold your own in an interview with someone who works in this industry.',
+  invest: 'In 30 days you’ll read a company in this industry and say what it’s actually worth watching for.',
+  build_startup: 'In 30 days you’ll be able to name a real gap in this industry and defend why it’s open.',
+  curiosity: 'In 30 days you’ll be the person at the table who explains how this industry really works.',
+};
+
 const STEP_LABELS = ['Industry', 'Goal', 'Level'];
 
 export default function GoalScreen() {
@@ -237,6 +248,13 @@ export default function GoalScreen() {
           })}
         </View>
 
+        {selectedGoal && (
+          <View style={styles.destinationBox}>
+            <Text style={styles.destinationLabel}>WHERE THIS TAKES YOU</Text>
+            <Text style={styles.destinationText}>{DESTINATIONS[selectedGoal]}</Text>
+          </View>
+        )}
+
         <View style={styles.infoBox}>
           <Feather name="info" size={14} color={COLORS.textMuted} />
           <Text style={styles.infoText}>
@@ -246,7 +264,7 @@ export default function GoalScreen() {
       </Animated.ScrollView>
 
       <StickyBottomCTA
-        title={isSubmitting ? 'Saving...' : 'Continue →'}
+        title={isSubmitting ? 'Saving...' : 'Commit to my goal'}
         onPress={handleContinue}
         disabled={!selectedGoal || isSubmitting}
       />
@@ -296,6 +314,17 @@ const styles = StyleSheet.create({
   checkmark: {
     width: 24, height: 24, borderRadius: 12,
     backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center',
+  },
+  destinationBox: {
+    marginTop: 22, padding: 18, borderRadius: 16,
+    backgroundColor: COLORS.accentSoft,
+    borderWidth: 1, borderColor: COLORS.accent + '55',
+  },
+  destinationLabel: {
+    fontSize: 10, fontWeight: '900', letterSpacing: 1.2, color: COLORS.accent,
+  },
+  destinationText: {
+    marginTop: 8, fontSize: 17, lineHeight: 25, fontWeight: '700', color: COLORS.textPrimary,
   },
   infoBox: {
     flexDirection: 'row', alignItems: 'center', gap: 8,

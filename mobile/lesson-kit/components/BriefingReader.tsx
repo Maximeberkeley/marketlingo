@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyTerm, Source } from '../types';
 import { tokens } from '../theme/tokens';
 import { ColorText } from './ColorText';
+import { dropIncompleteTail } from '../../lib/textUtils';
 
 interface Props {
   visible: boolean;
@@ -29,7 +30,9 @@ interface Props {
 }
 
 function paragraphs(text: string): string[] {
-  const normalized = text.replace(/\r/g, '').trim();
+  // Authored text can itself have been stored truncated; never render a
+  // fragment that stops mid-thought.
+  const normalized = dropIncompleteTail(text.replace(/\r/g, '').trim());
   if (!normalized) return [];
   const explicit = normalized.split(/\n\s*\n+/).map(part => part.trim()).filter(Boolean);
   if (explicit.length > 1) return explicit;
