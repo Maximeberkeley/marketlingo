@@ -2962,6 +2962,31 @@ export type Database = {
         Returns: Json
       }
       sync_friend_quests: { Args: { p_market_id: string }; Returns: number }
+      sync_local_streak: {
+        Args: { p_market_id: string; p_today: string }
+        Returns: {
+          completed_stacks: string[] | null
+          created_at: string
+          current_day: number | null
+          current_streak: number | null
+          familiarity_level: string | null
+          id: string
+          last_activity_at: string | null
+          learning_goal: string | null
+          longest_streak: number | null
+          market_id: string
+          start_date: string
+          streak_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "user_progress"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       sync_my_league: {
         Args: { p_market_id: string }
         Returns: {
