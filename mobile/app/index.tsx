@@ -64,7 +64,7 @@ export default function Index() {
         } else if (!progress?.familiarity_level) {
           safeReplace('/onboarding/familiarity');
         } else {
-          safeReplace('/(tabs)/home');
+          safeReplace('/daily-leo');
         }
       } catch (error) {
         log.warn('[Index] Startup redirect failed:', error);

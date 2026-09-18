@@ -20,13 +20,6 @@ import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { useAIConsent } from '../hooks/useAIConsent';
 import { isDark, applyThemeMode } from '../lib/theme';
-import {
-  getLeoWidgetLinkStatus,
-  LeoWidgetLinkStatus,
-  runLeoWidgetSelfTest,
-} from '../lib/leoWidget';
-import { useSelectedMarket } from '../hooks/useSelectedMarket';
-import { getMarketName } from '../lib/markets';
 
 import { NotificationOnboarding } from '../components/onboarding/NotificationOnboarding';
 import { log } from '../lib/logger';
@@ -84,7 +77,6 @@ async function registerForPushNotifications(): Promise<string | null> {
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const { user, signOut } = useAuth();
-  const { marketId } = useSelectedMarket();
   const aiConsent = useAIConsent();
 
   const [pushEnabled, setPushEnabled] = useState(false);
@@ -97,9 +89,6 @@ export default function SettingsScreen() {
   const [showNotifOnboarding, setShowNotifOnboarding] = useState(false);
   const [useIndustryMascots, setUseIndustryMascots] = useState(true);
   const [darkModeOn, setDarkModeOn] = useState(isDark);
-  const [widgetLink, setWidgetLink] = useState<LeoWidgetLinkStatus>(() => getLeoWidgetLinkStatus());
-  const [testingWidget, setTestingWidget] = useState(false);
-  const [widgetTestDetail, setWidgetTestDetail] = useState<string | null>(null);
   const notificationListener = useRef<any>(null);
 
   // Load saved preferences from profile
@@ -347,36 +336,6 @@ export default function SettingsScreen() {
     await supabase.from('profiles').update({ use_industry_mascots: value } as any).eq('id', user.id);
   };
 
-  const handleWidgetSelfTest = async () => {
-    if (!user || testingWidget) return;
-    setTestingWidget(true);
-      setWidgetTestDetail('Writing your current streak…');
-    try {
-      const { data, error } = await supabase
-        .from('user_progress')
-        .select('current_streak, streak_expires_at')
-        .eq('user_id', user.id)
-        .eq('market_id', marketId)
-        .maybeSingle();
-
-      if (error) throw error;
-      const result = await runLeoWidgetSelfTest({
-        streak: data?.current_streak ?? 0,
-        lessonComplete: false,
-        expiresAt: data?.streak_expires_at,
-        market: getMarketName(marketId),
-      });
-      setWidgetLink(result.status);
-      setWidgetTestDetail(result.detail);
-    } catch (error) {
-      log.warn('[Settings] Widget self-test failed:', error);
-      setWidgetLink('unlinked');
-      setWidgetTestDetail('Could not load your current streak. Check your connection and try again.');
-    } finally {
-      setTestingWidget(false);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <ScrollView
@@ -511,46 +470,6 @@ export default function SettingsScreen() {
               thumbColor="#FFFFFF"
             />
           </View>
-          <View style={styles.widgetCard}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.settingLabel}>Leo widgets</Text>
-              <Text style={styles.settingDesc}>
-                {widgetTestDetail || (widgetLink === 'ok'
-                  ? 'Connected — Leo Streak can read your live streak.'
-                  : widgetLink === 'unlinked'
-                    ? 'Not linked. Rebuild the app and make sure the widget uses the same team as the app.'
-                    : 'Widgets are only available on iPhone.')}
-              </Text>
-            </View>
-            <View
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: 6,
-                backgroundColor:
-                  widgetLink === 'ok'
-                    ? COLORS.success
-                    : widgetLink === 'unlinked'
-                      ? COLORS.error
-                      : COLORS.textMuted,
-              }}
-            />
-            <TouchableOpacity
-              style={[styles.widgetTestButton, testingWidget && { opacity: 0.55 }]}
-              onPress={handleWidgetSelfTest}
-              disabled={testingWidget || widgetLink === 'unsupported'}
-            >
-              {testingWidget ? (
-                <ActivityIndicator size="small" color={COLORS.textPrimary} />
-              ) : (
-                <Feather name="refresh-cw" size={15} color={COLORS.textPrimary} />
-              )}
-              <Text style={styles.widgetTestText}>{testingWidget ? 'Testing…' : 'Test sync'}</Text>
-            </TouchableOpacity>
-            <Text style={styles.widgetLockText}>
-              Home Screen and Lock Screen are supported. Add “Leo Streak” from either widget gallery.
-            </Text>
-          </View>
         </View>
 
         {/* AI & Voice */}
@@ -674,17 +593,6 @@ const styles = StyleSheet.create({
   },
   settingLabel: { fontSize: 15, fontWeight: '500', color: COLORS.textPrimary },
   settingDesc: { fontSize: 11, color: COLORS.textMuted, marginTop: 2 },
-  widgetCard: {
-    flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 10,
-    backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, marginBottom: 8,
-    borderWidth: 1, borderColor: COLORS.border,
-  },
-  widgetTestButton: {
-    width: '100%', height: 42, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: COLORS.bg1, borderRadius: 10, borderWidth: 1, borderColor: COLORS.border,
-  },
-  widgetTestText: { fontSize: 13, fontWeight: '700', color: COLORS.textPrimary },
-  widgetLockText: { width: '100%', fontSize: 11, lineHeight: 16, color: COLORS.textSecondary },
   notifSetupBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     backgroundColor: 'rgba(139,92,246,0.10)', borderRadius: 14, padding: 14, marginBottom: 8,

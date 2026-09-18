@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { COLORS } from '../../lib/constants';
 import { mentors } from '../../data/mentors';
+import { SpeechBubble } from '../ui/SpeechBubble';
 
 const MENTOR_IMAGES: Record<string, any> = {
   maya: require('../../assets/mentors/mentor-maya.png'),
@@ -116,12 +117,7 @@ export function MascotBreak({ type, message, characterId, marketId, slideIndex, 
           <Image source={avatarSource} style={[styles.avatar, isLeo ? styles.leoAvatar : styles.mentorAvatar]} />
         </Animated.View>
         <Text style={styles.charName}>{character.name}</Text>
-        <View style={styles.bubbleContainer}>
-          <View style={styles.bubblePointer} />
-          <View style={styles.bubble}>
-            <Text style={styles.bubbleText}>{displayMessage}</Text>
-          </View>
-        </View>
+        <SpeechBubble text={displayMessage} tail="top-center" style={styles.bubbleContainer} textStyle={styles.bubbleText} />
         {onDismiss && <Text style={styles.tapHint}>Tap to continue</Text>}
       </TouchableOpacity>
     </Animated.View>
@@ -159,11 +155,7 @@ export function InlineMascot({ characterId, marketId, message, position = 'left'
   return (
     <View style={[styles.inlineRow, position === 'right' && styles.inlineRowReverse]}>
       <Image source={avatarSource} style={[styles.inlineAvatar, { width: dim, height: dim, borderRadius: character.isLeo ? 0 : dim / 2 }]} />
-      {message && (
-        <View style={[styles.inlineBubble, position === 'right' ? styles.inlineBubbleRight : styles.inlineBubbleLeft]}>
-          <Text style={styles.inlineBubbleText}>{message}</Text>
-        </View>
-      )}
+      {message && <SpeechBubble text={message} tail={position === 'right' ? 'right' : 'left'} compact style={styles.inlineBubble} textStyle={styles.inlineBubbleText} />}
     </View>
   );
 }
@@ -174,28 +166,13 @@ const styles = StyleSheet.create({
   leoAvatar: { width: 100, height: 100 },
   mentorAvatar: { width: 88, height: 88, borderRadius: 44, borderWidth: 3, borderColor: COLORS.border },
   charName: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary, textAlign: 'center', marginTop: 8 },
-  bubbleContainer: { alignItems: 'center', marginTop: 12 },
-  bubblePointer: {
-    width: 14, height: 14, backgroundColor: COLORS.bg2,
-    borderTopWidth: 1, borderLeftWidth: 1, borderColor: COLORS.border,
-    transform: [{ rotate: '45deg' }], marginBottom: -7, zIndex: 1,
-  },
-  bubble: {
-    backgroundColor: COLORS.bg2, borderRadius: 16, borderWidth: 1, borderColor: COLORS.border,
-    paddingHorizontal: 18, paddingVertical: 12, maxWidth: 260,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 4,
-  },
+  bubbleContainer: { marginTop: 12, maxWidth: 260 },
   bubbleText: { fontSize: 14, color: COLORS.textPrimary, textAlign: 'center', lineHeight: 20 },
   tapHint: { marginTop: 12, fontSize: 12, color: COLORS.textMuted, textAlign: 'center', opacity: 0.7 },
   inlineRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
   inlineRowReverse: { flexDirection: 'row-reverse' },
   inlineAvatar: { resizeMode: 'contain' },
-  inlineBubble: {
-    backgroundColor: COLORS.bg2, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6,
-    borderWidth: 1, borderColor: COLORS.border, maxWidth: 160,
-  },
-  inlineBubbleLeft: { borderBottomLeftRadius: 2 },
-  inlineBubbleRight: { borderBottomRightRadius: 2 },
+  inlineBubble: { maxWidth: 160 },
   inlineBubbleText: { fontSize: 12, color: COLORS.textPrimary },
 });
 

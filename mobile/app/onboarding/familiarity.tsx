@@ -20,6 +20,7 @@ import { NotificationOnboarding } from '../../components/onboarding/Notification
 import { applyDemoXP } from '../../lib/demoXPBridge';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress';
 import { MascotAvatar } from '../../components/mascot/MascotAvatar';
+import { SpeechBubble } from '../../components/ui/SpeechBubble';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
 import { FeatureTour } from '../../components/onboarding/FeatureTour';
@@ -155,14 +156,14 @@ export default function FamiliarityScreen() {
         // Non-critical
       }
     }
-    if (seenTour) router.replace('/(tabs)/home');
+    if (seenTour) router.replace('/daily-leo');
     else setShowFeatureTour(true);
   };
 
   const handleTourComplete = async () => {
     setShowFeatureTour(false);
     await storage.setFeatureTourSeen().catch(() => {});
-    router.replace('/(tabs)/home');
+    router.replace('/daily-leo');
   };
 
   const handleBack = () => {
@@ -197,7 +198,7 @@ export default function FamiliarityScreen() {
         {selectedLevel && (
           <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}>
             <Image source={require('../../assets/mascot/leo-reference.png')} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
-            <Text style={styles.reactionText}>{LEO_LEVEL_REACTIONS[selectedLevel]}</Text>
+            <SpeechBubble text={LEO_LEVEL_REACTIONS[selectedLevel]} tail="left" compact style={styles.reactionBalloon} textStyle={styles.reactionText} />
           </Animated.View>
         )}
 
@@ -320,13 +321,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: COLORS.accent + '15',
-    borderWidth: 1,
-    borderColor: COLORS.accent + '30',
-    borderRadius: 14,
-    padding: 12,
     marginBottom: 16,
   },
+  reactionBalloon: { flex: 1 },
   reactionEmoji: { fontSize: 24 },
   reactionText: {
     flex: 1,

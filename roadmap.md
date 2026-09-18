@@ -1,5 +1,5 @@
 # Roadmap
-- [x] iOS home-screen Leo widget — sync immediately at lesson completion, query the active market, reload LeoWidget directly, and ship in build 103
+- [ ] Revisit Leo Home Screen and Lock Screen widgets in a future update; removed from release 1.0.8
 - [x] Website About — 3 founder posts (Maxime, Sophia, Leo) with large headshots and sitting/sat Leo sticker image
 - [x] Remove all purchase/IAP code from mobile + iOS (Apple rejection)
 - [x] Fix broken demo lesson on the website (src/components/demo/DemoLesson.tsx)
@@ -67,4 +67,4 @@
 - [x] Widget self-test red — replace the silently missing third-party bridge with a local iOS App Group module; fix broken target artwork paths
 - [x] Increase in-lesson Leo slightly without enlarging or overlapping the speech bubble
 - [x] Widget release hardening — remove the unreliable four-second WidgetKit acknowledgement gate, reload all timelines, pin the App Group on both targets, and prepare version 1.0.7 (build 117)
-- [x] Release candidate 1.0.7 (build 118) — finalize the native widget bridge and replace Leo's dotted lesson bubble with a compact illustrated balloon
+- [x] Release candidate 1.0.8 (build 119) — remove widgets and standardize Leo's smooth illustrated balloons

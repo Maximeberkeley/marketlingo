@@ -10,7 +10,6 @@ import {
   Image,
   Animated,
   Alert,
-  AppState,
 } from 'react-native';
 import { AchievementPopup } from '../../components/achievements/AchievementPopup';
 import { DailyNews } from '../../components/home/DailyNews';
@@ -55,15 +54,13 @@ import { useAchievements } from '../../hooks/useAchievements';
 import { LeoVoiceChatOverlay } from '../../components/ai/LeoVoiceChatOverlay';
 import { log } from '../../lib/logger';
 import { SundayRecapCard } from '../../components/home/SundayRecapCard';
-import { WidgetNudgeCard } from '../../components/home/WidgetNudgeCard';
-import { useWidgetNudge } from '../../hooks/useWidgetNudge';
 import { LeagueCeremonyModal } from '../../components/league/LeagueCeremonyModal';
 import { useLeague, TIER_META } from '../../hooks/useLeague';
 import { useWeeklyRecap } from '../../hooks/useWeeklyRecap';
 import { useCollectibles, CollectibleCard } from '../../hooks/useCollectibles';
 import { CardRevealModal } from '../../components/collectibles/CardRevealModal';
-import { syncLeoWidget } from '../../lib/leoWidget';
 import { LessonGoalsScreen } from '../../components/home/LessonGoalsScreen';
+import { SpeechBubble } from '../../components/ui/SpeechBubble';
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -164,29 +161,11 @@ export default function HomeScreen() {
   const league = useLeague(selectedMarketLocal || undefined);
   const recap = useWeeklyRecap(selectedMarketLocal || undefined);
   const [recapDismissed, setRecapDismissed] = useState(false);
-  const widgetNudge = useWidgetNudge();
   const showRecap = recap.isRecapDay && !recap.loading && !recap.seen && !recapDismissed && recap.xpThisWeek >= 0;
 
   useEffect(() => {
     if (selectedMarket) setSelectedMarketLocal(selectedMarket);
   }, [selectedMarket]);
-
-  useEffect(() => {
-    if (!selectedMarketLocal || !progress) return;
-
-    const push = () => syncLeoWidget({
-      streak: progress.current_streak || 0,
-      lessonComplete: lessonCompletedToday,
-      expiresAt: progress.streak_expires_at,
-      market: getMarketName(selectedMarketLocal),
-    });
-
-    push();
-    const sub = AppState.addEventListener('change', (next) => {
-      if (next === 'active') push();
-    });
-    return () => sub.remove();
-  }, [selectedMarketLocal, progress?.current_streak, progress?.streak_expires_at, lessonCompletedToday]);
 
   const { dueCount } = useSpacedRepetition(selectedMarketLocal || undefined);
   const { syncLessons } = useOfflineCache(selectedMarketLocal || undefined);
@@ -234,24 +213,6 @@ export default function HomeScreen() {
     xpRewardStreakBonus: XP_REWARDS.STREAK_BONUS,
     onDataRefresh: async () => {
       await Promise.all([fetchData(), refetchXP()]);
-      // Push the fresh streak straight to the widget the moment a lesson lands,
-      // reading it from the database so it is never one lesson behind.
-      if (user?.id) {
-        const widgetMarket = selectedMarketLocal || selectedMarket;
-        if (!widgetMarket) return;
-        const { data: fresh } = await supabase
-          .from('user_progress')
-          .select('current_streak, streak_expires_at')
-          .eq('user_id', user.id)
-          .eq('market_id', widgetMarket)
-          .maybeSingle();
-        syncLeoWidget({
-          streak: fresh?.current_streak ?? progress?.current_streak ?? 0,
-          lessonComplete: true,
-          expiresAt: fresh?.streak_expires_at ?? progress?.streak_expires_at,
-          market: getMarketName(widgetMarket),
-        });
-      }
     },
   });
 
@@ -519,10 +480,7 @@ export default function HomeScreen() {
               }}
             >
               <FoxMascot industry={selectedMarket || 'aerospace'} size={200} />
-              <View style={styles.speechBubble}>
-                <View style={styles.speechTail} />
-                <Text style={styles.speechText}>{greeting}</Text>
-              </View>
+              <SpeechBubble text={greeting} tail="left" tone="purple" style={styles.speechBubble} textStyle={styles.speechText} />
             </TouchableOpacity>
           </AnimatedSection>
 
@@ -563,17 +521,6 @@ export default function HomeScreen() {
               <Text style={styles.rescueLinkText}>No time? Take the 3-question rescue round</Text>
               <Feather name="chevron-right" size={14} color={COLORS.streak} />
             </TouchableOpacity>
-          )}
-
-          {/* ── Weekly nudge: put Leo on the home screen ── */}
-          {widgetNudge.visible && !session.showReader && (
-            <AnimatedSection delay={55}>
-              <WidgetNudgeCard
-                streak={streak}
-                onAdded={widgetNudge.markAdded}
-                onSnooze={widgetNudge.snooze}
-              />
-            </AnimatedSection>
           )}
 
           {/* ── Sunday recap ── */}
@@ -776,17 +723,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', marginBottom: 16,
   },
   speechBubble: {
-    backgroundColor: COLORS.bg1, borderRadius: 20,
-    paddingHorizontal: 20, paddingVertical: 12, marginTop: 8,
-    borderWidth: 1, borderColor: COLORS.border,
-    maxWidth: '85%', position: 'relative',
-  },
-  speechTail: {
-    position: 'absolute', top: -7, alignSelf: 'center', left: '50%', marginLeft: -7,
-    width: 0, height: 0,
-    borderLeftWidth: 7, borderRightWidth: 7, borderBottomWidth: 7,
-    borderLeftColor: 'transparent', borderRightColor: 'transparent',
-    borderBottomColor: COLORS.bg1,
+    maxWidth: '85%', marginTop: 8,
   },
   speechText: {
     ...TYPE.body, color: COLORS.textPrimary, textAlign: 'center', fontWeight: '500',

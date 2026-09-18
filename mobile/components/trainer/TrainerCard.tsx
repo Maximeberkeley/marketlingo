@@ -162,10 +162,10 @@ const leoStyles = StyleSheet.create({
   },
   bubble: {
     flex: 1,
-    borderRadius: 14,
-    borderTopLeftRadius: 4,
-    padding: 12,
-    borderWidth: 1,
+    borderRadius: 22,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderWidth: 1.5,
   },
   bubbleCorrect: {
     backgroundColor: 'rgba(34,197,94,0.08)',
