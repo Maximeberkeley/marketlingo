@@ -124,14 +124,22 @@ export function checkMechanism(slides: SlideLike[], id: string): BuildChainExerc
 }
 
 // ── 4. Claim check — true line vs. tampered lines from this lesson ─
+/** A year, a model designation or an ordinal is never a quantity to alter. */
+const isYear = (value: number) => Number.isInteger(value) && value >= 1900 && value <= 2099;
+
 function falsify(sentence: string): string | null {
-  const num = sentence.match(/\d{1,4}(?:[.,]\d{1,2})?/);
-  if (num) {
-    const raw = parseFloat(num[0].replace(',', '.'));
-    if (isFinite(raw) && raw > 0) {
-      const next = raw > 10 ? Math.max(1, Math.round(raw * 0.2)) : Math.round(raw * 7);
-      if (next !== raw) return sentence.replace(num[0], String(next));
-    }
+  // Alter a real quantity, walking every number so a date at the start of the
+  // sentence never becomes a nonsense year.
+  for (const match of sentence.matchAll(/\d{1,4}(?:[.,]\d{1,2})?/g)) {
+    const token = match[0];
+    const at = match.index ?? 0;
+    // Skip designations ("KC-46", "GPT-4") and years ("in 2024").
+    if (/[A-Za-z-]$/.test(sentence.slice(Math.max(0, at - 1), at))) continue;
+    const raw = parseFloat(token.replace(',', '.'));
+    if (!isFinite(raw) || raw <= 0 || isYear(raw)) continue;
+    const next = raw > 10 ? Math.max(1, Math.round(raw * 0.2)) : Math.round(raw * 7);
+    if (next === raw || isYear(next)) continue;
+    return sentence.slice(0, at) + String(next) + sentence.slice(at + token.length);
   }
   const lower = sentence.toLowerCase();
   for (const [from, to] of [[UP, DOWN], [DOWN, UP]] as const) {
