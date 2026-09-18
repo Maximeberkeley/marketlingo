@@ -1,9 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity, Image } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { tokens } from '../theme/tokens';
 import { playSound } from '../../lib/sounds';
+import { triggerHaptic } from '../../lib/haptics';
+import { useIntelHabit } from '../../hooks/useIntelHabit';
 
 interface Props {
   correct: number;
@@ -19,6 +22,8 @@ interface Props {
   doneLabel?: string;
   /** How many things the learner asked Leo during the lesson. */
   leoQuestions?: number;
+  /** Market the lesson belongs to — used for the intel nudge. */
+  marketId?: string;
 }
 
 interface Bonus {
@@ -60,7 +65,9 @@ export function LessonComplete({
   onDone,
   doneLabel = 'Continue',
   leoQuestions = 0,
+  marketId,
 }: Props) {
+  const intel = useIntelHabit(marketId);
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 100;
   const bonuses = useRef(computeBonuses(accuracy, bestCombo, heartsLeft, timeSpentSeconds)).current;
   const bonusXp = bonuses.reduce((sum, b) => sum + b.xp, 0);
@@ -126,6 +133,34 @@ export function LessonComplete({
         <Stat label="Correct" value={`${correct}/${total}`} />
         <Stat label="Time" value={formatTime(timeSpentSeconds)} />
       </View>
+
+      {/* Leo sends the learner into today's industry intel. */}
+      {!intel.loading && (
+        <TouchableOpacity
+          style={styles.intelCard}
+          activeOpacity={0.85}
+          onPress={() => {
+            triggerHaptic('medium');
+            onDone(totalXp);
+            router.push({ pathname: '/(tabs)/home', params: { intel: '1' } });
+          }}
+        >
+          <Image source={require('../../assets/leo-sticker.png')} style={styles.intelLeo} resizeMode="contain" />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.intelTitle}>
+              {intel.done
+                ? `All ${intel.target} stories read today. You're current.`
+                : `Now read ${intel.remaining} ${intel.remaining === 1 ? 'story' : 'stories'} from today's intel`}
+            </Text>
+            <Text style={styles.intelBody}>
+              {intel.done
+                ? 'Leo: "Go see what changed since this morning anyway."'
+                : `Leo: "The concept is yours. Now see it happening this week — ${intel.readToday}/${intel.target} today, +20 XP when you finish."`}
+            </Text>
+          </View>
+          <Feather name="chevron-right" size={18} color={tokens.color.accent} />
+        </TouchableOpacity>
+      )}
 
       <PrimaryButton label={doneLabel} onPress={() => onDone(totalXp)} style={styles.cta} />
     </View>
@@ -200,5 +235,20 @@ const styles = StyleSheet.create({
   },
   statValue: { fontSize: tokens.font.body, fontWeight: '800', color: tokens.color.text },
   statLabel: { fontSize: tokens.font.caption, color: tokens.color.textMuted, fontWeight: '600' },
-  cta: { alignSelf: 'stretch', marginTop: tokens.space.xl },
+  cta: { alignSelf: 'stretch', marginTop: tokens.space.lg },
+  intelCard: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: tokens.space.md,
+    marginTop: tokens.space.lg,
+    padding: tokens.space.md,
+    borderRadius: tokens.radius.lg,
+    borderWidth: 2,
+    borderColor: tokens.color.accent,
+    backgroundColor: tokens.color.accentSoft,
+  },
+  intelLeo: { width: 44, height: 44 },
+  intelTitle: { fontSize: tokens.font.caption + 2, fontWeight: '800', color: tokens.color.text },
+  intelBody: { fontSize: tokens.font.caption, color: tokens.color.textSecondary, marginTop: 2 },
 });

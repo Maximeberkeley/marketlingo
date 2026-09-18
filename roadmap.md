@@ -31,3 +31,9 @@
 ## Release
 - Version 1.0.8 / iOS build 119. Widgets deferred to a future update.
 - [ ] Rebuild and archive from `/Users/sophiehernandez/MarketLingo/mobile`.
+
+## New (Sept 18, 21:37)
+- [x] Weekly/monthly ranking showed only the current user — period XP now read from a shared view
+- [x] Daily intel habit: 3 stories a day, Leo sends learners there right after the lesson, +20 XP
+- [x] Restyled streak rescue + result to the Duolingo-grade reference (full-bleed gradient, giant streak number, white CTA, "Not now")
+- [~] AI curriculum rewrite batch running again (ai + aerospace, days 1-14, all four goals; 3 attempts per lesson)

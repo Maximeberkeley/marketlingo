@@ -86,20 +86,25 @@ export default function LeaderboardScreen() {
           .eq('market_id', market).order('total_xp', { ascending: false }).limit(50);
         if (xpData) await buildEntries(xpData, market);
       } else {
-        const now = new Date();
-        const since = new Date(now);
-        since.setDate(since.getDate() - (timeFilter === 'weekly' ? 7 : 30));
-        const { data: txns } = await supabase
-          .from('xp_transactions').select('user_id, xp_amount')
-          .eq('market_id', market).gte('created_at', since.toISOString());
-        if (txns) {
-          const userXPMap = new Map<string, number>();
-          txns.forEach((t) => userXPMap.set(t.user_id, (userXPMap.get(t.user_id) || 0) + t.xp_amount));
-          const sorted = Array.from(userXPMap.entries())
-            .sort((a, b) => b[1] - a[1]).slice(0, 50)
-            .map(([uid, total_xp]) => ({ user_id: uid, total_xp, current_level: 1 }));
-          await buildEntries(sorted, market);
-        }
+        // Period XP comes from a shared view: xp_transactions itself is owner-only,
+        // so reading it directly would only ever return the current user.
+        const column = timeFilter === 'weekly' ? 'weekly_xp' : 'monthly_xp';
+        const { data: periodData } = await supabase
+          .from('leaderboard_period_xp')
+          .select('user_id, weekly_xp, monthly_xp')
+          .eq('market_id', market)
+          .order(column, { ascending: false })
+          .limit(50);
+
+        const sorted = (periodData || [])
+          .map((row: any) => ({
+            user_id: row.user_id as string,
+            total_xp: Number(row[column]) || 0,
+            current_level: 1,
+          }))
+          .filter((row) => row.total_xp > 0)
+          .sort((a, b) => b.total_xp - a.total_xp);
+        await buildEntries(sorted, market);
       }
       setLoading(false);
     };

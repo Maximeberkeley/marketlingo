@@ -527,19 +527,19 @@ async function generateDayContent(
 
   const { system, user } = dayLessonPrompt(day, month, theme, topic, dayType, marketContext, persona);
 
-  // One retry: a day that fails the contract is regenerated, never saved thin.
+  // Up to three attempts: a day that fails the contract is rewritten, never saved thin.
   let lastProblems: string[] = [];
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (let attempt = 0; attempt < 3; attempt++) {
     const retryNote = attempt === 0
       ? ''
-      : `\n\nYour previous attempt was REJECTED for: ${lastProblems.join('; ')}. Fix every one of these and write the day again in full.`;
+      : `\n\nYour previous attempt was REJECTED for: ${lastProblems.join('; ')}. Fix every one of these and write the day again in full. The case beat MUST name a real company and carry at least two hard figures (a money amount, a percentage, a count or a date).`;
     const content = await callGateway(apiKey, system, user + retryNote);
     lastProblems = validateDayContent(content);
     if (lastProblems.length === 0) return content;
     console.warn(`Day ${day} (${goal}) attempt ${attempt + 1} rejected:`, lastProblems.join('; '));
   }
 
-  throw new Error(`Contract violation after retry: ${lastProblems.join('; ')}`);
+  throw new Error(`Contract violation after 3 attempts: ${lastProblems.join('; ')}`);
 }
 
 async function saveContent(

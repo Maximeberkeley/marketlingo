@@ -27,6 +27,7 @@ import { ImmersiveNewsOverlay } from './ImmersiveNewsOverlay';
 import { useAuth } from '../../hooks/useAuth';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
+import { useIntelHabit } from '../../hooks/useIntelHabit';
 
 // ── Types ──
 interface NewsItem {
@@ -44,6 +45,8 @@ interface NewsItem {
 interface DailyNewsProps {
   marketId: string;
   learningGoal?: string;
+  /** When true, opens the first story immediately (Leo sent them here). */
+  autoOpen?: boolean;
 }
 
 // ── Impact helper – only surfaces "high" items with an exclamation mark ──
@@ -778,7 +781,7 @@ function ArticleDetailSheet({
 }
 
 // ── Main Component ──
-export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
+export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNewsProps) {
   const { user } = useAuth();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -790,6 +793,16 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
   const [chatContext, setChatContext] = useState('');
   const [savedArticleIds, setSavedArticleIds] = useState<Set<string>>(new Set());
   const [quizArticle, setQuizArticle] = useState<NewsItem | null>(null);
+  const intel = useIntelHabit(marketId);
+  const autoOpened = useRef(false);
+
+  /** Open a story and count it toward today's 3 intel reads. */
+  const openStory = useCallback((items: NewsItem[], index: number) => {
+    const safe = index >= 0 ? index : 0;
+    setImmersiveIndex(safe);
+    const item = items[safe];
+    if (item) intel.recordRead(item.id);
+  }, [intel]);
 
   const kaiMentor: Mentor = getMentorForContext('news') || {
     id: 'kai', name: 'Kai', title: 'Market Analyst', expertise: ['markets'],
@@ -871,6 +884,13 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
 
   useEffect(() => { fetchNews(); }, [marketId]);
 
+  // Leo sent them straight here after a lesson: open the first story for them.
+  useEffect(() => {
+    if (!autoOpen || autoOpened.current || isLoading || news.length === 0) return;
+    autoOpened.current = true;
+    openStory(news, 0);
+  }, [autoOpen, isLoading, news, openStory]);
+
   // Save article to notebook
   const handleSaveToNotebook = async (item: NewsItem) => {
     if (!user) {
@@ -935,10 +955,34 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
             </Text>
           </View>
         </View>
-        <TouchableOpacity onPress={() => fetchNews(true)} disabled={isRefreshing} style={[s.refreshBtn, isRefreshing && { opacity: 0.5 }]}>
-          <Feather name="refresh-cw" size={14} color={COLORS.textMuted} />
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={[s.habitChip, intel.done && s.habitChipDone]}>
+            <Feather name={intel.done ? 'check' : 'target'} size={11} color={intel.done ? '#059669' : COLORS.accent} />
+            <Text style={[s.habitChipText, intel.done && { color: '#059669' }]}>
+              {intel.readToday}/{intel.target} today
+            </Text>
+          </View>
+          <TouchableOpacity onPress={() => fetchNews(true)} disabled={isRefreshing} style={[s.refreshBtn, isRefreshing && { opacity: 0.5 }]}>
+            <Feather name="refresh-cw" size={14} color={COLORS.textMuted} />
+          </TouchableOpacity>
+        </View>
       </View>
+
+      {/* Daily reading goal */}
+      {news.length > 0 && !isLoading && (
+        <View style={s.habitBar}>
+          <Text style={s.habitBarText}>
+            {intel.done
+              ? "Today's 3 stories read. You know what changed."
+              : `Read ${intel.remaining} more ${intel.remaining === 1 ? 'story' : 'stories'} today to stay current · +20 XP`}
+          </Text>
+          <View style={s.habitDots}>
+            {Array.from({ length: intel.target }).map((_, i) => (
+              <View key={i} style={[s.habitDot, i < intel.readToday && s.habitDotFilled]} />
+            ))}
+          </View>
+        </View>
+      )}
 
       {/* Loading */}
       {isLoading && (
@@ -969,8 +1013,7 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
           {/* Featured horizontal carousel */}
           {featured.length > 0 && (
             <FeaturedCarousel items={featured} onSelect={(item) => {
-              const idx = news.findIndex(n => n.id === item.id);
-              setImmersiveIndex(idx >= 0 ? idx : 0);
+              openStory(news, news.findIndex(n => n.id === item.id));
             }} />
           )}
 
@@ -991,8 +1034,7 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
                 item={item}
                 index={index}
                 onSelect={(item) => {
-                  const idx = news.findIndex(n => n.id === item.id);
-                  setImmersiveIndex(idx >= 0 ? idx : 0);
+                  openStory(news, news.findIndex(n => n.id === item.id));
                 }}
                 onAiAction={handleAiAction}
                 onSave={handleSaveToNotebook}
@@ -1030,6 +1072,7 @@ export function DailyNews({ marketId, learningGoal }: DailyNewsProps) {
           setChatContext(ctx);
           setChatNewsItem(article);
         }}
+        onArticleView={(article) => intel.recordRead(article.id)}
         marketId={marketId}
         learningGoal={learningGoal}
       />
@@ -1068,6 +1111,22 @@ const s = StyleSheet.create({
   headerTitle: { ...TYPE.h3, color: COLORS.textPrimary },
   headerSubtitle: { fontSize: 11, color: COLORS.textMuted },
   refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
+  habitChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999,
+    backgroundColor: 'rgba(99,102,241,0.10)',
+  },
+  habitChipDone: { backgroundColor: 'rgba(5,150,105,0.12)' },
+  habitChipText: { fontSize: 11, fontWeight: '800', color: COLORS.accent },
+  habitBar: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    gap: 10, marginBottom: 10, paddingHorizontal: 12, paddingVertical: 10,
+    borderRadius: 14, backgroundColor: COLORS.bg1,
+  },
+  habitBarText: { flex: 1, fontSize: 12, fontWeight: '700', color: COLORS.textSecondary },
+  habitDots: { flexDirection: 'row', gap: 4 },
+  habitDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.border },
+  habitDotFilled: { backgroundColor: COLORS.accent },
 
   featuredCard: { height: 220, borderRadius: 20, overflow: 'hidden', ...SHADOWS.md },
   featuredImage: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },

@@ -308,6 +308,7 @@ export function LessonScreen({
         timeSpentSeconds={timeSpentSeconds}
         streakDays={streakDays}
         doneLabel={doneLabel}
+        marketId={marketId}
         leoQuestions={leoMessages.filter(m => m.role === 'user').length}
         onDone={xp =>
           onFinish({

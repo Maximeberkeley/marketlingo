@@ -2703,6 +2703,23 @@ export type Database = {
         }
         Relationships: []
       }
+      leaderboard_period_xp: {
+        Row: {
+          market_id: string | null
+          monthly_xp: number | null
+          user_id: string | null
+          weekly_xp: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "xp_transactions_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leaderboard_progress: {
         Row: {
           current_streak: number | null
