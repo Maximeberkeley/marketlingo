@@ -81,6 +81,6 @@ const styles = StyleSheet.create({
   readButton: { minHeight: 62, flexDirection: 'row', alignItems: 'center', gap: 11, marginTop: 4, paddingHorizontal: 13, borderRadius: tokens.radius.md, backgroundColor: tokens.color.surface, borderWidth: 1, borderColor: tokens.color.border },
   readIcon: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.accentSoft },
   readCopy: { flex: 1 },
-  readTitle: { fontSize: 15, fontWeight: '850', color: tokens.color.text },
-  readNote: { marginTop: 2, fontSize: 11, fontWeight: '650', color: tokens.color.textMuted },
+  readTitle: { fontSize: 15, fontWeight: '800', color: tokens.color.text },
+  readNote: { marginTop: 2, fontSize: 11, fontWeight: '600', color: tokens.color.textMuted },
 });

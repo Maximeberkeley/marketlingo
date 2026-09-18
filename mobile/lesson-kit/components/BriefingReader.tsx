@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   scrollCue: { marginLeft: 'auto', fontSize: 11, fontWeight: '700', color: tokens.color.textMuted },
   title: { fontSize: 28, lineHeight: 34, fontWeight: '900', color: tokens.color.text },
   rule: { height: 1, backgroundColor: tokens.color.border, marginVertical: 24 },
-  lead: { fontSize: 19, lineHeight: 29, fontWeight: '650', color: tokens.color.text, marginBottom: 18 },
+  lead: { fontSize: 19, lineHeight: 29, fontWeight: '600', color: tokens.color.text, marginBottom: 18 },
   body: { fontSize: 17, lineHeight: 28, color: tokens.color.textSecondary, marginBottom: 18 },
   terms: { marginTop: 16, gap: 10 },
   sectionLabel: { fontSize: 11, fontWeight: '900', letterSpacing: 1.2, color: tokens.color.textMuted, marginBottom: 2 },
