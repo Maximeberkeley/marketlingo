@@ -1,18 +1,35 @@
-# MarketLingo v2 — From "buzz sentences" to a real learning tool
+# MarketLingo v2 — teach one thing a day, and prove it landed
 
 ## What is actually broken (verified in the live data)
 
-- **Lessons are too thin to teach.** Lesson text averages **274 characters** and never exceeds **450** across all 55,554 pieces of content. One paragraph per screen — enough for a buzz sentence, not for knowledge.
-- **Too broad per day, too shallow per idea.** Each day currently skims six different angles. Nothing is taught to the point of ownership.
-- **The games don't test the lesson.** They are built from separate pools (authored market packs, industry statistics, fact-check drills), not from the lesson just read — exactly what the tester reported.
+- **Content gets cut.** Text is written to a hard ceiling, so sentences end mid-phrase ("…that's where innovation of") and the reading view shows a stub.
+- **The games don't test the lesson.** They come from separate pools (authored market packs, industry statistics, fact-check drills), not from the lesson just read — exactly what the tester reported.
+- **Lessons are thin.** Text averages **274 characters**, never exceeds **450**, across all 55,554 pieces of content.
+- **Too broad per day.** Each day skims six angles; nothing is taught to the point of ownership.
 - **No promised outcome.** Only about **20 of 10,800** lessons carry learning objectives, so "your mission" falls back to slide titles.
-- **Content gets cut.** Written to a hard character ceiling, sentences end mid-phrase ("…that's where innovation of").
-- **Day logic is fragile.** Doing two lessons in one day, or opening day 2 while still on day 1, confuses progress, completion and the day counter.
+- **Day logic is fragile.** Two lessons in one day, or opening day 2 while day 1 is unfinished, confuses progress, completion and the day counter.
 - **Streak is a number, not an identity.**
 
-## 1. One concept a day, properly taught
+## The tension we are deliberately resolving
 
-The rule for the whole curriculum: **one idea per day, owned by the end of it.** Narrower, not longer — roughly the same five to seven minutes, but all of it spent on a single concept instead of six half-ideas.
+"Deep enough to be knowledge" and "light enough to do every day" pull against each other. The resolution is **narrower, not longer**: the same five to seven minutes, spent on **one** concept instead of six half-ideas, with extra depth strictly opt-in behind one tap. A beginner finishes in the same time as today. Nothing about the daily loop gets heavier.
+
+The tester's sharpest line was "I don't know who this is for." That is positioning, not depth — so this plan reduces configuration rather than adding knobs, and names one primary user.
+
+## Phase 0 — ship the two fixes that move the verdict (first)
+
+Small, safe, and they address the complaint directly:
+
+1. **No truncated content anywhere.** Remove the character ceilings that cut sentences; the reading view always shows the complete authored text.
+2. **The check is generated from the lesson it tests** — its own mechanism, figures, terms and the trap a beginner falls into. A wrong answer explains the real misconception and points to the passage. Market packs, statistics and drills stay, but move to Practice and spaced review where mixed recall belongs.
+3. **One primary user, named.** We pick the person the whole app speaks to (proposal: the ambitious non-expert breaking into an industry — career switcher, student, first-time founder — *not* the sector professional). The commitment screen, tone and difficulty default are written for them.
+4. **Day and session logic fix** (true blocker): one source of truth for "which day am I on, what is left today", so a second lesson counts as extra practice without double-advancing the day or double-paying XP, a future day resumes or previews explicitly, and a half-finished lesson resumes at the same beat without re-awarding XP or hearts.
+
+**Then re-run the exact same test with about five people who match that primary user, before building anything below.** If "it's not knowledge" persists for the target user, depth is the problem. If it doesn't, the rest of this plan is optional polish and we spend the effort elsewhere.
+
+Note: the criticism came from an AI-market lesson, so the first curriculum rewrite covers **AI and aerospace together** — otherwise a re-test on AI shows nothing.
+
+## Phase 1 — one concept a day, properly taught
 
 ```text
 Recap        the one thing you owned yesterday          ~15s
@@ -23,86 +40,58 @@ Check        questions written from today's own material ~1.5 min
 Takeaway     the sentence you keep, and tomorrow's hook  ~15s
 ```
 
-Depth is opt-in, never dumped: the deep-dive sits behind one tap for whoever wants the full mechanism and sources. A learner who reads only the cards still leaves with the concept.
+Substance arrives in two waves:
 
-## 2. Spread across six months properly
+1. **Deep layer on demand** — opening a lesson requests a substantive, sourced explanation of that single concept (mechanism chain, named case with figures, key terms, sources, links back and forward). Cached, written once, instant afterwards, opt-in.
+2. **Curriculum rewrite, market by market** — AI and aerospace first, then fintech. Generated against a stricter contract: one concept per day, no ceilings that cut sentences, mandatory objectives, mandatory recap and next-hook, mandatory named case with real figures, mandatory sources.
 
-The 180 days are sequenced as a real syllabus for each market and focus topic: foundations, then how value and money move, then players and power, then economics and numbers, then regulation and risk, then frontier and where the gaps are. Every week has a theme, every day one concept inside it, every seventh day is consolidation — no new idea, only retrieval and synthesis of the week's six.
+Three real objectives before every lesson; one earned takeaway after.
 
-Each day explicitly recaps the previous one and hooks the next, so the focus topic reads as a course, not 180 unrelated facts.
+## Phase 2 — spread across six months
 
-## 3. Real substance behind each concept
+180 days sequenced as a real syllabus per market: foundations → how value and money move → players and power → economics and numbers → regulation and risk → frontier and gaps. Each week a theme, each day one concept, every seventh day consolidation with no new idea — retrieval and synthesis only.
 
-Two waves:
+## Phase 3 — focus, without more knobs
 
-1. **Now — deep layer on demand.** Opening a lesson requests a substantive, sourced explanation of that single concept: the mechanism chain, the named case with figures, key terms, sources, and links back and forward. Cached, written once, instant afterwards. No truncation.
-2. **Then — rewrite market by market**, aerospace first, then fintech, then AI. Generated against a stricter contract: one concept per day, no character ceilings that cut sentences, mandatory objectives, mandatory recap and next-hook, mandatory named case with real figures, mandatory sources.
+Instead of goal × focus topic × level multiplying the surface area:
 
-## 4. The games test the lesson
+- The existing goal stays the single lens.
+- A **focus topic** is offered as one optional tap ("go deeper on launch economics?") after the first week, once the learner has context to choose — not another onboarding gate. Shipped for one market first and only extended if it's used.
+- The commitment screen states one concrete destination in the learner's words: "In 30 days you'll hold your own on this in a hiring conversation."
 
-Checks and games are generated **from that day's own material**: its mechanism, its case figures, its terms, the trap a beginner falls into. A wrong answer explains the real misconception and points to the passage that covers it. Market packs, statistics and drills remain, but move to Practice and spaced review where mixed recall belongs.
+## Phase 4 — a deliverable worth finishing
 
-Concept mastery stays deterministically scored; a missed concept returns in review days later.
+One living document per learner, built from their own answers and notes, shaped by their goal: idea dossier (found), interview brief (career), thesis sheet (invest), market map (explore). Completion percentage, grows daily, exportable. The weekly consolidation day asks for one line in their own words. Built only if the re-test says depth and outcome are what's missing.
 
-## 5. Goal plus focus topic
+## Phase 5 — streak that sells the identity
 
-A short second onboarding step after the market: a **focus topic** inside it (aerospace: launch economics, defense procurement, satellite data, propulsion and materials, air mobility — each market gets five to seven).
-
-- Goal (career, invest, found, explore) sets the lens; focus topic sets the subject.
-- The commitment screen names the destination: "In 30 days you'll hold your own on defense procurement in a hiring conversation."
-- Changeable monthly without losing streak or XP.
-- Three real objectives before every lesson; one earned takeaway after.
-
-## 6. Fix the day and session logic
-
-A single source of truth for "which day am I on and what is left today", so:
-
-- Finishing a second lesson in one day is allowed and counted as extra practice, and never double-advances the day or double-pays XP.
-- Opening a future day while the current one is unfinished either resumes the current day or is clearly presented as a preview — no silent state mixing.
-- Completion, streak, day counter and the daily record stay consistent, with the day resolved from the learner's start date and completion records rather than accumulated counters.
-- Re-entering a half-finished lesson resumes at the same beat without re-awarding XP or hearts.
-
-## 7. Goal-specific deliverable
-
-Learning accumulates into one living document per learner, built from their own answers and notes:
-
-- **Found** — Idea Dossier: market map, who owns which layer, the unclaimed gaps, shortlisted ideas, one written thesis with the next assumption to validate.
-- **Career** — Interview Brief: vocabulary owned, frameworks, their written case answers, questions to ask an interviewer.
-- **Invest** — Thesis Sheet: metrics that matter, red flags, companies tracked, their own call on each.
-- **Explore** — Market Map: how the industry fits together, surprising truths, players, what to watch.
-
-Each shows a completion percentage, grows daily, is exportable and shareable. The weekly consolidation day asks for one line in the learner's own words.
-
-## 8. Streak that sells the identity
-
-- **Identity**: "Commit to becoming fluent"; the streak reads as proof of becoming an insider in their focus topic.
-- **Loss**: the streak is framed as owned — countdown when today is unfinished, escalating Leo moods through the evening, one rescue.
+- **Identity**: "Commit to becoming fluent"; the streak reads as proof of becoming an insider, not a counter.
+- **Loss**: framed as owned — countdown when today is unfinished, escalating Leo moods through the evening, one rescue.
 - **Personality**: Leo remembers the market, the focus, and what they got wrong, and reacts to absence with attitude.
-- **Open loops**: dossier percentage, one concept awaiting review, "tomorrow: the company that proved everyone wrong".
+- **Open loops**: deliverable percentage, one concept awaiting review, "tomorrow: the company that proved everyone wrong".
 
 ## Technical notes
 
-- New tables: focus topics per market; cached deep-dive per lesson, goal and focus topic; generated checks linked to their source passage; deliverable documents with per-goal sections and entries. Row-level security scoped to the owner, with grants for the app roles.
-- Deep-dive and check generation in an edge function against a strict schema, keyed by lesson plus goal plus focus topic, cached; failure falls back to existing content so a lesson never blocks.
 - Day resolution consolidated into one module used by home, roadmap and the session flow, driven by start date plus completion records; XP and streak writes made idempotent per day and per lesson.
+- New tables: cached deep-dive per lesson and goal; generated checks linked to their source passage; deliverable documents with per-goal sections and entries; optional focus topics per market. Row-level security scoped to the owner, grants for the app roles.
+- Deep-dive and check generation in an edge function against a strict schema, cached by lesson and goal; failure falls back to existing content so a lesson never blocks.
 - Curriculum rewrite reuses the existing batch generation job with the new one-concept-per-day contract and per-market progress tracking.
 - Existing reading view, exercise renderer and Leo coaching are reused; the layered reader finally receives full text.
-- League, notes, and no-purchase constraints unchanged.
+- League, notes, review scheduling and the no-purchase constraints unchanged.
 
-## Sequence
+## Validation — outcome, not just QA
 
-1. Day and session logic fix (blocker — everything else builds on it).
-2. Focus topics, commitment screen, objectives before every lesson.
-3. One-concept lesson arc, deep layer on demand, checks generated from lesson content.
-4. Goal-specific deliverable and weekly consolidation.
-5. Streak identity, loss and open-loop system.
-6. Aerospace curriculum rewrite, then fintech, then AI.
+Feature checks:
 
-## Validation
+- Two lessons in one day, and day 2 opened during day 1: day counter, streak, XP and completion all stay correct.
+- No text ends mid-sentence anywhere; day N recaps N-1 and hooks N+1; day 7 introduces nothing new.
 
-- Two lessons in one day, and day 2 opened during day 1: day counter, streak, XP and completion stay correct.
-- An aerospace intermediate lesson teaches one concept a knowledgeable reader would call knowledge, and its questions are answerable only by someone who read it.
-- No text ends mid-sentence anywhere.
-- Day N recaps N-1 and hooks N+1 inside the same focus topic; day 7 introduces nothing new.
-- The dossier fills with the learner's own words and can be shared.
-- Review scheduling and league behaviour unchanged; typecheck and preview build green.
+Outcome checks (the ones that decide whether this worked):
+
+- Five testers matching the primary user run the same lesson-and-quiz test. Target: they can restate the concept and its mechanism unprompted afterwards, the quiz is answerable only from the lesson, and nobody says "I don't know who this is for".
+- Session length does not grow: the daily run still finishes in about five to seven minutes.
+- Daily completion and streak retention do not fall after the depth change.
+
+## Open question
+
+How many testers actually reported "too vague / not knowledge"? If it is one intermediate-level sector expert, Phase 0 plus the re-test is the right aggression and Phases 2 to 5 wait. If several target-profile users say it, we run the whole sequence.
