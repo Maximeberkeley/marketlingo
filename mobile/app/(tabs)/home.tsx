@@ -490,13 +490,10 @@ export default function HomeScreen() {
           totalXp={xpData?.total_xp || 0}
           level={xpData?.current_level || 1}
           lessonCompletedToday={lessonCompletedToday}
-          deliverableTitle={deliverable.template.title}
-          deliverableCompletion={deliverable.completion}
-          reviewDueCount={dueCount}
-          focusLabel={focusTopic.focusLabel}
+          arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
+          caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
           intelReadToday={intelHabit.readToday}
           intelTarget={intelHabit.target}
-          tomorrowTitle={tomorrowLesson?.title || null}
           rescueAvailable={showStreakWarning || criticalTimerActive}
           safeTop={insets.top}
           onOpenLesson={(stackId) => router.setParams({ openStackId: stackId })}
