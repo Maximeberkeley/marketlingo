@@ -13,6 +13,9 @@ Replace the current winding 180-day Course path with the attached section-based 
 - Previously unlocked lessons remain available and unfinished lessons remain intact.
 - If the local-day clock moves beyond Day 30 while Section 1 is incomplete, the clock continues normally but Section 2 stays locked. Completing the missing Section 1 lessons later unlocks Section 2 immediately without resetting dates, deleting work, skipping content, or changing the learner’s current day.
 - **Verified architecture conflict:** the current app has no independent section-completion lock; sections presently become available from the calendar day alone. Implement the requested lesson-completion gate as a derived access rule over existing completed lesson IDs, without changing stored progress or adding a second clock.
+- Apply that gate at every 30-day boundary. The global day continues advancing, while each section clamps its displayed day to its own range and never queries a nonexistent day.
+- If the global day belongs to a section blocked by an incomplete earlier section, Course focuses the most recently accessible section. That section shows its next unfinished eligible lesson, falling back to its final eligible day when appropriate.
+- When a section unlocks late, immediately recalculate its calendar-eligible lessons from the unchanged global day. Do not reset the clock or infer completion; every newly eligible lesson remains individually accessible from the section curriculum view.
 
 ## Course page
 
@@ -38,7 +41,7 @@ Replace the current winding 180-day Course path with the attached section-based 
 
 ## Module behavior
 
-- Resolve one authoritative displayed curriculum day from the existing local-day state and selected section.
+- Resolve one authoritative global day from the existing local-day state, then derive a bounded display day per section using its 30-day range, section access, and unfinished lessons.
 - Daily Lesson opens that day’s existing authored lesson through the current lesson goals and lesson reader flow.
 - Daily Arena and Deep Case open their existing experiences with the displayed day as context, using that day’s completed lesson material when available and retaining their existing grounded-content safety rules.
 - Intel opens the existing live-news destination and preserves date-based story freshness, the three-story habit, XP award, article actions, and reward deduplication. It shares the local-date boundary but never becomes a static curriculum lesson.
@@ -68,6 +71,7 @@ Replace the current winding 180-day Course path with the attached section-based 
 - Refactor `CourseJourney` into focused section header, five-module cluster, coin control, Leo center, and section curriculum components.
 - Reuse `dayMath`, `dayState`, `syllabus`, `useUserProgress`, `useHomeData`, and the existing session flow instead of duplicating timing or progress logic.
 - Derive section completion from completed lesson stack IDs matched to authored `day-N` curriculum records; late completion recalculates access immediately without mutating or reinterpreting stored progress.
+- Centralize section access and bounded-day derivation in one pure helper reused by the section cluster and curriculum preview, preventing boundary-specific exceptions or mismatched navigation.
 - Pass explicit section/day context through existing routes for Lesson, Arena, and Deep Case while retaining lesson-derived exercise generation.
 - Keep Notes on its existing route and data tables, and reuse the current Leo chat overlay from Home.
 - Keep all implementation under `/mobile`; no web redesign, database migration, curriculum rewrite, or unrelated screen changes.
@@ -76,6 +80,8 @@ Replace the current winding 180-day Course path with the attached section-based 
 
 - Test first use, mid-section, day 30, day 31 with Section 1 incomplete, Section 1 complete, and fully completed sections.
 - Test Day 31+ with missing Section 1 lessons, then complete each missing lesson and confirm Section 2 unlocks only after the thirtieth lesson while the original course clock and unfinished records remain unchanged.
+- Repeat boundary tests at Days 60/61, 90/91, 120/121, and 150/151, including multiple overdue locked sections and late unlocks.
+- Confirm no section requests a day outside its own 30-day range; the focused section is always the latest accessible one, and its cluster selects a valid unfinished or final eligible day.
 - Confirm all daily actions use the same local calendar boundary and completion never advances the day.
 - Confirm the next section unlocks only after all 30 prior-section lessons are complete.
 - Confirm past lessons remain available, unfinished lessons remain stored, and future content stays blocked.
