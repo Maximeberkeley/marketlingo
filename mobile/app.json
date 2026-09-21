@@ -16,7 +16,7 @@
       "supportsTablet": false,
       "appleTeamId": "PM32G4952G",
       "bundleIdentifier": "app.marketlingo.aerospace",
-      "buildNumber": "120",
+      "buildNumber": "121",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "MarketLingo needs microphone access to record your interview responses in the Mock Lab for AI feedback.",
