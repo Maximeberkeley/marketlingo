@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Alert,
   Animated,
-  Dimensions,
   FlatList,
   Image,
+  Modal,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -16,29 +18,17 @@ import { supabase } from '../../lib/supabase';
 import { goalContentTag } from '../../lib/goals';
 import { getMarketName } from '../../lib/markets';
 import { dayPromise, seasonThemes, syllabusDay, TOTAL_DAYS } from '../../lib/syllabus';
+import { latestAccessibleSection, resolveCourseSections, SectionAccess } from '../../lib/courseSections';
 import { triggerHaptic } from '../../lib/haptics';
 import { playSound } from '../../lib/sounds';
 import { StreakBadge } from '../ui/StreakBadge';
 import { XPBadge } from '../ui/XPBadge';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const NODE_ROW_HEIGHT = 116;
-const SEASON_HEADER_HEIGHT = 142;
-
-const COURSE_COLORS = [
-  { main: '#0EA5E9', deep: '#0369A1', soft: 'rgba(14,165,233,0.12)' },
-  { main: '#8B5CF6', deep: '#6D28D9', soft: 'rgba(139,92,246,0.12)' },
-  { main: '#F59E0B', deep: '#B45309', soft: 'rgba(245,158,11,0.12)' },
-  { main: '#10B981', deep: '#047857', soft: 'rgba(16,185,129,0.12)' },
-  { main: '#EC4899', deep: '#BE185D', soft: 'rgba(236,72,153,0.12)' },
-  { main: '#F97316', deep: '#C2410C', soft: 'rgba(249,115,22,0.12)' },
-];
-
-const PATH_X = [0.5, 0.7, 0.78, 0.64, 0.4, 0.22, 0.31];
+import { LeoCharacter } from '../mascot/LeoCharacter';
 
 interface CourseLesson {
   day: number;
   title: string;
+  description: string;
   stackId?: string;
   completed: boolean;
 }
@@ -52,36 +42,256 @@ interface CourseJourneyProps {
   totalXp: number;
   level: number;
   lessonCompletedToday: boolean;
-  deliverableTitle: string;
-  deliverableCompletion: number;
-  reviewDueCount: number;
-  focusLabel?: string | null;
+  arenaCompletedToday?: boolean;
+  caseCompletedToday?: boolean;
   intelReadToday: number;
   intelTarget: number;
-  tomorrowTitle?: string | null;
   rescueAvailable?: boolean;
   safeTop: number;
   onOpenLesson: (stackId: string) => void;
-  onAskLeo: () => void;
+  onAskLeo: (day?: number) => void;
 }
 
-function dayPosition(day: number) {
-  const usable = Math.max(250, SCREEN_WIDTH - 104);
-  return 52 + usable * PATH_X[(day - 1) % PATH_X.length];
+type ModuleKind = 'lesson' | 'arena' | 'case' | 'intel' | 'notes';
+
+const MODULES: Array<{
+  kind: ModuleKind;
+  label: string;
+  icon: keyof typeof Feather.glyphMap;
+  position: object;
+}> = [
+  { kind: 'lesson', label: 'Daily Lesson', icon: 'book-open', position: { top: 6, left: '50%', marginLeft: -42 } },
+  { kind: 'arena', label: 'Daily Arena', icon: 'target', position: { top: 92, right: 8 } },
+  { kind: 'case', label: 'Deep Case', icon: 'help-circle', position: { bottom: 6, right: 44 } },
+  { kind: 'intel', label: 'Intel', icon: 'radio', position: { bottom: 6, left: 44 } },
+  { kind: 'notes', label: 'Notes', icon: 'edit-3', position: { top: 92, left: 8 } },
+];
+
+function SectionHeader({
+  section,
+  title,
+  onPress,
+}: {
+  section: SectionAccess;
+  title: string;
+  onPress: () => void;
+}) {
+  return (
+    <TouchableOpacity
+      style={[styles.sectionHeader, !section.unlocked && styles.sectionHeaderLocked]}
+      onPress={onPress}
+      activeOpacity={0.9}
+      accessibilityRole="button"
+      accessibilityLabel={`Preview Section ${section.index + 1}, ${title}. ${section.completedCount} of 30 lessons complete`}
+    >
+      <View style={styles.sectionHeaderCopy}>
+        <Text style={styles.sectionEyebrow}>SECTION {section.index + 1}</Text>
+        <Text style={styles.sectionTitle} numberOfLines={2}>{title}</Text>
+        <Text style={styles.sectionProgress}>{section.completedCount} / 30 lessons</Text>
+        <View style={styles.sectionTrack}>
+          <View style={[styles.sectionFill, { width: `${(section.completedCount / 30) * 100}%` }]} />
+        </View>
+      </View>
+      <View style={styles.headerArrow}>
+        <Feather name="chevron-right" size={26} color={COLORS.textOnAccent} />
+      </View>
+    </TouchableOpacity>
+  );
 }
 
-function connectorStyle(day: number) {
-  const from = dayPosition(day);
-  const to = dayPosition(day + 1);
-  const delta = to - from;
-  const length = Math.sqrt(delta * delta + NODE_ROW_HEIGHT * NODE_ROW_HEIGHT);
-  const angle = `${Math.atan2(NODE_ROW_HEIGHT, delta) * (180 / Math.PI)}deg`;
-  return {
-    width: length,
-    left: (from + to - length) / 2,
-    top: (NODE_ROW_HEIGHT - 7) / 2,
-    transform: [{ rotate: angle }],
+function Coin({
+  label,
+  icon,
+  position,
+  locked,
+  completed,
+  onPress,
+}: {
+  label: string;
+  icon: keyof typeof Feather.glyphMap;
+  position: object;
+  locked: boolean;
+  completed: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <View style={[styles.coinPosition, position]}>
+      <TouchableOpacity
+        style={[styles.coinShadow, locked && styles.coinLocked]}
+        onPress={onPress}
+        activeOpacity={0.82}
+        accessibilityRole="button"
+        accessibilityLabel={`${label}${locked ? ', locked' : completed ? ', complete' : ''}`}
+        accessibilityState={{ disabled: locked }}
+      >
+        <View style={[styles.coinFace, locked && styles.coinFaceLocked]}>
+          <View style={styles.coinShine} />
+          <Feather
+            name={locked ? 'lock' : completed ? 'check' : icon}
+            size={locked ? 23 : 29}
+            color={locked ? COLORS.textMuted : COLORS.textOnAccent}
+          />
+        </View>
+      </TouchableOpacity>
+      <Text style={[styles.coinLabel, locked && styles.lockedText]} numberOfLines={1}>{label}</Text>
+    </View>
+  );
+}
+
+function SectionCluster({
+  section,
+  lesson,
+  title,
+  weekTitle,
+  activeSection,
+  lessonCompletedToday,
+  arenaCompletedToday,
+  caseCompletedToday,
+  intelDone,
+  onModule,
+  onLeo,
+  onHeader,
+}: {
+  section: SectionAccess;
+  lesson?: CourseLesson;
+  title: string;
+  weekTitle: string;
+  activeSection: boolean;
+  lessonCompletedToday: boolean;
+  arenaCompletedToday: boolean;
+  caseCompletedToday: boolean;
+  intelDone: boolean;
+  onModule: (kind: ModuleKind) => void;
+  onLeo: () => void;
+  onHeader: () => void;
+}) {
+  const moduleComplete = (kind: ModuleKind) => {
+    if (!activeSection) return kind === 'lesson' && Boolean(lesson?.completed);
+    if (kind === 'lesson') return lessonCompletedToday || Boolean(lesson?.completed);
+    if (kind === 'arena') return arenaCompletedToday;
+    if (kind === 'case') return caseCompletedToday;
+    if (kind === 'intel') return intelDone;
+    return false;
   };
+
+  return (
+    <View style={styles.sectionBlock}>
+      <SectionHeader section={section} title={title} onPress={onHeader} />
+      <View style={styles.weekHeading}>
+        <View>
+          <Text style={styles.weekEyebrow}>{section.unlocked ? `DAY ${section.displayDay}` : `DAYS ${section.startDay}–${section.endDay}`}</Text>
+          <Text style={styles.weekTitle} numberOfLines={2}>{weekTitle}</Text>
+        </View>
+        {!section.unlocked ? (
+          <View style={styles.lockPill}>
+            <Feather name="lock" size={12} color={COLORS.textMuted} />
+            <Text style={styles.lockPillText}>Finish Section {section.index}</Text>
+          </View>
+        ) : null}
+      </View>
+
+      <View style={[styles.cluster, !section.unlocked && styles.clusterLocked]}>
+        <View style={styles.orbit} />
+        {MODULES.map(module => {
+          // Notes is persistent and remains usable; the daily modules obey section access.
+          const locked = !section.unlocked && module.kind !== 'notes';
+          return (
+            <Coin
+              key={module.kind}
+              label={module.label}
+              icon={module.icon}
+              position={module.position}
+              locked={locked}
+              completed={moduleComplete(module.kind)}
+              onPress={() => onModule(module.kind)}
+            />
+          );
+        })}
+        <TouchableOpacity
+          style={styles.leoCenter}
+          onPress={onLeo}
+          activeOpacity={0.82}
+          accessibilityRole="button"
+          accessibilityLabel={`Ask Leo about ${title}`}
+        >
+          <LeoCharacter size="lg" animation={section.unlocked ? 'idle' : 'sleeping'} />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+function CurriculumPreview({
+  visible,
+  section,
+  title,
+  lessons,
+  currentDay,
+  onClose,
+  onOpenLesson,
+}: {
+  visible: boolean;
+  section: SectionAccess | null;
+  title: string;
+  lessons: CourseLesson[];
+  currentDay: number;
+  onClose: () => void;
+  onOpenLesson: (lesson: CourseLesson) => void;
+}) {
+  if (!section) return null;
+  const sectionLessons = lessons.filter(item => item.day >= section.startDay && item.day <= section.endDay);
+
+  return (
+    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+      <View style={styles.previewScreen}>
+        <View style={styles.previewHeader}>
+          <View style={styles.previewHeadingCopy}>
+            <Text style={styles.previewEyebrow}>SECTION {section.index + 1} · 30 DAYS</Text>
+            <Text style={styles.previewTitle} numberOfLines={2}>{title}</Text>
+          </View>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose} accessibilityLabel="Close curriculum">
+            <Feather name="x" size={22} color={COLORS.textPrimary} />
+          </TouchableOpacity>
+        </View>
+        <ScrollView contentContainerStyle={styles.previewList} showsVerticalScrollIndicator={false}>
+          {!section.unlocked ? (
+            <View style={styles.previewNotice}>
+              <Feather name="eye" size={18} color={COLORS.courseHeader} />
+              <Text style={styles.previewNoticeText}>Preview the curriculum now. Lessons open after the previous section’s 30 lessons are complete.</Text>
+            </View>
+          ) : null}
+          {sectionLessons.map(item => {
+            const calendarLocked = item.day > currentDay;
+            const locked = !section.unlocked || calendarLocked || !item.stackId;
+            return (
+              <TouchableOpacity
+                key={item.day}
+                style={[styles.lessonRow, locked && styles.lessonRowLocked]}
+                disabled={locked}
+                onPress={() => onOpenLesson(item)}
+                accessibilityRole="button"
+                accessibilityLabel={`Day ${item.day}, ${item.title}${locked ? ', locked' : item.completed ? ', complete' : ''}`}
+                accessibilityState={{ disabled: locked }}
+              >
+                <View style={[styles.dayCircle, item.completed && styles.dayCircleComplete]}>
+                  {item.completed ? (
+                    <Feather name="check" size={15} color={COLORS.textOnAccent} />
+                  ) : (
+                    <Text style={[styles.dayNumber, locked && styles.lockedText]}>{item.day}</Text>
+                  )}
+                </View>
+                <View style={styles.lessonCopy}>
+                  <Text style={[styles.lessonTitle, locked && styles.lockedText]} numberOfLines={2}>{item.title}</Text>
+                  <Text style={styles.lessonDescription} numberOfLines={2}>{item.description}</Text>
+                </View>
+                <Feather name={locked ? 'lock' : 'chevron-right'} size={17} color={locked ? COLORS.textMuted : COLORS.courseHeader} />
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
+    </Modal>
+  );
 }
 
 export function CourseJourney({
@@ -93,41 +303,22 @@ export function CourseJourney({
   totalXp,
   level,
   lessonCompletedToday,
-  deliverableTitle,
-  deliverableCompletion,
-  reviewDueCount,
-  focusLabel,
+  arenaCompletedToday = false,
+  caseCompletedToday = false,
   intelReadToday,
   intelTarget,
-  tomorrowTitle,
   rescueAvailable = false,
   safeTop,
   onOpenLesson,
   onAskLeo,
 }: CourseJourneyProps) {
-  const listRef = useRef<FlatList<CourseLesson>>(null);
-  const pulse = useRef(new Animated.Value(0)).current;
+  const listRef = useRef<FlatList<SectionAccess>>(null);
   const [lessons, setLessons] = useState<CourseLesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [loadKey, setLoadKey] = useState(0);
-
+  const [previewSection, setPreviewSection] = useState<SectionAccess | null>(null);
   const themes = useMemo(() => seasonThemes(marketId), [marketId]);
-  const activePlan = syllabusDay(marketId, currentDay);
-  const activeColor = COURSE_COLORS[activePlan.season - 1] ?? COURSE_COLORS[0];
-  const weekStart = Math.floor((currentDay - 1) / 7) * 7 + 1;
-  const weekEnd = Math.min(TOTAL_DAYS, weekStart + 6);
-
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulse, { toValue: 1, duration: 1100, useNativeDriver: true }),
-        Animated.timing(pulse, { toValue: 0, duration: 1100, useNativeDriver: true }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [pulse]);
 
   useEffect(() => {
     let active = true;
@@ -141,7 +332,6 @@ export function CourseJourney({
         .contains('tags', ['MICRO_LESSON'])
         .not('published_at', 'is', null)
         .order('created_at', { ascending: false });
-
       if (!active) return;
       if (error) {
         setLoadError(true);
@@ -153,26 +343,24 @@ export function CourseJourney({
       const byDay = new Map<number, { id: string; title: string; goalMatch: boolean }>();
       const completedByDay = new Map<number, boolean>();
       const completed = new Set(completedStackIds);
-
       (data || []).forEach((stack: any) => {
         const tags = Array.isArray(stack.tags) ? stack.tags : [];
-        const tag = tags.find((value: string) => value.startsWith('day-'));
+        const tag = tags.find((value: string) => /^day-\d+$/.test(value));
         const day = tag ? Number(tag.slice(4)) : NaN;
         if (!Number.isFinite(day) || day < 1 || day > TOTAL_DAYS) return;
         if (completed.has(stack.id)) completedByDay.set(day, true);
         const goalMatch = tags.includes(goalTag);
         const existing = byDay.get(day);
-        if (!existing || (goalMatch && !existing.goalMatch)) {
-          byDay.set(day, { id: stack.id, title: stack.title, goalMatch });
-        }
+        if (!existing || (goalMatch && !existing.goalMatch)) byDay.set(day, { id: stack.id, title: stack.title, goalMatch });
       });
-
       setLessons(Array.from({ length: TOTAL_DAYS }, (_, index) => {
         const day = index + 1;
         const lesson = byDay.get(day);
+        const plan = syllabusDay(marketId, day);
         return {
           day,
           title: lesson?.title || dayPromise(marketId, day),
+          description: plan.isConsolidation ? 'Review the week and explain one idea in your own words.' : plan.facet.promise,
           stackId: lesson?.id,
           completed: completedByDay.get(day) || false,
         };
@@ -183,142 +371,54 @@ export function CourseJourney({
     return () => { active = false; };
   }, [marketId, learningGoal, completedStackIds, loadKey]);
 
+  const completedDays = useMemo(() => new Set(lessons.filter(item => item.completed).map(item => item.day)), [lessons]);
+  const sections = useMemo(() => resolveCourseSections(currentDay, completedDays), [currentDay, completedDays]);
+  const focusedSectionIndex = useMemo(() => {
+    const calendarSection = Math.min(sections.length - 1, Math.floor((Math.max(1, currentDay) - 1) / 30));
+    return sections[calendarSection]?.unlocked ? calendarSection : latestAccessibleSection(sections);
+  }, [currentDay, sections]);
+
   useEffect(() => {
-    if (loading || lessons.length === 0) return;
-    const timer = setTimeout(() => {
-      listRef.current?.scrollToIndex({ index: Math.max(0, currentDay - 1), animated: false, viewPosition: 0.38 });
-    }, 80);
+    if (loading || sections.length === 0) return;
+    const timer = setTimeout(() => listRef.current?.scrollToIndex({ index: focusedSectionIndex, animated: false, viewPosition: 0.04 }), 80);
     return () => clearTimeout(timer);
-  }, [currentDay, lessons.length, loading]);
+  }, [focusedSectionIndex, loading, sections.length]);
 
-  const openLesson = (lesson: CourseLesson) => {
-    // Calendar days unlock permanently at local midnight. Completion never
-    // controls access, so a learner can catch up without corrupting "today".
-    const canOpen = lesson.day <= currentDay;
-    if (!canOpen || !lesson.stackId) return;
-    triggerHaptic(lesson.day === currentDay ? 'medium' : 'light');
+  const lockedMessage = (section: SectionAccess) => {
+    triggerHaptic('warning');
+    Alert.alert('Section locked', `Complete all 30 lessons in Section ${section.index} to unlock this section. Your course clock and unfinished work will not reset.`);
+  };
+
+  const handleModule = (section: SectionAccess, lesson: CourseLesson | undefined, kind: ModuleKind) => {
+    if (kind === 'notes') {
+      triggerHaptic('selection');
+      playSound('tap').catch(() => {});
+      router.push('/notes');
+      return;
+    }
+    if (!section.unlocked) {
+      lockedMessage(section);
+      return;
+    }
+    triggerHaptic('light');
     playSound('tap').catch(() => {});
-    onOpenLesson(lesson.stackId);
-  };
-
-  const renderSeasonHeader = (day: number) => {
-    if ((day - 1) % 30 !== 0) return null;
-    const season = Math.floor((day - 1) / 30);
-    const palette = COURSE_COLORS[season] ?? COURSE_COLORS[0];
-    const isActive = season === activePlan.season - 1;
-    return (
-      <View style={[styles.seasonHeader, { backgroundColor: palette.deep }]}>
-        <View style={styles.seasonCopy}>
-          <Text style={styles.seasonEyebrow}>SEASON {season + 1} · DAYS {day}–{Math.min(day + 29, TOTAL_DAYS)}</Text>
-          <Text style={styles.seasonTitle} numberOfLines={2}>{themes[season] || `Season ${season + 1}`}</Text>
-          <Text style={styles.seasonSubtitle}>Five territories. One idea at a time.</Text>
-        </View>
-        <View style={[styles.seasonSeal, { borderColor: palette.main }]}>
-          <Feather name={isActive ? 'navigation' : season < activePlan.season - 1 ? 'check' : 'flag'} size={21} color={COLORS.textPrimary} />
-        </View>
-      </View>
-    );
-  };
-
-  const renderItem = ({ item }: { item: CourseLesson }) => {
-    const plan = syllabusDay(marketId, item.day);
-    const palette = COURSE_COLORS[plan.season - 1] ?? COURSE_COLORS[0];
-    const isToday = item.day === currentDay;
-    const isFuture = item.day > currentDay;
-    const isMissed = item.day < currentDay && !item.completed;
-    const isUnavailable = !item.stackId;
-    const isReview = plan.isConsolidation;
-    const isMilestone = item.day % 15 === 0 && !isReview;
-    const x = dayPosition(item.day);
-    const nodeSize = isToday ? 78 : 62;
-    const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.13] });
-    const pulseOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.34, 0] });
-
-    return (
-      <View>
-        {renderSeasonHeader(item.day)}
-        <View style={styles.nodeRow}>
-          {item.day < TOTAL_DAYS && <View style={[styles.connector, connectorStyle(item.day), { backgroundColor: item.completed ? palette.main : COLORS.border }]} />}
-
-          {isToday && (
-            <Animated.View
-              style={[
-                styles.pulseRing,
-                {
-                  left: x - (nodeSize + 18) / 2,
-                  width: nodeSize + 18,
-                  height: nodeSize + 18,
-                  borderRadius: (nodeSize + 18) / 2,
-                  borderColor: palette.main,
-                  opacity: pulseOpacity,
-                  transform: [{ scale: pulseScale }],
-                },
-              ]}
-            />
-          )}
-
-          <TouchableOpacity
-            activeOpacity={isFuture || isUnavailable ? 1 : 0.8}
-            onPress={() => openLesson(item)}
-            accessibilityRole="button"
-            accessibilityLabel={`${isToday ? 'Today, ' : ''}Day ${item.day}: ${item.title}${isUnavailable ? ', unavailable' : isFuture ? ', locked' : ''}`}
-            accessibilityState={{ disabled: isFuture || isUnavailable }}
-            style={[
-              styles.node,
-              {
-                left: x - nodeSize / 2,
-                width: nodeSize,
-                height: nodeSize,
-                borderRadius: nodeSize / 2,
-                backgroundColor: item.completed || (isToday && !isUnavailable) ? palette.main : isMissed ? palette.soft : COLORS.bg2,
-                borderColor: isFuture || isUnavailable ? COLORS.border : isMissed ? palette.main : palette.deep,
-                shadowColor: item.completed || isToday ? palette.deep : COLORS.cardShadow,
-              },
-              isToday && styles.todayNode,
-            ]}
-          >
-            <View style={[styles.nodeHighlight, { width: nodeSize * 0.56 }]} />
-            {item.completed ? (
-              <Feather name="check" size={isToday ? 28 : 23} color={COLORS.textOnAccent} />
-            ) : isUnavailable ? (
-              <Feather name="clock" size={18} color={COLORS.textMuted} />
-            ) : isReview ? (
-              <Feather name="refresh-cw" size={isToday ? 27 : 21} color={isToday ? '#FFFFFF' : COLORS.textMuted} />
-            ) : isMilestone ? (
-              <Feather name="briefcase" size={isToday ? 28 : 22} color={isToday ? '#FFFFFF' : COLORS.textMuted} />
-            ) : isFuture ? (
-              <Feather name="lock" size={18} color={COLORS.textMuted} />
-            ) : (
-              <Feather name={isMissed ? 'corner-up-left' : 'play'} size={isMissed ? 22 : 27} color={isMissed ? palette.main : COLORS.textOnAccent} style={isMissed ? undefined : { marginLeft: 3 }} />
-            )}
-          </TouchableOpacity>
-
-          {isToday && (
-            <View style={[styles.todayLabel, x > SCREEN_WIDTH * 0.56 ? styles.todayLabelLeft : styles.todayLabelRight]}>
-                <Text style={[styles.todayEyebrow, { color: palette.main }]}>{isUnavailable ? 'BEING PREPARED' : lessonCompletedToday ? 'OWNED TODAY' : 'YOUR NEXT MOVE'}</Text>
-              <Text style={styles.todayTitle} numberOfLines={3}>{item.title}</Text>
-              <Text style={styles.todayMeta}>Day {item.day} · {dayPromise(marketId, item.day)}</Text>
-            </View>
-          )}
-
-          {isToday && (
-            <TouchableOpacity style={[styles.leoMarker, x > SCREEN_WIDTH * 0.56 ? styles.leoLeft : styles.leoRight]} onPress={onAskLeo} activeOpacity={0.82}>
-              <Image source={require('../../assets/mascot/leo-reading.png')} style={styles.leoImage} resizeMode="contain" />
-              <View style={[styles.leoBubble, { borderColor: palette.main }]}>
-                <Text style={styles.leoBubbleText}>{lessonCompletedToday ? 'Strong. Review it?' : 'This one matters.'}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
-    );
+    if (kind === 'lesson') {
+      if (lesson?.stackId && lesson.day <= currentDay) onOpenLesson(lesson.stackId);
+      else Alert.alert('Lesson unavailable', 'This lesson is not ready yet. Your progress is safe.');
+    } else if (kind === 'arena') {
+      router.push({ pathname: '/arena', params: { day: String(section.displayDay) } });
+    } else if (kind === 'case') {
+      router.push({ pathname: '/deep-case', params: { day: String(section.displayDay) } });
+    } else if (kind === 'intel') {
+      router.push('/(tabs)/roadmap');
+    }
   };
 
   if (loading) {
     return (
       <View style={styles.loading}>
-        <View style={[styles.loadingNode, { backgroundColor: activeColor.soft }]} />
-        <Text style={styles.loadingText}>Charting your course…</Text>
+        <View style={styles.loadingCoin} />
+        <Text style={styles.loadingText}>Building your course…</Text>
       </View>
     );
   }
@@ -329,11 +429,7 @@ export function CourseJourney({
         <Feather name="wifi-off" size={28} color={COLORS.textMuted} />
         <Text style={styles.emptyTitle}>Your course could not load</Text>
         <Text style={styles.loadingText}>Your progress is safe. Reconnect and try again.</Text>
-        <TouchableOpacity
-          style={[styles.retryButton, { backgroundColor: activeColor.main }]}
-          onPress={() => { triggerHaptic('selection'); setLoadKey(key => key + 1); }}
-          activeOpacity={0.85}
-        >
+        <TouchableOpacity style={styles.retryButton} onPress={() => setLoadKey(key => key + 1)}>
           <Text style={styles.retryText}>Try again</Text>
         </TouchableOpacity>
       </View>
@@ -344,167 +440,121 @@ export function CourseJourney({
     <View style={styles.container}>
       <FlatList
         ref={listRef}
-        data={lessons}
-        keyExtractor={(item) => String(item.day)}
-        renderItem={renderItem}
+        data={sections}
+        keyExtractor={item => String(item.index)}
         showsVerticalScrollIndicator={false}
-        initialNumToRender={12}
-        maxToRenderPerBatch={16}
-        windowSize={9}
-        onScrollToIndexFailed={({ index }) => {
-          listRef.current?.scrollToOffset({ offset: Math.max(0, index * NODE_ROW_HEIGHT), animated: false });
-        }}
+        initialNumToRender={3}
+        contentContainerStyle={styles.listContent}
+        onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: Math.max(0, index * 540), animated: false })}
         ListHeaderComponent={(
-          <View style={[styles.header, { paddingTop: safeTop + 10 }]}>
-            <View style={styles.topBar}>
-              <View>
-                <Text style={styles.courseLabel}>MY COURSE</Text>
-                <Text style={styles.marketName}>{getMarketName(marketId)}</Text>
-              </View>
-              <View style={styles.badges}>
-          <TouchableOpacity
-            disabled={!rescueAvailable}
-            onPress={() => { triggerHaptic('warning'); router.push('/streak-rescue'); }}
-            accessibilityRole={rescueAvailable ? 'button' : undefined}
-            accessibilityLabel={rescueAvailable ? `Rescue your ${streak} day streak` : undefined}
-          >
-            <StreakBadge count={streak} />
-          </TouchableOpacity>
-                <XPBadge xp={totalXp} level={level} />
-              </View>
+          <View style={[styles.topHeader, { paddingTop: safeTop + 10 }]}>
+            <View>
+              <Text style={styles.courseLabel}>MY COURSE</Text>
+              <Text style={styles.marketName}>{getMarketName(marketId)}</Text>
             </View>
-            <View style={[styles.weekBand, { borderColor: activeColor.main }]}> 
-              <View style={styles.weekBandTop}>
-                <Text style={[styles.weekEyebrow, { color: activeColor.main }]}>WEEK {Math.ceil(currentDay / 7)} · DAYS {weekStart}–{weekEnd}</Text>
-                <Text style={styles.weekCount}>{Math.min(7, currentDay - weekStart + (lessonCompletedToday ? 1 : 0))}/7</Text>
-              </View>
-              <Text style={styles.weekTitle}>{activePlan.seasonTheme}</Text>
-              <Text style={styles.weekPromise}>{dayPromise(marketId, currentDay)} today</Text>
-              <View style={styles.weekTicks}>
-                {Array.from({ length: weekEnd - weekStart + 1 }, (_, index) => {
-                  const day = weekStart + index;
-                  const done = day < currentDay || (day === currentDay && lessonCompletedToday);
-                  return <View key={day} style={[styles.weekTick, done && { backgroundColor: activeColor.main }]} />;
-                })}
-              </View>
-            </View>
-            <View style={styles.missionRail}>
-              <TouchableOpacity style={styles.missionPrimary} onPress={() => router.push('/deliverable')} activeOpacity={0.82}>
-                <View style={[styles.missionIcon, { backgroundColor: activeColor.soft }]}>
-                  <Feather name="file-text" size={17} color={activeColor.main} />
-                </View>
-                <View style={styles.missionCopy}>
-                  <Text style={styles.missionLabel}>YOUR {deliverableTitle.toUpperCase()}</Text>
-                  <Text style={styles.missionValue}>{deliverableCompletion}% built in your own words</Text>
-                </View>
-                <View style={styles.miniTrack}>
-                  <View style={[styles.miniFill, { width: `${deliverableCompletion}%`, backgroundColor: activeColor.main }]} />
-                </View>
-                <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
+            <View style={styles.badges}>
+              <TouchableOpacity disabled={!rescueAvailable} onPress={() => router.push('/streak-rescue')}>
+                <StreakBadge count={streak} />
               </TouchableOpacity>
-              <View style={styles.missionLinks}>
-                {focusLabel ? (
-                  <TouchableOpacity style={styles.missionLink} onPress={() => router.push('/focus')} activeOpacity={0.78}>
-                    <Feather name="crosshair" size={14} color={activeColor.main} />
-                    <Text style={styles.missionLinkText} numberOfLines={1}>{focusLabel}</Text>
-                  </TouchableOpacity>
-                ) : null}
-                <TouchableOpacity style={styles.missionLink} onPress={() => router.push('/(tabs)/practice')} activeOpacity={0.78}>
-                  <Feather name="rotate-ccw" size={14} color={reviewDueCount > 0 ? COLORS.warning : COLORS.textMuted} />
-                  <Text style={styles.missionLinkText}>{reviewDueCount > 0 ? `${reviewDueCount} to review` : 'Review clear'}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.missionLink} onPress={() => router.push('/(tabs)/roadmap')} activeOpacity={0.78}>
-                  <Feather name="radio" size={14} color={intelReadToday >= intelTarget ? COLORS.success : activeColor.main} />
-                  <Text style={styles.missionLinkText}>{intelReadToday}/{intelTarget} Intel</Text>
-                </TouchableOpacity>
-              </View>
-              {tomorrowTitle ? <Text style={styles.tomorrow} numberOfLines={1}>Tomorrow · {tomorrowTitle}</Text> : null}
-            </View>
-            <View style={styles.scrollCue}>
-              <Feather name="arrow-up" size={12} color={COLORS.textMuted} />
-              <Text style={styles.scrollCueText}>Past lessons above · the full course continues below</Text>
+              <XPBadge xp={totalXp} level={level} />
             </View>
           </View>
         )}
-        contentContainerStyle={styles.listContent}
-      />
-
-      <TouchableOpacity
-        style={[styles.notesButton, { bottom: 18 }]}
-        onPress={() => {
-          triggerHaptic('selection');
-          router.push('/notes');
+        renderItem={({ item: section }) => {
+          const lesson = lessons.find(entry => entry.day === section.displayDay);
+          const weekStart = Math.floor((section.displayDay - 1) / 7) * 7 + 1;
+          const weekLead = lessons.find(entry => entry.day === weekStart && entry.day >= section.startDay);
+          const weekTitle = weekLead?.title || syllabusDay(marketId, section.displayDay).facet.label;
+          const activeSection = section.index === focusedSectionIndex;
+          return (
+            <SectionCluster
+              section={section}
+              lesson={lesson}
+              title={themes[section.index] || `Section ${section.index + 1}`}
+              weekTitle={weekTitle}
+              activeSection={activeSection}
+              lessonCompletedToday={lessonCompletedToday}
+              arenaCompletedToday={arenaCompletedToday}
+              caseCompletedToday={caseCompletedToday}
+              intelDone={intelReadToday >= intelTarget}
+              onHeader={() => setPreviewSection(section)}
+              onLeo={() => onAskLeo(section.displayDay)}
+              onModule={kind => handleModule(section, lesson, kind)}
+            />
+          );
         }}
-        activeOpacity={0.82}
-        accessibilityLabel="Open notes"
-      >
-        <Feather name="edit-3" size={23} color={COLORS.textPrimary} />
-        <View style={[styles.notesNib, { backgroundColor: activeColor.main }]} />
-      </TouchableOpacity>
+      />
+      <CurriculumPreview
+        visible={Boolean(previewSection)}
+        section={previewSection}
+        title={previewSection ? themes[previewSection.index] || `Section ${previewSection.index + 1}` : ''}
+        lessons={lessons}
+        currentDay={currentDay}
+        onClose={() => setPreviewSection(null)}
+        onOpenLesson={lesson => {
+          setPreviewSection(null);
+          if (lesson.stackId) onOpenLesson(lesson.stackId);
+        }}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
-  listContent: { paddingBottom: 120 },
-  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg0 },
-  loadingNode: { width: 72, height: 72, borderRadius: 36, marginBottom: 16 },
-  loadingText: { ...TYPE.bodyBold, color: COLORS.textSecondary },
-  emptyTitle: { ...TYPE.h2, color: COLORS.textPrimary, marginTop: 4 },
-  retryButton: { minHeight: 48, minWidth: 140, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginTop: 8 },
+  listContent: { paddingBottom: 110 },
+  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, backgroundColor: COLORS.bg0, paddingHorizontal: 28 },
+  loadingCoin: { width: 70, height: 70, borderRadius: 35, backgroundColor: COLORS.accentSoft, borderWidth: 8, borderColor: COLORS.accentMedium },
+  loadingText: { ...TYPE.bodyBold, color: COLORS.textSecondary, textAlign: 'center' },
+  emptyTitle: { ...TYPE.h2, color: COLORS.textPrimary },
+  retryButton: { minHeight: 48, minWidth: 140, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.courseHeader },
   retryText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
-  header: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 12 },
-  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 },
+  topHeader: { paddingHorizontal: 20, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   courseLabel: { ...TYPE.overline, color: COLORS.textMuted },
   marketName: { ...TYPE.h1, color: COLORS.textPrimary, marginTop: 2 },
   badges: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  weekBand: { borderTopWidth: 3, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border, paddingVertical: 15 },
-  weekBandTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  weekEyebrow: { ...TYPE.overline },
-  weekCount: { ...TYPE.caption, color: COLORS.textMuted },
-  weekTitle: { ...TYPE.h2, color: COLORS.textPrimary, marginTop: 6 },
-  weekPromise: { ...TYPE.body, color: COLORS.textSecondary, marginTop: 2 },
-  weekTicks: { flexDirection: 'row', gap: 5, marginTop: 12 },
-  weekTick: { flex: 1, height: 4, borderRadius: 2, backgroundColor: COLORS.border },
-  missionRail: { paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border },
-  missionPrimary: { minHeight: 56, flexDirection: 'row', alignItems: 'center', gap: 10 },
-  missionIcon: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  missionCopy: { flex: 1, minWidth: 0 },
-  missionLabel: { ...TYPE.overline, color: COLORS.textMuted },
-  missionValue: { ...TYPE.bodyBold, color: COLORS.textPrimary, marginTop: 2 },
-  miniTrack: { width: 42, height: 5, borderRadius: 3, backgroundColor: COLORS.border, overflow: 'hidden' },
-  miniFill: { height: 5, borderRadius: 3 },
-  missionLinks: { flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginTop: 8 },
-  missionLink: { minHeight: 36, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, borderRadius: 10, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border },
-  missionLinkText: { ...TYPE.caption, color: COLORS.textSecondary, maxWidth: 118 },
-  tomorrow: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 9 },
-  scrollCue: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, paddingTop: 12 },
-  scrollCueText: { fontSize: 11, color: COLORS.textMuted, fontWeight: '600' },
-  seasonHeader: { height: SEASON_HEADER_HEIGHT, paddingHorizontal: 22, paddingVertical: 22, flexDirection: 'row', alignItems: 'center', overflow: 'hidden' },
-  seasonCopy: { flex: 1, paddingRight: 18 },
-  seasonEyebrow: { ...TYPE.overline, color: 'rgba(255,255,255,0.72)' },
-  seasonTitle: { fontSize: 25, lineHeight: 29, fontWeight: '800', color: '#FFFFFF', marginTop: 8 },
-  seasonSubtitle: { ...TYPE.caption, color: 'rgba(255,255,255,0.76)', marginTop: 6 },
-  seasonSeal: { width: 54, height: 54, borderRadius: 27, borderWidth: 3, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '8deg' }] },
-  nodeRow: { height: NODE_ROW_HEIGHT, position: 'relative', overflow: 'visible' },
-  connector: { position: 'absolute', height: 7, borderRadius: 4, opacity: 0.7 },
-  pulseRing: { position: 'absolute', top: (NODE_ROW_HEIGHT - 96) / 2, borderWidth: 3 },
-  node: { position: 'absolute', top: 24, borderWidth: 3, alignItems: 'center', justifyContent: 'center', zIndex: 4, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.28, shadowRadius: 0, elevation: 5 },
-  todayNode: { top: 18, borderWidth: 4 },
-  nodeHighlight: { position: 'absolute', top: 8, height: 8, borderRadius: 5, backgroundColor: 'rgba(255,255,255,0.22)' },
-  todayLabel: { position: 'absolute', top: 14, width: 145, zIndex: 3 },
-  todayLabelLeft: { left: 18, alignItems: 'flex-end' },
-  todayLabelRight: { right: 18, alignItems: 'flex-start' },
-  todayEyebrow: { ...TYPE.overline, fontSize: 9 },
-  todayTitle: { fontSize: 14, lineHeight: 18, fontWeight: '800', color: COLORS.textPrimary, marginTop: 3 },
-  todayMeta: { fontSize: 10, lineHeight: 14, color: COLORS.textMuted, marginTop: 3 },
-  leoMarker: { position: 'absolute', top: 60, zIndex: 6, alignItems: 'center' },
-  leoLeft: { right: 10 },
-  leoRight: { left: 8 },
-  leoImage: { width: 68, height: 68 },
-  leoBubble: { position: 'absolute', top: -17, minWidth: 94, paddingHorizontal: 9, paddingVertical: 6, borderRadius: 12, borderWidth: 1.5, backgroundColor: COLORS.bg2, ...SHADOWS.sm },
-  leoBubbleText: { fontSize: 10, fontWeight: '700', color: COLORS.textPrimary, textAlign: 'center' },
-  notesButton: { position: 'absolute', right: 18, width: 58, height: 58, borderRadius: 29, backgroundColor: COLORS.bg2, borderWidth: 2, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center', zIndex: 20, ...SHADOWS.lg },
-  notesNib: { position: 'absolute', right: 9, bottom: 9, width: 9, height: 9, borderRadius: 5 },
+  sectionBlock: { paddingHorizontal: 18, marginBottom: 26 },
+  sectionHeader: { minHeight: 142, borderRadius: 24, padding: 22, flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.courseHeader, shadowColor: COLORS.courseHeaderDeep, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.28, shadowRadius: 16, elevation: 8 },
+  sectionHeaderLocked: { opacity: 0.82 },
+  sectionHeaderCopy: { flex: 1, minWidth: 0, paddingRight: 14 },
+  sectionEyebrow: { ...TYPE.overline, color: 'rgba(255,255,255,0.75)' },
+  sectionTitle: { fontSize: 27, lineHeight: 32, fontWeight: '800', color: COLORS.textOnAccent, marginTop: 7 },
+  sectionProgress: { ...TYPE.caption, color: 'rgba(255,255,255,0.82)', marginTop: 12 },
+  sectionTrack: { height: 7, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.25)', marginTop: 8, overflow: 'hidden' },
+  sectionFill: { height: 7, borderRadius: 4, backgroundColor: COLORS.textOnAccent },
+  headerArrow: { width: 46, height: 46, borderRadius: 23, backgroundColor: 'rgba(34,28,164,0.32)', alignItems: 'center', justifyContent: 'center' },
+  weekHeading: { minHeight: 76, paddingHorizontal: 7, paddingTop: 22, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 },
+  weekEyebrow: { ...TYPE.overline, color: COLORS.courseHeader },
+  weekTitle: { ...TYPE.h2, color: COLORS.textPrimary, marginTop: 4, maxWidth: 255 },
+  lockPill: { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 12, paddingHorizontal: 9, paddingVertical: 7, backgroundColor: COLORS.lockedSurface },
+  lockPillText: { ...TYPE.caption, color: COLORS.textMuted, maxWidth: 110 },
+  cluster: { height: 374, position: 'relative', marginTop: 6 },
+  clusterLocked: { opacity: 0.66 },
+  orbit: { position: 'absolute', width: 246, height: 246, borderRadius: 123, borderWidth: 2, borderStyle: 'dashed', borderColor: COLORS.accentMedium, left: '50%', marginLeft: -123, top: 62 },
+  coinPosition: { position: 'absolute', width: 94, alignItems: 'center', zIndex: 3 },
+  coinShadow: { width: 84, height: 84, borderRadius: 42, backgroundColor: COLORS.courseCoinDeep, paddingBottom: 7, justifyContent: 'flex-start', shadowColor: COLORS.courseCoinDeep, shadowOffset: { width: 0, height: 9 }, shadowOpacity: 0.28, shadowRadius: 12, elevation: 8 },
+  coinFace: { width: 84, height: 77, borderRadius: 42, backgroundColor: COLORS.courseCoin, borderWidth: 1, borderColor: COLORS.courseCoinHighlight, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  coinLocked: { backgroundColor: COLORS.border, shadowColor: COLORS.cardShadow, shadowOpacity: 0.12 },
+  coinFaceLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border },
+  coinShine: { position: 'absolute', top: 8, left: 18, right: 18, height: 8, borderRadius: 5, backgroundColor: COLORS.courseCoinHighlight },
+  coinLabel: { ...TYPE.caption, color: COLORS.textPrimary, marginTop: 7, textAlign: 'center' },
+  lockedText: { color: COLORS.textMuted },
+  leoCenter: { position: 'absolute', width: 166, height: 166, left: '50%', marginLeft: -83, top: 107, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
+  previewScreen: { flex: 1, backgroundColor: COLORS.bg0 },
+  previewHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border },
+  previewHeadingCopy: { flex: 1, minWidth: 0 },
+  previewEyebrow: { ...TYPE.overline, color: COLORS.courseHeader },
+  previewTitle: { ...TYPE.h1, color: COLORS.textPrimary, marginTop: 4 },
+  closeButton: { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
+  previewList: { padding: 18, paddingBottom: 60 },
+  previewNotice: { flexDirection: 'row', gap: 10, padding: 14, borderRadius: 12, backgroundColor: COLORS.accentSoft, marginBottom: 12 },
+  previewNoticeText: { ...TYPE.caption, color: COLORS.textSecondary, flex: 1, lineHeight: 18 },
+  lessonRow: { minHeight: 72, flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border },
+  lessonRowLocked: { opacity: 0.58 },
+  dayCircle: { width: 38, height: 38, borderRadius: 19, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
+  dayCircleComplete: { backgroundColor: COLORS.success, borderColor: COLORS.success },
+  dayNumber: { ...TYPE.caption, color: COLORS.textPrimary },
+  lessonCopy: { flex: 1, minWidth: 0 },
+  lessonTitle: { ...TYPE.bodyBold, color: COLORS.textPrimary },
+  lessonDescription: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 3 },
 });

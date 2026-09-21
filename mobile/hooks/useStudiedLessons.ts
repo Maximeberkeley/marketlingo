@@ -49,7 +49,7 @@ const matchesFocus = (lesson: StudiedLesson, keywords: string[]) => {
   return keywords.some(word => haystack.includes(word));
 };
 
-export function useStudiedLessons(marketId?: string, focusKeywords: string[] = []) {
+export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [], preferredDay?: number) {
   const [lessons, setLessons] = useState<StudiedLesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const focusSignature = focusKeywords.join('|');
@@ -106,6 +106,12 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
         }
 
         const byRecency = [...byDay.values()].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
+        // A Course-section launch is intentionally strict: practice must test
+        // that displayed day, never silently substitute another studied day.
+        if (preferredDay) {
+          setLessons(byRecency.filter(lesson => lesson.day === preferredDay));
+          return;
+        }
         const keywords = focusSignature ? focusSignature.split('|').filter(Boolean) : [];
         if (keywords.length) {
           const preferred = byRecency.filter(l => matchesFocus(l, keywords));
@@ -123,7 +129,7 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
     } finally {
       setIsLoading(false);
     }
-  }, [marketId, focusSignature]);
+  }, [marketId, focusSignature, preferredDay]);
 
   useEffect(() => {
     load();

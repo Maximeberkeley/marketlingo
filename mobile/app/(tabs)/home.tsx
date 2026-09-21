@@ -453,15 +453,14 @@ export default function HomeScreen() {
           stackId={session.activeStack.id}
           learningGoal={learningGoal}
 
-          // A lesson from another day is revision (no rewards, no day movement).
-          // A repeat of TODAY's lesson runs as extra practice instead.
+          // Completed lessons reopen as review. An unfinished past lesson is
+          // catch-up work and must still be able to count toward its section.
           isReview={(() => {
-            const day = stackDayNumber(session.activeStack);
-            return day !== null && day !== currentDay;
+            return (progress?.completed_stacks || []).includes(session.activeStack.id);
           })()}
           isProUser={isProUser}
           streakDays={streak}
-          dayNumber={currentDay}
+          dayNumber={stackDayNumber(session.activeStack) || currentDay}
           metadata={(session.activeStack as any).metadata}
         />
       ) : session.showSessionComplete ? (
@@ -491,13 +490,10 @@ export default function HomeScreen() {
           totalXp={xpData?.total_xp || 0}
           level={xpData?.current_level || 1}
           lessonCompletedToday={lessonCompletedToday}
-          deliverableTitle={deliverable.template.title}
-          deliverableCompletion={deliverable.completion}
-          reviewDueCount={dueCount}
-          focusLabel={focusTopic.focusLabel}
+          arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
+          caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
           intelReadToday={intelHabit.readToday}
           intelTarget={intelHabit.target}
-          tomorrowTitle={tomorrowLesson?.title || null}
           rescueAvailable={showStreakWarning || criticalTimerActive}
           safeTop={insets.top}
           onOpenLesson={(stackId) => router.setParams({ openStackId: stackId })}

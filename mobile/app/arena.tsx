@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { ArenaScreen, ArenaResult } from '../lesson-kit/arena/ArenaScreen';
 import { buildArena } from '../lesson-kit/arena/buildArena';
@@ -17,11 +17,13 @@ import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
 
 export default function ArenaRoute() {
+  const { day } = useLocalSearchParams<{ day?: string }>();
+  const preferredDay = day ? Number(day) : undefined;
   const { marketId, loading: marketLoading } = useSelectedMarket();
   const content = useIndustryContent(marketId);
   // A chosen focus topic tilts which studied lessons the waves come from.
   const focus = useFocusTopic(marketId, 1);
-  const studied = useStudiedLessons(marketId, focus.keywords);
+  const studied = useStudiedLessons(marketId, focus.keywords, preferredDay);
   const { rewards, loading: rewardsLoading, recordArenaRun } = usePracticeRewards();
   const { addXP } = useUserXP(marketId);
   const { evaluateRewards } = useCollectibles(marketId);
