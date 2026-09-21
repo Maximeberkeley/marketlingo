@@ -57,6 +57,11 @@ export function useSessionFlow({
   const [completedBites, setCompletedBites] = useState<number[]>([]);
   const [activeBiteIndex, setActiveBiteIndex] = useState<number | null>(null);
 
+  const activeStackDay = () => {
+    const dayTag = (activeStack?.tags || []).find(tag => /^day-\d+$/.test(tag));
+    return dayTag ? Number(dayTag.slice(4)) : null;
+  };
+
   const handleOpenStack = useCallback((stack: StackWithSlides) => {
     triggerHaptic('light');
     trackEvent('lesson_start', { stackId: stack.id, type: stack.stack_type });
@@ -94,9 +99,11 @@ export function useSessionFlow({
       return false;
     }
 
-    // A second lesson on the same day is EXTRA PRACTICE: a smaller flat bonus,
-    // no streak re-bank, no day movement, no second lesson reward.
-    const isExtraPractice = lessonCompletedToday;
+    // Past unfinished lessons are catch-up work: record their completion, but
+    // never move today's clock, re-bank the streak, or pay the daily reward.
+    const stackDay = activeStackDay();
+    const isCatchUp = stackDay !== null && stackDay < currentDay;
+    const isExtraPractice = lessonCompletedToday || isCatchUp;
 
     triggerHaptic('success');
     let earnedXP = isExtraPractice ? 15 : xpRewardLessonComplete;
@@ -105,6 +112,8 @@ export function useSessionFlow({
     try {
       if (progress && activeStack) {
         if (isExtraPractice) {
+          const alreadyCompleted = progress.completed_stacks?.includes(activeStack.id);
+          if (!alreadyCompleted) await completeStack(activeStack.id);
           await addXP(earnedXP, 'extra_practice', activeStack.id, 'Extra lesson today');
           await onDataRefresh();
           synced = true;

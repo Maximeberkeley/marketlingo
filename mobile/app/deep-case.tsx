@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { CaseScreen, CaseResult } from '../lesson-kit/case/CaseScreen';
 import { buildCase } from '../lesson-kit/case/buildCase';
@@ -16,11 +16,13 @@ import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
 
 export default function DeepCaseRoute() {
+  const { day } = useLocalSearchParams<{ day?: string }>();
+  const preferredDay = day ? Number(day) : undefined;
   const { marketId, loading: marketLoading } = useSelectedMarket();
   const content = useIndustryContent(marketId);
   // A chosen focus topic tilts which studied lesson the case is built from.
   const focus = useFocusTopic(marketId, 1);
-  const studied = useStudiedLessons(marketId, focus.keywords);
+  const studied = useStudiedLessons(marketId, focus.keywords, preferredDay);
   const { recordCaseRun, loading: rewardsLoading } = usePracticeRewards();
   const { addXP } = useUserXP(marketId);
   const { evaluateRewards } = useCollectibles(marketId);

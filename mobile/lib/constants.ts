@@ -66,6 +66,12 @@ const LIGHT_COLORS = {
   surfaceSubtle: 'rgba(0, 0, 0, 0.02)',
   surfaceLight: 'rgba(0, 0, 0, 0.04)',
   imageScrim: 'rgba(0, 0, 0, 0.08)',
+  courseHeader: '#5B50F6',
+  courseHeaderDeep: '#4338CA',
+  courseCoin: '#665CF6',
+  courseCoinDeep: '#4338CA',
+  courseCoinHighlight: 'rgba(255, 255, 255, 0.34)',
+  lockedSurface: '#EEF0F5',
 };
 
 // Premium dark: warm-neutral greys in layered shades, never pure black.
@@ -106,6 +112,12 @@ const DARK_COLORS: typeof LIGHT_COLORS = {
   surfaceSubtle: 'rgba(255, 255, 255, 0.04)',
   surfaceLight: 'rgba(255, 255, 255, 0.08)',
   imageScrim: 'rgba(0, 0, 0, 0.28)',
+  courseHeader: '#7067F7',
+  courseHeaderDeep: '#5148CF',
+  courseCoin: '#766EF8',
+  courseCoinDeep: '#5148CF',
+  courseCoinHighlight: 'rgba(255, 255, 255, 0.28)',
+  lockedSurface: '#2A2F36',
 };
 
 export const COLORS = isDark ? DARK_COLORS : LIGHT_COLORS;

@@ -453,11 +453,10 @@ export default function HomeScreen() {
           stackId={session.activeStack.id}
           learningGoal={learningGoal}
 
-          // A lesson from another day is revision (no rewards, no day movement).
-          // A repeat of TODAY's lesson runs as extra practice instead.
+          // Completed lessons reopen as review. An unfinished past lesson is
+          // catch-up work and must still be able to count toward its section.
           isReview={(() => {
-            const day = stackDayNumber(session.activeStack);
-            return day !== null && day !== currentDay;
+            return (progress?.completed_stacks || []).includes(session.activeStack.id);
           })()}
           isProUser={isProUser}
           streakDays={streak}
