@@ -460,7 +460,7 @@ export default function HomeScreen() {
           })()}
           isProUser={isProUser}
           streakDays={streak}
-          dayNumber={currentDay}
+          dayNumber={stackDayNumber(session.activeStack) || currentDay}
           metadata={(session.activeStack as any).metadata}
         />
       ) : session.showSessionComplete ? (

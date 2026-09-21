@@ -28,6 +28,7 @@ import { LeoCharacter } from '../mascot/LeoCharacter';
 interface CourseLesson {
   day: number;
   title: string;
+  description: string;
   stackId?: string;
   completed: boolean;
 }
@@ -281,7 +282,7 @@ function CurriculumPreview({
                 </View>
                 <View style={styles.lessonCopy}>
                   <Text style={[styles.lessonTitle, locked && styles.lockedText]} numberOfLines={2}>{item.title}</Text>
-                  <Text style={styles.lessonDescription} numberOfLines={2}>{dayPromise('', item.day)}</Text>
+                  <Text style={styles.lessonDescription} numberOfLines={2}>{item.description}</Text>
                 </View>
                 <Feather name={locked ? 'lock' : 'chevron-right'} size={17} color={locked ? COLORS.textMuted : COLORS.courseHeader} />
               </TouchableOpacity>
@@ -355,7 +356,14 @@ export function CourseJourney({
       setLessons(Array.from({ length: TOTAL_DAYS }, (_, index) => {
         const day = index + 1;
         const lesson = byDay.get(day);
-        return { day, title: lesson?.title || dayPromise(marketId, day), stackId: lesson?.id, completed: completedByDay.get(day) || false };
+        const plan = syllabusDay(marketId, day);
+        return {
+          day,
+          title: lesson?.title || dayPromise(marketId, day),
+          description: plan.isConsolidation ? 'Review the week and explain one idea in your own words.' : plan.facet.promise,
+          stackId: lesson?.id,
+          completed: completedByDay.get(day) || false,
+        };
       }));
       setLoading(false);
     };
