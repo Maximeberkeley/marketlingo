@@ -11,6 +11,8 @@ Replace the current winding 180-day Course path with the attached section-based 
 - Section 2 unlocks only after all 30 lessons in Section 1 are completed. The same lesson-completion gate applies between later sections.
 - Daily unlocking and section completion remain separate: calendar time can make a day eligible, but an incomplete prior section keeps the next section’s actions locked.
 - Previously unlocked lessons remain available and unfinished lessons remain intact.
+- If the local-day clock moves beyond Day 30 while Section 1 is incomplete, the clock continues normally but Section 2 stays locked. Completing the missing Section 1 lessons later unlocks Section 2 immediately without resetting dates, deleting work, skipping content, or changing the learner’s current day.
+- **Verified architecture conflict:** the current app has no independent section-completion lock; sections presently become available from the calendar day alone. Implement the requested lesson-completion gate as a derived access rule over existing completed lesson IDs, without changing stored progress or adding a second clock.
 
 ## Course page
 
@@ -31,14 +33,15 @@ Replace the current winding 180-day Course path with the attached section-based 
   - Notes upper left;
   - existing Leo artwork in the center.
 - Use equal circular controls with a subtle raised coin construction, clear MarketLingo icons, soft shadows, restrained state motion, and screen-reader labels. Labels sit outside the circles only where needed; icons remain the main signal.
-- Use the uploaded mockup only for composition and hierarchy. Do not import its generated mascot or copy its colors.
+- Match the uploaded mockup closely in composition: solid white background, purple-blue section headers, five equal raised coins, restrained iconography, and Leo centered in the ring. Do not restore the winding path.
+- Reuse existing MarketLingo Leo illustrations and module icons. Add no replacement artwork or new visual assets unless the repository has no suitable existing asset.
 
 ## Module behavior
 
 - Resolve one authoritative displayed curriculum day from the existing local-day state and selected section.
 - Daily Lesson opens that day’s existing authored lesson through the current lesson goals and lesson reader flow.
 - Daily Arena and Deep Case open their existing experiences with the displayed day as context, using that day’s completed lesson material when available and retaining their existing grounded-content safety rules.
-- Intel opens the existing daily Intel destination and preserves the three-story habit, XP award, article actions, and live-news behavior; it shares the same local-date boundary without turning Notes or news into lesson records.
+- Intel opens the existing live-news destination and preserves date-based story freshness, the three-story habit, XP award, article actions, and reward deduplication. It shares the local-date boundary but never becomes a static curriculum lesson.
 - Notes opens the existing full notebook. Existing notes, lesson annotations, Leo-created notes, search, creation, editing, and deletion remain unchanged and never rotate with the curriculum day.
 - Every visible Leo remains tappable and opens the current Leo overlay with the relevant market, section, and day context. No second chat is created.
 - Preserve all current completion writes, XP awards, streak updates, replay/review behavior, and same-day reward protection.
@@ -55,15 +58,16 @@ Replace the current winding 180-day Course path with the attached section-based 
 ## Section curriculum view
 
 - Add a focused 30-day view opened from each section header.
-- List the section’s actual lesson titles and syllabus promises with completed, available, unfinished, and future states.
-- Permit opening any previously unlocked lesson; block future days and days inside a section whose prior-section completion gate is unmet.
+- List the section’s actual authored lesson titles and available descriptions/syllabus promises with completed, available, unfinished, and future states.
+- Allow the section-header arrow to open this view even for locked sections, so learners can inspect the real 30-day curriculum.
+- Permit opening any previously unlocked lesson. Keep lesson rows in locked sections visible but non-interactive, and block future calendar days.
 - Return naturally to the same section and scroll position on Course.
 
 ## Technical approach
 
 - Refactor `CourseJourney` into focused section header, five-module cluster, coin control, Leo center, and section curriculum components.
 - Reuse `dayMath`, `dayState`, `syllabus`, `useUserProgress`, `useHomeData`, and the existing session flow instead of duplicating timing or progress logic.
-- Derive section completion from completed lesson stack IDs matched to authored `day-N` curriculum records; do not mutate or reinterpret stored progress.
+- Derive section completion from completed lesson stack IDs matched to authored `day-N` curriculum records; late completion recalculates access immediately without mutating or reinterpreting stored progress.
 - Pass explicit section/day context through existing routes for Lesson, Arena, and Deep Case while retaining lesson-derived exercise generation.
 - Keep Notes on its existing route and data tables, and reuse the current Leo chat overlay from Home.
 - Keep all implementation under `/mobile`; no web redesign, database migration, curriculum rewrite, or unrelated screen changes.
@@ -71,9 +75,12 @@ Replace the current winding 180-day Course path with the attached section-based 
 ## Verification
 
 - Test first use, mid-section, day 30, day 31 with Section 1 incomplete, Section 1 complete, and fully completed sections.
+- Test Day 31+ with missing Section 1 lessons, then complete each missing lesson and confirm Section 2 unlocks only after the thirtieth lesson while the original course clock and unfinished records remain unchanged.
 - Confirm all daily actions use the same local calendar boundary and completion never advances the day.
 - Confirm the next section unlocks only after all 30 prior-section lessons are complete.
 - Confirm past lessons remain available, unfinished lessons remain stored, and future content stays blocked.
+- Confirm locked-section headers expose real curriculum previews while every locked lesson remains non-interactive.
+- Confirm Intel remains live and date-based, and Notes remains persistent and excluded from daily/section completion calculations.
 - Confirm Notes retains all content and CRUD behavior; Leo opens the existing chat from active and locked sections.
 - Confirm XP, streak, Arena, Deep Case, Intel habit, lesson review, and reward protection behave exactly as before.
 - Check small and large iPhones, long titles, safe areas, scrolling through all six sections, light/dark themes, accessibility labels, reduced motion, and unchanged bottom navigation.
