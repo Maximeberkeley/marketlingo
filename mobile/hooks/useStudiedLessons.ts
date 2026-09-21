@@ -105,13 +105,13 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
           byDay.set(day, { stackId: row.id, title: row.title, day, slides });
         }
 
-        const byRecency = [...byDay.values()].sort((a, b) => {
-          if (preferredDay) {
-            if (a.day === preferredDay) return -1;
-            if (b.day === preferredDay) return 1;
-          }
-          return (b.day ?? 0) - (a.day ?? 0);
-        });
+        const byRecency = [...byDay.values()].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
+        // A Course-section launch is intentionally strict: practice must test
+        // that displayed day, never silently substitute another studied day.
+        if (preferredDay) {
+          setLessons(byRecency.filter(lesson => lesson.day === preferredDay));
+          return;
+        }
         const keywords = focusSignature ? focusSignature.split('|').filter(Boolean) : [];
         if (keywords.length) {
           const preferred = byRecency.filter(l => matchesFocus(l, keywords));
