@@ -961,7 +961,7 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
   };
 
   const featured = news.slice(0, Math.min(5, news.length));
-  const feed = news.length > 3 ? news.slice(3) : news;
+  const feed = news.slice(featured.length);
 
   return (
     <View style={s.container}>
