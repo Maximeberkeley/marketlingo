@@ -29,7 +29,7 @@ export function XPBadge({ xp, level, showLevel = false }: XPBadgeProps) {
       Animated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 300, useNativeDriver: true }),
     ]).start();
 
-    // Bolt wiggle
+    // Potion wiggle
     Animated.sequence([
       Animated.timing(potionRotate, { toValue: 1, duration: 100, useNativeDriver: true }),
       Animated.timing(potionRotate, { toValue: -1, duration: 100, useNativeDriver: true }),
