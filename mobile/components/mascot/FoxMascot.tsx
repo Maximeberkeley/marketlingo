@@ -8,9 +8,7 @@ interface FoxMascotProps {
   size?: number;
 }
 
-/**
- * Displays the current industry Leo, with the established default as fallback.
- */
+/** Displays the established default Leo across every course. */
 export function FoxMascot({ industry: _industry, size = 220 }: FoxMascotProps) {
   const scaleAnim = useRef(new Animated.Value(0.85)).current;
   const breatheAnim = useRef(new Animated.Value(1)).current;
