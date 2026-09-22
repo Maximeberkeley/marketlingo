@@ -71,12 +71,13 @@ export function useLeo() {
 const sizeMap = {
   sm: 80,
   md: 120,
+  course: 144,
   lg: 160,
   xl: 200,
 };
 
 interface LeoCharacterProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'course' | 'lg' | 'xl';
   animation?: LeoAnim;
   variant?: LeoVariant;
   /** Disables breathing/bounce motion — a fully still mascot. */
@@ -145,15 +146,18 @@ export function LeoCharacter({
   return (
     <View style={[styles.container, { width: px, height: px }]}>
       <Animated.View
-        style={{
-          width: '100%',
-          height: '100%',
-          transform: [{ scale: breatheAnim }, { translateY: bounceAnim }],
-        }}
+        style={still
+          ? styles.stillImageWrapper
+          : {
+              width: '100%',
+              height: '100%',
+              transform: [{ scale: breatheAnim }, { translateY: bounceAnim }],
+            }}
       >
         <Image
           source={imageSource}
-          style={{ width: '100%', height: '100%', resizeMode: 'contain', alignSelf: 'center' }}
+          resizeMode="contain"
+          style={styles.image}
         />
       </Animated.View>
     </View>
@@ -166,4 +170,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  stillImageWrapper: {
+    width: '100%',
+    height: '100%',
+    backfaceVisibility: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    backfaceVisibility: 'hidden',
+    imageRendering: 'crisp-edges',
+  } as any,
 });

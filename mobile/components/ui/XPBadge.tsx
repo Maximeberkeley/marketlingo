@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 
 interface XPBadgeProps {
@@ -57,7 +58,10 @@ export function XPBadge({ xp, level, showLevel = false }: XPBadgeProps) {
 
   return (
     <Animated.View style={[styles.container, { transform: [{ scale: scaleAnim }] }]}>
-      <Animated.Text style={[styles.emoji, { transform: [{ rotate: rotation }] }]}>⚡</Animated.Text>
+      <Animated.View style={[styles.potionWrap, { transform: [{ rotate: rotation }] }]}>
+        <MaterialCommunityIcons name="flask" size={24} color={COLORS.xpBadgeIcon} />
+        <MaterialCommunityIcons name="star-four-points" size={11} color={COLORS.xpBadgeSpark} style={styles.sparkle} />
+      </Animated.View>
       <Text style={styles.xp}>{displayXP.toLocaleString()}</Text>
       {showLevel && <Text style={styles.level}>Lv.{level}</Text>}
     </Animated.View>
@@ -67,24 +71,35 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 20,
-    gap: 4,
+    minWidth: 82,
+    minHeight: 42,
+    justifyContent: 'center',
+    backgroundColor: COLORS.xpBadgeSurface,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 999,
+    gap: 7,
   },
-  emoji: {
-    fontSize: 14,
+  potionWrap: {
+    width: 27,
+    height: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sparkle: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
   },
   xp: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: COLORS.accent,
+    fontSize: 18,
+    fontWeight: '800',
+    color: COLORS.xpBadgeText,
   },
   level: {
     fontSize: 11,
     fontWeight: '600',
-    color: COLORS.accent,
+    color: COLORS.xpBadgeText,
     opacity: 0.7,
   },
 });
