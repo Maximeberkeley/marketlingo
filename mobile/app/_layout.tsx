@@ -107,6 +107,7 @@ export default function RootLayout() {
                 <Stack.Screen name="deliverable" />
                 <Stack.Screen name="focus" />
                 <Stack.Screen name="streak-rescue" />
+                <Stack.Screen name="lesson-prerequisite" options={{ animation: 'fade' }} />
                 <Stack.Screen name="arena" />
                 <Stack.Screen name="deep-case" />
                 <Stack.Screen name="trainer" />

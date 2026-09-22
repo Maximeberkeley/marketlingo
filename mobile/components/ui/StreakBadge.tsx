@@ -9,7 +9,7 @@ interface StreakBadgeProps {
 
 export function StreakBadge({ count }: StreakBadgeProps) {
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
-  const flameRotate = useRef(new Animated.Value(0)).current;
+  const energyRotate = useRef(new Animated.Value(0)).current;
   const isOnFire = count >= 7;
 
   useEffect(() => {
@@ -26,9 +26,9 @@ export function StreakBadge({ count }: StreakBadgeProps) {
     if (isOnFire) {
       const flicker = Animated.loop(
         Animated.sequence([
-          Animated.timing(flameRotate, { toValue: 1, duration: 400, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
-          Animated.timing(flameRotate, { toValue: -1, duration: 400, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
-          Animated.timing(flameRotate, { toValue: 0, duration: 300, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+          Animated.timing(energyRotate, { toValue: 1, duration: 400, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+          Animated.timing(energyRotate, { toValue: -1, duration: 400, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+          Animated.timing(energyRotate, { toValue: 0, duration: 300, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
         ])
       );
       flicker.start();
@@ -36,7 +36,7 @@ export function StreakBadge({ count }: StreakBadgeProps) {
     }
   }, [isOnFire]);
 
-  const rotation = flameRotate.interpolate({
+  const rotation = energyRotate.interpolate({
     inputRange: [-1, 0, 1],
     outputRange: ['-5deg', '0deg', '5deg'],
   });
@@ -44,7 +44,7 @@ export function StreakBadge({ count }: StreakBadgeProps) {
   return (
     <Animated.View style={[styles.container, { transform: [{ scale: scaleAnim }] }]}>
       <Animated.View style={isOnFire ? { transform: [{ rotate: rotation }] } : undefined}>
-        <Feather name="zap" size={15} color={COLORS.streak} />
+        <Feather name="battery-charging" size={15} color={COLORS.streak} />
       </Animated.View>
       <Text style={styles.count}>{count}</Text>
     </Animated.View>

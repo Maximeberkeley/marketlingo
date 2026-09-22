@@ -14,6 +14,7 @@ import { useCollectibles } from '../hooks/useCollectibles';
 import { getMarketName } from '../lib/markets';
 import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
+import { LessonPrerequisite } from '../components/course/LessonPrerequisite';
 
 export default function DeepCaseRoute() {
   const { day } = useLocalSearchParams<{ day?: string }>();
@@ -51,13 +52,7 @@ export default function DeepCaseRoute() {
   }
 
   if (studied.lessons.length === 0) {
-    return (
-      <View style={styles.loading}>
-        <Text style={styles.emptyTitle}>Your first case starts in the course</Text>
-        <Text style={styles.loadingText}>Complete a lesson first. Your case will use its real claims, mechanisms, and numbers.</Text>
-        <Text style={styles.backLink} onPress={() => router.replace('/(tabs)/home')}>Go to Course</Text>
-      </View>
-    );
+    return <LessonPrerequisite activity="case" />;
   }
 
   if (!deepCase) {

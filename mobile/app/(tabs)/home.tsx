@@ -136,7 +136,7 @@ function getRandomGreeting(key: keyof typeof LEO_GREETINGS): string {
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { user, loading: authLoading } = useAuth();
-  const { openStackId } = useLocalSearchParams<{ openStackId?: string }>();
+  const { openStackId, openToday } = useLocalSearchParams<{ openStackId?: string; openToday?: string }>();
 
   const [selectedMarketLocal, setSelectedMarketLocal] = useState<string | null>(null);
   const [revealedCard, setRevealedCard] = useState<Partial<CollectibleCard> | null>(null);
@@ -267,6 +267,14 @@ export default function HomeScreen() {
       }
     })();
   }, [openStackId, selectedMarket, user]);
+
+  // Prerequisite screens return directly to the active daily lesson even when
+  // they were opened outside the Course cluster and could not pass a stack ID.
+  useEffect(() => {
+    if (openToday !== '1' || !lessonStack || session.showReader) return;
+    session.handleOpenStack(lessonStack);
+    router.setParams({ openToday: undefined });
+  }, [openToday, lessonStack, session.showReader]);
 
   const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
