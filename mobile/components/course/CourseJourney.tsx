@@ -232,8 +232,8 @@ function SectionCluster({
           accessibilityRole="button"
           accessibilityLabel={`Ask Leo about ${title}`}
         >
-          <View style={styles.leoVisualScale} pointerEvents="none">
-            <LeoCharacter size="lg" animation={section.unlocked ? 'idle' : 'sleeping'} />
+          <View style={styles.leoVisual} pointerEvents="none">
+            <LeoCharacter size="course" animation={section.unlocked ? 'idle' : 'sleeping'} still />
           </View>
         </TouchableOpacity>
       </View>
@@ -597,7 +597,7 @@ const styles = StyleSheet.create({
   coinLabel: { ...TYPE.caption, color: COLORS.textPrimary, marginTop: 7, textAlign: 'center' },
   lockedText: { color: COLORS.textMuted },
   leoCenter: { position: 'absolute', width: 166, height: 166, left: '50%', marginLeft: -83, top: 107, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
-  leoVisualScale: { transform: [{ scale: 0.9 }] },
+  leoVisual: { width: 144, height: 144, backfaceVisibility: 'hidden' },
   previewScreen: { flex: 1, backgroundColor: COLORS.bg0 },
   previewHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border },
   previewHeadingCopy: { flex: 1, minWidth: 0 },

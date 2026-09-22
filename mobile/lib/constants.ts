@@ -52,6 +52,11 @@ const LIGHT_COLORS = {
 
   // Borders & Surfaces
   streak: '#F97316',
+  streakBadgeSurface: '#271B11',
+  xpBadgeSurface: '#1C1A2E',
+  xpBadgeIcon: '#A78BFA',
+  xpBadgeSpark: '#67E8F9',
+  xpBadgeText: '#C4B5FD',
   border: '#E8EAF0',
   borderLight: '#F3F4F6',
   cardShadow: 'rgba(0,0,0,0.06)',
@@ -100,6 +105,11 @@ const DARK_COLORS: typeof LIGHT_COLORS = {
   infoSoft: 'rgba(96, 165, 250, 0.16)',
 
   streak: '#FB923C',
+  streakBadgeSurface: '#271B11',
+  xpBadgeSurface: '#1C1A2E',
+  xpBadgeIcon: '#A78BFA',
+  xpBadgeSpark: '#67E8F9',
+  xpBadgeText: '#C4B5FD',
   border: '#31373F',
   borderLight: '#272C33',
   cardShadow: 'rgba(0,0,0,0.55)',
