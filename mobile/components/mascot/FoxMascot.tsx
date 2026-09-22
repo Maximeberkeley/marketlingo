@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Image, Animated, StyleSheet } from 'react-native';
-import { getMarketLeo } from '../../lib/marketAssets';
+
+const DEFAULT_LEO = require('../../assets/mascot/leo-idle.png');
 
 interface FoxMascotProps {
   industry: string;
@@ -10,10 +11,7 @@ interface FoxMascotProps {
 /**
  * Displays the current industry Leo, with the established default as fallback.
  */
-export function FoxMascot({ industry, size = 220 }: FoxMascotProps) {
-  const key = industry?.toLowerCase().replace(/[\s\/]+/g, '');
-  const source = getMarketLeo(key);
-
+export function FoxMascot({ industry: _industry, size = 220 }: FoxMascotProps) {
   const scaleAnim = useRef(new Animated.Value(0.85)).current;
   const breatheAnim = useRef(new Animated.Value(1)).current;
 
@@ -37,7 +35,7 @@ export function FoxMascot({ industry, size = 220 }: FoxMascotProps) {
     <View style={[styles.container, { height: size }]}>
       <Animated.View style={{ transform: [{ scale: Animated.multiply(scaleAnim, breatheAnim) }] }}>
         <Image
-          source={source}
+          source={DEFAULT_LEO}
           style={{ width: size, height: size, resizeMode: 'contain' }}
         />
       </Animated.View>

@@ -54,4 +54,4 @@
 - [ ] Complete a screen-by-screen visual, interaction, dark-mode, safe-area, and navigation audit before marking the next mobile release green.
 - [x] Redesign mobile Course into 30-day section clusters with bounded local-day access and locked-section curriculum previews.
 - [x] Tighten the Course clusters and headers, use a dynamic industry-icon badge, distinguish energy from XP, and add a Leo-led lesson prerequisite handoff.
-- [x] Replace the Course header with the real selection thumbnail, add ten new industry Leo mascots with default fallbacks, restore the larger orbit without next-section bleed, add custom flame/potion status icons, and simplify Intel into takeaway-first expandable cards.
+- [x] Restore the original large Course header, section banner, five-node orbit, and default Leo mascot; retain the flame/potion status icons and takeaway-first expandable Intel cards.
