@@ -15,6 +15,7 @@ import { getMarketName } from '../lib/markets';
 import { localDateString } from '../lib/dayMath';
 import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
+import { LessonPrerequisite } from '../components/course/LessonPrerequisite';
 
 export default function ArenaRoute() {
   const { day } = useLocalSearchParams<{ day?: string }>();
@@ -56,13 +57,7 @@ export default function ArenaRoute() {
   }
 
   if (studied.lessons.length === 0) {
-    return (
-      <View style={styles.loading}>
-        <Text style={styles.emptyTitle}>Your Arena needs a lesson</Text>
-        <Text style={styles.loadingText}>Complete a course lesson first. Every round will then test concepts you actually studied.</Text>
-        <Text style={styles.backLink} onPress={() => router.replace('/(tabs)/home')}>Go to Course</Text>
-      </View>
-    );
+    return <LessonPrerequisite activity="arena" />;
   }
 
   // Never leave the user on a blank, unresponsive screen.
@@ -103,6 +98,5 @@ export default function ArenaRoute() {
 const styles = StyleSheet.create({
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, backgroundColor: COLORS.bg0 },
   loadingText: { ...TYPE.caption, color: COLORS.textMuted, textAlign: 'center', paddingHorizontal: 32 },
-  emptyTitle: { ...TYPE.h2, color: COLORS.textPrimary, textAlign: 'center' },
   backLink: { ...TYPE.caption, color: COLORS.accent, fontWeight: '700' },
 });
