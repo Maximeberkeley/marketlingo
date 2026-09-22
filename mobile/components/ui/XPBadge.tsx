@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { Text, StyleSheet, Animated, Easing } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 
 interface XPBadgeProps {
@@ -10,7 +11,7 @@ interface XPBadgeProps {
 
 export function XPBadge({ xp, level, showLevel = false }: XPBadgeProps) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const boltRotate = useRef(new Animated.Value(0)).current;
+  const potionRotate = useRef(new Animated.Value(0)).current;
   const prevXP = useRef(xp);
   const [displayXP, setDisplayXP] = useState(xp);
   const countAnim = useRef(new Animated.Value(xp)).current;
@@ -28,11 +29,11 @@ export function XPBadge({ xp, level, showLevel = false }: XPBadgeProps) {
       Animated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 300, useNativeDriver: true }),
     ]).start();
 
-    // Bolt wiggle
+    // Potion wiggle
     Animated.sequence([
-      Animated.timing(boltRotate, { toValue: 1, duration: 100, useNativeDriver: true }),
-      Animated.timing(boltRotate, { toValue: -1, duration: 100, useNativeDriver: true }),
-      Animated.timing(boltRotate, { toValue: 0, duration: 80, useNativeDriver: true }),
+      Animated.timing(potionRotate, { toValue: 1, duration: 100, useNativeDriver: true }),
+      Animated.timing(potionRotate, { toValue: -1, duration: 100, useNativeDriver: true }),
+      Animated.timing(potionRotate, { toValue: 0, duration: 80, useNativeDriver: true }),
     ]).start();
 
     // Count from previous to new — fast
@@ -50,14 +51,17 @@ export function XPBadge({ xp, level, showLevel = false }: XPBadgeProps) {
     return () => countAnim.removeListener(listener);
   }, [xp]);
 
-  const rotation = boltRotate.interpolate({
+  const rotation = potionRotate.interpolate({
     inputRange: [-1, 0, 1],
     outputRange: ['-12deg', '0deg', '12deg'],
   });
 
   return (
     <Animated.View style={[styles.container, { transform: [{ scale: scaleAnim }] }]}>
-      <Animated.Text style={[styles.emoji, { transform: [{ rotate: rotation }] }]}>⚡</Animated.Text>
+      <Animated.View style={[styles.potionIcon, { transform: [{ rotate: rotation }] }]}>
+        <MaterialCommunityIcons name="flask" size={18} color={COLORS.accent} />
+        <MaterialCommunityIcons name="star-four-points" size={7} color={COLORS.info} style={styles.potionSpark} />
+      </Animated.View>
       <Text style={styles.xp}>{displayXP.toLocaleString()}</Text>
       {showLevel && <Text style={styles.level}>Lv.{level}</Text>}
     </Animated.View>
@@ -73,9 +77,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     gap: 4,
   },
-  emoji: {
-    fontSize: 14,
-  },
+  potionIcon: { width: 20, height: 19, alignItems: 'center', justifyContent: 'center' },
+  potionSpark: { position: 'absolute', right: -1, top: -2 },
   xp: {
     fontSize: 13,
     fontWeight: '700',

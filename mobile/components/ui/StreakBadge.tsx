@@ -43,8 +43,9 @@ export function StreakBadge({ count }: StreakBadgeProps) {
 
   return (
     <Animated.View style={[styles.container, { transform: [{ scale: scaleAnim }] }]}>
-      <Animated.View style={isOnFire ? { transform: [{ rotate: rotation }] } : undefined}>
-        <Feather name="battery-charging" size={15} color={COLORS.streak} />
+      <Animated.View style={[styles.flameIcon, isOnFire ? { transform: [{ rotate: rotation }] } : undefined]}>
+        <Feather name="droplet" size={17} color={COLORS.streak} fill={COLORS.streak} />
+        <Feather name="droplet" size={8} color={COLORS.gold} fill={COLORS.gold} style={styles.flameCore} />
       </Animated.View>
       <Text style={styles.count}>{count}</Text>
     </Animated.View>
@@ -66,4 +67,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.streak,
   },
+  flameIcon: { width: 18, height: 18, alignItems: 'center', justifyContent: 'center' },
+  flameCore: { position: 'absolute', bottom: 2 },
 });
