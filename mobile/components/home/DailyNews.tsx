@@ -280,7 +280,6 @@ function NewsFeedCard({
 }) {
   const slideAnim = useRef(new Animated.Value(24)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
-  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     Animated.parallel([
@@ -291,54 +290,31 @@ function NewsFeedCard({
 
   const catColor = categoryColors[item.categoryTag] || categoryColors.default;
   const isHighImpact = (item.impact || getImpactFromContent(item.title, item.summary)) === 'high';
-  const summary = item.summary?.trim() || '';
-  const firstSentence = summary.match(/^.*?[.!?](?:\s|$)/)?.[0]?.trim();
-  const takeaway = firstSentence || summary || 'Open the story for the latest verified development and its market context.';
-  const hasMore = summary.length > takeaway.length + 12;
 
   return (
     <Animated.View style={{ transform: [{ translateY: slideAnim }], opacity: opacityAnim }}>
-      <View style={s.feedCard}>
+      <TouchableOpacity activeOpacity={0.8} onPress={() => onSelect(item)} style={s.feedCard}>
+        {/* Text content */}
         <View style={s.feedCardText}>
           <View style={s.feedCardMeta}>
             <View style={[s.catBadge, { backgroundColor: catColor.bg }]}>
               <Text style={[s.catBadgeText, { color: catColor.text }]}>{item.categoryTag.toUpperCase()}</Text>
             </View>
             {isHighImpact && (
-              <View style={s.impactTag}>
-                <Feather name="trending-up" size={10} color={COLORS.error} />
-                <Text style={s.impactTagText}>KEY MOVE</Text>
+              <View style={s.highImpactInline}>
+                <Feather name="alert-circle" size={10} color="#EF4444" />
               </View>
             )}
             <Text style={s.feedDate}>{item.publishedAt}</Text>
           </View>
-          <TouchableOpacity activeOpacity={0.75} onPress={() => onSelect(item)} accessibilityRole="button" accessibilityLabel={`Open ${item.title}`}>
-            <Text style={s.feedTitle} numberOfLines={2}>{item.title}</Text>
-          </TouchableOpacity>
-          <View style={s.takeawayRow}>
-            <Text style={s.takeawayLabel}>TAKEAWAY</Text>
-            <Text style={s.takeawayText} numberOfLines={expanded ? undefined : 2}>{expanded ? summary || takeaway : takeaway}</Text>
-          </View>
-          <View style={s.sourceRow}>
-            <Text style={s.feedSource} numberOfLines={1}>{item.sourceName}</Text>
-            {hasMore ? (
-              <TouchableOpacity
-                style={s.readMoreButton}
-                onPress={() => {
-                  triggerHaptic('selection');
-                  setExpanded(value => !value);
-                }}
-                accessibilityRole="button"
-                accessibilityLabel={`${expanded ? 'Collapse' : 'Read more about'} ${item.title}`}
-                accessibilityState={{ expanded }}
-              >
-                <Text style={s.readMoreText}>{expanded ? 'Show less' : 'Read more'}</Text>
-                <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={13} color={COLORS.accent} />
-              </TouchableOpacity>
-            ) : null}
-          </View>
+          <Text style={s.feedTitle} numberOfLines={3}>{item.title}</Text>
+          {item.summary ? (
+            <Text style={s.feedSummary} numberOfLines={2}>{item.summary}</Text>
+          ) : null}
+          <Text style={s.feedSource}>{item.sourceName}</Text>
         </View>
 
+        {/* Image thumbnail on right */}
         <View style={s.feedThumb}>
           {item.imageUrl ? (
             <Image source={{ uri: item.imageUrl }} style={s.feedThumbImage} resizeMode="cover" />
@@ -348,7 +324,7 @@ function NewsFeedCard({
             </View>
           )}
         </View>
-      </View>
+      </TouchableOpacity>
 
       {/* Action buttons row */}
       <View style={s.aiActionsRow}>
@@ -961,7 +937,8 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
     setChatNewsItem(item);
   };
 
-  const feed = news;
+  const featured = news.length > 3 ? news.slice(0, 3) : [];
+  const feed = news.length > 3 ? news.slice(3) : news;
 
   return (
     <View style={s.container}>
@@ -1033,7 +1010,24 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
       {/* Content */}
       {!isLoading && !error && news.length > 0 && (
         <View>
-          <View style={s.feedList}>
+          {/* Featured horizontal carousel */}
+          {featured.length > 0 && (
+            <FeaturedCarousel items={featured} onSelect={(item) => {
+              openStory(news, news.findIndex(n => n.id === item.id));
+            }} />
+          )}
+
+          {/* Feed section label */}
+          {feed.length > 0 && featured.length > 0 && (
+            <View style={s.feedSectionHeader}>
+              <View style={s.feedSectionLine} />
+              <Text style={s.feedSectionLabel}>LATEST</Text>
+              <View style={s.feedSectionLine} />
+            </View>
+          )}
+
+          {/* Vertical feed */}
+          <View style={{ gap: 2 }}>
             {feed.map((item, index) => (
               <NewsFeedCard
                 key={item.id}
@@ -1156,29 +1150,21 @@ const s = StyleSheet.create({
   feedSectionLine: { flex: 1, height: 1, backgroundColor: COLORS.borderLight },
   feedSectionLabel: { ...TYPE.overline, color: COLORS.textMuted, fontSize: 10 },
 
-  feedList: { gap: 10 },
   feedCard: {
-    flexDirection: 'row', alignItems: 'flex-start', backgroundColor: COLORS.bg2, borderRadius: 14,
-    padding: 13, gap: 11, borderWidth: 1, borderColor: COLORS.borderLight,
+    flexDirection: 'row', backgroundColor: COLORS.bg2, borderRadius: 16,
+    padding: 12, gap: 12, borderWidth: 1, borderColor: COLORS.borderLight,
     ...SHADOWS.sm,
   },
-  feedCardText: { flex: 1, minWidth: 0 },
-  feedCardMeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 7, flexWrap: 'wrap' },
+  feedCardText: { flex: 1, justifyContent: 'space-between' },
+  feedCardMeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
   catBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 },
   catBadgeText: { fontSize: 8, fontWeight: '700', letterSpacing: 0.5 },
   feedDate: { fontSize: 10, color: COLORS.textMuted },
-  feedTitle: { fontSize: 15, fontWeight: '800', color: COLORS.textPrimary, lineHeight: 20, marginBottom: 9 },
-  impactTag: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 7, backgroundColor: COLORS.errorSoft },
-  impactTagText: { fontSize: 8, fontWeight: '800', color: COLORS.error },
-  takeawayRow: { borderLeftWidth: 2, borderLeftColor: COLORS.accent, paddingLeft: 9 },
-  takeawayLabel: { fontSize: 8, lineHeight: 11, fontWeight: '900', color: COLORS.accent, marginBottom: 2 },
-  takeawayText: { fontSize: 12, lineHeight: 17, fontWeight: '600', color: COLORS.textSecondary },
-  sourceRow: { minHeight: 25, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 7 },
+  feedTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, lineHeight: 19, marginBottom: 2 },
+  feedSummary: { fontSize: 11, color: COLORS.textSecondary, lineHeight: 15, marginBottom: 4 },
   feedSource: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
-  readMoreButton: { flexDirection: 'row', alignItems: 'center', gap: 2, paddingVertical: 4, paddingLeft: 8 },
-  readMoreText: { fontSize: 11, fontWeight: '700', color: COLORS.accent },
 
-  feedThumb: { width: 68, height: 68, borderRadius: 11, overflow: 'hidden' },
+  feedThumb: { width: 80, height: 80, borderRadius: 12, overflow: 'hidden' },
   feedThumbImage: { width: '100%', height: '100%' },
 
   aiActionsRow: {

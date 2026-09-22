@@ -3,6 +3,7 @@ import {
   Alert,
   Animated,
   FlatList,
+  Image,
   Modal,
   ScrollView,
   StyleSheet,
@@ -22,7 +23,6 @@ import { playSound } from '../../lib/sounds';
 import { StreakBadge } from '../ui/StreakBadge';
 import { XPBadge } from '../ui/XPBadge';
 import { LeoCharacter } from '../mascot/LeoCharacter';
-import { getMarketName } from '../../lib/markets';
 
 interface CourseLesson {
   day: number;
@@ -59,12 +59,30 @@ const MODULES: Array<{
   icon: keyof typeof Feather.glyphMap;
   position: object;
 }> = [
-  { kind: 'lesson', label: 'Daily Lesson', icon: 'book-open', position: { top: 6, left: '50%', marginLeft: -42 } },
-  { kind: 'arena', label: 'Daily Arena', icon: 'target', position: { top: 92, right: 8 } },
-  { kind: 'case', label: 'Deep Case', icon: 'help-circle', position: { bottom: 6, right: 44 } },
-  { kind: 'intel', label: 'Intel', icon: 'radio', position: { bottom: 6, left: 44 } },
-  { kind: 'notes', label: 'Notes', icon: 'edit-3', position: { top: 92, left: 8 } },
+  { kind: 'lesson', label: 'Daily Lesson', icon: 'book-open', position: { top: 0, left: '50%', marginLeft: -40 } },
+  { kind: 'arena', label: 'Daily Arena', icon: 'target', position: { top: 66, right: 22 } },
+  { kind: 'case', label: 'Deep Case', icon: 'help-circle', position: { bottom: 0, right: 56 } },
+  { kind: 'intel', label: 'Intel', icon: 'radio', position: { bottom: 0, left: 56 } },
+  { kind: 'notes', label: 'Notes', icon: 'edit-3', position: { top: 66, left: 22 } },
 ];
+
+const MARKET_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
+  aerospace: 'send',
+  neuroscience: 'activity',
+  ai: 'cpu',
+  fintech: 'dollar-sign',
+  ev: 'battery-charging',
+  biotech: 'heart',
+  cleanenergy: 'sun',
+  agtech: 'feather',
+  climatetech: 'wind',
+  cybersecurity: 'shield',
+  spacetech: 'radio',
+  robotics: 'settings',
+  healthtech: 'plus',
+  logistics: 'package',
+  web3: 'link',
+};
 
 function SectionHeader({
   section,
@@ -127,7 +145,7 @@ function Coin({
           <View style={styles.coinShine} />
           <Feather
             name={locked ? 'lock' : completed ? 'check' : icon}
-            size={locked ? 23 : 29}
+            size={locked ? 19 : 23}
             color={locked ? COLORS.textMuted : COLORS.textOnAccent}
           />
         </View>
@@ -213,7 +231,7 @@ function SectionCluster({
           accessibilityRole="button"
           accessibilityLabel={`Ask Leo about ${title}`}
         >
-          <LeoCharacter size="lg" animation={section.unlocked ? 'idle' : 'sleeping'} />
+          <LeoCharacter size="md" animation={section.unlocked ? 'idle' : 'sleeping'} />
         </TouchableOpacity>
       </View>
     </View>
@@ -450,9 +468,12 @@ export function CourseJourney({
         onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: Math.max(0, index * 540), animated: false })}
         ListHeaderComponent={(
           <View style={[styles.topHeader, { paddingTop: safeTop + 10 }]}>
-            <View>
-              <Text style={styles.courseLabel}>MY COURSE</Text>
-              <Text style={styles.marketName}>{getMarketName(marketId)}</Text>
+            <View
+              style={styles.marketBadge}
+              accessibilityRole="image"
+              accessibilityLabel="Active industry course"
+            >
+              <Feather name={MARKET_ICONS[marketId] || 'compass'} size={21} color={COLORS.courseHeader} />
             </View>
             <View style={styles.badges}>
               <TouchableOpacity disabled={!rescueAvailable} onPress={() => router.push('/streak-rescue')}>
@@ -504,44 +525,43 @@ export function CourseJourney({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
-  listContent: { paddingBottom: 88 },
+  listContent: { paddingBottom: 100 },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, backgroundColor: COLORS.bg0, paddingHorizontal: 28 },
   loadingCoin: { width: 70, height: 70, borderRadius: 35, backgroundColor: COLORS.accentSoft, borderWidth: 8, borderColor: COLORS.accentMedium },
   loadingText: { ...TYPE.bodyBold, color: COLORS.textSecondary, textAlign: 'center' },
   emptyTitle: { ...TYPE.h2, color: COLORS.textPrimary },
   retryButton: { minHeight: 48, minWidth: 140, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.courseHeader },
   retryText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
-  topHeader: { paddingHorizontal: 20, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  courseLabel: { ...TYPE.overline, color: COLORS.textMuted },
-  marketName: { ...TYPE.h2, color: COLORS.textPrimary, marginTop: 3 },
+  topHeader: { paddingHorizontal: 18, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  marketBadge: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.accentSoft, borderWidth: 1, borderColor: COLORS.accentMedium },
   badges: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  sectionBlock: { paddingHorizontal: 20, marginBottom: 22 },
-  sectionHeader: { minHeight: 142, borderRadius: 24, padding: 22, flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.courseHeader, shadowColor: COLORS.courseHeaderDeep, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.28, shadowRadius: 16, elevation: 8 },
+  sectionBlock: { paddingHorizontal: 18, marginBottom: 20 },
+  sectionHeader: { minHeight: 112, borderRadius: 20, paddingHorizontal: 18, paddingVertical: 16, flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.courseHeader, shadowColor: COLORS.courseHeaderDeep, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.24, shadowRadius: 13, elevation: 6 },
   sectionHeaderLocked: { opacity: 0.82 },
-  sectionHeaderCopy: { flex: 1, minWidth: 0, paddingRight: 16 },
+  sectionHeaderCopy: { flex: 1, minWidth: 0, paddingRight: 14 },
   sectionEyebrow: { ...TYPE.overline, color: 'rgba(255,255,255,0.75)' },
-  sectionTitle: { fontSize: 24, lineHeight: 29, fontWeight: '800', color: COLORS.textOnAccent, marginTop: 5 },
-  sectionProgress: { fontSize: 12, lineHeight: 16, fontWeight: '600', color: 'rgba(255,255,255,0.82)', marginTop: 10 },
-  sectionTrack: { height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.25)', marginTop: 8, overflow: 'hidden' },
-  sectionFill: { height: 6, borderRadius: 3, backgroundColor: COLORS.textOnAccent },
-  headerArrow: { width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(34,28,164,0.32)', alignItems: 'center', justifyContent: 'center' },
-  weekHeading: { minHeight: 68, paddingHorizontal: 8, paddingTop: 18, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 },
-  weekEyebrow: { ...TYPE.overline, color: COLORS.courseHeader },
-  weekTitle: { ...TYPE.h2, color: COLORS.textPrimary, marginTop: 4, maxWidth: 255 },
+  sectionTitle: { fontSize: 18, lineHeight: 23, fontWeight: '800', color: COLORS.textOnAccent, marginTop: 4 },
+  sectionProgress: { fontSize: 11, lineHeight: 14, fontWeight: '600', color: 'rgba(255,255,255,0.82)', marginTop: 7 },
+  sectionTrack: { height: 5, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.25)', marginTop: 6, overflow: 'hidden' },
+  sectionFill: { height: 5, borderRadius: 3, backgroundColor: COLORS.textOnAccent },
+  headerArrow: { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(34,28,164,0.32)', alignItems: 'center', justifyContent: 'center' },
+  weekHeading: { minHeight: 60, paddingHorizontal: 7, paddingTop: 15, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 },
+  weekEyebrow: { fontSize: 9, lineHeight: 12, fontWeight: '700', letterSpacing: 1, color: COLORS.courseHeader },
+  weekTitle: { fontSize: 17, lineHeight: 21, fontWeight: '700', color: COLORS.textPrimary, marginTop: 2, maxWidth: 255 },
   lockPill: { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 12, paddingHorizontal: 9, paddingVertical: 7, backgroundColor: COLORS.lockedSurface },
   lockPillText: { ...TYPE.caption, color: COLORS.textMuted, maxWidth: 110 },
-  cluster: { height: 374, position: 'relative', marginTop: 6 },
+  cluster: { height: 300, position: 'relative', marginTop: 2 },
   clusterLocked: { opacity: 0.66 },
-  orbit: { position: 'absolute', width: 246, height: 246, borderRadius: 123, borderWidth: 2, borderStyle: 'dashed', borderColor: COLORS.accentMedium, left: '50%', marginLeft: -123, top: 62 },
-  coinPosition: { position: 'absolute', width: 90, alignItems: 'center', zIndex: 3 },
-  coinShadow: { width: 84, height: 84, borderRadius: 42, backgroundColor: COLORS.courseCoinDeep, paddingBottom: 7, justifyContent: 'flex-start', shadowColor: COLORS.courseCoinDeep, shadowOffset: { width: 0, height: 9 }, shadowOpacity: 0.28, shadowRadius: 12, elevation: 8 },
-  coinFace: { width: 84, height: 77, borderRadius: 42, backgroundColor: COLORS.courseCoin, borderWidth: 1, borderColor: COLORS.courseCoinHighlight, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  orbit: { position: 'absolute', width: 208, height: 208, borderRadius: 104, borderWidth: 1.5, borderStyle: 'dashed', borderColor: COLORS.accentMedium, left: '50%', marginLeft: -104, top: 42 },
+  coinPosition: { position: 'absolute', width: 80, alignItems: 'center', zIndex: 3 },
+  coinShadow: { width: 68, height: 68, borderRadius: 34, backgroundColor: COLORS.courseCoinDeep, paddingBottom: 6, justifyContent: 'flex-start', shadowColor: COLORS.courseCoinDeep, shadowOffset: { width: 0, height: 7 }, shadowOpacity: 0.25, shadowRadius: 10, elevation: 7 },
+  coinFace: { width: 68, height: 62, borderRadius: 34, backgroundColor: COLORS.courseCoin, borderWidth: 1, borderColor: COLORS.courseCoinHighlight, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   coinLocked: { backgroundColor: COLORS.border, shadowColor: COLORS.cardShadow, shadowOpacity: 0.12 },
   coinFaceLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border },
-  coinShine: { position: 'absolute', top: 8, left: 18, right: 18, height: 7, borderRadius: 4, backgroundColor: COLORS.courseCoinHighlight },
-  coinLabel: { fontSize: 12, lineHeight: 15, fontWeight: '600', color: COLORS.textPrimary, marginTop: 4, textAlign: 'center' },
+  coinShine: { position: 'absolute', top: 7, left: 15, right: 15, height: 6, borderRadius: 4, backgroundColor: COLORS.courseCoinHighlight },
+  coinLabel: { fontSize: 11, lineHeight: 14, fontWeight: '600', color: COLORS.textPrimary, marginTop: 5, textAlign: 'center' },
   lockedText: { color: COLORS.textMuted },
-  leoCenter: { position: 'absolute', width: 166, height: 166, left: '50%', marginLeft: -83, top: 107, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
+  leoCenter: { position: 'absolute', width: 132, height: 132, left: '50%', marginLeft: -66, top: 83, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
   previewScreen: { flex: 1, backgroundColor: COLORS.bg0 },
   previewHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border },
   previewHeadingCopy: { flex: 1, minWidth: 0 },

@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 
 interface StreakBadgeProps {
@@ -43,8 +43,8 @@ export function StreakBadge({ count }: StreakBadgeProps) {
 
   return (
     <Animated.View style={[styles.container, { transform: [{ scale: scaleAnim }] }]}>
-      <Animated.View style={[styles.flameIcon, isOnFire ? { transform: [{ rotate: rotation }] } : undefined]}>
-        <MaterialCommunityIcons name="fire" size={20} color={COLORS.streak} />
+      <Animated.View style={isOnFire ? { transform: [{ rotate: rotation }] } : undefined}>
+        <Feather name="battery-charging" size={15} color={COLORS.streak} />
       </Animated.View>
       <Text style={styles.count}>{count}</Text>
     </Animated.View>
@@ -66,5 +66,4 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.streak,
   },
-  flameIcon: { width: 18, height: 18, alignItems: 'center', justifyContent: 'center' },
 });

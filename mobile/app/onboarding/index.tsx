@@ -25,10 +25,28 @@ import { OnboardingProgress } from '../../components/onboarding/OnboardingProgre
 import { triggerHaptic } from '../../lib/haptics';
 import { Feather } from '@expo/vector-icons';
 import { log } from '../../lib/logger';
-import { MARKET_ILLUSTRATIONS } from '../../lib/marketAssets';
 
 const STEP_LABELS = ['Industry', 'Goal', 'Level'];
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+// Market illustrations for the grid
+const MARKET_ILLUSTRATIONS: Record<string, any> = {
+  aerospace: require('../../assets/illustrations/aerospace.png'),
+  ai: require('../../assets/illustrations/ai.png'),
+  biotech: require('../../assets/illustrations/biotech.png'),
+  cleanenergy: require('../../assets/illustrations/cleanenergy.png'),
+  fintech: require('../../assets/illustrations/fintech.png'),
+  ev: require('../../assets/illustrations/ev.png'),
+  cybersecurity: require('../../assets/illustrations/cybersecurity.png'),
+  robotics: require('../../assets/illustrations/robotics.png'),
+  spacetech: require('../../assets/illustrations/spacetech.png'),
+  healthtech: require('../../assets/illustrations/healthtech.png'),
+  web3: require('../../assets/illustrations/web3.png'),
+  agtech: require('../../assets/illustrations/agtech.png'),
+  logistics: require('../../assets/illustrations/logistics.png'),
+  climatetech: require('../../assets/illustrations/climatetech.png'),
+  neuroscience: require('../../assets/illustrations/neuroscience.png'),
+};
 
 export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
