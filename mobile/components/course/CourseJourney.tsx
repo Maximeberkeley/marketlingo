@@ -130,7 +130,7 @@ function Coin({
           <View style={styles.coinShine} />
           <Feather
             name={locked ? 'lock' : completed ? 'check' : icon}
-            size={locked ? 19 : 23}
+            size={locked ? 22 : 28}
             color={locked ? COLORS.textMuted : COLORS.textOnAccent}
           />
         </View>
