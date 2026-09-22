@@ -280,6 +280,7 @@ function NewsFeedCard({
 }) {
   const slideAnim = useRef(new Animated.Value(24)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
+  const [analysisOpen, setAnalysisOpen] = useState(false);
 
   useEffect(() => {
     Animated.parallel([
@@ -309,9 +310,19 @@ function NewsFeedCard({
           </View>
           <Text style={s.feedTitle} numberOfLines={3}>{item.title}</Text>
           {item.summary ? (
-            <Text style={s.feedSummary} numberOfLines={2}>{item.summary}</Text>
+            <Text style={s.feedSummary} numberOfLines={1}>{item.summary}</Text>
           ) : null}
-          <Text style={s.feedSource}>{item.sourceName}</Text>
+          <View style={s.feedSignals}>
+            <View style={s.sourceChip}>
+              <Feather name="radio" size={9} color={COLORS.textMuted} />
+              <Text style={s.feedSource} numberOfLines={1}>{item.sourceName}</Text>
+            </View>
+            <View style={[s.impactChip, isHighImpact && s.impactChipHigh]}>
+              <Text style={[s.impactChipText, isHighImpact && s.impactChipTextHigh]}>
+                {isHighImpact ? 'HIGH IMPACT' : 'WATCH'}
+              </Text>
+            </View>
+          </View>
         </View>
 
         {/* Image thumbnail on right */}
@@ -326,12 +337,9 @@ function NewsFeedCard({
         </View>
       </TouchableOpacity>
 
-      {/* Action buttons row */}
-      <View style={s.aiActionsRow}>
+      <View style={s.quickActionsRow}>
         {([
           { action: 'discuss' as const, icon: 'message-circle' as const, label: 'Discuss' },
-          { action: 'summarize' as const, icon: 'file-text' as const, label: 'Summarize' },
-          { action: 'why' as const, icon: 'zap' as const, label: 'Why it matters' },
         ]).map(({ action, icon, label }) => (
           <TouchableOpacity
             key={action}
@@ -344,7 +352,6 @@ function NewsFeedCard({
           </TouchableOpacity>
         ))}
 
-        {/* Save to notebook */}
         <TouchableOpacity
           style={s.aiActionBtn}
           onPress={() => onSave(item)}
@@ -354,7 +361,6 @@ function NewsFeedCard({
           <Text style={[s.aiActionText, isSaved && { color: COLORS.accent }]}>{isSaved ? 'Saved' : 'Save'}</Text>
         </TouchableOpacity>
 
-        {/* Quiz me */}
         <TouchableOpacity
           style={[s.aiActionBtn, s.quizBtn]}
           onPress={() => onQuiz(item)}
@@ -364,14 +370,31 @@ function NewsFeedCard({
           <Text style={[s.aiActionText, { color: COLORS.accent, fontWeight: '700' }]}>Quiz</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[s.aiActionBtn, { marginLeft: 'auto' }]}
-          onPress={() => Linking.openURL(item.sourceUrl).catch(() => {})}
-          activeOpacity={0.7}
-        >
-          <Feather name="external-link" size={11} color={COLORS.textMuted} />
+        <TouchableOpacity style={s.analysisToggle} onPress={() => setAnalysisOpen(open => !open)} activeOpacity={0.72}>
+          <Text style={s.analysisToggleText}>{analysisOpen ? 'Close analysis' : 'Read full analysis'}</Text>
+          <Feather name={analysisOpen ? 'chevron-up' : 'chevron-down'} size={14} color={COLORS.accent} />
         </TouchableOpacity>
       </View>
+
+      {analysisOpen ? (
+        <View style={s.analysisPanel}>
+          {item.summary ? <Text style={s.analysisText}>{item.summary}</Text> : null}
+          <View style={s.analysisActions}>
+            <TouchableOpacity style={s.analysisAction} onPress={() => onAiAction(item, 'summarize')}>
+              <Feather name="file-text" size={13} color={COLORS.accent} />
+              <Text style={s.analysisActionText}>Quick summary</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={s.analysisAction} onPress={() => onAiAction(item, 'why')}>
+              <Feather name="zap" size={13} color={COLORS.accent} />
+              <Text style={s.analysisActionText}>Why it matters</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={s.analysisAction} onPress={() => Linking.openURL(item.sourceUrl).catch(() => {})}>
+              <Feather name="external-link" size={13} color={COLORS.accent} />
+              <Text style={s.analysisActionText}>Source</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : null}
     </Animated.View>
   );
 }
@@ -937,8 +960,8 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
     setChatNewsItem(item);
   };
 
-  const featured = news.length > 3 ? news.slice(0, 3) : [];
-  const feed = news.length > 3 ? news.slice(3) : news;
+  const featured = news.slice(0, Math.min(5, news.length));
+  const feed = news.slice(featured.length);
 
   return (
     <View style={s.container}>
@@ -1128,14 +1151,14 @@ const s = StyleSheet.create({
   habitDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.border },
   habitDotFilled: { backgroundColor: COLORS.accent },
 
-  featuredCard: { height: 220, borderRadius: 20, overflow: 'hidden', ...SHADOWS.md },
+  featuredCard: { height: 210, borderRadius: 18, overflow: 'hidden', ...SHADOWS.md },
   featuredImage: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
   featuredOverlay: { ...StyleSheet.absoluteFillObject },
   featuredContent: { ...StyleSheet.absoluteFillObject, padding: 16, justifyContent: 'flex-end' },
   featuredTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', position: 'absolute', top: 14, left: 14, right: 14 },
-  featuredBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
+  featuredBadge: { paddingHorizontal: 9, paddingVertical: 5, borderRadius: 8 },
   featuredBadgeText: { fontSize: 9, fontWeight: '700', color: '#fff', letterSpacing: 0.8 },
-  featuredTitle: { fontSize: 17, fontWeight: '800', color: '#fff', lineHeight: 22, marginBottom: 4 },
+  featuredTitle: { fontSize: 19, fontWeight: '900', color: '#fff', lineHeight: 24, marginBottom: 5 },
   featuredSummary: { fontSize: 11, color: 'rgba(255,255,255,0.75)', lineHeight: 15, marginBottom: 6 },
   featuredMeta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   featuredSource: { fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: '600' },
@@ -1163,11 +1186,17 @@ const s = StyleSheet.create({
   feedTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, lineHeight: 19, marginBottom: 2 },
   feedSummary: { fontSize: 11, color: COLORS.textSecondary, lineHeight: 15, marginBottom: 4 },
   feedSource: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
+  feedSignals: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 5 },
+  sourceChip: { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 1, paddingHorizontal: 7, paddingVertical: 4, borderRadius: 8, backgroundColor: COLORS.bg1 },
+  impactChip: { paddingHorizontal: 7, paddingVertical: 4, borderRadius: 8, backgroundColor: COLORS.accentSoft },
+  impactChipHigh: { backgroundColor: COLORS.errorSoft },
+  impactChipText: { fontSize: 8, fontWeight: '800', color: COLORS.accent },
+  impactChipTextHigh: { color: COLORS.error },
 
   feedThumb: { width: 80, height: 80, borderRadius: 12, overflow: 'hidden' },
   feedThumbImage: { width: '100%', height: '100%' },
 
-  aiActionsRow: {
+  quickActionsRow: {
     flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 12,
     paddingBottom: 10, paddingTop: 4, flexWrap: 'wrap',
   },
@@ -1178,6 +1207,13 @@ const s = StyleSheet.create({
   quizBtn: {
     backgroundColor: COLORS.accentSoft, borderWidth: 1, borderColor: COLORS.accentMedium,
   },
+  analysisToggle: { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 6 },
+  analysisToggleText: { fontSize: 10, fontWeight: '700', color: COLORS.accent },
+  analysisPanel: { marginHorizontal: 12, marginBottom: 12, padding: 12, borderRadius: 12, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.borderLight },
+  analysisText: { ...TYPE.caption, color: COLORS.textSecondary, lineHeight: 19 },
+  analysisActions: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginTop: 10 },
+  analysisAction: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 9, paddingVertical: 7, borderRadius: 9, backgroundColor: COLORS.accentSoft },
+  analysisActionText: { fontSize: 10, fontWeight: '700', color: COLORS.accent },
 
   loadingContainer: { gap: 8 },
   skeletonCard: { padding: 14, backgroundColor: COLORS.bg1, borderRadius: 14, borderWidth: 1, borderColor: COLORS.borderLight, gap: 8 },
