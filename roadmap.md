@@ -53,3 +53,4 @@
 - [x] Restore the Phase 4–6 retention loops displaced by the Course map without rebuilding a dashboard: focus, deliverable progress, insider streak/rescue, review, Intel progress, and tomorrow's open loop now live on the path.
 - [ ] Complete a screen-by-screen visual, interaction, dark-mode, safe-area, and navigation audit before marking the next mobile release green.
 - [x] Redesign mobile Course into 30-day section clusters with bounded local-day access and locked-section curriculum previews.
+- [x] Refine mobile Course/Intel presentation: 10% smaller Leo visual only, interactive industry artwork badge, stronger top-news carousel, and collapsible full analysis.

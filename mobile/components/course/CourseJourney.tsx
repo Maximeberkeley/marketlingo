@@ -25,6 +25,24 @@ import { StreakBadge } from '../ui/StreakBadge';
 import { XPBadge } from '../ui/XPBadge';
 import { LeoCharacter } from '../mascot/LeoCharacter';
 
+const MARKET_ILLUSTRATIONS: Record<string, any> = {
+  aerospace: require('../../assets/illustrations/aerospace.png'),
+  ai: require('../../assets/illustrations/ai.png'),
+  biotech: require('../../assets/illustrations/biotech.png'),
+  cleanenergy: require('../../assets/illustrations/cleanenergy.png'),
+  fintech: require('../../assets/illustrations/fintech.png'),
+  ev: require('../../assets/illustrations/ev.png'),
+  cybersecurity: require('../../assets/illustrations/cybersecurity.png'),
+  robotics: require('../../assets/illustrations/robotics.png'),
+  spacetech: require('../../assets/illustrations/spacetech.png'),
+  healthtech: require('../../assets/illustrations/healthtech.png'),
+  web3: require('../../assets/illustrations/web3.png'),
+  agtech: require('../../assets/illustrations/agtech.png'),
+  logistics: require('../../assets/illustrations/logistics.png'),
+  climatetech: require('../../assets/illustrations/climatetech.png'),
+  neuroscience: require('../../assets/illustrations/neuroscience.png'),
+};
+
 interface CourseLesson {
   day: number;
   title: string;
@@ -214,7 +232,9 @@ function SectionCluster({
           accessibilityRole="button"
           accessibilityLabel={`Ask Leo about ${title}`}
         >
-          <LeoCharacter size="lg" animation={section.unlocked ? 'idle' : 'sleeping'} />
+          <View style={styles.leoVisualScale} pointerEvents="none">
+            <LeoCharacter size="lg" animation={section.unlocked ? 'idle' : 'sleeping'} />
+          </View>
         </TouchableOpacity>
       </View>
     </View>
@@ -318,7 +338,22 @@ export function CourseJourney({
   const [loadError, setLoadError] = useState(false);
   const [loadKey, setLoadKey] = useState(0);
   const [previewSection, setPreviewSection] = useState<SectionAccess | null>(null);
+  const [showIndustryName, setShowIndustryName] = useState(false);
+  const industryPopoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const themes = useMemo(() => seasonThemes(marketId), [marketId]);
+  const marketName = getMarketName(marketId);
+  const marketIllustration = MARKET_ILLUSTRATIONS[marketId] || MARKET_ILLUSTRATIONS.aerospace;
+
+  useEffect(() => () => {
+    if (industryPopoverTimer.current) clearTimeout(industryPopoverTimer.current);
+  }, []);
+
+  const showIndustryPopover = () => {
+    triggerHaptic('selection');
+    setShowIndustryName(true);
+    if (industryPopoverTimer.current) clearTimeout(industryPopoverTimer.current);
+    industryPopoverTimer.current = setTimeout(() => setShowIndustryName(false), 2400);
+  };
 
   useEffect(() => {
     let active = true;
@@ -448,9 +483,22 @@ export function CourseJourney({
         onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: Math.max(0, index * 540), animated: false })}
         ListHeaderComponent={(
           <View style={[styles.topHeader, { paddingTop: safeTop + 10 }]}>
-            <View>
-              <Text style={styles.courseLabel}>MY COURSE</Text>
-              <Text style={styles.marketName}>{getMarketName(marketId)}</Text>
+            <View style={styles.industryBadgeWrap}>
+              <TouchableOpacity
+                style={styles.industryBadge}
+                onPress={showIndustryPopover}
+                activeOpacity={0.82}
+                accessibilityRole="button"
+                accessibilityLabel={`Current industry: ${marketName}`}
+                accessibilityHint="Shows your active industry"
+              >
+                <Image source={marketIllustration} style={styles.industryImage} resizeMode="contain" />
+              </TouchableOpacity>
+              {showIndustryName ? (
+                <View style={styles.industryPopover} accessibilityLiveRegion="polite">
+                  <Text style={styles.industryPopoverText}>Current Industry: {marketName}</Text>
+                </View>
+              ) : null}
             </View>
             <View style={styles.badges}>
               <TouchableOpacity disabled={!rescueAvailable} onPress={() => router.push('/streak-rescue')}>
@@ -510,8 +558,17 @@ const styles = StyleSheet.create({
   retryButton: { minHeight: 48, minWidth: 140, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.courseHeader },
   retryText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
   topHeader: { paddingHorizontal: 20, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  courseLabel: { ...TYPE.overline, color: COLORS.textMuted },
-  marketName: { ...TYPE.h1, color: COLORS.textPrimary, marginTop: 2 },
+  industryBadgeWrap: { position: 'relative', zIndex: 10 },
+  industryBadge: {
+    width: 58, height: 58, borderRadius: 17, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOWS.sm,
+  },
+  industryImage: { width: 48, height: 48 },
+  industryPopover: {
+    position: 'absolute', top: 66, left: 0, minWidth: 220, paddingHorizontal: 13, paddingVertical: 10,
+    borderRadius: 12, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, ...SHADOWS.md,
+  },
+  industryPopoverText: { ...TYPE.caption, color: COLORS.textPrimary },
   badges: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   sectionBlock: { paddingHorizontal: 18, marginBottom: 26 },
   sectionHeader: { minHeight: 142, borderRadius: 24, padding: 22, flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.courseHeader, shadowColor: COLORS.courseHeaderDeep, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.28, shadowRadius: 16, elevation: 8 },
@@ -540,6 +597,7 @@ const styles = StyleSheet.create({
   coinLabel: { ...TYPE.caption, color: COLORS.textPrimary, marginTop: 7, textAlign: 'center' },
   lockedText: { color: COLORS.textMuted },
   leoCenter: { position: 'absolute', width: 166, height: 166, left: '50%', marginLeft: -83, top: 107, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
+  leoVisualScale: { transform: [{ scale: 0.9 }] },
   previewScreen: { flex: 1, backgroundColor: COLORS.bg0 },
   previewHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border },
   previewHeadingCopy: { flex: 1, minWidth: 0 },

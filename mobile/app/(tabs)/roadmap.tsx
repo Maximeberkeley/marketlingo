@@ -78,7 +78,11 @@ export default function IntelScreen() {
           </View>
         </View>
         <Text style={styles.market}>{getMarketName(marketId)}</Text>
-        <Text style={styles.subtitle}>Three stories a day. Know what changed, why it matters, and what insiders are watching.</Text>
+        <View style={styles.promiseRow}>
+          <View style={styles.promiseChip}><Text style={styles.promiseChipText}>3 stories</Text></View>
+          <View style={styles.promiseChip}><Text style={styles.promiseChipText}>Live signals</Text></View>
+          <View style={styles.promiseChip}><Text style={styles.promiseChipText}>+20 XP</Text></View>
+        </View>
       </View>
 
       <View style={styles.feed}>
@@ -98,6 +102,8 @@ const styles = StyleSheet.create({
   signalMark: { width: 52, height: 52, borderRadius: 26, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
   liveDot: { position: 'absolute', right: 7, top: 7, width: 9, height: 9, borderRadius: 5, backgroundColor: COLORS.error, borderWidth: 2, borderColor: COLORS.bg0 },
   market: { ...TYPE.h3, color: COLORS.textPrimary, marginTop: 18 },
-  subtitle: { ...TYPE.body, color: COLORS.textSecondary, marginTop: 5, maxWidth: 340 },
+  promiseRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginTop: 9 },
+  promiseChip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 9, backgroundColor: COLORS.accentSoft, borderWidth: 1, borderColor: COLORS.accentMedium },
+  promiseChipText: { ...TYPE.caption, color: COLORS.accent },
   feed: { paddingHorizontal: 16, paddingTop: 20 },
 });
