@@ -210,7 +210,7 @@ function SectionCluster({
       <View style={[styles.cluster, !section.unlocked && styles.clusterLocked]}>
         <View style={styles.orbit} />
         {MODULES.map(module => {
-          // Notes is persistent and remains usable; the daily modules obey section access.
+          // Notes remains persistent, while future-section activity controls obey section access.
           const locked = !section.unlocked && module.kind !== 'notes';
           return (
             <Coin

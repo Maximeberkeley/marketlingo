@@ -46,7 +46,7 @@ export function LessonPrerequisite({ activity, lessonStackId }: LessonPrerequisi
     playSound('tap').catch(() => {});
     router.replace({
       pathname: '/(tabs)/home',
-      params: lessonStackId ? { openStackId: lessonStackId } : undefined,
+      params: lessonStackId ? { openStackId: lessonStackId } : { openToday: '1' },
     } as any);
   };
 
