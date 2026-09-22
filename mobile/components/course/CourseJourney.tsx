@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
@@ -23,6 +24,8 @@ import { playSound } from '../../lib/sounds';
 import { StreakBadge } from '../ui/StreakBadge';
 import { XPBadge } from '../ui/XPBadge';
 import { LeoCharacter } from '../mascot/LeoCharacter';
+import { getMarketIllustration, getMarketLeo } from '../../lib/marketAssets';
+import { getMarketName } from '../../lib/markets';
 
 interface CourseLesson {
   day: number;
@@ -59,30 +62,12 @@ const MODULES: Array<{
   icon: keyof typeof Feather.glyphMap;
   position: object;
 }> = [
-  { kind: 'lesson', label: 'Daily Lesson', icon: 'book-open', position: { top: 0, left: '50%', marginLeft: -40 } },
-  { kind: 'arena', label: 'Daily Arena', icon: 'target', position: { top: 66, right: 22 } },
-  { kind: 'case', label: 'Deep Case', icon: 'help-circle', position: { bottom: 0, right: 56 } },
-  { kind: 'intel', label: 'Intel', icon: 'radio', position: { bottom: 0, left: 56 } },
-  { kind: 'notes', label: 'Notes', icon: 'edit-3', position: { top: 66, left: 22 } },
+  { kind: 'lesson', label: 'Daily Lesson', icon: 'book-open', position: { top: 0, left: '50%', marginLeft: -45 } },
+  { kind: 'arena', label: 'Daily Arena', icon: 'target', position: { top: 64, right: 0 } },
+  { kind: 'case', label: 'Deep Case', icon: 'help-circle', position: { bottom: 0, right: 38 } },
+  { kind: 'intel', label: 'Intel', icon: 'radio', position: { bottom: 0, left: 38 } },
+  { kind: 'notes', label: 'Notes', icon: 'edit-3', position: { top: 64, left: 0 } },
 ];
-
-const MARKET_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
-  aerospace: 'send',
-  neuroscience: 'activity',
-  ai: 'cpu',
-  fintech: 'dollar-sign',
-  ev: 'battery-charging',
-  biotech: 'heart',
-  cleanenergy: 'sun',
-  agtech: 'feather',
-  climatetech: 'wind',
-  cybersecurity: 'shield',
-  spacetech: 'radio',
-  robotics: 'settings',
-  healthtech: 'plus',
-  logistics: 'package',
-  web3: 'link',
-};
 
 function SectionHeader({
   section,
@@ -165,6 +150,8 @@ function SectionCluster({
   arenaCompletedToday,
   caseCompletedToday,
   intelDone,
+  marketId,
+  minHeight,
   onModule,
   onLeo,
   onHeader,
@@ -178,6 +165,8 @@ function SectionCluster({
   arenaCompletedToday: boolean;
   caseCompletedToday: boolean;
   intelDone: boolean;
+  marketId: string;
+  minHeight: number;
   onModule: (kind: ModuleKind) => void;
   onLeo: () => void;
   onHeader: () => void;
@@ -192,7 +181,7 @@ function SectionCluster({
   };
 
   return (
-    <View style={styles.sectionBlock}>
+    <View style={[styles.sectionBlock, { minHeight }]}>
       <SectionHeader section={section} title={title} onPress={onHeader} />
       <View style={styles.weekHeading}>
         <View>
@@ -231,7 +220,11 @@ function SectionCluster({
           accessibilityRole="button"
           accessibilityLabel={`Ask Leo about ${title}`}
         >
-          <LeoCharacter size="md" animation={section.unlocked ? 'idle' : 'sleeping'} />
+          {section.unlocked ? (
+            <Image source={getMarketLeo(marketId)} style={styles.industryLeo} resizeMode="contain" />
+          ) : (
+            <LeoCharacter size="md" animation="sleeping" />
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -329,13 +322,22 @@ export function CourseJourney({
   onOpenLesson,
   onAskLeo,
 }: CourseJourneyProps) {
+  const { height: viewportHeight } = useWindowDimensions();
   const listRef = useRef<FlatList<SectionAccess>>(null);
   const [lessons, setLessons] = useState<CourseLesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [loadKey, setLoadKey] = useState(0);
   const [previewSection, setPreviewSection] = useState<SectionAccess | null>(null);
+  const [showMarketTip, setShowMarketTip] = useState(false);
   const themes = useMemo(() => seasonThemes(marketId), [marketId]);
+  const sectionMinHeight = Math.max(500, viewportHeight - safeTop - 82);
+
+  useEffect(() => {
+    if (!showMarketTip) return;
+    const timer = setTimeout(() => setShowMarketTip(false), 1800);
+    return () => clearTimeout(timer);
+  }, [showMarketTip]);
 
   useEffect(() => {
     let active = true;
@@ -468,13 +470,23 @@ export function CourseJourney({
         onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: Math.max(0, index * 540), animated: false })}
         ListHeaderComponent={(
           <View style={[styles.topHeader, { paddingTop: safeTop + 10 }]}>
-            <View
+            <TouchableOpacity
               style={styles.marketBadge}
-              accessibilityRole="image"
-              accessibilityLabel="Active industry course"
+              onPress={() => {
+                triggerHaptic('selection');
+                setShowMarketTip(true);
+              }}
+              activeOpacity={0.78}
+              accessibilityRole="button"
+              accessibilityLabel={`Active industry: ${getMarketName(marketId)}`}
             >
-              <Feather name={MARKET_ICONS[marketId] || 'compass'} size={21} color={COLORS.courseHeader} />
-            </View>
+              <Image source={getMarketIllustration(marketId)} style={styles.marketThumbnail} resizeMode="contain" />
+            </TouchableOpacity>
+            {showMarketTip ? (
+              <View style={styles.marketTip} pointerEvents="none">
+                <Text style={styles.marketTipText}>Active: {getMarketName(marketId)}</Text>
+              </View>
+            ) : null}
             <View style={styles.badges}>
               <TouchableOpacity disabled={!rescueAvailable} onPress={() => router.push('/streak-rescue')}>
                 <StreakBadge count={streak} />
@@ -500,6 +512,8 @@ export function CourseJourney({
               arenaCompletedToday={arenaCompletedToday}
               caseCompletedToday={caseCompletedToday}
               intelDone={intelReadToday >= intelTarget}
+              marketId={marketId}
+              minHeight={sectionMinHeight}
               onHeader={() => setPreviewSection(section)}
               onLeo={() => onAskLeo(section.displayDay)}
               onModule={kind => handleModule(section, lesson, kind)}
@@ -525,18 +539,21 @@ export function CourseJourney({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
-  listContent: { paddingBottom: 100 },
+  listContent: { paddingBottom: 88 },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, backgroundColor: COLORS.bg0, paddingHorizontal: 28 },
   loadingCoin: { width: 70, height: 70, borderRadius: 35, backgroundColor: COLORS.accentSoft, borderWidth: 8, borderColor: COLORS.accentMedium },
   loadingText: { ...TYPE.bodyBold, color: COLORS.textSecondary, textAlign: 'center' },
   emptyTitle: { ...TYPE.h2, color: COLORS.textPrimary },
   retryButton: { minHeight: 48, minWidth: 140, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.courseHeader },
   retryText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
-  topHeader: { paddingHorizontal: 18, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  marketBadge: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.accentSoft, borderWidth: 1, borderColor: COLORS.accentMedium },
+  topHeader: { paddingHorizontal: 18, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 10 },
+  marketBadge: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden', ...SHADOWS.sm },
+  marketThumbnail: { width: 34, height: 34 },
+  marketTip: { position: 'absolute', left: 18, bottom: -28, zIndex: 20, borderRadius: 10, paddingHorizontal: 11, paddingVertical: 7, backgroundColor: COLORS.textPrimary, ...SHADOWS.md },
+  marketTipText: { fontSize: 11, lineHeight: 14, fontWeight: '700', color: COLORS.bg0 },
   badges: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  sectionBlock: { paddingHorizontal: 18, marginBottom: 20 },
-  sectionHeader: { minHeight: 112, borderRadius: 20, paddingHorizontal: 18, paddingVertical: 16, flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.courseHeader, shadowColor: COLORS.courseHeaderDeep, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.24, shadowRadius: 13, elevation: 6 },
+  sectionBlock: { paddingHorizontal: 18 },
+  sectionHeader: { minHeight: 102, borderRadius: 18, paddingHorizontal: 17, paddingVertical: 13, flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.courseHeader, shadowColor: COLORS.courseHeaderDeep, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.22, shadowRadius: 11, elevation: 5 },
   sectionHeaderLocked: { opacity: 0.82 },
   sectionHeaderCopy: { flex: 1, minWidth: 0, paddingRight: 14 },
   sectionEyebrow: { ...TYPE.overline, color: 'rgba(255,255,255,0.75)' },
@@ -545,23 +562,24 @@ const styles = StyleSheet.create({
   sectionTrack: { height: 5, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.25)', marginTop: 6, overflow: 'hidden' },
   sectionFill: { height: 5, borderRadius: 3, backgroundColor: COLORS.textOnAccent },
   headerArrow: { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(34,28,164,0.32)', alignItems: 'center', justifyContent: 'center' },
-  weekHeading: { minHeight: 60, paddingHorizontal: 7, paddingTop: 15, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 },
+  weekHeading: { minHeight: 49, paddingHorizontal: 7, paddingTop: 10, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 },
   weekEyebrow: { fontSize: 9, lineHeight: 12, fontWeight: '700', letterSpacing: 1, color: COLORS.courseHeader },
   weekTitle: { fontSize: 17, lineHeight: 21, fontWeight: '700', color: COLORS.textPrimary, marginTop: 2, maxWidth: 255 },
   lockPill: { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 12, paddingHorizontal: 9, paddingVertical: 7, backgroundColor: COLORS.lockedSurface },
   lockPillText: { ...TYPE.caption, color: COLORS.textMuted, maxWidth: 110 },
-  cluster: { height: 300, position: 'relative', marginTop: 2 },
+  cluster: { height: 320, position: 'relative' },
   clusterLocked: { opacity: 0.66 },
-  orbit: { position: 'absolute', width: 208, height: 208, borderRadius: 104, borderWidth: 1.5, borderStyle: 'dashed', borderColor: COLORS.accentMedium, left: '50%', marginLeft: -104, top: 42 },
-  coinPosition: { position: 'absolute', width: 80, alignItems: 'center', zIndex: 3 },
-  coinShadow: { width: 68, height: 68, borderRadius: 34, backgroundColor: COLORS.courseCoinDeep, paddingBottom: 6, justifyContent: 'flex-start', shadowColor: COLORS.courseCoinDeep, shadowOffset: { width: 0, height: 7 }, shadowOpacity: 0.25, shadowRadius: 10, elevation: 7 },
-  coinFace: { width: 68, height: 62, borderRadius: 34, backgroundColor: COLORS.courseCoin, borderWidth: 1, borderColor: COLORS.courseCoinHighlight, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  orbit: { position: 'absolute', width: 246, height: 246, borderRadius: 123, borderWidth: 1.5, borderStyle: 'dashed', borderColor: COLORS.accentMedium, left: '50%', marginLeft: -123, top: 35 },
+  coinPosition: { position: 'absolute', width: 90, alignItems: 'center', zIndex: 3 },
+  coinShadow: { width: 84, height: 84, borderRadius: 42, backgroundColor: COLORS.courseCoinDeep, paddingBottom: 7, justifyContent: 'flex-start', shadowColor: COLORS.courseCoinDeep, shadowOffset: { width: 0, height: 7 }, shadowOpacity: 0.25, shadowRadius: 10, elevation: 7 },
+  coinFace: { width: 84, height: 77, borderRadius: 42, backgroundColor: COLORS.courseCoin, borderWidth: 1, borderColor: COLORS.courseCoinHighlight, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   coinLocked: { backgroundColor: COLORS.border, shadowColor: COLORS.cardShadow, shadowOpacity: 0.12 },
   coinFaceLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border },
-  coinShine: { position: 'absolute', top: 7, left: 15, right: 15, height: 6, borderRadius: 4, backgroundColor: COLORS.courseCoinHighlight },
-  coinLabel: { fontSize: 11, lineHeight: 14, fontWeight: '600', color: COLORS.textPrimary, marginTop: 5, textAlign: 'center' },
+  coinShine: { position: 'absolute', top: 8, left: 18, right: 18, height: 7, borderRadius: 4, backgroundColor: COLORS.courseCoinHighlight },
+  coinLabel: { fontSize: 12, lineHeight: 15, fontWeight: '600', color: COLORS.textPrimary, marginTop: 4, textAlign: 'center' },
   lockedText: { color: COLORS.textMuted },
-  leoCenter: { position: 'absolute', width: 132, height: 132, left: '50%', marginLeft: -66, top: 83, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
+  leoCenter: { position: 'absolute', width: 132, height: 132, left: '50%', marginLeft: -66, top: 91, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
+  industryLeo: { width: 128, height: 128 },
   previewScreen: { flex: 1, backgroundColor: COLORS.bg0 },
   previewHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border },
   previewHeadingCopy: { flex: 1, minWidth: 0 },
