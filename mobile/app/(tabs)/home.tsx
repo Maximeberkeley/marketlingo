@@ -7,7 +7,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
-  Image,
   Animated,
   Alert,
 } from 'react-native';
