@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, Easing } from 'react-native';
 import { COLORS } from '../../lib/constants';
+import { useDisplayName } from '../../hooks/useDisplayName';
 
 interface StreakAtRiskProps {
   streak: number;
@@ -10,6 +11,7 @@ interface StreakAtRiskProps {
 }
 
 export function StreakAtRisk({ streak, hoursLeft, onStartLesson, onDismiss }: StreakAtRiskProps) {
+  const { displayName } = useDisplayName();
   const shakeAnim = useRef(new Animated.Value(0)).current;
   const flameScale = useRef(new Animated.Value(1)).current;
   const slideAnim = useRef(new Animated.Value(-100)).current;
@@ -75,7 +77,7 @@ export function StreakAtRisk({ streak, hoursLeft, onStartLesson, onDismiss }: St
         </Animated.View>
         <View style={styles.messageColumn}>
           <Text style={[styles.headline, { color: textColor }]}>
-            {urgencyLevel === 'critical' ? 'Your streak is dying!' : `${streak}-day streak at risk!`}
+            {urgencyLevel === 'critical' ? `${displayName}, your streak needs you!` : `${displayName}, your ${streak}-day streak is at risk!`}
           </Text>
           <Text style={styles.subtext}>
             {urgencyLevel === 'critical'

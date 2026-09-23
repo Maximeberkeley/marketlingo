@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   sentenceWordStrong: { color: COLORS.accent, fontWeight: '900' },
   itWord: { color: COLORS.accent, fontWeight: '900', textDecorationLine: 'underline' },
   connectionArea: { height: 42, marginHorizontal: 28, justifyContent: 'center' },
-  connectionLine: { height: 3, borderRadius: 2, backgroundColor: COLORS.accent, transformOrigin: 'right' },
+  connectionLine: { height: 3, borderRadius: 2, backgroundColor: COLORS.accent },
   spark: { position: 'absolute', left: 0, width: 12, height: 12, borderRadius: 6, backgroundColor: COLORS.accent },
   tapIt: { alignSelf: 'center', flexDirection: 'row', gap: 7, alignItems: 'center', backgroundColor: COLORS.accentSoft, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12 },
   tapItText: { color: COLORS.accent, fontSize: 12, fontWeight: '800' },

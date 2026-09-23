@@ -57,65 +57,15 @@ export async function applyDemoXP(userId: string, marketId: string): Promise<num
   try {
     const { xp } = await getDemoXP();
     if (xp <= 0) return 0;
-
-    // Credit the XP via Supabase
-    const { data: priorReward } = await supabase
-      .from('xp_transactions')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('market_id', marketId)
-      .eq('source_type', 'demo_bridge')
-      .maybeSingle();
-    if (priorReward) {
-      await AsyncStorage.multiRemove([DEMO_XP_KEY, DEMO_MARKET_KEY, DEMO_COMPLETED_KEY]);
-      return 0;
-    }
-
-    const reward = Math.min(DEMO_REWARD_XP, xp);
-    const { error } = await supabase.from('xp_transactions').insert({
-      user_id: userId,
-      market_id: marketId,
-      xp_amount: reward,
-      source_type: 'demo_bridge',
-      description: 'XP earned during demo lesson — welcome bonus!',
+    const today = new Date();
+    const localDay = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const { data, error } = await supabase.rpc('claim_demo_onboarding_reward', {
+      p_market_id: marketId,
+      p_today: localDay,
     });
-
-    if (!error) {
-      // Ensure user_xp record exists first
-      await supabase.from('user_xp').upsert(
-        {
-          user_id: userId,
-          market_id: marketId,
-          total_xp: 0,
-          current_level: 1,
-          xp_to_next_level: 100,
-          startup_stage: 1,
-        },
-        { onConflict: 'user_id,market_id', ignoreDuplicates: true }
-      );
-
-      // Update the total XP atomically
-      await supabase.rpc('increment_user_xp', {
-        p_user_id: userId,
-        p_market_id: marketId,
-        p_amount: reward,
-      });
-
-      // Clear stored demo XP
-      const today = new Date();
-      const localDay = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-      await supabase.from('daily_completions').upsert({
-        user_id: userId,
-        market_id: marketId,
-        completion_date: localDay,
-        lesson_completed: false,
-        xp_earned: reward,
-      }, { onConflict: 'user_id,market_id,completion_date' });
-      await supabase.rpc('sync_local_streak', { p_market_id: marketId, p_today: localDay });
-      await AsyncStorage.multiRemove([DEMO_XP_KEY, DEMO_MARKET_KEY, DEMO_COMPLETED_KEY]);
-    }
-
-    return error ? 0 : reward;
+    if (error) throw error;
+    await AsyncStorage.multiRemove([DEMO_XP_KEY, DEMO_MARKET_KEY, DEMO_COMPLETED_KEY]);
+    return typeof data === 'number' ? data : 0;
   } catch (e) {
     log.warn('Failed to apply demo XP:', e);
     return 0;

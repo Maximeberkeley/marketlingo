@@ -36,13 +36,17 @@ export default function WelcomeScreen() {
         return;
       }
       const name = normalizeDisplayName(profile?.display_name || localName || user.user_metadata?.display_name);
-      const status = (profile?.demo_onboarding_status || localStatus || 'pending') as 'pending' | 'completed' | 'skipped';
+      const status = (localStatus === 'completed' || profile?.demo_onboarding_status === 'completed')
+        ? 'completed'
+        : (localStatus === 'skipped' || profile?.demo_onboarding_status === 'skipped')
+          ? 'skipped'
+          : 'pending';
       setDisplayName(name);
       setDemoStatus(status);
       await Promise.all([
         storage.setDisplayName(name),
         storage.setDemoStatus(status),
-        supabase.from('profiles').update({ display_name: name }).eq('id', user.id),
+        supabase.from('profiles').update({ display_name: name, demo_onboarding_status: status }).eq('id', user.id),
       ]);
       setLoading(false);
       void triggerCelebration();

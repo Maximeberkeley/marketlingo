@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { COLORS } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
+import { useDisplayName } from '../../hooks/useDisplayName';
 
 interface StreakCriticalTimerProps {
   streak: number;
@@ -22,6 +23,7 @@ interface StreakCriticalTimerProps {
 export function StreakCriticalTimer({
   streak, expiresAt, onStartLesson, isProUser, canUseLeoLogs, onUseLeoLogs,
 }: StreakCriticalTimerProps) {
+  const { displayName } = useDisplayName();
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [expired, setExpired] = useState(false);
   const [usingLogs, setUsingLogs] = useState(false);
@@ -88,7 +90,7 @@ export function StreakCriticalTimer({
     return (
       <View style={[styles.container, styles.expiredContainer]}>
         <Text style={styles.expiredEmoji}>💀</Text>
-        <Text style={styles.expiredTitle}>Streak Lost</Text>
+        <Text style={styles.expiredTitle}>{displayName}, start your comeback</Text>
         <Text style={styles.expiredSub}>Your {streak}-day streak has ended. Start a new one today!</Text>
         <TouchableOpacity style={styles.restartBtn} onPress={onStartLesson} activeOpacity={0.8}>
           <Text style={styles.restartBtnText}>Start Fresh 🔥</Text>
