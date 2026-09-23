@@ -15,7 +15,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { COLORS, TYPE } from '../../lib/constants';
@@ -24,7 +23,6 @@ import { MentorChatOverlay } from '../ai/MentorChatOverlay';
 import { getMentorForContext } from '../../data/mentors';
 import type { Mentor } from '../../data/mentors';
 import { ImmersiveNewsOverlay } from './ImmersiveNewsOverlay';
-import { useAuth } from '../../hooks/useAuth';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
 import { useIntelHabit } from '../../hooks/useIntelHabit';
@@ -690,7 +688,6 @@ function ArticleDetailSheet({
 
 // ── Main Component ──
 export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNewsProps) {
-  const { user } = useAuth();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -935,107 +932,64 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
 
 // ── Styles ──
 const s = StyleSheet.create({
-  container: {},
-
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  headerIconBg: {
-    width: 32, height: 32, borderRadius: 10, backgroundColor: COLORS.accentSoft,
-    alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: COLORS.accentMedium,
-  },
-  headerTitle: { ...TYPE.h3, color: COLORS.textPrimary },
-  headerSubtitle: { fontSize: 11, color: COLORS.textMuted },
-  refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
-  habitChip: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999,
-    backgroundColor: 'rgba(99,102,241,0.10)',
-  },
-  habitChipDone: { backgroundColor: 'rgba(5,150,105,0.12)' },
-  habitChipText: { fontSize: 11, fontWeight: '800', color: COLORS.accent },
-  habitBar: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    gap: 10, marginBottom: 10, paddingHorizontal: 12, paddingVertical: 10,
-    borderRadius: 14, backgroundColor: COLORS.bg1,
-  },
-  habitBarText: { flex: 1, fontSize: 12, fontWeight: '700', color: COLORS.textSecondary },
-  habitDots: { flexDirection: 'row', gap: 4 },
-  habitDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.border },
-  habitDotFilled: { backgroundColor: COLORS.accent },
-
-  featuredCard: { height: 210, borderRadius: 18, overflow: 'hidden', ...SHADOWS.md },
+  container: { backgroundColor: INTEL.background },
+  featuredCarousel: { marginBottom: 24, marginHorizontal: -16 },
+  featuredTrack: { paddingHorizontal: 16, gap: 12 },
+  featuredCard: { height: 250, borderRadius: 20, overflow: 'hidden', backgroundColor: INTEL.surface },
   featuredImage: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
-  featuredOverlay: { ...StyleSheet.absoluteFillObject },
-  featuredContent: { ...StyleSheet.absoluteFillObject, padding: 16, justifyContent: 'flex-end' },
-  featuredTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', position: 'absolute', top: 14, left: 14, right: 14 },
-  featuredBadge: { paddingHorizontal: 9, paddingVertical: 5, borderRadius: 8 },
-  featuredBadgeText: { fontSize: 9, fontWeight: '700', color: '#fff', letterSpacing: 0.8 },
-  featuredTitle: { fontSize: 19, fontWeight: '900', color: '#fff', lineHeight: 24, marginBottom: 5 },
-  featuredSummary: { fontSize: 11, color: 'rgba(255,255,255,0.75)', lineHeight: 15, marginBottom: 6 },
+  featuredOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: INTEL.scrim },
+  featuredContent: { ...StyleSheet.absoluteFillObject, padding: 18, justifyContent: 'flex-end' },
+  featuredTopRow: { position: 'absolute', top: 16, left: 16 },
+  featuredBadge: { paddingHorizontal: 9, paddingVertical: 5, borderRadius: 999, backgroundColor: INTEL.glass },
+  featuredBadgeText: { fontSize: 9, fontWeight: '800', color: INTEL.text, letterSpacing: 0.8 },
+  featuredTitle: { fontSize: 22, fontWeight: '900', color: INTEL.text, lineHeight: 27, marginBottom: 6 },
+  featuredSummary: { fontSize: 12, color: INTEL.secondaryBright, lineHeight: 16, marginBottom: 8 },
   featuredMeta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  featuredSource: { fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: '600' },
-  featuredDate: { fontSize: 10, color: 'rgba(255,255,255,0.5)' },
-  highImpactBadge: { width: 22, height: 22, borderRadius: 11, backgroundColor: 'rgba(239,68,68,0.8)', alignItems: 'center', justifyContent: 'center' },
-  highImpactInline: { marginLeft: 2 },
+  featuredSource: { fontSize: 12, color: INTEL.text, fontWeight: '700' },
+  featuredDate: { fontSize: 11, color: INTEL.muted },
 
   dotsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 10 },
-  dot: { height: 3, borderRadius: 2, backgroundColor: COLORS.accent },
+  dot: { height: 4, borderRadius: 2, backgroundColor: INTEL.text },
 
-  feedSectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
-  feedSectionLine: { flex: 1, height: 1, backgroundColor: COLORS.borderLight },
-  feedSectionLabel: { ...TYPE.overline, color: COLORS.textMuted, fontSize: 10 },
+  feedSectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
+  feedSectionLine: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: INTEL.separator },
+  feedSectionLabel: { ...TYPE.overline, color: INTEL.muted, fontSize: 10 },
+  feedList: { gap: 10 },
 
   feedCard: {
-    flexDirection: 'row', backgroundColor: COLORS.bg2, borderRadius: 16,
-    padding: 12, gap: 12, borderWidth: 1, borderColor: COLORS.borderLight,
-    ...SHADOWS.sm,
+    minHeight: 142, flexDirection: 'row', backgroundColor: INTEL.surface, borderRadius: 18,
+    padding: 14, gap: 14,
   },
   feedCardText: { flex: 1, justifyContent: 'space-between' },
-  feedCardMeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
-  catBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 },
-  catBadgeText: { fontSize: 8, fontWeight: '700', letterSpacing: 0.5 },
-  feedDate: { fontSize: 10, color: COLORS.textMuted },
-  feedTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, lineHeight: 19, marginBottom: 2 },
-  feedSummary: { fontSize: 11, color: COLORS.textSecondary, lineHeight: 15, marginBottom: 4 },
-  feedSource: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
-  feedSignals: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 5 },
-  sourceChip: { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 1, paddingHorizontal: 7, paddingVertical: 4, borderRadius: 8, backgroundColor: COLORS.bg1 },
-  impactChip: { paddingHorizontal: 7, paddingVertical: 4, borderRadius: 8, backgroundColor: COLORS.accentSoft },
-  impactChipHigh: { backgroundColor: COLORS.errorSoft },
-  impactChipText: { fontSize: 8, fontWeight: '800', color: COLORS.accent },
-  impactChipTextHigh: { color: COLORS.error },
-
-  feedThumb: { width: 80, height: 80, borderRadius: 12, overflow: 'hidden' },
+  feedSource: { fontSize: 12, color: INTEL.secondary, fontWeight: '800', marginBottom: 6 },
+  feedTitle: { fontSize: 16, fontWeight: '800', color: INTEL.text, lineHeight: 21 },
+  feedFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 },
+  feedDate: { fontSize: 11, color: INTEL.muted },
+  feedThumb: { width: 108, height: 108, borderRadius: 12, overflow: 'hidden', alignSelf: 'center', backgroundColor: INTEL.surfaceRaised },
   feedThumbImage: { width: '100%', height: '100%' },
 
-  quickActionsRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 12,
-    paddingBottom: 10, paddingTop: 4, flexWrap: 'wrap',
-  },
-  aiActionBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 12,
-  },
-  aiActionText: { fontSize: 10, color: COLORS.textMuted, fontWeight: '500' },
-  quizBtn: {
-    backgroundColor: COLORS.accentSoft, borderWidth: 1, borderColor: COLORS.accentMedium,
-  },
-  analysisToggle: { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 6 },
-  analysisToggleText: { fontSize: 10, fontWeight: '700', color: COLORS.accent },
-  analysisPanel: { marginHorizontal: 12, marginBottom: 12, padding: 12, borderRadius: 12, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.borderLight },
-  analysisText: { ...TYPE.caption, color: COLORS.textSecondary, lineHeight: 19 },
-  analysisActions: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginTop: 10 },
-  analysisAction: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 9, paddingVertical: 7, borderRadius: 9, backgroundColor: COLORS.accentSoft },
-  analysisActionText: { fontSize: 10, fontWeight: '700', color: COLORS.accent },
-
   loadingContainer: { gap: 8 },
-  skeletonCard: { padding: 14, backgroundColor: COLORS.bg1, borderRadius: 14, borderWidth: 1, borderColor: COLORS.borderLight, gap: 8 },
-  skeletonLine: { height: 14, backgroundColor: COLORS.surfaceLight, borderRadius: 7, width: '100%' },
-  emptyCard: { padding: 28, backgroundColor: COLORS.bg1, borderRadius: 16, borderWidth: 1, borderColor: COLORS.borderLight, alignItems: 'center', gap: 8 },
-  emptyText: { ...TYPE.body, color: COLORS.textMuted, textAlign: 'center' },
+  skeletonCard: { padding: 14, backgroundColor: INTEL.surface, borderRadius: 18, gap: 8 },
+  skeletonLine: { height: 14, backgroundColor: INTEL.surfaceRaised, borderRadius: 7, width: '100%' },
+  emptyCard: { padding: 28, backgroundColor: INTEL.surface, borderRadius: 18, alignItems: 'center', gap: 8 },
+  emptyText: { ...TYPE.body, color: INTEL.secondary, textAlign: 'center' },
   retryBtn: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: COLORS.accentSoft, borderRadius: 20, borderWidth: 1, borderColor: COLORS.accentMedium },
   retryText: { fontSize: 13, color: COLORS.accent, fontWeight: '600' },
-  lastUpdated: { fontSize: 11, color: COLORS.textMuted, textAlign: 'center', marginTop: 10 },
+  lastUpdated: { fontSize: 11, color: INTEL.muted, textAlign: 'center', marginTop: 16 },
 });
+
+const INTEL = {
+  background: '#000000',
+  surface: '#1C1C1E',
+  surfaceRaised: '#2C2C2E',
+  text: '#FFFFFF',
+  secondary: '#C7C7CC',
+  secondaryBright: 'rgba(255,255,255,0.82)',
+  muted: '#8E8E93',
+  separator: '#38383A',
+  glass: 'rgba(0,0,0,0.55)',
+  scrim: 'rgba(0,0,0,0.38)',
+};
 
 // ── Detail Sheet Styles ──
 const ds = StyleSheet.create({
