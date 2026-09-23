@@ -598,7 +598,7 @@ function ArticleDetailSheet({
               <View style={ds.contentPad}>
                 <View style={ds.metaRow}>
                   <View style={[ds.badge, { backgroundColor: COLORS.accentSoft }]}>
-                    <Text style={[ds.badgeText, { color: COLORS.accent }]}>{article.categoryTag.toUpperCase()}</Text>
+                    <Text style={[ds.badgeText, { color: COLORS.accent }]}>{(article.categoryTag || 'Industry').toUpperCase()}</Text>
                   </View>
                   {isHighImpact && (
                     <View style={ds.highImpactPill}>
@@ -613,7 +613,7 @@ function ArticleDetailSheet({
                 <Text style={ds.title}>{article.title}</Text>
                 {article.summary ? <Text style={ds.summary}>{article.summary}</Text> : null}
 
-                <TouchableOpacity onPress={() => Linking.openURL(article.sourceUrl).catch(() => {})} style={ds.sourceLink}>
+                <TouchableOpacity onPress={() => { if (article.sourceUrl) Linking.openURL(article.sourceUrl).catch(() => {}); }} style={ds.sourceLink}>
                   <Feather name="external-link" size={14} color={COLORS.accent} />
                   <Text style={ds.sourceLinkText}>Read full article</Text>
                 </TouchableOpacity>
@@ -769,11 +769,15 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
 
       if (!fnError && liveData?.success && liveData.data?.length > 0) {
         setNews(liveData.data.map((item: any) => ({
-          id: item.id, title: item.title, sourceName: item.sourceName,
-          sourceUrl: item.sourceUrl, publishedAt: item.publishedAt,
-          categoryTag: item.categoryTag || 'Industry', summary: item.summary || undefined,
-          imageUrl: item.imageUrl || undefined,
-          impact: item.impact || getImpactFromContent(item.title, item.summary),
+          id: item?.id ?? `news-${Math.random().toString(36).slice(2)}`,
+          title: item?.title || 'Untitled Story',
+          sourceName: item?.sourceName || 'Industry News',
+          sourceUrl: item?.sourceUrl || '',
+          publishedAt: item?.publishedAt || 'Recent',
+          categoryTag: item?.categoryTag || 'Industry',
+          summary: item?.summary || undefined,
+          imageUrl: item?.imageUrl || item?.image || undefined,
+          impact: item?.impact || getImpactFromContent(item?.title || '', item?.summary),
         })));
         setLastFetched(new Date());
       } else {
