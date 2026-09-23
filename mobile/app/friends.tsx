@@ -14,7 +14,7 @@ import { triggerHaptic } from '../lib/haptics';
 import { trackEvent } from '../lib/analytics';
 import { Feather } from '@expo/vector-icons';
 
-const LEO_TROPHY = require('../assets/mascot/leo-trophy.png');
+const SOCIAL_HERO = require('../assets/illustrations/friends-rivals-hero.png');
 const LEO_SASSY = require('../assets/mascot/leo-sassy.png');
 
 // ── Types ───────────────────────────────────────────
@@ -34,12 +34,11 @@ const MEDALS = [
   { bg: '#FFEDD5', ring: '#FB923C', text: '#C2410C' },
 ];
 
-function startOfWeek() {
-  const monday = new Date();
-  const day = monday.getDay();
-  monday.setDate(monday.getDate() - (day === 0 ? 6 : day - 1));
-  monday.setHours(0, 0, 0, 0);
-  return monday;
+function startOfMonth() {
+  const start = new Date();
+  start.setDate(1);
+  start.setHours(0, 0, 0, 0);
+  return start;
 }
 
 // ── Main Screen ─────────────────────────────────────
@@ -56,9 +55,8 @@ export default function FriendsScreen() {
   // Global leaderboard
   const [globalEntries, setGlobalEntries] = useState<LeaderboardEntry[]>([]);
   const [globalLoading, setGlobalLoading] = useState(false);
-  const [globalScope, setGlobalScope] = useState<'week' | 'all'>('week');
-  const [myStats, setMyStats] = useState<{ xp: number; level: number; streak: number; weekXP: number }>({ xp: 0, level: 1, streak: 0, weekXP: 0 });
-  const [friendWeekXP, setFriendWeekXP] = useState<Record<string, number>>({});
+  const [myStats, setMyStats] = useState<{ xp: number; level: number; streak: number; monthXP: number }>({ xp: 0, level: 1, streak: 0, monthXP: 0 });
+  const [friendMonthXP, setFriendMonthXP] = useState<Record<string, number>>({});
 
   // Animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -84,30 +82,30 @@ export default function FriendsScreen() {
       const [{ data: xp }, { data: prog }, { data: week }] = await Promise.all([
         supabase.from('leaderboard_xp').select('total_xp, current_level').eq('market_id', marketId).eq('user_id', user.id).maybeSingle(),
         supabase.from('leaderboard_progress').select('current_streak').eq('market_id', marketId).eq('user_id', user.id).maybeSingle(),
-        supabase.from('xp_transactions').select('xp_amount').eq('market_id', marketId).eq('user_id', user.id).gte('created_at', startOfWeek().toISOString()),
+        supabase.from('xp_transactions').select('xp_amount').eq('market_id', marketId).eq('user_id', user.id).gte('created_at', startOfMonth().toISOString()),
       ]);
       setMyStats({
         xp: xp?.total_xp || 0,
         level: xp?.current_level || 1,
         streak: prog?.current_streak || 0,
-        weekXP: (week ?? []).reduce((s: number, t: any) => s + (t.xp_amount || 0), 0),
+        monthXP: (week ?? []).reduce((s: number, t: any) => s + (t.xp_amount || 0), 0),
       });
     })();
   }, [marketId, user]);
 
-  // Real weekly XP for friends (head-to-head this week)
+  // Real monthly XP for friends in the current calendar season.
   useEffect(() => {
-    if (!marketId || !friends.length) { setFriendWeekXP({}); return; }
+    if (!marketId || !friends.length) { setFriendMonthXP({}); return; }
     (async () => {
       const { data } = await supabase
         .from('xp_transactions')
         .select('user_id, xp_amount')
         .eq('market_id', marketId)
         .in('user_id', friends.map((f) => f.id))
-        .gte('created_at', startOfWeek().toISOString());
+        .gte('created_at', startOfMonth().toISOString());
       const map: Record<string, number> = {};
       (data ?? []).forEach((t: any) => { map[t.user_id] = (map[t.user_id] || 0) + (t.xp_amount || 0); });
-      setFriendWeekXP(map);
+      setFriendMonthXP(map);
     })();
   }, [marketId, friends]);
 
@@ -116,36 +114,24 @@ export default function FriendsScreen() {
     if (!marketId || !user) return;
     if (activeTab !== 'global') return;
     fetchGlobalLeaderboard();
-  }, [marketId, user, activeTab, globalScope]);
+  }, [marketId, user, activeTab]);
 
   const fetchGlobalLeaderboard = async () => {
     if (!marketId || !user) return;
     setGlobalLoading(true);
     try {
-      let ranked: { user_id: string; total_xp: number; current_level: number }[] = [];
-
-      if (globalScope === 'all') {
-        const { data } = await supabase
-          .from('leaderboard_xp')
-          .select('user_id, total_xp, current_level')
-          .eq('market_id', marketId)
-          .order('total_xp', { ascending: false })
-          .limit(50);
-        ranked = data ?? [];
-      } else {
-        const { data: txns } = await supabase
+      const { data: txns } = await supabase
           .from('xp_transactions')
           .select('user_id, xp_amount')
           .eq('market_id', marketId)
-          .gte('created_at', startOfWeek().toISOString());
+          .gte('created_at', startOfMonth().toISOString());
 
-        const weekly = new Map<string, number>();
-        (txns ?? []).forEach((t) => weekly.set(t.user_id, (weekly.get(t.user_id) || 0) + (t.xp_amount || 0)));
-        ranked = Array.from(weekly.entries())
+        const monthly = new Map<string, number>();
+        (txns ?? []).forEach((t) => monthly.set(t.user_id, (monthly.get(t.user_id) || 0) + (t.xp_amount || 0)));
+        const ranked = Array.from(monthly.entries())
           .sort((a, b) => b[1] - a[1])
           .slice(0, 50)
           .map(([uid, xp]) => ({ user_id: uid, total_xp: xp, current_level: 1 }));
-      }
 
       if (!ranked.length) {
         setGlobalEntries([]);
@@ -190,17 +176,17 @@ export default function FriendsScreen() {
     const rows = [
       {
         id: 'me', isMe: true, name: 'You', initial,
-        xp: myStats.xp, weekXP: myStats.weekXP, level: myStats.level, streak: myStats.streak,
+        xp: myStats.monthXP, weekXP: myStats.monthXP, level: myStats.level, streak: myStats.streak,
         friend: null as Friend | null,
       },
       ...friends.map((f) => ({
         id: f.id, isMe: false, name: f.username, initial: f.username.charAt(0).toUpperCase(),
-        xp: f.totalXP, weekXP: friendWeekXP[f.id] || 0, level: f.currentLevel, streak: f.currentStreak,
+        xp: friendMonthXP[f.id] || 0, weekXP: friendMonthXP[f.id] || 0, level: f.currentLevel, streak: f.currentStreak,
         friend: f,
       })),
     ];
     return rows.sort((a, b) => b.xp - a.xp);
-  }, [friends, friendWeekXP, myStats, initial]);
+  }, [friends, friendMonthXP, myStats, initial]);
 
   const myFriendRank = friendsBoard.findIndex((r) => r.isMe) + 1;
 
@@ -326,11 +312,11 @@ export default function FriendsScreen() {
             <>
               {/* My real week card */}
               <View style={styles.heroCard}>
-                <Image source={LEO_TROPHY} style={styles.heroLeo} resizeMode="contain" />
+                  <Image source={SOCIAL_HERO} style={styles.heroLeo} resizeMode="cover" />
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.heroKicker}>THIS WEEK</Text>
+                    <Text style={styles.heroKicker}>CURRENT SEASON</Text>
                   <Text style={styles.heroValue}>
-                    {myStats.weekXP.toLocaleString()}<Text style={styles.heroUnit}> XP</Text>
+                      {myStats.monthXP.toLocaleString()}<Text style={styles.heroUnit}> XP</Text>
                   </Text>
                   <Text style={styles.heroLine}>
                     {friends.length === 0
@@ -393,7 +379,7 @@ export default function FriendsScreen() {
                       name={row.name}
                       initial={row.initial}
                       xp={row.xp}
-                      meta={`Lv.${row.level}${row.streak > 0 ? ` · ${row.streak}d streak` : ''}${row.weekXP > 0 ? ` · +${row.weekXP} this week` : ''}`}
+                       meta={`Lv.${row.level}${row.streak > 0 ? ` · ${row.streak}d streak` : ''}${row.weekXP > 0 ? ` · ${row.weekXP} this month` : ''}`}
                       isMe={row.isMe}
                       online={row.friend ? isActive(row.friend) : false}
                       onNudge={row.friend ? () => handleNudge(row.friend!) : undefined}
@@ -408,23 +394,10 @@ export default function FriendsScreen() {
           {/* ── GLOBAL TAB ──────────────────────── */}
           {activeTab === 'global' && (
             <>
-              {/* Scope switch */}
-              <View style={styles.scopeRow}>
-                {([['week', 'This week'], ['all', 'All time']] as const).map(([key, label]) => (
-                  <TouchableOpacity
-                    key={key}
-                    style={[styles.scopeChip, globalScope === key && styles.scopeChipActive]}
-                    onPress={() => { triggerHaptic('light'); setGlobalScope(key); }}
-                  >
-                    <Text style={[styles.scopeText, globalScope === key && styles.scopeTextActive]}>{label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
               {/* Rank hero with real numbers */}
               {!globalLoading && globalEntries.length > 0 && (
                 <View style={styles.heroCard}>
-                  <Image source={currentUserRank === 1 ? LEO_TROPHY : LEO_SASSY} style={styles.heroLeo} resizeMode="contain" />
+                  <Image source={SOCIAL_HERO} style={styles.heroLeo} resizeMode="cover" />
                   <View style={{ flex: 1 }}>
                     <Text style={styles.heroKicker}>{marketName.toUpperCase()}</Text>
                     <Text style={styles.heroValue}>
@@ -472,7 +445,7 @@ export default function FriendsScreen() {
                 <View style={styles.emptyState}>
                   <Image source={LEO_SASSY} style={styles.emptyLeo} resizeMode="contain" />
                   <Text style={styles.emptyTitle}>
-                    {globalScope === 'week' ? 'Nobody scored this week.' : 'No rankings yet.'}
+                    No one has scored this month yet.
                   </Text>
                   <Text style={styles.emptySub}>Finish one lesson and you take first place.</Text>
                 </View>
@@ -589,7 +562,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accentSoft, borderRadius: 22, padding: 14,
     borderWidth: 1.5, borderColor: COLORS.accentMedium, marginBottom: 14,
   },
-  heroLeo: { width: 66, height: 66 },
+  heroLeo: { width: 92, height: 72, borderRadius: 14 },
   heroKicker: { fontSize: 10, fontWeight: '800', letterSpacing: 1, color: COLORS.accent },
   heroValue: { fontSize: 28, fontWeight: '800', color: COLORS.textPrimary, marginTop: 2 },
   heroUnit: { fontSize: 14, fontWeight: '700', color: COLORS.textSecondary },
