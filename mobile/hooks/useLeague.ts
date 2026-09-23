@@ -53,6 +53,17 @@ export function currentMonthStart(date: Date = new Date()): string {
   return `${y}-${m}-01`;
 }
 
+/** Weekly learning recaps remain separate from the calendar-month league season. */
+export function currentWeekStart(date: Date = new Date()): string {
+  const monday = new Date(date);
+  const day = monday.getDay();
+  monday.setDate(monday.getDate() - (day === 0 ? 6 : day - 1));
+  const y = monday.getFullYear();
+  const m = String(monday.getMonth() + 1).padStart(2, '0');
+  const d = String(monday.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 function daysLeftInMonth(): number {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate();
