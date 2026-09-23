@@ -98,6 +98,8 @@ export default function RootLayout() {
               >
                 <Stack.Screen name="index" />
                 <Stack.Screen name="auth" />
+                <Stack.Screen name="demo" options={{ gestureEnabled: false }} />
+                <Stack.Screen name="onboarding/welcome" options={{ gestureEnabled: false }} />
                 <Stack.Screen name="onboarding/index" />
                 <Stack.Screen name="onboarding/goal" options={{ gestureEnabled: false }} />
                 <Stack.Screen name="onboarding/familiarity" options={{ gestureEnabled: false }} />

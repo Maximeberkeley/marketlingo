@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,23 +14,33 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
-import { DemoLesson } from '../components/demo/DemoLesson';
+import { storage } from '../lib/storage';
+import { LeoCharacter } from '../components/mascot/LeoCharacter';
+import { normalizeDisplayName } from '../hooks/useDisplayName';
 
 export default function AuthScreen() {
   const insets = useSafeAreaInsets();
+  const params = useLocalSearchParams<{ mode?: string }>();
   const { signInWithEmail, signUpWithEmail } = useAuth();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showDemo, setShowDemo] = useState(false);
+  const [signupStep, setSignupStep] = useState<'name' | 'credentials'>('name');
+  const [displayName, setDisplayName] = useState('');
 
-  const handleStartDemo = () => {
-    setShowDemo(true);
-    // Don't mark as seen until they actually complete it and sign up
-  };
+  useEffect(() => {
+    if (params.mode === 'signup') setMode('signup');
+    void storage.getDisplayName().then((name) => {
+      if (name) {
+        setDisplayName(name);
+        setSignupStep('credentials');
+      }
+    });
+  }, [params.mode]);
 
   const handleSubmit = async () => {
     if (!email.trim() || !password.trim()) {
@@ -43,15 +53,15 @@ export default function AuthScreen() {
       const result: { success: boolean; error: string | null; message?: string } =
         mode === 'login'
           ? await signInWithEmail(email.trim(), password)
-          : await signUpWithEmail(email.trim(), password);
+          : await signUpWithEmail(email.trim(), password, normalizeDisplayName(displayName));
 
       if (!result.success) {
         Alert.alert('Error', result.error || 'Something went wrong.');
       } else if (mode === 'signup' && result.message) {
         Alert.alert('Check your email', result.message);
       } else if (mode === 'signup') {
-        // New signups go through onboarding
-        router.replace('/onboarding' as any);
+        await storage.setDisplayName(normalizeDisplayName(displayName));
+        router.replace('/onboarding/welcome' as any);
       } else {
         // Existing users go to index which handles routing
         router.replace('/');
@@ -63,17 +73,6 @@ export default function AuthScreen() {
     }
 
   };
-
-  if (showDemo) {
-    return (
-      <View style={{ flex: 1, paddingTop: insets.top }}>
-        <DemoLesson
-          onSignUp={() => { setShowDemo(false); setMode('signup'); }}
-          onClose={() => setShowDemo(false)}
-        />
-      </View>
-    );
-  }
 
   return (
     <KeyboardAvoidingView
@@ -89,25 +88,60 @@ export default function AuthScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.leoSection}>
-          <Image
-            source={require('../assets/mascot/leo-reference.png')}
-            style={styles.leoImage}
-            resizeMode="contain"
-          />
+          {mode === 'signup' && signupStep === 'name'
+            ? <LeoCharacter size="lg" animation="thinking" still />
+            : <Image source={require('../assets/mascot/leo-reference.png')} style={styles.leoImage} resizeMode="contain" />}
           <Text style={styles.appName}>MarketLingo</Text>
           <Text style={styles.tagline}>Master any industry in 6 months</Text>
         </View>
 
-        {!showDemo && (
-          <TouchableOpacity style={styles.demoBtn} onPress={handleStartDemo} activeOpacity={0.8}>
+        {mode === 'login' && (
+          <TouchableOpacity style={styles.demoBtn} onPress={() => router.push('/demo' as any)} activeOpacity={0.8}>
             <Text style={styles.demoBtnText}>Try a free lesson first →</Text>
           </TouchableOpacity>
         )}
 
         <View style={styles.form}>
           <Text style={styles.formTitle}>
-            {mode === 'login' ? 'Welcome back' : 'Create account'}
+            {mode === 'login' ? 'Welcome back' : signupStep === 'name' ? 'What should we call you?' : 'Create account'}
           </Text>
+
+          {mode === 'signup' && signupStep === 'name' ? (
+            <>
+              <Text style={styles.nameSubtitle}>Choose a display name or nickname for your journey.</Text>
+              <View style={styles.inputGroup}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your name..."
+                  placeholderTextColor={COLORS.textMuted}
+                  value={displayName}
+                  onChangeText={(value) => setDisplayName(value.slice(0, 40))}
+                  autoFocus
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                  maxLength={40}
+                  returnKeyType="next"
+                  onSubmitEditing={() => {
+                    if (displayName.trim()) {
+                      void storage.setDisplayName(normalizeDisplayName(displayName));
+                      setSignupStep('credentials');
+                    }
+                  }}
+                />
+              </View>
+              <TouchableOpacity
+                style={[styles.submitButton, !displayName.trim() && styles.disabledButton]}
+                disabled={!displayName.trim()}
+                onPress={() => {
+                  void storage.setDisplayName(normalizeDisplayName(displayName));
+                  setSignupStep('credentials');
+                }}
+              >
+                <Text style={styles.submitButtonText}>Continue</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
 
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Email</Text>
@@ -149,13 +183,25 @@ export default function AuthScreen() {
             )}
           </TouchableOpacity>
 
+          {mode === 'signup' && (
+            <TouchableOpacity style={styles.backToName} onPress={() => setSignupStep('name')}>
+              <Text style={styles.backToNameText}>Change display name</Text>
+            </TouchableOpacity>
+          )}
+
           <Text style={styles.helperText}>
             Social sign-in has been removed from the mobile app until the native OAuth flow is fully configured.
           </Text>
+            </>
+          )}
 
           <TouchableOpacity
             style={styles.switchMode}
-            onPress={() => setMode(mode === 'login' ? 'signup' : 'login')}
+            onPress={() => {
+              const next = mode === 'login' ? 'signup' : 'login';
+              setMode(next);
+              if (next === 'signup') setSignupStep(displayName ? 'credentials' : 'name');
+            }}
           >
             <Text style={styles.switchText}>
               {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
@@ -179,6 +225,7 @@ const styles = StyleSheet.create({
   tagline: { fontSize: 14, color: COLORS.textMuted, marginTop: 4 },
   form: { flex: 1 },
   formTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 24 },
+  nameSubtitle: { fontSize: 15, lineHeight: 22, color: COLORS.textSecondary, marginTop: -14, marginBottom: 24 },
   inputGroup: { marginBottom: 16 },
   inputLabel: { fontSize: 13, fontWeight: '500', color: COLORS.textSecondary, marginBottom: 6 },
   input: {
@@ -190,6 +237,9 @@ const styles = StyleSheet.create({
     alignItems: 'center', marginTop: 8,
   },
   submitButtonText: { color: '#FFFFFF', fontWeight: '700', fontSize: 16 },
+  disabledButton: { opacity: 0.4 },
+  backToName: { alignItems: 'center', marginTop: 12 },
+  backToNameText: { color: COLORS.accent, fontSize: 13, fontWeight: '600' },
   helperText: {
     fontSize: 12,
     lineHeight: 18,
