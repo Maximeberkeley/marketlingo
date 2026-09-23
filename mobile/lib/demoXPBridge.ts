@@ -1,9 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './supabase';
 import { log } from './logger';
+import { localDateString } from './dayMath';
 
 const DEMO_XP_KEY = 'ml_demo_xp';
 const DEMO_MARKET_KEY = 'ml_demo_market';
+const DEMO_COMPLETED_KEY = 'ml_demo_completed';
+const DEMO_REWARD_XP = 20;
 
 /**
  * Save XP earned during the pre-auth demo lesson.
@@ -11,9 +14,12 @@ const DEMO_MARKET_KEY = 'ml_demo_market';
  */
 export async function saveDemoXP(xp: number) {
   try {
-    const existing = await AsyncStorage.getItem(DEMO_XP_KEY);
-    const current = existing ? parseInt(existing, 10) : 0;
-    await AsyncStorage.setItem(DEMO_XP_KEY, String(current + xp));
+    const completed = await AsyncStorage.getItem(DEMO_COMPLETED_KEY);
+    if (completed === 'true') return;
+    await AsyncStorage.multiSet([
+      [DEMO_XP_KEY, String(Math.min(DEMO_REWARD_XP, Math.max(0, xp)))],
+      [DEMO_COMPLETED_KEY, 'true'],
+    ]);
   } catch (e) {
     log.warn('Failed to save demo XP:', e);
   }
@@ -52,42 +58,14 @@ export async function applyDemoXP(userId: string, marketId: string): Promise<num
   try {
     const { xp } = await getDemoXP();
     if (xp <= 0) return 0;
-
-    // Credit the XP via Supabase
-    const { error } = await supabase.from('xp_transactions').insert({
-      user_id: userId,
-      market_id: marketId,
-      xp_amount: xp,
-      source_type: 'demo_bridge',
-      description: 'XP earned during demo lesson — welcome bonus!',
+    const localDay = localDateString();
+    const { data, error } = await supabase.rpc('claim_demo_onboarding_reward', {
+      p_market_id: marketId,
+      p_today: localDay,
     });
-
-    if (!error) {
-      // Ensure user_xp record exists first
-      await supabase.from('user_xp').upsert(
-        {
-          user_id: userId,
-          market_id: marketId,
-          total_xp: 0,
-          current_level: 1,
-          xp_to_next_level: 100,
-          startup_stage: 1,
-        },
-        { onConflict: 'user_id,market_id', ignoreDuplicates: true }
-      );
-
-      // Update the total XP atomically
-      await supabase.rpc('increment_user_xp', {
-        p_user_id: userId,
-        p_market_id: marketId,
-        p_amount: xp,
-      });
-
-      // Clear stored demo XP
-      await AsyncStorage.multiRemove([DEMO_XP_KEY, DEMO_MARKET_KEY]);
-    }
-
-    return xp;
+    if (error) throw error;
+    await AsyncStorage.multiRemove([DEMO_XP_KEY, DEMO_MARKET_KEY, DEMO_COMPLETED_KEY]);
+    return typeof data === 'number' ? data : 0;
   } catch (e) {
     log.warn('Failed to apply demo XP:', e);
     return 0;
@@ -99,7 +77,7 @@ export async function applyDemoXP(userId: string, marketId: string): Promise<num
  */
 export async function clearDemoXP() {
   try {
-    await AsyncStorage.multiRemove([DEMO_XP_KEY, DEMO_MARKET_KEY]);
+    await AsyncStorage.multiRemove([DEMO_XP_KEY, DEMO_MARKET_KEY, DEMO_COMPLETED_KEY]);
   } catch (e) {
     // Silent
   }

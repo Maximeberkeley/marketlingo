@@ -12,10 +12,11 @@ interface UseLeoPopupsOptions {
   cooldownMs?: number;
   /** Max popups per session (default 5) */
   maxPerSession?: number;
+  displayName?: string;
 }
 
 export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
-  const { cooldownMs = 60000, maxPerSession = 5 } = options;
+  const { cooldownMs = 60000, maxPerSession = 5, displayName = 'Scholar' } = options;
   const [currentMessage, setCurrentMessage] = useState<LeoPopupMessage | null>(null);
   const queue = useRef<LeoPopupMessage[]>([]);
   const lastShown = useRef<number>(0);
@@ -170,24 +171,24 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
   const triggerStreakProtect = useCallback((streak: number, onAction: () => void) => {
     enqueue({
       category: 'streak',
-      title: `Protect your ${streak}-day streak! 🔥`,
+      title: `${displayName}, protect your ${streak}-day streak! 🔥`,
       body: "Your streak is at risk. Complete today's lesson to keep it alive.",
       actionLabel: 'Start lesson',
       onAction,
       duration: 8000,
     });
-  }, [enqueue]);
+  }, [displayName, enqueue]);
 
   const triggerStreakCelebrate = useCallback((streak: number, onAction: () => void) => {
     enqueue({
       category: 'streak',
-      title: `${streak}-day streak! 🔥`,
+      title: `${displayName}, that's a ${streak}-day streak! 🔥`,
       body: "You're on fire! Share your progress with friends.",
       actionLabel: 'Share streak',
       onAction,
       duration: 7000,
     });
-  }, [enqueue]);
+  }, [displayName, enqueue]);
 
   const triggerExploreMarket = useCallback((onAction: () => void) => {
     enqueue({

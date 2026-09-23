@@ -9,6 +9,8 @@ export type Json =
 export interface Profile {
   id: string;
   username: string | null;
+  display_name: string | null;
+  demo_onboarding_status: 'pending' | 'completed' | 'skipped';
   avatar_url: string | null;
   selected_market: string | null;
   familiarity_level: string | null;

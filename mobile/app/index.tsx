@@ -41,7 +41,7 @@ export default function Index() {
         identifyUser(user.id, { email: user.email || '' });
 
         const { data: profile, error: profileError } = await withStartupTimeout(
-          supabase.from('profiles').select('selected_market').eq('id', user.id).maybeSingle()
+          supabase.from('profiles').select('selected_market, display_name, demo_onboarding_status').eq('id', user.id).maybeSingle()
         );
 
         if (profileError) {
@@ -51,7 +51,7 @@ export default function Index() {
         }
 
         if (!profile?.selected_market) {
-          safeReplace('/onboarding');
+          safeReplace('/onboarding/welcome');
           return;
         }
 

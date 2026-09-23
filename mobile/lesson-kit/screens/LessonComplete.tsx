@@ -7,6 +7,7 @@ import { tokens } from '../theme/tokens';
 import { playSound } from '../../lib/sounds';
 import { triggerHaptic } from '../../lib/haptics';
 import { useIntelHabit } from '../../hooks/useIntelHabit';
+import { useDisplayName } from '../../hooks/useDisplayName';
 
 interface Props {
   correct: number;
@@ -67,8 +68,14 @@ export function LessonComplete({
   leoQuestions = 0,
   marketId,
 }: Props) {
+  const { displayName } = useDisplayName();
   const intel = useIntelHabit(marketId);
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 100;
+  const praise = accuracy === 100
+    ? `Brilliant work, ${displayName}!`
+    : accuracy >= 80
+      ? `Spot on, ${displayName}! You're mastering this.`
+      : `Way to crush today's module, ${displayName}!`;
   const bonuses = useRef(computeBonuses(accuracy, bestCombo, heartsLeft, timeSpentSeconds)).current;
   const bonusXp = bonuses.reduce((sum, b) => sum + b.xp, 0);
   const totalXp = baseXp + bonusXp;
@@ -103,7 +110,7 @@ export function LessonComplete({
       <View style={styles.badge}>
         <Feather name="award" size={40} color={tokens.color.accent} />
       </View>
-      <Text style={styles.title}>Lesson complete</Text>
+      <Text style={styles.title}>{praise}</Text>
       {typeof streakDays === 'number' && streakDays > 0 ? (
         <Text style={styles.subtitle}>🔥 {streakDays}-day streak — come back tomorrow to keep it.</Text>
       ) : (

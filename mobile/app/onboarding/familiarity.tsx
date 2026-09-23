@@ -138,13 +138,15 @@ export default function FamiliarityScreen() {
       try {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('selected_market')
+          .select('selected_market, demo_onboarding_status')
           .eq('id', user.id)
           .single();
 
         if (profile?.selected_market) {
           setSelectedMarket(profile.selected_market);
-          const demoXP = await applyDemoXP(user.id, profile.selected_market);
+          const demoXP = profile.demo_onboarding_status === 'completed'
+            ? await applyDemoXP(user.id, profile.selected_market)
+            : 0;
           if (demoXP > 0) {
             Alert.alert(
               'Welcome bonus!',

@@ -13,6 +13,8 @@ const KEYS = {
   LEARNING_GOAL: '@marketlingo/learning_goal',
   FEATURE_TOUR_SEEN: '@marketlingo/feature_tour_seen',
   LEO_HINT_COUNT: '@marketlingo/leo_hint_count',
+  DISPLAY_NAME: '@marketlingo/display_name',
+  DEMO_STATUS: '@marketlingo/demo_status',
 };
 
 export const storage = {
@@ -82,6 +84,23 @@ export const storage = {
 
   async getLearningGoal(): Promise<string | null> {
     return AsyncStorage.getItem(KEYS.LEARNING_GOAL);
+  },
+
+  async setDisplayName(name: string): Promise<void> {
+    await AsyncStorage.setItem(KEYS.DISPLAY_NAME, name.trim().slice(0, 40));
+  },
+
+  async getDisplayName(): Promise<string | null> {
+    return AsyncStorage.getItem(KEYS.DISPLAY_NAME);
+  },
+
+  async setDemoStatus(status: 'pending' | 'completed' | 'skipped'): Promise<void> {
+    await AsyncStorage.setItem(KEYS.DEMO_STATUS, status);
+  },
+
+  async getDemoStatus(): Promise<'pending' | 'completed' | 'skipped' | null> {
+    const value = await AsyncStorage.getItem(KEYS.DEMO_STATUS);
+    return value === 'pending' || value === 'completed' || value === 'skipped' ? value : null;
   },
 
   async setFeatureTourSeen(): Promise<void> {

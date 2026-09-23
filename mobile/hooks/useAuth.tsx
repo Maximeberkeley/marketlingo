@@ -10,7 +10,7 @@ interface AuthContextType {
   loading: boolean;
   isAuthenticated: boolean;
   signInWithEmail: (email: string, password: string) => Promise<{ success: boolean; error: string | null }>;
-  signUpWithEmail: (email: string, password: string) => Promise<{ success: boolean; error: string | null; message?: string }>;
+  signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<{ success: boolean; error: string | null; message?: string }>;
   signOut: () => Promise<{ success: boolean; error: string | null }>;
   resetPassword: (email: string) => Promise<{ success: boolean; error: string | null }>;
   refreshSession: () => Promise<void>;
@@ -132,9 +132,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const signUpWithEmail = useCallback(async (email: string, password: string) => {
+  const signUpWithEmail = useCallback(async (email: string, password: string, displayName?: string) => {
     try {
-      const { data, error } = await supabase.auth.signUp({ email, password });
+      const cleanName = displayName?.trim().replace(/\s+/g, ' ').slice(0, 40);
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: cleanName ? { data: { display_name: cleanName } } : undefined,
+      });
       if (error) {
         log.error('[Auth] Signup error:', error.message, error.status);
         return { success: false, error: error.message };
