@@ -17,7 +17,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
-import { COLORS, TYPE } from '../../lib/constants';
+import { COLORS, TYPE, SHADOWS } from '../../lib/constants';
 import { Feather } from '@expo/vector-icons';
 import { MentorChatOverlay } from '../ai/MentorChatOverlay';
 import { getMentorForContext } from '../../data/mentors';
@@ -714,17 +714,24 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
     voiceId: 'iP95p4xoKVk53GoZ742B',
   };
 
-  const mapDbItem = (item: any): NewsItem => ({
-    id: item.id,
-    title: item.title,
-    sourceName: item.source_name,
-    sourceUrl: item.source_url,
-    publishedAt: new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    categoryTag: item.category_tag || 'Industry',
-    summary: item.summary || undefined,
-    imageUrl: item.image_url || undefined,
-    impact: getImpactFromContent(item.title, item.summary),
-  });
+  const mapDbItem = (item: any): NewsItem => {
+    const title = typeof item?.title === 'string' && item.title.trim() ? item.title : 'Untitled Story';
+    const publishedRaw = item?.published_at ? new Date(item.published_at) : null;
+    const publishedAt = publishedRaw && !isNaN(publishedRaw.getTime())
+      ? publishedRaw.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      : 'Recent';
+    return {
+      id: item?.id ?? `news-${Math.random().toString(36).slice(2)}`,
+      title,
+      sourceName: item?.source_name || 'Industry News',
+      sourceUrl: item?.source_url || '',
+      publishedAt,
+      categoryTag: item?.category_tag || 'Industry',
+      summary: item?.summary || undefined,
+      imageUrl: item?.image_url || undefined,
+      impact: getImpactFromContent(title, item?.summary),
+    };
+  };
 
   const fetchNews = async (forceRefresh = false) => {
     if (forceRefresh) setIsRefreshing(true);
