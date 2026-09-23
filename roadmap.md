@@ -58,5 +58,5 @@
 ## New (Sept 23) — universal first lesson and named onboarding
 - [x] Replace the old mobile demo with the universal three-step AI & Machine Learning lesson, including retry feedback, confetti, sound/haptics, +20 XP, and a real one-day starting streak.
 - [x] Add display-name capture, persist it safely to the learner profile, and route new accounts through the named welcome choice into demo or industry selection without affecting returning users.
-- [ ] Personalize lesson celebrations and streak prompts with the learner's name, with a clean “Scholar” fallback.
+- [x] Personalize lesson celebrations and streak prompts with the learner's name, with a clean “Scholar” fallback.
 - [ ] Verify fresh install, signup, sign-in, demo skip/completion, reward transfer, onboarding, and returning-user launch paths before release.
