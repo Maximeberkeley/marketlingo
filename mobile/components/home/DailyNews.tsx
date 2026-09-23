@@ -262,7 +262,7 @@ function NewsFeedCard({
           <Text style={s.feedTitle} numberOfLines={3}>{item?.title || 'Untitled Story'}</Text>
           <View style={s.feedFooter}>
             <Text style={s.feedDate}>{item?.publishedAt || 'Recent'}</Text>
-            <Feather name="more-horizontal" size={19} color={INTEL.muted} />
+            <Feather name="more-horizontal" size={19} color={COLORS.intelMuted} />
           </View>
         </View>
 
@@ -943,14 +943,14 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
 
 // ── Styles ──
 const INTEL = {
-  background: '#000000',
-  surface: '#1C1C1E',
-  surfaceRaised: '#2C2C2E',
-  text: '#FFFFFF',
-  secondary: '#C7C7CC',
+  background: COLORS.intelBackground,
+  surface: COLORS.intelSurface,
+  surfaceRaised: COLORS.intelSurfaceRaised,
+  text: COLORS.intelText,
+  secondary: COLORS.intelSecondary,
   secondaryBright: 'rgba(255,255,255,0.82)',
-  muted: '#8E8E93',
-  separator: '#38383A',
+  muted: COLORS.intelMuted,
+  separator: COLORS.intelSeparator,
   glass: 'rgba(0,0,0,0.55)',
   scrim: 'rgba(0,0,0,0.38)',
 };
@@ -959,18 +959,18 @@ const s = StyleSheet.create({
   container: { backgroundColor: INTEL.background },
   featuredCarousel: { marginBottom: 24, marginHorizontal: -16 },
   featuredTrack: { paddingHorizontal: 16, gap: 12 },
-  featuredCard: { height: 250, borderRadius: 20, overflow: 'hidden', backgroundColor: INTEL.surface },
+  featuredCard: { height: 250, borderRadius: 20, overflow: 'hidden', backgroundColor: INTEL.surface, borderWidth: 1, borderColor: COLORS.intelSeparator, ...SHADOWS.sm },
   featuredImage: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
   featuredOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: INTEL.scrim },
   featuredContent: { ...StyleSheet.absoluteFillObject, padding: 18, justifyContent: 'flex-end' },
   featuredTopRow: { position: 'absolute', top: 16, left: 16 },
   featuredBadge: { paddingHorizontal: 9, paddingVertical: 5, borderRadius: 999, backgroundColor: INTEL.glass },
-  featuredBadgeText: { fontSize: 9, fontWeight: '800', color: INTEL.text, letterSpacing: 0.8 },
-  featuredTitle: { fontSize: 22, fontWeight: '900', color: INTEL.text, lineHeight: 27, marginBottom: 6 },
+  featuredBadgeText: { fontSize: 9, fontWeight: '800', color: COLORS.textOnAccent, letterSpacing: 0.8 },
+  featuredTitle: { fontSize: 22, fontWeight: '900', color: COLORS.textOnAccent, lineHeight: 27, marginBottom: 6 },
   featuredSummary: { fontSize: 12, color: INTEL.secondaryBright, lineHeight: 16, marginBottom: 8 },
   featuredMeta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  featuredSource: { fontSize: 12, color: INTEL.text, fontWeight: '700' },
-  featuredDate: { fontSize: 11, color: INTEL.muted },
+  featuredSource: { fontSize: 12, color: COLORS.textOnAccent, fontWeight: '700' },
+  featuredDate: { fontSize: 11, color: 'rgba(255,255,255,0.72)' },
 
   dotsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 10 },
   dot: { height: 4, borderRadius: 2, backgroundColor: INTEL.text },
@@ -982,7 +982,7 @@ const s = StyleSheet.create({
 
   feedCard: {
     minHeight: 142, flexDirection: 'row', backgroundColor: INTEL.surface, borderRadius: 18,
-    padding: 14, gap: 14,
+    padding: 14, gap: 14, borderWidth: 1, borderColor: COLORS.intelSeparator, ...SHADOWS.sm,
   },
   feedCardText: { flex: 1, justifyContent: 'space-between' },
   feedSource: { fontSize: 12, color: INTEL.secondary, fontWeight: '800', marginBottom: 6 },
@@ -993,9 +993,9 @@ const s = StyleSheet.create({
   feedThumbImage: { width: '100%', height: '100%' },
 
   loadingContainer: { gap: 8 },
-  skeletonCard: { padding: 14, backgroundColor: INTEL.surface, borderRadius: 18, gap: 8 },
+  skeletonCard: { padding: 14, backgroundColor: INTEL.surface, borderRadius: 18, borderWidth: 1, borderColor: COLORS.intelSeparator, gap: 8 },
   skeletonLine: { height: 14, backgroundColor: INTEL.surfaceRaised, borderRadius: 7, width: '100%' },
-  emptyCard: { padding: 28, backgroundColor: INTEL.surface, borderRadius: 18, alignItems: 'center', gap: 8 },
+  emptyCard: { padding: 28, backgroundColor: INTEL.surface, borderRadius: 18, borderWidth: 1, borderColor: COLORS.intelSeparator, alignItems: 'center', gap: 8 },
   emptyText: { ...TYPE.body, color: INTEL.secondary, textAlign: 'center' },
   retryBtn: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: COLORS.accentSoft, borderRadius: 20, borderWidth: 1, borderColor: COLORS.accentMedium },
   retryText: { fontSize: 13, color: COLORS.accent, fontWeight: '600' },

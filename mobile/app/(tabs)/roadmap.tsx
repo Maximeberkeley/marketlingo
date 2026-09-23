@@ -7,7 +7,7 @@ import { DailyNews } from '../../components/home/DailyNews';
 import { ErrorBoundary } from '../../components/ErrorBoundary';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
-import { TYPE } from '../../lib/constants';
+import { COLORS, TYPE } from '../../lib/constants';
 import { getMarketName } from '../../lib/markets';
 import { triggerHaptic } from '../../lib/haptics';
 
@@ -90,11 +90,11 @@ export default function IntelScreen() {
 }
 
 const INTEL = {
-  background: '#000000',
-  surface: '#1C1C1E',
-  text: '#FFFFFF',
-  secondary: '#AEAEB2',
-  accent: '#A78BFA',
+  background: COLORS.intelBackground,
+  surface: COLORS.intelSurface,
+  text: COLORS.intelText,
+  secondary: COLORS.intelSecondary,
+  accent: COLORS.accent,
   live: '#FF453A',
 };
 
@@ -104,9 +104,9 @@ const styles = StyleSheet.create({
   masthead: { paddingHorizontal: 16, paddingBottom: 18 },
   mastheadTop: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
   title: { fontSize: 40, lineHeight: 44, fontWeight: '900', color: INTEL.text },
-  signalMark: { width: 42, height: 42, borderRadius: 21, backgroundColor: INTEL.surface, alignItems: 'center', justifyContent: 'center' },
+  signalMark: { width: 42, height: 42, borderRadius: 21, backgroundColor: INTEL.surface, borderWidth: 1, borderColor: COLORS.intelSeparator, alignItems: 'center', justifyContent: 'center' },
   liveDot: { position: 'absolute', right: 5, top: 5, width: 8, height: 8, borderRadius: 4, backgroundColor: INTEL.live, borderWidth: 2, borderColor: INTEL.surface },
-  marketTag: { alignSelf: 'flex-start', marginTop: 9, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999, backgroundColor: INTEL.surface },
+  marketTag: { alignSelf: 'flex-start', marginTop: 9, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999, backgroundColor: INTEL.surface, borderWidth: 1, borderColor: COLORS.intelSeparator },
   market: { ...TYPE.caption, color: INTEL.secondary },
   feed: { paddingHorizontal: 16 },
 });
