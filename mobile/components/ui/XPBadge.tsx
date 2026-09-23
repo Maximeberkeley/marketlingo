@@ -75,6 +75,8 @@ const styles = StyleSheet.create({
     minHeight: 42,
     justifyContent: 'center',
     backgroundColor: COLORS.xpBadgeSurface,
+    borderWidth: 1,
+    borderColor: COLORS.xpBadgeBorder,
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 999,

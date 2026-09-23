@@ -59,6 +59,8 @@ const styles = StyleSheet.create({
     minHeight: 42,
     justifyContent: 'center',
     backgroundColor: COLORS.streakBadgeSurface,
+    borderWidth: 1,
+    borderColor: COLORS.streakBadgeBorder,
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 999,
