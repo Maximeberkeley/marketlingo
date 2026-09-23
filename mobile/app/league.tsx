@@ -1,5 +1,5 @@
 /**
- * Weekly League — a high-energy tier race backed by the learner's real XP ledger.
+ * Monthly League — a high-energy tier race backed by the learner's real XP ledger.
  */
 import React, { useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -169,7 +169,7 @@ export default function LeagueScreen() {
                   ? league.myRank <= league.promotionCutoff
                     ? `You’re #${league.myRank} — keep your promotion spot.`
                     : `${league.xpToPromotion} XP to reach the promotion zone.`
-                  : 'Earn XP to enter this week’s race.'}
+                  : 'Earn XP to enter this month’s race.'}
               </Text>
             </View>
           </View>

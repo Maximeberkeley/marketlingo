@@ -75,7 +75,7 @@ export default function FriendsScreen() {
     });
   }, [user]);
 
-  // My own real stats (all time + this week)
+  // My own real stats for the current calendar-month season.
   useEffect(() => {
     if (!marketId || !user) return;
     (async () => {

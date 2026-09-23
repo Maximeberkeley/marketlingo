@@ -1,9 +1,8 @@
 /**
  * useLeague — calendar-month league standings, rival XP and season ceremony.
  *
- * The backend does the honest work: `sync_my_league` recomputes this week's XP
- * from xp_transactions and places the learner in a tier, and `run_league_rollover`
- * stamps last week's result. This hook only reads and presents.
+ * The backend recomputes the current calendar month's XP, places every learner
+ * in a tier, and stamps the previous season's result.
  */
 import { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -43,7 +42,7 @@ export interface LeagueState {
   demotionCutoff: number | null;
   weekOf: string;
   daysLeft: number;
-  /** Last week's stamped outcome, used for the Sunday ceremony. */
+  /** Last season's stamped outcome, used for the monthly ceremony. */
   lastWeek: { tier: LeagueTier; result: LeagueResult; finalRank: number | null; weekOf: string } | null;
   ceremonyPending: boolean;
 }
@@ -87,7 +86,7 @@ export function useLeague(marketId?: string) {
     const weekOf = currentMonthStart();
 
     try {
-      // 1. Recompute my placement for this week (server-side, from XP ledger).
+      // 1. Recompute every placement for this calendar month from the XP ledger.
       const { data: mine, error: syncError } = await supabase.rpc('sync_my_monthly_league', {
         p_market_id: marketId,
         p_season_start: weekOf,
