@@ -13,6 +13,7 @@ interface Props {
   slides: { title?: string; body?: string }[];
   objectives?: string[];
   marketId?: string;
+  day?: number;
   isBite?: boolean;
   onStart: () => void;
   onBack: () => void;
@@ -20,13 +21,19 @@ interface Props {
 
 const compact = (text: string, index: number) => {
   const clean = text.replace(/^[\s•\-–—]+/, '').replace(/\s+/g, ' ').trim();
+  if (/responsib|accountab|owns?\b/i.test(clean)) return 'Trace who owns the outcome';
+  if (/distinguish|compare|difference|versus|\bvs\.?\b/i.test(clean)) return 'Separate the key players';
+  if (/decision|purchas|buyer|contact/i.test(clean)) return 'Find the real decision-maker';
+  if (/risk|failure|threat/i.test(clean)) return 'Spot the hidden risk';
+  if (/metric|number|margin|cost|revenue/i.test(clean)) return 'Read the decisive number';
+  if (/mechanism|process|works?|flow/i.test(clean)) return 'Map how the system works';
   const withoutVerb = clean.replace(/^(explain|identify|understand|distinguish|describe|learn|recognize|compare|evaluate|analyze)\s+(how|why|what|the|an?)?\s*/i, '');
-  const words = withoutVerb.split(' ').filter(Boolean).slice(0, 6).join(' ').replace(/[.,;:]$/, '');
+  const words = withoutVerb.split(' ').filter(Boolean).slice(0, 5).join(' ').replace(/[.,;:]$/, '');
   const verbs = ['Spot', 'Compare', 'Decide'];
   return `${verbs[index] || 'Apply'} ${words}`;
 };
 
-export function LessonGoalsScreen({ title, slides, objectives, marketId, isBite, onStart, onBack }: Props) {
+export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1, isBite, onStart, onBack }: Props) {
   const insets = useSafeAreaInsets();
   const world = getMarketWorld(marketId);
   const marketName = getMarketName(marketId || 'aerospace');
@@ -46,7 +53,7 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, isBite,
 
       <LinearGradient colors={[world.colors[0], world.colors[1]]} style={styles.hero}>
         <Image source={world.illustration} style={styles.illustration} />
-        <Text style={styles.kicker}>{isBite ? 'QUICK BITE' : 'DAY 1'}</Text>
+        <Text style={styles.kicker}>{isBite ? 'QUICK BITE' : `DAY ${day}`}</Text>
         <Text style={styles.title}>{title}</Text>
         <View style={styles.timeChip}>
           <Feather name="clock" size={14} color={COLORS.bg0} />
