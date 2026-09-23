@@ -467,20 +467,33 @@ export function LeoVoiceChatOverlay({
   );
 }
 
-const TOP_PADDING = Platform.OS === 'ios' ? 56 : 40;
-
 const st = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
   },
-  bgGradient: {
+  sceneImage: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#0A0A1A',
+    width: '100%',
+    height: '100%',
   },
-
-  // Top bar
+  sceneShade: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(3,5,18,0.12)',
+  },
+  bottomShade: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '43%',
+    backgroundColor: 'rgba(3,5,18,0.72)',
+  },
   topBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -495,9 +508,15 @@ const st = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: 'rgba(14,16,31,0.76)',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  topBtnActive: {
+    backgroundColor: 'rgba(249,115,22,0.88)',
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   statusBadge: {
     flexDirection: 'row',
@@ -506,7 +525,9 @@ const st = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(14,16,31,0.76)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
   },
   liveDot: {
     width: 8,
@@ -516,51 +537,31 @@ const st = StyleSheet.create({
   statusBadgeText: {
     fontSize: 13,
     fontWeight: '700',
-    color: 'rgba(255,255,255,0.8)',
+    color: 'rgba(255,255,255,0.94)',
   },
-
-  // Center Leo
-  centerStage: {
-    flex: 1,
+  dialogStage: {
+    position: 'absolute',
+    top: '58%',
+    left: 24,
+    right: 24,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 30,
     zIndex: 10,
   },
-  leoRing: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    borderWidth: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.3)',
+  dialogTail: {
+    width: 20,
+    height: 20,
+    marginBottom: -10,
+    backgroundColor: 'rgba(15,17,31,0.9)',
+    borderLeftWidth: 1,
+    borderTopWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    transform: [{ rotate: '45deg' }],
+    zIndex: 2,
   },
-  leoAvatar: {
-    width: 136,
-    height: 136,
-    borderRadius: 68,
-    resizeMode: 'contain',
-  },
-  micBadge: {
-    position: 'absolute',
-    bottom: 2,
-    right: 2,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#EF4444',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#000',
-  },
-
-  // Status
   statusContainer: {
-    marginTop: 20,
+    marginTop: 8,
     alignItems: 'center',
-    minHeight: 30,
+    minHeight: 20,
   },
   statusRow: {
     flexDirection: 'row',
@@ -568,9 +569,9 @@ const st = StyleSheet.create({
     gap: 8,
   },
   statusText: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.7)',
-    fontWeight: '500',
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.68)',
+    fontWeight: '600',
   },
   recordDot: {
     width: 10,
@@ -579,23 +580,29 @@ const st = StyleSheet.create({
     backgroundColor: '#EF4444',
   },
 
-  // Subtitle
   subtitleBox: {
-    marginTop: 24,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    maxWidth: SCREEN_W - 60,
+    width: '100%',
+    minHeight: 94,
+    paddingHorizontal: 22,
+    paddingVertical: 18,
+    borderRadius: 28,
+    backgroundColor: 'rgba(15,17,31,0.9)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: 'rgba(255,255,255,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 12,
   },
   subtitleText: {
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: SCREEN_W < 370 ? 16 : 18,
+    lineHeight: SCREEN_W < 370 ? 22 : 25,
     color: '#fff',
     textAlign: 'center',
-    fontWeight: '400',
+    fontWeight: '600',
   },
   expandHint: {
     fontSize: 11,
@@ -605,72 +612,78 @@ const st = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // History
-  historyScroll: {
-    maxHeight: 120,
-    marginHorizontal: 20,
-    marginBottom: 8,
-  },
-  historyContent: {
-    gap: 6,
-    paddingVertical: 4,
-  },
-  historyBubble: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    alignSelf: 'flex-start',
-    maxWidth: '85%',
-  },
-  historyBubbleUser: {
-    alignSelf: 'flex-end',
-    backgroundColor: 'rgba(249,115,22,0.2)',
-  },
-  historyText: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.6)',
-    lineHeight: 18,
-  },
-  historyTextUser: {
-    color: 'rgba(255,255,255,0.8)',
-  },
-
-  // Bottom
   bottomBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
     paddingHorizontal: 24,
     zIndex: 10,
   },
-  micHintRow: {
+  callToolbar: {
+    minHeight: 122,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  sideAction: {
+    width: 82,
     alignItems: 'center',
-    gap: 12,
+    gap: 9,
+    paddingTop: 10,
+  },
+  sideActionCircle: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: 'rgba(28,30,46,0.94)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.09)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sideActionCircleActive: {
+    borderColor: 'rgba(249,115,22,0.65)',
+    backgroundColor: 'rgba(74,36,22,0.95)',
+  },
+  sideActionLabel: {
+    color: 'rgba(255,255,255,0.72)',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  primaryAction: {
+    minWidth: 132,
+    alignItems: 'center',
+    gap: 9,
   },
   bigMicBtn: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 76,
+    height: 76,
+    borderRadius: 38,
     backgroundColor: '#F97316',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#F97316',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.62,
+    shadowRadius: 18,
+    elevation: 14,
   },
   bigMicBtnRecording: {
     backgroundColor: '#EF4444',
     shadowColor: '#EF4444',
   },
-  micHintText: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.5)',
-    fontWeight: '500',
+  primaryActionLabel: {
+    color: 'rgba(255,255,255,0.86)',
+    fontSize: 12,
+    fontWeight: '700',
+    textAlign: 'center',
   },
   textInputRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     gap: 10,
+    paddingBottom: 8,
   },
   textInput: {
     flex: 1,
@@ -683,6 +696,7 @@ const st = StyleSheet.create({
     maxHeight: 100,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.15)',
+    minHeight: 48,
   },
   sendBtn: {
     width: 44,
