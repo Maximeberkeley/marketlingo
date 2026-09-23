@@ -64,6 +64,13 @@
       "when": 1790177116823,
       "tag": "0008_add_named_demo_onboarding",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1790177226779,
+      "tag": "0009_make_demo_reward_idempotent_and_streak_safe",
+      "breakpoints": true
     }
   ]
 }

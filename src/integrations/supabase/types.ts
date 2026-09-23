@@ -337,6 +337,7 @@ export type Database = {
           completed_stack_id: string | null
           completion_date: string
           created_at: string
+          demo_completed: boolean
           drills_completed: number
           games_completed: number
           id: string
@@ -350,6 +351,7 @@ export type Database = {
           completed_stack_id?: string | null
           completion_date?: string
           created_at?: string
+          demo_completed?: boolean
           drills_completed?: number
           games_completed?: number
           id?: string
@@ -363,6 +365,7 @@ export type Database = {
           completed_stack_id?: string | null
           completion_date?: string
           created_at?: string
+          demo_completed?: boolean
           drills_completed?: number
           games_completed?: number
           id?: string
@@ -2941,6 +2944,10 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      claim_demo_onboarding_reward: {
+        Args: { p_market_id: string; p_today: string }
+        Returns: number
       }
       current_week_start: { Args: never; Returns: string }
       decay_concept_mastery: { Args: never; Returns: number }
