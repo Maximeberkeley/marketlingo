@@ -3118,6 +3118,27 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      sync_my_monthly_league: {
+        Args: { p_market_id: string; p_season_start: string }
+        Returns: {
+          created_at: string
+          final_rank: number | null
+          id: string
+          market_id: string
+          result: string | null
+          tier: string
+          updated_at: string
+          user_id: string
+          week_of: string
+          weekly_xp: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "league_memberships"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
