@@ -101,82 +101,6 @@ const LAB_CARDS: CardData[] = [
   },
 ];
 
-const RESOURCE_CARDS: CardData[] = [
-  {
-    id: 'leaderboard',
-    title: 'Leaderboard',
-    subtitle: 'Friends & Rivals',
-    description: 'Compete with friends and climb the rankings.',
-    icon: 'users',
-    iconColor: '#FDE68A',
-    gradientColors: ['#7C2D12', '#B45309', '#F59E0B'] as const,
-    accentGlow: 'rgba(245, 158, 11, 0.4)',
-    path: '/friends',
-    heroImage: require('../../assets/illustrations/leaderboard-hero.png'),
-    tag: 'SOCIAL',
-  },
-  {
-    id: 'league',
-    title: 'Weekly League',
-    subtitle: 'Promotion Race',
-    description: 'Weekly XP puts you against rivals. Finish top to move up a tier.',
-    icon: 'award',
-    iconColor: '#BFDBFE',
-    gradientColors: ['#1E3A8A', '#1D4ED8', '#3B82F6'] as const,
-    accentGlow: 'rgba(59, 130, 246, 0.4)',
-    path: '/league',
-    tag: 'WEEKLY',
-  },
-  {
-    id: 'summaries',
-    title: 'Summaries',
-    subtitle: 'Market Digests',
-    description: 'Daily and weekly recaps of your learnings.',
-    icon: 'file-text',
-    iconColor: '#FED7AA',
-    gradientColors: ['#9A3412', '#C2410C', '#EA580C'] as const,
-    accentGlow: 'rgba(234, 88, 12, 0.4)',
-    path: '/summaries',
-    heroImage: require('../../assets/illustrations/summaries-hero.png'),
-  },
-  {
-    id: 'regulatory',
-    title: 'Regulatory Hub',
-    subtitle: 'Compliance & Policy',
-    description: 'Key regulations shaping your industry.',
-    icon: 'shield',
-    iconColor: '#BFDBFE',
-    gradientColors: ['#1E3A5F', '#1D4ED8', '#3B82F6'] as const,
-    accentGlow: 'rgba(59, 130, 246, 0.4)',
-    path: '/regulatory-hub',
-    heroImage: require('../../assets/illustrations/regulatory-hero.png'),
-  },
-  {
-    id: 'notebook',
-    title: 'Notebook',
-    subtitle: 'Your Insights',
-    description: 'Captured notes and key takeaways.',
-    icon: 'edit-3',
-    iconColor: '#FECDD3',
-    gradientColors: ['#9F1239', '#BE123C', '#E11D48'] as const,
-    accentGlow: 'rgba(225, 29, 72, 0.4)',
-    path: '/notes',
-    heroImage: require('../../assets/cards/notebook-hero.jpg'),
-  },
-  {
-    id: 'passport',
-    title: 'Passport',
-    subtitle: 'Industry Credentials',
-    description: 'Track verified expertise across industries.',
-    icon: 'globe',
-    iconColor: '#99F6E4',
-    gradientColors: ['#134E4A', '#0F766E', '#0D9488'] as const,
-    accentGlow: 'rgba(13, 148, 136, 0.4)',
-    path: '/passport',
-    heroImage: require('../../assets/illustrations/passport-hero.png'),
-  },
-];
-
 /* ─── Premium Carousel ─── */
 function PremiumCarousel({ cards, title }: { cards: CardData[]; title: string }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -458,8 +382,6 @@ export default function PracticeScreen() {
         {/* Labs */}
         <PremiumCarousel cards={LAB_CARDS} title="Labs" />
 
-        {/* Resources */}
-        <PremiumCarousel cards={RESOURCE_CARDS} title="Resources" />
       </ScrollView>
     </View>
   );
