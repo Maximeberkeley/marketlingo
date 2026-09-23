@@ -5,6 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../../lib/constants';
 import { getMarketWorld } from '../../data/marketWorlds';
+import { getMarketName } from '../../lib/markets';
 import { SpeechBubble } from '../ui/SpeechBubble';
 
 interface Props {
@@ -12,22 +13,30 @@ interface Props {
   slides: { title?: string; body?: string }[];
   objectives?: string[];
   marketId?: string;
+  day?: number;
   isBite?: boolean;
   onStart: () => void;
   onBack: () => void;
 }
 
-const compact = (text: string) => {
+const compact = (text: string, index: number) => {
   const clean = text.replace(/^[\s•\-–—]+/, '').replace(/\s+/g, ' ').trim();
-  // Split only on real sentence ends (punctuation + space + capital), so "Zelle vs. Venmo" stays intact.
-  const parts = clean.split(/(?<=[.!?])\s+(?=[A-Z])/);
-  const first = (parts[0] && parts[0].length > 24 ? parts[0] : clean) || clean;
-  return first.length > 72 ? `${first.slice(0, 69).trim()}…` : first;
+  if (/responsib|accountab|owns?\b/i.test(clean)) return 'Trace who owns the outcome';
+  if (/distinguish|compare|difference|versus|\bvs\.?\b/i.test(clean)) return 'Separate the key players';
+  if (/decision|purchas|buyer|contact/i.test(clean)) return 'Find the real decision-maker';
+  if (/risk|failure|threat/i.test(clean)) return 'Spot the hidden risk';
+  if (/metric|number|margin|cost|revenue/i.test(clean)) return 'Read the decisive number';
+  if (/mechanism|process|works?|flow/i.test(clean)) return 'Map how the system works';
+  const withoutVerb = clean.replace(/^(explain|identify|understand|distinguish|describe|learn|recognize|compare|evaluate|analyze)\s+(how|why|what|the|an?)?\s*/i, '');
+  const words = withoutVerb.split(' ').filter(Boolean).slice(0, 5).join(' ').replace(/[.,;:]$/, '');
+  const verbs = ['Spot', 'Compare', 'Decide'];
+  return `${verbs[index] || 'Apply'} ${words}`;
 };
 
-export function LessonGoalsScreen({ title, slides, objectives, marketId, isBite, onStart, onBack }: Props) {
+export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1, isBite, onStart, onBack }: Props) {
   const insets = useSafeAreaInsets();
   const world = getMarketWorld(marketId);
+  const marketName = getMarketName(marketId || 'aerospace');
   const goals = useMemo(() => {
     const authored = (objectives || []).filter(Boolean);
     const fallback = slides.map(slide => slide.title || '').filter(Boolean);
@@ -44,17 +53,16 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, isBite,
 
       <LinearGradient colors={[world.colors[0], world.colors[1]]} style={styles.hero}>
         <Image source={world.illustration} style={styles.illustration} />
-        <Text style={styles.kicker}>{isBite ? 'QUICK BITE' : world.worldName.toUpperCase()}</Text>
+        <Text style={styles.kicker}>{isBite ? 'QUICK BITE' : `DAY ${day}`}</Text>
         <Text style={styles.title}>{title}</Text>
         <View style={styles.timeChip}>
           <Feather name="clock" size={14} color={COLORS.bg0} />
-          <Text style={styles.timeText}>{isBite ? 'About 1 minute' : 'About 3 minutes'}</Text>
+          <Text style={styles.timeText}>{marketName} · {isBite ? '1 min' : '6 min'}</Text>
         </View>
       </LinearGradient>
 
       <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.heading}>Your mission</Text>
-        <Text style={styles.subheading}>Finish this run and you’ll be able to:</Text>
+        <Text style={styles.heading}>Three moves to own</Text>
         <View style={styles.goals}>
           {safeGoals.map((goal, index) => (
             <View key={`${goal}-${index}`} style={styles.goalRow}>
@@ -68,11 +76,11 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, isBite,
 
         <View style={styles.leoRow}>
           <Image source={require('../../assets/mascot/leo-reference.png')} style={styles.leo} />
-          <SpeechBubble text="Know the mission. Then earn the bragging rights." tail="left" compact style={styles.leoBalloon} textStyle={styles.leoLine} />
+          <SpeechBubble text="Three sharp moves. Then you make the call." tail="left" compact style={styles.leoBalloon} textStyle={styles.leoLine} />
         </View>
       </ScrollView>
 
-      <TouchableOpacity style={[styles.start, { backgroundColor: world.colors[0] }]} onPress={onStart} activeOpacity={0.86}>
+      <TouchableOpacity style={[styles.start, { backgroundColor: world.colors[0], shadowColor: world.colors[0] }]} onPress={onStart} activeOpacity={0.86}>
         <Text style={styles.startText}>Start mission</Text>
         <Feather name="arrow-right" size={19} color={COLORS.bg0} />
       </TouchableOpacity>
@@ -83,25 +91,25 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, isBite,
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg0, paddingHorizontal: 16 },
   back: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
-  hero: { minHeight: 230, borderRadius: 22, padding: 22, justifyContent: 'flex-end', overflow: 'hidden' },
-  illustration: { position: 'absolute', width: 190, height: 190, right: -18, top: -8, resizeMode: 'contain', opacity: 0.86 },
+  hero: { minHeight: 206, borderRadius: 22, padding: 22, justifyContent: 'flex-end', overflow: 'hidden' },
+  illustration: { position: 'absolute', width: 174, height: 174, right: -14, top: -6, resizeMode: 'contain', opacity: 0.88 },
   kicker: { color: COLORS.bg0, fontSize: 11, fontWeight: '900', letterSpacing: 1.2, opacity: 0.82 },
-  title: { color: COLORS.bg0, fontSize: 27, lineHeight: 31, fontWeight: '900', maxWidth: '75%', marginTop: 8 },
+  title: { color: COLORS.bg0, fontSize: 29, lineHeight: 34, fontWeight: '700', maxWidth: '76%', marginTop: 7 },
   timeChip: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 14 },
   timeText: { color: COLORS.bg0, fontSize: 13, fontWeight: '700' },
   body: { flex: 1 },
-  bodyContent: { paddingTop: 24, paddingBottom: 20 },
-  heading: { fontSize: 24, fontWeight: '900', color: COLORS.textPrimary },
+  bodyContent: { paddingTop: 18, paddingBottom: 14 },
+  heading: { fontSize: 19, fontWeight: '800', color: COLORS.textPrimary },
   subheading: { marginTop: 4, fontSize: 15, color: COLORS.textSecondary },
-  goals: { gap: 12, marginTop: 20 },
-  goalRow: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 48 },
-  number: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  goals: { gap: 8, marginTop: 12 },
+  goalRow: { flexDirection: 'row', alignItems: 'center', gap: 11, minHeight: 42 },
+  number: { width: 30, height: 30, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
   numberText: { color: COLORS.bg0, fontSize: 14, fontWeight: '900' },
-  goalText: { flex: 1, fontSize: 16, lineHeight: 21, color: COLORS.textPrimary, fontWeight: '700' },
-  leoRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 24 },
+  goalText: { flex: 1, fontSize: 15, lineHeight: 20, color: COLORS.textPrimary, fontWeight: '700' },
+  leoRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14 },
   leo: { width: 44, height: 44, resizeMode: 'contain' },
   leoBalloon: { flex: 1 },
   leoLine: { color: COLORS.textSecondary, fontSize: 13, lineHeight: 18, fontWeight: '600' },
-  start: { height: 56, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+  start: { height: 56, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, shadowOffset: { width: 0, height: 7 }, shadowOpacity: 0.34, shadowRadius: 16, elevation: 10 },
   startText: { color: COLORS.bg0, fontSize: 17, fontWeight: '900' },
 });

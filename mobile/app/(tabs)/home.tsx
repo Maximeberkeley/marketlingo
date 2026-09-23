@@ -425,6 +425,7 @@ export default function HomeScreen() {
           slides={session.activeStack.slides}
           objectives={(session.activeStack as any).metadata?.learning_objectives}
           marketId={selectedMarket || undefined}
+          day={currentDay}
           isBite={session.activeBiteIndex !== null}
           onStart={session.beginLesson}
           onBack={session.closeReader}

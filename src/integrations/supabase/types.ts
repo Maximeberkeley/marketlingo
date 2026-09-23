@@ -2949,6 +2949,7 @@ export type Database = {
         Args: { p_market_id: string; p_today: string }
         Returns: number
       }
+      current_league_season_start: { Args: never; Returns: string }
       current_week_start: { Args: never; Returns: string }
       decay_concept_mastery: { Args: never; Returns: number }
       evaluate_market_rewards: {
@@ -3098,6 +3099,27 @@ export type Database = {
       }
       sync_my_league: {
         Args: { p_market_id: string }
+        Returns: {
+          created_at: string
+          final_rank: number | null
+          id: string
+          market_id: string
+          result: string | null
+          tier: string
+          updated_at: string
+          user_id: string
+          week_of: string
+          weekly_xp: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "league_memberships"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      sync_my_monthly_league: {
+        Args: { p_market_id: string; p_season_start: string }
         Returns: {
           created_at: string
           final_rank: number | null

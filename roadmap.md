@@ -60,11 +60,17 @@
 - [x] Add display-name capture, persist it safely to the learner profile, and route new accounts through the named welcome choice into demo or industry selection without affecting returning users.
 - [x] Personalize lesson celebrations and streak prompts with the learner's name, with a clean “Scholar” fallback.
 - [ ] Verify fresh install, signup, sign-in, demo skip/completion, reward transfer, onboarding, and returning-user launch paths before release.
-## New (Sept 23) — Practice and Weekly League polish
+## New (Sept 23) — Practice and Monthly League polish
 - [x] Remove the Practice Resources section while preserving lesson activities and Labs.
-- [x] Rebuild Weekly League with tier progression, trophy Leo, medal/avatar standings, and promotion/demotion zones.
+- [x] Rebuild Monthly League with tier progression, trophy Leo, medal/avatar standings, and promotion/demotion zones.
 - [x] Upgrade the Arena prerequisite with interactive Thinking/Scholar Leo and a clear Course action.
 
 ## New (Sept 23) — Immersive Speak to Leo
 - [x] Replace the empty voice screen with the warm study scene and a three-action voice toolbar while preserving speech, transcription, and text chat.
+
+## New (Sept 23) — Lesson entry, orbit, Leo, and monthly leagues
+- [x] Tighten lesson outcomes, hierarchy, and the Start Mission glow.
+- [x] Compress Course section banners and turn the five fixed nodes into a visible learning orbit.
+- [x] Make Tap Leo conversation-safe with expandable history and keyboard dismissal.
+- [x] Convert social standings and tier leagues to calendar-month seasons with inspectable tiers and upgraded artwork.
 

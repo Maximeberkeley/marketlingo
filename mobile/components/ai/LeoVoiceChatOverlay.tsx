@@ -16,6 +16,8 @@ import {
   StatusBar,
   TextInput,
   KeyboardAvoidingView,
+  Keyboard,
+  ScrollView,
 } from 'react-native';
 import { Audio } from 'expo-av';
 import { Feather } from '@expo/vector-icons';
@@ -351,7 +353,7 @@ export function LeoVoiceChatOverlay({
             </View>
           </View>
 
-          <View style={st.dialogStage}>
+          <View style={[st.dialogStage, { bottom: insets.bottom + 154 }]}>
             <View style={st.dialogTail} />
             <TouchableOpacity
               style={st.subtitleBox}
@@ -365,8 +367,17 @@ export function LeoVoiceChatOverlay({
                   <ActivityIndicator size="small" color="#FB7A22" />
                   <Text style={st.subtitleText}>{isTranscribing ? 'Transcribing…' : 'Leo is thinking…'}</Text>
                 </View>
+              ) : subtitlesExpanded && messages.length > 0 ? (
+                <ScrollView style={st.conversationScroll} contentContainerStyle={st.conversationContent} showsVerticalScrollIndicator>
+                  {messages.map((message, index) => (
+                    <View key={`${message.role}-${index}`} style={[st.conversationBubble, message.role === 'user' ? st.userConversationBubble : st.leoConversationBubble]}>
+                      <Text style={st.conversationRole}>{message.role === 'user' ? 'YOU' : 'LEO'}</Text>
+                      <Text style={st.conversationText}>{message.content}</Text>
+                    </View>
+                  ))}
+                </ScrollView>
               ) : (
-                <Text style={st.subtitleText} numberOfLines={subtitlesExpanded ? undefined : 4}>
+                <Text style={st.subtitleText} numberOfLines={4}>
                   {narrationText || "Hey! 🦊 Ask me anything about your industry!"}
                 </Text>
               )}
@@ -393,18 +404,25 @@ export function LeoVoiceChatOverlay({
 
           <View style={[st.bottomBar, { paddingBottom: insets.bottom + 16 }]}>
             {showTextInput ? (
-              <View style={st.textInputRow}>
-                <TextInput
-                  style={st.textInput}
-                  value={textInput}
-                  onChangeText={setTextInput}
-                  placeholder="Type a message..."
-                  placeholderTextColor="rgba(255,255,255,0.4)"
-                  multiline
-                  maxLength={500}
-                  returnKeyType="send"
-                  onSubmitEditing={handleSendText}
-                />
+              <View style={st.keyboardComposer}>
+                <TouchableOpacity style={st.keyboardDismiss} onPress={() => { Keyboard.dismiss(); setShowTextInput(false); }} accessibilityLabel="Hide keyboard">
+                  <Feather name="chevron-down" size={18} color="#fff" />
+                  <Text style={st.keyboardDismissText}>Hide keyboard</Text>
+                </TouchableOpacity>
+                <View style={st.textInputRow}>
+                  <TextInput
+                    style={st.textInput}
+                    value={textInput}
+                    onChangeText={setTextInput}
+                    placeholder="Type a message..."
+                    placeholderTextColor="rgba(255,255,255,0.4)"
+                    multiline
+                    autoFocus
+                    blurOnSubmit
+                    maxLength={500}
+                    returnKeyType="send"
+                    onSubmitEditing={handleSendText}
+                  />
                 <TouchableOpacity
                   style={[st.sendBtn, (!textInput.trim() || isGenerating) && { opacity: 0.4 }]}
                   onPress={handleSendText}
@@ -412,6 +430,7 @@ export function LeoVoiceChatOverlay({
                 >
                   <Feather name="arrow-up" size={18} color="#fff" />
                 </TouchableOpacity>
+                </View>
               </View>
             ) : (
               <View style={st.callToolbar}>
@@ -541,7 +560,6 @@ const st = StyleSheet.create({
   },
   dialogStage: {
     position: 'absolute',
-    top: '58%',
     left: 24,
     right: 24,
     alignItems: 'center',
@@ -596,7 +614,15 @@ const st = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 20,
     elevation: 12,
+    maxHeight: 286,
   },
+  conversationScroll: { width: '100%', maxHeight: 232 },
+  conversationContent: { gap: 10, paddingVertical: 2 },
+  conversationBubble: { paddingHorizontal: 13, paddingVertical: 10, borderRadius: 14 },
+  userConversationBubble: { backgroundColor: 'rgba(249,115,22,0.22)', alignSelf: 'flex-end', maxWidth: '88%' },
+  leoConversationBubble: { backgroundColor: 'rgba(255,255,255,0.08)', alignSelf: 'flex-start', maxWidth: '94%' },
+  conversationRole: { fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.5)', marginBottom: 3 },
+  conversationText: { fontSize: 14, lineHeight: 20, fontWeight: '500', color: '#fff' },
   subtitleText: {
     fontSize: SCREEN_W < 370 ? 16 : 18,
     lineHeight: SCREEN_W < 370 ? 22 : 25,
@@ -685,6 +711,9 @@ const st = StyleSheet.create({
     gap: 10,
     paddingBottom: 8,
   },
+  keyboardComposer: { gap: 8, paddingBottom: 8 },
+  keyboardDismiss: { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 14, backgroundColor: 'rgba(28,30,46,0.9)' },
+  keyboardDismissText: { fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.76)' },
   textInput: {
     flex: 1,
     backgroundColor: 'rgba(255,255,255,0.1)',
