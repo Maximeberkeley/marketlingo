@@ -46,6 +46,7 @@ interface ImmersiveNewsOverlayProps {
   initialIndex: number;
   onClose: () => void;
   onOpenChat: (article: NewsItem) => void;
+  onQuiz?: (article: NewsItem) => void;
   /** Fires for each story the learner actually lands on. */
   onArticleView?: (article: NewsItem) => void;
   marketId: string;
@@ -149,6 +150,7 @@ export function ImmersiveNewsOverlay({
   initialIndex,
   onClose,
   onOpenChat,
+  onQuiz,
   onArticleView,
   marketId,
   learningGoal = 'curiosity',
@@ -500,6 +502,17 @@ User's goal: ${learningGoal}`;
           </View>
 
           <View style={st.topBarRight}>
+            {onQuiz ? (
+              <TouchableOpacity
+                style={st.quizButton}
+                onPress={() => onQuiz(article)}
+                accessibilityRole="button"
+                accessibilityLabel="Take quiz about this story"
+              >
+                <Feather name="help-circle" size={17} color={COLORS.textOnAccent} />
+                <Text style={st.quizButtonText}>Quiz</Text>
+              </TouchableOpacity>
+            ) : null}
             {/* Discuss with AI */}
             <TouchableOpacity
               style={st.topBtn}
@@ -656,6 +669,16 @@ const st = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  quizButton: {
+    height: 40,
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: COLORS.accent,
+  },
+  quizButtonText: { fontSize: 13, fontWeight: '800', color: COLORS.textOnAccent },
   counterBadge: {
     paddingHorizontal: 12,
     paddingVertical: 6,

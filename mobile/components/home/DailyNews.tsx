@@ -15,16 +15,14 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
-import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
+import { COLORS, TYPE } from '../../lib/constants';
 import { Feather } from '@expo/vector-icons';
 import { MentorChatOverlay } from '../ai/MentorChatOverlay';
 import { getMentorForContext } from '../../data/mentors';
 import type { Mentor } from '../../data/mentors';
 import { ImmersiveNewsOverlay } from './ImmersiveNewsOverlay';
-import { useAuth } from '../../hooks/useAuth';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
 import { useIntelHabit } from '../../hooks/useIntelHabit';
@@ -52,24 +50,6 @@ interface DailyNewsProps {
 // ── Impact helper – only surfaces "high" items with an exclamation mark ──
 
 // ── Category colors ──
-const categoryColors: Record<string, { bg: string; text: string }> = {
-  Space: { bg: 'rgba(99,102,241,0.12)', text: '#6366F1' },
-  Aviation: { bg: 'rgba(59,130,246,0.12)', text: '#3B82F6' },
-  Defense: { bg: 'rgba(239,68,68,0.12)', text: '#EF4444' },
-  Deals: { bg: 'rgba(245,158,11,0.12)', text: '#D97706' },
-  Industry: { bg: 'rgba(16,185,129,0.12)', text: '#059669' },
-  Innovation: { bg: 'rgba(139,92,246,0.12)', text: '#7C3AED' },
-  Launch: { bg: 'rgba(139,92,246,0.12)', text: '#7C3AED' },
-  Production: { bg: 'rgba(16,185,129,0.12)', text: '#059669' },
-  Models: { bg: 'rgba(124,58,237,0.12)', text: '#7C3AED' },
-  Hardware: { bg: 'rgba(6,182,212,0.12)', text: '#0891B2' },
-  AI: { bg: 'rgba(16,185,129,0.12)', text: '#059669' },
-  Finance: { bg: 'rgba(245,158,11,0.12)', text: '#D97706' },
-  Health: { bg: 'rgba(236,72,153,0.12)', text: '#DB2777' },
-  Research: { bg: 'rgba(99,102,241,0.12)', text: '#6366F1' },
-  default: { bg: 'rgba(100,116,139,0.08)', text: '#64748B' },
-};
-
 const GRADIENT_SETS = [
   ['#6366F1', '#8B5CF6'],
   ['#3B82F6', '#6366F1'],
@@ -78,7 +58,7 @@ const GRADIENT_SETS = [
 ];
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const FEATURED_CARD_WIDTH = SCREEN_WIDTH * 0.75;
+const FEATURED_CARD_WIDTH = SCREEN_WIDTH - 32;
 
 type NewsQuizQuestion = {
   question: string;
@@ -189,13 +169,13 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
   if (items.length === 0) return null;
 
   return (
-    <View style={{ marginBottom: 20 }}>
+    <View style={s.featuredCarousel}>
       <Animated.ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         snapToInterval={FEATURED_CARD_WIDTH + 12}
         decelerationRate="fast"
-        contentContainerStyle={{ paddingHorizontal: 4, gap: 12 }}
+        contentContainerStyle={s.featuredTrack}
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: false })}
         scrollEventThrottle={16}
       >
@@ -203,8 +183,6 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
           const inputRange = [(i - 1) * (FEATURED_CARD_WIDTH + 12), i * (FEATURED_CARD_WIDTH + 12), (i + 1) * (FEATURED_CARD_WIDTH + 12)];
           const scale = scrollX.interpolate({ inputRange, outputRange: [0.95, 1, 0.95], extrapolate: 'clamp' });
           const opacity = scrollX.interpolate({ inputRange, outputRange: [0.7, 1, 0.7], extrapolate: 'clamp' });
-          const isHighImpact = (item.impact || getImpactFromContent(item.title, item.summary)) === 'high';
-
           return (
             <Animated.View key={item.id} style={{ transform: [{ scale }], opacity, width: FEATURED_CARD_WIDTH }}>
               <TouchableOpacity activeOpacity={0.85} onPress={() => onSelect(item)} style={s.featuredCard}>
@@ -213,17 +191,12 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
                 ) : (
                   <View style={[s.featuredImage, { backgroundColor: GRADIENT_SETS[i % GRADIENT_SETS.length][0] }]} />
                 )}
-                <View style={[s.featuredOverlay, { backgroundColor: 'rgba(0,0,0,0.45)' }]} />
+                <View style={s.featuredOverlay} />
                 <View style={s.featuredContent}>
                   <View style={s.featuredTopRow}>
-                    <View style={[s.featuredBadge, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                    <View style={s.featuredBadge}>
                       <Text style={s.featuredBadgeText}>{item.categoryTag.toUpperCase()}</Text>
                     </View>
-                    {isHighImpact && (
-                      <View style={s.highImpactBadge}>
-                        <Feather name="alert-circle" size={10} color="#FFF" />
-                      </View>
-                    )}
                   </View>
                   <Text style={s.featuredTitle} numberOfLines={2}>{item.title}</Text>
                   {item.summary ? (
@@ -265,22 +238,13 @@ function NewsFeedCard({
   item,
   index,
   onSelect,
-  onAiAction,
-  onSave,
-  onQuiz,
-  isSaved,
 }: {
   item: NewsItem;
   index: number;
   onSelect: (item: NewsItem) => void;
-  onAiAction: (item: NewsItem, action: 'discuss' | 'summarize' | 'why') => void;
-  onSave: (item: NewsItem) => void;
-  onQuiz: (item: NewsItem) => void;
-  isSaved: boolean;
 }) {
   const slideAnim = useRef(new Animated.Value(24)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
-  const [analysisOpen, setAnalysisOpen] = useState(false);
 
   useEffect(() => {
     Animated.parallel([
@@ -289,39 +253,16 @@ function NewsFeedCard({
     ]).start();
   }, []);
 
-  const catColor = categoryColors[item.categoryTag] || categoryColors.default;
-  const isHighImpact = (item.impact || getImpactFromContent(item.title, item.summary)) === 'high';
-
   return (
     <Animated.View style={{ transform: [{ translateY: slideAnim }], opacity: opacityAnim }}>
       <TouchableOpacity activeOpacity={0.8} onPress={() => onSelect(item)} style={s.feedCard}>
         {/* Text content */}
         <View style={s.feedCardText}>
-          <View style={s.feedCardMeta}>
-            <View style={[s.catBadge, { backgroundColor: catColor.bg }]}>
-              <Text style={[s.catBadgeText, { color: catColor.text }]}>{item.categoryTag.toUpperCase()}</Text>
-            </View>
-            {isHighImpact && (
-              <View style={s.highImpactInline}>
-                <Feather name="alert-circle" size={10} color="#EF4444" />
-              </View>
-            )}
-            <Text style={s.feedDate}>{item.publishedAt}</Text>
-          </View>
+          <Text style={s.feedSource} numberOfLines={1}>{item.sourceName}</Text>
           <Text style={s.feedTitle} numberOfLines={3}>{item.title}</Text>
-          {item.summary ? (
-            <Text style={s.feedSummary} numberOfLines={1}>{item.summary}</Text>
-          ) : null}
-          <View style={s.feedSignals}>
-            <View style={s.sourceChip}>
-              <Feather name="radio" size={9} color={COLORS.textMuted} />
-              <Text style={s.feedSource} numberOfLines={1}>{item.sourceName}</Text>
-            </View>
-            <View style={[s.impactChip, isHighImpact && s.impactChipHigh]}>
-              <Text style={[s.impactChipText, isHighImpact && s.impactChipTextHigh]}>
-                {isHighImpact ? 'HIGH IMPACT' : 'WATCH'}
-              </Text>
-            </View>
+          <View style={s.feedFooter}>
+            <Text style={s.feedDate}>{item.publishedAt}</Text>
+            <Feather name="more-horizontal" size={19} color={INTEL.muted} />
           </View>
         </View>
 
@@ -337,64 +278,6 @@ function NewsFeedCard({
         </View>
       </TouchableOpacity>
 
-      <View style={s.quickActionsRow}>
-        {([
-          { action: 'discuss' as const, icon: 'message-circle' as const, label: 'Discuss' },
-        ]).map(({ action, icon, label }) => (
-          <TouchableOpacity
-            key={action}
-            style={s.aiActionBtn}
-            onPress={() => onAiAction(item, action)}
-            activeOpacity={0.7}
-          >
-            <Feather name={icon} size={11} color={COLORS.textMuted} />
-            <Text style={s.aiActionText}>{label}</Text>
-          </TouchableOpacity>
-        ))}
-
-        <TouchableOpacity
-          style={s.aiActionBtn}
-          onPress={() => onSave(item)}
-          activeOpacity={0.7}
-        >
-          <Feather name={isSaved ? 'bookmark' : 'bookmark'} size={11} color={isSaved ? COLORS.accent : COLORS.textMuted} />
-          <Text style={[s.aiActionText, isSaved && { color: COLORS.accent }]}>{isSaved ? 'Saved' : 'Save'}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[s.aiActionBtn, s.quizBtn]}
-          onPress={() => onQuiz(item)}
-          activeOpacity={0.7}
-        >
-          <Feather name="help-circle" size={11} color={COLORS.accent} />
-          <Text style={[s.aiActionText, { color: COLORS.accent, fontWeight: '700' }]}>Quiz</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={s.analysisToggle} onPress={() => setAnalysisOpen(open => !open)} activeOpacity={0.72}>
-          <Text style={s.analysisToggleText}>{analysisOpen ? 'Close analysis' : 'Read full analysis'}</Text>
-          <Feather name={analysisOpen ? 'chevron-up' : 'chevron-down'} size={14} color={COLORS.accent} />
-        </TouchableOpacity>
-      </View>
-
-      {analysisOpen ? (
-        <View style={s.analysisPanel}>
-          {item.summary ? <Text style={s.analysisText}>{item.summary}</Text> : null}
-          <View style={s.analysisActions}>
-            <TouchableOpacity style={s.analysisAction} onPress={() => onAiAction(item, 'summarize')}>
-              <Feather name="file-text" size={13} color={COLORS.accent} />
-              <Text style={s.analysisActionText}>Quick summary</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.analysisAction} onPress={() => onAiAction(item, 'why')}>
-              <Feather name="zap" size={13} color={COLORS.accent} />
-              <Text style={s.analysisActionText}>Why it matters</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.analysisAction} onPress={() => Linking.openURL(item.sourceUrl).catch(() => {})}>
-              <Feather name="external-link" size={13} color={COLORS.accent} />
-              <Text style={s.analysisActionText}>Source</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      ) : null}
     </Animated.View>
   );
 }
@@ -805,7 +688,6 @@ function ArticleDetailSheet({
 
 // ── Main Component ──
 export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNewsProps) {
-  const { user } = useAuth();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -814,7 +696,6 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
   const [immersiveIndex, setImmersiveIndex] = useState(-1);
   const [chatNewsItem, setChatNewsItem] = useState<NewsItem | null>(null);
   const [chatContext, setChatContext] = useState('');
-  const [savedArticleIds, setSavedArticleIds] = useState<Set<string>>(new Set());
   const [quizArticle, setQuizArticle] = useState<NewsItem | null>(null);
   const intel = useIntelHabit(marketId);
   const autoOpened = useRef(false);
@@ -914,36 +795,6 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
     openStory(news, 0);
   }, [autoOpen, isLoading, news, openStory]);
 
-  // Save article to notebook
-  const handleSaveToNotebook = async (item: NewsItem) => {
-    if (!user) {
-      Alert.alert('Sign in required', 'Please sign in to save articles.');
-      return;
-    }
-
-    if (savedArticleIds.has(item.id)) {
-      triggerHaptic('light');
-      return;
-    }
-
-    try {
-      const noteContent = `📰 ${item.title}\n\n${item.summary || ''}\n\n🔗 Source: ${item.sourceName}\n${item.sourceUrl}`;
-      const { error: saveError } = await supabase.from('notes').insert({
-        user_id: user.id,
-        content: noteContent,
-        linked_label: `News · ${item.categoryTag}`,
-        market_id: marketId,
-      });
-
-      if (saveError) throw saveError;
-
-      setSavedArticleIds(prev => new Set([...prev, item.id]));
-      triggerHaptic('success');
-    } catch {
-      Alert.alert('Error', 'Failed to save article. Try again.');
-    }
-  };
-
   // Quiz on article
   const handleQuiz = (item: NewsItem) => {
     triggerHaptic('medium');
@@ -965,48 +816,6 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
 
   return (
     <View style={s.container}>
-      {/* Header */}
-      <View style={s.header}>
-        <View style={s.headerLeft}>
-          <View style={s.headerIconBg}>
-            <Feather name="zap" size={14} color={COLORS.accent} />
-          </View>
-          <View>
-            <Text style={s.headerTitle}>Industry Intel</Text>
-            <Text style={s.headerSubtitle}>
-              {news.length > 0 ? `${news.length} stories · AI-analyzed` : 'AI-analyzed insights'}
-            </Text>
-          </View>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <View style={[s.habitChip, intel.done && s.habitChipDone]}>
-            <Feather name={intel.done ? 'check' : 'target'} size={11} color={intel.done ? '#059669' : COLORS.accent} />
-            <Text style={[s.habitChipText, intel.done && { color: '#059669' }]}>
-              {intel.readToday}/{intel.target} today
-            </Text>
-          </View>
-          <TouchableOpacity onPress={() => fetchNews(true)} disabled={isRefreshing} style={[s.refreshBtn, isRefreshing && { opacity: 0.5 }]}>
-            <Feather name="refresh-cw" size={14} color={COLORS.textMuted} />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Daily reading goal */}
-      {news.length > 0 && !isLoading && (
-        <View style={s.habitBar}>
-          <Text style={s.habitBarText}>
-            {intel.done
-              ? "Today's 3 stories read. You know what changed."
-              : `Read ${intel.remaining} more ${intel.remaining === 1 ? 'story' : 'stories'} today to stay current · +20 XP`}
-          </Text>
-          <View style={s.habitDots}>
-            {Array.from({ length: intel.target }).map((_, i) => (
-              <View key={i} style={[s.habitDot, i < intel.readToday && s.habitDotFilled]} />
-            ))}
-          </View>
-        </View>
-      )}
-
       {/* Loading */}
       {isLoading && (
         <View style={s.loadingContainer}>
@@ -1050,7 +859,7 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
           )}
 
           {/* Vertical feed */}
-          <View style={{ gap: 2 }}>
+          <View style={s.feedList}>
             {feed.map((item, index) => (
               <NewsFeedCard
                 key={item.id}
@@ -1059,10 +868,6 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
                 onSelect={(item) => {
                   openStory(news, news.findIndex(n => n.id === item.id));
                 }}
-                onAiAction={handleAiAction}
-                onSave={handleSaveToNotebook}
-                onQuiz={handleQuiz}
-                isSaved={savedArticleIds.has(item.id)}
               />
             ))}
           </View>
@@ -1096,6 +901,10 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
           setChatNewsItem(article);
         }}
         onArticleView={(article) => intel.recordRead(article.id)}
+        onQuiz={(article) => {
+          setImmersiveIndex(-1);
+          setQuizArticle(article);
+        }}
         marketId={marketId}
         learningGoal={learningGoal}
       />
@@ -1122,107 +931,64 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
 }
 
 // ── Styles ──
+const INTEL = {
+  background: '#000000',
+  surface: '#1C1C1E',
+  surfaceRaised: '#2C2C2E',
+  text: '#FFFFFF',
+  secondary: '#C7C7CC',
+  secondaryBright: 'rgba(255,255,255,0.82)',
+  muted: '#8E8E93',
+  separator: '#38383A',
+  glass: 'rgba(0,0,0,0.55)',
+  scrim: 'rgba(0,0,0,0.38)',
+};
+
 const s = StyleSheet.create({
-  container: {},
-
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  headerIconBg: {
-    width: 32, height: 32, borderRadius: 10, backgroundColor: COLORS.accentSoft,
-    alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: COLORS.accentMedium,
-  },
-  headerTitle: { ...TYPE.h3, color: COLORS.textPrimary },
-  headerSubtitle: { fontSize: 11, color: COLORS.textMuted },
-  refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
-  habitChip: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999,
-    backgroundColor: 'rgba(99,102,241,0.10)',
-  },
-  habitChipDone: { backgroundColor: 'rgba(5,150,105,0.12)' },
-  habitChipText: { fontSize: 11, fontWeight: '800', color: COLORS.accent },
-  habitBar: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    gap: 10, marginBottom: 10, paddingHorizontal: 12, paddingVertical: 10,
-    borderRadius: 14, backgroundColor: COLORS.bg1,
-  },
-  habitBarText: { flex: 1, fontSize: 12, fontWeight: '700', color: COLORS.textSecondary },
-  habitDots: { flexDirection: 'row', gap: 4 },
-  habitDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.border },
-  habitDotFilled: { backgroundColor: COLORS.accent },
-
-  featuredCard: { height: 210, borderRadius: 18, overflow: 'hidden', ...SHADOWS.md },
+  container: { backgroundColor: INTEL.background },
+  featuredCarousel: { marginBottom: 24, marginHorizontal: -16 },
+  featuredTrack: { paddingHorizontal: 16, gap: 12 },
+  featuredCard: { height: 250, borderRadius: 20, overflow: 'hidden', backgroundColor: INTEL.surface },
   featuredImage: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
-  featuredOverlay: { ...StyleSheet.absoluteFillObject },
-  featuredContent: { ...StyleSheet.absoluteFillObject, padding: 16, justifyContent: 'flex-end' },
-  featuredTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', position: 'absolute', top: 14, left: 14, right: 14 },
-  featuredBadge: { paddingHorizontal: 9, paddingVertical: 5, borderRadius: 8 },
-  featuredBadgeText: { fontSize: 9, fontWeight: '700', color: '#fff', letterSpacing: 0.8 },
-  featuredTitle: { fontSize: 19, fontWeight: '900', color: '#fff', lineHeight: 24, marginBottom: 5 },
-  featuredSummary: { fontSize: 11, color: 'rgba(255,255,255,0.75)', lineHeight: 15, marginBottom: 6 },
+  featuredOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: INTEL.scrim },
+  featuredContent: { ...StyleSheet.absoluteFillObject, padding: 18, justifyContent: 'flex-end' },
+  featuredTopRow: { position: 'absolute', top: 16, left: 16 },
+  featuredBadge: { paddingHorizontal: 9, paddingVertical: 5, borderRadius: 999, backgroundColor: INTEL.glass },
+  featuredBadgeText: { fontSize: 9, fontWeight: '800', color: INTEL.text, letterSpacing: 0.8 },
+  featuredTitle: { fontSize: 22, fontWeight: '900', color: INTEL.text, lineHeight: 27, marginBottom: 6 },
+  featuredSummary: { fontSize: 12, color: INTEL.secondaryBright, lineHeight: 16, marginBottom: 8 },
   featuredMeta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  featuredSource: { fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: '600' },
-  featuredDate: { fontSize: 10, color: 'rgba(255,255,255,0.5)' },
-  highImpactBadge: { width: 22, height: 22, borderRadius: 11, backgroundColor: 'rgba(239,68,68,0.8)', alignItems: 'center', justifyContent: 'center' },
-  highImpactInline: { marginLeft: 2 },
+  featuredSource: { fontSize: 12, color: INTEL.text, fontWeight: '700' },
+  featuredDate: { fontSize: 11, color: INTEL.muted },
 
   dotsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 10 },
-  dot: { height: 3, borderRadius: 2, backgroundColor: COLORS.accent },
+  dot: { height: 4, borderRadius: 2, backgroundColor: INTEL.text },
 
-  feedSectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
-  feedSectionLine: { flex: 1, height: 1, backgroundColor: COLORS.borderLight },
-  feedSectionLabel: { ...TYPE.overline, color: COLORS.textMuted, fontSize: 10 },
+  feedSectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
+  feedSectionLine: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: INTEL.separator },
+  feedSectionLabel: { ...TYPE.overline, color: INTEL.muted, fontSize: 10 },
+  feedList: { gap: 10 },
 
   feedCard: {
-    flexDirection: 'row', backgroundColor: COLORS.bg2, borderRadius: 16,
-    padding: 12, gap: 12, borderWidth: 1, borderColor: COLORS.borderLight,
-    ...SHADOWS.sm,
+    minHeight: 142, flexDirection: 'row', backgroundColor: INTEL.surface, borderRadius: 18,
+    padding: 14, gap: 14,
   },
   feedCardText: { flex: 1, justifyContent: 'space-between' },
-  feedCardMeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
-  catBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 },
-  catBadgeText: { fontSize: 8, fontWeight: '700', letterSpacing: 0.5 },
-  feedDate: { fontSize: 10, color: COLORS.textMuted },
-  feedTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary, lineHeight: 19, marginBottom: 2 },
-  feedSummary: { fontSize: 11, color: COLORS.textSecondary, lineHeight: 15, marginBottom: 4 },
-  feedSource: { fontSize: 11, color: COLORS.textMuted, fontWeight: '500' },
-  feedSignals: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 5 },
-  sourceChip: { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 1, paddingHorizontal: 7, paddingVertical: 4, borderRadius: 8, backgroundColor: COLORS.bg1 },
-  impactChip: { paddingHorizontal: 7, paddingVertical: 4, borderRadius: 8, backgroundColor: COLORS.accentSoft },
-  impactChipHigh: { backgroundColor: COLORS.errorSoft },
-  impactChipText: { fontSize: 8, fontWeight: '800', color: COLORS.accent },
-  impactChipTextHigh: { color: COLORS.error },
-
-  feedThumb: { width: 80, height: 80, borderRadius: 12, overflow: 'hidden' },
+  feedSource: { fontSize: 12, color: INTEL.secondary, fontWeight: '800', marginBottom: 6 },
+  feedTitle: { fontSize: 16, fontWeight: '800', color: INTEL.text, lineHeight: 21 },
+  feedFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 },
+  feedDate: { fontSize: 11, color: INTEL.muted },
+  feedThumb: { width: 108, height: 108, borderRadius: 12, overflow: 'hidden', alignSelf: 'center', backgroundColor: INTEL.surfaceRaised },
   feedThumbImage: { width: '100%', height: '100%' },
 
-  quickActionsRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 12,
-    paddingBottom: 10, paddingTop: 4, flexWrap: 'wrap',
-  },
-  aiActionBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 12,
-  },
-  aiActionText: { fontSize: 10, color: COLORS.textMuted, fontWeight: '500' },
-  quizBtn: {
-    backgroundColor: COLORS.accentSoft, borderWidth: 1, borderColor: COLORS.accentMedium,
-  },
-  analysisToggle: { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 6 },
-  analysisToggleText: { fontSize: 10, fontWeight: '700', color: COLORS.accent },
-  analysisPanel: { marginHorizontal: 12, marginBottom: 12, padding: 12, borderRadius: 12, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.borderLight },
-  analysisText: { ...TYPE.caption, color: COLORS.textSecondary, lineHeight: 19 },
-  analysisActions: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginTop: 10 },
-  analysisAction: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 9, paddingVertical: 7, borderRadius: 9, backgroundColor: COLORS.accentSoft },
-  analysisActionText: { fontSize: 10, fontWeight: '700', color: COLORS.accent },
-
   loadingContainer: { gap: 8 },
-  skeletonCard: { padding: 14, backgroundColor: COLORS.bg1, borderRadius: 14, borderWidth: 1, borderColor: COLORS.borderLight, gap: 8 },
-  skeletonLine: { height: 14, backgroundColor: COLORS.surfaceLight, borderRadius: 7, width: '100%' },
-  emptyCard: { padding: 28, backgroundColor: COLORS.bg1, borderRadius: 16, borderWidth: 1, borderColor: COLORS.borderLight, alignItems: 'center', gap: 8 },
-  emptyText: { ...TYPE.body, color: COLORS.textMuted, textAlign: 'center' },
+  skeletonCard: { padding: 14, backgroundColor: INTEL.surface, borderRadius: 18, gap: 8 },
+  skeletonLine: { height: 14, backgroundColor: INTEL.surfaceRaised, borderRadius: 7, width: '100%' },
+  emptyCard: { padding: 28, backgroundColor: INTEL.surface, borderRadius: 18, alignItems: 'center', gap: 8 },
+  emptyText: { ...TYPE.body, color: INTEL.secondary, textAlign: 'center' },
   retryBtn: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: COLORS.accentSoft, borderRadius: 20, borderWidth: 1, borderColor: COLORS.accentMedium },
   retryText: { fontSize: 13, color: COLORS.accent, fontWeight: '600' },
-  lastUpdated: { fontSize: 11, color: COLORS.textMuted, textAlign: 'center', marginTop: 10 },
+  lastUpdated: { fontSize: 11, color: INTEL.muted, textAlign: 'center', marginTop: 16 },
 });
 
 // ── Detail Sheet Styles ──
