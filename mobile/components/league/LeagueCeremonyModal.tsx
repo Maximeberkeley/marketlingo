@@ -1,8 +1,7 @@
 /**
- * LeagueCeremonyModal — the Sunday promotion ceremony.
+ * LeagueCeremonyModal — the monthly season promotion ceremony.
  *
- * Shown once per finished week: the badge rises, the result lands, and the
- * learner is told exactly what happens next week.
+ * Shown once per finished season: the badge rises and the result lands.
  */
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -74,7 +73,7 @@ export function LeagueCeremonyModal({ visible, tier, result, finalRank, onClose,
     result === 'promoted'
       ? `You finished ${finalRank ? `#${finalRank}` : 'in the top group'} and move up to ${meta.label}.`
       : result === 'demoted'
-      ? `A quiet week drops you to ${meta.label}. One good week takes it straight back.`
+      ? `A quiet month drops you to ${meta.label}. One strong season takes it straight back.`
       : `You finished ${finalRank ? `#${finalRank}` : 'mid-table'} and stay in ${meta.label}.`;
 
   return (
@@ -82,7 +81,7 @@ export function LeagueCeremonyModal({ visible, tier, result, finalRank, onClose,
       <View style={styles.backdrop}>
         <View style={styles.card}>
           <View style={[styles.topBand, { backgroundColor: meta.color }]} />
-          <Text style={styles.eyebrow}>WEEK CLOSED</Text>
+          <Text style={styles.eyebrow}>SEASON CLOSED</Text>
 
           <Animated.View
             style={[
@@ -121,7 +120,7 @@ export function LeagueCeremonyModal({ visible, tier, result, finalRank, onClose,
             }}
             activeOpacity={0.9}
           >
-            <Text style={styles.primaryBtnText}>See this week's table</Text>
+            <Text style={styles.primaryBtnText}>See this month’s table</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.secondaryBtn} onPress={onClose}>

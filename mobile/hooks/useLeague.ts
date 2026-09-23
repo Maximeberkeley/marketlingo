@@ -1,5 +1,5 @@
 /**
- * useLeague — weekly league standings, rival XP and the Sunday ceremony.
+ * useLeague — calendar-month league standings, rival XP and season ceremony.
  *
  * The backend does the honest work: `sync_my_league` recomputes this week's XP
  * from xp_transactions and places the learner in a tier, and `run_league_rollover`
@@ -38,6 +38,7 @@ export interface LeagueState {
   weeklyXp: number;
   myRank: number | null;
   rivals: Rival[];
+  rivalsByTier: Record<LeagueTier, Rival[]>;
   promotionCutoff: number;
   demotionCutoff: number | null;
   weekOf: string;
@@ -47,22 +48,15 @@ export interface LeagueState {
   ceremonyPending: boolean;
 }
 
-export function currentWeekStart(date: Date = new Date()): string {
-  const d = new Date(date);
-  const day = d.getDay(); // 0 = Sunday
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday
-  const monday = new Date(d);
-  monday.setDate(diff);
-  monday.setHours(0, 0, 0, 0);
-  const y = monday.getFullYear();
-  const m = String(monday.getMonth() + 1).padStart(2, '0');
-  const dd = String(monday.getDate()).padStart(2, '0');
-  return `${y}-${m}-${dd}`;
+export function currentMonthStart(date: Date = new Date()): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  return `${y}-${m}-01`;
 }
 
-function daysLeftInWeek(): number {
-  const day = new Date().getDay(); // 0 Sun … 6 Sat
-  return day === 0 ? 0 : 7 - day;
+function daysLeftInMonth(): number {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate();
 }
 
 const CEREMONY_KEY = '@marketlingo/league_ceremony_seen';
@@ -75,10 +69,11 @@ export function useLeague(marketId?: string) {
     weeklyXp: 0,
     myRank: null,
     rivals: [],
+    rivalsByTier: { bronze: [], silver: [], gold: [], platinum: [], diamond: [] },
     promotionCutoff: 1,
     demotionCutoff: null,
-    weekOf: currentWeekStart(),
-    daysLeft: daysLeftInWeek(),
+    weekOf: currentMonthStart(),
+    daysLeft: daysLeftInMonth(),
     lastWeek: null,
     ceremonyPending: false,
   });
@@ -89,27 +84,27 @@ export function useLeague(marketId?: string) {
       return;
     }
 
-    const weekOf = currentWeekStart();
+    const weekOf = currentMonthStart();
 
     try {
       // 1. Recompute my placement for this week (server-side, from XP ledger).
-      const { data: mine, error: syncError } = await supabase.rpc('sync_my_league', {
+      const { data: mine, error: syncError } = await supabase.rpc('sync_my_monthly_league', {
         p_market_id: marketId,
+        p_season_start: weekOf,
       });
       if (syncError) log.warn('League sync failed', syncError);
 
       const myRow = Array.isArray(mine) ? mine[0] : mine;
       const tier = ((myRow?.tier as LeagueTier) || 'bronze') as LeagueTier;
 
-      // 2. Standings for my tier this week.
+      // 2. Standings for every tier this month so the full league system is inspectable.
       const { data: standings } = await supabase
         .from('league_memberships')
-        .select('user_id, weekly_xp, updated_at')
+        .select('user_id, weekly_xp, updated_at, tier')
         .eq('market_id', marketId)
         .eq('week_of', weekOf)
-        .eq('tier', tier)
         .order('weekly_xp', { ascending: false })
-        .limit(30);
+        .limit(150);
 
       const rows = standings ?? [];
       const ids = rows.map((r) => r.user_id);
@@ -117,15 +112,21 @@ export function useLeague(marketId?: string) {
         ? await supabase.from('public_profiles').select('id, username').in('id', ids)
         : { data: [] as { id: string; username: string | null }[] };
 
-      const rivals: Rival[] = rows.map((r, i) => ({
-        userId: r.user_id,
-        username: r.user_id === user.id
-          ? 'You'
-          : (profiles?.find((p) => p.id === r.user_id)?.username?.split('@')[0] || 'Analyst'),
-        weeklyXp: r.weekly_xp ?? 0,
-        rank: i + 1,
-        isMe: r.user_id === user.id,
-      }));
+      const rivalsByTier = LEAGUE_TIERS.reduce((groups, groupTier) => {
+        groups[groupTier] = rows
+          .filter((row) => row.tier === groupTier)
+          .map((r, i) => ({
+            userId: r.user_id,
+            username: r.user_id === user.id
+              ? 'You'
+              : (profiles?.find((p) => p.id === r.user_id)?.username?.split('@')[0] || 'Analyst'),
+            weeklyXp: r.weekly_xp ?? 0,
+            rank: i + 1,
+            isMe: r.user_id === user.id,
+          }));
+        return groups;
+      }, { bronze: [], silver: [], gold: [], platinum: [], diamond: [] } as Record<LeagueTier, Rival[]>);
+      const rivals = rivalsByTier[tier];
 
       const size = rivals.length;
       const promotionCutoff = Math.max(1, Math.ceil(size * 0.3));
@@ -165,10 +166,11 @@ export function useLeague(marketId?: string) {
         weeklyXp: myRow?.weekly_xp ?? 0,
         myRank,
         rivals,
+        rivalsByTier,
         promotionCutoff,
         demotionCutoff,
         weekOf,
-        daysLeft: daysLeftInWeek(),
+        daysLeft: daysLeftInMonth(),
         lastWeek,
         ceremonyPending,
       });

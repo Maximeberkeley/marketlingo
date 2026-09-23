@@ -1,7 +1,7 @@
 /**
  * Weekly League — a high-energy tier race backed by the learner's real XP ledger.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -34,7 +34,7 @@ function nextTier(tier: LeagueTier): string | null {
   return next ? TIER_META[next].label : null;
 }
 
-function TierLadder({ current }: { current: LeagueTier }) {
+function TierLadder({ current, selected, onSelect }: { current: LeagueTier; selected: LeagueTier; onSelect: (tier: LeagueTier) => void }) {
   const currentIndex = LEAGUE_TIERS.indexOf(current);
 
   return (
@@ -45,13 +45,14 @@ function TierLadder({ current }: { current: LeagueTier }) {
         const locked = index > currentIndex;
         const active = tier === current;
         return (
-          <View key={tier} style={styles.tierStep}>
+          <TouchableOpacity key={tier} style={styles.tierStep} onPress={() => onSelect(tier)} accessibilityLabel={`View ${tierMeta.label} League`}>
             <View style={[styles.tierPedestal, active && styles.tierPedestalActive]}>
               <View
                 style={[
                   styles.trophyDisc,
                   { borderColor: locked ? COLORS.border : tierMeta.color },
                   active && { backgroundColor: COLORS.goldSoft, shadowColor: tierMeta.color },
+                  selected === tier && styles.trophyDiscSelected,
                   locked && styles.trophyDiscLocked,
                 ]}
               >
@@ -62,7 +63,7 @@ function TierLadder({ current }: { current: LeagueTier }) {
             <Text style={[styles.tierLabel, active && { color: tierMeta.color }, locked && styles.lockedLabel]} numberOfLines={1}>
               {tierMeta.label}
             </Text>
-          </View>
+          </TouchableOpacity>
         );
       })}
     </View>
@@ -105,6 +106,12 @@ export default function LeagueScreen() {
   const league = useLeague(selectedMarket || undefined);
   const meta = TIER_META[league.tier];
   const promotionTier = nextTier(league.tier);
+  const [selectedTier, setSelectedTier] = useState<LeagueTier | null>(null);
+  const viewedTier = selectedTier || league.tier;
+  const viewedMeta = TIER_META[viewedTier];
+  const viewedRivals = league.rivalsByTier[viewedTier] || [];
+  const viewedPromotionCutoff = Math.max(1, Math.ceil(viewedRivals.length * 0.3));
+  const viewedDemotionCutoff = viewedRivals.length >= 5 ? viewedRivals.length - Math.floor(viewedRivals.length * 0.2) : null;
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -121,14 +128,14 @@ export default function LeagueScreen() {
         >
           <Feather name="chevron-left" size={25} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.navTitle}>Weekly League</Text>
+        <Text style={styles.navTitle}>Monthly League</Text>
         <View style={styles.iconButton} />
       </View>
 
       {league.loading ? (
         <View style={styles.loading}>
           <ActivityIndicator size="large" color={COLORS.accent} />
-          <Text style={styles.loadingText}>Building this week’s table…</Text>
+          <Text style={styles.loadingText}>Building this month’s table…</Text>
         </View>
       ) : (
         <ScrollView
@@ -146,7 +153,7 @@ export default function LeagueScreen() {
             </View>
           </View>
 
-          <TierLadder current={league.tier} />
+          <TierLadder current={league.tier} selected={viewedTier} onSelect={(tier) => { triggerHaptic('selection'); setSelectedTier(tier); }} />
 
           <View style={styles.mascotStage}>
             <View style={[styles.glow, { backgroundColor: COLORS.goldSoft }]} />
@@ -169,29 +176,29 @@ export default function LeagueScreen() {
 
           <View style={styles.standingsHeading}>
             <View>
-              <Text style={styles.standingsTitle}>Standings</Text>
-              <Text style={styles.standingsSubtitle}>Weekly XP resets every Monday</Text>
+              <Text style={styles.standingsTitle}>{viewedMeta.label} standings</Text>
+              <Text style={styles.standingsSubtitle}>{viewedTier === league.tier ? 'Your league' : 'Viewing another league'} · Monthly XP</Text>
             </View>
             <Feather name="bar-chart-2" size={20} color={COLORS.accent} />
           </View>
 
           <View style={styles.table}>
-            {league.rivals.length === 0 ? (
+            {viewedRivals.length === 0 ? (
               <View style={styles.emptyState}>
                 <Feather name="users" size={28} color={COLORS.textMuted} />
                 <Text style={styles.emptyTitle}>No standings yet</Text>
-                <Text style={styles.emptyText}>Your first XP this week will put you on the board.</Text>
+                <Text style={styles.emptyText}>No learners have entered this tier this month yet.</Text>
               </View>
             ) : (
-              league.rivals.map((r, index) => {
+              viewedRivals.map((r, index) => {
                 const showPromotionDivider = index === 0;
-                const showDemotionDivider = league.demotionCutoff !== null && r.rank === league.demotionCutoff + 1;
+                const showDemotionDivider = viewedDemotionCutoff !== null && r.rank === viewedDemotionCutoff + 1;
                 return (
                   <React.Fragment key={r.userId}>
                     {showPromotionDivider && (
                       <ZoneDivider
                         type="promotion"
-                        label={promotionTier ? `Top ${league.promotionCutoff} advance to ${promotionTier} League` : `Top ${league.promotionCutoff} hold Diamond status`}
+                        label={viewedTier === league.tier && promotionTier ? `Top ${viewedPromotionCutoff} advance to ${promotionTier} League` : `Top ${viewedPromotionCutoff} lead ${viewedMeta.label}`}
                       />
                     )}
                     {showDemotionDivider && <ZoneDivider type="demotion" label="Demotion zone" />}
@@ -211,7 +218,7 @@ export default function LeagueScreen() {
                             </View>
                           )}
                         </View>
-                        {r.rank <= league.promotionCutoff && (
+                        {r.rank <= viewedPromotionCutoff && (
                           <View style={styles.advanceRow}>
                             <Feather name="arrow-up" size={11} color={COLORS.success} />
                             <Text style={styles.advanceText}>Promotion pace</Text>
@@ -226,7 +233,7 @@ export default function LeagueScreen() {
             )}
           </View>
 
-          <Text style={styles.footnote}>Sunday night locks the final table and stamps promotions or relegations.</Text>
+          <Text style={styles.footnote}>The final night of each month locks the season and stamps promotions or relegations.</Text>
         </ScrollView>
       )}
     </View>
@@ -254,6 +261,7 @@ const styles = StyleSheet.create({
   tierPedestalActive: { transform: [{ translateY: -5 }] },
   trophyDisc: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg2, borderWidth: 2, ...SHADOWS.sm },
   trophyDiscLocked: { backgroundColor: COLORS.lockedSurface, borderStyle: 'dashed', opacity: 0.72 },
+  trophyDiscSelected: { borderWidth: 3, transform: [{ scale: 1.08 }] },
   pedestalBase: { width: 34, height: 5, borderRadius: 3, marginTop: 3 },
   tierLabel: { marginTop: 3, fontSize: 9, fontWeight: '800', color: COLORS.textSecondary, textAlign: 'center' },
   lockedLabel: { color: COLORS.textMuted },
