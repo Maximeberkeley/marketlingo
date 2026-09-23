@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './supabase';
 import { log } from './logger';
+import { localDateString } from './dayMath';
 
 const DEMO_XP_KEY = 'ml_demo_xp';
 const DEMO_MARKET_KEY = 'ml_demo_market';
@@ -57,8 +58,7 @@ export async function applyDemoXP(userId: string, marketId: string): Promise<num
   try {
     const { xp } = await getDemoXP();
     if (xp <= 0) return 0;
-    const today = new Date();
-    const localDay = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const localDay = localDateString();
     const { data, error } = await supabase.rpc('claim_demo_onboarding_reward', {
       p_market_id: marketId,
       p_today: localDay,

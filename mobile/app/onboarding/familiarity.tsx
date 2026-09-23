@@ -83,7 +83,7 @@ export default function FamiliarityScreen() {
         // maybeSingle so a missing profile row does not throw and break the flow
         const { data: profile } = await supabase
           .from('profiles')
-          .select('selected_market')
+          .select('selected_market, demo_onboarding_status')
           .eq('id', user.id)
           .maybeSingle();
 
@@ -98,7 +98,7 @@ export default function FamiliarityScreen() {
           log.warn('[Familiarity] profile update failed:', profileUpdateError.message);
         }
 
-        if (profile?.selected_market) {
+        if (profile?.selected_market && profile.demo_onboarding_status === 'completed') {
           const { error: progressError } = await supabase
             .from('user_progress')
             .upsert(
