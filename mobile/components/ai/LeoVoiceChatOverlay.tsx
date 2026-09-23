@@ -1,6 +1,5 @@
 /**
- * LeoVoiceChatOverlay — Fullscreen immersive voice-first chat with Leo.
- * Same layout as Sophia's ImmersiveNewsOverlay: dark bg, centered avatar, tap to record.
+ * LeoVoiceChatOverlay — Fullscreen immersive voice-first study call with Leo.
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
@@ -17,7 +16,6 @@ import {
   StatusBar,
   TextInput,
   KeyboardAvoidingView,
-  ScrollView,
 } from 'react-native';
 import { Audio } from 'expo-av';
 import { Feather } from '@expo/vector-icons';
@@ -28,8 +26,8 @@ import { speakWithElevenLabs } from '../../lib/tts';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
 
-const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
-const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
+const { width: SCREEN_W } = Dimensions.get('window');
+const LEO_STUDY_SCENE = require('../../assets/mascot/leo-voice-study.png');
 const LEO_VOICE_ID = 'onwK4e9ZLuTAKqWW03F9'; // Daniel
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -86,52 +84,45 @@ export function LeoVoiceChatOverlay({
   const [subtitlesExpanded, setSubtitlesExpanded] = useState(false);
   const [textInput, setTextInput] = useState('');
   const [showTextInput, setShowTextInput] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   const soundRef = useRef<Audio.Sound | null>(null);
   const recordingRef = useRef<Audio.Recording | null>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const leoScale = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
+  const livePulse = useRef(new Animated.Value(1)).current;
 
   // Entrance animation
   useEffect(() => {
     if (visible) {
       fadeAnim.setValue(0);
-      leoScale.setValue(0);
       setMessages([]);
       setNarrationText('');
       setShowTextInput(false);
+      setIsMuted(false);
 
-      Animated.sequence([
-        Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }),
-        Animated.spring(leoScale, { toValue: 1, friction: 6, tension: 80, useNativeDriver: true }),
-      ]).start();
+      Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
 
       // Auto-greet
       setTimeout(() => {
-        const greeting = "Hey! 🦊 Tap me and ask anything about your industry!";
+        const greeting = "Hey! 🦊 Ask me anything about your industry!";
         setNarrationText(greeting);
         speakResponse(greeting);
       }, 600);
     }
   }, [visible]);
 
-  // Pulse animation for speaking
   useEffect(() => {
-    if (isSpeaking) {
-      const loop = Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, { toValue: 1.08, duration: 800, useNativeDriver: true }),
-          Animated.timing(pulseAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
-        ]),
-      );
-      loop.start();
-      return () => loop.stop();
-    } else {
-      pulseAnim.setValue(1);
-    }
-  }, [isSpeaking]);
+    if (!visible) return;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(livePulse, { toValue: 0.35, duration: 700, useNativeDriver: true }),
+        Animated.timing(livePulse, { toValue: 1, duration: 700, useNativeDriver: true }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [visible, livePulse]);
 
   // Glow animation for recording
   useEffect(() => {
@@ -163,9 +154,10 @@ export function LeoVoiceChatOverlay({
   const speakResponse = useCallback(async (text: string) => {
     try {
       setIsSpeaking(true);
-      const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_home');
+       const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_home');
       soundRef.current = sound;
       if (sound) {
+         await sound.setVolumeAsync(isMuted ? 0 : 1);
         sound.setOnPlaybackStatusUpdate((status: any) => {
           if (status.didJustFinish) {
             setIsSpeaking(false);
@@ -178,7 +170,7 @@ export function LeoVoiceChatOverlay({
     } catch {
       setIsSpeaking(false);
     }
-  }, []);
+  }, [isMuted]);
 
   const sendToLeo = useCallback(async (userText: string) => {
     const userMsg: Message = { role: 'user', content: userText };
@@ -283,6 +275,19 @@ export function LeoVoiceChatOverlay({
     await sendToLeo(text);
   }, [textInput, isGenerating, sendToLeo]);
 
+  const handleMute = useCallback(async () => {
+    const nextMuted = !isMuted;
+    setIsMuted(nextMuted);
+    triggerHaptic('light');
+    if (soundRef.current) {
+      try {
+        await soundRef.current.setVolumeAsync(nextMuted ? 0 : 1);
+      } catch {
+        // Audio may finish while the control is being pressed.
+      }
+    }
+  }, [isMuted]);
+
   const handleClose = useCallback(() => {
     if (soundRef.current) {
       soundRef.current.stopAsync().catch(() => {});
@@ -302,12 +307,6 @@ export function LeoVoiceChatOverlay({
 
   if (!visible) return null;
 
-  const ringColor = isRecording
-    ? '#EF4444'
-    : isSpeaking
-    ? '#F97316'
-    : 'rgba(255,255,255,0.3)';
-
   return (
     <Modal visible={visible} animationType="none" transparent statusBarTranslucent>
       <StatusBar barStyle="light-content" />
@@ -316,120 +315,82 @@ export function LeoVoiceChatOverlay({
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <Animated.View style={[st.container, { opacity: fadeAnim }]}>
-          {/* Dark gradient background */}
-          <View style={st.bgGradient} />
+          <Image source={LEO_STUDY_SCENE} style={st.sceneImage} resizeMode="cover" fadeDuration={0} />
+          <View style={st.sceneShade} />
+          <View style={st.bottomShade} />
 
           {/* Top bar */}
           <View style={[st.topBar, { paddingTop: insets.top + 12 }]}>
             <View style={st.statusBadge}>
-              <View style={[st.liveDot, { backgroundColor: isSpeaking ? '#F97316' : isRecording ? '#EF4444' : '#10B981' }]} />
+              <Animated.View
+                style={[
+                  st.liveDot,
+                  {
+                    opacity: livePulse,
+                    backgroundColor: isSpeaking ? '#F97316' : isRecording ? '#EF4444' : '#10B981',
+                  },
+                ]}
+              />
               <Text style={st.statusBadgeText}>
                 {isSpeaking ? 'Speaking' : isRecording ? 'Listening' : isGenerating ? 'Thinking' : 'Live'}
               </Text>
             </View>
 
             <View style={st.topBarRight}>
-              {/* Text input toggle */}
               <TouchableOpacity
-                style={st.topBtn}
+                style={[st.topBtn, showTextInput && st.topBtnActive]}
                 onPress={() => setShowTextInput(!showTextInput)}
+                accessibilityRole="button"
+                accessibilityLabel="Toggle text mode"
               >
                 <Feather name="type" size={18} color="#fff" />
               </TouchableOpacity>
-              {/* Close */}
-              <TouchableOpacity style={st.topBtn} onPress={handleClose}>
+              <TouchableOpacity style={st.topBtn} onPress={handleClose} accessibilityRole="button" accessibilityLabel="Close Speak to Leo">
                 <Feather name="x" size={22} color="#fff" />
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Center stage — Leo avatar */}
-          <View style={st.centerStage}>
-            <Animated.View
-              style={[
-                st.leoRing,
-                {
-                  transform: [{ scale: Animated.multiply(leoScale, pulseAnim) }],
-                  borderColor: ringColor,
-                },
-              ]}
+          <View style={st.dialogStage}>
+            <View style={st.dialogTail} />
+            <TouchableOpacity
+              style={st.subtitleBox}
+              onPress={() => setSubtitlesExpanded(!subtitlesExpanded)}
+              activeOpacity={0.9}
+              accessibilityRole="button"
+              accessibilityLabel="Leo's latest response"
             >
-              <TouchableOpacity onPress={handleLeoTap} activeOpacity={0.8}>
-                <Image source={LEO_IMAGE} style={st.leoAvatar} />
-                {isRecording && (
-                  <Animated.View style={[st.micBadge, { opacity: glowAnim }]}>
-                    <Feather name="mic" size={14} color="#fff" />
-                  </Animated.View>
-                )}
-              </TouchableOpacity>
-            </Animated.View>
+              {isGenerating || isTranscribing ? (
+                <View style={st.statusRow}>
+                  <ActivityIndicator size="small" color="#FB7A22" />
+                  <Text style={st.subtitleText}>{isTranscribing ? 'Transcribing…' : 'Leo is thinking…'}</Text>
+                </View>
+              ) : (
+                <Text style={st.subtitleText} numberOfLines={subtitlesExpanded ? undefined : 4}>
+                  {narrationText || "Hey! 🦊 Ask me anything about your industry!"}
+                </Text>
+              )}
+              {!subtitlesExpanded && narrationText.length > 150 && (
+                <Text style={st.expandHint}>Tap to read more</Text>
+              )}
+            </TouchableOpacity>
 
-            {/* Status text */}
             <View style={st.statusContainer}>
               {isGenerating && (
-                <View style={st.statusRow}>
-                  <ActivityIndicator size="small" color="#F97316" />
-                  <Text style={st.statusText}>Leo is thinking...</Text>
-                </View>
-              )}
-              {isTranscribing && (
-                <View style={st.statusRow}>
-                  <ActivityIndicator size="small" color="#F97316" />
-                  <Text style={st.statusText}>Transcribing...</Text>
-                </View>
+                <Text style={st.statusText}>Preparing an answer</Text>
               )}
               {isRecording && (
                 <View style={st.statusRow}>
                   <Animated.View style={[st.recordDot, { opacity: glowAnim }]} />
-                  <Text style={st.statusText}>Listening... Tap Leo again to send</Text>
+                  <Text style={st.statusText}>Listening… tap again to send</Text>
                 </View>
               )}
               {isSpeaking && !isGenerating && (
-                <Text style={st.statusText}>🎙 Leo is speaking...</Text>
-              )}
-              {!isSpeaking && !isGenerating && !isRecording && !isTranscribing && narrationText && (
-                <Text style={st.statusText}>Tap Leo to ask a question</Text>
-              )}
-              {!narrationText && !isGenerating && !isRecording && !isTranscribing && !isSpeaking && (
-                <Text style={st.statusText}>Tap Leo to start talking</Text>
+                <Text style={st.statusText}>Leo is speaking…</Text>
               )}
             </View>
-
-            {/* Narration subtitle */}
-            {narrationText && !isGenerating && (
-              <TouchableOpacity
-                style={st.subtitleBox}
-                onPress={() => setSubtitlesExpanded(!subtitlesExpanded)}
-                activeOpacity={0.8}
-              >
-                <Text style={st.subtitleText} numberOfLines={subtitlesExpanded ? undefined : 3}>
-                  {narrationText}
-                </Text>
-                {!subtitlesExpanded && narrationText.length > 100 && (
-                  <Text style={st.expandHint}>Tap to read more</Text>
-                )}
-              </TouchableOpacity>
-            )}
           </View>
 
-          {/* Conversation history (scrollable, semi-transparent) */}
-          {messages.length > 1 && (
-            <ScrollView
-              style={st.historyScroll}
-              contentContainerStyle={st.historyContent}
-              showsVerticalScrollIndicator={false}
-            >
-              {messages.slice(0, -1).map((msg, i) => (
-                <View key={i} style={[st.historyBubble, msg.role === 'user' && st.historyBubbleUser]}>
-                  <Text style={[st.historyText, msg.role === 'user' && st.historyTextUser]}>
-                    {msg.content}
-                  </Text>
-                </View>
-              ))}
-            </ScrollView>
-          )}
-
-          {/* Bottom — text input or mic hint */}
           <View style={[st.bottomBar, { paddingBottom: insets.bottom + 16 }]}>
             {showTextInput ? (
               <View style={st.textInputRow}>
@@ -453,24 +414,50 @@ export function LeoVoiceChatOverlay({
                 </TouchableOpacity>
               </View>
             ) : (
-              <View style={st.micHintRow}>
+              <View style={st.callToolbar}>
                 <TouchableOpacity
-                  style={[
-                    st.bigMicBtn,
-                    isRecording && st.bigMicBtnRecording,
-                  ]}
+                  style={st.sideAction}
+                  onPress={handleMute}
+                  accessibilityRole="button"
+                  accessibilityLabel={isMuted ? 'Unmute Leo' : 'Mute Leo'}
+                >
+                  <View style={[st.sideActionCircle, isMuted && st.sideActionCircleActive]}>
+                    <Feather name={isMuted ? 'mic' : 'mic-off'} size={23} color="#fff" />
+                  </View>
+                  <Text style={st.sideActionLabel}>{isMuted ? 'Unmute' : 'Mute'}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={st.primaryAction}
                   onPress={handleLeoTap}
                   activeOpacity={0.8}
+                  disabled={isGenerating || isTranscribing}
+                  accessibilityRole="button"
+                  accessibilityLabel={isRecording ? 'Stop and send recording' : 'Talk to Leo'}
                 >
-                  <Feather
-                    name={isRecording ? 'mic-off' : 'mic'}
-                    size={24}
-                    color="#fff"
-                  />
+                  <Animated.View
+                    style={[
+                      st.bigMicBtn,
+                      isRecording && st.bigMicBtnRecording,
+                      { opacity: isGenerating || isTranscribing ? 0.55 : 1 },
+                    ]}
+                  >
+                    <Feather name={isRecording ? 'square' : 'mic'} size={29} color="#fff" />
+                  </Animated.View>
+                  <Text style={st.primaryActionLabel}>{isRecording ? 'Tap to send' : 'Tap to talk to Leo'}</Text>
                 </TouchableOpacity>
-                <Text style={st.micHintText}>
-                  {isRecording ? 'Tap to stop' : 'Tap to talk to Leo'}
-                </Text>
+
+                <TouchableOpacity
+                  style={st.sideAction}
+                  onPress={() => setShowTextInput(true)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Open keyboard"
+                >
+                  <View style={st.sideActionCircle}>
+                    <Feather name="command" size={22} color="#fff" />
+                  </View>
+                  <Text style={st.sideActionLabel}>Keyboard</Text>
+                </TouchableOpacity>
               </View>
             )}
           </View>
@@ -480,20 +467,33 @@ export function LeoVoiceChatOverlay({
   );
 }
 
-const TOP_PADDING = Platform.OS === 'ios' ? 56 : 40;
-
 const st = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
   },
-  bgGradient: {
+  sceneImage: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#0A0A1A',
+    width: '100%',
+    height: '100%',
   },
-
-  // Top bar
+  sceneShade: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(3,5,18,0.12)',
+  },
+  bottomShade: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '43%',
+    backgroundColor: 'rgba(3,5,18,0.72)',
+  },
   topBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -508,9 +508,15 @@ const st = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: 'rgba(14,16,31,0.76)',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  topBtnActive: {
+    backgroundColor: 'rgba(249,115,22,0.88)',
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   statusBadge: {
     flexDirection: 'row',
@@ -519,7 +525,9 @@ const st = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(14,16,31,0.76)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
   },
   liveDot: {
     width: 8,
@@ -529,51 +537,31 @@ const st = StyleSheet.create({
   statusBadgeText: {
     fontSize: 13,
     fontWeight: '700',
-    color: 'rgba(255,255,255,0.8)',
+    color: 'rgba(255,255,255,0.94)',
   },
-
-  // Center Leo
-  centerStage: {
-    flex: 1,
+  dialogStage: {
+    position: 'absolute',
+    top: '58%',
+    left: 24,
+    right: 24,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 30,
     zIndex: 10,
   },
-  leoRing: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    borderWidth: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.3)',
+  dialogTail: {
+    width: 20,
+    height: 20,
+    marginBottom: -10,
+    backgroundColor: 'rgba(15,17,31,0.9)',
+    borderLeftWidth: 1,
+    borderTopWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    transform: [{ rotate: '45deg' }],
+    zIndex: 2,
   },
-  leoAvatar: {
-    width: 136,
-    height: 136,
-    borderRadius: 68,
-    resizeMode: 'contain',
-  },
-  micBadge: {
-    position: 'absolute',
-    bottom: 2,
-    right: 2,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#EF4444',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#000',
-  },
-
-  // Status
   statusContainer: {
-    marginTop: 20,
+    marginTop: 8,
     alignItems: 'center',
-    minHeight: 30,
+    minHeight: 20,
   },
   statusRow: {
     flexDirection: 'row',
@@ -581,9 +569,9 @@ const st = StyleSheet.create({
     gap: 8,
   },
   statusText: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.7)',
-    fontWeight: '500',
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.68)',
+    fontWeight: '600',
   },
   recordDot: {
     width: 10,
@@ -592,23 +580,29 @@ const st = StyleSheet.create({
     backgroundColor: '#EF4444',
   },
 
-  // Subtitle
   subtitleBox: {
-    marginTop: 24,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    maxWidth: SCREEN_W - 60,
+    width: '100%',
+    minHeight: 94,
+    paddingHorizontal: 22,
+    paddingVertical: 18,
+    borderRadius: 28,
+    backgroundColor: 'rgba(15,17,31,0.9)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: 'rgba(255,255,255,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 12,
   },
   subtitleText: {
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: SCREEN_W < 370 ? 16 : 18,
+    lineHeight: SCREEN_W < 370 ? 22 : 25,
     color: '#fff',
     textAlign: 'center',
-    fontWeight: '400',
+    fontWeight: '600',
   },
   expandHint: {
     fontSize: 11,
@@ -618,72 +612,78 @@ const st = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // History
-  historyScroll: {
-    maxHeight: 120,
-    marginHorizontal: 20,
-    marginBottom: 8,
-  },
-  historyContent: {
-    gap: 6,
-    paddingVertical: 4,
-  },
-  historyBubble: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    alignSelf: 'flex-start',
-    maxWidth: '85%',
-  },
-  historyBubbleUser: {
-    alignSelf: 'flex-end',
-    backgroundColor: 'rgba(249,115,22,0.2)',
-  },
-  historyText: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.6)',
-    lineHeight: 18,
-  },
-  historyTextUser: {
-    color: 'rgba(255,255,255,0.8)',
-  },
-
-  // Bottom
   bottomBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
     paddingHorizontal: 24,
     zIndex: 10,
   },
-  micHintRow: {
+  callToolbar: {
+    minHeight: 122,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  sideAction: {
+    width: 82,
     alignItems: 'center',
-    gap: 12,
+    gap: 9,
+    paddingTop: 10,
+  },
+  sideActionCircle: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: 'rgba(28,30,46,0.94)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.09)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sideActionCircleActive: {
+    borderColor: 'rgba(249,115,22,0.65)',
+    backgroundColor: 'rgba(74,36,22,0.95)',
+  },
+  sideActionLabel: {
+    color: 'rgba(255,255,255,0.72)',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  primaryAction: {
+    minWidth: 132,
+    alignItems: 'center',
+    gap: 9,
   },
   bigMicBtn: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 76,
+    height: 76,
+    borderRadius: 38,
     backgroundColor: '#F97316',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#F97316',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.62,
+    shadowRadius: 18,
+    elevation: 14,
   },
   bigMicBtnRecording: {
     backgroundColor: '#EF4444',
     shadowColor: '#EF4444',
   },
-  micHintText: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.5)',
-    fontWeight: '500',
+  primaryActionLabel: {
+    color: 'rgba(255,255,255,0.86)',
+    fontSize: 12,
+    fontWeight: '700',
+    textAlign: 'center',
   },
   textInputRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     gap: 10,
+    paddingBottom: 8,
   },
   textInput: {
     flex: 1,
@@ -696,6 +696,7 @@ const st = StyleSheet.create({
     maxHeight: 100,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.15)',
+    minHeight: 48,
   },
   sendBtn: {
     width: 44,
