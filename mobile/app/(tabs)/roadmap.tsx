@@ -6,7 +6,7 @@ import { Feather } from '@expo/vector-icons';
 import { DailyNews } from '../../components/home/DailyNews';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
-import { COLORS, TYPE } from '../../lib/constants';
+import { TYPE } from '../../lib/constants';
 import { getMarketName } from '../../lib/markets';
 import { triggerHaptic } from '../../lib/haptics';
 
@@ -54,7 +54,7 @@ export default function IntelScreen() {
   if (loading || !marketId) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color={COLORS.accent} />
+        <ActivityIndicator size="large" color={INTEL.accent} />
       </View>
     );
   }
@@ -64,25 +64,19 @@ export default function IntelScreen() {
       style={styles.container}
       contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: insets.bottom + 100 }}
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={COLORS.accent} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={INTEL.accent} />}
     >
       <View style={styles.masthead}>
         <View style={styles.mastheadTop}>
           <View>
-            <Text style={styles.eyebrow}>LIVE FROM YOUR INDUSTRY</Text>
             <Text style={styles.title}>Intel</Text>
           </View>
           <View style={styles.signalMark}>
-            <Feather name="radio" size={22} color={COLORS.textPrimary} />
+            <Feather name="radio" size={20} color={INTEL.text} />
             <View style={styles.liveDot} />
           </View>
         </View>
-        <Text style={styles.market}>{getMarketName(marketId)}</Text>
-        <View style={styles.promiseRow}>
-          <View style={styles.promiseChip}><Text style={styles.promiseChipText}>3 stories</Text></View>
-          <View style={styles.promiseChip}><Text style={styles.promiseChipText}>Live signals</Text></View>
-          <View style={styles.promiseChip}><Text style={styles.promiseChipText}>+20 XP</Text></View>
-        </View>
+        <View style={styles.marketTag}><Text style={styles.market}>{getMarketName(marketId)}</Text></View>
       </View>
 
       <View style={styles.feed}>
@@ -93,17 +87,23 @@ export default function IntelScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.bg0 },
-  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg0 },
-  masthead: { paddingHorizontal: 20, paddingBottom: 20, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border },
+  container: { flex: 1, backgroundColor: INTEL.background },
+  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: INTEL.background },
+  masthead: { paddingHorizontal: 16, paddingBottom: 18 },
   mastheadTop: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
-  eyebrow: { ...TYPE.overline, color: COLORS.accent },
-  title: { fontSize: 38, lineHeight: 42, fontWeight: '900', color: COLORS.textPrimary, marginTop: 3 },
-  signalMark: { width: 52, height: 52, borderRadius: 26, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
-  liveDot: { position: 'absolute', right: 7, top: 7, width: 9, height: 9, borderRadius: 5, backgroundColor: COLORS.error, borderWidth: 2, borderColor: COLORS.bg0 },
-  market: { ...TYPE.h3, color: COLORS.textPrimary, marginTop: 18 },
-  promiseRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginTop: 9 },
-  promiseChip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 9, backgroundColor: COLORS.accentSoft, borderWidth: 1, borderColor: COLORS.accentMedium },
-  promiseChipText: { ...TYPE.caption, color: COLORS.accent },
-  feed: { paddingHorizontal: 16, paddingTop: 20 },
+  title: { fontSize: 40, lineHeight: 44, fontWeight: '900', color: INTEL.text },
+  signalMark: { width: 42, height: 42, borderRadius: 21, backgroundColor: INTEL.surface, alignItems: 'center', justifyContent: 'center' },
+  liveDot: { position: 'absolute', right: 5, top: 5, width: 8, height: 8, borderRadius: 4, backgroundColor: INTEL.live, borderWidth: 2, borderColor: INTEL.surface },
+  marketTag: { alignSelf: 'flex-start', marginTop: 9, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999, backgroundColor: INTEL.surface },
+  market: { ...TYPE.caption, color: INTEL.secondary },
+  feed: { paddingHorizontal: 16 },
 });
+
+const INTEL = {
+  background: '#000000',
+  surface: '#1C1C1E',
+  text: '#FFFFFF',
+  secondary: '#AEAEB2',
+  accent: '#A78BFA',
+  live: '#FF453A',
+};
