@@ -4,6 +4,7 @@ import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { DailyNews } from '../../components/home/DailyNews';
+import { ErrorBoundary } from '../../components/ErrorBoundary';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { TYPE } from '../../lib/constants';
@@ -80,7 +81,9 @@ export default function IntelScreen() {
       </View>
 
       <View style={styles.feed}>
-        <DailyNews marketId={marketId} learningGoal={learningGoal} autoOpen={autoOpen === '1'} />
+        <ErrorBoundary>
+          <DailyNews marketId={marketId} learningGoal={learningGoal} autoOpen={autoOpen === '1'} />
+        </ErrorBoundary>
       </View>
     </ScrollView>
   );
