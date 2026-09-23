@@ -2949,6 +2949,7 @@ export type Database = {
         Args: { p_market_id: string; p_today: string }
         Returns: number
       }
+      current_league_season_start: { Args: never; Returns: string }
       current_week_start: { Args: never; Returns: string }
       decay_concept_mastery: { Args: never; Returns: number }
       evaluate_market_rewards: {
