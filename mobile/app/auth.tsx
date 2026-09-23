@@ -19,7 +19,7 @@ import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { storage } from '../lib/storage';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
-import { normalizeDisplayName } from '../hooks/useDisplayName';
+import { normalizeDisplayName } from '../lib/displayName';
 
 export default function AuthScreen() {
   const insets = useSafeAreaInsets();

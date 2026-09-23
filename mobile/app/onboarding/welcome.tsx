@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SHADOWS } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
-import { normalizeDisplayName } from '../../hooks/useDisplayName';
+import { normalizeDisplayName } from '../../lib/displayName';
 import { storage } from '../../lib/storage';
 import { supabase } from '../../lib/supabase';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';

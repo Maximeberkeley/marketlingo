@@ -2,7 +2,7 @@ import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { log } from './logger';
 import { storage } from './storage';
-import { normalizeDisplayName } from '../hooks/useDisplayName';
+import { normalizeDisplayName } from './displayName';
 
 const STREAK_NOTIF_KEY = 'ml_streak_notif_ids';
 

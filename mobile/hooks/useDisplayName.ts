@@ -3,13 +3,9 @@ import { useAuth } from './useAuth';
 import { supabase } from '../lib/supabase';
 import { storage } from '../lib/storage';
 import { log } from '../lib/logger';
+import { DISPLAY_NAME_FALLBACK, normalizeDisplayName } from '../lib/displayName';
 
-export const DISPLAY_NAME_FALLBACK = 'Scholar';
-
-export function normalizeDisplayName(value?: string | null): string {
-  const clean = value?.trim().replace(/\s+/g, ' ').slice(0, 40);
-  return clean || DISPLAY_NAME_FALLBACK;
-}
+export { DISPLAY_NAME_FALLBACK, normalizeDisplayName } from '../lib/displayName';
 
 export function useDisplayName() {
   const { user } = useAuth();
