@@ -161,6 +161,7 @@ function SectionCluster({
   lesson,
   title,
   weekTitle,
+  marketName,
   activeSection,
   lessonCompletedToday,
   arenaCompletedToday,
@@ -174,6 +175,7 @@ function SectionCluster({
   lesson?: CourseLesson;
   title: string;
   weekTitle: string;
+  marketName: string;
   activeSection: boolean;
   lessonCompletedToday: boolean;
   arenaCompletedToday: boolean;
@@ -199,6 +201,7 @@ function SectionCluster({
         <View>
           <Text style={styles.weekEyebrow}>{section.unlocked ? `DAY ${section.displayDay}` : `DAYS ${section.startDay}–${section.endDay}`}</Text>
           <Text style={styles.weekTitle} numberOfLines={2}>{weekTitle}</Text>
+          <Text style={styles.lessonMeta}>{marketName} · 6 min</Text>
         </View>
         {!section.unlocked ? (
           <View style={styles.lockPill}>
@@ -210,6 +213,15 @@ function SectionCluster({
 
       <View style={[styles.cluster, !section.unlocked && styles.clusterLocked]}>
         <View style={styles.orbit} />
+        <View style={[styles.orbitProgress, {
+          borderTopColor: section.completedCount > 0 ? COLORS.accent : 'transparent',
+          borderRightColor: section.completedCount > 6 ? COLORS.accent : 'transparent',
+          borderBottomColor: section.completedCount > 12 ? COLORS.accent : 'transparent',
+          borderLeftColor: section.completedCount > 20 ? COLORS.accent : 'transparent',
+        }]} />
+        {MODULES.map((module, index) => (
+          <View key={`marker-${module.kind}`} style={[styles.orbitMarker, styles[`orbitMarker${index}` as keyof typeof styles] as object, moduleComplete(module.kind) && styles.orbitMarkerComplete]} />
+        ))}
         {MODULES.map(module => {
           // Notes is persistent and remains usable; the daily modules obey section access.
           const locked = !section.unlocked && module.kind !== 'notes';
@@ -520,6 +532,7 @@ export function CourseJourney({
               lesson={lesson}
               title={themes[section.index] || `Section ${section.index + 1}`}
               weekTitle={weekTitle}
+              marketName={marketName}
               activeSection={activeSection}
               lessonCompletedToday={lessonCompletedToday}
               arenaCompletedToday={arenaCompletedToday}
@@ -571,23 +584,32 @@ const styles = StyleSheet.create({
   industryPopoverText: { ...TYPE.caption, color: COLORS.textPrimary },
   badges: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   sectionBlock: { paddingHorizontal: 18, marginBottom: 26 },
-  sectionHeader: { minHeight: 142, borderRadius: 24, padding: 22, flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.courseHeader, shadowColor: COLORS.courseHeaderDeep, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.28, shadowRadius: 16, elevation: 8 },
+  sectionHeader: { minHeight: 98, borderRadius: 20, paddingHorizontal: 18, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.courseHeader, shadowColor: COLORS.courseHeaderDeep, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.24, shadowRadius: 14, elevation: 7 },
   sectionHeaderLocked: { opacity: 0.82 },
   sectionHeaderCopy: { flex: 1, minWidth: 0, paddingRight: 14 },
   sectionEyebrow: { ...TYPE.overline, color: 'rgba(255,255,255,0.75)' },
-  sectionTitle: { fontSize: 27, lineHeight: 32, fontWeight: '800', color: COLORS.textOnAccent, marginTop: 7 },
-  sectionProgress: { ...TYPE.caption, color: 'rgba(255,255,255,0.82)', marginTop: 12 },
-  sectionTrack: { height: 7, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.25)', marginTop: 8, overflow: 'hidden' },
-  sectionFill: { height: 7, borderRadius: 4, backgroundColor: COLORS.textOnAccent },
-  headerArrow: { width: 46, height: 46, borderRadius: 23, backgroundColor: 'rgba(34,28,164,0.32)', alignItems: 'center', justifyContent: 'center' },
-  weekHeading: { minHeight: 76, paddingHorizontal: 7, paddingTop: 22, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 },
+  sectionTitle: { fontSize: 20, lineHeight: 24, fontWeight: '800', color: COLORS.textOnAccent, marginTop: 4 },
+  sectionProgress: { ...TYPE.caption, color: 'rgba(255,255,255,0.82)', marginTop: 6 },
+  sectionTrack: { height: 5, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.25)', marginTop: 5, overflow: 'hidden' },
+  sectionFill: { height: 5, borderRadius: 3, backgroundColor: COLORS.textOnAccent },
+  headerArrow: { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(34,28,164,0.32)', alignItems: 'center', justifyContent: 'center' },
+  weekHeading: { minHeight: 104, paddingHorizontal: 7, paddingTop: 20, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 },
   weekEyebrow: { ...TYPE.overline, color: COLORS.courseHeader },
-  weekTitle: { ...TYPE.h2, color: COLORS.textPrimary, marginTop: 4, maxWidth: 255 },
+  weekTitle: { fontSize: 28, lineHeight: 33, fontWeight: '600', color: COLORS.textPrimary, marginTop: 4, maxWidth: 286 },
+  lessonMeta: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 5 },
   lockPill: { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 12, paddingHorizontal: 9, paddingVertical: 7, backgroundColor: COLORS.lockedSurface },
   lockPillText: { ...TYPE.caption, color: COLORS.textMuted, maxWidth: 110 },
   cluster: { height: 374, position: 'relative', marginTop: 6 },
   clusterLocked: { opacity: 0.66 },
-  orbit: { position: 'absolute', width: 246, height: 246, borderRadius: 123, borderWidth: 2, borderStyle: 'dashed', borderColor: COLORS.accentMedium, left: '50%', marginLeft: -123, top: 62 },
+  orbit: { position: 'absolute', width: 268, height: 268, borderRadius: 134, borderWidth: 3, borderColor: COLORS.accentMedium, left: '50%', marginLeft: -134, top: 42 },
+  orbitProgress: { position: 'absolute', width: 268, height: 268, borderRadius: 134, borderWidth: 3, left: '50%', marginLeft: -134, top: 42, transform: [{ rotate: '-48deg' }] },
+  orbitMarker: { position: 'absolute', width: 9, height: 9, borderRadius: 5, backgroundColor: COLORS.bg2, borderWidth: 2, borderColor: COLORS.accent, zIndex: 1 },
+  orbitMarkerComplete: { backgroundColor: COLORS.accent },
+  orbitMarker0: { top: 38, left: '50%', marginLeft: -4 },
+  orbitMarker1: { top: 116, right: 30 },
+  orbitMarker2: { top: 287, right: 78 },
+  orbitMarker3: { top: 287, left: 78 },
+  orbitMarker4: { top: 116, left: 30 },
   coinPosition: { position: 'absolute', width: 94, alignItems: 'center', zIndex: 3 },
   coinShadow: { width: 84, height: 84, borderRadius: 42, backgroundColor: COLORS.courseCoinDeep, paddingBottom: 7, justifyContent: 'flex-start', shadowColor: COLORS.courseCoinDeep, shadowOffset: { width: 0, height: 9 }, shadowOpacity: 0.28, shadowRadius: 12, elevation: 8 },
   coinFace: { width: 84, height: 77, borderRadius: 42, backgroundColor: COLORS.courseCoin, borderWidth: 1, borderColor: COLORS.courseCoinHighlight, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },

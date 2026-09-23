@@ -68,3 +68,9 @@
 ## New (Sept 23) — Immersive Speak to Leo
 - [x] Replace the empty voice screen with the warm study scene and a three-action voice toolbar while preserving speech, transcription, and text chat.
 
+## New (Sept 23) — Lesson entry, orbit, Leo, and monthly leagues
+- [x] Tighten lesson outcomes, hierarchy, and the Start Mission glow.
+- [x] Compress Course section banners and turn the five fixed nodes into a visible learning orbit.
+- [x] Make Tap Leo conversation-safe with expandable history and keyboard dismissal.
+- [x] Convert social standings and tier leagues to calendar-month seasons with inspectable tiers and upgraded artwork.
+

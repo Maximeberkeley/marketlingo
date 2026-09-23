@@ -104,15 +104,16 @@ const LAB_CARDS: CardData[] = [
 const COMPETE_CARDS: CardData[] = [
   {
     id: 'league',
-    title: 'Weekly League',
-    subtitle: 'Promotion Race',
-    description: 'Climb the weekly XP table and earn your next trophy tier.',
+    title: 'Monthly League',
+    subtitle: 'Season Promotion Race',
+    description: 'Climb this month’s XP table and earn your next trophy tier.',
     icon: 'award',
     iconColor: '#BFDBFE',
     gradientColors: ['#1E3A8A', '#1D4ED8', '#3B82F6'] as const,
     accentGlow: 'rgba(59, 130, 246, 0.4)',
     path: '/league',
-    tag: 'WEEKLY',
+    heroImage: require('../../assets/illustrations/monthly-league-hero.png'),
+    tag: 'SEASON',
   },
   {
     id: 'leaderboard',
@@ -124,7 +125,7 @@ const COMPETE_CARDS: CardData[] = [
     gradientColors: ['#7C2D12', '#B45309', '#F59E0B'] as const,
     accentGlow: 'rgba(245, 158, 11, 0.4)',
     path: '/friends',
-    heroImage: require('../../assets/illustrations/leaderboard-hero.png'),
+    heroImage: require('../../assets/illustrations/friends-rivals-hero.png'),
     tag: 'SOCIAL',
   },
 ];
