@@ -57,6 +57,13 @@
       "when": 1789769135390,
       "tag": "0007_curriculum_rewrite_queue",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790177116823,
+      "tag": "0008_add_named_demo_onboarding",
+      "breakpoints": true
     }
   ]
 }

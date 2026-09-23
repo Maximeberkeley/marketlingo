@@ -1647,6 +1647,8 @@ export type Database = {
           ai_consent_declined_at: string | null
           avatar_url: string | null
           created_at: string
+          demo_onboarding_status: string
+          display_name: string | null
           familiarity_level: string | null
           featured_collectible_id: string | null
           id: string
@@ -1668,6 +1670,8 @@ export type Database = {
           ai_consent_declined_at?: string | null
           avatar_url?: string | null
           created_at?: string
+          demo_onboarding_status?: string
+          display_name?: string | null
           familiarity_level?: string | null
           featured_collectible_id?: string | null
           id: string
@@ -1689,6 +1693,8 @@ export type Database = {
           ai_consent_declined_at?: string | null
           avatar_url?: string | null
           created_at?: string
+          demo_onboarding_status?: string
+          display_name?: string | null
           familiarity_level?: string | null
           featured_collectible_id?: string | null
           id?: string
