@@ -1,6 +1,8 @@
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { log } from './logger';
+import { storage } from './storage';
+import { normalizeDisplayName } from '../hooks/useDisplayName';
 
 const STREAK_NOTIF_KEY = 'ml_streak_notif_ids';
 
@@ -27,6 +29,10 @@ function fillStreak(text: string, streak: number): string {
   return text.replace(/\{streak\}/g, String(streak));
 }
 
+function fillReminder(text: string, streak: number, displayName: string): string {
+  return fillStreak(text, streak).replace(/\{name\}/g, displayName);
+}
+
 /**
  * Schedule streak-at-risk push notifications.
  * Called after each session or when app opens.
@@ -51,14 +57,15 @@ export async function scheduleStreakNotifications(
   const ids: string[] = [];
 
   try {
+    const displayName = normalizeDisplayName(await storage.getDisplayName());
     // 8 PM reminder — friendly nudge
     if (now < today8PM) {
       const template = pickRandom(EVENING_TEMPLATES);
       const secondsUntil8PM = Math.floor((today8PM.getTime() - now.getTime()) / 1000);
       const id1 = await Notifications.scheduleNotificationAsync({
         content: {
-          title: fillStreak(template.title, currentStreak),
-          body: fillStreak(template.body, currentStreak),
+          title: `${displayName}, ${fillReminder(template.title, currentStreak, displayName)}`,
+          body: fillReminder(template.body, currentStreak, displayName),
           data: { type: 'streak_warning', route: '/(tabs)/home' },
           sound: true,
         },
@@ -76,8 +83,8 @@ export async function scheduleStreakNotifications(
       const secondsUntil10PM = Math.floor((today10PM.getTime() - now.getTime()) / 1000);
       const id2 = await Notifications.scheduleNotificationAsync({
         content: {
-          title: fillStreak(template.title, currentStreak),
-          body: fillStreak(template.body, currentStreak),
+          title: `${displayName}, ${fillReminder(template.title, currentStreak, displayName)}`,
+          body: fillReminder(template.body, currentStreak, displayName),
           data: { type: 'streak_warning', route: '/(tabs)/home' },
           sound: true,
         },

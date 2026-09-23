@@ -45,6 +45,7 @@ import { useStreakFreeze } from '../../hooks/useStreakFreeze';
 import { playSound } from '../../lib/sounds';
 import { useSpacedRepetition } from '../../hooks/useSpacedRepetition';
 import { useOfflineCache } from '../../hooks/useOfflineCache';
+import { useDisplayName } from '../../hooks/useDisplayName';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { FoxMascot } from '../../components/mascot/FoxMascot';
 import { LeoPopup } from '../../components/mascot/LeoPopup';
@@ -287,7 +288,8 @@ export default function HomeScreen() {
   useQuestRewards(quests, selectedMarketLocal || selectedMarket, addXP);
 
   // Leo popup system
-  const leoPopups = useLeoPopups({ cooldownMs: 45000, maxPerSession: 4 });
+  const { displayName } = useDisplayName();
+  const leoPopups = useLeoPopups({ cooldownMs: 45000, maxPerSession: 4, displayName });
 
   // The level recap appears after 4h away; XP remains visible in the top bar.
   const returnVisit = useReturnVisit(!!xpData && !loading);
