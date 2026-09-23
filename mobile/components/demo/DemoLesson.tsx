@@ -1,240 +1,257 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  View, Text, TouchableOpacity, ScrollView, StyleSheet,
-  Animated, Easing, Dimensions, Image,
+  Animated,
+  Easing,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { COLORS } from '../../lib/constants';
-import { saveDemoXP, saveDemoMarket } from '../../lib/demoXPBridge';
+import { Feather } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { COLORS, SHADOWS } from '../../lib/constants';
+import { saveDemoMarket, saveDemoXP } from '../../lib/demoXPBridge';
+import { storage } from '../../lib/storage';
+import { triggerCelebration, triggerHaptic } from '../../lib/haptics';
+import { playSound } from '../../lib/sounds';
+import { ConfettiBurst } from '../ui/ConfettiBurst';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-const DEMO_SLIDES = [
-  {
-    id: 1,
-    title: "The $1 Trillion AI Infrastructure Race",
-    body: "The AI industry isn't just about models — it's an arms race for compute infrastructure. Between 2022 and 2024, the three hyperscalers (AWS, Azure, GCP) collectively spent over $200 billion on data centers, GPUs, and networking equipment.\n\nNVIDIA's H100 GPU — the \"gold standard\" for AI training — commands $30,000–$40,000 per chip, and demand still outpaces supply by 10x.\n\nThe real moat isn't the model. It's whoever owns the inference infrastructure at scale.",
-    insight: "Compute is the new oil. The company that owns the pipes often wins more than the company that owns the algorithm.",
-  },
-  {
-    id: 2,
-    title: "Why 90% of 'AI Companies' Aren't Really AI Companies",
-    body: "Most companies calling themselves \"AI companies\" are actually software companies with an OpenAI API key. The distinction matters enormously for investors and job-seekers.\n\nTrue AI companies (Anthropic, Mistral, xAI) invest $100M+ in model training. \"AI-native\" companies (Cursor, Perplexity) build specialized UX on foundation models. \"AI-integrated\" incumbents (Salesforce, Adobe) add AI features to existing products.\n\nEach category has fundamentally different moats, burn rates, and hiring profiles.",
-    insight: "When evaluating an AI opportunity, always ask: where exactly in the stack does their edge come from?",
-  },
-];
-
-const DEMO_QUIZ = {
-  question: "A startup claims it has a proprietary AI model. They fine-tuned GPT-4 on internal data. How should you classify this company?",
-  options: [
-    { text: "True AI Company — fine-tuning IS model development", correct: false, feedback: "Fine-tuning modifies behavior but doesn't constitute building foundational AI. The core IP still belongs to OpenAI." },
-    { text: "AI-Native — specialized UX and data moat on foundation models", correct: true, feedback: "Correct! Their edge comes from domain-specific data and specialized UX — not the model itself. A valid and valuable moat." },
-    { text: "AI-Integrated — legacy software with AI bolted on", correct: false, feedback: "Incumbents are established companies adding AI. This is a new company built AI-first — they're AI-native." },
-    { text: "Undifferentiated — no moat if anyone can fine-tune", correct: false, feedback: "Their proprietary training data IS the moat. Replicating it takes years." },
-  ],
-};
-
-type DemoStep = 'intro' | 'slide1' | 'slide2' | 'quiz' | 'quiz-result' | 'gate';
+type DemoStage = 0 | 1 | 2 | 3;
 
 interface DemoLessonProps {
-  onSignUp: () => void;
-  onClose: () => void;
+  onComplete: () => void;
+  onSkip: () => void;
 }
 
-function XPBurst({ amount, visible }: { amount: number; visible: boolean }) {
-  const anim = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (visible) {
-      anim.setValue(0);
-      Animated.timing(anim, { toValue: 1, duration: 1400, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+const TOKENS = [
+  { word: 'torque', chance: '92%', correct: true },
+  { word: 'music', chance: '5%', correct: false },
+  { word: 'engine', chance: '1%', correct: false },
+];
+
+const QUIZ_OPTIONS = [
+  'It plans an outline of the conclusion before writing word one.',
+  'It calculates backwards from the final answer to the prompt.',
+  'It has zero idea how the sentence ends until it generates the final word.',
+  'It selects a complete pre-written answer from memory.',
+];
+
+export function DemoLesson({ onComplete, onSkip }: DemoLessonProps) {
+  const insets = useSafeAreaInsets();
+  const [stage, setStage] = useState<DemoStage>(0);
+  const [token, setToken] = useState<string | null>(null);
+  const [attentionRevealed, setAttentionRevealed] = useState(false);
+  const [wrongAnswer, setWrongAnswer] = useState<number | null>(null);
+  const [correct, setCorrect] = useState(false);
+  const [rewardSaved, setRewardSaved] = useState(false);
+  const content = useRef(new Animated.Value(1)).current;
+  const shake = useRef(new Animated.Value(0)).current;
+  const attention = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => { void saveDemoMarket('ai'); }, []);
+
+  const moveTo = (next: DemoStage) => {
+    content.setValue(0);
+    setStage(next);
+    Animated.timing(content, {
+      toValue: 1,
+      duration: 260,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const revealAttention = () => {
+    if (attentionRevealed) return;
+    setAttentionRevealed(true);
+    void triggerHaptic('selection');
+    void playSound('tap');
+    Animated.spring(attention, { toValue: 1, tension: 80, friction: 8, useNativeDriver: true }).start();
+  };
+
+  const answerQuiz = (index: number) => {
+    if (correct) return;
+    if (index !== 2) {
+      setWrongAnswer(index);
+      void triggerHaptic('warning');
+      void playSound('wrong');
+      shake.setValue(0);
+      Animated.sequence([
+        Animated.timing(shake, { toValue: 8, duration: 55, useNativeDriver: true }),
+        Animated.timing(shake, { toValue: -8, duration: 55, useNativeDriver: true }),
+        Animated.timing(shake, { toValue: 5, duration: 55, useNativeDriver: true }),
+        Animated.timing(shake, { toValue: 0, duration: 55, useNativeDriver: true }),
+      ]).start();
+      return;
     }
-  }, [visible]);
-  if (!visible) return null;
-  return (
-    <Animated.View style={[xpStyles.burst, {
-      opacity: anim.interpolate({ inputRange: [0, 0.3, 0.8, 1], outputRange: [0, 1, 1, 0] }),
-      transform: [
-        { translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [0, -60] }) },
-        { scale: anim.interpolate({ inputRange: [0, 0.3, 0.7, 1], outputRange: [0.5, 1.2, 1, 0.8] }) },
-      ],
-    }]}>
-      <Text style={xpStyles.burstText}>⚡ +{amount} XP</Text>
-    </Animated.View>
-  );
-}
 
-export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
-  const [step, setStep] = useState<DemoStep>('intro');
-  const [totalXP, setTotalXP] = useState(0);
-  const [selectedQuiz, setSelectedQuiz] = useState<number | null>(null);
-  const [showXPBurst, setShowXPBurst] = useState(false);
-  const [lastXPAmount, setLastXPAmount] = useState(0);
-  const slideAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => { saveDemoMarket('ai'); }, []);
-
-  const animateTransition = (callback: () => void) => {
-    slideAnim.setValue(40);
-    callback();
-    Animated.spring(slideAnim, { toValue: 0, tension: 300, friction: 26, useNativeDriver: true }).start();
+    setWrongAnswer(null);
+    setCorrect(true);
+    void triggerCelebration();
+    void playSound('celebration');
   };
 
-  const awardXP = (amount: number) => {
-    setTotalXP((prev) => prev + amount);
-    setLastXPAmount(amount);
-    setShowXPBurst(true);
-    saveDemoXP(amount);
-    setTimeout(() => setShowXPBurst(false), 1500);
+  const finishQuiz = async () => {
+    if (!rewardSaved) {
+      await Promise.all([saveDemoXP(20), storage.setDemoStatus('completed')]);
+      setRewardSaved(true);
+    }
+    moveTo(3);
   };
 
-  const goToStep = (next: DemoStep) => animateTransition(() => setStep(next));
-
-  const handleQuizSelect = (idx: number) => {
-    if (selectedQuiz !== null) return;
-    setSelectedQuiz(idx);
-    if (DEMO_QUIZ.options[idx].correct) awardXP(50);
-    setTimeout(() => goToStep('quiz-result'), 1200);
+  const skip = async () => {
+    await storage.setDemoStatus('skipped');
+    onSkip();
   };
 
-  const steps: DemoStep[] = ['intro', 'slide1', 'slide2', 'quiz', 'gate'];
-  const currentStepIdx = steps.indexOf(step === 'quiz-result' ? 'quiz' : step);
+  const activeStep = Math.min(stage, 2);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.xpBar}>
-        <TouchableOpacity onPress={onClose} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-          <Text style={styles.closeBtn}>✕</Text>
-        </TouchableOpacity>
-        <View style={styles.xpChip}>
-          <Text style={styles.xpChipText}>⚡ {totalXP} XP</Text>
-        </View>
-        <View style={styles.progressDots}>
-          {steps.map((_, i) => (
-            <View key={i} style={[styles.dot, i <= currentStepIdx && styles.dotActive]} />
+    <View style={[styles.screen, { paddingTop: insets.top + 6 }]}> 
+      <ConfettiBurst show={correct || stage === 3} count={30} />
+      <View style={styles.topBar}>
+        <View style={styles.progressWrap} accessibilityLabel={`Demo step ${activeStep + 1} of 3`}>
+          {['Step 1', 'Step 2', 'Quiz'].map((label, index) => (
+            <View key={label} style={styles.progressItem}>
+              <View style={[styles.progressTrack, index <= activeStep && styles.progressTrackActive]} />
+              <Text style={[styles.progressLabel, index === activeStep && styles.progressLabelActive]}>{label}</Text>
+            </View>
           ))}
         </View>
+        {stage < 3 && (
+          <TouchableOpacity style={styles.skipButton} onPress={skip} accessibilityRole="button" accessibilityLabel="Skip demo lesson">
+            <Text style={styles.skipText}>Skip</Text>
+            <Feather name="x" size={16} color={COLORS.textSecondary} />
+          </TouchableOpacity>
+        )}
       </View>
 
-      <XPBurst amount={lastXPAmount} visible={showXPBurst} />
-
-      <Animated.View style={[styles.content, { transform: [{ translateX: slideAnim }] }]}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-          {step === 'intro' && (
-            <View style={styles.stepContainer}>
-              <Image source={require('../../assets/mascot/leo-reference.png')} style={styles.introMascot} resizeMode="contain" />
-              <Text style={styles.introTitle}>Try a free lesson</Text>
-              <Text style={styles.introSubtitle}>2 slides + 1 quiz from the AI market.{'\n'}Earn real XP that carries into your account.</Text>
-              <View style={styles.introBadges}>
-                <View style={styles.introBadge}><Text style={styles.introBadgeText}>AI Market</Text></View>
-                <View style={styles.introBadge}><Text style={styles.introBadgeText}>3 min</Text></View>
-                <View style={styles.introBadge}><Text style={styles.introBadgeText}>Up to 100 XP</Text></View>
+      <Animated.View style={[styles.flex, {
+        opacity: content,
+        transform: [{ translateY: content.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }],
+      }]}> 
+        <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 28 }]} showsVerticalScrollIndicator={false}>
+          {stage === 0 && (
+            <View>
+              <Tag>HOW AI ACTUALLY WORKS</Tag>
+              <Text style={styles.eyebrow}>THE NEXT-TOKEN MACHINE · CONCEPT 1/3</Text>
+              <Text style={styles.title}>What is an LLM doing right now?</Text>
+              <Image source={require('../../assets/mascot/leo_AImachinelearning.png')} style={styles.heroLeo} resizeMode="contain" />
+              <View style={styles.promptCard}>
+                <Text style={styles.promptLead}>Predict the next word</Text>
+                <Text style={styles.sentence}>“The best thing about an electric car is the instant…”</Text>
+                <View style={styles.chips}>
+                  {TOKENS.map((item) => {
+                    const selected = token === item.word;
+                    return (
+                      <TouchableOpacity
+                        key={item.word}
+                        style={[styles.wordChip, selected && styles.wordChipSelected]}
+                        onPress={() => { setToken(item.word); void triggerHaptic('selection'); void playSound('tap'); }}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected }}
+                      >
+                        <Text style={[styles.word, selected && styles.wordSelected]}>{item.word}</Text>
+                        <Text style={[styles.chance, selected && styles.chanceSelected]}>{item.chance}</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </View>
-              <TouchableOpacity style={styles.primaryBtn} onPress={() => goToStep('slide1')} activeOpacity={0.8}>
-                <Text style={styles.primaryBtnText}>Start Demo Lesson →</Text>
-              </TouchableOpacity>
+              {token && (
+                <Takeaway icon="cpu">
+                  AI models are not searching Google or databases. They are massive mathematical prediction engines calculating the single most likely next word fragment.
+                </Takeaway>
+              )}
+              <Primary label="Continue" disabled={!token} onPress={() => moveTo(1)} />
             </View>
           )}
 
-          {step === 'slide1' && (
-            <View style={styles.stepContainer}>
-              <View style={styles.slideTag}><Text style={styles.slideTagText}>SLIDE 1 OF 2</Text></View>
-              <Text style={styles.slideTitle}>{DEMO_SLIDES[0].title}</Text>
-              <View style={styles.slideDivider} />
-              <Text style={styles.slideBody}>{DEMO_SLIDES[0].body}</Text>
-              <View style={styles.insightBox}>
-                <Text style={styles.insightLabel}>KEY INSIGHT</Text>
-                <Text style={styles.insightText}>{DEMO_SLIDES[0].insight}</Text>
+          {stage === 1 && (
+            <View>
+              <Tag>THE SECRET SAUCE</Tag>
+              <Text style={styles.eyebrow}>THE ATTENTION SPARK · CONCEPT 2/3</Text>
+              <Text style={styles.title}>How does it understand context?</Text>
+              <View style={styles.attentionCard}>
+                <View style={styles.sentenceLine}>
+                  <View style={styles.anchorWord}><Text style={styles.sentenceWordStrong}>trophy</Text></View>
+                  <Text style={styles.sentenceText}>The </Text>
+                </View>
+                <Text style={styles.contextSentence}>
+                  The <Text style={styles.sentenceWordStrong}>trophy</Text> didn't fit in the suitcase because{' '}
+                  <Text style={styles.itWord} onPress={revealAttention}>IT</Text> was too big.
+                </Text>
+                <View style={styles.connectionArea} pointerEvents="none">
+                  <Animated.View style={[styles.connectionLine, {
+                    opacity: attention,
+                    transform: [{ scaleX: attention }],
+                  }]} />
+                  <Animated.View style={[styles.spark, { opacity: attention }]} />
+                </View>
+                <TouchableOpacity style={styles.tapIt} onPress={revealAttention}>
+                  <Feather name={attentionRevealed ? 'link-2' : 'mouse-pointer'} size={16} color={COLORS.accent} />
+                  <Text style={styles.tapItText}>{attentionRevealed ? 'IT connects to trophy' : 'Tap “IT” to reveal the connection'}</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.primaryBtn} onPress={() => { awardXP(25); goToStep('slide2'); }} activeOpacity={0.8}>
-                <Text style={styles.primaryBtnText}>Next →</Text>
-              </TouchableOpacity>
+              {attentionRevealed && (
+                <Takeaway icon="git-merge">
+                  Older algorithms forgot earlier words. Modern Transformers use “Self-Attention” to map relationships between all words simultaneously, giving AI the illusion of reasoning.
+                </Takeaway>
+              )}
+              <Primary label="Ready for the Test" disabled={!attentionRevealed} onPress={() => moveTo(2)} />
             </View>
           )}
 
-          {step === 'slide2' && (
-            <View style={styles.stepContainer}>
-              <View style={styles.slideTag}><Text style={styles.slideTagText}>SLIDE 2 OF 2</Text></View>
-              <Text style={styles.slideTitle}>{DEMO_SLIDES[1].title}</Text>
-              <View style={styles.slideDivider} />
-              <Text style={styles.slideBody}>{DEMO_SLIDES[1].body}</Text>
-              <View style={styles.insightBox}>
-                <Text style={styles.insightLabel}>KEY INSIGHT</Text>
-                <Text style={styles.insightText}>{DEMO_SLIDES[1].insight}</Text>
-              </View>
-              <TouchableOpacity style={styles.primaryBtn} onPress={() => { awardXP(25); goToStep('quiz'); }} activeOpacity={0.8}>
-                <Text style={styles.primaryBtnText}>Take the Quiz →</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {step === 'quiz' && (
-            <View style={styles.stepContainer}>
-              <View style={[styles.slideTag, { backgroundColor: COLORS.goldSoft }]}>
-                <Text style={[styles.slideTagText, { color: COLORS.gold }]}>QUIZ</Text>
-              </View>
-              <Text style={styles.slideTitle}>{DEMO_QUIZ.question}</Text>
-              <View style={{ gap: 10, marginTop: 16 }}>
-                {DEMO_QUIZ.options.map((opt, idx) => {
-                  const isSelected = selectedQuiz === idx;
-                  const showResult = selectedQuiz !== null;
-                  const isCorrect = opt.correct;
+          {stage === 2 && (
+            <Animated.View style={{ transform: [{ translateX: shake }] }}>
+              <Tag>MIND-BLOWN TEST</Tag>
+              <Text style={styles.eyebrow}>ONE LAST PREDICTION</Text>
+              <Text style={styles.quizTitle}>When an AI writes a 500-word essay, when does it decide how the final sentence will conclude?</Text>
+              <View style={styles.options}>
+                {QUIZ_OPTIONS.map((option, index) => {
+                  const isWrong = wrongAnswer === index;
+                  const isCorrect = correct && index === 2;
                   return (
                     <TouchableOpacity
-                      key={idx}
-                      style={[
-                        styles.quizOption,
-                        isSelected && !showResult && styles.quizOptionSelected,
-                        showResult && isCorrect && styles.quizOptionCorrect,
-                        showResult && isSelected && !isCorrect && styles.quizOptionWrong,
-                      ]}
-                      onPress={() => handleQuizSelect(idx)}
-                      disabled={selectedQuiz !== null}
-                      activeOpacity={0.7}
+                      key={option}
+                      style={[styles.option, isWrong && styles.optionWrong, isCorrect && styles.optionCorrect]}
+                      onPress={() => answerQuiz(index)}
+                      disabled={correct}
                     >
-                      <View style={[styles.quizLetter, showResult && isCorrect && { backgroundColor: COLORS.successSoft }]}>
-                        <Text style={styles.quizLetterText}>{String.fromCharCode(65 + idx)}</Text>
+                      <View style={[styles.optionLetter, isWrong && styles.optionLetterWrong, isCorrect && styles.optionLetterCorrect]}>
+                        <Text style={styles.optionLetterText}>{String.fromCharCode(65 + index)}</Text>
                       </View>
-                      <Text style={styles.quizOptionText}>{opt.text}</Text>
+                      <Text style={styles.optionText}>{option}</Text>
+                      {isCorrect && <Feather name="check-circle" size={20} color={COLORS.success} />}
                     </TouchableOpacity>
                   );
                 })}
               </View>
-            </View>
-          )}
-
-          {step === 'quiz-result' && (
-            <View style={styles.stepContainer}>
-              {DEMO_QUIZ.options[selectedQuiz!]?.correct ? (
-                <><Text style={styles.resultTitle}>Correct!</Text></>
-              ) : (
-                <><Text style={styles.resultTitle}>Not quite</Text></>
+              {wrongAnswer !== null && !correct && (
+                <Text style={styles.hint}>Not quite. Think smaller: what does the model choose at each single moment?</Text>
               )}
-              <View style={styles.feedbackBox}>
-                <Text style={styles.feedbackText}>{DEMO_QUIZ.options[selectedQuiz!]?.feedback}</Text>
-              </View>
-              <TouchableOpacity style={styles.primaryBtn} onPress={() => goToStep('gate')} activeOpacity={0.8}>
-                <Text style={styles.primaryBtnText}>See Your Results →</Text>
-              </TouchableOpacity>
-            </View>
+              {correct && (
+                <View style={styles.explanation}>
+                  <Text style={styles.explanationTitle}>Aha!</Text>
+                  <Text style={styles.explanationText}>It has zero foresight. Modern AI generates purely forward, one word token at a time. The entire appearance of intelligent thought comes from predicting probabilities across trillions of words.</Text>
+                </View>
+              )}
+              <Primary label="Claim My Starting Reward" disabled={!correct} onPress={() => void finishQuiz()} />
+            </Animated.View>
           )}
 
-          {step === 'gate' && (
-            <View style={styles.stepContainer}>
-              <Image source={require('../../assets/mascot/leo-reference.png')} style={{ width: 64, height: 64, resizeMode: 'contain', alignSelf: 'center' }} />
-              <Text style={styles.gateTitle}>Demo Complete!</Text>
-              <View style={styles.gateXPBox}>
-                <Text style={styles.gateXPAmount}>{totalXP} XP earned</Text>
-                <Text style={styles.gateXPLabel}>This XP will be credited to your account</Text>
+          {stage === 3 && (
+            <View style={styles.victory}>
+              <Image source={require('../../assets/mascot/leo-celebrating.png')} style={styles.victoryLeo} resizeMode="contain" />
+              <Text style={styles.victoryKicker}>FIRST WIN BANKED</Text>
+              <Text style={styles.victoryTitle}>You just learned how modern AI thinks.</Text>
+              <View style={styles.rewards}>
+                <View style={styles.reward}><Feather name="zap" size={24} color={COLORS.gold} /><Text style={styles.rewardValue}>+20 XP</Text><Text style={styles.rewardLabel}>Starting reward</Text></View>
+                <View style={styles.reward}><Feather name="activity" size={24} color={COLORS.streak} /><Text style={styles.rewardValue}>1 Day</Text><Text style={styles.rewardLabel}>Streak unlocked</Text></View>
               </View>
-              <Text style={styles.gateBody}>
-                You just scratched the surface of the AI market.{'\n\n'}
-                Sign up to unlock 180 days of lessons across 15+ industries, trainer scenarios, speed drills, and more.
-              </Text>
-              <TouchableOpacity style={styles.primaryBtn} onPress={onSignUp} activeOpacity={0.8}>
-                <Text style={styles.primaryBtnText}>Create Account — Keep My XP</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.ghostBtn} onPress={onClose}>
-                <Text style={styles.ghostBtnText}>I already have an account</Text>
-              </TouchableOpacity>
+              <Primary label="Save My Progress & Choose Industry" onPress={onComplete} />
             </View>
           )}
         </ScrollView>
@@ -243,72 +260,87 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
   );
 }
 
-const xpStyles = StyleSheet.create({
-  burst: {
-    position: 'absolute', top: 60, right: 24, zIndex: 50,
-    backgroundColor: COLORS.goldSoft, borderWidth: 1, borderColor: 'rgba(251, 191, 36, 0.3)',
-    borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6,
-  },
-  burstText: { fontSize: 14, fontWeight: '700', color: COLORS.gold },
-});
+function Tag({ children }: { children: string }) {
+  return <View style={styles.tag}><Text style={styles.tagText}>{children}</Text></View>;
+}
+
+function Takeaway({ children, icon }: { children: string; icon: keyof typeof Feather.glyphMap }) {
+  return <View style={styles.takeaway}><Feather name={icon} size={20} color={COLORS.accent} /><Text style={styles.takeawayText}>{children}</Text></View>;
+}
+
+function Primary({ label, disabled, onPress }: { label: string; disabled?: boolean; onPress: () => void }) {
+  return (
+    <TouchableOpacity style={[styles.primary, disabled && styles.primaryDisabled]} disabled={disabled} onPress={onPress} activeOpacity={0.86}>
+      <Text style={styles.primaryText}>{label}</Text><Feather name="arrow-right" size={18} color={COLORS.textOnAccent} />
+    </TouchableOpacity>
+  );
+}
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.bg0 },
-  xpBar: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingTop: 8, paddingBottom: 8,
-  },
-  closeBtn: { fontSize: 18, color: COLORS.textMuted, fontWeight: '600' },
-  xpChip: { backgroundColor: COLORS.goldSoft, paddingHorizontal: 12, paddingVertical: 5, borderRadius: 12 },
-  xpChipText: { fontSize: 13, fontWeight: '700', color: COLORS.gold },
-  progressDots: { flexDirection: 'row', gap: 6 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.surfaceLight },
-  dotActive: { backgroundColor: COLORS.accent },
-  content: { flex: 1 },
-  scrollContent: { paddingHorizontal: 20, paddingBottom: 40 },
-  stepContainer: { paddingTop: 12 },
-  introMascot: { width: 120, height: 120, alignSelf: 'center', marginBottom: 16 },
-  introTitle: { fontSize: 26, fontWeight: '800', color: COLORS.textPrimary, textAlign: 'center', marginBottom: 8 },
-  introSubtitle: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 20, marginBottom: 20 },
-  introBadges: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 28 },
-  introBadge: { backgroundColor: COLORS.accentSoft, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 },
-  introBadgeText: { fontSize: 11, fontWeight: '600', color: COLORS.accent },
-  slideTag: { backgroundColor: COLORS.successSoft, alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginBottom: 12 },
-  slideTagText: { fontSize: 10, fontWeight: '700', color: COLORS.success, letterSpacing: 0.8 },
-  slideTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary, lineHeight: 28, marginBottom: 12 },
-  slideDivider: { height: 2, backgroundColor: 'rgba(139, 92, 246, 0.2)', borderRadius: 1, marginBottom: 14 },
-  slideBody: { fontSize: 14, color: COLORS.textSecondary, lineHeight: 22, marginBottom: 16 },
-  insightBox: {
-    backgroundColor: COLORS.accentSoft, borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.15)',
-    borderRadius: 12, padding: 14, marginBottom: 24,
-  },
-  insightLabel: { fontSize: 10, fontWeight: '700', color: COLORS.accent, marginBottom: 6, letterSpacing: 0.5 },
-  insightText: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 18, fontStyle: 'italic' },
-  quizOption: {
-    flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: COLORS.bg2,
-    borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.border,
-  },
-  quizOptionSelected: { borderColor: 'rgba(139, 92, 246, 0.4)' },
-  quizOptionCorrect: { borderColor: 'rgba(34, 197, 94, 0.4)', backgroundColor: COLORS.successSoft },
-  quizOptionWrong: { borderColor: 'rgba(239, 68, 68, 0.4)', backgroundColor: COLORS.errorSoft },
-  quizLetter: { width: 32, height: 32, borderRadius: 16, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
-  quizLetterText: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary },
-  quizOptionText: { flex: 1, fontSize: 13, color: COLORS.textPrimary, lineHeight: 18 },
-  resultEmoji: { fontSize: 56, textAlign: 'center', marginBottom: 12, marginTop: 20 },
-  resultTitle: { fontSize: 24, fontWeight: '800', color: COLORS.textPrimary, textAlign: 'center', marginBottom: 16 },
-  feedbackBox: { backgroundColor: COLORS.bg2, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: COLORS.border, marginBottom: 24 },
-  feedbackText: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20 },
-  gateEmoji: { fontSize: 56, textAlign: 'center', marginTop: 20, marginBottom: 12 },
-  gateTitle: { fontSize: 26, fontWeight: '800', color: COLORS.textPrimary, textAlign: 'center', marginBottom: 16 },
-  gateXPBox: {
-    backgroundColor: COLORS.goldSoft, borderWidth: 1, borderColor: 'rgba(251, 191, 36, 0.2)',
-    borderRadius: 14, padding: 16, alignItems: 'center', marginBottom: 20,
-  },
-  gateXPAmount: { fontSize: 22, fontWeight: '800', color: COLORS.gold, marginBottom: 4 },
-  gateXPLabel: { fontSize: 12, color: COLORS.textMuted },
-  gateBody: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 20, marginBottom: 28 },
-  primaryBtn: { backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginBottom: 12 },
-  primaryBtnText: { fontSize: 16, fontWeight: '700', color: '#FFFFFF' },
-  ghostBtn: { alignItems: 'center', paddingVertical: 12 },
-  ghostBtnText: { fontSize: 14, color: COLORS.textMuted },
+  flex: { flex: 1 },
+  screen: { flex: 1, backgroundColor: COLORS.bg0 },
+  topBar: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, paddingHorizontal: 18, paddingVertical: 10 },
+  progressWrap: { flex: 1, flexDirection: 'row', gap: 6 },
+  progressItem: { flex: 1, gap: 5 },
+  progressTrack: { height: 5, borderRadius: 3, backgroundColor: COLORS.bg2 },
+  progressTrackActive: { backgroundColor: COLORS.accent },
+  progressLabel: { fontSize: 10, color: COLORS.textMuted, textAlign: 'center', fontWeight: '600' },
+  progressLabelActive: { color: COLORS.accent, fontWeight: '800' },
+  skipButton: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingVertical: 2 },
+  skipText: { fontSize: 13, fontWeight: '700', color: COLORS.textSecondary },
+  content: { paddingHorizontal: 20, paddingTop: 18 },
+  tag: { alignSelf: 'flex-start', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, backgroundColor: COLORS.accentSoft, marginBottom: 10 },
+  tagText: { fontSize: 10, fontWeight: '900', color: COLORS.accent, letterSpacing: 1 },
+  eyebrow: { fontSize: 11, fontWeight: '800', color: COLORS.textMuted, marginBottom: 6 },
+  title: { fontSize: 30, lineHeight: 36, fontWeight: '900', color: COLORS.textPrimary },
+  heroLeo: { width: 190, height: 190, alignSelf: 'center', marginVertical: 8 },
+  promptCard: { backgroundColor: COLORS.bg2, borderRadius: 20, borderWidth: 1, borderColor: COLORS.border, padding: 18, ...SHADOWS.sm },
+  promptLead: { fontSize: 11, fontWeight: '800', color: COLORS.accent, marginBottom: 8, textTransform: 'uppercase' },
+  sentence: { fontSize: 19, lineHeight: 27, fontWeight: '700', color: COLORS.textPrimary },
+  chips: { flexDirection: 'row', gap: 8, marginTop: 18 },
+  wordChip: { flex: 1, minHeight: 68, borderRadius: 14, backgroundColor: COLORS.bg1, borderWidth: 2, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
+  wordChipSelected: { backgroundColor: COLORS.accentSoft, borderColor: COLORS.accent },
+  word: { fontSize: 15, fontWeight: '800', color: COLORS.textPrimary },
+  wordSelected: { color: COLORS.accent },
+  chance: { fontSize: 11, color: COLORS.textMuted, marginTop: 3 },
+  chanceSelected: { color: COLORS.accent, fontWeight: '800' },
+  takeaway: { flexDirection: 'row', gap: 12, backgroundColor: COLORS.accentSoft, borderRadius: 16, padding: 16, marginTop: 16, borderWidth: 1, borderColor: COLORS.border },
+  takeawayText: { flex: 1, fontSize: 14, lineHeight: 21, color: COLORS.textSecondary, fontWeight: '600' },
+  primary: { minHeight: 56, borderRadius: 16, marginTop: 22, paddingHorizontal: 18, backgroundColor: COLORS.accent, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, ...SHADOWS.accent },
+  primaryDisabled: { opacity: 0.35 },
+  primaryText: { fontSize: 16, fontWeight: '800', color: COLORS.textOnAccent, textAlign: 'center' },
+  attentionCard: { marginTop: 24, minHeight: 240, borderRadius: 22, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, padding: 20, justifyContent: 'center', ...SHADOWS.sm },
+  sentenceLine: { position: 'absolute', opacity: 0 },
+  anchorWord: { opacity: 0 },
+  sentenceText: { color: COLORS.textPrimary },
+  contextSentence: { fontSize: 23, lineHeight: 36, textAlign: 'center', color: COLORS.textPrimary, fontWeight: '600' },
+  sentenceWordStrong: { color: COLORS.accent, fontWeight: '900' },
+  itWord: { color: COLORS.accent, fontWeight: '900', textDecorationLine: 'underline' },
+  connectionArea: { height: 42, marginHorizontal: 28, justifyContent: 'center' },
+  connectionLine: { height: 3, borderRadius: 2, backgroundColor: COLORS.accent, transformOrigin: 'right' },
+  spark: { position: 'absolute', left: 0, width: 12, height: 12, borderRadius: 6, backgroundColor: COLORS.accent },
+  tapIt: { alignSelf: 'center', flexDirection: 'row', gap: 7, alignItems: 'center', backgroundColor: COLORS.accentSoft, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12 },
+  tapItText: { color: COLORS.accent, fontSize: 12, fontWeight: '800' },
+  quizTitle: { fontSize: 25, lineHeight: 32, fontWeight: '900', color: COLORS.textPrimary, marginBottom: 18 },
+  options: { gap: 10 },
+  option: { minHeight: 76, flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 16, borderWidth: 2, borderColor: COLORS.border, backgroundColor: COLORS.bg2, padding: 13 },
+  optionWrong: { borderColor: COLORS.error, backgroundColor: COLORS.errorSoft },
+  optionCorrect: { borderColor: COLORS.success, backgroundColor: COLORS.successSoft },
+  optionLetter: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg1 },
+  optionLetterWrong: { backgroundColor: COLORS.errorSoft },
+  optionLetterCorrect: { backgroundColor: COLORS.successSoft },
+  optionLetterText: { fontSize: 13, fontWeight: '900', color: COLORS.textSecondary },
+  optionText: { flex: 1, fontSize: 14, lineHeight: 20, fontWeight: '600', color: COLORS.textPrimary },
+  hint: { marginTop: 12, color: COLORS.error, fontSize: 13, lineHeight: 19, fontWeight: '700' },
+  explanation: { marginTop: 16, padding: 16, borderRadius: 16, backgroundColor: COLORS.successSoft, borderWidth: 1, borderColor: COLORS.success },
+  explanationTitle: { fontSize: 18, fontWeight: '900', color: COLORS.success, marginBottom: 4 },
+  explanationText: { fontSize: 14, lineHeight: 21, color: COLORS.textSecondary },
+  victory: { alignItems: 'center', paddingTop: 20 },
+  victoryLeo: { width: 210, height: 210 },
+  victoryKicker: { fontSize: 11, fontWeight: '900', color: COLORS.accent, letterSpacing: 1.2, marginTop: 4 },
+  victoryTitle: { fontSize: 28, lineHeight: 34, fontWeight: '900', textAlign: 'center', color: COLORS.textPrimary, marginTop: 8 },
+  rewards: { alignSelf: 'stretch', flexDirection: 'row', gap: 10, marginTop: 22 },
+  reward: { flex: 1, minHeight: 118, alignItems: 'center', justifyContent: 'center', borderRadius: 18, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border },
+  rewardValue: { fontSize: 20, fontWeight: '900', color: COLORS.textPrimary, marginTop: 7 },
+  rewardLabel: { fontSize: 11, color: COLORS.textMuted, marginTop: 3 },
 });
