@@ -65,3 +65,6 @@
 - [x] Rebuild Weekly League with tier progression, trophy Leo, medal/avatar standings, and promotion/demotion zones.
 - [x] Upgrade the Arena prerequisite with interactive Thinking/Scholar Leo and a clear Course action.
 
+## New (Sept 23) — Immersive Speak to Leo
+- [~] Replace the empty voice screen with the warm study scene and a three-action voice toolbar while preserving speech, transcription, and text chat.
+
