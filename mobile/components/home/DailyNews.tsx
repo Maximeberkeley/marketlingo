@@ -18,7 +18,7 @@ import {
   Alert,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
-import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
+import { COLORS, TYPE } from '../../lib/constants';
 import { Feather } from '@expo/vector-icons';
 import { MentorChatOverlay } from '../ai/MentorChatOverlay';
 import { getMentorForContext } from '../../data/mentors';
@@ -52,24 +52,6 @@ interface DailyNewsProps {
 // ── Impact helper – only surfaces "high" items with an exclamation mark ──
 
 // ── Category colors ──
-const categoryColors: Record<string, { bg: string; text: string }> = {
-  Space: { bg: 'rgba(99,102,241,0.12)', text: '#6366F1' },
-  Aviation: { bg: 'rgba(59,130,246,0.12)', text: '#3B82F6' },
-  Defense: { bg: 'rgba(239,68,68,0.12)', text: '#EF4444' },
-  Deals: { bg: 'rgba(245,158,11,0.12)', text: '#D97706' },
-  Industry: { bg: 'rgba(16,185,129,0.12)', text: '#059669' },
-  Innovation: { bg: 'rgba(139,92,246,0.12)', text: '#7C3AED' },
-  Launch: { bg: 'rgba(139,92,246,0.12)', text: '#7C3AED' },
-  Production: { bg: 'rgba(16,185,129,0.12)', text: '#059669' },
-  Models: { bg: 'rgba(124,58,237,0.12)', text: '#7C3AED' },
-  Hardware: { bg: 'rgba(6,182,212,0.12)', text: '#0891B2' },
-  AI: { bg: 'rgba(16,185,129,0.12)', text: '#059669' },
-  Finance: { bg: 'rgba(245,158,11,0.12)', text: '#D97706' },
-  Health: { bg: 'rgba(236,72,153,0.12)', text: '#DB2777' },
-  Research: { bg: 'rgba(99,102,241,0.12)', text: '#6366F1' },
-  default: { bg: 'rgba(100,116,139,0.08)', text: '#64748B' },
-};
-
 const GRADIENT_SETS = [
   ['#6366F1', '#8B5CF6'],
   ['#3B82F6', '#6366F1'],
@@ -78,7 +60,7 @@ const GRADIENT_SETS = [
 ];
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const FEATURED_CARD_WIDTH = SCREEN_WIDTH * 0.75;
+const FEATURED_CARD_WIDTH = SCREEN_WIDTH - 32;
 
 type NewsQuizQuestion = {
   question: string;
@@ -189,13 +171,13 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
   if (items.length === 0) return null;
 
   return (
-    <View style={{ marginBottom: 20 }}>
+    <View style={s.featuredCarousel}>
       <Animated.ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         snapToInterval={FEATURED_CARD_WIDTH + 12}
         decelerationRate="fast"
-        contentContainerStyle={{ paddingHorizontal: 4, gap: 12 }}
+        contentContainerStyle={s.featuredTrack}
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: false })}
         scrollEventThrottle={16}
       >
@@ -203,8 +185,6 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
           const inputRange = [(i - 1) * (FEATURED_CARD_WIDTH + 12), i * (FEATURED_CARD_WIDTH + 12), (i + 1) * (FEATURED_CARD_WIDTH + 12)];
           const scale = scrollX.interpolate({ inputRange, outputRange: [0.95, 1, 0.95], extrapolate: 'clamp' });
           const opacity = scrollX.interpolate({ inputRange, outputRange: [0.7, 1, 0.7], extrapolate: 'clamp' });
-          const isHighImpact = (item.impact || getImpactFromContent(item.title, item.summary)) === 'high';
-
           return (
             <Animated.View key={item.id} style={{ transform: [{ scale }], opacity, width: FEATURED_CARD_WIDTH }}>
               <TouchableOpacity activeOpacity={0.85} onPress={() => onSelect(item)} style={s.featuredCard}>
@@ -213,17 +193,12 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
                 ) : (
                   <View style={[s.featuredImage, { backgroundColor: GRADIENT_SETS[i % GRADIENT_SETS.length][0] }]} />
                 )}
-                <View style={[s.featuredOverlay, { backgroundColor: 'rgba(0,0,0,0.45)' }]} />
+                <View style={s.featuredOverlay} />
                 <View style={s.featuredContent}>
                   <View style={s.featuredTopRow}>
-                    <View style={[s.featuredBadge, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                    <View style={s.featuredBadge}>
                       <Text style={s.featuredBadgeText}>{item.categoryTag.toUpperCase()}</Text>
                     </View>
-                    {isHighImpact && (
-                      <View style={s.highImpactBadge}>
-                        <Feather name="alert-circle" size={10} color="#FFF" />
-                      </View>
-                    )}
                   </View>
                   <Text style={s.featuredTitle} numberOfLines={2}>{item.title}</Text>
                   {item.summary ? (
@@ -265,22 +240,13 @@ function NewsFeedCard({
   item,
   index,
   onSelect,
-  onAiAction,
-  onSave,
-  onQuiz,
-  isSaved,
 }: {
   item: NewsItem;
   index: number;
   onSelect: (item: NewsItem) => void;
-  onAiAction: (item: NewsItem, action: 'discuss' | 'summarize' | 'why') => void;
-  onSave: (item: NewsItem) => void;
-  onQuiz: (item: NewsItem) => void;
-  isSaved: boolean;
 }) {
   const slideAnim = useRef(new Animated.Value(24)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
-  const [analysisOpen, setAnalysisOpen] = useState(false);
 
   useEffect(() => {
     Animated.parallel([
@@ -289,39 +255,16 @@ function NewsFeedCard({
     ]).start();
   }, []);
 
-  const catColor = categoryColors[item.categoryTag] || categoryColors.default;
-  const isHighImpact = (item.impact || getImpactFromContent(item.title, item.summary)) === 'high';
-
   return (
     <Animated.View style={{ transform: [{ translateY: slideAnim }], opacity: opacityAnim }}>
       <TouchableOpacity activeOpacity={0.8} onPress={() => onSelect(item)} style={s.feedCard}>
         {/* Text content */}
         <View style={s.feedCardText}>
-          <View style={s.feedCardMeta}>
-            <View style={[s.catBadge, { backgroundColor: catColor.bg }]}>
-              <Text style={[s.catBadgeText, { color: catColor.text }]}>{item.categoryTag.toUpperCase()}</Text>
-            </View>
-            {isHighImpact && (
-              <View style={s.highImpactInline}>
-                <Feather name="alert-circle" size={10} color="#EF4444" />
-              </View>
-            )}
-            <Text style={s.feedDate}>{item.publishedAt}</Text>
-          </View>
+          <Text style={s.feedSource} numberOfLines={1}>{item.sourceName}</Text>
           <Text style={s.feedTitle} numberOfLines={3}>{item.title}</Text>
-          {item.summary ? (
-            <Text style={s.feedSummary} numberOfLines={1}>{item.summary}</Text>
-          ) : null}
-          <View style={s.feedSignals}>
-            <View style={s.sourceChip}>
-              <Feather name="radio" size={9} color={COLORS.textMuted} />
-              <Text style={s.feedSource} numberOfLines={1}>{item.sourceName}</Text>
-            </View>
-            <View style={[s.impactChip, isHighImpact && s.impactChipHigh]}>
-              <Text style={[s.impactChipText, isHighImpact && s.impactChipTextHigh]}>
-                {isHighImpact ? 'HIGH IMPACT' : 'WATCH'}
-              </Text>
-            </View>
+          <View style={s.feedFooter}>
+            <Text style={s.feedDate}>{item.publishedAt}</Text>
+            <Feather name="more-horizontal" size={19} color={INTEL.muted} />
           </View>
         </View>
 
@@ -337,64 +280,6 @@ function NewsFeedCard({
         </View>
       </TouchableOpacity>
 
-      <View style={s.quickActionsRow}>
-        {([
-          { action: 'discuss' as const, icon: 'message-circle' as const, label: 'Discuss' },
-        ]).map(({ action, icon, label }) => (
-          <TouchableOpacity
-            key={action}
-            style={s.aiActionBtn}
-            onPress={() => onAiAction(item, action)}
-            activeOpacity={0.7}
-          >
-            <Feather name={icon} size={11} color={COLORS.textMuted} />
-            <Text style={s.aiActionText}>{label}</Text>
-          </TouchableOpacity>
-        ))}
-
-        <TouchableOpacity
-          style={s.aiActionBtn}
-          onPress={() => onSave(item)}
-          activeOpacity={0.7}
-        >
-          <Feather name={isSaved ? 'bookmark' : 'bookmark'} size={11} color={isSaved ? COLORS.accent : COLORS.textMuted} />
-          <Text style={[s.aiActionText, isSaved && { color: COLORS.accent }]}>{isSaved ? 'Saved' : 'Save'}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[s.aiActionBtn, s.quizBtn]}
-          onPress={() => onQuiz(item)}
-          activeOpacity={0.7}
-        >
-          <Feather name="help-circle" size={11} color={COLORS.accent} />
-          <Text style={[s.aiActionText, { color: COLORS.accent, fontWeight: '700' }]}>Quiz</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={s.analysisToggle} onPress={() => setAnalysisOpen(open => !open)} activeOpacity={0.72}>
-          <Text style={s.analysisToggleText}>{analysisOpen ? 'Close analysis' : 'Read full analysis'}</Text>
-          <Feather name={analysisOpen ? 'chevron-up' : 'chevron-down'} size={14} color={COLORS.accent} />
-        </TouchableOpacity>
-      </View>
-
-      {analysisOpen ? (
-        <View style={s.analysisPanel}>
-          {item.summary ? <Text style={s.analysisText}>{item.summary}</Text> : null}
-          <View style={s.analysisActions}>
-            <TouchableOpacity style={s.analysisAction} onPress={() => onAiAction(item, 'summarize')}>
-              <Feather name="file-text" size={13} color={COLORS.accent} />
-              <Text style={s.analysisActionText}>Quick summary</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.analysisAction} onPress={() => onAiAction(item, 'why')}>
-              <Feather name="zap" size={13} color={COLORS.accent} />
-              <Text style={s.analysisActionText}>Why it matters</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.analysisAction} onPress={() => Linking.openURL(item.sourceUrl).catch(() => {})}>
-              <Feather name="external-link" size={13} color={COLORS.accent} />
-              <Text style={s.analysisActionText}>Source</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      ) : null}
     </Animated.View>
   );
 }
@@ -814,7 +699,6 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
   const [immersiveIndex, setImmersiveIndex] = useState(-1);
   const [chatNewsItem, setChatNewsItem] = useState<NewsItem | null>(null);
   const [chatContext, setChatContext] = useState('');
-  const [savedArticleIds, setSavedArticleIds] = useState<Set<string>>(new Set());
   const [quizArticle, setQuizArticle] = useState<NewsItem | null>(null);
   const intel = useIntelHabit(marketId);
   const autoOpened = useRef(false);
@@ -914,36 +798,6 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
     openStory(news, 0);
   }, [autoOpen, isLoading, news, openStory]);
 
-  // Save article to notebook
-  const handleSaveToNotebook = async (item: NewsItem) => {
-    if (!user) {
-      Alert.alert('Sign in required', 'Please sign in to save articles.');
-      return;
-    }
-
-    if (savedArticleIds.has(item.id)) {
-      triggerHaptic('light');
-      return;
-    }
-
-    try {
-      const noteContent = `📰 ${item.title}\n\n${item.summary || ''}\n\n🔗 Source: ${item.sourceName}\n${item.sourceUrl}`;
-      const { error: saveError } = await supabase.from('notes').insert({
-        user_id: user.id,
-        content: noteContent,
-        linked_label: `News · ${item.categoryTag}`,
-        market_id: marketId,
-      });
-
-      if (saveError) throw saveError;
-
-      setSavedArticleIds(prev => new Set([...prev, item.id]));
-      triggerHaptic('success');
-    } catch {
-      Alert.alert('Error', 'Failed to save article. Try again.');
-    }
-  };
-
   // Quiz on article
   const handleQuiz = (item: NewsItem) => {
     triggerHaptic('medium');
@@ -965,48 +819,6 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
 
   return (
     <View style={s.container}>
-      {/* Header */}
-      <View style={s.header}>
-        <View style={s.headerLeft}>
-          <View style={s.headerIconBg}>
-            <Feather name="zap" size={14} color={COLORS.accent} />
-          </View>
-          <View>
-            <Text style={s.headerTitle}>Industry Intel</Text>
-            <Text style={s.headerSubtitle}>
-              {news.length > 0 ? `${news.length} stories · AI-analyzed` : 'AI-analyzed insights'}
-            </Text>
-          </View>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <View style={[s.habitChip, intel.done && s.habitChipDone]}>
-            <Feather name={intel.done ? 'check' : 'target'} size={11} color={intel.done ? '#059669' : COLORS.accent} />
-            <Text style={[s.habitChipText, intel.done && { color: '#059669' }]}>
-              {intel.readToday}/{intel.target} today
-            </Text>
-          </View>
-          <TouchableOpacity onPress={() => fetchNews(true)} disabled={isRefreshing} style={[s.refreshBtn, isRefreshing && { opacity: 0.5 }]}>
-            <Feather name="refresh-cw" size={14} color={COLORS.textMuted} />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Daily reading goal */}
-      {news.length > 0 && !isLoading && (
-        <View style={s.habitBar}>
-          <Text style={s.habitBarText}>
-            {intel.done
-              ? "Today's 3 stories read. You know what changed."
-              : `Read ${intel.remaining} more ${intel.remaining === 1 ? 'story' : 'stories'} today to stay current · +20 XP`}
-          </Text>
-          <View style={s.habitDots}>
-            {Array.from({ length: intel.target }).map((_, i) => (
-              <View key={i} style={[s.habitDot, i < intel.readToday && s.habitDotFilled]} />
-            ))}
-          </View>
-        </View>
-      )}
-
       {/* Loading */}
       {isLoading && (
         <View style={s.loadingContainer}>
@@ -1050,7 +862,7 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
           )}
 
           {/* Vertical feed */}
-          <View style={{ gap: 2 }}>
+          <View style={s.feedList}>
             {feed.map((item, index) => (
               <NewsFeedCard
                 key={item.id}
@@ -1059,10 +871,6 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
                 onSelect={(item) => {
                   openStory(news, news.findIndex(n => n.id === item.id));
                 }}
-                onAiAction={handleAiAction}
-                onSave={handleSaveToNotebook}
-                onQuiz={handleQuiz}
-                isSaved={savedArticleIds.has(item.id)}
               />
             ))}
           </View>
@@ -1096,6 +904,10 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
           setChatNewsItem(article);
         }}
         onArticleView={(article) => intel.recordRead(article.id)}
+        onQuiz={(article) => {
+          setImmersiveIndex(-1);
+          setQuizArticle(article);
+        }}
         marketId={marketId}
         learningGoal={learningGoal}
       />
