@@ -1,164 +1,293 @@
 /**
- * League screen — this week's tier table with live rival XP.
+ * Weekly League — a high-energy tier race backed by the learner's real XP ledger.
  */
 import React from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import { COLORS, SHADOWS } from '../lib/constants';
+
+import { COLORS, SHADOWS, TYPE } from '../lib/constants';
+import { isDark } from '../lib/theme';
 import { useSelectedMarket } from '../hooks/useSelectedMarket';
-import { TIER_META, useLeague } from '../hooks/useLeague';
+import { LEAGUE_TIERS, LeagueTier, TIER_META, useLeague } from '../hooks/useLeague';
 import { getMarketName } from '../lib/markets';
-import { LinearGradient } from 'expo-linear-gradient';
-import { getMarketWorld } from '../data/marketWorlds';
+import { triggerHaptic } from '../lib/haptics';
+
+const TROPHY_LEO = require('../assets/mascot/leo-trophy.png');
+const AVATAR_COLORS = ['#7C3AED', '#0F766E', '#B45309', '#BE123C', '#0369A1', '#4D7C0F'];
+
+function initials(name: string): string {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return 'A';
+  return words.slice(0, 2).map((word) => word[0]?.toUpperCase() ?? '').join('');
+}
+
+function avatarColor(id: string): string {
+  const total = id.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return AVATAR_COLORS[total % AVATAR_COLORS.length] ?? AVATAR_COLORS[0];
+}
+
+function nextTier(tier: LeagueTier): string | null {
+  const currentIndex = LEAGUE_TIERS.indexOf(tier);
+  const next = LEAGUE_TIERS[currentIndex + 1];
+  return next ? TIER_META[next].label : null;
+}
+
+function TierLadder({ current }: { current: LeagueTier }) {
+  const currentIndex = LEAGUE_TIERS.indexOf(current);
+
+  return (
+    <View style={styles.ladder}>
+      <View style={styles.ladderLine} />
+      {LEAGUE_TIERS.map((tier, index) => {
+        const tierMeta = TIER_META[tier];
+        const locked = index > currentIndex;
+        const active = tier === current;
+        return (
+          <View key={tier} style={styles.tierStep}>
+            <View style={[styles.tierPedestal, active && styles.tierPedestalActive]}>
+              <View
+                style={[
+                  styles.trophyDisc,
+                  { borderColor: locked ? COLORS.border : tierMeta.color },
+                  active && { backgroundColor: COLORS.goldSoft, shadowColor: tierMeta.color },
+                  locked && styles.trophyDiscLocked,
+                ]}
+              >
+                <Feather name={locked ? 'lock' : 'award'} size={active ? 25 : 20} color={locked ? COLORS.textMuted : tierMeta.color} />
+              </View>
+              {active && <View style={[styles.pedestalBase, { backgroundColor: tierMeta.color }]} />}
+            </View>
+            <Text style={[styles.tierLabel, active && { color: tierMeta.color }, locked && styles.lockedLabel]} numberOfLines={1}>
+              {tierMeta.label}
+            </Text>
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+function RankBadge({ rank }: { rank: number }) {
+  const medalColor = rank === 1 ? '#FBBF24' : rank === 2 ? '#94A3B8' : rank === 3 ? '#B45309' : null;
+  if (!medalColor) {
+    return (
+      <View style={styles.rankNumberWrap}>
+        <Text style={styles.rankNumber}>{rank}</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={[styles.medal, { backgroundColor: medalColor }]}>
+      <Feather name="award" size={14} color={COLORS.textOnAccent} />
+      <Text style={styles.medalText}>{rank}</Text>
+    </View>
+  );
+}
+
+function ZoneDivider({ type, label }: { type: 'promotion' | 'demotion'; label: string }) {
+  const color = type === 'promotion' ? COLORS.success : COLORS.error;
+  return (
+    <View style={[styles.zoneDivider, { borderColor: color }]}>
+      <View style={[styles.zoneIcon, { backgroundColor: type === 'promotion' ? COLORS.successSoft : COLORS.errorSoft }]}>
+        <Feather name={type === 'promotion' ? 'arrow-up' : 'arrow-down'} size={13} color={color} />
+      </View>
+      <Text style={[styles.zoneText, { color }]}>{label}</Text>
+    </View>
+  );
+}
 
 export default function LeagueScreen() {
   const insets = useSafeAreaInsets();
   const { marketId: selectedMarket } = useSelectedMarket();
   const league = useLeague(selectedMarket || undefined);
   const meta = TIER_META[league.tier];
-  const world = getMarketWorld(selectedMarket);
-  const topXp = Math.max(1, ...league.rivals.map(rival => rival.weeklyXp));
+  const promotionTier = nextTier(league.tier);
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-          <Feather name="chevron-left" size={24} color={COLORS.textPrimary} />
+      <View style={styles.navBar}>
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={() => {
+            triggerHaptic('light');
+            router.back();
+          }}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
+          <Feather name="chevron-left" size={25} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>League</Text>
-        <View style={{ width: 24 }} />
+        <Text style={styles.navTitle}>Weekly League</Text>
+        <View style={styles.iconButton} />
       </View>
 
       {league.loading ? (
         <View style={styles.loading}>
-          <ActivityIndicator color={COLORS.accent} />
+          <ActivityIndicator size="large" color={COLORS.accent} />
+          <Text style={styles.loadingText}>Building this week’s table…</Text>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 40 }}>
-          <LinearGradient colors={[world.colors[0], world.colors[1]]} style={styles.hero}>
-            <View style={styles.heroTop}>
-              <View style={styles.crestOuter}>
-                <View style={styles.crestInner}><Feather name="award" size={30} color={meta.color} /></View>
-              </View>
-              <View style={styles.heroCopy}>
-                <Text style={styles.heroEyebrow}>{world.worldName.toUpperCase()}</Text>
-                <Text style={styles.tier}>{meta.label} League</Text>
-                <Text style={styles.heroSub}>{getMarketName(selectedMarket || 'aerospace')}</Text>
-              </View>
-              <View style={styles.countdown}>
-                <Text style={styles.countdownValue}>{league.daysLeft}</Text>
-                <Text style={styles.countdownLabel}>{league.daysLeft === 1 ? 'DAY' : 'DAYS'}</Text>
-              </View>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 40 }]}
+        >
+          <View style={styles.titleRow}>
+            <View style={styles.titleCopy}>
+              <Text style={styles.eyebrow}>{getMarketName(selectedMarket || 'aerospace').toUpperCase()}</Text>
+              <Text style={styles.leagueTitle}>{meta.label} League</Text>
             </View>
-            <View style={styles.heroRule} />
-            <View style={styles.heroStatus}>
-              <Feather name={league.myRank && league.myRank <= league.promotionCutoff ? 'trending-up' : 'target'} size={16} color={COLORS.bg2} />
-              <Text style={styles.heroLine}>
+            <View style={styles.countdownPill}>
+              <Feather name="clock" size={14} color={COLORS.warning} />
+              <Text style={styles.countdownText}>{league.daysLeft} {league.daysLeft === 1 ? 'DAY' : 'DAYS'}</Text>
+            </View>
+          </View>
+
+          <TierLadder current={league.tier} />
+
+          <View style={styles.mascotStage}>
+            <View style={[styles.glow, { backgroundColor: COLORS.goldSoft }]} />
+            <Image source={TROPHY_LEO} style={styles.trophyLeo} resizeMode="contain" />
+            <View style={styles.statusPill}>
+              <Feather
+                name={league.myRank && league.myRank <= league.promotionCutoff ? 'trending-up' : 'target'}
+                size={15}
+                color={league.myRank && league.myRank <= league.promotionCutoff ? COLORS.success : COLORS.accent}
+              />
+              <Text style={styles.statusText}>
                 {league.myRank
                   ? league.myRank <= league.promotionCutoff
-                    ? `Rank #${league.myRank}. You are in the promotion zone.`
-                    : `${league.xpToPromotion} XP to promotion.`
-                  : 'Earn XP to enter this week’s table.'}
+                    ? `You’re #${league.myRank} — keep your promotion spot.`
+                    : `${league.xpToPromotion} XP to reach the promotion zone.`
+                  : 'Earn XP to enter this week’s race.'}
               </Text>
             </View>
-          </LinearGradient>
+          </View>
 
-          <View style={styles.legend}>
-            <LegendDot color={COLORS.success} label={`Top ${league.promotionCutoff} promote`} />
-            {league.demotionCutoff && (
-              <LegendDot color={COLORS.error} label={`Below #${league.demotionCutoff} relegate`} />
-            )}
+          <View style={styles.standingsHeading}>
+            <View>
+              <Text style={styles.standingsTitle}>Standings</Text>
+              <Text style={styles.standingsSubtitle}>Weekly XP resets every Monday</Text>
+            </View>
+            <Feather name="bar-chart-2" size={20} color={COLORS.accent} />
           </View>
 
           <View style={styles.table}>
-            {league.rivals.length === 0 && <Text style={styles.empty}>No standings yet this week.</Text>}
-            {league.rivals.map((r) => {
-              const promote = r.rank <= league.promotionCutoff;
-              const relegate = !!league.demotionCutoff && r.rank > league.demotionCutoff;
-              return (
-                <View key={r.userId} style={[styles.row, r.isMe && styles.myRow]}> 
-                  <View
-                    style={[
-                      styles.rankPill,
-                      promote && { backgroundColor: COLORS.successSoft },
-                      relegate && { backgroundColor: COLORS.errorSoft },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.rankText,
-                        promote && { color: COLORS.success },
-                        relegate && { color: COLORS.error },
-                      ]}
-                    >
-                      {r.rank}
-                    </Text>
-                  </View>
-                  <Text style={[styles.name, r.isMe && { fontWeight: '800', color: COLORS.textPrimary }]} numberOfLines={1}>
-                    {r.isMe ? 'You' : r.username}
-                  </Text>
-                  <View style={styles.rivalData}>
-                    <Text style={styles.xp}>{r.weeklyXp} XP</Text>
-                    <View style={styles.xpTrack}><View style={[styles.xpFill, { width: `${Math.max(3, (r.weeklyXp / topXp) * 100)}%`, backgroundColor: r.isMe ? meta.color : COLORS.textMuted }]} /></View>
-                  </View>
-                </View>
-              );
-            })}
+            {league.rivals.length === 0 ? (
+              <View style={styles.emptyState}>
+                <Feather name="users" size={28} color={COLORS.textMuted} />
+                <Text style={styles.emptyTitle}>No standings yet</Text>
+                <Text style={styles.emptyText}>Your first XP this week will put you on the board.</Text>
+              </View>
+            ) : (
+              league.rivals.map((r, index) => {
+                const showPromotionDivider = index === 0;
+                const showDemotionDivider = league.demotionCutoff !== null && r.rank === league.demotionCutoff + 1;
+                return (
+                  <React.Fragment key={r.userId}>
+                    {showPromotionDivider && (
+                      <ZoneDivider
+                        type="promotion"
+                        label={promotionTier ? `Top ${league.promotionCutoff} advance to ${promotionTier} League` : `Top ${league.promotionCutoff} hold Diamond status`}
+                      />
+                    )}
+                    {showDemotionDivider && <ZoneDivider type="demotion" label="Demotion zone" />}
+                    <View style={[styles.row, r.isMe && styles.myRow]}>
+                      <RankBadge rank={r.rank} />
+                      <View style={[styles.avatar, { backgroundColor: avatarColor(r.userId) }]}>
+                        <Text style={styles.avatarText}>{initials(r.isMe ? 'You' : r.username)}</Text>
+                      </View>
+                      <View style={styles.personCopy}>
+                        <View style={styles.nameRow}>
+                          <Text style={[styles.name, r.isMe && styles.myName]} numberOfLines={1}>
+                            {r.isMe ? 'You' : r.username}
+                          </Text>
+                          {r.isMe && (
+                            <View style={styles.youBadge}>
+                              <Text style={styles.youBadgeText}>{meta.label.toUpperCase()}</Text>
+                            </View>
+                          )}
+                        </View>
+                        {r.rank <= league.promotionCutoff && (
+                          <View style={styles.advanceRow}>
+                            <Feather name="arrow-up" size={11} color={COLORS.success} />
+                            <Text style={styles.advanceText}>Promotion pace</Text>
+                          </View>
+                        )}
+                      </View>
+                      <Text style={[styles.xp, r.isMe && { color: COLORS.accent }]}>{r.weeklyXp} XP</Text>
+                    </View>
+                  </React.Fragment>
+                );
+              })
+            )}
           </View>
 
-          <Text style={styles.footnote}>
-            Weekly XP is counted from your own activity ledger and resets every Monday. Results are stamped on Sunday night.
-          </Text>
+          <Text style={styles.footnote}>Sunday night locks the final table and stamps promotions or relegations.</Text>
         </ScrollView>
       )}
     </View>
   );
 }
 
-function LegendDot({ color, label }: { color: string; label: string }) {
-  return (
-    <View style={styles.legendItem}>
-      <View style={[styles.dot, { backgroundColor: color }]} />
-      <Text style={styles.legendText}>{label}</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: COLORS.bg0 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
-  loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  hero: { borderRadius: 20, padding: 18, marginBottom: 16, overflow: 'hidden', ...SHADOWS.md },
-  heroTop: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  crestOuter: { width: 64, height: 72, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.35)', alignItems: 'center', justifyContent: 'center' },
-  crestInner: { width: 48, height: 48, borderRadius: 24, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
-  heroCopy: { flex: 1 },
-  heroEyebrow: { fontSize: 9, fontWeight: '900', color: 'rgba(255,255,255,0.72)' },
-  tier: { fontSize: 24, lineHeight: 28, fontWeight: '900', color: COLORS.bg2 },
-  heroSub: { fontSize: 12, color: 'rgba(255,255,255,0.76)', marginTop: 2 },
-  countdown: { alignItems: 'center', minWidth: 42 },
-  countdownValue: { fontSize: 26, fontWeight: '900', color: COLORS.bg2 },
-  countdownLabel: { fontSize: 8, fontWeight: '900', color: 'rgba(255,255,255,0.7)' },
-  heroRule: { height: 1, backgroundColor: 'rgba(255,255,255,0.24)', marginVertical: 14 },
-  heroStatus: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  heroLine: { flex: 1, fontSize: 13, fontWeight: '700', color: COLORS.bg2, lineHeight: 18 },
-  legend: { flexDirection: 'row', gap: 16, marginBottom: 10, paddingHorizontal: 4 },
-  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  dot: { width: 8, height: 8, borderRadius: 4 },
-  legendText: { fontSize: 11, color: COLORS.textMuted, fontWeight: '600' },
-  table: { backgroundColor: COLORS.bg2, borderRadius: 16, borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden', ...SHADOWS.sm },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 62, paddingVertical: 10, paddingHorizontal: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.borderLight },
-  myRow: { backgroundColor: COLORS.accentSoft, borderLeftWidth: 4, borderLeftColor: COLORS.accent },
-  rankPill: { width: 30, height: 30, borderRadius: 15, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
-  rankText: { fontSize: 12, fontWeight: '800', color: COLORS.textSecondary },
-  name: { flex: 1, fontSize: 14, color: COLORS.textSecondary, fontWeight: '600' },
-  rivalData: { width: 84, alignItems: 'flex-end', gap: 5 },
-  xp: { fontSize: 13, fontWeight: '800', color: COLORS.textPrimary },
-  xpTrack: { width: '100%', height: 3, borderRadius: 2, overflow: 'hidden', backgroundColor: COLORS.borderLight },
-  xpFill: { height: '100%', borderRadius: 2 },
-  empty: { padding: 20, textAlign: 'center', color: COLORS.textMuted, fontSize: 13 },
-  footnote: { fontSize: 11, color: COLORS.textMuted, marginTop: 14, lineHeight: 16 },
+  navBar: { minHeight: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14 },
+  navTitle: { ...TYPE.h3, color: COLORS.textPrimary },
+  iconButton: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
+  loadingText: { ...TYPE.caption, color: COLORS.textMuted },
+  content: { paddingHorizontal: 18, paddingTop: 8 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 6 },
+  titleCopy: { flex: 1 },
+  eyebrow: { ...TYPE.overline, color: COLORS.textMuted },
+  leagueTitle: { ...TYPE.hero, color: COLORS.textPrimary, marginTop: 3 },
+  countdownPill: { minHeight: 36, paddingHorizontal: 12, borderRadius: 18, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.warningSoft, borderWidth: 1, borderColor: COLORS.warning },
+  countdownText: { fontSize: 11, fontWeight: '900', color: COLORS.warning },
+  ladder: { position: 'relative', flexDirection: 'row', justifyContent: 'space-between', marginTop: 24, paddingHorizontal: 2 },
+  ladderLine: { position: 'absolute', top: 23, left: 26, right: 26, height: 3, borderRadius: 2, backgroundColor: COLORS.border },
+  tierStep: { width: '19%', alignItems: 'center' },
+  tierPedestal: { height: 54, alignItems: 'center', justifyContent: 'flex-start' },
+  tierPedestalActive: { transform: [{ translateY: -5 }] },
+  trophyDisc: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg2, borderWidth: 2, ...SHADOWS.sm },
+  trophyDiscLocked: { backgroundColor: COLORS.lockedSurface, borderStyle: 'dashed', opacity: 0.72 },
+  pedestalBase: { width: 34, height: 5, borderRadius: 3, marginTop: 3 },
+  tierLabel: { marginTop: 3, fontSize: 9, fontWeight: '800', color: COLORS.textSecondary, textAlign: 'center' },
+  lockedLabel: { color: COLORS.textMuted },
+  mascotStage: { minHeight: 238, alignItems: 'center', justifyContent: 'flex-end', marginTop: 16 },
+  glow: { position: 'absolute', top: 36, width: 174, height: 174, borderRadius: 87, opacity: isDark ? 0.85 : 1 },
+  trophyLeo: { width: 190, height: 190, resizeMode: 'contain', backfaceVisibility: 'hidden', imageRendering: 'crisp-edges' } as any,
+  statusPill: { width: '100%', minHeight: 48, borderRadius: 14, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, ...SHADOWS.sm },
+  statusText: { flexShrink: 1, ...TYPE.caption, color: COLORS.textSecondary, textAlign: 'center' },
+  standingsHeading: { marginTop: 26, marginBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  standingsTitle: { ...TYPE.h2, color: COLORS.textPrimary },
+  standingsSubtitle: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 2 },
+  table: { borderRadius: 18, overflow: 'hidden', backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, ...SHADOWS.md },
+  zoneDivider: { minHeight: 40, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, backgroundColor: COLORS.bg1, borderLeftWidth: 4, borderBottomWidth: StyleSheet.hairlineWidth },
+  zoneIcon: { width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  zoneText: { flex: 1, fontSize: 11, fontWeight: '800' },
+  row: { minHeight: 72, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.borderLight, backgroundColor: COLORS.bg2 },
+  myRow: { backgroundColor: COLORS.accentSoft, borderWidth: 2, borderColor: COLORS.accent, borderRadius: 12, marginHorizontal: 5, marginVertical: 5, ...SHADOWS.accent },
+  rankNumberWrap: { width: 30, alignItems: 'center' },
+  rankNumber: { fontSize: 15, fontWeight: '900', color: COLORS.textSecondary },
+  medal: { width: 30, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center', ...SHADOWS.sm },
+  medalText: { fontSize: 9, lineHeight: 10, fontWeight: '900', color: COLORS.textOnAccent },
+  avatar: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: COLORS.bg2 },
+  avatarText: { fontSize: 13, fontWeight: '900', color: '#FFFFFF' },
+  personCopy: { flex: 1, minWidth: 0 },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  name: { flexShrink: 1, fontSize: 14, fontWeight: '700', color: COLORS.textPrimary },
+  myName: { fontWeight: '900' },
+  youBadge: { paddingHorizontal: 6, paddingVertical: 3, borderRadius: 6, backgroundColor: COLORS.accentMedium },
+  youBadgeText: { fontSize: 8, fontWeight: '900', color: COLORS.accent },
+  advanceRow: { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 3 },
+  advanceText: { fontSize: 9, fontWeight: '700', color: COLORS.success },
+  xp: { fontSize: 14, fontWeight: '900', color: COLORS.textPrimary },
+  emptyState: { alignItems: 'center', paddingHorizontal: 24, paddingVertical: 32 },
+  emptyTitle: { ...TYPE.h3, color: COLORS.textPrimary, marginTop: 10 },
+  emptyText: { ...TYPE.caption, color: COLORS.textMuted, textAlign: 'center', marginTop: 4 },
+  footnote: { ...TYPE.caption, color: COLORS.textMuted, textAlign: 'center', lineHeight: 17, marginTop: 14, paddingHorizontal: 16 },
 });
