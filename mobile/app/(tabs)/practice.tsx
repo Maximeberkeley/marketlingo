@@ -101,6 +101,34 @@ const LAB_CARDS: CardData[] = [
   },
 ];
 
+const COMPETE_CARDS: CardData[] = [
+  {
+    id: 'league',
+    title: 'Weekly League',
+    subtitle: 'Promotion Race',
+    description: 'Climb the weekly XP table and earn your next trophy tier.',
+    icon: 'award',
+    iconColor: '#BFDBFE',
+    gradientColors: ['#1E3A8A', '#1D4ED8', '#3B82F6'] as const,
+    accentGlow: 'rgba(59, 130, 246, 0.4)',
+    path: '/league',
+    tag: 'WEEKLY',
+  },
+  {
+    id: 'leaderboard',
+    title: 'Friends & Rivals',
+    subtitle: 'Social Standings',
+    description: 'See who is building industry fluency alongside you.',
+    icon: 'users',
+    iconColor: '#FDE68A',
+    gradientColors: ['#7C2D12', '#B45309', '#F59E0B'] as const,
+    accentGlow: 'rgba(245, 158, 11, 0.4)',
+    path: '/friends',
+    heroImage: require('../../assets/illustrations/leaderboard-hero.png'),
+    tag: 'SOCIAL',
+  },
+];
+
 /* ─── Premium Carousel ─── */
 function PremiumCarousel({ cards, title }: { cards: CardData[]; title: string }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -381,6 +409,8 @@ export default function PracticeScreen() {
 
         {/* Labs */}
         <PremiumCarousel cards={LAB_CARDS} title="Labs" />
+
+        <PremiumCarousel cards={COMPETE_CARDS} title="Compete" />
 
       </ScrollView>
     </View>

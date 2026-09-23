@@ -185,7 +185,7 @@ export default function LeagueScreen() {
             ) : (
               league.rivals.map((r, index) => {
                 const showPromotionDivider = index === 0;
-                const showDemotionDivider = league.demotionCutoff === r.rank;
+                const showDemotionDivider = league.demotionCutoff !== null && r.rank === league.demotionCutoff + 1;
                 return (
                   <React.Fragment key={r.userId}>
                     {showPromotionDivider && (
