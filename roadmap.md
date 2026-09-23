@@ -61,7 +61,7 @@
 - [x] Personalize lesson celebrations and streak prompts with the learner's name, with a clean “Scholar” fallback.
 - [ ] Verify fresh install, signup, sign-in, demo skip/completion, reward transfer, onboarding, and returning-user launch paths before release.
 ## New (Sept 23) — Practice and Weekly League polish
-- [ ] Remove the Practice Resources section while preserving lesson activities and Labs.
-- [ ] Rebuild Weekly League with tier progression, trophy Leo, medal/avatar standings, and promotion/demotion zones.
-- [ ] Upgrade the Arena prerequisite with interactive Thinking/Scholar Leo and a clear Course action.
+- [x] Remove the Practice Resources section while preserving lesson activities and Labs.
+- [x] Rebuild Weekly League with tier progression, trophy Leo, medal/avatar standings, and promotion/demotion zones.
+- [x] Upgrade the Arena prerequisite with interactive Thinking/Scholar Leo and a clear Course action.
 
