@@ -931,6 +931,19 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
 }
 
 // ── Styles ──
+const INTEL = {
+  background: '#000000',
+  surface: '#1C1C1E',
+  surfaceRaised: '#2C2C2E',
+  text: '#FFFFFF',
+  secondary: '#C7C7CC',
+  secondaryBright: 'rgba(255,255,255,0.82)',
+  muted: '#8E8E93',
+  separator: '#38383A',
+  glass: 'rgba(0,0,0,0.55)',
+  scrim: 'rgba(0,0,0,0.38)',
+};
+
 const s = StyleSheet.create({
   container: { backgroundColor: INTEL.background },
   featuredCarousel: { marginBottom: 24, marginHorizontal: -16 },
@@ -977,19 +990,6 @@ const s = StyleSheet.create({
   retryText: { fontSize: 13, color: COLORS.accent, fontWeight: '600' },
   lastUpdated: { fontSize: 11, color: INTEL.muted, textAlign: 'center', marginTop: 16 },
 });
-
-const INTEL = {
-  background: '#000000',
-  surface: '#1C1C1E',
-  surfaceRaised: '#2C2C2E',
-  text: '#FFFFFF',
-  secondary: '#C7C7CC',
-  secondaryBright: 'rgba(255,255,255,0.82)',
-  muted: '#8E8E93',
-  separator: '#38383A',
-  glass: 'rgba(0,0,0,0.55)',
-  scrim: 'rgba(0,0,0,0.38)',
-};
 
 // ── Detail Sheet Styles ──
 const ds = StyleSheet.create({

@@ -86,6 +86,15 @@ export default function IntelScreen() {
   );
 }
 
+const INTEL = {
+  background: '#000000',
+  surface: '#1C1C1E',
+  text: '#FFFFFF',
+  secondary: '#AEAEB2',
+  accent: '#A78BFA',
+  live: '#FF453A',
+};
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: INTEL.background },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: INTEL.background },
@@ -98,12 +107,3 @@ const styles = StyleSheet.create({
   market: { ...TYPE.caption, color: INTEL.secondary },
   feed: { paddingHorizontal: 16 },
 });
-
-const INTEL = {
-  background: '#000000',
-  surface: '#1C1C1E',
-  text: '#FFFFFF',
-  secondary: '#AEAEB2',
-  accent: '#A78BFA',
-  live: '#FF453A',
-};
