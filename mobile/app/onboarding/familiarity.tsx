@@ -83,7 +83,7 @@ export default function FamiliarityScreen() {
         // maybeSingle so a missing profile row does not throw and break the flow
         const { data: profile } = await supabase
           .from('profiles')
-          .select('selected_market, demo_onboarding_status')
+          .select('selected_market')
           .eq('id', user.id)
           .maybeSingle();
 
@@ -98,7 +98,7 @@ export default function FamiliarityScreen() {
           log.warn('[Familiarity] profile update failed:', profileUpdateError.message);
         }
 
-        if (profile?.selected_market && profile.demo_onboarding_status === 'completed') {
+        if (profile?.selected_market) {
           const { error: progressError } = await supabase
             .from('user_progress')
             .upsert(
@@ -138,13 +138,15 @@ export default function FamiliarityScreen() {
       try {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('selected_market')
+          .select('selected_market, demo_onboarding_status')
           .eq('id', user.id)
           .single();
 
         if (profile?.selected_market) {
           setSelectedMarket(profile.selected_market);
-          const demoXP = await applyDemoXP(user.id, profile.selected_market);
+          const demoXP = profile.demo_onboarding_status === 'completed'
+            ? await applyDemoXP(user.id, profile.selected_market)
+            : 0;
           if (demoXP > 0) {
             Alert.alert(
               'Welcome bonus!',
