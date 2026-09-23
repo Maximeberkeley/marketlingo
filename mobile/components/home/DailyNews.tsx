@@ -186,7 +186,7 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
           return (
             <Animated.View key={item.id} style={{ transform: [{ scale }], opacity, width: FEATURED_CARD_WIDTH }}>
               <TouchableOpacity activeOpacity={0.85} onPress={() => onSelect(item)} style={s.featuredCard}>
-                {item.imageUrl ? (
+                {item?.imageUrl ? (
                   <Image source={{ uri: item.imageUrl }} style={s.featuredImage} resizeMode="cover" />
                 ) : (
                   <View style={[s.featuredImage, { backgroundColor: GRADIENT_SETS[i % GRADIENT_SETS.length][0] }]} />
@@ -195,16 +195,16 @@ function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (i
                 <View style={s.featuredContent}>
                   <View style={s.featuredTopRow}>
                     <View style={s.featuredBadge}>
-                      <Text style={s.featuredBadgeText}>{item.categoryTag.toUpperCase()}</Text>
+                      <Text style={s.featuredBadgeText}>{(item?.categoryTag || 'Industry').toUpperCase()}</Text>
                     </View>
                   </View>
-                  <Text style={s.featuredTitle} numberOfLines={2}>{item.title}</Text>
-                  {item.summary ? (
+                  <Text style={s.featuredTitle} numberOfLines={2}>{item?.title || 'Untitled Story'}</Text>
+                  {item?.summary ? (
                     <Text style={s.featuredSummary} numberOfLines={1}>{item.summary}</Text>
                   ) : null}
                   <View style={s.featuredMeta}>
-                    <Text style={s.featuredSource}>{item.sourceName}</Text>
-                    <Text style={s.featuredDate}>{item.publishedAt}</Text>
+                    <Text style={s.featuredSource}>{item?.sourceName || 'Industry News'}</Text>
+                    <Text style={s.featuredDate}>{item?.publishedAt || 'Recent'}</Text>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -258,10 +258,10 @@ function NewsFeedCard({
       <TouchableOpacity activeOpacity={0.8} onPress={() => onSelect(item)} style={s.feedCard}>
         {/* Text content */}
         <View style={s.feedCardText}>
-          <Text style={s.feedSource} numberOfLines={1}>{item.sourceName}</Text>
-          <Text style={s.feedTitle} numberOfLines={3}>{item.title}</Text>
+          <Text style={s.feedSource} numberOfLines={1}>{item?.sourceName || 'Industry News'}</Text>
+          <Text style={s.feedTitle} numberOfLines={3}>{item?.title || 'Untitled Story'}</Text>
           <View style={s.feedFooter}>
-            <Text style={s.feedDate}>{item.publishedAt}</Text>
+            <Text style={s.feedDate}>{item?.publishedAt || 'Recent'}</Text>
             <Feather name="more-horizontal" size={19} color={INTEL.muted} />
           </View>
         </View>
