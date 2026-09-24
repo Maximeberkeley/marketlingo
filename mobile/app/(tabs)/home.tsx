@@ -274,6 +274,12 @@ export default function HomeScreen() {
   const [showSocialNudge, setShowSocialNudge] = useState(true);
   const [showCriticalTimer, setShowCriticalTimer] = useState(true);
   const [showLeoChat, setShowLeoChat] = useState(false);
+  const [courseFocused, setCourseFocused] = useState(true);
+
+  useFocusEffect(useCallback(() => {
+    setCourseFocused(true);
+    return () => setCourseFocused(false);
+  }, []));
 
   // Calculate if we're in the critical 2-hour window
   const criticalTimerActive = (() => {
@@ -315,6 +321,7 @@ export default function HomeScreen() {
   useEffect(() => {
     if (loading || authLoading || hasTriggeredWelcome.current) return;
     if (!selectedMarket || !user) return;
+    if (!courseFocused || session.showGoals || session.showReader || session.showSessionComplete) return;
     hasTriggeredWelcome.current = true;
     if (lessonCompletedToday) return;
 
@@ -341,7 +348,7 @@ export default function HomeScreen() {
       if (timedTimer) clearTimeout(timedTimer);
       clearTimeout(idleTimer);
     };
-  }, [loading, authLoading, selectedMarket, user, lessonCompletedToday, lessonStack?.id, displayName]);
+  }, [loading, authLoading, selectedMarket, user, lessonCompletedToday, lessonStack?.id, displayName, courseFocused, session.showGoals, session.showReader, session.showSessionComplete]);
 
   // Opening a lesson cancels the dashboard-idle nudge lifecycle until Course
   // is visible again; completion also clears any queued in-app messages.

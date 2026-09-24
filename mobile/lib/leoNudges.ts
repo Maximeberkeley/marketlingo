@@ -6,6 +6,7 @@ import { log } from './logger';
 import { storage } from './storage';
 
 const NUDGE_STATE_KEY = 'ml_leo_nudge_state';
+const LEGACY_STREAK_KEY = 'ml_streak_notif_ids';
 
 export type LeoNudgeWindow = 'midday' | 'afternoon' | 'evening' | 'urgent' | 'idle';
 
@@ -95,8 +96,9 @@ export async function cancelRollingLeoNudges(): Promise<void> {
     await Promise.all(state.scheduledIds.map(id => Notifications.cancelScheduledNotificationAsync(id).catch(() => {})));
     const scheduled = await Notifications.getAllScheduledNotificationsAsync();
     await Promise.all(scheduled
-      .filter(item => item.content.data?.type === 'leo_rolling_nudge')
+      .filter(item => item.content.data?.type === 'leo_rolling_nudge' || item.content.data?.type === 'streak_warning')
       .map(item => Notifications.cancelScheduledNotificationAsync(item.identifier).catch(() => {})));
+    await AsyncStorage.removeItem(LEGACY_STREAK_KEY);
     await writeState({ ...state, scheduledIds: [] });
   } catch (error) {
     log.warn('[LeoNudges] Could not cancel reminders:', error);
