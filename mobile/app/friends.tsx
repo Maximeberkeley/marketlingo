@@ -13,6 +13,8 @@ import { supabase } from '../lib/supabase';
 import { triggerHaptic } from '../lib/haptics';
 import { trackEvent } from '../lib/analytics';
 import { Feather } from '@expo/vector-icons';
+import { getMonthlyStandings, standingName } from '../lib/socialStandings';
+import { log } from '../lib/logger';
 
 const SOCIAL_HERO = require('../assets/illustrations/friends-rivals-hero.png');
 const LEO_SASSY = require('../assets/mascot/leo-sassy.png');
@@ -55,6 +57,7 @@ export default function FriendsScreen() {
   // Global leaderboard
   const [globalEntries, setGlobalEntries] = useState<LeaderboardEntry[]>([]);
   const [globalLoading, setGlobalLoading] = useState(false);
+  const [globalError, setGlobalError] = useState<string | null>(null);
   const [myStats, setMyStats] = useState<{ xp: number; level: number; streak: number; monthXP: number }>({ xp: 0, level: 1, streak: 0, monthXP: 0 });
   const [friendMonthXP, setFriendMonthXP] = useState<Record<string, number>>({});
 
@@ -75,38 +78,30 @@ export default function FriendsScreen() {
     });
   }, [user]);
 
-  // My own real stats for the current calendar-month season.
+  // All social stats come from the same privacy-safe calendar-month board.
   useEffect(() => {
     if (!marketId || !user) return;
     (async () => {
-      const [{ data: xp }, { data: prog }, { data: week }] = await Promise.all([
-        supabase.from('leaderboard_xp').select('total_xp, current_level').eq('market_id', marketId).eq('user_id', user.id).maybeSingle(),
-        supabase.from('leaderboard_progress').select('current_streak').eq('market_id', marketId).eq('user_id', user.id).maybeSingle(),
-        supabase.from('xp_transactions').select('xp_amount').eq('market_id', marketId).eq('user_id', user.id).gte('created_at', startOfMonth().toISOString()),
-      ]);
+      const standings = await getMonthlyStandings(marketId);
+      const mine = standings.find(row => row.user_id === user.id);
       setMyStats({
-        xp: xp?.total_xp || 0,
-        level: xp?.current_level || 1,
-        streak: prog?.current_streak || 0,
-        monthXP: (week ?? []).reduce((s: number, t: any) => s + (t.xp_amount || 0), 0),
+        xp: mine?.monthly_xp || 0,
+        level: mine?.current_level || 1,
+        streak: mine?.current_streak || 0,
+        monthXP: mine?.monthly_xp || 0,
       });
-    })();
+    })().catch(error => log.warn('Could not load my monthly social stats', error));
   }, [marketId, user]);
 
   // Real monthly XP for friends in the current calendar season.
   useEffect(() => {
     if (!marketId || !friends.length) { setFriendMonthXP({}); return; }
     (async () => {
-      const { data } = await supabase
-        .from('xp_transactions')
-        .select('user_id, xp_amount')
-        .eq('market_id', marketId)
-        .in('user_id', friends.map((f) => f.id))
-        .gte('created_at', startOfMonth().toISOString());
-      const map: Record<string, number> = {};
-      (data ?? []).forEach((t: any) => { map[t.user_id] = (map[t.user_id] || 0) + (t.xp_amount || 0); });
+      const standings = await getMonthlyStandings(marketId);
+      const friendIds = new Set(friends.map(friend => friend.id));
+      const map = Object.fromEntries(standings.filter(row => friendIds.has(row.user_id)).map(row => [row.user_id, row.monthly_xp]));
       setFriendMonthXP(map);
-    })();
+    })().catch(error => log.warn('Could not load friend monthly XP', error));
   }, [marketId, friends]);
 
   // Fetch global leaderboard
@@ -119,50 +114,30 @@ export default function FriendsScreen() {
   const fetchGlobalLeaderboard = async () => {
     if (!marketId || !user) return;
     setGlobalLoading(true);
+    setGlobalError(null);
     try {
-      const { data: txns } = await supabase
-          .from('xp_transactions')
-          .select('user_id, xp_amount')
-          .eq('market_id', marketId)
-          .gte('created_at', startOfMonth().toISOString());
-
-        const monthly = new Map<string, number>();
-        (txns ?? []).forEach((t) => monthly.set(t.user_id, (monthly.get(t.user_id) || 0) + (t.xp_amount || 0)));
-        const ranked = Array.from(monthly.entries())
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 50)
-          .map(([uid, xp]) => ({ user_id: uid, total_xp: xp, current_level: 1 }));
-
-      if (!ranked.length) {
+      const standings = (await getMonthlyStandings(marketId)).filter(row => row.monthly_xp > 0).slice(0, 50);
+      if (!standings.length) {
         setGlobalEntries([]);
         setGlobalLoading(false);
         return;
       }
-
-      const userIds = ranked.map((x) => x.user_id);
-      const [{ data: profiles }, { data: progressData }, { data: levels }] = await Promise.all([
-        supabase.from('public_profiles').select('id, username').in('id', userIds),
-        supabase.from('leaderboard_progress').select('user_id, current_streak').eq('market_id', marketId).in('user_id', userIds),
-        supabase.from('leaderboard_xp').select('user_id, current_level').eq('market_id', marketId).in('user_id', userIds),
-      ]);
-
-      const entries: LeaderboardEntry[] = ranked.map((x, idx) => {
-        const profile = profiles?.find((p) => p.id === x.user_id);
-        const prog = progressData?.find((p) => p.user_id === x.user_id);
-        const lvl = levels?.find((l) => l.user_id === x.user_id);
-        return {
+      const entries: LeaderboardEntry[] = standings.map((row, idx) => ({
           rank: idx + 1,
-          user_id: x.user_id,
-          username: profile?.username?.split('@')[0] || 'Analyst',
-          total_xp: x.total_xp,
-          current_level: lvl?.current_level || x.current_level,
-          current_streak: prog?.current_streak || 0,
-          isCurrentUser: x.user_id === user.id,
-        };
-      });
+          user_id: row.user_id,
+          username: standingName(row),
+          total_xp: row.monthly_xp,
+          current_level: row.current_level,
+          current_streak: row.current_streak,
+          isCurrentUser: row.user_id === user.id,
+      }));
 
       setGlobalEntries(entries);
-    } catch (e) { /* non-critical */ }
+    } catch (error) {
+      log.warn('Global standings failed', error);
+      setGlobalEntries([]);
+      setGlobalError('Standings could not load. Check your connection and try again.');
+    }
     setGlobalLoading(false);
   };
 
@@ -441,6 +416,16 @@ export default function FriendsScreen() {
 
               {globalLoading ? (
                 <ActivityIndicator color={COLORS.accent} size="large" style={{ marginTop: 60 }} />
+              ) : globalError ? (
+                <View style={styles.emptyState}>
+                  <Feather name="wifi-off" size={32} color={COLORS.textMuted} />
+                  <Text style={styles.emptyTitle}>Standings unavailable</Text>
+                  <Text style={styles.emptySub}>{globalError}</Text>
+                  <TouchableOpacity style={styles.inviteBtn} onPress={fetchGlobalLeaderboard}>
+                    <Feather name="refresh-cw" size={14} color={COLORS.textOnAccent} />
+                    <Text style={styles.inviteBtnText}>Try again</Text>
+                  </TouchableOpacity>
+                </View>
               ) : globalEntries.length === 0 ? (
                 <View style={styles.emptyState}>
                   <Image source={LEO_SASSY} style={styles.emptyLeo} resizeMode="contain" />
