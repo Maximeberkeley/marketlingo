@@ -67,6 +67,7 @@ import { useFocusTopic } from '../../hooks/useFocusTopic';
 import { FocusTopicCard } from '../../components/home/FocusTopicCard';
 import { CourseJourney } from '../../components/course/CourseJourney';
 import { useIntelHabit } from '../../hooks/useIntelHabit';
+import { claimLeoNudge, currentLeoNudgeWindow, getLeoNudge } from '../../lib/leoNudges';
 
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
@@ -295,57 +296,58 @@ export default function HomeScreen() {
   const returnVisit = useReturnVisit(!!xpData && !loading);
   const hasTriggeredWelcome = useRef(false);
 
+  const previousLessonComplete = useRef(lessonCompletedToday);
   useEffect(() => {
-    if (lessonCompletedToday) playSound('lessonComplete');
+    if (lessonCompletedToday) {
+      playSound('lessonComplete');
+      leoPopups.clear();
+      if (!previousLessonComplete.current) {
+        void claimLeoNudge('completion').then(claimed => {
+          if (claimed) leoPopups.triggerCompletionNod(() => leoPopups.dismiss());
+        });
+      }
+    }
+    previousLessonComplete.current = lessonCompletedToday;
   }, [lessonCompletedToday]);
 
-  // Trigger contextual Leo popups — all interactive with CTAs
+  // Rolling Course nudges use the device's local clock and stop for the day
+  // the instant the lesson is complete.
   useEffect(() => {
     if (loading || authLoading || hasTriggeredWelcome.current) return;
     if (!selectedMarket || !user) return;
     hasTriggeredWelcome.current = true;
+    if (lessonCompletedToday) return;
 
-    const timer = setTimeout(() => {
-      // First popup: based on most important user context
-      if (!lessonCompletedToday && streakRiskHours && streakRiskHours < 8) {
-        leoPopups.triggerStreakProtect(streak, () => {
-          if (lessonStack) session.handleOpenStack(lessonStack);
-        });
-      } else if (!lessonCompletedToday) {
-        leoPopups.triggerStartLesson(currentDay, () => {
-          if (lessonStack) session.handleOpenStack(lessonStack);
-        });
-      } else if (dueCount > 0) {
-        leoPopups.triggerReviewDue(dueCount, () => {
-          router.push('/(tabs)/practice' as any);
-        });
-      } else {
-        leoPopups.triggerWriteNote(() => {
-          router.push('/notes' as any);
-        });
-      }
+    const openLesson = () => {
+      if (lessonStack) session.handleOpenStack(lessonStack);
+    };
+    const timedWindow = currentLeoNudgeWindow();
+    const timedTimer = timedWindow ? setTimeout(() => {
+      void claimLeoNudge(`window:${timedWindow}`).then(claimed => {
+        if (!claimed) return;
+        const script = getLeoNudge(timedWindow, displayName);
+        leoPopups.triggerSassyNudge(script.title, script.body, openLesson);
+      });
+    }, 6500) : null;
+    const idleTimer = setTimeout(() => {
+      void claimLeoNudge('idle').then(claimed => {
+        if (!claimed) return;
+        const script = getLeoNudge('idle', displayName);
+        leoPopups.triggerSassyNudge(script.title, script.body, openLesson);
+      });
+    }, 90000);
 
-      // Second popup after 90s — social/game action
-      setTimeout(() => {
-        if (socialNudge) {
-          leoPopups.triggerCheckLeaderboard(
-            socialNudge.name?.split('@')[0] || 'A rival',
-            () => router.push('/leaderboard' as any),
-          );
-        } else if (!lessonCompletedToday) {
-          leoPopups.triggerAddFriends(() => {
-            router.push('/friends' as any);
-          });
-        } else {
-          leoPopups.triggerTryTrainer(() => {
-            router.push('/(tabs)/practice' as any);
-          });
-        }
-      }, 90000);
-    }, 2500);
+    return () => {
+      if (timedTimer) clearTimeout(timedTimer);
+      clearTimeout(idleTimer);
+    };
+  }, [loading, authLoading, selectedMarket, user, lessonCompletedToday, lessonStack?.id, displayName]);
 
-    return () => clearTimeout(timer);
-  }, [loading, authLoading, selectedMarket, user]);
+  // Opening a lesson cancels the dashboard-idle nudge lifecycle until Course
+  // is visible again; completion also clears any queued in-app messages.
+  useEffect(() => {
+    if (session.showGoals || session.showReader || lessonCompletedToday) leoPopups.clear();
+  }, [session.showGoals, session.showReader, lessonCompletedToday]);
 
   // Guard against onboarding redirect loops: only redirect once per mount.
   // If the backend write from familiarity.tsx hasn't propagated yet, a second

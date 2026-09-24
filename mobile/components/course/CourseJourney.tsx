@@ -335,7 +335,12 @@ function CurriculumPreview({
                   )}
                 </View>
                 <View style={styles.lessonCopy}>
-                  <Text style={[styles.lessonTitle, locked && styles.lockedText]} numberOfLines={2}>{item.title}</Text>
+                  <Text
+                    style={[styles.lessonTitle, item.title.length > 35 && styles.lessonTitleLong, locked && styles.lockedText]}
+                    numberOfLines={2}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.82}
+                  >{item.title}</Text>
                   <Text style={styles.lessonDescription} numberOfLines={2}>{item.description}</Text>
                 </View>
                 <Feather name={locked ? 'lock' : 'chevron-right'} size={17} color={locked ? COLORS.textMuted : COLORS.courseHeader} />
@@ -665,5 +670,6 @@ const styles = StyleSheet.create({
   dayNumber: { ...TYPE.caption, color: COLORS.textPrimary },
   lessonCopy: { flex: 1, minWidth: 0 },
   lessonTitle: { ...TYPE.bodyBold, color: COLORS.textPrimary },
+  lessonTitleLong: { fontSize: 14, lineHeight: 19 },
   lessonDescription: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 3 },
 });
