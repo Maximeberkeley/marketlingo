@@ -32,90 +32,107 @@ export function useFriends(marketId?: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * One guarded pass: friends, then pending requests. A failure in either half
+   * can never leave the screen spinning — `finally` always clears loading.
+   */
   const fetchFriends = useCallback(async () => {
     if (!user || !marketId) {
+      setFriends([]);
+      setPendingRequests([]);
       setLoading(false);
       return;
     }
 
     setLoading(true);
     setError(null);
-    // Get accepted friendships where I'm either user_id or friend_id
-    const { data: friendships, error: friendshipError } = await supabase
-      .from('friendships')
-      .select('id, user_id, friend_id, status')
-      .or(`user_id.eq.${user.id},friend_id.eq.${user.id}`)
-      .eq('status', 'accepted');
-    if (friendshipError) {
-      log.warn('Friendships failed to load', friendshipError);
-      setError('Friends could not load. Check your connection and try again.');
-      setLoading(false);
-      return;
-    }
 
-    if (!friendships?.length) {
-      setFriends([]);
-      setLoading(false);
-    } else {
-      const friendIds = friendships.map((f) =>
-        f.user_id === user.id ? f.friend_id : f.user_id
-      );
+    try {
+      // Get accepted friendships where I'm either user_id or friend_id
+      const { data: friendships, error: friendshipError } = await supabase
+        .from('friendships')
+        .select('id, user_id, friend_id, status')
+        .or(`user_id.eq.${user.id},friend_id.eq.${user.id}`)
+        .eq('status', 'accepted');
 
-      let standings;
-      try {
-        standings = await getMonthlyStandings(marketId);
-      } catch (standingsError) {
-        log.warn('Friend standings failed to load', standingsError);
-        setError('Friend scores could not load. Check your connection and try again.');
-        setLoading(false);
-        return;
+      if (friendshipError) {
+        log.warn('Friendships failed to load', friendshipError);
+        setError('Friends could not load. Check your connection and try again.');
+      } else if (!friendships?.length) {
+        setFriends([]);
+      } else {
+        const friendIds = friendships.map((f) =>
+          f.user_id === user.id ? f.friend_id : f.user_id
+        );
+
+        let standings: Awaited<ReturnType<typeof getMonthlyStandings>> = [];
+        try {
+          standings = await getMonthlyStandings(marketId);
+        } catch (standingsError) {
+          log.warn('Friend standings failed to load', standingsError);
+          setError('Friend scores could not load. Check your connection and try again.');
+        }
+
+        const friendList: Friend[] = friendIds.map((fId) => {
+          const friendship = friendships.find(
+            (f) => (f.user_id === fId || f.friend_id === fId)
+          );
+          const standing = standings.find((row) => row.user_id === fId);
+
+          return {
+            id: fId,
+            friendshipId: friendship?.id || '',
+            username: standing ? standingName(standing) : 'Friend',
+            avatarUrl: standing?.avatar_url || null,
+            totalXP: standing?.monthly_xp || 0,
+            currentStreak: standing?.current_streak || 0,
+            currentLevel: standing?.current_level || 1,
+            lastActivityAt: standing?.last_activity_at || null,
+          };
+        });
+
+        friendList.sort((a, b) => b.totalXP - a.totalXP);
+        setFriends(friendList);
       }
 
-      const friendList: Friend[] = friendIds.map((fId) => {
-        const friendship = friendships.find(
-          (f) => (f.user_id === fId || f.friend_id === fId)
-        );
-        const standing = standings.find((row) => row.user_id === fId);
+      // Get pending requests TO me. Its own guard: a failure here must not
+      // discard the friends we just resolved.
+      try {
+        const { data: pending, error: pendingError } = await supabase
+          .from('friendships')
+          .select('id, user_id, created_at')
+          .eq('friend_id', user.id)
+          .eq('status', 'pending');
 
-        return {
-          id: fId,
-          friendshipId: friendship?.id || '',
-          username: standing ? standingName(standing) : 'Friend',
-          avatarUrl: standing?.avatar_url || null,
-          totalXP: standing?.monthly_xp || 0,
-          currentStreak: standing?.current_streak || 0,
-          currentLevel: standing?.current_level || 1,
-          lastActivityAt: standing?.last_activity_at || null,
-        };
-      });
+        if (pendingError) {
+          log.warn('Friend requests failed to load', pendingError);
+        } else if (!pending?.length) {
+          setPendingRequests([]);
+        } else {
+          const fromIds = pending.map((p) => p.user_id);
+          const { data: fromProfiles } = await supabase
+            .from('public_profiles')
+            .select('id, username')
+            .in('id', fromIds);
 
-      friendList.sort((a, b) => b.totalXP - a.totalXP);
-      setFriends(friendList);
+          setPendingRequests(
+            pending.map((p) => ({
+              id: p.id,
+              fromUserId: p.user_id,
+              fromUsername:
+                fromProfiles?.find((pr) => pr.id === p.user_id)?.username?.split('@')[0] || 'Someone',
+              createdAt: p.created_at,
+            }))
+          );
+        }
+      } catch (pendingErr) {
+        log.warn('Friend requests lookup failed', pendingErr);
+      }
+    } catch (err) {
+      log.warn('Friends lookup failed', err);
+      setError('Friends could not load. Check your connection and try again.');
+    } finally {
       setLoading(false);
-    }
-
-    // Get pending requests TO me
-    const { data: pending } = await supabase
-      .from('friendships')
-      .select('id, user_id, created_at')
-      .eq('friend_id', user.id)
-      .eq('status', 'pending');
-
-    if (pending?.length) {
-      const fromIds = pending.map((p) => p.user_id);
-      const { data: fromProfiles } = await supabase
-        .from('public_profiles')
-        .select('id, username')
-        .in('id', fromIds);
-
-      setPendingRequests(
-        pending.map((p) => ({
-          id: p.id,
-          fromUserId: p.user_id,
-          fromUsername: fromProfiles?.find((pr) => pr.id === p.user_id)?.username?.split('@')[0] || 'Someone',
-          createdAt: p.created_at,
-        }))
-      );
     }
   }, [user, marketId]);
 
