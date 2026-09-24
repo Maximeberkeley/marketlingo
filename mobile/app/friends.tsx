@@ -215,7 +215,12 @@ export default function FriendsScreen() {
   const handleRemove = (friend: Friend) => {
     Alert.alert('Remove friend?', `Remove ${friend.username}?`, [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Remove', style: 'destructive', onPress: () => removeFriend(friend.friendshipId) },
+      {
+        text: 'Remove', style: 'destructive', onPress: async () => {
+          const result = await removeFriend(friend.friendshipId);
+          if (!result.success) Alert.alert('Could not remove friend', result.error || 'Please try again.');
+        },
+      },
     ]);
   };
 
@@ -251,8 +256,19 @@ export default function FriendsScreen() {
                   `${r.fromUsername} wants to be friends`,
                   'Accept request?',
                   [
-                    { text: 'Decline', style: 'cancel', onPress: () => declineRequest(r.id) },
-                    { text: 'Accept', onPress: () => { triggerHaptic('success'); acceptRequest(r.id); } },
+                    {
+                      text: 'Decline', style: 'cancel', onPress: async () => {
+                        const result = await declineRequest(r.id);
+                        if (!result.success) Alert.alert('Could not decline request', result.error || 'Please try again.');
+                      },
+                    },
+                    {
+                      text: 'Accept', onPress: async () => {
+                        triggerHaptic('success');
+                        const result = await acceptRequest(r.id);
+                        if (!result.success) Alert.alert('Could not accept request', result.error || 'Please try again.');
+                      },
+                    },
                   ]
                 );
               });
