@@ -1,0 +1,107 @@
+import { useEffect } from 'react';
+import { router } from 'expo-router';
+import { View, ActivityIndicator, StyleSheet, Image, Text } from 'react-native';
+import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../lib/supabase';
+import { trackEvent, identifyUser } from '../lib/analytics';
+import { COLORS } from '../lib/constants';
+import { log } from '../lib/logger';
+const STARTUP_TIMEOUT_MS = 6000;
+function withStartupTimeout(request) {
+    return Promise.race([
+        Promise.resolve(request),
+        new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Startup request timed out')), STARTUP_TIMEOUT_MS);
+        }),
+    ]);
+}
+export default function Index() {
+    const { user, loading } = useAuth();
+    useEffect(() => {
+        if (loading)
+            return;
+        let isActive = true;
+        const safeReplace = (path) => {
+            if (!isActive)
+                return;
+            router.replace(path);
+        };
+        async function redirect() {
+            if (!user) {
+                safeReplace('/auth');
+                return;
+            }
+            try {
+                trackEvent('app_open');
+                identifyUser(user.id, { email: user.email || '' });
+                const { data: profile, error: profileError } = await withStartupTimeout(supabase.from('profiles').select('selected_market, display_name, demo_onboarding_status').eq('id', user.id).maybeSingle());
+                if (profileError) {
+                    log.warn('[Index] Failed to load profile during startup:', profileError.message);
+                    safeReplace('/(tabs)/home');
+                    return;
+                }
+                if (!profile?.selected_market) {
+                    safeReplace('/onboarding/welcome');
+                    return;
+                }
+                const { data: progress, error: progressError } = await withStartupTimeout(supabase
+                    .from('user_progress')
+                    .select('learning_goal, familiarity_level')
+                    .eq('user_id', user.id)
+                    .eq('market_id', profile.selected_market)
+                    .maybeSingle());
+                if (progressError && progressError.code !== 'PGRST116') {
+                    log.warn('[Index] Failed to load progress during startup:', progressError.message);
+                    safeReplace('/(tabs)/home');
+                    return;
+                }
+                if (!progress?.learning_goal) {
+                    safeReplace('/onboarding/goal');
+                }
+                else if (!progress?.familiarity_level) {
+                    safeReplace('/onboarding/familiarity');
+                }
+                else {
+                    safeReplace('/daily-leo');
+                }
+            }
+            catch (error) {
+                log.warn('[Index] Startup redirect failed:', error);
+                safeReplace('/(tabs)/home');
+            }
+        }
+        void redirect();
+        return () => {
+            isActive = false;
+        };
+    }, [user, loading]);
+    return (<View style={styles.container}>
+      <Image source={require('../assets/mascot/leo-reference.png')} style={styles.logo} resizeMode="contain"/>
+      <Text style={styles.appName}>MarketLingo</Text>
+      <Text style={styles.tagline}>Master any industry in 6 months</Text>
+      <ActivityIndicator size="large" color={COLORS.accent} style={{ marginTop: 40 }}/>
+    </View>);
+}
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.bg0,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    logo: {
+        width: 140,
+        height: 140,
+        marginBottom: 12,
+    },
+    appName: {
+        fontSize: 28,
+        fontWeight: '700',
+        color: COLORS.textPrimary,
+        marginBottom: 4,
+    },
+    tagline: {
+        fontSize: 14,
+        color: COLORS.textMuted,
+    },
+});

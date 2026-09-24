@@ -1,0 +1,143 @@
+/**
+ * useOfflineCache — caches today's + tomorrow's lesson to AsyncStorage
+ * for offline reading. Auto-syncs when online.
+ */
+import { useState, useCallback, useEffect, useRef } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '../lib/supabase';
+const CACHE_KEY = 'ml_offline_lessons';
+const CACHE_EXPIRY_HOURS = 24;
+export function useOfflineCache(marketId) {
+    const [cachedLessons, setCachedLessons] = useState([]);
+    const [isOffline, setIsOffline] = useState(false);
+    const [syncing, setSyncing] = useState(false);
+    const cachedLessonsRef = useRef([]);
+    cachedLessonsRef.current = cachedLessons;
+    const syncingRef = useRef(false);
+    // Load cache from storage
+    const loadCache = useCallback(async () => {
+        try {
+            const raw = await AsyncStorage.getItem(CACHE_KEY);
+            if (raw) {
+                const cache = JSON.parse(raw);
+                // Filter out expired entries
+                const now = new Date();
+                const valid = cache.lessons.filter((l) => {
+                    const cachedTime = new Date(l.cachedAt);
+                    const hoursSince = (now.getTime() - cachedTime.getTime()) / (1000 * 60 * 60);
+                    return hoursSince < CACHE_EXPIRY_HOURS;
+                });
+                setCachedLessons(valid);
+            }
+        }
+        catch {
+            // Corrupt cache, ignore
+        }
+    }, []);
+    useEffect(() => {
+        loadCache();
+    }, [loadCache]);
+    /**
+     * Cache a lesson stack for offline access
+     */
+    const cacheLesson = useCallback(async (stack, dayNumber) => {
+        try {
+            const entry = {
+                stack,
+                dayNumber,
+                cachedAt: new Date().toISOString(),
+            };
+            const raw = await AsyncStorage.getItem(CACHE_KEY);
+            const cache = raw ? JSON.parse(raw) : { lessons: [], lastSyncAt: '' };
+            // Replace if same day exists, otherwise add
+            const existing = cache.lessons.findIndex((l) => l.dayNumber === dayNumber);
+            if (existing >= 0) {
+                cache.lessons[existing] = entry;
+            }
+            else {
+                cache.lessons.push(entry);
+            }
+            // Keep only last 3 cached lessons
+            cache.lessons = cache.lessons.slice(-3);
+            cache.lastSyncAt = new Date().toISOString();
+            await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+            cachedLessonsRef.current = cache.lessons;
+            setCachedLessons(cache.lessons);
+        }
+        catch {
+            // Storage full or error
+        }
+    }, []);
+    /**
+     * Pre-fetch today + tomorrow's lessons for offline access
+     */
+    const syncLessons = useCallback(async (currentDay) => {
+        if (!marketId || syncingRef.current)
+            return;
+        syncingRef.current = true;
+        setSyncing(true);
+        try {
+            const daysToCache = [currentDay, currentDay + 1].filter((d) => d <= 180);
+            for (const day of daysToCache) {
+                // Check if already cached (read through a ref so callers holding an
+                // older closure still see the current cache)
+                const alreadyCached = cachedLessonsRef.current.find((l) => l.dayNumber === day);
+                if (alreadyCached)
+                    continue;
+                const dayTag = `day-${day}`;
+                const { data: stacks } = await supabase
+                    .from('stacks')
+                    .select('id, title, stack_type, tags, duration_minutes, slides (id, slide_number, title, body, sources)')
+                    .eq('market_id', marketId)
+                    .contains('tags', ['MICRO_LESSON', dayTag])
+                    .not('published_at', 'is', null)
+                    .limit(1);
+                if (stacks?.[0]) {
+                    const stack = stacks[0];
+                    const fullStack = {
+                        ...stack,
+                        tags: stack.tags || [],
+                        slides: (stack.slides || [])
+                            .sort((a, b) => a.slide_number - b.slide_number)
+                            .map((s) => ({
+                            ...s,
+                            sources: Array.isArray(s.sources) ? s.sources : [],
+                        })),
+                    };
+                    await cacheLesson(fullStack, day);
+                }
+            }
+        }
+        catch {
+            // Offline or error — that's fine
+        }
+        finally {
+            syncingRef.current = false;
+            setSyncing(false);
+        }
+    }, [marketId, cacheLesson]);
+    /**
+     * Get a cached lesson by day number (for offline use)
+     */
+    const getCachedLesson = useCallback((dayNumber) => {
+        const cached = cachedLessons.find((l) => l.dayNumber === dayNumber);
+        return cached?.stack || null;
+    }, [cachedLessons]);
+    /**
+     * Clear all cached lessons
+     */
+    const clearCache = useCallback(async () => {
+        await AsyncStorage.removeItem(CACHE_KEY);
+        setCachedLessons([]);
+    }, []);
+    return {
+        cachedLessons,
+        isOffline,
+        syncing,
+        cacheLesson,
+        syncLessons,
+        getCachedLesson,
+        clearCache,
+        cachedCount: cachedLessons.length,
+    };
+}

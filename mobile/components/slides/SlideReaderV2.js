@@ -1,0 +1,859 @@
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Animated, Modal, Image, PanResponder, ScrollView, } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
+import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
+import { mentors, LEO_VOICE_ID } from '../../data/mentors';
+import { getPrimaryMentorForMarket } from '../../data/marketConfig';
+import { ConceptCard, parseSlideIntoCards } from './ConceptCard';
+import { ObjectiveCard, RecapCard, ReflectionCard } from './ImmersiveCards';
+import { LeoInterstitial, shouldShowLeoCard } from './LeoInterstitial';
+import { QuizCard, generateQuizFromSlide, shouldShowQuiz } from './QuizCard';
+import { WordMatchGame, extractTermPairs, shouldShowWordMatch } from './WordMatchGame';
+import { SwipeFlashcardDrill, generateFlashcardsFromSlides } from './SwipeFlashcardDrill';
+import { ComboBar } from './ComboBar';
+import { FeedbackBanner } from './FeedbackBanner';
+import { AnnotationModal } from './AnnotationModal';
+import { LessonDecisionModal } from '../decision/LessonDecisionModal';
+import { AskLeoOverlay } from '../ai/AskLeoOverlay';
+import { playSound } from '../../lib/sounds';
+import { useNarration } from '../../hooks/useNarration';
+import { createComboState, comboCorrect, comboWrong, getComboMessage } from '../../lib/combo';
+import { Feather } from '@expo/vector-icons';
+const MENTOR_IMAGES = {
+    maya: require('../../assets/mentors/mentor-maya.png'),
+    alex: require('../../assets/mentors/mentor-alex.png'),
+    kai: require('../../assets/mentors/mentor-kai.png'),
+    sophia: require('../../assets/mentors/mentor-sophia.png'),
+};
+const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const SWIPE_THRESHOLD = 35;
+const MINIMUM_LESSON_TIME_SECONDS = 120;
+const TYPE_COLORS = {
+    LESSON: '#22C55E',
+    NEWS: '#3B82F6',
+    HISTORY: '#F59E0B',
+};
+export function SlideReaderV2({ stackTitle, stackType, slides, onClose, onComplete, onSaveInsight, onAddNote, marketId, stackId, isReview = false, isProUser = true, onAskMentor, mentorName, dayNumber, previousLessonTitle, metadata, }) {
+    const insets = useSafeAreaInsets();
+    const [currentCard, setCurrentCard] = useState(0);
+    const [startTime] = useState(() => Date.now());
+    const [timeSpentSeconds, setTimeSpentSeconds] = useState(0);
+    const [showCompletion, setShowCompletion] = useState(false);
+    const [showDecision, setShowDecision] = useState(false);
+    const [showAskLeo, setShowAskLeo] = useState(false);
+    const [showAnnotation, setShowAnnotation] = useState(false);
+    const [narrationEnabled, setNarrationEnabled] = useState(false);
+    const cardKey = useRef(0);
+    // Combo system state
+    const [comboState, setComboState] = useState(createComboState);
+    const [correctCount, setCorrectCount] = useState(0);
+    const [totalAnswered, setTotalAnswered] = useState(0);
+    // Feedback banner state
+    const [feedbackVisible, setFeedbackVisible] = useState(false);
+    const [feedbackCorrect, setFeedbackCorrect] = useState(false);
+    const [feedbackMessage, setFeedbackMessage] = useState('');
+    const [feedbackExplanation, setFeedbackExplanation] = useState();
+    const [feedbackXP, setFeedbackXP] = useState(0);
+    // Swipe animation
+    const swipeX = useRef(new Animated.Value(0)).current;
+    const cardOpacity = useRef(new Animated.Value(1)).current;
+    // Resolve mentor voice for this market
+    const mentorId = marketId ? getPrimaryMentorForMarket(marketId) : 'sophia';
+    const mentor = mentors.find(m => m.id === mentorId) || mentors[0];
+    const mentorVoiceId = mentor.voiceId || LEO_VOICE_ID;
+    const { speak, stop: stopNarration, isPlaying, isLoading: narrationLoading } = useNarration({
+        voiceId: mentorVoiceId,
+        enabled: narrationEnabled,
+    });
+    const accentColor = TYPE_COLORS[stackType] || COLORS.accent;
+    // Timer
+    useEffect(() => {
+        const interval = setInterval(() => setTimeSpentSeconds(Math.floor((Date.now() - startTime) / 1000)), 1000);
+        return () => clearInterval(interval);
+    }, [startTime]);
+    // Auto-narrate when card changes
+    useEffect(() => {
+        if (!narrationEnabled)
+            return;
+        const card = allCards[currentCard];
+        if (!card)
+            return;
+        if (card.type === 'concept') {
+            const textToRead = [card.title, card.content, ...(card.bullets || [])].filter(Boolean).join('. ');
+            speak(textToRead);
+        }
+        else {
+            stopNarration();
+        }
+    }, [currentCard, narrationEnabled]);
+    useEffect(() => { if (!narrationEnabled)
+        stopNarration(); }, [narrationEnabled]);
+    useEffect(() => { return () => { stopNarration(); }; }, []);
+    const hasMetMinimumTime = timeSpentSeconds >= MINIMUM_LESSON_TIME_SECONDS;
+    // Build all cards from slides
+    const allCards = useMemo(() => {
+        const items = [];
+        // ── RECAP CARD: Use generated recap_bridge or fall back to previousLessonTitle ──
+        if (stackType === 'LESSON' && !isReview) {
+            const recapText = metadata?.recap_bridge || previousLessonTitle;
+            items.push({
+                type: 'recap',
+                previousTopic: recapText,
+                currentTopic: stackTitle,
+                slideIndex: 0,
+            });
+        }
+        // ── OBJECTIVE CARD: Use generated learning_objectives or fall back to slide titles ──
+        if (stackType === 'LESSON' && !isReview && slides.length >= 2) {
+            const goals = metadata?.learning_objectives?.length
+                ? metadata.learning_objectives.slice(0, 3)
+                : slides.map(s => s.title).filter(t => t && t.length > 5).slice(0, 3);
+            if (goals.length > 0) {
+                items.push({ type: 'objective', goals, slideIndex: 0 });
+            }
+        }
+        slides.forEach((slide, slideIdx) => {
+            const parsed = parseSlideIntoCards(slide.title, slide.body, [], slideIdx, marketId);
+            parsed.forEach((card) => {
+                if (card.type === 'sources')
+                    return;
+                items.push({
+                    type: 'concept',
+                    cardType: card.type,
+                    title: card.title,
+                    content: card.content,
+                    bullets: card.bullets,
+                    sources: card.sources,
+                    keyTerms: card.keyTerms,
+                    slideIndex: slideIdx,
+                });
+            });
+        });
+        // ── FLASHCARD DRILL: Swipe-based true/false review before reflection ──
+        if (stackType === 'LESSON' && slides.length >= 2 && !isReview) {
+            const flashcards = generateFlashcardsFromSlides(slides.map(s => ({ title: s.title, body: s.body })));
+            if (flashcards.length >= 3) {
+                items.push({
+                    type: 'flashcard',
+                    cards: flashcards,
+                    slideIndex: slides.length - 1,
+                });
+            }
+        }
+        // ── REFLECTION CARD: Use generated key_takeaway and next_preview ──
+        if (stackType === 'LESSON' && slides.length >= 2) {
+            const takeaway = metadata?.key_takeaway
+                || `Understanding ${(slides[slides.length - 1]?.title || stackTitle).toLowerCase()} is essential to mastering how this industry operates and where it's heading.`;
+            const preview = metadata?.next_preview
+                || (dayNumber ? `Day ${dayNumber + 1} continues your journey deeper into the fundamentals.` : undefined);
+            items.push({
+                type: 'reflection',
+                keyTakeaway: takeaway,
+                nextPreview: preview,
+                slideIndex: slides.length - 1,
+            });
+        }
+        // Single sources card at end
+        const lastSlide = slides[slides.length - 1];
+        if (lastSlide?.sources?.length > 0) {
+            items.push({
+                type: 'concept',
+                cardType: 'sources',
+                content: '',
+                sources: lastSlide.sources,
+                slideIndex: slides.length - 1,
+            });
+        }
+        // Smart merging for cap
+        const MAX_CONCEPT_CARDS = 18;
+        if (items.length > MAX_CONCEPT_CARDS) {
+            const merged = [];
+            let pendingContent = '';
+            let pendingTitle;
+            let pendingSlideIdx = 0;
+            for (const item of items) {
+                if (item.type !== 'concept') {
+                    if (pendingContent) {
+                        merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
+                        pendingContent = '';
+                        pendingTitle = undefined;
+                    }
+                    merged.push(item);
+                    continue;
+                }
+                const card = item;
+                if (card.cardType === 'header' || card.cardType === 'bullet-group' || card.cardType === 'sources') {
+                    if (pendingContent) {
+                        merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
+                        pendingContent = '';
+                        pendingTitle = undefined;
+                    }
+                    merged.push(card);
+                }
+                else {
+                    if (pendingContent.length > 0 && (pendingContent.length + (card.content?.length || 0)) > 900) {
+                        merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
+                        pendingContent = card.content || '';
+                        pendingTitle = card.title;
+                        pendingSlideIdx = card.slideIndex;
+                    }
+                    else {
+                        if (!pendingTitle && card.title)
+                            pendingTitle = card.title;
+                        pendingContent += (pendingContent ? ' ' : '') + (card.content || '');
+                        pendingSlideIdx = card.slideIndex;
+                    }
+                }
+            }
+            if (pendingContent) {
+                merged.push({ type: 'concept', cardType: 'concept', title: pendingTitle, content: pendingContent, slideIndex: pendingSlideIdx });
+            }
+            if (merged.length > MAX_CONCEPT_CARDS) {
+                const result = [];
+                let headerCount = 0;
+                for (const item of merged) {
+                    if (item.type === 'concept' && item.cardType === 'header') {
+                        headerCount++;
+                        if (headerCount === 1 || headerCount % 3 === 0)
+                            result.push(item);
+                    }
+                    else {
+                        result.push(item);
+                    }
+                }
+                items.length = 0;
+                items.push(...result.slice(0, MAX_CONCEPT_CARDS));
+            }
+            else {
+                items.length = 0;
+                items.push(...merged);
+            }
+        }
+        // Insert Leo cards
+        const totalItems = items.length;
+        const leoPositions = [];
+        for (let i = 0; i < totalItems; i++) {
+            const leoType = shouldShowLeoCard(i, totalItems);
+            if (leoType)
+                leoPositions.push({ index: i, leoType });
+        }
+        for (let i = leoPositions.length - 1; i >= 0; i--) {
+            const { index, leoType } = leoPositions[i];
+            const nearbyItem = items[index];
+            const slideIndex = nearbyItem && 'slideIndex' in nearbyItem ? nearbyItem.slideIndex : 0;
+            items.splice(index, 0, { type: 'leo', leoType, slideIndex });
+        }
+        // Insert quiz cards at strategic points
+        const quizInsertions = [];
+        for (let i = 0; i < items.length; i++) {
+            if (shouldShowQuiz(i, items.length)) {
+                const item = items[i];
+                if (item.type === 'concept' && item.content) {
+                    const slideData = slides[item.slideIndex];
+                    if (slideData) {
+                        const quiz = generateQuizFromSlide(slideData.title, slideData.body, item.slideIndex);
+                        if (quiz)
+                            quizInsertions.push({ index: i + 1, quiz, slideIndex: item.slideIndex });
+                    }
+                }
+            }
+        }
+        for (let i = quizInsertions.length - 1; i >= 0; i--) {
+            const { index, quiz, slideIndex } = quizInsertions[i];
+            items.splice(index, 0, { type: 'quiz', quiz, slideIndex });
+        }
+        // Insert word-match games at strategic midpoints
+        const wmInsertions = [];
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            if (item.type === 'concept' && item.content) {
+                const slideData = slides[item.slideIndex];
+                if (slideData) {
+                    const pairs = extractTermPairs(slideData.title, slideData.body);
+                    if (shouldShowWordMatch(i, items.length, pairs)) {
+                        wmInsertions.push({ index: i + 1, pairs, slideIndex: item.slideIndex });
+                    }
+                }
+            }
+        }
+        for (let i = wmInsertions.length - 1; i >= 0; i--) {
+            const { index, pairs, slideIndex } = wmInsertions[i];
+            items.splice(index, 0, { type: 'wordmatch', pairs, slideIndex });
+        }
+        return items;
+    }, [slides, marketId, stackType, stackTitle, isReview, previousLessonTitle, dayNumber]);
+    const totalCards = allCards.length;
+    const progress = totalCards > 0 ? (currentCard + 1) / totalCards : 0;
+    const currentCardData = allCards[currentCard];
+    const currentSlideIndex = currentCardData ? ('slideIndex' in currentCardData ? currentCardData.slideIndex : 0) : 0;
+    const currentSlide = slides[currentSlideIndex];
+    const isLastCard = currentCard >= totalCards - 1;
+    // All users can complete full lessons — the app is free
+    // Pro ad is shown AFTER lesson completion instead
+    const animateTransition = useCallback((direction, callback) => {
+        const toX = direction === 'left' ? -SCREEN_WIDTH * 0.3 : SCREEN_WIDTH * 0.3;
+        Animated.parallel([
+            Animated.timing(swipeX, { toValue: toX, duration: 150, useNativeDriver: true }),
+            Animated.timing(cardOpacity, { toValue: 0.3, duration: 150, useNativeDriver: true }),
+        ]).start(() => {
+            callback();
+            swipeX.setValue(direction === 'left' ? SCREEN_WIDTH * 0.15 : -SCREEN_WIDTH * 0.15);
+            cardOpacity.setValue(0.3);
+            Animated.parallel([
+                Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }),
+                Animated.timing(cardOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+            ]).start();
+        });
+    }, [swipeX, cardOpacity]);
+    const goNext = useCallback(() => {
+        if (isLastCard) {
+            setShowDecision(true);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            playSound('lessonComplete');
+            return;
+        }
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        animateTransition('left', () => {
+            cardKey.current++;
+            setCurrentCard(prev => prev + 1);
+        });
+    }, [isLastCard, currentCard, animateTransition]);
+    const goPrev = useCallback(() => {
+        if (currentCard <= 0)
+            return;
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        animateTransition('right', () => {
+            cardKey.current++;
+            setCurrentCard(prev => prev - 1);
+        });
+    }, [currentCard, animateTransition]);
+    // Swipe gesture — use a transparent overlay layer to avoid ScrollView conflict in Expo
+    const panResponder = useMemo(() => PanResponder.create({
+        onStartShouldSetPanResponder: () => false,
+        onMoveShouldSetPanResponder: (_, gs) => {
+            return Math.abs(gs.dx) > 10 && Math.abs(gs.dx) > Math.abs(gs.dy) * 1.2;
+        },
+        onMoveShouldSetPanResponderCapture: (_, gs) => {
+            // More aggressive capture for Expo: grab horizontal swipes early
+            return Math.abs(gs.dx) > 12 && Math.abs(gs.dx) > Math.abs(gs.dy) * 1.5;
+        },
+        onPanResponderGrant: () => {
+            // Stop any ongoing spring animation when touch starts
+            swipeX.stopAnimation();
+        },
+        onPanResponderMove: (_, gs) => {
+            const dampen = (currentCard === 0 && gs.dx > 0) || (isLastCard && gs.dx < 0) ? 0.15 : 0.6;
+            swipeX.setValue(gs.dx * dampen);
+        },
+        onPanResponderRelease: (_, gs) => {
+            const vx = gs.vx;
+            if (gs.dx < -SWIPE_THRESHOLD || vx < -0.4) {
+                Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }).start();
+                goNext();
+            }
+            else if (gs.dx > SWIPE_THRESHOLD || vx > 0.4) {
+                Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }).start();
+                goPrev();
+            }
+            else {
+                Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }).start();
+            }
+        },
+        onPanResponderTerminate: () => {
+            Animated.spring(swipeX, { toValue: 0, tension: 200, friction: 20, useNativeDriver: true }).start();
+        },
+    }), [goNext, goPrev, currentCard, isLastCard]);
+    // Handle answer from quiz/flashcard/wordmatch → show feedback banner
+    const handleAnswer = useCallback((correct, explanation) => {
+        const BASE_XP = 10;
+        let xpEarned;
+        let newCombo;
+        if (correct) {
+            const result = comboCorrect(comboState, BASE_XP);
+            newCombo = result.newState;
+            xpEarned = result.xpEarned;
+            setCorrectCount(prev => prev + 1);
+            playSound('correct');
+        }
+        else {
+            const result = comboWrong(comboState, BASE_XP);
+            newCombo = result.newState;
+            xpEarned = result.xpEarned;
+            playSound('wrong');
+        }
+        setComboState(newCombo);
+        setTotalAnswered(prev => prev + 1);
+        // Combo message
+        const comboMsg = getComboMessage(newCombo.streak);
+        const correctMsgs = ['Nailed it! 🎯', 'Exactly right! ⭐', 'Perfect! 💡', 'You got it! ✅'];
+        const wrongMsgs = ['Not quite!', 'Close one!', 'Good try!', 'Almost!'];
+        const baseMsg = correct
+            ? correctMsgs[Math.floor(Math.random() * correctMsgs.length)]
+            : wrongMsgs[Math.floor(Math.random() * wrongMsgs.length)];
+        setFeedbackCorrect(correct);
+        setFeedbackMessage(comboMsg || baseMsg);
+        setFeedbackExplanation(explanation);
+        setFeedbackXP(xpEarned);
+        setFeedbackVisible(true);
+    }, [comboState]);
+    const handleFeedbackContinue = useCallback(() => {
+        setFeedbackVisible(false);
+        goNext();
+    }, [goNext]);
+    const handleComplete = useCallback(() => {
+        setShowCompletion(false);
+        onComplete(isReview, timeSpentSeconds);
+    }, [isReview, timeSpentSeconds, onComplete]);
+    const renderCard = () => {
+        if (!currentCardData)
+            return null;
+        if (currentCardData.type === 'leo') {
+            return (<LeoInterstitial key={`leo-${currentCard}`} type={currentCardData.leoType} progress={progress} slideTitle={currentSlide?.title}/>);
+        }
+        if (currentCardData.type === 'quiz') {
+            return (<QuizCard key={`quiz-${currentCard}`} quiz={currentCardData.quiz} onAnswer={(correct) => {
+                    handleAnswer(correct, currentCardData.quiz.explanation);
+                }} accentColor={accentColor}/>);
+        }
+        if (currentCardData.type === 'wordmatch') {
+            return (<WordMatchGame key={`wm-${currentCard}`} pairs={currentCardData.pairs} onComplete={(score, total) => {
+                    handleAnswer(score === total, `You matched ${score}/${total} pairs correctly.`);
+                }} accentColor={accentColor}/>);
+        }
+        // ── Immersive cards ──
+        if (currentCardData.type === 'objective') {
+            return (<ObjectiveCard key={`obj-${currentCard}`} goals={currentCardData.goals} accentColor={accentColor} marketId={marketId}/>);
+        }
+        if (currentCardData.type === 'recap') {
+            return (<RecapCard key={`recap-${currentCard}`} dayNumber={dayNumber} previousTopic={currentCardData.previousTopic} currentTopic={currentCardData.currentTopic} accentColor={accentColor} marketId={marketId}/>);
+        }
+        if (currentCardData.type === 'flashcard') {
+            return (<SwipeFlashcardDrill key={`flash-${currentCard}`} cards={currentCardData.cards} onComplete={(score, total) => {
+                    handleAnswer(score >= total * 0.7, `You got ${score}/${total} correct!`);
+                }} accentColor={accentColor}/>);
+        }
+        if (currentCardData.type === 'reflection') {
+            return (<ReflectionCard key={`refl-${currentCard}`} keyTakeaway={currentCardData.keyTakeaway} nextPreview={currentCardData.nextPreview} accentColor={accentColor} dayNumber={dayNumber}/>);
+        }
+        return (<ConceptCard key={`card-${currentCard}`} type={currentCardData.cardType} title={currentCardData.title} content={currentCardData.content} bullets={currentCardData.bullets} sources={currentCardData.sources} keyTerms={currentCardData.keyTerms} cardIndex={currentCard} totalCards={totalCards} accentColor={accentColor}/>);
+    };
+    return (<Modal visible animationType="slide" presentationStyle="fullScreen">
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+
+        {/* Top Bar */}
+        <View style={styles.topBar}>
+          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+            <Text style={styles.closeIcon}>✕</Text>
+          </TouchableOpacity>
+
+          <View style={styles.topBarCenter}>
+            <Text style={styles.stackLabel} numberOfLines={1}>{stackTitle}</Text>
+          </View>
+
+          {/* Ask Leo */}
+          <TouchableOpacity onPress={() => setShowAskLeo(true)} style={styles.askLeoBtn}>
+            <Image source={LEO_IMAGE} style={styles.askLeoImage}/>
+          </TouchableOpacity>
+
+          {/* Narration toggle */}
+          <TouchableOpacity onPress={() => setNarrationEnabled(!narrationEnabled)} style={[styles.narrationBtn, narrationEnabled && styles.narrationBtnActive]}>
+            <Feather name="volume-2" size={20} color={narrationEnabled ? COLORS.accent : COLORS.textMuted} style={{ opacity: narrationEnabled ? 1 : 0.4 }}/>
+          </TouchableOpacity>
+        </View>
+
+        {/* Progress Bar — Duolingo style */}
+        <View style={styles.progressBarContainer}>
+          <View style={styles.progressBar}>
+            <Animated.View style={[styles.progressFill, { backgroundColor: accentColor, width: `${progress * 100}%` }]}/>
+            {/* Progress knob */}
+            <View style={[styles.progressKnob, { left: `${Math.min(progress * 100, 97)}%`, borderColor: accentColor }]}/>
+          </View>
+        </View>
+
+        {/* Combo Bar — visible when user has answered questions */}
+        {totalAnswered > 0 && (<ComboBar combo={comboState} correctCount={correctCount} totalAnswered={totalAnswered}/>)}
+
+        {/* Card Area with swipe + edge tap zones for Expo fallback */}
+        <View style={styles.cardArea}>
+          <Animated.View style={[{ flex: 1 }, { transform: [{ translateX: swipeX }], opacity: cardOpacity }]} {...panResponder.panHandlers}>
+            <ScrollView style={styles.cardScroll} contentContainerStyle={styles.cardContent} showsVerticalScrollIndicator={false} bounces={false}>
+              {renderCard()}
+            </ScrollView>
+          </Animated.View>
+
+          {/* Edge tap zones as swipe fallback for Expo */}
+          <TouchableOpacity style={styles.edgeTapLeft} onPress={goPrev} activeOpacity={0.3}/>
+          <TouchableOpacity style={styles.edgeTapRight} onPress={goNext} activeOpacity={0.3}/>
+        </View>
+
+        {/* Bottom Bar */}
+        <View style={[styles.bottomBar, { paddingBottom: insets.bottom + 12 }]}>
+          <View style={styles.bottomRow}>
+            {/* Back button */}
+            <TouchableOpacity style={[styles.backBtn, currentCard === 0 && { opacity: 0.3 }]} onPress={goPrev} disabled={currentCard === 0}>
+              <Feather name="chevron-left" size={20} color={COLORS.textSecondary}/>
+            </TouchableOpacity>
+
+            {/* Action buttons */}
+            {currentCardData?.type === 'concept' && currentCardData.cardType !== 'sources' && (<>
+                <TouchableOpacity style={styles.actionBtn} onPress={() => currentSlide && setShowAnnotation(true)}>
+                  <Feather name="edit-3" size={18} color={COLORS.textSecondary}/>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.actionBtn} onPress={() => currentSlide && onSaveInsight(currentSlide.slideNumber)}>
+                  <Feather name="bookmark" size={18} color={COLORS.textSecondary}/>
+                </TouchableOpacity>
+              </>)}
+
+            <View style={styles.progressDotsWrapper}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.progressDots}>
+                {Array.from({ length: totalCards }).map((_, i) => (<View key={i} style={[
+                styles.dot,
+                i === currentCard
+                    ? [styles.dotActive, { backgroundColor: accentColor }]
+                    : i < currentCard
+                        ? [styles.dotCompleted, { backgroundColor: accentColor }]
+                        : styles.dotUpcoming,
+            ]}/>))}
+              </ScrollView>
+            </View>
+
+            <TouchableOpacity style={[styles.nextBtn, { backgroundColor: accentColor }]} onPress={goNext}>
+              <Feather name={isLastCard ? 'check' : 'chevron-right'} size={18} color="#fff" style={{ marginRight: 4 }}/>
+              <Text style={styles.nextBtnText}>
+                {isLastCard ? 'Done' : 'Next'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Annotation Modal */}
+        <AnnotationModal visible={showAnnotation} slideTitle={currentSlide?.title || ''} slideBody={currentCardData?.type === 'concept' ? (currentCardData.content || '') : ''} onSave={(annotation) => {
+            setShowAnnotation(false);
+            if (currentSlide) {
+                onAddNote(currentSlide.slideNumber, annotation);
+            }
+        }} onCancel={() => setShowAnnotation(false)}/>
+
+        {/* Decision Engine — closing decision before completion */}
+        <LessonDecisionModal visible={showDecision} marketId={marketId} stackId={stackId} dayNumber={dayNumber} lessonTitle={stackTitle} onDone={() => {
+            setShowDecision(false);
+            setShowCompletion(true);
+        }}/>
+
+        {/* Completion Modal */}
+        <Modal visible={showCompletion} transparent animationType="fade">
+          <CompletionOverlay isReview={isReview} hasMetMinimumTime={hasMetMinimumTime} timeSpentSeconds={timeSpentSeconds} marketId={marketId} onComplete={handleComplete} onKeepReading={() => setShowCompletion(false)}/>
+        </Modal>
+
+        {/* Ask Leo */}
+        <AskLeoOverlay visible={showAskLeo} onClose={() => setShowAskLeo(false)} lessonContext={`Lesson: ${stackTitle}\nCurrent slide: ${currentSlide?.title || ''}\nContent: ${currentCardData?.type === 'concept' ? currentCardData.content : ''}`}/>
+
+        {/* Feedback Banner — Duolingo-style bottom feedback */}
+        <FeedbackBanner visible={feedbackVisible} isCorrect={feedbackCorrect} message={feedbackMessage} explanation={feedbackExplanation} xpEarned={feedbackXP} comboMultiplier={comboState.multiplier} onContinue={handleFeedbackContinue}/>
+      </View>
+    </Modal>);
+}
+// ── Completion Overlay ──
+function CompletionOverlay({ isReview, hasMetMinimumTime, timeSpentSeconds, marketId, onComplete, onKeepReading, }) {
+    const scaleAnim = useRef(new Animated.Value(0.85)).current;
+    const opacityAnim = useRef(new Animated.Value(0)).current;
+    useEffect(() => {
+        Animated.parallel([
+            Animated.spring(scaleAnim, { toValue: 1, tension: 200, friction: 15, useNativeDriver: true }),
+            Animated.timing(opacityAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
+        ]).start();
+    }, []);
+    const remaining = Math.max(0, MINIMUM_LESSON_TIME_SECONDS - timeSpentSeconds);
+    const remainMin = Math.floor(remaining / 60);
+    const remainSec = remaining % 60;
+    return (<Animated.View style={[compStyles.overlay, { opacity: opacityAnim }]}>
+      <Animated.View style={[compStyles.card, { transform: [{ scale: scaleAnim }] }]}>
+        {/* Icon instead of emoji */}
+        <View style={compStyles.iconCircle}>
+          <Feather name={isReview ? 'book-open' : hasMetMinimumTime ? 'award' : 'bar-chart-2'} size={36} color={hasMetMinimumTime ? COLORS.success : COLORS.accent}/>
+        </View>
+
+        {isReview ? (<>
+            <Text style={compStyles.title}>Great review!</Text>
+            <Text style={compStyles.sub}>Knowledge reinforced</Text>
+          </>) : !hasMetMinimumTime ? (<>
+            <Text style={compStyles.title}>Take your time!</Text>
+            <Text style={compStyles.sub}>Read for {remainMin}:{remainSec.toString().padStart(2, '0')} more to earn XP</Text>
+            <TouchableOpacity style={compStyles.keepBtn} onPress={onKeepReading}>
+              <Text style={compStyles.keepBtnText}>Keep Reading</Text>
+            </TouchableOpacity>
+          </>) : (<>
+            <Text style={compStyles.title}>Lesson Complete!</Text>
+            <View style={compStyles.xpBadge}>
+              <Feather name="activity" size={18} color={COLORS.accent}/>
+              <Text style={compStyles.xpText}>+50 XP</Text>
+            </View>
+          </>)}
+
+        {(isReview || hasMetMinimumTime) && (<TouchableOpacity style={compStyles.ctaBtn} onPress={onComplete}>
+            <Text style={compStyles.ctaBtnText}>Continue</Text>
+          </TouchableOpacity>)}
+      </Animated.View>
+    </Animated.View>);
+}
+const compStyles = StyleSheet.create({
+    overlay: {
+        flex: 1,
+        backgroundColor: 'rgba(8,11,24,0.9)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 28,
+    },
+    card: {
+        backgroundColor: COLORS.bg2,
+        borderRadius: 28,
+        padding: 32,
+        width: '100%',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        ...SHADOWS.lg,
+    },
+    iconCircle: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: COLORS.accentSoft,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: COLORS.accentMedium,
+    },
+    iconImg: {
+        width: 40,
+        height: 40,
+        resizeMode: 'contain',
+    },
+    title: { ...TYPE.h1, color: COLORS.textPrimary, marginBottom: 6, textAlign: 'center' },
+    sub: { ...TYPE.body, color: COLORS.textSecondary, textAlign: 'center', marginBottom: 16 },
+    xpBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        backgroundColor: COLORS.accentSoft,
+        borderRadius: 20,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: COLORS.accentMedium,
+    },
+    xpText: { ...TYPE.h2, color: COLORS.accent },
+    ctaBtn: {
+        width: '100%',
+        height: 54,
+        backgroundColor: COLORS.accent,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...SHADOWS.accent,
+    },
+    ctaBtnText: { fontSize: 17, fontWeight: '800', color: '#fff' },
+    keepBtn: {
+        width: '100%',
+        height: 48,
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 8,
+    },
+    keepBtnText: { ...TYPE.bodyBold, color: COLORS.textSecondary },
+});
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.bg0,
+    },
+    topBar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        gap: 12,
+    },
+    closeBtn: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: COLORS.bg1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: COLORS.border,
+    },
+    closeIcon: {
+        fontSize: 16,
+        color: COLORS.textSecondary,
+        fontWeight: '600',
+    },
+    topBarCenter: {
+        flex: 1,
+    },
+    stackLabel: {
+        ...TYPE.bodyBold,
+        color: COLORS.textSecondary,
+    },
+    askLeoBtn: {
+        width: 42,
+        height: 42,
+        borderRadius: 21,
+        backgroundColor: 'rgba(249,115,22,0.1)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1.5,
+        borderColor: 'rgba(249,115,22,0.25)',
+    },
+    askLeoImage: {
+        width: 28,
+        height: 28,
+        resizeMode: 'contain',
+    },
+    narrationBtn: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: COLORS.bg1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: COLORS.border,
+    },
+    narrationBtnActive: {
+        backgroundColor: COLORS.accentSoft,
+        borderColor: COLORS.accentMedium,
+    },
+    narrationImg: {
+        width: 18,
+        height: 18,
+        resizeMode: 'contain',
+    },
+    progressBarContainer: {
+        paddingHorizontal: 16,
+        marginBottom: 4,
+    },
+    progressBar: {
+        height: 10,
+        backgroundColor: '#E5E7EB',
+        borderRadius: 5,
+        overflow: 'visible',
+        position: 'relative',
+    },
+    progressFill: {
+        height: '100%',
+        borderRadius: 5,
+    },
+    progressKnob: {
+        position: 'absolute',
+        top: -3,
+        width: 16,
+        height: 16,
+        borderRadius: 8,
+        backgroundColor: COLORS.bg2,
+        borderWidth: 3,
+        marginLeft: -8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.15,
+        shadowRadius: 2,
+        elevation: 3,
+    },
+    cardArea: {
+        flex: 1,
+        position: 'relative',
+    },
+    cardScroll: {
+        flex: 1,
+    },
+    cardContent: {
+        flexGrow: 1,
+        paddingHorizontal: 24,
+        paddingTop: 12,
+        paddingBottom: 48, // pb-12 to clear Next button / home bar
+    },
+    edgeTapLeft: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: 40,
+        zIndex: 10,
+    },
+    edgeTapRight: {
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        bottom: 0,
+        width: 40,
+        zIndex: 10,
+    },
+    bottomBar: {
+        paddingHorizontal: 16,
+        paddingTop: 8,
+        borderTopWidth: 1,
+        borderTopColor: COLORS.border,
+    },
+    bottomRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    actionBtn: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: COLORS.bg1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: COLORS.border,
+    },
+    actionIcon: {
+        width: 20,
+        height: 20,
+        resizeMode: 'contain',
+    },
+    counterText: {
+        ...TYPE.caption,
+        color: COLORS.textMuted,
+    },
+    progressDotsWrapper: { flex: 1, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+    progressDots: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 3, paddingHorizontal: 4 },
+    dot: { height: 3, borderRadius: 2 },
+    dotActive: { width: 16, opacity: 1 },
+    dotCompleted: { width: 5, opacity: 0.4 },
+    dotUpcoming: { width: 5, backgroundColor: COLORS.border },
+    nextBtn: {
+        height: 44,
+        paddingHorizontal: 24,
+        borderRadius: 22,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        flexShrink: 0,
+        ...SHADOWS.accent,
+    },
+    nextBtnText: {
+        ...TYPE.bodyBold,
+        color: '#fff',
+    },
+    backBtn: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: COLORS.bg1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: COLORS.border,
+    },
+});

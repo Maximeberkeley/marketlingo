@@ -1,0 +1,155 @@
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '../lib/supabase';
+import { storage } from '../lib/storage';
+import { log } from '../lib/logger';
+export function useContent() {
+    const [lessons, setLessons] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [filters, setFilters] = useState(null);
+    const loadFilters = useCallback(async () => {
+        const [industry, familiarity, userTier] = await Promise.all([
+            storage.getIndustry(),
+            storage.getFamiliarity(),
+            storage.getUserTier(),
+        ]);
+        if (!industry || !familiarity)
+            return;
+        // Resolve the learner's current day from their saved progress for this
+        // market. Falls back to day 1 when signed out or progress is missing.
+        let day = 1;
+        try {
+            const { data: auth } = await supabase.auth.getUser();
+            if (auth?.user) {
+                const { data } = await supabase
+                    .from('user_progress')
+                    .select('current_day')
+                    .eq('user_id', auth.user.id)
+                    .eq('market_id', industry)
+                    .maybeSingle();
+                if (data?.current_day) {
+                    day = Math.min(180, Math.max(1, data.current_day));
+                }
+            }
+        }
+        catch (error) {
+            log.warn('[useContent] Could not resolve current day, defaulting to 1:', error);
+        }
+        setFilters({ industry, familiarity, userTier, day });
+    }, []);
+    useEffect(() => {
+        loadFilters();
+    }, [loadFilters]);
+    const fetchLessonsForDay = useCallback(async (day) => {
+        if (!filters)
+            return;
+        setIsLoading(true);
+        try {
+            // Fetch stacks for the given day and market
+            // The stacks table uses tags array with 'day:X' format for day-based content
+            const { data: stacks, error } = await supabase
+                .from('stacks')
+                .select(`
+          id,
+          title,
+          stack_type,
+          duration_minutes,
+          market_id,
+          tags,
+          metadata,
+          slides (
+            slide_number,
+            title,
+            body,
+            sources
+          )
+        `)
+                .eq('market_id', filters.industry)
+                .contains('tags', [`day-${day}`])
+                // Newest authored lesson for a day wins, so a rewritten (v2) day replaces the old one.
+                .order('created_at', { ascending: false });
+            if (error) {
+                log.error('Error fetching lessons:', error);
+                return;
+            }
+            // XP rewards based on stack type (matches web app logic)
+            const getXpReward = (stackType) => {
+                switch (stackType) {
+                    case 'lesson': return 50;
+                    case 'news': return 25;
+                    case 'game': return 25;
+                    case 'drill': return 25;
+                    default: return 50;
+                }
+            };
+            const formattedLessons = (stacks ?? []).map((stack) => {
+                const row = stack;
+                return {
+                    id: row.id,
+                    title: row.title,
+                    type: getStackType(row.stack_type),
+                    duration: row.duration_minutes ?? 5,
+                    xpReward: getXpReward(row.stack_type),
+                    stackType: row.stack_type,
+                    slides: [...(row.slides ?? [])]
+                        .sort((a, b) => a.slide_number - b.slide_number)
+                        .map((s) => ({
+                        slideNumber: s.slide_number,
+                        title: s.title,
+                        body: s.body,
+                        sources: s.sources ?? undefined,
+                    })),
+                    requiresPro: row.stack_type === 'game' || row.stack_type === 'drill',
+                    metadata: (row.metadata ?? undefined),
+                };
+            });
+            setLessons(formattedLessons);
+        }
+        catch (error) {
+            log.error('Error in fetchLessonsForDay:', error);
+        }
+        finally {
+            setIsLoading(false);
+        }
+    }, [filters]);
+    const getContentForFamiliarity = (content, familiarity) => {
+        // Adapt content depth based on familiarity level
+        switch (familiarity) {
+            case 'beginner':
+                // Add more explanations, slower pacing
+                return content;
+            case 'intermediate':
+                // Skip basic definitions, faster pacing
+                return content;
+            case 'advanced':
+                // Expert-level only, no hand-holding
+                return content;
+            default:
+                return content;
+        }
+    };
+    const isContentAccessible = (lesson, userTier) => {
+        if (!lesson.requiresPro)
+            return true;
+        return userTier === 'pro';
+    };
+    return {
+        lessons,
+        isLoading,
+        filters,
+        fetchLessonsForDay,
+        getContentForFamiliarity,
+        isContentAccessible,
+    };
+}
+function getStackType(stackType) {
+    switch (stackType) {
+        case 'news':
+            return 'news';
+        case 'game':
+            return 'game';
+        case 'drill':
+            return 'drill';
+        default:
+            return 'lesson';
+    }
+}

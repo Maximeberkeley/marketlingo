@@ -1,0 +1,414 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, ImageBackground, } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import { COLORS } from '../lib/constants';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../hooks/useAuth';
+import { ProgressBar } from '../components/ui/ProgressBar';
+import { MentorChatOverlay } from '../components/ai/MentorChatOverlay';
+import { TrainerCard } from '../components/trainer/TrainerCard';
+import { getMentorForContext } from '../data/mentors';
+import { triggerHaptic } from '../lib/haptics';
+import { playSound } from '../lib/sounds';
+import { Feather } from '@expo/vector-icons';
+import { log } from '../lib/logger';
+// shuffleOptions no longer needed — inline shuffle preserves originalIndex mapping
+// Market-specific hero images
+const MARKET_HERO_IMAGES = {
+    aerospace: require('../assets/markets/aerospace-hero.jpg'),
+    neuroscience: require('../assets/markets/neuroscience-hero.jpg'),
+    ai: require('../assets/markets/ai-hero.jpg'),
+    fintech: require('../assets/markets/fintech-hero.jpg'),
+    ev: require('../assets/markets/ev-hero.jpg'),
+    biotech: require('../assets/markets/biotech-hero.jpg'),
+    cleanenergy: require('../assets/markets/cleanenergy-hero.jpg'),
+    agtech: require('../assets/markets/agtech-hero.jpg'),
+    climatetech: require('../assets/markets/climatetech-hero.jpg'),
+    cybersecurity: require('../assets/markets/cybersecurity-hero.jpg'),
+    spacetech: require('../assets/markets/spacetech-hero.jpg'),
+    robotics: require('../assets/markets/robotics-hero.jpg'),
+    healthtech: require('../assets/markets/healthtech-hero.jpg'),
+    logistics: require('../assets/markets/logistics-hero.jpg'),
+    web3: require('../assets/markets/web3-hero.jpg'),
+};
+const MARKET_ACCENT_COLORS = {
+    aerospace: '#8B5CF6',
+    neuroscience: '#F43F5E',
+    ai: '#3B82F6',
+    fintech: '#10B981',
+    ev: '#06B6D4',
+    biotech: '#EC4899',
+    cleanenergy: '#F59E0B',
+    agtech: '#22C55E',
+    climatetech: '#14B8A6',
+    cybersecurity: '#EF4444',
+    spacetech: '#6366F1',
+    robotics: '#64748B',
+    healthtech: '#0EA5E9',
+    logistics: '#F97316',
+    web3: '#7C3AED',
+};
+export default function TrainerScreen() {
+    const insets = useSafeAreaInsets();
+    const { user } = useAuth();
+    const [scenarios, setScenarios] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [selectedMarket, setSelectedMarket] = useState(null);
+    const [showIntro, setShowIntro] = useState(true);
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [feedback, setFeedback] = useState(null);
+    const [mentorChatVisible, setMentorChatVisible] = useState(false);
+    const [activeMentor, setActiveMentor] = useState(null);
+    const [isProUser, setIsProUser] = useState(false);
+    const [correctCount, setCorrectCount] = useState(0);
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!user)
+                return;
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('selected_market, is_pro_user')
+                .eq('id', user.id)
+                .single();
+            const market = profile?.selected_market || 'aerospace';
+            setSelectedMarket(market);
+            setIsProUser(profile?.is_pro_user || false);
+            const { data: scenarioData, error } = await supabase
+                .from('trainer_scenarios')
+                .select('id, market_id, scenario, question, options, correct_option_index, tags, sources, created_at')
+                .eq('market_id', market)
+                .order('created_at', { ascending: true });
+            if (error) {
+                log.error('Error fetching scenarios:', error);
+                setLoading(false);
+                return;
+            }
+            const formatted = (scenarioData || []).map((s) => {
+                let rawOptions = [];
+                if (Array.isArray(s.options)) {
+                    rawOptions = s.options.map((opt) => {
+                        if (typeof opt === 'string')
+                            return opt;
+                        if (typeof opt === 'object' && opt !== null && 'label' in opt)
+                            return opt.label;
+                        return String(opt);
+                    });
+                }
+                const originalCorrectIndex = s.correct_option_index ?? 0;
+                // Tag each option with its original index BEFORE shuffling
+                const tagged = rawOptions.map((label, i) => ({ label, originalIndex: i }));
+                // Fisher-Yates shuffle
+                for (let i = tagged.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [tagged[i], tagged[j]] = [tagged[j], tagged[i]];
+                }
+                const newCorrectIndex = tagged.findIndex((o) => o.originalIndex === originalCorrectIndex);
+                const options = tagged.map((opt, idx) => ({
+                    label: opt.label,
+                    isCorrect: idx === newCorrectIndex,
+                    originalIndex: opt.originalIndex,
+                }));
+                return { id: s.id, scenario: s.scenario, question: s.question, options, correctIndex: newCorrectIndex };
+            });
+            // Resume from first uncompleted
+            const { data: attempts } = await supabase
+                .from('trainer_attempts')
+                .select('scenario_id')
+                .eq('user_id', user.id);
+            if (attempts && attempts.length > 0 && formatted.length > 0) {
+                const completedIds = new Set(attempts.map((a) => a.scenario_id));
+                const idx = formatted.findIndex((s) => !completedIds.has(s.id));
+                if (idx !== -1)
+                    setCurrentIndex(idx);
+            }
+            setScenarios(formatted);
+            setLoading(false);
+        };
+        fetchData();
+    }, [user]);
+    const current = scenarios[currentIndex];
+    const handleOpenMentorChat = () => {
+        const mentor = getMentorForContext('strategy', selectedMarket || 'aerospace');
+        setActiveMentor(mentor);
+        setMentorChatVisible(true);
+    };
+    const handleSelectOption = async (optionIdx) => {
+        if (feedback || !user || !current)
+            return;
+        setSelectedOption(optionIdx);
+        // Send the ORIGINAL index to the RPC so correctness check matches the DB
+        const originalIndex = current.options[optionIdx]?.originalIndex ?? optionIdx;
+        const { data, error } = await supabase.rpc('submit_trainer_answer', {
+            p_scenario_id: current.id,
+            p_selected_option: originalIndex,
+            p_time_spent: null,
+        });
+        if (error) {
+            log.error('Error submitting answer:', error);
+            return;
+        }
+        const result = data;
+        setFeedback(result || { isCorrect: false, correctIndex: 0, feedback_pro_reasoning: null, feedback_common_mistake: null, feedback_mental_model: null });
+        triggerHaptic(result?.isCorrect ? 'success' : 'warning');
+        playSound(result?.isCorrect ? 'correct' : 'wrong');
+        if (result?.isCorrect) {
+            setCorrectCount(correctCount + 1);
+        }
+    };
+    const handleSaveToNotebook = async () => {
+        if (!user || !current || !selectedMarket)
+            return;
+        await supabase.from('notes').insert({
+            user_id: user.id,
+            content: `Trainer insight: ${feedback?.feedback_mental_model || current.scenario}`,
+            linked_label: `Trainer · ${current.question.substring(0, 30)}...`,
+            market_id: selectedMarket,
+        });
+        Alert.alert('Saved', 'Insight saved to notebook!');
+    };
+    const handleNext = () => {
+        setSelectedOption(null);
+        setFeedback(null);
+        // Show pro interstitial every 2 scenarios for free users
+        if (!isProUser && false) {
+            return; // Will advance after ad closes
+        }
+        advanceScenario();
+    };
+    const advanceScenario = () => {
+        if (currentIndex < scenarios.length - 1) {
+            setCurrentIndex((prev) => prev + 1);
+        }
+        else {
+            Alert.alert('Complete!', 'All scenarios completed!');
+            setCurrentIndex(0);
+        }
+    };
+    if (loading) {
+        return (<View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color={COLORS.accent}/>
+      </View>);
+    }
+    const accentColor = MARKET_ACCENT_COLORS[selectedMarket || 'aerospace'] || '#8B5CF6';
+    const heroImage = MARKET_HERO_IMAGES[selectedMarket || 'aerospace'];
+    // Intro screen
+    if (showIntro && scenarios.length > 0) {
+        return (<View style={styles.container}>
+        <ScrollView contentContainerStyle={[styles.scrollContent, { paddingTop: 0, paddingBottom: insets.bottom + 40 }]} showsVerticalScrollIndicator={false}>
+          {/* Hero Image Banner */}
+          <ImageBackground source={heroImage} style={[styles.heroBanner, { paddingTop: insets.top + 16 }]} imageStyle={{ borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
+            <View style={styles.heroBannerOverlay}>
+              <TouchableOpacity style={styles.backBtnOverlay} onPress={() => router.back()}>
+                <Text style={styles.backTextLight}>← Back</Text>
+              </TouchableOpacity>
+              <View style={styles.heroBannerContent}>
+                <View style={[styles.heroBadge, { backgroundColor: accentColor + 'CC' }]}>
+                  <Feather name="target" size={14} color="#fff"/>
+                  <Text style={styles.heroBadgeText}>INDUSTRY TRAINER</Text>
+                </View>
+                <Text style={styles.heroBannerTitle}>Think Like an Expert</Text>
+                <Text style={styles.heroBannerSubtitle}>Complex scenarios with deep professional feedback</Text>
+                <View style={styles.heroBannerStats}>
+                  <View style={styles.heroBannerStat}>
+                    <Text style={styles.heroBannerStatNum}>{scenarios.length}</Text>
+                    <Text style={styles.heroBannerStatLabel}>Scenarios</Text>
+                  </View>
+                  <View style={styles.heroBannerDivider}/>
+                  <View style={styles.heroBannerStat}>
+                    <Text style={styles.heroBannerStatNum}>+50</Text>
+                    <Text style={styles.heroBannerStatLabel}>XP each</Text>
+                  </View>
+                  <View style={styles.heroBannerDivider}/>
+                  <View style={styles.heroBannerStat}>
+                    <Text style={styles.heroBannerStatNum}>PRO</Text>
+                    <Text style={styles.heroBannerStatLabel}>Feedback</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </ImageBackground>
+
+          <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
+            <View style={styles.introCenter}>
+              <Feather name="target" size={56} color={COLORS.accent} style={{ marginBottom: 12 }}/>
+              <Text style={styles.introMsg}>Time to level up! These scenarios will teach you to think like a pro.</Text>
+            </View>
+
+            <View style={styles.featuresCard}>
+              <Text style={styles.featuresTitle}>What you'll master</Text>
+              {[
+                { icon: 'layers', text: 'Real-world decision scenarios' },
+                { icon: 'search', text: 'Pro reasoning breakdowns' },
+                { icon: 'target', text: 'Common mistake analysis' },
+                { icon: 'book-open', text: 'Mental models for founders' },
+            ].map((f, i) => (<View key={i} style={styles.featureRow}>
+                  <Feather name={f.icon} size={18} color={COLORS.accent}/>
+                  <Text style={styles.featureText}>{f.text}</Text>
+                </View>))}
+            </View>
+
+            <TouchableOpacity style={[styles.ctaButton, { backgroundColor: accentColor }]} onPress={() => setShowIntro(false)}>
+              <Text style={styles.ctaText}>Start Training →</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </View>);
+    }
+    if (scenarios.length === 0) {
+        return (<View style={[styles.container, styles.centered]}>
+        <Feather name="target" size={48} color={COLORS.textMuted} style={{ marginBottom: 12 }}/>
+        <Text style={styles.emptyTitle}>No scenarios available</Text>
+        <Text style={styles.emptySubtitle}>Complete more lessons to unlock trainer scenarios!</Text>
+        <TouchableOpacity style={styles.ctaButton} onPress={() => router.back()}>
+          <Text style={styles.ctaText}>Back to Home</Text>
+        </TouchableOpacity>
+      </View>);
+    }
+    return (<View style={styles.container}>
+      <ScrollView contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 40 }]} showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Text style={styles.backText}>← Back</Text>
+          </TouchableOpacity>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.headerTitle}>Trainer</Text>
+            <Text style={styles.headerSub}>Scenario {currentIndex + 1} of {scenarios.length}</Text>
+          </View>
+        </View>
+
+        <ProgressBar progress={((currentIndex + 1) / scenarios.length) * 100} height={4}/>
+
+        {/* TrainerCard — full-featured component with feedback, mascot, mentor CTA */}
+        <View style={{ marginTop: 12 }}>
+          <TrainerCard scenario={{
+            id: current.id,
+            scenario: current.scenario,
+            question: current.question,
+            options: current.options,
+        }} onSaveToNotebook={handleSaveToNotebook} onNext={handleNext} onAskMentor={(question) => {
+            const mentor = getMentorForContext('strategy', selectedMarket || 'aerospace');
+            setActiveMentor(mentor);
+            setMentorChatVisible(true);
+        }} onAttemptComplete={async (_isCorrect, selectedOption) => {
+            // Map shuffled index back to original for the RPC's correctness check
+            const origIdx = current.options[selectedOption]?.originalIndex ?? selectedOption;
+            const { data, error } = await supabase.rpc('submit_trainer_answer', {
+                p_scenario_id: current.id,
+                p_selected_option: origIdx,
+                p_time_spent: null,
+            });
+            if (error) {
+                log.error(error);
+                return undefined;
+            }
+            return data;
+        }} marketId={selectedMarket || 'aerospace'}/>
+        </View>
+      </ScrollView>
+
+
+      {/* Mentor Chat Overlay */}
+      {activeMentor && (<MentorChatOverlay visible={mentorChatVisible} mentor={activeMentor} onClose={() => setMentorChatVisible(false)} marketId={selectedMarket || undefined} context={current
+                ? `Trainer scenario: "${current.scenario}" — Question: "${current.question}". ${feedback ? `The user answered ${feedback.isCorrect ? 'correctly' : 'incorrectly'}. Pro reasoning: ${feedback.feedback_pro_reasoning || ''}` : 'The user is thinking through their answer.'}`
+                : `${selectedMarket} industry trainer scenarios`}/>)}
+    </View>);
+}
+const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: COLORS.bg0 },
+    centered: { alignItems: 'center', justifyContent: 'center', padding: 24 },
+    scrollContent: { paddingHorizontal: 16 },
+    // Hero banner styles
+    heroBanner: { height: 280, width: '100%' },
+    heroBannerOverlay: {
+        flex: 1, backgroundColor: 'rgba(0,0,0,0.55)',
+        borderBottomLeftRadius: 24, borderBottomRightRadius: 24,
+        paddingHorizontal: 20, paddingBottom: 24,
+        justifyContent: 'space-between',
+    },
+    backBtnOverlay: { alignSelf: 'flex-start', marginBottom: 12 },
+    backTextLight: { fontSize: 15, color: 'rgba(255,255,255,0.85)' },
+    heroBannerContent: { gap: 10 },
+    heroBadge: {
+        alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6,
+        paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10,
+    },
+    heroBadgeText: { fontSize: 11, fontWeight: '700', color: '#FFFFFF', letterSpacing: 0.5 },
+    heroBannerTitle: { fontSize: 26, fontWeight: '800', color: '#FFFFFF', lineHeight: 32 },
+    heroBannerSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 18 },
+    heroBannerStats: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
+    heroBannerStat: { flex: 1, alignItems: 'center' },
+    heroBannerDivider: { width: 1, height: 28, backgroundColor: 'rgba(255,255,255,0.3)' },
+    heroBannerStatNum: { fontSize: 18, fontWeight: '700', color: '#FFFFFF' },
+    heroBannerStatLabel: { fontSize: 10, color: 'rgba(255,255,255,0.65)', marginTop: 2 },
+    // Legacy / active
+    backBtn: { marginBottom: 12 },
+    backText: { fontSize: 15, color: COLORS.textSecondary },
+    header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
+    headerTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary },
+    headerSub: { fontSize: 12, color: COLORS.textMuted },
+    introCenter: { alignItems: 'center', marginBottom: 20 },
+    introMsg: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginTop: 12, lineHeight: 20 },
+    featuresCard: {
+        backgroundColor: COLORS.bg2, borderRadius: 16, padding: 16, marginBottom: 16,
+        borderWidth: 1, borderColor: COLORS.border,
+    },
+    featuresTitle: { fontSize: 16, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 12 },
+    featureRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
+    featureIcon: { fontSize: 18, width: 28 },
+    featureDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#EF4444' },
+    featureText: { fontSize: 14, color: COLORS.textSecondary, flex: 1 },
+    ctaButton: {
+        backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center',
+    },
+    ctaText: { color: '#FFFFFF', fontWeight: '700', fontSize: 16 },
+    emptyTitle: { fontSize: 20, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 8 },
+    emptySubtitle: { fontSize: 14, color: COLORS.textMuted, textAlign: 'center', marginBottom: 20 },
+    scenarioCard: {
+        backgroundColor: COLORS.bg2, borderRadius: 14, padding: 16, marginVertical: 16,
+        borderWidth: 1, borderColor: COLORS.border,
+    },
+    scenarioText: { fontSize: 14, color: COLORS.textSecondary, lineHeight: 21 },
+    questionText: { fontSize: 18, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 16, lineHeight: 26 },
+    optionCard: {
+        flexDirection: 'row', alignItems: 'center', gap: 12,
+        backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14,
+        borderWidth: 1, borderColor: COLORS.border,
+    },
+    optionSelected: { borderColor: 'rgba(139, 92, 246, 0.5)' },
+    optionCorrect: { borderColor: 'rgba(34, 197, 94, 0.5)', backgroundColor: 'rgba(34, 197, 94, 0.08)' },
+    optionWrong: { borderColor: 'rgba(239, 68, 68, 0.5)', backgroundColor: 'rgba(239, 68, 68, 0.08)' },
+    optionLetter: {
+        width: 32, height: 32, borderRadius: 16, backgroundColor: COLORS.bg1,
+        alignItems: 'center', justifyContent: 'center',
+    },
+    optionLetterText: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary },
+    optionText: { flex: 1, fontSize: 14, color: COLORS.textPrimary, lineHeight: 20 },
+    feedbackCard: {
+        backgroundColor: COLORS.bg2, borderRadius: 14, padding: 16, marginTop: 16,
+        borderWidth: 1,
+    },
+    feedbackCorrect: { borderColor: 'rgba(34, 197, 94, 0.3)' },
+    feedbackWrong: { borderColor: 'rgba(245, 158, 11, 0.3)' },
+    feedbackTitle: { fontSize: 16, fontWeight: '700', marginBottom: 8 },
+    feedbackBody: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20, marginBottom: 8 },
+    mentalModelBox: {
+        padding: 10, borderRadius: 10, backgroundColor: 'rgba(139, 92, 246, 0.05)',
+        borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.2)',
+    },
+    mentalModelLabel: { fontSize: 11, fontWeight: '600', color: COLORS.accent, marginBottom: 4 },
+    mentalModelText: { fontSize: 12, color: COLORS.textMuted, lineHeight: 18 },
+    saveBtn: {
+        paddingHorizontal: 16, paddingVertical: 14, borderRadius: 14,
+        backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center',
+    },
+    saveBtnText: { fontSize: 14, color: COLORS.textSecondary },
+    mentorChatCTA: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+        backgroundColor: 'rgba(139, 92, 246, 0.12)', borderRadius: 12, paddingVertical: 12,
+        borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.25)', marginTop: 12,
+    },
+    mentorChatCTAText: { fontSize: 14, fontWeight: '600', color: COLORS.accent },
+});

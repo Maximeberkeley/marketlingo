@@ -1,0 +1,365 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Animated, Image, } from 'react-native';
+import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { storage } from '../../lib/storage';
+import { FAMILIARITY_LEVELS, COLORS } from '../../lib/constants';
+import { StickyBottomCTA } from '../../components/StickyBottomCTA';
+import { useAuth } from '../../hooks/useAuth';
+import { supabase } from '../../lib/supabase';
+import { NotificationOnboarding } from '../../components/onboarding/NotificationOnboarding';
+import { applyDemoXP } from '../../lib/demoXPBridge';
+import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress';
+import { MascotAvatar } from '../../components/mascot/MascotAvatar';
+import { SpeechBubble } from '../../components/ui/SpeechBubble';
+import { triggerHaptic } from '../../lib/haptics';
+import { log } from '../../lib/logger';
+import { FeatureTour } from '../../components/onboarding/FeatureTour';
+const STEP_LABELS = ['Industry', 'Goal', 'Level'];
+const LEO_LEVEL_REACTIONS = {
+    beginner: "Perfect — we'll start from scratch! No jargon, I promise.",
+    intermediate: "Nice! I'll skip the basics and go straight to the good stuff.",
+    advanced: "Respect! Expert-mode unlocked. Let's get deep.",
+};
+export default function FamiliarityScreen() {
+    const insets = useSafeAreaInsets();
+    const { user } = useAuth();
+    const [selectedLevel, setSelectedLevel] = useState(null);
+    const [showNotifOnboarding, setShowNotifOnboarding] = useState(false);
+    const [showFeatureTour, setShowFeatureTour] = useState(false);
+    const [selectedMarket, setSelectedMarket] = useState(null);
+    const [learningGoal, setLearningGoal] = useState('curiosity');
+    // Animations
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(30)).current;
+    const reactionOpacity = useRef(new Animated.Value(0)).current;
+    useEffect(() => {
+        Animated.parallel([
+            Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
+            Animated.spring(slideAnim, { toValue: 0, tension: 50, friction: 8, useNativeDriver: true }),
+        ]).start();
+    }, []);
+    useEffect(() => {
+        if (selectedLevel) {
+            reactionOpacity.setValue(0);
+            Animated.timing(reactionOpacity, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+        }
+    }, [selectedLevel]);
+    const handleSelect = (level) => {
+        triggerHaptic('light');
+        setSelectedLevel(level);
+    };
+    const handleContinue = async () => {
+        if (!selectedLevel)
+            return;
+        triggerHaptic('success');
+        try {
+            await storage.setFamiliarity(selectedLevel);
+            await storage.setOnboardingComplete(true);
+        }
+        catch (e) {
+            log.warn('[Familiarity] local storage write failed:', e);
+        }
+        if (user) {
+            try {
+                // maybeSingle so a missing profile row does not throw and break the flow
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('selected_market')
+                    .eq('id', user.id)
+                    .maybeSingle();
+                // CRITICAL: profiles.familiarity_level is what /(tabs)/home reads to gate onboarding.
+                // If this write fails, home will bounce back here → infinite loop.
+                const { error: profileUpdateError } = await supabase
+                    .from('profiles')
+                    .update({ familiarity_level: selectedLevel })
+                    .eq('id', user.id);
+                if (profileUpdateError) {
+                    log.warn('[Familiarity] profile update failed:', profileUpdateError.message);
+                }
+                if (profile?.selected_market) {
+                    const { error: progressError } = await supabase
+                        .from('user_progress')
+                        .upsert({
+                        user_id: user.id,
+                        market_id: profile.selected_market,
+                        familiarity_level: selectedLevel,
+                    }, { onConflict: 'user_id,market_id' });
+                    if (progressError) {
+                        log.warn('[Familiarity] user_progress upsert failed:', progressError.message);
+                    }
+                }
+            }
+            catch (e) {
+                // Never block navigation on a backend hiccup — onboarding must finish
+                log.warn('[Familiarity] backend write failed, continuing:', e);
+            }
+        }
+        setShowNotifOnboarding(true);
+    };
+    const handleNotifComplete = async (_enabled) => {
+        setShowNotifOnboarding(false);
+        const [seenTour, storedGoal, storedMarket] = await Promise.all([
+            storage.hasSeenFeatureTour().catch(() => false),
+            storage.getLearningGoal().catch(() => null),
+            storage.getIndustry().catch(() => null),
+        ]);
+        if (storedGoal)
+            setLearningGoal(storedGoal);
+        if (storedMarket)
+            setSelectedMarket(storedMarket);
+        if (user) {
+            try {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('selected_market, demo_onboarding_status')
+                    .eq('id', user.id)
+                    .single();
+                if (profile?.selected_market) {
+                    setSelectedMarket(profile.selected_market);
+                    const demoXP = profile.demo_onboarding_status === 'completed'
+                        ? await applyDemoXP(user.id, profile.selected_market)
+                        : 0;
+                    if (demoXP > 0) {
+                        Alert.alert('Welcome bonus!', `Your ${demoXP} XP from the demo lesson has been credited to your account. Keep that momentum going!`);
+                    }
+                }
+            }
+            catch (e) {
+                // Non-critical
+            }
+        }
+        if (seenTour)
+            router.replace('/daily-leo');
+        else
+            setShowFeatureTour(true);
+    };
+    const handleTourComplete = async () => {
+        setShowFeatureTour(false);
+        await storage.setFeatureTourSeen().catch(() => { });
+        router.replace('/daily-leo');
+    };
+    const handleBack = () => {
+        router.back();
+    };
+    return (<View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* Progress */}
+      <OnboardingProgress currentStep={2} totalSteps={3} labels={STEP_LABELS}/>
+
+      <Animated.ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+        {/* Back Button */}
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+          <Text style={styles.backButtonText}>← Back</Text>
+        </TouchableOpacity>
+
+        {/* Header */}
+        <View style={styles.header}>
+          <MascotAvatar size="lg"/>
+          <Text style={styles.title}>Your Experience Level</Text>
+          <Text style={styles.subtitle}>
+            I'll adapt the content depth to match your knowledge
+          </Text>
+        </View>
+
+        {/* Leo reaction bubble */}
+        {selectedLevel && (<Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}>
+            <Image source={require('../../assets/mascot/leo-reference.png')} style={{ width: 24, height: 24, resizeMode: 'contain' }}/>
+            <SpeechBubble text={LEO_LEVEL_REACTIONS[selectedLevel]} tail="left" compact style={styles.reactionBalloon} textStyle={styles.reactionText}/>
+          </Animated.View>)}
+
+        {/* Level Cards */}
+        <View style={styles.cardsContainer}>
+          {FAMILIARITY_LEVELS.map((level, index) => (<Animated.View key={level.id} style={{
+                opacity: fadeAnim,
+                transform: [{
+                        translateY: fadeAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [20 + index * 8, 0],
+                        }),
+                    }],
+            }}>
+              <TouchableOpacity style={[
+                styles.card,
+                selectedLevel === level.id && styles.cardSelected,
+            ]} onPress={() => handleSelect(level.id)} activeOpacity={0.7}>
+                <View style={styles.cardContent}>
+                  <View style={styles.cardIndex}>
+                    <Text style={styles.cardIndexText}>{index + 1}</Text>
+                  </View>
+
+                  <View style={styles.cardText}>
+                    <Text style={styles.cardTitle}>{level.name}</Text>
+                    <Text style={styles.cardDescription}>{level.description}</Text>
+                  </View>
+                </View>
+                {selectedLevel === level.id && (<View style={styles.checkmark}>
+                    <Text style={styles.checkmarkText}>✓</Text>
+                  </View>)}
+              </TouchableOpacity>
+            </Animated.View>))}
+        </View>
+
+        {/* Almost done indicator */}
+        <View style={styles.almostDone}>
+          <Text style={styles.almostDoneEmoji}>·</Text>
+          <Text style={styles.almostDoneText}>
+            Almost done! One more tap and you're in.
+          </Text>
+        </View>
+
+        {/* Info Box */}
+        <View style={styles.infoBox}>
+          <Text style={styles.infoText}>
+            You can change this anytime in Settings
+          </Text>
+        </View>
+      </Animated.ScrollView>
+
+      <StickyBottomCTA title="Start Learning" onPress={handleContinue} disabled={!selectedLevel}/>
+
+      <NotificationOnboarding visible={showNotifOnboarding} onComplete={handleNotifComplete}/>
+      <FeatureTour visible={showFeatureTour} marketId={selectedMarket} goal={learningGoal} onComplete={handleTourComplete}/>
+    </View>);
+}
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.bg0,
+    },
+    scrollContent: {
+        paddingHorizontal: 16,
+        paddingBottom: 120,
+    },
+    backButton: {
+        marginTop: 8,
+        marginBottom: 16,
+    },
+    backButtonText: {
+        fontSize: 16,
+        color: COLORS.accent,
+        fontWeight: '500',
+    },
+    header: {
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: '700',
+        color: COLORS.textPrimary,
+        marginTop: 12,
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    subtitle: {
+        fontSize: 16,
+        color: COLORS.textSecondary,
+        textAlign: 'center',
+        lineHeight: 22,
+    },
+    reactionBubble: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        marginBottom: 16,
+    },
+    reactionBalloon: { flex: 1 },
+    reactionEmoji: { fontSize: 24 },
+    reactionText: {
+        flex: 1,
+        fontSize: 13,
+        color: COLORS.textSecondary,
+        lineHeight: 18,
+    },
+    cardsContainer: {
+        gap: 12,
+    },
+    card: {
+        backgroundColor: COLORS.bg2,
+        borderRadius: 16,
+        padding: 16,
+        borderWidth: 2,
+        borderColor: 'transparent',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    cardSelected: {
+        borderColor: COLORS.accent,
+        backgroundColor: `${COLORS.accent}15`,
+    },
+    cardContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    cardIndex: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        marginRight: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: COLORS.accentSoft,
+    },
+    cardIndexText: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: COLORS.accent,
+    },
+    cardText: {
+        flex: 1,
+    },
+    cardTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: COLORS.textPrimary,
+        marginBottom: 4,
+    },
+    cardDescription: {
+        fontSize: 14,
+        color: COLORS.textMuted,
+        lineHeight: 20,
+    },
+    checkmark: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: COLORS.accent,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    checkmarkText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '700',
+    },
+    almostDone: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginTop: 20,
+        padding: 14,
+        backgroundColor: 'rgba(34, 197, 94, 0.08)',
+        borderWidth: 1,
+        borderColor: 'rgba(34, 197, 94, 0.2)',
+        borderRadius: 12,
+    },
+    almostDoneEmoji: { fontSize: 20 },
+    almostDoneText: {
+        fontSize: 13,
+        color: COLORS.success,
+        fontWeight: '500',
+    },
+    infoBox: {
+        marginTop: 12,
+        padding: 16,
+        backgroundColor: COLORS.bg1,
+        borderRadius: 12,
+        alignItems: 'center',
+    },
+    infoText: {
+        fontSize: 14,
+        color: COLORS.textMuted,
+    },
+});
