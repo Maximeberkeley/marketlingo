@@ -2971,6 +2971,20 @@ export type Database = {
         Returns: number
       }
       get_available_day: { Args: { p_start_date: string }; Returns: number }
+      get_monthly_standings: {
+        Args: { p_market_id: string; p_season_start: string }
+        Returns: {
+          avatar_url: string
+          current_level: number
+          current_streak: number
+          display_name: string
+          last_activity_at: string
+          monthly_xp: number
+          tier: string
+          user_id: string
+          username: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -3041,6 +3055,15 @@ export type Database = {
         }
       }
       run_league_rollover: { Args: never; Returns: number }
+      search_public_profiles: {
+        Args: { p_query: string }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          id: string
+          username: string
+        }[]
+      }
       set_featured_collectible: {
         Args: { p_collectible_id: string }
         Returns: undefined
