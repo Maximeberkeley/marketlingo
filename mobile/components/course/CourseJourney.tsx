@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import Svg, { Circle } from 'react-native-svg';
 import { router } from 'expo-router';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
@@ -49,6 +50,7 @@ interface CourseLesson {
   description: string;
   stackId?: string;
   completed: boolean;
+  authored: boolean;
 }
 
 interface CourseJourneyProps {
@@ -193,14 +195,25 @@ function SectionCluster({
     if (kind === 'intel') return intelDone;
     return false;
   };
+  const coreCompleted = (['lesson', 'arena', 'case', 'intel'] as ModuleKind[])
+    .filter(kind => moduleComplete(kind)).length;
+  const orbitRadius = 132.5;
+  const orbitCircumference = 2 * Math.PI * orbitRadius;
+  const orbitOffset = orbitCircumference * (1 - coreCompleted / 4);
+  const longTitle = weekTitle.length > 35;
 
   return (
     <View style={styles.sectionBlock}>
       <SectionHeader section={section} title={title} onPress={onHeader} />
       <View style={styles.weekHeading}>
-        <View>
+        <View style={styles.weekHeadingCopy}>
           <Text style={styles.weekEyebrow}>{section.unlocked ? `DAY ${section.displayDay}` : `DAYS ${section.startDay}–${section.endDay}`}</Text>
-          <Text style={styles.weekTitle} numberOfLines={2}>{weekTitle}</Text>
+          <Text
+            style={[styles.weekTitle, longTitle && styles.weekTitleLong]}
+            numberOfLines={2}
+            adjustsFontSizeToFit
+            minimumFontScale={0.78}
+          >{weekTitle}</Text>
           <Text style={styles.lessonMeta}>{marketName} · 6 min</Text>
         </View>
         {!section.unlocked ? (
@@ -212,13 +225,22 @@ function SectionCluster({
       </View>
 
       <View style={[styles.cluster, !section.unlocked && styles.clusterLocked]}>
-        <View style={styles.orbit} />
-        <View style={[styles.orbitProgress, {
-          borderTopColor: section.completedCount > 0 ? COLORS.accent : 'transparent',
-          borderRightColor: section.completedCount > 6 ? COLORS.accent : 'transparent',
-          borderBottomColor: section.completedCount > 12 ? COLORS.accent : 'transparent',
-          borderLeftColor: section.completedCount > 20 ? COLORS.accent : 'transparent',
-        }]} />
+        <Svg width={268} height={268} style={styles.orbitSvg} pointerEvents="none">
+          <Circle cx={134} cy={134} r={orbitRadius} fill="none" stroke={COLORS.accentMedium} strokeWidth={3} />
+          <Circle
+            cx={134}
+            cy={134}
+            r={orbitRadius}
+            fill="none"
+            stroke={COLORS.accent}
+            strokeWidth={4}
+            strokeLinecap="round"
+            strokeDasharray={`${orbitCircumference} ${orbitCircumference}`}
+            strokeDashoffset={orbitOffset}
+            rotation={-90}
+            origin="134, 134"
+          />
+        </Svg>
         {MODULES.map((module, index) => (
           <View key={`marker-${module.kind}`} style={[styles.orbitMarker, styles[`orbitMarker${index}` as keyof typeof styles] as object, moduleComplete(module.kind) && styles.orbitMarkerComplete]} />
         ))}
@@ -313,7 +335,12 @@ function CurriculumPreview({
                   )}
                 </View>
                 <View style={styles.lessonCopy}>
-                  <Text style={[styles.lessonTitle, locked && styles.lockedText]} numberOfLines={2}>{item.title}</Text>
+                  <Text
+                    style={[styles.lessonTitle, item.title.length > 35 && styles.lessonTitleLong, locked && styles.lockedText]}
+                    numberOfLines={2}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.82}
+                  >{item.title}</Text>
                   <Text style={styles.lessonDescription} numberOfLines={2}>{item.description}</Text>
                 </View>
                 <Feather name={locked ? 'lock' : 'chevron-right'} size={17} color={locked ? COLORS.textMuted : COLORS.courseHeader} />
@@ -410,6 +437,7 @@ export function CourseJourney({
           description: plan.isConsolidation ? 'Review the week and explain one idea in your own words.' : plan.facet.promise,
           stackId: lesson?.id,
           completed: completedByDay.get(day) || false,
+          authored: Boolean(lesson?.title),
         };
       }));
       setLoading(false);
@@ -522,9 +550,14 @@ export function CourseJourney({
         )}
         renderItem={({ item: section }) => {
           const lesson = lessons.find(entry => entry.day === section.displayDay);
-          const weekStart = Math.floor((section.displayDay - 1) / 7) * 7 + 1;
-          const weekLead = lessons.find(entry => entry.day === weekStart && entry.day >= section.startDay);
-          const weekTitle = weekLead?.title || syllabusDay(marketId, section.displayDay).facet.label;
+          const displayedLesson = lessons.find(entry => entry.day === section.displayDay);
+          const sectionLead = lessons.find(entry => entry.day === section.startDay);
+          const lockedTeasers = ['Locked Dossier', 'Uncharted Territory', 'Next Module Locked'];
+          const weekTitle = section.unlocked
+            ? displayedLesson?.title || `Day ${section.displayDay}`
+            : sectionLead?.authored
+              ? sectionLead.title
+              : lockedTeasers[section.index % lockedTeasers.length];
           const activeSection = section.index === focusedSectionIndex;
           return (
             <SectionCluster
@@ -593,16 +626,17 @@ const styles = StyleSheet.create({
   sectionTrack: { height: 5, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.25)', marginTop: 5, overflow: 'hidden' },
   sectionFill: { height: 5, borderRadius: 3, backgroundColor: COLORS.textOnAccent },
   headerArrow: { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(34,28,164,0.32)', alignItems: 'center', justifyContent: 'center' },
-  weekHeading: { minHeight: 104, paddingHorizontal: 7, paddingTop: 20, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 },
+  weekHeading: { minHeight: 112, paddingHorizontal: 7, paddingTop: 20, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 },
+  weekHeadingCopy: { flex: 1, minWidth: 0 },
   weekEyebrow: { ...TYPE.overline, color: COLORS.courseHeader },
-  weekTitle: { fontSize: 28, lineHeight: 33, fontWeight: '600', color: COLORS.textPrimary, marginTop: 4, maxWidth: 286 },
+  weekTitle: { fontSize: 28, lineHeight: 33, fontWeight: '700', color: COLORS.textPrimary, marginTop: 4, maxWidth: 300 },
+  weekTitleLong: { fontSize: 18, lineHeight: 23 },
   lessonMeta: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 5 },
   lockPill: { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 12, paddingHorizontal: 9, paddingVertical: 7, backgroundColor: COLORS.lockedSurface },
   lockPillText: { ...TYPE.caption, color: COLORS.textMuted, maxWidth: 110 },
   cluster: { height: 374, position: 'relative', marginTop: 6 },
   clusterLocked: { opacity: 0.66 },
-  orbit: { position: 'absolute', width: 268, height: 268, borderRadius: 134, borderWidth: 3, borderColor: COLORS.accentMedium, left: '50%', marginLeft: -134, top: 42 },
-  orbitProgress: { position: 'absolute', width: 268, height: 268, borderRadius: 134, borderWidth: 3, left: '50%', marginLeft: -134, top: 42, transform: [{ rotate: '-48deg' }] },
+  orbitSvg: { position: 'absolute', width: 268, height: 268, left: '50%', marginLeft: -134, top: 42 },
   orbitMarker: { position: 'absolute', width: 9, height: 9, borderRadius: 5, backgroundColor: COLORS.bg2, borderWidth: 2, borderColor: COLORS.accent, zIndex: 1 },
   orbitMarkerComplete: { backgroundColor: COLORS.accent },
   orbitMarker0: { top: 38, left: '50%', marginLeft: -4 },
@@ -636,5 +670,6 @@ const styles = StyleSheet.create({
   dayNumber: { ...TYPE.caption, color: COLORS.textPrimary },
   lessonCopy: { flex: 1, minWidth: 0 },
   lessonTitle: { ...TYPE.bodyBold, color: COLORS.textPrimary },
+  lessonTitleLong: { fontSize: 14, lineHeight: 19 },
   lessonDescription: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 3 },
 });

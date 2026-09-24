@@ -4,6 +4,7 @@ import { useAuth } from './useAuth';
 import { UserXP, DailyCompletion } from '../lib/types';
 import { log } from '../lib/logger';
 import { localDateString } from '../lib/dayMath';
+import { cancelRollingLeoNudges } from '../lib/leoNudges';
 
 export const XP_REWARDS = {
   LESSON_COMPLETE: 50,
@@ -281,6 +282,8 @@ export function useUserXP(marketId?: string) {
       p_today: today,
     });
     if (streakError) log.warn('Streak sync after lesson failed:', streakError.message);
+
+    await cancelRollingLeoNudges();
 
     return data;
   };

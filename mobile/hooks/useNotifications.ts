@@ -4,6 +4,7 @@ import * as Notifications from 'expo-notifications';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { log } from '../lib/logger';
+import { cancelRollingLeoNudges, scheduleRollingLeoNudges } from '../lib/leoNudges';
 
 export interface NotificationPreferences {
   dailyReminder: boolean;
@@ -143,8 +144,11 @@ export function useNotifications() {
     if (!isSupported) return;
 
     try {
-      // Cancel existing scheduled notifications
-      await Notifications.cancelAllScheduledNotificationsAsync();
+      // Preserve Intel and rolling Leo alerts; replace only this recurring reminder.
+      const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+      await Promise.all(scheduled
+        .filter(item => item.content.data?.type === 'daily_reminder')
+        .map(item => Notifications.cancelScheduledNotificationAsync(item.identifier)));
 
       if (!preferences.dailyReminder) return;
 
@@ -215,6 +219,14 @@ export function useNotifications() {
     }
   }, [isSupported]);
 
+  const scheduleRollingReminders = useCallback(async (lessonCompletedToday: boolean) => {
+    if (!isSupported || !preferences.dailyReminder) {
+      await cancelRollingLeoNudges();
+      return;
+    }
+    await scheduleRollingLeoNudges(lessonCompletedToday);
+  }, [isSupported, preferences.dailyReminder]);
+
   // Update preferences
   const updatePreferences = useCallback(async (newPrefs: Partial<NotificationPreferences>) => {
     const updated = { ...preferences, ...newPrefs };
@@ -263,6 +275,8 @@ export function useNotifications() {
     registerPushNotifications,
     scheduleDailyReminder,
     scheduleStreakReminder,
+    scheduleRollingReminders,
+    cancelRollingReminders: cancelRollingLeoNudges,
     sendLocalNotification,
     updatePreferences,
   };

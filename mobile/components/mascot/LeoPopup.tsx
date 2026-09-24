@@ -17,7 +17,7 @@ import * as Haptics from 'expo-haptics';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, SHADOWS } from '../../lib/constants';
 
-const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
+const LEO_IMAGE = require('../../assets/mascot/leo-jumping.png');
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // ── Message Categories ──
@@ -58,7 +58,7 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
   const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const animateIn = useCallback(() => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Animated.parallel([
       Animated.spring(translateY, { toValue: 0, tension: 120, friction: 12, useNativeDriver: true }),
       Animated.timing(opacity, { toValue: 1, duration: 250, useNativeDriver: true }),
@@ -125,7 +125,6 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
         }}
         style={styles.touchable}
       >
-        <View style={[styles.accentRail, { backgroundColor: config.color }]} />
         {/* Leo avatar */}
         <Animated.View style={[styles.leoWrap, { transform: [{ scale: leoScale }, { translateY: leoBounce }] }]}>
           <Image source={LEO_IMAGE} style={styles.leoImage} />
@@ -159,7 +158,6 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
             </TouchableOpacity>
           )}
         </View>
-        <View style={[styles.cornerMark, { borderColor: config.color + '55' }]} />
       </TouchableOpacity>
     </Animated.View>
   );
@@ -168,7 +166,7 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 60,
+    top: 54,
     left: 16,
     right: 16,
     zIndex: 9999,
@@ -176,27 +174,28 @@ const styles = StyleSheet.create({
   touchable: {
     flexDirection: 'row',
     backgroundColor: COLORS.bg2,
-    borderRadius: 26,
-    padding: 16,
+    borderRadius: 20,
+    paddingVertical: 13,
+    paddingHorizontal: 14,
     borderWidth: 1,
     borderColor: COLORS.border,
     ...SHADOWS.lg,
-    shadowColor: '#000',
+    shadowColor: COLORS.cardShadow,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 24,
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
     elevation: 10,
   },
-  accentRail: { position: 'absolute', left: 0, top: 14, bottom: 14, width: 4, borderTopRightRadius: 4, borderBottomRightRadius: 4 },
-  cornerMark: { position: 'absolute', right: 10, bottom: 10, width: 14, height: 14, borderRightWidth: 2, borderBottomWidth: 2 },
   leoWrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 8,
+    marginTop: -28,
+    marginLeft: -8,
   },
   leoImage: {
-    width: 60,
-    height: 60,
+    width: 82,
+    height: 82,
     resizeMode: 'contain',
   },
   content: {
@@ -244,6 +243,6 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: COLORS.textOnAccent,
   },
 });

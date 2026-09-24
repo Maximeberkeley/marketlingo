@@ -36,7 +36,8 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
     }
 
     processingRef.current = true;
-    const next = queue.current.shift()!;
+    const next = queue.current.shift();
+    if (!next) return;
     lastShown.current = now;
     shownCount.current++;
     setCurrentMessage(next);
@@ -55,6 +56,34 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
     processingRef.current = false;
     setTimeout(() => processQueue(), 500);
   }, [processQueue]);
+
+  const clear = useCallback(() => {
+    queue.current = [];
+    processingRef.current = false;
+    setCurrentMessage(null);
+  }, []);
+
+  const triggerSassyNudge = useCallback((title: string, body: string, onAction: () => void) => {
+    enqueue({
+      category: 'learning',
+      title,
+      body,
+      actionLabel: Math.random() > 0.5 ? 'Jump In' : 'Let’s Go',
+      onAction,
+      duration: 10000,
+    });
+  }, [enqueue]);
+
+  const triggerCompletionNod = useCallback((onAction: () => void) => {
+    enqueue({
+      category: 'achievement',
+      title: 'Okay, showoff.',
+      body: 'You’re safe... until tomorrow.',
+      actionLabel: 'Nice',
+      onAction,
+      duration: 6500,
+    });
+  }, [enqueue]);
 
   // ── Interactive trigger helpers (all require user action) ──
 
@@ -226,7 +255,10 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
   return {
     currentMessage,
     dismiss,
+    clear,
     enqueue,
+    triggerSassyNudge,
+    triggerCompletionNod,
     // Social
     triggerAddFriends,
     triggerInviteFriend,
