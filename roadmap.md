@@ -75,9 +75,9 @@
 - [x] Convert social standings and tier leagues to calendar-month seasons with inspectable tiers and upgraded artwork.
 
 ## New (Sept 24) — Course orbit accuracy and rolling Leo nudges
-- [ ] Replace locked-section placeholder labels with real upcoming lesson titles or curated locked teasers.
-- [ ] Make the Course orbit fill clockwise from Daily Lesson in exact 25% steps across Lesson, Arena, Deep Case, and Intel; exclude Notes.
-- [ ] Fit long Course lesson titles across two complete lines without awkward ellipsis.
-- [ ] Add a personalized jumping-Leo in-app nudge with idle and time-of-day scripts.
-- [ ] Schedule matching local reminders for incomplete local days, cancel them immediately on lesson completion, and show one restrained completion nod.
+- [x] Replace locked-section placeholder labels with real upcoming lesson titles or curated locked teasers.
+- [x] Make the Course orbit fill clockwise from Daily Lesson in exact 25% steps across Lesson, Arena, Deep Case, and Intel; exclude Notes.
+- [x] Fit long Course lesson titles across two complete lines without awkward ellipsis.
+- [x] Add a personalized jumping-Leo in-app nudge with idle and time-of-day scripts.
+- [x] Schedule matching local reminders for incomplete local days, cancel them immediately on lesson completion, and show one restrained completion nod.
 
