@@ -38,34 +38,6 @@ export default function LeaderboardScreen() {
   const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const buildEntries = useCallback(async (
-    xpData: { user_id: string; total_xp: number; current_level: number }[],
-    market: string,
-  ) => {
-    const userIds = xpData.map((x) => x.user_id);
-    if (userIds.length === 0) { setLeaderboard([]); return; }
-
-    const [{ data: profiles }, { data: progressData }] = await Promise.all([
-      supabase.from('public_profiles').select('id, username').in('id', userIds),
-      supabase.from('leaderboard_progress').select('user_id, current_streak').eq('market_id', market).in('user_id', userIds),
-    ]);
-
-    const entries: LeaderboardEntry[] = xpData.map((xp, index) => {
-      const p = profiles?.find((pr) => pr.id === xp.user_id);
-      const s = progressData?.find((pr) => pr.user_id === xp.user_id);
-      return {
-        rank: index + 1, user_id: xp.user_id,
-        username: p?.username?.split('@')[0] || `User ${index + 1}`,
-        total_xp: xp.total_xp, current_level: xp.current_level,
-        current_streak: s?.current_streak || 0, isCurrentUser: xp.user_id === user?.id,
-      };
-    });
-
-    setLeaderboard(entries);
-    const me = entries.find((e) => e.isCurrentUser);
-    setCurrentUserRank(me?.rank ?? null);
-  }, [user]);
-
   useEffect(() => {
     const fetchLeaderboard = async () => {
       if (!user) return;

@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput,
   Alert, ActivityIndicator, Animated, Share, Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { COLORS, TYPE, SHADOWS } from '../lib/constants';
 import { getMarketName } from '../lib/markets';
 import { useFriends, Friend } from '../hooks/useFriends';
@@ -48,7 +48,7 @@ export default function FriendsScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [marketId, setMarketId] = useState<string | null>(null);
-  const { friends, pendingRequests, loading, sendRequest, acceptRequest, declineRequest, removeFriend } = useFriends(marketId || undefined);
+  const { friends, pendingRequests, loading, error: friendsError, sendRequest, acceptRequest, declineRequest, removeFriend, refetch } = useFriends(marketId || undefined);
   const [addUsername, setAddUsername] = useState('');
   const [adding, setAdding] = useState(false);
   const [activeTab, setActiveTab] = useState<'friends' | 'global'>('friends');
@@ -111,7 +111,7 @@ export default function FriendsScreen() {
     fetchGlobalLeaderboard();
   }, [marketId, user, activeTab]);
 
-  const fetchGlobalLeaderboard = async () => {
+  const fetchGlobalLeaderboard = useCallback(async () => {
     if (!marketId || !user) return;
     setGlobalLoading(true);
     setGlobalError(null);
@@ -139,7 +139,13 @@ export default function FriendsScreen() {
       setGlobalError('Standings could not load. Check your connection and try again.');
     }
     setGlobalLoading(false);
-  };
+  }, [marketId, user]);
+
+  useFocusEffect(useCallback(() => {
+    if (!marketId || !user) return;
+    void refetch();
+    if (activeTab === 'global') void fetchGlobalLeaderboard();
+  }, [activeTab, fetchGlobalLeaderboard, marketId, refetch, user]));
 
   const currentUserRank = globalEntries.find((e) => e.isCurrentUser)?.rank ?? null;
   const marketName = marketId ? getMarketName(marketId) : '';
@@ -187,7 +193,7 @@ export default function FriendsScreen() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.access_token) {
-        await supabase.functions.invoke('send-push-notification', {
+        const { error } = await supabase.functions.invoke('send-push-notification', {
           body: {
             userId: friend.id,
             title: 'Nudge!',
@@ -196,8 +202,13 @@ export default function FriendsScreen() {
           },
           headers: { Authorization: `Bearer ${session.access_token}` },
         });
+        if (error) throw error;
       }
-    } catch (e) { /* non-critical */ }
+    } catch (error) {
+      log.warn('Friend nudge failed', error);
+      Alert.alert('Nudge not sent', 'Check your connection and try again.');
+      return;
+    }
     Alert.alert('Nudge sent', `${friend.username} just got a ping.`);
   };
 
@@ -285,7 +296,7 @@ export default function FriendsScreen() {
           {/* ── FRIENDS TAB ─────────────────────── */}
           {activeTab === 'friends' && (
             <>
-              {/* My real week card */}
+              {/* Current monthly season card */}
               <View style={styles.heroCard}>
                   <Image source={SOCIAL_HERO} style={styles.heroLeo} resizeMode="cover" />
                 <View style={{ flex: 1 }}>
@@ -335,11 +346,21 @@ export default function FriendsScreen() {
 
               {loading ? (
                 <ActivityIndicator color={COLORS.accent} size="large" style={{ marginTop: 60 }} />
+              ) : friendsError ? (
+                <View style={styles.emptyState}>
+                  <Feather name="wifi-off" size={32} color={COLORS.textMuted} />
+                  <Text style={styles.emptyTitle}>Friends unavailable</Text>
+                  <Text style={styles.emptySub}>{friendsError}</Text>
+                  <TouchableOpacity style={styles.inviteBtn} onPress={refetch}>
+                    <Feather name="refresh-cw" size={14} color="#FFF" />
+                    <Text style={styles.inviteBtnText}>Try again</Text>
+                  </TouchableOpacity>
+                </View>
               ) : friends.length === 0 ? (
                 <View style={styles.emptyState}>
                   <Image source={LEO_SASSY} style={styles.emptyLeo} resizeMode="contain" />
                   <Text style={styles.emptyTitle}>Racing alone is easy.</Text>
-                  <Text style={styles.emptySub}>Invite one friend. Beat them weekly.</Text>
+                  <Text style={styles.emptySub}>Invite one friend and make this month a race.</Text>
                   <TouchableOpacity style={styles.inviteBtn} onPress={handleShareInvite}>
                     <Feather name="share-2" size={14} color="#FFF" />
                     <Text style={styles.inviteBtnText}>Invite friends</Text>

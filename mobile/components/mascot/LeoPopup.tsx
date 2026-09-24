@@ -17,7 +17,7 @@ import * as Haptics from 'expo-haptics';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, SHADOWS } from '../../lib/constants';
 
-const LEO_IMAGE = require('../../assets/mascot/leo-rain.png');
+const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // ── Message Categories ──

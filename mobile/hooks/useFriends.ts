@@ -30,6 +30,7 @@ export function useFriends(marketId?: string) {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [pendingRequests, setPendingRequests] = useState<FriendRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchFriends = useCallback(async () => {
     if (!user || !marketId) {
@@ -37,12 +38,20 @@ export function useFriends(marketId?: string) {
       return;
     }
 
+    setLoading(true);
+    setError(null);
     // Get accepted friendships where I'm either user_id or friend_id
-    const { data: friendships } = await supabase
+    const { data: friendships, error: friendshipError } = await supabase
       .from('friendships')
       .select('id, user_id, friend_id, status')
       .or(`user_id.eq.${user.id},friend_id.eq.${user.id}`)
       .eq('status', 'accepted');
+    if (friendshipError) {
+      log.warn('Friendships failed to load', friendshipError);
+      setError('Friends could not load. Check your connection and try again.');
+      setLoading(false);
+      return;
+    }
 
     if (!friendships?.length) {
       setFriends([]);
@@ -52,7 +61,15 @@ export function useFriends(marketId?: string) {
         f.user_id === user.id ? f.friend_id : f.user_id
       );
 
-      const standings = await getMonthlyStandings(marketId);
+      let standings;
+      try {
+        standings = await getMonthlyStandings(marketId);
+      } catch (standingsError) {
+        log.warn('Friend standings failed to load', standingsError);
+        setError('Friend scores could not load. Check your connection and try again.');
+        setLoading(false);
+        return;
+      }
 
       const friendList: Friend[] = friendIds.map((fId) => {
         const friendship = friendships.find(
@@ -141,27 +158,34 @@ export function useFriends(marketId?: string) {
   }, [user]);
 
   const acceptRequest = useCallback(async (friendshipId: string) => {
-    await supabase
+    const { error } = await supabase
       .from('friendships')
       .update({ status: 'accepted', updated_at: new Date().toISOString() })
       .eq('id', friendshipId);
+    if (error) return { success: false, error: error.message };
     await fetchFriends();
+    return { success: true };
   }, [fetchFriends]);
 
   const declineRequest = useCallback(async (friendshipId: string) => {
-    await supabase.from('friendships').delete().eq('id', friendshipId);
+    const { error } = await supabase.from('friendships').delete().eq('id', friendshipId);
+    if (error) return { success: false, error: error.message };
     setPendingRequests((prev) => prev.filter((r) => r.id !== friendshipId));
+    return { success: true };
   }, []);
 
   const removeFriend = useCallback(async (friendshipId: string) => {
-    await supabase.from('friendships').delete().eq('id', friendshipId);
+    const { error } = await supabase.from('friendships').delete().eq('id', friendshipId);
+    if (error) return { success: false, error: error.message };
     await fetchFriends();
+    return { success: true };
   }, [fetchFriends]);
 
   return {
     friends,
     pendingRequests,
     loading,
+    error,
     sendRequest,
     acceptRequest,
     declineRequest,
