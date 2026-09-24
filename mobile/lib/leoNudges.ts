@@ -13,10 +13,10 @@ export type LeoNudgeWindow = 'midday' | 'afternoon' | 'evening' | 'urgent' | 'id
 const SCRIPTS: Record<LeoNudgeWindow, Array<{ title: string; body: string }>> = {
   midday: [
     { title: 'A quick word…', body: 'Your lunch break has 3 minutes to spare, {name}. Those markets won’t study themselves.' },
-    { title: 'Leo is watching', body: 'I took a nap, woke up, and you’re STILL on today’s lesson?' },
+    { title: 'Leo is watching', body: 'I took a nap, woke up, and you’re STILL on Day 1?' },
   ],
   afternoon: [
-    { title: 'Be so for real', body: 'Outsmarting Wall Street takes 3 minutes. Your scrolling took 45, {name}.' },
+    { title: 'Be so for real', body: 'Outsmarting Wall Street takes 3 minutes. Your scrolling took 45. Be so for real, {name}.' },
     { title: 'Leo here', body: 'Just checking if you forgot how to be clever today.' },
   ],
   evening: [

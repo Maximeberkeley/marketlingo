@@ -144,8 +144,11 @@ export function useNotifications() {
     if (!isSupported) return;
 
     try {
-      // Cancel existing scheduled notifications
-      await Notifications.cancelAllScheduledNotificationsAsync();
+      // Preserve Intel and rolling Leo alerts; replace only this recurring reminder.
+      const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+      await Promise.all(scheduled
+        .filter(item => item.content.data?.type === 'daily_reminder')
+        .map(item => Notifications.cancelScheduledNotificationAsync(item.identifier)));
 
       if (!preferences.dailyReminder) return;
 
