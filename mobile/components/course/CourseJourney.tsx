@@ -134,18 +134,43 @@ function Coin({
   completed: boolean;
   onPress: () => void;
 }) {
+  const glowIntensity = useRef(new Animated.Value(0.56)).current;
+
+  const setPressed = (pressed: boolean) => {
+    Animated.spring(glowIntensity, {
+      toValue: pressed ? 1 : 0.56,
+      damping: 16,
+      stiffness: 240,
+      mass: 0.55,
+      useNativeDriver: true,
+    }).start();
+  };
+
   return (
     <View style={[styles.coinPosition, position]}>
+      {!locked ? (
+        <>
+          <Animated.View
+            pointerEvents="none"
+            style={[styles.coinGlowWide, { opacity: glowIntensity }]}
+          />
+          <Animated.View
+            pointerEvents="none"
+            style={[styles.coinGlowNear, { opacity: glowIntensity }]}
+          />
+        </>
+      ) : null}
       <TouchableOpacity
         style={[styles.coinShadow, locked && styles.coinLocked]}
         onPress={onPress}
+        onPressIn={() => setPressed(true)}
+        onPressOut={() => setPressed(false)}
         activeOpacity={0.82}
         accessibilityRole="button"
         accessibilityLabel={`${label}${locked ? ', locked' : completed ? ', complete' : ''}`}
         accessibilityState={{ disabled: locked }}
       >
         <View style={[styles.coinFace, locked && styles.coinFaceLocked]}>
-          <View style={styles.coinShine} />
           <Feather
             name={locked ? 'lock' : completed ? 'check' : icon}
             size={locked ? 23 : 29}
@@ -645,11 +670,24 @@ const styles = StyleSheet.create({
   orbitMarker3: { top: 287, left: 78 },
   orbitMarker4: { top: 116, left: 30 },
   coinPosition: { position: 'absolute', width: 94, alignItems: 'center', zIndex: 3 },
-  coinShadow: { width: 84, height: 84, borderRadius: 42, backgroundColor: COLORS.courseCoinDeep, paddingBottom: 7, justifyContent: 'flex-start', shadowColor: COLORS.courseCoinDeep, shadowOffset: { width: 0, height: 9 }, shadowOpacity: 0.28, shadowRadius: 12, elevation: 8 },
-  coinFace: { width: 84, height: 77, borderRadius: 42, backgroundColor: COLORS.courseCoin, borderWidth: 1, borderColor: COLORS.courseCoinHighlight, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  coinLocked: { backgroundColor: COLORS.border, shadowColor: COLORS.cardShadow, shadowOpacity: 0.12 },
+  coinGlowWide: {
+    position: 'absolute', top: -7, width: 98, height: 98, borderRadius: 49,
+    backgroundColor: COLORS.accentSoft, shadowColor: COLORS.accent, shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.34, shadowRadius: 22, elevation: 7,
+  },
+  coinGlowNear: {
+    position: 'absolute', top: -1, width: 86, height: 86, borderRadius: 43,
+    backgroundColor: COLORS.accentMedium, shadowColor: COLORS.courseCoinHighlight, shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.52, shadowRadius: 11, elevation: 8,
+  },
+  coinShadow: {
+    width: 84, height: 84, borderRadius: 42, backgroundColor: COLORS.courseCoin,
+    alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.courseCoinHighlight,
+    shadowColor: COLORS.accent, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.46, shadowRadius: 18, elevation: 10,
+  },
+  coinFace: { width: 81, height: 81, borderRadius: 41, backgroundColor: COLORS.courseCoin, alignItems: 'center', justifyContent: 'center' },
+  coinLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border, shadowColor: COLORS.cardShadow, shadowOpacity: 0.1, elevation: 3 },
   coinFaceLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border },
-  coinShine: { position: 'absolute', top: 8, left: 18, right: 18, height: 8, borderRadius: 5, backgroundColor: COLORS.courseCoinHighlight },
   coinLabel: { ...TYPE.caption, color: COLORS.textPrimary, marginTop: 7, textAlign: 'center' },
   lockedText: { color: COLORS.textMuted },
   leoCenter: { position: 'absolute', width: 166, height: 166, left: '50%', marginLeft: -83, top: 107, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
