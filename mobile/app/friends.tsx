@@ -157,12 +157,12 @@ export default function FriendsScreen() {
     const rows = [
       {
         id: 'me', isMe: true, name: 'You', initial,
-        xp: myStats.monthXP, weekXP: myStats.monthXP, level: myStats.level, streak: myStats.streak,
+        xp: myStats.monthXP, monthXP: myStats.monthXP, level: myStats.level, streak: myStats.streak,
         friend: null as Friend | null,
       },
       ...friends.map((f) => ({
         id: f.id, isMe: false, name: f.username, initial: f.username.charAt(0).toUpperCase(),
-        xp: friendMonthXP[f.id] || 0, weekXP: friendMonthXP[f.id] || 0, level: f.currentLevel, streak: f.currentStreak,
+        xp: friendMonthXP[f.id] || 0, monthXP: friendMonthXP[f.id] || 0, level: f.currentLevel, streak: f.currentStreak,
         friend: f,
       })),
     ];
@@ -391,7 +391,7 @@ export default function FriendsScreen() {
                       name={row.name}
                       initial={row.initial}
                       xp={row.xp}
-                       meta={`Lv.${row.level}${row.streak > 0 ? ` · ${row.streak}d streak` : ''}${row.weekXP > 0 ? ` · ${row.weekXP} this month` : ''}`}
+                       meta={`Lv.${row.level}${row.streak > 0 ? ` · ${row.streak}d streak` : ''}${row.monthXP > 0 ? ` · ${row.monthXP} this month` : ''}`}
                       isMe={row.isMe}
                       online={row.friend ? isActive(row.friend) : false}
                       onNudge={row.friend ? () => handleNudge(row.friend!) : undefined}

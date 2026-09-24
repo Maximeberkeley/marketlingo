@@ -111,3 +111,50 @@ export function consolidationSection(template: DeliverableTemplate, day: number)
 export function isConsolidationDay(day: number): boolean {
   return day > 0 && day % 7 === 0;
 }
+
+/**
+ * The status the document confers on its author. Earned, never assigned:
+ * each rank is simply how much of the document exists in their own words.
+ */
+export interface DossierRank {
+  /** What they are, now. */
+  title: string;
+  /** One line explaining what the document can already do for them. */
+  blurb: string;
+  /** Completion needed for the next rank, or null at the top. */
+  nextAt: number | null;
+  /** The next title, or null at the top. */
+  nextTitle: string | null;
+}
+
+const RANKS: { at: number; title: string; blurb: string }[] = [
+  { at: 0, title: 'Observer', blurb: 'Nothing written yet. One line starts the document.' },
+  { at: 17, title: 'Analyst', blurb: 'You have your first position on this industry in writing.' },
+  { at: 34, title: 'Market Reader', blurb: 'Enough to hold a real conversation about how this industry works.' },
+  { at: 50, title: 'Insider', blurb: 'Half the document stands. It already reads like someone who works here.' },
+  { at: 67, title: 'Operator', blurb: 'You can defend most of this without notes.' },
+  { at: 84, title: 'Authority', blurb: 'One section from a document you would put your name on.' },
+  { at: 100, title: 'Principal', blurb: 'Complete, in your own words, and ready to send.' },
+];
+
+export function dossierRank(completion: number): DossierRank {
+  const pct = Math.max(0, Math.min(100, Math.round(completion)));
+  let index = 0;
+  for (let i = 0; i < RANKS.length; i += 1) {
+    if (pct >= RANKS[i].at) index = i;
+  }
+  const current = RANKS[index];
+  const next = RANKS[index + 1] ?? null;
+  return {
+    title: current.title,
+    blurb: current.blurb,
+    nextAt: next ? next.at : null,
+    nextTitle: next ? next.title : null,
+  };
+}
+
+/** Short status word shown on each slot. */
+export function slotStatus(lineCount: number): 'empty' | 'filled' | 'strong' {
+  if (lineCount <= 0) return 'empty';
+  return lineCount >= 2 ? 'strong' : 'filled';
+}

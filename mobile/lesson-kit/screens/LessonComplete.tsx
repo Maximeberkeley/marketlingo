@@ -8,6 +8,8 @@ import { playSound } from '../../lib/sounds';
 import { triggerHaptic } from '../../lib/haptics';
 import { useIntelHabit } from '../../hooks/useIntelHabit';
 import { useDisplayName } from '../../hooks/useDisplayName';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { useDeliverable } from '../../hooks/useDeliverable';
 
 interface Props {
   correct: number;
@@ -70,6 +72,13 @@ export function LessonComplete({
 }: Props) {
   const { displayName } = useDisplayName();
   const intel = useIntelHabit(marketId);
+  const { progress } = useUserProgress(marketId);
+  const goal = (progress as { learning_goal?: string } | null)?.learning_goal ?? null;
+  const dossier = useDeliverable(marketId, goal);
+  /** The next slot the learner can light up, in their own words. */
+  const openSlot = dossier.loading
+    ? null
+    : dossier.template.sections.find(s => (dossier.bySection[s.key]?.length ?? 0) === 0) ?? null;
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 100;
   const praise = accuracy === 100
     ? `Brilliant work, ${displayName}!`
@@ -140,6 +149,31 @@ export function LessonComplete({
         <Stat label="Correct" value={`${correct}/${total}`} />
         <Stat label="Time" value={formatTime(timeSpentSeconds)} />
       </View>
+
+      {/* One slot of their own dossier is now within reach. */}
+      {openSlot && (
+        <TouchableOpacity
+          style={styles.dossierCard}
+          activeOpacity={0.85}
+          onPress={() => {
+            triggerHaptic('medium');
+            onDone(totalXp);
+            router.push({ pathname: '/deliverable', params: { section: openSlot.key } });
+          }}
+        >
+          <View style={styles.dossierIcon}>
+            <Feather name="file-text" size={18} color={tokens.color.accent} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.dossierEyebrow}>
+              {dossier.template.title.toUpperCase()} · {dossier.completion}% WRITTEN
+            </Text>
+            <Text style={styles.dossierTitle}>Slot open: {openSlot.title}</Text>
+            <Text style={styles.dossierBody}>{openSlot.prompt}</Text>
+          </View>
+          <Feather name="chevron-right" size={18} color={tokens.color.accent} />
+        </TouchableOpacity>
+      )}
 
       {/* Leo sends the learner into today's industry intel. */}
       {!intel.loading && (
@@ -258,4 +292,42 @@ const styles = StyleSheet.create({
   intelLeo: { width: 44, height: 44 },
   intelTitle: { fontSize: tokens.font.caption + 2, fontWeight: '800', color: tokens.color.text },
   intelBody: { fontSize: tokens.font.caption, color: tokens.color.textSecondary, marginTop: 2 },
+  dossierCard: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: tokens.space.md,
+    marginTop: tokens.space.lg,
+    padding: tokens.space.md,
+    borderRadius: tokens.radius.lg,
+    borderWidth: 1,
+    borderColor: tokens.color.accent,
+    backgroundColor: tokens.color.card,
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 4,
+  },
+  dossierIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: tokens.color.accentSoft,
+  },
+  dossierEyebrow: {
+    fontSize: 9.5,
+    fontWeight: '800',
+    letterSpacing: 1,
+    color: tokens.color.accent,
+  },
+  dossierTitle: {
+    fontSize: tokens.font.caption + 2,
+    fontWeight: '800',
+    color: tokens.color.text,
+    marginTop: 3,
+  },
+  dossierBody: { fontSize: tokens.font.caption, color: tokens.color.textSecondary, marginTop: 2 },
 });
