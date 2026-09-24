@@ -4,6 +4,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
+import { getMonthlyStandings, standingName } from '../lib/socialStandings';
+import { log } from '../lib/logger';
 
 export interface Friend {
   id: string;
@@ -50,29 +52,23 @@ export function useFriends(marketId?: string) {
         f.user_id === user.id ? f.friend_id : f.user_id
       );
 
-      const [{ data: profiles }, { data: xpData }, { data: progressData }] = await Promise.all([
-        supabase.from('public_profiles').select('id, username, avatar_url').in('id', friendIds),
-        supabase.from('leaderboard_xp').select('user_id, total_xp, current_level').eq('market_id', marketId).in('user_id', friendIds),
-        supabase.from('leaderboard_progress').select('user_id, current_streak, last_activity_at').eq('market_id', marketId).in('user_id', friendIds),
-      ]);
+      const standings = await getMonthlyStandings(marketId);
 
       const friendList: Friend[] = friendIds.map((fId) => {
         const friendship = friendships.find(
           (f) => (f.user_id === fId || f.friend_id === fId)
         );
-        const profile = profiles?.find((p) => p.id === fId);
-        const xp = xpData?.find((x) => x.user_id === fId);
-        const prog = progressData?.find((p) => p.user_id === fId);
+        const standing = standings.find((row) => row.user_id === fId);
 
         return {
           id: fId,
           friendshipId: friendship?.id || '',
-          username: profile?.username?.split('@')[0] || 'Friend',
-          avatarUrl: profile?.avatar_url || null,
-          totalXP: xp?.total_xp || 0,
-          currentStreak: prog?.current_streak || 0,
-          currentLevel: xp?.current_level || 1,
-          lastActivityAt: prog?.last_activity_at || null,
+          username: standing ? standingName(standing) : 'Friend',
+          avatarUrl: standing?.avatar_url || null,
+          totalXP: standing?.monthly_xp || 0,
+          currentStreak: standing?.current_streak || 0,
+          currentLevel: standing?.current_level || 1,
+          lastActivityAt: standing?.last_activity_at || null,
         };
       });
 
@@ -114,13 +110,14 @@ export function useFriends(marketId?: string) {
     if (!user) return { success: false, error: 'Not authenticated' };
 
     // Search by username (which may contain email) — case-insensitive partial match
-    const { data: targetProfile } = await supabase
-      .from('public_profiles')
-      .select('id, username')
-      .or(`username.ilike.%${friendIdentifier}%`)
-      .neq('id', user.id)
-      .limit(1)
-      .maybeSingle();
+    const { data: matches, error: searchError } = await supabase.rpc('search_public_profiles', {
+      p_query: friendIdentifier.trim(),
+    });
+    if (searchError) {
+      log.warn('Friend search failed', searchError);
+      return { success: false, error: 'Search is unavailable right now. Please try again.' };
+    }
+    const targetProfile = matches?.[0];
 
     if (!targetProfile) return { success: false, error: 'User not found. Make sure they have an account.' };
 

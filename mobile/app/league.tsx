@@ -183,7 +183,17 @@ export default function LeagueScreen() {
           </View>
 
           <View style={styles.table}>
-            {viewedRivals.length === 0 ? (
+            {league.error ? (
+              <View style={styles.emptyState}>
+                <Feather name="wifi-off" size={28} color={COLORS.textMuted} />
+                <Text style={styles.emptyTitle}>Standings unavailable</Text>
+                <Text style={styles.emptyText}>{league.error}</Text>
+                <TouchableOpacity style={styles.retryButton} onPress={league.refetch}>
+                  <Feather name="refresh-cw" size={15} color={COLORS.textOnAccent} />
+                  <Text style={styles.retryText}>Try again</Text>
+                </TouchableOpacity>
+              </View>
+            ) : viewedRivals.length === 0 ? (
               <View style={styles.emptyState}>
                 <Feather name="users" size={28} color={COLORS.textMuted} />
                 <Text style={styles.emptyTitle}>No standings yet</Text>
@@ -248,6 +258,8 @@ const styles = StyleSheet.create({
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   loadingText: { ...TYPE.caption, color: COLORS.textMuted },
   content: { paddingHorizontal: 18, paddingTop: 8 },
+  retryButton: { marginTop: 14, minHeight: 44, paddingHorizontal: 18, borderRadius: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, backgroundColor: COLORS.accent },
+  retryText: { ...TYPE.caption, color: COLORS.textOnAccent, fontWeight: '800' },
   titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 6 },
   titleCopy: { flex: 1 },
   eyebrow: { ...TYPE.overline, color: COLORS.textMuted },
