@@ -352,7 +352,7 @@ function endsMidSentence(text: string): boolean {
 }
 
 /** Rejects a day that would ship thin, cut, or unsourced. */
-function validateDayContent(content: any): string[] {
+function validateDayContent(content: any, goal?: LearningGoal): string[] {
   const problems: string[] = [];
   if (!content) return ['no content'];
   if (!content.title || String(content.title).trim().length < 6) problems.push('missing title');
@@ -377,6 +377,16 @@ function validateDayContent(content: any): string[] {
   const allSources = slides.flatMap((s: any) => (Array.isArray(s?.sources) ? s.sources : []));
   const usableSources = allSources.filter((s: any) => typeof s?.url === 'string' && /^https?:\/\/[^\s]+\.[^\s]+/.test(s.url) && !/example\.com/.test(s.url));
   if (usableSources.length < 2) problems.push('needs at least 2 real sources with links');
+  if (goal === 'build_startup') {
+    const lessonText = JSON.stringify(content).toLowerCase();
+    const assumesExistingVenture = [
+      /your startup(?:'s)?/,
+      /your (?:company|product|prototype|customers?)/,
+      /apply (?:this|it) to your idea/,
+      /for your existing idea/,
+    ].some(pattern => pattern.test(lessonText));
+    if (assumesExistingVenture) problems.push('startup path assumes an existing idea, product, customer, or company');
+  }
   return problems;
 }
 
@@ -431,6 +441,8 @@ ${beatSpec}
 
 Keep the ${persona.label} lens throughout (what they should do with this):
 ${persona.slideGuidance}
+
+${persona.label === 'Build a Startup' ? `STARTUP-PATH RULE: Assume the learner has no startup idea yet. Begin from an observed customer, workflow, constraint, or recurring problem. Never say “your startup”, “your product”, “your customers”, or “your idea” unless the lesson explicitly frames an existing idea as optional. The takeaway must help the learner discover or test a possible gap before proposing a solution.` : ''}
 
 Return valid JSON only:
 {
@@ -549,7 +561,7 @@ async function generateDayContent(
       ? ''
       : `\n\nYour previous attempt was REJECTED for: ${lastProblems.join('; ')}. Fix every one of these and write the day again in full. The case beat MUST name a real company and carry at least two hard figures (a money amount, a percentage, a count or a date).`;
     const content = await callGateway(apiKey, system, user + retryNote);
-    lastProblems = validateDayContent(content);
+    lastProblems = validateDayContent(content, goal);
     if (lastProblems.length === 0) return content;
     console.warn(`Day ${day} (${goal}) attempt ${attempt + 1} rejected:`, lastProblems.join('; '));
   }

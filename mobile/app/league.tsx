@@ -14,7 +14,7 @@ import { LEAGUE_TIERS, LeagueTier, TIER_META, useLeague } from '../hooks/useLeag
 import { getMarketName } from '../lib/markets';
 import { triggerHaptic } from '../lib/haptics';
 
-const TROPHY_LEO = require('../assets/mascot/leo-trophy.png');
+const LEAGUE_HERO = require('../assets/illustrations/monthly-league-hero.png');
 const AVATAR_COLORS = ['#7C3AED', '#0F766E', '#B45309', '#BE123C', '#0369A1', '#4D7C0F'];
 
 function initials(name: string): string {
@@ -157,7 +157,7 @@ export default function LeagueScreen() {
 
           <View style={styles.mascotStage}>
             <View style={[styles.glow, { backgroundColor: COLORS.goldSoft }]} />
-            <Image source={TROPHY_LEO} style={styles.trophyLeo} resizeMode="contain" />
+            <Image source={LEAGUE_HERO} style={styles.trophyLeo} resizeMode="cover" />
             <View style={styles.statusPill}>
               <Feather
                 name={league.myRank && league.myRank <= league.promotionCutoff ? 'trending-up' : 'target'}
@@ -183,7 +183,17 @@ export default function LeagueScreen() {
           </View>
 
           <View style={styles.table}>
-            {viewedRivals.length === 0 ? (
+            {league.error ? (
+              <View style={styles.emptyState}>
+                <Feather name="wifi-off" size={28} color={COLORS.textMuted} />
+                <Text style={styles.emptyTitle}>Standings unavailable</Text>
+                <Text style={styles.emptyText}>{league.error}</Text>
+                <TouchableOpacity style={styles.retryButton} onPress={league.refetch}>
+                  <Feather name="refresh-cw" size={15} color={COLORS.textOnAccent} />
+                  <Text style={styles.retryText}>Try again</Text>
+                </TouchableOpacity>
+              </View>
+            ) : viewedRivals.length === 0 ? (
               <View style={styles.emptyState}>
                 <Feather name="users" size={28} color={COLORS.textMuted} />
                 <Text style={styles.emptyTitle}>No standings yet</Text>
@@ -248,6 +258,8 @@ const styles = StyleSheet.create({
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   loadingText: { ...TYPE.caption, color: COLORS.textMuted },
   content: { paddingHorizontal: 18, paddingTop: 8 },
+  retryButton: { marginTop: 14, minHeight: 44, paddingHorizontal: 18, borderRadius: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, backgroundColor: COLORS.accent },
+  retryText: { ...TYPE.caption, color: COLORS.textOnAccent, fontWeight: '800' },
   titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 6 },
   titleCopy: { flex: 1 },
   eyebrow: { ...TYPE.overline, color: COLORS.textMuted },
@@ -267,7 +279,7 @@ const styles = StyleSheet.create({
   lockedLabel: { color: COLORS.textMuted },
   mascotStage: { minHeight: 238, alignItems: 'center', justifyContent: 'flex-end', marginTop: 16 },
   glow: { position: 'absolute', top: 36, width: 174, height: 174, borderRadius: 87, opacity: isDark ? 0.85 : 1 },
-  trophyLeo: { width: 190, height: 190, resizeMode: 'contain', backfaceVisibility: 'hidden', imageRendering: 'crisp-edges' } as any,
+  trophyLeo: { width: '100%', height: 190, borderRadius: 22, resizeMode: 'cover', backfaceVisibility: 'hidden' },
   statusPill: { width: '100%', minHeight: 48, borderRadius: 14, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, ...SHADOWS.sm },
   statusText: { flexShrink: 1, ...TYPE.caption, color: COLORS.textSecondary, textAlign: 'center' },
   standingsHeading: { marginTop: 26, marginBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

@@ -340,7 +340,7 @@ Key requirements:
 - Include expert-level reasoning that teaches valuable lessons
 - Reference real industry dynamics, regulations, and market conditions`;
 
-  const userPrompt = `Create a challenging strategic decision scenario for a startup founder in ${marketName}, focused on: "${theme}"
+  const userPrompt = `Create a challenging strategic decision scenario for a prospective founder in ${marketName}, focused on: "${theme}". Assume the learner may have no startup idea, product, prototype, customer, or company. Frame the scenario around evaluating a real market gap or a clearly hypothetical venture; never ask about "the founder's own situation" as though one already exists.
 
 Return valid JSON only:
 {
@@ -355,7 +355,7 @@ Return valid JSON only:
   "feedback_pro_reasoning": "Expert explanation (300-500 chars) of why the correct answer demonstrates superior strategic thinking. Reference industry norms, typical outcomes, and proven frameworks.",
   "feedback_common_mistake": "The most frequent error inexperienced founders make in this situation and why (100-200 chars)",
   "feedback_mental_model": "A reusable principle or framework that applies beyond this specific scenario (50-100 chars)",
-  "follow_up_question": "A deeper reflection question that prompts self-examination of the founder's own situation",
+  "follow_up_question": "A deeper reflection question about what evidence the learner would seek before choosing or pursuing this opportunity",
   "tags": ["${theme.split(' ')[0].toLowerCase()}", "${marketId}", "strategy"]
 }
 

@@ -1,0 +1,71 @@
+/**
+ * useFeatureFlags — remote kill switch for AI-dependent features.
+ *
+ * Flags live in the `feature_flags` table and are cached locally so the app
+ * behaves predictably offline. Defaults are safe: AI stays on unless the
+ * backend says otherwise, experimental surfaces stay off.
+ */
+import { useCallback, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '../lib/supabase';
+const DEFAULTS = {
+    ai_leo: true,
+    ai_voice: true,
+    ai_mentor_chat: true,
+    decision_engine: true,
+    market_of_the_day: false,
+};
+const CACHE_KEY = 'feature_flags_v1';
+const CACHE_TTL_MS = 5 * 60 * 1000;
+let memoryCache = null;
+let memoryCacheAt = 0;
+export async function fetchFeatureFlags() {
+    try {
+        const { data, error } = await supabase.from('feature_flags').select('key, enabled');
+        if (error)
+            throw error;
+        const map = { ...DEFAULTS };
+        (data || []).forEach((row) => {
+            map[row.key] = row.enabled;
+        });
+        memoryCache = map;
+        memoryCacheAt = Date.now();
+        AsyncStorage.setItem(CACHE_KEY, JSON.stringify(map)).catch(() => { });
+        return map;
+    }
+    catch {
+        if (memoryCache)
+            return memoryCache;
+        try {
+            const raw = await AsyncStorage.getItem(CACHE_KEY);
+            if (raw)
+                return { ...DEFAULTS, ...JSON.parse(raw) };
+        }
+        catch {
+            // ignore
+        }
+        return { ...DEFAULTS };
+    }
+}
+/** Non-hook check for use inside async handlers. Cache expires so a remote
+ *  kill switch takes effect without a cold start. */
+export async function isFeatureEnabled(key) {
+    const fresh = memoryCache && Date.now() - memoryCacheAt < CACHE_TTL_MS;
+    const flags = fresh ? memoryCache : await fetchFeatureFlags();
+    return flags[key] ?? DEFAULTS[key];
+}
+export function useFeatureFlags() {
+    const [flags, setFlags] = useState(memoryCache || DEFAULTS);
+    const [loaded, setLoaded] = useState(!!memoryCache);
+    const refresh = useCallback(async () => {
+        const next = await fetchFeatureFlags();
+        setFlags(next);
+        setLoaded(true);
+        return next;
+    }, []);
+    useEffect(() => {
+        refresh();
+    }, [refresh]);
+    const isEnabled = useCallback((key) => flags[key] ?? DEFAULTS[key], [flags]);
+    return { flags, loaded, isEnabled, refresh };
+}

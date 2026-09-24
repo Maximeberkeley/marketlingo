@@ -46,7 +46,7 @@ const TEMPLATES: Record<DeliverableGoal, DeliverableTemplate> = {
   build_startup: {
     goal: 'build_startup',
     title: 'Idea Dossier',
-    subtitle: 'The file where your idea stops being a feeling.',
+    subtitle: 'The file where industry gaps become a defensible plan.',
     payoff: 'Finish it and you have a real, named gap with evidence behind it.',
     sections: [
       { key: 'gap', title: 'The gap', prompt: 'What is broken or missing here, in one line?' },
@@ -54,7 +54,7 @@ const TEMPLATES: Record<DeliverableGoal, DeliverableTemplate> = {
       { key: 'why_now', title: 'Why now', prompt: 'What changed recently that makes this possible today?' },
       { key: 'money', title: 'Where the money is', prompt: 'Who would pay, and roughly how much?' },
       { key: 'incumbents', title: 'Why the big players have not fixed it', prompt: 'What stops them?' },
-      { key: 'first_test', title: 'My first test', prompt: 'The cheapest thing you could do this month to check it.' },
+      { key: 'first_test', title: 'My first test', prompt: 'The cheapest way to test whether this gap is real.' },
     ],
   },
   invest: {

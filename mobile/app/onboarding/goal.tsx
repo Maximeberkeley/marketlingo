@@ -61,8 +61,8 @@ const goalOptions: GoalOption[] = [
     title: 'Build a startup',
     subtitle: 'Founder Path',
     color: '#22C55E',
-    description: 'Learn GTM strategies, fundraising, competitive moats, and regulatory pathways',
-    emphasis: ['GTM strategy', 'Fundraising', 'Regulatory paths'],
+    description: 'Find a real industry gap, test who feels it, and build evidence before choosing a solution',
+    emphasis: ['Opportunity discovery', 'Customer evidence', 'First tests'],
   },
   {
     id: 'curiosity',
@@ -78,7 +78,7 @@ const goalOptions: GoalOption[] = [
 const LEO_REACTIONS: Record<LearningGoal, string> = {
   join_industry: "Great choice! I'll prep you like a recruiter's dream candidate.",
   invest: "Love it! Let's sharpen your investment thesis.",
-  build_startup: "Founder mode activated! Let's build something big.",
+  build_startup: "You do not need an idea yet. We’ll find a gap worth solving.",
   curiosity: "Curiosity is a superpower — let's explore together!",
 };
 

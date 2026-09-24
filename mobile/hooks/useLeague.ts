@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { log } from '../lib/logger';
+import { getMonthlyStandings, standingName } from '../lib/socialStandings';
 
 export type LeagueTier = 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
 export type LeagueResult = 'promoted' | 'demoted' | 'held';
@@ -33,6 +34,7 @@ export interface Rival {
 
 export interface LeagueState {
   loading: boolean;
+  error: string | null;
   tier: LeagueTier;
   weeklyXp: number;
   myRank: number | null;
@@ -75,6 +77,7 @@ export function useLeague(marketId?: string) {
   const { user } = useAuth();
   const [state, setState] = useState<LeagueState>({
     loading: true,
+    error: null,
     tier: 'bronze',
     weeklyXp: 0,
     myRank: null,
@@ -108,29 +111,15 @@ export function useLeague(marketId?: string) {
       const tier = ((myRow?.tier as LeagueTier) || 'bronze') as LeagueTier;
 
       // 2. Standings for every tier this month so the full league system is inspectable.
-      const { data: standings } = await supabase
-        .from('league_memberships')
-        .select('user_id, weekly_xp, updated_at, tier')
-        .eq('market_id', marketId)
-        .eq('week_of', weekOf)
-        .order('weekly_xp', { ascending: false })
-        .limit(150);
-
-      const rows = standings ?? [];
-      const ids = rows.map((r) => r.user_id);
-      const { data: profiles } = ids.length
-        ? await supabase.from('public_profiles').select('id, username').in('id', ids)
-        : { data: [] as { id: string; username: string | null }[] };
+      const rows = await getMonthlyStandings(marketId);
 
       const rivalsByTier = LEAGUE_TIERS.reduce((groups, groupTier) => {
         groups[groupTier] = rows
           .filter((row) => row.tier === groupTier)
           .map((r, i) => ({
             userId: r.user_id,
-            username: r.user_id === user.id
-              ? 'You'
-              : (profiles?.find((p) => p.id === r.user_id)?.username?.split('@')[0] || 'Analyst'),
-            weeklyXp: r.weekly_xp ?? 0,
+            username: r.user_id === user.id ? 'You' : standingName(r),
+            weeklyXp: r.monthly_xp,
             rank: i + 1,
             isMe: r.user_id === user.id,
           }));
@@ -172,6 +161,7 @@ export function useLeague(marketId?: string) {
 
       setState({
         loading: false,
+        error: null,
         tier,
         weeklyXp: myRow?.weekly_xp ?? 0,
         myRank,
@@ -186,7 +176,7 @@ export function useLeague(marketId?: string) {
       });
     } catch (e) {
       log.error('League load failed', e);
-      setState((s) => ({ ...s, loading: false }));
+      setState((s) => ({ ...s, loading: false, error: 'Standings could not load. Check your connection and try again.' }));
     }
   }, [user, marketId]);
 

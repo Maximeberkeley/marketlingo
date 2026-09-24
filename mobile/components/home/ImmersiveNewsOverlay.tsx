@@ -65,7 +65,7 @@ const sophiaAvatar = require('../../assets/mentors/mentor-sophia.png');
 const GOAL_LABELS: Record<string, string> = {
   join_industry: 'joining and building a career in',
   invest: 'investing in',
-  build_startup: 'building a startup in',
+  build_startup: 'finding a valuable gap in',
   curiosity: 'learning about and understanding',
 };
 

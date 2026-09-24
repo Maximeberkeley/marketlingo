@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
+  AccessibilityInfo,
   FlatList,
   Image,
   Modal,
@@ -25,6 +26,43 @@ import { playSound } from '../../lib/sounds';
 import { StreakBadge } from '../ui/StreakBadge';
 import { XPBadge } from '../ui/XPBadge';
 import { LeoCharacter } from '../mascot/LeoCharacter';
+
+function MovingLessonTitle({ title, long }: { title: string; long: boolean }) {
+  const sweep = useRef(new Animated.Value(0)).current;
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    void AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    return () => subscription.remove();
+  }, []);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      sweep.setValue(0);
+      return;
+    }
+    const animation = Animated.loop(Animated.sequence([
+      Animated.timing(sweep, { toValue: 1, duration: 1150, useNativeDriver: true }),
+      Animated.delay(1850),
+      Animated.timing(sweep, { toValue: 0, duration: 0, useNativeDriver: true }),
+    ]));
+    animation.start();
+    return () => animation.stop();
+  }, [reduceMotion, sweep]);
+
+  return (
+    <View style={styles.weekTitleWrap}>
+      <Text style={[styles.weekTitle, long && styles.weekTitleLong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.78}>{title}</Text>
+      {!reduceMotion ? (
+        <Animated.View pointerEvents="none" style={[styles.titleSweep, {
+          opacity: sweep.interpolate({ inputRange: [0, 0.35, 0.7, 1], outputRange: [0, 0.6, 0.25, 0] }),
+          transform: [{ translateX: sweep.interpolate({ inputRange: [0, 1], outputRange: [250, -70] }) }],
+        }]} />
+      ) : null}
+    </View>
+  );
+}
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
   aerospace: require('../../assets/illustrations/aerospace.png'),
@@ -233,12 +271,7 @@ function SectionCluster({
       <View style={styles.weekHeading}>
         <View style={styles.weekHeadingCopy}>
           <Text style={styles.weekEyebrow}>{section.unlocked ? `DAY ${section.displayDay}` : `DAYS ${section.startDay}–${section.endDay}`}</Text>
-          <Text
-            style={[styles.weekTitle, longTitle && styles.weekTitleLong]}
-            numberOfLines={2}
-            adjustsFontSizeToFit
-            minimumFontScale={0.78}
-          >{weekTitle}</Text>
+          <MovingLessonTitle title={weekTitle} long={longTitle} />
           <Text style={styles.lessonMeta}>{marketName} · 6 min</Text>
         </View>
         {!section.unlocked ? (
@@ -292,7 +325,7 @@ function SectionCluster({
           accessibilityLabel={`Ask Leo about ${title}`}
         >
           <View style={styles.leoVisual} pointerEvents="none">
-            <LeoCharacter size="course" animation={section.unlocked ? 'idle' : 'sleeping'} still />
+            <LeoCharacter size="course" animation="reading" still />
           </View>
         </TouchableOpacity>
       </View>
@@ -655,7 +688,9 @@ const styles = StyleSheet.create({
   weekHeadingCopy: { flex: 1, minWidth: 0 },
   weekEyebrow: { ...TYPE.overline, color: COLORS.courseHeader },
   weekTitle: { fontSize: 28, lineHeight: 33, fontWeight: '700', color: COLORS.textPrimary, marginTop: 4, maxWidth: 300 },
+  weekTitleWrap: { position: 'relative', overflow: 'hidden', maxWidth: 300 },
   weekTitleLong: { fontSize: 18, lineHeight: 23 },
+  titleSweep: { position: 'absolute', top: 1, bottom: 0, width: 62, backgroundColor: COLORS.accentSoft, borderRadius: 18 },
   lessonMeta: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 5 },
   lockPill: { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 12, paddingHorizontal: 9, paddingVertical: 7, backgroundColor: COLORS.lockedSurface },
   lockPillText: { ...TYPE.caption, color: COLORS.textMuted, maxWidth: 110 },

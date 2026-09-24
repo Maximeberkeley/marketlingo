@@ -8,14 +8,9 @@ import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { Feather } from '@expo/vector-icons';
+import { getMonthlyStandings, standingName } from '../lib/socialStandings';
+import { log } from '../lib/logger';
 
-type TimeFilter = 'weekly' | 'monthly' | 'all-time';
-
-const TIME_TABS: { key: TimeFilter; label: string }[] = [
-  { key: 'weekly', label: 'This Week' },
-  { key: 'monthly', label: 'This Month' },
-  { key: 'all-time', label: 'All Time' },
-];
 
 interface LeaderboardEntry {
   rank: number;
@@ -41,35 +36,7 @@ export default function LeaderboardScreen() {
   const [loading, setLoading] = useState(true);
   const [marketName, setMarketName] = useState('');
   const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
-  const [timeFilter, setTimeFilter] = useState<TimeFilter>('all-time');
-
-  const buildEntries = useCallback(async (
-    xpData: { user_id: string; total_xp: number; current_level: number }[],
-    market: string,
-  ) => {
-    const userIds = xpData.map((x) => x.user_id);
-    if (userIds.length === 0) { setLeaderboard([]); return; }
-
-    const [{ data: profiles }, { data: progressData }] = await Promise.all([
-      supabase.from('public_profiles').select('id, username').in('id', userIds),
-      supabase.from('leaderboard_progress').select('user_id, current_streak').eq('market_id', market).in('user_id', userIds),
-    ]);
-
-    const entries: LeaderboardEntry[] = xpData.map((xp, index) => {
-      const p = profiles?.find((pr) => pr.id === xp.user_id);
-      const s = progressData?.find((pr) => pr.user_id === xp.user_id);
-      return {
-        rank: index + 1, user_id: xp.user_id,
-        username: p?.username?.split('@')[0] || `User ${index + 1}`,
-        total_xp: xp.total_xp, current_level: xp.current_level,
-        current_streak: s?.current_streak || 0, isCurrentUser: xp.user_id === user?.id,
-      };
-    });
-
-    setLeaderboard(entries);
-    const me = entries.find((e) => e.isCurrentUser);
-    setCurrentUserRank(me?.rank ?? null);
-  }, [user]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -80,36 +47,29 @@ export default function LeaderboardScreen() {
       const market = profile?.selected_market || 'aerospace';
       setMarketName(market.charAt(0).toUpperCase() + market.slice(1));
 
-      if (timeFilter === 'all-time') {
-        const { data: xpData } = await supabase
-          .from('leaderboard_xp').select('user_id, total_xp, current_level')
-          .eq('market_id', market).order('total_xp', { ascending: false }).limit(50);
-        if (xpData) await buildEntries(xpData, market);
-      } else {
-        // Period XP comes from a shared view: xp_transactions itself is owner-only,
-        // so reading it directly would only ever return the current user.
-        const column = timeFilter === 'weekly' ? 'weekly_xp' : 'monthly_xp';
-        const { data: periodData } = await supabase
-          .from('leaderboard_period_xp')
-          .select('user_id, weekly_xp, monthly_xp')
-          .eq('market_id', market)
-          .order(column, { ascending: false })
-          .limit(50);
-
-        const sorted = (periodData || [])
-          .map((row: any) => ({
-            user_id: row.user_id as string,
-            total_xp: Number(row[column]) || 0,
-            current_level: 1,
-          }))
-          .filter((row) => row.total_xp > 0)
-          .sort((a, b) => b.total_xp - a.total_xp);
-        await buildEntries(sorted, market);
+      try {
+        setError(null);
+        const rows = (await getMonthlyStandings(market)).filter(row => row.monthly_xp > 0).slice(0, 50);
+        const entries = rows.map((row, index) => ({
+          rank: index + 1,
+          user_id: row.user_id,
+          username: standingName(row),
+          total_xp: row.monthly_xp,
+          current_level: row.current_level,
+          current_streak: row.current_streak,
+          isCurrentUser: row.user_id === user.id,
+        }));
+        setLeaderboard(entries);
+        setCurrentUserRank(entries.find(entry => entry.isCurrentUser)?.rank ?? null);
+      } catch (loadError) {
+        log.warn('Leaderboard failed', loadError);
+        setLeaderboard([]);
+        setError('Monthly standings could not load. Please try again.');
       }
       setLoading(false);
     };
     fetchLeaderboard();
-  }, [user, timeFilter, buildEntries]);
+  }, [user]);
 
   return (
     <View style={styles.container}>
@@ -131,21 +91,7 @@ export default function LeaderboardScreen() {
         )}
       </View>
 
-      {/* Time filter tabs */}
-      <View style={styles.tabRow}>
-        {TIME_TABS.map((tab) => (
-          <TouchableOpacity
-            key={tab.key}
-            style={[styles.tab, timeFilter === tab.key && styles.tabActive]}
-            onPress={() => setTimeFilter(tab.key)}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.tabText, timeFilter === tab.key && styles.tabTextActive]}>
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <View style={styles.seasonBar}><Text style={styles.seasonText}>CURRENT MONTHLY SEASON</Text></View>
 
       <ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 80 }]}
@@ -177,13 +123,19 @@ export default function LeaderboardScreen() {
           )}
           <View style={styles.filterBadge}>
             <Text style={styles.filterBadgeText}>
-              {timeFilter === 'all-time' ? 'All Time' : timeFilter === 'weekly' ? 'This Week' : 'This Month'}
+                This Month
             </Text>
           </View>
         </View>
 
         {loading ? (
           <View style={styles.centered}><ActivityIndicator color={COLORS.accent} size="large" /></View>
+        ) : error ? (
+          <View style={styles.emptyState}>
+            <Feather name="wifi-off" size={30} color={COLORS.textMuted} />
+            <Text style={styles.emptyTitle}>Standings unavailable</Text>
+            <Text style={styles.emptySub}>{error}</Text>
+          </View>
         ) : leaderboard.length === 0 ? (
           <View style={styles.emptyState}>
             <Image source={require('../assets/illustrations/leaderboard-hero.png')} style={{ width: 120, height: 120, marginBottom: 16 }} resizeMode="contain" />
@@ -254,6 +206,8 @@ const styles = StyleSheet.create({
   tabActive: { backgroundColor: COLORS.accent },
   tabText: { fontSize: 12, fontWeight: '600', color: COLORS.textMuted },
   tabTextActive: { color: '#FFFFFF' },
+  seasonBar: { paddingHorizontal: 16, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: COLORS.border },
+  seasonText: { fontSize: 11, fontWeight: '800', color: COLORS.accent },
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
   prizeBanner: {
     flexDirection: 'row', alignItems: 'flex-start', gap: 12, padding: 16, borderRadius: 16, marginBottom: 16,
