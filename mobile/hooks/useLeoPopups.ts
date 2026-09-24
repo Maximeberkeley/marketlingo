@@ -77,9 +77,9 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
   const triggerCompletionNod = useCallback((onAction: () => void) => {
     enqueue({
       category: 'achievement',
-      title: 'Okay, showoff.',
-      body: 'You’re safe... until tomorrow.',
-      actionLabel: 'Nice',
+      title: 'Today’s briefing is complete',
+      body: 'Your streak is secure. The Arena and Intel can now reinforce what you learned.',
+      actionLabel: 'Continue',
       onAction,
       duration: 6500,
     });
@@ -90,7 +90,7 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
   const triggerAddFriends = useCallback((onAction: () => void) => {
     enqueue({
       category: 'social',
-      title: 'Learn with friends! 🤝',
+      title: 'Learn with friends',
       body: 'People who learn together retain 40% more. Add a friend to compete on the leaderboard.',
       actionLabel: 'Add friends',
       onAction,
@@ -123,7 +123,7 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
   const triggerStartLesson = useCallback((dayNumber: number, onAction: () => void) => {
     enqueue({
       category: 'learning',
-      title: `Day ${dayNumber} is ready! 📚`,
+      title: `Day ${dayNumber} is ready`,
       body: "Today's lesson is waiting. Build your expertise one day at a time.",
       actionLabel: 'Start lesson',
       onAction,
@@ -134,7 +134,7 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
   const triggerReviewDue = useCallback((dueCount: number, onAction: () => void) => {
     enqueue({
       category: 'learning',
-      title: `${dueCount} concepts to review 📝`,
+      title: `${dueCount} concepts to review`,
       body: 'Spaced repetition works best on time. Quick review now?',
       actionLabel: 'Review now',
       onAction,
@@ -145,7 +145,7 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
   const triggerWriteNote = useCallback((onAction: () => void) => {
     enqueue({
       category: 'learning',
-      title: 'Capture your insights ✏️',
+      title: 'Capture your insight',
       body: 'Writing notes boosts retention by 30%. Save a takeaway from today.',
       actionLabel: 'Write a note',
       onAction,
@@ -156,7 +156,7 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
   const triggerTryTrainer = useCallback((onAction: () => void) => {
     enqueue({
       category: 'game',
-      title: 'Test your knowledge ⚡',
+      title: 'Test your knowledge',
       body: 'Real-world scenario challenge — can you make the right call?',
       actionLabel: 'Try trainer',
       onAction,
@@ -167,7 +167,7 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
   const triggerPlayGame = useCallback((onAction: () => void) => {
     enqueue({
       category: 'game',
-      title: 'Quick challenge? 🎮',
+      title: 'Quick challenge?',
       body: 'A 2-minute drill to sharpen your decision-making skills.',
       actionLabel: 'Play now',
       onAction,
@@ -178,7 +178,7 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
   const triggerInvestmentLab = useCallback((onAction: () => void) => {
     enqueue({
       category: 'game',
-      title: 'Investment Lab unlocked 💰',
+      title: 'Investment Lab unlocked',
       body: 'Practice portfolio construction with real market scenarios.',
       actionLabel: 'Open lab',
       onAction,
@@ -189,7 +189,7 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
   const triggerSetGoal = useCallback((onAction: () => void) => {
     enqueue({
       category: 'achievement',
-      title: 'Set your learning goal 🎯',
+      title: 'Set your learning goal',
       body: 'Choose a focus — career, investing, or building a startup — to personalize your path.',
       actionLabel: 'Set goal',
       onAction,
@@ -200,7 +200,7 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
   const triggerStreakProtect = useCallback((streak: number, onAction: () => void) => {
     enqueue({
       category: 'streak',
-      title: `${displayName}, protect your ${streak}-day streak! 🔥`,
+      title: `${displayName}, protect your ${streak}-day streak`,
       body: "Your streak is at risk. Complete today's lesson to keep it alive.",
       actionLabel: 'Start lesson',
       onAction,
@@ -211,7 +211,7 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
   const triggerStreakCelebrate = useCallback((streak: number, onAction: () => void) => {
     enqueue({
       category: 'streak',
-      title: `${displayName}, that's a ${streak}-day streak! 🔥`,
+      title: `${displayName}, that’s a ${streak}-day streak`,
       body: "You're on fire! Share your progress with friends.",
       actionLabel: 'Share streak',
       onAction,

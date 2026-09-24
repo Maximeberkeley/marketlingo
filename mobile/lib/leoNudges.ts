@@ -12,23 +12,23 @@ export type LeoNudgeWindow = 'midday' | 'afternoon' | 'evening' | 'urgent' | 'id
 
 const SCRIPTS: Record<LeoNudgeWindow, Array<{ title: string; body: string }>> = {
   midday: [
-    { title: 'A quick word…', body: 'Your lunch break has 3 minutes to spare, {name}. Those markets won’t study themselves.' },
-    { title: 'Leo is watching', body: 'I took a nap, woke up, and you’re STILL on Day 1?' },
+    { title: 'Your briefing is ready', body: '{name}, take one focused lesson now and keep today’s idea in motion.' },
+    { title: 'Build today’s fluency', body: 'A short lesson now gives you one more industry mechanism you can explain.' },
   ],
   afternoon: [
-    { title: 'Be so for real', body: 'Outsmarting Wall Street takes 3 minutes. Your scrolling took 45. Be so for real, {name}.' },
-    { title: 'Leo here', body: 'Just checking if you forgot how to be clever today.' },
+    { title: 'One useful idea today', body: '{name}, your next course lesson is ready when you have a few focused minutes.' },
+    { title: 'Continue the thread', body: 'Pick up where you left off and turn today’s concept into something you can use.' },
   ],
   evening: [
-    { title: 'Tick-tock', body: 'Your streak is on life support, {name}. Just saying.' },
-    { title: 'A fox has limits', body: 'I’m a fox, not a babysitter. Finish your lesson before midnight strikes.' },
+    { title: 'Protect your learning streak', body: '{name}, complete today’s lesson before your local day ends.' },
+    { title: 'Close the loop', body: 'Finish today’s briefing and keep your insider streak intact.' },
   ],
   urgent: [
-    { title: 'Midnight is coming', body: '{name}, this is the part where you save the streak and pretend you planned it.' },
-    { title: 'Last call', body: 'One lesson. Three minutes. Zero dramatic excuses.' },
+    { title: 'Your local day ends soon', body: '{name}, one completed lesson will protect your streak before midnight.' },
+    { title: 'Last briefing window', body: 'Complete today’s lesson now to carry your progress into tomorrow.' },
   ],
   idle: [
-    { title: 'Leo is watching', body: 'Staring at the dashboard won’t get you that promotion, {name}.' },
+    { title: 'Ready when you are', body: '{name}, today’s lesson is the clearest next step on your course map.' },
   ],
 };
 

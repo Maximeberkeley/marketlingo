@@ -17,7 +17,7 @@ import * as Haptics from 'expo-haptics';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, SHADOWS } from '../../lib/constants';
 
-const LEO_IMAGE = require('../../assets/mascot/leo-jumping.png');
+const LEO_IMAGE = require('../../assets/mascot/leo-rain.png');
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // ── Message Categories ──
@@ -52,9 +52,6 @@ const CATEGORY_CONFIG: Record<LeoPopupCategory, { icon: string; color: string; l
 export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
   const translateY = useRef(new Animated.Value(-200)).current;
   const opacity = useRef(new Animated.Value(0)).current;
-  const leoScale = useRef(new Animated.Value(0.5)).current;
-  const leoBounce = useRef(new Animated.Value(0)).current;
-  const bounceLoop = useRef<Animated.CompositeAnimation | null>(null);
   const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const animateIn = useCallback(() => {
@@ -62,17 +59,7 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
     Animated.parallel([
       Animated.spring(translateY, { toValue: 0, tension: 120, friction: 12, useNativeDriver: true }),
       Animated.timing(opacity, { toValue: 1, duration: 250, useNativeDriver: true }),
-      Animated.spring(leoScale, { toValue: 1, tension: 150, friction: 8, useNativeDriver: true }),
-    ]).start(() => {
-      // Subtle bounce loop
-      bounceLoop.current = Animated.loop(
-        Animated.sequence([
-          Animated.timing(leoBounce, { toValue: -4, duration: 800, useNativeDriver: true }),
-          Animated.timing(leoBounce, { toValue: 0, duration: 800, useNativeDriver: true }),
-        ]),
-      );
-      bounceLoop.current.start();
-    });
+    ]).start();
   }, []);
 
   const animateOut = useCallback(() => {
@@ -88,8 +75,6 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
     // Reset
     translateY.setValue(-200);
     opacity.setValue(0);
-    leoScale.setValue(0.5);
-    leoBounce.setValue(0);
 
     animateIn();
 
@@ -101,7 +86,6 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
 
     return () => {
       if (dismissTimer.current) clearTimeout(dismissTimer.current);
-      bounceLoop.current?.stop();
     };
   }, [message?.id]);
 
@@ -126,9 +110,9 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
         style={styles.touchable}
       >
         {/* Leo avatar */}
-        <Animated.View style={[styles.leoWrap, { transform: [{ scale: leoScale }, { translateY: leoBounce }] }]}>
+        <View style={styles.leoWrap}>
           <Image source={LEO_IMAGE} style={styles.leoImage} />
-        </Animated.View>
+        </View>
 
         {/* Content */}
         <View style={styles.content}>
