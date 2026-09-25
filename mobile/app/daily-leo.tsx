@@ -132,7 +132,7 @@ export default function DailyLeoScreen() {
 
 
       <View style={styles.footer}>
-        <Text style={styles.caption}>One lesson. About five minutes. Then I stop judging.</Text>
+        <Text style={styles.caption}>One lesson. About five minutes. That is the whole day.</Text>
         <TouchableOpacity
           style={styles.continueButton}
           activeOpacity={0.88}
@@ -153,8 +153,10 @@ const styles = StyleSheet.create({
   eyebrow: { fontSize: 11, fontWeight: '900', color: COLORS.accent, letterSpacing: 1.2, marginBottom: 10 },
   title: { fontSize: 32, lineHeight: 38, fontWeight: '900', color: COLORS.textPrimary, maxWidth: 330 },
   scene: { flex: 1, minHeight: 310, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  leoWrap: { width: 174, height: 220, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' },
-  bubble: { flex: 1, maxWidth: 190, marginLeft: 8 },
+  // Full width and no clipping: the umbrella and tail must stay in frame.
+  leoWrap: { width: 208, height: 208, justifyContent: 'center', alignItems: 'center' },
+  bubble: { flex: 1, maxWidth: 186, marginLeft: 2 },
+
   footer: { gap: 14 },
   caption: { color: COLORS.textSecondary, fontSize: 13, lineHeight: 19, textAlign: 'center', fontWeight: '600' },
   continueButton: { height: 58, borderRadius: 18, backgroundColor: COLORS.accent, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, ...SHADOWS.accent },
