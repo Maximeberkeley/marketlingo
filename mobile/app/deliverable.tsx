@@ -251,7 +251,32 @@ export default function DeliverableScreen() {
           </View>
         )}
 
-        <Text style={styles.sectionHeading}>THE SLOTS</Text>
+        {/* Plain explanation: what this document is, and why writing in it pays. */}
+        <View style={styles.explain}>
+          <View style={styles.explainRow}>
+            <Feather name="edit-3" size={14} color={COLORS.accent} />
+            <Text style={styles.explainText}>
+              One sentence after a lesson. That is the whole job.
+            </Text>
+          </View>
+          <View style={styles.explainRow}>
+            <Feather name="layers" size={14} color={COLORS.accent} />
+            <Text style={styles.explainText}>
+              Each sentence fills a section below and moves your rank up.
+            </Text>
+          </View>
+          <View style={styles.explainRow}>
+            <Feather name="send" size={14} color={COLORS.accent} />
+            <Text style={styles.explainText}>
+              By the end you can export it as a real {marketName} brief.
+            </Text>
+          </View>
+        </View>
+
+        <Text style={styles.sectionHeading}>
+          {nextOpen ? `NEXT UP · ${nextOpen.title.toUpperCase()}` : 'ALL SECTIONS WRITTEN'}
+        </Text>
+
 
         {template.sections.map((section, index) => {
           const own = bySection[section.key] ?? [];
