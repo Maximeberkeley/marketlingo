@@ -156,6 +156,14 @@ export async function speakWithElevenLabs(
     return null;
   }
 
+  // A muted learner never triggers a voice request at all.
+  if (isLeoMutedSync()) {
+    log.debug(`[TTS:${tag}] Muted — skipping speech`);
+    return null;
+  }
+
+  const generation = speechGeneration;
+
   log.debug(`[TTS:${tag}] Starting TTS, text: "${text.substring(0, 50)}...", voice: ${voiceId}`);
 
   try {
@@ -163,6 +171,13 @@ export async function speakWithElevenLabs(
     log.debug(`[TTS:${tag}] Auth token obtained:`, token ? `${token.substring(0, 10)}...` : '⚠️ EMPTY');
     
     const base64 = await fetchAudioAsBase64(text, voiceId, token);
+
+    // The learner may have walked away while the audio downloaded.
+    if (generation !== speechGeneration || isLeoMutedSync()) {
+      log.debug(`[TTS:${tag}] Cancelled before playback`);
+      return null;
+    }
+
 
     // Write to temp file
     const tempPath = `${FileSystem.cacheDirectory}${tag}_${Date.now()}.mp3`;
