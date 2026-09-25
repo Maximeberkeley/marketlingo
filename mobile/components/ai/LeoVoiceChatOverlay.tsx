@@ -310,21 +310,18 @@ export function LeoVoiceChatOverlay({
     const nextMuted = !isMuted;
     setIsMuted(nextMuted);
     triggerHaptic('light');
-    if (soundRef.current) {
-      try {
-        await soundRef.current.setVolumeAsync(nextMuted ? 0 : 1);
-      } catch {
-        // Audio may finish while the control is being pressed.
-      }
+    // The choice is remembered until it is tapped again.
+    await setLeoMuted(nextMuted);
+    if (nextMuted) {
+      await stopAllTTS();
+      soundRef.current = null;
+      setIsSpeaking(false);
     }
   }, [isMuted]);
 
   const handleClose = useCallback(() => {
-    if (soundRef.current) {
-      soundRef.current.stopAsync().catch(() => {});
-      soundRef.current.unloadAsync().catch(() => {});
-      soundRef.current = null;
-    }
+    stopAllTTS().catch(() => {});
+    soundRef.current = null;
     if (recordingRef.current) {
       recordingRef.current.stopAndUnloadAsync().catch(() => {});
       recordingRef.current = null;
@@ -335,6 +332,7 @@ export function LeoVoiceChatOverlay({
     setNarrationText('');
     onClose();
   }, [onClose]);
+
 
   if (!visible) return null;
 
