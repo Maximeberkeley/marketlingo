@@ -26,23 +26,42 @@ function withStartupTimeout<T>(request: PromiseLike<T>): Promise<T> {
   ]);
 }
 
+/**
+ * A warm welcome, never a countdown. Leo greets the learner by time of day and
+ * points at what is waiting, without deadlines or guilt.
+ */
 function presentation(data: Reminder) {
   const hour = new Date().getHours();
-  const expiry = data.expiresAt ? new Date(data.expiresAt).getTime() : NaN;
-  const hoursLeft = Number.isFinite(expiry) ? Math.max(0, (expiry - Date.now()) / 3600000) : 24 - hour;
   const market = getMarketName(data.market);
 
-  if (hoursLeft <= 3 || hour >= 21) {
-    return { mood: 'urgent' as LeoAnim, eyebrow: 'FINAL HOURS', line: `${Math.ceil(hoursLeft)} hours left. I brought the rain. You bring five minutes for ${market}.` };
+  if (hour >= 21) {
+    return {
+      mood: 'reading' as LeoAnim,
+      eyebrow: 'GOOD EVENING',
+      line: `Quiet hours are the best hours. I have one ${market} idea ready for you.`,
+    };
   }
   if (hour >= 18) {
-    return { mood: 'thinking' as LeoAnim, eyebrow: 'EVENING CHECK', line: `Your ${market} lesson is still waiting. Bold strategy. Shall we save the streak?` };
+    return {
+      mood: 'thinking' as LeoAnim,
+      eyebrow: 'GOOD EVENING',
+      line: `Welcome back. Today's ${market} idea is short, and it is a good one.`,
+    };
   }
   if (hour >= 12) {
-    return { mood: 'sassy' as LeoAnim, eyebrow: 'AFTERNOON CHECK', line: `You have time. Your excuses are simply getting more creative than your ${market} knowledge.` };
+    return {
+      mood: 'sassy' as LeoAnim,
+      eyebrow: 'GOOD AFTERNOON',
+      line: `Good to see you. One ${market} idea, and you walk away knowing something new.`,
+    };
   }
-  return { mood: 'reading' as LeoAnim, eyebrow: 'TODAY’S MISSION', line: `${market} is moving while you sleep. Conveniently, I took notes.` };
+  return {
+    mood: 'reading' as LeoAnim,
+    eyebrow: 'GOOD MORNING',
+    line: `${market} moved while you slept. Conveniently, I took notes.`,
+  };
 }
+
 
 export default function DailyLeoScreen() {
   const insets = useSafeAreaInsets();
@@ -99,7 +118,11 @@ export default function DailyLeoScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 22 }]}>
       <View style={styles.heading}>
         <Text style={styles.eyebrow}>{content.eyebrow}</Text>
-        <Text style={styles.title}>{data.streak > 0 ? `${data.streak}-day streak on the line` : 'Your daily edge starts here'}</Text>
+        <Text style={styles.title}>
+          {data.streak > 0
+            ? `Welcome back — ${data.streak} ${data.streak === 1 ? 'day' : 'days'} in a row`
+            : 'Welcome back to your market'}
+        </Text>
       </View>
 
       <View style={styles.scene}>
@@ -107,8 +130,9 @@ export default function DailyLeoScreen() {
         <SpeechBubble text={content.line} tail="left" tone="purple" style={styles.bubble} />
       </View>
 
+
       <View style={styles.footer}>
-        <Text style={styles.caption}>One lesson. About five minutes. Then I stop judging.</Text>
+        <Text style={styles.caption}>One lesson. About five minutes. That is the whole day.</Text>
         <TouchableOpacity
           style={styles.continueButton}
           activeOpacity={0.88}
@@ -129,8 +153,10 @@ const styles = StyleSheet.create({
   eyebrow: { fontSize: 11, fontWeight: '900', color: COLORS.accent, letterSpacing: 1.2, marginBottom: 10 },
   title: { fontSize: 32, lineHeight: 38, fontWeight: '900', color: COLORS.textPrimary, maxWidth: 330 },
   scene: { flex: 1, minHeight: 310, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  leoWrap: { width: 174, height: 220, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' },
-  bubble: { flex: 1, maxWidth: 190, marginLeft: 8 },
+  // Full width and no clipping: the umbrella and tail must stay in frame.
+  leoWrap: { width: 208, height: 208, justifyContent: 'center', alignItems: 'center' },
+  bubble: { flex: 1, maxWidth: 186, marginLeft: 2 },
+
   footer: { gap: 14 },
   caption: { color: COLORS.textSecondary, fontSize: 13, lineHeight: 19, textAlign: 'center', fontWeight: '600' },
   continueButton: { height: 58, borderRadius: 18, backgroundColor: COLORS.accent, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, ...SHADOWS.accent },

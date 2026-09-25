@@ -77,6 +77,12 @@ export default function DeliverableScreen() {
 
   const { template, bySection, completion, filledSections } = deliverable;
   const rank = useMemo(() => dossierRank(completion), [completion]);
+  /** The first still-empty section: the screen always names one clear next move. */
+  const nextOpen = useMemo(
+    () => template.sections.find(section => (bySection[section.key]?.length ?? 0) === 0) ?? null,
+    [template.sections, bySection],
+  );
+
 
   // The ring animates to the new completion whenever the document grows.
   const ringAnim = useRef(new Animated.Value(0)).current;
@@ -251,7 +257,32 @@ export default function DeliverableScreen() {
           </View>
         )}
 
-        <Text style={styles.sectionHeading}>THE SLOTS</Text>
+        {/* Plain explanation: what this document is, and why writing in it pays. */}
+        <View style={styles.explain}>
+          <View style={styles.explainRow}>
+            <Feather name="edit-3" size={14} color={COLORS.accent} />
+            <Text style={styles.explainText}>
+              One sentence after a lesson. That is the whole job.
+            </Text>
+          </View>
+          <View style={styles.explainRow}>
+            <Feather name="layers" size={14} color={COLORS.accent} />
+            <Text style={styles.explainText}>
+              Each sentence fills a section below and moves your rank up.
+            </Text>
+          </View>
+          <View style={styles.explainRow}>
+            <Feather name="send" size={14} color={COLORS.accent} />
+            <Text style={styles.explainText}>
+              By the end you can export it as a real {marketName} brief.
+            </Text>
+          </View>
+        </View>
+
+        <Text style={styles.sectionHeading}>
+          {nextOpen ? `NEXT UP · ${nextOpen.title.toUpperCase()}` : 'ALL SECTIONS WRITTEN'}
+        </Text>
+
 
         {template.sections.map((section, index) => {
           const own = bySection[section.key] ?? [];
@@ -347,6 +378,9 @@ export default function DeliverableScreen() {
 
               {open && (
                 <View style={styles.composer}>
+                  <Text style={styles.hint}>
+                    One or two sentences, in your own words. Only you ever see this.
+                  </Text>
                   <TextInput
                     style={styles.input}
                     value={draft}
@@ -356,6 +390,7 @@ export default function DeliverableScreen() {
                     multiline
                     autoFocus
                   />
+
                   <TouchableOpacity
                     style={[styles.saveBtn, draft.trim().length < 3 && styles.saveBtnOff]}
                     disabled={draft.trim().length < 3 || saving}
@@ -491,12 +526,26 @@ const styles = StyleSheet.create({
   },
   weeklyCtaText: { ...TYPE.bodyBold, color: COLORS.textOnAccent, fontWeight: '800' },
 
+  explain: {
+    marginHorizontal: 18,
+    marginBottom: 18,
+    padding: 16,
+    borderRadius: 20,
+    gap: 10,
+    backgroundColor: COLORS.accentSoft,
+    borderWidth: 1,
+    borderColor: COLORS.accentMedium,
+  },
+  explainRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  explainText: { ...TYPE.caption, color: COLORS.textPrimary, flex: 1, fontWeight: '600' },
+
   sectionHeading: {
     ...TYPE.overline,
-    color: COLORS.textMuted,
+    color: COLORS.accent,
     marginLeft: 22,
     marginBottom: 10,
   },
+
 
   card: {
     marginHorizontal: 18,
@@ -562,6 +611,8 @@ const styles = StyleSheet.create({
   entryDay: { fontSize: 10.5, fontWeight: '700', color: COLORS.textMuted },
 
   composer: { marginTop: 12, gap: 10 },
+  hint: { ...TYPE.caption, color: COLORS.textSecondary, fontWeight: '600' },
+
   input: {
     ...TYPE.body,
     color: COLORS.textPrimary,

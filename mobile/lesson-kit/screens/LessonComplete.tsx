@@ -238,14 +238,53 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: tokens.color.bg },
   wrap: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: tokens.space.xl,
+    paddingBottom: tokens.space.xl * 2,
+    gap: tokens.space.sm,
+    backgroundColor: tokens.color.bg,
+  },
+  intelWrap: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: tokens.space.xl,
-    gap: tokens.space.sm,
     backgroundColor: tokens.color.bg,
   },
+  intelHeroLeo: { width: 132, height: 132, marginBottom: tokens.space.lg },
+  intelEyebrow: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1.4,
+    color: tokens.color.accent,
+  },
+  intelHeadline: {
+    fontSize: tokens.font.title + 2,
+    fontWeight: '900',
+    color: tokens.color.text,
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  intelSub: {
+    fontSize: tokens.font.body,
+    color: tokens.color.textSecondary,
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  intelQuote: {
+    fontSize: tokens.font.caption + 1,
+    color: tokens.color.textMuted,
+    textAlign: 'center',
+    marginTop: tokens.space.md,
+    fontStyle: 'italic',
+  },
+  laterBtn: { marginTop: tokens.space.md, padding: tokens.space.sm },
+  laterText: { fontSize: tokens.font.caption + 1, fontWeight: '700', color: tokens.color.textMuted },
+
   badge: {
     width: 88, height: 88, borderRadius: 44,
     backgroundColor: tokens.color.accentSoft,
