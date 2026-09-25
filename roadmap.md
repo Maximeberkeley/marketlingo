@@ -1,5 +1,9 @@
 # MarketLingo roadmap
 
+## Sept 25 — Practice artwork and update delivery
+- [x] Use the supplied arena and case artwork on their respective Practice cards and remove the redundant lesson-count sentence.
+- [x] Explain App Store automatic updates versus app-delivered updates accurately, without implying a new version is already available.
+
 ## v2 content rethink — "teach one thing a day, and prove it landed"
 
 ### Phase 0 — content-agnostic fixes (done)

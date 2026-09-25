@@ -25,7 +25,7 @@ const ACTIVITY_CARDS = [
         gradientColors: ['#92400E', '#B45309', '#D97706'],
         accentGlow: 'rgba(217, 119, 6, 0.4)',
         path: '/arena',
-        heroImage: require('../../assets/cards/games-hero.jpg'),
+        heroImage: require('../../assets/cards/daily-arena-hero.jpg'),
         tag: 'DAILY',
     },
     {
@@ -38,7 +38,7 @@ const ACTIVITY_CARDS = [
         gradientColors: ['#1E1B4B', '#312E81', '#4338CA'],
         accentGlow: 'rgba(67, 56, 202, 0.4)',
         path: '/deep-case',
-        heroImage: require('../../assets/cards/trainer-hero.jpg'),
+        heroImage: require('../../assets/cards/deep-case-hero.jpg'),
         tag: 'CASE',
     },
 ];
@@ -291,11 +291,9 @@ export default function PracticeScreen() {
                 ? `Practice ${studied.lessons[0].title}`
                 : 'Complete your first lesson to unlock practice'}
             </Text>
-            <Text style={styles.groundedBody}>
-              {studied.lessons.length > 0
-            ? `${studied.lessons.length} completed lesson${studied.lessons.length === 1 ? '' : 's'} can appear. Nothing random.`
-            : 'Arena and Deep Case stay locked until they can test something you actually studied.'}
-            </Text>
+            {studied.lessons.length === 0 && !studied.isLoading && (<Text style={styles.groundedBody}>
+              Arena and Deep Case stay locked until they can test something you actually studied.
+            </Text>)}
           </View>
         </View>
 
