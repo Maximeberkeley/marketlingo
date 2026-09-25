@@ -410,7 +410,7 @@ export default function SettingsScreen() {
 
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Version</Text>
-            <Text style={styles.infoValue}>{Constants.expoConfig?.version || '1.0.9'}</Text>
+            <Text style={styles.infoValue}>{Constants.expoConfig?.version || '1.1.0'}</Text>
           </View>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/legal?type=terms')}>

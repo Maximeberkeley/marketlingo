@@ -379,7 +379,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.versionText}>MarketLingo v1.0.9</Text>
+        <Text style={styles.versionText}>MarketLingo v1.1.0</Text>
         </Animated.View>
       </ScrollView>
 
