@@ -87,3 +87,6 @@
 - [ ] Remember mute until it is manually switched off.
 - [ ] Split the crowded lesson completion screen into a scrollable rewards step and a clean "now read intel" step.
 - [ ] Investigate why a completed lesson shows no tick and no purple orbit fill, and why the day advances immediately when the learner is behind.
+- [ ] Give credit for a streak when the learner studies today even while behind schedule.
+- [ ] Fix the cut mascot image on the check-in popup and replace the 18-hours-left warning with a welcome message.
+- [ ] Rework the dossier into an intuitive, gamified, clearly explained experience.
