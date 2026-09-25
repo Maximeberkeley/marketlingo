@@ -207,6 +207,8 @@ export function AskLeoOverlay({
         await stopAudio();
         return;
       }
+      if (isLeoMutedSync()) return;
+
       try {
         setIsPlayingAudio(true);
         if (Platform.OS === 'web') {
