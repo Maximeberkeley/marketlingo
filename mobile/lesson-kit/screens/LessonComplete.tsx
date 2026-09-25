@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -89,7 +89,9 @@ export function LessonComplete({
   const bonusXp = bonuses.reduce((sum, b) => sum + b.xp, 0);
   const totalXp = baseXp + bonusXp;
 
+  const [step, setStep] = useState<'rewards' | 'intel'>('rewards');
   const [shown, setShown] = useState(0);
+
   const counter = useRef(new Animated.Value(0)).current;
   const [display, setDisplay] = useState(0);
 
