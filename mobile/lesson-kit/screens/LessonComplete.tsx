@@ -114,8 +114,45 @@ export function LessonComplete({
     return () => clearTimeout(t);
   }, [shown, bonuses.length]);
 
+  // Step 2 keeps a single clear instruction instead of crowding the reward screen.
+  if (step === 'intel') {
+    return (
+      <View style={styles.intelWrap}>
+        <Image source={require('../../assets/leo-sticker.png')} style={styles.intelHeroLeo} resizeMode="contain" />
+        <Text style={styles.intelEyebrow}>ONE LAST STEP</Text>
+        <Text style={styles.intelHeadline}>Now read today's intel</Text>
+        <Text style={styles.intelSub}>
+          {intel.done
+            ? `All ${intel.target} stories read today. You're current.`
+            : `${intel.remaining} ${intel.remaining === 1 ? 'story' : 'stories'} left today · ${intel.readToday}/${intel.target} · +20 XP when you finish`}
+        </Text>
+        <Text style={styles.intelQuote}>
+          {intel.done
+            ? 'Leo: "Go see what changed since this morning anyway."'
+            : 'Leo: "The concept is yours. Now see it happening this week."'}
+        </Text>
+        <PrimaryButton
+          label="Open today's intel"
+          onPress={() => {
+            triggerHaptic('medium');
+            onDone(totalXp);
+            router.push({ pathname: '/(tabs)/roadmap', params: { autoOpen: '1' } });
+          }}
+          style={styles.cta}
+        />
+        <TouchableOpacity onPress={() => onDone(totalXp)} style={styles.laterBtn} activeOpacity={0.7}>
+          <Text style={styles.laterText}>Maybe later</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.wrap}>
+    <ScrollView
+      style={styles.scroll}
+      contentContainerStyle={styles.wrap}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.badge}>
         <Feather name="award" size={40} color={tokens.color.accent} />
       </View>
@@ -175,38 +212,19 @@ export function LessonComplete({
         </TouchableOpacity>
       )}
 
-      {/* Leo sends the learner into today's industry intel. */}
-      {!intel.loading && (
-        <TouchableOpacity
-          style={styles.intelCard}
-          activeOpacity={0.85}
-          onPress={() => {
-            triggerHaptic('medium');
-            onDone(totalXp);
-            router.push({ pathname: '/(tabs)/roadmap', params: { autoOpen: '1' } });
-          }}
-        >
-          <Image source={require('../../assets/leo-sticker.png')} style={styles.intelLeo} resizeMode="contain" />
-          <View style={{ flex: 1 }}>
-            <Text style={styles.intelTitle}>
-              {intel.done
-                ? `All ${intel.target} stories read today. You're current.`
-                : `Now read ${intel.remaining} ${intel.remaining === 1 ? 'story' : 'stories'} from today's intel`}
-            </Text>
-            <Text style={styles.intelBody}>
-              {intel.done
-                ? 'Leo: "Go see what changed since this morning anyway."'
-                : `Leo: "The concept is yours. Now see it happening this week — ${intel.readToday}/${intel.target} today, +20 XP when you finish."`}
-            </Text>
-          </View>
-          <Feather name="chevron-right" size={18} color={tokens.color.accent} />
-        </TouchableOpacity>
-      )}
-
-      <PrimaryButton label={doneLabel} onPress={() => onDone(totalXp)} style={styles.cta} />
-    </View>
+      <PrimaryButton
+        label={intel.loading ? doneLabel : 'Continue'}
+        onPress={() => {
+          triggerHaptic('light');
+          if (intel.loading) onDone(totalXp);
+          else setStep('intel');
+        }}
+        style={styles.cta}
+      />
+    </ScrollView>
   );
 }
+
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
