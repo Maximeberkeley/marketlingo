@@ -26,23 +26,42 @@ function withStartupTimeout<T>(request: PromiseLike<T>): Promise<T> {
   ]);
 }
 
+/**
+ * A warm welcome, never a countdown. Leo greets the learner by time of day and
+ * points at what is waiting, without deadlines or guilt.
+ */
 function presentation(data: Reminder) {
   const hour = new Date().getHours();
-  const expiry = data.expiresAt ? new Date(data.expiresAt).getTime() : NaN;
-  const hoursLeft = Number.isFinite(expiry) ? Math.max(0, (expiry - Date.now()) / 3600000) : 24 - hour;
   const market = getMarketName(data.market);
 
-  if (hoursLeft <= 3 || hour >= 21) {
-    return { mood: 'urgent' as LeoAnim, eyebrow: 'FINAL HOURS', line: `${Math.ceil(hoursLeft)} hours left. I brought the rain. You bring five minutes for ${market}.` };
+  if (hour >= 21) {
+    return {
+      mood: 'reading' as LeoAnim,
+      eyebrow: 'GOOD EVENING',
+      line: `Quiet hours are the best hours. I have one ${market} idea ready for you.`,
+    };
   }
   if (hour >= 18) {
-    return { mood: 'thinking' as LeoAnim, eyebrow: 'EVENING CHECK', line: `Your ${market} lesson is still waiting. Bold strategy. Shall we save the streak?` };
+    return {
+      mood: 'thinking' as LeoAnim,
+      eyebrow: 'GOOD EVENING',
+      line: `Welcome back. Today's ${market} idea is short, and it is a good one.`,
+    };
   }
   if (hour >= 12) {
-    return { mood: 'sassy' as LeoAnim, eyebrow: 'AFTERNOON CHECK', line: `You have time. Your excuses are simply getting more creative than your ${market} knowledge.` };
+    return {
+      mood: 'sassy' as LeoAnim,
+      eyebrow: 'GOOD AFTERNOON',
+      line: `Good to see you. One ${market} idea, and you walk away knowing something new.`,
+    };
   }
-  return { mood: 'reading' as LeoAnim, eyebrow: 'TODAY’S MISSION', line: `${market} is moving while you sleep. Conveniently, I took notes.` };
+  return {
+    mood: 'reading' as LeoAnim,
+    eyebrow: 'GOOD MORNING',
+    line: `${market} moved while you slept. Conveniently, I took notes.`,
+  };
 }
+
 
 export default function DailyLeoScreen() {
   const insets = useSafeAreaInsets();
