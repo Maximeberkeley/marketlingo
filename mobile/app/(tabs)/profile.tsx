@@ -287,9 +287,33 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+        {/* The learner's own document, always one tap away. */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>YOUR DOSSIER</Text>
+          <TouchableOpacity
+            style={styles.collectionCard}
+            activeOpacity={0.88}
+            onPress={() => { triggerHaptic('light'); router.push('/deliverable' as any); }}
+          >
+            <View style={[styles.collectionIcon, { backgroundColor: COLORS.accent }]}>
+              <Feather name="file-text" size={24} color="#FFFFFF" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>
+                {dossier.template?.title || 'Your living dossier'}
+              </Text>
+              <Text style={styles.menuSubtitle}>
+                {`${Math.round(dossier.completion)}% written · ${dossierRankInfo.title}`}
+              </Text>
+            </View>
+            <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
+          </TouchableOpacity>
+        </View>
+
         {/* Learning Preferences */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>INSIDER COLLECTION</Text>
+
           <TouchableOpacity style={styles.collectionCard} onPress={() => router.push('/collection' as any)}>
             <View style={[styles.collectionIcon, { backgroundColor: getMarketWorld(selectedMarket).colors[0] }]}>
               <Feather name={featuredCard ? 'award' : 'layers'} size={24} color="#FFFFFF" />
