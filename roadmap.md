@@ -1,5 +1,11 @@
 # MarketLingo roadmap
 
+## Sept 25 — Lesson goals and recurring phone error
+- [x] Replace cut-off lesson goals with short, complete, lesson-specific goals and double-check generated goals before display.
+- [x] Diagnose and fix the recurring error shown in the new phone screenshot.
+- [x] Add Leo to the locked Deep Case screen shown in the third phone screenshot.
+- [x] Make only the current Course lesson title shimmer through its letters, with no overlay on future lessons.
+
 ## Sept 25 — Practice artwork and update delivery
 - [x] Use the supplied arena and case artwork on their respective Practice cards and remove the redundant lesson-count sentence.
 - [x] Explain App Store automatic updates versus app-delivered updates accurately, without implying a new version is already available.

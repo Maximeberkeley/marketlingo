@@ -93,6 +93,9 @@ function AskLeoOverlay({
   const autoAsked = useRef(false);
   const { requireAI, modalProps } = useAIConsent();
   const accent = accentColor || tokens.color.accent;
+  const collapseModes = useCallback(() => {
+    Animated.timing(modesAnim, { toValue: 0, duration: 180, useNativeDriver: true }).start(() => setModesExpanded(false));
+  }, [modesAnim]);
   const setMessages = useCallback(
     (next) => {
       if (onMessagesChange) onMessagesChange(next);

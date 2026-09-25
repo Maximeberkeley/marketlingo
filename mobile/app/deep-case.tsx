@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { CaseScreen, CaseResult } from '../lesson-kit/case/CaseScreen';
@@ -53,9 +53,12 @@ export default function DeepCaseRoute() {
   if (studied.lessons.length === 0) {
     return (
       <View style={styles.loading}>
+        <Image source={require('../assets/mascot/leo-thinking.png')} style={styles.leo} resizeMode="contain" accessibilityLabel="Leo is thinking" />
         <Text style={styles.emptyTitle}>Your first case starts in the course</Text>
         <Text style={styles.loadingText}>Complete a lesson first. Your case will use its real claims, mechanisms, and numbers.</Text>
-        <Text style={styles.backLink} onPress={() => router.replace('/(tabs)/home')}>Go to Course</Text>
+        <TouchableOpacity style={styles.courseButton} onPress={() => router.replace('/(tabs)/home')} accessibilityRole="button">
+          <Text style={styles.courseButtonText}>Go to Course</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -106,4 +109,7 @@ const styles = StyleSheet.create({
   loadingText: { ...TYPE.caption, color: COLORS.textMuted, textAlign: 'center' },
   emptyTitle: { ...TYPE.h2, color: COLORS.textPrimary },
   backLink: { ...TYPE.bodyBold, color: COLORS.accent, marginTop: 4 },
+  leo: { width: 192, height: 192, marginBottom: 12 },
+  courseButton: { marginTop: 8, minWidth: 188, minHeight: 50, borderRadius: 14, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.accent },
+  courseButtonText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
 });

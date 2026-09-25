@@ -150,6 +150,11 @@ export function AskLeoOverlay({
 
   const accent = accentColor || tokens.color.accent;
 
+  const collapseModes = useCallback(() => {
+    Animated.timing(modesAnim, { toValue: 0, duration: 180, useNativeDriver: true })
+      .start(() => setModesExpanded(false));
+  }, [modesAnim]);
+
   const setMessages = useCallback(
     (next: LeoMessage[]) => {
       if (onMessagesChange) onMessagesChange(next);

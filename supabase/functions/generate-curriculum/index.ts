@@ -359,6 +359,19 @@ function validateDayContent(content: any, goal?: LearningGoal): string[] {
   if (!content.concept || String(content.concept).trim().length < 6) problems.push('missing concept name');
   const objectives = Array.isArray(content.learning_objectives) ? content.learning_objectives.filter((o: any) => String(o || '').trim().length > 8) : [];
   if (objectives.length < 3) problems.push('needs 3 real learning objectives');
+  // Gate one: each promise must be brief and syntactically finished.
+  // Gate two: the lesson itself must substantiate its subject. These checks
+  // run on NEW content only; existing lessons are never regenerated here.
+  const lessonEvidence = String((content.slides || []).map((s: any) => `${s?.title || ''} ${s?.body || ''}`).join(' ')).toLowerCase();
+  const objectiveWords = (text: string) => (text.toLowerCase().match(/[a-z]{4,}/g) || [])
+    .filter(w => !['about', 'after', 'also', 'and', 'before', 'between', 'from', 'into', 'that', 'their', 'then', 'these', 'this', 'those', 'through', 'when', 'where', 'which', 'while', 'with', 'your'].includes(w));
+  for (const [index, raw] of objectives.entries()) {
+    const text = String(raw).trim();
+    if (text.length > 88 || !/[.!?]$/.test(text) || /\b(?:a|an|and|as|at|because|by|for|from|in|into|of|or|the|to|with|can|will|may|must|should)\s*[.!?]?$/i.test(text))
+      problems.push(`objective ${index + 1} must be a short, finished sentence`);
+    if (objectiveWords(text).filter(w => new RegExp(`\\b${w}\\b`, 'i').test(lessonEvidence)).length < 2)
+      problems.push(`objective ${index + 1} is not grounded in the lesson`);
+  }
   for (const field of ['key_takeaway', 'recap_bridge', 'next_preview']) {
     if (!content[field] || String(content[field]).trim().length < 12) problems.push(`missing ${field}`);
   }
@@ -449,9 +462,9 @@ Return valid JSON only:
   "title": "The concept, stated as a title (max 8 words)",
   "concept": "The single concept in 3-8 words",
   "learning_objectives": [
-    "A specific thing they can do or explain afterwards",
-    "A second distinct outcome",
-    "A third distinct outcome"
+    "A short, complete action sentence grounded in this lesson.",
+    "A second distinct, complete action sentence.",
+    "A third distinct, complete action sentence."
   ],
   "key_takeaway": "The one sentence they keep",
   "recap_bridge": "One sentence tying yesterday's idea to today's",
@@ -467,7 +480,7 @@ Return valid JSON only:
   "tags": ["${topic.split(' ')[0].toLowerCase()}", "month-${month}", "${theme.toLowerCase().replace(/\s+/g, '-')}"]
 }
 
-Rules that cause rejection if broken: exactly 6 beats; every body at least ${MIN_BODY} characters and ending in a complete sentence; beat 4 contains real figures; at least two real source links across the day (never example.com); all three objectives written as outcomes.`;
+Rules that cause rejection if broken: exactly 6 beats; every body at least ${MIN_BODY} characters and ending in a complete sentence; beat 4 contains real figures; at least two real source links across the day (never example.com); all three objectives are distinct action outcomes, each 88 characters or less, each ending with a period, and each directly evidenced by this lesson. Never abbreviate or cut a phrase to fit.`;
 
   return { system, user };
 }

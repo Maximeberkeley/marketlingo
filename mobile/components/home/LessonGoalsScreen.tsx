@@ -7,6 +7,7 @@ import { COLORS } from '../../lib/constants';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { getMarketName } from '../../lib/markets';
 import { SpeechBubble } from '../ui/SpeechBubble';
+import { lessonGoalLabels } from '../../lib/lessonGoals';
 
 interface Props {
   title: string;
@@ -19,31 +20,11 @@ interface Props {
   onBack: () => void;
 }
 
-// Keep each goal short and a complete thought: never glue on a verb, never cut mid-word.
-const compact = (text: string) => {
-  let clean = text.replace(/^[\s•\-–—\d.)]+/, '').replace(/\s+/g, ' ').trim();
-  clean = clean.replace(/^(you will|you'll|learn to|be able to)\s+/i, '');
-  // Shorten long goals: prefer a natural clause break, else the last whole word.
-  if (clean.length > 48) {
-    const window = clean.slice(0, 48);
-    const clause = window.search(/[,;:—–](?=[^,;:—–]*$)/);
-    const word = window.lastIndexOf(' ');
-    const cut = clause > 20 ? clause : word > 20 ? word : 0;
-    if (cut) clean = clean.slice(0, cut);
-  }
-  clean = clean.replace(/[.,;:]+$/, '');
-  return clean.charAt(0).toUpperCase() + clean.slice(1);
-};
-
 export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1, isBite, onStart, onBack }: Props) {
   const insets = useSafeAreaInsets();
   const world = getMarketWorld(marketId);
   const marketName = getMarketName(marketId || 'aerospace');
-  const goals = useMemo(() => {
-    const authored = (objectives || []).filter(Boolean);
-    const fallback = slides.map(slide => slide.title || '').filter(Boolean);
-    return [...new Set((authored.length ? authored : fallback).map(t => compact(t)))].slice(0, 3);
-  }, [objectives, slides]);
+  const goals = useMemo(() => lessonGoalLabels(objectives, slides), [objectives, slides]);
 
   const safeGoals = goals.length ? goals : ['Read the signal', 'Make the call', 'Keep the insight'];
 
@@ -64,7 +45,7 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1
       </LinearGradient>
 
       <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.heading}>Three moves to own</Text>
+        <Text style={styles.heading}>{goals.length ? 'In this lesson' : 'Your next lesson'}</Text>
         <View style={styles.goals}>
           {safeGoals.map((goal, index) => (
             <View key={`${goal}-${index}`} style={styles.goalRow}>
