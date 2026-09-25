@@ -106,6 +106,7 @@ export function useSessionFlow({
 
 
 
+
     triggerHaptic('success');
     let earnedXP = isExtraPractice ? 15 : xpRewardLessonComplete;
 
