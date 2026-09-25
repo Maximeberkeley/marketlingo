@@ -18,15 +18,18 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   ScrollView,
+  AppState,
 } from 'react-native';
 import { Audio } from 'expo-av';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
-import { speakWithElevenLabs } from '../../lib/tts';
+import { speakWithElevenLabs, stopAllTTS } from '../../lib/tts';
+import { isLeoMutedSync, loadLeoMuted, setLeoMuted } from '../../lib/voicePrefs';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
+
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const LEO_STUDY_SCENE = require('../../assets/mascot/leo-voice-study.png');
