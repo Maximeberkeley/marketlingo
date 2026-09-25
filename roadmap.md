@@ -86,3 +86,4 @@
 - [ ] Stop Leo's voice the moment the chat is left or the app is backgrounded, and cancel speech still downloading.
 - [ ] Remember mute until it is manually switched off.
 - [ ] Split the crowded lesson completion screen into a scrollable rewards step and a clean "now read intel" step.
+- [ ] Investigate why a completed lesson shows no tick and no purple orbit fill, and why the day advances immediately when the learner is behind.
