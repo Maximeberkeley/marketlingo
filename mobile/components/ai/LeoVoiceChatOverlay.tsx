@@ -465,12 +465,13 @@ export function LeoVoiceChatOverlay({
                   style={st.sideAction}
                   onPress={handleMute}
                   accessibilityRole="button"
-                  accessibilityLabel={isMuted ? 'Unmute Leo' : 'Mute Leo'}
+                  accessibilityLabel={isMuted ? "Turn Leo's voice back on" : "Mute Leo's voice"}
                 >
                   <View style={[st.sideActionCircle, isMuted && st.sideActionCircleActive]}>
-                    <Feather name={isMuted ? 'mic' : 'mic-off'} size={23} color="#fff" />
+                    <Feather name={isMuted ? 'volume-x' : 'volume-2'} size={23} color="#fff" />
                   </View>
-                  <Text style={st.sideActionLabel}>{isMuted ? 'Unmute' : 'Mute'}</Text>
+                  <Text style={st.sideActionLabel}>{isMuted ? 'Muted' : 'Mute'}</Text>
+
                 </TouchableOpacity>
 
                 <TouchableOpacity
