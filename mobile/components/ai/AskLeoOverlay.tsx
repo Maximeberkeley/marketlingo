@@ -448,9 +448,23 @@ export function AskLeoOverlay({
                   : 'Your study partner for this card'}
               </Text>
             </View>
+            <TouchableOpacity
+              onPress={toggleMute}
+              style={[styles.closeBtn, muted && styles.mutedBtn]}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              accessibilityRole="button"
+              accessibilityLabel={muted ? 'Turn Leo\'s voice back on' : 'Mute Leo\'s voice'}
+            >
+              <Feather
+                name={muted ? 'volume-x' : 'volume-2'}
+                size={18}
+                color={muted ? tokens.color.accent : tokens.color.textSecondary}
+              />
+            </TouchableOpacity>
             <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
               <Feather name="x" size={18} color={tokens.color.textSecondary} />
             </TouchableOpacity>
+
           </View>
 
           {/* Context strip — what he's answering about */}
@@ -689,7 +703,14 @@ const styles = StyleSheet.create({
     backgroundColor: tokens.color.surface,
     alignItems: 'center',
     justifyContent: 'center',
+    marginLeft: 6,
   },
+  mutedBtn: {
+    backgroundColor: tokens.color.accentSoft,
+    borderWidth: 1,
+    borderColor: tokens.color.accent,
+  },
+
   contextStrip: {
     marginHorizontal: 16,
     marginBottom: 10,
