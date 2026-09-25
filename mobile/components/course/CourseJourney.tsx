@@ -43,9 +43,9 @@ function MovingLessonTitle({ title, long, active }: { title: string; long: boole
       return;
     }
     const animation = Animated.loop(Animated.sequence([
-      Animated.timing(sweep, { toValue: 1, duration: 1150, useNativeDriver: true }),
+      Animated.timing(sweep, { toValue: 1, duration: 1150, useNativeDriver: false }),
       Animated.delay(1850),
-      Animated.timing(sweep, { toValue: 0, duration: 0, useNativeDriver: true }),
+      Animated.timing(sweep, { toValue: 0, duration: 0, useNativeDriver: false }),
     ]));
     animation.start();
     return () => animation.stop();
