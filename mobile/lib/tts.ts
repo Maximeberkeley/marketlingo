@@ -200,21 +200,39 @@ export async function speakWithElevenLabs(
       staysActiveInBackground: false,
     });
 
+    // One last check: do not start talking if the learner has left.
+    if (generation !== speechGeneration || isLeoMutedSync()) {
+      log.debug(`[TTS:${tag}] Cancelled just before playback`);
+      FileSystem.deleteAsync(tempPath, { idempotent: true }).catch(() => {});
+      return null;
+    }
+
     // Create and play sound
     const { sound } = await Audio.Sound.createAsync(
       { uri: tempPath },
       { shouldPlay: true },
     );
+    activeSounds.add(sound);
     log.debug(`[TTS:${tag}] Playback started`);
 
     // Clean up temp file when done
     sound.setOnPlaybackStatusUpdate((status) => {
       if ('didJustFinish' in status && status.didJustFinish) {
+        activeSounds.delete(sound);
         FileSystem.deleteAsync(tempPath, { idempotent: true }).catch(() => {});
       }
     });
 
+    // The screen may have closed while the player was being created.
+    if (generation !== speechGeneration) {
+      activeSounds.delete(sound);
+      sound.stopAsync().catch(() => {});
+      sound.unloadAsync().catch(() => {});
+      return null;
+    }
+
     return sound;
+
   } catch (err) {
     log.warn(`[TTS:${tag}] Error:`, err);
     return null;
