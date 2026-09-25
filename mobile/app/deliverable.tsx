@@ -378,6 +378,9 @@ export default function DeliverableScreen() {
 
               {open && (
                 <View style={styles.composer}>
+                  <Text style={styles.hint}>
+                    One or two sentences, in your own words. Only you ever see this.
+                  </Text>
                   <TextInput
                     style={styles.input}
                     value={draft}
@@ -387,6 +390,7 @@ export default function DeliverableScreen() {
                     multiline
                     autoFocus
                   />
+
                   <TouchableOpacity
                     style={[styles.saveBtn, draft.trim().length < 3 && styles.saveBtnOff]}
                     disabled={draft.trim().length < 3 || saving}
