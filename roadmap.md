@@ -4,6 +4,7 @@
 - [ ] Replace cut-off lesson goals with short, complete, lesson-specific goals and double-check generated goals before display.
 - [ ] Diagnose and fix the recurring error shown in the new phone screenshot.
 - [ ] Remove Leo from the screen shown in the third phone screenshot.
+- [ ] Make only the current Course lesson title shimmer through its letters, with no overlay on future lessons.
 
 ## Sept 25 — Practice artwork and update delivery
 - [x] Use the supplied arena and case artwork on their respective Practice cards and remove the redundant lesson-count sentence.
