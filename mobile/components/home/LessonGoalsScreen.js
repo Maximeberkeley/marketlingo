@@ -10,9 +10,12 @@ import { SpeechBubble } from "../ui/SpeechBubble";
 const compact = (text) => {
   let clean = text.replace(/^[\s•\-–—\d.)]+/, "").replace(/\s+/g, " ").trim();
   clean = clean.replace(/^(you will|you'll|learn to|be able to)\s+/i, "");
-  if (clean.length > 70) {
-    const cut = clean.slice(0, 70).search(/[,;:—–](?=[^,;:—–]*$)/);
-    if (cut > 25) clean = clean.slice(0, cut);
+  if (clean.length > 48) {
+    const window = clean.slice(0, 48);
+    const clause = window.search(/[,;:—–](?=[^,;:—–]*$)/);
+    const word = window.lastIndexOf(" ");
+    const cut = clause > 20 ? clause : word > 20 ? word : 0;
+    if (cut) clean = clean.slice(0, cut);
   }
   clean = clean.replace(/[.,;:]+$/, "");
   return clean.charAt(0).toUpperCase() + clean.slice(1);
