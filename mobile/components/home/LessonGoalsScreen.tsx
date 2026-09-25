@@ -39,7 +39,7 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1
   const goals = useMemo(() => {
     const authored = (objectives || []).filter(Boolean);
     const fallback = slides.map(slide => slide.title || '').filter(Boolean);
-    return [...new Set((authored.length ? authored : fallback).map(compact))].slice(0, 3);
+    return [...new Set((authored.length ? authored : fallback).map(t => compact(t)))].slice(0, 3);
   }, [objectives, slides]);
 
   const safeGoals = goals.length ? goals : ['Read the signal', 'Make the call', 'Keep the insight'];
