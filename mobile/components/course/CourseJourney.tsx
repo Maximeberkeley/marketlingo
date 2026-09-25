@@ -27,7 +27,7 @@ import { StreakBadge } from '../ui/StreakBadge';
 import { XPBadge } from '../ui/XPBadge';
 import { LeoCharacter } from '../mascot/LeoCharacter';
 
-function MovingLessonTitle({ title, long }: { title: string; long: boolean }) {
+function MovingLessonTitle({ title, long, active }: { title: string; long: boolean; active: boolean }) {
   const sweep = useRef(new Animated.Value(0)).current;
   const [reduceMotion, setReduceMotion] = useState(false);
 
@@ -38,7 +38,7 @@ function MovingLessonTitle({ title, long }: { title: string; long: boolean }) {
   }, []);
 
   useEffect(() => {
-    if (reduceMotion) {
+    if (reduceMotion || !active) {
       sweep.setValue(0);
       return;
     }
@@ -49,27 +49,40 @@ function MovingLessonTitle({ title, long }: { title: string; long: boolean }) {
     ]));
     animation.start();
     return () => animation.stop();
-  }, [reduceMotion, sweep]);
+  }, [active, reduceMotion, sweep]);
+
+  if (!active || reduceMotion) {
+    return <Text style={[styles.weekTitle, long && styles.weekTitleLong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.78}>{title}</Text>;
+  }
+
+  const letters = [...title].filter(char => char !== ' ').length;
+  let characterIndex = 0;
 
   return (
-    <View style={styles.weekTitleWrap}>
-      <Text style={[styles.weekTitle, long && styles.weekTitleLong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.78}>{title}</Text>
-      {!reduceMotion ? (
-        <Animated.View pointerEvents="none" style={[styles.titleShineWindow, {
-          opacity: sweep.interpolate({ inputRange: [0, 0.15, 0.85, 1], outputRange: [0, 0.92, 0.92, 0] }),
-          transform: [{ translateX: sweep.interpolate({ inputRange: [0, 1], outputRange: [-76, 304] }) }],
-        }]}>
-          <Animated.Text
-            style={[
-              styles.weekTitle,
-              styles.weekTitleShine,
-              long && styles.weekTitleLong,
-              { transform: [{ translateX: sweep.interpolate({ inputRange: [0, 1], outputRange: [76, -304] }) }] },
-            ]}
-            numberOfLines={2}
-          >{title}</Animated.Text>
-        </Animated.View>
-      ) : null}
+    <View style={styles.weekTitleLetters} accessible accessibilityRole="text" accessibilityLabel={title}>
+      {title.split(' ').map((word, wordIndex) => (
+        <View key={`${wordIndex}-${word}`} style={styles.weekTitleWord} accessible={false}>
+          {[...word].map((letter, index) => {
+            const progress = (++characterIndex) / (letters + 1);
+            const window = Math.min(0.075, 0.4 / (letters + 1));
+            return (
+              <Animated.Text
+                key={`${wordIndex}-${index}`}
+                accessible={false}
+                style={[
+                  styles.weekTitle,
+                  styles.weekTitleLetter,
+                  long && styles.weekTitleLong,
+                  {
+                    color: sweep.interpolate({ inputRange: [0, progress - window, progress, progress + window, 1], outputRange: [COLORS.textPrimary, COLORS.textPrimary, COLORS.courseCoinHighlight, COLORS.textPrimary, COLORS.textPrimary] }),
+                    textShadowColor: sweep.interpolate({ inputRange: [0, progress - window, progress, progress + window, 1], outputRange: [COLORS.bg0, COLORS.bg0, COLORS.accent, COLORS.bg0, COLORS.bg0] }),
+                  },
+                ]}
+              >{letter}</Animated.Text>
+            );
+          })}
+        </View>
+      ))}
     </View>
   );
 }
@@ -281,7 +294,7 @@ function SectionCluster({
       <View style={styles.weekHeading}>
         <View style={styles.weekHeadingCopy}>
           <Text style={styles.weekEyebrow}>{section.unlocked ? `DAY ${section.displayDay}` : `DAYS ${section.startDay}–${section.endDay}`}</Text>
-          <MovingLessonTitle title={weekTitle} long={longTitle} />
+          <MovingLessonTitle title={weekTitle} long={longTitle} active={activeSection && section.unlocked && !lessonCompletedToday} />
           <Text style={styles.lessonMeta}>{marketName} · 6 min</Text>
         </View>
         {!section.unlocked ? (
@@ -698,16 +711,10 @@ const styles = StyleSheet.create({
   weekHeadingCopy: { flex: 1, minWidth: 0 },
   weekEyebrow: { ...TYPE.overline, color: COLORS.courseHeader },
   weekTitle: { fontSize: 28, lineHeight: 33, fontWeight: '700', color: COLORS.textPrimary, marginTop: 4, maxWidth: 300 },
-  weekTitleWrap: { position: 'relative', overflow: 'hidden', maxWidth: 300 },
+  weekTitleLetters: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', maxWidth: 300, marginTop: 4 },
+  weekTitleWord: { flexDirection: 'row', marginRight: 6 },
+  weekTitleLetter: { marginTop: 0, textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 7 },
   weekTitleLong: { fontSize: 18, lineHeight: 23 },
-  titleShineWindow: { position: 'absolute', top: 0, bottom: 0, left: 0, width: 76, overflow: 'hidden' },
-  weekTitleShine: {
-    position: 'absolute', top: 0, left: 0, width: 300,
-    color: COLORS.courseCoinHighlight,
-    textShadowColor: COLORS.accent,
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 8,
-  },
   lessonMeta: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 5 },
   lockPill: { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 12, paddingHorizontal: 9, paddingVertical: 7, backgroundColor: COLORS.lockedSurface },
   lockPillText: { ...TYPE.caption, color: COLORS.textMuted, maxWidth: 110 },
