@@ -71,7 +71,7 @@ export default function Settings() {
                 </div>
                 <div className="p-4 rounded-card bg-bg-2 border border-border">
                   <p className="text-caption text-text-muted mb-1">Version</p>
-                  <p className="text-body text-text-primary font-medium">1.0.0</p>
+                  <p className="text-body text-text-primary font-medium">1.1.0</p>
                 </div>
                 <div className="p-4 rounded-card bg-bg-2 border border-border">
                   <p className="text-caption text-text-muted mb-1">Industry Focus</p>
