@@ -89,7 +89,7 @@ export function LeoVoiceChatOverlay({
   const [subtitlesExpanded, setSubtitlesExpanded] = useState(false);
   const [textInput, setTextInput] = useState('');
   const [showTextInput, setShowTextInput] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(isLeoMutedSync());
 
   const soundRef = useRef<Audio.Sound | null>(null);
   const recordingRef = useRef<Audio.Recording | null>(null);
@@ -104,18 +104,27 @@ export function LeoVoiceChatOverlay({
       setMessages([]);
       setNarrationText('');
       setShowTextInput(false);
-      setIsMuted(false);
 
       Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
 
-      // Auto-greet
-      setTimeout(() => {
-        const greeting = "Hey! 🦊 Ask me anything about your industry!";
-        setNarrationText(greeting);
-        speakResponse(greeting);
-      }, 600);
+      // Auto-greet, unless Leo is muted — that choice is remembered.
+      let cancelled = false;
+      loadLeoMuted().then(muted => {
+        setIsMuted(muted);
+        if (cancelled) return;
+        setTimeout(() => {
+          if (cancelled) return;
+          const greeting = "Hey! 🦊 Ask me anything about your industry!";
+          setNarrationText(greeting);
+          if (!muted) speakResponse(greeting);
+        }, 600);
+      });
+      return () => {
+        cancelled = true;
+      };
     }
   }, [visible]);
+
 
   useEffect(() => {
     if (!visible) return;
