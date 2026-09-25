@@ -102,9 +102,8 @@ export function useSessionFlow({
     // Catching up on an earlier day still counts as today's study: it marks the
     // day complete, banks the streak and fills the orbit. Only a second lesson
     // on a day that is already done is treated as extra practice.
-    const stackDay = activeStackDay();
-    const isCatchUp = stackDay !== null && stackDay < currentDay;
     const isExtraPractice = lessonCompletedToday;
+
 
 
     triggerHaptic('success');
