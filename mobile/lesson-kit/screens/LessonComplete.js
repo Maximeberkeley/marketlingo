@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity, Image, ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { PrimaryButton } from "../components/PrimaryButton";
@@ -50,6 +50,7 @@ function LessonComplete({
   const bonuses = useRef(computeBonuses(accuracy, bestCombo, heartsLeft, timeSpentSeconds)).current;
   const bonusXp = bonuses.reduce((sum, b) => sum + b.xp, 0);
   const totalXp = baseXp + bonusXp;
+  const [step, setStep] = useState("rewards");
   const [shown, setShown] = useState(0);
   const counter = useRef(new Animated.Value(0)).current;
   const [display, setDisplay] = useState(0);
@@ -74,7 +75,36 @@ function LessonComplete({
     }, 350 + shown * 300);
     return () => clearTimeout(t);
   }, [shown, bonuses.length]);
-  return <View style={styles.wrap}>
+  if (step === "intel") {
+    return <View style={styles.intelWrap}>
+        <Image source={require("../../assets/leo-sticker.png")} style={styles.intelHeroLeo} resizeMode="contain" />
+        <Text style={styles.intelEyebrow}>ONE LAST STEP</Text>
+        <Text style={styles.intelHeadline}>Now read today's intel</Text>
+        <Text style={styles.intelSub}>
+          {intel.done ? `All ${intel.target} stories read today. You're current.` : `${intel.remaining} ${intel.remaining === 1 ? "story" : "stories"} left today \xB7 ${intel.readToday}/${intel.target} \xB7 +20 XP when you finish`}
+        </Text>
+        <Text style={styles.intelQuote}>
+          {intel.done ? 'Leo: "Go see what changed since this morning anyway."' : 'Leo: "The concept is yours. Now see it happening this week."'}
+        </Text>
+        <PrimaryButton
+      label="Open today's intel"
+      onPress={() => {
+        triggerHaptic("medium");
+        onDone(totalXp);
+        router.push({ pathname: "/(tabs)/roadmap", params: { autoOpen: "1" } });
+      }}
+      style={styles.cta}
+    />
+        <TouchableOpacity onPress={() => onDone(totalXp)} style={styles.laterBtn} activeOpacity={0.7}>
+          <Text style={styles.laterText}>Maybe later</Text>
+        </TouchableOpacity>
+      </View>;
+  }
+  return <ScrollView
+    style={styles.scroll}
+    contentContainerStyle={styles.wrap}
+    showsVerticalScrollIndicator={false}
+  >
       <View style={styles.badge}>
         <Feather name="award" size={40} color={tokens.color.accent} />
       </View>
@@ -126,32 +156,16 @@ function LessonComplete({
           <Feather name="chevron-right" size={18} color={tokens.color.accent} />
         </TouchableOpacity>}
 
-      {
-    /* Leo sends the learner into today's industry intel. */
-  }
-      {!intel.loading && <TouchableOpacity
-    style={styles.intelCard}
-    activeOpacity={0.85}
+      <PrimaryButton
+    label={intel.loading ? doneLabel : "Continue"}
     onPress={() => {
-      triggerHaptic("medium");
-      onDone(totalXp);
-      router.push({ pathname: "/(tabs)/roadmap", params: { autoOpen: "1" } });
+      triggerHaptic("light");
+      if (intel.loading) onDone(totalXp);
+      else setStep("intel");
     }}
-  >
-          <Image source={require("../../assets/leo-sticker.png")} style={styles.intelLeo} resizeMode="contain" />
-          <View style={{ flex: 1 }}>
-            <Text style={styles.intelTitle}>
-              {intel.done ? `All ${intel.target} stories read today. You're current.` : `Now read ${intel.remaining} ${intel.remaining === 1 ? "story" : "stories"} from today's intel`}
-            </Text>
-            <Text style={styles.intelBody}>
-              {intel.done ? 'Leo: "Go see what changed since this morning anyway."' : `Leo: "The concept is yours. Now see it happening this week \u2014 ${intel.readToday}/${intel.target} today, +20 XP when you finish."`}
-            </Text>
-          </View>
-          <Feather name="chevron-right" size={18} color={tokens.color.accent} />
-        </TouchableOpacity>}
-
-      <PrimaryButton label={doneLabel} onPress={() => onDone(totalXp)} style={styles.cta} />
-    </View>;
+    style={styles.cta}
+  />
+    </ScrollView>;
 }
 function Stat({ label, value }) {
   return <View style={styles.stat}>
@@ -160,14 +174,52 @@ function Stat({ label, value }) {
     </View>;
 }
 const styles = StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: tokens.color.bg },
   wrap: {
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: tokens.space.xl,
+    paddingBottom: tokens.space.xl * 2,
+    gap: tokens.space.sm,
+    backgroundColor: tokens.color.bg
+  },
+  intelWrap: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     padding: tokens.space.xl,
-    gap: tokens.space.sm,
     backgroundColor: tokens.color.bg
   },
+  intelHeroLeo: { width: 132, height: 132, marginBottom: tokens.space.lg },
+  intelEyebrow: {
+    fontSize: 10,
+    fontWeight: "800",
+    letterSpacing: 1.4,
+    color: tokens.color.accent
+  },
+  intelHeadline: {
+    fontSize: tokens.font.title + 2,
+    fontWeight: "900",
+    color: tokens.color.text,
+    textAlign: "center",
+    marginTop: 8
+  },
+  intelSub: {
+    fontSize: tokens.font.body,
+    color: tokens.color.textSecondary,
+    textAlign: "center",
+    marginTop: 10
+  },
+  intelQuote: {
+    fontSize: tokens.font.caption + 1,
+    color: tokens.color.textMuted,
+    textAlign: "center",
+    marginTop: tokens.space.md,
+    fontStyle: "italic"
+  },
+  laterBtn: { marginTop: tokens.space.md, padding: tokens.space.sm },
+  laterText: { fontSize: tokens.font.caption + 1, fontWeight: "700", color: tokens.color.textMuted },
   badge: {
     width: 88,
     height: 88,
