@@ -20,7 +20,9 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import { speakWithElevenLabs } from '../../lib/tts';
+import { speakWithElevenLabs, stopAllTTS } from '../../lib/tts';
+import { isLeoMutedSync, loadLeoMuted, setLeoMuted } from '../../lib/voicePrefs';
+
 import * as Haptics from 'expo-haptics';
 import { tokens } from '../../lesson-kit/theme/tokens';
 import { supabase } from '../../lib/supabase';
@@ -131,6 +133,8 @@ export function AskLeoOverlay({
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [typed, setTyped] = useState<string | null>(null);
+  const [muted, setMuted] = useState(isLeoMutedSync());
+
   const [saved, setSaved] = useState<number[]>([]);
   // Mode cards open BIG on every entry, then collapse to compact chips once
   // the learner picks one or types a question. Reopening the sheet resets it.
