@@ -611,6 +611,8 @@ const styles = StyleSheet.create({
   entryDay: { fontSize: 10.5, fontWeight: '700', color: COLORS.textMuted },
 
   composer: { marginTop: 12, gap: 10 },
+  hint: { ...TYPE.caption, color: COLORS.textSecondary, fontWeight: '600' },
+
   input: {
     ...TYPE.body,
     color: COLORS.textPrimary,
