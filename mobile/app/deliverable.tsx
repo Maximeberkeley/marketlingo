@@ -77,6 +77,12 @@ export default function DeliverableScreen() {
 
   const { template, bySection, completion, filledSections } = deliverable;
   const rank = useMemo(() => dossierRank(completion), [completion]);
+  /** The first still-empty section: the screen always names one clear next move. */
+  const nextOpen = useMemo(
+    () => template.sections.find(section => (bySection[section.key]?.length ?? 0) === 0) ?? null,
+    [template.sections, bySection],
+  );
+
 
   // The ring animates to the new completion whenever the document grows.
   const ringAnim = useRef(new Animated.Value(0)).current;
