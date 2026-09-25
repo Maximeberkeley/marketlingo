@@ -163,6 +163,7 @@ export function AskLeoOverlay({
       // Every entry starts with the big mode cards.
       setModesExpanded(true);
       modesAnim.setValue(1);
+      loadLeoMuted().then(setMuted);
       Animated.spring(slideAnim, {
         toValue: 1,
         tension: 190,
@@ -172,28 +173,33 @@ export function AskLeoOverlay({
     } else {
       slideAnim.setValue(0);
       autoAsked.current = false;
+      // Closing the sheet silences Leo at once, including audio still arriving.
+      stopAllTTS().catch(() => {});
+      soundRef.current = null;
+      setIsPlayingAudio(false);
     }
   }, [visible, slideAnim, modesAnim]);
 
-  const collapseModes = useCallback(() => {
-    if (!modesExpanded) return;
-    Animated.timing(modesAnim, {
-      toValue: 0,
-      duration: 220,
-      useNativeDriver: true,
-    }).start(() => setModesExpanded(false));
-  }, [modesExpanded, modesAnim]);
+  // Unmounting the lesson must never leave Leo talking.
+  useEffect(() => () => {
+    stopAllTTS().catch(() => {});
+    soundRef.current = null;
+  }, []);
 
   const stopAudio = useCallback(async () => {
-    try {
-      await soundRef.current?.stopAsync();
-      await soundRef.current?.unloadAsync();
-    } catch {
-      /* already gone */
-    }
+    await stopAllTTS();
     soundRef.current = null;
     setIsPlayingAudio(false);
   }, []);
+
+  const toggleMute = useCallback(async () => {
+    const next = !muted;
+    setMuted(next);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    await setLeoMuted(next);
+    if (next) await stopAudio();
+  }, [muted, stopAudio]);
+
 
   const playTTS = useCallback(
     async (text: string) => {
