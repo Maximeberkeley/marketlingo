@@ -118,13 +118,18 @@ export default function DailyLeoScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 22 }]}>
       <View style={styles.heading}>
         <Text style={styles.eyebrow}>{content.eyebrow}</Text>
-        <Text style={styles.title}>{data.streak > 0 ? `${data.streak}-day streak on the line` : 'Your daily edge starts here'}</Text>
+        <Text style={styles.title}>
+          {data.streak > 0
+            ? `Welcome back — ${data.streak} ${data.streak === 1 ? 'day' : 'days'} in a row`
+            : 'Welcome back to your market'}
+        </Text>
       </View>
 
       <View style={styles.scene}>
         <View style={styles.leoWrap}><LeoCharacter size="xl" animation={content.mood} still /></View>
         <SpeechBubble text={content.line} tail="left" tone="purple" style={styles.bubble} />
       </View>
+
 
       <View style={styles.footer}>
         <Text style={styles.caption}>One lesson. About five minutes. Then I stop judging.</Text>
