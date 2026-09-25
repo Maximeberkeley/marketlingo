@@ -17,6 +17,9 @@ import { Feather } from '@expo/vector-icons';
 import { triggerHaptic } from '../../lib/haptics';
 import { useCollectibles } from '../../hooks/useCollectibles';
 import { getMarketWorld } from '../../data/marketWorlds';
+import { useDeliverable } from '../../hooks/useDeliverable';
+import { dossierRank } from '../../lib/deliverables';
+
 
 // Market illustrations for profile
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
@@ -64,6 +67,10 @@ export default function ProfileScreen() {
   const { xpData, getCurrentStage, getProgressToNextStage } = useUserXP(selectedMarket || undefined);
   const { cards, featuredId } = useCollectibles(selectedMarket || undefined);
   const featuredCard = cards.find(card => card.id === featuredId);
+  // The living dossier is the learner's own document: it deserves a permanent door.
+  const dossier = useDeliverable(selectedMarket || undefined, currentGoal);
+  const dossierRankInfo = dossierRank(dossier.completion);
+
 
   useEffect(() => {
     const fetchProfile = async () => {
