@@ -526,12 +526,26 @@ const styles = StyleSheet.create({
   },
   weeklyCtaText: { ...TYPE.bodyBold, color: COLORS.textOnAccent, fontWeight: '800' },
 
+  explain: {
+    marginHorizontal: 18,
+    marginBottom: 18,
+    padding: 16,
+    borderRadius: 20,
+    gap: 10,
+    backgroundColor: COLORS.accentSoft,
+    borderWidth: 1,
+    borderColor: COLORS.accentMedium,
+  },
+  explainRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  explainText: { ...TYPE.caption, color: COLORS.textPrimary, flex: 1, fontWeight: '600' },
+
   sectionHeading: {
     ...TYPE.overline,
-    color: COLORS.textMuted,
+    color: COLORS.accent,
     marginLeft: 22,
     marginBottom: 10,
   },
+
 
   card: {
     marginHorizontal: 18,
