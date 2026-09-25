@@ -18,15 +18,18 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   ScrollView,
+  AppState,
 } from 'react-native';
 import { Audio } from 'expo-av';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
-import { speakWithElevenLabs } from '../../lib/tts';
+import { speakWithElevenLabs, stopAllTTS } from '../../lib/tts';
+import { isLeoMutedSync, loadLeoMuted, setLeoMuted } from '../../lib/voicePrefs';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
+
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const LEO_STUDY_SCENE = require('../../assets/mascot/leo-voice-study.png');
@@ -86,7 +89,7 @@ export function LeoVoiceChatOverlay({
   const [subtitlesExpanded, setSubtitlesExpanded] = useState(false);
   const [textInput, setTextInput] = useState('');
   const [showTextInput, setShowTextInput] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(isLeoMutedSync());
 
   const soundRef = useRef<Audio.Sound | null>(null);
   const recordingRef = useRef<Audio.Recording | null>(null);
@@ -101,18 +104,27 @@ export function LeoVoiceChatOverlay({
       setMessages([]);
       setNarrationText('');
       setShowTextInput(false);
-      setIsMuted(false);
 
       Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
 
-      // Auto-greet
-      setTimeout(() => {
-        const greeting = "Hey! 🦊 Ask me anything about your industry!";
-        setNarrationText(greeting);
-        speakResponse(greeting);
-      }, 600);
+      // Auto-greet, unless Leo is muted — that choice is remembered.
+      let cancelled = false;
+      loadLeoMuted().then(muted => {
+        setIsMuted(muted);
+        if (cancelled) return;
+        setTimeout(() => {
+          if (cancelled) return;
+          const greeting = "Hey! 🦊 Ask me anything about your industry!";
+          setNarrationText(greeting);
+          if (!muted) speakResponse(greeting);
+        }, 600);
+      });
+      return () => {
+        cancelled = true;
+      };
     }
   }, [visible]);
+
 
   useEffect(() => {
     if (!visible) return;
@@ -145,21 +157,37 @@ export function LeoVoiceChatOverlay({
   // Cleanup on close
   useEffect(() => {
     if (!visible) {
-      soundRef.current?.stopAsync().catch(() => {});
-      soundRef.current?.unloadAsync().catch(() => {});
+      stopAllTTS().catch(() => {});
       soundRef.current = null;
       recordingRef.current?.stopAndUnloadAsync().catch(() => {});
       recordingRef.current = null;
+      setIsSpeaking(false);
     }
   }, [visible]);
 
+  // Leaving the app, or unmounting the screen, always silences Leo.
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', state => {
+      if (state !== 'active') {
+        stopAllTTS().catch(() => {});
+        soundRef.current = null;
+        setIsSpeaking(false);
+      }
+    });
+    return () => {
+      subscription.remove();
+      stopAllTTS().catch(() => {});
+      soundRef.current = null;
+    };
+  }, []);
+
   const speakResponse = useCallback(async (text: string) => {
+    if (isLeoMutedSync()) return;
     try {
       setIsSpeaking(true);
-       const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_home');
+      const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_home');
       soundRef.current = sound;
       if (sound) {
-         await sound.setVolumeAsync(isMuted ? 0 : 1);
         sound.setOnPlaybackStatusUpdate((status: any) => {
           if (status.didJustFinish) {
             setIsSpeaking(false);
@@ -172,7 +200,8 @@ export function LeoVoiceChatOverlay({
     } catch {
       setIsSpeaking(false);
     }
-  }, [isMuted]);
+  }, []);
+
 
   const sendToLeo = useCallback(async (userText: string) => {
     const userMsg: Message = { role: 'user', content: userText };
@@ -281,21 +310,18 @@ export function LeoVoiceChatOverlay({
     const nextMuted = !isMuted;
     setIsMuted(nextMuted);
     triggerHaptic('light');
-    if (soundRef.current) {
-      try {
-        await soundRef.current.setVolumeAsync(nextMuted ? 0 : 1);
-      } catch {
-        // Audio may finish while the control is being pressed.
-      }
+    // The choice is remembered until it is tapped again.
+    await setLeoMuted(nextMuted);
+    if (nextMuted) {
+      await stopAllTTS();
+      soundRef.current = null;
+      setIsSpeaking(false);
     }
   }, [isMuted]);
 
   const handleClose = useCallback(() => {
-    if (soundRef.current) {
-      soundRef.current.stopAsync().catch(() => {});
-      soundRef.current.unloadAsync().catch(() => {});
-      soundRef.current = null;
-    }
+    stopAllTTS().catch(() => {});
+    soundRef.current = null;
     if (recordingRef.current) {
       recordingRef.current.stopAndUnloadAsync().catch(() => {});
       recordingRef.current = null;
@@ -306,6 +332,7 @@ export function LeoVoiceChatOverlay({
     setNarrationText('');
     onClose();
   }, [onClose]);
+
 
   if (!visible) return null;
 
@@ -438,12 +465,13 @@ export function LeoVoiceChatOverlay({
                   style={st.sideAction}
                   onPress={handleMute}
                   accessibilityRole="button"
-                  accessibilityLabel={isMuted ? 'Unmute Leo' : 'Mute Leo'}
+                  accessibilityLabel={isMuted ? "Turn Leo's voice back on" : "Mute Leo's voice"}
                 >
                   <View style={[st.sideActionCircle, isMuted && st.sideActionCircleActive]}>
-                    <Feather name={isMuted ? 'mic' : 'mic-off'} size={23} color="#fff" />
+                    <Feather name={isMuted ? 'volume-x' : 'volume-2'} size={23} color="#fff" />
                   </View>
-                  <Text style={st.sideActionLabel}>{isMuted ? 'Unmute' : 'Mute'}</Text>
+                  <Text style={st.sideActionLabel}>{isMuted ? 'Muted' : 'Mute'}</Text>
+
                 </TouchableOpacity>
 
                 <TouchableOpacity

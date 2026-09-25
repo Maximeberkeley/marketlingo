@@ -9,6 +9,37 @@ import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system/legacy';
 import { supabase } from './supabase';
 import { log } from './logger';
+import { isLeoMutedSync } from './voicePrefs';
+
+/**
+ * Every sound Leo is currently playing. Audio takes a second or two to
+ * arrive, so leaving a screen must be able to cancel playback that has not
+ * started yet — otherwise Leo talks to an empty room.
+ */
+const activeSounds = new Set<Audio.Sound>();
+let speechGeneration = 0;
+
+/** Immediately silences Leo everywhere and cancels any pending speech. */
+export async function stopAllTTS(): Promise<void> {
+  speechGeneration += 1;
+  const sounds = Array.from(activeSounds);
+  activeSounds.clear();
+  await Promise.all(
+    sounds.map(async sound => {
+      try {
+        await sound.stopAsync();
+      } catch {
+        /* already finished */
+      }
+      try {
+        await sound.unloadAsync();
+      } catch {
+        /* already unloaded */
+      }
+    }),
+  );
+}
+
 
 const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_KEY || '';
@@ -125,6 +156,14 @@ export async function speakWithElevenLabs(
     return null;
   }
 
+  // A muted learner never triggers a voice request at all.
+  if (isLeoMutedSync()) {
+    log.debug(`[TTS:${tag}] Muted — skipping speech`);
+    return null;
+  }
+
+  const generation = speechGeneration;
+
   log.debug(`[TTS:${tag}] Starting TTS, text: "${text.substring(0, 50)}...", voice: ${voiceId}`);
 
   try {
@@ -132,6 +171,13 @@ export async function speakWithElevenLabs(
     log.debug(`[TTS:${tag}] Auth token obtained:`, token ? `${token.substring(0, 10)}...` : '⚠️ EMPTY');
     
     const base64 = await fetchAudioAsBase64(text, voiceId, token);
+
+    // The learner may have walked away while the audio downloaded.
+    if (generation !== speechGeneration || isLeoMutedSync()) {
+      log.debug(`[TTS:${tag}] Cancelled before playback`);
+      return null;
+    }
+
 
     // Write to temp file
     const tempPath = `${FileSystem.cacheDirectory}${tag}_${Date.now()}.mp3`;
@@ -154,21 +200,39 @@ export async function speakWithElevenLabs(
       staysActiveInBackground: false,
     });
 
+    // One last check: do not start talking if the learner has left.
+    if (generation !== speechGeneration || isLeoMutedSync()) {
+      log.debug(`[TTS:${tag}] Cancelled just before playback`);
+      FileSystem.deleteAsync(tempPath, { idempotent: true }).catch(() => {});
+      return null;
+    }
+
     // Create and play sound
     const { sound } = await Audio.Sound.createAsync(
       { uri: tempPath },
       { shouldPlay: true },
     );
+    activeSounds.add(sound);
     log.debug(`[TTS:${tag}] Playback started`);
 
     // Clean up temp file when done
     sound.setOnPlaybackStatusUpdate((status) => {
       if ('didJustFinish' in status && status.didJustFinish) {
+        activeSounds.delete(sound);
         FileSystem.deleteAsync(tempPath, { idempotent: true }).catch(() => {});
       }
     });
 
+    // The screen may have closed while the player was being created.
+    if (generation !== speechGeneration) {
+      activeSounds.delete(sound);
+      sound.stopAsync().catch(() => {});
+      sound.unloadAsync().catch(() => {});
+      return null;
+    }
+
     return sound;
+
   } catch (err) {
     log.warn(`[TTS:${tag}] Error:`, err);
     return null;
