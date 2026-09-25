@@ -55,10 +55,20 @@ function MovingLessonTitle({ title, long }: { title: string; long: boolean }) {
     <View style={styles.weekTitleWrap}>
       <Text style={[styles.weekTitle, long && styles.weekTitleLong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.78}>{title}</Text>
       {!reduceMotion ? (
-        <Animated.View pointerEvents="none" style={[styles.titleSweep, {
-          opacity: sweep.interpolate({ inputRange: [0, 0.35, 0.7, 1], outputRange: [0, 0.6, 0.25, 0] }),
-          transform: [{ translateX: sweep.interpolate({ inputRange: [0, 1], outputRange: [250, -70] }) }],
-        }]} />
+        <Animated.View pointerEvents="none" style={[styles.titleShineWindow, {
+          opacity: sweep.interpolate({ inputRange: [0, 0.15, 0.85, 1], outputRange: [0, 0.92, 0.92, 0] }),
+          transform: [{ translateX: sweep.interpolate({ inputRange: [0, 1], outputRange: [-76, 304] }) }],
+        }]}>
+          <Animated.Text
+            style={[
+              styles.weekTitle,
+              styles.weekTitleShine,
+              long && styles.weekTitleLong,
+              { transform: [{ translateX: sweep.interpolate({ inputRange: [0, 1], outputRange: [76, -304] }) }] },
+            ]}
+            numberOfLines={2}
+          >{title}</Animated.Text>
+        </Animated.View>
       ) : null}
     </View>
   );
@@ -325,7 +335,7 @@ function SectionCluster({
           accessibilityLabel={`Ask Leo about ${title}`}
         >
           <View style={styles.leoVisual} pointerEvents="none">
-            <LeoCharacter size="course" animation="reading" still />
+            <LeoCharacter size="course" animation={section.unlocked ? 'reading' : 'sleeping'} still />
           </View>
         </TouchableOpacity>
       </View>
@@ -690,7 +700,14 @@ const styles = StyleSheet.create({
   weekTitle: { fontSize: 28, lineHeight: 33, fontWeight: '700', color: COLORS.textPrimary, marginTop: 4, maxWidth: 300 },
   weekTitleWrap: { position: 'relative', overflow: 'hidden', maxWidth: 300 },
   weekTitleLong: { fontSize: 18, lineHeight: 23 },
-  titleSweep: { position: 'absolute', top: 1, bottom: 0, width: 62, backgroundColor: COLORS.accentSoft, borderRadius: 18 },
+  titleShineWindow: { position: 'absolute', top: 0, bottom: 0, left: 0, width: 76, overflow: 'hidden' },
+  weekTitleShine: {
+    position: 'absolute', top: 0, left: 0, width: 300,
+    color: COLORS.courseCoinHighlight,
+    textShadowColor: COLORS.accent,
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
+  },
   lessonMeta: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 5 },
   lockPill: { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 12, paddingHorizontal: 9, paddingVertical: 7, backgroundColor: COLORS.lockedSurface },
   lockPillText: { ...TYPE.caption, color: COLORS.textMuted, maxWidth: 110 },
