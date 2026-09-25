@@ -9,6 +9,37 @@ import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system/legacy';
 import { supabase } from './supabase';
 import { log } from './logger';
+import { isLeoMutedSync } from './voicePrefs';
+
+/**
+ * Every sound Leo is currently playing. Audio takes a second or two to
+ * arrive, so leaving a screen must be able to cancel playback that has not
+ * started yet — otherwise Leo talks to an empty room.
+ */
+const activeSounds = new Set<Audio.Sound>();
+let speechGeneration = 0;
+
+/** Immediately silences Leo everywhere and cancels any pending speech. */
+export async function stopAllTTS(): Promise<void> {
+  speechGeneration += 1;
+  const sounds = Array.from(activeSounds);
+  activeSounds.clear();
+  await Promise.all(
+    sounds.map(async sound => {
+      try {
+        await sound.stopAsync();
+      } catch {
+        /* already finished */
+      }
+      try {
+        await sound.unloadAsync();
+      } catch {
+        /* already unloaded */
+      }
+    }),
+  );
+}
+
 
 const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_KEY || '';
