@@ -157,21 +157,37 @@ export function LeoVoiceChatOverlay({
   // Cleanup on close
   useEffect(() => {
     if (!visible) {
-      soundRef.current?.stopAsync().catch(() => {});
-      soundRef.current?.unloadAsync().catch(() => {});
+      stopAllTTS().catch(() => {});
       soundRef.current = null;
       recordingRef.current?.stopAndUnloadAsync().catch(() => {});
       recordingRef.current = null;
+      setIsSpeaking(false);
     }
   }, [visible]);
 
+  // Leaving the app, or unmounting the screen, always silences Leo.
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', state => {
+      if (state !== 'active') {
+        stopAllTTS().catch(() => {});
+        soundRef.current = null;
+        setIsSpeaking(false);
+      }
+    });
+    return () => {
+      subscription.remove();
+      stopAllTTS().catch(() => {});
+      soundRef.current = null;
+    };
+  }, []);
+
   const speakResponse = useCallback(async (text: string) => {
+    if (isLeoMutedSync()) return;
     try {
       setIsSpeaking(true);
-       const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_home');
+      const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_home');
       soundRef.current = sound;
       if (sound) {
-         await sound.setVolumeAsync(isMuted ? 0 : 1);
         sound.setOnPlaybackStatusUpdate((status: any) => {
           if (status.didJustFinish) {
             setIsSpeaking(false);
@@ -184,7 +200,8 @@ export function LeoVoiceChatOverlay({
     } catch {
       setIsSpeaking(false);
     }
-  }, [isMuted]);
+  }, []);
+
 
   const sendToLeo = useCallback(async (userText: string) => {
     const userMsg: Message = { role: 'user', content: userText };
