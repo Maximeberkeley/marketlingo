@@ -19,18 +19,17 @@ interface Props {
   onBack: () => void;
 }
 
-const compact = (text: string, index: number) => {
-  const clean = text.replace(/^[\s•\-–—]+/, '').replace(/\s+/g, ' ').trim();
-  if (/responsib|accountab|owns?\b/i.test(clean)) return 'Trace who owns the outcome';
-  if (/distinguish|compare|difference|versus|\bvs\.?\b/i.test(clean)) return 'Separate the key players';
-  if (/decision|purchas|buyer|contact/i.test(clean)) return 'Find the real decision-maker';
-  if (/risk|failure|threat/i.test(clean)) return 'Spot the hidden risk';
-  if (/metric|number|margin|cost|revenue/i.test(clean)) return 'Read the decisive number';
-  if (/mechanism|process|works?|flow/i.test(clean)) return 'Map how the system works';
-  const withoutVerb = clean.replace(/^(explain|identify|understand|distinguish|describe|learn|recognize|compare|evaluate|analyze)\s+(how|why|what|the|an?)?\s*/i, '');
-  const words = withoutVerb.split(' ').filter(Boolean).slice(0, 5).join(' ').replace(/[.,;:]$/, '');
-  const verbs = ['Spot', 'Compare', 'Decide'];
-  return `${verbs[index] || 'Apply'} ${words}`;
+// Keep each goal a complete thought: never glue on a verb, never cut mid-phrase.
+const compact = (text: string) => {
+  let clean = text.replace(/^[\s•\-–—\d.)]+/, '').replace(/\s+/g, ' ').trim();
+  clean = clean.replace(/^(you will|you'll|learn to|be able to)\s+/i, '');
+  // Shorten long goals only at a natural clause break, so the sentence still reads.
+  if (clean.length > 70) {
+    const cut = clean.slice(0, 70).search(/[,;:—–](?=[^,;:—–]*$)/);
+    if (cut > 25) clean = clean.slice(0, cut);
+  }
+  clean = clean.replace(/[.,;:]+$/, '');
+  return clean.charAt(0).toUpperCase() + clean.slice(1);
 };
 
 export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1, isBite, onStart, onBack }: Props) {
