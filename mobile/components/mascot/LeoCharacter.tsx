@@ -95,7 +95,7 @@ const LEO_IMAGES: Record<string, any> = {
   sleeping: require('../../assets/mascot/leo-sleeping.png'),
   sassy: require('../../assets/mascot/leo-sassy.png'),
   licking: require('../../assets/mascot/leo-licking.png'),
-  reading: require('../../assets/mascot/leo-reading.png'),
+  reading: require('../../assets/mascot/leo-reading-clean.png'),
   trophy: require('../../assets/mascot/leo-trophy.png'),
 };
 
