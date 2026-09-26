@@ -49,7 +49,7 @@ function useStudiedLessons(marketId, focusKeywords = [], preferredDay) {
         const byDay = /* @__PURE__ */ new Map();
         for (const row of data ?? []) {
           const day = dayFromTags(row.tags);
-          if (day === null || day > availableDay) continue;
+          if (day === null) continue;
           if (byDay.has(day)) continue;
           const slides = [...row.slides ?? []].sort((a, b) => a.slide_number - b.slide_number).map((s) => ({ slideNumber: s.slide_number, title: s.title, body: s.body }));
           if (!slides.length) continue;

@@ -39,14 +39,18 @@ function MovingLessonTitle({ title, long, active }) {
       sweep.setValue(0);
       return;
     }
+    sweep.setValue(0);
     const animation = Animated.loop(Animated.sequence([
       Animated.timing(sweep, { toValue: 1, duration: 1150, useNativeDriver: false }),
       Animated.delay(1850),
       Animated.timing(sweep, { toValue: 0, duration: 0, useNativeDriver: false })
     ]));
     animation.start();
-    return () => animation.stop();
-  }, [active, reduceMotion, sweep]);
+    return () => {
+      animation.stop();
+      sweep.setValue(0);
+    };
+  }, [active, reduceMotion, sweep, title]);
   if (!active || reduceMotion) {
     return <Text style={[styles.weekTitle, long && styles.weekTitleLong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.78}>{title}</Text>;
   }
