@@ -275,6 +275,8 @@ export default function HomeScreen() {
   const [showLeoChat, setShowLeoChat] = useState(false);
   const [courseFocused, setCourseFocused] = useState(true);
   const [clockNow, setClockNow] = useState(() => new Date());
+  const refreshStreakData = useRef({ refetchXP, refetchProgress });
+  refreshStreakData.current = { refetchXP, refetchProgress };
   useEffect(() => {
     const ticker = setInterval(() => setClockNow(new Date()), 15000);
     return () => clearInterval(ticker);
@@ -283,18 +285,18 @@ export default function HomeScreen() {
   useFocusEffect(useCallback(() => {
     setCourseFocused(true);
     setClockNow(new Date());
-    void refetchXP();
-    void refetchProgress();
+    void refreshStreakData.current.refetchXP();
+    void refreshStreakData.current.refetchProgress();
     return () => setCourseFocused(false);
-  }, [refetchXP, refetchProgress]));
+  }, []));
 
   // Crossing local midnight invalidates yesterday's completion even if the screen stays open.
   const clockDay = localDateString(clockNow);
   const completedOnClockDay = Boolean(dailyCompletion?.lesson_completed && dailyCompletion.completion_date === clockDay);
   useEffect(() => {
     if (clockDay !== localDateString()) return;
-    void refetchXP();
-    void refetchProgress();
+    void refreshStreakData.current.refetchXP();
+    void refreshStreakData.current.refetchProgress();
   }, [clockDay]);
   const streakCountdown = streakCountdownLabel(streak, completedOnClockDay, clockNow);
 
