@@ -1,5 +1,11 @@
 # MarketLingo roadmap
 
+## Sept 26 — Notifications actually arriving
+- [x] Register and store each learner's device for reminders the moment they allow notifications, and keep it current on every app open.
+- [x] Send reminders through the service the app is actually registered with, and drop devices that uninstalled.
+- [x] Keep recurring daily reminders armed so a day without opening the app still gets a nudge.
+
+
 ## Sept 26 — Reward gallery refresh
 - [x] Refine Insider Collection and Achievements using the selected violet/ember, energetic, tight-gallery direction.
 - [x] Make every changed screen equally legible and polished in dark and light mode.
