@@ -11,6 +11,7 @@ import { getMarketName, getMarketEmoji } from '../lib/markets';
 import { triggerHaptic } from '../lib/haptics';
 import { trackEvent } from '../lib/analytics';
 import { log } from '../lib/logger';
+import { autoDossierLine, deliverableFor } from '../lib/deliverables';
 
 interface UseSessionFlowParams {
   user: any;
@@ -29,6 +30,33 @@ interface UseSessionFlowParams {
   xpRewardLessonComplete: number;
   xpRewardStreakBonus: number;
   onDataRefresh: () => Promise<void>;
+}
+
+/** Drops one real sentence from the finished lesson into the learner's dossier. */
+async function fillDossierFromLesson(userId: string, marketId: string, goal: string | null, stack: StackWithSlides, day: number) {
+  try {
+    const template = deliverableFor(goal);
+    const { data } = await supabase
+      .from('deliverable_entries')
+      .select('section_key, content, source, day_number')
+      .eq('user_id', userId).eq('market_id', marketId).eq('goal_key', template.goal);
+    const rows = data ?? [];
+    // One automatic line per lesson day, never twice.
+    if (rows.some(r => r.source === 'lesson' && r.day_number === day)) return;
+    const line = autoDossierLine(
+      template,
+      new Set(rows.map(r => r.section_key as string)),
+      stack.slides,
+      new Set(rows.map(r => r.content as string)),
+    );
+    if (!line) return;
+    await supabase.from('deliverable_entries').insert({
+      user_id: userId, market_id: marketId, goal_key: template.goal,
+      section_key: line.sectionKey, content: line.content, day_number: day, source: 'lesson',
+    });
+  } catch (err) {
+    log.warn('[useSessionFlow] Dossier auto-fill failed:', err);
+  }
 }
 
 export function useSessionFlow({
@@ -135,6 +163,11 @@ export function useSessionFlow({
 
           if (xpData) {
             checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
+          }
+          if (user?.id && selectedMarket) {
+            const dayTag = activeStack.tags?.find(t => /^day[:-]\d+$/.test(t));
+            const lessonDay = dayTag ? Number(dayTag.split(/[:-]/)[1]) : currentDay;
+            await fillDossierFromLesson(user.id, selectedMarket, progress.learning_goal ?? null, activeStack, lessonDay);
           }
           // Refresh progress before showing the completion screen.
           await onDataRefresh();

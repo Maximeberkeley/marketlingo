@@ -104,7 +104,42 @@ function slotStatus(lineCount) {
   if (lineCount <= 0) return "empty";
   return lineCount >= 2 ? "strong" : "filled";
 }
+const SECTION_HINTS = {
+  how_money_moves: /\b(pay|pays|paid|revenue|margin|cash|price|cost|contract|fee)s?\b/i,
+  money: /\b(pay|pays|paid|revenue|margin|cash|price|cost|contract|fee)s?\b/i,
+  chain: /\b(supplier|supply|chain|integrat|deliver|build|assembl)/i,
+  drivers: /\b(because|drives|leads to|so that|which means)\b/i,
+  players: /\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)?\b.*\b(controls|owns|leads|holds|dominates|power)\b/,
+  incumbents: /\b(incumbent|large|primes?|big players|established|slow)\b/i,
+  who_hurts: /\b(lose|loses|wait|delay|risk|pain|cost)s?\b/i,
+  numbers: /\d/,
+  risk: /\b(risk|rule|regulat|certif|fail|delay|approval)/i,
+  rules: /\b(rule|regulat|certif|law|approval|standard)/i,
+  why_now: /\b(now|recent|since|20(2\d)|new)\b/i,
+  frontier: /\b(next|future|will|emerging|new)\b/i
+};
+function lessonSentences(slides) {
+  const out = [];
+  for (const slide of slides) {
+    const text = (slide.body || "").replace(/\s+/g, " ").replace(/[*_#>`]/g, "").trim();
+    for (const raw of text.split(/(?<=[.!?])\s+/)) {
+      const s = raw.trim();
+      if (s.length >= 40 && s.length <= 220 && /[.!]$/.test(s) && /^[A-Z0-9"]/.test(s)) out.push(s);
+    }
+  }
+  return out;
+}
+function autoDossierLine(template, filledKeys, slides, existing) {
+  const section = template.sections.find((s) => !filledKeys.has(s.key));
+  if (!section) return null;
+  const sentences = lessonSentences(slides).filter((s) => !existing.has(s));
+  if (!sentences.length) return null;
+  const hint = SECTION_HINTS[section.key];
+  const match = hint ? sentences.find((s) => hint.test(s)) : void 0;
+  return { sectionKey: section.key, content: match ?? sentences[sentences.length - 1] };
+}
 export {
+  autoDossierLine,
   consolidationSection,
   deliverableFor,
   dossierRank,
