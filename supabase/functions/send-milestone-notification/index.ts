@@ -193,12 +193,16 @@ Deno.serve(async (req) => {
     
     const { title, body } = formatTemplate(template, formattedData);
 
-    // Send notification
-    const success = await sendToAPNs(profile.push_token, title, body, {
+    // Send notification — Expo-registered devices must go through Expo.
+    const notificationData = {
       route: payload.milestoneType === 'certificate' ? '/investment-lab/certificate' : '/achievements',
       type: payload.milestoneType,
       ...payload.milestoneData,
-    });
+    };
+
+    const success = isExpoPushToken(profile.push_token)
+      ? (await sendToExpo(profile.push_token, title, body, notificationData)).ok
+      : await sendToAPNs(profile.push_token, title, body, notificationData);
 
     return new Response(
       JSON.stringify({ success: true, sent: success }),
