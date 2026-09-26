@@ -146,3 +146,68 @@ export async function scheduleRollingLeoNudges(lessonCompletedToday: boolean): P
     log.warn('[LeoNudges] Could not schedule reminders:', error);
   }
 }
+
+/**
+ * Recurring daily reminders that survive days the app is never opened.
+ * The rolling same-day nudges above only cover the current local day, so these
+ * repeating alarms are the safety net that keeps the habit alive offline.
+ */
+const DAILY_FALLBACKS: Array<{ key: string; hour: number; minute: number; title: string; body: string }> = [
+  {
+    key: 'morning',
+    hour: 9,
+    minute: 0,
+    title: 'Your daily briefing is ready',
+    body: '{name}, one focused lesson and today\u2019s market idea is yours.',
+  },
+  {
+    key: 'evening',
+    hour: 20,
+    minute: 30,
+    title: 'Keep your streak alive',
+    body: '{name}, today\u2019s lesson takes about five minutes. Then the day is closed.',
+  },
+];
+
+export async function scheduleDailyFallbackReminders(): Promise<void> {
+  try {
+    const permission = await Notifications.getPermissionsAsync();
+    if (permission.status !== 'granted') return;
+
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    await Promise.all(scheduled
+      .filter(item => item.content.data?.type === 'daily_fallback')
+      .map(item => Notifications.cancelScheduledNotificationAsync(item.identifier).catch(() => {})));
+
+    const displayName = normalizeDisplayName(await storage.getDisplayName());
+
+    for (const slot of DAILY_FALLBACKS) {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: slot.title,
+          body: personalized(slot.body, displayName),
+          sound: true,
+          data: { type: 'daily_fallback', route: '/(tabs)/home', slot: slot.key },
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DAILY,
+          hour: slot.hour,
+          minute: slot.minute,
+        },
+      });
+    }
+  } catch (error) {
+    log.warn('[LeoNudges] Could not schedule daily fallbacks:', error);
+  }
+}
+
+export async function cancelDailyFallbackReminders(): Promise<void> {
+  try {
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    await Promise.all(scheduled
+      .filter(item => item.content.data?.type === 'daily_fallback')
+      .map(item => Notifications.cancelScheduledNotificationAsync(item.identifier).catch(() => {})));
+  } catch (error) {
+    log.warn('[LeoNudges] Could not cancel daily fallbacks:', error);
+  }
+}
