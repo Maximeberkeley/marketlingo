@@ -18,7 +18,7 @@ import { router } from "expo-router";
 import { COLORS, SHADOWS, TYPE } from "../../lib/constants";
 import { supabase } from "../../lib/supabase";
 import { goalContentTag } from "../../lib/goals";
-import { getMarketName } from "../../lib/markets";
+import { getMarketById, getMarketName } from "../../lib/markets";
 import { dayPromise, seasonThemes, syllabusDay, TOTAL_DAYS } from "../../lib/syllabus";
 import { latestAccessibleSection, resolveCourseSections } from "../../lib/courseSections";
 import { triggerHaptic } from "../../lib/haptics";
@@ -335,19 +335,14 @@ function CourseJourney({
   const [loadError, setLoadError] = useState(false);
   const [loadKey, setLoadKey] = useState(0);
   const [previewSection, setPreviewSection] = useState(null);
-  const [showIndustryName, setShowIndustryName] = useState(false);
-  const industryPopoverTimer = useRef(null);
+  const [showIndustryDetails, setShowIndustryDetails] = useState(false);
   const themes = useMemo(() => seasonThemes(marketId), [marketId]);
   const marketName = getMarketName(marketId);
+  const marketDescription = getMarketById(marketId)?.description;
   const marketIllustration = MARKET_ILLUSTRATIONS[marketId] || MARKET_ILLUSTRATIONS.aerospace;
-  useEffect(() => () => {
-    if (industryPopoverTimer.current) clearTimeout(industryPopoverTimer.current);
-  }, []);
-  const showIndustryPopover = () => {
+  const openIndustryDetails = () => {
     triggerHaptic("selection");
-    setShowIndustryName(true);
-    if (industryPopoverTimer.current) clearTimeout(industryPopoverTimer.current);
-    industryPopoverTimer.current = setTimeout(() => setShowIndustryName(false), 2400);
+    setShowIndustryDetails(true);
   };
   useEffect(() => {
     let active = true;
@@ -463,21 +458,15 @@ function CourseJourney({
     contentContainerStyle={styles.listContent}
     onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: Math.max(0, index * 540), animated: false })}
     ListHeaderComponent={<View style={[styles.topHeader, { paddingTop: safeTop + 10 }]}>
-            <View style={styles.industryBadgeWrap}>
-              <TouchableOpacity
+            <TouchableOpacity
       style={styles.industryBadge}
-      onPress={showIndustryPopover}
+      onPress={openIndustryDetails}
       activeOpacity={0.82}
       accessibilityRole="button"
-      accessibilityLabel={`Current industry: ${marketName}`}
-      accessibilityHint="Shows your active industry"
+      accessibilityLabel={`Current industry: ${marketName}. Open industry details`}
     >
-                <Image source={marketIllustration} style={styles.industryImage} resizeMode="contain" />
-              </TouchableOpacity>
-              {showIndustryName ? <View style={styles.industryPopover} accessibilityLiveRegion="polite">
-                  <Text style={styles.industryPopoverText}>Current Industry: {marketName}</Text>
-                </View> : null}
-            </View>
+              <Image source={marketIllustration} style={styles.industryImage} resizeMode="contain" />
+            </TouchableOpacity>
             <View style={styles.badges}>
               <TouchableOpacity disabled={!rescueAvailable} onPress={() => router.push("/streak-rescue")}>
                 <StreakBadge count={streak} />
@@ -521,6 +510,76 @@ function CourseJourney({
       if (lesson.stackId) onOpenLesson(lesson.stackId);
     }}
   />
+      <Modal
+    visible={showIndustryDetails}
+    transparent
+    animationType="fade"
+    statusBarTranslucent
+    onRequestClose={() => setShowIndustryDetails(false)}
+  >
+        <View style={styles.industryModal}>
+          <TouchableOpacity
+    style={styles.industryBackdrop}
+    onPress={() => setShowIndustryDetails(false)}
+    accessibilityLabel="Close industry details"
+  />
+          <View style={styles.industrySheet} accessibilityViewIsModal>
+            <View style={styles.industryHandle} />
+            <View style={styles.industrySheetHeading}>
+              <View style={styles.industryArtwork}>
+                <Image source={marketIllustration} style={styles.industryArtworkImage} resizeMode="contain" />
+              </View>
+              <TouchableOpacity
+    style={styles.industryClose}
+    onPress={() => setShowIndustryDetails(false)}
+    accessibilityLabel="Close industry details"
+  >
+                <Feather name="x" size={20} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.industryEyebrow}>YOUR INDUSTRY</Text>
+            <Text style={styles.industryTitle}>{marketName}</Text>
+            {marketDescription ? <Text style={styles.industryDescription}>{marketDescription}</Text> : null}
+            <View style={styles.industryDivider} />
+            <View style={styles.industryProgressRow}>
+              <View style={styles.industryProgressIcon}>
+                <Feather name="book-open" size={18} color={COLORS.accent} />
+              </View>
+              <View style={styles.industryProgressCopy}>
+                <Text style={styles.industryProgressTitle}>Your course</Text>
+                <Text style={styles.industryProgressDetail}>
+                  {lessons.filter((item) => item.completed).length} of {TOTAL_DAYS} lessons complete · {themes[focusedSectionIndex] || "Foundations"}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity
+    style={styles.industryAction}
+    onPress={() => {
+      setShowIndustryDetails(false);
+      setPreviewSection(sections[focusedSectionIndex] || null);
+    }}
+    accessibilityRole="button"
+    accessibilityLabel={`Explore ${marketName} course`}
+  >
+              <Text style={styles.industryActionText}>Explore course</Text>
+              <Feather name="arrow-right" size={18} color={COLORS.textOnAccent} />
+            </TouchableOpacity>
+            <TouchableOpacity
+    style={styles.industrySecondaryAction}
+    onPress={() => {
+      setShowIndustryDetails(false);
+      router.push("/(tabs)/roadmap");
+    }}
+    accessibilityRole="button"
+    accessibilityLabel={`Read ${marketName} industry intel`}
+  >
+              <Feather name="radio" size={18} color={COLORS.accent} />
+              <Text style={styles.industrySecondaryText}>Read industry intel</Text>
+              <Feather name="arrow-up-right" size={16} color={COLORS.textMuted} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>;
 }
 const styles = StyleSheet.create({
@@ -533,7 +592,6 @@ const styles = StyleSheet.create({
   retryButton: { minHeight: 48, minWidth: 140, borderRadius: 14, alignItems: "center", justifyContent: "center", backgroundColor: COLORS.courseHeader },
   retryText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
   topHeader: { paddingHorizontal: 20, paddingBottom: 18, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  industryBadgeWrap: { position: "relative", zIndex: 10 },
   industryBadge: {
     width: 58,
     height: 58,
@@ -546,20 +604,27 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm
   },
   industryImage: { width: 48, height: 48 },
-  industryPopover: {
-    position: "absolute",
-    top: 66,
-    left: 0,
-    minWidth: 220,
-    paddingHorizontal: 13,
-    paddingVertical: 10,
-    borderRadius: 12,
-    backgroundColor: COLORS.bg2,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    ...SHADOWS.md
-  },
-  industryPopoverText: { ...TYPE.caption, color: COLORS.textPrimary },
+  industryModal: { flex: 1, justifyContent: "flex-end" },
+  industryBackdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: COLORS.imageScrim },
+  industrySheet: { backgroundColor: COLORS.bg2, borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderColor: COLORS.border, paddingHorizontal: 24, paddingTop: 12, paddingBottom: 36, ...SHADOWS.md },
+  industryHandle: { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.border, alignSelf: "center", marginBottom: 22 },
+  industrySheetHeading: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18 },
+  industryArtwork: { width: 78, height: 78, borderRadius: 18, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, alignItems: "center", justifyContent: "center" },
+  industryArtworkImage: { width: 68, height: 68 },
+  industryClose: { width: 42, height: 42, borderRadius: 21, backgroundColor: COLORS.bg1, alignItems: "center", justifyContent: "center" },
+  industryEyebrow: { ...TYPE.overline, color: COLORS.accent },
+  industryTitle: { ...TYPE.h1, color: COLORS.textPrimary, marginTop: 4 },
+  industryDescription: { ...TYPE.body, color: COLORS.textSecondary, marginTop: 7 },
+  industryDivider: { height: StyleSheet.hairlineWidth, backgroundColor: COLORS.border, marginVertical: 22 },
+  industryProgressRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 22 },
+  industryProgressIcon: { width: 42, height: 42, borderRadius: 12, backgroundColor: COLORS.accentSoft, alignItems: "center", justifyContent: "center" },
+  industryProgressCopy: { flex: 1 },
+  industryProgressTitle: { ...TYPE.bodyBold, color: COLORS.textPrimary },
+  industryProgressDetail: { ...TYPE.caption, color: COLORS.textSecondary, marginTop: 3 },
+  industryAction: { minHeight: 52, borderRadius: 12, backgroundColor: COLORS.courseHeader, paddingHorizontal: 18, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  industryActionText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
+  industrySecondaryAction: { minHeight: 52, flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 4, marginTop: 6 },
+  industrySecondaryText: { ...TYPE.bodyBold, color: COLORS.textPrimary, flex: 1 },
   badges: { flexDirection: "row", alignItems: "center", gap: 8 },
   sectionBlock: { paddingHorizontal: 18, marginBottom: 26 },
   sectionHeader: { minHeight: 98, borderRadius: 20, paddingHorizontal: 18, paddingVertical: 14, flexDirection: "row", alignItems: "center", backgroundColor: COLORS.courseHeader, shadowColor: COLORS.courseHeaderDeep, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.24, shadowRadius: 14, elevation: 7 },
