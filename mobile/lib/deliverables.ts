@@ -158,3 +158,56 @@ export function slotStatus(lineCount: number): 'empty' | 'filled' | 'strong' {
   if (lineCount <= 0) return 'empty';
   return lineCount >= 2 ? 'strong' : 'filled';
 }
+
+// ---------------------------------------------------------------------------
+// Automatic filling: every finished lesson drops one complete sentence from
+// that lesson into the next open section. The learner can edit or delete it.
+// ---------------------------------------------------------------------------
+
+const SECTION_HINTS: Record<string, RegExp> = {
+  how_money_moves: /\b(pay|pays|paid|revenue|margin|cash|price|cost|contract|fee)s?\b/i,
+  money: /\b(pay|pays|paid|revenue|margin|cash|price|cost|contract|fee)s?\b/i,
+  chain: /\b(supplier|supply|chain|integrat|deliver|build|assembl)/i,
+  drivers: /\b(because|drives|leads to|so that|which means)\b/i,
+  players: /\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)?\b.*\b(controls|owns|leads|holds|dominates|power)\b/,
+  incumbents: /\b(incumbent|large|primes?|big players|established|slow)\b/i,
+  who_hurts: /\b(lose|loses|wait|delay|risk|pain|cost)s?\b/i,
+  numbers: /\d/,
+  risk: /\b(risk|rule|regulat|certif|fail|delay|approval)/i,
+  rules: /\b(rule|regulat|certif|law|approval|standard)/i,
+  why_now: /\b(now|recent|since|20(2\d)|new)\b/i,
+  frontier: /\b(next|future|will|emerging|new)\b/i,
+};
+
+function lessonSentences(slides: { body: string }[]): string[] {
+  const out: string[] = [];
+  for (const slide of slides) {
+    const text = (slide.body || '').replace(/\s+/g, ' ').replace(/[*_#>`]/g, '').trim();
+    for (const raw of text.split(/(?<=[.!?])\s+/)) {
+      const s = raw.trim();
+      // Complete, readable sentences only: never a fragment, never a question.
+      if (s.length >= 40 && s.length <= 220 && /[.!]$/.test(s) && /^[A-Z0-9"]/.test(s)) out.push(s);
+    }
+  }
+  return out;
+}
+
+/**
+ * Picks the section and sentence a finished lesson should add. Returns null
+ * when every section is already written or the lesson has no usable sentence.
+ */
+export function autoDossierLine(
+  template: DeliverableTemplate,
+  filledKeys: Set<string>,
+  slides: { body: string }[],
+  existing: Set<string>,
+): { sectionKey: string; content: string } | null {
+  const section = template.sections.find(s => !filledKeys.has(s.key));
+  if (!section) return null;
+  const sentences = lessonSentences(slides).filter(s => !existing.has(s));
+  if (!sentences.length) return null;
+  const hint = SECTION_HINTS[section.key];
+  const match = hint ? sentences.find(s => hint.test(s)) : undefined;
+  // Fallback: the lesson's closing idea (the takeaway sits at the end).
+  return { sectionKey: section.key, content: match ?? sentences[sentences.length - 1] };
+}

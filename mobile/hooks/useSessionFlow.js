@@ -5,6 +5,33 @@ import { getMarketName, getMarketEmoji } from "../lib/markets";
 import { triggerHaptic } from "../lib/haptics";
 import { trackEvent } from "../lib/analytics";
 import { log } from "../lib/logger";
+import { autoDossierLine, deliverableFor } from "../lib/deliverables";
+async function fillDossierFromLesson(userId, marketId, goal, stack, day) {
+  try {
+    const template = deliverableFor(goal);
+    const { data } = await supabase.from("deliverable_entries").select("section_key, content, source, day_number").eq("user_id", userId).eq("market_id", marketId).eq("goal_key", template.goal);
+    const rows = data ?? [];
+    if (rows.some((r) => r.source === "lesson" && r.day_number === day)) return;
+    const line = autoDossierLine(
+      template,
+      new Set(rows.map((r) => r.section_key)),
+      stack.slides,
+      new Set(rows.map((r) => r.content))
+    );
+    if (!line) return;
+    await supabase.from("deliverable_entries").insert({
+      user_id: userId,
+      market_id: marketId,
+      goal_key: template.goal,
+      section_key: line.sectionKey,
+      content: line.content,
+      day_number: day,
+      source: "lesson"
+    });
+  } catch (err) {
+    log.warn("[useSessionFlow] Dossier auto-fill failed:", err);
+  }
+}
 function useSessionFlow({
   user,
   selectedMarket,
@@ -94,6 +121,11 @@ function useSessionFlow({
           checkStreakMilestone(newStreak, mktName, mktEmoji);
           if (xpData) {
             checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
+          }
+          if (user?.id && selectedMarket) {
+            const dayTag = activeStack.tags?.find((t) => /^day[:-]\d+$/.test(t));
+            const lessonDay = dayTag ? Number(dayTag.split(/[:-]/)[1]) : currentDay;
+            await fillDossierFromLesson(user.id, selectedMarket, progress.learning_goal ?? null, activeStack, lessonDay);
           }
           await onDataRefresh();
           synced = true;

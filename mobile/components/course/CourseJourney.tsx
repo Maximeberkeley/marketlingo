@@ -16,6 +16,7 @@ import { Feather } from '@expo/vector-icons';
 import Svg, { Circle } from 'react-native-svg';
 import { router } from 'expo-router';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
+import { isDark } from '../../lib/theme';
 import { supabase } from '../../lib/supabase';
 import { goalContentTag } from '../../lib/goals';
 import { getMarketById, getMarketName } from '../../lib/markets';
@@ -63,10 +64,16 @@ function MovingLessonTitle({ title, long, active }: { title: string; long: boole
       {[...title].map((letter, index) => {
         const progress = (index + 1) / (letters + 1);
         const width = Math.min(0.095, 2.5 / (letters + 1));
-        return <Animated.Text key={index} accessible={false} style={{
-          color: sweep.interpolate({ inputRange: [0, progress - width, progress, progress + width, 1], outputRange: [COLORS.textPrimary, COLORS.textPrimary, COLORS.textOnAccent, COLORS.textPrimary, COLORS.textPrimary] }),
-          textShadowColor: sweep.interpolate({ inputRange: [0, progress - width, progress, progress + width, 1], outputRange: [COLORS.bg0, COLORS.bg0, COLORS.accent, COLORS.bg0, COLORS.bg0] }),
+        const range = [0, progress - width, progress, progress + width, 1];
+        // Dark mode: letters flash white with a violet halo.
+        // Light mode: a halo on a white page looks muddy, so letters turn violet instead.
+        const peak = isDark ? COLORS.textOnAccent : COLORS.accent;
+        return <Animated.Text key={index} accessible={false} style={isDark ? {
+          color: sweep.interpolate({ inputRange: range, outputRange: [COLORS.textPrimary, COLORS.textPrimary, peak, COLORS.textPrimary, COLORS.textPrimary] }),
+          textShadowColor: sweep.interpolate({ inputRange: range, outputRange: [COLORS.bg0, COLORS.bg0, COLORS.accent, COLORS.bg0, COLORS.bg0] }),
           textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 6,
+        } : {
+          color: sweep.interpolate({ inputRange: range, outputRange: [COLORS.textPrimary, COLORS.textPrimary, peak, COLORS.textPrimary, COLORS.textPrimary] }),
         }}>{letter}</Animated.Text>;
       })}
     </Text>
