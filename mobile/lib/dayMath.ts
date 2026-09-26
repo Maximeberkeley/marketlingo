@@ -30,6 +30,16 @@ export function nextLocalMidnightISOString(date: Date = new Date()): string {
   return next.toISOString();
 }
 
+/** Only an unfinished local day with a live streak may show the final countdown. */
+export function streakCountdownLabel(streak: number, lessonDone: boolean, date: Date = new Date()): string | null {
+  if (streak <= 0 || lessonDone) return null;
+  const midnight = new Date(date);
+  midnight.setHours(24, 0, 0, 0);
+  const minutes = Math.ceil((midnight.getTime() - date.getTime()) / 60000);
+  if (minutes <= 0 || minutes > 90) return null;
+  return `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, '0')}`;
+}
+
 /**
  * Day number (1-180) available to the learner, based on local calendar days
  * elapsed since start_date. Rolls over at local midnight anywhere in the world.

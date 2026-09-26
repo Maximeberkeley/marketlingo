@@ -67,6 +67,7 @@ import { useFocusTopic } from '../../hooks/useFocusTopic';
 import { FocusTopicCard } from '../../components/home/FocusTopicCard';
 import { CourseJourney } from '../../components/course/CourseJourney';
 import { useIntelHabit } from '../../hooks/useIntelHabit';
+import { localDateString, streakCountdownLabel } from '../../lib/dayMath';
 import { claimLeoNudge, currentLeoNudgeWindow, getLeoNudge } from '../../lib/leoNudges';
 
 
@@ -142,7 +143,7 @@ export default function HomeScreen() {
 
   const [selectedMarketLocal, setSelectedMarketLocal] = useState<string | null>(null);
   const [revealedCard, setRevealedCard] = useState<Partial<CollectibleCard> | null>(null);
-  const { progress, completeStack, updateStreak } = useUserProgress(selectedMarketLocal || undefined);
+  const { progress, completeStack, updateStreak, refetch: refetchProgress } = useUserProgress(selectedMarketLocal || undefined);
   const {
     xpData, dailyCompletion, completeLessonForToday,
     getCurrentStage, getProgressToNextStage, isLessonCompletedToday, addXP,
@@ -270,24 +271,35 @@ export default function HomeScreen() {
     })();
   }, [openStackId, selectedMarket, user]);
 
-  const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
-  const [showCriticalTimer, setShowCriticalTimer] = useState(true);
   const [showLeoChat, setShowLeoChat] = useState(false);
   const [courseFocused, setCourseFocused] = useState(true);
+  const [clockNow, setClockNow] = useState(() => new Date());
+  useEffect(() => {
+    const ticker = setInterval(() => setClockNow(new Date()), 15000);
+    return () => clearInterval(ticker);
+  }, []);
 
   useFocusEffect(useCallback(() => {
     setCourseFocused(true);
+    setClockNow(new Date());
+    void refetchXP();
+    void refetchProgress();
     return () => setCourseFocused(false);
-  }, []));
+  }, [refetchXP, refetchProgress]));
+
+  // Crossing local midnight invalidates yesterday's completion even if the screen stays open.
+  const clockDay = localDateString(clockNow);
+  const completedOnClockDay = Boolean(dailyCompletion?.lesson_completed && dailyCompletion.completion_date === clockDay);
+  useEffect(() => {
+    if (clockDay !== localDateString()) return;
+    void refetchXP();
+    void refetchProgress();
+  }, [clockDay]);
+  const streakCountdown = streakCountdownLabel(streak, completedOnClockDay, clockNow);
 
   // Calculate if we're in the critical 2-hour window
-  const criticalTimerActive = (() => {
-    if (!progress?.streak_expires_at || streak === 0 || lessonCompletedToday) return false;
-    const expires = new Date(progress.streak_expires_at);
-    const hoursLeft = (expires.getTime() - Date.now()) / (1000 * 60 * 60);
-    return hoursLeft > 0 && hoursLeft <= 2;
-  })();
+  const criticalTimerActive = Boolean(streakCountdown);
 
   // Daily quests
   const { quests, completedCount, totalBonusXP, allComplete } = useDailyQuests(dailyCompletion, streak);
@@ -506,7 +518,8 @@ export default function HomeScreen() {
           caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
           intelReadToday={intelHabit.readToday}
           intelTarget={intelHabit.target}
-          rescueAvailable={showStreakWarning || criticalTimerActive}
+          rescueAvailable={Boolean(streakCountdown)}
+          streakCountdown={streakCountdown}
           safeTop={insets.top}
           onOpenLesson={(stackId) => router.setParams({ openStackId: stackId })}
           onAskLeo={() => setShowLeoChat(true)}
