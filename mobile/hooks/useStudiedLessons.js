@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import { supabase } from "../lib/supabase";
-import { calculateAvailableDay } from "../lib/dayMath";
 import { log } from "../lib/logger";
 const dayFromTags = (tags) => {
   const hit = (tags || []).find((t) => /^day-\d+$/.test(t));
@@ -25,10 +24,8 @@ function useStudiedLessons(marketId, focusKeywords = [], preferredDay) {
     setIsLoading(true);
     try {
       const { data: auth } = await supabase.auth.getUser();
-      let availableDay = 1;
       if (auth?.user) {
-        const { data: progress } = await supabase.from("user_progress").select("start_date, completed_stacks").eq("user_id", auth.user.id).eq("market_id", marketId).maybeSingle();
-        availableDay = calculateAvailableDay(progress?.start_date ?? null);
+        const { data: progress } = await supabase.from("user_progress").select("completed_stacks").eq("user_id", auth.user.id).eq("market_id", marketId).maybeSingle();
         const completedIds = Array.isArray(progress?.completed_stacks) ? progress.completed_stacks.filter((id) => typeof id === "string") : [];
         const { data: daily, error: dailyError } = await supabase.from("daily_completions").select("completed_stack_id").eq("user_id", auth.user.id).eq("market_id", marketId).eq("lesson_completed", true).order("completion_date", { ascending: false }).limit(40);
         if (dailyError) log.warn("[useStudiedLessons] Daily credits unavailable:", dailyError.message);
