@@ -1,5 +1,19 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import * as jose from 'https://deno.land/x/jose@v5.2.0/index.ts';
+import { isExpoPushToken, sendToExpo } from '../_shared/expo-push.ts';
+
+// Remove a token Expo reports as uninstalled so we stop targeting a dead device.
+async function clearStalePushToken(token: string): Promise<void> {
+  try {
+    const admin = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    );
+    await admin.from('profiles').update({ push_token: null }).eq('push_token', token);
+  } catch (error) {
+    console.error('Could not clear stale push token:', error);
+  }
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
