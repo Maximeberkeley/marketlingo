@@ -21,7 +21,7 @@ import { getMarketName } from '../lib/markets';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_GAP = 10;
-const CARD_WIDTH = (SCREEN_WIDTH - 32 - CARD_GAP) / 2;
+const CARD_WIDTH = (SCREEN_WIDTH - 40 - CARD_GAP) / 2;
 
 const FEATHER_ACHIEVE_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   games: 'play-circle',
