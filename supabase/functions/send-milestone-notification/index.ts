@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import * as jose from 'https://deno.land/x/jose@v5.2.0/index.ts';
+import { isExpoPushToken, sendToExpo } from '../_shared/expo-push.ts';
 
 // Send milestone/achievement notifications to specific users
 
