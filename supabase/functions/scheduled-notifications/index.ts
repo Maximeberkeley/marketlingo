@@ -1,5 +1,19 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import * as jose from 'https://deno.land/x/jose@v5.2.0/index.ts';
+import { isExpoPushToken, sendToExpo } from '../_shared/expo-push.ts';
+
+// Remove a token Expo reports as uninstalled so we stop targeting a dead device.
+async function clearStalePushToken(token: string): Promise<void> {
+  try {
+    const admin = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    );
+    await admin.from('profiles').update({ push_token: null }).eq('push_token', token);
+  } catch (error) {
+    console.error('Could not clear stale push token:', error);
+  }
+}
 
 // Scheduled notification sender for:
 // - Daily lesson reminders (Duolingo-style guilt trips)
@@ -125,7 +139,7 @@ async function generateAPNsJWT(): Promise<string> {
 async function sendToAPNs(token: string, title: string, body: string, data?: Record<string, unknown>): Promise<boolean> {
   try {
     const jwt = await generateAPNsJWT();
-    const bundleId = 'app.lovable.94df7a7687ec45218c7386e5aa46d211';
+    const bundleId = 'app.marketlingo.aerospace';
 
     const payload = {
       aps: {
@@ -188,6 +202,16 @@ async function sendToFCM(token: string, title: string, body: string, data?: Reco
 }
 
 async function sendNotification(token: string, title: string, body: string, data?: Record<string, unknown>): Promise<boolean> {
+  // The mobile app registers through Expo, so its tokens must go to Expo.
+  if (isExpoPushToken(token)) {
+    const result = await sendToExpo(token, title, body, data);
+    if (result.unregistered) {
+      console.log('Expo token no longer registered, clearing it:', token.slice(0, 24));
+      await clearStalePushToken(token);
+    }
+    return result.ok;
+  }
+
   const isAPNsToken = /^[a-f0-9]{64}$/i.test(token);
   return isAPNsToken 
     ? await sendToAPNs(token, title, body, data)

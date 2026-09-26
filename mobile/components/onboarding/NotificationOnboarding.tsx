@@ -11,6 +11,9 @@ import {
 import * as ExpoNotifications from 'expo-notifications';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
+import { supabase } from '../../lib/supabase';
+import { syncPushToken } from '../../lib/pushToken';
+import { scheduleDailyFallbackReminders } from '../../lib/leoNudges';
 
 interface NotificationOnboardingProps {
   visible: boolean;
@@ -40,7 +43,19 @@ export function NotificationOnboarding({ visible, onComplete }: NotificationOnbo
     setIsEnabling(true);
     try {
       const { status } = await ExpoNotifications.requestPermissionsAsync();
-      onComplete(status === 'granted');
+      const granted = status === 'granted';
+
+      if (granted) {
+        // Register this device with the server right away, otherwise reminders
+        // have no address to reach and silently never arrive.
+        const { data } = await supabase.auth.getUser();
+        if (data?.user?.id) {
+          await syncPushToken(data.user.id);
+          await scheduleDailyFallbackReminders();
+        }
+      }
+
+      onComplete(granted);
     } catch {
       onComplete(false);
     }

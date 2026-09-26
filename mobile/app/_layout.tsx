@@ -8,6 +8,7 @@ import * as Notifications from 'expo-notifications';
 import { AuthProvider } from '../hooks/useAuth';
 import { LeoProvider } from '../components/mascot/LeoCharacter';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { PushTokenSync } from '../components/PushTokenSync';
 import { COLORS } from '../lib/constants';
 import { isDark } from '../lib/theme';
 
@@ -18,6 +19,7 @@ function resolveRoute(data: Record<string, any>): string | null {
   switch (data?.type) {
     case 'streak_warning':
     case 'daily_reminder':
+    case 'daily_fallback':
     case 'leo_rolling_nudge':
       return '/(tabs)/home';
     case 'leaderboard':
@@ -89,6 +91,7 @@ export default function RootLayout() {
         <ErrorBoundary>
           <AuthProvider>
             <LeoProvider>
+              <PushTokenSync />
               <StatusBar style={isDark ? 'light' : 'dark'} />
               <Stack
                 screenOptions={{

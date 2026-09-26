@@ -1,44 +1,63 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet, Animated, } from 'react-native';
-import * as ExpoNotifications from 'expo-notifications';
-import { Feather } from '@expo/vector-icons';
-import { COLORS } from '../../lib/constants';
+import { useState, useRef } from "react";
+import {
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+  StyleSheet,
+  Animated
+} from "react-native";
+import * as ExpoNotifications from "expo-notifications";
+import { Feather } from "@expo/vector-icons";
+import { COLORS } from "../../lib/constants";
+import { supabase } from "../../lib/supabase";
+import { syncPushToken } from "../../lib/pushToken";
+import { scheduleDailyFallbackReminders } from "../../lib/leoNudges";
 const benefits = [
-    { icon: 'clock', title: 'Daily Reminders', description: 'Never miss a lesson with smart reminders at your preferred time', color: '#8B5CF6' },
-    { icon: 'activity', title: 'Streak Protection', description: 'Get warned before your learning streak expires', color: '#F97316' },
-    { icon: 'file-text', title: 'Breaking News', description: 'Stay ahead with real-time industry updates', color: '#3B82F6' },
+  { icon: "clock", title: "Daily Reminders", description: "Never miss a lesson with smart reminders at your preferred time", color: "#8B5CF6" },
+  { icon: "activity", title: "Streak Protection", description: "Get warned before your learning streak expires", color: "#F97316" },
+  { icon: "file-text", title: "Breaking News", description: "Stay ahead with real-time industry updates", color: "#3B82F6" }
 ];
-export function NotificationOnboarding({ visible, onComplete }) {
-    const [step, setStep] = useState(0);
-    const [isEnabling, setIsEnabling] = useState(false);
-    const slideAnim = useRef(new Animated.Value(0)).current;
-    const goToStep2 = () => {
-        Animated.timing(slideAnim, { toValue: -300, duration: 220, useNativeDriver: true }).start(() => {
-            setStep(1);
-            slideAnim.setValue(300);
-            Animated.spring(slideAnim, { toValue: 0, damping: 22, useNativeDriver: true }).start();
-        });
-    };
-    const handleEnable = async () => {
-        setIsEnabling(true);
-        try {
-            const { status } = await ExpoNotifications.requestPermissionsAsync();
-            onComplete(status === 'granted');
+function NotificationOnboarding({ visible, onComplete }) {
+  const [step, setStep] = useState(0);
+  const [isEnabling, setIsEnabling] = useState(false);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const goToStep2 = () => {
+    Animated.timing(slideAnim, { toValue: -300, duration: 220, useNativeDriver: true }).start(() => {
+      setStep(1);
+      slideAnim.setValue(300);
+      Animated.spring(slideAnim, { toValue: 0, damping: 22, useNativeDriver: true }).start();
+    });
+  };
+  const handleEnable = async () => {
+    setIsEnabling(true);
+    try {
+      const { status } = await ExpoNotifications.requestPermissionsAsync();
+      const granted = status === "granted";
+      if (granted) {
+        const { data } = await supabase.auth.getUser();
+        if (data?.user?.id) {
+          await syncPushToken(data.user.id);
+          await scheduleDailyFallbackReminders();
         }
-        catch {
-            onComplete(false);
-        }
-        setIsEnabling(false);
-    };
-    return (<Modal visible={visible} transparent animationType="fade" onRequestClose={() => onComplete(false)}>
+      }
+      onComplete(granted);
+    } catch {
+      onComplete(false);
+    }
+    setIsEnabling(false);
+  };
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={() => onComplete(false)}>
       <View style={styles.backdrop}>
         <View style={styles.card}>
           <Animated.View style={{ transform: [{ translateX: slideAnim }] }}>
-            {step === 0 ? (<>
-                {/* Hero */}
+            {step === 0 ? <>
+                {
+    /* Hero */
+  }
                 <View style={styles.heroWrap}>
                   <View style={styles.heroIcon}>
-                    <Feather name="bell" size={36} color="#8B5CF6"/>
+                    <Feather name="bell" size={36} color="#8B5CF6" />
                   </View>
                   <Text style={styles.heroTitle}>Stay on Track</Text>
                   <Text style={styles.heroSub}>
@@ -46,32 +65,38 @@ export function NotificationOnboarding({ visible, onComplete }) {
                   </Text>
                 </View>
 
-                {/* Benefits */}
+                {
+    /* Benefits */
+  }
                 <View style={styles.benefitsList}>
-                  {benefits.map((b) => (<View key={b.title} style={styles.benefitRow}>
-                      <View style={[styles.benefitIcon, { backgroundColor: b.color + '20' }]}>
-                        <Feather name={b.icon} size={20} color={b.color}/>
+                  {benefits.map((b) => <View key={b.title} style={styles.benefitRow}>
+                      <View style={[styles.benefitIcon, { backgroundColor: b.color + "20" }]}>
+                        <Feather name={b.icon} size={20} color={b.color} />
                       </View>
                       <View style={{ flex: 1 }}>
                         <Text style={styles.benefitTitle}>{b.title}</Text>
                         <Text style={styles.benefitDesc}>{b.description}</Text>
                       </View>
-                    </View>))}
+                    </View>)}
                 </View>
 
-                {/* CTA */}
+                {
+    /* CTA */
+  }
                 <TouchableOpacity style={styles.primaryBtn} onPress={goToStep2} activeOpacity={0.85}>
                   <Text style={styles.primaryBtnText}>Continue</Text>
-                  <Feather name="arrow-right" size={16} color="#fff"/>
+                  <Feather name="arrow-right" size={16} color="#fff" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.skipBtn} onPress={() => onComplete(false)}>
                   <Text style={styles.skipBtnText}>Maybe later</Text>
                 </TouchableOpacity>
-              </>) : (<>
-                {/* Step 2: permission request */}
+              </> : <>
+                {
+    /* Step 2: permission request */
+  }
                 <View style={styles.heroWrap}>
                   <View style={styles.heroIconRound}>
-                    <Feather name="bell" size={30} color="#8B5CF6"/>
+                    <Feather name="bell" size={30} color="#8B5CF6" />
                   </View>
                   <Text style={styles.heroTitle}>Allow Notifications</Text>
                   <Text style={styles.heroSub}>
@@ -82,19 +107,24 @@ export function NotificationOnboarding({ visible, onComplete }) {
                 <View style={styles.summaryBox}>
                   <Text style={styles.summaryLabel}>You'll receive:</Text>
                   {[
-                { dot: '#8B5CF6', icon: 'clock', text: 'Daily lesson reminders at your chosen time' },
-                { dot: '#F97316', icon: 'activity', text: 'Streak expiration warnings' },
-                { dot: '#3B82F6', icon: 'file-text', text: 'Breaking industry news (optional)' },
-            ].map((item, i) => (<View key={i} style={styles.summaryRow}>
-                      <View style={[styles.dot, { backgroundColor: item.dot }]}/>
+    { dot: "#8B5CF6", icon: "clock", text: "Daily lesson reminders at your chosen time" },
+    { dot: "#F97316", icon: "activity", text: "Streak expiration warnings" },
+    { dot: "#3B82F6", icon: "file-text", text: "Breaking industry news (optional)" }
+  ].map((item, i) => <View key={i} style={styles.summaryRow}>
+                      <View style={[styles.dot, { backgroundColor: item.dot }]} />
                       <Text style={styles.summaryText}>{item.text}</Text>
-                    </View>))}
+                    </View>)}
                 </View>
 
-                <TouchableOpacity style={styles.primaryBtn} onPress={handleEnable} disabled={isEnabling} activeOpacity={0.85}>
-                  <Feather name="bell" size={16} color="#fff" style={{ marginRight: 6 }}/>
+                <TouchableOpacity
+    style={styles.primaryBtn}
+    onPress={handleEnable}
+    disabled={isEnabling}
+    activeOpacity={0.85}
+  >
+                  <Feather name="bell" size={16} color="#fff" style={{ marginRight: 6 }} />
                   <Text style={styles.primaryBtnText}>
-                    {isEnabling ? 'Enabling...' : 'Enable Notifications'}
+                    {isEnabling ? "Enabling..." : "Enable Notifications"}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.skipBtn} onPress={() => onComplete(false)}>
@@ -103,62 +133,99 @@ export function NotificationOnboarding({ visible, onComplete }) {
                 <Text style={styles.privacyNote}>
                   You can change your preferences anytime in Settings
                 </Text>
-              </>)}
+              </>}
           </Animated.View>
         </View>
       </View>
-    </Modal>);
+    </Modal>;
 }
 const styles = StyleSheet.create({
-    backdrop: {
-        flex: 1, backgroundColor: 'rgba(0,0,0,0.45)',
-        justifyContent: 'center', alignItems: 'center', padding: 24,
-    },
-    card: {
-        backgroundColor: COLORS.bg1, borderRadius: 24, padding: 24,
-        width: '100%', maxWidth: 400,
-        borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden',
-    },
-    heroWrap: { alignItems: 'center', marginBottom: 24 },
-    heroIcon: {
-        width: 80, height: 80, borderRadius: 20,
-        backgroundColor: 'rgba(139,92,246,0.15)',
-        alignItems: 'center', justifyContent: 'center', marginBottom: 16,
-    },
-    heroIconRound: {
-        width: 72, height: 72, borderRadius: 36,
-        backgroundColor: 'rgba(139,92,246,0.12)',
-        alignItems: 'center', justifyContent: 'center', marginBottom: 16,
-    },
-    heroTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 8, textAlign: 'center' },
-    heroSub: { fontSize: 14, color: COLORS.textMuted, textAlign: 'center', lineHeight: 20 },
-    benefitsList: { gap: 10, marginBottom: 24 },
-    benefitRow: {
-        flexDirection: 'row', alignItems: 'flex-start', gap: 12,
-        padding: 12, borderRadius: 12,
-        backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border,
-    },
-    benefitIcon: {
-        width: 44, height: 44, borderRadius: 12,
-        alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-    },
-    benefitTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
-    benefitDesc: { fontSize: 12, color: COLORS.textMuted, lineHeight: 17, marginTop: 2 },
-    primaryBtn: {
-        backgroundColor: COLORS.accent, borderRadius: 14,
-        paddingVertical: 14, alignItems: 'center', marginBottom: 10,
-        flexDirection: 'row', justifyContent: 'center',
-    },
-    primaryBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
-    skipBtn: { alignItems: 'center', paddingVertical: 8 },
-    skipBtnText: { fontSize: 13, color: COLORS.textMuted },
-    summaryBox: {
-        backgroundColor: COLORS.bg2, borderRadius: 14, padding: 16,
-        borderWidth: 1, borderColor: COLORS.border, marginBottom: 24, gap: 8,
-    },
-    summaryLabel: { fontSize: 12, color: COLORS.textMuted, marginBottom: 4 },
-    summaryRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-    dot: { width: 6, height: 6, borderRadius: 3, flexShrink: 0 },
-    summaryText: { fontSize: 13, color: COLORS.textPrimary },
-    privacyNote: { fontSize: 10, color: COLORS.textMuted, textAlign: 'center', marginTop: 12 },
+  backdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24
+  },
+  card: {
+    backgroundColor: COLORS.bg1,
+    borderRadius: 24,
+    padding: 24,
+    width: "100%",
+    maxWidth: 400,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    overflow: "hidden"
+  },
+  heroWrap: { alignItems: "center", marginBottom: 24 },
+  heroIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 20,
+    backgroundColor: "rgba(139,92,246,0.15)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16
+  },
+  heroIconRound: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: "rgba(139,92,246,0.12)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16
+  },
+  heroTitle: { fontSize: 22, fontWeight: "700", color: COLORS.textPrimary, marginBottom: 8, textAlign: "center" },
+  heroSub: { fontSize: 14, color: COLORS.textMuted, textAlign: "center", lineHeight: 20 },
+  benefitsList: { gap: 10, marginBottom: 24 },
+  benefitRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: COLORS.bg2,
+    borderWidth: 1,
+    borderColor: COLORS.border
+  },
+  benefitIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0
+  },
+  benefitTitle: { fontSize: 14, fontWeight: "600", color: COLORS.textPrimary },
+  benefitDesc: { fontSize: 12, color: COLORS.textMuted, lineHeight: 17, marginTop: 2 },
+  primaryBtn: {
+    backgroundColor: COLORS.accent,
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: "center",
+    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "center"
+  },
+  primaryBtnText: { color: "#fff", fontSize: 15, fontWeight: "700" },
+  skipBtn: { alignItems: "center", paddingVertical: 8 },
+  skipBtnText: { fontSize: 13, color: COLORS.textMuted },
+  summaryBox: {
+    backgroundColor: COLORS.bg2,
+    borderRadius: 14,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: 24,
+    gap: 8
+  },
+  summaryLabel: { fontSize: 12, color: COLORS.textMuted, marginBottom: 4 },
+  summaryRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+  dot: { width: 6, height: 6, borderRadius: 3, flexShrink: 0 },
+  summaryText: { fontSize: 13, color: COLORS.textPrimary },
+  privacyNote: { fontSize: 10, color: COLORS.textMuted, textAlign: "center", marginTop: 12 }
 });
+export {
+  NotificationOnboarding
+};

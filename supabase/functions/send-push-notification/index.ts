@@ -1,5 +1,19 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import * as jose from 'https://deno.land/x/jose@v5.2.0/index.ts';
+import { isExpoPushToken, sendToExpo } from '../_shared/expo-push.ts';
+
+// Remove a token Expo reports as uninstalled so we stop targeting a dead device.
+async function clearStalePushToken(token: string): Promise<void> {
+  try {
+    const admin = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    );
+    await admin.from('profiles').update({ push_token: null }).eq('push_token', token);
+  } catch (error) {
+    console.error('Could not clear stale push token:', error);
+  }
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -60,7 +74,7 @@ async function sendToAPNs(
 ): Promise<boolean> {
   try {
     const jwt = await generateAPNsJWT();
-    const bundleId = 'app.lovable.94df7a7687ec45218c7386e5aa46d211'; // Your app bundle ID
+    const bundleId = 'app.marketlingo.aerospace'; // Your app bundle ID
 
     const payload: APNsPayload = {
       aps: {
@@ -175,6 +189,16 @@ async function sendNotification(
   body: string,
   data?: Record<string, unknown>
 ): Promise<boolean> {
+  // The mobile app registers through Expo, so its tokens must go to Expo.
+  if (isExpoPushToken(token)) {
+    const result = await sendToExpo(token, title, body, data);
+    if (result.unregistered) {
+      console.log('Expo token no longer registered, clearing it:', token.slice(0, 24));
+      await clearStalePushToken(token);
+    }
+    return result.ok;
+  }
+
   // APNs tokens are typically 64 hex characters
   // FCM tokens are longer and contain different characters
   const isAPNsToken = /^[a-f0-9]{64}$/i.test(token);
