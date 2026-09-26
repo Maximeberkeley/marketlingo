@@ -11,6 +11,9 @@ import {
 import * as ExpoNotifications from 'expo-notifications';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
+import { supabase } from '../../lib/supabase';
+import { syncPushToken } from '../../lib/pushToken';
+import { scheduleDailyFallbackReminders } from '../../lib/leoNudges';
 
 interface NotificationOnboardingProps {
   visible: boolean;
