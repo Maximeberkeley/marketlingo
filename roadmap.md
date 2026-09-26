@@ -1,5 +1,9 @@
 # MarketLingo roadmap
 
+## Sept 26 — Streak timing
+- [ ] Never offer rescue after a lesson credited on the learner's local day, including direct entry to the rescue screen.
+- [ ] Show a compact red time-left indicator beside the Course flame only in the last 90 minutes of an unfinished day; refresh as the clock advances.
+
 ## Sept 26 — Intel feed rhythm
 - [x] Break up the small-news feed with a larger horizontally swipeable story panel midway down, reusing the clean featured-story treatment without extra controls.
 
