@@ -188,6 +188,16 @@ async function sendToFCM(token: string, title: string, body: string, data?: Reco
 }
 
 async function sendNotification(token: string, title: string, body: string, data?: Record<string, unknown>): Promise<boolean> {
+  // The mobile app registers through Expo, so its tokens must go to Expo.
+  if (isExpoPushToken(token)) {
+    const result = await sendToExpo(token, title, body, data);
+    if (result.unregistered) {
+      console.log('Expo token no longer registered, clearing it:', token.slice(0, 24));
+      await clearStalePushToken(token);
+    }
+    return result.ok;
+  }
+
   const isAPNsToken = /^[a-f0-9]{64}$/i.test(token);
   return isAPNsToken 
     ? await sendToAPNs(token, title, body, data)
