@@ -112,7 +112,9 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
         const byDay = new Map<number, StudiedLesson>();
         for (const row of (data ?? []) as unknown as StackRow[]) {
           const day = dayFromTags(row.tags);
-          if (day === null || day > availableDay) continue;
+          // A completed stack is explicit study evidence, even if the course
+          // calendar was reset or the learner caught up on a different day.
+          if (day === null) continue;
           if (byDay.has(day)) continue;
           const slides = [...(row.slides ?? [])]
             .sort((a, b) => a.slide_number - b.slide_number)
