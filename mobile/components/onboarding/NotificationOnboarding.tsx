@@ -40,7 +40,19 @@ export function NotificationOnboarding({ visible, onComplete }: NotificationOnbo
     setIsEnabling(true);
     try {
       const { status } = await ExpoNotifications.requestPermissionsAsync();
-      onComplete(status === 'granted');
+      const granted = status === 'granted';
+
+      if (granted) {
+        // Register this device with the server right away, otherwise reminders
+        // have no address to reach and silently never arrive.
+        const { data } = await supabase.auth.getUser();
+        if (data?.user?.id) {
+          await syncPushToken(data.user.id);
+          await scheduleDailyFallbackReminders();
+        }
+      }
+
+      onComplete(granted);
     } catch {
       onComplete(false);
     }
