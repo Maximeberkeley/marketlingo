@@ -477,7 +477,7 @@ export default function HomeScreen() {
         />
       ) : session.showSessionComplete ? (
         <SessionCompleteCard
-          dayNumber={currentDay}
+          dayNumber={session.activeStack ? stackDayNumber(session.activeStack) || currentDay : currentDay}
           marketName={getMarketName(selectedMarket || 'aerospace')}
           marketEmoji=""
           xpEarned={session.sessionXPEarned}

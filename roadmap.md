@@ -1,5 +1,10 @@
 # MarketLingo roadmap
 
+## Sept 26 — Practice unlock and Course polish
+- [x] Use credited completed lessons to unlock Arena/Deep Case even when catching up on a different Course day; refresh study evidence on return.
+- [x] Reject failed lesson saves instead of showing a misleading completion and restore accurate lesson-day labeling.
+- [x] Match the lesson completion backdrop to the active theme and keep the title shine on actual letters of the focused unfinished lesson.
+
 ## Sept 25 — Lesson goals and recurring phone error
 - [x] Replace cut-off lesson goals with short, complete, lesson-specific goals and double-check generated goals before display.
 - [x] Diagnose and fix the recurring error shown in the new phone screenshot.

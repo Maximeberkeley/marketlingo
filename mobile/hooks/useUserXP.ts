@@ -238,17 +238,18 @@ export function useUserXP(marketId?: string) {
    * recorded, but it does not re-pay the lesson XP or re-mark the day.
    */
   const completeLessonForToday = async (stackId: string) => {
-    if (!user || !marketId) return;
+    if (!user || !marketId) throw new Error('Sign in and choose a market before saving a lesson.');
 
     const today = localDateString();
 
-    const { data: existing } = await supabase
+    const { data: existing, error: lookupError } = await supabase
       .from('daily_completions')
       .select('lesson_completed, completed_stack_id')
       .eq('user_id', user.id)
       .eq('market_id', marketId)
       .eq('completion_date', today)
       .maybeSingle();
+    if (lookupError) throw lookupError;
 
     const alreadyDone = Boolean(existing?.lesson_completed);
 
@@ -267,9 +268,8 @@ export function useUserXP(marketId?: string) {
       .select()
       .single();
 
-    if (!error && data) {
-      setDailyCompletion(data);
-    }
+    if (error || !data) throw error || new Error('Could not save today’s lesson credit.');
+    setDailyCompletion(data);
 
     if (!alreadyDone) {
       await addXP(XP_REWARDS.LESSON_COMPLETE, 'lesson', stackId, 'Completed daily lesson');

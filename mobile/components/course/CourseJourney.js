@@ -39,40 +39,34 @@ function MovingLessonTitle({ title, long, active }) {
       sweep.setValue(0);
       return;
     }
+    sweep.setValue(0);
     const animation = Animated.loop(Animated.sequence([
       Animated.timing(sweep, { toValue: 1, duration: 1150, useNativeDriver: false }),
       Animated.delay(1850),
       Animated.timing(sweep, { toValue: 0, duration: 0, useNativeDriver: false })
     ]));
     animation.start();
-    return () => animation.stop();
-  }, [active, reduceMotion, sweep]);
+    return () => {
+      animation.stop();
+      sweep.setValue(0);
+    };
+  }, [active, reduceMotion, sweep, title]);
   if (!active || reduceMotion) {
     return <Text style={[styles.weekTitle, long && styles.weekTitleLong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.78}>{title}</Text>;
   }
-  const letters = [...title].filter((char) => char !== " ").length;
-  let characterIndex = 0;
-  return <View style={styles.weekTitleLetters} accessible accessibilityRole="text" accessibilityLabel={title}>
-      {title.split(" ").map((word, wordIndex) => <View key={`${wordIndex}-${word}`} style={styles.weekTitleWord} accessible={false}>
-          {[...word].map((letter, index) => {
-    const progress = ++characterIndex / (letters + 1);
-    const window = Math.min(0.075, 0.4 / (letters + 1));
-    return <Animated.Text
-      key={`${wordIndex}-${index}`}
-      accessible={false}
-      style={[
-        styles.weekTitle,
-        styles.weekTitleLetter,
-        long && styles.weekTitleLong,
-        {
-          color: sweep.interpolate({ inputRange: [0, progress - window, progress, progress + window, 1], outputRange: [COLORS.textPrimary, COLORS.textPrimary, COLORS.courseCoinHighlight, COLORS.textPrimary, COLORS.textPrimary] }),
-          textShadowColor: sweep.interpolate({ inputRange: [0, progress - window, progress, progress + window, 1], outputRange: [COLORS.bg0, COLORS.bg0, COLORS.accent, COLORS.bg0, COLORS.bg0] })
-        }
-      ]}
-    >{letter}</Animated.Text>;
+  const letters = [...title].length;
+  return <Text style={[styles.weekTitle, long && styles.weekTitleLong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.78} accessible accessibilityLabel={title}>
+      {[...title].map((letter, index) => {
+    const progress = (index + 1) / (letters + 1);
+    const width = Math.min(0.095, 2.5 / (letters + 1));
+    return <Animated.Text key={index} accessible={false} style={{
+      color: sweep.interpolate({ inputRange: [0, progress - width, progress, progress + width, 1], outputRange: [COLORS.textPrimary, COLORS.textPrimary, COLORS.textOnAccent, COLORS.textPrimary, COLORS.textPrimary] }),
+      textShadowColor: sweep.interpolate({ inputRange: [0, progress - width, progress, progress + width, 1], outputRange: [COLORS.bg0, COLORS.bg0, COLORS.accent, COLORS.bg0, COLORS.bg0] }),
+      textShadowOffset: { width: 0, height: 0 },
+      textShadowRadius: 6
+    }}>{letter}</Animated.Text>;
   })}
-        </View>)}
-    </View>;
+    </Text>;
 }
 const MARKET_ILLUSTRATIONS = {
   aerospace: require("../../assets/illustrations/aerospace.png"),
@@ -206,7 +200,7 @@ function SectionCluster({
       <View style={styles.weekHeading}>
         <View style={styles.weekHeadingCopy}>
           <Text style={styles.weekEyebrow}>{section.unlocked ? `DAY ${section.displayDay}` : `DAYS ${section.startDay}\u2013${section.endDay}`}</Text>
-          <MovingLessonTitle title={weekTitle} long={longTitle} active={activeSection && section.unlocked && !lessonCompletedToday} />
+          <MovingLessonTitle title={weekTitle} long={longTitle} active={activeSection && section.unlocked && !lesson?.completed} />
           <Text style={styles.lessonMeta}>{marketName} · 6 min</Text>
         </View>
         {!section.unlocked ? <View style={styles.lockPill}>
@@ -581,9 +575,6 @@ const styles = StyleSheet.create({
   weekHeadingCopy: { flex: 1, minWidth: 0 },
   weekEyebrow: { ...TYPE.overline, color: COLORS.courseHeader },
   weekTitle: { fontSize: 28, lineHeight: 33, fontWeight: "700", color: COLORS.textPrimary, marginTop: 4, maxWidth: 300 },
-  weekTitleLetters: { flexDirection: "row", flexWrap: "wrap", alignItems: "flex-start", maxWidth: 300, marginTop: 4 },
-  weekTitleWord: { flexDirection: "row", marginRight: 6 },
-  weekTitleLetter: { marginTop: 0, textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 7 },
   weekTitleLong: { fontSize: 18, lineHeight: 23 },
   lessonMeta: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 5 },
   lockPill: { flexDirection: "row", alignItems: "center", gap: 5, borderRadius: 12, paddingHorizontal: 9, paddingVertical: 7, backgroundColor: COLORS.lockedSurface },
