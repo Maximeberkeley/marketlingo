@@ -1,8 +1,8 @@
 # MarketLingo roadmap
 
 ## Sept 26 — Reward gallery refresh
-- [ ] Refine Insider Collection and Achievements using the selected violet/ember, energetic, tight-gallery direction.
-- [ ] Make every changed screen equally legible and polished in dark and light mode.
+- [x] Refine Insider Collection and Achievements using the selected violet/ember, energetic, tight-gallery direction.
+- [x] Make every changed screen equally legible and polished in dark and light mode.
 
 ## Sept 26 — Streak timing
 - [x] Never offer rescue after a lesson credited on the learner's local day, including direct entry to the rescue screen.
