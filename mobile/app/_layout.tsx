@@ -91,6 +91,7 @@ export default function RootLayout() {
         <ErrorBoundary>
           <AuthProvider>
             <LeoProvider>
+              <PushTokenSync />
               <StatusBar style={isDark ? 'light' : 'dark'} />
               <Stack
                 screenOptions={{
