@@ -101,7 +101,7 @@ export function useUserProgress(marketId?: string) {
   const updateStreak = syncStreak;
 
   const completeStack = async (stackId: string) => {
-    if (!progress) return;
+    if (!progress) throw new Error('Lesson progress has not loaded. Please try again.');
     if (progress.completed_stacks?.includes(stackId)) return progress;
 
     const completedStacks = [...(progress.completed_stacks || []), stackId];
@@ -115,9 +115,8 @@ export function useUserProgress(marketId?: string) {
       .select()
       .single();
 
-    if (!error && data) {
-      setProgress(data as UserProgress);
-    }
+    if (error || !data) throw error || new Error('Could not save the completed lesson.');
+    setProgress(data as UserProgress);
     return data;
   };
 

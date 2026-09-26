@@ -57,11 +57,6 @@ export function useSessionFlow({
   const [completedBites, setCompletedBites] = useState<number[]>([]);
   const [activeBiteIndex, setActiveBiteIndex] = useState<number | null>(null);
 
-  const activeStackDay = () => {
-    const dayTag = (activeStack?.tags || []).find(tag => /^day-\d+$/.test(tag));
-    return dayTag ? Number(dayTag.slice(4)) : null;
-  };
-
   const handleOpenStack = useCallback((stack: StackWithSlides) => {
     triggerHaptic('light');
     trackEvent('lesson_start', { stackId: stack.id, type: stack.stack_type });
@@ -98,6 +93,10 @@ export function useSessionFlow({
       Alert.alert('Too fast!', 'Take a moment to read through the slides.');
       return false;
     }
+    if (!progress || !activeStack) {
+      Alert.alert('Could not save your lesson', 'Please reconnect and try again.');
+      return false;
+    }
 
     // Catching up on an earlier day still counts as today's study: it marks the
     // day complete, banks the streak and fills the orbit. Only a second lesson
@@ -121,8 +120,8 @@ export function useSessionFlow({
           synced = true;
         } else {
           await completeStack(activeStack.id);
-          const updatedProgress = await updateStreak();
           await completeLessonForToday(activeStack.id);
+          const updatedProgress = await updateStreak();
           if ((progress.current_streak || 0) > 0) {
             const streakBonus = xpRewardStreakBonus * (progress.current_streak || 1);
             await addXP(streakBonus, 'streak_bonus');
@@ -145,9 +144,10 @@ export function useSessionFlow({
     } catch (err) {
       log.error('Lesson completion error:', err);
       Alert.alert(
-        'Saved locally',
-        'We had trouble syncing your progress. It will retry the next time you are online.',
+        'Could not save your lesson',
+        'Please reconnect and try again. Your lesson has not been marked complete yet.',
       );
+      return false;
     }
 
     trackEvent('lesson_complete', {
