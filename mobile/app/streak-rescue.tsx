@@ -26,7 +26,7 @@ import { playSound } from '../lib/sounds';
 import { log } from '../lib/logger';
 import { getMarketName } from '../lib/markets';
 import { lessonStatements } from '../lesson-kit/practice/lessonQuestions';
-import { nextLocalMidnightISOString } from '../lib/dayMath';
+import { localDateString, nextLocalMidnightISOString, streakCountdownLabel } from '../lib/dayMath';
 
 interface RescueQuestion {
   id: string;
@@ -53,10 +53,32 @@ export default function StreakRescueScreen() {
   const [outcome, setOutcome] = useState<null | 'saved' | 'lost'>(null);
   const [saving, setSaving] = useState(false);
   const [started, setStarted] = useState(false);
+  const [lessonDoneToday, setLessonDoneToday] = useState<boolean | null>(null);
+  const [clockNow, setClockNow] = useState(() => new Date());
 
   const heart = useRef(new Animated.Value(1)).current;
   const streak = progress?.current_streak ?? 0;
   const marketName = marketId ? getMarketName(marketId) : 'your industry';
+
+  useEffect(() => {
+    const timer = setInterval(() => setClockNow(new Date()), 15000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!user || !marketId) return;
+    let live = true;
+    setLessonDoneToday(null);
+    supabase.from('daily_completions').select('lesson_completed')
+      .eq('user_id', user.id).eq('market_id', marketId)
+      .eq('completion_date', localDateString()).maybeSingle()
+      .then(({ data, error }) => {
+        if (live) setLessonDoneToday(error ? true : Boolean(data?.lesson_completed));
+      });
+    return () => { live = false; };
+  }, [user?.id, marketId, localDateString(clockNow)]);
+
+  const rescueWindowOpen = lessonDoneToday === false && Boolean(streakCountdownLabel(streak, false, clockNow));
 
   useEffect(() => {
     Animated.loop(
@@ -81,6 +103,16 @@ export default function StreakRescueScreen() {
 
   const finish = useCallback(async (finalCorrect: number) => {
     setSaving(true);
+    // Re-check server credit at the moment of saving, not only on entry.
+    if (!user || !marketId || !rescueWindowOpen) { setSaving(false); return; }
+    const { data: today, error: todayError } = await supabase.from('daily_completions')
+      .select('lesson_completed').eq('user_id', user.id).eq('market_id', marketId)
+      .eq('completion_date', localDateString()).maybeSingle();
+    if (todayError || today?.lesson_completed) {
+      setLessonDoneToday(true);
+      setSaving(false);
+      return;
+    }
     if (finalCorrect >= NEEDED_CORRECT) {
       let saved = false;
       if (canFreeze) {
@@ -105,7 +137,7 @@ export default function StreakRescueScreen() {
       setOutcome('lost');
     }
     setSaving(false);
-  }, [canFreeze, useFreeze, user, marketId, refetchProgress]);
+  }, [canFreeze, useFreeze, user, marketId, refetchProgress, rescueWindowOpen]);
 
   const onAnswer = (value: boolean) => {
     if (answer !== null) return;
@@ -135,10 +167,23 @@ export default function StreakRescueScreen() {
     if (!wasRight) triggerHaptic('light');
   };
 
-  if (loading) {
+  if (loading || lessonDoneToday === null) {
     return (
       <View style={[styles.screen, styles.center]}>
         <ActivityIndicator color={COLORS.streak} />
+      </View>
+    );
+  }
+
+  if (!rescueWindowOpen && !outcome) {
+    return (
+      <View style={[styles.screen, styles.center, { padding: 24 }]}>
+        <Feather name="check-circle" size={32} color={COLORS.success} />
+        <Text style={styles.title}>{lessonDoneToday ? "Today's lesson is done" : 'No rescue needed now'}</Text>
+        <Text style={styles.body}>{lessonDoneToday ? 'Your streak is safe for today.' : 'Study a lesson to keep your streak going.'}</Text>
+        <TouchableOpacity style={styles.primary} onPress={() => router.back()}>
+          <Text style={styles.primaryText}>Back to Course</Text>
+        </TouchableOpacity>
       </View>
     );
   }

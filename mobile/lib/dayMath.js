@@ -1,41 +1,38 @@
-/**
- * Calendar-day math for curriculum unlocking.
- *
- * Rules:
- *  - A new day unlocks at the learner's LOCAL midnight (not 24h after the
- *    previous lesson). Learners can study any time during their day.
- *  - `start_date` is stored as a plain 'YYYY-MM-DD' string. `new Date(str)`
- *    parses that as UTC midnight, which shifts the day by one for users west
- *    of UTC. We therefore parse it explicitly as a LOCAL date.
- */
-/** Parse 'YYYY-MM-DD' as local midnight (timezone-safe). */
-export function parseLocalDate(dateStr) {
-    const [y, m, d] = dateStr.split('T')[0].split('-').map(Number);
-    return new Date(y, (m || 1) - 1, d || 1, 0, 0, 0, 0);
+function parseLocalDate(dateStr) {
+  const [y, m, d] = dateStr.split("T")[0].split("-").map(Number);
+  return new Date(y, (m || 1) - 1, d || 1, 0, 0, 0, 0);
 }
-/** Today's date as 'YYYY-MM-DD' in the device's local timezone. */
-export function localDateString(date = new Date()) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+function localDateString(date = /* @__PURE__ */ new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
-/** The next boundary at which today's local-calendar commitment is judged. */
-export function nextLocalMidnightISOString(date = new Date()) {
-    const next = new Date(date);
-    next.setHours(24, 0, 0, 0);
-    return next.toISOString();
+function nextLocalMidnightISOString(date = /* @__PURE__ */ new Date()) {
+  const next = new Date(date);
+  next.setHours(24, 0, 0, 0);
+  return next.toISOString();
 }
-/**
- * Day number (1-180) available to the learner, based on local calendar days
- * elapsed since start_date. Rolls over at local midnight anywhere in the world.
- */
-export function calculateAvailableDay(startDate) {
-    if (!startDate)
-        return 1;
-    const start = parseLocalDate(startDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const diffDays = Math.floor((today.getTime() - start.getTime()) / 86400000);
-    return Math.min(180, Math.max(1, diffDays + 1));
+function streakCountdownLabel(streak, lessonDone, date = /* @__PURE__ */ new Date()) {
+  if (streak <= 0 || lessonDone) return null;
+  const midnight = new Date(date);
+  midnight.setHours(24, 0, 0, 0);
+  const minutes = Math.ceil((midnight.getTime() - date.getTime()) / 6e4);
+  if (minutes <= 0 || minutes > 90) return null;
+  return `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, "0")}`;
 }
+function calculateAvailableDay(startDate) {
+  if (!startDate) return 1;
+  const start = parseLocalDate(startDate);
+  const today = /* @__PURE__ */ new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffDays = Math.floor((today.getTime() - start.getTime()) / 864e5);
+  return Math.min(180, Math.max(1, diffDays + 1));
+}
+export {
+  calculateAvailableDay,
+  localDateString,
+  nextLocalMidnightISOString,
+  parseLocalDate,
+  streakCountdownLabel
+};

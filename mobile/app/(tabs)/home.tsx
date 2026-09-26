@@ -67,6 +67,7 @@ import { useFocusTopic } from '../../hooks/useFocusTopic';
 import { FocusTopicCard } from '../../components/home/FocusTopicCard';
 import { CourseJourney } from '../../components/course/CourseJourney';
 import { useIntelHabit } from '../../hooks/useIntelHabit';
+import { localDateString, streakCountdownLabel } from '../../lib/dayMath';
 import { claimLeoNudge, currentLeoNudgeWindow, getLeoNudge } from '../../lib/leoNudges';
 
 
@@ -142,7 +143,7 @@ export default function HomeScreen() {
 
   const [selectedMarketLocal, setSelectedMarketLocal] = useState<string | null>(null);
   const [revealedCard, setRevealedCard] = useState<Partial<CollectibleCard> | null>(null);
-  const { progress, completeStack, updateStreak } = useUserProgress(selectedMarketLocal || undefined);
+  const { progress, completeStack, updateStreak, refetch: refetchProgress } = useUserProgress(selectedMarketLocal || undefined);
   const {
     xpData, dailyCompletion, completeLessonForToday,
     getCurrentStage, getProgressToNextStage, isLessonCompletedToday, addXP,
@@ -225,7 +226,7 @@ export default function HomeScreen() {
 
   const session = useSessionFlow({
     user, selectedMarket, lessonStack, progress, xpData,
-    lessonCompletedToday, currentDay,
+    lessonCompletedToday: Boolean(dailyCompletion?.lesson_completed && dailyCompletion.completion_date === localDateString()), currentDay,
     completeStack, updateStreak, completeLessonForToday, addXP,
     checkStreakMilestone, checkLevelMilestone,
     xpRewardLessonComplete: XP_REWARDS.LESSON_COMPLETE,
@@ -270,25 +271,36 @@ export default function HomeScreen() {
     })();
   }, [openStackId, selectedMarket, user]);
 
-  const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
-  const [showCriticalTimer, setShowCriticalTimer] = useState(true);
   const [showLeoChat, setShowLeoChat] = useState(false);
   const [courseFocused, setCourseFocused] = useState(true);
+  const [clockNow, setClockNow] = useState(() => new Date());
+  const refreshStreakData = useRef({ refetchXP, refetchProgress });
+  refreshStreakData.current = { refetchXP, refetchProgress };
+  useEffect(() => {
+    const ticker = setInterval(() => setClockNow(new Date()), 15000);
+    return () => clearInterval(ticker);
+  }, []);
 
   useFocusEffect(useCallback(() => {
     setCourseFocused(true);
+    setClockNow(new Date());
+    void refreshStreakData.current.refetchXP();
+    void refreshStreakData.current.refetchProgress();
     return () => setCourseFocused(false);
   }, []));
 
-  // Calculate if we're in the critical 2-hour window
-  const criticalTimerActive = (() => {
-    if (!progress?.streak_expires_at || streak === 0 || lessonCompletedToday) return false;
-    const expires = new Date(progress.streak_expires_at);
-    const hoursLeft = (expires.getTime() - Date.now()) / (1000 * 60 * 60);
-    return hoursLeft > 0 && hoursLeft <= 2;
-  })();
+  // Crossing local midnight invalidates yesterday's completion even if the screen stays open.
+  const clockDay = localDateString(clockNow);
+  const completedOnClockDay = Boolean(dailyCompletion?.lesson_completed && dailyCompletion.completion_date === clockDay);
+  useEffect(() => {
+    if (clockDay !== localDateString()) return;
+    void refreshStreakData.current.refetchXP();
+    void refreshStreakData.current.refetchProgress();
+  }, [clockDay]);
+  const streakCountdown = streakCountdownLabel(streak, completedOnClockDay, clockNow);
 
+  // Calculate if we're in the critical 2-hour window
   // Daily quests
   const { quests, completedCount, totalBonusXP, allComplete } = useDailyQuests(dailyCompletion, streak);
   // Bonus XP is banked as soon as a quest flips to complete (once per day).
@@ -501,12 +513,13 @@ export default function HomeScreen() {
           streak={streak}
           totalXp={xpData?.total_xp || 0}
           level={xpData?.current_level || 1}
-          lessonCompletedToday={lessonCompletedToday}
+          lessonCompletedToday={completedOnClockDay}
           arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
           caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
           intelReadToday={intelHabit.readToday}
           intelTarget={intelHabit.target}
-          rescueAvailable={showStreakWarning || criticalTimerActive}
+          rescueAvailable={Boolean(streakCountdown)}
+          streakCountdown={streakCountdown}
           safeTop={insets.top}
           onOpenLesson={(stackId) => router.setParams({ openStackId: stackId })}
           onAskLeo={() => setShowLeoChat(true)}

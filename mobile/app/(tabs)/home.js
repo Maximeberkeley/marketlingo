@@ -44,6 +44,7 @@ import { useDeliverable } from "../../hooks/useDeliverable";
 import { useFocusTopic } from "../../hooks/useFocusTopic";
 import { CourseJourney } from "../../components/course/CourseJourney";
 import { useIntelHabit } from "../../hooks/useIntelHabit";
+import { localDateString, streakCountdownLabel } from "../../lib/dayMath";
 import { claimLeoNudge, currentLeoNudgeWindow, getLeoNudge } from "../../lib/leoNudges";
 const MARKET_ILLUSTRATIONS = {
   aerospace: require("../../assets/illustrations/aerospace.png"),
@@ -111,7 +112,7 @@ function HomeScreen() {
   const { openStackId } = useLocalSearchParams();
   const [selectedMarketLocal, setSelectedMarketLocal] = useState(null);
   const [revealedCard, setRevealedCard] = useState(null);
-  const { progress, completeStack, updateStreak } = useUserProgress(selectedMarketLocal || void 0);
+  const { progress, completeStack, updateStreak, refetch: refetchProgress } = useUserProgress(selectedMarketLocal || void 0);
   const {
     xpData,
     dailyCompletion,
@@ -195,7 +196,7 @@ function HomeScreen() {
     lessonStack,
     progress,
     xpData,
-    lessonCompletedToday,
+    lessonCompletedToday: Boolean(dailyCompletion?.lesson_completed && dailyCompletion.completion_date === localDateString()),
     currentDay,
     completeStack,
     updateStreak,
@@ -231,21 +232,31 @@ function HomeScreen() {
       }
     })();
   }, [openStackId, selectedMarket, user]);
-  const [showStreakWarning, setShowStreakWarning] = useState(true);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
-  const [showCriticalTimer, setShowCriticalTimer] = useState(true);
   const [showLeoChat, setShowLeoChat] = useState(false);
   const [courseFocused, setCourseFocused] = useState(true);
+  const [clockNow, setClockNow] = useState(() => /* @__PURE__ */ new Date());
+  const refreshStreakData = useRef({ refetchXP, refetchProgress });
+  refreshStreakData.current = { refetchXP, refetchProgress };
+  useEffect(() => {
+    const ticker = setInterval(() => setClockNow(/* @__PURE__ */ new Date()), 15e3);
+    return () => clearInterval(ticker);
+  }, []);
   useFocusEffect(useCallback(() => {
     setCourseFocused(true);
+    setClockNow(/* @__PURE__ */ new Date());
+    void refreshStreakData.current.refetchXP();
+    void refreshStreakData.current.refetchProgress();
     return () => setCourseFocused(false);
   }, []));
-  const criticalTimerActive = (() => {
-    if (!progress?.streak_expires_at || streak === 0 || lessonCompletedToday) return false;
-    const expires = new Date(progress.streak_expires_at);
-    const hoursLeft = (expires.getTime() - Date.now()) / (1e3 * 60 * 60);
-    return hoursLeft > 0 && hoursLeft <= 2;
-  })();
+  const clockDay = localDateString(clockNow);
+  const completedOnClockDay = Boolean(dailyCompletion?.lesson_completed && dailyCompletion.completion_date === clockDay);
+  useEffect(() => {
+    if (clockDay !== localDateString()) return;
+    void refreshStreakData.current.refetchXP();
+    void refreshStreakData.current.refetchProgress();
+  }, [clockDay]);
+  const streakCountdown = streakCountdownLabel(streak, completedOnClockDay, clockNow);
   const { quests, completedCount, totalBonusXP, allComplete } = useDailyQuests(dailyCompletion, streak);
   useQuestRewards(quests, selectedMarketLocal || selectedMarket, addXP);
   const { displayName } = useDisplayName();
@@ -430,12 +441,13 @@ function HomeScreen() {
     streak={streak}
     totalXp={xpData?.total_xp || 0}
     level={xpData?.current_level || 1}
-    lessonCompletedToday={lessonCompletedToday}
+    lessonCompletedToday={completedOnClockDay}
     arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
     caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
     intelReadToday={intelHabit.readToday}
     intelTarget={intelHabit.target}
-    rescueAvailable={showStreakWarning || criticalTimerActive}
+    rescueAvailable={Boolean(streakCountdown)}
+    streakCountdown={streakCountdown}
     safeTop={insets.top}
     onOpenLesson={(stackId) => router.setParams({ openStackId: stackId })}
     onAskLeo={() => setShowLeoChat(true)}

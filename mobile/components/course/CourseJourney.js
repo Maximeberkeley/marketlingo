@@ -325,6 +325,7 @@ function CourseJourney({
   intelReadToday,
   intelTarget,
   rescueAvailable = false,
+  streakCountdown = null,
   safeTop,
   onOpenLesson,
   onAskLeo
@@ -468,9 +469,10 @@ function CourseJourney({
               <Image source={marketIllustration} style={styles.industryImage} resizeMode="contain" />
             </TouchableOpacity>
             <View style={styles.badges}>
-              <TouchableOpacity disabled={!rescueAvailable} onPress={() => router.push("/streak-rescue")}>
+              <TouchableOpacity disabled={!rescueAvailable} onPress={() => router.push("/streak-rescue")} accessibilityLabel={rescueAvailable ? `Streak rescue, ${streakCountdown || "available now"}` : `${streak}-day streak`}>
                 <StreakBadge count={streak} />
               </TouchableOpacity>
+              {streakCountdown ? <Text style={styles.streakCountdown} accessibilityLabel={`${streakCountdown} left to study today`}>{streakCountdown}</Text> : null}
               <XPBadge xp={totalXp} level={level} />
             </View>
           </View>}
@@ -626,6 +628,7 @@ const styles = StyleSheet.create({
   industrySecondaryAction: { minHeight: 52, flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 4, marginTop: 6 },
   industrySecondaryText: { ...TYPE.bodyBold, color: COLORS.textPrimary, flex: 1 },
   badges: { flexDirection: "row", alignItems: "center", gap: 8 },
+  streakCountdown: { ...TYPE.caption, color: COLORS.error, fontWeight: "800", fontVariant: ["tabular-nums"] },
   sectionBlock: { paddingHorizontal: 18, marginBottom: 26 },
   sectionHeader: { minHeight: 98, borderRadius: 20, paddingHorizontal: 18, paddingVertical: 14, flexDirection: "row", alignItems: "center", backgroundColor: COLORS.courseHeader, shadowColor: COLORS.courseHeaderDeep, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.24, shadowRadius: 14, elevation: 7 },
   sectionHeaderLocked: { opacity: 0.82 },
