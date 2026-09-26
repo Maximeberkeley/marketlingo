@@ -38,7 +38,7 @@ export default function CollectionScreen() {
           const world = getMarketWorld(card.market_id);
           return (
             <TouchableOpacity key={card.id} style={[styles.card, card.owned ? styles.ownedCard : styles.lockedCard]} onPress={() => setSelected(card)} activeOpacity={0.82}>
-              <View style={[styles.cardArt, { backgroundColor: card.owned ? world.colors[0] : COLORS.lockedSurface }]}> 
+              <View style={[styles.cardArt, { backgroundColor: card.owned ? world.colors[0] : COLORS.lockedSurface }]}>
                 <Feather name={card.owned ? 'compass' : 'lock'} size={28} color={card.owned ? '#FFFFFF' : COLORS.textMuted} />
               </View>
               <Text style={[styles.rarity, { color: card.owned ? COLORS.accent : COLORS.textMuted }]}>{RARITY_LABEL[card.rarity]}</Text>
