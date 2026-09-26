@@ -6,13 +6,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Image,
   Animated,
   Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { COLORS, SHADOWS, TYPE } from '../lib/constants';
+import { COLORS, TYPE } from '../lib/constants';
+import { isDark } from '../lib/theme';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { ACHIEVEMENTS, tierColors } from '../data/achievements';
@@ -21,7 +21,7 @@ import { getMarketName } from '../lib/markets';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_GAP = 10;
-const CARD_WIDTH = (SCREEN_WIDTH - 32 - CARD_GAP) / 2;
+const CARD_WIDTH = (SCREEN_WIDTH - 40 - CARD_GAP) / 2;
 
 const FEATHER_ACHIEVE_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   games: 'play-circle',
@@ -126,7 +126,6 @@ export default function AchievementsScreen() {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [showAllMarkets, setShowAllMarkets] = useState(false);
   const [loading, setLoading] = useState(true);
-  const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -159,12 +158,6 @@ export default function AchievementsScreen() {
       setMarketMilestones((milestoneRows || []) as MarketMilestone[]);
       setLoading(false);
 
-      const pct = merged.length > 0 ? merged.filter(a => a.unlocked).length / merged.length : 0;
-      Animated.timing(progressAnim, {
-        toValue: pct,
-        duration: 800,
-        useNativeDriver: false,
-      }).start();
     };
     fetchData();
   }, [user]);
@@ -180,7 +173,6 @@ export default function AchievementsScreen() {
   const visibleMilestones = showAllMarkets ? marketMilestones : industryMilestones;
 
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
-  const progressPercent = achievements.length > 0 ? Math.round((unlockedCount / achievements.length) * 100) : 0;
 
   if (loading) {
     return (
@@ -213,35 +205,6 @@ export default function AchievementsScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero Banner */}
-        <View style={styles.heroBanner}>
-          <Image
-            source={require('../assets/illustrations/achievements-hero.png')}
-            style={styles.heroImage}
-            resizeMode="cover"
-          />
-          <View style={styles.heroOverlay} />
-          <View style={styles.heroContent}>
-            <View style={styles.heroLeft}>
-              <Text style={styles.heroLabel}>Your Progress</Text>
-              <Text style={styles.heroPercent}>{progressPercent}% Complete</Text>
-            </View>
-            <View style={styles.heroBadgePill}>
-              <Feather name="zap" size={11} color="#FBBF24" />
-              <Text style={styles.heroBadgeText}>{unlockedCount} badges</Text>
-            </View>
-          </View>
-          {/* Progress bar */}
-          <View style={styles.heroProgressBg}>
-            <Animated.View style={[styles.heroProgressFill, {
-              width: progressAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: ['0%', '100%'],
-              }),
-            }]} />
-          </View>
-        </View>
-
         {marketMilestones.length > 0 && (
           <View style={styles.milestoneSection}>
             <View style={styles.milestoneHeading}>
@@ -303,15 +266,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
     backgroundColor: COLORS.bg0,
   },
-  backBtn: { padding: 6, marginLeft: -6 },
-  headerTitle: { ...TYPE.h3, color: COLORS.textPrimary },
-  headerSub: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 1 },
+  backBtn: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center', marginLeft: -8, borderRadius: 19 },
+  headerTitle: { fontSize: 24, lineHeight: 29, fontWeight: '900', color: COLORS.textPrimary },
+  headerSub: { fontSize: 13, fontWeight: '600', color: COLORS.textMuted, marginTop: 1 },
   countBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -331,76 +292,23 @@ const styles = StyleSheet.create({
   },
   otherChipText: { fontSize: 10, fontWeight: '700', color: COLORS.accent, letterSpacing: 0.2 },
 
-  scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
-
-  // Hero banner
-  heroBanner: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    marginBottom: 20,
-    ...SHADOWS.md,
-  },
-  heroImage: {
-    width: '100%',
-    height: 140,
-  },
-  heroOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(120, 53, 15, 0.55)',
-  },
-  heroContent: {
-    position: 'absolute',
-    bottom: 26,
-    left: 16,
-    right: 16,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-  },
-  heroLeft: {},
-  heroLabel: { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.7)', marginBottom: 2 },
-  heroPercent: { fontSize: 22, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.4 },
-  heroBadgePill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-  },
-  heroBadgeText: { fontSize: 11, fontWeight: '700', color: '#FFFFFF' },
-  heroProgressBg: {
-    position: 'absolute',
-    bottom: 10,
-    left: 16,
-    right: 16,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    overflow: 'hidden',
-  },
-  heroProgressFill: {
-    height: '100%',
-    borderRadius: 3,
-    backgroundColor: '#FBBF24',
-  },
+  scrollContent: { paddingHorizontal: 20, paddingTop: 8 },
 
   // Tier sections
   milestoneSection: { marginBottom: 24 },
   milestoneHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   milestoneCount: { fontSize: 11, fontWeight: '700', color: COLORS.accent, marginBottom: 10 },
   milestoneRow: { gap: 10 },
-  milestoneCard: { width: 142, minHeight: 132, padding: 14, borderRadius: 14, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.accentMedium },
+  milestoneCard: { width: 142, minHeight: 132, padding: 14, borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.accentMedium },
   milestoneIcon: { width: 34, height: 34, borderRadius: 10, backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
   milestoneMarket: { fontSize: 9, fontWeight: '800', color: COLORS.textMuted, marginBottom: 4 },
   milestoneTitle: { fontSize: 13, lineHeight: 17, fontWeight: '800', color: COLORS.textPrimary, flex: 1 },
   milestoneDay: { fontSize: 9, fontWeight: '900', color: COLORS.accent, marginTop: 8 },
-  tierSection: { marginBottom: 24 },
+  tierSection: { marginBottom: 28 },
   tierLabel: {
     ...TYPE.overline,
     color: COLORS.textMuted,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   grid: {
     flexDirection: 'row',
@@ -411,20 +319,26 @@ const styles = StyleSheet.create({
   // Achievement card (2-col)
   gridCard: {
     width: CARD_WIDTH,
-    padding: 14,
-    borderRadius: 14,
+    minHeight: 158,
+    padding: 15,
+    borderRadius: 22,
     borderWidth: 1,
+    shadowColor: COLORS.accent,
+    shadowOpacity: isDark ? 0.08 : 0.04,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 1,
   },
   cardTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 10,
+    marginBottom: 14,
   },
   iconCircle: {
     width: 38,
     height: 38,
-    borderRadius: 12,
+    borderRadius: 11,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -435,8 +349,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkMark: { fontSize: 11, color: '#fff', fontWeight: '700' },
-  cardName: { ...TYPE.bodyBold, fontSize: 13, color: COLORS.textPrimary, marginBottom: 2 },
+  checkMark: { fontSize: 11, color: COLORS.textOnAccent, fontWeight: '800' },
+  cardName: { ...TYPE.bodyBold, fontSize: 14, lineHeight: 18, color: COLORS.textPrimary, marginBottom: 3 },
   cardDesc: { fontSize: 11, color: COLORS.textMuted, lineHeight: 15, marginBottom: 8 },
   cardFooter: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   xpText: { fontSize: 10, fontWeight: '600', color: COLORS.textMuted },
