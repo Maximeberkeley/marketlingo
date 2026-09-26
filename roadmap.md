@@ -1,5 +1,9 @@
 # MarketLingo roadmap
 
+## Sept 26 — Reward gallery refresh
+- [ ] Refine Insider Collection and Achievements using the selected violet/ember, energetic, tight-gallery direction.
+- [ ] Make every changed screen equally legible and polished in dark and light mode.
+
 ## Sept 26 — Streak timing
 - [x] Never offer rescue after a lesson credited on the learner's local day, including direct entry to the rescue screen.
 - [x] Show a compact red time-left indicator beside the Course flame only in the last 90 minutes of an unfinished day; refresh as the clock advances.
