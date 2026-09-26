@@ -74,7 +74,7 @@ async function sendToAPNs(
 ): Promise<boolean> {
   try {
     const jwt = await generateAPNsJWT();
-    const bundleId = 'app.lovable.94df7a7687ec45218c7386e5aa46d211'; // Your app bundle ID
+    const bundleId = 'app.marketlingo.aerospace'; // Your app bundle ID
 
     const payload: APNsPayload = {
       aps: {

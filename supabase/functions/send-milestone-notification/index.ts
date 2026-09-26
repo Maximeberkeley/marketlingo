@@ -88,7 +88,7 @@ async function generateAPNsJWT(): Promise<string> {
 async function sendToAPNs(token: string, title: string, body: string, data?: Record<string, unknown>): Promise<boolean> {
   try {
     const jwt = await generateAPNsJWT();
-    const bundleId = 'app.lovable.94df7a7687ec45218c7386e5aa46d211';
+    const bundleId = 'app.marketlingo.aerospace';
 
     const response = await fetch(`https://api.push.apple.com/3/device/${token}`, {
       method: 'POST',
