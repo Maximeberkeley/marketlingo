@@ -19,6 +19,7 @@ function resolveRoute(data: Record<string, any>): string | null {
   switch (data?.type) {
     case 'streak_warning':
     case 'daily_reminder':
+    case 'daily_fallback':
     case 'leo_rolling_nudge':
       return '/(tabs)/home';
     case 'leaderboard':
