@@ -1,7 +1,7 @@
 # MarketLingo roadmap
 
 ## Sept 26 — Intel feed rhythm
-- [ ] Break up the small-news feed with a larger horizontally swipeable story panel midway down, reusing the clean featured-story treatment without extra controls.
+- [x] Break up the small-news feed with a larger horizontally swipeable story panel midway down, reusing the clean featured-story treatment without extra controls.
 
 ## Sept 26 — Industry badge
 - [x] Replace the clipped, auto-dismissed industry label with an accessible theme-aware sheet showing the industry, course progress, and direct Course/Intel actions.

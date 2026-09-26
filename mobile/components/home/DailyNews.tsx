@@ -824,6 +824,11 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
 
   const featured = news.slice(0, Math.min(5, news.length));
   const feed = news.slice(featured.length);
+  // Give the list one visual pause without repeating stories or surfacing stories without imagery.
+  const midStories = feed.slice(2).filter(item => Boolean(item.imageUrl)).slice(0, 3);
+  const midStoryIds = new Set(midStories.length >= 2 ? midStories.map(item => item.id) : []);
+  const remainingFeed = feed.slice(2).filter(item => !midStoryIds.has(item.id));
+  const selectStory = (item: NewsItem) => openStory(news, news.findIndex(n => n.id === item.id));
 
   return (
     <View style={s.container}>
@@ -855,9 +860,7 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
         <View>
           {/* Featured horizontal carousel */}
           {featured.length > 0 && (
-            <FeaturedCarousel items={featured} onSelect={(item) => {
-              openStory(news, news.findIndex(n => n.id === item.id));
-            }} />
+            <FeaturedCarousel items={featured} onSelect={selectStory} />
           )}
 
           {/* Feed section label */}
@@ -871,14 +874,25 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
 
           {/* Vertical feed */}
           <View style={s.feedList}>
-            {feed.map((item, index) => (
+            {feed.slice(0, 2).map((item, index) => (
               <NewsFeedCard
                 key={item.id}
                 item={item}
                 index={index}
-                onSelect={(item) => {
-                  openStory(news, news.findIndex(n => n.id === item.id));
-                }}
+                onSelect={selectStory}
+              />
+            ))}
+            {midStoryIds.size >= 2 ? (
+              <View style={s.midFeedCarousel}>
+                <FeaturedCarousel items={midStories} onSelect={selectStory} />
+              </View>
+            ) : null}
+            {remainingFeed.map((item, index) => (
+              <NewsFeedCard
+                key={item.id}
+                item={item}
+                index={index + 2}
+                onSelect={selectStory}
               />
             ))}
           </View>
@@ -979,6 +993,7 @@ const s = StyleSheet.create({
   feedSectionLine: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: INTEL.separator },
   feedSectionLabel: { ...TYPE.overline, color: INTEL.muted, fontSize: 10 },
   feedList: { gap: 10 },
+  midFeedCarousel: { marginTop: 12, marginBottom: 4 },
 
   feedCard: {
     minHeight: 142, flexDirection: 'row', backgroundColor: INTEL.surface, borderRadius: 18,
