@@ -1,5 +1,8 @@
 # MarketLingo roadmap
 
+## Sept 26 — Industry badge
+- [x] Replace the clipped, auto-dismissed industry label with an accessible theme-aware sheet showing the industry, course progress, and direct Course/Intel actions.
+
 ## Sept 26 — Practice unlock and Course polish
 - [x] Use credited completed lessons to unlock Arena/Deep Case even when catching up on a different Course day; refresh study evidence on return.
 - [x] Reject failed lesson saves instead of showing a misleading completion and restore accurate lesson-day labeling.
