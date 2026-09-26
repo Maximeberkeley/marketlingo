@@ -175,6 +175,16 @@ async function sendNotification(
   body: string,
   data?: Record<string, unknown>
 ): Promise<boolean> {
+  // The mobile app registers through Expo, so its tokens must go to Expo.
+  if (isExpoPushToken(token)) {
+    const result = await sendToExpo(token, title, body, data);
+    if (result.unregistered) {
+      console.log('Expo token no longer registered, clearing it:', token.slice(0, 24));
+      await clearStalePushToken(token);
+    }
+    return result.ok;
+  }
+
   // APNs tokens are typically 64 hex characters
   // FCM tokens are longer and contain different characters
   const isAPNsToken = /^[a-f0-9]{64}$/i.test(token);
