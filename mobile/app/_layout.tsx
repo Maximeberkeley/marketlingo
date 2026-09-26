@@ -8,6 +8,7 @@ import * as Notifications from 'expo-notifications';
 import { AuthProvider } from '../hooks/useAuth';
 import { LeoProvider } from '../components/mascot/LeoCharacter';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { PushTokenSync } from '../components/PushTokenSync';
 import { COLORS } from '../lib/constants';
 import { isDark } from '../lib/theme';
 
