@@ -30,10 +30,6 @@ function useSessionFlow({
   const [sessionXPEarned, setSessionXPEarned] = useState(0);
   const [completedBites, setCompletedBites] = useState([]);
   const [activeBiteIndex, setActiveBiteIndex] = useState(null);
-  const activeStackDay = () => {
-    const dayTag = (activeStack?.tags || []).find((tag) => /^day-\d+$/.test(tag));
-    return dayTag ? Number(dayTag.slice(4)) : null;
-  };
   const handleOpenStack = useCallback((stack) => {
     triggerHaptic("light");
     trackEvent("lesson_start", { stackId: stack.id, type: stack.stack_type });
@@ -67,6 +63,10 @@ function useSessionFlow({
       Alert.alert("Too fast!", "Take a moment to read through the slides.");
       return false;
     }
+    if (!progress || !activeStack) {
+      Alert.alert("Could not save your lesson", "Please reconnect and try again.");
+      return false;
+    }
     const isExtraPractice = lessonCompletedToday;
     triggerHaptic("success");
     let earnedXP = isExtraPractice ? 15 : xpRewardLessonComplete;
@@ -81,8 +81,8 @@ function useSessionFlow({
           synced = true;
         } else {
           await completeStack(activeStack.id);
-          const updatedProgress = await updateStreak();
           await completeLessonForToday(activeStack.id);
+          const updatedProgress = await updateStreak();
           if ((progress.current_streak || 0) > 0) {
             const streakBonus = xpRewardStreakBonus * (progress.current_streak || 1);
             await addXP(streakBonus, "streak_bonus");
@@ -102,9 +102,10 @@ function useSessionFlow({
     } catch (err) {
       log.error("Lesson completion error:", err);
       Alert.alert(
-        "Saved locally",
-        "We had trouble syncing your progress. It will retry the next time you are online."
+        "Could not save your lesson",
+        "Please reconnect and try again. Your lesson has not been marked complete yet."
       );
+      return false;
     }
     trackEvent("lesson_complete", {
       stackId: activeStack?.id || "",
