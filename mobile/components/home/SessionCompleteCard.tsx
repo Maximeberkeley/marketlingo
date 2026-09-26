@@ -105,13 +105,13 @@ export function SessionCompleteCard({
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: COLORS.bg0,
     justifyContent: 'center', alignItems: 'center', padding: 24, zIndex: 100,
   },
   card: {
     width: '100%', maxWidth: 360, backgroundColor: COLORS.bg2,
     borderRadius: 28, padding: 28, alignItems: 'center',
-    borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.25)',
+    borderWidth: 1, borderColor: COLORS.border,
     shadowColor: COLORS.accent, shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.15, shadowRadius: 30, elevation: 12,
   },
@@ -135,13 +135,13 @@ const styles = StyleSheet.create({
   actions: { width: '100%', gap: 10 },
   shareBtn: {
     width: '100%', paddingVertical: 14, borderRadius: 14,
-    backgroundColor: COLORS.accentSoft, borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.25)',
+    backgroundColor: COLORS.accentSoft, borderWidth: 1, borderColor: COLORS.accentMedium,
     alignItems: 'center',
   },
   shareBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.accent },
   mentorBtn: {
     width: '100%', paddingVertical: 14, borderRadius: 14,
-    backgroundColor: COLORS.successSoft, borderWidth: 1, borderColor: 'rgba(16, 185, 129, 0.25)',
+    backgroundColor: COLORS.successSoft, borderWidth: 1, borderColor: COLORS.success,
     alignItems: 'center',
   },
   mentorBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.success },
@@ -149,5 +149,5 @@ const styles = StyleSheet.create({
     width: '100%', paddingVertical: 14, borderRadius: 14,
     backgroundColor: COLORS.accent, alignItems: 'center',
   },
-  continueBtnText: { fontSize: 15, fontWeight: '700', color: '#FFFFFF' },
+  continueBtnText: { fontSize: 15, fontWeight: '700', color: COLORS.textOnAccent },
 });

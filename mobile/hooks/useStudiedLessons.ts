@@ -9,7 +9,8 @@
  * Frame of reference is always the LOCAL calendar day (lib/dayMath), never the
  * timestamp of the moment a lesson happened to be completed.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
 
 import { supabase } from '../lib/supabase';
 import { calculateAvailableDay } from '../lib/dayMath';
@@ -75,7 +76,22 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
         const completedIds = Array.isArray(progress?.completed_stacks)
           ? progress.completed_stacks.filter((id): id is string => typeof id === 'string')
           : [];
-        if (completedIds.length === 0) {
+        // A daily lesson can be credited even if the legacy completed_stacks
+        // update failed. Both records are evidence of a finished lesson.
+        const { data: daily, error: dailyError } = await supabase
+          .from('daily_completions')
+          .select('completed_stack_id')
+          .eq('user_id', auth.user.id)
+          .eq('market_id', marketId)
+          .eq('lesson_completed', true)
+          .order('completion_date', { ascending: false })
+          .limit(40);
+        if (dailyError) log.warn('[useStudiedLessons] Daily credits unavailable:', dailyError.message);
+        const creditedIds = [...new Set([
+          ...completedIds.slice(-40),
+          ...(daily ?? []).map(row => row.completed_stack_id).filter((id): id is string => typeof id === 'string'),
+        ])];
+        if (creditedIds.length === 0) {
           setLessons([]);
           return;
         }
@@ -84,7 +100,7 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
           .from('stacks')
           .select('id, title, tags, created_at, slides (slide_number, title, body)')
           .eq('market_id', marketId)
-          .in('id', completedIds.slice(-40))
+          .in('id', creditedIds)
           .order('created_at', { ascending: false });
 
         if (error) {
@@ -106,10 +122,12 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
         }
 
         const byRecency = [...byDay.values()].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
-        // A Course-section launch is intentionally strict: practice must test
-        // that displayed day, never silently substitute another studied day.
+        // Prefer the displayed day if studied. Catch-up learners may have
+        // finished a different day: use their latest actual lesson instead of
+        // falsely showing the first-lesson prerequisite.
         if (preferredDay) {
-          setLessons(byRecency.filter(lesson => lesson.day === preferredDay));
+          const selected = byRecency.filter(lesson => lesson.day === preferredDay);
+          setLessons(selected.length ? selected : byRecency);
           return;
         }
         const keywords = focusSignature ? focusSignature.split('|').filter(Boolean) : [];
@@ -131,9 +149,7 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
     }
   }, [marketId, focusSignature, preferredDay]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useFocusEffect(useCallback(() => { void load(); }, [load]));
 
   return { lessons, isLoading, reload: load };
 }
