@@ -226,7 +226,7 @@ export default function HomeScreen() {
 
   const session = useSessionFlow({
     user, selectedMarket, lessonStack, progress, xpData,
-    lessonCompletedToday, currentDay,
+    lessonCompletedToday: Boolean(dailyCompletion?.lesson_completed && dailyCompletion.completion_date === localDateString()), currentDay,
     completeStack, updateStreak, completeLessonForToday, addXP,
     checkStreakMilestone, checkLevelMilestone,
     xpRewardLessonComplete: XP_REWARDS.LESSON_COMPLETE,
@@ -301,8 +301,6 @@ export default function HomeScreen() {
   const streakCountdown = streakCountdownLabel(streak, completedOnClockDay, clockNow);
 
   // Calculate if we're in the critical 2-hour window
-  const criticalTimerActive = Boolean(streakCountdown);
-
   // Daily quests
   const { quests, completedCount, totalBonusXP, allComplete } = useDailyQuests(dailyCompletion, streak);
   // Bonus XP is banked as soon as a quest flips to complete (once per day).
@@ -515,7 +513,7 @@ export default function HomeScreen() {
           streak={streak}
           totalXp={xpData?.total_xp || 0}
           level={xpData?.current_level || 1}
-          lessonCompletedToday={lessonCompletedToday}
+          lessonCompletedToday={completedOnClockDay}
           arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
           caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
           intelReadToday={intelHabit.readToday}

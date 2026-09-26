@@ -26,8 +26,7 @@ import { playSound } from '../lib/sounds';
 import { log } from '../lib/logger';
 import { getMarketName } from '../lib/markets';
 import { lessonStatements } from '../lesson-kit/practice/lessonQuestions';
-import { nextLocalMidnightISOString } from '../lib/dayMath';
-import { localDateString, streakCountdownLabel } from '../lib/dayMath';
+import { localDateString, nextLocalMidnightISOString, streakCountdownLabel } from '../lib/dayMath';
 
 interface RescueQuestion {
   id: string;
@@ -176,7 +175,7 @@ export default function StreakRescueScreen() {
     );
   }
 
-  if (!rescueWindowOpen) {
+  if (!rescueWindowOpen && !outcome) {
     return (
       <View style={[styles.screen, styles.center, { padding: 24 }]}>
         <Feather name="check-circle" size={32} color={COLORS.success} />
