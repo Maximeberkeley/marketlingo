@@ -196,7 +196,7 @@ export default function Landing() {
                 onClick={() => setShowDemo(true)}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-base rounded-2xl shadow-lg"
               >
-                Try a Free Demo Lesson
+                Try a Demo Lesson
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
               <Button
