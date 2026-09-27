@@ -97,7 +97,7 @@ export default function AuthScreen() {
 
         {mode === 'login' && (
           <TouchableOpacity style={styles.demoBtn} onPress={() => router.push('/demo' as any)} activeOpacity={0.8}>
-            <Text style={styles.demoBtnText}>Try a free lesson first →</Text>
+            <Text style={styles.demoBtnText}>Try a demo lesson first →</Text>
           </TouchableOpacity>
         )}
 

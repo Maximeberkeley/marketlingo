@@ -184,7 +184,7 @@ export default function AuthPage() {
                       <Zap size={20} className="text-accent" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-body font-semibold text-text-primary">Try a free lesson now</p>
+                      <p className="text-body font-semibold text-text-primary">Try a demo lesson now</p>
                       <p className="text-caption text-text-muted">AI market · 4 min · No signup needed</p>
                     </div>
                     <span className="chip bg-accent/20 text-accent border-accent/30 text-[10px] px-2 py-0.5 flex-shrink-0">FREE</span>

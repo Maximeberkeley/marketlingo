@@ -176,7 +176,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
         <img src={mentorMaya} alt="Maya" className="w-8 h-8 rounded-full object-cover object-[50%_20%] border border-accent/30" />
         <div>
           <p className="text-[11px] text-accent font-semibold">Maya Chen · AI Market Strategist</p>
-          <p className="text-[11px] text-text-muted">Free sample lesson · AI Industry</p>
+          <p className="text-[11px] text-text-muted">Demo lesson · AI Industry</p>
         </div>
         <div className="ml-auto flex items-center gap-1 text-[11px] text-text-muted">
           <Star size={11} className="text-yellow-400" />
@@ -239,7 +239,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                 className="w-full max-w-sm"
               >
                 <Button variant="cta" size="full" onClick={() => setStep("slide1")}>
-                  Start Free Lesson <ChevronRight size={18} />
+                  Start Demo Lesson <ChevronRight size={18} />
                 </Button>
                 <p className="text-caption text-text-muted text-center mt-3">No signup required · 4 min read</p>
               </motion.div>
