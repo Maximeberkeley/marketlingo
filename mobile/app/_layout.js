@@ -4,7 +4,6 @@ import { Stack, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import * as Notifications from "expo-notifications";
 import { AuthProvider } from "../hooks/useAuth";
 import { LeoProvider } from "../components/mascot/LeoCharacter";
 import { ErrorBoundary } from "../components/ErrorBoundary";
@@ -32,43 +31,55 @@ function resolveRoute(data) {
       return null;
   }
 }
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true
-  })
-});
 function RootLayout() {
   const notificationResponseListener = useRef(null);
   useEffect(() => {
-    const clearBadge = () => {
-      Notifications.setBadgeCountAsync(0).catch(() => {
-      });
-      Notifications.dismissAllNotificationsAsync().catch(() => {
-      });
+    let active = true;
+    const connectNotifications = async () => {
+      try {
+        const Notifications = await import("expo-notifications");
+        if (!active) return;
+        Notifications.setNotificationHandler({
+          handleNotification: async () => ({
+            shouldShowAlert: true,
+            shouldPlaySound: true,
+            shouldSetBadge: false,
+            shouldShowBanner: true,
+            shouldShowList: true
+          })
+        });
+        const clearBadge = () => {
+          Notifications.setBadgeCountAsync(0).catch(() => {
+          });
+          Notifications.dismissAllNotificationsAsync().catch(() => {
+          });
+        };
+        clearBadge();
+        notificationResponseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+          const data = response.notification.request.content.data || {};
+          const target = resolveRoute(data);
+          if (target) setTimeout(() => router.push(target), 300);
+        });
+      } catch {
+      }
     };
-    clearBadge();
-    const sub = AppState.addEventListener("change", (state) => {
-      if (state === "active") clearBadge();
-    });
-    return () => sub.remove();
+    void connectNotifications();
+    return () => {
+      active = false;
+      notificationResponseListener.current?.remove();
+      notificationResponseListener.current = null;
+    };
   }, []);
   useEffect(() => {
-    notificationResponseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-      const data = response.notification.request.content.data || {};
-      const target = resolveRoute(data);
-      if (target) {
-        setTimeout(() => {
-          router.push(target);
-        }, 300);
-      }
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state !== "active") return;
+      void import("expo-notifications").then((Notifications) => Promise.allSettled([
+        Notifications.setBadgeCountAsync(0),
+        Notifications.dismissAllNotificationsAsync()
+      ])).catch(() => {
+      });
     });
-    return () => {
-      notificationResponseListener.current?.remove();
-    };
+    return () => sub.remove();
   }, []);
   return <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

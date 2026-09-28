@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
-import { syncPushToken } from '../lib/pushToken';
-import { scheduleDailyFallbackReminders } from '../lib/leoNudges';
 
 /**
  * Keeps the learner's push token stored on their profile so server-side
@@ -20,17 +18,29 @@ export function PushTokenSync() {
     }
 
     const run = async () => {
-      await syncPushToken(user.id);
-      await scheduleDailyFallbackReminders();
-      lastSyncedFor.current = user.id;
+      try {
+        // Keep native notification modules outside the startup import graph.
+        const [{ syncPushToken }, { scheduleDailyFallbackReminders }] = await Promise.all([
+          import('../lib/pushToken'),
+          import('../lib/leoNudges'),
+        ]);
+        await syncPushToken(user.id);
+        await scheduleDailyFallbackReminders();
+        lastSyncedFor.current = user.id;
+      } catch {
+        // Push registration is optional and must never interrupt app launch.
+      }
     };
 
-    run();
+    const timer = setTimeout(() => void run(), 2500);
 
     const sub = AppState.addEventListener('change', (state) => {
       if (state === 'active') run();
     });
-    return () => sub.remove();
+    return () => {
+      clearTimeout(timer);
+      sub.remove();
+    };
   }, [user]);
 
   return null;

@@ -130,3 +130,4 @@
 - [x] Daily Lesson circle tap stops working after streak rescue
 - [x] Rescue win discarded when round crosses midnight
 - [x] Verify push notifications are sent (delivery OK; send times are UTC — per-user local timing pending user decision)
+- [x] Harden 1.1.1 launch so notification setup cannot close the app before its first screen.
