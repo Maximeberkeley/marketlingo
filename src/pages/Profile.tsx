@@ -318,7 +318,7 @@ export default function ProfilePage() {
           transition={{ delay: 0.3 }}
           className="text-center text-caption text-text-muted mt-12"
         >
-          MarketLingo v1.1.0
+          MarketLingo v1.1.1
         </motion.p>
       </div>
 

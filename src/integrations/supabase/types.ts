@@ -1663,6 +1663,7 @@ export type Database = {
           pro_trial_start_date: string | null
           push_token: string | null
           selected_market: string | null
+          timezone: string | null
           updated_at: string
           use_industry_mascots: boolean
           username: string | null
@@ -1686,6 +1687,7 @@ export type Database = {
           pro_trial_start_date?: string | null
           push_token?: string | null
           selected_market?: string | null
+          timezone?: string | null
           updated_at?: string
           use_industry_mascots?: boolean
           username?: string | null
@@ -1709,6 +1711,7 @@ export type Database = {
           pro_trial_start_date?: string | null
           push_token?: string | null
           selected_market?: string | null
+          timezone?: string | null
           updated_at?: string
           use_industry_mascots?: boolean
           username?: string | null
@@ -2217,6 +2220,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          kind: string
           market_id: string
           used_at: string
           user_id: string
@@ -2225,6 +2229,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          kind?: string
           market_id: string
           used_at?: string
           user_id: string
@@ -2233,6 +2238,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          kind?: string
           market_id?: string
           used_at?: string
           user_id?: string
@@ -3015,6 +3021,10 @@ export type Database = {
       league_group_size: {
         Args: { p_market_id: string; p_tier: string }
         Returns: number
+      }
+      leo_streak_gift: {
+        Args: { p_claim?: boolean; p_market_id: string; p_today: string }
+        Returns: Json
       }
       next_league_tier: {
         Args: { p_direction: number; p_tier: string }

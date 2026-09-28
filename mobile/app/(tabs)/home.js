@@ -16,6 +16,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useUserProgress } from "../../hooks/useUserProgress";
 import { useUserXP, XP_REWARDS } from "../../hooks/useUserXP";
 import { WelcomeBackModal } from "../../components/home/WelcomeBackModal";
+import { LeoStreakGift } from "../../components/home/LeoStreakGift";
 import { useReturnVisit } from "../../hooks/useReturnVisit";
 import { LessonKitReader as SlideReader } from "../../components/slides/LessonKitReader";
 import { SessionCompleteCard } from "../../components/home/SessionCompleteCard";
@@ -228,11 +229,12 @@ export default function HomeScreen() {
           }))
         };
         session.handleOpenStack(formatted);
-        router.setParams({ openStackId: void 0 });
-        openStackHandled.current = null;
       }
-    })();
-  }, [openStackId, selectedMarket, user]);
+    })().finally(() => {
+      router.setParams({ openStackId: void 0 });
+      openStackHandled.current = null;
+    });
+  }, [openStackId, selectedMarket, user, session.showReader]);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
   const [showLeoChat, setShowLeoChat] = useState(false);
   const [courseFocused, setCourseFocused] = useState(true);
@@ -367,6 +369,13 @@ export default function HomeScreen() {
     marketName={getMarketName(selectedMarket || "aerospace")}
     onClose={returnVisit.dismiss}
   />
+      <LeoStreakGift
+    marketId={selectedMarketLocal || selectedMarket}
+    userId={user?.id}
+    blocked={session.showReader || returnVisit.isReturningVisit}
+    onRestored={() => fetchData?.()}
+  />
+
       {
     /* Leo voice chat — fullscreen immersive */
   }

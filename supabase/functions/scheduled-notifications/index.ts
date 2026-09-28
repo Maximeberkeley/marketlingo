@@ -395,36 +395,35 @@ Deno.serve(async (req) => {
         }
       }
     } else if (job.type === 'news_update') {
+      // Three Intel drops per day, each at the learner's own local time,
+      // each pointing at a different fresh headline.
+      const INTEL_SLOTS = [8, 13, 19];
       const { data: allUsers } = await supabase
         .from('profiles')
-        .select('id, push_token, notification_preferences, selected_market')
+        .select('id, push_token, notification_preferences, selected_market, timezone')
         .not('push_token', 'is', null)
         .not('selected_market', 'is', null);
 
-      const marketUserMap: Record<string, { id: string; push_token: string; market: string }[]> = {};
+      const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+      const headlineCache: Record<string, string[]> = {};
       for (const u of allUsers || []) {
         const prefs = (u.notification_preferences as any) || {};
         if (prefs.newsAlerts === false || !u.push_token || !u.selected_market) continue;
+        const slot = INTEL_SLOTS.indexOf(localNowFor(u.timezone).getHours());
+        if (slot < 0) continue;
         const m = u.selected_market as string;
-        if (!marketUserMap[m]) marketUserMap[m] = [];
-        marketUserMap[m].push({ id: u.id, push_token: u.push_token, market: m });
-      }
-
-      const today = new Date().toISOString().split('T')[0];
-      for (const [marketId, users] of Object.entries(marketUserMap)) {
-        const { data: latestNews } = await supabase
-          .from('news_items')
-          .select('title')
-          .eq('market_id', marketId)
-          .gte('published_at', today)
-          .limit(1)
-          .single();
-
-        if (latestNews) {
-          for (const u of users) {
-            usersToNotify.push({ ...u, latestHeadline: latestNews.title });
-          }
+        if (!headlineCache[m]) {
+          const { data: news } = await supabase
+            .from('news_items')
+            .select('title')
+            .eq('market_id', m)
+            .gte('published_at', since)
+            .order('published_at', { ascending: false })
+            .limit(3);
+          headlineCache[m] = (news || []).map((n: any) => n.title).filter(Boolean);
         }
+        const titles = headlineCache[m];
+        usersToNotify.push({ id: u.id, push_token: u.push_token, market: m, latestHeadline: titles.length ? titles[slot % titles.length] : undefined });
       }
     } else if (job.type === 'weekly_recap') {
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
