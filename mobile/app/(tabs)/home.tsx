@@ -265,11 +265,15 @@ export default function HomeScreen() {
             })),
         };
         session.handleOpenStack(formatted as any);
-        router.setParams({ openStackId: undefined });
-        openStackHandled.current = null;
       }
-    })();
-  }, [openStackId, selectedMarket, user]);
+    })().finally(() => {
+      // Always release the request, even when the lesson failed to load or
+      // another screen (e.g. streak rescue) interrupted it. A stale value
+      // made the next tap on the circle a no-op.
+      router.setParams({ openStackId: undefined });
+      openStackHandled.current = null;
+    });
+  }, [openStackId, selectedMarket, user, session.showReader]);
 
   const [showSocialNudge, setShowSocialNudge] = useState(true);
   const [showLeoChat, setShowLeoChat] = useState(false);

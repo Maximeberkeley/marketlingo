@@ -1,3 +1,4 @@
+"use strict";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -28,7 +29,7 @@ import { getMarketName } from "../lib/markets";
 import { lessonStatements } from "../lesson-kit/practice/lessonQuestions";
 import { localDateString, nextLocalMidnightISOString, streakCountdownLabel } from "../lib/dayMath";
 const NEEDED_CORRECT = 2;
-function StreakRescueScreen() {
+export default function StreakRescueScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { marketId } = useSelectedMarket();
@@ -63,7 +64,12 @@ function StreakRescueScreen() {
       live = false;
     };
   }, [user?.id, marketId, localDateString(clockNow)]);
-  const rescueWindowOpen = lessonDoneToday === false && Boolean(streakCountdownLabel(streak, false, clockNow));
+  const liveWindowOpen = lessonDoneToday === false && Boolean(streakCountdownLabel(streak, false, clockNow));
+  const [roundLatched, setRoundLatched] = useState(false);
+  useEffect(() => {
+    if (liveWindowOpen) setRoundLatched(true);
+  }, [liveWindowOpen]);
+  const rescueWindowOpen = liveWindowOpen || roundLatched && lessonDoneToday !== true;
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
@@ -87,7 +93,8 @@ function StreakRescueScreen() {
       return;
     }
     const { data: today, error: todayError } = await supabase.from("daily_completions").select("lesson_completed").eq("user_id", user.id).eq("market_id", marketId).eq("completion_date", localDateString()).maybeSingle();
-    if (todayError || today?.lesson_completed) {
+    if (todayError) log.warn("Rescue credit check failed", todayError);
+    if (today?.lesson_completed) {
       setLessonDoneToday(true);
       setSaving(false);
       return;
@@ -329,6 +336,3 @@ const styles = StyleSheet.create({
   ghostCta: { alignSelf: "stretch", paddingVertical: 15, alignItems: "center", marginTop: 4 },
   ghostCtaText: { fontSize: 14, fontWeight: "900", letterSpacing: 0.6, color: "rgba(255,255,255,0.85)" }
 });
-export {
-  StreakRescueScreen as default
-};

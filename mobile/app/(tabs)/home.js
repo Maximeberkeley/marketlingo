@@ -1,3 +1,4 @@
+"use strict";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import {
@@ -106,7 +107,7 @@ function getRandomGreeting(key) {
   const msgs = LEO_GREETINGS[key];
   return msgs[Math.floor(Math.random() * msgs.length)];
 }
-function HomeScreen() {
+export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { user, loading: authLoading } = useAuth();
   const { openStackId } = useLocalSearchParams();
@@ -642,6 +643,3 @@ const styles = StyleSheet.create({
   tomorrowLabel: { ...TYPE.caption, color: COLORS.textMuted },
   tomorrowTitle: { fontSize: 14, fontWeight: "600", color: COLORS.textPrimary, marginTop: 2 }
 });
-export {
-  HomeScreen as default
-};

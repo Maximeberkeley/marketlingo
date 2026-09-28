@@ -78,7 +78,12 @@ export default function StreakRescueScreen() {
     return () => { live = false; };
   }, [user?.id, marketId, localDateString(clockNow)]);
 
-  const rescueWindowOpen = lessonDoneToday === false && Boolean(streakCountdownLabel(streak, false, clockNow));
+  const liveWindowOpen = lessonDoneToday === false && Boolean(streakCountdownLabel(streak, false, clockNow));
+  // Latch the window once the round starts, so crossing midnight mid-round
+  // cannot silently discard a winning rescue.
+  const [roundLatched, setRoundLatched] = useState(false);
+  useEffect(() => { if (liveWindowOpen) setRoundLatched(true); }, [liveWindowOpen]);
+  const rescueWindowOpen = liveWindowOpen || (roundLatched && lessonDoneToday !== true);
 
   useEffect(() => {
     Animated.loop(
@@ -108,7 +113,8 @@ export default function StreakRescueScreen() {
     const { data: today, error: todayError } = await supabase.from('daily_completions')
       .select('lesson_completed').eq('user_id', user.id).eq('market_id', marketId)
       .eq('completion_date', localDateString()).maybeSingle();
-    if (todayError || today?.lesson_completed) {
+    if (todayError) log.warn('Rescue credit check failed', todayError);
+    if (today?.lesson_completed) {
       setLessonDoneToday(true);
       setSaving(false);
       return;
