@@ -459,7 +459,7 @@ export default function HomeScreen() {
     rescueAvailable={Boolean(streakCountdown)}
     streakCountdown={streakCountdown}
     safeTop={insets.top}
-    onOpenLesson={(stackId) => router.setParams({ openStackId: stackId })}
+    onOpenLesson={(stackId) => { void openLessonById(stackId); }}
     onAskLeo={() => setShowLeoChat(true)}
   /> : <HomeSkeleton />}
 
