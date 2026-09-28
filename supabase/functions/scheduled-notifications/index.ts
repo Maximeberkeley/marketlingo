@@ -295,7 +295,7 @@ Deno.serve(async (req) => {
           user_id,
           current_streak,
           streak_expires_at,
-          profiles!inner(push_token, notification_preferences)
+          profiles!inner(push_token, notification_preferences, timezone)
         `)
         .gte('current_streak', 1)
         .gt('streak_expires_at', now)
@@ -304,7 +304,9 @@ Deno.serve(async (req) => {
       usersToNotify = (atRiskUsers || [])
         .filter(u => {
           const prefs = (u.profiles as any)?.notification_preferences || {};
-          return prefs.streakReminders !== false && (u.profiles as any)?.push_token;
+          return prefs.streakReminders !== false
+            && (u.profiles as any)?.push_token
+            && isLocalWindow((u.profiles as any)?.timezone, 21);
         })
         .map(u => ({
           id: u.user_id,
