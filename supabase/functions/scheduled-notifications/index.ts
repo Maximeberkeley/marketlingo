@@ -116,6 +116,22 @@ function getRandomTemplate(type: keyof typeof NOTIFICATION_TEMPLATES) {
   return templates[Math.floor(Math.random() * templates.length)];
 }
 
+// Local clock for a learner. Falls back to UTC when the phone has not
+// reported a timezone yet, so nobody is silently skipped.
+function localNowFor(timezone: string | null | undefined): Date {
+  const tz = timezone && timezone.length > 3 ? timezone : 'UTC';
+  try {
+    return new Date(new Date().toLocaleString('en-US', { timeZone: tz }));
+  } catch {
+    return new Date();
+  }
+}
+
+// Reminders land at 9:07 local; streak warnings at 21:37 local.
+function isLocalWindow(timezone: string | null | undefined, targetHour: number): boolean {
+  return localNowFor(timezone).getHours() === targetHour;
+}
+
 // Generate APNs JWT
 async function generateAPNsJWT(): Promise<string> {
   const keyId = Deno.env.get('APNS_KEY_ID');
@@ -245,25 +261,25 @@ Deno.serve(async (req) => {
     let usersToNotify: any[] = [];
 
     if (job.type === 'daily_reminder') {
-      // Get users with daily reminders enabled who haven't completed today's lesson
-      const today = new Date().toISOString().split('T')[0];
-      
+      // Users whose local time is 9am and who haven't completed today's lesson
       const { data: users } = await supabase
         .from('profiles')
-        .select('id, push_token, notification_preferences')
+        .select('id, push_token, notification_preferences, timezone')
         .not('push_token', 'is', null);
 
       for (const user of users || []) {
         const prefs = user.notification_preferences || {};
         if (prefs.dailyReminder === false) continue;
+        if (!isLocalWindow(user.timezone, 9)) continue;
 
+        const localToday = localNowFor(user.timezone).toISOString().split('T')[0];
         const { data: completion } = await supabase
           .from('daily_completions')
           .select('id')
           .eq('user_id', user.id)
-          .eq('completion_date', today)
+          .eq('completion_date', localToday)
           .eq('lesson_completed', true)
-          .single();
+          .maybeSingle();
 
         if (!completion) {
           usersToNotify.push(user);
@@ -279,7 +295,7 @@ Deno.serve(async (req) => {
           user_id,
           current_streak,
           streak_expires_at,
-          profiles!inner(push_token, notification_preferences)
+          profiles!inner(push_token, notification_preferences, timezone)
         `)
         .gte('current_streak', 1)
         .gt('streak_expires_at', now)
@@ -288,7 +304,9 @@ Deno.serve(async (req) => {
       usersToNotify = (atRiskUsers || [])
         .filter(u => {
           const prefs = (u.profiles as any)?.notification_preferences || {};
-          return prefs.streakReminders !== false && (u.profiles as any)?.push_token;
+          return prefs.streakReminders !== false
+            && (u.profiles as any)?.push_token
+            && isLocalWindow((u.profiles as any)?.timezone, 21);
         })
         .map(u => ({
           id: u.user_id,

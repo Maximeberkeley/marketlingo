@@ -46,14 +46,25 @@ export async function syncPushToken(userId: string, options?: { requestPermissio
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('push_token')
+      .select('push_token, timezone')
       .eq('id', userId)
       .maybeSingle();
 
-    if (profile?.push_token !== token) {
+    // The server sends reminders at each learner's local time, so keep the
+    // device's timezone on the profile alongside the token.
+    let deviceTz: string | null = null;
+    try {
+      deviceTz = Intl.DateTimeFormat().resolvedOptions().timeZone || null;
+    } catch { deviceTz = null; }
+
+    if (profile?.push_token !== token || (deviceTz && profile?.timezone !== deviceTz)) {
       const { error } = await supabase
         .from('profiles')
-        .update({ push_token: token, updated_at: new Date().toISOString() })
+        .update({
+          push_token: token,
+          ...(deviceTz ? { timezone: deviceTz } : {}),
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', userId);
       if (error) log.warn('[Push] Could not save push token:', error.message);
     }

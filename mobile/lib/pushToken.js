@@ -26,9 +26,19 @@ async function syncPushToken(userId, options) {
     const tokenData = projectId ? await Notifications.getExpoPushTokenAsync({ projectId }) : await Notifications.getExpoPushTokenAsync();
     const token = tokenData?.data;
     if (!token) return null;
-    const { data: profile } = await supabase.from("profiles").select("push_token").eq("id", userId).maybeSingle();
-    if (profile?.push_token !== token) {
-      const { error } = await supabase.from("profiles").update({ push_token: token, updated_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", userId);
+    const { data: profile } = await supabase.from("profiles").select("push_token, timezone").eq("id", userId).maybeSingle();
+    let deviceTz = null;
+    try {
+      deviceTz = Intl.DateTimeFormat().resolvedOptions().timeZone || null;
+    } catch {
+      deviceTz = null;
+    }
+    if (profile?.push_token !== token || deviceTz && profile?.timezone !== deviceTz) {
+      const { error } = await supabase.from("profiles").update({
+        push_token: token,
+        ...deviceTz ? { timezone: deviceTz } : {},
+        updated_at: (/* @__PURE__ */ new Date()).toISOString()
+      }).eq("id", userId);
       if (error) log.warn("[Push] Could not save push token:", error.message);
     }
     return token;
