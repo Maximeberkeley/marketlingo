@@ -1663,6 +1663,7 @@ export type Database = {
           pro_trial_start_date: string | null
           push_token: string | null
           selected_market: string | null
+          timezone: string | null
           updated_at: string
           use_industry_mascots: boolean
           username: string | null
@@ -1686,6 +1687,7 @@ export type Database = {
           pro_trial_start_date?: string | null
           push_token?: string | null
           selected_market?: string | null
+          timezone?: string | null
           updated_at?: string
           use_industry_mascots?: boolean
           username?: string | null
@@ -1709,6 +1711,7 @@ export type Database = {
           pro_trial_start_date?: string | null
           push_token?: string | null
           selected_market?: string | null
+          timezone?: string | null
           updated_at?: string
           use_industry_mascots?: boolean
           username?: string | null
