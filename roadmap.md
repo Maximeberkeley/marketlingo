@@ -125,3 +125,8 @@
 - [ ] Give credit for a streak when the learner studies today even while behind schedule.
 - [ ] Fix the cut mascot image on the check-in popup and replace the 18-hours-left warning with a welcome message.
 - [ ] Rework the dossier into an intuitive, gamified, clearly explained experience.
+
+## Sept 28
+- [x] Daily Lesson circle tap stops working after streak rescue
+- [x] Rescue win discarded when round crosses midnight
+- [x] Verify push notifications are sent (delivery OK; send times are UTC — per-user local timing pending user decision)
