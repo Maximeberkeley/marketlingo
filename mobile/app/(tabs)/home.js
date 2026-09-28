@@ -235,6 +235,43 @@ export default function HomeScreen() {
       openStackHandled.current = null;
     });
   }, [openStackId, selectedMarket, user, session.showReader]);
+
+  // Direct lesson open for the Course circle (stale route params made taps no-ops).
+  const openingLesson = useRef(false);
+  const openLessonById = useCallback(async (stackId) => {
+    if (openingLesson.current) return;
+    openingLesson.current = true;
+    try {
+      const { data: stack } = await supabase
+        .from('stacks')
+        .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
+        .eq('id', stackId)
+        .not('published_at', 'is', null)
+        .single();
+
+      if (stack && stack.slides?.length > 0) {
+        const formatted = {
+          ...stack,
+          tags: stack.tags || [],
+          slides: (stack.slides || [])
+            .sort((a, b) => a.slide_number - b.slide_number)
+            .map((s) => ({
+              ...s,
+              sources: Array.isArray(s.sources)
+                ? s.sources.map((src) => typeof src === 'string' ? { label: 'Source', url: src } : src).filter(Boolean)
+                : [],
+            })),
+        };
+        session.handleOpenStack(formatted);
+      } else {
+        Alert.alert('Lesson unavailable', 'This lesson could not load. Your progress is safe.');
+      }
+    } catch {
+      Alert.alert('Lesson unavailable', 'Please reconnect and try again. Your progress is safe.');
+    } finally {
+      openingLesson.current = false;
+    }
+  }, [session.handleOpenStack]);
   const [showSocialNudge, setShowSocialNudge] = useState(true);
   const [showLeoChat, setShowLeoChat] = useState(false);
   const [courseFocused, setCourseFocused] = useState(true);
@@ -459,7 +496,7 @@ export default function HomeScreen() {
     rescueAvailable={Boolean(streakCountdown)}
     streakCountdown={streakCountdown}
     safeTop={insets.top}
-    onOpenLesson={(stackId) => router.setParams({ openStackId: stackId })}
+    onOpenLesson={(stackId) => { void openLessonById(stackId); }}
     onAskLeo={() => setShowLeoChat(true)}
   /> : <HomeSkeleton />}
 

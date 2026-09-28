@@ -276,6 +276,44 @@ export default function HomeScreen() {
     });
   }, [openStackId, selectedMarket, user, session.showReader]);
 
+  // Direct lesson open for the Course circle. Route params could keep a stale
+  // lesson id after a detour (streak rescue), which made later taps no-ops.
+  const openingLesson = useRef(false);
+  const openLessonById = useCallback(async (stackId: string) => {
+    if (openingLesson.current) return;
+    openingLesson.current = true;
+    try {
+      const { data: stack } = await supabase
+        .from('stacks')
+        .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
+        .eq('id', stackId)
+        .not('published_at', 'is', null)
+        .single();
+
+      if (stack && (stack.slides as any[])?.length > 0) {
+        const formatted = {
+          ...stack,
+          tags: stack.tags || [],
+          slides: ((stack.slides as any[]) || [])
+            .sort((a: any, b: any) => a.slide_number - b.slide_number)
+            .map((s: any) => ({
+              ...s,
+              sources: Array.isArray(s.sources)
+                ? s.sources.map((src: any) => typeof src === 'string' ? { label: 'Source', url: src } : src).filter(Boolean)
+                : [],
+            })),
+        };
+        session.handleOpenStack(formatted as any);
+      } else {
+        Alert.alert('Lesson unavailable', 'This lesson could not load. Your progress is safe.');
+      }
+    } catch {
+      Alert.alert('Lesson unavailable', 'Please reconnect and try again. Your progress is safe.');
+    } finally {
+      openingLesson.current = false;
+    }
+  }, [session.handleOpenStack]);
+
   const [showSocialNudge, setShowSocialNudge] = useState(true);
   const [showLeoChat, setShowLeoChat] = useState(false);
   const [courseFocused, setCourseFocused] = useState(true);
@@ -533,7 +571,7 @@ export default function HomeScreen() {
           rescueAvailable={Boolean(streakCountdown)}
           streakCountdown={streakCountdown}
           safeTop={insets.top}
-          onOpenLesson={(stackId) => router.setParams({ openStackId: stackId })}
+          onOpenLesson={(stackId) => { void openLessonById(stackId); }}
           onAskLeo={() => setShowLeoChat(true)}
         />
       ) : (
