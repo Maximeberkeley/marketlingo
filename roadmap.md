@@ -129,4 +129,4 @@
 ## Sept 28
 - [x] Daily Lesson circle tap stops working after streak rescue
 - [x] Rescue win discarded when round crosses midnight
-- [ ] Verify push notifications are sent
+- [x] Verify push notifications are sent (delivery OK; send times are UTC — per-user local timing pending user decision)

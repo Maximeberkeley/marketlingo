@@ -281,7 +281,7 @@ Deno.serve(async (req) => {
           streak_expires_at,
           profiles!inner(push_token, notification_preferences)
         `)
-        .gt('current_streak', 1)
+        .gte('current_streak', 1)
         .gt('streak_expires_at', now)
         .lt('streak_expires_at', sixHoursFromNow);
 
