@@ -113,6 +113,13 @@
       "when": 1790272011108,
       "tag": "0015_add_safe_social_ranking_rpcs",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1790617433602,
+      "tag": "0016_leo_weekly_streak_gift",
+      "breakpoints": true
     }
   ]
 }
