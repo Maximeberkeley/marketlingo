@@ -1,8 +1,6 @@
 import { useEffect, useRef } from "react";
 import { AppState } from "react-native";
 import { useAuth } from "../hooks/useAuth";
-import { syncPushToken } from "../lib/pushToken";
-import { scheduleDailyFallbackReminders } from "../lib/leoNudges";
 function PushTokenSync() {
   const { user } = useAuth();
   const lastSyncedFor = useRef(null);
@@ -12,15 +10,25 @@ function PushTokenSync() {
       return;
     }
     const run = async () => {
-      await syncPushToken(user.id);
-      await scheduleDailyFallbackReminders();
-      lastSyncedFor.current = user.id;
+      try {
+        const [{ syncPushToken }, { scheduleDailyFallbackReminders }] = await Promise.all([
+          import("../lib/pushToken"),
+          import("../lib/leoNudges")
+        ]);
+        await syncPushToken(user.id);
+        await scheduleDailyFallbackReminders();
+        lastSyncedFor.current = user.id;
+      } catch {
+      }
     };
-    run();
+    const timer = setTimeout(() => void run(), 2500);
     const sub = AppState.addEventListener("change", (state) => {
       if (state === "active") run();
     });
-    return () => sub.remove();
+    return () => {
+      clearTimeout(timer);
+      sub.remove();
+    };
   }, [user]);
   return null;
 }
