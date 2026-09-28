@@ -25,6 +25,7 @@ import { useUserXP, XP_REWARDS } from '../../hooks/useUserXP';
 import { StreakBadge } from '../../components/ui/StreakBadge';
 import { XPBadge } from '../../components/ui/XPBadge';
 import { WelcomeBackModal } from '../../components/home/WelcomeBackModal';
+import { LeoStreakGift } from '../../components/home/LeoStreakGift';
 import { useReturnVisit } from '../../hooks/useReturnVisit';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { LessonKitReader as SlideReader } from '../../components/slides/LessonKitReader';
@@ -435,6 +436,13 @@ export default function HomeScreen() {
         marketName={getMarketName(selectedMarket || 'aerospace')}
         onClose={returnVisit.dismiss}
       />
+      <LeoStreakGift
+        marketId={selectedMarketLocal || selectedMarket}
+        userId={user?.id}
+        blocked={session.showReader || returnVisit.isReturningVisit}
+        onRestored={() => fetchData?.()}
+      />
+
       {/* Leo voice chat — fullscreen immersive */}
       <LeoVoiceChatOverlay
         visible={showLeoChat}
