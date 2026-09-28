@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 24 },
   card: {
     width: '100%', maxWidth: 360, borderRadius: 28, padding: 24, alignItems: 'center',
-    backgroundColor: COLORS.bgCard, borderWidth: 1, borderColor: COLORS.border, ...(SHADOWS as any).lg,
+    backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, ...(SHADOWS as any).lg,
   },
   eyebrow: { ...(TYPE as any).caption, color: COLORS.accent, fontWeight: '800', letterSpacing: 1.4, fontSize: 12 },
   leo: { width: 176, height: 176, marginVertical: 8 },
