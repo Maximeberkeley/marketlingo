@@ -141,6 +141,8 @@ async function sendPushNotifications(
 
     const marketLabel = marketSearchConfig[marketId]?.label || marketId;
     let sent = 0;
+    // One phone can hold several accounts; never alert the same device twice.
+    const seenTokens = new Set<string>();
 
     for (const profile of profiles) {
       const prefs = profile.notification_preferences as any;
@@ -148,7 +150,8 @@ async function sendPushNotifications(
       if (prefs && prefs.newsAlerts === false) continue;
 
       const token = profile.push_token;
-      if (!token) continue;
+      if (!token || seenTokens.has(token)) continue;
+      seenTokens.add(token);
 
       try {
         // Send via Expo Push API
