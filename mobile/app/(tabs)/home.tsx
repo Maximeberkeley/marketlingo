@@ -564,6 +564,7 @@ export default function HomeScreen() {
           totalXp={xpData?.total_xp || 0}
           level={xpData?.current_level || 1}
           lessonCompletedToday={completedOnClockDay}
+          isFocused={courseFocused}
           arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
           caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
           intelReadToday={intelHabit.readToday}

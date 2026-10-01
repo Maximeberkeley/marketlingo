@@ -66,6 +66,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish }:
   const [callCorrect, setCallCorrect] = useState(false);
   const [debrief, setDebrief] = useState(false);
   const [showExit, setShowExit] = useState(false);
+  const [banking, setBanking] = useState(false);
 
   const stage = deepCase.stages[stageIndex];
   const passive = isPassiveKind(stage?.exercise.kind);
@@ -168,9 +169,12 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish }:
             mood={result.grade === 'A' || result.grade === 'B' ? 'celebrate' : 'thinking'}
           />
 
-          <PrimaryButton
-            label={`Bank +${xp} XP`}
-            onPress={() =>
+           <PrimaryButton
+             label={banking ? 'Saving your case…' : `Bank +${xp} XP`}
+             variant={banking ? 'disabled' : 'primary'}
+             onPress={() => {
+               if (banking) return;
+               setBanking(true);
               onFinish({
                 grade: result.grade,
                 correct,
@@ -178,10 +182,10 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish }:
                 callCorrect,
                 confidence: confidence || 'medium',
                 xp,
-              })
-            }
+               });
+             }}
           />
-          <TouchableOpacity style={styles.ghostBtn} onPress={onExit} activeOpacity={0.8}>
+           <TouchableOpacity style={styles.ghostBtn} onPress={onExit} disabled={banking} activeOpacity={0.8}>
             <Text style={styles.ghostText}>Back to practice</Text>
           </TouchableOpacity>
         </ScrollView>
