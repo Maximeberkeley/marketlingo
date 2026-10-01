@@ -468,9 +468,12 @@ Deno.serve(async (req) => {
 
     let successCount = 0;
     let failCount = 0;
+    // One phone can hold several accounts; never alert the same device twice.
+    const seenTokens = new Set<string>();
 
     for (const user of usersToNotify) {
-      if (!user.push_token) continue;
+      if (!user.push_token || seenTokens.has(user.push_token)) continue;
+      seenTokens.add(user.push_token);
 
       const template = getRandomTemplate(job.type);
 
