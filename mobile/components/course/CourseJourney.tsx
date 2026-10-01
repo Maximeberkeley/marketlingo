@@ -531,7 +531,9 @@ export function CourseJourney({
   useEffect(() => {
     if (loading || sections.length === 0 || initialPositioned.current) return;
     const timer = setTimeout(() => {
-      listRef.current?.scrollToIndex({ index: focusedSectionIndex, animated: false, viewPosition: 0, viewOffset: safeTop + 16 });
+      if (focusedSectionIndex > 0) {
+        listRef.current?.scrollToIndex({ index: focusedSectionIndex, animated: false, viewPosition: 0, viewOffset: safeTop + 16 });
+      }
       initialPositioned.current = true;
     }, 120);
     return () => clearTimeout(timer);

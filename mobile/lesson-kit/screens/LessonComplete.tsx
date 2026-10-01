@@ -75,10 +75,8 @@ export function LessonComplete({
   const { progress } = useUserProgress(marketId);
   const goal = (progress as { learning_goal?: string } | null)?.learning_goal ?? null;
   const dossier = useDeliverable(marketId, goal);
-  /** The next slot the learner can light up, in their own words. */
-  const openSlot = dossier.loading
-    ? null
-    : dossier.template.sections.find(s => (dossier.bySection[s.key]?.length ?? 0) === 0) ?? null;
+  const latestLine = dossier.entries[0];
+  const latestSection = dossier.template.sections.find(s => s.key === latestLine?.sectionKey);
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 100;
   const praise = accuracy === 100
     ? `Brilliant work, ${displayName}!`
@@ -189,15 +187,15 @@ export function LessonComplete({
         <Stat label="Time" value={formatTime(timeSpentSeconds)} />
       </View>
 
-      {/* One slot of their own dossier is now within reach. */}
-      {openSlot && (
+      {/* Lessons add to the brief automatically; editing remains optional. */}
+      {!dossier.loading && (
         <TouchableOpacity
           style={styles.dossierCard}
           activeOpacity={0.85}
           onPress={() => {
             triggerHaptic('medium');
             onDone(totalXp);
-            router.push({ pathname: '/deliverable', params: { section: openSlot.key } });
+            router.push({ pathname: '/deliverable', params: latestSection ? { section: latestSection.key } : {} });
           }}
         >
           <View style={styles.dossierIcon}>
@@ -205,10 +203,10 @@ export function LessonComplete({
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.dossierEyebrow}>
-              {dossier.template.title.toUpperCase()} · {dossier.completion}% WRITTEN
+              {dossier.template.title.toUpperCase()} · {dossier.completion}% READY
             </Text>
-            <Text style={styles.dossierTitle}>Slot open: {openSlot.title}</Text>
-            <Text style={styles.dossierBody}>{openSlot.prompt}</Text>
+            <Text style={styles.dossierTitle}>{latestLine ? 'Your brief is growing' : 'Your brief starts here'}</Text>
+            <Text style={styles.dossierBody}>{latestLine ? `${latestSection?.title || 'Latest insight'} · ${latestLine.content}` : 'Your lessons add insights automatically. See what you have learned.'}</Text>
           </View>
           <Feather name="chevron-right" size={18} color={tokens.color.accent} />
         </TouchableOpacity>

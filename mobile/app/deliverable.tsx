@@ -341,7 +341,7 @@ export default function DeliverableScreen() {
                 />
               </TouchableOpacity>
 
-               {(open || !showAll ? own.slice(0, open ? undefined : 1) : own).map(entry => (
+               {(showAll || open ? own : own.slice(0, 1)).map(entry => (
                 <View key={entry.id} style={styles.entry}>
                   <View style={styles.entryBar} />
                   <View style={styles.flex}>
