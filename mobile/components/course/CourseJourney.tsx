@@ -455,6 +455,7 @@ export function CourseJourney({
   const initialPositioned = useRef(false);
   const [lessons, setLessons] = useState<CourseLesson[]>([]);
   const [loading, setLoading] = useState(true);
+  const loadedMarket = useRef<string | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [loadKey, setLoadKey] = useState(0);
   const [previewSection, setPreviewSection] = useState<SectionAccess | null>(null);
@@ -472,7 +473,9 @@ export function CourseJourney({
   useEffect(() => {
     let active = true;
     const load = async () => {
-      setLoading(true);
+      // Keep the list mounted during progress refreshes; otherwise iOS loses
+      // the scroll responder while returning from the dossier or practice.
+      if (loadedMarket.current !== marketId) setLoading(true);
       setLoadError(false);
       const { data, error } = await supabase
         .from('stacks')
@@ -515,6 +518,7 @@ export function CourseJourney({
           authored: Boolean(lesson?.title),
         };
       }));
+      loadedMarket.current = marketId;
       setLoading(false);
     };
     void load();
@@ -532,12 +536,12 @@ export function CourseJourney({
     if (loading || sections.length === 0 || initialPositioned.current) return;
     const timer = setTimeout(() => {
       if (focusedSectionIndex > 0) {
-        listRef.current?.scrollToIndex({ index: focusedSectionIndex, animated: false, viewPosition: 0, viewOffset: safeTop + 16 });
+        listRef.current?.scrollToIndex({ index: focusedSectionIndex, animated: false, viewPosition: 0 });
       }
       initialPositioned.current = true;
     }, 120);
     return () => clearTimeout(timer);
-  }, [focusedSectionIndex, loading, sections.length, safeTop]);
+  }, [focusedSectionIndex, loading, sections.length]);
 
   useEffect(() => { initialPositioned.current = false; }, [marketId]);
   useEffect(() => {
@@ -600,7 +604,7 @@ export function CourseJourney({
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: safeTop }]}>
       <FlatList
         ref={listRef}
         data={sections}
@@ -612,7 +616,7 @@ export function CourseJourney({
         contentContainerStyle={styles.listContent}
         onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: Math.max(0, index * 540), animated: false })}
         ListHeaderComponent={(
-          <View style={[styles.topHeader, { paddingTop: safeTop + 10 }]}>
+           <View style={[styles.topHeader, { paddingTop: 10 }]}>
             <TouchableOpacity
               style={styles.industryBadge}
               onPress={openIndustryDetails}
