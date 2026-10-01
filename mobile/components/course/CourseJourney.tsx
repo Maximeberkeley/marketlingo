@@ -487,7 +487,7 @@ export function CourseJourney({
       if (!active) return;
       if (error) {
         setLoadError(true);
-        setLessons([]);
+        if (loadedMarket.current !== marketId) setLessons([]);
         setLoading(false);
         return;
       }
@@ -590,7 +590,7 @@ export function CourseJourney({
     );
   }
 
-  if (loadError) {
+  if (loadError && loadedMarket.current !== marketId) {
     return (
       <View style={styles.loading}>
         <Feather name="wifi-off" size={28} color={COLORS.textMuted} />
@@ -605,13 +605,18 @@ export function CourseJourney({
 
   return (
     <View style={[styles.container, { paddingTop: safeTop }]}>
+      {loadError && (
+        <TouchableOpacity style={styles.retryButton} onPress={() => setLoadKey(key => key + 1)} accessibilityRole="button">
+          <Text style={styles.retryText}>Couldn't refresh · Try again</Text>
+        </TouchableOpacity>
+      )}
       <FlatList
         ref={listRef}
         data={sections}
         keyExtractor={item => String(item.index)}
         showsVerticalScrollIndicator={false}
         initialNumToRender={3}
-        scrollEnabled={isFocused}
+        scrollEnabled
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.listContent}
         onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: Math.max(0, index * 540), animated: false })}
