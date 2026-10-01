@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -65,9 +66,8 @@ export default function DeliverableScreen() {
     [day, deliverable.template],
   );
 
-  const [openSection, setOpenSection] = useState<string | null>(
-    params.section || weeklyPrompt?.key || null,
-  );
+  const [openSection, setOpenSection] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
   const [draft, setDraft] = useState('');
   const [saving, setSaving] = useState(false);
   /** Slot that just received a line — drives the reveal flash. */
@@ -82,6 +82,10 @@ export default function DeliverableScreen() {
     () => template.sections.find(section => (bySection[section.key]?.length ?? 0) === 0) ?? null,
     [template.sections, bySection],
   );
+  const latestEntry = deliverable.entries[0];
+  const featuredSection = template.sections.find(section => section.key === (params.section || latestEntry?.sectionKey)) || nextOpen || template.sections[0];
+  const visibleSections = showAll ? template.sections : featuredSection ? [featuredSection] : [];
+  const close = () => { Keyboard.dismiss(); router.back(); };
 
 
   // The ring animates to the new completion whenever the document grows.
@@ -146,7 +150,7 @@ export default function DeliverableScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.headerRow}>
-          <TouchableOpacity onPress={() => router.back()} hitSlop={14} style={styles.backBtn}>
+           <TouchableOpacity onPress={close} hitSlop={14} style={styles.backBtn}>
             <Feather name="chevron-left" size={24} color={COLORS.textPrimary} />
           </TouchableOpacity>
           <TouchableOpacity onPress={share} style={styles.shareBtn} activeOpacity={0.85} hitSlop={10}>
@@ -204,12 +208,12 @@ export default function DeliverableScreen() {
                 </Svg>
                 <View style={styles.ringCentre}>
                   <Text style={styles.ringPct}>{Math.round(ringPct)}%</Text>
-                  <Text style={styles.ringLabel}>written</Text>
+                 <Text style={styles.ringLabel}>ready</Text>
                 </View>
               </View>
             </View>
 
-            <Text style={styles.rankBlurb}>{rank.blurb}</Text>
+             <Text style={styles.rankBlurb}>Your lessons build this brief automatically. Make it yours whenever you like.</Text>
 
             <View style={styles.heroMetaRow}>
               <View style={styles.metaChip}>
@@ -222,7 +226,7 @@ export default function DeliverableScreen() {
                 <View style={styles.metaChip}>
                   <Feather name="trending-up" size={12} color={COLORS.accent} />
                   <Text style={styles.metaChipText}>
-                    {rank.nextAt}% unlocks {rank.nextTitle}
+                     {rank.nextTitle} at {rank.nextAt}%
                   </Text>
                 </View>
               ) : (
@@ -257,34 +261,20 @@ export default function DeliverableScreen() {
           </View>
         )}
 
-        {/* Plain explanation: what this document is, and why writing in it pays. */}
-        <View style={styles.explain}>
-          <View style={styles.explainRow}>
-            <Feather name="edit-3" size={14} color={COLORS.accent} />
-            <Text style={styles.explainText}>
-              One sentence after a lesson. That is the whole job.
-            </Text>
-          </View>
-          <View style={styles.explainRow}>
-            <Feather name="layers" size={14} color={COLORS.accent} />
-            <Text style={styles.explainText}>
-              Each sentence fills a section below and moves your rank up.
-            </Text>
-          </View>
-          <View style={styles.explainRow}>
-            <Feather name="send" size={14} color={COLORS.accent} />
-            <Text style={styles.explainText}>
-              By the end you can export it as a real {marketName} brief.
-            </Text>
-          </View>
-        </View>
+         <View style={styles.explain}>
+           <Feather name={latestEntry ? 'check-circle' : 'book-open'} size={20} color={COLORS.accent} />
+           <View style={styles.flex}>
+             <Text style={styles.explainTitle}>{latestEntry ? 'Added from your lesson' : 'Your brief starts with a lesson'}</Text>
+             <Text style={styles.explainText} numberOfLines={showAll ? undefined : 3}>{latestEntry ? latestEntry.content : 'Finish a lesson and the first insight appears here automatically.'}</Text>
+           </View>
+         </View>
 
         <Text style={styles.sectionHeading}>
-          {nextOpen ? `NEXT UP · ${nextOpen.title.toUpperCase()}` : 'ALL SECTIONS WRITTEN'}
+           {showAll ? 'YOUR DOCUMENT' : 'YOUR LATEST SECTION'}
         </Text>
 
-
-        {template.sections.map((section, index) => {
+         {visibleSections.map((section) => {
+           const index = template.sections.findIndex(item => item.key === section.key);
           const own = bySection[section.key] ?? [];
           const status = slotStatus(own.length);
           const open = openSection === section.key;
@@ -325,7 +315,7 @@ export default function DeliverableScreen() {
 
                 <View style={styles.flex}>
                   <Text style={styles.cardTitle}>{section.title}</Text>
-                  <Text style={styles.cardPrompt}>{section.prompt}</Text>
+                   {(open || showAll) && <Text style={styles.cardPrompt}>{section.prompt}</Text>}
                   <View style={styles.statusRow}>
                     {status === 'empty' ? (
                       <View style={styles.statusEmpty}>
@@ -336,7 +326,7 @@ export default function DeliverableScreen() {
                       <View style={styles.statusDone}>
                         <Feather name="zap" size={9} color={COLORS.success} />
                         <Text style={styles.statusDoneText}>
-                          {status === 'strong' ? 'Well evidenced' : 'Locked in'}
+                           {status === 'strong' ? 'Well evidenced' : 'In your brief'}
                           {own.length > 1 ? ` · ${own.length} lines` : ''}
                         </Text>
                       </View>
@@ -351,14 +341,14 @@ export default function DeliverableScreen() {
                 />
               </TouchableOpacity>
 
-              {own.map(entry => (
+               {(open || !showAll ? own.slice(0, open ? undefined : 1) : own).map(entry => (
                 <View key={entry.id} style={styles.entry}>
                   <View style={styles.entryBar} />
                   <View style={styles.flex}>
                     <Text style={styles.entryText}>{entry.content}</Text>
                     <View style={styles.entryFoot}>
                       {entry.dayNumber ? (
-                        <Text style={styles.entryDay}>Written on day {entry.dayNumber}</Text>
+                         <Text style={styles.entryDay}>Day {entry.dayNumber}</Text>
                       ) : (
                         <View />
                       )}
@@ -379,7 +369,7 @@ export default function DeliverableScreen() {
               {open && (
                 <View style={styles.composer}>
                   <Text style={styles.hint}>
-                    One or two sentences, in your own words. Only you ever see this.
+                     Add your take, in your own words.
                   </Text>
                   <TextInput
                     style={styles.input}
@@ -388,7 +378,7 @@ export default function DeliverableScreen() {
                     placeholder="Write it the way you would say it out loud…"
                     placeholderTextColor={COLORS.textMuted}
                     multiline
-                    autoFocus
+                     blurOnSubmit
                   />
 
                   <TouchableOpacity
@@ -406,6 +396,13 @@ export default function DeliverableScreen() {
             </View>
           );
         })}
+         <TouchableOpacity style={styles.showAllButton} onPress={() => { Keyboard.dismiss(); setOpenSection(null); setShowAll(value => !value); }} accessibilityRole="button">
+           <Text style={styles.showAllText}>{showAll ? 'Show latest' : `See all ${template.sections.length} sections`}</Text>
+           <Feather name={showAll ? 'chevron-up' : 'arrow-right'} size={16} color={COLORS.accent} />
+         </TouchableOpacity>
+         <TouchableOpacity style={styles.doneButton} onPress={close} accessibilityRole="button">
+           <Text style={styles.doneText}>Back to Course</Text>
+         </TouchableOpacity>
 
         <View style={styles.footNote}>
           <Feather name="lock" size={12} color={COLORS.textMuted} />
@@ -526,18 +523,13 @@ const styles = StyleSheet.create({
   },
   weeklyCtaText: { ...TYPE.bodyBold, color: COLORS.textOnAccent, fontWeight: '800' },
 
-  explain: {
-    marginHorizontal: 18,
-    marginBottom: 18,
-    padding: 16,
-    borderRadius: 20,
-    gap: 10,
-    backgroundColor: COLORS.accentSoft,
-    borderWidth: 1,
-    borderColor: COLORS.accentMedium,
-  },
-  explainRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  explainText: { ...TYPE.caption, color: COLORS.textPrimary, flex: 1, fontWeight: '600' },
+   explain: { flexDirection: 'row', alignItems: 'flex-start', marginHorizontal: 18, marginBottom: 18, padding: 16, gap: 12, backgroundColor: COLORS.accentSoft, borderLeftWidth: 3, borderLeftColor: COLORS.accent },
+   explainTitle: { ...TYPE.bodyBold, color: COLORS.textPrimary, marginBottom: 5 },
+   explainText: { ...TYPE.body, color: COLORS.textSecondary },
+   showAllButton: { minHeight: 54, marginHorizontal: 18, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: COLORS.border },
+   showAllText: { ...TYPE.bodyBold, color: COLORS.accent },
+   doneButton: { minHeight: 52, marginHorizontal: 18, marginTop: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.accent, borderRadius: 14 },
+   doneText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
 
   sectionHeading: {
     ...TYPE.overline,
