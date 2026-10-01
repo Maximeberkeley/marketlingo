@@ -122,11 +122,11 @@ export default function RootLayout() {
                 <Stack.Screen name="daily-leo" options={{ animation: 'fade', gestureEnabled: false }} />
                 <Stack.Screen name="(tabs)" options={{ animation: 'fade', gestureEnabled: false }} />
                 <Stack.Screen name="notes" />
-                <Stack.Screen name="deliverable" />
+                <Stack.Screen name="deliverable" options={{ animation: 'fade' }} />
                 <Stack.Screen name="focus" />
                 <Stack.Screen name="streak-rescue" />
-                <Stack.Screen name="arena" />
-                <Stack.Screen name="deep-case" />
+                <Stack.Screen name="arena" options={{ animation: 'fade' }} />
+                <Stack.Screen name="deep-case" options={{ animation: 'fade' }} />
                 <Stack.Screen name="trainer" />
                 <Stack.Screen name="games" />
                 <Stack.Screen name="drills" />
