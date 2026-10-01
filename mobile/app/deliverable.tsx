@@ -252,6 +252,7 @@ export default function DeliverableScreen() {
               activeOpacity={0.85}
               onPress={() => {
                 triggerHaptic('light');
+                setShowAll(true);
                 setOpenSection(weeklyPrompt.key);
               }}
             >
@@ -264,13 +265,13 @@ export default function DeliverableScreen() {
          <View style={styles.explain}>
            <Feather name={latestEntry ? 'check-circle' : 'book-open'} size={20} color={COLORS.accent} />
            <View style={styles.flex}>
-             <Text style={styles.explainTitle}>{latestEntry ? 'Added from your lesson' : 'Your brief starts with a lesson'}</Text>
+             <Text style={styles.explainTitle}>{latestEntry ? 'Your latest insight' : 'Your brief starts with a lesson'}</Text>
              <Text style={styles.explainText} numberOfLines={showAll ? undefined : 3}>{latestEntry ? latestEntry.content : 'Finish a lesson and the first insight appears here automatically.'}</Text>
            </View>
          </View>
 
         <Text style={styles.sectionHeading}>
-           {showAll ? 'YOUR DOCUMENT' : 'YOUR LATEST SECTION'}
+           {showAll ? 'YOUR DOCUMENT' : latestEntry ? 'YOUR LATEST SECTION' : 'YOUR FIRST SECTION'}
         </Text>
 
          {visibleSections.map((section) => {
