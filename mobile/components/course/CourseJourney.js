@@ -250,7 +250,8 @@ export function CourseJourney({ marketId, currentDay, learningGoal, completedSta
                 return;
             if (error) {
                 setLoadError(true);
-                setLessons([]);
+                if (loadedMarket.current !== marketId)
+                    setLessons([]);
                 setLoading(false);
                 return;
             }
@@ -353,7 +354,7 @@ export function CourseJourney({ marketId, currentDay, learningGoal, completedSta
         <Text style={styles.loadingText}>Building your course…</Text>
       </View>);
     }
-    if (loadError) {
+    if (loadError && loadedMarket.current !== marketId) {
         return (<View style={styles.loading}>
         <Feather name="wifi-off" size={28} color={COLORS.textMuted}/>
         <Text style={styles.emptyTitle}>Your course could not load</Text>
@@ -364,7 +365,10 @@ export function CourseJourney({ marketId, currentDay, learningGoal, completedSta
       </View>);
     }
     return (<View style={[styles.container, { paddingTop: safeTop }]}>
-      <FlatList ref={listRef} data={sections} keyExtractor={item => String(item.index)} showsVerticalScrollIndicator={false} initialNumToRender={3} scrollEnabled={isFocused} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.listContent} onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: Math.max(0, index * 540), animated: false })} ListHeaderComponent={(<View style={[styles.topHeader, { paddingTop: 10 }]}>
+      {loadError && (<TouchableOpacity style={styles.retryButton} onPress={() => setLoadKey(key => key + 1)} accessibilityRole="button">
+          <Text style={styles.retryText}>Couldn't refresh · Try again</Text>
+        </TouchableOpacity>)}
+      <FlatList ref={listRef} data={sections} keyExtractor={item => String(item.index)} showsVerticalScrollIndicator={false} initialNumToRender={3} scrollEnabled keyboardShouldPersistTaps="handled" contentContainerStyle={styles.listContent} onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: Math.max(0, index * 540), animated: false })} ListHeaderComponent={(<View style={[styles.topHeader, { paddingTop: 10 }]}>
             <TouchableOpacity style={styles.industryBadge} onPress={openIndustryDetails} activeOpacity={0.82} accessibilityRole="button" accessibilityLabel={`Current industry: ${marketName}. Open industry details`}>
               <Image source={marketIllustration} style={styles.industryImage} resizeMode="contain"/>
             </TouchableOpacity>
