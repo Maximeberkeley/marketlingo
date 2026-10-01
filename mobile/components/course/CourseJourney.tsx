@@ -116,6 +116,7 @@ interface CourseJourneyProps {
   totalXp: number;
   level: number;
   lessonCompletedToday: boolean;
+  isFocused: boolean;
   arenaCompletedToday?: boolean;
   caseCompletedToday?: boolean;
   intelReadToday: number;
@@ -249,6 +250,7 @@ function SectionCluster({
   arenaCompletedToday,
   caseCompletedToday,
   intelDone,
+  isFocused,
   onModule,
   onLeo,
   onHeader,
@@ -263,6 +265,7 @@ function SectionCluster({
   arenaCompletedToday: boolean;
   caseCompletedToday: boolean;
   intelDone: boolean;
+  isFocused: boolean;
   onModule: (kind: ModuleKind) => void;
   onLeo: () => void;
   onHeader: () => void;
@@ -288,7 +291,7 @@ function SectionCluster({
       <View style={styles.weekHeading}>
         <View style={styles.weekHeadingCopy}>
           <Text style={styles.weekEyebrow}>{section.unlocked ? `DAY ${section.displayDay}` : `DAYS ${section.startDay}–${section.endDay}`}</Text>
-          <MovingLessonTitle title={weekTitle} long={longTitle} active={activeSection && section.unlocked && !lesson?.completed} />
+          <MovingLessonTitle title={weekTitle} long={longTitle} active={isFocused && activeSection && section.unlocked && !lessonCompletedToday && !lesson?.completed} />
           <Text style={styles.lessonMeta}>{marketName} · 6 min</Text>
         </View>
         {!section.unlocked ? (
@@ -437,6 +440,7 @@ export function CourseJourney({
   totalXp,
   level,
   lessonCompletedToday,
+  isFocused,
   arenaCompletedToday = false,
   caseCompletedToday = false,
   intelReadToday,
@@ -448,6 +452,7 @@ export function CourseJourney({
   onAskLeo,
 }: CourseJourneyProps) {
   const listRef = useRef<FlatList<SectionAccess>>(null);
+  const initialPositioned = useRef(false);
   const [lessons, setLessons] = useState<CourseLesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
@@ -524,10 +529,21 @@ export function CourseJourney({
   }, [currentDay, sections]);
 
   useEffect(() => {
-    if (loading || sections.length === 0) return;
-    const timer = setTimeout(() => listRef.current?.scrollToIndex({ index: focusedSectionIndex, animated: false, viewPosition: 0.04 }), 80);
+    if (loading || sections.length === 0 || initialPositioned.current) return;
+    const timer = setTimeout(() => {
+      listRef.current?.scrollToIndex({ index: focusedSectionIndex, animated: false, viewPosition: 0, viewOffset: safeTop + 16 });
+      initialPositioned.current = true;
+    }, 120);
     return () => clearTimeout(timer);
-  }, [focusedSectionIndex, loading, sections.length]);
+  }, [focusedSectionIndex, loading, sections.length, safeTop]);
+
+  useEffect(() => { initialPositioned.current = false; }, [marketId]);
+  useEffect(() => {
+    if (!isFocused) {
+      setPreviewSection(null);
+      setShowIndustryDetails(false);
+    }
+  }, [isFocused]);
 
   const lockedMessage = (section: SectionAccess) => {
     triggerHaptic('warning');
@@ -589,6 +605,8 @@ export function CourseJourney({
         keyExtractor={item => String(item.index)}
         showsVerticalScrollIndicator={false}
         initialNumToRender={3}
+        scrollEnabled={isFocused}
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.listContent}
         onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: Math.max(0, index * 540), animated: false })}
         ListHeaderComponent={(
@@ -630,7 +648,8 @@ export function CourseJourney({
               weekTitle={weekTitle}
               marketName={marketName}
               activeSection={activeSection}
-              lessonCompletedToday={lessonCompletedToday}
+               lessonCompletedToday={lessonCompletedToday}
+               isFocused={isFocused}
               arenaCompletedToday={arenaCompletedToday}
               caseCompletedToday={caseCompletedToday}
               intelDone={intelReadToday >= intelTarget}

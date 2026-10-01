@@ -69,6 +69,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
   const [lastGain, setLastGain] = useState<number | null>(null);
   const [ended, setEnded] = useState<{ survived: boolean } | null>(null);
   const [showExit, setShowExit] = useState(false);
+  const [banking, setBanking] = useState(false);
 
   const wave = waves[waveIndex];
   const exercise: Exercise | undefined = wave?.exercises[beatIndex];
@@ -270,8 +271,11 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
 
           <View style={{ height: 12 }} />
           <PrimaryButton
-            label={`Bank +${xp} XP`}
-            onPress={() =>
+            label={banking ? 'Saving your run…' : `Bank +${xp} XP`}
+            variant={banking ? 'disabled' : 'primary'}
+            onPress={() => {
+              if (banking) return;
+              setBanking(true);
               onFinish({
                 score,
                 correct,
@@ -280,11 +284,11 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
                 waveReached: waveIndex + 1,
                 survived: ended.survived,
                 xp,
-              })
-            }
+              });
+            }}
           />
-          <TouchableOpacity style={styles.ghostBtn} onPress={onExit} activeOpacity={0.8}>
-            <Text style={styles.ghostText}>Leave the arena</Text>
+          <TouchableOpacity style={styles.ghostBtn} onPress={onExit} disabled={banking} activeOpacity={0.8}>
+            <Text style={styles.ghostText}>Back to {marketName} practice</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -538,14 +542,14 @@ const styles = StyleSheet.create({
   waveMetaText: { fontSize: 11, fontWeight: '700', color: '#FFFFFF' },
   waveBtn: {
     marginTop: 18,
-    backgroundColor: tokens.color.card,
+     backgroundColor: tokens.color.bg,
     borderRadius: 16,
     paddingVertical: 15,
     paddingHorizontal: 28,
     alignSelf: 'stretch',
     alignItems: 'center',
   },
-  waveBtnText: { fontSize: 16, fontWeight: '800', color: '#1A1F36' },
+   waveBtnText: { fontSize: 16, fontWeight: '800', color: tokens.color.text },
 
   exitBackdrop: { flex: 1, backgroundColor: 'rgba(10,12,20,0.6)', justifyContent: 'flex-end' },
   exitSheet: {
