@@ -116,7 +116,7 @@ export default function Landing() {
       <nav className="landing-nav fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border pt-safe sm:pt-0">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
           <div className="landing-nav-brand flex items-center gap-2.5">
-            <img src={appIcon} alt="MarketLingo" className="w-9 h-9 rounded-[22%] shadow-sm" />
+            <img src={appIcon} alt="" className="hidden sm:block w-9 h-9 rounded-[22%] shadow-sm" />
             <span className="landing-heading font-bold text-lg text-foreground">MarketLingo</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground ml-8">
@@ -307,7 +307,7 @@ export default function Landing() {
       </section>
 
       {/* Meet Leo section */}
-      <section className="py-20 px-4 sm:px-6 bg-gradient-to-b from-primary/5 to-transparent">
+      <section className="hidden sm:block py-20 px-4 sm:px-6 bg-gradient-to-b from-primary/5 to-transparent">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial="hidden"
@@ -562,7 +562,7 @@ export default function Landing() {
               viewport={{ once: true, margin: "-50px" }}
               variants={fadeUp}
               custom={2}
-              className="rounded-3xl bg-card border border-border p-8 sm:p-10 overflow-hidden relative"
+              className="hidden sm:block rounded-3xl bg-card border border-border p-8 sm:p-10 overflow-hidden relative"
             >
               <div className="absolute bottom-0 left-1/2 w-72 h-72 bg-orange-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
               <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-10">
@@ -662,7 +662,7 @@ export default function Landing() {
           custom={0}
           className="max-w-3xl mx-auto text-center p-12 rounded-3xl bg-gradient-to-br from-primary/10 to-purple-500/10 border border-primary/20"
         >
-          <img src={leoMascot} alt="Leo" className="w-20 h-20 mx-auto mb-6 drop-shadow-lg" />
+          <img src={leoMascot} alt="Leo" className="hidden sm:block w-20 h-20 mx-auto mb-6 drop-shadow-lg" />
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
             Ready to become an industry insider?
           </h2>
@@ -696,7 +696,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2.5">
-              <img src={appIcon} alt="MarketLingo" className="w-8 h-8 rounded-[22%] shadow-sm" />
+              <img src={appIcon} alt="" className="hidden sm:block w-8 h-8 rounded-[22%] shadow-sm" />
               <span className="font-bold text-foreground">MarketLingo</span>
             </div>
             <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-muted-foreground">
