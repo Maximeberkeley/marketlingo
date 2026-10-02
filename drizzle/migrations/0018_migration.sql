@@ -1,0 +1,3 @@
+DROP POLICY IF EXISTS "Chat messages readable by authenticated" ON public.seminar_chat_messages;
+CREATE POLICY "Registered attendees read seminar chat" ON public.seminar_chat_messages FOR SELECT TO authenticated
+USING (auth.uid() = user_id OR EXISTS (SELECT 1 FROM public.seminar_registrations r WHERE r.seminar_id = seminar_chat_messages.seminar_id AND r.user_id = auth.uid()) OR public.has_role(auth.uid(), 'admin'));
