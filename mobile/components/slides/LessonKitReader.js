@@ -43,7 +43,7 @@ export function LessonKitReader({ stackTitle, slides, onClose, onComplete, onSav
         trainer,
         drills,
         stats,
-    }), [stackTitle, slides, marketId, metadata, trainer, drills, stats]);
+    }, dayNumber === 1), [stackTitle, slides, marketId, metadata, trainer, drills, stats, dayNumber]);
     const extraActions = useCallback((exerciseIndex) => {
         const slideNumber = slideNumbers[exerciseIndex] ?? 1;
         return (<View style={styles.actions}>
