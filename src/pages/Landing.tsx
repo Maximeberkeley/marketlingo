@@ -151,9 +151,8 @@ export default function Landing() {
             <Button variant="link" onClick={() => navigate("/auth")}>Sign in</Button>
           </div>
         </div>
-        <div className="landing-mobile-art" aria-label="Preview of the MarketLingo app with Leo">
+        <div className="landing-mobile-art" aria-label="Preview of the MarketLingo app">
           <div className="landing-phone"><img src="/appstore/screenshot-1-home.png" alt="MarketLingo daily course screen" /></div>
-          <img className="landing-leo" src={leoMascot} alt="Leo the fox" />
           <span className="landing-art-caption">01 / THE DAILY COURSE</span>
         </div>
       </section>
