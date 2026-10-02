@@ -12,8 +12,18 @@ import { DeepDiveProvider } from '../../lesson-kit/components/DeepDiveContext';
  * Key terms come from the existing slide parser; everything else is derived
  * from the real slide text by the sequencer.
  */
-function buildLesson(stackTitle, slides, marketId, metadata, industry) {
-    const enriched = slides.map((slide, slideIdx) => {
+// Day 1 guardrail: a first lesson must never refer to a "yesterday".
+const PRIOR_RE = /^[^.!?]*\b(yesterday|last time|previous lesson|in our orientation)\b[^.!?]*[.!?]\s*/i;
+function firstDayText(title, body) {
+  return {
+    title: String(title || '').replace(/^recap:\s*/i, 'Foundation: ').replace(/yesterday's\s+/i, 'The '),
+    body: String(body || '').replace(PRIOR_RE, ''),
+  };
+}
+
+function buildLesson(stackTitle, slides, marketId, metadata, industry, isFirstDay = false) {
+    const enriched = slides.map((raw, slideIdx) => {
+    const slide = isFirstDay ? { ...raw, ...firstDayText(raw.title, raw.body) } : raw;
         const cards = parseSlideIntoCards(slide.title, slide.body, slide.sources || [], slideIdx, marketId);
         const keyTerms = cards.flatMap((c) => c.keyTerms || []);
         return {
@@ -33,7 +43,7 @@ export function LessonKitReader({ stackTitle, slides, onClose, onComplete, onSav
         trainer,
         drills,
         stats,
-    }), [stackTitle, slides, marketId, metadata, trainer, drills, stats]);
+    }, dayNumber === 1), [stackTitle, slides, marketId, metadata, trainer, drills, stats, dayNumber]);
     const extraActions = useCallback((exerciseIndex) => {
         const slideNumber = slideNumbers[exerciseIndex] ?? 1;
         return (<View style={styles.actions}>
