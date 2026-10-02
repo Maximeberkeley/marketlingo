@@ -53,14 +53,25 @@ export interface LessonKitReaderProps {
  * Key terms come from the existing slide parser; everything else is derived
  * from the real slide text by the sequencer.
  */
+// Day 1 guardrail: a first lesson must never refer to a "yesterday".
+const PRIOR_RE = /^[^.!?]*\b(yesterday|last time|previous lesson|in our orientation)\b[^.!?]*[.!?]\s*/i;
+function firstDayText(title: string, body: string) {
+  return {
+    title: String(title || '').replace(/^recap:\s*/i, 'Foundation: ').replace(/yesterday's\s+/i, 'The '),
+    body: String(body || '').replace(PRIOR_RE, ''),
+  };
+}
+
 function buildLesson(
   stackTitle: string,
   slides: SlideData[],
   marketId: string | undefined,
   metadata: StackMetadata | undefined,
   industry: IndustryInput,
+  isFirstDay = false,
 ) {
-  const enriched: SlideLike[] = slides.map((slide, slideIdx) => {
+  const enriched: SlideLike[] = slides.map((raw, slideIdx) => {
+    const slide = isFirstDay ? { ...raw, ...firstDayText(raw.title, raw.body) } : raw;
     const cards = parseSlideIntoCards(slide.title, slide.body, slide.sources || [], slideIdx, marketId);
     const keyTerms = cards.flatMap((c: any) => c.keyTerms || []);
     return {
