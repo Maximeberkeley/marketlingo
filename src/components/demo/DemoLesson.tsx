@@ -154,7 +154,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
       className="fixed inset-0 z-[200] bg-bg-0 flex flex-col overflow-hidden"
     >
       {/* Header */}
-      <div className="flex-shrink-0 px-4 pt-safe-top pt-4 pb-3 flex items-center justify-between gap-3 border-b border-border">
+      <div className="flex-shrink-0 px-4 pt-safe pb-3 flex items-center justify-between gap-3 border-b border-border">
         <button onClick={onClose} className="p-1.5 rounded-lg text-text-muted hover:text-text-primary transition-colors">
           <X size={20} />
         </button>
@@ -294,7 +294,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                 </div>
               </div>
 
-              <div className="sticky bottom-0 left-0 right-0 pt-4 pb-6 bg-gradient-to-t from-bg-0 via-bg-0/90 to-transparent">
+              <div className="sticky bottom-0 left-0 right-0 pt-4 safe-area-bottom bg-gradient-to-t from-bg-0 via-bg-0/90 to-transparent">
                 <div className="max-w-lg mx-auto">
                 <Button variant="cta" size="full" onClick={() => { setStep("slide2"); awardXP(10); }}>
                   Next Slide <ChevronRight size={18} />
@@ -351,7 +351,7 @@ export function DemoLesson({ onSignUp, onClose }: DemoLessonProps) {
                 </div>
               </div>
 
-              <div className="sticky bottom-0 left-0 right-0 pt-4 pb-6 bg-gradient-to-t from-bg-0 via-bg-0/90 to-transparent">
+              <div className="sticky bottom-0 left-0 right-0 pt-4 safe-area-bottom bg-gradient-to-t from-bg-0 via-bg-0/90 to-transparent">
                 <div className="max-w-lg mx-auto">
                 <Button variant="cta" size="full" onClick={() => { setStep("quiz"); awardXP(10); }}>
                   Test Your Knowledge <ChevronRight size={18} />

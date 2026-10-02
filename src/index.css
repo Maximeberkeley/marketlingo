@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Market Outfit";
+  src: url("/fonts/outfit-regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Market Figtree";
+  src: url("/fonts/figtree-regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
 /* MarketLingo Design System v2
    Light-first, Brilliant-inspired, with dark mode support
    All colors in HSL format
@@ -17,6 +33,9 @@
     /* Brand Accent — Vibrant purple */
     --accent: 258 90% 66%;       /* #8B5CF6 */
     --accent-glow: 258 90% 66% / 0.15;
+    --landing-ink: 231 35% 16%;
+    --landing-amber: 37 92% 50%;
+    --landing-paper: 0 0% 100%;
     
     /* Text Hierarchy */
     --text-primary: 230 25% 12%;      /* Near black */
@@ -93,6 +112,9 @@
     
     --accent: 258 90% 66%;
     --accent-glow: 258 90% 66% / 0.3;
+    --landing-ink: 220 25% 98%;
+    --landing-amber: 37 92% 50%;
+    --landing-paper: 222 47% 8%;
     
     --text-primary: 220 25% 98%;
     --text-secondary: 220 18% 75%;
@@ -150,6 +172,148 @@
     --sidebar-border: var(--border);
     --sidebar-ring: var(--accent);
   }
+}
+
+/* Editorial iPhone landing: the real app screen and Leo replace the old centered stack. */
+.landing-nav-brand { min-width: 0; flex-shrink: 0; }
+.landing-nav-actions { flex-shrink: 0; }
+@media (max-width: 400px) {
+  .landing-nav-brand { gap: 6px; }
+  .landing-nav-brand img { width: 32px; height: 32px; }
+  .landing-nav-brand span { font-size: 15px; }
+  .landing-nav-actions button { height: 38px; padding-left: 12px; padding-right: 12px; font-size: 13px; }
+}
+.landing-heading, .landing-display {
+  font-family: "Market Outfit", sans-serif;
+}
+
+.landing-mobile-hero {
+  position: relative;
+  min-height: 684px;
+  padding: calc(88px + env(safe-area-inset-top, 0px)) 24px 0;
+  overflow: hidden;
+  background: hsl(var(--landing-paper));
+  color: hsl(var(--landing-ink));
+  font-family: "Market Figtree", sans-serif;
+}
+
+.landing-mobile-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 470px;
+}
+
+.landing-eyebrow {
+  display: inline-block;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: hsl(var(--primary) / .1);
+  color: hsl(var(--primary));
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .11em;
+}
+
+.landing-display {
+  margin: 17px 0 18px;
+  color: hsl(var(--landing-ink));
+  font-size: 46px;
+  font-weight: 800;
+  line-height: .98;
+}
+
+.landing-display span { color: hsl(var(--primary)); }
+
+.landing-mobile-copy > p {
+  max-width: 300px;
+  margin: 0 0 22px;
+  color: hsl(var(--landing-ink) / .72);
+  font-size: 16px;
+  line-height: 1.42;
+}
+
+.landing-primary-cta {
+  width: 100%;
+  max-width: 380px;
+  height: 54px;
+  gap: 12px;
+  border-radius: 16px;
+  font-family: "Market Figtree", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 12px 26px hsl(var(--primary) / .2);
+}
+
+.landing-secondary-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 7px;
+  color: hsl(var(--landing-ink) / .7);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.landing-secondary-actions a { display: inline-flex; align-items: center; gap: 3px; }
+.landing-secondary-actions a:hover { color: hsl(var(--primary)); }
+.landing-secondary-actions button { padding: 0; height: auto; color: inherit; font-size: inherit; text-decoration: none; }
+
+.landing-mobile-art {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 235px;
+  pointer-events: none;
+}
+
+.landing-phone {
+  position: absolute;
+  right: 2%;
+  bottom: -105px;
+  width: 196px;
+  height: 355px;
+  overflow: hidden;
+  transform: rotate(-6deg);
+  transform-origin: bottom right;
+  border: 6px solid hsl(var(--landing-ink));
+  border-radius: 33px;
+  background: hsl(var(--landing-ink));
+  box-shadow: -18px 12px 35px hsl(var(--landing-ink) / .22);
+}
+
+.landing-phone img { width: 100%; height: auto; display: block; }
+
+.landing-leo {
+  position: absolute;
+  bottom: 49px;
+  right: 155px;
+  width: 130px;
+  height: 130px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 10px hsl(var(--landing-ink) / .18));
+}
+
+.landing-art-caption {
+  position: absolute;
+  bottom: 23px;
+  left: 24px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  color: hsl(var(--landing-ink) / .55);
+}
+
+@media (max-width: 350px) {
+  .landing-mobile-hero { min-height: 660px; padding-left: 18px; padding-right: 18px; }
+  .landing-display { font-size: 42px; }
+  .landing-phone { width: 170px; right: 0; }
+  .landing-leo { right: 136px; width: 112px; height: 112px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .landing-leo { animation: landing-leo-float 4s ease-in-out infinite; }
+  @keyframes landing-leo-float { 50% { transform: translateY(-5px); } }
 }
 
 @layer base {
