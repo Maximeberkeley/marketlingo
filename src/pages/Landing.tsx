@@ -113,9 +113,9 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border pt-safe sm:pt-0">
+      <nav className="landing-nav fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border pt-safe sm:pt-0">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+          <div className="landing-nav-brand flex items-center gap-2.5">
             <img src={appIcon} alt="MarketLingo" className="w-9 h-9 rounded-[22%] shadow-sm" />
             <span className="landing-heading font-bold text-lg text-foreground">MarketLingo</span>
           </div>
@@ -125,7 +125,7 @@ export default function Landing() {
             <a href="#about" className="hover:text-foreground transition-colors">About</a>
             <a href="#pricing" className="hover:text-foreground transition-colors">Free</a>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="landing-nav-actions flex items-center gap-3">
             <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} className="hidden sm:inline-flex">
               Sign in
             </Button>
