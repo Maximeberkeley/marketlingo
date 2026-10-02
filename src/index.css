@@ -684,3 +684,22 @@
 .card-hover-lift:active {
   transform: translateY(0) scale(0.98);
 }
+
+/* Website demo follows the phone's three interactive lesson beats. */
+.website-demo { font-family: "Market Figtree", sans-serif; }
+.website-demo h1 { font-family: "Market Outfit", sans-serif; letter-spacing: 0; }
+.website-demo-tag { display: inline-block; padding: 6px 10px; border-radius: 6px; background: hsl(var(--primary) / .12); color: hsl(var(--primary)); font-size: 11px; font-weight: 800; }
+.website-demo-eyebrow { margin: 18px 0 6px; color: hsl(var(--muted-foreground)); font-size: 11px; font-weight: 800; }
+.website-demo-title { max-width: 550px; font-size: 30px; line-height: 1.18; font-weight: 800; }
+.website-demo-visual { display: flex; justify-content: center; align-items: center; gap: 12px; height: 170px; margin: 14px 0; color: hsl(var(--foreground)); font-family: "Market Outfit", sans-serif; font-size: 24px; font-weight: 800; }
+.website-demo-visual span { border-bottom: 2px solid hsl(var(--border)); padding: 10px 4px; }
+.website-demo-visual .website-demo-visual-focus { color: hsl(var(--primary)); border-color: hsl(var(--primary)); font-size: 44px; }
+.website-demo-panel { border: 1px solid hsl(var(--border)); border-radius: 8px; background: hsl(var(--card)); padding: 20px; }
+.website-demo-label { color: hsl(var(--primary)); font-size: 11px; font-weight: 800; margin-bottom: 10px; }
+.website-demo-word { line-height: 1.15; }
+.website-demo-word strong { max-width: 100%; overflow-wrap: anywhere; }
+.website-demo-takeaway { margin-top: 16px; border-left: 3px solid hsl(var(--primary)); background: hsl(var(--primary) / .1); padding: 15px; border-radius: 4px; line-height: 1.5; }
+.website-demo-next { width: 100%; min-height: 54px; margin-top: 22px; gap: 10px; font-weight: 750; }
+.website-demo-answer { line-height: 1.35; }
+.website-demo-finish { padding-top: 12vh; }
+.website-demo-award { display: flex; justify-content: center; align-items: center; width: 92px; height: 92px; margin: 0 auto 25px; border-radius: 50%; background: hsl(var(--primary) / .12); color: hsl(var(--primary)); }
