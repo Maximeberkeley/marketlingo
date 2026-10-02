@@ -267,14 +267,14 @@
   align-items: center;
   gap: 9px;
   margin-top: 12px;
-  color: hsl(var(--landing-ink) / .7);
+  color: hsl(var(--landing-ink) / .82);
   font-size: 13px;
   font-weight: 600;
 }
 
 .landing-secondary-actions a { display: inline-flex; align-items: center; gap: 3px; }
 .landing-secondary-actions a:hover { color: hsl(var(--primary)); }
-.landing-secondary-actions button { padding: 0; height: auto; color: inherit; font-size: inherit; text-decoration: none; }
+.landing-secondary-actions button { padding: 0; height: auto; color: hsl(var(--landing-ink) / .82); font-size: inherit; text-decoration: none; }
 
 .landing-mobile-art {
   position: absolute;
@@ -314,8 +314,10 @@
 
 .landing-art-caption {
   position: absolute;
-  bottom: 23px;
+  bottom: 12px;
   left: 24px;
+  padding: 3px 7px;
+  background: hsl(var(--landing-paper) / .9);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: .1em;
