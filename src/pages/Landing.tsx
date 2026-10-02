@@ -111,7 +111,7 @@ export default function Landing() {
   const [showDemo, setShowDemo] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className="landing-site min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Nav */}
       <nav className="landing-nav fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border pt-safe sm:pt-0">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
@@ -140,7 +140,7 @@ export default function Landing() {
       <section className="landing-mobile-hero sm:hidden">
         <div className="landing-mobile-copy">
           <span className="landing-eyebrow">YOUR DAILY INDUSTRY EDGE</span>
-          <h1 className="landing-display">Master<br /><span>markets</span><br />by habit.</h1>
+          <h1 className="landing-display">Become an<br /><span>insider.</span></h1>
           <p>Get fluent in the industries shaping tomorrow, five minutes at a time.</p>
           <Button onClick={() => setShowDemo(true)} className="landing-primary-cta">
             Try a Demo Lesson <ArrowRight className="w-5 h-5" aria-hidden="true" />
@@ -321,7 +321,7 @@ export default function Landing() {
               custom={0}
               src={leoCelebrating}
               alt="Leo celebrating"
-              className="w-40 h-40 md:w-52 md:h-52 drop-shadow-2xl flex-shrink-0"
+              className="landing-jumping-leo w-40 md:w-52 h-auto object-contain drop-shadow-2xl flex-shrink-0"
             />
             <div>
               <motion.h2 variants={fadeUp} custom={1} className="text-3xl sm:text-4xl font-bold mb-4">
