@@ -113,11 +113,11 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border pt-safe sm:pt-0">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <img src={appIcon} alt="MarketLingo" className="w-9 h-9 rounded-[22%] shadow-sm" />
-            <span className="font-bold text-lg tracking-tight text-foreground">MarketLingo</span>
+            <span className="landing-heading font-bold text-lg text-foreground">MarketLingo</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground ml-8">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
@@ -126,18 +126,39 @@ export default function Landing() {
             <a href="#pricing" className="hover:text-foreground transition-colors">Free</a>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} className="hidden sm:inline-flex">
               Sign in
             </Button>
-            <Button size="sm" onClick={() => setShowDemo(true)} className="bg-primary hover:bg-primary/90">
-              Try a Demo Lesson
+            <Button size="sm" onClick={() => setShowDemo(true)} className="bg-primary hover:bg-primary/90 rounded-full px-4 sm:rounded-md">
+              <span className="sm:hidden">Try demo</span><span className="hidden sm:inline">Try a Demo Lesson</span>
             </Button>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 relative overflow-hidden">
+      <section className="landing-mobile-hero sm:hidden">
+        <div className="landing-mobile-copy">
+          <span className="landing-eyebrow">YOUR DAILY INDUSTRY EDGE</span>
+          <h1 className="landing-display">Master<br /><span>markets</span><br />by habit.</h1>
+          <p>Get fluent in the industries shaping tomorrow, five minutes at a time.</p>
+          <Button onClick={() => setShowDemo(true)} className="landing-primary-cta">
+            Try a Demo Lesson <ArrowRight className="w-5 h-5" aria-hidden="true" />
+          </Button>
+          <div className="landing-secondary-actions">
+            <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer">Get the iPhone app <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" /></a>
+            <span aria-hidden="true">·</span>
+            <Button variant="link" onClick={() => navigate("/auth")}>Sign in</Button>
+          </div>
+        </div>
+        <div className="landing-mobile-art" aria-label="Preview of the MarketLingo app with Leo">
+          <div className="landing-phone"><img src="/appstore/screenshot-1-home.png" alt="MarketLingo daily course screen" /></div>
+          <img className="landing-leo" src={leoMascot} alt="Leo the fox" />
+          <span className="landing-art-caption">01 / THE DAILY COURSE</span>
+        </div>
+      </section>
+
+      <section className="hidden sm:block pt-32 pb-20 px-4 sm:px-6 relative overflow-hidden">
         <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
         
         <div className="max-w-6xl mx-auto relative">
@@ -225,7 +246,7 @@ export default function Landing() {
       </section>
 
       {/* Social proof strip */}
-      <section className="py-8 border-y border-border bg-secondary/30">
+      <section className="landing-proof py-8 border-y border-border bg-secondary/30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-center gap-8 text-muted-foreground text-sm">
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4" />
@@ -382,7 +403,7 @@ export default function Landing() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide justify-center"
+            className="flex gap-4 overflow-x-auto pb-4 px-4 snap-x snap-mandatory scrollbar-hide justify-start lg:justify-center"
           >
             {[
               { src: "/appstore/screenshot-1-home.png", label: "Daily lessons" },
