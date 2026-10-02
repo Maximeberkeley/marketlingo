@@ -180,7 +180,7 @@
   }
 }
 
-/* Editorial iPhone landing: the real app screen and Leo replace the old centered stack. */
+/* Editorial iPhone landing: the real app screen replaces the old centered stack. */
 .landing-nav-brand { min-width: 0; flex-shrink: 0; }
 .landing-nav-actions { flex-shrink: 0; }
 @media (max-width: 400px) {
@@ -302,16 +302,6 @@
 
 .landing-phone img { width: 100%; height: auto; display: block; }
 
-.landing-leo {
-  position: absolute;
-  bottom: 34px;
-  right: 170px;
-  width: 142px;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 12px 10px hsl(var(--landing-ink) / .18));
-}
-
 .landing-art-caption {
   position: absolute;
   bottom: 12px;
@@ -328,7 +318,6 @@
   .landing-mobile-hero { min-height: 664px; padding-left: 18px; padding-right: 18px; }
   .landing-display { font-size: 44px; }
   .landing-phone { width: 176px; right: 0; }
-  .landing-leo { right: 137px; width: 118px; }
 }
 
 @media (max-width: 639px) {
