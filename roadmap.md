@@ -1,5 +1,9 @@
 # MarketLingo roadmap
 
+## Mobile website — current
+- [ ] Remove remaining fox imagery from the mobile website, including navigation and lower sections.
+- [ ] Bring the website demo lesson and lesson previews into visual alignment with the phone app.
+
 ## Sept 26 — Notifications actually arriving
 - [x] Register and store each learner's device for reminders the moment they allow notifications, and keep it current on every app open.
 - [x] Send reminders through the service the app is actually registered with, and drop devices that uninstalled.
