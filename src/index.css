@@ -175,6 +175,14 @@
 }
 
 /* Editorial iPhone landing: the real app screen and Leo replace the old centered stack. */
+.landing-nav-brand { min-width: 0; flex-shrink: 0; }
+.landing-nav-actions { flex-shrink: 0; }
+@media (max-width: 400px) {
+  .landing-nav-brand { gap: 6px; }
+  .landing-nav-brand img { width: 32px; height: 32px; }
+  .landing-nav-brand span { font-size: 15px; }
+  .landing-nav-actions button { height: 38px; padding-left: 12px; padding-right: 12px; font-size: 13px; }
+}
 .landing-heading, .landing-display {
   font-family: "Market Outfit", sans-serif;
 }
