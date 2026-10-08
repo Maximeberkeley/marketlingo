@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
   suggestion: { marginTop: 10, opacity: 0.75, gap: 4 },
   suggestionText: { ...TYPE.caption, color: COLORS.textMuted, lineHeight: 19, fontStyle: 'italic' },
   link: { ...TYPE.caption, color: COLORS.accent, fontWeight: '800' },
-  addMore: { ...TYPE.caption, color: COLORS.textMuted, fontWeight: '700', marginTop: 12 },
+  addMore: { ...n.caption, color: COLORS.accent, fontWeight: '800', marginTop: 12 },
   composer: { marginTop: 12, gap: 8 },
   rewriteHint: { ...TYPE.caption, color: COLORS.textMuted },
   input: {
