@@ -10,7 +10,7 @@ export function ReadingCopy({ text, body = '', evidence = false, preserveCover =
   text: string; body?: string; evidence?: boolean; preserveCover?: boolean;
 }) {
   const headlineList = preserveCover ? null : colonList(text);
-  const bodyList = preserveCover ? null : colonList(body);
+  const followingBody = [headlineList?.body, body].filter(Boolean).join('\n\n');
   const rows = (items: string[]) => <View>{items.map((item, index) => (
     <View key={`${index}-${item}`} style={[styles.row, index > 0 && styles.divider]}>
       <Feather name="check" size={15} color={tokens.color.accent} style={styles.check} />
@@ -20,17 +20,14 @@ export function ReadingCopy({ text, body = '', evidence = false, preserveCover =
   return <View style={styles.wrap}>
     {!!text && <ColorText text={headlineList?.headline || text} style={evidence ? styles.body : styles.headline} maxSentences={10000} maxLength={1000000} />}
     {headlineList && rows(headlineList.items)}
-    {!!body && (bodyList ? <View style={styles.wrap}>
-      <ColorText text={bodyList.headline} style={styles.headline} maxSentences={10000} maxLength={1000000} />
-      {rows(bodyList.items)}
-    </View> : <ColorText text={body} style={styles.body} maxSentences={10000} maxLength={1000000} />)}
+    {!!followingBody && <ColorText text={followingBody} style={styles.body} maxSentences={10000} maxLength={1000000} />}
   </View>;
 }
 
 const styles = StyleSheet.create({
   wrap: { gap: tokens.space.lg, minWidth: 0 },
   headline: { fontSize: 32, lineHeight: 38, fontWeight: '800', color: tokens.color.text },
-  body: { fontSize: 19, lineHeight: 28, color: tokens.color.text, opacity: 0.8 },
+  body: { fontSize: 19, lineHeight: 28, fontWeight: '400', color: tokens.color.text, opacity: 0.8 },
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: tokens.space.md, paddingVertical: tokens.space.md },
   divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: tokens.color.border },
   check: { marginTop: 6 },

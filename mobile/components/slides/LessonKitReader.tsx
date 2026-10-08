@@ -176,8 +176,8 @@ export function LessonKitReader({
 
 
   const extraActions = useCallback(
-    (exerciseIndex: number, dismiss: () => void) => {
-      const slideNumber = slideNumbers[exerciseIndex] ?? 1;
+    (exerciseIndex: number, dismiss: () => void, exercise?: Exercise) => {
+      const slideNumber = (exercise?.kind === 'microInsight' ? exercise.sourceSlideNumber : undefined) ?? slideNumbers[exerciseIndex] ?? 1;
       return (
         <View style={styles.actions}>
           <TouchableOpacity style={styles.action} onPress={() => { dismiss(); onAddNote(slideNumber); }}>
@@ -209,8 +209,8 @@ export function LessonKitReader({
           total > 0 ? Math.round((correct / total) * 100) : 100,
         )}
         renderExtraActions={extraActions}
-        onSaveLeoAnswer={(text, exerciseIndex) =>
-          onAddNote(slideNumbers[exerciseIndex] ?? 1, `Leo explained: ${text}`)
+        onSaveLeoAnswer={(text, exerciseIndex, exercise) =>
+          onAddNote((exercise?.kind === 'microInsight' ? exercise.sourceSlideNumber : undefined) ?? slideNumbers[exerciseIndex] ?? 1, `Leo explained: ${text}`)
         }
         streakDays={streakDays}
         confirmExit={!isReview}

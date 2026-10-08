@@ -1,5 +1,6 @@
 import type { Exercise, KeyTerm } from './types';
 import { shortLabel, shortText } from './text';
+import { splitSentences } from '../lib/textUtils';
 
 /** Presentation only: preserve all authored/generated text and grading. */
 export function readingCardKind(exercise: Exercise): 'idea' | 'evidence' | 'takeaway' {
@@ -32,16 +33,20 @@ export function cardCopy(exercise: Exercise): string[] {
 }
 
 /** Only transform complete, unambiguous comma/semicolon lists; keep other prose intact. */
-export function colonList(text: string): { headline: string; items: string[] } | null {
-  const at = text.indexOf(':');
-  if (at < 1 || text.slice(at + 1).includes(':')) return null;
-  const headline = text.slice(0, at).trim();
-  const tail = text.slice(at + 1).trim();
-  // A second sentence may contain unrelated context; leave it as prose.
-  if (/[.!?]\s+[A-Z]/.test(tail) || /https?$/i.test(headline)) return null;
+export function colonList(text: string): { headline: string; items: string[]; body: string } | null {
+  const first = splitSentences(text)[0] || '';
+  const at = first.indexOf(':');
+  if (at < 1 || first.slice(at + 1).includes(':')) return null;
+  // Quoted prose is never a list, including quotes around individual items.
+  // An apostrophe between letters (supplier's) is not a quotation mark.
+  if (/["“”‘’]/.test(first.replace(/([\p{L}\p{N}])['’](?=[\p{L}\p{N}])/gu, '$1')) ||
+    /'/.test(first.replace(/([\p{L}\p{N}])'(?=[\p{L}\p{N}])/gu, '$1'))) return null;
+  const headline = first.slice(0, at).trim();
+  const tail = first.slice(at + 1).trim();
+  if (/https?$/i.test(headline)) return null;
   const items = tail.replace(/[.!?]$/, '').split(/[,;]\s+|\s+and\s+(?=[^,;]+$)/i)
     .map(item => item.replace(/^and\s+/i, '').trim()).filter(Boolean);
-  return items.length >= 3 ? { headline, items } : null;
+  return items.length >= 3 ? { headline, items, body: text.trimStart().slice(first.length).trim() } : null;
 }
 
 export function cardTerms(exercise: Exercise): KeyTerm[] {
