@@ -301,7 +301,7 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
 
 
       {phase === 'feedback' && !isInfo && (<>
-          <FeedbackFooter isCorrect={state.isCorrect} explanation={'explanation' in exercise ? exercise.explanation : undefined} correctAnswer={state.isCorrect ? undefined : correctAnswerText}/>
+          <FeedbackFooter isCorrect={state.isCorrect} explanation={'explanation' in exercise ? exercise.explanation : undefined} correctAnswer={state.isCorrect || repeatsAnswer ? undefined : correctAnswerText}/>
           <TouchableOpacity style={[styles.leoPrompt, { borderColor: world.colors[0] + '55' }]} onPress={() => openLeo(state.isCorrect
                 ? 'Explain this card to me.'
                 : 'Why is that the right answer?')}>

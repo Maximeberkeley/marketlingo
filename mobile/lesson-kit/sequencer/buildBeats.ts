@@ -101,13 +101,14 @@ function checkShown(seen: string[], used: Set<string>, id: string): MultipleChoi
     if (used.has(norm(truth))) continue;
     const lies = [truth, ...seen.filter(s => norm(s) !== norm(truth))]
       .map(alterNumber)
-      .filter((s): s is string => typeof s === 'string' && norm(s) !== norm(truth));
+      .filter((s): s is string => typeof s === 'string' && norm(s) !== norm(truth))
+      .filter(s => !used.has(`lie:${norm(s)}`));
     const uniqueLies = lies.filter((s, i) => lies.findIndex(o => norm(o) === norm(s)) === i).slice(0, 2);
     if (uniqueLies.length < 2) continue;
     const options = shuffle([truth, ...uniqueLies]);
     if (new Set(options.map(norm)).size !== options.length) continue;
     used.add(norm(truth));
-        uniqueLies.forEach(l => used.add(`lie:${norm(l)}`));
+    uniqueLies.forEach(l => used.add(`lie:${norm(l)}`));
     return {
       kind: 'multipleChoice',
       id,

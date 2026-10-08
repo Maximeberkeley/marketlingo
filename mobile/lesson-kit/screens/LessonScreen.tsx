@@ -382,7 +382,7 @@ export function LessonScreen({
           <FeedbackFooter
             isCorrect={state.isCorrect}
             explanation={'explanation' in exercise ? exercise.explanation : undefined}
-            correctAnswer={state.isCorrect ? undefined : correctAnswerText}
+            correctAnswer={state.isCorrect || repeatsAnswer ? undefined : correctAnswerText}
           />
           <TouchableOpacity
             style={[styles.leoPrompt, { borderColor: world.colors[0] + '55' }]}
