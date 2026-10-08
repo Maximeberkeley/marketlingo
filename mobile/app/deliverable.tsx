@@ -357,13 +357,14 @@ const styles = StyleSheet.create({
   suggestion: { marginTop: 10, opacity: 0.75, gap: 4 },
   suggestionText: { ...TYPE.caption, color: COLORS.textMuted, lineHeight: 19, fontStyle: 'italic' },
   link: { ...TYPE.caption, color: COLORS.accent, fontWeight: '800' },
-  addMore: { ...n.caption, color: COLORS.accent, fontWeight: '800', marginTop: 12 },
+  addMore: { ...TYPE.caption, color: COLORS.accent, fontWeight: '800', marginTop: 12 },
   composer: { marginTop: 12, gap: 8 },
   rewriteHint: { ...TYPE.caption, color: COLORS.textMuted },
   input: {
     ...TYPE.body,
     color: COLORS.textPrimary,
     minHeight: 44,
+    maxHeight: 152, // ~6 lines at lineHeight 22 — grows with content, then scrolls
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 10,
