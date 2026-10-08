@@ -145,12 +145,13 @@ export default function GoalScreen() {
 
   const handleContinue = async () => {
     if (!selectedGoal || !selectedMarket) return;
+    triggerHaptic('medium');
     if (!user) {
-      // Guest user — redirect to auth
-      router.replace('/auth');
+      // Guest: keep the choice on the device; it is saved to the account after sign-up.
+      await storage.setLearningGoal(selectedGoal).catch(() => {});
+      router.push('/onboarding/familiarity');
       return;
     }
-    triggerHaptic('medium');
     setIsSubmitting(true);
     try {
       await storage.setLearningGoal(selectedGoal);

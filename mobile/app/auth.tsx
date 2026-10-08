@@ -61,7 +61,8 @@ export default function AuthScreen() {
         Alert.alert('Check your email', result.message);
       } else if (mode === 'signup') {
         await storage.setDisplayName(normalizeDisplayName(displayName));
-        router.replace('/onboarding/welcome' as any);
+        // Industry, goal and level were picked before sign-up; attach them and continue to the walkthrough.
+        router.replace({ pathname: '/onboarding/familiarity', params: { resume: '1' } } as any);
       } else {
         // Existing users go to index which handles routing
         router.replace('/');
@@ -94,12 +95,6 @@ export default function AuthScreen() {
           <Text style={styles.appName}>MarketLingo</Text>
           <Text style={styles.tagline}>Master any industry in 6 months</Text>
         </View>
-
-        {mode === 'login' && (
-          <TouchableOpacity style={styles.demoBtn} onPress={() => router.push('/demo' as any)} activeOpacity={0.8}>
-            <Text style={styles.demoBtnText}>Try a demo lesson first →</Text>
-          </TouchableOpacity>
-        )}
 
         <View style={styles.form}>
           <Text style={styles.formTitle}>
