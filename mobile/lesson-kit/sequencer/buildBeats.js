@@ -2,15 +2,21 @@ import { getIndustryPack } from '../industry/packs';
 import { makeColdOpen, makeMicroInsight, norm, sentences, shuffle } from './extract';
 import { splitSentences } from '../../lib/textUtils';
 const clean = (s) => s.replace(/\s+/g, ' ').trim();
-const STARTUP_LINE = /^\s*for your startup\b/i;
-/** Drop "For your startup…" sentences unless the learner is building a startup. */
+const STARTUP_PREFIX = /^\s*for your startup\s*[:,\u2014\u2013-]?\s*/i;
+/** Keep the sentence, minus its "For your startup:" lead-in. */
+const stripStartup = (s) => {
+  const rest = s.replace(STARTUP_PREFIX, '');
+  return rest === s ? s : rest.charAt(0).toUpperCase() + rest.slice(1);
+};
+/** Strip the "For your startup:" prefix unless the learner is building a startup. */
 export function filterForGoal(text, learningGoal) {
     if (learningGoal === 'build_startup')
         return text;
     return (text || '')
         .split(/\n/)
         .map(line => splitSentences(line)
-        .filter(s => !STARTUP_LINE.test(s))
+        .map(stripStartup)
+        .filter(s => s.trim())
         .join(' '))
         .filter((line, i, all) => line.trim() || (i > 0 && all[i - 1].trim()))
         .join('\n')
@@ -57,14 +63,17 @@ function checkShown(seen, used, id) {
             continue;
         const lies = [truth, ...seen.filter(s => norm(s) !== norm(truth))]
             .map(alterNumber)
+            .filter(s => !used.has(`lie:${norm(s)}`))
             .filter((s) => typeof s === 'string' && norm(s) !== norm(truth));
-        const uniqueLies = lies.filter((s, i) => lies.findIndex(o => norm(o) === norm(s)) === i).slice(0, 2);
+        const uniqueLies = lies.filter(s => !used.has(`lie:${norm(s)}`))
+            .filter((s, i) => lies.findIndex(o => norm(o) === norm(s)) === i).slice(0, 2);
         if (uniqueLies.length < 2)
             continue;
         const options = shuffle([truth, ...uniqueLies]);
         if (new Set(options.map(norm)).size !== options.length)
             continue;
         used.add(norm(truth));
+        uniqueLies.forEach(l => used.add(`lie:${norm(l)}`));
         return {
             kind: 'multipleChoice',
             id,

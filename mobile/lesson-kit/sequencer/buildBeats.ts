@@ -42,16 +42,22 @@ export interface BeatBuildResult {
 
 const clean = (s: string) => s.replace(/\s+/g, ' ').trim();
 
-const STARTUP_LINE = /^\s*for your startup\b/i;
+const STARTUP_PREFIX = /^\s*for your startup\s*[:,\u2014\u2013-]?\s*/i;
+/** Keep the sentence, minus its "For your startup:" lead-in. */
+const stripStartup = (s: string) => {
+  const rest = s.replace(STARTUP_PREFIX, '');
+  return rest === s ? s : rest.charAt(0).toUpperCase() + rest.slice(1);
+};
 
-/** Drop "For your startup…" sentences unless the learner is building a startup. */
+/** Strip the "For your startup:" prefix unless the learner is building a startup. */
 export function filterForGoal(text: string, learningGoal?: string | null): string {
   if (learningGoal === 'build_startup') return text;
   return (text || '')
     .split(/\n/)
     .map(line =>
       splitSentences(line)
-        .filter(s => !STARTUP_LINE.test(s))
+        .map(stripStartup)
+        .filter(s => s.trim())
         .join(' '),
     )
     .filter((line, i, all) => line.trim() || (i > 0 && all[i - 1].trim()))
@@ -101,6 +107,7 @@ function checkShown(seen: string[], used: Set<string>, id: string): MultipleChoi
     const options = shuffle([truth, ...uniqueLies]);
     if (new Set(options.map(norm)).size !== options.length) continue;
     used.add(norm(truth));
+        uniqueLies.forEach(l => used.add(`lie:${norm(l)}`));
     return {
       kind: 'multipleChoice',
       id,

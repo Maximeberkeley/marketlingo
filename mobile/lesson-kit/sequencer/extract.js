@@ -37,7 +37,6 @@ export function standaloneQuantities(text) {
   const out = [];
   for (const m of (text || '').matchAll(QTY_RE)) {
     if (!m[2] && !m[4]) continue;
-    if (/[\w-]$/.test(m[1] || '') ) continue;
     out.push(m[3]);
   }
   return out;
