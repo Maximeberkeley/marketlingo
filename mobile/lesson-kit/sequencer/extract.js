@@ -30,6 +30,13 @@ export function shuffle(arr) {
 function numericSentences(text) {
     return sentences(text, 30, 170).filter(s => /\d/.test(s));
 }
+/** True when the headline has a number AND a later card (another slide) mentions it again. */
+function numberExplainedLater(headline, source, slides) {
+  const nums = (headline.match(/\d+(?:[.,]\d+)?/g) || []).filter(n => !/^(19|20)\d\d$/.test(n));
+  if (!nums.length) return false;
+  return slides.some(s => s !== source && nums.some(n => (s.body || '').includes(n)));
+}
+
 // ── Cold open ──────────────────────────────────────────────────────
 export function makeColdOpen(slides, id, eyebrow) {
     const candidates = slides.flatMap(slide => numericSentences(slide.body).map(headline => ({ headline, slide })));
@@ -41,7 +48,7 @@ export function makeColdOpen(slides, id, eyebrow) {
         id,
         eyebrow: eyebrow || 'Today in your market',
         headline: selected.headline,
-        kicker: "Here's why that number matters.",
+        kicker: numberExplainedLater(selected.headline, selected.slide, slides) ? "Here's why that number matters." : undefined,
         fullText: selected.slide.body,
         detailTitle: selected.slide.title,
         keyTerms: selected.slide.keyTerms,
