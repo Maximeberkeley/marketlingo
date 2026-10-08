@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -62,19 +62,8 @@ export function LessonComplete({
   const [step, setStep] = useState<'rewards' | 'intel'>('rewards');
   const [shown, setShown] = useState(0);
 
-  const counter = useRef(new Animated.Value(0)).current;
-  const [display, setDisplay] = useState(0);
-
   useEffect(() => {
-    const id = counter.addListener(({ value }) => setDisplay(Math.round(value)));
-    Animated.timing(counter, {
-      toValue: totalXp,
-      duration: 900,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start();
     playSound('celebration').catch(() => {});
-    return () => counter.removeListener(id);
   }, []);
 
   useEffect(() => {

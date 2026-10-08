@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -28,18 +28,8 @@ export function LessonComplete({ correct, total, baseXp, bestCombo = 0, heartsLe
     const totalXp = bonuses.reduce((sum, line) => sum + line.xp, 0);
     const [step, setStep] = useState('rewards');
     const [shown, setShown] = useState(0);
-    const counter = useRef(new Animated.Value(0)).current;
-    const [display, setDisplay] = useState(0);
     useEffect(() => {
-        const id = counter.addListener(({ value }) => setDisplay(Math.round(value)));
-        Animated.timing(counter, {
-            toValue: totalXp,
-            duration: 900,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: false,
-        }).start();
         playSound('celebration').catch(() => { });
-        return () => counter.removeListener(id);
     }, []);
     useEffect(() => {
         if (shown >= bonuses.length)
@@ -83,7 +73,7 @@ export function LessonComplete({ correct, total, baseXp, bestCombo = 0, heartsLe
       <Text style={styles.title}>{praise}</Text>
       {typeof streakDays === 'number' && streakDays > 0 ? (<Text style={styles.subtitle}>🔥 {streakDays}-day streak — come back tomorrow to keep it.</Text>) : (<Text style={styles.subtitle}>You just started a streak. Come back tomorrow to keep it.</Text>)}
 
-      <Text style={styles.xpBig}>+{display} XP</Text>
+      <Text style={styles.xpBig}>+{totalXp} XP</Text>
 
       <View style={styles.bonusList}>
         {bonuses.map((b, i) => (<View key={i} style={styles.bonusRow}>
