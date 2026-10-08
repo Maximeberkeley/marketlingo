@@ -31,8 +31,19 @@ function numericSentences(text) {
     return sentences(text, 30, 170).filter(s => /\d/.test(s));
 }
 /** True when the headline has a number AND a later card (another slide) mentions it again. */
+/** Standalone quantities only (%, currency, units, durations) — never digits inside names like Tier-1, 787, DO-178C. */
+const QTY_RE = /(^|[^\w-])([$€£])?(\d[\d,]*(?:\.\d+)?)(?![\w-]*-)\s*(%|percent\b|(?:million|billion|trillion|thousand|bn|[mk]|x|years?|months?|weeks?|days?|hours?|minutes?|seconds?|kg|km|tons?|tonnes?|miles?|kwh|mwh|gwh|mw|gw|kw)(?![\w-]))?/gi;
+export function standaloneQuantities(text) {
+  const out = [];
+  for (const m of (text || '').matchAll(QTY_RE)) {
+    if (!m[2] && !m[4]) continue;
+    out.push(m[3]);
+  }
+  return out;
+}
+
 function numberExplainedLater(headline, source, slides) {
-  const nums = (headline.match(/\d+(?:[.,]\d+)?/g) || []).filter(n => !/^(19|20)\d\d$/.test(n));
+  const nums = standaloneQuantities(headline).filter(n => !/^(19|20)\d\d$/.test(n));
   if (!nums.length) return false;
   return slides.some(s => s !== source && nums.some(n => (s.body || '').includes(n)));
 }

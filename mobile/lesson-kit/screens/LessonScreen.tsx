@@ -30,6 +30,7 @@ import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { AskLeoOverlay, LeoMessage } from '../../components/ai/AskLeoOverlay';
 import { storage } from '../../lib/storage';
+import { normalizedCopy } from '../cardPresentation';
 
 /** Flatten the current beat's visible text into a context string for Leo. */
 function exerciseContext(exercise?: Exercise): string {
@@ -271,13 +272,20 @@ export function LessonScreen({
     setShowExitPrompt(true);
   }, [confirmExit, finished, onExit]);
 
+  /** The feedback explanation already quotes the correct sentence; don't print it twice. */
+  const feedbackExplanation = exercise && 'explanation' in exercise ? normalizedCopy(exercise.explanation || '') : '';
+  const answerCopy = exercise && exercise.kind === 'multipleChoice' ? normalizedCopy(exercise.options[exercise.correctIndex] || '') : '';
+  const repeatsAnswer = Boolean(answerCopy && feedbackExplanation.includes(answerCopy));
+
   /** Only the current check's own explanation can supply automatic speech. */
   const leoCoach = useMemo(() => {
     if (phase !== 'feedback' || isInfo || !exercise || !('explanation' in exercise)) return null;
     const line = exercise.explanation?.trim();
     if (!line) return null;
+    // The footer already prints the explanation; a matching bubble would repeat it.
+    if (normalizedCopy(line) === feedbackExplanation) return null;
     return { line, mood: (state.isCorrect ? 'correct' : 'incorrect') as LeoMood };
-  }, [phase, isInfo, state.isCorrect, exercise]);
+  }, [phase, isInfo, state.isCorrect, exercise, feedbackExplanation]);
 
   const correctAnswerText = useMemo(() => {
 
@@ -382,7 +390,7 @@ export function LessonScreen({
           <FeedbackFooter
             isCorrect={state.isCorrect}
             explanation={'explanation' in exercise ? exercise.explanation : undefined}
-            correctAnswer={state.isCorrect ? undefined : correctAnswerText}
+            correctAnswer={state.isCorrect || repeatsAnswer ? undefined : correctAnswerText}
           />
           <TouchableOpacity
             style={[styles.leoPrompt, { borderColor: world.colors[0] + '55' }]}
