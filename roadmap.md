@@ -1,6 +1,7 @@
 # MarketLingo roadmap
 
 ## iPhone dossier writing
+- [ ] Add Cancel on all writing bars; close empty/unchanged Return without refocusing; remove blur-saving and verify local draft recovery in both sources.
 - [x] Preserve drafts, save on Return, and add a keyboard Save bar in both source versions.
 - [x] Grow and reveal editors above the keyboard; add tap-to-edit and swipe delete; polish text and progress animation.
 - [x] Verify draft recovery, Return, failed saves, editing/deletion and simulated section-six keyboard reveal in both source versions; pairs match.
