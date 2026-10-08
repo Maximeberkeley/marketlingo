@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { LessonScreen } from '../../lesson-kit/screens/LessonScreen';
 import { tokens } from '../../lesson-kit/theme/tokens';
@@ -194,6 +194,9 @@ export function LessonKitReader({
     [slideNumbers, onAddNote, onSaveInsight],
   );
 
+  // LessonScreen snapshots its queue on mount: wait for the writing default before mounting it.
+  if (!defaultSectionKey) return <View style={styles.opening}><ActivityIndicator color={tokens.color.accent} /></View>;
+
   return (
     <DeepDiveProvider stackId={stackId} learningGoal={learningGoal}>
       <LessonScreen
@@ -217,6 +220,7 @@ export function LessonKitReader({
 }
 
 const styles = StyleSheet.create({
+  opening: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   actions: { flexDirection: 'row', gap: tokens.space.md },
   action: {
     flex: 1,
