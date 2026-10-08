@@ -46,6 +46,8 @@ const isPassiveKind = (kind) => PASSIVE_KINDS.includes(kind);
 export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, renderExtraActions, doneLabel, streakDays, confirmExit = true, marketId, onSaveLeoAnswer, }) {
     const insets = useSafeAreaInsets();
     const [queue, setQueue] = useState(lesson.exercises);
+    const [cardSpace, setCardSpace] = useState(0);
+    const [measuredCard, setMeasuredCard] = useState(null);
     const [index, setIndex] = useState(0);
     const [maxIndexReached, setMaxIndexReached] = useState(0);
     const [phase, setPhase] = useState('answering');
@@ -77,6 +79,7 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
     const popAnim = useRef(new Animated.Value(0)).current;
     useEffect(() => {
         setQueue(lesson.exercises);
+        setMeasuredCard(null);
         setIndex(0);
         setPhase('answering');
         setState({ canCheck: false, isCorrect: false });
@@ -114,6 +117,24 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
         return () => animation.stop();
     }, [index, lesson.id, reduceMotion, enter]);
     const exercise = queue[index];
+    const combined = exercise?.kind === 'microInsight' && Boolean(exercise.mergedCards?.length);
+    const combinedFits = measuredCard?.id === exercise?.id && cardSpace > 0 && measuredCard.height <= cardSpace;
+    useEffect(() => {
+        if (!combined || !exercise || measuredCard?.id !== exercise.id || cardSpace <= 0 || measuredCard.height <= cardSpace)
+            return;
+        // Native layout includes real text wrapping, font scaling, panels and controls.
+        // Restore both originals before showing an overflowing combined card.
+        setQueue(current => {
+            const position = current.findIndex(card => card.id === exercise.id);
+            if (position < 0)
+                return current;
+            return [...current.slice(0, position), ...(exercise.kind === 'microInsight' ? exercise.mergedCards || [exercise] : [exercise]), ...current.slice(position + 1)];
+        });
+        setMeasuredCard(null);
+    }, [combined, exercise, measuredCard, cardSpace]);
+    const sourceIndex = lesson.exercises.findIndex(card => card.id === exercise?.id ||
+        (card.kind === 'microInsight' && card.mergedCards?.some(original => original.id === exercise?.id)));
+    const actionIndex = sourceIndex >= 0 ? sourceIndex : index;
     const isInfo = isPassiveKind(exercise?.kind);
     const total = queue.length;
     const progress = total > 0 ? (index + (phase === 'feedback' ? 1 : 0)) / total : 0;
@@ -253,12 +274,12 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
                 timeSpentSeconds,
             })}/>);
     }
-    const buttonVariant = phase === 'feedback' || isInfo || state.canCheck ? 'primary' : 'disabled';
+    const buttonVariant = combined && !combinedFits ? 'disabled' : phase === 'feedback' || isInfo || state.canCheck ? 'primary' : 'disabled';
     const buttonLabel = isInfo ? 'Continue' : phase === 'answering' ? 'Check' : 'Continue';
     return (<View style={[styles.root, { paddingTop: insets.top }]}>
       <LessonHeader progress={progress} onExit={handleExitPress} onAskLeo={() => openLeo()} onMore={renderExtraActions ? () => setShowActions(value => !value) : undefined} menuOpen={showActions}/>
 
-      {!!pop && (<Animated.View pointerEvents="none" style={[
+      {!!pop && (<Animated.View key={exercise.id} pointerEvents="none" style={[
                 styles.pop,
                 {
                     opacity: popAnim.interpolate({ inputRange: [0, 0.15, 1], outputRange: [0, 1, 0] }),
@@ -270,9 +291,10 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
           <Text style={styles.popText}>{pop}</Text>
         </Animated.View>)}
 
-      <ScrollView ref={scrollRef} style={styles.scroll} contentContainerStyle={[styles.content, exercise.kind === 'coldOpen' && styles.coverContent]} keyboardShouldPersistTaps="handled">
+      <ScrollView ref={scrollRef} style={styles.scroll} onLayout={event => setCardSpace(Math.max(0, event.nativeEvent.layout.height - 48))} contentContainerStyle={[styles.content, exercise.kind === 'coldOpen' && styles.coverContent]} keyboardShouldPersistTaps="handled">
         {exercise.kind !== 'coldOpen' && <View style={styles.upperSpace}/>}
-        <Animated.View style={[styles.beat, exercise.kind === 'coldOpen' && styles.fullBleed, { opacity: enter, transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]}>
+        <Animated.View onLayout={event => { if (combined)
+        setMeasuredCard({ id: exercise.id, height: event.nativeEvent.layout.height }); }} style={[styles.beat, exercise.kind === 'coldOpen' && styles.fullBleed, { opacity: combined && !combinedFits ? 0 : enter, transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]}>
           {exercise.kind === 'sayIt'
             ? <SayIt key={exercise.id} exercise={exercise} marketId={marketId} onDone={continueLesson}/>
             : renderExercise(exercise, phase, handleChange)}
@@ -291,7 +313,7 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
         <View style={styles.menuLayer}>
           <TouchableOpacity style={StyleSheet.absoluteFillObject} activeOpacity={1} onPress={() => setShowActions(false)} accessibilityRole="button" accessibilityLabel="Dismiss lesson actions"/>
           <View style={[styles.actionsMenu, { marginTop: insets.top + 64 }]}>
-            {renderExtraActions?.(index, () => setShowActions(false))}
+            {renderExtraActions?.(actionIndex, () => setShowActions(false), exercise)}
           </View>
         </View>
       </Modal>
@@ -330,7 +352,7 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
         </View>
       </Modal>
       {/* Ask Leo — mid-lesson questions */}
-      <AskLeoOverlay visible={showAskLeo} onClose={() => { setShowAskLeo(false); setLeoAutoAsk(null); }} lessonContext={`Lesson: ${lesson.title}\nWorld: ${world.worldName}\nCurrent beat: ${exerciseContext(exercise)}`} contextLabel={exerciseContext(exercise).split('\n')[0] || lesson.title} accentColor={world.colors[0]} messages={leoMessages} onMessagesChange={setLeoMessages} autoAsk={leoAutoAsk} onSaveAnswer={onSaveLeoAnswer ? text => onSaveLeoAnswer(text, index) : undefined}/>
+      <AskLeoOverlay visible={showAskLeo} onClose={() => { setShowAskLeo(false); setLeoAutoAsk(null); }} lessonContext={`Lesson: ${lesson.title}\nWorld: ${world.worldName}\nCurrent beat: ${exerciseContext(exercise)}`} contextLabel={exerciseContext(exercise).split('\n')[0] || lesson.title} accentColor={world.colors[0]} messages={leoMessages} onMessagesChange={setLeoMessages} autoAsk={leoAutoAsk} onSaveAnswer={onSaveLeoAnswer ? text => onSaveLeoAnswer(text, actionIndex, exercise) : undefined}/>
     </View>);
 }
 function renderExercise(exercise, phase, onChange) {

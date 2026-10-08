@@ -92,8 +92,8 @@ export function LessonKitReader({ stackTitle, slides, onClose, onComplete, onSav
             slideNumbers: [...baseSlideNumbers, last],
         };
     }, [baseLesson, baseSlideNumbers, authoredLesson, metadata, dayNumber, learningGoal, slides, defaultSectionKey]);
-    const extraActions = useCallback((exerciseIndex, dismiss) => {
-        const slideNumber = slideNumbers[exerciseIndex] ?? 1;
+    const extraActions = useCallback((exerciseIndex, dismiss, exercise) => {
+        const slideNumber = (exercise?.kind === 'microInsight' ? exercise.sourceSlideNumber : undefined) ?? slideNumbers[exerciseIndex] ?? 1;
         return (<View style={styles.actions}>
           <TouchableOpacity style={styles.action} onPress={() => { dismiss(); onAddNote(slideNumber); }}>
             <Feather name="edit-3" size={16} color={tokens.color.textSecondary}/>
@@ -109,7 +109,7 @@ export function LessonKitReader({ stackTitle, slides, onClose, onComplete, onSav
     if (!defaultSectionKey)
         return <View style={styles.opening}><ActivityIndicator color={tokens.color.accent}/></View>;
     return (<DeepDiveProvider stackId={stackId} learningGoal={learningGoal}>
-      <LessonScreen lesson={lesson} marketId={marketId} onExit={onClose} onFinish={({ timeSpentSeconds, correct, total }) => onComplete(isReview, timeSpentSeconds, total > 0 ? Math.round((correct / total) * 100) : 100)} renderExtraActions={extraActions} onSaveLeoAnswer={(text, exerciseIndex) => onAddNote(slideNumbers[exerciseIndex] ?? 1, `Leo explained: ${text}`)} streakDays={streakDays} confirmExit={!isReview}/>
+      <LessonScreen lesson={lesson} marketId={marketId} onExit={onClose} onFinish={({ timeSpentSeconds, correct, total }) => onComplete(isReview, timeSpentSeconds, total > 0 ? Math.round((correct / total) * 100) : 100)} renderExtraActions={extraActions} onSaveLeoAnswer={(text, exerciseIndex, exercise) => onAddNote((exercise?.kind === 'microInsight' ? exercise.sourceSlideNumber : undefined) ?? slideNumbers[exerciseIndex] ?? 1, `Leo explained: ${text}`)} streakDays={streakDays} confirmExit={!isReview}/>
     </DeepDiveProvider>);
 }
 const styles = StyleSheet.create({
