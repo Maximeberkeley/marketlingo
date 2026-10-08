@@ -5,3 +5,4 @@
 - Load optional native notification bridges after the first screen mounts and contain failures, because notification setup must never block iOS launch.
 - Keep the website's compact phone landing separate from the larger-screen presentation while sharing the real demo and download actions, because small screens need editorial hierarchy without duplicating behavior.
 - Keep the website demo aligned with the phone’s universal three-concept AI lesson while showing preview-only rewards, because web visitors must not mistake a preview for credited app progress.
+- Phone first-open order is Industry → Goal → Level → sign-up → walkthrough, with guest choices kept on-device and attached after sign-up, because new users must see their path before creating an account.
