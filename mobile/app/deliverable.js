@@ -283,7 +283,7 @@ export default function DeliverableScreen() {
             const flashing = justFilled === section.key;
             const renderEditor = () => (<View style={styles.composer} onLayout={() => setTimeout(revealEditor, 60)}>
               <TextInput ref={ref => { inputRefs.current[section.key] = ref; }} style={[styles.input, { height: inputHeights[section.key] ?? MIN_INPUT_HEIGHT }]} value={draft} onChangeText={value => { if (!savingRef.current)
-                setDraft(section.key, value); }} editable={savingKey === null} placeholder="One sentence is enough…" placeholderTextColor={COLORS.textMuted} multiline autoCapitalize="sentences" returnKeyType="done" submitBehavior="submit" blurOnSubmit={false} inputAccessoryViewID={Platform.OS === 'ios' ? ACCESSORY_ID : undefined} scrollEnabled={(inputHeights[section.key] ?? MIN_INPUT_HEIGHT) >= MAX_INPUT_HEIGHT} onContentSizeChange={event => {
+                setDraft(section.key, value); }} placeholder="One sentence is enough…" placeholderTextColor={COLORS.textMuted} multiline autoCapitalize="sentences" returnKeyType="done" submitBehavior="submit" blurOnSubmit={false} inputAccessoryViewID={Platform.OS === 'ios' ? ACCESSORY_ID : undefined} scrollEnabled={(inputHeights[section.key] ?? MIN_INPUT_HEIGHT) >= MAX_INPUT_HEIGHT} onContentSizeChange={event => {
                     const height = Math.min(MAX_INPUT_HEIGHT, Math.max(MIN_INPUT_HEIGHT, Math.ceil(event.nativeEvent.contentSize.height)));
                     setInputHeights(prev => prev[section.key] === height ? prev : { ...prev, [section.key]: height });
                     setTimeout(revealEditor, 60);
