@@ -333,6 +333,11 @@ export default function HomeScreen() {
     return () => setCourseFocused(false);
   }, []));
 
+  // Dossier lines are written in lessons and on the dossier screen; refresh the count on return.
+  const reloadDossier = deliverable.reload;
+  useFocusEffect(useCallback(() => { void reloadDossier(); }, [reloadDossier]));
+  useEffect(() => { if (!session.showReader) void reloadDossier(); }, [session.showReader, reloadDossier]);
+
   // Crossing local midnight invalidates yesterday's completion even if the screen stays open.
   const clockDay = localDateString(clockNow);
   const completedOnClockDay = Boolean(dailyCompletion?.lesson_completed && dailyCompletion.completion_date === clockDay);
