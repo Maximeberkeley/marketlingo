@@ -10,6 +10,7 @@
  * consolidation days and in each lesson's "Say it" step. Completion counts only
  * sections holding at least one learner-written line.
  */
+import { standaloneQuantities } from '../lesson-kit/sequencer/extract';
 export type DeliverableGoal = 'career' | 'build_startup' | 'invest' | 'curiosity';
 
 export interface DeliverableSection {
@@ -163,20 +164,28 @@ export function slotStatus(lineCount: number): 'empty' | 'filled' | 'strong' {
 // Lesson hints select a writing prompt; they never write a learner's line.
 // ---------------------------------------------------------------------------
 
-export const SECTION_HINTS: Record<string, RegExp> = {
+/** A hint is a regex, or a function when only real logic can judge the match. */
+export type SectionHint = RegExp | ((text: string) => boolean);
+
+export const SECTION_HINTS: Record<string, SectionHint> = {
   how_money_moves: /\b(pay|pays|paid|revenue|margin|cash|price|cost|contract|fee)s?\b/i,
   money: /\b(pay|pays|paid|revenue|margin|cash|price|cost|contract|fee)s?\b/i,
   chain: /\b(supplier|supply|chain|integrat|deliver|build|assembl)/i,
   drivers: /\b(because|drives|leads to|so that|which means)\b/i,
-  players: /\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)?\b.*\b(controls|owns|leads|holds|dominates|power)\b/,
+  players: /\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)?\b.*\b(controls?|owns|leads|holds|dominates|power|decides|gatekeep(?:s)?)\b/,
   incumbents: /\b(incumbent|large|primes?|big players|established|slow)\b/i,
   who_hurts: /\b(lose|loses|wait|delay|risk|pain|cost)s?\b/i,
-  numbers: /\d/,
+  // Standalone quantities only (%, $, units, durations) — never digits inside names like Tier-1 or 787.
+  numbers: (text: string) => standaloneQuantities(text).length > 0,
   risk: /\b(risk|rule|regulat|certif|fail|delay|approval)/i,
   rules: /\b(rule|regulat|certif|law|approval|standard)/i,
   why_now: /\b(now|recent|since|20(2\d)|new)\b/i,
   frontier: /\b(next|future|will|emerging|new)\b/i,
 };
+
+function hintMatches(hint: SectionHint, text: string): boolean {
+  return typeof hint === 'function' ? hint(text) : hint.test(text);
+}
 
 /** Prefer relevant unwritten sections; a lesson title weighs more than incidental body words. */
 export function sectionForLesson(
@@ -186,7 +195,11 @@ export function sectionForLesson(
 ): DeliverableSection {
   const scored = template.sections.map(section => {
     const hint = SECTION_HINTS[section.key];
-    const occurrences = (text: string) => hint ? (text.match(new RegExp(hint.source, `${hint.flags}g`)) ?? []).length : 0;
+    const occurrences = (text: string) => {
+      if (!hint) return 0;
+      if (typeof hint === 'function') return hint(text) ? 1 : 0;
+      return (text.match(new RegExp(hint.source, `${hint.flags}g`)) ?? []).length;
+    };
     const score = slides.reduce((sum, slide) => sum + occurrences(slide.title ?? '') * 3 + occurrences(slide.body), 0);
     return { section, score };
   }).filter(item => item.score > 0).sort((a, b) => b.score - a.score);
@@ -230,7 +243,7 @@ export function autoDossierLine(
   const sentences = lessonSentences(slides).filter(s => !existing.has(s));
   if (!sentences.length) return null;
   const hint = SECTION_HINTS[section.key];
-  const match = hint ? sentences.find(s => hint.test(s)) : undefined;
+  const match = hint ? sentences.find(s => hintMatches(hint, s)) : undefined;
   // Fallback: the lesson's closing idea (the takeaway sits at the end).
   return { sectionKey: section.key, content: match ?? sentences[sentences.length - 1] };
 }
