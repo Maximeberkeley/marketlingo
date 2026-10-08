@@ -1,5 +1,11 @@
 # MarketLingo roadmap
 
+## iPhone dossier writing
+- [x] Preserve drafts, save on Return, and add a keyboard Save bar in both source versions.
+- [x] Grow and reveal editors above the keyboard; add tap-to-edit and swipe delete; polish text and progress animation.
+- [x] Verify draft recovery, Return, failed saves, editing/deletion and simulated section-six keyboard reveal in both source versions; pairs match.
+- [ ] Validate sections 5/6 with the actual iOS keyboard and swipe gestures (blocked: no iOS simulator/device in this environment; needs a phone build).
+
 ## Dossier follow-up
 - [x] Match Say it to lesson content, keep section switching and a compact Skip link.
 - [x] Block unchanged suggestions and open only the requested dossier editor, with correct focus and straight dividers.

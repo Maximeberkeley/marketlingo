@@ -7,10 +7,13 @@
  * faded as a starting point and never count as written.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Share, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
+import { ActivityIndicator, Alert, Animated, InputAccessoryView, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Share, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { useAuth } from '../hooks/useAuth';
 import { COLORS, TYPE } from '../lib/constants';
 import { getMarketName } from '../lib/markets';
 import { useSelectedMarket } from '../hooks/useSelectedMarket';
@@ -20,8 +23,21 @@ import { consolidationSection, isConsolidationDay, sameDossierText } from '../li
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { log } from '../lib/logger';
+const ACCESSORY_ID = 'dossier-writing';
+const MIN_INPUT_HEIGHT = 80;
+const MAX_INPUT_HEIGHT = 180;
+function ProgressSegment({ filled }) {
+    const amount = useRef(new Animated.Value(filled ? 1 : 0)).current;
+    useEffect(() => {
+        const animation = Animated.timing(amount, { toValue: filled ? 1 : 0, duration: 320, useNativeDriver: false });
+        animation.start();
+        return () => animation.stop();
+    }, [filled, amount]);
+    return <View style={styles.segment}><Animated.View style={[styles.segmentFill, { width: amount.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) }]}/></View>;
+}
 export default function DeliverableScreen() {
     const insets = useSafeAreaInsets();
+    const { user } = useAuth();
     const params = useLocalSearchParams();
     const { marketId, loading: marketLoading } = useSelectedMarket();
     const { progress, availableDay } = useUserProgress(marketId);
@@ -30,81 +46,188 @@ export default function DeliverableScreen() {
     const marketName = getMarketName(marketId);
     const day = availableDay || 1;
     const weeklyPrompt = useMemo(() => (isConsolidationDay(day) ? consolidationSection(deliverable.template, day) : null), [day, deliverable.template]);
-    /** Draft text per section. */
-    const [drafts, setDrafts] = useState({});
-    /** Suggestion id the draft was started from, per section (replaced on save). */
-    const [startedFrom, setStartedFrom] = useState({});
-    /** Only the section the learner opened has a text field. */
-    const [composing, setComposing] = useState(null);
+    const [snapshot, setSnapshot] = useState({ drafts: {}, startedFrom: {}, editing: {}, composing: null });
+    const snapshotRef = useRef(snapshot);
+    const { drafts, startedFrom, editing, composing } = snapshot;
+    const [draftsReady, setDraftsReady] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [savingKey, setSavingKey] = useState(null);
-    /** Section that just received a line — drives the brief highlight. */
+    const savingRef = useRef(false);
+    const leavingRef = useRef(false);
     const [justFilled, setJustFilled] = useState(null);
+    const [inputHeights, setInputHeights] = useState({});
     const scrollRef = useRef(null);
-    const sectionY = useRef({});
+    const scrollY = useRef(0);
+    const keyboardTop = useRef(null);
     const inputRefs = useRef({});
     const openedParam = useRef(null);
-    const busy = marketLoading || deliverable.loading;
+    const writeQueue = useRef(Promise.resolve());
+    const storageKey = user?.id && marketId ? `dossier-draft:${user.id}:${marketId}:${deliverable.template.goal}` : null;
     const { template, bySection, filledSections } = deliverable;
+    const busy = marketLoading || deliverable.loading || !draftsReady;
     const total = template.sections.length;
+    const persist = (next) => {
+        if (!storageKey)
+            return;
+        const key = storageKey;
+        writeQueue.current = writeQueue.current.then(() => AsyncStorage.setItem(key, JSON.stringify(next)))
+            .catch(error => { log.warn('[Dossier] Draft storage failed:', error); });
+    };
+    const changeSnapshot = (change) => {
+        const next = change(snapshotRef.current);
+        snapshotRef.current = next;
+        setSnapshot(next);
+        persist(next);
+    };
+    useEffect(() => {
+        leavingRef.current = false;
+        return () => { leavingRef.current = true; };
+    }, []);
+    useEffect(() => {
+        let active = true;
+        setDraftsReady(false);
+        const restore = async () => {
+            await writeQueue.current;
+            try {
+                const raw = storageKey ? await AsyncStorage.getItem(storageKey) : null;
+                const saved = raw ? JSON.parse(raw) : null;
+                const next = {
+                    drafts: saved?.drafts ?? {}, startedFrom: saved?.startedFrom ?? {},
+                    editing: saved?.editing ?? {}, composing: saved?.composing ?? null,
+                };
+                if (active) {
+                    snapshotRef.current = next;
+                    setSnapshot(next);
+                }
+            }
+            catch (error) {
+                log.warn('[Dossier] Draft restore failed:', error);
+            }
+            if (active)
+                setDraftsReady(true);
+        };
+        void restore();
+        return () => { active = false; };
+    }, [storageKey]);
+    // Measure the actual editor after the keyboard and the growing field settle.
+    const revealEditor = () => {
+        const key = snapshotRef.current.composing;
+        if (!key || keyboardTop.current === null)
+            return;
+        inputRefs.current[key]?.measureInWindow((_x, y, _width, height) => {
+            const bottom = (keyboardTop.current ?? 0) - (Platform.OS === 'ios' ? 56 : 0) - 16;
+            const overflow = y + height - bottom;
+            if (overflow > 0)
+                scrollRef.current?.scrollTo({ y: Math.max(0, scrollY.current + overflow), animated: true });
+        });
+    };
+    useEffect(() => {
+        const shown = Keyboard.addListener('keyboardDidShow', event => {
+            keyboardTop.current = event.endCoordinates.screenY;
+            setTimeout(revealEditor, 100);
+        });
+        const changed = Keyboard.addListener('keyboardDidChangeFrame', event => {
+            keyboardTop.current = event.endCoordinates.screenY;
+            setTimeout(revealEditor, 100);
+        });
+        const hidden = Keyboard.addListener('keyboardDidHide', () => { keyboardTop.current = null; });
+        return () => { shown.remove(); changed.remove(); hidden.remove(); };
+    }, []);
     useEffect(() => {
         if (busy || !params.section || openedParam.current === params.section)
             return;
         if (!template.sections.some(section => section.key === params.section))
             return;
         openedParam.current = params.section;
-        setComposing(params.section);
+        changeSnapshot(prev => ({ ...prev, composing: params.section ?? null }));
     }, [busy, params.section, template.sections]);
     useEffect(() => {
         if (!composing || busy)
             return;
-        const timer = setTimeout(() => {
-            const y = sectionY.current[composing];
-            if (typeof y === 'number')
-                scrollRef.current?.scrollTo({ y: Math.max(0, y - 24), animated: true });
-            inputRefs.current[composing]?.focus();
-        }, 350);
+        const timer = setTimeout(() => { inputRefs.current[composing]?.focus(); revealEditor(); }, 350);
         return () => clearTimeout(timer);
     }, [composing, busy]);
     const learnerLineCount = deliverable.learnerEntries.length;
-    const close = () => { Keyboard.dismiss(); router.back(); };
-    const setDraft = (key, value) => setDrafts(prev => ({ ...prev, [key]: value }));
-    const focusSection = (key) => {
-        setComposing(key);
-        const y = sectionY.current[key];
-        if (typeof y === 'number')
-            scrollRef.current?.scrollTo({ y: Math.max(0, y - 24), animated: true });
-        setTimeout(() => inputRefs.current[key]?.focus(), 350);
+    const close = async () => {
+        if (savingRef.current)
+            return;
+        leavingRef.current = true;
+        persist(snapshotRef.current);
+        await writeQueue.current;
+        router.back();
+    };
+    const setDraft = (key, value) => changeSnapshot(prev => ({ ...prev, drafts: { ...prev.drafts, [key]: value } }));
+    const focusSection = (key) => changeSnapshot(prev => ({ ...prev, composing: key }));
+    const editLine = (key, id, content) => {
+        const current = snapshotRef.current;
+        if (current.drafts[key]?.trim() && current.editing[key] !== id) {
+            focusSection(key);
+            Alert.alert('Finish your draft first', 'Save this line before editing another.');
+            return;
+        }
+        triggerHaptic('light');
+        changeSnapshot(prev => ({ ...prev, composing: key,
+            drafts: { ...prev.drafts, [key]: prev.editing[key] === id ? prev.drafts[key] : content },
+            editing: { ...prev.editing, [key]: id }, startedFrom: { ...prev.startedFrom, [key]: '' },
+        }));
     };
     const save = async (key) => {
-        const text = (drafts[key] ?? '').trim();
-        const suggestionId = startedFrom[key];
+        const current = snapshotRef.current;
+        const text = (current.drafts[key] ?? '').trim();
+        const suggestionId = current.startedFrom[key];
         const original = deliverable.entries.find(entry => entry.id === suggestionId);
-        if (text.length < 3 || savingKey || (original && sameDossierText(text, original.content)))
+        if (text.length < 3 || savingRef.current || (original && sameDossierText(text, original.content))) {
+            if (!leavingRef.current)
+                inputRefs.current[key]?.focus();
             return;
+        }
+        savingRef.current = true;
         setSavingKey(key);
         const wasEmpty = (bySection[key]?.length ?? 0) === 0;
-        const ok = suggestionId
-            ? await deliverable.replaceSuggestion(suggestionId, key, text, day)
-            : await deliverable.addLine(key, text, day);
+        const ok = current.editing[key]
+            ? await deliverable.updateLine(current.editing[key], text)
+            : suggestionId ? await deliverable.replaceSuggestion(suggestionId, key, text, day)
+                : await deliverable.addLine(key, text, day);
+        savingRef.current = false;
         setSavingKey(null);
-        if (!ok)
+        if (!ok) {
+            Alert.alert('Line not saved', 'Your draft is safe. Please try saving again.');
+            inputRefs.current[key]?.focus();
             return;
-        setDraft(key, '');
-        setStartedFrom(prev => { const next = { ...prev }; delete next[key]; return next; });
-        setComposing(null);
-        Keyboard.dismiss();
+        }
+        changeSnapshot(prev => ({ ...prev, composing: prev.composing === key ? null : prev.composing,
+            drafts: { ...prev.drafts, [key]: '' }, startedFrom: { ...prev.startedFrom, [key]: '' }, editing: { ...prev.editing, [key]: '' },
+        }));
+        if (!snapshotRef.current.composing)
+            Keyboard.dismiss();
         setJustFilled(key);
         setTimeout(() => setJustFilled(null), 2200);
-        if (wasEmpty) {
-            triggerHaptic('success');
-            playSound('unlock').catch(() => { });
-        }
-        else {
-            triggerHaptic('light');
-            playSound('xpEarn').catch(() => { });
-        }
+        triggerHaptic(wasEmpty ? 'success' : 'light');
+        playSound(wasEmpty ? 'unlock' : 'xpEarn').catch(() => { });
     };
+    const deleteLine = async (id, key) => {
+        const ok = await deliverable.removeLine(id);
+        if (!ok) {
+            Alert.alert('Line not deleted', 'Please try again.');
+            return;
+        }
+        triggerHaptic('light');
+        if (snapshotRef.current.editing[key] === id)
+            changeSnapshot(prev => ({ ...prev,
+                editing: { ...prev.editing, [key]: '' }, drafts: { ...prev.drafts, [key]: '' },
+            }));
+    };
+    const activeSection = template.sections.find(section => section.key === composing);
+    const activeOriginal = deliverable.entries.find(entry => entry.id === startedFrom[composing ?? '']);
+    const activeDraft = drafts[composing ?? ''] ?? '';
+    const saveDisabled = activeDraft.trim().length < 3 || savingKey !== null || !!(activeOriginal && sameDossierText(activeDraft, activeOriginal.content));
+    const saveBar = <View style={styles.accessoryBar}>
+    <Text style={styles.accessoryTitle} numberOfLines={1}>{activeSection?.title ?? ''}</Text>
+    <TouchableOpacity accessibilityRole="button" accessibilityLabel="Save dossier line" style={[styles.accessorySave, saveDisabled && styles.saveBtnOff]} disabled={saveDisabled} onPress={() => { if (composing)
+        void save(composing); }}>
+      <Text style={styles.saveText}>{savingKey ? 'Saving…' : 'Save'}</Text>
+    </TouchableOpacity>
+  </View>;
     const share = async () => {
         triggerHaptic('light');
         try {
@@ -122,7 +245,7 @@ export default function DeliverableScreen() {
     }
     const firstEmpty = template.sections.find(section => (bySection[section.key]?.length ?? 0) === 0) ?? null;
     return (<KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView ref={scrollRef} style={styles.fill} contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 40 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+      <ScrollView ref={scrollRef} style={styles.fill} contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + (composing ? 240 : 40) }} keyboardShouldPersistTaps="always" keyboardDismissMode="none" onScroll={event => { scrollY.current = event.nativeEvent.contentOffset.y; }} scrollEventThrottle={16} onLayout={revealEditor} showsVerticalScrollIndicator={false}>
         <View style={styles.headerRow}>
           <TouchableOpacity onPress={close} hitSlop={14} style={styles.backBtn} accessibilityLabel="Back">
             <Feather name="chevron-left" size={24} color={COLORS.textPrimary}/>
@@ -138,7 +261,7 @@ export default function DeliverableScreen() {
           <Text style={styles.title}>{template.title}</Text>
           <Text style={styles.count}>{`${filledSections} of ${total} sections written by you`}</Text>
           <View style={styles.segments}>
-            {template.sections.map(section => (<View key={section.key} style={[styles.segment, (bySection[section.key]?.length ?? 0) > 0 && styles.segmentOn]}/>))}
+            {template.sections.map(section => (<ProgressSegment key={section.key} filled={(bySection[section.key]?.length ?? 0) > 0}/>))}
           </View>
         </View>
 
@@ -157,25 +280,38 @@ export default function DeliverableScreen() {
             const showField = composing === section.key;
             const original = deliverable.entries.find(entry => entry.id === startedFrom[section.key]);
             const unchangedSuggestion = !!original && sameDossierText(draft, original.content);
-            const saveDisabled = draft.trim().length < 3 || unchangedSuggestion || savingKey !== null;
             const flashing = justFilled === section.key;
-            return (<View key={section.key} onLayout={e => { sectionY.current[section.key] = e.nativeEvent.layout.y; }} style={[styles.section, index > 0 && styles.divider, flashing && styles.sectionFlash]}>
+            const renderEditor = () => (<View style={styles.composer} onLayout={() => setTimeout(revealEditor, 60)}>
+              <TextInput ref={ref => { inputRefs.current[section.key] = ref; }} style={[styles.input, { height: inputHeights[section.key] ?? MIN_INPUT_HEIGHT }]} value={draft} onChangeText={value => { if (!savingRef.current)
+                setDraft(section.key, value); }} placeholder="One sentence is enough…" placeholderTextColor={COLORS.textMuted} multiline autoCapitalize="sentences" returnKeyType="done" submitBehavior="submit" blurOnSubmit={false} inputAccessoryViewID={Platform.OS === 'ios' ? ACCESSORY_ID : undefined} scrollEnabled={(inputHeights[section.key] ?? MIN_INPUT_HEIGHT) >= MAX_INPUT_HEIGHT} onContentSizeChange={event => {
+                    const height = Math.min(MAX_INPUT_HEIGHT, Math.max(MIN_INPUT_HEIGHT, Math.ceil(event.nativeEvent.contentSize.height)));
+                    setInputHeights(prev => prev[section.key] === height ? prev : { ...prev, [section.key]: height });
+                    setTimeout(revealEditor, 60);
+                }} onFocus={() => setTimeout(revealEditor, 80)} onSubmitEditing={() => void save(section.key)} onBlur={() => {
+                    setTimeout(() => {
+                        if (!leavingRef.current && snapshotRef.current.composing === section.key && !savingRef.current)
+                            void save(section.key);
+                    }, 0);
+                }}/>
+              {unchangedSuggestion ? <Text style={styles.rewriteHint}>Put it in your own words first.</Text> : null}
+            </View>);
+            return (<View key={section.key} style={[styles.section, index > 0 && styles.divider, flashing && styles.sectionFlash]}>
               <Text style={styles.sectionHead}>
-                <Text style={styles.sectionNum}>{`${String(index + 1).padStart(2, '0')}  `}</Text>
+                <Text style={[styles.sectionNum, !empty && styles.sectionNumWritten]}>{`${String(index + 1).padStart(2, '0')}  `}</Text>
                 {section.title}
               </Text>
 
               {empty ? <Text style={styles.prompt}>{section.prompt}</Text> : null}
 
-              {own.map(entry => (<TouchableOpacity key={entry.id} activeOpacity={1} delayLongPress={350} onLongPress={() => { triggerHaptic('light'); setEditMode(true); }} style={styles.line}>
-                  <View style={styles.fill}>
-                    <Text style={styles.lineText}>{entry.content}</Text>
-                    {entry.dayNumber ? <Text style={styles.lineDay}>{`Day ${entry.dayNumber}`}</Text> : null}
+              {own.map(entry => (<Swipeable key={entry.id} overshootRight={false} rightThreshold={40} renderRightActions={() => <TouchableOpacity style={styles.deleteAction} accessibilityLabel="Delete line" onPress={() => void deleteLine(entry.id, section.key)}><Feather name="trash-2" size={20} color={COLORS.textOnAccent}/></TouchableOpacity>}>
+                  <View style={styles.line}>
+                    {showField && editing[section.key] === entry.id ? renderEditor() : (<TouchableOpacity style={styles.fill} activeOpacity={0.8} accessibilityLabel="Edit dossier line" onPress={() => editLine(section.key, entry.id, entry.content)} onLongPress={() => setEditMode(true)}>
+                        <Text style={styles.lineText}>{entry.content}</Text>
+                        {entry.dayNumber ? <Text style={styles.lineDay}>{`Day ${entry.dayNumber}`}</Text> : null}
+                      </TouchableOpacity>)}
+                    {editMode ? <TouchableOpacity hitSlop={10} accessibilityLabel="Delete line" onPress={() => void deleteLine(entry.id, section.key)}><Feather name="trash-2" size={15} color={COLORS.textMuted}/></TouchableOpacity> : null}
                   </View>
-                  {editMode ? (<TouchableOpacity onPress={() => { triggerHaptic('light'); deliverable.removeLine(entry.id); }} hitSlop={10} accessibilityLabel="Delete line">
-                      <Feather name="trash-2" size={15} color={COLORS.textMuted}/>
-                    </TouchableOpacity>) : null}
-                </TouchableOpacity>))}
+                </Swipeable>))}
 
               {empty && suggestion ? (<View style={styles.suggestion}>
                   <Text style={styles.suggestionText}>
@@ -184,21 +320,17 @@ export default function DeliverableScreen() {
                   </Text>
                   <TouchableOpacity hitSlop={8} onPress={() => {
                         triggerHaptic('light');
-                        setDraft(section.key, suggestion.content);
-                        setStartedFrom(prev => ({ ...prev, [section.key]: suggestion.id }));
-                        focusSection(section.key);
+                        changeSnapshot(prev => ({ ...prev, composing: section.key,
+                            drafts: { ...prev.drafts, [section.key]: suggestion.content },
+                            startedFrom: { ...prev.startedFrom, [section.key]: suggestion.id },
+                            editing: { ...prev.editing, [section.key]: '' },
+                        }));
                     }}>
                     <Text style={styles.link}>Start from this</Text>
                   </TouchableOpacity>
                 </View>) : null}
 
-              {showField ? (<View style={styles.composer}>
-                  <TextInput ref={ref => { inputRefs.current[section.key] = ref; }} style={styles.input} value={draft} onChangeText={value => setDraft(section.key, value)} placeholder="Write a line…" placeholderTextColor={COLORS.textMuted} multiline blurOnSubmit/>
-                  {unchangedSuggestion ? <Text style={styles.rewriteHint}>Put it in your own words first.</Text> : null}
-                  {draft.trim().length > 0 ? (<TouchableOpacity style={[styles.saveBtn, saveDisabled && styles.saveBtnOff]} disabled={saveDisabled} onPress={() => save(section.key)} activeOpacity={0.9}>
-                      <Text style={styles.saveText}>{savingKey === section.key ? 'Saving…' : 'Save'}</Text>
-                    </TouchableOpacity>) : null}
-                </View>) : (<TouchableOpacity hitSlop={8} onPress={() => focusSection(section.key)}>
+              {showField ? (editing[section.key] ? null : renderEditor()) : (<TouchableOpacity hitSlop={8} onPress={() => focusSection(section.key)}>
                   <Text style={styles.addMore}>{empty ? 'Write' : '+ Add a line'}</Text>
                 </TouchableOpacity>)}
             </View>);
@@ -221,6 +353,8 @@ export default function DeliverableScreen() {
           <Text style={styles.footNote}>Private to you.</Text>
         </View>
       </ScrollView>
+      {Platform.OS === 'ios' ? <InputAccessoryView nativeID={ACCESSORY_ID} backgroundColor={COLORS.bg0}>{saveBar}</InputAccessoryView>
+            : composing ? saveBar : null}
     </KeyboardAvoidingView>);
 }
 const styles = StyleSheet.create({
@@ -243,8 +377,8 @@ const styles = StyleSheet.create({
     title: { ...TYPE.h1, color: COLORS.textPrimary, marginTop: 8 },
     count: { ...TYPE.body, color: COLORS.textSecondary, marginTop: 10 },
     segments: { flexDirection: 'row', gap: 4, marginTop: 12 },
-    segment: { flex: 1, height: 3, borderRadius: 2, backgroundColor: COLORS.border },
-    segmentOn: { backgroundColor: COLORS.accent },
+    segment: { flex: 1, height: 3, borderRadius: 2, overflow: 'hidden', backgroundColor: COLORS.border },
+    segmentFill: { height: '100%', backgroundColor: COLORS.accent },
     weekly: { marginHorizontal: 24, marginBottom: 8, paddingVertical: 14, gap: 4 },
     weeklyLabel: { fontSize: 10, fontWeight: '800', letterSpacing: 1.1, color: COLORS.accent },
     weeklyPrompt: { ...TYPE.body, color: COLORS.textPrimary, lineHeight: 21 },
@@ -253,29 +387,35 @@ const styles = StyleSheet.create({
     sectionFlash: { backgroundColor: COLORS.accentSoft, paddingHorizontal: 12, marginHorizontal: 12 },
     sectionHead: { ...TYPE.h3, color: COLORS.textPrimary },
     sectionNum: { color: COLORS.textMuted, fontWeight: '800' },
-    prompt: { ...TYPE.body, color: COLORS.textMuted, marginTop: 6, lineHeight: 21 },
-    line: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginTop: 10 },
-    lineText: { ...TYPE.body, color: COLORS.textPrimary, lineHeight: 23 },
+    sectionNumWritten: { color: COLORS.accent },
+    prompt: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 6, lineHeight: 21 },
+    line: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginTop: 18, marginBottom: 8 },
+    lineText: { ...TYPE.body, fontSize: 18, color: COLORS.textPrimary, lineHeight: 27 },
     lineDay: { fontSize: 11, fontWeight: '700', color: COLORS.textMuted, marginTop: 3 },
     suggestion: { marginTop: 10, opacity: 0.75, gap: 4 },
     suggestionText: { ...TYPE.caption, color: COLORS.textMuted, lineHeight: 19, fontStyle: 'italic' },
     link: { ...TYPE.caption, color: COLORS.accent, fontWeight: '800' },
     addMore: { ...TYPE.caption, color: COLORS.accent, fontWeight: '800', marginTop: 12 },
-    composer: { marginTop: 12, gap: 8 },
+    composer: { flex: 1, marginTop: 12, gap: 8 },
     rewriteHint: { ...TYPE.caption, color: COLORS.textMuted },
     input: {
         ...TYPE.body,
         color: COLORS.textPrimary,
-        minHeight: 44,
-        maxHeight: 152, // ~6 lines at lineHeight 22 — grows with content, then scrolls
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        borderRadius: 10,
+        fontSize: 17,
+        lineHeight: 25,
+        minHeight: MIN_INPUT_HEIGHT,
+        maxHeight: MAX_INPUT_HEIGHT,
+        paddingHorizontal: 16,
+        paddingVertical: 15,
+        borderRadius: 8,
         borderWidth: 1,
         borderColor: COLORS.border,
         textAlignVertical: 'top',
     },
-    saveBtn: { alignSelf: 'flex-end', paddingHorizontal: 18, paddingVertical: 9, borderRadius: 999, backgroundColor: COLORS.accent },
+    accessoryBar: { height: 56, flexDirection: 'row', alignItems: 'center', gap: 16, paddingHorizontal: 16, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.border, backgroundColor: COLORS.bg0 },
+    accessoryTitle: { ...TYPE.caption, flex: 1, color: COLORS.textSecondary },
+    accessorySave: { height: 36, minWidth: 72, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16, borderRadius: 6, backgroundColor: COLORS.accent },
+    deleteAction: { width: 64, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.error },
     saveBtnOff: { backgroundColor: COLORS.border },
     saveText: { ...TYPE.caption, color: COLORS.textOnAccent, fontWeight: '800' },
     actions: { paddingHorizontal: 24, paddingTop: 24, gap: 10 },
