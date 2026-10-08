@@ -9,7 +9,8 @@ import {
   Animated,
   Image,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import { localDateString } from '../../lib/dayMath';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { storage, FamiliarityLevel } from '../../lib/storage';
 import { FAMILIARITY_LEVELS, COLORS } from '../../lib/constants';
@@ -37,6 +38,7 @@ const LEO_LEVEL_REACTIONS: Record<string, string> = {
 export default function FamiliarityScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const params = useLocalSearchParams<{ resume?: string }>();
   const [selectedLevel, setSelectedLevel] = useState<FamiliarityLevel | null>(null);
   const [showNotifOnboarding, setShowNotifOnboarding] = useState(false);
   const [showFeatureTour, setShowFeatureTour] = useState(false);
@@ -62,6 +64,47 @@ export default function FamiliarityScreen() {
     }
   }, [selectedLevel]);
 
+  // After sign-up: attach the choices made before the account existed, then show the walkthrough.
+  const resumeStarted = useRef(false);
+  useEffect(() => {
+    if (params.resume !== '1' || !user || resumeStarted.current) return;
+    resumeStarted.current = true;
+    void (async () => {
+      const [market, goal, level] = await Promise.all([
+        storage.getIndustry().catch(() => null),
+        storage.getLearningGoal().catch(() => null),
+        storage.getFamiliarity().catch(() => null),
+      ]);
+      if (!market) {
+        router.replace('/onboarding' as any);
+        return;
+      }
+      try {
+        await supabase
+          .from('profiles')
+          .update({ selected_market: market, ...(level ? { familiarity_level: level } : {}) })
+          .eq('id', user.id);
+        await supabase.from('user_progress').upsert(
+          {
+            user_id: user.id,
+            market_id: market,
+            current_day: 1,
+            start_date: localDateString(),
+            ...(goal ? { learning_goal: goal } : {}),
+            ...(level ? { familiarity_level: level } : {}),
+          },
+          { onConflict: 'user_id,market_id' }
+        );
+      } catch (e) {
+        log.warn('[Familiarity] resume sync failed:', e);
+      }
+      if (!goal) { router.replace('/onboarding/goal' as any); return; }
+      if (!level) return; // let them pick the level here
+      setSelectedLevel(level);
+      setShowNotifOnboarding(true);
+    })();
+  }, [params.resume, user]);
+
   const handleSelect = (level: FamiliarityLevel) => {
     triggerHaptic('light');
     setSelectedLevel(level);
@@ -76,6 +119,12 @@ export default function FamiliarityScreen() {
       await storage.setOnboardingComplete(true);
     } catch (e) {
       log.warn('[Familiarity] local storage write failed:', e);
+    }
+
+    if (!user) {
+      // Industry → Goal → Level are done; now create the account.
+      router.push({ pathname: '/auth', params: { mode: 'signup' } } as any);
+      return;
     }
 
     if (user) {

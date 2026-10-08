@@ -32,7 +32,9 @@ export default function Index() {
 
     async function redirect() {
       if (!user) {
-        safeReplace('/auth');
+        // First open: Industry → Goal → Level, then sign up.
+        const level = await storage.getFamiliarity().catch(() => null);
+        safeReplace(level ? '/auth?mode=signup' : '/onboarding');
         return;
       }
 
@@ -51,7 +53,7 @@ export default function Index() {
         }
 
         if (!profile?.selected_market) {
-          safeReplace('/onboarding/welcome');
+          safeReplace('/onboarding');
           return;
         }
 
