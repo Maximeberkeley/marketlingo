@@ -1,17 +1,6 @@
-/**
- * Beat sequencer — reading cards plus checks on text already shown.
- * Mirrors buildBeats.ts; keep both identical in behavior.
- */
 import { getIndustryPack } from '../industry/packs';
-import { statLeoLine } from '../industry/build';
 import { makeColdOpen, makeMicroInsight, norm, sentences, shuffle } from './extract';
 import { splitSentences } from '../../lib/textUtils';
-
-function leoLine(pool, i) {
-    if (!pool?.length)
-        return undefined;
-    return pool[i % pool.length];
-}
 const clean = (s) => s.replace(/\s+/g, ' ').trim();
 const STARTUP_LINE = /^\s*for your startup\b/i;
 /** Drop "For your startup…" sentences unless the learner is building a startup. */
@@ -68,7 +57,7 @@ function checkShown(seen, used, id) {
             continue;
         const lies = [truth, ...seen.filter(s => norm(s) !== norm(truth))]
             .map(alterNumber)
-            .filter((s) => Boolean(s) && norm(s) !== norm(truth));
+            .filter((s) => typeof s === 'string' && norm(s) !== norm(truth));
         const uniqueLies = lies.filter((s, i) => lies.findIndex(o => norm(o) === norm(s)) === i).slice(0, 2);
         if (uniqueLies.length < 2)
             continue;
@@ -93,8 +82,6 @@ export function buildBeats(stackTitle, rawSlides, metadata, industry) {
         .map(s => ({ ...s, body: filterForGoal(s.body, goal) }))
         .filter(s => s.body.trim().length > 0);
     const pack = getIndustryPack(industry?.marketId);
-    const marketLabel = pack?.label || industry?.marketName || 'your market';
-    const statLines = shuffle(industry?.stats ?? []).map(statLeoLine);
     const exercises = [];
     const slideNumbers = [];
     const seen = [];
@@ -111,32 +98,20 @@ export function buildBeats(stackTitle, rawSlides, metadata, industry) {
     const firstSlide = slides[0]?.slideNumber ?? 1;
     const lastSlide = slides[slides.length - 1]?.slideNumber ?? firstSlide;
     // 1. Cold open — the lesson's own line.
-    push(makeColdOpen(slides, 'beat-open', pack ? pack.eyebrow : undefined), firstSlide, {
-        line: statLines[0] || leoLine(pack?.leo.open, 0) || `Two minutes inside ${marketLabel}. Let's go.`,
-        mood: 'idle',
-    });
+    push(makeColdOpen(slides, 'beat-open', pack ? pack.eyebrow : undefined), firstSlide);
     // 2. Insight card per slide, with a check on already-shown text in between.
     let checkCount = 0;
     slides.forEach((slide, slideIdx) => {
-        push(makeMicroInsight(slide, `beat-insight-${slide.slideNumber}`, slide.title), slide.slideNumber, {
-            line: undefined,
-            mood: 'idle',
-        });
+        push(makeMicroInsight(slide, `beat-insight-${slide.slideNumber}`, slide.title), slide.slideNumber);
         const isLast = slideIdx === slides.length - 1;
         if (!isLast && slideIdx % 2 === 1) {
-            const added = push(checkShown(seen, usedTruths, `beat-check-${checkCount + 1}`), slide.slideNumber, {
-                line: leoLine(pack?.leo.game, checkCount),
-                mood: 'thinking',
-            });
+            const added = push(checkShown(seen, usedTruths, `beat-check-${checkCount + 1}`), slide.slideNumber);
             if (added)
                 checkCount += 1;
         }
     });
     // 3. Final check — still only what was shown.
-    push(checkShown(seen, usedTruths, 'beat-check-final'), lastSlide, {
-        line: pack?.leo.boss || `Your call. Read it the way an insider in ${marketLabel} would.`,
-        mood: 'thinking',
-    });
+    push(checkShown(seen, usedTruths, 'beat-check-final'), lastSlide);
     // 4. Takeaway, plus a cliffhanger for tomorrow.
     const takeaway = filterForGoal((metadata?.key_takeaway || '').trim(), goal);
     if (takeaway.length >= 12) {
@@ -151,17 +126,13 @@ export function buildBeats(stackTitle, rawSlides, metadata, industry) {
                 .filter(value => Boolean(value.trim()))
                 .join('\n\n'),
             detailTitle: 'What to remember',
-        }, lastSlide, { line: pack?.leo.takeaway, mood: 'celebrate' });
+        }, lastSlide);
     }
     return {
         lesson: {
             id: stackTitle,
             title: stackTitle,
             exercises,
-            leoReactions: {
-                win: ['That is exactly how an insider reads it.', 'Clean. You are building real instinct.', 'Yes — you followed the money.'],
-                miss: ['Not it, but now you know where to look.', 'Close. Re-read who carries the risk.', 'Wrong turn — this is the one people get wrong.'],
-            },
         },
         slideNumbers,
     };

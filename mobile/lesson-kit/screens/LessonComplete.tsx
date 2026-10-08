@@ -7,7 +7,7 @@ import { tokens } from '../theme/tokens';
 import { playSound } from '../../lib/sounds';
 import { triggerHaptic } from '../../lib/haptics';
 import { useIntelHabit } from '../../hooks/useIntelHabit';
-import { useDisplayName } from '../../hooks/useDisplayName';
+import { lessonRewards, scoreHeadline } from './lessonRewards';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useDeliverable } from '../../hooks/useDeliverable';
 
@@ -29,28 +29,6 @@ interface Props {
   marketId?: string;
 }
 
-interface Bonus {
-  label: string;
-  xp: number;
-}
-
-function computeBonuses(
-  accuracy: number,
-  bestCombo: number,
-  heartsLeft: number,
-  timeSpentSeconds: number,
-): Bonus[] {
-  const bonuses: Bonus[] = [];
-  if (accuracy === 100) bonuses.push({ label: 'Flawless run', xp: 25 });
-  if (heartsLeft === 3 && accuracy < 100) bonuses.push({ label: 'All hearts intact', xp: 10 });
-  if (bestCombo >= 3) bonuses.push({ label: `${bestCombo} in a row`, xp: bestCombo * 3 });
-  if (timeSpentSeconds > 0 && timeSpentSeconds < 180 && accuracy >= 80) {
-    bonuses.push({ label: 'Sharp and quick', xp: 15 });
-  }
-  bonuses.push({ label: 'Daily lesson', xp: 5 + Math.floor(Math.random() * 16) });
-  return bonuses;
-}
-
 function formatTime(seconds: number) {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
@@ -62,7 +40,7 @@ export function LessonComplete({
   total,
   baseXp,
   bestCombo = 0,
-  heartsLeft = 3,
+  heartsLeft,
   timeSpentSeconds = 0,
   streakDays,
   onDone,
@@ -70,7 +48,6 @@ export function LessonComplete({
   leoQuestions = 0,
   marketId,
 }: Props) {
-  const { displayName } = useDisplayName();
   const intel = useIntelHabit(marketId);
   const { progress } = useUserProgress(marketId);
   const goal = (progress as { learning_goal?: string } | null)?.learning_goal ?? null;
@@ -78,14 +55,9 @@ export function LessonComplete({
   const latestLine = dossier.entries[0];
   const latestSection = dossier.template.sections.find(s => s.key === latestLine?.sectionKey);
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 100;
-  const praise = accuracy === 100
-    ? `Brilliant work, ${displayName}!`
-    : accuracy >= 80
-      ? `Spot on, ${displayName}! You're mastering this.`
-      : `Way to crush today's module, ${displayName}!`;
-  const bonuses = useRef(computeBonuses(accuracy, bestCombo, heartsLeft, timeSpentSeconds)).current;
-  const bonusXp = bonuses.reduce((sum, b) => sum + b.xp, 0);
-  const totalXp = baseXp + bonusXp;
+  const praise = scoreHeadline(accuracy, total);
+  const bonuses = useRef(lessonRewards(baseXp, accuracy, total, bestCombo, heartsLeft, timeSpentSeconds)).current;
+  const totalXp = bonuses.reduce((sum, line) => sum + line.xp, 0);
 
   const [step, setStep] = useState<'rewards' | 'intel'>('rewards');
   const [shown, setShown] = useState(0);
@@ -166,7 +138,7 @@ export function LessonComplete({
       <Text style={styles.xpBig}>+{display} XP</Text>
 
       <View style={styles.bonusList}>
-        {bonuses.slice(0, shown).map((b, i) => (
+        {bonuses.map((b, i) => (
           <View key={i} style={styles.bonusRow}>
             <Feather name="zap" size={14} color={tokens.color.accent} />
             <Text style={styles.bonusLabel}>{b.label}</Text>
@@ -182,7 +154,7 @@ export function LessonComplete({
       )}
 
       <View style={styles.stats}>
-        <Stat label="Accuracy" value={`${accuracy}%`} />
+        <Stat label="Accuracy" value={total > 0 ? `${accuracy}%` : "—"} />
         <Stat label="Correct" value={`${correct}/${total}`} />
         <Stat label="Time" value={formatTime(timeSpentSeconds)} />
       </View>
@@ -201,7 +173,7 @@ export function LessonComplete({
           <View style={styles.dossierIcon}>
             <Feather name="file-text" size={18} color={tokens.color.accent} />
           </View>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, minWidth: 0 }}>
             <Text style={styles.dossierEyebrow}>
               {dossier.template.title.toUpperCase()} · {dossier.completion}% READY
             </Text>
@@ -289,8 +261,8 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     marginBottom: tokens.space.sm,
   },
-  title: { fontSize: tokens.font.title, fontWeight: '800', color: tokens.color.text },
-  subtitle: { fontSize: tokens.font.body, color: tokens.color.textSecondary, textAlign: 'center' },
+  title: { maxWidth: '100%', textAlign: 'center', fontSize: tokens.font.title, fontWeight: '800', color: tokens.color.text },
+  subtitle: { maxWidth: '100%', textAlign: 'center', fontSize: tokens.font.body, color: tokens.color.textSecondary, textAlign: 'center' },
   xpBig: {
     fontSize: 40,
     fontWeight: '900',
@@ -314,7 +286,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: tokens.space.md,
     paddingVertical: tokens.space.sm,
   },
-  bonusLabel: { flex: 1, fontSize: tokens.font.caption + 1, fontWeight: '700', color: tokens.color.textSecondary },
+  bonusLabel: { flex: 1, minWidth: 0, flexShrink: 1, fontSize: tokens.font.caption + 1, fontWeight: '700', color: tokens.color.textSecondary },
   bonusXp: { fontSize: tokens.font.caption + 1, fontWeight: '800', color: tokens.color.accent },
   stats: {
     flexDirection: 'row',

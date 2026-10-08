@@ -8,11 +8,13 @@ import { useEnter } from './shared';
 import { ColorText } from '../components/ColorText';
 import { shortLabel } from '../text';
 import { BriefingReader } from '../components/BriefingReader';
+import { cardTerms, hasExtraBriefing } from '../cardPresentation';
 
 /** Cold open — one arresting line, full bleed, then tap on. */
 export function ColdOpen({ exercise, onChange }: ExerciseProps<ColdOpenExercise>) {
   const enter = useEnter(exercise.id);
   const [showBriefing, setShowBriefing] = useState(false);
+  const hasBriefing = hasExtraBriefing(exercise);
 
   useEffect(() => {
     onChange({ canCheck: true, isCorrect: true });
@@ -27,7 +29,7 @@ export function ColdOpen({ exercise, onChange }: ExerciseProps<ColdOpenExercise>
         {!!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow).toUpperCase()}</Text>}
         <ColorText text={exercise.headline} style={styles.headline} maxSentences={4} maxLength={260} />
         {!!exercise.kicker && <ColorText text={exercise.kicker} style={styles.kicker} maxSentences={1} maxLength={80} />}
-        {!!exercise.fullText && exercise.fullText.trim() !== exercise.headline.trim() && (
+        {hasBriefing && (
           <TouchableOpacity
             accessibilityRole="button"
             accessibilityLabel="Read full briefing"
@@ -44,13 +46,13 @@ export function ColdOpen({ exercise, onChange }: ExerciseProps<ColdOpenExercise>
           </TouchableOpacity>
         )}
       </Animated.View>
-      {!!exercise.fullText && (
+      {hasBriefing && (
         <BriefingReader
           visible={showBriefing}
           title={exercise.detailTitle || exercise.eyebrow || 'Briefing'}
           eyebrow={exercise.eyebrow}
-          text={exercise.fullText}
-          keyTerms={exercise.keyTerms}
+          text={exercise.fullText || ''}
+          keyTerms={cardTerms(exercise)}
           sources={exercise.sources}
           onClose={() => setShowBriefing(false)}
         />
@@ -60,8 +62,9 @@ export function ColdOpen({ exercise, onChange }: ExerciseProps<ColdOpenExercise>
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, justifyContent: 'center' },
+  wrap: { flex: 1, minWidth: 0, maxWidth: '100%', alignSelf: 'stretch', justifyContent: 'center' },
   card: {
+    minWidth: 0, maxWidth: '100%',
     borderRadius: tokens.radius.xl,
     // Always the dark ink card — in dark mode tokens.color.text flips light,
     // which made this white-on-white. The cold open stays dramatic in both themes.
@@ -80,7 +83,7 @@ const styles = StyleSheet.create({
   kicker: { fontSize: tokens.font.body, color: '#FFFFFF', opacity: 0.75, lineHeight: 23 },
   readButton: { minHeight: 62, flexDirection: 'row', alignItems: 'center', gap: 11, marginTop: 4, paddingHorizontal: 13, borderRadius: tokens.radius.md, backgroundColor: tokens.color.surface, borderWidth: 1, borderColor: tokens.color.border },
   readIcon: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.accentSoft },
-  readCopy: { flex: 1 },
+  readCopy: { flex: 1, minWidth: 0 },
   readTitle: { fontSize: 15, fontWeight: '800', color: tokens.color.text },
   readNote: { marginTop: 2, fontSize: 11, fontWeight: '600', color: tokens.color.textMuted },
 });
