@@ -1,24 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { tokens } from '../theme/tokens';
-import { useEnter } from './shared';
 import { ColorText } from '../components/ColorText';
 import { shortLabel } from '../text';
 import { BriefingReader } from '../components/BriefingReader';
 import { cardTerms, hasExtraBriefing } from '../cardPresentation';
 /** Cold open — one arresting line, full bleed, then tap on. */
 export function ColdOpen({ exercise, onChange }) {
-    const enter = useEnter(exercise.id);
     const [showBriefing, setShowBriefing] = useState(false);
     const hasBriefing = hasExtraBriefing(exercise);
     useEffect(() => {
         onChange({ canCheck: true, isCorrect: true });
     }, [exercise.id]);
-    const translateY = enter.interpolate({ inputRange: [0, 1], outputRange: [24, 0] });
-    const scale = enter.interpolate({ inputRange: [0, 1], outputRange: [0.96, 1] });
     return (<View style={styles.wrap}>
-      <Animated.View style={[styles.card, { opacity: enter, transform: [{ translateY }, { scale }] }]}>
+      <View style={styles.card}>
         {!!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow).toUpperCase()}</Text>}
         <ColorText text={exercise.headline} style={styles.headline} maxSentences={4} maxLength={260}/>
         {!!exercise.kicker && <ColorText text={exercise.kicker} style={styles.kicker} maxSentences={1} maxLength={80}/>}
@@ -30,30 +26,28 @@ export function ColdOpen({ exercise, onChange }) {
             </View>
             <Feather name="chevron-right" size={18} color={tokens.color.textMuted}/>
           </TouchableOpacity>)}
-      </Animated.View>
+      </View>
       {hasBriefing && (<BriefingReader visible={showBriefing} title={exercise.detailTitle || exercise.eyebrow || 'Briefing'} eyebrow={exercise.eyebrow} text={exercise.fullText || ''} keyTerms={cardTerms(exercise)} sources={exercise.sources} onClose={() => setShowBriefing(false)}/>)}
     </View>);
 }
 const styles = StyleSheet.create({
-    wrap: { flex: 1, minWidth: 0, maxWidth: '100%', alignSelf: 'stretch', justifyContent: 'center' },
+    wrap: { minWidth: 0, maxWidth: '100%', alignSelf: 'stretch' },
     card: {
         minWidth: 0, maxWidth: '100%',
-        borderRadius: tokens.radius.xl,
-        // Always the dark ink card — in dark mode tokens.color.text flips light,
-        // which made this white-on-white. The cold open stays dramatic in both themes.
-        backgroundColor: '#171B26',
+        backgroundColor: tokens.color.coldOpen,
+        minHeight: 300,
         padding: tokens.space.xl,
         gap: tokens.space.md,
     },
     eyebrow: {
         fontSize: 11,
         fontWeight: '900',
-        letterSpacing: 1.6,
-        color: '#FFFFFF',
+        letterSpacing: 0,
+        color: tokens.color.coldOpenText,
         opacity: 0.6,
     },
-    headline: { fontSize: 26, fontWeight: '900', color: '#FFFFFF', lineHeight: 33 },
-    kicker: { fontSize: tokens.font.body, color: '#FFFFFF', opacity: 0.75, lineHeight: 23 },
+    headline: { fontSize: 32, fontWeight: '800', color: tokens.color.coldOpenText, lineHeight: 38 },
+    kicker: { fontSize: tokens.font.body, color: tokens.color.coldOpenText, opacity: 0.75, lineHeight: 23 },
     readButton: { minHeight: 62, flexDirection: 'row', alignItems: 'center', gap: 11, marginTop: 4, paddingHorizontal: 13, borderRadius: tokens.radius.md, backgroundColor: tokens.color.surface, borderWidth: 1, borderColor: tokens.color.border },
     readIcon: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.accentSoft },
     readCopy: { flex: 1, minWidth: 0 },

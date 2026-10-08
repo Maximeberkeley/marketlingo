@@ -5,21 +5,22 @@ import { tokens } from '../theme/tokens';
 import { ColorText } from '../components/ColorText';
 import { shortLabel, shortText } from '../text';
 import { BriefingReader } from '../components/BriefingReader';
-import { cardTerms, hasExtraBriefing } from '../cardPresentation';
+import { cardTerms, hasExtraBriefing, readingCardKind } from '../cardPresentation';
 export function InfoCard({ exercise, onChange }) {
     const [showBriefing, setShowBriefing] = useState(false);
     const terms = cardTerms(exercise);
     const hasBriefing = hasExtraBriefing(exercise);
+    const kind = readingCardKind(exercise);
     useEffect(() => {
         onChange({ canCheck: true, isCorrect: true });
     }, [exercise.id]);
     const bodyIsEcho = !!exercise.title &&
         normalize(exercise.body) === normalize(exercise.title);
-    return (<View style={styles.wrap}>
-      {!!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow)}</Text>}
+    return (<View style={[styles.wrap, kind === 'takeaway' && styles.takeaway]}>
+      {kind === 'takeaway' ? <Text style={styles.eyebrow}>The rule</Text> : !!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow)}</Text>}
       {!!exercise.title && <ColorText text={exercise.title} style={styles.title} maxSentences={1} maxLength={80}/>}
 
-      {!!exercise.body && !bodyIsEcho && <ColorText text={exercise.body} style={styles.body} maxSentences={2} maxLength={150}/>}
+      {!!exercise.body && !bodyIsEcho && <View style={kind === 'evidence' ? styles.evidence : undefined}><ColorText text={exercise.body} style={styles.body} maxSentences={2} maxLength={150}/></View>}
 
       {exercise.bullets?.slice(0, 2).map((b, i) => (<View key={i} style={styles.bulletRow}>
           <View style={styles.dot}/>
@@ -47,14 +48,16 @@ function normalize(s) {
 }
 const styles = StyleSheet.create({
     wrap: { minWidth: 0, maxWidth: '100%', gap: tokens.space.md, alignSelf: 'stretch' },
+    takeaway: { backgroundColor: tokens.color.accentSoft, borderRadius: tokens.radius.lg, padding: tokens.space.xl },
+    evidence: { backgroundColor: tokens.color.evidence, borderRadius: tokens.radius.md, padding: tokens.space.xl },
     eyebrow: {
         fontSize: tokens.font.caption,
         fontWeight: '800',
-        letterSpacing: 0.8,
+        letterSpacing: 0,
         textTransform: 'uppercase',
         color: tokens.color.accent,
     },
-    title: { fontSize: tokens.font.title, fontWeight: '800', color: tokens.color.text, lineHeight: 32 },
+    title: { fontSize: 28, fontWeight: '800', color: tokens.color.text, lineHeight: 32 },
     body: { fontSize: tokens.font.body + 1, lineHeight: 26, color: tokens.color.text },
     bulletRow: { flexDirection: 'row', gap: tokens.space.md, alignItems: 'flex-start' },
     dot: {
