@@ -7,8 +7,8 @@
  *  curiosity     → Market Map
  *
  * Every section is filled from the learner's own words — lines they write on
- * consolidation days, notes they keep, calls they defend. Completion is simply
- * how many sections have at least one line in them.
+ * consolidation days and in each lesson's "Say it" step. Completion counts only
+ * sections holding at least one learner-written line.
  */
 export type DeliverableGoal = 'career' | 'build_startup' | 'invest' | 'curiosity';
 
@@ -131,10 +131,10 @@ const RANKS: { at: number; title: string; blurb: string }[] = [
   { at: 0, title: 'Observer', blurb: 'Nothing written yet. One line starts the document.' },
   { at: 17, title: 'Analyst', blurb: 'You have your first position on this industry in writing.' },
   { at: 34, title: 'Market Reader', blurb: 'Enough to hold a real conversation about how this industry works.' },
-  { at: 50, title: 'Insider', blurb: 'Half the document stands. It already reads like someone who works here.' },
+  { at: 50, title: 'Insider', blurb: 'Half the document is written. It already reads like someone who works here.' },
   { at: 67, title: 'Operator', blurb: 'You can defend most of this without notes.' },
   { at: 84, title: 'Authority', blurb: 'One section from a document you would put your name on.' },
-  { at: 100, title: 'Principal', blurb: 'Complete, in your own words, and ready to send.' },
+  { at: 100, title: 'Principal', blurb: 'Complete. Every section is written by you and ready to send.' },
 ];
 
 export function dossierRank(completion: number): DossierRank {
