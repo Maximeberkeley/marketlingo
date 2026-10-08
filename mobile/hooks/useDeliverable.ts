@@ -26,13 +26,13 @@ export function useDeliverable(marketId?: string, goal?: string | null) {
   const [entries, setEntries] = useState<DeliverableEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (showLoading = true) => {
     if (!marketId) {
       setEntries([]);
       setLoading(false);
       return;
     }
-    setLoading(true);
+    if (showLoading) setLoading(true);
     try {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth?.user) {
@@ -92,7 +92,7 @@ export function useDeliverable(marketId?: string, goal?: string | null) {
           log.warn('[useDeliverable] Could not save line:', error.message);
           return false;
         }
-        await load();
+        await load(false);
         return true;
       } catch (err) {
         log.warn('[useDeliverable] Save failed:', err);
@@ -119,6 +119,26 @@ export function useDeliverable(marketId?: string, goal?: string | null) {
     },
     [],
   );
+
+  /** Edit the learner's line without changing its authorship or day stamp. */
+  const updateLine = useCallback(async (id: string, content: string) => {
+    const text = content.trim();
+    if (!marketId || text.length < 3) return false;
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) return false;
+      const { data, error } = await supabase.from('deliverable_entries')
+        .update({ content: text }).eq('id', id).eq('user_id', auth.user.id)
+        .eq('market_id', marketId).eq('goal_key', template.goal).eq('source', 'learner')
+        .select('id');
+      if (error || !data?.length) return false;
+      setEntries(prev => prev.map(entry => entry.id === id ? { ...entry, content: text } : entry));
+      return true;
+    } catch (error) {
+      log.warn('[useDeliverable] Edit failed:', error);
+      return false;
+    }
+  }, [marketId, template.goal]);
 
   /** Rewrites an old suggestion: saves the learner's version, then drops the suggestion. */
   const replaceSuggestion = useCallback(
@@ -184,6 +204,7 @@ export function useDeliverable(marketId?: string, goal?: string | null) {
     filledSections,
     loading,
     addLine,
+    updateLine,
     removeLine,
     reload: load,
     exportText,
