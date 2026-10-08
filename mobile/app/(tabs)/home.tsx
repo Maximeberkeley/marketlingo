@@ -575,6 +575,20 @@ export default function HomeScreen() {
           safeTop={insets.top}
           onOpenLesson={(stackId) => { void openLessonById(stackId); }}
           onAskLeo={() => setShowLeoChat(true)}
+          belowToday={deliverable.loading ? null : (
+            <TouchableOpacity
+              style={styles.dossierChip}
+              activeOpacity={0.85}
+              accessibilityRole="button"
+              onPress={() => { triggerHaptic('light'); router.push('/deliverable'); }}
+            >
+              <Feather name="file-text" size={14} color={COLORS.accent} />
+              <Text style={styles.dossierChipText} numberOfLines={1}>
+                {`${deliverable.template.title} · ${deliverable.filledSections} of ${deliverable.template.sections.length} sections`}
+              </Text>
+              <Feather name="chevron-right" size={14} color={COLORS.textMuted} />
+            </TouchableOpacity>
+          )}
         />
       ) : (
         <HomeSkeleton />
@@ -608,6 +622,22 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  dossierChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
+    gap: 8,
+    marginTop: 4,
+    marginBottom: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: COLORS.surfaceSubtle,
+    borderWidth: 1,
+    borderColor: COLORS.accentMedium,
+    maxWidth: '90%',
+  },
+  dossierChipText: { ...TYPE.caption, color: COLORS.textPrimary, fontWeight: '700', flexShrink: 1 },
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   scrollContent: { paddingHorizontal: 20 },
   rescueLink: {
