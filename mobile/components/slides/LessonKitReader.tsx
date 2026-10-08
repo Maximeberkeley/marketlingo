@@ -110,8 +110,9 @@ export function LessonKitReader({
         trainer,
         drills,
         stats,
+        learningGoal,
       }, dayNumber === 1),
-    [stackTitle, slides, marketId, metadata, trainer, drills, stats, dayNumber],
+    [stackTitle, slides, marketId, metadata, trainer, drills, stats, dayNumber, learningGoal],
   );
 
 
