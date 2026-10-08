@@ -179,6 +179,21 @@ export interface TheCallExercise {
   explanation?: string;
 }
 
+/**
+ * Last beat: the learner writes one sentence into their dossier, then compares
+ * it with the lesson's takeaway. Ungraded; skipping costs nothing.
+ * Hand-written lessons may include `{ kind: 'sayIt' }`; the reader fills the rest.
+ */
+export interface SayItExercise {
+  kind: 'sayIt';
+  id: string;
+  /** Shown under the learner's sentence as "Compare with the lesson". */
+  takeaway?: string;
+  /** Local lesson day stamped on the saved line. */
+  dayNumber?: number;
+  learningGoal?: string | null;
+}
+
 /** A short in-character line from Leo, shown above the beat. */
 export interface LeoBeat {
   /** What Leo says while the learner is working on this beat. */
@@ -201,7 +216,8 @@ type AnyExercise =
   | SpotFakeExercise
   | MapMarketExercise
   | ChartReadExercise
-  | TheCallExercise;
+  | TheCallExercise
+  | SayItExercise;
 
 /** Every beat can carry a Leo line, whatever its kind. */
 export type Exercise = AnyExercise & { leo?: LeoBeat };

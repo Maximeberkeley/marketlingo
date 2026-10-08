@@ -8,7 +8,12 @@ import { SlideLike } from '../../lesson-kit/sequencer/extract';
 import { useIndustryContent } from '../../hooks/useIndustryContent';
 import { parseSlideIntoCards } from './ConceptCard';
 import { DeepDiveProvider } from '../../lesson-kit/components/DeepDiveContext';
-import type { Lesson } from '../../lesson-kit/types';
+import type { Exercise, Lesson } from '../../lesson-kit/types';
+
+/** Authored fields win, but only when actually set. */
+function stripUndefined<T extends object>(value: T): Partial<T> {
+  return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined && v !== null && v !== '')) as Partial<T>;
+}
 
 
 interface Source {
@@ -114,7 +119,7 @@ export function LessonKitReader({
 }: LessonKitReaderProps) {
   const { trainer, drills, stats } = useIndustryContent(marketId, dayNumber);
 
-  const { lesson, slideNumbers } = useMemo(
+  const { lesson: baseLesson, slideNumbers: baseSlideNumbers } = useMemo(
     () => isAuthoredLesson(authoredLesson)
       ? { lesson: { ...authoredLesson, id: authoredLesson.id || stackTitle, title: authoredLesson.title || stackTitle }, slideNumbers: authoredLesson.exercises.map(() => slides[0]?.slideNumber ?? 1) }
       :
@@ -127,6 +132,33 @@ export function LessonKitReader({
       }, dayNumber === 1),
     [stackTitle, slides, marketId, metadata, trainer, drills, stats, dayNumber, learningGoal, authoredLesson],
   );
+
+  // "Say it" closes every daily lesson. Hand-written lessons opt in with { kind: 'sayIt' }.
+  const { lesson, slideNumbers } = useMemo(() => {
+    const sayIt = (id = 'beat-say-it'): Exercise => ({
+      kind: 'sayIt',
+      id,
+      takeaway: metadata?.key_takeaway?.trim() || undefined,
+      dayNumber,
+      learningGoal,
+    });
+    if (isAuthoredLesson(authoredLesson)) {
+      return {
+        lesson: {
+          ...baseLesson,
+          exercises: baseLesson.exercises.map(ex => (ex.kind === 'sayIt'
+            ? { ...sayIt(ex.id || 'beat-say-it'), ...stripUndefined(ex) } as Exercise
+            : ex)),
+        },
+        slideNumbers: baseSlideNumbers,
+      };
+    }
+    const last = baseSlideNumbers[baseSlideNumbers.length - 1] ?? slides[0]?.slideNumber ?? 1;
+    return {
+      lesson: { ...baseLesson, exercises: [...baseLesson.exercises, sayIt()] },
+      slideNumbers: [...baseSlideNumbers, last],
+    };
+  }, [baseLesson, baseSlideNumbers, authoredLesson, metadata, dayNumber, learningGoal, slides]);
 
 
   const extraActions = useCallback(
