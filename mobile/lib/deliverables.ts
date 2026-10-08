@@ -164,20 +164,28 @@ export function slotStatus(lineCount: number): 'empty' | 'filled' | 'strong' {
 // Lesson hints select a writing prompt; they never write a learner's line.
 // ---------------------------------------------------------------------------
 
-export const SECTION_HINTS: Record<string, RegExp> = {
+/** A hint is a regex, or a function when only real logic can judge the match. */
+export type SectionHint = RegExp | ((text: string) => boolean);
+
+export const SECTION_HINTS: Record<string, SectionHint> = {
   how_money_moves: /\b(pay|pays|paid|revenue|margin|cash|price|cost|contract|fee)s?\b/i,
   money: /\b(pay|pays|paid|revenue|margin|cash|price|cost|contract|fee)s?\b/i,
   chain: /\b(supplier|supply|chain|integrat|deliver|build|assembl)/i,
   drivers: /\b(because|drives|leads to|so that|which means)\b/i,
-  players: /\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)?\b.*\b(controls|owns|leads|holds|dominates|power)\b/,
+  players: /\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)?\b.*\b(controls?|owns|leads|holds|dominates|power|decides|gatekeep(?:s)?)\b/,
   incumbents: /\b(incumbent|large|primes?|big players|established|slow)\b/i,
   who_hurts: /\b(lose|loses|wait|delay|risk|pain|cost)s?\b/i,
-  numbers: /\d/,
+  // Standalone quantities only (%, $, units, durations) — never digits inside names like Tier-1 or 787.
+  numbers: (text: string) => standaloneQuantities(text).length > 0,
   risk: /\b(risk|rule|regulat|certif|fail|delay|approval)/i,
   rules: /\b(rule|regulat|certif|law|approval|standard)/i,
   why_now: /\b(now|recent|since|20(2\d)|new)\b/i,
   frontier: /\b(next|future|will|emerging|new)\b/i,
 };
+
+function hintMatches(hint: SectionHint, text: string): boolean {
+  return typeof hint === 'function' ? hint(text) : hint.test(text);
+}
 
 /** Prefer relevant unwritten sections; a lesson title weighs more than incidental body words. */
 export function sectionForLesson(
