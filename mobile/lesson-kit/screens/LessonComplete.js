@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -7,30 +7,15 @@ import { tokens } from '../theme/tokens';
 import { playSound } from '../../lib/sounds';
 import { triggerHaptic } from '../../lib/haptics';
 import { useIntelHabit } from '../../hooks/useIntelHabit';
-import { useDisplayName } from '../../hooks/useDisplayName';
+import { lessonRewards, scoreHeadline } from './lessonRewards';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useDeliverable } from '../../hooks/useDeliverable';
-function computeBonuses(accuracy, bestCombo, heartsLeft, timeSpentSeconds) {
-    const bonuses = [];
-    if (accuracy === 100)
-        bonuses.push({ label: 'Flawless run', xp: 25 });
-    if (heartsLeft === 3 && accuracy < 100)
-        bonuses.push({ label: 'All hearts intact', xp: 10 });
-    if (bestCombo >= 3)
-        bonuses.push({ label: `${bestCombo} in a row`, xp: bestCombo * 3 });
-    if (timeSpentSeconds > 0 && timeSpentSeconds < 180 && accuracy >= 80) {
-        bonuses.push({ label: 'Sharp and quick', xp: 15 });
-    }
-    bonuses.push({ label: 'Daily lesson', xp: 5 + Math.floor(Math.random() * 16) });
-    return bonuses;
-}
 function formatTime(seconds) {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return m > 0 ? `${m} min ${s.toString().padStart(2, '0')}` : `${s} sec`;
 }
-export function LessonComplete({ correct, total, baseXp, bestCombo = 0, heartsLeft = 3, timeSpentSeconds = 0, streakDays, onDone, doneLabel = 'Continue', leoQuestions = 0, marketId, }) {
-    const { displayName } = useDisplayName();
+export function LessonComplete({ correct, total, baseXp, bestCombo = 0, heartsLeft, timeSpentSeconds = 0, streakDays, onDone, doneLabel = 'Continue', leoQuestions = 0, marketId, }) {
     const intel = useIntelHabit(marketId);
     const { progress } = useUserProgress(marketId);
     const goal = progress?.learning_goal ?? null;
@@ -38,28 +23,13 @@ export function LessonComplete({ correct, total, baseXp, bestCombo = 0, heartsLe
     const latestLine = dossier.entries[0];
     const latestSection = dossier.template.sections.find(s => s.key === latestLine?.sectionKey);
     const accuracy = total > 0 ? Math.round((correct / total) * 100) : 100;
-    const praise = accuracy === 100
-        ? `Brilliant work, ${displayName}!`
-        : accuracy >= 80
-            ? `Spot on, ${displayName}! You're mastering this.`
-            : `Way to crush today's module, ${displayName}!`;
-    const bonuses = useRef(computeBonuses(accuracy, bestCombo, heartsLeft, timeSpentSeconds)).current;
-    const bonusXp = bonuses.reduce((sum, b) => sum + b.xp, 0);
-    const totalXp = baseXp + bonusXp;
+    const praise = scoreHeadline(accuracy, total);
+    const bonuses = useRef(lessonRewards(baseXp, accuracy, total, bestCombo, heartsLeft, timeSpentSeconds)).current;
+    const totalXp = bonuses.reduce((sum, line) => sum + line.xp, 0);
     const [step, setStep] = useState('rewards');
     const [shown, setShown] = useState(0);
-    const counter = useRef(new Animated.Value(0)).current;
-    const [display, setDisplay] = useState(0);
     useEffect(() => {
-        const id = counter.addListener(({ value }) => setDisplay(Math.round(value)));
-        Animated.timing(counter, {
-            toValue: totalXp,
-            duration: 900,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: false,
-        }).start();
         playSound('celebration').catch(() => { });
-        return () => counter.removeListener(id);
     }, []);
     useEffect(() => {
         if (shown >= bonuses.length)
@@ -103,10 +73,10 @@ export function LessonComplete({ correct, total, baseXp, bestCombo = 0, heartsLe
       <Text style={styles.title}>{praise}</Text>
       {typeof streakDays === 'number' && streakDays > 0 ? (<Text style={styles.subtitle}>🔥 {streakDays}-day streak — come back tomorrow to keep it.</Text>) : (<Text style={styles.subtitle}>You just started a streak. Come back tomorrow to keep it.</Text>)}
 
-      <Text style={styles.xpBig}>+{display} XP</Text>
+      <Text style={styles.xpBig}>+{totalXp} XP</Text>
 
       <View style={styles.bonusList}>
-        {bonuses.slice(0, shown).map((b, i) => (<View key={i} style={styles.bonusRow}>
+        {bonuses.map((b, i) => (<View key={i} style={styles.bonusRow}>
             <Feather name="zap" size={14} color={tokens.color.accent}/>
             <Text style={styles.bonusLabel}>{b.label}</Text>
             <Text style={styles.bonusXp}>+{b.xp}</Text>
@@ -118,7 +88,7 @@ export function LessonComplete({ correct, total, baseXp, bestCombo = 0, heartsLe
         </Text>)}
 
       <View style={styles.stats}>
-        <Stat label="Accuracy" value={`${accuracy}%`}/>
+        <Stat label="Accuracy" value={total > 0 ? `${accuracy}%` : "—"}/>
         <Stat label="Correct" value={`${correct}/${total}`}/>
         <Stat label="Time" value={formatTime(timeSpentSeconds)}/>
       </View>
@@ -132,7 +102,7 @@ export function LessonComplete({ correct, total, baseXp, bestCombo = 0, heartsLe
           <View style={styles.dossierIcon}>
             <Feather name="file-text" size={18} color={tokens.color.accent}/>
           </View>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, minWidth: 0 }}>
             <Text style={styles.dossierEyebrow}>
               {dossier.template.title.toUpperCase()} · {dossier.completion}% READY
             </Text>
@@ -210,8 +180,8 @@ const styles = StyleSheet.create({
         alignItems: 'center', justifyContent: 'center',
         marginBottom: tokens.space.sm,
     },
-    title: { fontSize: tokens.font.title, fontWeight: '800', color: tokens.color.text },
-    subtitle: { fontSize: tokens.font.body, color: tokens.color.textSecondary, textAlign: 'center' },
+    title: { maxWidth: '100%', textAlign: 'center', fontSize: tokens.font.title, fontWeight: '800', color: tokens.color.text },
+    subtitle: { maxWidth: '100%', textAlign: 'center', fontSize: tokens.font.body, color: tokens.color.textSecondary, textAlign: 'center' },
     xpBig: {
         fontSize: 40,
         fontWeight: '900',
@@ -235,7 +205,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: tokens.space.md,
         paddingVertical: tokens.space.sm,
     },
-    bonusLabel: { flex: 1, fontSize: tokens.font.caption + 1, fontWeight: '700', color: tokens.color.textSecondary },
+    bonusLabel: { flex: 1, minWidth: 0, flexShrink: 1, fontSize: tokens.font.caption + 1, fontWeight: '700', color: tokens.color.textSecondary },
     bonusXp: { fontSize: tokens.font.caption + 1, fontWeight: '800', color: tokens.color.accent },
     stats: {
         flexDirection: 'row',

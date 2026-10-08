@@ -54,7 +54,8 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
     const [gradedCount, setGradedCount] = useState(0);
     const [combo, setCombo] = useState(0);
     const [bestCombo, setBestCombo] = useState(0);
-    const [hearts, setHearts] = useState(MAX_HEARTS);
+    const livesEnabled = typeof lesson.lives === 'number';
+    const [hearts, setHearts] = useState(lesson.lives ?? MAX_HEARTS);
     const [missed, setMissed] = useState([]);
     /** Per-beat outcome (exercise id -> was correct) so back/forward navigation
      *  restores the real previous result instead of resetting the card. */
@@ -81,7 +82,7 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
         setGradedCount(0);
         setCombo(0);
         setBestCombo(0);
-        setHearts(MAX_HEARTS);
+        setHearts(lesson.lives ?? MAX_HEARTS);
         setMissed([]);
         setResults({});
         setShowExitPrompt(false);
@@ -197,20 +198,22 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
                     playSound('wrong').catch(() => { });
                     setCombo(0);
                     setMissed(m => (exercise ? [...m, exercise] : m));
-                    const nextHearts = Math.max(0, hearts - 1);
-                    setHearts(nextHearts);
-                    if (nextHearts === 0)
-                        setShowHeartsPrompt(true);
+                    if (livesEnabled) {
+                        const nextHearts = Math.max(0, hearts - 1);
+                        setHearts(nextHearts);
+                        if (nextHearts === 0)
+                            setShowHeartsPrompt(true);
+                    }
                 }
             }
             setPhase('feedback');
             return;
         }
         goNext();
-    }, [isInfo, phase, state, goNext, exercise, xpPerCorrect, firePop, combo, hearts]);
+    }, [isInfo, phase, state, goNext, exercise, xpPerCorrect, firePop, combo, hearts, livesEnabled, index, maxIndexReached]);
     const retryMissed = useCallback(() => {
         setShowHeartsPrompt(false);
-        setHearts(MAX_HEARTS);
+        setHearts(lesson.lives ?? MAX_HEARTS);
         if (!missed.length)
             return;
         const retryItems = missed.map((e, i) => ({ ...e, id: `${e.id}-retry${i}` }));
@@ -228,21 +231,15 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
         }
         setShowExitPrompt(true);
     }, [confirmExit, finished, onExit]);
-    /** Leo coaches the beat, then reacts to the answer. */
+    /** Only the current check's own explanation can supply automatic speech. */
     const leoCoach = useMemo(() => {
-        if (phase === 'feedback' && !isInfo) {
-            const pool = state.isCorrect ? lesson.leoReactions?.win : lesson.leoReactions?.miss;
-            if (pool?.length) {
-                const line = pool[index % pool.length];
-                return { line, mood: (state.isCorrect ? 'correct' : 'incorrect') };
-            }
+        if (phase !== 'feedback' || isInfo || !exercise || !('explanation' in exercise))
             return null;
-        }
-        const line = exercise?.leo?.line;
+        const line = exercise.explanation?.trim();
         if (!line)
             return null;
-        return { line, mood: (exercise?.leo?.mood ?? 'idle') };
-    }, [phase, isInfo, state.isCorrect, lesson.leoReactions, index, exercise]);
+        return { line, mood: (state.isCorrect ? 'correct' : 'incorrect') };
+    }, [phase, isInfo, state.isCorrect, exercise]);
     const correctAnswerText = useMemo(() => {
         if (!exercise)
             return undefined;
@@ -262,7 +259,7 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
     }, [exercise]);
     if (finished || !exercise) {
         const timeSpentSeconds = Math.round((Date.now() - startedAt.current) / 1000);
-        return (<LessonComplete correct={correctCount} total={gradedCount} baseXp={correctCount * xpPerCorrect} bestCombo={bestCombo} heartsLeft={hearts} timeSpentSeconds={timeSpentSeconds} streakDays={streakDays} doneLabel={doneLabel} marketId={marketId} leoQuestions={leoMessages.filter(m => m.role === 'user').length} onDone={xp => onFinish({
+        return (<LessonComplete correct={correctCount} total={gradedCount} baseXp={correctCount * xpPerCorrect} bestCombo={bestCombo} heartsLeft={livesEnabled ? hearts : undefined} timeSpentSeconds={timeSpentSeconds} streakDays={streakDays} doneLabel={doneLabel} marketId={marketId} leoQuestions={leoMessages.filter(m => m.role === 'user').length} onDone={xp => onFinish({
                 correct: correctCount,
                 total: gradedCount,
                 xp,
@@ -278,7 +275,7 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
             : 'disabled';
     const buttonLabel = isInfo ? 'Continue' : phase === 'answering' ? 'Check' : 'Continue';
     return (<View style={[styles.root, { paddingTop: insets.top }]}>
-      <LessonHeader progress={progress} onExit={handleExitPress} onBack={index > 0 ? handleBack : undefined} lives={hasGraded ? hearts : undefined} label={`${world.worldName} · ${lesson.title}`} accentColor={world.colors[0]} onAskLeo={() => openLeo()} showLeoHint={showLeoHint} onDismissLeoHint={() => setShowLeoHint(false)}/>
+      <LessonHeader progress={progress} onExit={handleExitPress} onBack={index > 0 ? handleBack : undefined} lives={livesEnabled && hasGraded ? hearts : undefined} label={`${world.worldName} · ${lesson.title}`} accentColor={world.colors[0]} onAskLeo={() => openLeo()} showLeoHint={showLeoHint} onDismissLeoHint={() => setShowLeoHint(false)}/>
 
       {combo >= 2 && (<View style={styles.comboRow}>
           <Text style={styles.comboText}>{combo} in a row</Text>
@@ -342,7 +339,7 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
       </Modal>
 
       {/* Out of hearts — offer a retry instead of ending the lesson */}
-      <Modal visible={showHeartsPrompt} transparent animationType="fade" onRequestClose={() => setShowHeartsPrompt(false)}>
+      <Modal visible={livesEnabled && showHeartsPrompt} transparent animationType="fade" onRequestClose={() => setShowHeartsPrompt(false)}>
         <View style={styles.backdrop}>
           <View style={styles.sheet}>
             <Text style={styles.sheetTitle}>Out of hearts</Text>
@@ -350,7 +347,7 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
               No problem — nothing is locked. Redo the questions you missed to lock the ideas in.
             </Text>
             <PrimaryButton label="Retry what I missed" onPress={retryMissed}/>
-            <TouchableOpacity onPress={() => { setShowHeartsPrompt(false); setHearts(MAX_HEARTS); }} style={styles.ghost}>
+            <TouchableOpacity onPress={() => { setShowHeartsPrompt(false); setHearts(lesson.lives ?? MAX_HEARTS); }} style={styles.ghost}>
               <Text style={styles.ghostText}>Keep going</Text>
             </TouchableOpacity>
           </View>
@@ -397,8 +394,10 @@ function renderExercise(exercise, phase, onChange) {
 const styles = StyleSheet.create({
     root: { flex: 1, backgroundColor: tokens.color.bg },
     worldRail: { height: 3, marginHorizontal: tokens.space.lg, borderRadius: 2 },
-    scroll: { flex: 1 },
+    scroll: { flex: 1, width: '100%' },
     content: {
+        width: '100%',
+        alignItems: 'stretch',
         padding: tokens.space.lg,
         paddingBottom: tokens.space.xxl,
         gap: tokens.space.lg,

@@ -1,5 +1,10 @@
 # MarketLingo roadmap
 
+## Daily lesson screen cleanup
+- [x] Hide empty/repeated briefing actions and unrelated card terms.
+- [x] Respect optional lives and remove unrelated Leo speech in daily lessons.
+- [x] Reconcile itemized XP and score headlines; constrain card/tile wrapping in both phone sources.
+
 ## Mobile website — current
 - [x] Remove remaining fox imagery from the mobile website, including navigation and lower sections.
 - [x] Replace the outdated website demo lesson with the phone app’s three interactive AI concepts and segmented lesson progress.

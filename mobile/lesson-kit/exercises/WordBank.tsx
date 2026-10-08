@@ -92,7 +92,7 @@ export function WordBank({ exercise, phase, onChange }: ExerciseProps<WordBankEx
 }
 
 const styles = StyleSheet.create({
-  wrap: { gap: tokens.space.xl },
+  wrap: { minWidth: 0, maxWidth: '100%', alignSelf: 'stretch', gap: tokens.space.xl },
   prompt: { fontSize: tokens.font.prompt, fontWeight: '800', color: tokens.color.text, lineHeight: 28 },
   answerArea: {
     minHeight: 96,
@@ -107,7 +107,11 @@ const styles = StyleSheet.create({
   placeholder: { color: tokens.color.textMuted, fontSize: tokens.font.caption + 1 },
   tileRow: { flexDirection: 'row', flexWrap: 'wrap', gap: tokens.space.sm },
   tile: {
-    height: tokens.size.tileHeight,
+    minHeight: tokens.size.tileHeight,
+    maxWidth: '100%',
+    minWidth: 0,
+    flexShrink: 1,
+    paddingVertical: tokens.space.sm,
     paddingHorizontal: tokens.space.lg,
     borderRadius: tokens.radius.md,
     borderWidth: 2,
@@ -120,5 +124,5 @@ const styles = StyleSheet.create({
     borderColor: tokens.color.accent,
     backgroundColor: tokens.color.accentSoft,
   },
-  tileText: { fontSize: tokens.font.body, fontWeight: '600', color: tokens.color.text },
+  tileText: { minWidth: 0, maxWidth: '100%', flexShrink: 1, fontSize: tokens.font.body, fontWeight: '600', color: tokens.color.text },
 });

@@ -7,9 +7,12 @@ import { ExerciseProps } from './types';
 import { ColorText } from '../components/ColorText';
 import { shortLabel, shortText } from '../text';
 import { BriefingReader } from '../components/BriefingReader';
+import { cardTerms, hasExtraBriefing } from '../cardPresentation';
 
 export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
   const [showBriefing, setShowBriefing] = useState(false);
+  const terms = cardTerms(exercise);
+  const hasBriefing = hasExtraBriefing(exercise);
   useEffect(() => {
     onChange({ canCheck: true, isCorrect: true });
   }, [exercise.id]);
@@ -32,7 +35,7 @@ export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
         </View>
       ))}
 
-      {exercise.keyTerms?.slice(0, 1).map((t, i) => (
+      {terms.slice(0, 1).map((t, i) => (
         <View key={`t${i}`} style={styles.termCard}>
           <Text style={styles.term}>{shortLabel(t.term)}</Text>
           <ColorText text={t.definition} style={styles.termDef} maxSentences={1} maxLength={100} />
@@ -44,14 +47,14 @@ export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
           Sources: {exercise.sources.map(s => s.label).join(' · ')}
         </Text>
       )}
-      {!!exercise.fullText && exercise.fullText.trim() !== exercise.body.trim() && (
+      {hasBriefing && (
         <TouchableOpacity accessibilityRole="button" style={styles.readButton} activeOpacity={0.82} onPress={() => setShowBriefing(true)}>
           <Feather name="book-open" size={16} color={tokens.color.accent} />
           <Text style={styles.readText}>Read briefing</Text>
           <Feather name="chevron-right" size={17} color={tokens.color.textMuted} />
         </TouchableOpacity>
       )}
-      {!!exercise.fullText && <BriefingReader visible={showBriefing} title={exercise.detailTitle || exercise.title || exercise.eyebrow || 'Lesson briefing'} text={exercise.fullText} keyTerms={exercise.keyTerms} sources={exercise.sources} onClose={() => setShowBriefing(false)} />}
+      {hasBriefing && <BriefingReader visible={showBriefing} title={exercise.detailTitle || exercise.title || exercise.eyebrow || 'Lesson briefing'} text={exercise.fullText || ''} keyTerms={terms} sources={exercise.sources} onClose={() => setShowBriefing(false)} />}
     </View>
   );
 }
@@ -61,7 +64,7 @@ function normalize(s: string) {
 }
 
 const styles = StyleSheet.create({
-  wrap: { gap: tokens.space.md, alignSelf: 'stretch' },
+  wrap: { minWidth: 0, maxWidth: '100%', gap: tokens.space.md, alignSelf: 'stretch' },
   eyebrow: {
     fontSize: tokens.font.caption,
     fontWeight: '800',

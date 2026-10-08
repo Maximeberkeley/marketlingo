@@ -6,7 +6,7 @@ import { BuildChainExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { Prompt, shuffle, tap, tick, useShake } from './shared';
 import { ColorText } from '../components/ColorText';
-import { shortLabel } from '../text';
+
 
 /**
  * Build the Chain — tap the steps in the real order.
@@ -68,9 +68,8 @@ export function BuildChain({ exercise, phase, onChange }: ExerciseProps<BuildCha
                 <ColorText
                   text={filled ? exercise.steps[used[slot]] : 'Tap the next step'}
                   style={[styles.slotText, filled && styles.slotTextFilled]}
-                  maxSentences={1}
-                  maxLength={64}
-                  numberOfLines={2}
+                  maxSentences={10000}
+                  maxLength={1000000}
                 />
               </View>
               {slot < exercise.steps.length - 1 && (
@@ -99,7 +98,7 @@ export function BuildChain({ exercise, phase, onChange }: ExerciseProps<BuildCha
               }}
               style={[styles.tile, spent && styles.tileSpent]}
             >
-              <Text style={[styles.tileText, spent && styles.tileTextSpent]}>{shortLabel(label)}</Text>
+              <Text style={[styles.tileText, spent && styles.tileTextSpent]}>{label}</Text>
             </TouchableOpacity>
           );
         })}
@@ -109,7 +108,7 @@ export function BuildChain({ exercise, phase, onChange }: ExerciseProps<BuildCha
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1 },
+  wrap: { flex: 1, minWidth: 0, maxWidth: '100%', alignSelf: 'stretch' },
   chain: { gap: 0 },
   slotRow: { alignItems: 'stretch' },
   slot: {
@@ -138,7 +137,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   slotNumFilled: { color: tokens.color.accentDark },
-  slotText: { flex: 1, fontSize: tokens.font.caption + 2, fontWeight: '600', color: tokens.color.textMuted },
+  slotText: { flex: 1, minWidth: 0, flexShrink: 1, fontSize: tokens.font.caption + 2, fontWeight: '600', color: tokens.color.textMuted },
   slotTextFilled: { color: tokens.color.text, fontWeight: '800' },
   arrow: { alignSelf: 'center', marginVertical: 2 },
   bank: {
@@ -148,6 +147,9 @@ const styles = StyleSheet.create({
     marginTop: tokens.space.xl,
   },
   tile: {
+    maxWidth: '100%',
+    minWidth: 0,
+    flexShrink: 1,
     paddingHorizontal: tokens.space.md,
     paddingVertical: 10,
     borderRadius: tokens.radius.md,
@@ -161,6 +163,6 @@ const styles = StyleSheet.create({
     borderColor: tokens.color.disabled,
     borderBottomWidth: 2,
   },
-  tileText: { fontSize: tokens.font.caption + 2, fontWeight: '800', color: tokens.color.text },
+  tileText: { flexShrink: 1, minWidth: 0, maxWidth: '100%', fontSize: tokens.font.caption + 2, fontWeight: '800', color: tokens.color.text },
   tileTextSpent: { color: tokens.color.disabledText },
 });
