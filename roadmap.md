@@ -1,9 +1,9 @@
 # MarketLingo roadmap
 
 ## Merged card list fixes
-- [ ] Restrict rows to unquoted first sentences and keep subsequent copy regular body text.
-- [ ] Restore separate original cards when native layout exceeds available space; preserve Note/Save source mapping and synchronize paired sources.
-- [ ] Run focused copy, overflow, navigation and source-parity checks.
+- [x] Restrict rows to unquoted first sentences and keep subsequent copy regular body text.
+- [x] Restore separate original cards when native layout exceeds available space; preserve Note/Save source mapping and synchronize six paired sources.
+- [x] Focused copy, measured overflow/fitting-card navigation, source mapping, grounding and source-parity checks passed in both versions; actual iPhone verification remains blocked on a phone build below.
 
 ## Purposeful lesson cards
 - [x] Center cards above midpoint with collapsing spacers and non-shrinking overflow; enlarge headline/body type and render colon lists as rows (simulated rendering verified).
