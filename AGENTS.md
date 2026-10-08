@@ -7,3 +7,4 @@
 - Keep the website demo aligned with the phone’s universal three-concept AI lesson while showing preview-only rewards, because web visitors must not mistake a preview for credited app progress.
 - Phone first-open order is Industry → Goal → Level → sign-up → walkthrough, with guest choices kept on-device and attached after sign-up, because new users must see their path before creating an account.
 - Daily lesson cards share rendered-copy disclosure/term guards, respect optional lives, and use one XP ledger with score-based headlines, because hidden copy and unitemized rewards undermine lesson trust.
+- Dossier progress and ranks count only learner-written lines (source 'learner'); lessons never write dossier lines on their own, and legacy 'lesson' lines appear only as suggestions to rewrite, because progress must reflect the learner's own thinking.
