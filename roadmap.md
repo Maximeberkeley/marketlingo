@@ -1,5 +1,10 @@
 # MarketLingo roadmap
 
+## Home ring hierarchy
+- [ ] Keep five tappable circles and dossier chip; emphasize the unfinished daily lesson and reveal accent activities after completion in both sources.
+- [ ] Show real locked section titles with their section prerequisite; verify animation and paired sources.
+- [ ] Verify pulse, stagger and haptic on an actual iPhone (blocked: no iOS simulator/device; needs a phone build).
+
 ## Calm premium lesson screen
 - [ ] Simplify header and move Note/Save into overflow; distinguish reading cards, neutralize figures and feedback, add 180ms transitions and verify paired sources.
 - [ ] Verify actual iPhone rendering and haptics (blocked: no iOS simulator/device; requires a phone build).
