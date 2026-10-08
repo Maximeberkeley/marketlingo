@@ -1,5 +1,9 @@
 # MarketLingo roadmap
 
+## Calm premium lesson screen
+- [ ] Simplify header and move Note/Save into overflow; distinguish reading cards, neutralize figures and feedback, add 180ms transitions and verify paired sources.
+- [ ] Verify actual iPhone rendering and haptics (blocked: no iOS simulator/device; requires a phone build).
+
 ## iPhone dossier writing
 - [x] Add Cancel on all writing bars; close empty/unchanged Return without refocusing; remove blur-saving and verify local draft recovery in both sources (simulated iOS/Android/web controls).
 - [x] Preserve drafts, save on Return, and add a keyboard Save bar in both source versions.
