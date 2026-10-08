@@ -124,7 +124,7 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
           {!!stackId && !deepDive && (
             <TouchableOpacity
               accessibilityRole="button"
-              accessibilityLabel="Go deeper on this concept"
+              accessibilityLabel="Want to know more about this concept"
               activeOpacity={0.85}
               style={styles.deepButton}
               disabled={deepLoading}
@@ -139,7 +139,7 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
                 <Feather name="layers" size={16} color={tokens.color.accent} />
               )}
               <Text style={styles.deepButtonText}>
-                {deepLoading ? 'Writing the deep layer…' : 'Go deeper on this concept'}
+                {deepLoading ? 'Writing the deep layer…' : 'Want to know more?'}
               </Text>
             </TouchableOpacity>
           )}
