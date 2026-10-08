@@ -145,6 +145,11 @@ export default function OnboardingScreen() {
           <Text style={styles.subtitle}>
             Your 6-month mastery journey starts here
           </Text>
+          {!user && (
+            <TouchableOpacity onPress={() => router.push('/auth' as any)} activeOpacity={0.7} style={{ marginTop: 10 }}>
+              <Text style={{ color: COLORS.accent, fontWeight: '700', fontSize: 15 }}>I already have an account</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Demo bridge banner */}
