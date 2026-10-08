@@ -63,10 +63,9 @@ function checkShown(seen, used, id) {
             continue;
         const lies = [truth, ...seen.filter(s => norm(s) !== norm(truth))]
             .map(alterNumber)
-            .filter(s => !used.has(`lie:${norm(s)}`))
-            .filter((s) => typeof s === 'string' && norm(s) !== norm(truth));
-        const uniqueLies = lies.filter(s => !used.has(`lie:${norm(s)}`))
-            .filter((s, i) => lies.findIndex(o => norm(o) === norm(s)) === i).slice(0, 2);
+            .filter((s) => typeof s === 'string' && norm(s) !== norm(truth))
+            .filter(s => !used.has(`lie:${norm(s)}`));
+        const uniqueLies = lies.filter((s, i) => lies.findIndex(o => norm(o) === norm(s)) === i).slice(0, 2);
         if (uniqueLies.length < 2)
             continue;
         const options = shuffle([truth, ...uniqueLies]);
