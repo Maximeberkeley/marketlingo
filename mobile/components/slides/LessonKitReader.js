@@ -92,14 +92,14 @@ export function LessonKitReader({ stackTitle, slides, onClose, onComplete, onSav
             slideNumbers: [...baseSlideNumbers, last],
         };
     }, [baseLesson, baseSlideNumbers, authoredLesson, metadata, dayNumber, learningGoal, slides, defaultSectionKey]);
-    const extraActions = useCallback((exerciseIndex) => {
+    const extraActions = useCallback((exerciseIndex, dismiss) => {
         const slideNumber = slideNumbers[exerciseIndex] ?? 1;
         return (<View style={styles.actions}>
-          <TouchableOpacity style={styles.action} onPress={() => onAddNote(slideNumber)}>
+          <TouchableOpacity style={styles.action} onPress={() => { dismiss(); onAddNote(slideNumber); }}>
             <Feather name="edit-3" size={16} color={tokens.color.textSecondary}/>
             <Text style={styles.actionText}>Note</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.action} onPress={() => onSaveInsight(slideNumber)}>
+          <TouchableOpacity style={styles.action} onPress={() => { dismiss(); onSaveInsight(slideNumber); }}>
             <Feather name="bookmark" size={16} color={tokens.color.textSecondary}/>
             <Text style={styles.actionText}>Save</Text>
           </TouchableOpacity>
@@ -114,17 +114,15 @@ export function LessonKitReader({ stackTitle, slides, onClose, onComplete, onSav
 }
 const styles = StyleSheet.create({
     opening: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    actions: { flexDirection: 'row', gap: tokens.space.md },
+    actions: { gap: tokens.space.xs },
     action: {
-        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         gap: 6,
-        height: 42,
+        minHeight: 44,
+        paddingHorizontal: tokens.space.md,
         borderRadius: tokens.radius.md,
-        borderWidth: 2,
-        borderColor: tokens.color.border,
         backgroundColor: tokens.color.card,
     },
     actionText: { fontSize: tokens.font.caption + 1, fontWeight: '700', color: tokens.color.textSecondary },

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Modal, TouchableOpacity, Animated, Easing } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Modal, TouchableOpacity, Animated, Easing, AccessibilityInfo } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 
@@ -22,7 +22,6 @@ import { ChartRead } from '../modules/ChartRead';
 import { TheCall } from '../modules/TheCall';
 import { SayIt } from '../modules/SayIt';
 import { ExerciseState } from '../exercises/types';
-import { LeoCoach, LeoMood } from '../components/LeoCoach';
 
 import { LessonComplete } from './LessonComplete';
 import { tokens } from '../theme/tokens';
@@ -30,7 +29,6 @@ import { Exercise, Lesson } from '../types';
 import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { AskLeoOverlay, LeoMessage } from '../../components/ai/AskLeoOverlay';
-import { storage } from '../../lib/storage';
 import { normalizedCopy } from '../cardPresentation';
 
 /** Flatten the current beat's visible text into a context string for Leo. */
@@ -57,8 +55,8 @@ export interface LessonScreenProps {
   /** Fired when the learner finishes the lesson and taps the final CTA. */
   onFinish: (result: { correct: number; total: number; xp: number; timeSpentSeconds: number }) => void;
   xpPerCorrect?: number;
-  /** Rendered above the action button (e.g. Note / Save buttons). */
-  renderExtraActions?: (exerciseIndex: number) => React.ReactNode;
+  /** Rendered in the header overflow menu (e.g. Note / Save). */
+  renderExtraActions?: (exerciseIndex: number, dismiss: () => void) => React.ReactNode;
   doneLabel?: string;
   /** Current daily streak, shown on the finish screen. */
   streakDays?: number;
@@ -102,8 +100,10 @@ export function LessonScreen({
   const [showAskLeo, setShowAskLeo] = useState(false);
   const [leoMessages, setLeoMessages] = useState<LeoMessage[]>([]);
   const [leoAutoAsk, setLeoAutoAsk] = useState<string | null>(null);
-  const [showLeoHint, setShowLeoHint] = useState(false);
-  const [nudge, setNudge] = useState<string | null>(null);
+  const [showActions, setShowActions] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const enter = useRef(new Animated.Value(1)).current;
+  const scrollRef = useRef<ScrollView>(null);
   const [finished, setFinished] = useState(false);
   const startedAt = useRef(Date.now());
   const world = getMarketWorld(marketId);
@@ -130,29 +130,31 @@ export function LessonScreen({
     startedAt.current = Date.now();
     setLeoMessages([]);
     setLeoAutoAsk(null);
-    setNudge(null);
+    setShowActions(false);
   }, [lesson.id]);
 
-  // Show the "tap me" hint only for the learner's first two lessons.
   useEffect(() => {
-    let cancelled = false;
-    let hide: ReturnType<typeof setTimeout> | undefined;
-    storage.getLeoHintCount().then(count => {
-      if (cancelled || count >= 2) return;
-      setShowLeoHint(true);
-      storage.bumpLeoHintCount().catch(() => {});
-      hide = setTimeout(() => setShowLeoHint(false), 6000);
+    let active = true;
+    AccessibilityInfo.isReduceMotionEnabled().then(value => { if (active) setReduceMotion(value); }).catch(() => {});
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    return () => { active = false; subscription.remove(); };
+  }, []);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+    setShowActions(false);
+    enter.setValue(reduceMotion ? 1 : 0);
+    const animation = Animated.timing(enter, {
+      toValue: 1, duration: reduceMotion ? 0 : 180,
+      easing: Easing.out(Easing.quad), useNativeDriver: true,
     });
-    return () => {
-      cancelled = true;
-      if (hide) clearTimeout(hide);
-    };
-  }, [lesson.id]);
+    animation.start();
+    return () => animation.stop();
+  }, [index, lesson.id, reduceMotion, enter]);
 
   const exercise = queue[index];
   const isInfo = isPassiveKind(exercise?.kind);
   const total = queue.length;
-  const hasGraded = useMemo(() => queue.some(e => !isPassiveKind(e.kind)), [queue]);
   const progress = total > 0 ? (index + (phase === 'feedback' ? 1 : 0)) / total : 0;
 
   const handleChange = useCallback((next: ExerciseState) => setState(next), []);
@@ -160,18 +162,9 @@ export function LessonScreen({
   /** Opens the chat, optionally with a question Leo answers straight away. */
   const openLeo = useCallback((question?: string) => {
     setLeoAutoAsk(question ?? null);
-    setNudge(null);
-    setShowLeoHint(false);
+    setShowActions(false);
     setShowAskLeo(true);
   }, []);
-
-  // Leo offers help when the learner sits on the same card for a while.
-  useEffect(() => {
-    setNudge(null);
-    if (phase !== 'answering' || isInfo || showAskLeo) return;
-    const timer = setTimeout(() => setNudge("This one's dense. Want it simpler?"), 22000);
-    return () => clearTimeout(timer);
-  }, [index, phase, isInfo, showAskLeo]);
 
   const firePop = useCallback((label: string) => {
     setPop(label);
@@ -190,7 +183,7 @@ export function LessonScreen({
   const goToBeat = useCallback((target: number) => {
     const beat = queue[target];
     setIndex(target);
-    setNudge(null);
+    setShowActions(false);
     const graded = beat && !isPassiveKind(beat.kind) ? results[beat.id] : undefined;
     if (graded !== undefined) {
       setPhase('feedback');
@@ -200,10 +193,6 @@ export function LessonScreen({
       setState({ canCheck: false, isCorrect: false });
     }
   }, [queue, results]);
-
-  const handleBack = useCallback(() => {
-    if (index > 0) goToBeat(index - 1);
-  }, [index, goToBeat]);
 
   const goNext = useCallback(() => {
     if (index >= total - 1) {
@@ -215,10 +204,14 @@ export function LessonScreen({
     goToBeat(index + 1);
   }, [index, total, goToBeat]);
 
+  const continueLesson = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    goNext();
+  }, [goNext]);
+
   const onAction = useCallback(() => {
     if (isInfo) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-      goNext();
+      continueLesson();
       return;
     }
     if (phase === 'answering') {
@@ -249,8 +242,8 @@ export function LessonScreen({
       setPhase('feedback');
       return;
     }
-    goNext();
-  }, [isInfo, phase, state, goNext, exercise, xpPerCorrect, firePop, combo, hearts, livesEnabled, index, maxIndexReached]);
+    continueLesson();
+  }, [isInfo, phase, state, continueLesson, exercise, xpPerCorrect, firePop, combo, hearts, livesEnabled, index, maxIndexReached]);
 
   const retryMissed = useCallback(() => {
     setShowHeartsPrompt(false);
@@ -277,16 +270,6 @@ export function LessonScreen({
   const feedbackExplanation = exercise && 'explanation' in exercise ? normalizedCopy(exercise.explanation || '') : '';
   const answerCopy = exercise && exercise.kind === 'multipleChoice' ? normalizedCopy(exercise.options[exercise.correctIndex] || '') : '';
   const repeatsAnswer = Boolean(answerCopy && feedbackExplanation.includes(answerCopy));
-
-  /** Only the current check's own explanation can supply automatic speech. */
-  const leoCoach = useMemo(() => {
-    if (phase !== 'feedback' || isInfo || !exercise || !('explanation' in exercise)) return null;
-    const line = exercise.explanation?.trim();
-    if (!line) return null;
-    // The footer already prints the explanation; a matching bubble would repeat it.
-    if (normalizedCopy(line) === feedbackExplanation) return null;
-    return { line, mood: (state.isCorrect ? 'correct' : 'incorrect') as LeoMood };
-  }, [phase, isInfo, state.isCorrect, exercise, feedbackExplanation]);
 
   const correctAnswerText = useMemo(() => {
 
@@ -327,14 +310,7 @@ export function LessonScreen({
     );
   }
 
-  const buttonVariant =
-    phase === 'feedback'
-      ? state.isCorrect
-        ? 'correct'
-        : 'incorrect'
-      : isInfo || state.canCheck
-      ? 'primary'
-      : 'disabled';
+  const buttonVariant = phase === 'feedback' || isInfo || state.canCheck ? 'primary' : 'disabled';
 
   const buttonLabel = isInfo ? 'Continue' : phase === 'answering' ? 'Check' : 'Continue';
 
@@ -343,20 +319,10 @@ export function LessonScreen({
       <LessonHeader
         progress={progress}
         onExit={handleExitPress}
-        onBack={index > 0 ? handleBack : undefined}
-        lives={livesEnabled && hasGraded ? hearts : undefined}
-        label={`${world.worldName} · ${lesson.title}`}
-        accentColor={world.colors[0]}
         onAskLeo={() => openLeo()}
-        showLeoHint={showLeoHint}
-        onDismissLeoHint={() => setShowLeoHint(false)}
+        onMore={renderExtraActions ? () => setShowActions(value => !value) : undefined}
+        menuOpen={showActions}
       />
-
-      {combo >= 2 && (
-        <View style={styles.comboRow}>
-          <Text style={styles.comboText}>{combo} in a row</Text>
-        </View>
-      )}
 
       {!!pop && (
         <Animated.View
@@ -375,60 +341,45 @@ export function LessonScreen({
         </Animated.View>
       )}
 
-      <View style={[styles.worldRail, { backgroundColor: world.colors[0] }]} />
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        {!!leoCoach && <LeoCoach line={leoCoach.line} mood={leoCoach.mood} accent={world.colors[0]} />}
-        {exercise.kind === 'sayIt'
-          ? <SayIt key={exercise.id} exercise={exercise} marketId={marketId} onDone={goNext} />
-          : renderExercise(exercise, phase, handleChange)}
+        <Animated.View style={[styles.beat, exercise.kind === 'coldOpen' && styles.fullBleed, { opacity: enter, transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]} >
+          {exercise.kind === 'sayIt'
+            ? <SayIt key={exercise.id} exercise={exercise} marketId={marketId} onDone={continueLesson} />
+            : renderExercise(exercise, phase, handleChange)}
+        </Animated.View>
       </ScrollView>
 
 
       {phase === 'feedback' && !isInfo && (
-        <>
-          <FeedbackFooter
-            isCorrect={state.isCorrect}
-            explanation={'explanation' in exercise ? exercise.explanation : undefined}
-            correctAnswer={state.isCorrect || repeatsAnswer ? undefined : correctAnswerText}
-          />
-          <TouchableOpacity
-            style={[styles.leoPrompt, { borderColor: world.colors[0] + '55' }]}
-            onPress={() =>
-              openLeo(
-                state.isCorrect
-                  ? 'Explain this card to me.'
-                  : 'Why is that the right answer?',
-              )
-            }
-          >
-            <Text style={[styles.leoPromptText, { color: world.colors[0] }]}>
-              {state.isCorrect ? 'Explain this' : 'Ask Leo why'}
-            </Text>
-          </TouchableOpacity>
-        </>
-      )}
-
-      {!!nudge && phase === 'answering' && (
-        <TouchableOpacity
-          style={[styles.leoPrompt, { borderColor: world.colors[0] + '55' }]}
-          onPress={() => openLeo('Explain this simpler.')}
-        >
-          <Text style={[styles.leoPromptText, { color: world.colors[0] }]}>{nudge}</Text>
-        </TouchableOpacity>
+        <FeedbackFooter
+          key={exercise.id}
+          isCorrect={state.isCorrect}
+          explanation={'explanation' in exercise ? exercise.explanation : undefined}
+          correctAnswer={state.isCorrect || repeatsAnswer ? undefined : correctAnswerText}
+        />
       )}
 
       {exercise.kind === 'sayIt' ? (
         <View style={{ height: insets.bottom + tokens.space.lg }} />
       ) : (
         <View style={[styles.footer, { paddingBottom: insets.bottom + tokens.space.lg }]}>
-          {renderExtraActions?.(index)}
           <PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant} />
         </View>
       )}
+
+      <Modal visible={showActions} transparent animationType="fade" onRequestClose={() => setShowActions(false)}>
+        <View style={styles.menuLayer}>
+          <TouchableOpacity style={StyleSheet.absoluteFillObject} activeOpacity={1} onPress={() => setShowActions(false)} accessibilityRole="button" accessibilityLabel="Dismiss lesson actions" />
+          <View style={[styles.actionsMenu, { marginTop: insets.top + 64 }]}>
+            {renderExtraActions?.(index, () => setShowActions(false))}
+          </View>
+        </View>
+      </Modal>
 
       {/* Leave confirmation — loss aversion */}
       <Modal visible={showExitPrompt} transparent animationType="fade" onRequestClose={() => setShowExitPrompt(false)}>
@@ -523,27 +474,20 @@ function renderExercise(
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: tokens.color.bg },
-  worldRail: { height: 3, marginHorizontal: tokens.space.lg, borderRadius: 2 },
+  beat: { width: '100%', alignSelf: 'stretch' },
+  fullBleed: { marginHorizontal: -tokens.space.lg, width: 'auto' },
+  menuLayer: { flex: 1 },
+  actionsMenu: { alignSelf: 'flex-end', marginRight: tokens.space.lg, minWidth: 176, maxWidth: '90%', padding: tokens.space.sm, backgroundColor: tokens.color.card, borderWidth: 1, borderColor: tokens.color.border, borderRadius: tokens.radius.sm },
   scroll: { flex: 1, width: '100%' },
   content: {
     width: '100%',
     alignItems: 'stretch',
-    padding: tokens.space.lg,
+    paddingHorizontal: tokens.space.lg,
+    paddingTop: 24,
     paddingBottom: tokens.space.xxl,
     gap: tokens.space.lg,
     flexGrow: 1,
     justifyContent: 'flex-start',
-  },
-  comboRow: { alignItems: 'center', paddingBottom: tokens.space.sm },
-  comboText: {
-    fontSize: tokens.font.caption,
-    fontWeight: '800',
-    color: tokens.color.accent,
-    backgroundColor: tokens.color.accentSoft,
-    paddingHorizontal: tokens.space.md,
-    paddingVertical: 4,
-    borderRadius: tokens.radius.pill,
-    overflow: 'hidden',
   },
   pop: {
     position: 'absolute',
@@ -556,27 +500,15 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: tokens.color.correctDark,
   },
-  leoPrompt: {
-    alignSelf: 'center',
-    marginBottom: tokens.space.sm,
-    paddingHorizontal: tokens.space.lg,
-    paddingVertical: tokens.space.sm,
-    borderRadius: tokens.radius.pill,
-    borderWidth: 1.5,
-    backgroundColor: tokens.color.surface,
-  },
-  leoPromptText: { fontSize: tokens.font.caption, fontWeight: '800' },
   footer: {
     paddingHorizontal: tokens.space.lg,
     paddingTop: tokens.space.md,
     gap: tokens.space.md,
-    borderTopWidth: 1,
-    borderTopColor: tokens.color.border,
     backgroundColor: tokens.color.bg,
   },
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(15,17,26,0.55)',
+    backgroundColor: tokens.color.scrim,
     justifyContent: 'flex-end',
   },
   sheet: {

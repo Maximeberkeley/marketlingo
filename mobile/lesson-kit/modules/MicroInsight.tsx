@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { tokens } from '../theme/tokens';
 import { MicroInsightExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
-import { useEnter } from './shared';
 import { ColorText } from '../components/ColorText';
 import { shortLabel, shortText } from '../text';
 import { BriefingReader } from '../components/BriefingReader';
-import { cardTerms, hasExtraBriefing } from '../cardPresentation';
+import { cardTerms, hasExtraBriefing, readingCardKind } from '../cardPresentation';
 
 /** Micro-insight — two lines max, big type, one idea to carry forward. */
 export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightExercise>) {
-  const enter = useEnter(exercise.id);
+  const kind = readingCardKind(exercise);
   const [showBriefing, setShowBriefing] = useState(false);
   const [showTerm, setShowTerm] = useState(false);
   const keyTerm = cardTerms(exercise)[0];
@@ -23,12 +22,13 @@ export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightE
     onChange({ canCheck: true, isCorrect: true });
   }, [exercise.id]);
 
-  const translateY = enter.interpolate({ inputRange: [0, 1], outputRange: [16, 0] });
 
   return (
-    <Animated.View style={[styles.wrap, { opacity: enter, transform: [{ translateY }] }]}>
-      {!!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow).toUpperCase()}</Text>}
-      <ColorText text={exercise.text} style={styles.text} maxSentences={2} maxLength={150} />
+    <View style={[styles.wrap, kind === 'takeaway' && styles.takeaway]}>
+      {kind === 'takeaway' ? <Text style={styles.eyebrow}>The rule</Text> : !!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow).toUpperCase()}</Text>}
+      <View style={kind === 'evidence' ? styles.evidence : undefined}>
+        <ColorText text={exercise.text} style={kind === 'evidence' ? styles.quote : styles.text} maxSentences={2} maxLength={150} />
+      </View>
       {!!exercise.highlight && (
         <View style={styles.highlight}>
           <ColorText text={exercise.highlight} style={styles.highlightText} maxSentences={1} maxLength={100} />
@@ -61,18 +61,19 @@ export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightE
         </TouchableOpacity>
       )}
       {hasBriefing && <BriefingReader visible={showBriefing} title={exercise.detailTitle || exercise.eyebrow || 'Lesson briefing'} text={exercise.fullText || ''} keyTerms={cardTerms(exercise)} sources={exercise.sources} onClose={() => setShowBriefing(false)} />}
-    </Animated.View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, minWidth: 0, maxWidth: '100%', alignSelf: 'stretch', justifyContent: 'center', gap: tokens.space.lg },
-  eyebrow: { fontSize: 11, fontWeight: '900', letterSpacing: 1.4, color: tokens.color.accent },
-  text: { fontSize: 24, fontWeight: '800', color: tokens.color.text, lineHeight: 32 },
+  wrap: { minWidth: 0, maxWidth: '100%', alignSelf: 'stretch', gap: tokens.space.lg },
+  takeaway: { backgroundColor: tokens.color.accentSoft, borderRadius: tokens.radius.lg, padding: tokens.space.xl },
+  evidence: { backgroundColor: tokens.color.evidence, borderRadius: tokens.radius.md, padding: tokens.space.xl },
+  quote: { fontSize: 22, lineHeight: 30, color: tokens.color.text, fontWeight: '500' },
+  eyebrow: { fontSize: 11, fontWeight: '800', letterSpacing: 0, color: tokens.color.accent },
+  text: { fontSize: 28, fontWeight: '800', color: tokens.color.text, lineHeight: 32 },
   highlight: {
-    borderLeftWidth: 4,
-    borderLeftColor: tokens.color.accent,
-    paddingLeft: tokens.space.md,
+    paddingTop: tokens.space.sm,
   },
   highlightText: { fontSize: tokens.font.body, color: tokens.color.textSecondary, lineHeight: 23, fontWeight: '600' },
   term: {

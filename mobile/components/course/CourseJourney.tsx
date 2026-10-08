@@ -12,6 +12,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../../hooks/useAuth';
 import { Feather } from '@expo/vector-icons';
 import Svg, { Circle } from 'react-native-svg';
 import { router } from 'expo-router';
@@ -130,6 +132,8 @@ interface CourseJourneyProps {
   belowToday?: React.ReactNode;
 }
 
+const AnimatedFeather = Animated.createAnimatedComponent(Feather);
+
 type ModuleKind = 'lesson' | 'arena' | 'case' | 'intel' | 'notes';
 
 const MODULES: Array<{
@@ -164,79 +168,52 @@ function SectionHeader({
     >
       <View style={styles.sectionHeaderCopy}>
         <Text style={styles.sectionEyebrow}>SECTION {section.index + 1}</Text>
-        <Text style={styles.sectionTitle} numberOfLines={2}>{title}</Text>
-        <Text style={styles.sectionProgress}>{section.completedCount} / 30 lessons</Text>
+        <Text style={[styles.sectionTitle, !section.unlocked && styles.lockedText]} numberOfLines={2}>{title}</Text>
+        <Text style={[styles.sectionProgress, !section.unlocked && styles.lockedText]}>{section.unlocked ? `${section.completedCount} / 30 lessons` : `Unlocks after Section ${section.index}`}</Text>
         <View style={styles.sectionTrack}>
           <View style={[styles.sectionFill, { width: `${(section.completedCount / 30) * 100}%` }]} />
         </View>
       </View>
       <View style={styles.headerArrow}>
-        <Feather name="chevron-right" size={26} color={COLORS.textOnAccent} />
+        <Feather name="chevron-right" size={26} color={section.unlocked ? COLORS.textOnAccent : COLORS.courseMutedText} />
       </View>
     </TouchableOpacity>
   );
 }
 
-function Coin({
-  label,
-  icon,
-  position,
-  locked,
-  completed,
-  onPress,
-}: {
-  label: string;
-  icon: keyof typeof Feather.glyphMap;
-  position: object;
-  locked: boolean;
-  completed: boolean;
-  onPress: () => void;
+function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, pulse = false, reveal, muted = false }: {
+  label: string; icon: keyof typeof Feather.glyphMap; position: object;
+  locked: boolean; completed: boolean; onPress: () => void;
+  emphasis?: boolean; pulse?: boolean; reveal?: Animated.Value; muted?: boolean;
 }) {
-  const glowIntensity = useRef(new Animated.Value(0.56)).current;
-
-  const setPressed = (pressed: boolean) => {
-    Animated.spring(glowIntensity, {
-      toValue: pressed ? 1 : 0.56,
-      damping: 16,
-      stiffness: 240,
-      mass: 0.55,
-      useNativeDriver: true,
-    }).start();
-  };
-
+  const pulseValue = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    pulseValue.setValue(0);
+    if (!pulse) return;
+    const animation = Animated.loop(Animated.sequence([
+      Animated.timing(pulseValue, { toValue: 1, duration: 1000, useNativeDriver: true }),
+      Animated.timing(pulseValue, { toValue: 0, duration: 1000, useNativeDriver: true }),
+    ]));
+    animation.start();
+    return () => animation.stop();
+  }, [pulse, pulseValue]);
+  const fill = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedFill, COLORS.accent] }) : muted || locked ? COLORS.courseMutedFill : COLORS.accent;
+  const iconColor = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedText, COLORS.textOnAccent] }) : muted || locked ? COLORS.courseMutedText : COLORS.textOnAccent;
+  const labelColor = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedText, COLORS.accent] }) : muted || locked ? COLORS.courseMutedText : COLORS.accent;
   return (
     <View style={[styles.coinPosition, position]}>
-      {!locked ? (
-        <>
-          <Animated.View
-            pointerEvents="none"
-            style={[styles.coinGlowWide, { opacity: glowIntensity }]}
-          />
-          <Animated.View
-            pointerEvents="none"
-            style={[styles.coinGlowNear, { opacity: glowIntensity }]}
-          />
-        </>
-      ) : null}
-      <TouchableOpacity
-        style={[styles.coinShadow, locked && styles.coinLocked]}
-        onPress={onPress}
-        onPressIn={() => setPressed(true)}
-        onPressOut={() => setPressed(false)}
-        activeOpacity={0.82}
-        accessibilityRole="button"
-        accessibilityLabel={`${label}${locked ? ', locked' : completed ? ', complete' : ''}`}
-        accessibilityState={{ disabled: locked }}
-      >
-        <View style={[styles.coinFace, locked && styles.coinFaceLocked]}>
-          <Feather
-            name={locked ? 'lock' : completed ? 'check' : icon}
-            size={locked ? 23 : 29}
-            color={locked ? COLORS.textMuted : COLORS.textOnAccent}
-          />
-        </View>
-      </TouchableOpacity>
-      <Text style={[styles.coinLabel, locked && styles.lockedText]} numberOfLines={1}>{label}</Text>
+      <View style={styles.coinSlot}>
+        {pulse && <Animated.View pointerEvents="none" style={[styles.lessonPulse, {
+          opacity: pulseValue.interpolate({ inputRange: [0, 1], outputRange: [0.08, 0.18] }),
+          transform: [{ scale: pulseValue.interpolate({ inputRange: [0, 1], outputRange: [1, 1.14] }) }],
+        }]} />}
+        <TouchableOpacity onPress={onPress} activeOpacity={0.82} accessibilityRole="button" accessibilityLabel={`${label}${locked ? ', locked' : completed ? ', complete' : ''}`} style={styles.coinTouch}>
+          <Animated.View style={[styles.coinFace, { backgroundColor: fill, transform: [{ scale: emphasis ? 1.12 : 1 }] }]}>
+            <AnimatedFeather name={locked ? 'lock' : completed ? 'check' : icon} size={29} color={iconColor} />
+          </Animated.View>
+        </TouchableOpacity>
+      </View>
+      <Animated.Text style={[styles.coinLabel, { color: labelColor }]} numberOfLines={1}>{label}</Animated.Text>
     </View>
   );
 }
@@ -256,6 +233,8 @@ function SectionCluster({
   onModule,
   onLeo,
   onHeader,
+  activityReveal,
+  reduceMotion,
 }: {
   section: SectionAccess;
   lesson?: CourseLesson;
@@ -271,6 +250,8 @@ function SectionCluster({
   onModule: (kind: ModuleKind) => void;
   onLeo: () => void;
   onHeader: () => void;
+  activityReveal: Animated.Value[];
+  reduceMotion: boolean;
 }) {
   const moduleComplete = (kind: ModuleKind) => {
     if (!activeSection) return kind === 'lesson' && Boolean(lesson?.completed);
@@ -293,13 +274,13 @@ function SectionCluster({
       <View style={styles.weekHeading}>
         <View style={styles.weekHeadingCopy}>
           <Text style={styles.weekEyebrow}>{section.unlocked ? `DAY ${section.displayDay}` : `DAYS ${section.startDay}–${section.endDay}`}</Text>
-          <MovingLessonTitle title={weekTitle} long={longTitle} active={isFocused && activeSection && section.unlocked && !lessonCompletedToday && !lesson?.completed} />
+          {!section.unlocked ? <Text style={[styles.weekTitle, styles.lockedText]}>{weekTitle}</Text> : <MovingLessonTitle title={weekTitle} long={longTitle} active={isFocused && activeSection && section.unlocked && !lessonCompletedToday && !lesson?.completed} />}
           <Text style={styles.lessonMeta}>{marketName} · 6 min</Text>
         </View>
         {!section.unlocked ? (
           <View style={styles.lockPill}>
             <Feather name="lock" size={12} color={COLORS.textMuted} />
-            <Text style={styles.lockPillText}>Finish Section {section.index}</Text>
+            <Text style={styles.lockPillText}>Unlocks after Section {section.index}</Text>
           </View>
         ) : null}
       </View>
@@ -330,11 +311,15 @@ function SectionCluster({
           return (
             <Coin
               key={module.kind}
-              label={module.label}
+              label={activeSection && module.kind === 'lesson' && !lessonCompletedToday ? 'Start here' : module.label}
               icon={module.icon}
               position={module.position}
               locked={locked}
-              completed={moduleComplete(module.kind)}
+              completed={activeSection && module.kind === 'lesson' ? lessonCompletedToday : moduleComplete(module.kind)}
+              emphasis={activeSection && module.kind === 'lesson' && !lessonCompletedToday}
+              pulse={isFocused && activeSection && module.kind === 'lesson' && !lessonCompletedToday && !reduceMotion}
+              muted={activeSection && module.kind !== 'lesson' && !lessonCompletedToday}
+              reveal={activeSection && module.kind !== 'lesson' ? activityReveal[['notes', 'arena', 'intel', 'case'].indexOf(module.kind)] : undefined}
               onPress={() => onModule(module.kind)}
             />
           );
@@ -454,10 +439,48 @@ export function CourseJourney({
   onAskLeo,
   belowToday,
 }: CourseJourneyProps) {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const activityReveal = useRef(Array.from({ length: 4 }, () => new Animated.Value(lessonCompletedToday ? 1 : 0))).current;
+  const seenReveals = useRef(new Set<string>()).current;
+  const now = new Date();
+  const localDay = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+  const revealKey = `@marketlingo/home-reveal/${user?.id ?? 'guest'}/${marketId}/${localDay}`;
+  useEffect(() => {
+    let active = true;
+    AccessibilityInfo.isReduceMotionEnabled().then(value => { if (active) setReduceMotion(value); }).catch(() => {});
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    return () => { active = false; subscription.remove(); };
+  }, []);
+  useEffect(() => {
+    if (!lessonCompletedToday) {
+      activityReveal.forEach(value => value.setValue(0));
+      return;
+    }
+    if (!isFocused || loading) return;
+    let active = true;
+    let animation: Animated.CompositeAnimation | undefined;
+    const reveal = async () => {
+      const seen = seenReveals.has(revealKey) || await AsyncStorage.getItem(revealKey).catch(() => null) === 'seen';
+      if (!active) return;
+      if (seen || reduceMotion) {
+        activityReveal.forEach(value => value.setValue(1));
+      } else {
+        activityReveal.forEach(value => value.setValue(0));
+        animation = Animated.stagger(80, activityReveal.map(value => Animated.timing(value, { toValue: 1, duration: 250, useNativeDriver: false })));
+        triggerHaptic('light').catch(() => {});
+        animation.start();
+      }
+      seenReveals.add(revealKey);
+      void AsyncStorage.setItem(revealKey, 'seen').catch(() => {});
+    };
+    void reveal();
+    return () => { active = false; animation?.stop(); };
+  }, [lessonCompletedToday, isFocused, loading, revealKey, reduceMotion, activityReveal, seenReveals]);
   const listRef = useRef<FlatList<SectionAccess>>(null);
   const initialPositioned = useRef(false);
   const [lessons, setLessons] = useState<CourseLesson[]>([]);
-  const [loading, setLoading] = useState(true);
   const loadedMarket = useRef<string | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [loadKey, setLoadKey] = useState(0);
@@ -647,12 +670,9 @@ export function CourseJourney({
           const lesson = lessons.find(entry => entry.day === section.displayDay);
           const displayedLesson = lessons.find(entry => entry.day === section.displayDay);
           const sectionLead = lessons.find(entry => entry.day === section.startDay);
-          const lockedTeasers = ['Locked Dossier', 'Uncharted Territory', 'Next Module Locked'];
           const weekTitle = section.unlocked
-            ? displayedLesson?.title || `Day ${section.displayDay}`
-            : sectionLead?.authored
-              ? sectionLead.title
-              : lockedTeasers[section.index % lockedTeasers.length];
+            ? displayedLesson?.title || dayPromise(marketId, section.displayDay)
+            : themes[section.index] || sectionLead?.title || dayPromise(marketId, section.startDay);
           const activeSection = section.index === focusedSectionIndex;
           return (
             <View>
@@ -665,6 +685,8 @@ export function CourseJourney({
               activeSection={activeSection}
                lessonCompletedToday={lessonCompletedToday}
                isFocused={isFocused}
+               activityReveal={activityReveal}
+               reduceMotion={reduceMotion}
               arenaCompletedToday={arenaCompletedToday}
               caseCompletedToday={caseCompletedToday}
               intelDone={intelReadToday >= intelTarget}
@@ -803,7 +825,7 @@ const styles = StyleSheet.create({
   streakCountdown: { ...TYPE.caption, color: COLORS.error, fontWeight: '800', fontVariant: ['tabular-nums'] },
   sectionBlock: { paddingHorizontal: 18, marginBottom: 26 },
   sectionHeader: { minHeight: 98, borderRadius: 20, paddingHorizontal: 18, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.courseHeader, shadowColor: COLORS.courseHeaderDeep, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.24, shadowRadius: 14, elevation: 7 },
-  sectionHeaderLocked: { opacity: 0.82 },
+  sectionHeaderLocked: { backgroundColor: COLORS.courseMutedFill, shadowOpacity: 0, elevation: 0 },
   sectionHeaderCopy: { flex: 1, minWidth: 0, paddingRight: 14 },
   sectionEyebrow: { ...TYPE.overline, color: 'rgba(255,255,255,0.75)' },
   sectionTitle: { fontSize: 20, lineHeight: 24, fontWeight: '800', color: COLORS.textOnAccent, marginTop: 4 },
@@ -845,7 +867,10 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.courseCoinHighlight,
     shadowColor: COLORS.accent, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.46, shadowRadius: 18, elevation: 10,
   },
-  coinFace: { width: 81, height: 81, borderRadius: 41, backgroundColor: COLORS.courseCoin, alignItems: 'center', justifyContent: 'center' },
+  coinSlot: { width: 94, height: 94, alignItems: 'center', justifyContent: 'center' },
+  coinTouch: { width: 94, height: 94, alignItems: 'center', justifyContent: 'center' },
+  lessonPulse: { position: 'absolute', width: 100, height: 100, borderRadius: 50, borderWidth: 3, borderColor: COLORS.accent },
+  coinFace: { width: 84, height: 84, borderRadius: 42, alignItems: 'center', justifyContent: 'center' },
   coinLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border, shadowColor: COLORS.cardShadow, shadowOpacity: 0.1, elevation: 3 },
   coinFaceLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border },
   coinLabel: { ...TYPE.caption, color: COLORS.textPrimary, marginTop: 7, textAlign: 'center' },

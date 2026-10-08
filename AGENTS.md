@@ -7,6 +7,8 @@
 - Keep the website demo aligned with the phone’s universal three-concept AI lesson while showing preview-only rewards, because web visitors must not mistake a preview for credited app progress.
 - Phone first-open order is Industry → Goal → Level → sign-up → walkthrough, with guest choices kept on-device and attached after sign-up, because new users must see their path before creating an account.
 - Daily lesson cards share rendered-copy disclosure/term guards, respect optional lives, and use one XP ledger with score-based headlines, because hidden copy and unitemized rewards undermine lesson trust.
+- LessonScreen owns beat transitions and the header overflow while reading-card roles share a presentation classifier, because presentation changes must not alter lesson copy or grading.
+- Home ring hierarchy follows credited local-day lesson completion, with presentation-only reveal state retained across focus changes; section access and module actions stay unchanged because muted circles are not new locks.
 - Dossier progress and ranks count only learner-written lines (source 'learner'); lessons never write dossier lines on their own, and legacy 'lesson' lines appear only as suggestions to rewrite, because progress must reflect the learner's own thinking.
 - Select Say it prompts using shared lesson-section hints and reject punctuation-only suggestion rewrites in both the editor and save hook, because lesson relevance and authorship must hold beyond presentation.
 - Persist dossier editor snapshots on-device scoped to learner, market, and goal; edit learner entries in place and commit only through Save or Return; Cancel and unchanged Return close without discarding drafts or refocusing, because keyboard dismissal must not silently publish learner text.

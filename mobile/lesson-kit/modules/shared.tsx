@@ -35,13 +35,9 @@ export function tap() {
   playSound('tap').catch(() => {});
 }
 
-/** A value that springs to 1 whenever `key` changes — used for entrances. */
+/** Module-local entrances stay neutral; LessonScreen owns the shared transition. */
 export function useEnter(key: string | number) {
-  const anim = React.useRef(new Animated.Value(0)).current;
-  React.useEffect(() => {
-    anim.setValue(0);
-    Animated.spring(anim, { toValue: 1, friction: 7, tension: 60, useNativeDriver: true }).start();
-  }, [key, anim]);
+  const anim = React.useRef(new Animated.Value(1)).current;
   return anim;
 }
 
@@ -69,7 +65,7 @@ export const styles = StyleSheet.create({
   eyebrow: {
     fontSize: 11,
     fontWeight: '800',
-    letterSpacing: 1.2,
+    letterSpacing: 0,
     color: tokens.color.accent,
   },
   prompt: {

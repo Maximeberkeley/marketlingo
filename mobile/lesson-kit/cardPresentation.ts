@@ -1,6 +1,17 @@
 import type { Exercise, KeyTerm } from './types';
 import { shortLabel, shortText } from './text';
 
+/** Presentation only: preserve all authored/generated text and grading. */
+export function readingCardKind(exercise: Exercise): 'idea' | 'evidence' | 'takeaway' {
+  const label = ['eyebrow', 'title', 'detailTitle'].map(key => {
+    const value = (exercise as unknown as Record<string, unknown>)[key];
+    return typeof value === 'string' ? value : '';
+  }).join(' ');
+  if (/takeaway/i.test(exercise.id) || /\b(lock it in|takeaway|the rule|what to remember)\b/i.test(label)) return 'takeaway';
+  if (/\b(evidence|proof|quote|case study|in the real world)\b/i.test(label)) return 'evidence';
+  return 'idea';
+}
+
 /** Compare rendered copy, not formatting or hidden briefing text. */
 export function normalizedCopy(text = ''): string {
   return text.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();

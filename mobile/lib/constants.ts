@@ -86,6 +86,8 @@ const LIGHT_COLORS = {
   courseCoinDeep: '#4338CA',
   courseCoinHighlight: 'rgba(255, 255, 255, 0.34)',
   lockedSurface: '#EEF0F5',
+  courseMutedFill: '#EEF0F4',
+  courseMutedText: '#6B7280',
 };
 
 // Premium dark: warm-neutral greys in layered shades, never pure black.
@@ -146,6 +148,8 @@ const DARK_COLORS: typeof LIGHT_COLORS = {
   courseCoinDeep: '#5148CF',
   courseCoinHighlight: 'rgba(255, 255, 255, 0.28)',
   lockedSurface: '#2A2F36',
+  courseMutedFill: '#2A2F36',
+  courseMutedText: '#AAB1BC',
 };
 
 export const COLORS = isDark ? DARK_COLORS : LIGHT_COLORS;

@@ -1,4 +1,16 @@
 import { shortLabel, shortText } from './text';
+/** Presentation only: preserve all authored/generated text and grading. */
+export function readingCardKind(exercise) {
+    const label = ['eyebrow', 'title', 'detailTitle'].map(key => {
+        const value = exercise[key];
+        return typeof value === 'string' ? value : '';
+    }).join(' ');
+    if (/takeaway/i.test(exercise.id) || /\b(lock it in|takeaway|the rule|what to remember)\b/i.test(label))
+        return 'takeaway';
+    if (/\b(evidence|proof|quote|case study|in the real world)\b/i.test(label))
+        return 'evidence';
+    return 'idea';
+}
 /** Compare rendered copy, not formatting or hidden briefing text. */
 export function normalizedCopy(text = '') {
     return text.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();

@@ -8,7 +8,7 @@ export function FeedbackFooter({ isCorrect, explanation, correctAnswer }) {
     const [expanded, setExpanded] = useState(false);
     const tint = isCorrect ? tokens.color.correctDark : tokens.color.incorrectDark;
     const hasMore = Boolean(explanation && explanation.length > 150);
-    return (<View style={[styles.wrap, { backgroundColor: isCorrect ? tokens.color.correctSoft : tokens.color.incorrectSoft }]}>
+    return (<View style={styles.wrap}>
       <View style={styles.headRow}>
         <Feather name={isCorrect ? 'check-circle' : 'x-circle'} size={20} color={tint}/>
         <Text style={[styles.title, { color: tint }]}>
@@ -28,8 +28,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: tokens.space.lg,
         paddingTop: tokens.space.md,
         paddingBottom: tokens.space.sm,
-        borderTopLeftRadius: tokens.radius.xl,
-        borderTopRightRadius: tokens.radius.xl,
+        backgroundColor: tokens.color.bg,
     },
     headRow: { flexDirection: 'row', alignItems: 'center', gap: tokens.space.sm },
     title: { fontSize: tokens.font.prompt, fontWeight: '800' },
