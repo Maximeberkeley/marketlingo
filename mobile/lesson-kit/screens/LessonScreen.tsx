@@ -162,8 +162,11 @@ export function LessonScreen({
     if (!combined || !exercise || measuredCard?.id !== exercise.id || cardSpace <= 0 || measuredCard.height <= cardSpace) return;
     // Native layout includes real text wrapping, font scaling, panels and controls.
     // Restore both originals before showing an overflowing combined card.
-    setQueue(current => current.flatMap(card => card.id === exercise.id && card.kind === 'microInsight'
-      ? card.mergedCards || [card] : [card]));
+    setQueue(current => {
+      const position = current.findIndex(card => card.id === exercise.id);
+      if (position < 0) return current;
+      return [...current.slice(0, position), ...(exercise.kind === 'microInsight' ? exercise.mergedCards || [exercise] : [exercise]), ...current.slice(position + 1)];
+    });
     setMeasuredCard(null);
   }, [combined, exercise, measuredCard, cardSpace]);
   const sourceIndex = lesson.exercises.findIndex(card => card.id === exercise?.id ||
@@ -326,7 +329,7 @@ export function LessonScreen({
     );
   }
 
-  const buttonVariant = phase === 'feedback' || isInfo || state.canCheck ? 'primary' : 'disabled';
+  const buttonVariant = combined && !combinedFits ? 'disabled' : phase === 'feedback' || isInfo || state.canCheck ? 'primary' : 'disabled';
 
   const buttonLabel = isInfo ? 'Continue' : phase === 'answering' ? 'Check' : 'Continue';
 
@@ -342,6 +345,7 @@ export function LessonScreen({
 
       {!!pop && (
         <Animated.View
+          key={exercise.id}
           pointerEvents="none"
           style={[
             styles.pop,
