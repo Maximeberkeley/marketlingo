@@ -16,6 +16,6 @@ export function lessonRewards(baseXp: number, accuracy: number, total: number,
   if (bestCombo >= 3) lines.push({ label: `${bestCombo} in a row`, xp: bestCombo * 3 });
   if (total > 0 && timeSpentSeconds > 0 && timeSpentSeconds < 180 && accuracy >= 80)
     lines.push({ label: 'Sharp and quick', xp: 15 });
-  lines.push({ label: 'Daily lesson', xp: 5 + Math.floor(Math.random() * 16) });
+  lines.push({ label: 'Daily lesson', xp: 10 });
   return lines;
 }
