@@ -169,9 +169,8 @@ const styles = StyleSheet.create({
   skip: { alignSelf: 'center', paddingVertical: 4 },
   skipText: { fontSize: tokens.font.caption, color: tokens.color.textSecondary },
   mine: {
-    borderLeftWidth: 3,
-    borderLeftColor: tokens.color.accent,
-    paddingLeft: tokens.space.md,
+    paddingHorizontal: tokens.space.md,
+    backgroundColor: tokens.color.accentSoft,
     paddingVertical: 4,
   },
   mineText: { fontSize: tokens.font.body, color: tokens.color.text, lineHeight: 24, fontWeight: '600' },

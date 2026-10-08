@@ -15,6 +15,11 @@ const LIGHT_COLOR = {
     accent: '#8B5CF6',
     accentDark: '#7C3AED',
     accentSoft: 'rgba(139, 92, 246, 0.10)',
+    lessonAccent: '#8B5CF6',
+    coldOpen: '#171B26',
+    coldOpenText: '#FFFFFF',
+    evidence: '#F3F4F6',
+    scrim: 'rgba(15,17,26,0.55)',
 
     signalData: '#0EA5E9',
     signalUp: '#16A34A',
@@ -51,6 +56,11 @@ const DARK_COLOR = {
     accent: '#A78BFA',
     accentDark: '#8B5CF6',
     accentSoft: 'rgba(167, 139, 250, 0.16)',
+    lessonAccent: '#8B5CF6',
+    coldOpen: '#171B26',
+    coldOpenText: '#F2F4F8',
+    evidence: '#23272E',
+    scrim: 'rgba(15,17,26,0.55)',
 
     signalData: '#38BDF8',
     signalUp: '#34D399',
@@ -94,7 +104,7 @@ export const tokens = {
     xxl: 32,
   },
   size: {
-    progressBar: 12,
+    progressBar: 3,
     buttonHeight: 56,
     choiceMinHeight: 62,
     tileHeight: 44,
