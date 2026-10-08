@@ -35,18 +35,18 @@ export function ColdOpen({ exercise, onChange }) {
     </View>);
 }
 const styles = StyleSheet.create({
-    wrap: { flexGrow: 1, flexBasis: 0, minWidth: 0, maxWidth: '100%', alignSelf: 'stretch' },
+    wrap: { flexGrow: 1, flexShrink: 0, minWidth: 0, maxWidth: '100%', alignSelf: 'stretch' },
     card: {
-        flexGrow: 1, flexBasis: 0, minWidth: 0, maxWidth: '100%',
+        flexGrow: 1, flexShrink: 0, minWidth: 0, maxWidth: '100%',
         backgroundColor: tokens.color.coldOpen,
         minHeight: 300,
         padding: tokens.space.xl,
     },
-    coverSky: { flexGrow: 2, flexBasis: 0 },
+    coverSky: { flexGrow: 0.42, flexBasis: 0 },
     coverCopy: { flexShrink: 0, gap: tokens.space.md },
-    coverFoot: { flexGrow: 1, flexBasis: 0 },
+    coverFoot: { flexGrow: 0.58, flexBasis: 0 },
     eyebrow: {
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: '900',
         letterSpacing: 0,
         color: tokens.color.coldOpenText,

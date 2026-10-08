@@ -1,12 +1,13 @@
 import { getIndustryPack } from '../industry/packs';
 import { makeColdOpen, makeMicroInsight, norm, sentences, shuffle } from './extract';
 import { splitSentences } from '../../lib/textUtils';
+import { cardCopy, readingCardKind } from '../cardPresentation';
 const clean = (s) => s.replace(/\s+/g, ' ').trim();
 const STARTUP_PREFIX = /^\s*for your startup\s*[:,\u2014\u2013-]?\s*/i;
 /** Keep the sentence, minus its "For your startup:" lead-in. */
 const stripStartup = (s) => {
-  const rest = s.replace(STARTUP_PREFIX, '');
-  return rest === s ? s : rest.charAt(0).toUpperCase() + rest.slice(1);
+    const rest = s.replace(STARTUP_PREFIX, '');
+    return rest === s ? s : rest.charAt(0).toUpperCase() + rest.slice(1);
 };
 /** Strip the "For your startup:" prefix unless the learner is building a startup. */
 export function filterForGoal(text, learningGoal) {
@@ -35,8 +36,38 @@ function visibleLines(ex) {
             out.push(e.text);
         if (e.highlight && e.highlight.length <= 100)
             out.push(e.highlight);
+        if (ex.body)
+            out.push(...cardCopy(ex).slice(1, 2));
     }
     return out.flatMap(t => splitSentences(clean(t))).map(clean).filter(s => s.length >= 30);
+}
+/** Merge only adjacent insights, never across a check or into the opening/rule. */
+export function mergeThinReadingCards(exercises, slideNumbers) {
+    const merged = [];
+    const numbers = [];
+    for (let index = 0; index < exercises.length; index += 1) {
+        const first = exercises[index];
+        const next = exercises[index + 1];
+        const words = cardCopy(first).join(' ').trim().split(/\s+/).filter(Boolean).length;
+        if (first.kind === 'microInsight' && next?.kind === 'microInsight' && words < 25 &&
+            readingCardKind(first) !== 'takeaway' && readingCardKind(next) !== 'takeaway') {
+            const firstCopy = cardCopy(first);
+            const nextCopy = cardCopy(next);
+            merged.push({ ...first, text: firstCopy[0],
+                body: [...firstCopy.slice(1), ...nextCopy].filter(Boolean).join('\n\n'), highlight: undefined,
+                fullText: [first.fullText, next.fullText].filter(Boolean).join('\n\n'),
+                keyTerms: [...(first.keyTerms || (first.keyTerm ? [first.keyTerm] : [])), ...(next.keyTerms || (next.keyTerm ? [next.keyTerm] : []))],
+                sources: [...(first.sources || []), ...(next.sources || [])],
+            });
+            numbers.push(slideNumbers[index]);
+            index += 1;
+        }
+        else {
+            merged.push(first);
+            numbers.push(slideNumbers[index]);
+        }
+    }
+    return { lesson: { id: '', title: '', exercises: merged }, slideNumbers: numbers };
 }
 const isYear = (n) => Number.isInteger(n) && n >= 1900 && n <= 2099;
 /** Change one real quantity in a sentence (never a year or a designation). */
@@ -136,13 +167,14 @@ export function buildBeats(stackTitle, rawSlides, metadata, industry) {
             detailTitle: 'What to remember',
         }, lastSlide);
     }
+    const merged = mergeThinReadingCards(exercises, slideNumbers);
     return {
         lesson: {
             id: stackTitle,
             title: stackTitle,
-            exercises,
+            exercises: merged.lesson.exercises,
         },
-        slideNumbers,
+        slideNumbers: merged.slideNumbers,
     };
 }
 export { sentences };

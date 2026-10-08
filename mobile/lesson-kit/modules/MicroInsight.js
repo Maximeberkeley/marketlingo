@@ -6,7 +6,8 @@ import { tokens } from '../theme/tokens';
 import { ColorText } from '../components/ColorText';
 import { shortLabel } from '../text';
 import { BriefingReader } from '../components/BriefingReader';
-import { cardTerms, hasExtraBriefing, readingCardKind } from '../cardPresentation';
+import { cardCopy, cardTerms, hasExtraBriefing, readingCardKind } from '../cardPresentation';
+import { ReadingCopy } from '../components/ReadingCopy';
 /** Micro-insight — two lines max, big type, one idea to carry forward. */
 export function MicroInsight({ exercise, onChange }) {
     const kind = readingCardKind(exercise);
@@ -14,16 +15,17 @@ export function MicroInsight({ exercise, onChange }) {
     const [showTerm, setShowTerm] = useState(false);
     const keyTerm = cardTerms(exercise)[0];
     const hasBriefing = hasExtraBriefing(exercise);
+    const [headline, body, highlight] = cardCopy(exercise);
     useEffect(() => {
         onChange({ canCheck: true, isCorrect: true });
     }, [exercise.id]);
     return (<View style={[styles.wrap, kind === 'takeaway' && styles.takeaway]}>
       {kind === 'takeaway' ? <Text style={styles.eyebrow}>The rule</Text> : !!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow).toUpperCase()}</Text>}
       <View style={kind === 'evidence' ? styles.evidence : undefined}>
-        <ColorText text={exercise.text} style={kind === 'evidence' ? styles.quote : styles.text} maxSentences={2} maxLength={150}/>
+        <ReadingCopy text={headline} body={body} evidence={kind === 'evidence'} preserveCover={kind === 'takeaway'}/>
       </View>
-      {!!exercise.highlight && (<View style={styles.highlight}>
-          <ColorText text={exercise.highlight} style={styles.highlightText} maxSentences={1} maxLength={100}/>
+      {!!highlight && (<View style={styles.highlight}>
+          <ReadingCopy text="" body={highlight} preserveCover={kind === 'takeaway'}/>
         </View>)}
       {!!keyTerm && (<TouchableOpacity accessibilityRole="button" accessibilityState={{ expanded: showTerm }} accessibilityLabel={`${showTerm ? 'Hide' : 'Show'} definition for ${keyTerm.term}`} activeOpacity={0.84} style={styles.term} onPress={() => {
                 Haptics.selectionAsync().catch(() => { });
@@ -48,7 +50,7 @@ const styles = StyleSheet.create({
     takeaway: { backgroundColor: tokens.color.accentSoft, borderRadius: tokens.radius.lg, padding: tokens.space.xl },
     evidence: { backgroundColor: tokens.color.evidence, borderRadius: tokens.radius.md, padding: tokens.space.xl },
     quote: { fontSize: 22, lineHeight: 30, color: tokens.color.text, fontWeight: '500' },
-    eyebrow: { fontSize: 11, fontWeight: '800', letterSpacing: 0, color: tokens.color.accent },
+    eyebrow: { fontSize: 12, fontWeight: '800', letterSpacing: 0, color: tokens.color.accent },
     text: { fontSize: 28, fontWeight: '800', color: tokens.color.text, lineHeight: 32 },
     highlight: {
         paddingTop: tokens.space.sm,
