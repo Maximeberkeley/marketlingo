@@ -195,7 +195,11 @@ export function sectionForLesson(
 ): DeliverableSection {
   const scored = template.sections.map(section => {
     const hint = SECTION_HINTS[section.key];
-    const occurrences = (text: string) => hint ? (text.match(new RegExp(hint.source, `${hint.flags}g`)) ?? []).length : 0;
+    const occurrences = (text: string) => {
+      if (!hint) return 0;
+      if (typeof hint === 'function') return hint(text) ? 1 : 0;
+      return (text.match(new RegExp(hint.source, `${hint.flags}g`)) ?? []).length;
+    };
     const score = slides.reduce((sum, slide) => sum + occurrences(slide.title ?? '') * 3 + occurrences(slide.body), 0);
     return { section, score };
   }).filter(item => item.score > 0).sort((a, b) => b.score - a.score);
