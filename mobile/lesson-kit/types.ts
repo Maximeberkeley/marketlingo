@@ -32,6 +32,10 @@ export interface MicroInsightExercise {
   text: string;
   /** Visible secondary copy when adjacent thin reading cards are combined. */
   body?: string;
+  /** Original reading cards retained until their combined native layout fits. */
+  mergedCards?: MicroInsightExercise[];
+  /** Source mapping remains stable when a combined card is split for layout. */
+  sourceSlideNumber?: number;
   highlight?: string;
   keyTerm?: KeyTerm;
   keyTerms?: KeyTerm[];

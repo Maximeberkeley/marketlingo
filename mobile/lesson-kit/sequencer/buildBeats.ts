@@ -93,6 +93,8 @@ export function mergeThinReadingCards(exercises: Exercise[], slideNumbers: numbe
       const firstCopy = cardCopy(first);
       const nextCopy = cardCopy(next);
       merged.push({ ...first, text: firstCopy[0],
+        mergedCards: [{ ...first, sourceSlideNumber: slideNumbers[index] }, { ...next, sourceSlideNumber: slideNumbers[index + 1] }],
+        sourceSlideNumber: slideNumbers[index],
         body: [...firstCopy.slice(1), ...nextCopy].filter(Boolean).join('\n\n'), highlight: undefined,
         fullText: [first.fullText, next.fullText].filter(Boolean).join('\n\n'),
         keyTerms: [...(first.keyTerms || (first.keyTerm ? [first.keyTerm] : [])), ...(next.keyTerms || (next.keyTerm ? [next.keyTerm] : []))],
