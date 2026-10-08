@@ -126,6 +126,8 @@ interface CourseJourneyProps {
   safeTop: number;
   onOpenLesson: (stackId: string) => void;
   onAskLeo: (day?: number) => void;
+  /** Small card shown under today's lesson section (the learner's dossier progress). */
+  belowToday?: React.ReactNode;
 }
 
 type ModuleKind = 'lesson' | 'arena' | 'case' | 'intel' | 'notes';
@@ -450,6 +452,7 @@ export function CourseJourney({
   safeTop,
   onOpenLesson,
   onAskLeo,
+  belowToday,
 }: CourseJourneyProps) {
   const listRef = useRef<FlatList<SectionAccess>>(null);
   const initialPositioned = useRef(false);
@@ -652,6 +655,7 @@ export function CourseJourney({
               : lockedTeasers[section.index % lockedTeasers.length];
           const activeSection = section.index === focusedSectionIndex;
           return (
+            <View>
             <SectionCluster
               section={section}
               lesson={lesson}
@@ -668,6 +672,8 @@ export function CourseJourney({
               onLeo={() => onAskLeo(section.displayDay)}
               onModule={kind => handleModule(section, lesson, kind)}
             />
+            {activeSection ? belowToday : null}
+            </View>
           );
         }}
       />

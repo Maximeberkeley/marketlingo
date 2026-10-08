@@ -7,6 +7,10 @@ import { buildBeats } from '../../lesson-kit/sequencer/buildBeats';
 import { useIndustryContent } from '../../hooks/useIndustryContent';
 import { parseSlideIntoCards } from './ConceptCard';
 import { DeepDiveProvider } from '../../lesson-kit/components/DeepDiveContext';
+/** Authored fields win, but only when actually set. */
+function stripUndefined(value) {
+    return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined && v !== null && v !== ''));
+}
 /**
  * Adapts a stack of lesson slides into a sequence of playable beats.
  * Key terms come from the existing slide parser; everything else is derived
@@ -15,22 +19,19 @@ import { DeepDiveProvider } from '../../lesson-kit/components/DeepDiveContext';
 // Day 1 guardrail: a first lesson must never refer to a "yesterday".
 const PRIOR_RE = /^[^.!?]*\b(yesterday|last time|previous lesson|in our orientation)\b[^.!?]*[.!?]\s*/i;
 function firstDayText(title, body) {
-  return {
-    title: String(title || '').replace(/^recap:\s*/i, 'Foundation: ').replace(/yesterday's\s+/i, 'The '),
-    body: String(body || '').replace(PRIOR_RE, ''),
-  };
+    return {
+        title: String(title || '').replace(/^recap:\s*/i, 'Foundation: ').replace(/yesterday's\s+/i, 'The '),
+        body: String(body || '').replace(PRIOR_RE, ''),
+    };
 }
-
-
 /** A hand-written lesson is usable only if it has an exercises array with at least one beat. */
 function isAuthoredLesson(value) {
-  const v = value;
-  return !!v && typeof v === 'object' && Array.isArray(v.exercises) && v.exercises.length > 0;
+    const v = value;
+    return !!v && typeof v === 'object' && Array.isArray(v.exercises) && v.exercises.length > 0;
 }
-
 function buildLesson(stackTitle, slides, marketId, metadata, industry, isFirstDay = false) {
     const enriched = slides.map((raw, slideIdx) => {
-    const slide = isFirstDay ? { ...raw, ...firstDayText(raw.title, raw.body) } : raw;
+        const slide = isFirstDay ? { ...raw, ...firstDayText(raw.title, raw.body) } : raw;
         const cards = parseSlideIntoCards(slide.title, slide.body, slide.sources || [], slideIdx, marketId);
         const keyTerms = cards.flatMap((c) => c.keyTerms || []);
         return {
@@ -45,15 +46,42 @@ function buildLesson(stackTitle, slides, marketId, metadata, industry, isFirstDa
 }
 export function LessonKitReader({ stackTitle, slides, onClose, onComplete, onSaveInsight, onAddNote, marketId, isReview = false, streakDays, dayNumber, metadata, stackId, learningGoal, authoredLesson, }) {
     const { trainer, drills, stats } = useIndustryContent(marketId, dayNumber);
-    const { lesson, slideNumbers } = useMemo(() => isAuthoredLesson(authoredLesson)
+    const { lesson: baseLesson, slideNumbers: baseSlideNumbers } = useMemo(() => isAuthoredLesson(authoredLesson)
         ? { lesson: { ...authoredLesson, id: authoredLesson.id || stackTitle, title: authoredLesson.title || stackTitle }, slideNumbers: authoredLesson.exercises.map(() => slides[0]?.slideNumber ?? 1) }
-        : buildLesson(stackTitle, slides, marketId, metadata, {
-        marketId,
-        trainer,
-        drills,
-        stats,
-        learningGoal,
-    }, dayNumber === 1), [stackTitle, slides, marketId, metadata, trainer, drills, stats, dayNumber, learningGoal, authoredLesson]);
+        :
+            buildLesson(stackTitle, slides, marketId, metadata, {
+                marketId,
+                trainer,
+                drills,
+                stats,
+                learningGoal,
+            }, dayNumber === 1), [stackTitle, slides, marketId, metadata, trainer, drills, stats, dayNumber, learningGoal, authoredLesson]);
+    // "Say it" closes every daily lesson. Hand-written lessons opt in with { kind: 'sayIt' }.
+    const { lesson, slideNumbers } = useMemo(() => {
+        const sayIt = (id = 'beat-say-it') => ({
+            kind: 'sayIt',
+            id,
+            takeaway: metadata?.key_takeaway?.trim() || undefined,
+            dayNumber,
+            learningGoal,
+        });
+        if (isAuthoredLesson(authoredLesson)) {
+            return {
+                lesson: {
+                    ...baseLesson,
+                    exercises: baseLesson.exercises.map(ex => (ex.kind === 'sayIt'
+                        ? { ...sayIt(ex.id || 'beat-say-it'), ...stripUndefined(ex) }
+                        : ex)),
+                },
+                slideNumbers: baseSlideNumbers,
+            };
+        }
+        const last = baseSlideNumbers[baseSlideNumbers.length - 1] ?? slides[0]?.slideNumber ?? 1;
+        return {
+            lesson: { ...baseLesson, exercises: [...baseLesson.exercises, sayIt()] },
+            slideNumbers: [...baseSlideNumbers, last],
+        };
+    }, [baseLesson, baseSlideNumbers, authoredLesson, metadata, dayNumber, learningGoal, slides]);
     const extraActions = useCallback((exerciseIndex) => {
         const slideNumber = slideNumbers[exerciseIndex] ?? 1;
         return (<View style={styles.actions}>

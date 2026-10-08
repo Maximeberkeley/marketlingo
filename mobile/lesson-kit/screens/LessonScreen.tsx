@@ -20,6 +20,7 @@ import { SpotTheFake } from '../modules/SpotTheFake';
 import { MapMarket } from '../modules/MapMarket';
 import { ChartRead } from '../modules/ChartRead';
 import { TheCall } from '../modules/TheCall';
+import { SayIt } from '../modules/SayIt';
 import { ExerciseState } from '../exercises/types';
 import { LeoCoach, LeoMood } from '../components/LeoCoach';
 
@@ -47,7 +48,7 @@ function exerciseContext(exercise?: Exercise): string {
 const MAX_HEARTS = 3;
 
 /** Beats that need no answer — the button just says Continue. */
-const PASSIVE_KINDS = ['info', 'coldOpen', 'microInsight'] as const;
+const PASSIVE_KINDS = ['info', 'coldOpen', 'microInsight', 'sayIt'] as const;
 const isPassiveKind = (kind?: string) => PASSIVE_KINDS.includes(kind as (typeof PASSIVE_KINDS)[number]);
 
 export interface LessonScreenProps {
@@ -381,7 +382,9 @@ export function LessonScreen({
         keyboardShouldPersistTaps="handled"
       >
         {!!leoCoach && <LeoCoach line={leoCoach.line} mood={leoCoach.mood} accent={world.colors[0]} />}
-        {renderExercise(exercise, phase, handleChange)}
+        {exercise.kind === 'sayIt'
+          ? <SayIt key={exercise.id} exercise={exercise} marketId={marketId} onDone={goNext} />
+          : renderExercise(exercise, phase, handleChange)}
       </ScrollView>
 
 
@@ -418,10 +421,14 @@ export function LessonScreen({
         </TouchableOpacity>
       )}
 
-      <View style={[styles.footer, { paddingBottom: insets.bottom + tokens.space.lg }]}>
-        {renderExtraActions?.(index)}
-        <PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant} />
-      </View>
+      {exercise.kind === 'sayIt' ? (
+        <View style={{ height: insets.bottom + tokens.space.lg }} />
+      ) : (
+        <View style={[styles.footer, { paddingBottom: insets.bottom + tokens.space.lg }]}>
+          {renderExtraActions?.(index)}
+          <PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant} />
+        </View>
+      )}
 
       {/* Leave confirmation — loss aversion */}
       <Modal visible={showExitPrompt} transparent animationType="fade" onRequestClose={() => setShowExitPrompt(false)}>

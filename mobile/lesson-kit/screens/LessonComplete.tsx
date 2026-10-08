@@ -52,8 +52,8 @@ export function LessonComplete({
   const { progress } = useUserProgress(marketId);
   const goal = (progress as { learning_goal?: string } | null)?.learning_goal ?? null;
   const dossier = useDeliverable(marketId, goal);
-  const latestLine = dossier.entries[0];
-  const latestSection = dossier.template.sections.find(s => s.key === latestLine?.sectionKey);
+  const sectionCount = dossier.template.sections.length;
+  const nextSection = dossier.firstOpenSection;
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 100;
   const praise = scoreHeadline(accuracy, total);
   const bonuses = useRef(lessonRewards(baseXp, accuracy, total, bestCombo, heartsLeft, timeSpentSeconds)).current;
@@ -148,7 +148,7 @@ export function LessonComplete({
         <Stat label="Time" value={formatTime(timeSpentSeconds)} />
       </View>
 
-      {/* Lessons add to the brief automatically; editing remains optional. */}
+      {/* Real progress: only sections the learner wrote count. */}
       {!dossier.loading && (
         <TouchableOpacity
           style={styles.dossierCard}
@@ -156,7 +156,7 @@ export function LessonComplete({
           onPress={() => {
             triggerHaptic('medium');
             onDone(totalXp);
-            router.push({ pathname: '/deliverable', params: latestSection ? { section: latestSection.key } : {} });
+            router.push({ pathname: '/deliverable', params: nextSection ? { section: nextSection.key } : {} });
           }}
         >
           <View style={styles.dossierIcon}>
@@ -164,10 +164,10 @@ export function LessonComplete({
           </View>
           <View style={{ flex: 1, minWidth: 0 }}>
             <Text style={styles.dossierEyebrow}>
-              {dossier.template.title.toUpperCase()} · {dossier.completion}% READY
+              {dossier.template.title.toUpperCase()}
             </Text>
-            <Text style={styles.dossierTitle}>{latestLine ? 'Your brief is growing' : 'Your brief starts here'}</Text>
-            <Text style={styles.dossierBody}>{latestLine ? `${latestSection?.title || 'Latest insight'} · ${latestLine.content}` : 'Your lessons add insights automatically. See what you have learned.'}</Text>
+            <Text style={styles.dossierTitle}>{`${dossier.template.title} · ${dossier.filledSections} of ${sectionCount} sections written by you`}</Text>
+            <Text style={styles.dossierBody}>{nextSection ? `Next: ${nextSection.title}` : 'Every section is written. Open it to review or export.'}</Text>
           </View>
           <Feather name="chevron-right" size={18} color={tokens.color.accent} />
         </TouchableOpacity>

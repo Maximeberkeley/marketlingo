@@ -213,7 +213,7 @@ function CurriculumPreview({ visible, section, title, lessons, currentDay, onClo
       </View>
     </Modal>);
 }
-export function CourseJourney({ marketId, currentDay, learningGoal, completedStackIds, streak, totalXp, level, lessonCompletedToday, isFocused, arenaCompletedToday = false, caseCompletedToday = false, intelReadToday, intelTarget, rescueAvailable = false, streakCountdown = null, safeTop, onOpenLesson, onAskLeo, }) {
+export function CourseJourney({ marketId, currentDay, learningGoal, completedStackIds, streak, totalXp, level, lessonCompletedToday, isFocused, arenaCompletedToday = false, caseCompletedToday = false, intelReadToday, intelTarget, rescueAvailable = false, streakCountdown = null, safeTop, onOpenLesson, onAskLeo, belowToday, }) {
     const listRef = useRef(null);
     const initialPositioned = useRef(false);
     const [lessons, setLessons] = useState([]);
@@ -390,7 +390,10 @@ export function CourseJourney({ marketId, currentDay, learningGoal, completedSta
                     ? sectionLead.title
                     : lockedTeasers[section.index % lockedTeasers.length];
             const activeSection = section.index === focusedSectionIndex;
-            return (<SectionCluster section={section} lesson={lesson} title={themes[section.index] || `Section ${section.index + 1}`} weekTitle={weekTitle} marketName={marketName} activeSection={activeSection} lessonCompletedToday={lessonCompletedToday} isFocused={isFocused} arenaCompletedToday={arenaCompletedToday} caseCompletedToday={caseCompletedToday} intelDone={intelReadToday >= intelTarget} onHeader={() => setPreviewSection(section)} onLeo={() => onAskLeo(section.displayDay)} onModule={kind => handleModule(section, lesson, kind)}/>);
+            return (<View>
+            <SectionCluster section={section} lesson={lesson} title={themes[section.index] || `Section ${section.index + 1}`} weekTitle={weekTitle} marketName={marketName} activeSection={activeSection} lessonCompletedToday={lessonCompletedToday} isFocused={isFocused} arenaCompletedToday={arenaCompletedToday} caseCompletedToday={caseCompletedToday} intelDone={intelReadToday >= intelTarget} onHeader={() => setPreviewSection(section)} onLeo={() => onAskLeo(section.displayDay)} onModule={kind => handleModule(section, lesson, kind)}/>
+            {activeSection ? belowToday : null}
+            </View>);
         }}/>
       <CurriculumPreview visible={Boolean(previewSection)} section={previewSection} title={previewSection ? themes[previewSection.index] || `Section ${previewSection.index + 1}` : ''} lessons={lessons} currentDay={currentDay} onClose={() => setPreviewSection(null)} onOpenLesson={lesson => {
             setPreviewSection(null);

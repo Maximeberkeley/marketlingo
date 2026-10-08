@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { View, StyleSheet, Alert, } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, } from 'react-native';
 import { AchievementPopup } from '../../components/achievements/AchievementPopup';
 import { HomeSkeleton } from '../../components/home/HomeSkeleton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,6 +15,7 @@ import { WelcomeBackModal } from '../../components/home/WelcomeBackModal';
 import { LeoStreakGift } from '../../components/home/LeoStreakGift';
 import { useReturnVisit } from '../../hooks/useReturnVisit';
 import { LessonKitReader as SlideReader } from '../../components/slides/LessonKitReader';
+import { Feather } from '@expo/vector-icons';
 import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
 import { MilestoneShareCard } from '../../components/sharing/MilestoneShareCard';
 import { useDailyQuests } from '../../hooks/useDailyQuests';
@@ -22,6 +23,7 @@ import { useQuestRewards } from '../../hooks/useQuestRewards';
 import { useMilestoneSharing } from '../../hooks/useMilestoneSharing';
 import { useHomeData } from '../../hooks/useHomeData';
 import { useSessionFlow } from '../../hooks/useSessionFlow';
+import { triggerHaptic } from '../../lib/haptics';
 import { useStreakFreeze } from '../../hooks/useStreakFreeze';
 import { playSound } from '../../lib/sounds';
 import { useSpacedRepetition } from '../../hooks/useSpacedRepetition';
@@ -276,6 +278,11 @@ export default function HomeScreen() {
         void refreshStreakData.current.refetchProgress();
         return () => setCourseFocused(false);
     }, []));
+    // Dossier lines are written in lessons and on the dossier screen; refresh the count on return.
+    const reloadDossier = deliverable.reload;
+    useFocusEffect(useCallback(() => { void reloadDossier(); }, [reloadDossier]));
+    useEffect(() => { if (!session.showReader)
+        void reloadDossier(); }, [session.showReader, reloadDossier]);
     // Crossing local midnight invalidates yesterday's completion even if the screen stays open.
     const clockDay = localDateString(clockNow);
     const completedOnClockDay = Boolean(dailyCompletion?.lesson_completed && dailyCompletion.completion_date === clockDay);
@@ -437,7 +444,13 @@ export default function HomeScreen() {
                 session.dismissSessionComplete();
             }} onDismiss={() => {
                 session.dismissSessionComplete();
-            }}/>) : selectedMarket ? (<CourseJourney marketId={selectedMarket} currentDay={currentDay} learningGoal={learningGoal} completedStackIds={progress?.completed_stacks || []} streak={streak} totalXp={xpData?.total_xp || 0} level={xpData?.current_level || 1} lessonCompletedToday={completedOnClockDay} isFocused={courseFocused} arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0} caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0} intelReadToday={intelHabit.readToday} intelTarget={intelHabit.target} rescueAvailable={Boolean(streakCountdown)} streakCountdown={streakCountdown} safeTop={insets.top} onOpenLesson={(stackId) => { void openLessonById(stackId); }} onAskLeo={() => setShowLeoChat(true)}/>) : (<HomeSkeleton />)}
+            }}/>) : selectedMarket ? (<CourseJourney marketId={selectedMarket} currentDay={currentDay} learningGoal={learningGoal} completedStackIds={progress?.completed_stacks || []} streak={streak} totalXp={xpData?.total_xp || 0} level={xpData?.current_level || 1} lessonCompletedToday={completedOnClockDay} isFocused={courseFocused} arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0} caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0} intelReadToday={intelHabit.readToday} intelTarget={intelHabit.target} rescueAvailable={Boolean(streakCountdown)} streakCountdown={streakCountdown} safeTop={insets.top} onOpenLesson={(stackId) => { void openLessonById(stackId); }} onAskLeo={() => setShowLeoChat(true)} belowToday={deliverable.loading ? null : (<TouchableOpacity style={styles.dossierChip} activeOpacity={0.85} accessibilityRole="button" onPress={() => { triggerHaptic('light'); router.push('/deliverable'); }}>
+              <Feather name="file-text" size={14} color={COLORS.accent}/>
+              <Text style={styles.dossierChipText} numberOfLines={1}>
+                {`${deliverable.template.title} · ${deliverable.filledSections} of ${deliverable.template.sections.length} sections`}
+              </Text>
+              <Feather name="chevron-right" size={14} color={COLORS.textMuted}/>
+            </TouchableOpacity>)}/>) : (<HomeSkeleton />)}
 
       <MilestoneShareCard visible={milestone.visible} type={milestone.type} data={milestone.data} onDismiss={dismissMilestone}/>
 
@@ -447,6 +460,22 @@ export default function HomeScreen() {
     </View>);
 }
 const styles = StyleSheet.create({
+    dossierChip: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'center',
+        gap: 8,
+        marginTop: 4,
+        marginBottom: 12,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        borderRadius: 999,
+        backgroundColor: COLORS.surfaceSubtle,
+        borderWidth: 1,
+        borderColor: COLORS.accentMedium,
+        maxWidth: '90%',
+    },
+    dossierChipText: { ...TYPE.caption, color: COLORS.textPrimary, fontWeight: '700', flexShrink: 1 },
     container: { flex: 1, backgroundColor: COLORS.bg0 },
     scrollContent: { paddingHorizontal: 20 },
     rescueLink: {
