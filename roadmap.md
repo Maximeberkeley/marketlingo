@@ -1,5 +1,9 @@
 # MarketLingo roadmap
 
+## Purposeful lesson cards
+- [ ] Center cards above midpoint with top-scrolling overflow; enlarge headline/body type and render colon lists as rows.
+- [ ] Merge adjacent thin reading cards without crossing checks or losing displayed text; synchronize paired sources and verify.
+
 ## Lesson polish pass
 - [x] Hide grading-only completion details for reading-only lessons; replace the Intel follow-up screen with a small completion link and direct Continue.
 - [x] Prefer the strongest dossier section match, with a half-score threshold for unwritten sections and no single-number-only matches.
