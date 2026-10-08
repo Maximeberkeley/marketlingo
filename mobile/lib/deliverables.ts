@@ -243,7 +243,7 @@ export function autoDossierLine(
   const sentences = lessonSentences(slides).filter(s => !existing.has(s));
   if (!sentences.length) return null;
   const hint = SECTION_HINTS[section.key];
-  const match = hint ? sentences.find(s => hint.test(s)) : undefined;
+  const match = hint ? sentences.find(s => hintMatches(hint, s)) : undefined;
   // Fallback: the lesson's closing idea (the takeaway sits at the end).
   return { sectionKey: section.key, content: match ?? sentences[sentences.length - 1] };
 }
