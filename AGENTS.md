@@ -8,3 +8,4 @@
 - Phone first-open order is Industry → Goal → Level → sign-up → walkthrough, with guest choices kept on-device and attached after sign-up, because new users must see their path before creating an account.
 - Daily lesson cards share rendered-copy disclosure/term guards, respect optional lives, and use one XP ledger with score-based headlines, because hidden copy and unitemized rewards undermine lesson trust.
 - Dossier progress and ranks count only learner-written lines (source 'learner'); lessons never write dossier lines on their own, and legacy 'lesson' lines appear only as suggestions to rewrite, because progress must reflect the learner's own thinking.
+- Select Say it prompts using shared lesson-section hints and reject punctuation-only suggestion rewrites in both the editor and save hook, because lesson relevance and authorship must hold beyond presentation.

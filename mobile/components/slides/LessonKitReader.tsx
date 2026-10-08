@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { LessonScreen } from '../../lesson-kit/screens/LessonScreen';
@@ -9,6 +9,8 @@ import { useIndustryContent } from '../../hooks/useIndustryContent';
 import { parseSlideIntoCards } from './ConceptCard';
 import { DeepDiveProvider } from '../../lesson-kit/components/DeepDiveContext';
 import type { Exercise, Lesson } from '../../lesson-kit/types';
+import { useDeliverable } from '../../hooks/useDeliverable';
+import { sectionForLesson } from '../../lib/deliverables';
 
 /** Authored fields win, but only when actually set. */
 function stripUndefined<T extends object>(value: T): Partial<T> {
@@ -118,6 +120,17 @@ export function LessonKitReader({
   authoredLesson,
 }: LessonKitReaderProps) {
   const { trainer, drills, stats } = useIndustryContent(marketId, dayNumber);
+  const dossier = useDeliverable(marketId, learningGoal);
+  // Freeze the default once progress loads, so saving cannot change the active lesson beat.
+  const matchedSection = useRef<string | undefined>(undefined);
+  if (!dossier.loading && !matchedSection.current) {
+    matchedSection.current = sectionForLesson(
+      dossier.template,
+      new Set(dossier.learnerEntries.map(entry => entry.sectionKey)),
+      [{ title: stackTitle, body: metadata?.key_takeaway ?? '' }, ...slides],
+    ).key;
+  }
+  const defaultSectionKey = matchedSection.current;
 
   const { lesson: baseLesson, slideNumbers: baseSlideNumbers } = useMemo(
     () => isAuthoredLesson(authoredLesson)
@@ -141,6 +154,7 @@ export function LessonKitReader({
       takeaway: metadata?.key_takeaway?.trim() || undefined,
       dayNumber,
       learningGoal,
+      sectionKey: defaultSectionKey,
     });
     if (isAuthoredLesson(authoredLesson)) {
       return {
@@ -158,7 +172,7 @@ export function LessonKitReader({
       lesson: { ...baseLesson, exercises: [...baseLesson.exercises, sayIt()] },
       slideNumbers: [...baseSlideNumbers, last],
     };
-  }, [baseLesson, baseSlideNumbers, authoredLesson, metadata, dayNumber, learningGoal, slides]);
+  }, [baseLesson, baseSlideNumbers, authoredLesson, metadata, dayNumber, learningGoal, slides, defaultSectionKey]);
 
 
   const extraActions = useCallback(

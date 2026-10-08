@@ -192,6 +192,8 @@ export interface SayItExercise {
   /** Local lesson day stamped on the saved line. */
   dayNumber?: number;
   learningGoal?: string | null;
+  /** Lesson-matched dossier section; the learner may change it. */
+  sectionKey?: string;
 }
 
 /** A short in-character line from Leo, shown above the beat. */
