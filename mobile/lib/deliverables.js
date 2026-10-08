@@ -140,24 +140,30 @@ export const SECTION_HINTS = {
 function hintMatches(hint, text) {
     return typeof hint === 'function' ? hint(text) : hint.test(text);
 }
-/** Prefer relevant unwritten sections; a lesson title weighs more than incidental body words. */
+/** Relevance wins; an unwritten section must reach half the strongest match. */
 export function sectionForLesson(template, filledKeys, slides) {
+    const quantities = new Set(slides.flatMap(slide => standaloneQuantities(`${slide.title ?? ''} ${slide.body}`)));
     const scored = template.sections.map(section => {
         const hint = SECTION_HINTS[section.key];
         const occurrences = (text) => {
             if (!hint)
                 return 0;
+            if (section.key === 'numbers' && quantities.size < 2)
+                return 0;
             if (typeof hint === 'function')
                 return hint(text) ? 1 : 0;
-            return (text.match(new RegExp(hint.source, `${hint.flags}g`)) ?? []).length;
+            // A year or other isolated digit cannot create a topical match.
+            const words = text.replace(/\b\d[\d,.]*\b/g, ' ');
+            return (words.match(new RegExp(hint.source, `${hint.flags.replace(/g/g, '')}g`)) ?? []).length;
         };
         const score = slides.reduce((sum, slide) => sum + occurrences(slide.title ?? '') * 3 + occurrences(slide.body), 0);
         return { section, score };
     }).filter(item => item.score > 0).sort((a, b) => b.score - a.score);
-    return scored.find(item => !filledKeys.has(item.section.key))?.section
-        ?? template.sections.find(section => !filledKeys.has(section.key))
-        ?? scored[0]?.section
-        ?? template.sections[0];
+    const best = scored[0];
+    if (!best)
+        return template.sections.find(section => !filledKeys.has(section.key)) ?? template.sections[0];
+    return scored.find(item => !filledKeys.has(item.section.key) && item.score >= best.score / 2)?.section
+        ?? best.section;
 }
 /** Case and punctuation changes alone are not a learner rewrite. */
 export function sameDossierText(left, right) {

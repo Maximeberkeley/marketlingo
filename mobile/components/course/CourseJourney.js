@@ -89,12 +89,12 @@ const MODULES = [
 function SectionHeader({ section, title, onPress, }) {
     return (<TouchableOpacity style={[styles.sectionHeader, !section.unlocked && styles.sectionHeaderLocked]} onPress={onPress} activeOpacity={0.9} accessibilityRole="button" accessibilityLabel={`Preview Section ${section.index + 1}, ${title}. ${section.completedCount} of 30 lessons complete`}>
       <View style={styles.sectionHeaderCopy}>
-        <Text style={styles.sectionEyebrow}>SECTION {section.index + 1}</Text>
+        <Text style={[styles.sectionEyebrow, !section.unlocked && styles.lockedText]}>SECTION {section.index + 1}</Text>
         <Text style={[styles.sectionTitle, !section.unlocked && styles.lockedText]} numberOfLines={2}>{title}</Text>
         <Text style={[styles.sectionProgress, !section.unlocked && styles.lockedText]}>{section.unlocked ? `${section.completedCount} / 30 lessons` : `Unlocks after Section ${section.index}`}</Text>
-        <View style={styles.sectionTrack}>
+        {section.unlocked && <View style={styles.sectionTrack}>
           <View style={[styles.sectionFill, { width: `${(section.completedCount / 30) * 100}%` }]}/>
-        </View>
+        </View>}
       </View>
       <View style={styles.headerArrow}>
         <Feather name="chevron-right" size={26} color={section.unlocked ? COLORS.textOnAccent : COLORS.courseMutedText}/>
@@ -133,6 +133,9 @@ function Coin({ label, icon, position, locked, completed, onPress, emphasis = fa
     </View>);
 }
 function SectionCluster({ section, lesson, title, weekTitle, marketName, activeSection, lessonCompletedToday, arenaCompletedToday, caseCompletedToday, intelDone, isFocused, onModule, onLeo, onHeader, activityReveal, reduceMotion, }) {
+    if (!section.unlocked) {
+        return <View style={styles.sectionBlock}><SectionHeader section={section} title={title} onPress={onHeader}/></View>;
+    }
     const moduleComplete = (kind) => {
         if (!activeSection)
             return kind === 'lesson' && Boolean(lesson?.completed);

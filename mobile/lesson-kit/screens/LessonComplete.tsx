@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { tokens } from '../theme/tokens';
 import { playSound } from '../../lib/sounds';
 import { triggerHaptic } from '../../lib/haptics';
-import { useIntelHabit } from '../../hooks/useIntelHabit';
 import { lessonRewards, scoreHeadline } from './lessonRewards';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useDeliverable } from '../../hooks/useDeliverable';
@@ -48,7 +47,6 @@ export function LessonComplete({
   leoQuestions = 0,
   marketId,
 }: Props) {
-  const intel = useIntelHabit(marketId);
   const { progress } = useUserProgress(marketId);
   const goal = (progress as { learning_goal?: string } | null)?.learning_goal ?? null;
   const dossier = useDeliverable(marketId, goal);
@@ -59,7 +57,6 @@ export function LessonComplete({
   const bonuses = useRef(lessonRewards(baseXp, accuracy, total, bestCombo, heartsLeft, timeSpentSeconds)).current;
   const totalXp = bonuses.reduce((sum, line) => sum + line.xp, 0);
 
-  const [step, setStep] = useState<'rewards' | 'intel'>('rewards');
   const [shown, setShown] = useState(0);
 
   useEffect(() => {
@@ -74,39 +71,6 @@ export function LessonComplete({
     }, 350 + shown * 300);
     return () => clearTimeout(t);
   }, [shown, bonuses.length]);
-
-  // Step 2 keeps a single clear instruction instead of crowding the reward screen.
-  if (step === 'intel') {
-    return (
-      <View style={styles.intelWrap}>
-        <Image source={require('../../assets/leo-sticker.png')} style={styles.intelHeroLeo} resizeMode="contain" />
-        <Text style={styles.intelEyebrow}>ONE LAST STEP</Text>
-        <Text style={styles.intelHeadline}>Now read today's intel</Text>
-        <Text style={styles.intelSub}>
-          {intel.done
-            ? `All ${intel.target} stories read today. You're current.`
-            : `${intel.remaining} ${intel.remaining === 1 ? 'story' : 'stories'} left today · ${intel.readToday}/${intel.target} · +20 XP when you finish`}
-        </Text>
-        <Text style={styles.intelQuote}>
-          {intel.done
-            ? 'Leo: "Go see what changed since this morning anyway."'
-            : 'Leo: "The concept is yours. Now see it happening this week."'}
-        </Text>
-        <PrimaryButton
-          label="Open today's intel"
-          onPress={() => {
-            triggerHaptic('medium');
-            onDone(totalXp);
-            router.push({ pathname: '/(tabs)/roadmap', params: { autoOpen: '1' } });
-          }}
-          style={styles.cta}
-        />
-        <TouchableOpacity onPress={() => onDone(totalXp)} style={styles.laterBtn} activeOpacity={0.7}>
-          <Text style={styles.laterText}>Maybe later</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
 
   return (
     <ScrollView
@@ -126,7 +90,7 @@ export function LessonComplete({
 
       <Text style={styles.xpBig}>+{totalXp} XP</Text>
 
-      <View style={styles.bonusList}>
+      {total > 0 && <View style={styles.bonusList}>
         {bonuses.map((b, i) => (
           <View key={i} style={styles.bonusRow}>
             <Feather name="zap" size={14} color={tokens.color.accent} />
@@ -134,7 +98,7 @@ export function LessonComplete({
             <Text style={styles.bonusXp}>+{b.xp}</Text>
           </View>
         ))}
-      </View>
+      </View>}
 
       {leoQuestions > 0 && (
         <Text style={styles.leoLine}>
@@ -143,8 +107,8 @@ export function LessonComplete({
       )}
 
       <View style={styles.stats}>
-        <Stat label="Accuracy" value={total > 0 ? `${accuracy}%` : "—"} />
-        <Stat label="Correct" value={`${correct}/${total}`} />
+        {total > 0 && <Stat label="Accuracy" value={`${accuracy}%`} />}
+        {total > 0 && <Stat label="Correct" value={`${correct}/${total}`} />}
         <Stat label="Time" value={formatTime(timeSpentSeconds)} />
       </View>
 
@@ -173,12 +137,25 @@ export function LessonComplete({
         </TouchableOpacity>
       )}
 
-      <PrimaryButton
-        label={intel.loading ? doneLabel : 'Continue'}
+      <TouchableOpacity
+        accessibilityRole="link"
+        accessibilityLabel="Today's intel · 3 stories →"
+        style={styles.intelLink}
+        activeOpacity={0.7}
         onPress={() => {
           triggerHaptic('light');
-          if (intel.loading) onDone(totalXp);
-          else setStep('intel');
+          onDone(totalXp);
+          router.push({ pathname: '/(tabs)/roadmap', params: { autoOpen: '1' } });
+        }}
+      >
+        <Text style={styles.intelLinkText}>Today's intel · 3 stories →</Text>
+      </TouchableOpacity>
+
+      <PrimaryButton
+        label={doneLabel}
+        onPress={() => {
+          triggerHaptic('light');
+          onDone(totalXp);
         }}
         style={styles.cta}
       />
@@ -207,42 +184,8 @@ const styles = StyleSheet.create({
     gap: tokens.space.sm,
     backgroundColor: tokens.color.bg,
   },
-  intelWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: tokens.space.xl,
-    backgroundColor: tokens.color.bg,
-  },
-  intelHeroLeo: { width: 132, height: 132, marginBottom: tokens.space.lg },
-  intelEyebrow: {
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 1.4,
-    color: tokens.color.accent,
-  },
-  intelHeadline: {
-    fontSize: tokens.font.title + 2,
-    fontWeight: '900',
-    color: tokens.color.text,
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  intelSub: {
-    fontSize: tokens.font.body,
-    color: tokens.color.textSecondary,
-    textAlign: 'center',
-    marginTop: 10,
-  },
-  intelQuote: {
-    fontSize: tokens.font.caption + 1,
-    color: tokens.color.textMuted,
-    textAlign: 'center',
-    marginTop: tokens.space.md,
-    fontStyle: 'italic',
-  },
-  laterBtn: { marginTop: tokens.space.md, padding: tokens.space.sm },
-  laterText: { fontSize: tokens.font.caption + 1, fontWeight: '700', color: tokens.color.textMuted },
+  intelLink: { minHeight: 44, justifyContent: 'center', alignSelf: 'stretch', alignItems: 'center' },
+  intelLinkText: { fontSize: tokens.font.caption + 1, color: tokens.color.accent, fontWeight: '600', textAlign: 'center' },
 
   badge: {
     width: 88, height: 88, borderRadius: 44,
@@ -295,21 +238,6 @@ const styles = StyleSheet.create({
   statValue: { fontSize: tokens.font.body, fontWeight: '800', color: tokens.color.text },
   statLabel: { fontSize: tokens.font.caption, color: tokens.color.textMuted, fontWeight: '600' },
   cta: { alignSelf: 'stretch', marginTop: tokens.space.lg },
-  intelCard: {
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: tokens.space.md,
-    marginTop: tokens.space.lg,
-    padding: tokens.space.md,
-    borderRadius: tokens.radius.lg,
-    borderWidth: 2,
-    borderColor: tokens.color.accent,
-    backgroundColor: tokens.color.accentSoft,
-  },
-  intelLeo: { width: 44, height: 44 },
-  intelTitle: { fontSize: tokens.font.caption + 2, fontWeight: '800', color: tokens.color.text },
-  intelBody: { fontSize: tokens.font.caption, color: tokens.color.textSecondary, marginTop: 2 },
   dossierCard: {
     alignSelf: 'stretch',
     flexDirection: 'row',
