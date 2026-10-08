@@ -192,7 +192,7 @@ export default function HomeScreen() {
         (async () => {
             const { data: stack } = await supabase
                 .from('stacks')
-                .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
+                .select('id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)')
                 .eq('id', openStackId)
                 .not('published_at', 'is', null)
                 .single();
@@ -229,7 +229,7 @@ export default function HomeScreen() {
         try {
             const { data: stack } = await supabase
                 .from('stacks')
-                .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
+                .select('id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)')
                 .eq('id', stackId)
                 .not('published_at', 'is', null)
                 .single();

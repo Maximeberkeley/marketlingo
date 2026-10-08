@@ -1,0 +1,2 @@
+ALTER TABLE public.stacks ADD COLUMN IF NOT EXISTS authored_lesson jsonb;
+COMMENT ON COLUMN public.stacks.authored_lesson IS 'Optional hand-written Lesson (lesson-kit Lesson shape); played directly instead of generated beats.';

@@ -166,7 +166,7 @@ export function useHomeData(
       // 4. Closest available day
       let { data: lessonStacks } = await supabase
         .from('stacks')
-        .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
+        .select('id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)')
         .eq('market_id', market)
         .contains('tags', ['MICRO_LESSON', dayTag, goalTag, levelTag])
         .not('published_at', 'is', null)
@@ -181,7 +181,7 @@ export function useHomeData(
       if (!hasSlides(lessonStacks).length) {
         const { data: fb1 } = await supabase
           .from('stacks')
-          .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
+          .select('id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)')
           .eq('market_id', market)
           .contains('tags', ['MICRO_LESSON', dayTag, goalTag])
           .not('published_at', 'is', null)
@@ -193,7 +193,7 @@ export function useHomeData(
       if (!hasSlides(lessonStacks).length) {
         const { data: fallback } = await supabase
           .from('stacks')
-          .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
+          .select('id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)')
           .eq('market_id', market)
           .contains('tags', ['MICRO_LESSON', dayTag])
           .not('published_at', 'is', null)
@@ -205,7 +205,7 @@ export function useHomeData(
       if (!hasSlides(lessonStacks).length) {
         const { data: allLessons } = await supabase
           .from('stacks')
-          .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
+          .select('id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)')
           .eq('market_id', market)
           .contains('tags', ['MICRO_LESSON'])
           .not('published_at', 'is', null);
@@ -244,7 +244,7 @@ export function useHomeData(
       // Fetch news/game stack
       const { data: newsStacks } = await supabase
         .from('stacks')
-        .select('id, title, stack_type, tags, duration_minutes, metadata, slides (id, slide_number, title, body, sources)')
+        .select('id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)')
         .eq('market_id', market)
         .contains('tags', ['DAILY_GAME'])
         .not('published_at', 'is', null)
