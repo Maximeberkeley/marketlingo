@@ -41,13 +41,16 @@ export function ChoiceCard({ label, state, onPress, disabled }: Props) {
       onPress={onPress}
       style={[styles.card, { backgroundColor: BG[state], borderColor: BORDER[state] }]}
     >
-      <ColorText text={label} style={[styles.label, { color: TEXT[state] }]} maxSentences={1} maxLength={80} />
+      <ColorText text={label} style={[styles.label, { color: TEXT[state] }]} maxSentences={10000} maxLength={1000000} />
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
+    minWidth: 0,
+    maxWidth: '100%',
+    alignSelf: 'stretch',
     minHeight: tokens.size.choiceMinHeight,
     borderRadius: tokens.radius.lg,
     borderWidth: 2,
@@ -56,6 +59,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
+    minWidth: 0,
+    flexShrink: 1,
     fontSize: tokens.font.body,
     fontWeight: '600',
     lineHeight: 22,

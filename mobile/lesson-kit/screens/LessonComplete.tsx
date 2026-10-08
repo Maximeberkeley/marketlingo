@@ -135,7 +135,7 @@ export function LessonComplete({
         <Text style={styles.subtitle}>You just started a streak. Come back tomorrow to keep it.</Text>
       )}
 
-      <Text style={styles.xpBig}>+{display} XP</Text>
+      <Text style={styles.xpBig}>+{totalXp} XP</Text>
 
       <View style={styles.bonusList}>
         {bonuses.map((b, i) => (
