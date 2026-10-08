@@ -30,6 +30,8 @@ export interface MicroInsightExercise {
   id: string;
   eyebrow?: string;
   text: string;
+  /** Visible secondary copy when adjacent thin reading cards are combined. */
+  body?: string;
   highlight?: string;
   keyTerm?: KeyTerm;
   keyTerms?: KeyTerm[];
