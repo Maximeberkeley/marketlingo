@@ -10,6 +10,7 @@
  * consolidation days and in each lesson's "Say it" step. Completion counts only
  * sections holding at least one learner-written line.
  */
+import { standaloneQuantities } from '../lesson-kit/sequencer/extract';
 export type DeliverableGoal = 'career' | 'build_startup' | 'invest' | 'curiosity';
 
 export interface DeliverableSection {
