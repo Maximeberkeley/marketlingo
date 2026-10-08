@@ -319,7 +319,7 @@ export default function DeliverableScreen() {
               <TextInput ref={ref => { inputRefs.current[section.key] = ref; }}
                 style={[styles.input, { height: inputHeights[section.key] ?? MIN_INPUT_HEIGHT }]}
                 value={draft} onChangeText={value => { if (!savingRef.current) setDraft(section.key, value); }}
-                editable={savingKey === null} placeholder="One sentence is enough…" placeholderTextColor={COLORS.textMuted}
+                placeholder="One sentence is enough…" placeholderTextColor={COLORS.textMuted}
                 multiline autoCapitalize="sentences" returnKeyType="done" submitBehavior="submit" blurOnSubmit={false}
                 inputAccessoryViewID={Platform.OS === 'ios' ? ACCESSORY_ID : undefined}
                 scrollEnabled={(inputHeights[section.key] ?? MIN_INPUT_HEIGHT) >= MAX_INPUT_HEIGHT}
