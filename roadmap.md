@@ -1,9 +1,9 @@
 # MarketLingo roadmap
 
 ## Dossier follow-up
-- [ ] Match Say it to lesson content, keep section switching and a compact Skip link.
-- [ ] Block unchanged suggestions and open only the requested dossier editor, with correct focus and straight dividers.
-- [ ] Verify both phone source versions and certification/suggestion regression checks.
+- [x] Match Say it to lesson content, keep section switching and a compact Skip link.
+- [x] Block unchanged suggestions and open only the requested dossier editor, with correct focus and straight dividers.
+- [x] Verify both phone source versions and certification/suggestion regression checks (simulated native controls; device rendering still needs a phone).
 
 ## Daily lesson screen cleanup
 - [x] Hide empty/repeated briefing actions and unrelated card terms.

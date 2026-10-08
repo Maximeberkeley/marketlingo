@@ -191,8 +191,8 @@ export function sectionForLesson(
     return { section, score };
   }).filter(item => item.score > 0).sort((a, b) => b.score - a.score);
   return scored.find(item => !filledKeys.has(item.section.key))?.section
-    ?? scored[0]?.section
     ?? template.sections.find(section => !filledKeys.has(section.key))
+    ?? scored[0]?.section
     ?? template.sections[0];
 }
 
