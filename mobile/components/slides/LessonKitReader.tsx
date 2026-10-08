@@ -67,7 +67,7 @@ function firstDayText(title: string, body: string) {
 
 
 /** A hand-written lesson is usable only if it has an exercises array with at least one beat. */
-function isAuthoredLesson(value: unknown): value is Lesson) {
+function isAuthoredLesson(value: unknown): value is Lesson {
   const v = value as any;
   return !!v && typeof v === 'object' && Array.isArray(v.exercises) && v.exercises.length > 0;
 }
