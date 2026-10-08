@@ -1,33 +1,25 @@
 /**
- * The learner's living dossier — Interview Brief, Idea Dossier, Thesis Sheet
- * or Market Map depending on their goal.
+ * The learner's dossier — Interview Brief, Idea Dossier, Thesis Sheet or
+ * Market Map depending on their goal.
  *
- * It is not a form. It is a document that visibly assembles itself: every
- * section is a slot, every line the learner writes lights one of them, and the
- * rank at the top is earned purely by how much of the document exists in their
- * own words. Filling a slot is a moment — ring advance, glow, sound, haptic.
+ * It reads like the document itself: a cover line, six numbered sections in
+ * order, and the learner's own lines as body text. Lesson suggestions are shown
+ * faded as a starting point and never count as written.
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Easing, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Share, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Share, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Circle } from 'react-native-svg';
-import { COLORS, TYPE, SHADOWS } from '../lib/constants';
-import { isDark } from '../lib/theme';
+import { COLORS, TYPE } from '../lib/constants';
 import { getMarketName } from '../lib/markets';
 import { useSelectedMarket } from '../hooks/useSelectedMarket';
 import { useUserProgress } from '../hooks/useUserProgress';
 import { useDeliverable } from '../hooks/useDeliverable';
-import { consolidationSection, dossierRank, isConsolidationDay, slotStatus, } from '../lib/deliverables';
+import { consolidationSection, isConsolidationDay } from '../lib/deliverables';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { log } from '../lib/logger';
-const RING_SIZE = 108;
-const RING_STROKE = 9;
-const RING_RADIUS = (RING_SIZE - RING_STROKE) / 2;
-const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 export default function DeliverableScreen() {
     const insets = useSafeAreaInsets();
     const params = useLocalSearchParams();
@@ -38,73 +30,60 @@ export default function DeliverableScreen() {
     const marketName = getMarketName(marketId);
     const day = availableDay || 1;
     const weeklyPrompt = useMemo(() => (isConsolidationDay(day) ? consolidationSection(deliverable.template, day) : null), [day, deliverable.template]);
-    const [openSection, setOpenSection] = useState(null);
-    const [showAll, setShowAll] = useState(false);
-    const [draft, setDraft] = useState('');
-    const [saving, setSaving] = useState(false);
-    /** Old automatic suggestion currently being rewritten by the learner. */
-    const [editingId, setEditingId] = useState(null);
-    const [editDraft, setEditDraft] = useState('');
-    /** Slot that just received a line — drives the reveal flash. */
+    /** Draft text per section. */
+    const [drafts, setDrafts] = useState({});
+    /** Suggestion id the draft was started from, per section (replaced on save). */
+    const [startedFrom, setStartedFrom] = useState({});
+    /** Filled sections whose "add another line" field is open. */
+    const [composing, setComposing] = useState(params.section ?? null);
+    const [editMode, setEditMode] = useState(false);
+    const [savingKey, setSavingKey] = useState(null);
+    /** Section that just received a line — drives the brief highlight. */
     const [justFilled, setJustFilled] = useState(null);
+    const scrollRef = useRef(null);
+    const sectionY = useRef({});
+    const inputRefs = useRef({});
     const busy = marketLoading || deliverable.loading;
-    const { template, bySection, completion, filledSections } = deliverable;
-    const rank = useMemo(() => dossierRank(completion), [completion]);
-    /** The first still-empty section: the screen always names one clear next move. */
-    const nextOpen = useMemo(() => template.sections.find(section => (bySection[section.key]?.length ?? 0) === 0) ?? null, [template.sections, bySection]);
-    const latestEntry = deliverable.entries[0];
-    const featuredSection = template.sections.find(section => section.key === (params.section || latestEntry?.sectionKey)) || nextOpen || template.sections[0];
-    const visibleSections = showAll ? template.sections : featuredSection ? [featuredSection] : [];
+    const { template, bySection, filledSections } = deliverable;
+    const total = template.sections.length;
+    const learnerLineCount = deliverable.learnerEntries.length;
     const close = () => { Keyboard.dismiss(); router.back(); };
-    // The ring animates to the new completion whenever the document grows.
-    const ringAnim = useRef(new Animated.Value(0)).current;
-    const [ringPct, setRingPct] = useState(0);
-    useEffect(() => {
-        const id = ringAnim.addListener(({ value }) => setRingPct(value));
-        Animated.timing(ringAnim, {
-            toValue: completion,
-            duration: 700,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: false,
-        }).start();
-        return () => ringAnim.removeListener(id);
-    }, [completion, ringAnim]);
-    const save = async (sectionKey) => {
-        setSaving(true);
-        const wasEmpty = (bySection[sectionKey]?.length ?? 0) === 0;
-        const ok = await deliverable.addLine(sectionKey, draft, day);
-        setSaving(false);
+    const setDraft = (key, value) => setDrafts(prev => ({ ...prev, [key]: value }));
+    const focusSection = (key) => {
+        const filled = (bySection[key]?.length ?? 0) > 0;
+        if (filled)
+            setComposing(key);
+        const y = sectionY.current[key];
+        if (typeof y === 'number')
+            scrollRef.current?.scrollTo({ y: Math.max(0, y - 24), animated: true });
+        setTimeout(() => inputRefs.current[key]?.focus(), 350);
+    };
+    const save = async (key) => {
+        const text = (drafts[key] ?? '').trim();
+        if (text.length < 3)
+            return;
+        setSavingKey(key);
+        const wasEmpty = (bySection[key]?.length ?? 0) === 0;
+        const suggestionId = startedFrom[key];
+        const ok = suggestionId
+            ? await deliverable.replaceSuggestion(suggestionId, key, text, day)
+            : await deliverable.addLine(key, text, day);
+        setSavingKey(null);
         if (!ok)
             return;
-        setDraft('');
+        setDraft(key, '');
+        setStartedFrom(prev => { const next = { ...prev }; delete next[key]; return next; });
+        setComposing(null);
+        Keyboard.dismiss();
+        setJustFilled(key);
+        setTimeout(() => setJustFilled(null), 2200);
         if (wasEmpty) {
-            setJustFilled(sectionKey);
             triggerHaptic('success');
             playSound('unlock').catch(() => { });
-            setTimeout(() => setJustFilled(null), 2200);
         }
         else {
             triggerHaptic('light');
             playSound('xpEarn').catch(() => { });
-        }
-    };
-    const saveRewrite = async (id, sectionKey) => {
-        setSaving(true);
-        const wasEmpty = (bySection[sectionKey]?.length ?? 0) === 0;
-        const ok = await deliverable.replaceSuggestion(id, sectionKey, editDraft, day);
-        setSaving(false);
-        if (!ok)
-            return;
-        setEditingId(null);
-        setEditDraft('');
-        if (wasEmpty) {
-            setJustFilled(sectionKey);
-            triggerHaptic('success');
-            playSound('unlock').catch(() => { });
-            setTimeout(() => setJustFilled(null), 2200);
-        }
-        else {
-            triggerHaptic('light');
         }
     };
     const share = async () => {
@@ -122,438 +101,170 @@ export default function DeliverableScreen() {
         <Text style={styles.loadingText}>Opening your dossier…</Text>
       </View>);
     }
-    const dashOffset = RING_CIRCUMFERENCE * (1 - Math.max(0, Math.min(100, ringPct)) / 100);
-    return (<KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView style={styles.flex} contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 56 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+    const firstEmpty = template.sections.find(section => (bySection[section.key]?.length ?? 0) === 0) ?? null;
+    return (<KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <ScrollView ref={scrollRef} style={styles.fill} contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: insets.bottom + 40 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={styles.headerRow}>
-           <TouchableOpacity onPress={close} hitSlop={14} style={styles.backBtn}>
+          <TouchableOpacity onPress={close} hitSlop={14} style={styles.backBtn} accessibilityLabel="Back">
             <Feather name="chevron-left" size={24} color={COLORS.textPrimary}/>
           </TouchableOpacity>
-          <TouchableOpacity onPress={share} style={styles.shareBtn} activeOpacity={0.85} hitSlop={10}>
-            <Feather name="share-2" size={14} color={COLORS.accent}/>
-            <Text style={styles.shareText}>Export</Text>
-          </TouchableOpacity>
+          {learnerLineCount > 0 ? (<TouchableOpacity onPress={() => { triggerHaptic('light'); setEditMode(v => !v); }} hitSlop={10}>
+              <Text style={styles.editToggle}>{editMode ? 'Done' : 'Edit'}</Text>
+            </TouchableOpacity>) : null}
         </View>
 
-        {/* Hero: the document's own cover. */}
-        <View style={styles.heroWrap}>
-          <LinearGradient colors={isDark
-            ? ['#2A2340', '#1E2230', '#191C22']
-            : ['#F1EBFF', '#F6F4FF', '#FFFFFF']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
-            <View style={styles.heroTop}>
-              <View style={styles.heroCopy}>
-                <Text style={styles.eyebrow}>{marketName.toUpperCase()} DOSSIER</Text>
-                <Text style={styles.title} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.85}>
-                  {template.title}
-                </Text>
-                <View style={styles.rankPill}>
-                  <Feather name="shield" size={11} color={COLORS.accent}/>
-                  <Text style={styles.rankPillText}>{rank.title.toUpperCase()}</Text>
-                </View>
-              </View>
-
-              <View style={styles.ringWrap}>
-                <Svg width={RING_SIZE} height={RING_SIZE}>
-                  <Circle cx={RING_SIZE / 2} cy={RING_SIZE / 2} r={RING_RADIUS} stroke={isDark ? 'rgba(255,255,255,0.10)' : 'rgba(26,31,54,0.08)'} strokeWidth={RING_STROKE} fill="none"/>
-                  <Circle cx={RING_SIZE / 2} cy={RING_SIZE / 2} r={RING_RADIUS} stroke={COLORS.accent} strokeWidth={RING_STROKE} strokeLinecap="round" fill="none" strokeDasharray={`${RING_CIRCUMFERENCE} ${RING_CIRCUMFERENCE}`} strokeDashoffset={dashOffset} transform={`rotate(-90 ${RING_SIZE / 2} ${RING_SIZE / 2})`}/>
-                </Svg>
-                <View style={styles.ringCentre}>
-                  <Text style={styles.ringPct}>{Math.round(ringPct)}%</Text>
-                 <Text style={styles.ringLabel}>ready</Text>
-                </View>
-              </View>
-            </View>
-
-             <Text style={styles.rankBlurb}>{rank.blurb}</Text>
-
-            <View style={styles.heroMetaRow}>
-              <View style={styles.metaChip}>
-                <Feather name="check-circle" size={12} color={COLORS.success}/>
-                <Text style={styles.metaChipText}>
-                  {filledSections}/{template.sections.length} sections
-                </Text>
-              </View>
-              {rank.nextTitle ? (<View style={styles.metaChip}>
-                  <Feather name="trending-up" size={12} color={COLORS.accent}/>
-                  <Text style={styles.metaChipText}>
-                     {rank.nextTitle} at {rank.nextAt}%
-                  </Text>
-                </View>) : (<View style={styles.metaChip}>
-                  <Feather name="award" size={12} color={COLORS.gold}/>
-                  <Text style={styles.metaChipText}>Top rank held</Text>
-                </View>)}
-            </View>
-          </LinearGradient>
+        {/* Cover */}
+        <View style={styles.cover}>
+          <Text style={styles.eyebrow}>{`${marketName.toUpperCase()} · ${template.title.toUpperCase()}`}</Text>
+          <Text style={styles.title}>{template.title}</Text>
+          <Text style={styles.count}>{`${filledSections} of ${total} sections written by you`}</Text>
+          <View style={styles.segments}>
+            {template.sections.map(section => (<View key={section.key} style={[styles.segment, (bySection[section.key]?.length ?? 0) > 0 && styles.segmentOn]}/>))}
+          </View>
         </View>
 
-        {weeklyPrompt && (<View style={styles.weekly}>
-            <View style={styles.weeklyHead}>
-              <Feather name="edit-3" size={13} color={COLORS.accent}/>
-              <Text style={styles.weeklyLabel}>CONSOLIDATION DAY</Text>
-            </View>
-            <Text style={styles.weeklyTitle}>One line, in your words</Text>
+        {weeklyPrompt && (<TouchableOpacity style={styles.weekly} activeOpacity={0.85} onPress={() => { triggerHaptic('light'); focusSection(weeklyPrompt.key); }}>
+            <Text style={styles.weeklyLabel}>CONSOLIDATION DAY</Text>
             <Text style={styles.weeklyPrompt}>{weeklyPrompt.prompt}</Text>
-            <TouchableOpacity style={styles.weeklyCta} activeOpacity={0.85} onPress={() => {
-                triggerHaptic('light');
-                setShowAll(true);
-                setOpenSection(weeklyPrompt.key);
-            }}>
-              <Text style={styles.weeklyCtaText}>Write today's line</Text>
-              <Feather name="arrow-right" size={14} color={COLORS.textOnAccent}/>
-            </TouchableOpacity>
-          </View>)}
+            <Text style={styles.link}>Write today's line</Text>
+          </TouchableOpacity>)}
 
-         <View style={styles.explain}>
-           <Feather name={latestEntry ? 'check-circle' : 'book-open'} size={20} color={COLORS.accent}/>
-           <View style={styles.flex}>
-             <Text style={styles.explainTitle}>{latestEntry ? 'Your latest insight' : 'Your brief starts with a lesson'}</Text>
-             <Text style={styles.explainText} numberOfLines={showAll ? undefined : 3}>{latestEntry ? latestEntry.content : 'Finish a lesson and the first insight appears here automatically.'}</Text>
-           </View>
-         </View>
-
-        <Text style={styles.sectionHeading}>
-           {showAll ? 'YOUR DOCUMENT' : latestEntry ? 'YOUR LATEST SECTION' : 'YOUR FIRST SECTION'}
-        </Text>
-
-         {visibleSections.map((section) => {
-            const index = template.sections.findIndex(item => item.key === section.key);
+        {/* Sections, in order */}
+        {template.sections.map((section, index) => {
             const own = bySection[section.key] ?? [];
-            const suggestions = deliverable.suggestionsBySection[section.key] ?? [];
-            const status = slotStatus(own.length);
-            const open = openSection === section.key;
+            const suggestion = (deliverable.suggestionsBySection[section.key] ?? [])[0];
+            const empty = own.length === 0;
+            const draft = drafts[section.key] ?? '';
+            const showField = empty || composing === section.key;
             const flashing = justFilled === section.key;
-            return (<View key={section.key} style={[
-                    styles.card,
-                    status !== 'empty' && styles.cardFilled,
-                    flashing && styles.cardFlash,
-                ]}>
-              <TouchableOpacity style={styles.cardHead} onPress={() => {
-                    triggerHaptic('light');
-                    setDraft('');
-                    setOpenSection(open ? null : section.key);
-                }} activeOpacity={0.85}>
-                <View style={[
-                    styles.slotIndex,
-                    status !== 'empty' && styles.slotIndexFilled,
-                ]}>
-                  {status === 'empty' ? (<Text style={styles.slotIndexText}>
-                      {String(index + 1).padStart(2, '0')}
-                    </Text>) : (<Feather name="check" size={14} color={COLORS.textOnAccent}/>)}
-                </View>
+            return (<View key={section.key} onLayout={e => { sectionY.current[section.key] = e.nativeEvent.layout.y; }} style={[styles.section, index > 0 && styles.divider, flashing && styles.sectionFlash]}>
+              <Text style={styles.sectionHead}>
+                <Text style={styles.sectionNum}>{`${String(index + 1).padStart(2, '0')}  `}</Text>
+                {section.title}
+              </Text>
 
-                <View style={styles.flex}>
-                  <Text style={styles.cardTitle}>{section.title}</Text>
-                   {(open || showAll) && <Text style={styles.cardPrompt}>{section.prompt}</Text>}
-                  <View style={styles.statusRow}>
-                    {status === 'empty' ? (<View style={styles.statusEmpty}>
-                        <Feather name="circle" size={9} color={COLORS.textMuted}/>
-                        <Text style={styles.statusEmptyText}>Awaiting your line</Text>
-                      </View>) : (<View style={styles.statusDone}>
-                        <Feather name="zap" size={9} color={COLORS.success}/>
-                        <Text style={styles.statusDoneText}>
-                           {status === 'strong' ? 'Well evidenced' : 'In your brief'}
-                          {own.length > 1 ? ` · ${own.length} lines` : ''}
-                        </Text>
-                      </View>)}
+              {empty ? <Text style={styles.prompt}>{section.prompt}</Text> : null}
+
+              {own.map(entry => (<TouchableOpacity key={entry.id} activeOpacity={1} delayLongPress={350} onLongPress={() => { triggerHaptic('light'); setEditMode(true); }} style={styles.line}>
+                  <View style={styles.fill}>
+                    <Text style={styles.lineText}>{entry.content}</Text>
+                    {entry.dayNumber ? <Text style={styles.lineDay}>{`Day ${entry.dayNumber}`}</Text> : null}
                   </View>
-                </View>
+                  {editMode ? (<TouchableOpacity onPress={() => { triggerHaptic('light'); deliverable.removeLine(entry.id); }} hitSlop={10} accessibilityLabel="Delete line">
+                      <Feather name="trash-2" size={15} color={COLORS.textMuted}/>
+                    </TouchableOpacity>) : null}
+                </TouchableOpacity>))}
 
-                <Feather name={open ? 'chevron-up' : 'chevron-down'} size={18} color={COLORS.textMuted}/>
-              </TouchableOpacity>
-
-               {(showAll || open ? own : own.slice(0, 1)).map(entry => (<View key={entry.id} style={styles.entry}>
-                  <View style={styles.entryBar}/>
-                  <View style={styles.flex}>
-                    <Text style={styles.entryText}>{entry.content}</Text>
-                    <View style={styles.entryFoot}>
-                      {entry.dayNumber ? (<Text style={styles.entryDay}>Day {entry.dayNumber}</Text>) : (<View />)}
-                      <TouchableOpacity onPress={() => {
-                        triggerHaptic('light');
-                        deliverable.removeLine(entry.id);
-                    }} hitSlop={10}>
-                        <Feather name="trash-2" size={13} color={COLORS.textMuted}/>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>))}
-
-              {suggestions.map(entry => (<View key={entry.id} style={[styles.entry, styles.suggestion]}>
-                  <View style={[styles.entryBar, styles.suggestionBar]}/>
-                  <View style={styles.flex}>
-                    <Text style={styles.suggestionLabel}>Suggested — rewrite it in your words</Text>
-                    {editingId === entry.id ? (<>
-                        <TextInput style={styles.input} value={editDraft} onChangeText={setEditDraft} multiline blurOnSubmit autoFocus placeholderTextColor={COLORS.textMuted}/>
-                        <View style={styles.suggestionActions}>
-                          <TouchableOpacity onPress={() => { setEditingId(null); setEditDraft(''); }} hitSlop={10}>
-                            <Text style={styles.suggestionCancel}>Cancel</Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity style={[styles.saveBtn, styles.suggestionSave, editDraft.trim().length < 3 && styles.saveBtnOff]} disabled={editDraft.trim().length < 3 || saving} onPress={() => saveRewrite(entry.id, section.key)} activeOpacity={0.9}>
-                            <Text style={styles.saveText}>{saving ? 'Saving…' : 'Save my version'}</Text>
-                          </TouchableOpacity>
-                        </View>
-                      </>) : (<>
-                        <Text style={styles.suggestionText}>{entry.content}</Text>
-                        <View style={styles.entryFoot}>
-                          <TouchableOpacity style={styles.suggestionEdit} onPress={() => { triggerHaptic('light'); setEditingId(entry.id); setEditDraft(entry.content); }} hitSlop={10} accessibilityRole="button">
-                            <Feather name="edit-3" size={12} color={COLORS.accent}/>
-                            <Text style={styles.suggestionEditText}>Edit</Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity onPress={() => { triggerHaptic('light'); deliverable.removeLine(entry.id); }} hitSlop={10}>
-                            <Feather name="trash-2" size={13} color={COLORS.textMuted}/>
-                          </TouchableOpacity>
-                        </View>
-                      </>)}
-                  </View>
-                </View>))}
-
-              {open && (<View style={styles.composer}>
-                  <Text style={styles.hint}>
-                     Add your take, in your own words.
+              {empty && suggestion ? (<View style={styles.suggestion}>
+                  <Text style={styles.suggestionText}>
+                    {suggestion.dayNumber ? `From Day ${suggestion.dayNumber}: ` : 'From a lesson: '}
+                    {suggestion.content}
                   </Text>
-                  <TextInput style={styles.input} value={draft} onChangeText={setDraft} placeholder="Write it the way you would say it out loud…" placeholderTextColor={COLORS.textMuted} multiline blurOnSubmit/>
-
-                  <TouchableOpacity style={[styles.saveBtn, draft.trim().length < 3 && styles.saveBtnOff]} disabled={draft.trim().length < 3 || saving} onPress={() => save(section.key)} activeOpacity={0.9}>
-                    <Text style={styles.saveText}>
-                      {saving ? 'Saving…' : status === 'empty' ? 'Fill this slot' : 'Add another line'}
-                    </Text>
+                  <TouchableOpacity hitSlop={8} onPress={() => {
+                        triggerHaptic('light');
+                        setDraft(section.key, suggestion.content);
+                        setStartedFrom(prev => ({ ...prev, [section.key]: suggestion.id }));
+                        setTimeout(() => inputRefs.current[section.key]?.focus(), 50);
+                    }}>
+                    <Text style={styles.link}>Start from this</Text>
                   </TouchableOpacity>
-                </View>)}
+                </View>) : null}
+
+              {showField ? (<View style={styles.composer}>
+                  <TextInput ref={ref => { inputRefs.current[section.key] = ref; }} style={styles.input} value={draft} onChangeText={value => setDraft(section.key, value)} placeholder="Write a line…" placeholderTextColor={COLORS.textMuted} multiline blurOnSubmit/>
+                  {draft.trim().length > 0 ? (<TouchableOpacity style={[styles.saveBtn, draft.trim().length < 3 && styles.saveBtnOff]} disabled={draft.trim().length < 3 || savingKey === section.key} onPress={() => save(section.key)} activeOpacity={0.9}>
+                      <Text style={styles.saveText}>{savingKey === section.key ? 'Saving…' : 'Save'}</Text>
+                    </TouchableOpacity>) : null}
+                </View>) : (<TouchableOpacity hitSlop={8} onPress={() => focusSection(section.key)}>
+                  <Text style={styles.addMore}>+ Add a line</Text>
+                </TouchableOpacity>)}
             </View>);
         })}
-         <TouchableOpacity style={styles.showAllButton} onPress={() => { Keyboard.dismiss(); setOpenSection(null); setShowAll(value => !value); }} accessibilityRole="button">
-           <Text style={styles.showAllText}>{showAll ? 'Show latest' : `See all ${template.sections.length} sections`}</Text>
-           <Feather name={showAll ? 'chevron-up' : 'arrow-right'} size={16} color={COLORS.accent}/>
-         </TouchableOpacity>
-         <TouchableOpacity style={styles.doneButton} onPress={close} accessibilityRole="button">
-           <Text style={styles.doneText}>Back to Course</Text>
-         </TouchableOpacity>
 
-        <View style={styles.footNote}>
-          <Feather name="lock" size={12} color={COLORS.textMuted}/>
-          <Text style={styles.footNoteText}>
-            Private to you. Export sends a clean copy you can paste anywhere.
-          </Text>
+        {/* Bottom actions */}
+        <View style={styles.actions}>
+          {learnerLineCount === 0 ? (<TouchableOpacity style={styles.primary} activeOpacity={0.9} onPress={() => { triggerHaptic('light'); if (firstEmpty)
+            focusSection(firstEmpty.key); }}>
+              <Text style={styles.primaryText}>Write your first line</Text>
+            </TouchableOpacity>) : (<>
+              <TouchableOpacity style={styles.primary} activeOpacity={0.9} onPress={share}>
+                <Feather name="share-2" size={15} color={COLORS.textOnAccent}/>
+                <Text style={styles.primaryText}>Export brief</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.secondary} onPress={close}>
+                <Text style={styles.secondaryText}>Back to course</Text>
+              </TouchableOpacity>
+            </>)}
+          <Text style={styles.footNote}>Private to you.</Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>);
 }
 const styles = StyleSheet.create({
-    flex: { flex: 1, backgroundColor: COLORS.bg0 },
-    loading: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 14,
-        backgroundColor: COLORS.bg0,
-    },
+    root: { flex: 1, backgroundColor: COLORS.bg0 },
+    fill: { flex: 1 },
+    loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 14, backgroundColor: COLORS.bg0 },
     loadingText: { ...TYPE.caption, color: COLORS.textSecondary },
     headerRow: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 18,
-        marginBottom: 10,
+        paddingHorizontal: 16,
+        marginBottom: 8,
+        minHeight: 40,
     },
-    backBtn: {
-        width: 38,
-        height: 38,
-        borderRadius: 19,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: COLORS.surfaceSubtle,
-    },
-    shareBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        borderRadius: 999,
-        backgroundColor: COLORS.accentSoft,
-        borderWidth: 1,
-        borderColor: COLORS.accentMedium,
-    },
-    shareText: { ...TYPE.caption, color: COLORS.accent, fontWeight: '800' },
-    heroWrap: { paddingHorizontal: 18, marginBottom: 20 },
-    hero: {
-        borderRadius: 26,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: COLORS.accentMedium,
-        ...SHADOWS.lg,
-    },
-    heroTop: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-    heroCopy: { flex: 1 },
-    eyebrow: { ...TYPE.overline, color: COLORS.accent },
-    title: { ...TYPE.h1, color: COLORS.textPrimary, marginTop: 6 },
-    rankPill: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 5,
-        alignSelf: 'flex-start',
-        marginTop: 10,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 999,
-        backgroundColor: COLORS.accentSoft,
-        borderWidth: 1,
-        borderColor: COLORS.accentMedium,
-    },
-    rankPillText: { fontSize: 10, fontWeight: '800', letterSpacing: 1, color: COLORS.accent },
-    ringWrap: { width: RING_SIZE, height: RING_SIZE, alignItems: 'center', justifyContent: 'center' },
-    ringCentre: { position: 'absolute', alignItems: 'center' },
-    ringPct: { fontSize: 24, fontWeight: '900', color: COLORS.textPrimary, letterSpacing: -0.5 },
-    ringLabel: { fontSize: 10, fontWeight: '700', color: COLORS.textMuted, letterSpacing: 0.5 },
-    rankBlurb: { ...TYPE.body, color: COLORS.textSecondary, marginTop: 16, lineHeight: 21 },
-    heroMetaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 },
-    metaChip: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        borderRadius: 999,
-        backgroundColor: COLORS.surfaceSubtle,
+    backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginLeft: -8 },
+    editToggle: { ...TYPE.caption, color: COLORS.accent, fontWeight: '800' },
+    cover: { paddingHorizontal: 24, paddingTop: 8, paddingBottom: 20 },
+    eyebrow: { fontSize: 11, fontWeight: '800', letterSpacing: 1.2, color: COLORS.textMuted },
+    title: { ...TYPE.h1, color: COLORS.textPrimary, marginTop: 8 },
+    count: { ...TYPE.body, color: COLORS.textSecondary, marginTop: 10 },
+    segments: { flexDirection: 'row', gap: 4, marginTop: 12 },
+    segment: { flex: 1, height: 3, borderRadius: 2, backgroundColor: COLORS.border },
+    segmentOn: { backgroundColor: COLORS.accent },
+    weekly: { marginHorizontal: 24, marginBottom: 8, paddingVertical: 14, gap: 4 },
+    weeklyLabel: { fontSize: 10, fontWeight: '800', letterSpacing: 1.1, color: COLORS.accent },
+    weeklyPrompt: { ...TYPE.body, color: COLORS.textPrimary, lineHeight: 21 },
+    section: { marginHorizontal: 24, paddingVertical: 20, borderRadius: 12 },
+    divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.border },
+    sectionFlash: { backgroundColor: COLORS.accentSoft },
+    sectionHead: { ...TYPE.h3, color: COLORS.textPrimary },
+    sectionNum: { color: COLORS.textMuted, fontWeight: '800' },
+    prompt: { ...TYPE.body, color: COLORS.textMuted, marginTop: 6, lineHeight: 21 },
+    line: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginTop: 10 },
+    lineText: { ...TYPE.body, color: COLORS.textPrimary, lineHeight: 23 },
+    lineDay: { fontSize: 11, fontWeight: '700', color: COLORS.textMuted, marginTop: 3 },
+    suggestion: { marginTop: 10, opacity: 0.75, gap: 4 },
+    suggestionText: { ...TYPE.caption, color: COLORS.textMuted, lineHeight: 19, fontStyle: 'italic' },
+    link: { ...TYPE.caption, color: COLORS.accent, fontWeight: '800' },
+    addMore: { ...TYPE.caption, color: COLORS.textMuted, fontWeight: '700', marginTop: 12 },
+    composer: { marginTop: 12, gap: 8 },
+    input: {
+        ...TYPE.body,
+        color: COLORS.textPrimary,
+        minHeight: 44,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        borderRadius: 10,
         borderWidth: 1,
         borderColor: COLORS.border,
+        textAlignVertical: 'top',
     },
-    metaChipText: { fontSize: 11, fontWeight: '700', color: COLORS.textSecondary },
-    weekly: {
-        marginHorizontal: 18,
-        marginBottom: 20,
-        padding: 16,
-        borderRadius: 20,
-        backgroundColor: COLORS.accentSoft,
-        borderWidth: 1,
-        borderColor: COLORS.accentMedium,
-    },
-    weeklyHead: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-    weeklyLabel: { fontSize: 10, fontWeight: '800', letterSpacing: 1.1, color: COLORS.accent },
-    weeklyTitle: { ...TYPE.h3, color: COLORS.textPrimary, marginTop: 6 },
-    weeklyPrompt: { ...TYPE.body, color: COLORS.textSecondary, marginTop: 4, lineHeight: 21 },
-    weeklyCta: {
+    saveBtn: { alignSelf: 'flex-end', paddingHorizontal: 18, paddingVertical: 9, borderRadius: 999, backgroundColor: COLORS.accent },
+    saveBtnOff: { backgroundColor: COLORS.border },
+    saveText: { ...TYPE.caption, color: COLORS.textOnAccent, fontWeight: '800' },
+    actions: { paddingHorizontal: 24, paddingTop: 24, gap: 10 },
+    primary: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        marginTop: 14,
-        paddingVertical: 12,
-        borderRadius: 14,
+        height: 52,
+        borderRadius: 999,
         backgroundColor: COLORS.accent,
     },
-    weeklyCtaText: { ...TYPE.bodyBold, color: COLORS.textOnAccent, fontWeight: '800' },
-    explain: { flexDirection: 'row', alignItems: 'flex-start', marginHorizontal: 18, marginBottom: 18, padding: 16, gap: 12, backgroundColor: COLORS.accentSoft, borderLeftWidth: 3, borderLeftColor: COLORS.accent },
-    explainTitle: { ...TYPE.bodyBold, color: COLORS.textPrimary, marginBottom: 5 },
-    explainText: { ...TYPE.body, color: COLORS.textSecondary },
-    showAllButton: { minHeight: 54, marginHorizontal: 18, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: COLORS.border },
-    showAllText: { ...TYPE.bodyBold, color: COLORS.accent },
-    doneButton: { minHeight: 52, marginHorizontal: 18, marginTop: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.accent, borderRadius: 14 },
-    doneText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
-    sectionHeading: {
-        ...TYPE.overline,
-        color: COLORS.accent,
-        marginLeft: 22,
-        marginBottom: 10,
-    },
-    card: {
-        marginHorizontal: 18,
-        marginBottom: 12,
-        borderRadius: 22,
-        backgroundColor: COLORS.bg2,
-        borderWidth: 1,
-        borderColor: COLORS.border,
-        padding: 16,
-        ...SHADOWS.sm,
-    },
-    cardFilled: {
-        borderColor: COLORS.accentMedium,
-        shadowColor: '#8B5CF6',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: isDark ? 0.5 : 0.22,
-        shadowRadius: 18,
-        elevation: 5,
-    },
-    cardFlash: {
-        borderColor: COLORS.success,
-        shadowColor: '#22C55E',
-        shadowOpacity: isDark ? 0.65 : 0.3,
-        shadowRadius: 24,
-    },
-    cardHead: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
-    slotIndex: {
-        width: 30,
-        height: 30,
-        borderRadius: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: COLORS.surfaceSubtle,
-        borderWidth: 1,
-        borderColor: COLORS.border,
-    },
-    slotIndexFilled: { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
-    slotIndexText: { fontSize: 11, fontWeight: '800', color: COLORS.textMuted },
-    cardTitle: { ...TYPE.h3, color: COLORS.textPrimary },
-    cardPrompt: { ...TYPE.caption, color: COLORS.textSecondary, marginTop: 4, lineHeight: 18, fontWeight: '500' },
-    statusRow: { marginTop: 8 },
-    statusEmpty: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-    statusEmptyText: { fontSize: 10.5, fontWeight: '700', color: COLORS.textMuted, letterSpacing: 0.2 },
-    statusDone: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-    statusDoneText: { fontSize: 10.5, fontWeight: '800', color: COLORS.success, letterSpacing: 0.2 },
-    entry: {
-        flexDirection: 'row',
-        gap: 10,
-        marginTop: 12,
-        padding: 12,
-        borderRadius: 16,
-        backgroundColor: COLORS.bg1,
-    },
-    entryBar: { width: 3, borderRadius: 2, backgroundColor: COLORS.accent },
-    entryText: { ...TYPE.body, color: COLORS.textPrimary, lineHeight: 22 },
-    suggestion: { opacity: 0.85 },
-    suggestionBar: { backgroundColor: COLORS.textMuted },
-    suggestionLabel: { ...TYPE.caption, color: COLORS.textMuted, fontWeight: '700', marginBottom: 4 },
-    suggestionText: { ...TYPE.body, color: COLORS.textSecondary, lineHeight: 22, fontStyle: 'italic' },
-    suggestionEdit: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-    suggestionEditText: { ...TYPE.caption, color: COLORS.accent, fontWeight: '800' },
-    suggestionActions: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 16, marginTop: 8 },
-    suggestionCancel: { ...TYPE.caption, color: COLORS.textMuted, fontWeight: '700' },
-    suggestionSave: { marginTop: 0, flex: 1 },
-    entryFoot: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginTop: 8,
-    },
-    entryDay: { fontSize: 10.5, fontWeight: '700', color: COLORS.textMuted },
-    composer: { marginTop: 12, gap: 10 },
-    hint: { ...TYPE.caption, color: COLORS.textSecondary, fontWeight: '600' },
-    input: {
-        ...TYPE.body,
-        color: COLORS.textPrimary,
-        minHeight: 88,
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: COLORS.accentMedium,
-        backgroundColor: COLORS.bg1,
-        padding: 13,
-        textAlignVertical: 'top',
-    },
-    saveBtn: {
-        borderRadius: 16,
-        backgroundColor: COLORS.accent,
-        paddingVertical: 14,
-        alignItems: 'center',
-        ...SHADOWS.accent,
-    },
-    saveBtnOff: { backgroundColor: COLORS.border, shadowOpacity: 0 },
-    saveText: { ...TYPE.bodyBold, color: COLORS.textOnAccent, fontWeight: '800' },
-    footNote: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 7,
-        marginTop: 10,
-        paddingHorizontal: 30,
-    },
-    footNoteText: { fontSize: 11, color: COLORS.textMuted, fontWeight: '600', textAlign: 'center' },
+    primaryText: { ...TYPE.bodyBold, color: COLORS.textOnAccent, fontWeight: '800' },
+    secondary: { alignItems: 'center', paddingVertical: 10 },
+    secondaryText: { ...TYPE.bodyBold, color: COLORS.textSecondary },
+    footNote: { fontSize: 11, color: COLORS.textMuted, fontWeight: '600', textAlign: 'center', marginTop: 4 },
 });
