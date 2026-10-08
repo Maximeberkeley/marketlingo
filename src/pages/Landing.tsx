@@ -89,7 +89,7 @@ const steps = [
   {
     num: "01",
     title: "Pick your industry",
-    desc: "Choose from 12+ markets — aerospace, EVs, biotech, and more.",
+    desc: "Choose from 15 markets — aerospace, EVs, biotech, and more.",
     icon: Globe,
   },
   {
@@ -249,7 +249,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-center gap-8 text-muted-foreground text-sm">
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4" />
-            <span>12+ Industries</span>
+            <span>15 Industries</span>
           </div>
           <div className="flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
