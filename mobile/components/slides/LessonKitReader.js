@@ -1,5 +1,5 @@
-import React, { useMemo, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useMemo, useCallback, useRef } from 'react';
+import { ActivityIndicator, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { LessonScreen } from '../../lesson-kit/screens/LessonScreen';
 import { tokens } from '../../lesson-kit/theme/tokens';
@@ -7,6 +7,8 @@ import { buildBeats } from '../../lesson-kit/sequencer/buildBeats';
 import { useIndustryContent } from '../../hooks/useIndustryContent';
 import { parseSlideIntoCards } from './ConceptCard';
 import { DeepDiveProvider } from '../../lesson-kit/components/DeepDiveContext';
+import { useDeliverable } from '../../hooks/useDeliverable';
+import { sectionForLesson } from '../../lib/deliverables';
 /** Authored fields win, but only when actually set. */
 function stripUndefined(value) {
     return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined && v !== null && v !== ''));
@@ -46,6 +48,13 @@ function buildLesson(stackTitle, slides, marketId, metadata, industry, isFirstDa
 }
 export function LessonKitReader({ stackTitle, slides, onClose, onComplete, onSaveInsight, onAddNote, marketId, isReview = false, streakDays, dayNumber, metadata, stackId, learningGoal, authoredLesson, }) {
     const { trainer, drills, stats } = useIndustryContent(marketId, dayNumber);
+    const dossier = useDeliverable(marketId, learningGoal);
+    // Freeze the default once progress loads, so saving cannot change the active lesson beat.
+    const matchedSection = useRef(undefined);
+    if (!dossier.loading && !matchedSection.current) {
+        matchedSection.current = sectionForLesson(dossier.template, new Set(dossier.learnerEntries.map(entry => entry.sectionKey)), [{ title: stackTitle, body: metadata?.key_takeaway ?? '' }, ...slides]).key;
+    }
+    const defaultSectionKey = matchedSection.current;
     const { lesson: baseLesson, slideNumbers: baseSlideNumbers } = useMemo(() => isAuthoredLesson(authoredLesson)
         ? { lesson: { ...authoredLesson, id: authoredLesson.id || stackTitle, title: authoredLesson.title || stackTitle }, slideNumbers: authoredLesson.exercises.map(() => slides[0]?.slideNumber ?? 1) }
         :
@@ -64,6 +73,7 @@ export function LessonKitReader({ stackTitle, slides, onClose, onComplete, onSav
             takeaway: metadata?.key_takeaway?.trim() || undefined,
             dayNumber,
             learningGoal,
+            sectionKey: defaultSectionKey,
         });
         if (isAuthoredLesson(authoredLesson)) {
             return {
@@ -81,7 +91,7 @@ export function LessonKitReader({ stackTitle, slides, onClose, onComplete, onSav
             lesson: { ...baseLesson, exercises: [...baseLesson.exercises, sayIt()] },
             slideNumbers: [...baseSlideNumbers, last],
         };
-    }, [baseLesson, baseSlideNumbers, authoredLesson, metadata, dayNumber, learningGoal, slides]);
+    }, [baseLesson, baseSlideNumbers, authoredLesson, metadata, dayNumber, learningGoal, slides, defaultSectionKey]);
     const extraActions = useCallback((exerciseIndex) => {
         const slideNumber = slideNumbers[exerciseIndex] ?? 1;
         return (<View style={styles.actions}>
@@ -95,11 +105,15 @@ export function LessonKitReader({ stackTitle, slides, onClose, onComplete, onSav
           </TouchableOpacity>
         </View>);
     }, [slideNumbers, onAddNote, onSaveInsight]);
+    // LessonScreen snapshots its queue on mount: wait for the writing default before mounting it.
+    if (!defaultSectionKey)
+        return <View style={styles.opening}><ActivityIndicator color={tokens.color.accent}/></View>;
     return (<DeepDiveProvider stackId={stackId} learningGoal={learningGoal}>
       <LessonScreen lesson={lesson} marketId={marketId} onExit={onClose} onFinish={({ timeSpentSeconds, correct, total }) => onComplete(isReview, timeSpentSeconds, total > 0 ? Math.round((correct / total) * 100) : 100)} renderExtraActions={extraActions} onSaveLeoAnswer={(text, exerciseIndex) => onAddNote(slideNumbers[exerciseIndex] ?? 1, `Leo explained: ${text}`)} streakDays={streakDays} confirmExit={!isReview}/>
     </DeepDiveProvider>);
 }
 const styles = StyleSheet.create({
+    opening: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     actions: { flexDirection: 'row', gap: tokens.space.md },
     action: {
         flex: 1,

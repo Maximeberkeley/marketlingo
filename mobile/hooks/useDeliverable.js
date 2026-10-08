@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { log } from '../lib/logger';
-import { deliverableFor } from '../lib/deliverables';
+import { deliverableFor, sameDossierText } from '../lib/deliverables';
 export function useDeliverable(marketId, goal) {
     const template = useMemo(() => deliverableFor(goal), [goal]);
     const [entries, setEntries] = useState([]);
@@ -102,11 +102,14 @@ export function useDeliverable(marketId, goal) {
     }, []);
     /** Rewrites an old suggestion: saves the learner's version, then drops the suggestion. */
     const replaceSuggestion = useCallback(async (id, sectionKey, content, dayNumber) => {
+        const suggestion = entries.find(entry => entry.id === id && entry.source !== 'learner' && entry.sectionKey === sectionKey);
+        if (!suggestion || sameDossierText(content, suggestion.content))
+            return false;
         const ok = await addLine(sectionKey, content, dayNumber, 'learner');
         if (ok)
             await removeLine(id);
         return ok;
-    }, [addLine, removeLine]);
+    }, [addLine, removeLine, entries]);
     /** Only the learner's own lines count toward the document. */
     const learnerEntries = useMemo(() => entries.filter(e => e.source === 'learner'), [entries]);
     const bySection = useMemo(() => {
