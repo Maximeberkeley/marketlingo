@@ -440,6 +440,7 @@ export function CourseJourney({
   belowToday,
 }: CourseJourneyProps) {
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
   const [reduceMotion, setReduceMotion] = useState(false);
   const activityReveal = useRef(Array.from({ length: 4 }, () => new Animated.Value(lessonCompletedToday ? 1 : 0))).current;
   const seenReveals = useRef(new Set<string>()).current;
@@ -457,7 +458,7 @@ export function CourseJourney({
       activityReveal.forEach(value => value.setValue(0));
       return;
     }
-    if (!isFocused) return;
+    if (!isFocused || loading) return;
     let active = true;
     let animation: Animated.CompositeAnimation | undefined;
     const reveal = async () => {
@@ -476,11 +477,10 @@ export function CourseJourney({
     };
     void reveal();
     return () => { active = false; animation?.stop(); };
-  }, [lessonCompletedToday, isFocused, revealKey, reduceMotion, activityReveal, seenReveals]);
+  }, [lessonCompletedToday, isFocused, loading, revealKey, reduceMotion, activityReveal, seenReveals]);
   const listRef = useRef<FlatList<SectionAccess>>(null);
   const initialPositioned = useRef(false);
   const [lessons, setLessons] = useState<CourseLesson[]>([]);
-  const [loading, setLoading] = useState(true);
   const loadedMarket = useRef<string | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [loadKey, setLoadKey] = useState(0);

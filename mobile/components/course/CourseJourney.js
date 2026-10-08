@@ -225,6 +225,7 @@ function CurriculumPreview({ visible, section, title, lessons, currentDay, onClo
 }
 export function CourseJourney({ marketId, currentDay, learningGoal, completedStackIds, streak, totalXp, level, lessonCompletedToday, isFocused, arenaCompletedToday = false, caseCompletedToday = false, intelReadToday, intelTarget, rescueAvailable = false, streakCountdown = null, safeTop, onOpenLesson, onAskLeo, belowToday, }) {
     const { user } = useAuth();
+    const [loading, setLoading] = useState(true);
     const [reduceMotion, setReduceMotion] = useState(false);
     const activityReveal = useRef(Array.from({ length: 4 }, () => new Animated.Value(lessonCompletedToday ? 1 : 0))).current;
     const seenReveals = useRef(new Set()).current;
@@ -243,7 +244,7 @@ export function CourseJourney({ marketId, currentDay, learningGoal, completedSta
             activityReveal.forEach(value => value.setValue(0));
             return;
         }
-        if (!isFocused)
+        if (!isFocused || loading)
             return;
         let active = true;
         let animation;
@@ -265,11 +266,10 @@ export function CourseJourney({ marketId, currentDay, learningGoal, completedSta
         };
         void reveal();
         return () => { active = false; animation?.stop(); };
-    }, [lessonCompletedToday, isFocused, revealKey, reduceMotion, activityReveal, seenReveals]);
+    }, [lessonCompletedToday, isFocused, loading, revealKey, reduceMotion, activityReveal, seenReveals]);
     const listRef = useRef(null);
     const initialPositioned = useRef(false);
     const [lessons, setLessons] = useState([]);
-    const [loading, setLoading] = useState(true);
     const loadedMarket = useRef(null);
     const [loadError, setLoadError] = useState(false);
     const [loadKey, setLoadKey] = useState(0);
