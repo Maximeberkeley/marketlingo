@@ -536,6 +536,7 @@ export default function HomeScreen() {
           streakDays={streak}
           dayNumber={stackDayNumber(session.activeStack) || currentDay}
           metadata={(session.activeStack as any).metadata}
+          authoredLesson={(session.activeStack as any).authored_lesson}
         />
       ) : session.showSessionComplete ? (
         <SessionCompleteCard

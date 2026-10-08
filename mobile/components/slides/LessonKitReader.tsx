@@ -8,6 +8,7 @@ import { SlideLike } from '../../lesson-kit/sequencer/extract';
 import { useIndustryContent } from '../../hooks/useIndustryContent';
 import { parseSlideIntoCards } from './ConceptCard';
 import { DeepDiveProvider } from '../../lesson-kit/components/DeepDiveContext';
+import type { Lesson } from '../../lesson-kit/types';
 
 
 interface Source {
@@ -45,6 +46,8 @@ export interface LessonKitReaderProps {
   /** Stored learning goal, so the deep layer is written through the right lens. */
   learningGoal?: string | null;
   metadata?: StackMetadata;
+  /** Hand-written lesson from stacks.authored_lesson; played instead of generated beats. */
+  authoredLesson?: unknown;
   [key: string]: any;
 }
 
@@ -60,6 +63,13 @@ function firstDayText(title: string, body: string) {
     title: String(title || '').replace(/^recap:\s*/i, 'Foundation: ').replace(/yesterday's\s+/i, 'The '),
     body: String(body || '').replace(PRIOR_RE, ''),
   };
+}
+
+
+/** A hand-written lesson is usable only if it has an exercises array with at least one beat. */
+function isAuthoredLesson(value: unknown): value is Lesson) {
+  const v = value as any;
+  return !!v && typeof v === 'object' && Array.isArray(v.exercises) && v.exercises.length > 0;
 }
 
 function buildLesson(
@@ -100,11 +110,14 @@ export function LessonKitReader({
   metadata,
   stackId,
   learningGoal,
+  authoredLesson,
 }: LessonKitReaderProps) {
   const { trainer, drills, stats } = useIndustryContent(marketId, dayNumber);
 
   const { lesson, slideNumbers } = useMemo(
-    () =>
+    () => isAuthoredLesson(authoredLesson)
+      ? { lesson: { ...authoredLesson, id: authoredLesson.id || stackTitle, title: authoredLesson.title || stackTitle }, slideNumbers: authoredLesson.exercises.map(() => slides[0]?.slideNumber ?? 1) }
+      :
       buildLesson(stackTitle, slides, marketId, metadata, {
         marketId,
         trainer,
@@ -112,7 +125,7 @@ export function LessonKitReader({
         stats,
         learningGoal,
       }, dayNumber === 1),
-    [stackTitle, slides, marketId, metadata, trainer, drills, stats, dayNumber, learningGoal],
+    [stackTitle, slides, marketId, metadata, trainer, drills, stats, dayNumber, learningGoal, authoredLesson],
   );
 
 

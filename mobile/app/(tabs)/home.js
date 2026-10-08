@@ -433,7 +433,7 @@ export default function HomeScreen() {
         // catch-up work and must still be able to count toward its section.
         isReview={(() => {
                 return (progress?.completed_stacks || []).includes(session.activeStack.id);
-            })()} isProUser={isProUser} streakDays={streak} dayNumber={stackDayNumber(session.activeStack) || currentDay} metadata={session.activeStack.metadata}/>) : session.showSessionComplete ? (<SessionCompleteCard dayNumber={session.activeStack ? stackDayNumber(session.activeStack) || currentDay : currentDay} marketName={getMarketName(selectedMarket || 'aerospace')} marketEmoji="" xpEarned={session.sessionXPEarned} streak={streak} lessonTitle={session.activeStack?.title || lessonStack?.title || 'Lesson'} totalXP={xpData?.total_xp || 0} stageName={currentStage.name} onContinue={() => {
+            })()} isProUser={isProUser} streakDays={streak} dayNumber={stackDayNumber(session.activeStack) || currentDay} metadata={session.activeStack.metadata} authoredLesson={session.activeStack.authored_lesson}/>) : session.showSessionComplete ? (<SessionCompleteCard dayNumber={session.activeStack ? stackDayNumber(session.activeStack) || currentDay : currentDay} marketName={getMarketName(selectedMarket || 'aerospace')} marketEmoji="" xpEarned={session.sessionXPEarned} streak={streak} lessonTitle={session.activeStack?.title || lessonStack?.title || 'Lesson'} totalXP={xpData?.total_xp || 0} stageName={currentStage.name} onContinue={() => {
                 session.dismissSessionComplete();
             }} onDismiss={() => {
                 session.dismissSessionComplete();
