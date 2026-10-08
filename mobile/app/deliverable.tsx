@@ -6,7 +6,7 @@
  * order, and the learner's own lines as body text. Lesson suggestions are shown
  * faded as a starting point and never count as written.
  */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Keyboard,
@@ -29,7 +29,7 @@ import { getMarketName } from '../lib/markets';
 import { useSelectedMarket } from '../hooks/useSelectedMarket';
 import { useUserProgress } from '../hooks/useUserProgress';
 import { useDeliverable } from '../hooks/useDeliverable';
-import { consolidationSection, isConsolidationDay } from '../lib/deliverables';
+import { consolidationSection, isConsolidationDay, sameDossierText } from '../lib/deliverables';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
 import { log } from '../lib/logger';
@@ -53,8 +53,8 @@ export default function DeliverableScreen() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   /** Suggestion id the draft was started from, per section (replaced on save). */
   const [startedFrom, setStartedFrom] = useState<Record<string, string>>({});
-  /** Filled sections whose "add another line" field is open. */
-  const [composing, setComposing] = useState<string | null>(params.section ?? null);
+  /** Only the section the learner opened has a text field. */
+  const [composing, setComposing] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [savingKey, setSavingKey] = useState<string | null>(null);
   /** Section that just received a line — drives the brief highlight. */
@@ -63,18 +63,34 @@ export default function DeliverableScreen() {
   const scrollRef = useRef<ScrollView>(null);
   const sectionY = useRef<Record<string, number>>({});
   const inputRefs = useRef<Record<string, TextInput | null>>({});
+  const openedParam = useRef<string | null>(null);
 
   const busy = marketLoading || deliverable.loading;
   const { template, bySection, filledSections } = deliverable;
   const total = template.sections.length;
+  useEffect(() => {
+    if (busy || !params.section || openedParam.current === params.section) return;
+    if (!template.sections.some(section => section.key === params.section)) return;
+    openedParam.current = params.section;
+    setComposing(params.section);
+  }, [busy, params.section, template.sections]);
+
+  useEffect(() => {
+    if (!composing || busy) return;
+    const timer = setTimeout(() => {
+      const y = sectionY.current[composing];
+      if (typeof y === 'number') scrollRef.current?.scrollTo({ y: Math.max(0, y - 24), animated: true });
+      inputRefs.current[composing]?.focus();
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [composing, busy]);
   const learnerLineCount = deliverable.learnerEntries.length;
   const close = () => { Keyboard.dismiss(); router.back(); };
 
   const setDraft = (key: string, value: string) => setDrafts(prev => ({ ...prev, [key]: value }));
 
   const focusSection = (key: string) => {
-    const filled = (bySection[key]?.length ?? 0) > 0;
-    if (filled) setComposing(key);
+    setComposing(key);
     const y = sectionY.current[key];
     if (typeof y === 'number') scrollRef.current?.scrollTo({ y: Math.max(0, y - 24), animated: true });
     setTimeout(() => inputRefs.current[key]?.focus(), 350);
@@ -82,10 +98,11 @@ export default function DeliverableScreen() {
 
   const save = async (key: string) => {
     const text = (drafts[key] ?? '').trim();
-    if (text.length < 3) return;
+    const suggestionId = startedFrom[key];
+    const original = deliverable.entries.find(entry => entry.id === suggestionId);
+    if (text.length < 3 || savingKey || (original && sameDossierText(text, original.content))) return;
     setSavingKey(key);
     const wasEmpty = (bySection[key]?.length ?? 0) === 0;
-    const suggestionId = startedFrom[key];
     const ok = suggestionId
       ? await deliverable.replaceSuggestion(suggestionId, key, text, day)
       : await deliverable.addLine(key, text, day);
@@ -179,7 +196,10 @@ export default function DeliverableScreen() {
           const suggestion = (deliverable.suggestionsBySection[section.key] ?? [])[0];
           const empty = own.length === 0;
           const draft = drafts[section.key] ?? '';
-          const showField = empty || composing === section.key;
+          const showField = composing === section.key;
+          const original = deliverable.entries.find(entry => entry.id === startedFrom[section.key]);
+          const unchangedSuggestion = !!original && sameDossierText(draft, original.content);
+          const saveDisabled = draft.trim().length < 3 || unchangedSuggestion || savingKey !== null;
           const flashing = justFilled === section.key;
 
           return (
@@ -231,7 +251,7 @@ export default function DeliverableScreen() {
                       triggerHaptic('light');
                       setDraft(section.key, suggestion.content);
                       setStartedFrom(prev => ({ ...prev, [section.key]: suggestion.id }));
-                      setTimeout(() => inputRefs.current[section.key]?.focus(), 50);
+                      focusSection(section.key);
                     }}
                   >
                     <Text style={styles.link}>Start from this</Text>
@@ -251,10 +271,11 @@ export default function DeliverableScreen() {
                     multiline
                     blurOnSubmit
                   />
+                  {unchangedSuggestion ? <Text style={styles.rewriteHint}>Put it in your own words first.</Text> : null}
                   {draft.trim().length > 0 ? (
                     <TouchableOpacity
-                      style={[styles.saveBtn, draft.trim().length < 3 && styles.saveBtnOff]}
-                      disabled={draft.trim().length < 3 || savingKey === section.key}
+                      style={[styles.saveBtn, saveDisabled && styles.saveBtnOff]}
+                      disabled={saveDisabled}
                       onPress={() => save(section.key)}
                       activeOpacity={0.9}
                     >
@@ -264,7 +285,7 @@ export default function DeliverableScreen() {
                 </View>
               ) : (
                 <TouchableOpacity hitSlop={8} onPress={() => focusSection(section.key)}>
-                  <Text style={styles.addMore}>+ Add a line</Text>
+                  <Text style={styles.addMore}>{empty ? 'Write' : '+ Add a line'}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -324,9 +345,9 @@ const styles = StyleSheet.create({
   weekly: { marginHorizontal: 24, marginBottom: 8, paddingVertical: 14, gap: 4 },
   weeklyLabel: { fontSize: 10, fontWeight: '800', letterSpacing: 1.1, color: COLORS.accent },
   weeklyPrompt: { ...TYPE.body, color: COLORS.textPrimary, lineHeight: 21 },
-  section: { marginHorizontal: 24, paddingVertical: 20, borderRadius: 12 },
+  section: { marginHorizontal: 24, paddingVertical: 20 },
   divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.border },
-  sectionFlash: { backgroundColor: COLORS.accentSoft },
+  sectionFlash: { backgroundColor: COLORS.accentSoft, paddingHorizontal: 12, marginHorizontal: 12 },
   sectionHead: { ...TYPE.h3, color: COLORS.textPrimary },
   sectionNum: { color: COLORS.textMuted, fontWeight: '800' },
   prompt: { ...TYPE.body, color: COLORS.textMuted, marginTop: 6, lineHeight: 21 },
@@ -338,6 +359,7 @@ const styles = StyleSheet.create({
   link: { ...TYPE.caption, color: COLORS.accent, fontWeight: '800' },
   addMore: { ...TYPE.caption, color: COLORS.textMuted, fontWeight: '700', marginTop: 12 },
   composer: { marginTop: 12, gap: 8 },
+  rewriteHint: { ...TYPE.caption, color: COLORS.textMuted },
   input: {
     ...TYPE.body,
     color: COLORS.textPrimary,

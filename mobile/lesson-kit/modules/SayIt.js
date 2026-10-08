@@ -16,11 +16,13 @@ export function SayIt({ exercise, marketId, onDone }) {
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(null);
     const [failed, setFailed] = useState(false);
-    // Pre-select the first section with no learner-written line.
+    // Respect the reader's lesson match; changing sections remains a learner choice.
     useEffect(() => {
-        if (!sectionKey && !loading)
-            setSectionKey((firstOpenSection ?? template.sections[0]).key);
-    }, [sectionKey, loading, firstOpenSection, template.sections]);
+        if (!sectionKey && !loading) {
+            const matched = template.sections.find(s => s.key === exercise.sectionKey);
+            setSectionKey((matched ?? firstOpenSection ?? template.sections[0]).key);
+        }
+    }, [sectionKey, loading, firstOpenSection, template.sections, exercise.sectionKey]);
     const section = template.sections.find(s => s.key === sectionKey) ?? template.sections[0];
     const canAdd = text.trim().length >= 3 && !saving && !!marketId;
     const add = async () => {
@@ -75,7 +77,9 @@ export function SayIt({ exercise, marketId, onDone }) {
       {failed && <Text style={styles.error}>Couldn't save that. Try again, or skip for now.</Text>}
 
       <PrimaryButton label={saving ? 'Saving…' : `Add to my ${template.title}`} onPress={add} variant={canAdd ? 'primary' : 'disabled'}/>
-      <PrimaryButton label="Skip" onPress={onDone} variant="ghost"/>
+      <TouchableOpacity onPress={onDone} style={styles.skip} hitSlop={10} accessibilityRole="link" disabled={saving}>
+        <Text style={styles.skipText}>Skip</Text>
+      </TouchableOpacity>
     </View>);
 }
 const styles = StyleSheet.create({
@@ -123,6 +127,8 @@ const styles = StyleSheet.create({
         textAlignVertical: 'top',
     },
     error: { fontSize: tokens.font.caption, color: tokens.color.incorrect },
+    skip: { alignSelf: 'center', paddingVertical: 4 },
+    skipText: { fontSize: tokens.font.caption, color: tokens.color.textSecondary },
     mine: {
         borderLeftWidth: 3,
         borderLeftColor: tokens.color.accent,

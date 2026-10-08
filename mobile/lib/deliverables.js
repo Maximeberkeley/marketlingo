@@ -110,10 +110,9 @@ export function slotStatus(lineCount) {
     return lineCount >= 2 ? 'strong' : 'filled';
 }
 // ---------------------------------------------------------------------------
-// Automatic filling: every finished lesson drops one complete sentence from
-// that lesson into the next open section. The learner can edit or delete it.
+// Lesson hints select a writing prompt; they never write a learner's line.
 // ---------------------------------------------------------------------------
-const SECTION_HINTS = {
+export const SECTION_HINTS = {
     how_money_moves: /\b(pay|pays|paid|revenue|margin|cash|price|cost|contract|fee)s?\b/i,
     money: /\b(pay|pays|paid|revenue|margin|cash|price|cost|contract|fee)s?\b/i,
     chain: /\b(supplier|supply|chain|integrat|deliver|build|assembl)/i,
@@ -127,6 +126,24 @@ const SECTION_HINTS = {
     why_now: /\b(now|recent|since|20(2\d)|new)\b/i,
     frontier: /\b(next|future|will|emerging|new)\b/i,
 };
+/** Prefer relevant unwritten sections; a lesson title weighs more than incidental body words. */
+export function sectionForLesson(template, filledKeys, slides) {
+    const scored = template.sections.map(section => {
+        const hint = SECTION_HINTS[section.key];
+        const occurrences = (text) => hint ? (text.match(new RegExp(hint.source, `${hint.flags}g`)) ?? []).length : 0;
+        const score = slides.reduce((sum, slide) => sum + occurrences(slide.title ?? '') * 3 + occurrences(slide.body), 0);
+        return { section, score };
+    }).filter(item => item.score > 0).sort((a, b) => b.score - a.score);
+    return scored.find(item => !filledKeys.has(item.section.key))?.section
+        ?? template.sections.find(section => !filledKeys.has(section.key))
+        ?? scored[0]?.section
+        ?? template.sections[0];
+}
+/** Case and punctuation changes alone are not a learner rewrite. */
+export function sameDossierText(left, right) {
+    const normalize = (text) => text.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+    return normalize(left) === normalize(right);
+}
 function lessonSentences(slides) {
     const out = [];
     for (const slide of slides) {

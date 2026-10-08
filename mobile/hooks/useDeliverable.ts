@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { supabase } from '../lib/supabase';
 import { log } from '../lib/logger';
-import { DeliverableTemplate, deliverableFor } from '../lib/deliverables';
+import { DeliverableTemplate, deliverableFor, sameDossierText } from '../lib/deliverables';
 
 export interface DeliverableEntry {
   id: string;
@@ -123,11 +123,13 @@ export function useDeliverable(marketId?: string, goal?: string | null) {
   /** Rewrites an old suggestion: saves the learner's version, then drops the suggestion. */
   const replaceSuggestion = useCallback(
     async (id: string, sectionKey: string, content: string, dayNumber?: number) => {
+      const suggestion = entries.find(entry => entry.id === id && entry.source !== 'learner' && entry.sectionKey === sectionKey);
+      if (!suggestion || sameDossierText(content, suggestion.content)) return false;
       const ok = await addLine(sectionKey, content, dayNumber, 'learner');
       if (ok) await removeLine(id);
       return ok;
     },
-    [addLine, removeLine],
+    [addLine, removeLine, entries],
   );
 
   /** Only the learner's own lines count toward the document. */
