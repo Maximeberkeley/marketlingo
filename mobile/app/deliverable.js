@@ -80,6 +80,10 @@ export default function DeliverableScreen() {
         persist(next);
     };
     useEffect(() => {
+        leavingRef.current = false;
+        return () => { leavingRef.current = true; };
+    }, []);
+    useEffect(() => {
         let active = true;
         setDraftsReady(false);
         const restore = async () => {
@@ -155,6 +159,12 @@ export default function DeliverableScreen() {
     const setDraft = (key, value) => changeSnapshot(prev => ({ ...prev, drafts: { ...prev.drafts, [key]: value } }));
     const focusSection = (key) => changeSnapshot(prev => ({ ...prev, composing: key }));
     const editLine = (key, id, content) => {
+        const current = snapshotRef.current;
+        if (current.drafts[key]?.trim() && current.editing[key] !== id) {
+            focusSection(key);
+            Alert.alert('Finish your draft first', 'Save this line before editing another.');
+            return;
+        }
         triggerHaptic('light');
         changeSnapshot(prev => ({ ...prev, composing: key,
             drafts: { ...prev.drafts, [key]: prev.editing[key] === id ? prev.drafts[key] : content },
