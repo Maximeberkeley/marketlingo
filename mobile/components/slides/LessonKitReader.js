@@ -21,6 +21,13 @@ function firstDayText(title, body) {
   };
 }
 
+
+/** A hand-written lesson is usable only if it has an exercises array with at least one beat. */
+function isAuthoredLesson(value) {
+  const v = value;
+  return !!v && typeof v === 'object' && Array.isArray(v.exercises) && v.exercises.length > 0;
+}
+
 function buildLesson(stackTitle, slides, marketId, metadata, industry, isFirstDay = false) {
     const enriched = slides.map((raw, slideIdx) => {
     const slide = isFirstDay ? { ...raw, ...firstDayText(raw.title, raw.body) } : raw;
@@ -36,15 +43,17 @@ function buildLesson(stackTitle, slides, marketId, metadata, industry, isFirstDa
     });
     return buildBeats(stackTitle, enriched, metadata, industry);
 }
-export function LessonKitReader({ stackTitle, slides, onClose, onComplete, onSaveInsight, onAddNote, marketId, isReview = false, streakDays, dayNumber, metadata, stackId, learningGoal, }) {
+export function LessonKitReader({ stackTitle, slides, onClose, onComplete, onSaveInsight, onAddNote, marketId, isReview = false, streakDays, dayNumber, metadata, stackId, learningGoal, authoredLesson, }) {
     const { trainer, drills, stats } = useIndustryContent(marketId, dayNumber);
-    const { lesson, slideNumbers } = useMemo(() => buildLesson(stackTitle, slides, marketId, metadata, {
+    const { lesson, slideNumbers } = useMemo(() => isAuthoredLesson(authoredLesson)
+        ? { lesson: { ...authoredLesson, id: authoredLesson.id || stackTitle, title: authoredLesson.title || stackTitle }, slideNumbers: authoredLesson.exercises.map(() => slides[0]?.slideNumber ?? 1) }
+        : buildLesson(stackTitle, slides, marketId, metadata, {
         marketId,
         trainer,
         drills,
         stats,
         learningGoal,
-    }, dayNumber === 1), [stackTitle, slides, marketId, metadata, trainer, drills, stats, dayNumber, learningGoal]);
+    }, dayNumber === 1), [stackTitle, slides, marketId, metadata, trainer, drills, stats, dayNumber, learningGoal, authoredLesson]);
     const extraActions = useCallback((exerciseIndex) => {
         const slideNumber = slideNumbers[exerciseIndex] ?? 1;
         return (<View style={styles.actions}>

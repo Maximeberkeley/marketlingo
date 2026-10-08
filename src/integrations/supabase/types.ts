@@ -2174,6 +2174,7 @@ export type Database = {
       }
       stacks: {
         Row: {
+          authored_lesson: Json | null
           created_at: string
           duration_minutes: number | null
           id: string
@@ -2185,6 +2186,7 @@ export type Database = {
           title: string
         }
         Insert: {
+          authored_lesson?: Json | null
           created_at?: string
           duration_minutes?: number | null
           id?: string
@@ -2196,6 +2198,7 @@ export type Database = {
           title: string
         }
         Update: {
+          authored_lesson?: Json | null
           created_at?: string
           duration_minutes?: number | null
           id?: string
