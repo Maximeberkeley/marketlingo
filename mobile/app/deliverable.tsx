@@ -78,7 +78,6 @@ export default function DeliverableScreen() {
   const [editMode, setEditMode] = useState(false);
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const savingRef = useRef(false);
-  const leavingRef = useRef(false);
   const [justFilled, setJustFilled] = useState<string | null>(null);
   const [inputHeights, setInputHeights] = useState<Record<string, number>>({});
   const scrollRef = useRef<ScrollView>(null);
@@ -104,10 +103,6 @@ export default function DeliverableScreen() {
     setSnapshot(next);
     persist(next);
   };
-  useEffect(() => {
-    leavingRef.current = false;
-    return () => { leavingRef.current = true; };
-  }, []);
   useEffect(() => {
     let active = true;
     setDraftsReady(false);
@@ -158,19 +153,26 @@ export default function DeliverableScreen() {
   }, [busy, params.section, template.sections]);
   useEffect(() => {
     if (!composing || busy) return;
-    const timer = setTimeout(() => { inputRefs.current[composing]?.focus(); revealEditor(); }, 350);
+    const timer = setTimeout(() => {
+      if (snapshotRef.current.composing !== composing) return;
+      inputRefs.current[composing]?.focus(); revealEditor();
+    }, 350);
     return () => clearTimeout(timer);
   }, [composing, busy]);
   const learnerLineCount = deliverable.learnerEntries.length;
   const close = async () => {
     if (savingRef.current) return;
-    leavingRef.current = true;
     persist(snapshotRef.current);
     await writeQueue.current;
     router.back();
   };
   const setDraft = (key: string, value: string) => changeSnapshot(prev => ({ ...prev, drafts: { ...prev.drafts, [key]: value } }));
   const focusSection = (key: string) => changeSnapshot(prev => ({ ...prev, composing: key }));
+  const cancel = () => {
+    if (savingRef.current) return;
+    changeSnapshot(prev => ({ ...prev, composing: null }));
+    Keyboard.dismiss();
+  };
   const editLine = (key: string, id: string, content: string) => {
     const current = snapshotRef.current;
     if (current.drafts[key]?.trim() && current.editing[key] !== id) {
@@ -185,12 +187,13 @@ export default function DeliverableScreen() {
     }));
   };
   const save = async (key: string) => {
+    if (savingRef.current) return;
     const current = snapshotRef.current;
     const text = (current.drafts[key] ?? '').trim();
     const suggestionId = current.startedFrom[key];
-    const original = deliverable.entries.find(entry => entry.id === suggestionId);
-    if (text.length < 3 || savingRef.current || (original && sameDossierText(text, original.content))) {
-      if (!leavingRef.current) inputRefs.current[key]?.focus();
+    const original = deliverable.entries.find(entry => entry.id === (current.editing[key] || suggestionId));
+    if (text.length < 3 || (original && sameDossierText(text, original.content))) {
+      cancel();
       return;
     }
     savingRef.current = true;
@@ -204,7 +207,6 @@ export default function DeliverableScreen() {
     setSavingKey(null);
     if (!ok) {
       Alert.alert('Line not saved', 'Your draft is safe. Please try saving again.');
-      inputRefs.current[key]?.focus();
       return;
     }
     changeSnapshot(prev => ({ ...prev, composing: prev.composing === key ? null : prev.composing,
@@ -225,10 +227,14 @@ export default function DeliverableScreen() {
     }));
   };
   const activeSection = template.sections.find(section => section.key === composing);
-  const activeOriginal = deliverable.entries.find(entry => entry.id === startedFrom[composing ?? '']);
+  const activeOriginal = deliverable.entries.find(entry => entry.id === (editing[composing ?? ''] || startedFrom[composing ?? '']));
   const activeDraft = drafts[composing ?? ''] ?? '';
   const saveDisabled = activeDraft.trim().length < 3 || savingKey !== null || !!(activeOriginal && sameDossierText(activeDraft, activeOriginal.content));
   const saveBar = <View style={styles.accessoryBar}>
+    <TouchableOpacity accessibilityRole="button" accessibilityLabel="Cancel dossier writing" hitSlop={8}
+      disabled={savingKey !== null} onPress={cancel}>
+      <Text style={styles.link}>Cancel</Text>
+    </TouchableOpacity>
     <Text style={styles.accessoryTitle} numberOfLines={1}>{activeSection?.title ?? ''}</Text>
     <TouchableOpacity accessibilityRole="button" accessibilityLabel="Save dossier line" style={[styles.accessorySave, saveDisabled && styles.saveBtnOff]}
       disabled={saveDisabled} onPress={() => { if (composing) void save(composing); }}>
@@ -330,9 +336,6 @@ export default function DeliverableScreen() {
                 }}
                 onFocus={() => setTimeout(revealEditor, 80)}
                 onSubmitEditing={() => void save(section.key)}
-                onBlur={() => { setTimeout(() => {
-                  if (!leavingRef.current && snapshotRef.current.composing === section.key && !savingRef.current) void save(section.key);
-                }, 0); }}
               />
               {unchangedSuggestion ? <Text style={styles.rewriteHint}>Put it in your own words first.</Text> : null}
             </View>
