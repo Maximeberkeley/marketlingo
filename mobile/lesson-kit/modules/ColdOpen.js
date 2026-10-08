@@ -15,6 +15,8 @@ export function ColdOpen({ exercise, onChange }) {
     }, [exercise.id]);
     return (<View style={styles.wrap}>
       <View style={styles.card}>
+        <View style={styles.coverSky}/>
+        <View style={styles.coverCopy}>
         {!!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow).toUpperCase()}</Text>}
         <ColorText text={exercise.headline} style={styles.headline} maxSentences={4} maxLength={260}/>
         {!!exercise.kicker && <ColorText text={exercise.kicker} style={styles.kicker} maxSentences={1} maxLength={80}/>}
@@ -26,19 +28,23 @@ export function ColdOpen({ exercise, onChange }) {
             </View>
             <Feather name="chevron-right" size={18} color={tokens.color.textMuted}/>
           </TouchableOpacity>)}
+        </View>
+        <View style={styles.coverFoot}/>
       </View>
       {hasBriefing && (<BriefingReader visible={showBriefing} title={exercise.detailTitle || exercise.eyebrow || 'Briefing'} eyebrow={exercise.eyebrow} text={exercise.fullText || ''} keyTerms={cardTerms(exercise)} sources={exercise.sources} onClose={() => setShowBriefing(false)}/>)}
     </View>);
 }
 const styles = StyleSheet.create({
-    wrap: { minWidth: 0, maxWidth: '100%', alignSelf: 'stretch' },
+    wrap: { flexGrow: 1, flexBasis: 0, minWidth: 0, maxWidth: '100%', alignSelf: 'stretch' },
     card: {
-        minWidth: 0, maxWidth: '100%',
+        flexGrow: 1, flexBasis: 0, minWidth: 0, maxWidth: '100%',
         backgroundColor: tokens.color.coldOpen,
         minHeight: 300,
         padding: tokens.space.xl,
-        gap: tokens.space.md,
     },
+    coverSky: { flexGrow: 2, flexBasis: 0 },
+    coverCopy: { flexShrink: 0, gap: tokens.space.md },
+    coverFoot: { flexGrow: 1, flexBasis: 0 },
     eyebrow: {
         fontSize: 11,
         fontWeight: '900',

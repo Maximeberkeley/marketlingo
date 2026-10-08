@@ -344,7 +344,7 @@ export function LessonScreen({
       <ScrollView
         ref={scrollRef}
         style={styles.scroll}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, exercise.kind === 'coldOpen' && styles.coverContent]}
         keyboardShouldPersistTaps="handled"
       >
         <Animated.View style={[styles.beat, exercise.kind === 'coldOpen' && styles.fullBleed, { opacity: enter, transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]} >
@@ -475,7 +475,8 @@ function renderExercise(
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: tokens.color.bg },
   beat: { width: '100%', alignSelf: 'stretch' },
-  fullBleed: { marginHorizontal: -tokens.space.lg, width: 'auto' },
+  fullBleed: { flexGrow: 1, flexBasis: 0 },
+  coverContent: { paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0, gap: 0 },
   menuLayer: { flex: 1 },
   actionsMenu: { alignSelf: 'flex-end', marginRight: tokens.space.lg, minWidth: 176, maxWidth: '90%', padding: tokens.space.sm, backgroundColor: tokens.color.card, borderWidth: 1, borderColor: tokens.color.border, borderRadius: tokens.radius.sm },
   scroll: { flex: 1, width: '100%' },
