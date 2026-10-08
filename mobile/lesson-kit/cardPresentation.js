@@ -20,13 +20,27 @@ export function cardCopy(exercise) {
         case 'coldOpen':
             return [shortText(exercise.headline, 4, 260), shortText(exercise.kicker, 1, 80)];
         case 'microInsight':
-            return [shortText(exercise.text, 2, 150), shortText(exercise.highlight, 1, 100)];
+            return [shortText(exercise.text, 2, 150), shortText(exercise.body, 10000, 1000000), shortText(exercise.highlight, 1, 100)];
         case 'info':
             return [shortText(exercise.title, 1, 80), shortText(exercise.body, 2, 150),
                 ...(exercise.bullets || []).slice(0, 2).map(b => shortText(b, 1, 90))];
         default:
             return [];
     }
+}
+/** Only transform complete, unambiguous comma/semicolon lists; keep other prose intact. */
+export function colonList(text) {
+    const at = text.indexOf(':');
+    if (at < 1 || text.slice(at + 1).includes(':'))
+        return null;
+    const headline = text.slice(0, at).trim();
+    const tail = text.slice(at + 1).trim();
+    // A second sentence may contain unrelated context; leave it as prose.
+    if (/[.!?]\s+[A-Z]/.test(tail) || /https?$/i.test(headline))
+        return null;
+    const items = tail.replace(/[.!?]$/, '').split(/[,;]\s+|\s+and\s+(?=[^,;]+$)/i)
+        .map(item => item.replace(/^and\s+/i, '').trim()).filter(Boolean);
+    return items.length >= 3 ? { headline, items } : null;
 }
 export function cardTerms(exercise) {
     if (!('keyTerms' in exercise) && !('keyTerm' in exercise))

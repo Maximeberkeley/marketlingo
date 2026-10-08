@@ -15,6 +15,7 @@ import { IndustryPack, getIndustryPack } from '../industry/packs';
 import type { DrillRow, IndustryStatRow, TrainerScenarioRow } from '../../hooks/useIndustryContent';
 import { SlideLike, makeColdOpen, makeMicroInsight, norm, sentences, shuffle } from './extract';
 import { splitSentences } from '../../lib/textUtils';
+import { cardCopy, readingCardKind } from '../cardPresentation';
 
 export interface StackMetadataLike {
   learning_objectives?: string[];
@@ -74,8 +75,37 @@ function visibleLines(ex: Exercise): string[] {
   } else if (ex.kind === 'microInsight') {
     if (e.text && e.text.length <= 150) out.push(e.text);
     if (e.highlight && e.highlight.length <= 100) out.push(e.highlight);
+    if (ex.body) out.push(...cardCopy(ex).slice(1, 2));
   }
   return out.flatMap(t => splitSentences(clean(t))).map(clean).filter(s => s.length >= 30);
+}
+
+/** Merge only adjacent insights, never across a check or into the opening/rule. */
+export function mergeThinReadingCards(exercises: Exercise[], slideNumbers: number[]): BeatBuildResult {
+  const merged: Exercise[] = [];
+  const numbers: number[] = [];
+  for (let index = 0; index < exercises.length; index += 1) {
+    const first = exercises[index];
+    const next = exercises[index + 1];
+    const words = cardCopy(first).join(' ').trim().split(/\s+/).filter(Boolean).length;
+    if (first.kind === 'microInsight' && next?.kind === 'microInsight' && words < 25 &&
+      readingCardKind(first) !== 'takeaway' && readingCardKind(next) !== 'takeaway') {
+      const firstCopy = cardCopy(first);
+      const nextCopy = cardCopy(next);
+      merged.push({ ...first, text: firstCopy[0],
+        body: [...firstCopy.slice(1), ...nextCopy].filter(Boolean).join('\n\n'), highlight: undefined,
+        fullText: [first.fullText, next.fullText].filter(Boolean).join('\n\n'),
+        keyTerms: [...(first.keyTerms || (first.keyTerm ? [first.keyTerm] : [])), ...(next.keyTerms || (next.keyTerm ? [next.keyTerm] : []))],
+        sources: [...(first.sources || []), ...(next.sources || [])],
+      });
+      numbers.push(slideNumbers[index]);
+      index += 1;
+    } else {
+      merged.push(first);
+      numbers.push(slideNumbers[index]);
+    }
+  }
+  return { lesson: { id: '', title: '', exercises: merged }, slideNumbers: numbers };
 }
 
 const isYear = (n: number) => Number.isInteger(n) && n >= 1900 && n <= 2099;
@@ -185,14 +215,15 @@ export function buildBeats(
     );
   }
 
+  const merged = mergeThinReadingCards(exercises, slideNumbers);
   return {
     lesson: {
       id: stackTitle,
       title: stackTitle,
-      exercises,
+      exercises: merged.lesson.exercises,
 
     },
-    slideNumbers,
+    slideNumbers: merged.slideNumbers,
   };
 }
 

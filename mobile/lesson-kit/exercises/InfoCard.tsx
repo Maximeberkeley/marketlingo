@@ -7,13 +7,15 @@ import { ExerciseProps } from './types';
 import { ColorText } from '../components/ColorText';
 import { shortLabel, shortText } from '../text';
 import { BriefingReader } from '../components/BriefingReader';
-import { cardTerms, hasExtraBriefing, readingCardKind } from '../cardPresentation';
+import { cardCopy, cardTerms, hasExtraBriefing, readingCardKind } from '../cardPresentation';
+import { ReadingCopy } from '../components/ReadingCopy';
 
 export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
   const [showBriefing, setShowBriefing] = useState(false);
   const terms = cardTerms(exercise);
   const hasBriefing = hasExtraBriefing(exercise);
   const kind = readingCardKind(exercise);
+  const [title, body] = cardCopy(exercise);
   useEffect(() => {
     onChange({ canCheck: true, isCorrect: true });
   }, [exercise.id]);
@@ -25,9 +27,9 @@ export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
   return (
     <View style={[styles.wrap, kind === 'takeaway' && styles.takeaway]}>
       {kind === 'takeaway' ? <Text style={styles.eyebrow}>The rule</Text> : !!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow)}</Text>}
-      {!!exercise.title && <ColorText text={exercise.title} style={styles.title} maxSentences={1} maxLength={80} />}
-
-      {!!exercise.body && !bodyIsEcho && <View style={kind === 'evidence' ? styles.evidence : undefined}><ColorText text={exercise.body} style={styles.body} maxSentences={2} maxLength={150} /></View>}
+      <View style={kind === 'evidence' ? styles.evidence : undefined}>
+        <ReadingCopy text={title} body={bodyIsEcho ? '' : body} preserveCover={kind === 'takeaway'} />
+      </View>
 
       {exercise.bullets?.slice(0, 2).map((b, i) => (
         <View key={i} style={styles.bulletRow}>
@@ -69,7 +71,7 @@ const styles = StyleSheet.create({
   takeaway: { backgroundColor: tokens.color.accentSoft, borderRadius: tokens.radius.lg, padding: tokens.space.xl },
   evidence: { backgroundColor: tokens.color.evidence, borderRadius: tokens.radius.md, padding: tokens.space.xl },
   eyebrow: {
-    fontSize: tokens.font.caption,
+    fontSize: 12,
     fontWeight: '800',
     letterSpacing: 0,
     textTransform: 'uppercase',

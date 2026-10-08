@@ -347,11 +347,13 @@ export function LessonScreen({
         contentContainerStyle={[styles.content, exercise.kind === 'coldOpen' && styles.coverContent]}
         keyboardShouldPersistTaps="handled"
       >
+        {exercise.kind !== 'coldOpen' && <View style={styles.upperSpace} />}
         <Animated.View style={[styles.beat, exercise.kind === 'coldOpen' && styles.fullBleed, { opacity: enter, transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]} >
           {exercise.kind === 'sayIt'
             ? <SayIt key={exercise.id} exercise={exercise} marketId={marketId} onDone={continueLesson} />
             : renderExercise(exercise, phase, handleChange)}
         </Animated.View>
+        {exercise.kind !== 'coldOpen' && <View style={styles.lowerSpace} />}
       </ScrollView>
 
 
@@ -474,8 +476,10 @@ function renderExercise(
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: tokens.color.bg },
-  beat: { width: '100%', alignSelf: 'stretch' },
-  fullBleed: { flexGrow: 1, flexBasis: 0 },
+  beat: { width: '100%', alignSelf: 'stretch', flexShrink: 0 },
+  upperSpace: { flexGrow: 0.42, flexBasis: 0 },
+  lowerSpace: { flexGrow: 0.58, flexBasis: 0 },
+  fullBleed: { flexGrow: 1 },
   coverContent: { paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0, gap: 0 },
   menuLayer: { flex: 1 },
   actionsMenu: { alignSelf: 'flex-end', marginRight: tokens.space.lg, minWidth: 176, maxWidth: '90%', padding: tokens.space.sm, backgroundColor: tokens.color.card, borderWidth: 1, borderColor: tokens.color.border, borderRadius: tokens.radius.sm },
@@ -485,8 +489,7 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     paddingHorizontal: tokens.space.lg,
     paddingTop: 24,
-    paddingBottom: tokens.space.xxl,
-    gap: tokens.space.lg,
+    paddingBottom: 24,
     flexGrow: 1,
     justifyContent: 'flex-start',
   },
