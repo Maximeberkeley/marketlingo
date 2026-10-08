@@ -1,5 +1,11 @@
 # MarketLingo roadmap
 
+## Lesson polish pass
+- [ ] Hide grading-only completion details for reading-only lessons; replace the Intel follow-up screen with a small completion link and direct Continue.
+- [ ] Prefer the strongest dossier section match, with a half-score threshold for unwritten sections and no single-number-only matches.
+- [ ] Fill the cold-open content area with a bottom-third cover layout; reduce locked sections to one header.
+- [ ] Verify both source versions and focused regression checks.
+
 ## Home ring hierarchy
 - [x] Keep five tappable circles and dossier chip; emphasize the unfinished daily lesson and reveal accent activities after completion in both sources.
 - [x] Show real locked section titles with their section prerequisite; simulated interaction checks passed for first-focus reveal, persistence, reduced motion and source parity.
