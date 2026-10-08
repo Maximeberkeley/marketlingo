@@ -1,7 +1,8 @@
 /**
  * The learner's living document: their own lines, per goal, per market.
  *
- * Completion is the share of sections that hold at least one line. Every write
+ * Completion is the share of sections holding at least one line the learner
+ * wrote. Older auto-filled lines (source 'lesson') are shown only as suggestions. Every write
  * is stamped with the LOCAL day the learner is on, never a UTC timestamp.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -27,7 +28,7 @@ export function useDeliverable(marketId, goal) {
             }
             const { data, error } = await supabase
                 .from('deliverable_entries')
-                .select('id, section_key, content, day_number, created_at')
+                .select('id, section_key, content, day_number, created_at, source')
                 .eq('user_id', auth.user.id)
                 .eq('market_id', marketId)
                 .eq('goal_key', template.goal)
@@ -42,6 +43,7 @@ export function useDeliverable(marketId, goal) {
                 content: row.content,
                 dayNumber: row.day_number ?? null,
                 createdAt: row.created_at,
+                source: (row.source ?? 'learner'),
             })));
         }
         catch (err) {
@@ -98,13 +100,35 @@ export function useDeliverable(marketId, goal) {
             return false;
         }
     }, []);
+    /** Rewrites an old suggestion: saves the learner's version, then drops the suggestion. */
+    const replaceSuggestion = useCallback(async (id, sectionKey, content, dayNumber) => {
+        const ok = await addLine(sectionKey, content, dayNumber, 'learner');
+        if (ok)
+            await removeLine(id);
+        return ok;
+    }, [addLine, removeLine]);
+    /** Only the learner's own lines count toward the document. */
+    const learnerEntries = useMemo(() => entries.filter(e => e.source === 'learner'), [entries]);
     const bySection = useMemo(() => {
+        var _a;
+        const map = {};
+        for (const entry of learnerEntries) {
+            (map[_a = entry.sectionKey] || (map[_a] = [])).push(entry);
+        }
+        return map;
+    }, [learnerEntries]);
+    const suggestionsBySection = useMemo(() => {
+        var _a;
         const map = {};
         for (const entry of entries) {
-            (map[entry.sectionKey] ||= []).push(entry);
+            if (entry.source === 'learner')
+                continue;
+            (map[_a = entry.sectionKey] || (map[_a] = [])).push(entry);
         }
         return map;
     }, [entries]);
+    /** First section with no learner-written line. */
+    const firstOpenSection = template.sections.find(s => !(bySection[s.key]?.length)) ?? null;
     const filledSections = template.sections.filter(s => (bySection[s.key]?.length ?? 0) > 0).length;
     const completion = Math.round((filledSections / template.sections.length) * 100);
     /** Plain-text export the learner can share or paste anywhere. */
@@ -118,13 +142,17 @@ export function useDeliverable(marketId, goal) {
             own.forEach(e => lines.push(`  • ${e.content}${e.dayNumber ? ` (day ${e.dayNumber})` : ''}`));
             lines.push('');
         }
-        lines.push(`${completion}% complete — written in my own words with MarketLingo.`);
+        lines.push(`${filledSections} of ${template.sections.length} sections written with MarketLingo.`);
         return lines.join('\n');
-    }, [template, bySection, completion]);
+    }, [template, bySection, filledSections]);
     return {
         template,
         entries,
+        learnerEntries,
         bySection,
+        suggestionsBySection,
+        firstOpenSection,
+        replaceSuggestion,
         completion,
         filledSections,
         loading,

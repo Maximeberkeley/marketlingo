@@ -19,6 +19,7 @@ import { SpotTheFake } from '../modules/SpotTheFake';
 import { MapMarket } from '../modules/MapMarket';
 import { ChartRead } from '../modules/ChartRead';
 import { TheCall } from '../modules/TheCall';
+import { SayIt } from '../modules/SayIt';
 import { LeoCoach } from '../components/LeoCoach';
 import { LessonComplete } from './LessonComplete';
 import { tokens } from '../theme/tokens';
@@ -42,7 +43,7 @@ function exerciseContext(exercise) {
 }
 const MAX_HEARTS = 3;
 /** Beats that need no answer — the button just says Continue. */
-const PASSIVE_KINDS = ['info', 'coldOpen', 'microInsight'];
+const PASSIVE_KINDS = ['info', 'coldOpen', 'microInsight', 'sayIt'];
 const isPassiveKind = (kind) => PASSIVE_KINDS.includes(kind);
 export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, renderExtraActions, doneLabel, streakDays, confirmExit = true, marketId, onSaveLeoAnswer, }) {
     const insets = useSafeAreaInsets();
@@ -233,19 +234,19 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
         setShowExitPrompt(true);
     }, [confirmExit, finished, onExit]);
     /** The feedback explanation already quotes the correct sentence; don't print it twice. */
-  const feedbackExplanation = exercise && 'explanation' in exercise ? normalizedCopy(exercise.explanation || '') : '';
-  const answerCopy = exercise && exercise.kind === 'multipleChoice' ? normalizedCopy(exercise.options[exercise.correctIndex] || '') : '';
-  const repeatsAnswer = Boolean(answerCopy && feedbackExplanation.includes(answerCopy));
-
-  /** Only the current check's own explanation can supply automatic speech. */
+    const feedbackExplanation = exercise && 'explanation' in exercise ? normalizedCopy(exercise.explanation || '') : '';
+    const answerCopy = exercise && exercise.kind === 'multipleChoice' ? normalizedCopy(exercise.options[exercise.correctIndex] || '') : '';
+    const repeatsAnswer = Boolean(answerCopy && feedbackExplanation.includes(answerCopy));
+    /** Only the current check's own explanation can supply automatic speech. */
     const leoCoach = useMemo(() => {
         if (phase !== 'feedback' || isInfo || !exercise || !('explanation' in exercise))
             return null;
         const line = exercise.explanation?.trim();
         if (!line)
             return null;
-    // The footer already prints the explanation; a matching bubble would repeat it.
-    if (normalizedCopy(line) === feedbackExplanation) return null;
+        // The footer already prints the explanation; a matching bubble would repeat it.
+        if (normalizedCopy(line) === feedbackExplanation)
+            return null;
         return { line, mood: (state.isCorrect ? 'correct' : 'incorrect') };
     }, [phase, isInfo, state.isCorrect, exercise, feedbackExplanation]);
     const correctAnswerText = useMemo(() => {
@@ -304,7 +305,9 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
       <View style={[styles.worldRail, { backgroundColor: world.colors[0] }]}/>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         {!!leoCoach && <LeoCoach line={leoCoach.line} mood={leoCoach.mood} accent={world.colors[0]}/>}
-        {renderExercise(exercise, phase, handleChange)}
+        {exercise.kind === 'sayIt'
+            ? <SayIt key={exercise.id} exercise={exercise} marketId={marketId} onDone={goNext}/>
+            : renderExercise(exercise, phase, handleChange)}
       </ScrollView>
 
 
@@ -323,10 +326,10 @@ export function LessonScreen({ lesson, onExit, onFinish, xpPerCorrect = 10, rend
           <Text style={[styles.leoPromptText, { color: world.colors[0] }]}>{nudge}</Text>
         </TouchableOpacity>)}
 
-      <View style={[styles.footer, { paddingBottom: insets.bottom + tokens.space.lg }]}>
-        {renderExtraActions?.(index)}
-        <PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant}/>
-      </View>
+      {exercise.kind === 'sayIt' ? (<View style={{ height: insets.bottom + tokens.space.lg }}/>) : (<View style={[styles.footer, { paddingBottom: insets.bottom + tokens.space.lg }]}>
+          {renderExtraActions?.(index)}
+          <PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant}/>
+        </View>)}
 
       {/* Leave confirmation — loss aversion */}
       <Modal visible={showExitPrompt} transparent animationType="fade" onRequestClose={() => setShowExitPrompt(false)}>

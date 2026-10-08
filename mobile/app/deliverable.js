@@ -42,6 +42,9 @@ export default function DeliverableScreen() {
     const [showAll, setShowAll] = useState(false);
     const [draft, setDraft] = useState('');
     const [saving, setSaving] = useState(false);
+    /** Old automatic suggestion currently being rewritten by the learner. */
+    const [editingId, setEditingId] = useState(null);
+    const [editDraft, setEditDraft] = useState('');
     /** Slot that just received a line — drives the reveal flash. */
     const [justFilled, setJustFilled] = useState(null);
     const busy = marketLoading || deliverable.loading;
@@ -83,6 +86,25 @@ export default function DeliverableScreen() {
         else {
             triggerHaptic('light');
             playSound('xpEarn').catch(() => { });
+        }
+    };
+    const saveRewrite = async (id, sectionKey) => {
+        setSaving(true);
+        const wasEmpty = (bySection[sectionKey]?.length ?? 0) === 0;
+        const ok = await deliverable.replaceSuggestion(id, sectionKey, editDraft, day);
+        setSaving(false);
+        if (!ok)
+            return;
+        setEditingId(null);
+        setEditDraft('');
+        if (wasEmpty) {
+            setJustFilled(sectionKey);
+            triggerHaptic('success');
+            playSound('unlock').catch(() => { });
+            setTimeout(() => setJustFilled(null), 2200);
+        }
+        else {
+            triggerHaptic('light');
         }
     };
     const share = async () => {
@@ -142,7 +164,7 @@ export default function DeliverableScreen() {
               </View>
             </View>
 
-             <Text style={styles.rankBlurb}>Your lessons build this brief automatically. Make it yours whenever you like.</Text>
+             <Text style={styles.rankBlurb}>{rank.blurb}</Text>
 
             <View style={styles.heroMetaRow}>
               <View style={styles.metaChip}>
@@ -196,6 +218,7 @@ export default function DeliverableScreen() {
          {visibleSections.map((section) => {
             const index = template.sections.findIndex(item => item.key === section.key);
             const own = bySection[section.key] ?? [];
+            const suggestions = deliverable.suggestionsBySection[section.key] ?? [];
             const status = slotStatus(own.length);
             const open = openSection === section.key;
             const flashing = justFilled === section.key;
@@ -251,6 +274,35 @@ export default function DeliverableScreen() {
                         <Feather name="trash-2" size={13} color={COLORS.textMuted}/>
                       </TouchableOpacity>
                     </View>
+                  </View>
+                </View>))}
+
+              {suggestions.map(entry => (<View key={entry.id} style={[styles.entry, styles.suggestion]}>
+                  <View style={[styles.entryBar, styles.suggestionBar]}/>
+                  <View style={styles.flex}>
+                    <Text style={styles.suggestionLabel}>Suggested — rewrite it in your words</Text>
+                    {editingId === entry.id ? (<>
+                        <TextInput style={styles.input} value={editDraft} onChangeText={setEditDraft} multiline blurOnSubmit autoFocus placeholderTextColor={COLORS.textMuted}/>
+                        <View style={styles.suggestionActions}>
+                          <TouchableOpacity onPress={() => { setEditingId(null); setEditDraft(''); }} hitSlop={10}>
+                            <Text style={styles.suggestionCancel}>Cancel</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity style={[styles.saveBtn, styles.suggestionSave, editDraft.trim().length < 3 && styles.saveBtnOff]} disabled={editDraft.trim().length < 3 || saving} onPress={() => saveRewrite(entry.id, section.key)} activeOpacity={0.9}>
+                            <Text style={styles.saveText}>{saving ? 'Saving…' : 'Save my version'}</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </>) : (<>
+                        <Text style={styles.suggestionText}>{entry.content}</Text>
+                        <View style={styles.entryFoot}>
+                          <TouchableOpacity style={styles.suggestionEdit} onPress={() => { triggerHaptic('light'); setEditingId(entry.id); setEditDraft(entry.content); }} hitSlop={10} accessibilityRole="button">
+                            <Feather name="edit-3" size={12} color={COLORS.accent}/>
+                            <Text style={styles.suggestionEditText}>Edit</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity onPress={() => { triggerHaptic('light'); deliverable.removeLine(entry.id); }} hitSlop={10}>
+                            <Feather name="trash-2" size={13} color={COLORS.textMuted}/>
+                          </TouchableOpacity>
+                        </View>
+                      </>)}
                   </View>
                 </View>))}
 
@@ -457,6 +509,15 @@ const styles = StyleSheet.create({
     },
     entryBar: { width: 3, borderRadius: 2, backgroundColor: COLORS.accent },
     entryText: { ...TYPE.body, color: COLORS.textPrimary, lineHeight: 22 },
+    suggestion: { opacity: 0.85 },
+    suggestionBar: { backgroundColor: COLORS.textMuted },
+    suggestionLabel: { ...TYPE.caption, color: COLORS.textMuted, fontWeight: '700', marginBottom: 4 },
+    suggestionText: { ...TYPE.body, color: COLORS.textSecondary, lineHeight: 22, fontStyle: 'italic' },
+    suggestionEdit: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+    suggestionEditText: { ...TYPE.caption, color: COLORS.accent, fontWeight: '800' },
+    suggestionActions: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 16, marginTop: 8 },
+    suggestionCancel: { ...TYPE.caption, color: COLORS.textMuted, fontWeight: '700' },
+    suggestionSave: { marginTop: 0, flex: 1 },
     entryFoot: {
         flexDirection: 'row',
         alignItems: 'center',
