@@ -18,7 +18,7 @@ export function ReadingCopy({ text, body = '', evidence = false, preserveCover =
     </View>
   ))}</View>;
   return <View style={styles.wrap}>
-    <ColorText text={headlineList?.headline || text} style={evidence ? styles.body : styles.headline} maxSentences={10000} maxLength={1000000} />
+    {!!text && <ColorText text={headlineList?.headline || text} style={evidence ? styles.body : styles.headline} maxSentences={10000} maxLength={1000000} />}
     {headlineList && rows(headlineList.items)}
     {!!body && (bodyList ? <View style={styles.wrap}>
       <ColorText text={bodyList.headline} style={styles.headline} maxSentences={10000} maxLength={1000000} />
