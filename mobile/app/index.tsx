@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import { trackEvent, identifyUser } from '../lib/analytics';
 import { COLORS } from '../lib/constants';
 import { log } from '../lib/logger';
+import { storage } from '../lib/storage';
 
 const STARTUP_TIMEOUT_MS = 6000;
 
