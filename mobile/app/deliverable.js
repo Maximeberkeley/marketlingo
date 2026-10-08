@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     weeklyPrompt: { ...TYPE.body, color: COLORS.textPrimary, lineHeight: 21 },
     section: { marginHorizontal: 24, paddingVertical: 20, borderRadius: 12 },
     divider: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.border },
-    sectionFlash: { backgroundColor: COLORS.accentLight },
+    sectionFlash: { backgroundColor: COLORS.accentSoft },
     sectionHead: { ...TYPE.h3, color: COLORS.textPrimary },
     sectionNum: { color: COLORS.textMuted, fontWeight: '800' },
     prompt: { ...TYPE.body, color: COLORS.textMuted, marginTop: 6, lineHeight: 21 },
