@@ -70,13 +70,13 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
           <View style={styles.rule}/>
           {sections.map((section, index) => (<ColorText key={`${index}-${section.slice(0, 18)}`} text={section} style={index === 0 ? styles.lead : styles.body} maxSentences={100} maxLength={10000}/>))}
 
-          {!!stackId && !deepDive && (<TouchableOpacity accessibilityRole="button" accessibilityLabel="Go deeper on this concept" activeOpacity={0.85} style={styles.deepButton} disabled={deepLoading} onPress={() => {
+          {!!stackId && !deepDive && (<TouchableOpacity accessibilityRole="button" accessibilityLabel="Want to know more about this concept" activeOpacity={0.85} style={styles.deepButton} disabled={deepLoading} onPress={() => {
                 Haptics.selectionAsync().catch(() => { });
                 loadDeepDive();
             }}>
               {deepLoading ? (<ActivityIndicator size="small" color={tokens.color.accent}/>) : (<Feather name="layers" size={16} color={tokens.color.accent}/>)}
               <Text style={styles.deepButtonText}>
-                {deepLoading ? 'Writing the deep layer…' : 'Go deeper on this concept'}
+                {deepLoading ? 'Writing the deep layer…' : 'Want to know more?'}
               </Text>
             </TouchableOpacity>)}
 
