@@ -1,9 +1,24 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Notifications from 'expo-notifications';
 import { localDateString } from './dayMath';
 import { normalizeDisplayName } from './displayName';
 import { log } from './logger';
 import { storage } from './storage';
+
+// The native notifications bridge is loaded lazily: this module is imported
+// eagerly by launch-path code (useUserXP → Home), so a top-level native import
+// can crash the app before the first screen mounts on a stale archive.
+type NotificationsModule = typeof import('expo-notifications');
+let notificationsCache: NotificationsModule | null = null;
+async function loadNotifications(): Promise<NotificationsModule | null> {
+  if (notificationsCache) return notificationsCache;
+  try {
+    notificationsCache = await import('expo-notifications');
+    return notificationsCache;
+  } catch (error) {
+    log.warn('[LeoNudges] Notifications bridge unavailable:', error);
+    return null;
+  }
+}
 
 const NUDGE_STATE_KEY = 'ml_leo_nudge_state';
 const LEGACY_STREAK_KEY = 'ml_streak_notif_ids';
@@ -92,6 +107,8 @@ export async function claimLeoNudge(key: string): Promise<boolean> {
 
 export async function cancelRollingLeoNudges(): Promise<void> {
   try {
+    const Notifications = await loadNotifications();
+    if (!Notifications) return;
     const state = await readState();
     await Promise.all(state.scheduledIds.map(id => Notifications.cancelScheduledNotificationAsync(id).catch(() => {})));
     const scheduled = await Notifications.getAllScheduledNotificationsAsync();
@@ -110,6 +127,8 @@ export async function scheduleRollingLeoNudges(lessonCompletedToday: boolean): P
   if (lessonCompletedToday) return;
 
   try {
+    const Notifications = await loadNotifications();
+    if (!Notifications) return;
     const permission = await Notifications.getPermissionsAsync();
     if (permission.status !== 'granted') return;
 
@@ -171,6 +190,8 @@ const DAILY_FALLBACKS: Array<{ key: string; hour: number; minute: number; title:
 
 export async function scheduleDailyFallbackReminders(): Promise<void> {
   try {
+    const Notifications = await loadNotifications();
+    if (!Notifications) return;
     const permission = await Notifications.getPermissionsAsync();
     if (permission.status !== 'granted') return;
 
@@ -203,6 +224,8 @@ export async function scheduleDailyFallbackReminders(): Promise<void> {
 
 export async function cancelDailyFallbackReminders(): Promise<void> {
   try {
+    const Notifications = await loadNotifications();
+    if (!Notifications) return;
     const scheduled = await Notifications.getAllScheduledNotificationsAsync();
     await Promise.all(scheduled
       .filter(item => item.content.data?.type === 'daily_fallback')
