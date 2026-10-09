@@ -177,3 +177,4 @@
 - [x] Rescue win discarded when round crosses midnight
 - [x] Verify push notifications are sent (delivery OK; send times are UTC — per-user local timing pending user decision)
 - [x] Harden 1.1.1 launch so notification setup cannot close the app before its first screen.
+- [x] Launch crash (build 126, "undefined is not a function"): leoNudges now lazy-loads the native notifications bridge (it was imported eagerly via useUserXP on the launch path, violating the lazy-native rule); ErrorBoundary persists a crash report (message + component stack) to on-device storage and shows the failing component on the error screen so the next screenshot identifies the exact spot; build number bumped to 127 for the next TestFlight build.
