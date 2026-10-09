@@ -107,6 +107,8 @@ export async function claimLeoNudge(key: string): Promise<boolean> {
 
 export async function cancelRollingLeoNudges(): Promise<void> {
   try {
+    const Notifications = await loadNotifications();
+    if (!Notifications) return;
     const state = await readState();
     await Promise.all(state.scheduledIds.map(id => Notifications.cancelScheduledNotificationAsync(id).catch(() => {})));
     const scheduled = await Notifications.getAllScheduledNotificationsAsync();
@@ -125,6 +127,8 @@ export async function scheduleRollingLeoNudges(lessonCompletedToday: boolean): P
   if (lessonCompletedToday) return;
 
   try {
+    const Notifications = await loadNotifications();
+    if (!Notifications) return;
     const permission = await Notifications.getPermissionsAsync();
     if (permission.status !== 'granted') return;
 
