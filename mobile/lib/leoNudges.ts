@@ -190,6 +190,8 @@ const DAILY_FALLBACKS: Array<{ key: string; hour: number; minute: number; title:
 
 export async function scheduleDailyFallbackReminders(): Promise<void> {
   try {
+    const Notifications = await loadNotifications();
+    if (!Notifications) return;
     const permission = await Notifications.getPermissionsAsync();
     if (permission.status !== 'granted') return;
 
@@ -222,6 +224,8 @@ export async function scheduleDailyFallbackReminders(): Promise<void> {
 
 export async function cancelDailyFallbackReminders(): Promise<void> {
   try {
+    const Notifications = await loadNotifications();
+    if (!Notifications) return;
     const scheduled = await Notifications.getAllScheduledNotificationsAsync();
     await Promise.all(scheduled
       .filter(item => item.content.data?.type === 'daily_fallback')
