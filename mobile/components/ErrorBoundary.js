@@ -9,7 +9,8 @@ function stackLocation(errorInfo) {
     const lines = (errorInfo.componentStack || '')
         .split('\n')
         .map(line => line.trim())
-        .filter(line => line.startsWith('in ') && !line.startsWith('in ErrorBoundary'));
+        .filter(line => /^(in|at) /.test(line) && !/^(in|at) ErrorBoundary/.test(line))
+    .map(line => line.replace(/ \(.*\)$/, ''));
     return lines.slice(0, 3).join(' · ');
 }
 export class ErrorBoundary extends Component {

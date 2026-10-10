@@ -78,7 +78,6 @@ const MARKET_ILLUSTRATIONS = {
     climatetech: require('../../assets/illustrations/climatetech.png'),
     neuroscience: require('../../assets/illustrations/neuroscience.png'),
 };
-const AnimatedFeather = Animated.createAnimatedComponent(Feather);
 const MODULES = [
     { kind: 'lesson', label: 'Daily Lesson', icon: 'book-open', position: { top: 6, left: '50%', marginLeft: -42 } },
     { kind: 'arena', label: 'Daily Arena', icon: 'target', position: { top: 92, right: 8 } },
@@ -115,7 +114,10 @@ function Coin({ label, icon, position, locked, completed, onPress, emphasis = fa
         return () => animation.stop();
     }, [pulse, pulseValue]);
     const fill = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedFill, COLORS.accent] }) : muted || locked ? COLORS.courseMutedFill : COLORS.accent;
-    const iconColor = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedText, COLORS.textOnAccent] }) : muted || locked ? COLORS.courseMutedText : COLORS.textOnAccent;
+    // Icons are not animatable views: crossfade two static icons instead of
+  // animating the icon colour (that path crashes release builds).
+  const iconName = locked ? 'lock' : completed ? 'check' : icon;
+  const iconColor = reveal ? COLORS.courseMutedText : muted || locked ? COLORS.courseMutedText : COLORS.textOnAccent;
     const labelColor = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedText, COLORS.accent] }) : muted || locked ? COLORS.courseMutedText : COLORS.accent;
     return (<View style={[styles.coinPosition, position]}>
       <View style={styles.coinSlot}>
@@ -125,7 +127,10 @@ function Coin({ label, icon, position, locked, completed, onPress, emphasis = fa
                 }]}/>}
         <TouchableOpacity onPress={onPress} activeOpacity={0.82} accessibilityRole="button" accessibilityLabel={`${label}${locked ? ', locked' : completed ? ', complete' : ''}`} style={styles.coinTouch}>
           <Animated.View style={[styles.coinFace, { backgroundColor: fill, transform: [{ scale: emphasis ? 1.12 : 1 }] }]}>
-            <AnimatedFeather name={locked ? 'lock' : completed ? 'check' : icon} size={29} color={iconColor}/>
+            <Feather name={iconName} size={29} color={iconColor} />
+            {reveal && <Animated.View pointerEvents="none" style={[styles.coinIconOverlay, { opacity: reveal }]}>
+              <Feather name={iconName} size={29} color={COLORS.textOnAccent} />
+            </Animated.View>}
           </Animated.View>
         </TouchableOpacity>
       </View>
@@ -585,6 +590,7 @@ const styles = StyleSheet.create({
     coinSlot: { width: 94, height: 94, alignItems: 'center', justifyContent: 'center' },
     coinTouch: { width: 94, height: 94, alignItems: 'center', justifyContent: 'center' },
     lessonPulse: { position: 'absolute', width: 100, height: 100, borderRadius: 50, borderWidth: 3, borderColor: COLORS.accent },
+    coinIconOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
     coinFace: { width: 84, height: 84, borderRadius: 42, alignItems: 'center', justifyContent: 'center' },
     coinLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border, shadowColor: COLORS.cardShadow, shadowOpacity: 0.1, elevation: 3 },
     coinFaceLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border },
