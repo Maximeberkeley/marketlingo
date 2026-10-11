@@ -11,11 +11,12 @@ import { DemoLesson } from "@/components/demo/DemoLesson";
 import leoMascot from "@/assets/mascot/leo-reference.png";
 import leoCelebrating from "@/assets/mascot/leo-celebrating.png";
 import leoSticker from "@/assets/leo-sticker.png";
-import appIcon from "@/assets/app-icon.png";
+import appIconAsset from "@/assets/marketlingo-app-icon.png.asset.json";
 import maximePortrait from "@/assets/maxime-lucas-founder.jpg.asset.json";
 import sophiaPortrait from "@/assets/sophia-hernandez-cofounder.png.asset.json";
 
 const APP_STORE_URL = "https://apps.apple.com/app/marketlingo/id6758534066";
+const appIcon = appIconAsset.url;
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },

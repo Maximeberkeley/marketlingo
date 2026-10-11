@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import appIcon from "@/assets/app-icon.png";
+import appIconAsset from "@/assets/marketlingo-app-icon.png.asset.json";
+const appIcon = appIconAsset.url;
 
 const PRIVACY_POLICY = `Last updated: March 9, 2026
 
