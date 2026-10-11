@@ -187,7 +187,7 @@ function SectionCluster({ section, lesson, title, weekTitle, marketName, activeS
         })}
         <TouchableOpacity style={styles.leoCenter} onPress={onLeo} activeOpacity={0.82} accessibilityRole="button" accessibilityLabel={`Ask Leo about ${title}`}>
           <View style={styles.leoVisual} pointerEvents="none">
-            <LeoCharacter size="course" animation={section.unlocked ? 'reading' : 'sleeping'} still/>
+            <LeoCharacter size="course" animation={(activeSection ? lessonCompletedToday : Boolean(lesson?.completed)) ? 'reading' : 'sleeping'} still/>
           </View>
         </TouchableOpacity>
       </View>
