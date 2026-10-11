@@ -26,7 +26,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0B1020"
+"backgroundColor": "#3A1729"
       },
       "package": "app.marketlingo.aerospace"
     },
