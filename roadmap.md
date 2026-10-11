@@ -178,3 +178,11 @@
 - [x] Verify push notifications are sent (delivery OK; send times are UTC — per-user local timing pending user decision)
 - [x] Harden 1.1.1 launch so notification setup cannot close the app before its first screen.
 - [x] Launch crash (build 126, "undefined is not a function"): leoNudges now lazy-loads the native notifications bridge (it was imported eagerly via useUserXP on the launch path, violating the lazy-native rule); ErrorBoundary persists a crash report (message + component stack) to on-device storage and shows the failing component on the error screen so the next screenshot identifies the exact spot; build number bumped to 127 for the next TestFlight build.
+
+## New app icon
+- [x] Replace app icon everywhere: iOS icon, Android adaptive (safe-zone composite), web favicon/png/ico, apple-touch, App Store 1024; buildNumber 130.
+
+## League fixes
+- [ ] Close each monthly season exactly once (stop weekly re-judging of the previous month).
+- [ ] Make displayed ranking tie-breaking match the final result.
+- [ ] Fix league screen labels: no shifting "Promotion pace"/"Demotion zone" cutoffs, correct wording for zero-XP and Diamond members.
