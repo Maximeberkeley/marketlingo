@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -38,9 +38,7 @@ export function LessonComplete({ correct, total, baseXp, bestCombo = 0, heartsLe
         return () => clearTimeout(t);
     }, [shown, bonuses.length]);
     return (<ScrollView style={styles.scroll} contentContainerStyle={styles.wrap} showsVerticalScrollIndicator={false}>
-      <View style={styles.badge}>
-        <Feather name="award" size={40} color={tokens.color.accent}/>
-      </View>
+      <Image source={require('../../assets/mascot/leo-celebrating.png')} style={styles.leoHero} resizeMode="contain" />
       <Text style={styles.title}>{praise}</Text>
       {typeof streakDays === 'number' && streakDays > 0 ? (<Text style={styles.subtitle}>🔥 {streakDays}-day streak — come back tomorrow to keep it.</Text>) : (<Text style={styles.subtitle}>You just started a streak. Come back tomorrow to keep it.</Text>)}
 
@@ -104,6 +102,7 @@ function Stat({ label, value }) {
     </View>);
 }
 const styles = StyleSheet.create({
+  leoHero: { width: 132, height: 132, alignSelf: 'center', marginBottom: 8 },
     scroll: { flex: 1, backgroundColor: tokens.color.bg },
     wrap: {
         flexGrow: 1,

@@ -227,7 +227,7 @@ export default function StreakRescueScreen() {
               ? `${correct} of ${questions.length} right. You kept it — now bank today's lesson so it never comes to this again.`
               : `Only ${correct} of ${questions.length} right this time. Nothing you learned is gone, just the count. Day one is the easiest day to win.`}
           </Text>
-          <Image source={require('../assets/leo-sticker.png')} style={styles.fullLeo} resizeMode="contain" />
+          <Image source={saved ? require('../assets/mascot/leo-trophy.png') : require('../assets/mascot/leo-rain.png')} style={styles.fullLeo} resizeMode="contain" />
           <View style={{ flex: 1 }} />
           <TouchableOpacity style={styles.whiteCta} onPress={() => router.replace('/(tabs)/home')} activeOpacity={0.9}>
             <Text style={[styles.whiteCtaText, { color: saved ? '#C2410C' : '#1E293B' }]}>
@@ -252,7 +252,7 @@ export default function StreakRescueScreen() {
           <Text style={styles.fullBody}>
             Three fast true-or-false calls from {marketName}. Get {NEEDED_CORRECT} right and the streak stays yours.
           </Text>
-          <Image source={require('../assets/leo-sticker.png')} style={styles.fullLeo} resizeMode="contain" />
+          <Image source={require('../assets/mascot/leo-rain.png')} style={styles.fullLeo} resizeMode="contain" />
           <View style={{ flex: 1 }} />
           <TouchableOpacity
             style={styles.whiteCta}
