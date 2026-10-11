@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import appIcon from "@/assets/app-icon.png";
+import appIconAsset from "@/assets/marketlingo-app-icon.png.asset.json";
+const appIcon = appIconAsset.url;
 
 export default function PrivacyPolicy() {
   const navigate = useNavigate();
