@@ -167,7 +167,9 @@ export default function LeagueScreen() {
               <Text style={styles.statusText}>
                 {league.myRank
                   ? league.myRank <= league.promotionCutoff
-                    ? `You’re #${league.myRank} — keep your promotion spot.`
+                    ? league.tier === 'diamond'
+                      ? `You’re #${league.myRank} — holding the top of Diamond.`
+                      : `You’re #${league.myRank} — keep your promotion spot.`
                     : `${league.xpToPromotion} XP to reach the promotion zone.`
                   : 'Earn XP to enter this month’s race.'}
               </Text>
@@ -228,7 +230,7 @@ export default function LeagueScreen() {
                             </View>
                           )}
                         </View>
-                        {r.rank <= viewedPromotionCutoff && (
+                        {r.rank <= viewedPromotionCutoff && r.weeklyXp > 0 && (
                           <View style={styles.advanceRow}>
                             <Feather name="arrow-up" size={11} color={COLORS.success} />
                             <Text style={styles.advanceText}>Promotion pace</Text>
@@ -243,7 +245,7 @@ export default function LeagueScreen() {
             )}
           </View>
 
-          <Text style={styles.footnote}>The final night of each month locks the season and stamps promotions or relegations.</Text>
+          <Text style={styles.footnote}>Top 30% of each tier moves up, the bottom 20% moves down (in groups of five or more), and a month with no XP always drops. The final night of the month locks the season.</Text>
         </ScrollView>
       )}
     </View>
