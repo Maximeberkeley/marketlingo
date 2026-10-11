@@ -183,6 +183,6 @@
 - [x] Replace app icon everywhere: iOS icon, Android adaptive (safe-zone composite), web favicon/png/ico, apple-touch, App Store 1024; buildNumber 130.
 
 ## League fixes
-- [ ] Close each monthly season exactly once (stop weekly re-judging of the previous month).
-- [ ] Make displayed ranking tie-breaking match the final result.
-- [ ] Fix league screen labels: no shifting "Promotion pace"/"Demotion zone" cutoffs, correct wording for zero-XP and Diamond members.
+- [x] Close each monthly season exactly once (weekly run is now a no-op after the final stamp; migration 0020).
+- [x] Displayed ranking and final result share one deterministic tie-break.
+- [x] Screen wording fixed: zero-XP rows lose the "Promotion pace" chip, Diamond leaders get hold-the-top copy, footnote spells out the real rules.
