@@ -12,7 +12,7 @@ import { useSelectedMarket } from '../hooks/useSelectedMarket';
 import { LEAGUE_TIERS, TIER_META, useLeague } from '../hooks/useLeague';
 import { getMarketName } from '../lib/markets';
 import { triggerHaptic } from '../lib/haptics';
-const TROPHY_LEO = require('../assets/mascot/leo-trophy.png');
+const TROPHY_LEO = require('../assets/illustrations/monthly-league-hero.png');
 const AVATAR_COLORS = ['#7C3AED', '#0F766E', '#B45309', '#BE123C', '#0369A1', '#4D7C0F'];
 function initials(name) {
     const words = name.trim().split(/\s+/).filter(Boolean);
