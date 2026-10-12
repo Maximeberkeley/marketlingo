@@ -142,8 +142,8 @@ export default function LeoCallScreen() {
 
   // Setup: daily limit, call type, target.
   useEffect(() => {
-    // Wait for market, Brief and latest lesson so Leo's first turn has real context.
-    if (!user || !marketId || dossier.loading || (!params.lessonTitle && studied.isLoading)) return;
+    // Wait for market, progress (goal/level), Brief and latest lesson so Leo's first turn has real context.
+    if (!user || !marketId || progressLoading || dossier.loading || (!params.lessonTitle && studied.isLoading)) return;
     let cancelled = false;
     (async () => {
       const [called, rotated, savedTarget, isMuted] = await Promise.all([

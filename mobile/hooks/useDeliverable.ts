@@ -211,7 +211,7 @@ export function useDeliverable(marketId?: string, goal?: string | null) {
     replaceSuggestion,
     completion,
     filledSections,
-    loading: loading || loadedKey !== `${marketId ? `${marketId}:${template.goal}` : null}`,
+    loading: loading || loadedKey !== (marketId ? `${marketId}:${template.goal}` : null),
     addLine,
     updateLine,
     removeLine,
