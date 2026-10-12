@@ -20,9 +20,8 @@ async function saveInterviewTarget(userId, marketId, target) {
 function roleTrack(role) {
   const r = (role || "").toLowerCase();
   if (/(recruit|talent|hr\b|human resources|people ops|sourcer)/.test(r)) return "behavioral";
-  if (/(consult|strategy|advisor|analyst at|associate at|case)/.test(r)) return "case";
-  if (/(tech|engineer|developer|architect|lead|scientist|devops|data|it\b|cto|software|technical)/.test(r)) return "technical";
-  return "case";
+  if (/(consult|strategy|strategist|analyst|case)/.test(r)) return "case";
+  return "technical";
 }
 const TRACK_LABEL = {
   technical: "Technical & certification questions",
@@ -87,19 +86,44 @@ function buildSprintPlan(opts) {
   const today = opts.today || localDateString();
   const total = Math.max(1, Math.min(14, opts.daysLeft + 1));
   const company = opts.target.company || "the company";
-  const track = roleTrack(opts.target.role);
-  const mockFor = (concept) => track === "behavioral" ? `Tell ${company} about a time you handled ${concept.toLowerCase()} (STAR).` : track === "technical" ? `How would you apply ${concept.toLowerCase()} in your first month at ${company}?` : `${company} asks: size the impact of ${concept.toLowerCase()} on their business.`;
+  const role = opts.target.role || "the role";
+  const concepts = opts.concepts.length ? opts.concepts : ["Your strongest market idea"];
+  const conceptAt = (i) => concepts[i % concepts.length];
+  const lines = [
+    (i) => {
+      const c = conceptAt(i);
+      return { concept: c, mock: `How would you apply ${c.toLowerCase()} in your first month at ${company}?` };
+    },
+    (i) => {
+      const c = conceptAt(i + 1);
+      return { concept: c, mock: `Tell ${company} about a time you handled ${c.toLowerCase()} (STAR).` };
+    },
+    (i) => {
+      const c = conceptAt(i + 2);
+      return { concept: c, mock: `Explain ${c.toLowerCase()} to a ${company} interviewer in ninety seconds.` };
+    },
+    (i) => {
+      const title = opts.news.length ? opts.news[i % opts.news.length] : null;
+      return title ? { concept: "Current events", mock: `Be ready to discuss: ${title}`, newsTitle: title } : { concept: conceptAt(i + 3), mock: `Write one Brief line about ${conceptAt(i + 3).toLowerCase()} you could say out loud.` };
+    },
+    (i) => {
+      const c = conceptAt(i + 4);
+      return { concept: c, mock: `Write one Brief line about ${c.toLowerCase()} you could say out loud.` };
+    }
+  ];
   const out = [];
+  let lastMock = "";
   for (let i = 0; i < total; i++) {
-    const last = i === total - 1;
-    const concept = opts.concepts.length ? opts.concepts[i % opts.concepts.length] : "Your strongest market idea";
-    const headline = opts.news.length ? opts.news[i % opts.news.length] : null;
+    const last = i === total - 1 && total > 1;
+    let entry = lines[i % lines.length](i);
+    if (entry.mock === lastMock) entry = lines[(i + 1) % lines.length](i);
+    lastMock = entry.mock;
     out.push({
       day: i + 1,
       dateLabel: dateLabel(addDays(today, i)),
-      concept,
-      mock: last ? `Full mock interview for ${opts.target.role || "the role"} at ${company}.` : mockFor(concept),
-      news: headline ? { title: headline, howToMention: `Bring it up when they ask what's changing in the industry: say what happened, then what it means for ${company}.` } : null,
+      concept: entry.concept,
+      mock: last ? `Full mock interview for ${role} at ${company}.` : entry.mock,
+      news: entry.newsTitle ? { title: entry.newsTitle, howToMention: `Bring it up when they ask what's changing in the industry: say what happened, then what it means for ${company}.` } : null,
       fullMock: last
     });
   }
