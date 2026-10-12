@@ -242,9 +242,9 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
             end={{ x: 1, y: 1 }}
             style={styles.summaryHero}
           >
-            <Text style={styles.summaryKicker}>{ended.survived ? 'RUN COMPLETE' : 'RUN ENDED'}</Text>
-            <Text style={styles.summaryScore}>{score}</Text>
-            <Text style={styles.summaryRank}>{rank.label}</Text>
+            <Text style={styles.summaryKicker}>DAILY QUIZ</Text>
+            <Text style={styles.summaryScore}>{`${correct} of ${graded}`}</Text>
+            <Text style={styles.summaryRank}>right</Text>
             {newBest && (
               <View style={styles.bestPill}>
                 <Feather name="trending-up" size={11} color="#FFFFFF" />
@@ -255,23 +255,23 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
 
           <View style={styles.statGrid}>
             <SummaryStat icon="check-circle" label="Correct" value={`${correct}/${graded}`} />
-            <SummaryStat icon="zap" label="Best combo" value={`x${bestCombo}`} />
-            <SummaryStat icon="layers" label="Wave" value={`${waveIndex + 1}/${waves.length}`} />
+            <SummaryStat icon="star" label="Score" value={`${score}`} />
+            <SummaryStat icon="layers" label="Round" value={`${waveIndex + 1}/${waves.length}`} />
             <SummaryStat icon="award" label="XP earned" value={`+${xp}`} />
           </View>
 
           <LeoCoach
             line={
               ended.survived
-                ? `Clean run in ${marketName}. That combo is what separates a desk analyst from a tourist.`
-                : `The clock got you. Come back and take the ${rank.label} title.`
+                ? `${correct} of ${graded} right. See you tomorrow.`
+                : `${correct} of ${graded} right. Try again tomorrow.`
             }
             mood={ended.survived ? 'celebrate' : 'thinking'}
           />
 
           <View style={{ height: 12 }} />
           <PrimaryButton
-            label={banking ? 'Saving your run…' : `Bank +${xp} XP`}
+            label={banking ? 'Saving…' : `Collect +${xp} XP`}
             variant={banking ? 'disabled' : 'primary'}
             onPress={() => {
               if (banking) return;
@@ -329,7 +329,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
 
         <View style={styles.hudCenter}>
           <Text style={styles.hudWave}>
-            WAVE {waveIndex + 1} · {wave.name.toUpperCase()}
+            ROUND {waveIndex + 1} OF {waves.length}
           </Text>
           <Animated.Text style={[styles.hudScore, { transform: [{ scale: scoreScale }] }]}>
             {score}
@@ -337,17 +337,6 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
         </View>
 
         <View style={styles.hudRight}>
-          <View style={styles.shieldRow}>
-            {Array.from({ length: START_SHIELDS }).map((_, i) => (
-              <Feather
-                key={i}
-                name="shield"
-                size={15}
-                color={i < shields ? tokens.color.accent : tokens.color.disabled}
-              />
-            ))}
-          </View>
-          {combo >= 2 && <Text style={styles.comboText}>x{combo} combo</Text>}
         </View>
       </View>
 
@@ -362,7 +351,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
       </View>
       {!passive && (
         <Text style={[styles.timerLabel, urgent && { color: tokens.color.incorrect }]}>
-          {phase === 'feedback' ? 'Locked' : `${timeLeft}s · x${wave.multiplier} points`}
+          {phase === 'feedback' ? 'Locked' : `${timeLeft}s left`}
         </Text>
       )}
 
@@ -411,17 +400,13 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
             end={{ x: 1, y: 1 }}
             style={styles.waveCard}
           >
-            <Text style={styles.waveKicker}>WAVE {waveIndex + 1} OF {waves.length}</Text>
+            <Text style={styles.waveKicker}>ROUND {waveIndex + 1} OF {waves.length}</Text>
             <Text style={styles.waveName}>{wave.name}</Text>
             <Text style={styles.waveTagline}>{wave.tagline}</Text>
             <View style={styles.waveMetaRow}>
               <View style={styles.waveMeta}>
                 <Feather name="clock" size={12} color="#FFFFFF" />
-                <Text style={styles.waveMetaText}>{wave.seconds}s per call</Text>
-              </View>
-              <View style={styles.waveMeta}>
-                <Feather name="star" size={12} color="#FFFFFF" />
-                <Text style={styles.waveMetaText}>x{wave.multiplier} points</Text>
+                <Text style={styles.waveMetaText}>{wave.seconds} seconds per question</Text>
               </View>
             </View>
             <TouchableOpacity

@@ -68,12 +68,6 @@ export default function InterviewLabScreen() {
   const readiness = useInterviewReadiness(marketId);
   const track = readiness.target ? roleTrack(readiness.target.role) : null;
   const [showReadiness, setShowReadiness] = useState(false);
-  const readinessShown = useRef(false);
-  useEffect(() => {
-    if (readiness.loading || readinessShown.current || !user) return;
-    readinessShown.current = true;
-    setShowReadiness(true);
-  }, [readiness.loading, user]);
   const { addXP } = useUserXP(marketId);
   const { recordCaseRun } = usePracticeRewards();
   const { evaluateRewards } = useCollectibles(marketId);
@@ -209,22 +203,25 @@ export default function InterviewLabScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.close}><Feather name="x" size={22} color={COLORS.bg0} /></TouchableOpacity>
         <Image source={SOPHIA} style={styles.sophiaHero} />
         <Text style={styles.kickerLight}>INTERVIEW LAB</Text>
-        <Text style={styles.heroTitle}>Train under pressure.</Text>
-        <Text style={styles.heroBody}>Five short beats. One answer you can defend.</Text>
+        <Text style={styles.heroTitle}>Interview practice</Text>
+        <Text style={styles.heroBody}>Practice an interview question. Get feedback in 2 minutes.</Text>
       </LinearGradient>
-      <View style={styles.pathBody}>
-        <PathCard icon="briefcase" title="Future Pro" subtitle="Cases, math, and structured answers" color={world.colors[0]} onPress={() => setPath('consulting')} />
-        <PathCard icon="award" title="Academic Star" subtitle="Impact stories and scholarship answers" color={world.colors[1]} onPress={() => setPath('academic')} />
+      <ScrollView contentContainerStyle={[styles.pathBody, { paddingBottom: insets.bottom + 28 }]} showsVerticalScrollIndicator={false}>
+        {!readiness.loading && user ? (
+          <ReadinessCard
+            inline
+            visible
+            readiness={readiness}
+            onClose={() => {}}
+            onOpenBrief={() => router.push('/deliverable' as any)}
+            onStartMock={() => { setPath(track === 'behavioral' ? 'academic' : 'consulting'); setStage('response'); }}
+          />
+        ) : null}
+        <PathCard icon="briefcase" title="Job interview" subtitle="Cases, numbers and clear answers" color={world.colors[0]} onPress={() => setPath('consulting')} />
+        <PathCard icon="award" title="Scholarship or school interview" subtitle="Stories about what you did and why" color={world.colors[1]} onPress={() => setPath('academic')} />
         <Text style={styles.smallPrint}>Sophia coaches every run. Voice is optional.</Text>
-        {track && <TouchableOpacity onPress={() => setShowReadiness(true)}><Text style={styles.smallPrint}>{`${readiness.target?.role} · ${TRACK_LABEL[track]} · Readiness ${readiness.percent}%`}</Text></TouchableOpacity>}
-      </View>
-        <ReadinessCard
-          visible={showReadiness}
-          readiness={readiness}
-          onClose={() => setShowReadiness(false)}
-          onOpenBrief={() => { setShowReadiness(false); router.push('/deliverable' as any); }}
-          onStartMock={() => { setShowReadiness(false); setPath(track === 'behavioral' ? 'academic' : 'consulting'); setStage('response'); }}
-        />
+        {track && <Text style={styles.smallPrint}>{`${readiness.target?.role} · ${TRACK_LABEL[track]}`}</Text>}
+      </ScrollView>
     </View>
   );
 
@@ -240,7 +237,7 @@ export default function InterviewLabScreen() {
         <Text style={[styles.stageLabel, { color: world.colors[0] }]}>{STAGES[stageIndex].label.toUpperCase()} · {stageIndex + 1}/5</Text>
 
         {stage === 'brief' && <>
-          <Text style={styles.title}>Pick the pressure.</Text><Text style={styles.subtitle}>Your coach changes what a strong answer sounds like.</Text>
+          <Text style={styles.title}>Pick your interviewer.</Text><Text style={styles.subtitle}>Your coach changes what a strong answer sounds like.</Text>
           <View style={styles.personas}>{(Object.entries(INTERVIEW_PERSONAS) as [InterviewPersona, typeof INTERVIEW_PERSONAS[InterviewPersona]][]).map(([key, item]) => (
             <TouchableOpacity key={key} onPress={() => setPersona(key)} style={[styles.persona, persona === key && { borderColor: item.color, backgroundColor: `${item.color}10` }]}>
               <Feather name={item.icon as keyof typeof Feather.glyphMap} size={19} color={item.color} />
@@ -258,7 +255,7 @@ export default function InterviewLabScreen() {
             <View style={styles.prompt}><Text style={styles.promptLabel}>THE PROBLEM</Text><Text style={styles.promptText}>{short(framework.label, 120)}</Text></View>
             {framework.branches.slice(0, 3).map((branch, index) => <View key={branch} style={styles.frameworkRow}><Text style={[styles.frameworkNumber, { color: world.colors[index % 3] }]}>{index + 1}</Text><Text style={styles.frameworkText}>{short(branch, 92)}</Text></View>)}
           </> : STORY_HERO_STEPS.map((item, index) => <View key={item.letter} style={styles.frameworkRow}><Text style={[styles.frameworkNumber, { color: world.colors[index % 3] }]}>{item.letter}</Text><View style={{ flex: 1 }}><Text style={styles.frameworkText}>{item.label}</Text><Text style={styles.personaText}>{item.prompt}</Text></View></View>)}
-          <Coach text={path === 'consulting' ? 'Separate the branches. Overlap is where clear thinking goes to die.' : 'Keep the setup short. Your action and result are the main event.'} />
+          <Coach text={path === 'consulting' ? 'Split the problem into parts that don\'t overlap.' : 'Keep the setup short. Spend most time on what you did.'} />
           <Action label="Enter pressure round" color={world.colors[0]} onPress={() => next('pressure')} />
         </>}
 
@@ -269,7 +266,7 @@ export default function InterviewLabScreen() {
             const revealed = pressureChoice !== null; const correct = index === pressure.correctIndex; const picked = index === pressureChoice;
             return <TouchableOpacity key={`${option}-${index}`} disabled={revealed} onPress={() => choosePressure(index)} style={[styles.option, revealed && correct && styles.correct, revealed && picked && !correct && styles.wrong]}><Text style={styles.optionLetter}>{String.fromCharCode(65 + index)}</Text><Text style={styles.optionText}>{short(option, 90)}</Text></TouchableOpacity>;
           })}</View>
-          {pressureChoice !== null && <><View style={[styles.feedback, { backgroundColor: pressureCorrect ? COLORS.successSoft : COLORS.errorSoft }]}><Text style={styles.feedbackTitle}>{pressureCorrect ? 'Clean hit.' : 'Good trap. Learn it once.'}</Text><Text style={styles.feedbackText}>{short(pressure.explanation, 155)}</Text></View><Action label="Face the interviewer" color={world.colors[0]} onPress={() => next('response')} /></>}
+          {pressureChoice !== null && <><View style={[styles.feedback, { backgroundColor: pressureCorrect ? COLORS.successSoft : COLORS.errorSoft }]}><Text style={styles.feedbackTitle}>{pressureCorrect ? 'Correct.' : 'Not quite. Here\'s why:'}</Text><Text style={styles.feedbackText}>{short(pressure.explanation, 155)}</Text></View><Action label="Answer the question" color={world.colors[0]} onPress={() => next('response')} /></>}
         </>}
 
         {stage === 'response' && mock && <>
@@ -312,7 +309,7 @@ const gradeLabel = (score = 5) => score >= 9 ? 'Offer-ready' : score >= 7.5 ? 'S
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg0 }, center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg0 },
   pathHero: { height: 335, paddingHorizontal: 22, paddingBottom: 28, justifyContent: 'flex-end', overflow: 'hidden' }, close: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
-  sophiaHero: { position: 'absolute', width: 250, height: 250, right: -25, top: 45, resizeMode: 'cover', borderRadius: 125, opacity: 0.93 }, kickerLight: { color: COLORS.bg0, fontSize: 11, fontWeight: '900', letterSpacing: 1.2 }, heroTitle: { color: COLORS.bg0, fontSize: 31, lineHeight: 35, fontWeight: '900', maxWidth: 220, marginTop: 8 }, heroBody: { color: COLORS.bg0, opacity: 0.82, fontSize: 15, marginTop: 8, maxWidth: 215 },
+  sophiaHero: { position: 'absolute', width: 120, height: 120, right: 18, top: 60, resizeMode: 'cover', borderRadius: 60, opacity: 0.95 }, kickerLight: { color: COLORS.bg0, fontSize: 11, fontWeight: '900', letterSpacing: 1.2 }, heroTitle: { color: COLORS.bg0, fontSize: 31, lineHeight: 35, fontWeight: '900', maxWidth: 220, marginTop: 8 }, heroBody: { color: COLORS.bg0, opacity: 0.82, fontSize: 15, marginTop: 8, maxWidth: 215 },
   pathBody: { padding: 18, gap: 12 }, pathCard: { flexDirection: 'row', alignItems: 'center', minHeight: 92, padding: 16, borderWidth: 1, borderColor: COLORS.border, borderRadius: 16, gap: 14, backgroundColor: COLORS.bg2 }, pathIcon: { width: 50, height: 50, borderRadius: 14, alignItems: 'center', justifyContent: 'center' }, pathTitle: { fontSize: 18, fontWeight: '900', color: COLORS.textPrimary }, pathSubtitle: { fontSize: 13, color: COLORS.textSecondary, marginTop: 4 }, smallPrint: { color: COLORS.textMuted, fontSize: 12, textAlign: 'center', marginTop: 8 },
   header: { height: 58, paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center', gap: 8 }, headerTitle: { color: COLORS.textPrimary, fontWeight: '900', fontSize: 15 }, headerSub: { color: COLORS.textMuted, fontSize: 11, marginTop: 1 }, sophiaSmall: { width: 38, height: 38, borderRadius: 19, marginRight: 6 }, rail: { flexDirection: 'row', gap: 4, paddingHorizontal: 16 }, railSegment: { flex: 1, height: 5, borderRadius: 3 },
   scroll: { padding: 20, gap: 14 }, stageLabel: { fontSize: 11, fontWeight: '900', letterSpacing: 1 }, title: { color: COLORS.textPrimary, fontSize: 27, lineHeight: 32, fontWeight: '900' }, subtitle: { color: COLORS.textSecondary, fontSize: 15, lineHeight: 21 },

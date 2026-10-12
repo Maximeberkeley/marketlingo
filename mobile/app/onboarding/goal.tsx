@@ -70,7 +70,7 @@ const goalOptions: GoalOption[] = [
     title: 'Pure curiosity',
     subtitle: 'Explorer Mode',
     color: '#F59E0B',
-    description: 'Discover big-picture trends, fascinating history, and "wow factor" insights',
+    description: 'Discover big-picture trends and the history behind them',
     emphasis: ['Trend analysis', 'Industry history', 'Key innovations'],
   },
 ];
@@ -79,7 +79,7 @@ const LEO_REACTIONS: Record<LearningGoal, string> = {
   join_industry: "I'll prep you for the interview.",
   invest: "Let's sharpen your investment thesis.",
   build_startup: "We'll find a gap worth solving.",
-  curiosity: "Curiosity is a superpower. Let's explore.",
+  curiosity: "Good choice. Let's explore.",
 };
 
 /**
@@ -265,7 +265,7 @@ export default function GoalScreen() {
       </Animated.ScrollView>
 
       <StickyBottomCTA
-        title={isSubmitting ? 'Saving...' : 'Commit to my goal'}
+        title={isSubmitting ? 'Saving...' : 'Continue'}
         onPress={handleContinue}
         disabled={!selectedGoal || isSubmitting}
       />

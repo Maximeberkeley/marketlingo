@@ -24,7 +24,7 @@ export function SundayRecapCard({ recap, accent, tierLabel, rank, onDismiss, onO
   const delta = recap.xpThisWeek - recap.xpLastWeek;
   const deltaText =
     recap.xpLastWeek === 0
-      ? 'First full week on the desk'
+      ? 'Your first full week'
       : delta >= 0
       ? `${delta} XP more than last week`
       : `${Math.abs(delta)} XP less than last week`;

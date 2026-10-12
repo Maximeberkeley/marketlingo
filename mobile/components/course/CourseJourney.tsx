@@ -679,8 +679,10 @@ export function CourseJourney({
           const lesson = lessons.find(entry => entry.day === section.displayDay);
           const displayedLesson = lessons.find(entry => entry.day === section.displayDay);
           const sectionLead = lessons.find(entry => entry.day === section.startDay);
+          // Never show a syllabus facet label ("What it is") as a lesson title: fall back to the latest real lesson title.
+          const latestReal = [...lessons].filter(entry => entry.day <= section.displayDay && entry.title && entry.day >= section.startDay).sort((x, y) => y.day - x.day)[0];
           const weekTitle = section.unlocked
-            ? displayedLesson?.title || dayPromise(marketId, section.displayDay)
+            ? displayedLesson?.title || latestReal?.title || themes[section.index] || `Day ${section.displayDay}`
             : themes[section.index] || sectionLead?.title || dayPromise(marketId, section.startDay);
           const activeSection = section.index === focusedSectionIndex;
           return (

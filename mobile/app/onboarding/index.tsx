@@ -143,7 +143,7 @@ export default function OnboardingScreen() {
           <LeoCharacter size="lg" animation="waving" />
           <Text style={styles.title}>Choose your industry</Text>
           <Text style={styles.subtitle}>
-            Your 6-month mastery journey starts here
+            Pick your industry
           </Text>
           {!user && (
             <TouchableOpacity onPress={() => router.push('/auth' as any)} activeOpacity={0.7} style={{ marginTop: 10 }}>
