@@ -454,7 +454,7 @@ function CourseJourney({
         return {
           day,
           title: lesson?.title || dayPromise(marketId, day),
-          description: plan.isConsolidation ? "Review the week and explain one idea in your own words." : plan.facet.promise,
+          description: plan.isConsolidation ? `${plan.facet.promise} Review one idea from the week.` : plan.facet.promise,
           stackId: lesson?.id,
           completed: completedByDay.get(day) || false,
           authored: Boolean(lesson?.title)

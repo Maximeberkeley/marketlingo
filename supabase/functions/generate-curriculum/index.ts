@@ -419,7 +419,7 @@ function dayLessonPrompt(
   const planAngle = plan
     ? `TODAY'S ANGLE — "${plan.facetLabel}": ${plan.angle}`
     : isConsolidation
-      ? `This is a CONSOLIDATION day. Introduce NO new concept. Take the single most important idea of this week's theme ("${theme}") and make the learner retrieve and connect it.`
+      ? `Teach one core operating concept of this industry. Also include a short review of an already-taught idea from this week's theme ("${theme}") and connect it to today's concept. Review must not replace today's new concept.`
       : 'Teach one core operating concept of this industry.';
   const flavour = isConsolidation
     ? ''
@@ -433,7 +433,7 @@ function dayLessonPrompt(
   const system = `You are a veteran ${marketContext} insider writing one day of a six-month curriculum for ${persona.label.toUpperCase()} learners.
 
 THE CONTRACT — follow it exactly:
-- ONE concept for the whole day. Name it. Do not skim several angles.
+- ONE new concept for the whole day. Name it. Do not skim several angles.${isConsolidation ? ' Include brief retrieval of an already-taught idea, connected to the new concept; preserve the scheduled angle in full.' : ''}
 - Teach it to the point of ownership: after today the learner can explain the mechanism to someone else without notes.
 - Write complete prose. Never abbreviate to fit a length. Never end a sentence or a beat mid-thought.
 - Every figure must be real and checkable: actual companies, programmes, dollar amounts, percentages, dates.

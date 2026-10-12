@@ -21,4 +21,5 @@
 - Leo calls go through one server function (turn + recap) with the call type, lesson, Brief, goal, level and interview target, while the phone owns rotation, the daily limit and Brief saving, because the model must stay server-side and learner lines must be saved as the learner's own.
 - Resolve displayed lesson titles and catch-up labels through the shared lesson identity helpers, because authored lessons and calendar days can differ from section names and credited study days.
 - Keep quiz history scoped to learner and market on-device, key it by question content and record only displayed questions; never relax exclusion when the pool is exhausted, because shuffled IDs and aborted runs must not permit seven-day repeats.
-- Sanitize generated and authored lesson copy through the sequencer's goal filter and teach the takeaway before its fallback application check, because personalization and grading must remain grounded in visible text.
+- Goal-filter authored/generated copy and teach the takeaway before fallback checks; grounding must stay visible.
+- Keep syllabus reviews additive in server prompts and phone promises; reviews must not replace angles or change day-to-topic mapping.

@@ -6,7 +6,8 @@
  *   - 6 seasons of 30 days, one per theme of the chosen market
  *   - each season covers 5 territories, 6 days each
  *   - those 6 days take a fixed arc of angles on the territory
- *   - every 7th day of the programme consolidates instead of adding an idea
+ *   - every 7th day adds a short review alongside its scheduled angle
+ *   - reviews never replace angles; all 30 territories keep all six angles
  */
 
 import { markets } from './markets';
@@ -71,5 +72,5 @@ export function syllabusDay(marketId: string, day: number): SyllabusDay {
 /** The short label shown next to a day in the roadmap. */
 export function dayPromise(marketId: string, day: number): string {
   const plan = syllabusDay(marketId, day);
-  return plan.isConsolidation ? 'Consolidation — no new idea' : plan.facet.label;
+  return plan.isConsolidation ? `${plan.facet.label} · Weekly review` : plan.facet.label;
 }
