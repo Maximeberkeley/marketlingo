@@ -1,4 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../hooks/useAuth';
+import type { Exercise } from '../lesson-kit/types';
+import { QuizSeen, recentQuizHistory, recordQuizQuestion } from '../lib/quizHistory';
 import { View, Text, StyleSheet, ActivityIndicator, Animated, Image, TouchableOpacity } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
@@ -93,6 +97,7 @@ function ArenaPrerequisite() {
 }
 
 export default function ArenaRoute() {
+  const { user } = useAuth();
   const { day } = useLocalSearchParams<{ day?: string }>();
   const preferredDay = day ? Number(day) : undefined;
   const { marketId, loading: marketLoading } = useSelectedMarket();
@@ -104,6 +109,31 @@ export default function ArenaRoute() {
   const { addXP } = useUserXP(marketId);
   const { evaluateRewards } = useCollectibles(marketId);
   const [runKey, setRunKey] = useState(0);
+  const historyKey = user?.id && marketId ? `ml_quiz_seen_v1/${user.id}/${marketId}` : null;
+  const [loadedHistoryKey, setLoadedHistoryKey] = useState<string | null>(null);
+  const [historyError, setHistoryError] = useState(false);
+  const [seenKeys, setSeenKeys] = useState<Set<string>>(new Set());
+  const history = useRef<QuizSeen[]>([]);
+  const writeQueue = useRef(Promise.resolve());
+  useEffect(() => {
+    let active = true;
+    if (!historyKey) return;
+    setHistoryError(false);
+    void AsyncStorage.getItem(historyKey).then(raw => {
+      if (!active) return;
+      history.current = recentQuizHistory(raw ? JSON.parse(raw) : []);
+      setSeenKeys(new Set(history.current.map(row => row.key)));
+      setLoadedHistoryKey(historyKey);
+    }).catch(() => { if (active) setHistoryError(true); });
+    return () => { active = false; };
+  }, [historyKey]);
+  const onQuestionSeen = useCallback((exercise: Exercise) => {
+    if (!historyKey) return;
+    history.current = recordQuizQuestion(history.current, exercise);
+    const snapshot = JSON.stringify(history.current);
+    writeQueue.current = writeQueue.current.then(() => AsyncStorage.setItem(historyKey, snapshot))
+      .catch(error => { log.warn('[Arena] Could not save question history:', error); setHistoryError(true); });
+  }, [historyKey]);
 
   const waves = useMemo(
     () =>
@@ -114,13 +144,19 @@ export default function ArenaRoute() {
         drills: content.drills,
         stats: content.stats,
         studied: studied.lessons,
+        seenQuestionKeys: seenKeys,
       }),
     // A new runKey reshuffles the run.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [marketId, content.trainer, content.drills, content.stats, studied.lessons, runKey],
+    [marketId, content.trainer, content.drills, content.stats, studied.lessons, runKey, seenKeys],
   );
 
-  const busy = marketLoading || content.isLoading || rewardsLoading || studied.isLoading;
+  const busy = marketLoading || content.isLoading || rewardsLoading || studied.isLoading || !historyKey || loadedHistoryKey !== historyKey;
+
+  if (historyError) return <View style={styles.loading}>
+    <Text style={styles.loadingText}>Your quiz history could not be saved or loaded. Please reopen the quiz.</Text>
+    <Text style={styles.backLink} onPress={() => router.back()}>Go back</Text>
+  </View>;
 
   if (busy) {
     return (
@@ -139,7 +175,7 @@ export default function ArenaRoute() {
   if (!waves || waves.length === 0) {
     return (
       <View style={styles.loading}>
-        <Text style={styles.loadingText}>No arena rounds ready for this market yet.</Text>
+        <Text style={styles.loadingText}>You've seen all available questions this week. Study another lesson for fresh questions.</Text>
         <Text style={styles.backLink} onPress={() => router.back()}>Go back</Text>
       </View>
     );
@@ -166,6 +202,7 @@ export default function ArenaRoute() {
       bestScore={rewards.arenaBestScore}
       onExit={() => router.back()}
       onFinish={handleFinish}
+      onQuestionSeen={onQuestionSeen}
     />
   );
 }
