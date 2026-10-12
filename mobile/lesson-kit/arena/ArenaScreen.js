@@ -278,19 +278,21 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish 
       </View>
 
       {
-    /* Timer */
+    /* Timer — hidden behind the round-intro card until Start is tapped */
   }
-      <View style={styles.timerTrack}>
-        <Animated.View
+      {!showWaveIntro && <>
+          <View style={styles.timerTrack}>
+            <Animated.View
     style={[
       styles.timerFill,
       { width: timerWidth, backgroundColor: urgent ? tokens.color.incorrect : tokens.color.accent }
     ]}
   />
-      </View>
-      {!passive && <Text style={[styles.timerLabel, urgent && { color: tokens.color.incorrect }]}>
-          {phase === "feedback" ? "Locked" : `${timeLeft}s left`}
-        </Text>}
+          </View>
+          {!passive && <Text style={[styles.timerLabel, urgent && { color: tokens.color.incorrect }]}>
+              {phase === "feedback" ? "Locked" : `${timeLeft}s left`}
+            </Text>}
+        </>}
 
       {lastGain !== null && <Animated.View
     style={[
@@ -311,8 +313,13 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish 
     showsVerticalScrollIndicator={false}
     keyboardShouldPersistTaps="handled"
   >
-        {!!exercise.leo?.line && <LeoCoach line={exercise.leo.line} mood={exercise.leo.mood} />}
-        {renderExerciseByKind(exercise, phase, setState)}
+        {
+    /* The question stays behind the round-intro card until Start is tapped */
+  }
+        {!showWaveIntro ? <>
+            {!!exercise.leo?.line && <LeoCoach line={exercise.leo.line} mood={exercise.leo.mood} />}
+            {renderExerciseByKind(exercise, phase, setState)}
+          </> : null}
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
