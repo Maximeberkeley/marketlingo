@@ -1,3 +1,4 @@
+import { jsx, jsxs } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { router } from "expo-router";
@@ -42,7 +43,7 @@ function presentation(data) {
     return {
       mood: "sassy",
       eyebrow: "GOOD AFTERNOON",
-      line: `One ${market} idea. Five minutes. Let's go.`
+      line: `Today's ${market} idea is ready.`
     };
   }
   return {
@@ -98,16 +99,36 @@ function DailyLeoScreen() {
   }, [user]);
   const content = useMemo(() => data ? presentation(data) : null, [data]);
   if (loading || !data || !content) {
-    return <View style={styles.loading}><ActivityIndicator color={COLORS.accent} /></View>;
+    return /* @__PURE__ */ jsx(View, { style: styles.loading, children: /* @__PURE__ */ jsx(ActivityIndicator, { color: COLORS.accent }) });
   }
-  return <View style={[styles.root, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 22 }]}><View style={styles.heading}><Text style={styles.eyebrow}>{content.eyebrow}</Text><Text style={styles.title}>{data.streak > 0 ? `Welcome back \u2014 ${data.streak} ${data.streak === 1 ? "day" : "days"} in a row` : "Welcome back to your market"}</Text></View><View style={styles.scene}><SpeechBubble text={content.line} tail="bottom-center" showLabel style={styles.bubble} /><View style={styles.leoWrap}><LeoCharacter size="xl" animation={content.mood} still /></View></View><View style={styles.footer}><Text style={styles.caption}>One lesson. About five minutes. That's it for today.</Text><TouchableOpacity
-    style={styles.continueButton}
-    activeOpacity={0.88}
-    onPress={() => {
-      triggerHaptic("medium");
-      router.replace("/(tabs)/home");
-    }}
-  ><Text style={styles.continueText}>Continue</Text><Feather name="arrow-right" size={20} color="#FFFFFF" /></TouchableOpacity></View></View>;
+  return /* @__PURE__ */ jsxs(View, { style: [styles.root, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 22 }], children: [
+    /* @__PURE__ */ jsxs(View, { style: styles.heading, children: [
+      /* @__PURE__ */ jsx(Text, { style: styles.eyebrow, children: content.eyebrow }),
+      /* @__PURE__ */ jsx(Text, { style: styles.title, children: data.streak > 0 ? `Welcome back \u2014 ${data.streak} ${data.streak === 1 ? "day" : "days"} in a row` : "Welcome back to your market" })
+    ] }),
+    /* @__PURE__ */ jsxs(View, { style: styles.scene, children: [
+      /* @__PURE__ */ jsx(SpeechBubble, { text: content.line, tail: "bottom-center", showLabel: true, style: styles.bubble }),
+      /* @__PURE__ */ jsx(View, { style: styles.leoWrap, children: /* @__PURE__ */ jsx(LeoCharacter, { size: "xl", animation: content.mood, still: true }) })
+    ] }),
+    /* @__PURE__ */ jsxs(View, { style: styles.footer, children: [
+      /* @__PURE__ */ jsx(Text, { style: styles.caption, children: "One lesson. About five minutes." }),
+      /* @__PURE__ */ jsxs(
+        TouchableOpacity,
+        {
+          style: styles.continueButton,
+          activeOpacity: 0.88,
+          onPress: () => {
+            triggerHaptic("medium");
+            router.replace("/(tabs)/home");
+          },
+          children: [
+            /* @__PURE__ */ jsx(Text, { style: styles.continueText, children: "Continue" }),
+            /* @__PURE__ */ jsx(Feather, { name: "arrow-right", size: 20, color: "#FFFFFF" })
+          ]
+        }
+      )
+    ] })
+  ] });
 }
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg0, paddingHorizontal: 22, justifyContent: "space-between" },
@@ -118,6 +139,7 @@ const styles = StyleSheet.create({
   scene: { flex: 1, minHeight: 310, flexDirection: "column", alignItems: "center", justifyContent: "center" },
   // Full width and no clipping: the umbrella and tail must stay in frame.
   leoWrap: { width: 208, height: 208, justifyContent: "center", alignItems: "center" },
+  // Centered over Leo's head so the bubble reads as coming from him.
   bubble: { maxWidth: 260, marginBottom: 8, alignSelf: "center" },
   footer: { gap: 14 },
   caption: { color: COLORS.textSecondary, fontSize: 13, lineHeight: 19, textAlign: "center", fontWeight: "600" },

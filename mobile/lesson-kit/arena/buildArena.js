@@ -1,3 +1,4 @@
+import { quizQuestionKeys } from "../../lib/quizHistory";
 import { getIndustryPack } from "../industry/packs";
 import {
   checkClaim,
@@ -31,14 +32,28 @@ function shuffle(arr) {
 const clean = (list, limit) => shuffle(list.filter((e) => !!e)).slice(0, limit);
 function fromStudied(studied, build, prefix) {
   if (!studied?.length) return [];
-  return studied.slice(0, 4).map((lesson, i) => build(lesson.slides, `${prefix}-${i}`));
+  return studied.map((lesson, i) => build(lesson.slides, `${prefix}-${i}`));
 }
 function buildArena(input) {
   const pack = getIndustryPack(input.marketId);
   const { trainer, drills, stats, studied } = input;
   const trainerPool = shuffle(trainer);
-  const wave1 = clean(
-    [
+  const used = new Set(input.seenQuestionKeys || []);
+  const fresh = (make, limit) => {
+    const selected = [];
+    for (let attempt = 0; attempt < 12 && selected.length < limit; attempt += 1) {
+      for (const exercise of clean(make(), 1e3)) {
+        const keys = quizQuestionKeys(exercise);
+        if (keys.some((key) => used.has(key))) continue;
+        keys.forEach((key) => used.add(key));
+        selected.push(exercise);
+        if (selected.length === limit) break;
+      }
+    }
+    return selected;
+  };
+  const wave1 = fresh(
+    () => [
       ...fromStudied(studied, (slides, id) => checkDefinition(termsFromSlides(slides), id), "a1-def"),
       ...fromStudied(studied, checkClaim, "a1-claim"),
       pack ? packFaceOff(pack, "a1-faceoff") : null,
@@ -48,8 +63,8 @@ function buildArena(input) {
     ],
     4
   );
-  const wave2 = clean(
-    [
+  const wave2 = fresh(
+    () => [
       ...fromStudied(studied, checkMechanism, "a2-mech"),
       ...fromStudied(studied, checkFigure, "a2-fig"),
       pack ? packChain(pack, "a2-chain") : null,
@@ -60,11 +75,10 @@ function buildArena(input) {
     ],
     4
   );
-  const wave3 = clean(
-    [
+  const wave3 = fresh(
+    () => [
       ...fromStudied(studied, checkTamper, "a3-tamper"),
-      trainerCall(trainerPool[0], "a3-call1"),
-      trainerCall(trainerPool[1], "a3-call2"),
+      ...trainerPool.map((scenario, index) => trainerCall(scenario, `a3-call-${index}`)),
       drillSpotFake(drills, "a3-fake", "One of these is false. Which one?"),
       pack ? packSpeedRound(pack, "a3-speed") : null
     ],
