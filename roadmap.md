@@ -2,7 +2,8 @@
 
 ## Oct 12 — Symbol and notification framing
 - [x] Match welcome-back streak and XP symbols to the app's flame and bottle in both phone sources.
-- [ ] Widen the in-app notification shown in the screenshot to the screen width with safe side margins; sync both phone sources and verify sizing.
+- [x] Widen the in-app notification shown in the screenshot to the screen width with 16px side margins in both phone sources; style checks passed at widths 320–768 and syntax checks passed.
+- [ ] Verify notification framing on an iPhone (blocked: no iOS device/simulator; requires the next phone build).
 
 ## Oct 12 — Syllabus review correction
 - [x] Preserve every topic angle and add review alongside the seventh-day topic; align generator and phone wording, sync JavaScript, and test all 180 days. Lesson writer deployed; existing lessons not regenerated.
