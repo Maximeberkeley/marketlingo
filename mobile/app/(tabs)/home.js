@@ -307,11 +307,6 @@ function HomeScreen() {
     if (lessonCompletedToday) {
       playSound("lessonComplete");
       leoPopups.clear();
-      if (!previousLessonComplete.current) {
-        void claimLeoNudge("completion").then((claimed) => {
-          if (claimed) leoPopups.triggerCompletionNod(() => leoPopups.dismiss());
-        });
-      }
     }
     previousLessonComplete.current = lessonCompletedToday;
   }, [lessonCompletedToday]);
@@ -490,6 +485,7 @@ function HomeScreen() {
     totalXp={xpData?.total_xp || 0}
     level={xpData?.current_level || 1}
     lessonCompletedToday={completedOnClockDay}
+    completedTodayStackId={completedOnClockDay ? dailyCompletion?.completed_stack_id : null}
     isFocused={courseFocused}
     arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
     caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}

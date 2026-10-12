@@ -335,9 +335,8 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish 
     end={{ x: 1, y: 1 }}
     style={styles.waveCard}
   >
-            <Text style={styles.waveKicker}>ROUND {waveIndex + 1} OF {waves.length}</Text>
+            <Text style={styles.waveKicker}>Round {waveIndex + 1} of {waves.length}</Text>
             <Text style={styles.waveName}>{wave.name}</Text>
-            <Text style={styles.waveTagline}>{wave.tagline}</Text>
             <View style={styles.waveMetaRow}>
               <View style={styles.waveMeta}>
                 <Feather name="clock" size={12} color="#FFFFFF" />
@@ -353,7 +352,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish 
       setShowWaveIntro(false);
     }}
   >
-              <Text style={styles.waveBtnText}>Enter the wave</Text>
+              <Text style={styles.waveBtnText}>Start</Text>
             </TouchableOpacity>
           </LinearGradient>
         </View>

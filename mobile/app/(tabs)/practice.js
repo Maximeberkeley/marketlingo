@@ -7,8 +7,7 @@ import {
   StyleSheet,
   Animated,
   ActivityIndicator,
-  Dimensions,
-  ImageBackground
+  Dimensions
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -28,54 +27,32 @@ const ACTIVITY_CARDS = [
   {
     id: "arena",
     title: "Daily quiz",
-    subtitle: "Daily quiz \xB7 3 rounds \xB7 3 min",
     description: "Quick questions on what you studied.",
     icon: "zap",
-    iconColor: "#FDE68A",
-    gradientColors: ["#92400E", "#B45309", "#D97706"],
-    accentGlow: "rgba(217, 119, 6, 0.4)",
-    path: "/arena",
-    heroImage: require("../../assets/cards/daily-arena-hero.jpg"),
-    tag: "DAILY"
+    path: "/arena"
   },
   {
     id: "deep-case",
     title: "Case",
-    subtitle: "A real situation",
     description: "A real situation. What would you do?",
     icon: "briefcase",
-    iconColor: "#C7D2FE",
-    gradientColors: ["#1E1B4B", "#312E81", "#4338CA"],
-    accentGlow: "rgba(67, 56, 202, 0.4)",
-    path: "/deep-case",
-    heroImage: require("../../assets/cards/deep-case-hero.jpg"),
-    tag: "CASE"
+    path: "/deep-case"
   }
 ];
 const LAB_CARDS = [
   {
     id: "interview-lab",
     title: "Interview practice",
-    subtitle: "Mock interview",
-    description: "Practice an interview question. Get feedback in 2 minutes.",
+    description: "Answer a question. Get useful feedback.",
     icon: "mic",
-    iconColor: "#C4B5FD",
-    gradientColors: ["#1E1B4B", "#4338CA", "#7C3AED"],
-    accentGlow: "rgba(124, 58, 237, 0.5)",
-    path: "/interview-lab",
-    heroImage: require("../../assets/illustrations/interview-lab-hero.png")
+    path: "/interview-lab"
   },
   {
     id: "investment",
     title: "Investment Lab",
-    subtitle: "For investors",
-    description: "Look at a company and decide if you would invest.",
+    description: "Would you invest in this company?",
     icon: "trending-up",
-    iconColor: "#A7F3D0",
-    gradientColors: ["#064E3B", "#047857", "#059669"],
-    accentGlow: "rgba(5, 150, 105, 0.4)",
-    path: "/investment-lab",
-    heroImage: require("../../assets/cards/investment-lab-hero.jpg")
+    path: "/investment-lab"
   }
 ];
 function PremiumCarousel({ cards, title }) {
@@ -163,76 +140,19 @@ function PremiumCard({ card, index }) {
     router.push(card.path);
   };
   const cardContent = <View style={styles.cardInner}>
-      {
-    /* Top section: hero image full-bleed */
-  }
-      {card.heroImage ? <ImageBackground
-    source={card.heroImage}
-    style={styles.heroImageBg}
-    imageStyle={styles.heroImageStyle}
-    resizeMode="contain"
-  >
-          
-          {
-    /* Floating tag */
-  }
-          {card.tag && <View style={styles.floatingTag}>
-              <Text style={styles.floatingTagText}>{card.tag}</Text>
-            </View>}
-        </ImageBackground> : <View style={[styles.heroPlaceholder, { backgroundColor: card.gradientColors[1] }]}>
-          <Feather name={card.icon} size={48} color="rgba(255,255,255,0.15)" />
-          {card.tag && <View style={styles.floatingTag}>
-              <Text style={styles.floatingTagText}>{card.tag}</Text>
-            </View>}
-        </View>}
-
-      {
-    /* Bottom content — glass-style panel */
-  }
       <View style={styles.contentPanel}>
-        {
-    /* Icon + subtitle row */
-  }
         <View style={styles.metaRow}>
-          <View style={[styles.iconPill, { backgroundColor: `${card.gradientColors[1]}18` }]}>
-            <Feather name={card.icon} size={13} color={card.gradientColors[1]} />
+          <View style={styles.iconPill}>
+            <Feather name={card.icon} size={16} color={COLORS.accent} />
           </View>
-          <Text style={[styles.subtitleText, { color: card.gradientColors[1] }]}>
-            {card.subtitle}
-          </Text>
+          <Text style={styles.cardTitle}>{card.title}</Text>
         </View>
-
-        {
-    /* Title */
-  }
-        <Text style={styles.cardTitle}>{card.title}</Text>
-
-        {
-    /* Description */
-  }
-        <Text style={styles.cardDesc}>{card.description}</Text>
-
-        {
-    /* Arrow CTA */
-  }
+        <Text style={styles.cardDesc} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>{card.description}</Text>
         <View style={styles.ctaRow}>
-          <Text style={[styles.ctaText, { color: card.gradientColors[1] }]}>
-            Start
-          </Text>
-          <View style={[styles.ctaArrow, { backgroundColor: `${card.gradientColors[1]}12` }]}>
-            <Feather
-    name="arrow-right"
-    size={14}
-    color={card.gradientColors[1]}
-  />
-          </View>
+          <Text style={styles.ctaText}>Start</Text>
+          <Feather name="arrow-right" size={16} color={COLORS.accent} />
         </View>
       </View>
-
-      {
-    /* Accent border at top */
-  }
-      <View style={[styles.accentStripe, { backgroundColor: card.gradientColors[1] }]} />
     </View>;
   return <Animated.View style={[styles.cardOuter, { transform: [{ scale: scaleAnim }] }]}>
       <TouchableOpacity
@@ -431,74 +351,20 @@ const styles = StyleSheet.create({
   /* Card */
   cardOuter: {
     width: CARD_WIDTH,
-    borderRadius: 22,
+    borderRadius: 8,
     ...SHADOWS.lg
   },
   cardTouch: {
     width: "100%",
-    borderRadius: 22,
+    borderRadius: 8,
     overflow: "hidden"
   },
   cardInner: {
     backgroundColor: COLORS.bg2,
-    borderRadius: 22,
+    borderRadius: 8,
     overflow: "hidden",
     borderWidth: 1,
     borderColor: COLORS.border
-  },
-  accentStripe: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 3,
-    borderTopLeftRadius: 22,
-    borderTopRightRadius: 22
-  },
-  /* Hero image area */
-  heroImageBg: {
-    height: 160,
-    backgroundColor: "#F3EEF8",
-    borderTopLeftRadius: 21,
-    borderTopRightRadius: 21,
-    overflow: "hidden",
-    justifyContent: "flex-end"
-  },
-  heroImageStyle: {
-    borderTopLeftRadius: 21,
-    borderTopRightRadius: 21
-  },
-  heroOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: COLORS.imageScrim,
-    borderTopLeftRadius: 21,
-    borderTopRightRadius: 21
-  },
-  heroPlaceholder: {
-    height: 160,
-    alignItems: "center",
-    justifyContent: "center",
-    borderTopLeftRadius: 21,
-    borderTopRightRadius: 21
-  },
-  /* Floating tag */
-  floatingTag: {
-    position: "absolute",
-    top: 14,
-    right: 14,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
-    backgroundColor: "rgba(255,255,255,0.9)"
-  },
-  floatingTagText: {
-    fontSize: 9,
-    fontWeight: "800",
-    color: COLORS.textPrimary,
-    letterSpacing: 1
   },
   /* Content panel */
   contentPanel: {
@@ -514,17 +380,15 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 8,
+    backgroundColor: COLORS.accentSoft,
     alignItems: "center",
     justifyContent: "center"
   },
-  subtitleText: {
-    ...TYPE.overline,
-    fontSize: 10
-  },
   cardTitle: {
-    ...TYPE.h1,
+    ...TYPE.h3,
     color: COLORS.textPrimary,
-    marginBottom: 4
+    flexShrink: 1,
+    letterSpacing: 0
   },
   cardDesc: {
     ...TYPE.body,
@@ -536,18 +400,13 @@ const styles = StyleSheet.create({
   ctaRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between"
+    gap: 8,
+    minHeight: 32
   },
   ctaText: {
     ...TYPE.bodyBold,
-    fontSize: 13
-  },
-  ctaArrow: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center"
+    fontSize: 14,
+    color: COLORS.accent
   }
 });
 export {
