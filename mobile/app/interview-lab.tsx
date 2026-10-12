@@ -291,9 +291,6 @@ export default function InterviewLabScreen() {
   );
 }
 
-function PathCard({ icon, title, subtitle, color, onPress }: { icon: keyof typeof Feather.glyphMap; title: string; subtitle: string; color: string; onPress: () => void }) {
-  return <TouchableOpacity onPress={onPress} style={styles.pathCard}><View style={[styles.pathIcon, { backgroundColor: `${color}16` }]}><Feather name={icon} size={24} color={color} /></View><View style={{ flex: 1 }}><Text style={styles.pathTitle}>{title}</Text><Text style={styles.pathSubtitle}>{subtitle}</Text></View><Feather name="arrow-right" size={20} color={COLORS.textMuted} /></TouchableOpacity>;
-}
 function Coach({ text, onSpeak, speaking }: { text: string; onSpeak?: () => void; speaking?: boolean }) { return <View style={styles.coach}><Image source={LEO} style={styles.coachAvatar} resizeMode="contain" /><Text style={styles.coachText}>{text}</Text>{onSpeak && <TouchableOpacity onPress={onSpeak}><Feather name={speaking ? 'volume-2' : 'volume-1'} size={18} color={COLORS.accent} /></TouchableOpacity>}</View>; }
 function Action({ label, color, onPress, disabled }: { label: string; color: string; onPress: () => void; disabled?: boolean }) { return <TouchableOpacity disabled={disabled} onPress={onPress} style={[styles.action, { backgroundColor: color }, disabled && styles.disabled]}><Text style={styles.actionText}>{label}</Text><Feather name="arrow-right" size={18} color={COLORS.bg0} /></TouchableOpacity>; }
 function Debrief({ icon, title, body, color }: { icon: keyof typeof Feather.glyphMap; title: string; body: string; color: string }) { return <View style={styles.debrief}><Feather name={icon} size={19} color={color} /><View style={{ flex: 1 }}><Text style={[styles.debriefTitle, { color }]}>{title}</Text><Text style={styles.debriefBody}>{body || 'No note this round.'}</Text></View></View>; }
