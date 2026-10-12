@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Animated,
   ActivityIndicator,
+  Image,
   Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
@@ -34,6 +35,7 @@ interface CardData {
   icon: keyof typeof Feather.glyphMap;
   path: string;
   isPro?: boolean;
+  hero?: number;
 }
 
 const ACTIVITY_CARDS: CardData[] = [
@@ -43,6 +45,7 @@ const ACTIVITY_CARDS: CardData[] = [
     description: 'Quick questions on what you studied.',
     icon: 'zap',
     path: '/arena',
+    hero: require('../../assets/cards/daily-arena-hero.jpg'),
   },
   {
     id: 'deep-case',
@@ -50,6 +53,7 @@ const ACTIVITY_CARDS: CardData[] = [
     description: 'A real situation. What would you do?',
     icon: 'briefcase',
     path: '/deep-case',
+    hero: require('../../assets/cards/deep-case-hero.jpg'),
   },
 ];
 
@@ -60,6 +64,7 @@ const LAB_CARDS: CardData[] = [
     description: 'Answer a question. Get useful feedback.',
     icon: 'mic',
     path: '/interview-lab',
+    hero: require('../../assets/illustrations/interview-lab-hero.png'),
   },
   {
     id: 'investment',
