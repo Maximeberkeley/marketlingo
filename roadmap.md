@@ -1,9 +1,10 @@
 # MarketLingo roadmap
 
 ## Oct 12 — Last polish
-- [ ] Keep credited Home completion checked and coloured; show Today's done inline under the ring and use real lesson titles.
-- [ ] Compact Practice cards to icon/title/one-line/Start, remove repeated labels, simplify quiz intro, and make Log out plain grey text.
-- [ ] Synchronize phone TSX/JS pairs and run focused regression checks.
+- [x] Keep credited Home completion checked and coloured; show Today's done inline under the ring and use real lesson titles.
+- [x] Compact Practice cards to icon/title/one-line/Start, remove repeated labels, simplify quiz intro, and make Log out plain grey text.
+- [x] Synchronize five phone TSX/JS pairs; simulated completed/unfinished rings, catch-up title/day, inline notice, compact card, quiz intro and logout checks passed; build 133.
+- [ ] Verify these layouts and completion return on an actual iPhone (blocked: no iOS device/simulator; requires TestFlight build 133).
 
 ## Merged card list fixes
 - [x] Restrict rows to unquoted first sentences and keep subsequent copy regular body text.
