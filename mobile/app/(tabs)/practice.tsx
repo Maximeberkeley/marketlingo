@@ -433,6 +433,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
+  /* Illustration band at the top of the card */
+  cardHero: {
+    width: '100%',
+    height: 140,
+    backgroundColor: '#F3EEFA',
+  },
   /* Content panel */
   contentPanel: {
     padding: 18,
