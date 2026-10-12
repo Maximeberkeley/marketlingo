@@ -114,7 +114,7 @@ export function LeoInterstitial({ type, progress, slideTitle, customMessage }: L
       </View>
 
       {/* Message */}
-      <SpeechBubble text={message} tail="top-center" tone="purple" style={styles.messageBubble} textStyle={[styles.message, { color: accent }]} />
+      <SpeechBubble text={message} tail="top-center" showLabel style={styles.messageBubble} />
 
       {/* Progress indicator */}
       <View style={styles.progressContainer}>

@@ -248,7 +248,7 @@ export default function FamiliarityScreen() {
         {/* Leo reaction bubble */}
         {selectedLevel && (
           <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}>
-            <SpeechBubble text={LEO_LEVEL_REACTIONS[selectedLevel]} tail="bottom-center" compact style={styles.reactionBalloon} textStyle={styles.reactionText} />
+            <SpeechBubble text={LEO_LEVEL_REACTIONS[selectedLevel]} tail="bottom-center" showLabel style={styles.reactionBalloon} />
             <Image source={require('../../assets/mascot/leo-reference.png')} style={{ width: 40, height: 40, resizeMode: 'contain' }} />
           </Animated.View>
         )}

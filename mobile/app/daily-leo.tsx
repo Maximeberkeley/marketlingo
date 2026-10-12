@@ -126,7 +126,7 @@ export default function DailyLeoScreen() {
       </View>
 
       <View style={styles.scene}>
-        <SpeechBubble text={content.line} tail="bottom-center" tone="purple" style={styles.bubble} />
+        <SpeechBubble text={content.line} tail="bottom-center" showLabel style={styles.bubble} />
         <View style={styles.leoWrap}><LeoCharacter size="xl" animation={content.mood} still /></View>
       </View>
 

@@ -43,7 +43,7 @@ export function LeoBubble({ message, animation }: LeoBubbleProps) {
       <Animated.View style={[styles.glow, { opacity: glowPulse }]} />
 
       <Animated.View style={[styles.bubbleWrap, { opacity: bubbleOpacity, transform: [{ scale: bubbleScale }] }]}> 
-        <SpeechBubble text={message} tail="bottom-center" tone="purple" textStyle={styles.bubbleText} />
+        <SpeechBubble text={message} tail="bottom-center" showLabel />
       </Animated.View>
 
       <Animated.View style={[styles.leoWrap, { transform: [{ scale: leoScale }] }]}>
