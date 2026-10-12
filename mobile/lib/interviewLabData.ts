@@ -166,7 +166,7 @@ export function dbToBigBoss(row: any): BigBossQuestion {
 // consulting cases or mental math; these fill the gap until the question table
 // carries enough rows for the track.
 export type TrackKey = 'technical' | 'behavioral';
-export const TRACK_MOCKS: Record<string, Partial<Record<TrackKey, MockPrompt[]>>> = {
+export const TRACK_MOCKS: Record<string, Partial<Record<TrackKey, Omit<MockPrompt, 'sampleAnswer'>[]>>> = {
   aerospace: {
     technical: [
       { id: 'aero-tech-1', scenario: 'Your team is adding a new software feature to a flight control computer.', question: 'How would you show the certification authority that this software is safe to fly?', buzzwords: ['design assurance level', 'requirements traceability', 'verification', 'structural coverage', 'certification plan'] },
@@ -194,5 +194,5 @@ export const TRACK_MOCKS: Record<string, Partial<Record<TrackKey, MockPrompt[]>>
 /** On-device mocks for a market and role track ('case' and role-neutral use the question table). */
 export function trackMocks(marketId: string | null | undefined, track: string | null | undefined): MockPrompt[] {
   if (!marketId || (track !== 'technical' && track !== 'behavioral')) return [];
-  return TRACK_MOCKS[marketId]?.[track] || [];
+  return (TRACK_MOCKS[marketId]?.[track] || []).map(m => ({ ...m, sampleAnswer: '' }));
 }
