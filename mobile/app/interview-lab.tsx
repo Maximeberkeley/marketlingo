@@ -86,9 +86,15 @@ export default function InterviewLabScreen() {
     used.add(pick);
     return pick;
   };
-  // Technical and behavioral roles use their own bank first; never consulting cases for a technical role.
+  // Technical and behavioral roles use their own bank first; never consulting cases or
+  // mental math unless the role is genuinely a case track. No saved target = join_industry
+  // default: technical + behavioral bank.
   const mockPool = useMemo(() => {
     if (path !== 'consulting') return questions.mockQuestions;
+    if (track === null) {
+      const bank = [...trackMocks(marketId, 'technical'), ...trackMocks(marketId, 'behavioral')];
+      return bank.length ? bank : questions.mockQuestions;
+    }
     const bank = trackMocks(marketId, track);
     if (track === 'technical') {
       const fit = questions.mockQuestions.filter(m => /certif|technical|system|standard|regulat|engineer|architect|safety|spec/i.test(`${m.scenario} ${m.question}`));
@@ -96,7 +102,7 @@ export default function InterviewLabScreen() {
     }
     return bank.length ? bank : questions.mockQuestions;
   }, [path, track, marketId, questions.mockQuestions]);
-  const allowMath = path === 'consulting' && (track === 'case' || track === null);
+  const allowMath = path === 'consulting' && track === 'case';
   const pressurePoolSize = allowMath && questions.mentalMathQuestions.length ? questions.mentalMathQuestions.length : questions.mcqQuestions.length;
   const rollQuestions = useCallback(() => {
     setMockIdx(pickUnused(mockPool.length, usedMock.current));
@@ -104,7 +110,12 @@ export default function InterviewLabScreen() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mockPool, pressurePoolSize]);
   useEffect(() => { usedMock.current.clear(); usedPressure.current.clear(); rollQuestions(); }, [rollQuestions, path]);
-  const mock = mockPool[mockIdx] || mockPool[0];
+  const poolMock = mockPool[mockIdx] || mockPool[0];
+  // The question shown on the home card is the question that opens on tap — locked at start.
+  const [lockedMock, setLockedMock] = useState<typeof poolMock | null>(null);
+  const mock = lockedMock || poolMock;
+  // Steps count from the stage the run actually started on (direct starts skip Brief/Frame).
+  const [startStage, setStartStage] = useState<Stage>('brief');
   const pressure = useMemo(() => {
     if (allowMath && questions.mentalMathQuestions.length) return questions.mentalMathQuestions[pressureIdx % questions.mentalMathQuestions.length];
     return questions.mcqQuestions.length ? questions.mcqQuestions[pressureIdx % questions.mcqQuestions.length] : undefined;
