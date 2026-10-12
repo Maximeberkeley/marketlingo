@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Animated,
   ActivityIndicator,
+  Image,
   Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
@@ -34,6 +35,7 @@ interface CardData {
   icon: keyof typeof Feather.glyphMap;
   path: string;
   isPro?: boolean;
+  hero?: number;
 }
 
 const ACTIVITY_CARDS: CardData[] = [
@@ -43,6 +45,7 @@ const ACTIVITY_CARDS: CardData[] = [
     description: 'Quick questions on what you studied.',
     icon: 'zap',
     path: '/arena',
+    hero: require('../../assets/cards/daily-arena-hero.jpg'),
   },
   {
     id: 'deep-case',
@@ -50,6 +53,7 @@ const ACTIVITY_CARDS: CardData[] = [
     description: 'A real situation. What would you do?',
     icon: 'briefcase',
     path: '/deep-case',
+    hero: require('../../assets/cards/deep-case-hero.jpg'),
   },
 ];
 
@@ -60,6 +64,7 @@ const LAB_CARDS: CardData[] = [
     description: 'Answer a question. Get useful feedback.',
     icon: 'mic',
     path: '/interview-lab',
+    hero: require('../../assets/illustrations/interview-lab-hero.png'),
   },
   {
     id: 'investment',
@@ -165,6 +170,14 @@ function PremiumCard({ card, index }: { card: CardData; index: number }) {
 
   const cardContent = (
     <View style={styles.cardInner}>
+      {card.hero ? (
+        <Image
+          source={card.hero}
+          style={styles.cardHero}
+          resizeMode="contain"
+          pointerEvents="none"
+        />
+      ) : null}
       <View style={styles.contentPanel}>
         <View style={styles.metaRow}>
           <View style={styles.iconPill}>
@@ -419,6 +432,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: COLORS.border,
+  },
+  /* Illustration band at the top of the card */
+  cardHero: {
+    width: '100%',
+    height: 140,
+    backgroundColor: '#F3EEFA',
   },
   /* Content panel */
   contentPanel: {

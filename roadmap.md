@@ -208,3 +208,6 @@
 - [x] Under 14 days: day-by-day sprint plan ending with a full mock
 - [x] No date: weekly stay-ready check
 - [x] Role-aware questions (Tech Lead / Recruiter / Consultant)
+
+## Oct 12 — Practice card illustrations
+- [x] Daily quiz / Case / Interview practice cards show their Leo illustration at the top: height 140, lavender #F3EEFA, resizeMode contain, no overlay. Icon, title, one line and Start unchanged.

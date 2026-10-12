@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Animated,
   ActivityIndicator,
+  Image,
   Dimensions
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
@@ -29,14 +30,16 @@ const ACTIVITY_CARDS = [
     title: "Daily quiz",
     description: "Quick questions on what you studied.",
     icon: "zap",
-    path: "/arena"
+    path: "/arena",
+    hero: require("../../assets/cards/daily-arena-hero.jpg")
   },
   {
     id: "deep-case",
     title: "Case",
     description: "A real situation. What would you do?",
     icon: "briefcase",
-    path: "/deep-case"
+    path: "/deep-case",
+    hero: require("../../assets/cards/deep-case-hero.jpg")
   }
 ];
 const LAB_CARDS = [
@@ -45,7 +48,8 @@ const LAB_CARDS = [
     title: "Interview practice",
     description: "Answer a question. Get useful feedback.",
     icon: "mic",
-    path: "/interview-lab"
+    path: "/interview-lab",
+    hero: require("../../assets/illustrations/interview-lab-hero.png")
   },
   {
     id: "investment",
@@ -140,6 +144,12 @@ function PremiumCard({ card, index }) {
     router.push(card.path);
   };
   const cardContent = <View style={styles.cardInner}>
+      {card.hero ? <Image
+    source={card.hero}
+    style={styles.cardHero}
+    resizeMode="contain"
+    pointerEvents="none"
+  /> : null}
       <View style={styles.contentPanel}>
         <View style={styles.metaRow}>
           <View style={styles.iconPill}>
@@ -365,6 +375,12 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderWidth: 1,
     borderColor: COLORS.border
+  },
+  /* Illustration band at the top of the card */
+  cardHero: {
+    width: "100%",
+    height: 140,
+    backgroundColor: "#F3EEFA"
   },
   /* Content panel */
   contentPanel: {
