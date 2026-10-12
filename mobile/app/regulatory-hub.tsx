@@ -198,7 +198,7 @@ const REGULATORY_DATA: Record<string, MarketRegulatoryData> = {
 
 const DEFAULT_REGULATORY: MarketRegulatoryData = {
   marketName: 'Your Industry',
-  mentorTip: 'Understanding the regulatory landscape is a founder superpower. Knowing the rules lets you build faster and fundraise more credibly.',
+  mentorTip: 'Understanding the regulatory landscape helps founders. Knowing the rules lets you build faster and fundraise more credibly.',
   bodies: [
     { title: 'Federal Agencies', description: 'Industry-specific federal regulators set product standards and market access rules.' },
     { title: 'State Regulators', description: 'State-level permits, licenses, and compliance vary significantly by geography.' },

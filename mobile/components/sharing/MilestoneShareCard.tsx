@@ -39,7 +39,7 @@ const milestoneConfig: Record<MilestoneType, {
     color: '#F97316',
     bgColor: 'rgba(249, 115, 22, 0.15)',
     getTitle: (v) => `${v}-Day Streak!`,
-    getSubtitle: () => 'Consistency is the ultimate superpower',
+    getSubtitle: () => 'Days in a row',
   },
   level_up: {
     emoji: '⚡',

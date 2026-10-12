@@ -20,7 +20,7 @@ const MESSAGES: Record<InterstitialType, string[]> = {
   encouragement: [
     "You're doing great! Keep going!",
     "Love the focus! You're learning fast.",
-    "This is your superpower building!",
+    "Another day done.",
     "Pro tip: try to explain this to someone later!",
   ],
   'fun-fact': [
