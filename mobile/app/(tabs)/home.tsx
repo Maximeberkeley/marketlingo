@@ -518,8 +518,8 @@ export default function HomeScreen() {
           slides={session.activeStack.slides}
           objectives={(session.activeStack as any).metadata?.learning_objectives}
           marketId={selectedMarket || undefined}
-          day={openedLessonDay ?? currentDay}
-          dayLabel={openedLessonDay && openedLessonDay < currentDay && !completedOnClockDay ? lessonDayLabel(openedLessonDay, currentDay, false) : undefined}
+          day={introDay}
+          dayLabel={introDay < currentDay && !completedOnClockDay ? lessonDayLabel(introDay, currentDay, false) : undefined}
           isBite={session.activeBiteIndex !== null}
           onStart={session.beginLesson}
           onBack={session.closeReader}
