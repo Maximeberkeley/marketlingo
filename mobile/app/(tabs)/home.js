@@ -246,11 +246,9 @@ function HomeScreen() {
     });
   }, [openStackId, selectedMarket, user, session.showReader]);
   const openingLesson = useRef(false);
-  const [openedLessonDay, setOpenedLessonDay] = useState(null);
   const openLessonById = useCallback(async (stackId, day) => {
     if (openingLesson.current) return;
     openingLesson.current = true;
-    setOpenedLessonDay(typeof day === "number" && day > 0 ? day : null);
     try {
       const { data: stack } = await supabase.from("stacks").select("id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)").eq("id", stackId).not("published_at", "is", null).single();
       if (stack && stack.slides?.length > 0) {
@@ -304,6 +302,7 @@ function HomeScreen() {
     void refreshStreakData.current.refetchProgress();
   }, [clockDay]);
   const streakCountdown = streakCountdownLabel(streak, completedOnClockDay, clockNow);
+  const introDay = stackDayNumber(session.activeStack) ?? currentDay;
   const { quests, completedCount, totalBonusXP, allComplete } = useDailyQuests(dailyCompletion, streak);
   useQuestRewards(quests, selectedMarketLocal || selectedMarket, addXP);
   const { displayName } = useDisplayName();
@@ -326,7 +325,6 @@ function HomeScreen() {
     if (lessonCompletedToday) return;
     const openLesson = () => {
       if (lessonStack) {
-        setOpenedLessonDay(null);
         session.handleOpenStack(lessonStack);
       }
     };
@@ -406,7 +404,6 @@ function HomeScreen() {
       onStart: () => {
         returnVisit.dismiss();
         if (lessonCompletedToday || !lessonStack) return;
-        setOpenedLessonDay(null);
         session.handleOpenStack(lessonStack);
       },
       lessonDone: lessonCompletedToday
@@ -434,8 +431,8 @@ function HomeScreen() {
       slides: session.activeStack.slides,
       objectives: session.activeStack.metadata?.learning_objectives,
       marketId: selectedMarket || void 0,
-      day: openedLessonDay ?? currentDay,
-      dayLabel: openedLessonDay && openedLessonDay < currentDay && !completedOnClockDay ? lessonDayLabel(openedLessonDay, currentDay, false) : void 0,
+      day: introDay,
+      dayLabel: introDay < currentDay && !completedOnClockDay ? lessonDayLabel(introDay, currentDay, false) : void 0,
       isBite: session.activeBiteIndex !== null,
       onStart: session.beginLesson,
       onBack: session.closeReader

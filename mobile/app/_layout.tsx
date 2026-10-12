@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -37,6 +38,11 @@ function resolveRoute(data: Record<string, any>): string | null {
 
 export default function RootLayout() {
   const notificationResponseListener = useRef<{ remove: () => void } | null>(null);
+
+  // Retired Practice-shortcuts preference: clear it once on app start so it does not linger.
+  useEffect(() => {
+    AsyncStorage.multiRemove(['@marketlingo/practice_shortcuts', '@marketlingo/practice_shortcuts_v2']).catch(() => {});
+  }, []);
 
   // Load the native notifications bridge only after the first screen can mount.
   // A stale native archive must never be able to terminate the app at startup.

@@ -3,7 +3,6 @@ import {
   View,
   Text,
   ScrollView,
-  Pressable,
   TouchableOpacity,
   StyleSheet,
   Animated,
@@ -23,7 +22,6 @@ import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { getMarketName } from '../../lib/markets';
-import { ShortcutRow, ShortcutGallery, useShortcuts } from '../../components/practice/ShortcutIslands';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - 40; // Full width with 20px padding each side
@@ -220,9 +218,6 @@ export default function PracticeScreen() {
   const [goal, setGoal] = useState<string | null>(null);
   const studied = useStudiedLessons(selectedMarket || undefined);
   const headerAnim = useRef(new Animated.Value(0)).current;
-  const shortcuts = useShortcuts();
-  const [editing, setEditing] = useState(false);
-  const [galleryOpen, setGalleryOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -268,9 +263,7 @@ export default function PracticeScreen() {
           paddingBottom: insets.bottom + 100,
         }}
         showsVerticalScrollIndicator={false}
-        onScrollBeginDrag={() => setEditing(false)}
       >
-        <Pressable onPress={() => setEditing(false)}>
         {/* Header */}
         <Animated.View
           style={[
@@ -299,8 +292,6 @@ export default function PracticeScreen() {
           </View>
         </Animated.View>
 
-        <ShortcutRow ids={shortcuts.ids} editing={editing} setEditing={setEditing} onRemove={shortcuts.remove} onAdd={() => { setEditing(false); setGalleryOpen(true); }} />
-
         <View style={styles.groundedBand}>
           <View style={styles.groundedIcon}>
             <Feather name={studied.lessons.length > 0 ? 'check-circle' : 'book-open'} size={18} color={studied.lessons.length > 0 ? COLORS.success : COLORS.accent} />
@@ -327,15 +318,7 @@ export default function PracticeScreen() {
         {/* Labs */}
         <PremiumCarousel cards={LAB_CARDS.filter(card => card.id !== 'investment' || goal === 'invest')} title="More practice" />
 
-        </Pressable>
       </ScrollView>
-      <ShortcutGallery
-        visible={galleryOpen}
-        ids={shortcuts.ids}
-        onAdd={shortcuts.add}
-        onRemove={shortcuts.remove}
-        onClose={() => setGalleryOpen(false)}
-      />
     </View>
   );
 }
@@ -347,7 +330,6 @@ const styles = StyleSheet.create({
 
   /* Header */
   header: { paddingHorizontal: 20, marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  addBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
   headerTitle: {
     ...TYPE.hero,
     fontSize: 32,

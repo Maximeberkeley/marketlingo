@@ -74,7 +74,7 @@ export default function LeoCallScreen() {
     ? (latestLesson.slides[latestLesson.slides.length - 1]?.body || '').replace(/\s+/g, ' ').trim().slice(0, 400) || undefined
     : undefined;
   const { user } = useAuth();
-  const { progress } = useUserProgress(marketId);
+  const { progress, loading: progressLoading } = useUserProgress(marketId);
   const goal = (progress as { learning_goal?: string } | null)?.learning_goal ?? null;
   const level = (progress as { familiarity_level?: string } | null)?.familiarity_level ?? null;
   const dossier = useDeliverable(marketId, goal);
@@ -142,8 +142,8 @@ export default function LeoCallScreen() {
 
   // Setup: daily limit, call type, target.
   useEffect(() => {
-    // Wait for market, Brief and latest lesson so Leo's first turn has real context.
-    if (!user || !marketId || dossier.loading || (!params.lessonTitle && studied.isLoading)) return;
+    // Wait for market, progress (goal/level), Brief and latest lesson so Leo's first turn has real context.
+    if (!user || !marketId || progressLoading || dossier.loading || (!params.lessonTitle && studied.isLoading)) return;
     let cancelled = false;
     (async () => {
       const [called, rotated, savedTarget, isMuted] = await Promise.all([
@@ -165,7 +165,7 @@ export default function LeoCallScreen() {
       Audio.requestPermissionsAsync().catch(() => {});
     })();
     return () => { cancelled = true; };
-  }, [user, dossier.loading, marketId, params.mode, params.lessonTitle, studied.isLoading]);
+  }, [user, dossier.loading, marketId, params.mode, params.lessonTitle, studied.isLoading, progressLoading]);
 
   // Timer.
   useEffect(() => {

@@ -292,11 +292,9 @@ export default function HomeScreen() {
   // Direct lesson open for the Course circle. Route params could keep a stale
   // lesson id after a detour (streak rescue), which made later taps no-ops.
   const openingLesson = useRef(false);
-  const [openedLessonDay, setOpenedLessonDay] = useState<number | null>(null);
   const openLessonById = useCallback(async (stackId: string, day?: number) => {
     if (openingLesson.current) return;
     openingLesson.current = true;
-    setOpenedLessonDay(typeof day === 'number' && day > 0 ? day : null);
     try {
       const { data: stack } = await supabase
         .from('stacks')
@@ -362,6 +360,8 @@ export default function HomeScreen() {
     void refreshStreakData.current.refetchProgress();
   }, [clockDay]);
   const streakCountdown = streakCountdownLabel(streak, completedOnClockDay, clockNow);
+  // The lesson intro always shows the lesson's own day, never the calendar tap day.
+  const introDay = stackDayNumber(session.activeStack) ?? currentDay;
 
   // Calculate if we're in the critical 2-hour window
   // Daily quests
@@ -397,7 +397,7 @@ export default function HomeScreen() {
     if (lessonCompletedToday) return;
 
     const openLesson = () => {
-      if (lessonStack) { setOpenedLessonDay(null); session.handleOpenStack(lessonStack); }
+      if (lessonStack) { session.handleOpenStack(lessonStack); }
     };
     const timedWindow = currentLeoNudgeWindow();
     const timedTimer = timedWindow ? setTimeout(() => {
@@ -492,7 +492,6 @@ export default function HomeScreen() {
         onStart={() => {
           returnVisit.dismiss();
           if (lessonCompletedToday || !lessonStack) return;
-          setOpenedLessonDay(null);
           session.handleOpenStack(lessonStack);
         }}
         lessonDone={lessonCompletedToday}
@@ -519,8 +518,8 @@ export default function HomeScreen() {
           slides={session.activeStack.slides}
           objectives={(session.activeStack as any).metadata?.learning_objectives}
           marketId={selectedMarket || undefined}
-          day={openedLessonDay ?? currentDay}
-          dayLabel={openedLessonDay && openedLessonDay < currentDay && !completedOnClockDay ? lessonDayLabel(openedLessonDay, currentDay, false) : undefined}
+          day={introDay}
+          dayLabel={introDay < currentDay && !completedOnClockDay ? lessonDayLabel(introDay, currentDay, false) : undefined}
           isBite={session.activeBiteIndex !== null}
           onStart={session.beginLesson}
           onBack={session.closeReader}

@@ -272,6 +272,36 @@ export default function ProfileScreen() {
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity
+            style={styles.menuItem}
+            activeOpacity={0.88}
+            onPress={() => { triggerHaptic('light'); router.push('/leaderboard' as any); }}
+          >
+            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
+              <Feather name="award" size={18} color={COLORS.accent} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>League</Text>
+              <Text style={styles.menuSubtitle}>Your rank this month</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            activeOpacity={0.88}
+            onPress={() => { triggerHaptic('light'); router.push('/friends' as any); }}
+          >
+            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
+              <Feather name="users" size={18} color={COLORS.accent} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Friends</Text>
+              <Text style={styles.menuSubtitle}>Add friends and compare streaks</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.menuItem} onPress={() => setShowGoalPicker(true)}>
             <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
               <Feather name={GOAL_OPTIONS.find(g => g.id === currentGoal)?.icon || 'target'} size={18} color={COLORS.accent} />
