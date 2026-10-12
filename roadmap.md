@@ -231,3 +231,10 @@
 
 ## Oct 12 — Practice card illustrations
 - [x] Daily quiz / Case / Interview practice cards show their Leo illustration at the top: height 140, lavender #F3EEFA, resizeMode contain, no overlay. Icon, title, one line and Start unchanged.
+
+## Oct 12 — Shortcuts, Leo call context, intro day, welcome back
+- [x] Shortcuts redesigned: glass gradient tiles in a framed "Shortcuts" panel, labelled Add tile, Edit/Done, list-style picker; no duplicates of Practice cards; starts with Call Leo, League, Brief
+- [x] Call Leo from a shortcut uses the learner's market, latest studied lesson, Brief, goal and level
+- [x] Lesson intro shows the lesson's own day ("Catch up: Day 1")
+- [x] iPhone SE: compact intro so Leo stays above Start
+- [x] Welcome back: "Start today's lesson" opens the lesson; XP line reads "N XP to Level L+1"

@@ -297,17 +297,9 @@ export default function PracticeScreen() {
               </View>
             )}
           </View>
-          <TouchableOpacity
-            style={styles.addBtn}
-            accessibilityLabel="Add shortcut"
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            onPress={() => { triggerHaptic('light'); setEditing(false); setGalleryOpen(true); }}
-          >
-            <Feather name="plus" size={20} color={COLORS.accent} />
-          </TouchableOpacity>
         </Animated.View>
 
-        <ShortcutRow ids={shortcuts.ids} editing={editing} setEditing={setEditing} onRemove={shortcuts.remove} />
+        <ShortcutRow ids={shortcuts.ids} editing={editing} setEditing={setEditing} onRemove={shortcuts.remove} onAdd={() => { setEditing(false); setGalleryOpen(true); }} />
 
         <View style={styles.groundedBand}>
           <View style={styles.groundedIcon}>
@@ -341,6 +333,7 @@ export default function PracticeScreen() {
         visible={galleryOpen}
         ids={shortcuts.ids}
         onAdd={shortcuts.add}
+        onRemove={shortcuts.remove}
         onClose={() => setGalleryOpen(false)}
       />
     </View>

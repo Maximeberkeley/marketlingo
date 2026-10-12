@@ -60,6 +60,7 @@ import { useLeague, TIER_META } from '../../hooks/useLeague';
 import { useWeeklyRecap } from '../../hooks/useWeeklyRecap';
 import { useCollectibles, CollectibleCard } from '../../hooks/useCollectibles';
 import { CardRevealModal } from '../../components/collectibles/CardRevealModal';
+import { lessonDayLabel } from '../../lib/lessonIdentity';
 import { LessonGoalsScreen } from '../../components/home/LessonGoalsScreen';
 import { SpeechBubble } from '../../components/ui/SpeechBubble';
 import { InsiderIdentityCard } from '../../components/home/InsiderIdentityCard';
@@ -291,9 +292,11 @@ export default function HomeScreen() {
   // Direct lesson open for the Course circle. Route params could keep a stale
   // lesson id after a detour (streak rescue), which made later taps no-ops.
   const openingLesson = useRef(false);
-  const openLessonById = useCallback(async (stackId: string) => {
+  const [openedLessonDay, setOpenedLessonDay] = useState<number | null>(null);
+  const openLessonById = useCallback(async (stackId: string, day?: number) => {
     if (openingLesson.current) return;
     openingLesson.current = true;
+    setOpenedLessonDay(typeof day === 'number' && day > 0 ? day : null);
     try {
       const { data: stack } = await supabase
         .from('stacks')
@@ -394,7 +397,7 @@ export default function HomeScreen() {
     if (lessonCompletedToday) return;
 
     const openLesson = () => {
-      if (lessonStack) session.handleOpenStack(lessonStack);
+      if (lessonStack) { setOpenedLessonDay(null); session.handleOpenStack(lessonStack); }
     };
     const timedWindow = currentLeoNudgeWindow();
     const timedTimer = timedWindow ? setTimeout(() => {
@@ -486,6 +489,13 @@ export default function HomeScreen() {
         marketId={selectedMarket || 'aerospace'}
         marketName={getMarketName(selectedMarket || 'aerospace')}
         onClose={returnVisit.dismiss}
+        onStart={() => {
+          returnVisit.dismiss();
+          if (lessonCompletedToday || !lessonStack) return;
+          setOpenedLessonDay(null);
+          session.handleOpenStack(lessonStack);
+        }}
+        lessonDone={lessonCompletedToday}
       />
       <LeoStreakGift
         marketId={selectedMarketLocal || selectedMarket}
@@ -509,7 +519,8 @@ export default function HomeScreen() {
           slides={session.activeStack.slides}
           objectives={(session.activeStack as any).metadata?.learning_objectives}
           marketId={selectedMarket || undefined}
-          day={currentDay}
+          day={openedLessonDay ?? currentDay}
+          dayLabel={openedLessonDay && openedLessonDay < currentDay && !completedOnClockDay ? lessonDayLabel(openedLessonDay, currentDay, false) : undefined}
           isBite={session.activeBiteIndex !== null}
           onStart={session.beginLesson}
           onBack={session.closeReader}
@@ -586,7 +597,7 @@ export default function HomeScreen() {
           rescueAvailable={Boolean(streakCountdown)}
           streakCountdown={streakCountdown}
           safeTop={insets.top}
-          onOpenLesson={(stackId) => { void openLessonById(stackId); }}
+          onOpenLesson={(stackId, day) => { void openLessonById(stackId, day); }}
           onAskLeo={() => setShowLeoChat(true)}
           belowToday={deliverable.loading ? null : (
             <TouchableOpacity

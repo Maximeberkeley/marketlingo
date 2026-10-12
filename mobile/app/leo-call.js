@@ -30,6 +30,8 @@ import { trackEvent } from "../lib/analytics";
 import { useUserProgress } from "../hooks/useUserProgress";
 import { useDeliverable } from "../hooks/useDeliverable";
 import { useUserXP } from "../hooks/useUserXP";
+import { useSelectedMarket } from "../hooks/useSelectedMarket";
+import { useStudiedLessons } from "../hooks/useStudiedLessons";
 import { loadInterviewTarget } from "../lib/interviewPrep";
 import { getMarketName } from "../lib/markets";
 import {
@@ -72,7 +74,11 @@ const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 function LeoCallScreen() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
-  const marketId = params.marketId ? String(params.marketId) : void 0;
+  const selected = useSelectedMarket();
+  const marketId = params.marketId ? String(params.marketId) : selected.loading ? void 0 : selected.marketId;
+  const studied = useStudiedLessons(params.lessonTitle ? void 0 : marketId);
+  const latestLesson = params.lessonTitle ? null : studied.lessons[0] ?? null;
+  const fallbackTakeaway = latestLesson ? (latestLesson.slides[latestLesson.slides.length - 1]?.body || "").replace(/\s+/g, " ").trim().slice(0, 400) || void 0 : void 0;
   const { user } = useAuth();
   const { progress } = useUserProgress(marketId);
   const goal = progress?.learning_goal ?? null;
@@ -109,8 +115,8 @@ function LeoCallScreen() {
   const muted = useRef(false);
   const context = useMemo(() => ({
     callType,
-    lessonTitle: params.lessonTitle ? String(params.lessonTitle) : void 0,
-    takeaway: params.takeaway ? String(params.takeaway) : void 0,
+    lessonTitle: params.lessonTitle ? String(params.lessonTitle) : latestLesson?.title || void 0,
+    takeaway: params.takeaway ? String(params.takeaway) : fallbackTakeaway,
     goal,
     level,
     industry: marketId ? getMarketName(marketId) : void 0,
@@ -120,7 +126,7 @@ function LeoCallScreen() {
       text: e.content
     })),
     briefSections: dossier.template.sections.map((s) => ({ key: s.key, title: s.title }))
-  }), [callType, params.lessonTitle, params.takeaway, goal, level, marketId, target, dossier.entries, dossier.template]);
+  }), [callType, params.lessonTitle, params.takeaway, latestLesson, fallbackTakeaway, goal, level, marketId, target, dossier.entries, dossier.template]);
   const contextRef = useRef(context);
   contextRef.current = context;
   const learnerTurns = messages.filter((m) => m.role === "user").length;
@@ -135,7 +141,7 @@ function LeoCallScreen() {
     });
   }, [fade]);
   useEffect(() => {
-    if (!user || dossier.loading) return;
+    if (!user || !marketId || dossier.loading || !params.lessonTitle && studied.isLoading) return;
     let cancelled = false;
     (async () => {
       const [called, rotated, savedTarget, isMuted] = await Promise.all([
@@ -163,7 +169,7 @@ function LeoCallScreen() {
     return () => {
       cancelled = true;
     };
-  }, [user, dossier.loading, marketId, params.mode]);
+  }, [user, dossier.loading, marketId, params.mode, params.lessonTitle, studied.isLoading]);
   useEffect(() => {
     if (phase !== "live") return;
     const id = setInterval(() => setElapsed((s) => s + 1), 1e3);

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -76,50 +76,36 @@ function PremiumCarousel({ cards, title }) {
     scrollRef.current?.scrollTo({ x: idx * SNAP_WIDTH, animated: true });
     setCurrentIndex(idx);
   }, []);
-  return <View style={styles.carouselWrap}>
+  return /* @__PURE__ */ React.createElement(View, { style: styles.carouselWrap }, /* @__PURE__ */ React.createElement(View, { style: styles.sectionHeader }, /* @__PURE__ */ React.createElement(View, { style: styles.sectionTitleRow }, /* @__PURE__ */ React.createElement(View, { style: styles.sectionDot }), /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, title)), /* @__PURE__ */ React.createElement(View, { style: styles.pageIndicator }, cards.map((_, i) => /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      key: i,
+      onPress: () => scrollToIndex(i),
+      hitSlop: { top: 10, bottom: 10, left: 4, right: 4 }
+    },
+    /* @__PURE__ */ React.createElement(
+      Animated.View,
       {
-    /* Section header */
-  }
-      <View style={styles.sectionHeader}>
-        <View style={styles.sectionTitleRow}>
-          <View style={styles.sectionDot} />
-          <Text style={styles.sectionTitle}>{title}</Text>
-        </View>
-        {
-    /* Pill-style page indicator */
-  }
-        <View style={styles.pageIndicator}>
-          {cards.map((_, i) => <TouchableOpacity
-    key={i}
-    onPress={() => scrollToIndex(i)}
-    hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}
-  >
-              <Animated.View
-    style={[
-      styles.indicatorDot,
-      i === currentIndex && styles.indicatorDotActive
-    ]}
-  />
-            </TouchableOpacity>)}
-        </View>
-      </View>
-
-      {
-    /* Cards */
-  }
-      <ScrollView
-    ref={scrollRef}
-    horizontal
-    pagingEnabled={false}
-    showsHorizontalScrollIndicator={false}
-    snapToInterval={SNAP_WIDTH}
-    decelerationRate="fast"
-    contentContainerStyle={styles.scrollContent}
-    onMomentumScrollEnd={handleScroll}
-  >
-        {cards.map((card, index) => <PremiumCard key={card.id} card={card} index={index} />)}
-      </ScrollView>
-    </View>;
+        style: [
+          styles.indicatorDot,
+          i === currentIndex && styles.indicatorDotActive
+        ]
+      }
+    )
+  )))), /* @__PURE__ */ React.createElement(
+    ScrollView,
+    {
+      ref: scrollRef,
+      horizontal: true,
+      pagingEnabled: false,
+      showsHorizontalScrollIndicator: false,
+      snapToInterval: SNAP_WIDTH,
+      decelerationRate: "fast",
+      contentContainerStyle: styles.scrollContent,
+      onMomentumScrollEnd: handleScroll
+    },
+    cards.map((card, index) => /* @__PURE__ */ React.createElement(PremiumCard, { key: card.id, card, index }))
+  ));
 }
 function PremiumCard({ card, index }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -145,38 +131,26 @@ function PremiumCard({ card, index }) {
     });
     router.push(card.path);
   };
-  const cardContent = <View style={styles.cardInner}>
-      {card.hero ? <Image
-    source={card.hero}
-    style={styles.cardHero}
-    resizeMode="contain"
-    pointerEvents="none"
-  /> : null}
-      <View style={styles.contentPanel}>
-        <View style={styles.metaRow}>
-          <View style={styles.iconPill}>
-            <Feather name={card.icon} size={16} color={COLORS.accent} />
-          </View>
-          <Text style={styles.cardTitle}>{card.title}</Text>
-        </View>
-        <Text style={styles.cardDesc} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>{card.description}</Text>
-        <View style={styles.ctaRow}>
-          <Text style={styles.ctaText}>Start</Text>
-          <Feather name="arrow-right" size={16} color={COLORS.accent} />
-        </View>
-      </View>
-    </View>;
-  return <Animated.View style={[styles.cardOuter, { transform: [{ scale: scaleAnim }] }]}>
-      <TouchableOpacity
-    activeOpacity={0.92}
-    onPressIn={onPressIn}
-    onPressOut={onPressOut}
-    onPress={onPress}
-    style={styles.cardTouch}
-  >
-        {cardContent}
-      </TouchableOpacity>
-    </Animated.View>;
+  const cardContent = /* @__PURE__ */ React.createElement(View, { style: styles.cardInner }, card.hero ? /* @__PURE__ */ React.createElement(
+    Image,
+    {
+      source: card.hero,
+      style: styles.cardHero,
+      resizeMode: "contain",
+      pointerEvents: "none"
+    }
+  ) : null, /* @__PURE__ */ React.createElement(View, { style: styles.contentPanel }, /* @__PURE__ */ React.createElement(View, { style: styles.metaRow }, /* @__PURE__ */ React.createElement(View, { style: styles.iconPill }, /* @__PURE__ */ React.createElement(Feather, { name: card.icon, size: 16, color: COLORS.accent })), /* @__PURE__ */ React.createElement(Text, { style: styles.cardTitle }, card.title)), /* @__PURE__ */ React.createElement(Text, { style: styles.cardDesc, numberOfLines: 1, adjustsFontSizeToFit: true, minimumFontScale: 0.85 }, card.description), /* @__PURE__ */ React.createElement(View, { style: styles.ctaRow }, /* @__PURE__ */ React.createElement(Text, { style: styles.ctaText }, "Start"), /* @__PURE__ */ React.createElement(Feather, { name: "arrow-right", size: 16, color: COLORS.accent }))));
+  return /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.cardOuter, { transform: [{ scale: scaleAnim }] }] }, /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      activeOpacity: 0.92,
+      onPressIn,
+      onPressOut,
+      onPress,
+      style: styles.cardTouch
+    },
+    cardContent
+  ));
 }
 function PracticeScreen() {
   const insets = useSafeAreaInsets();
@@ -210,93 +184,51 @@ function PracticeScreen() {
     }
   }, [loading]);
   if (loading) {
-    return <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color={COLORS.accent} />
-      </View>;
+    return /* @__PURE__ */ React.createElement(View, { style: [styles.container, styles.centered] }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }));
   }
-  return <View style={styles.container}>
-      <ScrollView
-    contentContainerStyle={{
-      paddingTop: insets.top + 12,
-      paddingBottom: insets.bottom + 100
-    }}
-    showsVerticalScrollIndicator={false}
-    onScrollBeginDrag={() => setEditing(false)}
-  >
-        <Pressable onPress={() => setEditing(false)}>
-        {
-    /* Header */
-  }
-        <Animated.View
-    style={[
-      styles.header,
+  return /* @__PURE__ */ React.createElement(View, { style: styles.container }, /* @__PURE__ */ React.createElement(
+    ScrollView,
+    {
+      contentContainerStyle: {
+        paddingTop: insets.top + 12,
+        paddingBottom: insets.bottom + 100
+      },
+      showsVerticalScrollIndicator: false,
+      onScrollBeginDrag: () => setEditing(false)
+    },
+    /* @__PURE__ */ React.createElement(Pressable, { onPress: () => setEditing(false) }, /* @__PURE__ */ React.createElement(
+      Animated.View,
       {
-        opacity: headerAnim,
-        transform: [
+        style: [
+          styles.header,
           {
-            translateY: headerAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [20, 0]
-            })
+            opacity: headerAnim,
+            transform: [
+              {
+                translateY: headerAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [20, 0]
+                })
+              }
+            ]
           }
         ]
-      }
-    ]}
-  >
-          <View>
-            <Text style={styles.headerTitle}>Practice</Text>
-            {selectedMarket && <View style={styles.marketBadge}>
-                <View style={styles.marketDot} />
-                <Text style={styles.marketBadgeText}>{getMarketName(selectedMarket)}</Text>
-              </View>}
-          </View>
-          <TouchableOpacity
-    style={styles.addBtn}
-    accessibilityLabel="Add shortcut"
-    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-    onPress={() => {
-      triggerHaptic("light");
+      },
+      /* @__PURE__ */ React.createElement(View, null, /* @__PURE__ */ React.createElement(Text, { style: styles.headerTitle }, "Practice"), selectedMarket && /* @__PURE__ */ React.createElement(View, { style: styles.marketBadge }, /* @__PURE__ */ React.createElement(View, { style: styles.marketDot }), /* @__PURE__ */ React.createElement(Text, { style: styles.marketBadgeText }, getMarketName(selectedMarket))))
+    ), /* @__PURE__ */ React.createElement(ShortcutRow, { ids: shortcuts.ids, editing, setEditing, onRemove: shortcuts.remove, onAdd: () => {
       setEditing(false);
       setGalleryOpen(true);
-    }}
-  >
-            <Feather name="plus" size={20} color={COLORS.accent} />
-          </TouchableOpacity>
-        </Animated.View>
-
-        <ShortcutRow ids={shortcuts.ids} editing={editing} setEditing={setEditing} onRemove={shortcuts.remove} />
-
-        <View style={styles.groundedBand}>
-          <View style={styles.groundedIcon}>
-            <Feather name={studied.lessons.length > 0 ? "check-circle" : "book-open"} size={18} color={studied.lessons.length > 0 ? COLORS.success : COLORS.accent} />
-          </View>
-          <View style={styles.groundedCopy}>
-            <Text style={styles.groundedLabel}>BUILT FROM YOUR COURSE</Text>
-            <Text style={styles.groundedTitle} numberOfLines={2}>
-              {studied.isLoading ? "Finding the concepts you own\u2026" : studied.lessons.length > 0 ? `Practice ${studied.lessons[0].title}` : "Complete your first lesson to unlock practice"}
-            </Text>
-            {studied.lessons.length === 0 && !studied.isLoading && <Text style={styles.groundedBody}>
-                Arena and Deep Case stay locked until they can test something you actually studied.
-              </Text>}
-          </View>
-        </View>
-
-        {studied.lessons.length > 0 ? <PremiumCarousel cards={ACTIVITY_CARDS} title="From your lessons" /> : null}
-
-        {
-    /* Labs */
-  }
-        <PremiumCarousel cards={LAB_CARDS.filter((card) => card.id !== "investment" || goal === "invest")} title="More practice" />
-
-        </Pressable>
-      </ScrollView>
-      <ShortcutGallery
-    visible={galleryOpen}
-    ids={shortcuts.ids}
-    onAdd={shortcuts.add}
-    onClose={() => setGalleryOpen(false)}
-  />
-    </View>;
+    } }), /* @__PURE__ */ React.createElement(View, { style: styles.groundedBand }, /* @__PURE__ */ React.createElement(View, { style: styles.groundedIcon }, /* @__PURE__ */ React.createElement(Feather, { name: studied.lessons.length > 0 ? "check-circle" : "book-open", size: 18, color: studied.lessons.length > 0 ? COLORS.success : COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: styles.groundedCopy }, /* @__PURE__ */ React.createElement(Text, { style: styles.groundedLabel }, "BUILT FROM YOUR COURSE"), /* @__PURE__ */ React.createElement(Text, { style: styles.groundedTitle, numberOfLines: 2 }, studied.isLoading ? "Finding the concepts you own\u2026" : studied.lessons.length > 0 ? `Practice ${studied.lessons[0].title}` : "Complete your first lesson to unlock practice"), studied.lessons.length === 0 && !studied.isLoading && /* @__PURE__ */ React.createElement(Text, { style: styles.groundedBody }, "Arena and Deep Case stay locked until they can test something you actually studied."))), studied.lessons.length > 0 ? /* @__PURE__ */ React.createElement(PremiumCarousel, { cards: ACTIVITY_CARDS, title: "From your lessons" }) : null, /* @__PURE__ */ React.createElement(PremiumCarousel, { cards: LAB_CARDS.filter((card) => card.id !== "investment" || goal === "invest"), title: "More practice" }))
+  ), /* @__PURE__ */ React.createElement(
+    ShortcutGallery,
+    {
+      visible: galleryOpen,
+      ids: shortcuts.ids,
+      onAdd: shortcuts.add,
+      onRemove: shortcuts.remove,
+      onClose: () => setGalleryOpen(false)
+    }
+  ));
 }
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },

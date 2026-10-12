@@ -11,6 +11,9 @@ interface WelcomeBackModalProps {
   level: number;
   xp: number;
   xpToNextLevel?: number;
+  /** Opens today's lesson; falls back to closing. */
+  onStart?: () => void;
+  lessonDone?: boolean;
   streak: number;
   marketId: string;
   marketName: string;
@@ -30,13 +33,19 @@ export function WelcomeBackModal({
   marketId,
   marketName,
   onClose,
+  onStart,
+  lessonDone,
 }: WelcomeBackModalProps) {
   const scale = useRef(new Animated.Value(0.9)).current;
   const fade = useRef(new Animated.Value(0)).current;
   const barFill = useRef(new Animated.Value(0)).current;
 
-  const nextLevelXP = xpToNextLevel && xpToNextLevel > 0 ? xpToNextLevel : 100;
-  const progressRatio = Math.max(0, Math.min(1, nextLevelXP > 0 ? (xp % nextLevelXP) / nextLevelXP : 0));
+  // Level L spans (L-1)²·50 → L²·50 total XP (same rule as the server).
+  const levelStart = (level - 1) * (level - 1) * 50;
+  const levelEnd = level * level * 50;
+  const xpLeft = Math.max(0, typeof xpToNextLevel === 'number' && xpToNextLevel > 0 ? xpToNextLevel : levelEnd - xp);
+  const span = Math.max(1, levelEnd - levelStart);
+  const progressRatio = Math.max(0, Math.min(1, 1 - xpLeft / span));
 
   useEffect(() => {
     if (!visible) {
@@ -87,7 +96,7 @@ export function WelcomeBackModal({
               />
             </View>
             <Text style={styles.barLabel}>
-              {xp.toLocaleString()} XP total · next level at {nextLevelXP} XP
+              {xpLeft.toLocaleString()} XP to Level {level + 1}
             </Text>
 
             <View style={styles.statRow}>
@@ -104,8 +113,8 @@ export function WelcomeBackModal({
               </View>
             </View>
 
-            <TouchableOpacity style={styles.cta} onPress={onClose} activeOpacity={0.9}>
-              <Text style={styles.ctaText}>Start today's lesson</Text>
+            <TouchableOpacity style={styles.cta} onPress={lessonDone ? onClose : (onStart ?? onClose)} activeOpacity={0.9}>
+              <Text style={styles.ctaText}>{lessonDone ? 'Keep going' : "Start today's lesson"}</Text>
               <Feather name="arrow-right" size={17} color="#FFFFFF" />
             </TouchableOpacity>
           </ScrollView>
