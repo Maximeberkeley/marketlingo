@@ -244,8 +244,6 @@ export default function InterviewLabScreen() {
           onOpenBrief={() => { setShowReadiness(false); router.push('/deliverable' as any); }}
           onStartMock={() => { setShowReadiness(false); setPath(track === 'behavioral' ? 'academic' : 'consulting'); setStage('response'); }}
         />
-      <View>
-      </View>
     </View>);
     return (<View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={styles.header}>

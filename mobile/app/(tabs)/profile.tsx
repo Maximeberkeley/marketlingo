@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
+import { InterviewTargetForm } from '../../components/interview/InterviewTargetForm';
+import { useInterviewReadiness } from '../../hooks/useInterviewReadiness';
   View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Share,
   ActivityIndicator, Modal, Animated, Image,
 } from 'react-native';
@@ -212,12 +214,15 @@ export default function ProfileScreen() {
   });
 
   if (loading || authLoading) {
+    /*INTERVIEW_HOOK*/
     return (
       <View style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color={COLORS.accent} />
       </View>
     );
   }
+
+  /*INTERVIEW_HOOK*/
 
   return (
     <View style={styles.container}>
@@ -286,6 +291,15 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
         </View>
+
+        <View style={styles.section}>
+
+          <Text style={styles.sectionTitle}>INTERVIEW</Text>
+
+          <InterviewTargetForm target={interviewPrep.target} onSave={interviewPrep.saveTarget} />
+
+        </View>
+
 
         {/* The learner's own document, always one tap away. */}
         <View style={styles.section}>
