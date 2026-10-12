@@ -3,7 +3,7 @@ import { ActivityIndicator, View, Text, TouchableOpacity, StyleSheet } from 'rea
 import { Feather } from '@expo/vector-icons';
 import { LessonScreen } from '../../lesson-kit/screens/LessonScreen';
 import { tokens } from '../../lesson-kit/theme/tokens';
-import { buildBeats, IndustryInput } from '../../lesson-kit/sequencer/buildBeats';
+import { buildBeats, filterForGoal, lessonForGoal, IndustryInput } from '../../lesson-kit/sequencer/buildBeats';
 import { SlideLike } from '../../lesson-kit/sequencer/extract';
 import { useIndustryContent } from '../../hooks/useIndustryContent';
 import { parseSlideIntoCards } from './ConceptCard';
@@ -117,8 +117,10 @@ export function LessonKitReader({
   metadata,
   stackId,
   learningGoal,
-  authoredLesson,
+  authoredLesson: rawAuthoredLesson,
 }: LessonKitReaderProps) {
+  const authoredLesson = useMemo(() => isAuthoredLesson(rawAuthoredLesson)
+    ? lessonForGoal(rawAuthoredLesson, learningGoal) : rawAuthoredLesson, [rawAuthoredLesson, learningGoal]);
   const { trainer, drills, stats } = useIndustryContent(marketId, dayNumber);
   const dossier = useDeliverable(marketId, learningGoal);
   // Freeze the default once progress loads, so saving cannot change the active lesson beat.
@@ -151,7 +153,7 @@ export function LessonKitReader({
     const sayIt = (id = 'beat-say-it'): Exercise => ({
       kind: 'sayIt',
       id,
-      takeaway: metadata?.key_takeaway?.trim() || undefined,
+      takeaway: filterForGoal(metadata?.key_takeaway?.trim() || '', learningGoal) || undefined,
       dayNumber,
       learningGoal,
       sectionKey: defaultSectionKey,
