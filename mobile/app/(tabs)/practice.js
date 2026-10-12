@@ -3,6 +3,7 @@ import {
   View,
   Text,
   ScrollView,
+  Pressable,
   TouchableOpacity,
   StyleSheet,
   Animated,
@@ -20,6 +21,7 @@ import { COLORS, SHADOWS, TYPE } from "../../lib/constants";
 import { useAuth } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabase";
 import { getMarketName } from "../../lib/markets";
+import { ShortcutRow, ShortcutGallery, useShortcuts } from "../../components/practice/ShortcutIslands";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = SCREEN_WIDTH - 40;
 const CARD_GAP = 16;
@@ -184,6 +186,9 @@ function PracticeScreen() {
   const [goal, setGoal] = useState(null);
   const studied = useStudiedLessons(selectedMarket || void 0);
   const headerAnim = useRef(new Animated.Value(0)).current;
+  const shortcuts = useShortcuts();
+  const [editing, setEditing] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
   useEffect(() => {
     if (!user) return;
     supabase.from("profiles").select("selected_market").eq("id", user.id).single().then(({ data }) => {
@@ -216,7 +221,9 @@ function PracticeScreen() {
       paddingBottom: insets.bottom + 100
     }}
     showsVerticalScrollIndicator={false}
+    onScrollBeginDrag={() => setEditing(false)}
   >
+        <Pressable onPress={() => setEditing(false)}>
         {
     /* Header */
   }
@@ -243,7 +250,21 @@ function PracticeScreen() {
                 <Text style={styles.marketBadgeText}>{getMarketName(selectedMarket)}</Text>
               </View>}
           </View>
+          <TouchableOpacity
+    style={styles.addBtn}
+    accessibilityLabel="Add shortcut"
+    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    onPress={() => {
+      triggerHaptic("light");
+      setEditing(false);
+      setGalleryOpen(true);
+    }}
+  >
+            <Feather name="plus" size={20} color={COLORS.accent} />
+          </TouchableOpacity>
         </Animated.View>
+
+        <ShortcutRow ids={shortcuts.ids} editing={editing} setEditing={setEditing} onRemove={shortcuts.remove} />
 
         <View style={styles.groundedBand}>
           <View style={styles.groundedIcon}>
@@ -267,14 +288,22 @@ function PracticeScreen() {
   }
         <PremiumCarousel cards={LAB_CARDS.filter((card) => card.id !== "investment" || goal === "invest")} title="More practice" />
 
+        </Pressable>
       </ScrollView>
+      <ShortcutGallery
+    visible={galleryOpen}
+    ids={shortcuts.ids}
+    onAdd={shortcuts.add}
+    onClose={() => setGalleryOpen(false)}
+  />
     </View>;
 }
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: "center", justifyContent: "center" },
   /* Header */
-  header: { paddingHorizontal: 20, marginBottom: 20 },
+  header: { paddingHorizontal: 20, marginBottom: 20, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
+  addBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.accentSoft, alignItems: "center", justifyContent: "center", marginTop: 4 },
   headerTitle: {
     ...TYPE.hero,
     fontSize: 32,
