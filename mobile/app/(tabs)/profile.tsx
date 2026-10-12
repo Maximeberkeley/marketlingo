@@ -305,14 +305,8 @@ export default function ProfileScreen() {
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.menuItem, { backgroundColor: 'rgba(239, 68, 68, 0.08)', borderColor: 'rgba(239, 68, 68, 0.2)' }]}
-            onPress={handleSignOut}
-          >
-            <View style={[styles.menuIcon, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
-              <Feather name="log-out" size={18} color="#EF4444" />
-            </View>
-            <Text style={[styles.menuTitle, { color: '#EF4444' }]}>Log out</Text>
+          <TouchableOpacity style={styles.logoutLink} onPress={handleSignOut} accessibilityRole="button">
+            <Text style={styles.logoutText}>Log out</Text>
           </TouchableOpacity>
         </View>
 
@@ -475,6 +469,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, flexDirection: 'row', alignItems: 'center',
     borderWidth: 1, borderColor: COLORS.border, marginBottom: 8, gap: 12,
   },
+  logoutLink: { alignSelf: 'flex-start', paddingVertical: 14, paddingHorizontal: 4, minHeight: 44 },
+  logoutText: { fontSize: 15, color: COLORS.textMuted },
   menuIcon: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   menuIconImg: { width: 24, height: 24, resizeMode: 'contain' as const },
   menuTitle: { fontSize: 15, fontWeight: '500', color: COLORS.textPrimary },
