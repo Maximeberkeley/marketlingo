@@ -24,6 +24,13 @@ const CONFIDENCE: { key: Confidence; label: string; note: string }[] = [
   { key: 'high', label: 'Bet the desk', note: 'High conviction, size up' },
 ];
 
+/** Investors size positions; everyone else just states how sure they are. */
+const PLAIN_CONFIDENCE: { key: Confidence; label: string; note: string }[] = [
+  { key: 'low', label: 'Not sure', note: 'I could see this going either way' },
+  { key: 'medium', label: 'Fairly sure', note: 'I would back this with a reason' },
+  { key: 'high', label: 'Certain', note: 'I would defend this out loud' },
+];
+
 const GRADE_COLOR: Record<CaseGrade, string> = {
   A: '#22C55E',
   B: '#0EA5E9',
@@ -46,13 +53,16 @@ interface Props {
   marketName: string;
   onExit: () => void;
   onFinish: (result: CaseResult) => void;
+  /** Learner goal; only 'invest' sees position-sizing conviction labels. */
+  goal?: string | null;
 }
 
 /**
  * Deep Case — a slow, four-stage case study. No clock, no shields: the reward
  * is a graded verdict and the reasoning behind it.
  */
-export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish }: Props) {
+export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal }: Props) {
+  const CONVICTION = goal === 'invest' ? CONFIDENCE : PLAIN_CONFIDENCE;
   const insets = useSafeAreaInsets();
   const world = getMarketWorld(marketId);
 
@@ -145,12 +155,12 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish }:
           </LinearGradient>
 
           <View style={styles.debriefRow}>
-            <DebriefStat icon="check-circle" label="Stages right" value={`${correct}/${graded}`} />
+            <DebriefStat icon="check-circle" label="Stages right" value={`${correct + Math.max(0, deepCase.stages.length - graded)}/${deepCase.stages.length}`} />
             <DebriefStat icon="flag" label="Final call" value={callCorrect ? 'Correct' : 'Missed'} />
             <DebriefStat
               icon="activity"
               label="Conviction"
-              value={CONFIDENCE.find(c => c.key === confidence)?.label || 'Standard'}
+              value={CONVICTION.find(c => c.key === confidence)?.label || 'Standard'}
             />
           </View>
 
@@ -267,7 +277,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish }:
           <View style={styles.convictionChip}>
             <Feather name="activity" size={12} color={tokens.color.accent} />
             <Text style={styles.convictionChipText}>
-              Conviction: {CONFIDENCE.find(c => c.key === confidence)?.label}
+              Conviction: {CONVICTION.find(c => c.key === confidence)?.label}
             </Text>
           </View>
         )}
@@ -292,7 +302,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish }:
             <Text style={styles.sheetBody}>
               Calibration counts. Being loudly wrong costs more than being quietly right.
             </Text>
-            {CONFIDENCE.map(opt => (
+            {CONVICTION.map(opt => (
               <TouchableOpacity
                 key={opt.key}
                 style={styles.convictionOption}

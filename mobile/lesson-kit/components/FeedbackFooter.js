@@ -4,10 +4,19 @@ import { Feather } from '@expo/vector-icons';
 import { tokens } from '../theme/tokens';
 import { ColorText } from './ColorText';
 import { shortLabel } from '../text';
+/** Pull a trailing "Source: …" credit off the insight so it sits on its own line. */
+export function splitSource(text) {
+  const raw = (text || '').trim();
+  const m = raw.match(/^([\s\S]*?)\s*\(?\bSource:\s*([\s\S]+?)\)?\.?\s*$/i);
+  if (!m) return { insight: raw, source: '' };
+  return { insight: m[1].trim(), source: m[2].trim() };
+}
+
 export function FeedbackFooter({ isCorrect, explanation, correctAnswer }) {
     const [expanded, setExpanded] = useState(false);
     const tint = isCorrect ? tokens.color.correctDark : tokens.color.incorrectDark;
-    const hasMore = Boolean(explanation && explanation.length > 150);
+    const { insight, source } = splitSource(explanation);
+  const hasMore = Boolean(insight && insight.length > 150);
     return (<View style={styles.wrap}>
       <View style={styles.headRow}>
         <Feather name={isCorrect ? 'check-circle' : 'x-circle'} size={20} color={tint}/>
@@ -16,7 +25,8 @@ export function FeedbackFooter({ isCorrect, explanation, correctAnswer }) {
         </Text>
       </View>
       {!isCorrect && !!correctAnswer && (<ColorText text={`Answer: ${shortLabel(correctAnswer)}`} style={styles.body} maxSentences={1} maxLength={96}/>)}
-      {!!explanation && <ColorText text={explanation} style={styles.body} maxSentences={expanded ? 100 : 2} maxLength={expanded ? 10000 : 150}/>}
+      {!!insight && <ColorText text={insight} style={styles.body} maxSentences={expanded ? 100 : 2} maxLength={expanded ? 10000 : 150}/>}
+      {!!source && <Text style={styles.source}>Source: {source}</Text>}
       {hasMore && (<TouchableOpacity accessibilityRole="button" accessibilityState={{ expanded }} style={styles.more} onPress={() => setExpanded(value => !value)}>
           <Text style={[styles.moreText, { color: tint }]}>{expanded ? 'Show less' : 'Read full reasoning'}</Text>
           <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={15} color={tint}/>
@@ -24,6 +34,7 @@ export function FeedbackFooter({ isCorrect, explanation, correctAnswer }) {
     </View>);
 }
 const styles = StyleSheet.create({
+  source: { marginTop: 8, fontSize: 13, lineHeight: 18, fontWeight: '600', color: tokens.color.textMuted },
     wrap: {
         paddingHorizontal: tokens.space.lg,
         paddingTop: tokens.space.md,

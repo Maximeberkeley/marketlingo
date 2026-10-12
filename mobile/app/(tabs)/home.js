@@ -46,6 +46,7 @@ import { CourseJourney } from '../../components/course/CourseJourney';
 import { useIntelHabit } from '../../hooks/useIntelHabit';
 import { localDateString, streakCountdownLabel } from '../../lib/dayMath';
 import { claimLeoNudge, currentLeoNudgeWindow, getLeoNudge } from '../../lib/leoNudges';
+import { contextualLeoLine } from '../../lib/leoLines';
 const MARKET_ILLUSTRATIONS = {
     aerospace: require('../../assets/illustrations/aerospace.png'),
     ai: require('../../assets/illustrations/ai.png'),
@@ -340,7 +341,7 @@ export default function HomeScreen() {
                 if (!claimed)
                     return;
                 const script = getLeoNudge(timedWindow, displayName);
-                leoPopups.triggerSassyNudge(script.title, script.body, openLesson);
+                leoPopups.triggerSassyNudge(script.title, contextualLeoLine({ day: currentDay, streak, todayHook: lessonStack?.title }), openLesson);
             });
         }, 6500) : null;
         const idleTimer = setTimeout(() => {
@@ -348,7 +349,7 @@ export default function HomeScreen() {
                 if (!claimed)
                     return;
                 const script = getLeoNudge('idle', displayName);
-                leoPopups.triggerSassyNudge(script.title, script.body, openLesson);
+                leoPopups.triggerSassyNudge(script.title, contextualLeoLine({ day: currentDay, streak, todayHook: lessonStack?.title }), openLesson);
             });
         }, 90000);
         return () => {

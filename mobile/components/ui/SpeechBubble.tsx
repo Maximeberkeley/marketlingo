@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { COLORS, SHADOWS } from '../../lib/constants';
 
-type TailSide = 'left' | 'right' | 'top-left' | 'top-center';
+type TailSide = 'left' | 'right' | 'top-left' | 'top-center' | 'bottom-center';
 type BubbleTone = 'neutral' | 'purple' | 'warm' | 'success';
 
 interface SpeechBubbleProps {
@@ -33,7 +33,7 @@ export function SpeechBubble({
 }: SpeechBubbleProps) {
   const palette = tones[tone];
   return (
-    <View style={[styles.wrap, style]}>
+    <View style={[styles.wrap, tail === 'left' ? styles.hugStart : tail === 'right' ? styles.hugEnd : styles.hugCenter, style]}>
       <View
         style={[
           styles.tail,
@@ -48,14 +48,17 @@ export function SpeechBubble({
           { backgroundColor: palette.background, borderColor: palette.border },
         ]}
       >
-        {children ?? <Text style={[styles.text, compact && styles.textCompact, textStyle]}>{text}</Text>}
+        {children ?? <Text numberOfLines={2} style={[styles.text, compact && styles.textCompact, textStyle]}>{text}</Text>}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { position: 'relative' },
+  wrap: { position: 'relative', maxWidth: 280 },
+  hugStart: { alignSelf: 'flex-start' },
+  hugEnd: { alignSelf: 'flex-end' },
+  hugCenter: { alignSelf: 'center' },
   balloon: {
     borderRadius: 24,
     borderWidth: 1.5,
@@ -80,4 +83,5 @@ const styles = StyleSheet.create({
   tail_right: { right: -7, top: '50%', marginTop: -9, borderBottomWidth: 0, borderLeftWidth: 0 },
   'tail_top-left': { left: 28, top: -7, borderRightWidth: 0, borderBottomWidth: 0 },
   'tail_top-center': { left: '50%', top: -7, marginLeft: -9, borderRightWidth: 0, borderBottomWidth: 0 },
+  'tail_bottom-center': { left: '50%', bottom: -7, marginLeft: -9, borderLeftWidth: 0, borderTopWidth: 0 },
 });

@@ -60,8 +60,20 @@ const clean = (s: string) => s.replace(/\s+/g, ' ').trim();
 const cite = (sentence: string) => `Straight from what you just read: ${clean(sentence)}`;
 
 // ── 1. Definition check — this lesson's own key terms ──────────────
+/** A real glossary term: 1–4 words, not a quote, not an editorial phrase. */
+const NOT_TERMS = /^(unanimous|for your|the (rule|takeaway|catch|bottom line|lesson|point|short version)|why it|what it|here'?s|in short|bottom line|key (idea|point)|note|example|takeaway|remember|tip|warning|result|so what)\b/i;
+export function isRealTerm(raw?: string): boolean {
+  const term = (raw || '').trim();
+  if (!term || /["'“”‘’«»]/.test(term)) return false;
+  const words = term.split(/\s+/).filter(Boolean);
+  if (words.length < 1 || words.length > 4) return false;
+  if (NOT_TERMS.test(term)) return false;
+  if (/[.!?]$/.test(term)) return false;
+  return true;
+}
+
 export function checkDefinition(terms: KeyTerm[], id: string): MultipleChoiceExercise | null {
-  const usable = terms.filter(t => t.term?.trim() && (t.definition || '').trim().length > 14);
+  const usable = terms.filter(t => isRealTerm(t.term) && (t.definition || '').trim().length > 14);
   const unique = usable.filter(
     (t, i) => usable.findIndex(o => norm(o.term) === norm(t.term)) === i,
   );

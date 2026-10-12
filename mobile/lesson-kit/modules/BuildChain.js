@@ -56,7 +56,7 @@ export function BuildChain({ exercise, phase, onChange }) {
                 <Text style={[styles.slotNum, filled && styles.slotNumFilled]}>{slot + 1}</Text>
                 <ColorText text={filled ? exercise.steps[used[slot]] : 'Tap the next step'} style={[styles.slotText, filled && styles.slotTextFilled]} maxSentences={10000} maxLength={1000000}/>
               </View>
-              {slot < exercise.steps.length - 1 && (<Feather name="chevron-down" size={16} color={filled ? tokens.color.accent : tokens.color.border} style={styles.arrow}/>)}
+              {slot < exercise.steps.length - 1 && (<Feather name="chevron-down" size={12} color={filled ? tokens.color.accent : tokens.color.border} style={styles.arrow}/>)}
             </View>);
         })}
       </Animated.View>
@@ -87,9 +87,9 @@ const styles = StyleSheet.create({
         borderStyle: 'dashed',
         borderColor: tokens.color.border,
         backgroundColor: tokens.color.surface,
-        paddingVertical: tokens.space.md,
+        paddingVertical: 8,
         paddingHorizontal: tokens.space.md,
-        minHeight: 54,
+        minHeight: 44,
     },
     slotFilled: {
         borderStyle: 'solid',
@@ -106,19 +106,19 @@ const styles = StyleSheet.create({
     slotNumFilled: { color: tokens.color.accentDark },
     slotText: { flex: 1, minWidth: 0, flexShrink: 1, fontSize: tokens.font.caption + 2, fontWeight: '600', color: tokens.color.textMuted },
     slotTextFilled: { color: tokens.color.text, fontWeight: '800' },
-    arrow: { alignSelf: 'center', marginVertical: 2 },
+    arrow: { alignSelf: 'center', marginVertical: 0 },
     bank: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         gap: tokens.space.sm,
-        marginTop: tokens.space.xl,
+        marginTop: tokens.space.md,
     },
     tile: {
         maxWidth: '100%',
         minWidth: 0,
         flexShrink: 1,
         paddingHorizontal: tokens.space.md,
-        paddingVertical: 10,
+        paddingVertical: 8,
         borderRadius: tokens.radius.md,
         backgroundColor: tokens.color.card,
         borderWidth: 2,

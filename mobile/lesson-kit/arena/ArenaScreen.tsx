@@ -121,7 +121,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
       clearTick();
       setGraded(g => g + 1);
       if (isCorrect) {
-        const speedBonus = Math.round((secondsRemaining / Math.max(1, wave.seconds)) * 40);
+        const speedBonus = Math.round((secondsRemaining / Math.max(1, beatSecondsFor(wave, exercise))) * 40);
         const comboBonus = Math.round(combo * 15);
         const gain = Math.round((60 + speedBonus + comboBonus) * wave.multiplier);
         setScore(s => s + gain);
@@ -152,7 +152,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
       setShields(s => s - 1);
       setPhase('feedback');
     },
-    [clearTick, combo, endRun, popGain, shields, wave],
+    [clearTick, combo, endRun, popGain, shields, wave, exercise],
   );
 
   // Countdown for the current beat
@@ -160,11 +160,11 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
     if (!wave || !exercise || showWaveIntro || phase === 'feedback' || ended) return;
     if (passive) return;
 
-    setTimeLeft(wave.seconds);
+    setTimeLeft(beatSecondsFor(wave, exercise));
     timerAnim.setValue(1);
     Animated.timing(timerAnim, {
       toValue: 0,
-      duration: wave.seconds * 1000,
+      duration: beatSecondsFor(wave, exercise) * 1000,
       easing: Easing.linear,
       useNativeDriver: false,
     }).start();
@@ -596,3 +596,9 @@ const styles = StyleSheet.create({
   statValue: { fontSize: 18, fontWeight: '800', color: tokens.color.text },
   statLabel: { fontSize: 10, fontWeight: '700', color: tokens.color.textMuted, letterSpacing: 0.4 },
 });
+
+/** Build the Chain always gets a 25-second clock, whatever the wave. */
+function beatSecondsFor(wave: { seconds: number } | undefined, exercise: { kind: string } | undefined | null): number {
+  if (!wave) return 20;
+  return exercise?.kind === 'buildChain' ? 25 : wave.seconds;
+}

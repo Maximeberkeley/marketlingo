@@ -30,9 +30,9 @@ import type { LearningGoal } from './goal';
 const STEP_LABELS = ['Industry', 'Goal', 'Level'];
 
 const LEO_LEVEL_REACTIONS: Record<string, string> = {
-  beginner: "Perfect — we'll start from scratch! No jargon, I promise.",
-  intermediate: "Nice! I'll skip the basics and go straight to the good stuff.",
-  advanced: "Respect! Expert-mode unlocked. Let's get deep.",
+  beginner: "From scratch. No jargon, I promise.",
+  intermediate: "Skipping basics. Straight to the good stuff.",
+  advanced: "Expert mode unlocked. Let's go deep.",
 };
 
 export default function FamiliarityScreen() {
@@ -248,8 +248,8 @@ export default function FamiliarityScreen() {
         {/* Leo reaction bubble */}
         {selectedLevel && (
           <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}>
-            <Image source={require('../../assets/mascot/leo-reference.png')} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
-            <SpeechBubble text={LEO_LEVEL_REACTIONS[selectedLevel]} tail="left" compact style={styles.reactionBalloon} textStyle={styles.reactionText} />
+            <SpeechBubble text={LEO_LEVEL_REACTIONS[selectedLevel]} tail="bottom-center" compact style={styles.reactionBalloon} textStyle={styles.reactionText} />
+            <Image source={require('../../assets/mascot/leo-reference.png')} style={{ width: 40, height: 40, resizeMode: 'contain' }} />
           </Animated.View>
         )}
 
@@ -369,12 +369,12 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   reactionBubble: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     gap: 10,
     marginBottom: 16,
   },
-  reactionBalloon: { flex: 1 },
+  reactionBalloon: {},
   reactionEmoji: { fontSize: 24 },
   reactionText: {
     flex: 1,

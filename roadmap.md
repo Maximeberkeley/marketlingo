@@ -186,3 +186,18 @@
 - [x] Close each monthly season exactly once (weekly run is now a no-op after the final stamp; migration 0020).
 - [x] Displayed ranking and final result share one deterministic tie-break.
 - [x] Screen wording fixed: zero-XP rows lose the "Promotion pace" chip, Diamond leaders get hold-the-top copy, footnote spells out the real rules.
+
+## Oct 12 — Practice bug fixes
+- [ ] Interview Lab: full coach feedback, rotating unused questions, buzzwords only after grading
+- [ ] Number Sense: Check enabled at once, slider starts at minimum, answer off-centre
+- [ ] Definition checks only for short real terms
+- [ ] Arena: source on its own line; Build the Chain max 4 items, 25s, no scroll
+- [ ] Deep Case: debrief from same scenario, correct stage count, real decision for The Call, non-investor conviction labels
+- [ ] Leo bubble: ~8 words, fits text, above Leo, contextual lines
+
+## Oct 12 — Interview readiness
+- [ ] "Got an interview?" (company, role, date / no date yet) in Profile and Interview Brief
+- [ ] Floating glass readiness card on entering the lab (brief, mocks, lessons, current-events)
+- [ ] Under 14 days: day-by-day sprint plan ending with a full mock
+- [ ] No date: weekly stay-ready check
+- [ ] Role-aware questions (Tech Lead / Recruiter / Consultant)

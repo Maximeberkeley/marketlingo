@@ -11,6 +11,7 @@ import { useSelectedMarket } from '../hooks/useSelectedMarket';
 import { usePracticeRewards } from '../hooks/usePracticeRewards';
 import { useUserXP } from '../hooks/useUserXP';
 import { useCollectibles } from '../hooks/useCollectibles';
+import { useLearningGoal } from '../hooks/useLearningGoal';
 import { getMarketName } from '../lib/markets';
 import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
@@ -26,6 +27,7 @@ export default function DeepCaseRoute() {
   const { recordCaseRun, loading: rewardsLoading } = usePracticeRewards();
   const { addXP } = useUserXP(marketId);
   const { evaluateRewards } = useCollectibles(marketId);
+  const learningGoal = useLearningGoal(marketId);
   const marketName = getMarketName(marketId);
 
   const deepCase = useMemo(
@@ -91,6 +93,7 @@ export default function DeepCaseRoute() {
       deepCase={deepCase}
       marketId={marketId}
       marketName={marketName}
+      goal={learningGoal}
       onExit={() => router.back()}
       onFinish={handleFinish}
     />

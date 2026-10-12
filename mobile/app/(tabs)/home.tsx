@@ -70,6 +70,7 @@ import { CourseJourney } from '../../components/course/CourseJourney';
 import { useIntelHabit } from '../../hooks/useIntelHabit';
 import { localDateString, streakCountdownLabel } from '../../lib/dayMath';
 import { claimLeoNudge, currentLeoNudgeWindow, getLeoNudge } from '../../lib/leoNudges';
+import { contextualLeoLine } from '../../lib/leoLines';
 
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
@@ -393,14 +394,14 @@ export default function HomeScreen() {
       void claimLeoNudge(`window:${timedWindow}`).then(claimed => {
         if (!claimed) return;
         const script = getLeoNudge(timedWindow, displayName);
-        leoPopups.triggerSassyNudge(script.title, script.body, openLesson);
+        leoPopups.triggerSassyNudge(script.title, contextualLeoLine({ day: currentDay, streak, todayHook: lessonStack?.title }), openLesson);
       });
     }, 6500) : null;
     const idleTimer = setTimeout(() => {
       void claimLeoNudge('idle').then(claimed => {
         if (!claimed) return;
         const script = getLeoNudge('idle', displayName);
-        leoPopups.triggerSassyNudge(script.title, script.body, openLesson);
+        leoPopups.triggerSassyNudge(script.title, contextualLeoLine({ day: currentDay, streak, todayHook: lessonStack?.title }), openLesson);
       });
     }, 90000);
 
