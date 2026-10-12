@@ -231,7 +231,7 @@ export default function InterviewLabScreen() {
       onStart={(question?: string) => {
         setPersona(personaForTrack(track));
         if (question && question !== poolMock?.question) {
-          setLockedMock({ id: `card-${Date.now()}`, scenario: target?.company ? `${target.company} interview` : 'Mock interview', question, buzzwords: [], sampleAnswer: '' } as any);
+          setLockedMock({ id: `card-${Date.now()}`, scenario: readiness.target?.company ? `${readiness.target.company} interview` : 'Mock interview', question, buzzwords: [], sampleAnswer: '' } as any);
         } else if (poolMock) {
           setLockedMock(poolMock);
         }
@@ -248,9 +248,9 @@ export default function InterviewLabScreen() {
         <View style={{ flex: 1 }}><Text style={styles.headerTitle}>{marketName} Interview</Text><Text style={styles.headerSub}>{INTERVIEW_PERSONAS[persona].label}</Text></View>
         <Image source={LEO} style={styles.leoSmall} resizeMode="contain" />
       </View>
-      <View style={styles.rail}>{STAGES.map((item, index) => <View key={item.key} style={[styles.railSegment, { backgroundColor: index <= stageIndex ? world.colors[0] : COLORS.border }]} />)}</View>
+      <View style={styles.rail}>{visibleStages.map((item, index) => <View key={item.key} style={[styles.railSegment, { backgroundColor: index <= visibleIndex ? COLORS.accent : COLORS.border }]} />)}</View>
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 28 }]} showsVerticalScrollIndicator={false}>
-        <Text style={[styles.stageLabel, { color: world.colors[0] }]}>{STAGES[stageIndex].label.toUpperCase()} · {stageIndex + 1}/5</Text>
+        <Text style={[styles.stageLabel, { color: COLORS.accent }]}>{STAGES[stageIndex].label.toUpperCase()} · {visibleIndex + 1}/{visibleStages.length}</Text>
 
         {stage === 'brief' && <>
           <Text style={styles.title}>Pick your interviewer.</Text><Text style={styles.subtitle}>Your coach changes what a strong answer sounds like.</Text>
@@ -306,7 +306,7 @@ export default function InterviewLabScreen() {
           <Debrief icon="zap" title="Sharper version" body={feedback.betterVersion} color={world.colors[0]} />
           {mock && mock.buzzwords.length > 0 && <View style={styles.debrief}><Feather name="book-open" size={19} color={world.colors[0]} /><View style={{ flex: 1 }}><Text style={[styles.debriefTitle, { color: world.colors[0] }]}>Words a pro would use</Text><View style={[styles.keywordRow, { marginTop: 6 }]}>{mock.buzzwords.slice(0, 6).map(word => <View key={word} style={styles.keyword}><Text style={styles.keywordText}>{word}</Text></View>)}</View></View></View>}
           <Action label="Bank result" color={world.colors[0]} onPress={bankResult} />
-          <TouchableOpacity onPress={() => { setFeedback(null); setResponse(''); setPressureChoice(null); setPressureCorrect(false); rollQuestions(); setStage('brief'); }} style={styles.retry}><Text style={styles.retryText}>Run another mission</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => { setFeedback(null); setResponse(''); setPressureChoice(null); setPressureCorrect(false); setLockedMock(null); rollQuestions(); setStartStage('brief'); setStage('brief'); }} style={styles.retry}><Text style={styles.retryText}>Run another mission</Text></TouchableOpacity>
         </>}
       </ScrollView>
     </View>
