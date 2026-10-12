@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { buildBeats, filterForGoal, lessonForGoal } from '../../mobile/lesson-kit/sequencer/buildBeats';
-import { buildArena } from '../../mobile/lesson-kit/arena/buildArena';
-import { quizQuestionKeys, recentQuizHistory, recordQuizQuestion, QUIZ_WINDOW_MS } from '../../mobile/lib/quizHistory';
-import { realLessonTitle, lessonDayLabel } from '../../mobile/lib/lessonIdentity';
+import { buildBeats, filterForGoal, lessonForGoal } from '../mobile/lesson-kit/sequencer/buildBeats';
+import { buildArena } from '../mobile/lesson-kit/arena/buildArena';
+import { quizQuestionKeys, recentQuizHistory, recordQuizQuestion, QUIZ_WINDOW_MS } from '../mobile/lib/quizHistory';
+import { realLessonTitle, lessonDayLabel } from '../mobile/lib/lessonIdentity';
 
 const rule = 'The buyer signs the contract, while the user works with the product.';
 const slides = [{ slideNumber: 1, title: 'Buyer ≠ User', body: `${rule} Ask the buyer about budgets and the user about daily work.` }];
