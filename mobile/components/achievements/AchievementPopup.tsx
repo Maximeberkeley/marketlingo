@@ -8,6 +8,7 @@ import {
   Image,
   Animated,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import { COLORS } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
@@ -110,7 +111,12 @@ export function AchievementPopup({ visible, achievement, onDismiss }: Achievemen
           </Animated.View>
 
           {/* Content */}
-          <View style={styles.content}>
+          <ScrollView
+            style={styles.contentScroll}
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          >
             {/* Tier badge */}
             <View style={[styles.tierBadge, { backgroundColor: tier.bg, borderColor: tier.border }]}>
               <Text style={[styles.tierText, { color: tier.color }]}>{tier.label}</Text>
