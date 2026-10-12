@@ -525,7 +525,6 @@ export default function HomeScreen() {
                   `lesson:${selectedMarket}:${session.activeStack.id}`,
                   accuracy,
                 );
-                if (rewards?.collectibles?.[0]) setRevealedCard(rewards.collectibles[0]);
               }}
           onSaveInsight={session.handleSaveInsight}
           onAddNote={session.handleAddNote}
@@ -608,12 +607,12 @@ export default function HomeScreen() {
       />
 
       <AchievementPopup
-        visible={!!achievementPopup && !leoPopups.currentMessage && !revealedCard}
+        visible={!!achievementPopup && !leoPopups.currentMessage}
         achievement={achievementPopup}
         onDismiss={() => setAchievementPopup(null)}
       />
 
-      {league.lastWeek && (
+      {false && league.lastWeek && (
         <LeagueCeremonyModal
           visible={league.ceremonyPending && !session.showReader}
           tier={league.lastWeek.tier}
