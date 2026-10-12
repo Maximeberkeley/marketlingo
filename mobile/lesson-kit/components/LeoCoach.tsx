@@ -94,7 +94,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
               { opacity: enter, transform: [{ scale: pop }, { translateY: rise }] },
             ]}
           >
-            <SpeechBubble tail="left" tone="neutral" style={styles.bubble}>
+            <SpeechBubble tail="left" showLabel style={styles.bubble}>
               <ColorText text={line} style={styles.text} maxSentences={2} maxLength={110} />
             </SpeechBubble>
           </Animated.View>
@@ -137,9 +137,9 @@ const styles = StyleSheet.create({
   },
   bubble: { width: '100%' },
   text: {
-    fontSize: tokens.font.caption,
-    lineHeight: 18,
-    fontWeight: '800',
+    fontSize: 16,
+    lineHeight: 24,
+    fontWeight: '500',
     color: tokens.color.text,
   },
 });
