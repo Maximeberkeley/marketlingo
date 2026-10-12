@@ -3,7 +3,6 @@ import {
   View,
   Text,
   ScrollView,
-  Pressable,
   TouchableOpacity,
   StyleSheet,
   Animated,
@@ -21,7 +20,6 @@ import { COLORS, SHADOWS, TYPE } from "../../lib/constants";
 import { useAuth } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabase";
 import { getMarketName } from "../../lib/markets";
-import { ShortcutRow, ShortcutGallery, useShortcuts } from "../../components/practice/ShortcutIslands";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = SCREEN_WIDTH - 40;
 const CARD_GAP = 16;
@@ -160,9 +158,6 @@ function PracticeScreen() {
   const [goal, setGoal] = useState(null);
   const studied = useStudiedLessons(selectedMarket || void 0);
   const headerAnim = useRef(new Animated.Value(0)).current;
-  const shortcuts = useShortcuts();
-  const [editing, setEditing] = useState(false);
-  const [galleryOpen, setGalleryOpen] = useState(false);
   useEffect(() => {
     if (!user) return;
     supabase.from("profiles").select("selected_market").eq("id", user.id).single().then(({ data }) => {
@@ -193,10 +188,9 @@ function PracticeScreen() {
         paddingTop: insets.top + 12,
         paddingBottom: insets.bottom + 100
       },
-      showsVerticalScrollIndicator: false,
-      onScrollBeginDrag: () => setEditing(false)
+      showsVerticalScrollIndicator: false
     },
-    /* @__PURE__ */ React.createElement(Pressable, { onPress: () => setEditing(false) }, /* @__PURE__ */ React.createElement(
+    /* @__PURE__ */ React.createElement(
       Animated.View,
       {
         style: [
@@ -215,19 +209,10 @@ function PracticeScreen() {
         ]
       },
       /* @__PURE__ */ React.createElement(View, null, /* @__PURE__ */ React.createElement(Text, { style: styles.headerTitle }, "Practice"), selectedMarket && /* @__PURE__ */ React.createElement(View, { style: styles.marketBadge }, /* @__PURE__ */ React.createElement(View, { style: styles.marketDot }), /* @__PURE__ */ React.createElement(Text, { style: styles.marketBadgeText }, getMarketName(selectedMarket))))
-    ), /* @__PURE__ */ React.createElement(ShortcutRow, { ids: shortcuts.ids, editing, setEditing, onRemove: shortcuts.remove, onAdd: () => {
-      setEditing(false);
-      setGalleryOpen(true);
-    } }), /* @__PURE__ */ React.createElement(View, { style: styles.groundedBand }, /* @__PURE__ */ React.createElement(View, { style: styles.groundedIcon }, /* @__PURE__ */ React.createElement(Feather, { name: studied.lessons.length > 0 ? "check-circle" : "book-open", size: 18, color: studied.lessons.length > 0 ? COLORS.success : COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: styles.groundedCopy }, /* @__PURE__ */ React.createElement(Text, { style: styles.groundedLabel }, "BUILT FROM YOUR COURSE"), /* @__PURE__ */ React.createElement(Text, { style: styles.groundedTitle, numberOfLines: 2 }, studied.isLoading ? "Finding the concepts you own\u2026" : studied.lessons.length > 0 ? `Practice ${studied.lessons[0].title}` : "Complete your first lesson to unlock practice"), studied.lessons.length === 0 && !studied.isLoading && /* @__PURE__ */ React.createElement(Text, { style: styles.groundedBody }, "Arena and Deep Case stay locked until they can test something you actually studied."))), studied.lessons.length > 0 ? /* @__PURE__ */ React.createElement(PremiumCarousel, { cards: ACTIVITY_CARDS, title: "From your lessons" }) : null, /* @__PURE__ */ React.createElement(PremiumCarousel, { cards: LAB_CARDS.filter((card) => card.id !== "investment" || goal === "invest"), title: "More practice" }))
-  ), /* @__PURE__ */ React.createElement(
-    ShortcutGallery,
-    {
-      visible: galleryOpen,
-      ids: shortcuts.ids,
-      onAdd: shortcuts.add,
-      onRemove: shortcuts.remove,
-      onClose: () => setGalleryOpen(false)
-    }
+    ),
+    /* @__PURE__ */ React.createElement(View, { style: styles.groundedBand }, /* @__PURE__ */ React.createElement(View, { style: styles.groundedIcon }, /* @__PURE__ */ React.createElement(Feather, { name: studied.lessons.length > 0 ? "check-circle" : "book-open", size: 18, color: studied.lessons.length > 0 ? COLORS.success : COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: styles.groundedCopy }, /* @__PURE__ */ React.createElement(Text, { style: styles.groundedLabel }, "BUILT FROM YOUR COURSE"), /* @__PURE__ */ React.createElement(Text, { style: styles.groundedTitle, numberOfLines: 2 }, studied.isLoading ? "Finding the concepts you own\u2026" : studied.lessons.length > 0 ? `Practice ${studied.lessons[0].title}` : "Complete your first lesson to unlock practice"), studied.lessons.length === 0 && !studied.isLoading && /* @__PURE__ */ React.createElement(Text, { style: styles.groundedBody }, "Arena and Deep Case stay locked until they can test something you actually studied."))),
+    studied.lessons.length > 0 ? /* @__PURE__ */ React.createElement(PremiumCarousel, { cards: ACTIVITY_CARDS, title: "From your lessons" }) : null,
+    /* @__PURE__ */ React.createElement(PremiumCarousel, { cards: LAB_CARDS.filter((card) => card.id !== "investment" || goal === "invest"), title: "More practice" })
   ));
 }
 const styles = StyleSheet.create({
@@ -235,7 +220,6 @@ const styles = StyleSheet.create({
   centered: { alignItems: "center", justifyContent: "center" },
   /* Header */
   header: { paddingHorizontal: 20, marginBottom: 20, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
-  addBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.accentSoft, alignItems: "center", justifyContent: "center", marginTop: 4 },
   headerTitle: {
     ...TYPE.hero,
     fontSize: 32,
