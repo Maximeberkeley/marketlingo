@@ -72,6 +72,7 @@ export default function ProfileScreen() {
   // The living dossier is the learner's own document: it deserves a permanent door.
   const dossier = useDeliverable(selectedMarket || undefined, currentGoal);
   const dossierRankInfo = dossierRank(dossier.completion);
+  const interviewPrep = useInterviewReadiness(selectedMarket);
 
 
   useEffect(() => {
@@ -214,15 +215,12 @@ export default function ProfileScreen() {
   });
 
   if (loading || authLoading) {
-    /*INTERVIEW_HOOK*/
     return (
       <View style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color={COLORS.accent} />
       </View>
     );
   }
-
-  /*INTERVIEW_HOOK*/
 
   return (
     <View style={styles.container}>

@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import {
+import { InterviewTargetForm } from '../../components/interview/InterviewTargetForm';
+import { useInterviewReadiness } from '../../hooks/useInterviewReadiness';
   View,
   Text,
   ScrollView,
@@ -68,6 +70,7 @@ function ProfileScreen() {
   const featuredCard = cards.find((card) => card.id === featuredId);
   const dossier = useDeliverable(selectedMarket || void 0, currentGoal);
   const dossierRankInfo = dossierRank(dossier.completion);
+  const interviewPrep = useInterviewReadiness(selectedMarket);
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user) return;
