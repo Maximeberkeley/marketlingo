@@ -170,6 +170,14 @@ function PremiumCard({ card, index }: { card: CardData; index: number }) {
 
   const cardContent = (
     <View style={styles.cardInner}>
+      {card.hero ? (
+        <Image
+          source={card.hero}
+          style={styles.cardHero}
+          resizeMode="contain"
+          pointerEvents="none"
+        />
+      ) : null}
       <View style={styles.contentPanel}>
         <View style={styles.metaRow}>
           <View style={styles.iconPill}>
