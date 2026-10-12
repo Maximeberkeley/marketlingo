@@ -52,7 +52,7 @@ function presentation(data: Reminder) {
     return {
       mood: 'sassy' as LeoAnim,
       eyebrow: 'GOOD AFTERNOON',
-      line: `One ${market} idea. Five minutes. Let's go.`,
+      line: `Today's ${market} idea is ready.`,
     };
   }
   return {
@@ -132,7 +132,7 @@ export default function DailyLeoScreen() {
 
 
       <View style={styles.footer}>
-        <Text style={styles.caption}>One lesson. About five minutes. That's it for today.</Text>
+        <Text style={styles.caption}>One lesson. About five minutes.</Text>
         <TouchableOpacity
           style={styles.continueButton}
           activeOpacity={0.88}

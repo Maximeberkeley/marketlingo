@@ -1,5 +1,10 @@
 # MarketLingo roadmap
 
+## Oct 12 — Day-4 fixes
+- [ ] Simplify welcome copy; show exact generated/hand-written day titles and clear catch-up labels.
+- [ ] Guarantee a takeaway-grounded application question when no number check exists and remove startup-addressed copy for other goals.
+- [ ] Exclude daily quiz questions seen in the last seven days; synchronize source pairs and run focused regression checks.
+
 ## Oct 12 — Last polish
 - [x] Replace cold-start boolean readiness with matching progress/XP, explicitly resolved daily completion and a loaded lesson; keep the same skeleton during the ring's own course query in both source versions.
 - [x] Keep credited Home completion checked and coloured; show Today's done inline under the ring and use real lesson titles.
