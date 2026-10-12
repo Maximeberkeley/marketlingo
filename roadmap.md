@@ -1,6 +1,7 @@
 # MarketLingo roadmap
 
 ## Oct 12 — Last polish
+- [x] Replace cold-start boolean readiness with matching progress/XP, explicitly resolved daily completion and a loaded lesson; keep the same skeleton during the ring's own course query in both source versions.
 - [x] Keep credited Home completion checked and coloured; show Today's done inline under the ring and use real lesson titles.
 - [x] Compact Practice cards to icon/title/one-line/Start, remove repeated labels, simplify quiz intro, and make Log out plain grey text.
 - [x] Synchronize five phone TSX/JS pairs; simulated completed/unfinished rings, catch-up title/day, inline notice, compact card, quiz intro and logout checks passed; build 133.

@@ -151,6 +151,7 @@ export default function HomeScreen() {
     getCurrentStage, getProgressToNextStage, isLessonCompletedToday, addXP,
     refetch: refetchXP,
     loading: xpLoading,
+    completionReady,
   } = useUserXP(selectedMarketLocal || undefined);
 
   const lessonCompletedToday = isLessonCompletedToday();
@@ -186,15 +187,14 @@ export default function HomeScreen() {
     if (selectedMarket) setSelectedMarketLocal(selectedMarket);
   }, [selectedMarket]);
 
-  // The ring must never render from defaults ("Day 1", "Start here"): keep the
-  // skeleton up until progress and today's completion have actually loaded.
-  // A sticky flag rather than the transient loading booleans, so later
-  // refetches (tab focus, midnight tick) never flash the skeleton again.
-  const [bootReady, setBootReady] = useState(false);
-  useEffect(() => {
-    if (bootReady || authLoading || loading || xpLoading || progressLoading || !selectedMarket) return;
-    setBootReady(true);
-  }, [bootReady, authLoading, loading, xpLoading, progressLoading, selectedMarket]);
+  // Missing-market early returns clear loading before the real queries start.
+  // Gate on resolved data for this learner/market, not those transient flags.
+  const bootReady = Boolean(
+    user && selectedMarket && selectedMarketLocal === selectedMarket &&
+    progress?.user_id === user.id && progress?.market_id === selectedMarket &&
+    xpData?.user_id === user.id && xpData?.market_id === selectedMarket &&
+    completionReady && lessonStack?.id && currentDay > 0
+  );
 
   const { dueCount } = useSpacedRepetition(selectedMarketLocal || undefined);
   const deliverable = useDeliverable(selectedMarketLocal || undefined, learningGoal);
