@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
-import { buildSprintPlan, daysUntil, InterviewTarget, weekKey } from '../../lib/interviewPrep';
+import { buildSprintPlan, daysUntil, InterviewTarget, shortDate, weekKey } from '../../lib/interviewPrep';
 import type { InterviewReadiness } from '../../hooks/useInterviewReadiness';
 import { InterviewTargetForm } from './InterviewTargetForm';
 import { triggerHaptic } from '../../lib/haptics';
@@ -99,7 +99,7 @@ export function ReadinessCard({ visible, inline = false, readiness, onClose, onS
 
             {weekly && (
               <View style={{ marginTop: 18 }}>
-                <Text style={styles.section}>{`STAY READY · WEEK OF ${weekKey()}`}</Text>
+                <Text style={styles.section}>{`STAY READY · WEEK OF ${shortDate(weekKey()).toUpperCase()}`}</Text>
                 <View style={[styles.day, styles.dayToday]}>
                   <Text style={styles.dayLine}><Text style={styles.dayKey}>1  </Text>Answer one mock question.</Text>
                   <Text style={styles.dayLine}><Text style={styles.dayKey}>2  </Text>Update one line of your Interview Brief.</Text>

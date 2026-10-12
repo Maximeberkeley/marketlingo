@@ -2,17 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
-import { InterviewTarget, parseInterviewDate, roleTrack, TRACK_LABEL } from '../../lib/interviewPrep';
+import { InterviewTarget, parseInterviewDate, roleTrack, shortDate, TRACK_LABEL } from '../../lib/interviewPrep';
 import { triggerHaptic } from '../../lib/haptics';
 
 interface Props {
   target: InterviewTarget | null;
   onSave: (t: InterviewTarget | null) => Promise<void> | void;
+  /** Start with the fields showing (used by the "Add it" link). */
+  initiallyOpen?: boolean;
+  /** Called when the open form is cancelled. */
+  onCancel?: () => void;
 }
 
 /** "Got an interview?" — company, role, and a date (or "no date yet"). */
-export function InterviewTargetForm({ target, onSave }: Props) {
-  const [open, setOpen] = useState(false);
+export function InterviewTargetForm({ target, onSave, initiallyOpen = false, onCancel }: Props) {
+  const [open, setOpen] = useState(initiallyOpen);
   const [company, setCompany] = useState(target?.company || '');
   const [role, setRole] = useState(target?.role || '');
   const [date, setDate] = useState(target?.date || '');
@@ -43,7 +47,7 @@ export function InterviewTargetForm({ target, onSave }: Props) {
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{target ? `${target.role} · ${target.company}` : 'Got an interview?'}</Text>
           <Text style={styles.sub}>
-            {target ? `${target.date ? target.date : 'No date yet'} · ${TRACK_LABEL[roleTrack(target.role)]}` : 'Add the company, role and date. We’ll plan your prep.'}
+            {target ? `${target.date ? shortDate(target.date) : 'No date yet'} · ${TRACK_LABEL[roleTrack(target.role)]}` : 'Add the company, role and date. We’ll plan your prep.'}
           </Text>
         </View>
         <Feather name={target ? 'edit-2' : 'plus'} size={18} color={COLORS.textMuted} />
@@ -72,7 +76,7 @@ export function InterviewTargetForm({ target, onSave }: Props) {
             </TouchableOpacity>
           )}
           <View style={{ flex: 1 }} />
-          <TouchableOpacity onPress={() => setOpen(false)}><Text style={styles.cancel}>Cancel</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => { setOpen(false); onCancel?.(); }}><Text style={styles.cancel}>Cancel</Text></TouchableOpacity>
           <TouchableOpacity style={styles.save} onPress={save}><Text style={styles.saveText}>Save</Text></TouchableOpacity>
         </View>
       </View>
