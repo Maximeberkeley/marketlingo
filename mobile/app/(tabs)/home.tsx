@@ -145,11 +145,12 @@ export default function HomeScreen() {
 
   const [selectedMarketLocal, setSelectedMarketLocal] = useState<string | null>(null);
   const [revealedCard, setRevealedCard] = useState<Partial<CollectibleCard> | null>(null);
-  const { progress, completeStack, updateStreak, refetch: refetchProgress } = useUserProgress(selectedMarketLocal || undefined);
+  const { progress, completeStack, updateStreak, refetch: refetchProgress, loading: progressLoading } = useUserProgress(selectedMarketLocal || undefined);
   const {
     xpData, dailyCompletion, completeLessonForToday,
     getCurrentStage, getProgressToNextStage, isLessonCompletedToday, addXP,
     refetch: refetchXP,
+    loading: xpLoading,
   } = useUserXP(selectedMarketLocal || undefined);
 
   const lessonCompletedToday = isLessonCompletedToday();
