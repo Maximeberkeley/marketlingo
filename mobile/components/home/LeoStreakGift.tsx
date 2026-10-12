@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing, Image } from 'react-native';
+import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing, Image, ScrollView } from 'react-native';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
 import { supabase } from '../../lib/supabase';
@@ -78,6 +78,7 @@ export function LeoStreakGift({ marketId, userId, blocked, onRestored }: Props) 
     <Modal visible={visible && !blocked} transparent animationType="fade" onRequestClose={() => setVisible(false)}>
       <View style={styles.backdrop}>
         <Animated.View style={[styles.card, { transform: [{ scale: pop }] }]}>
+          <ScrollView showsVerticalScrollIndicator={false} bounces={false} contentContainerStyle={styles.cardContent}>
           <Text style={styles.eyebrow}>{found ? 'LEO FOUND SOMETHING' : 'STREAK RETURNED'}</Text>
           <Animated.View style={{ transform: [{ translateY }] }}>
             <Image source={found ? SAD_LEO : HAPPY_LEO} style={styles.leo} resizeMode="contain" />
