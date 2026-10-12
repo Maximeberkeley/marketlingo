@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
+import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
@@ -77,7 +77,7 @@ export function WelcomeBackModal({
             <Text style={styles.heroSub}>{marketName} insider</Text>
           </LinearGradient>
 
-          <View style={styles.body}>
+          <ScrollView style={styles.bodyScroll} contentContainerStyle={styles.body} showsVerticalScrollIndicator={false} bounces={false}>
             <View style={styles.barTrack}>
               <Animated.View
                 style={[
@@ -108,7 +108,7 @@ export function WelcomeBackModal({
               <Text style={styles.ctaText}>Start today's lesson</Text>
               <Feather name="arrow-right" size={17} color="#FFFFFF" />
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         </Animated.View>
       </View>
     </Modal>
@@ -126,11 +126,13 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     maxWidth: 380,
+    maxHeight: '90%',
     borderRadius: 26,
     overflow: 'hidden',
     backgroundColor: COLORS.bg2,
     ...SHADOWS.lg,
   },
+  bodyScroll: { flexGrow: 0, flexShrink: 1 },
   hero: { paddingTop: 18, paddingBottom: 22, alignItems: 'center' },
   mascotWrap: { height: 120, justifyContent: 'center' },
   heroKicker: {
