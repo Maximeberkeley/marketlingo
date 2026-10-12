@@ -380,8 +380,13 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {!!exercise.leo?.line && <LeoCoach line={exercise.leo.line} mood={exercise.leo.mood} />}
-        {renderExerciseByKind(exercise, phase, setState)}
+        {/* The question stays behind the round-intro card until Start is tapped */}
+        {!showWaveIntro ? (
+          <>
+            {!!exercise.leo?.line && <LeoCoach line={exercise.leo.line} mood={exercise.leo.mood} />}
+            {renderExerciseByKind(exercise, phase, setState)}
+          </>
+        ) : null}
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
