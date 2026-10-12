@@ -95,7 +95,7 @@ const LEO_IMAGES: Record<string, any> = {
   sleeping: require('../../assets/mascot/leo-sleeping.png'),
   sassy: require('../../assets/mascot/leo-sassy.png'),
   licking: require('../../assets/mascot/leo-licking.png'),
-  reading: { uri: `https://www.market-verse.com${require('../../assets/mascot/leo-reading-oct11.png.asset.json').url}` },
+  reading: require('../../assets/mascot/leo-reading-oct11.png'),
   trophy: require('../../assets/mascot/leo-trophy.png'),
 };
 
