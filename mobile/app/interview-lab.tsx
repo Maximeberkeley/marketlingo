@@ -19,20 +19,20 @@ import { useCollectibles } from '../hooks/useCollectibles';
 import { supabase } from '../lib/supabase';
 import { getMarketName } from '../lib/markets';
 import { getMarketWorld } from '../data/marketWorlds';
-import { InterviewPath, InterviewPersona, INTERVIEW_PERSONAS, MECE_FRAMEWORKS, STORY_HERO_STEPS } from '../lib/interviewLabData';
-import { speakAsSophia, transcribeAudio } from '../lib/interviewVoice';
+import { InterviewPath, InterviewPersona, INTERVIEW_PERSONAS, MECE_FRAMEWORKS, STORY_HERO_STEPS, trackMocks } from '../lib/interviewLabData';
+import { speakAsLeo, transcribeAudio } from '../lib/interviewVoice';
 import { triggerHaptic } from '../lib/haptics';
 import { log } from '../lib/logger';
 import { useInterviewReadiness } from '../hooks/useInterviewReadiness';
-import { ReadinessCard } from '../components/interview/ReadinessCard';
-import { roleTrack, TRACK_LABEL } from '../lib/interviewPrep';
+import { InterviewHome } from '../components/interview/InterviewHome';
+import { personaForTrack, roleTrack } from '../lib/interviewPrep';
 
-const SOPHIA = require('../assets/mentors/mentor-sophia.png');
+const LEO = require('../assets/mascot/leo-idle.png');
 type Stage = 'brief' | 'framework' | 'pressure' | 'response' | 'verdict';
 type Feedback = {
   score?: number; industryKnowledgeScore?: number; communicationScore?: number;
   personaFitScore?: number; whatWentWell?: string; roomForImprovement?: string;
-  betterVersion?: string; sophiaSays?: string; buzzwordsUsed?: string[]; buzzwordsMissed?: string[];
+  betterVersion?: string; leoSays?: string; sophiaSays?: string; buzzwordsUsed?: string[]; buzzwordsMissed?: string[];
 };
 const STAGES: { key: Stage; label: string }[] = [
   { key: 'brief', label: 'Brief' }, { key: 'framework', label: 'Frame' },
@@ -69,7 +69,6 @@ export default function InterviewLabScreen() {
   const questions = useInterviewQuestions(marketId, path || 'consulting');
   const readiness = useInterviewReadiness(marketId);
   const track = readiness.target ? roleTrack(readiness.target.role) : null;
-  const [showReadiness, setShowReadiness] = useState(false);
   const { addXP } = useUserXP(marketId);
   const { recordCaseRun } = usePracticeRewards();
   const { evaluateRewards } = useCollectibles(marketId);
@@ -87,25 +86,29 @@ export default function InterviewLabScreen() {
     used.add(pick);
     return pick;
   };
-  const pressurePoolSize = path === 'consulting' && track !== 'technical' && questions.mentalMathQuestions.length ? questions.mentalMathQuestions.length : questions.mcqQuestions.length;
+  // Technical and behavioral roles use their own bank first; never consulting cases for a technical role.
+  const mockPool = useMemo(() => {
+    if (path !== 'consulting') return questions.mockQuestions;
+    const bank = trackMocks(marketId, track);
+    if (track === 'technical') {
+      const fit = questions.mockQuestions.filter(m => /certif|technical|system|standard|regulat|engineer|architect|safety|spec/i.test(`${m.scenario} ${m.question}`));
+      return bank.length || fit.length ? [...bank, ...fit] : questions.mockQuestions;
+    }
+    return bank.length ? bank : questions.mockQuestions;
+  }, [path, track, marketId, questions.mockQuestions]);
+  const allowMath = path === 'consulting' && (track === 'case' || track === null);
+  const pressurePoolSize = allowMath && questions.mentalMathQuestions.length ? questions.mentalMathQuestions.length : questions.mcqQuestions.length;
   const rollQuestions = useCallback(() => {
-    const technical = track === 'technical'
-      ? questions.mockQuestions.map((m, i) => (/certif|technical|system|standard|regulat|engineer|architect|safety|spec/i.test(`${m.scenario} ${m.question}`) ? i : -1)).filter(i => i >= 0 && !usedMock.current.has(i))
-      : [];
-    if (technical.length) {
-      const pick = technical[Math.floor(Math.random() * technical.length)];
-      usedMock.current.add(pick);
-      setMockIdx(pick);
-    } else setMockIdx(pickUnused(questions.mockQuestions.length, usedMock.current));
+    setMockIdx(pickUnused(mockPool.length, usedMock.current));
     setPressureIdx(pickUnused(pressurePoolSize, usedPressure.current));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [questions.mockQuestions, pressurePoolSize, track]);
+  }, [mockPool, pressurePoolSize]);
   useEffect(() => { usedMock.current.clear(); usedPressure.current.clear(); rollQuestions(); }, [rollQuestions, path]);
-  const mock = questions.mockQuestions[mockIdx] || questions.mockQuestions[0];
+  const mock = mockPool[mockIdx] || mockPool[0];
   const pressure = useMemo(() => {
-    if (path === 'consulting' && track !== 'technical' && questions.mentalMathQuestions.length) return questions.mentalMathQuestions[pressureIdx % questions.mentalMathQuestions.length];
+    if (allowMath && questions.mentalMathQuestions.length) return questions.mentalMathQuestions[pressureIdx % questions.mentalMathQuestions.length];
     return questions.mcqQuestions.length ? questions.mcqQuestions[pressureIdx % questions.mcqQuestions.length] : undefined;
-  }, [path, track, pressureIdx, questions.mentalMathQuestions, questions.mcqQuestions]);
+  }, [allowMath, pressureIdx, questions.mentalMathQuestions, questions.mcqQuestions]);
   const framework = MECE_FRAMEWORKS[marketId] || MECE_FRAMEWORKS.aerospace;
   const stageIndex = Math.max(0, STAGES.findIndex(item => item.key === stage));
 
@@ -148,7 +151,7 @@ export default function InterviewLabScreen() {
     if (!text || speaking) return;
     setSpeaking(true);
     try {
-      const sound = await speakAsSophia(text);
+      const sound = await speakAsLeo(text);
       soundRef.current = sound;
       sound?.setOnPlaybackStatusUpdate(status => {
         if ('didJustFinish' in status && status.didJustFinish) setSpeaking(false);
@@ -179,7 +182,7 @@ export default function InterviewLabScreen() {
       });
     } catch (error) {
       log.warn('[Interview] Feedback failed:', error);
-      setFeedback({ score: 5, sophiaSays: 'The connection flinched. Your answer still counts as a rep.', whatWentWell: 'You committed to an answer.', roomForImprovement: 'Try again for a full review.', betterVersion: 'Lead with your answer, then prove it.' });
+      setFeedback({ score: 5, leoSays: 'The connection flinched. Your answer still counts as a rep.', whatWentWell: 'You committed to an answer.', roomForImprovement: 'Try again for a full review.', betterVersion: 'Lead with your answer, then prove it.' });
       setStage('verdict');
     } finally { setSubmitting(false); }
   };
@@ -201,45 +204,19 @@ export default function InterviewLabScreen() {
 
   if (marketLoading || questions.loading) return <View style={styles.center}><ActivityIndicator size="large" color={COLORS.accent} /></View>;
   if (!path) return (
-    <View style={styles.root}>
-      <LinearGradient colors={[world.colors[0], world.colors[1]]} style={[styles.pathHero, { paddingTop: insets.top + 18 }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.close}><Feather name="x" size={22} color={COLORS.bg0} /></TouchableOpacity>
-        <Image source={SOPHIA} style={styles.sophiaHero} />
-        <Text style={styles.kickerLight}>INTERVIEW LAB</Text>
-        <Text style={styles.heroTitle}>Interview practice</Text>
-        <Text style={styles.heroBody}>Practice an interview question. Get feedback in 2 minutes.</Text>
-      </LinearGradient>
-      <ScrollView contentContainerStyle={[styles.pathBody, { paddingBottom: insets.bottom + 28 }]} showsVerticalScrollIndicator={false}>
-        {!readiness.loading && user ? (
-          <ReadinessCard
-            inline
-            visible
-            readiness={readiness}
-            onClose={() => {}}
-            onOpenBrief={() => router.push('/deliverable' as any)}
-            onStartMock={() => { setPath(track === 'behavioral' ? 'academic' : 'consulting'); setStage('response'); }}
-          />
-        ) : null}
-        <TouchableOpacity
-          accessibilityRole="button"
-          accessibilityLabel="Warm up with Leo"
-          activeOpacity={0.85}
-          style={styles.warmUp}
-          onPress={() => { triggerHaptic('medium'); router.push({ pathname: '/leo-call', params: { marketId: marketId ?? '', mode: 'interview' } } as any); }}
-        >
-          <Image source={require('../assets/mascot/leo-waving.png')} style={styles.warmUpLeo} resizeMode="contain" />
-          <View style={{ flex: 1 }}>
-            <Text style={styles.warmUpTitle}>Warm up with Leo</Text>
-            <Text style={styles.warmUpSub}>{readiness.target?.company ? `3-min call · Leo plays your ${readiness.target.company} interviewer` : '3-min call · Leo plays your interviewer'}</Text>
-          </View>
-          <Feather name="phone" size={18} color={COLORS.accent} />
-        </TouchableOpacity>
-        <PathCard icon="briefcase" title="Job interview" subtitle="Cases, numbers and clear answers" color={world.colors[0]} onPress={() => setPath('consulting')} />
-        <PathCard icon="award" title="Scholarship or school interview" subtitle="Stories about what you did and why" color={world.colors[1]} onPress={() => setPath('academic')} />
-        <Text style={styles.smallPrint}>Sophia coaches every run. Voice is optional.</Text>
-        {track && <Text style={styles.smallPrint}>{`${readiness.target?.role} · ${TRACK_LABEL[track]}`}</Text>}
-      </ScrollView>
-    </View>
+    <InterviewHome
+      userId={user?.id}
+      marketId={marketId}
+      readiness={readiness}
+      nextQuestion={mock?.question}
+      topInset={insets.top}
+      bottomInset={insets.bottom}
+      onClose={() => router.back()}
+      onOpenBrief={() => router.push('/deliverable' as any)}
+      onWarmUp={() => router.push({ pathname: '/leo-call', params: { marketId: marketId ?? '', mode: 'interview' } } as any)}
+      onStart={() => { setPersona(personaForTrack(track)); setPath('consulting'); setStage('response'); }}
+      onSchool={() => { setPersona('recruiter'); setPath('academic'); setStage('brief'); }}
+    />
   );
 
   return (
@@ -247,7 +224,7 @@ export default function InterviewLabScreen() {
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.close}><Feather name="x" size={22} color={COLORS.textPrimary} /></TouchableOpacity>
         <View style={{ flex: 1 }}><Text style={styles.headerTitle}>{marketName} Interview</Text><Text style={styles.headerSub}>{INTERVIEW_PERSONAS[persona].label}</Text></View>
-        <Image source={SOPHIA} style={styles.sophiaSmall} />
+        <Image source={LEO} style={styles.leoSmall} resizeMode="contain" />
       </View>
       <View style={styles.rail}>{STAGES.map((item, index) => <View key={item.key} style={[styles.railSegment, { backgroundColor: index <= stageIndex ? world.colors[0] : COLORS.border }]} />)}</View>
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 28 }]} showsVerticalScrollIndicator={false}>
@@ -294,14 +271,14 @@ export default function InterviewLabScreen() {
             <TouchableOpacity onPress={recording ? stopRecording : startRecording} style={[styles.record, recording && styles.recording]}><Feather name={recording ? 'square' : 'mic'} size={18} color={recording ? COLORS.bg0 : world.colors[0]} /><Text style={[styles.recordText, recording && { color: COLORS.bg0 }]}>{recording ? 'Stop' : 'Record'}</Text></TouchableOpacity>
             <Text style={styles.count}>{response.trim().split(/\s+/).filter(Boolean).length} words</Text>
           </View>
-          <Action label={submitting ? 'Sophia is grading…' : 'Lock answer'} color={world.colors[0]} disabled={submitting || response.trim().length < 20} onPress={submit} />
+          <Action label={submitting ? 'Leo is grading…' : 'Lock answer'} color={world.colors[0]} disabled={submitting || response.trim().length < 20} onPress={submit} />
         </>}
 
         {stage === 'verdict' && feedback && <>
           <LinearGradient colors={[scoreColor(feedback.score), world.colors[1]]} style={styles.verdict}>
             <Text style={styles.verdictLabel}>INTERVIEW VERDICT</Text><Text style={styles.verdictScore}>{Math.round((feedback.score || 5) * 10)}</Text><Text style={styles.verdictGrade}>{gradeLabel(feedback.score)}</Text>
           </LinearGradient>
-          <Coach text={feedback.sophiaSays || 'The structure is forming. Make every sentence earn its place.'} onSpeak={() => playCoach(feedback.sophiaSays)} speaking={speaking} />
+          <Coach text={feedback.leoSays || feedback.sophiaSays || 'The structure is forming. Make every sentence earn its place.'} onSpeak={() => playCoach(feedback.leoSays || feedback.sophiaSays)} speaking={speaking} />
           <Debrief icon="check-circle" title="Keep" body={feedback.whatWentWell} color={COLORS.success} />
           <Debrief icon="target" title="Fix next" body={feedback.roomForImprovement} color={COLORS.warning} />
           <Debrief icon="zap" title="Sharper version" body={feedback.betterVersion} color={world.colors[0]} />
@@ -317,7 +294,7 @@ export default function InterviewLabScreen() {
 function PathCard({ icon, title, subtitle, color, onPress }: { icon: keyof typeof Feather.glyphMap; title: string; subtitle: string; color: string; onPress: () => void }) {
   return <TouchableOpacity onPress={onPress} style={styles.pathCard}><View style={[styles.pathIcon, { backgroundColor: `${color}16` }]}><Feather name={icon} size={24} color={color} /></View><View style={{ flex: 1 }}><Text style={styles.pathTitle}>{title}</Text><Text style={styles.pathSubtitle}>{subtitle}</Text></View><Feather name="arrow-right" size={20} color={COLORS.textMuted} /></TouchableOpacity>;
 }
-function Coach({ text, onSpeak, speaking }: { text: string; onSpeak?: () => void; speaking?: boolean }) { return <View style={styles.coach}><Image source={SOPHIA} style={styles.coachAvatar} /><Text style={styles.coachText}>{text}</Text>{onSpeak && <TouchableOpacity onPress={onSpeak}><Feather name={speaking ? 'volume-2' : 'volume-1'} size={18} color={COLORS.accent} /></TouchableOpacity>}</View>; }
+function Coach({ text, onSpeak, speaking }: { text: string; onSpeak?: () => void; speaking?: boolean }) { return <View style={styles.coach}><Image source={LEO} style={styles.coachAvatar} resizeMode="contain" /><Text style={styles.coachText}>{text}</Text>{onSpeak && <TouchableOpacity onPress={onSpeak}><Feather name={speaking ? 'volume-2' : 'volume-1'} size={18} color={COLORS.accent} /></TouchableOpacity>}</View>; }
 function Action({ label, color, onPress, disabled }: { label: string; color: string; onPress: () => void; disabled?: boolean }) { return <TouchableOpacity disabled={disabled} onPress={onPress} style={[styles.action, { backgroundColor: color }, disabled && styles.disabled]}><Text style={styles.actionText}>{label}</Text><Feather name="arrow-right" size={18} color={COLORS.bg0} /></TouchableOpacity>; }
 function Debrief({ icon, title, body, color }: { icon: keyof typeof Feather.glyphMap; title: string; body: string; color: string }) { return <View style={styles.debrief}><Feather name={icon} size={19} color={color} /><View style={{ flex: 1 }}><Text style={[styles.debriefTitle, { color }]}>{title}</Text><Text style={styles.debriefBody}>{body || 'No note this round.'}</Text></View></View>; }
 const scoreColor = (score = 5) => score >= 8 ? '#16A34A' : score >= 6 ? '#F59E0B' : '#EF4444';
@@ -326,13 +303,12 @@ const gradeLabel = (score = 5) => score >= 9 ? 'Offer-ready' : score >= 7.5 ? 'S
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg0 }, center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg0 },
   pathHero: { height: 335, paddingHorizontal: 22, paddingBottom: 28, justifyContent: 'flex-end', overflow: 'hidden' }, close: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
-  sophiaHero: { position: 'absolute', width: 120, height: 120, right: 18, top: 60, resizeMode: 'cover', borderRadius: 60, opacity: 0.95 }, kickerLight: { color: COLORS.bg0, fontSize: 11, fontWeight: '900', letterSpacing: 1.2 }, heroTitle: { color: COLORS.bg0, fontSize: 31, lineHeight: 35, fontWeight: '900', maxWidth: 220, marginTop: 8 }, heroBody: { color: COLORS.bg0, opacity: 0.82, fontSize: 15, marginTop: 8, maxWidth: 215 },
   pathBody: { padding: 18, gap: 12 }, pathCard: { flexDirection: 'row', alignItems: 'center', minHeight: 92, padding: 16, borderWidth: 1, borderColor: COLORS.border, borderRadius: 16, gap: 14, backgroundColor: COLORS.bg2 }, pathIcon: { width: 50, height: 50, borderRadius: 14, alignItems: 'center', justifyContent: 'center' }, pathTitle: { fontSize: 18, fontWeight: '900', color: COLORS.textPrimary }, pathSubtitle: { fontSize: 13, color: COLORS.textSecondary, marginTop: 4 }, smallPrint: { color: COLORS.textMuted, fontSize: 12, textAlign: 'center', marginTop: 8 },
   warmUp: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 18, borderWidth: 1.5, borderColor: COLORS.accent, backgroundColor: COLORS.bg2, marginBottom: 12 }, warmUpLeo: { width: 48, height: 48 }, warmUpTitle: { color: COLORS.textPrimary, fontWeight: '800', fontSize: 16 }, warmUpSub: { color: COLORS.textSecondary, fontSize: 13, marginTop: 2 },
-  header: { height: 58, paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center', gap: 8 }, headerTitle: { color: COLORS.textPrimary, fontWeight: '900', fontSize: 15 }, headerSub: { color: COLORS.textMuted, fontSize: 11, marginTop: 1 }, sophiaSmall: { width: 38, height: 38, borderRadius: 19, marginRight: 6 }, rail: { flexDirection: 'row', gap: 4, paddingHorizontal: 16 }, railSegment: { flex: 1, height: 5, borderRadius: 3 },
+  header: { height: 58, paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center', gap: 8 }, headerTitle: { color: COLORS.textPrimary, fontWeight: '900', fontSize: 15 }, headerSub: { color: COLORS.textMuted, fontSize: 11, marginTop: 1 }, leoSmall: { width: 40, height: 40, marginRight: 6 }, rail: { flexDirection: 'row', gap: 4, paddingHorizontal: 16 }, railSegment: { flex: 1, height: 5, borderRadius: 3 },
   scroll: { padding: 20, gap: 14 }, stageLabel: { fontSize: 11, fontWeight: '900', letterSpacing: 1 }, title: { color: COLORS.textPrimary, fontSize: 27, lineHeight: 32, fontWeight: '900' }, subtitle: { color: COLORS.textSecondary, fontSize: 15, lineHeight: 21 },
   personas: { gap: 10 }, persona: { minHeight: 72, borderRadius: 15, borderWidth: 2, borderColor: COLORS.border, padding: 13, flexDirection: 'row', gap: 12, alignItems: 'center' }, personaTitle: { fontSize: 15, fontWeight: '800', color: COLORS.textPrimary }, personaText: { fontSize: 12, lineHeight: 17, color: COLORS.textSecondary, marginTop: 2 },
-  coach: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: 15, backgroundColor: COLORS.accentSoft }, coachAvatar: { width: 42, height: 42, borderRadius: 21 }, coachText: { flex: 1, fontSize: 13, lineHeight: 18, fontWeight: '600', color: COLORS.textPrimary },
+  coach: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: 15, backgroundColor: COLORS.accentSoft }, coachAvatar: { width: 44, height: 44 }, coachText: { flex: 1, fontSize: 13, lineHeight: 18, fontWeight: '600', color: COLORS.textPrimary },
   prompt: { padding: 18, borderRadius: 16, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border }, promptLabel: { fontSize: 10, color: COLORS.textMuted, fontWeight: '900', letterSpacing: 1, marginBottom: 7 }, promptText: { fontSize: 19, lineHeight: 25, color: COLORS.textPrimary, fontWeight: '800' },
   frameworkRow: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 14, borderBottomWidth: 1, borderBottomColor: COLORS.border }, frameworkNumber: { width: 28, fontSize: 22, fontWeight: '900', textAlign: 'center' }, frameworkText: { flex: 1, fontSize: 15, lineHeight: 20, fontWeight: '700', color: COLORS.textPrimary },
   options: { gap: 9 }, option: { minHeight: 60, padding: 12, borderRadius: 14, borderWidth: 2, borderColor: COLORS.border, flexDirection: 'row', alignItems: 'center', gap: 11 }, optionLetter: { width: 28, height: 28, textAlign: 'center', textAlignVertical: 'center', borderRadius: 8, backgroundColor: COLORS.bg1, color: COLORS.textSecondary, fontWeight: '900' }, optionText: { flex: 1, color: COLORS.textPrimary, fontSize: 14, lineHeight: 19, fontWeight: '600' }, correct: { borderColor: COLORS.success, backgroundColor: COLORS.successSoft }, wrong: { borderColor: COLORS.error, backgroundColor: COLORS.errorSoft },
