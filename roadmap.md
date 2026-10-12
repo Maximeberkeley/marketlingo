@@ -238,3 +238,11 @@
 - [x] Lesson intro shows the lesson's own day ("Catch up: Day 1")
 - [x] iPhone SE: compact intro so Leo stays above Start
 - [x] Welcome back: "Start today's lesson" opens the lesson; XP line reads "N XP to Level L+1"
+
+### Oct 12 — Remove Practice shortcuts (in progress)
+- [ ] Delete ShortcutIslands, strip all usage from practice tab (.tsx/.js), clear storage key on app start
+- [ ] You tab: League + Friends rows after Interview Brief (.tsx/.js)
+
+### Oct 12 — Follow-up fixes (queued)
+- [ ] Lesson intro day computed from the lesson itself (home.tsx introDay = stackDayNumber(session.activeStack) ?? currentDay; label via lessonDayLabel) for all entry points (.tsx/.js)
+- [ ] Leo call opener context: useStudiedLessons + useDeliverable report loading while marketId differs from loaded marketId; leo-call waits for useUserProgress before first turn (.tsx/.js)
