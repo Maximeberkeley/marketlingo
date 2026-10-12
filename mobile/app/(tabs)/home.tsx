@@ -292,11 +292,9 @@ export default function HomeScreen() {
   // Direct lesson open for the Course circle. Route params could keep a stale
   // lesson id after a detour (streak rescue), which made later taps no-ops.
   const openingLesson = useRef(false);
-  const [openedLessonDay, setOpenedLessonDay] = useState<number | null>(null);
   const openLessonById = useCallback(async (stackId: string, day?: number) => {
     if (openingLesson.current) return;
     openingLesson.current = true;
-    setOpenedLessonDay(typeof day === 'number' && day > 0 ? day : null);
     try {
       const { data: stack } = await supabase
         .from('stacks')
