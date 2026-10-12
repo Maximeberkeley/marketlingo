@@ -6,8 +6,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Leo's voice - using "George" for a warm, friendly male narrator
-const DEFAULT_VOICE_ID = "JBFqnCBsd6RMkjVDRZzb";
+// Leo uses Liam: a young, confident American voice.
+const DEFAULT_VOICE_ID = "TX3LPaxmHKxFdv7VOQHJ";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {

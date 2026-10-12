@@ -1,10 +1,10 @@
 // Voice assignments:
-// Leo (mascot)  → George (warm friendly narrator): JBFqnCBsd6RMkjVDRZzb
+// Leo (mascot)  → Liam (young, confident American): TX3LPaxmHKxFdv7VOQHJ
 // Maya Chen     → Alice (sharp, analytical female): Xb7hH8MSUJpSbSDYk0k2
 // Dr. Alex      → Brian (patient, authoritative male): nPczCjzI2devNBz1zQrb
 // Kai Johnson   → Chris (energetic, upbeat male): iP95p4xoKVk53GoZ742B
 // Sophia        → Lily (warm, supportive female): pFZP5JQG7iQjIQuC4Bku
-export const LEO_VOICE_ID = 'JBFqnCBsd6RMkjVDRZzb';
+export const LEO_VOICE_ID = 'TX3LPaxmHKxFdv7VOQHJ';
 export const mentors = [
     {
         id: 'maya',
