@@ -186,6 +186,16 @@ export default function HomeScreen() {
     if (selectedMarket) setSelectedMarketLocal(selectedMarket);
   }, [selectedMarket]);
 
+  // The ring must never render from defaults ("Day 1", "Start here"): keep the
+  // skeleton up until progress and today's completion have actually loaded.
+  // A sticky flag rather than the transient loading booleans, so later
+  // refetches (tab focus, midnight tick) never flash the skeleton again.
+  const [bootReady, setBootReady] = useState(false);
+  useEffect(() => {
+    if (bootReady || authLoading || loading || xpLoading || progressLoading || !selectedMarket) return;
+    setBootReady(true);
+  }, [bootReady, authLoading, loading, xpLoading, progressLoading, selectedMarket]);
+
   const { dueCount } = useSpacedRepetition(selectedMarketLocal || undefined);
   const deliverable = useDeliverable(selectedMarketLocal || undefined, learningGoal);
   const focusTopic = useFocusTopic(selectedMarketLocal || undefined, currentDay || 1);
