@@ -160,3 +160,39 @@ export function dbToBigBoss(row: any): BigBossQuestion {
     tip: row.explanation || '',
   };
 }
+
+// ─── Role-track mock questions (on-device bank) ───
+// Technical and behavioral questions by market. Technical roles never get
+// consulting cases or mental math; these fill the gap until the question table
+// carries enough rows for the track.
+export type TrackKey = 'technical' | 'behavioral';
+export const TRACK_MOCKS: Record<string, Partial<Record<TrackKey, Omit<MockPrompt, 'sampleAnswer'>[]>>> = {
+  aerospace: {
+    technical: [
+      { id: 'aero-tech-1', scenario: 'Your team is adding a new software feature to a flight control computer.', question: 'How would you show the certification authority that this software is safe to fly?', buzzwords: ['design assurance level', 'requirements traceability', 'verification', 'structural coverage', 'certification plan'] },
+      { id: 'aero-tech-2', scenario: 'A supplier part fails a fatigue test late in the program.', question: 'Walk me through how you would find the root cause and decide what to do next.', buzzwords: ['root cause analysis', 'fatigue life', 'test evidence', 'margin of safety', 'corrective action'] },
+      { id: 'aero-tech-3', scenario: 'Engineers want a lighter composite panel, but the stress team is worried.', question: 'How would you weigh the weight saving against the risk?', buzzwords: ['trade study', 'damage tolerance', 'weight budget', 'inspection interval', 'failure mode'] },
+      { id: 'aero-tech-4', scenario: 'A sensor gives a wrong reading during a test flight and the system reacts to it.', question: 'How would you redesign the system so one bad sensor cannot cause harm?', buzzwords: ['redundancy', 'voting logic', 'single point of failure', 'fault detection', 'safety assessment'] },
+      { id: 'aero-tech-5', scenario: 'You join a satellite team two months before launch.', question: 'What tests would you insist on before the satellite ships to the launch site?', buzzwords: ['thermal vacuum', 'vibration test', 'acceptance test', 'test campaign', 'flight readiness'] },
+      { id: 'aero-tech-6', scenario: 'A change request arrives that touches wiring in an aircraft already in service.', question: 'How do you keep the change safe and fully documented?', buzzwords: ['configuration control', 'change impact', 'airworthiness', 'service bulletin', 'regression testing'] },
+      { id: 'aero-tech-7', scenario: 'Production keeps finding the same drilling defect on one assembly.', question: 'How would you fix the process, not just the parts?', buzzwords: ['process capability', 'first article inspection', 'nonconformance', 'standard work', 'quality escape'] },
+      { id: 'aero-tech-8', scenario: 'A new engine control update saves fuel but changes how the engine responds.', question: 'How would you prove the update is ready for line pilots?', buzzwords: ['flight test', 'envelope', 'human factors', 'simulation', 'acceptance criteria'] },
+      { id: 'aero-tech-9', scenario: 'Your drone program needs approval to fly beyond the pilot’s line of sight.', question: 'What technical case would you build for the regulator?', buzzwords: ['detect and avoid', 'risk assessment', 'command and control link', 'operational limits', 'safety case'] },
+      { id: 'aero-tech-10', scenario: 'Two teams disagree on whether a requirement is testable.', question: 'How would you rewrite the requirement and settle the disagreement?', buzzwords: ['verifiable requirement', 'acceptance criteria', 'interface control', 'systems engineering', 'traceability'] },
+    ],
+    behavioral: [
+      { id: 'aero-beh-1', scenario: 'Interviewers want to see how you handle safety pressure.', question: 'Tell me about a time you raised a concern when others wanted to move faster.', buzzwords: ['safety culture', 'escalation', 'evidence', 'stakeholder', 'outcome'] },
+      { id: 'aero-beh-2', scenario: 'Aerospace programs run for years with many teams.', question: 'Tell me about a time you worked with a team you did not control to hit a deadline.', buzzwords: ['cross-functional', 'alignment', 'schedule', 'trade-off', 'result'] },
+      { id: 'aero-beh-3', scenario: 'Mistakes in this industry must be reported, not hidden.', question: 'Tell me about a mistake you made and what you changed afterwards.', buzzwords: ['ownership', 'root cause', 'lesson learned', 'process change', 'transparency'] },
+      { id: 'aero-beh-4', scenario: 'The role involves explaining technical work to non-engineers.', question: 'Tell me about a time you explained something complex to someone without your background.', buzzwords: ['clarity', 'audience', 'simplify', 'decision', 'feedback'] },
+      { id: 'aero-beh-5', scenario: 'Plans change when tests fail.', question: 'Tell me about a time a plan fell apart and how you recovered.', buzzwords: ['adaptability', 'prioritisation', 'recovery plan', 'communication', 'result'] },
+      { id: 'aero-beh-6', scenario: 'They want to know why you chose this industry.', question: 'Why aerospace, and what part of it do you want to own in five years?', buzzwords: ['motivation', 'specific interest', 'career path', 'impact', 'learning'] },
+    ],
+  },
+};
+
+/** On-device mocks for a market and role track ('case' and role-neutral use the question table). */
+export function trackMocks(marketId: string | null | undefined, track: string | null | undefined): MockPrompt[] {
+  if (!marketId || (track !== 'technical' && track !== 'behavioral')) return [];
+  return (TRACK_MOCKS[marketId]?.[track] || []).map(m => ({ ...m, sampleAnswer: '' }));
+}

@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../../lib/constants";
-import { parseInterviewDate, roleTrack, TRACK_LABEL } from "../../lib/interviewPrep";
+import { parseInterviewDate, roleTrack, shortDate, TRACK_LABEL } from "../../lib/interviewPrep";
 import { triggerHaptic } from "../../lib/haptics";
-function InterviewTargetForm({ target, onSave }) {
-  const [open, setOpen] = useState(false);
+function InterviewTargetForm({ target, onSave, initiallyOpen = false, onCancel }) {
+  const [open, setOpen] = useState(initiallyOpen);
   const [company, setCompany] = useState(target?.company || "");
   const [role, setRole] = useState(target?.role || "");
   const [date, setDate] = useState(target?.date || "");
@@ -36,41 +36,15 @@ function InterviewTargetForm({ target, onSave }) {
     return <TouchableOpacity style={styles.card} activeOpacity={0.88} onPress={() => {
       triggerHaptic("light");
       setOpen(true);
-    }}>
-        <View style={styles.icon}><Feather name="briefcase" size={20} color={COLORS.accent} /></View>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.title}>{target ? `${target.role} \xB7 ${target.company}` : "Got an interview?"}</Text>
-          <Text style={styles.sub}>
-            {target ? `${target.date ? target.date : "No date yet"} \xB7 ${TRACK_LABEL[roleTrack(target.role)]}` : "Add the company, role and date. We\u2019ll plan your prep."}
-          </Text>
-        </View>
-        <Feather name={target ? "edit-2" : "plus"} size={18} color={COLORS.textMuted} />
-      </TouchableOpacity>;
+    }}><View style={styles.icon}><Feather name="briefcase" size={20} color={COLORS.accent} /></View><View style={{ flex: 1 }}><Text style={styles.title}>{target ? `${target.role} \xB7 ${target.company}` : "Got an interview?"}</Text><Text style={styles.sub}>{target ? `${target.date ? shortDate(target.date) : "No date yet"} \xB7 ${TRACK_LABEL[roleTrack(target.role)]}` : "Add the company, role and date. We\u2019ll plan your prep."}</Text></View><Feather name={target ? "edit-2" : "plus"} size={18} color={COLORS.textMuted} /></TouchableOpacity>;
   }
-  return <View style={styles.card}>
-      <View style={{ flex: 1, gap: 10 }}>
-        <Text style={styles.title}>Got an interview?</Text>
-        <TextInput value={company} onChangeText={setCompany} placeholder="Company" placeholderTextColor={COLORS.textMuted} style={styles.input} />
-        <TextInput value={role} onChangeText={setRole} placeholder="Role (e.g. Tech Lead, Recruiter, Consultant)" placeholderTextColor={COLORS.textMuted} style={styles.input} />
-        {!noDate && <TextInput value={date} onChangeText={setDate} placeholder="Date (YYYY-MM-DD)" placeholderTextColor={COLORS.textMuted} style={styles.input} keyboardType="numbers-and-punctuation" />}
-        <TouchableOpacity style={styles.toggle} onPress={() => setNoDate((v) => !v)}>
-          <Feather name={noDate ? "check-square" : "square"} size={18} color={COLORS.accent} />
-          <Text style={styles.toggleText}>No date yet</Text>
-        </TouchableOpacity>
-        {!!error && <Text style={styles.error}>{error}</Text>}
-        <View style={styles.row}>
-          {target && <TouchableOpacity onPress={async () => {
+  return <View style={styles.card}><View style={{ flex: 1, gap: 10 }}><Text style={styles.title}>Got an interview?</Text><TextInput value={company} onChangeText={setCompany} placeholder="Company" placeholderTextColor={COLORS.textMuted} style={styles.input} /><TextInput value={role} onChangeText={setRole} placeholder="Role (e.g. Tech Lead, Recruiter, Consultant)" placeholderTextColor={COLORS.textMuted} style={styles.input} />{!noDate && <TextInput value={date} onChangeText={setDate} placeholder="Date (YYYY-MM-DD)" placeholderTextColor={COLORS.textMuted} style={styles.input} keyboardType="numbers-and-punctuation" />}<TouchableOpacity style={styles.toggle} onPress={() => setNoDate((v) => !v)}><Feather name={noDate ? "check-square" : "square"} size={18} color={COLORS.accent} /><Text style={styles.toggleText}>No date yet</Text></TouchableOpacity>{!!error && <Text style={styles.error}>{error}</Text>}<View style={styles.row}>{target && <TouchableOpacity onPress={async () => {
     await onSave(null);
     setOpen(false);
-  }}>
-              <Text style={styles.remove}>Remove</Text>
-            </TouchableOpacity>}
-          <View style={{ flex: 1 }} />
-          <TouchableOpacity onPress={() => setOpen(false)}><Text style={styles.cancel}>Cancel</Text></TouchableOpacity>
-          <TouchableOpacity style={styles.save} onPress={save}><Text style={styles.saveText}>Save</Text></TouchableOpacity>
-        </View>
-      </View>
-    </View>;
+  }}><Text style={styles.remove}>Remove</Text></TouchableOpacity>}<View style={{ flex: 1 }} /><TouchableOpacity onPress={() => {
+    setOpen(false);
+    onCancel?.();
+  }}><Text style={styles.cancel}>Cancel</Text></TouchableOpacity><TouchableOpacity style={styles.save} onPress={save}><Text style={styles.saveText}>Save</Text></TouchableOpacity></View></View></View>;
 }
 const styles = StyleSheet.create({
   card: { flexDirection: "row", alignItems: "center", gap: 12, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.bg2 },

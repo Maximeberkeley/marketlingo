@@ -1,5 +1,5 @@
 // Voice utilities for Interview Lab
-// Uses existing elevenlabs-tts edge function with Sophia's voice (Jessica)
+// Uses the elevenlabs-tts edge function with Leo's voice — Leo is the only coach
 // ======================================================================
 
 import { Audio } from 'expo-av';
@@ -8,8 +8,7 @@ import { supabase } from './supabase';
 import { speakWithElevenLabs } from './tts';
 import { log } from './logger';
 
-// Sophia Hernández voice = Jessica (warm, professional)
-const SOPHIA_VOICE_ID = 'cgSgspJ2msm6clMCkdW9';
+import { LEO_VOICE_ID } from '../data/mentors';
 
 const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 
@@ -28,17 +27,17 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 }
 
 /**
- * Play TTS audio using Sophia's voice.
+ * Play TTS audio in Leo's voice.
  * Uses static import of speakWithElevenLabs for reliable native bundling.
  */
-export async function speakAsSophia(text: string): Promise<Audio.Sound | null> {
+export async function speakAsLeo(text: string): Promise<Audio.Sound | null> {
   if (!text || text.trim().length === 0) return null;
 
   try {
-    log.debug('[Sophia] Speaking:', text.substring(0, 60) + '...');
-    return await speakWithElevenLabs(text, SOPHIA_VOICE_ID, 'sophia_interview');
+    log.debug('[Leo coach] Speaking:', text.substring(0, 60) + '...');
+    return await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_interview');
   } catch (err) {
-    log.warn('Sophia TTS error:', err);
+    log.warn('Leo coach TTS error:', err);
     return null;
   }
 }
@@ -87,8 +86,9 @@ export function buildFeedbackNarration(feedback: any): string {
   
   const parts: string[] = [];
   
-  if (feedback.sophiaSays) {
-    parts.push(feedback.sophiaSays);
+  const coachLine = feedback.leoSays || feedback.sophiaSays;
+  if (coachLine) {
+    parts.push(coachLine);
   }
   
   parts.push(`You scored ${feedback.score} out of 100.`);

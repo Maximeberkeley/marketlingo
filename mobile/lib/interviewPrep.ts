@@ -115,9 +115,18 @@ function addDays(iso: string, n: number): string {
   return dt.toISOString().slice(0, 10);
 }
 
-function dateLabel(iso: string): string {
-  const [y, m, d] = iso.split('-').map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+/** 'YYYY-MM-DD' → 'Oct 12'. Fixed English format so every screen reads the same. */
+export function shortDate(iso?: string | null): string {
+  if (!iso || !/^\d{4}-\d{2}-\d{2}/.test(iso)) return '';
+  const [, m, d] = iso.slice(0, 10).split('-').map(Number);
+  return `${MONTHS[m - 1]} ${d}`;
+}
+function dateLabel(iso: string): string { return shortDate(iso); }
+
+/** Interviewer persona that matches a role track. */
+export function personaForTrack(track: RoleTrack | null): 'consultant' | 'tech_lead' | 'recruiter' {
+  return track === 'technical' ? 'tech_lead' : track === 'behavioral' ? 'recruiter' : 'consultant';
 }
 
 /** Day-by-day sprint: 1 concept, 1 company mock question, 1 news item; the last day is a full mock. */

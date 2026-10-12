@@ -71,9 +71,17 @@ function addDays(iso, n) {
   const dt = new Date(Date.UTC(y, m - 1, d + n));
   return dt.toISOString().slice(0, 10);
 }
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function shortDate(iso) {
+  if (!iso || !/^\d{4}-\d{2}-\d{2}/.test(iso)) return "";
+  const [, m, d] = iso.slice(0, 10).split("-").map(Number);
+  return `${MONTHS[m - 1]} ${d}`;
+}
 function dateLabel(iso) {
-  const [y, m, d] = iso.split("-").map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString(void 0, { weekday: "short", month: "short", day: "numeric" });
+  return shortDate(iso);
+}
+function personaForTrack(track) {
+  return track === "technical" ? "tech_lead" : track === "behavioral" ? "recruiter" : "consultant";
 }
 function buildSprintPlan(opts) {
   const today = opts.today || localDateString();
@@ -111,7 +119,9 @@ export {
   daysUntil,
   loadInterviewTarget,
   parseInterviewDate,
+  personaForTrack,
   roleTrack,
   saveInterviewTarget,
+  shortDate,
   weekKey
 };

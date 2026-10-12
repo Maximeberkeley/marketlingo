@@ -25,14 +25,14 @@ import { useCollectibles } from "../hooks/useCollectibles";
 import { supabase } from "../lib/supabase";
 import { getMarketName } from "../lib/markets";
 import { getMarketWorld } from "../data/marketWorlds";
-import { INTERVIEW_PERSONAS, MECE_FRAMEWORKS, STORY_HERO_STEPS } from "../lib/interviewLabData";
-import { speakAsSophia, transcribeAudio } from "../lib/interviewVoice";
+import { INTERVIEW_PERSONAS, MECE_FRAMEWORKS, STORY_HERO_STEPS, trackMocks } from "../lib/interviewLabData";
+import { speakAsLeo, transcribeAudio } from "../lib/interviewVoice";
 import { triggerHaptic } from "../lib/haptics";
 import { log } from "../lib/logger";
 import { useInterviewReadiness } from "../hooks/useInterviewReadiness";
-import { ReadinessCard } from "../components/interview/ReadinessCard";
-import { roleTrack, TRACK_LABEL } from "../lib/interviewPrep";
-const SOPHIA = require("../assets/mentors/mentor-sophia.png");
+import { InterviewHome } from "../components/interview/InterviewHome";
+import { personaForTrack, roleTrack } from "../lib/interviewPrep";
+const LEO = require("../assets/mascot/leo-idle.png");
 const STAGES = [
   { key: "brief", label: "Brief" },
   { key: "framework", label: "Frame" },
@@ -71,7 +71,6 @@ function InterviewLabScreen() {
   const questions = useInterviewQuestions(marketId, path || "consulting");
   const readiness = useInterviewReadiness(marketId);
   const track = readiness.target ? roleTrack(readiness.target.role) : null;
-  const [showReadiness, setShowReadiness] = useState(false);
   const { addXP } = useUserXP(marketId);
   const { recordCaseRun } = usePracticeRewards();
   const { evaluateRewards } = useCollectibles(marketId);
@@ -88,26 +87,31 @@ function InterviewLabScreen() {
     used.add(pick);
     return pick;
   };
-  const pressurePoolSize = path === "consulting" && track !== "technical" && questions.mentalMathQuestions.length ? questions.mentalMathQuestions.length : questions.mcqQuestions.length;
+  const mockPool = useMemo(() => {
+    if (path !== "consulting") return questions.mockQuestions;
+    const bank = trackMocks(marketId, track);
+    if (track === "technical") {
+      const fit = questions.mockQuestions.filter((m) => /certif|technical|system|standard|regulat|engineer|architect|safety|spec/i.test(`${m.scenario} ${m.question}`));
+      return bank.length || fit.length ? [...bank, ...fit] : questions.mockQuestions;
+    }
+    return bank.length ? bank : questions.mockQuestions;
+  }, [path, track, marketId, questions.mockQuestions]);
+  const allowMath = path === "consulting" && (track === "case" || track === null);
+  const pressurePoolSize = allowMath && questions.mentalMathQuestions.length ? questions.mentalMathQuestions.length : questions.mcqQuestions.length;
   const rollQuestions = useCallback(() => {
-    const technical = track === "technical" ? questions.mockQuestions.map((m, i) => /certif|technical|system|standard|regulat|engineer|architect|safety|spec/i.test(`${m.scenario} ${m.question}`) ? i : -1).filter((i) => i >= 0 && !usedMock.current.has(i)) : [];
-    if (technical.length) {
-      const pick = technical[Math.floor(Math.random() * technical.length)];
-      usedMock.current.add(pick);
-      setMockIdx(pick);
-    } else setMockIdx(pickUnused(questions.mockQuestions.length, usedMock.current));
+    setMockIdx(pickUnused(mockPool.length, usedMock.current));
     setPressureIdx(pickUnused(pressurePoolSize, usedPressure.current));
-  }, [questions.mockQuestions, pressurePoolSize, track]);
+  }, [mockPool, pressurePoolSize]);
   useEffect(() => {
     usedMock.current.clear();
     usedPressure.current.clear();
     rollQuestions();
   }, [rollQuestions, path]);
-  const mock = questions.mockQuestions[mockIdx] || questions.mockQuestions[0];
+  const mock = mockPool[mockIdx] || mockPool[0];
   const pressure = useMemo(() => {
-    if (path === "consulting" && track !== "technical" && questions.mentalMathQuestions.length) return questions.mentalMathQuestions[pressureIdx % questions.mentalMathQuestions.length];
+    if (allowMath && questions.mentalMathQuestions.length) return questions.mentalMathQuestions[pressureIdx % questions.mentalMathQuestions.length];
     return questions.mcqQuestions.length ? questions.mcqQuestions[pressureIdx % questions.mcqQuestions.length] : void 0;
-  }, [path, track, pressureIdx, questions.mentalMathQuestions, questions.mcqQuestions]);
+  }, [allowMath, pressureIdx, questions.mentalMathQuestions, questions.mcqQuestions]);
   const framework = MECE_FRAMEWORKS[marketId] || MECE_FRAMEWORKS.aerospace;
   const stageIndex = Math.max(0, STAGES.findIndex((item) => item.key === stage));
   useEffect(() => () => {
@@ -159,7 +163,7 @@ function InterviewLabScreen() {
     if (!text || speaking) return;
     setSpeaking(true);
     try {
-      const sound = await speakAsSophia(text);
+      const sound = await speakAsLeo(text);
       soundRef.current = sound;
       sound?.setOnPlaybackStatusUpdate((status) => {
         if ("didJustFinish" in status && status.didJustFinish) setSpeaking(false);
@@ -201,7 +205,7 @@ function InterviewLabScreen() {
       });
     } catch (error) {
       log.warn("[Interview] Feedback failed:", error);
-      setFeedback({ score: 5, sophiaSays: "The connection flinched. Your answer still counts as a rep.", whatWentWell: "You committed to an answer.", roomForImprovement: "Try again for a full review.", betterVersion: "Lead with your answer, then prove it." });
+      setFeedback({ score: 5, leoSays: "The connection flinched. Your answer still counts as a rep.", whatWentWell: "You committed to an answer.", roomForImprovement: "Try again for a full review.", betterVersion: "Lead with your answer, then prove it." });
       setStage("verdict");
     } finally {
       setSubmitting(false);
@@ -227,62 +231,50 @@ function InterviewLabScreen() {
     }
     router.back();
   };
-  if (marketLoading || questions.loading) return /* @__PURE__ */ React.createElement(View, { style: styles.center }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }));
-  if (!path) return /* @__PURE__ */ React.createElement(View, { style: styles.root }, /* @__PURE__ */ React.createElement(LinearGradient, { colors: [world.colors[0], world.colors[1]], style: [styles.pathHero, { paddingTop: insets.top + 18 }] }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.back(), style: styles.close }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 22, color: COLORS.bg0 })), /* @__PURE__ */ React.createElement(Image, { source: SOPHIA, style: styles.sophiaHero }), /* @__PURE__ */ React.createElement(Text, { style: styles.kickerLight }, "INTERVIEW LAB"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroTitle }, "Interview practice"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroBody }, "Practice an interview question. Get feedback in 2 minutes.")), /* @__PURE__ */ React.createElement(ScrollView, { contentContainerStyle: [styles.pathBody, { paddingBottom: insets.bottom + 28 }], showsVerticalScrollIndicator: false }, !readiness.loading && user ? /* @__PURE__ */ React.createElement(
-    ReadinessCard,
-    {
-      inline: true,
-      visible: true,
-      readiness,
-      onClose: () => {
-      },
-      onOpenBrief: () => router.push("/deliverable"),
-      onStartMock: () => {
-        setPath(track === "behavioral" ? "academic" : "consulting");
-        setStage("response");
-      }
-    }
-  ) : null, /* @__PURE__ */ React.createElement(
-    TouchableOpacity,
-    {
-      accessibilityRole: "button",
-      accessibilityLabel: "Warm up with Leo",
-      activeOpacity: 0.85,
-      style: styles.warmUp,
-      onPress: () => {
-        triggerHaptic("medium");
-        router.push({ pathname: "/leo-call", params: { marketId: marketId ?? "", mode: "interview" } });
-      }
-    },
-    /* @__PURE__ */ React.createElement(Image, { source: require("../assets/mascot/leo-waving.png"), style: styles.warmUpLeo, resizeMode: "contain" }),
-    /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.warmUpTitle }, "Warm up with Leo"), /* @__PURE__ */ React.createElement(Text, { style: styles.warmUpSub }, readiness.target?.company ? `3-min call \xB7 Leo plays your ${readiness.target.company} interviewer` : "3-min call \xB7 Leo plays your interviewer")),
-    /* @__PURE__ */ React.createElement(Feather, { name: "phone", size: 18, color: COLORS.accent })
-  ), /* @__PURE__ */ React.createElement(PathCard, { icon: "briefcase", title: "Job interview", subtitle: "Cases, numbers and clear answers", color: world.colors[0], onPress: () => setPath("consulting") }), /* @__PURE__ */ React.createElement(PathCard, { icon: "award", title: "Scholarship or school interview", subtitle: "Stories about what you did and why", color: world.colors[1], onPress: () => setPath("academic") }), /* @__PURE__ */ React.createElement(Text, { style: styles.smallPrint }, "Sophia coaches every run. Voice is optional."), track && /* @__PURE__ */ React.createElement(Text, { style: styles.smallPrint }, `${readiness.target?.role} \xB7 ${TRACK_LABEL[track]}`)));
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 8 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.header }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.back(), style: styles.close }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 22, color: COLORS.textPrimary })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.headerTitle }, marketName, " Interview"), /* @__PURE__ */ React.createElement(Text, { style: styles.headerSub }, INTERVIEW_PERSONAS[persona].label)), /* @__PURE__ */ React.createElement(Image, { source: SOPHIA, style: styles.sophiaSmall })), /* @__PURE__ */ React.createElement(View, { style: styles.rail }, STAGES.map((item, index) => /* @__PURE__ */ React.createElement(View, { key: item.key, style: [styles.railSegment, { backgroundColor: index <= stageIndex ? world.colors[0] : COLORS.border }] }))), /* @__PURE__ */ React.createElement(ScrollView, { contentContainerStyle: [styles.scroll, { paddingBottom: insets.bottom + 28 }], showsVerticalScrollIndicator: false }, /* @__PURE__ */ React.createElement(Text, { style: [styles.stageLabel, { color: world.colors[0] }] }, STAGES[stageIndex].label.toUpperCase(), " \xB7 ", stageIndex + 1, "/5"), stage === "brief" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Pick your interviewer."), /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "Your coach changes what a strong answer sounds like."), /* @__PURE__ */ React.createElement(View, { style: styles.personas }, Object.entries(INTERVIEW_PERSONAS).map(([key, item]) => /* @__PURE__ */ React.createElement(TouchableOpacity, { key, onPress: () => setPersona(key), style: [styles.persona, persona === key && { borderColor: item.color, backgroundColor: `${item.color}10` }] }, /* @__PURE__ */ React.createElement(Feather, { name: item.icon, size: 19, color: item.color }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.personaTitle }, item.label), /* @__PURE__ */ React.createElement(Text, { style: styles.personaText }, short(item.description, 58))), persona === key && /* @__PURE__ */ React.createElement(Feather, { name: "check-circle", size: 18, color: item.color })))), /* @__PURE__ */ React.createElement(Coach, { text: "I\u2019ll listen for structure, evidence, and whether you actually answered the question.", onSpeak: () => playCoach("I will listen for structure, evidence, and whether you actually answered the question."), speaking }), /* @__PURE__ */ React.createElement(Action, { label: "Build my framework", color: world.colors[0], onPress: () => next("framework") })), stage === "framework" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, path === "consulting" ? "Build the frame." : "Build the story."), path === "consulting" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: styles.prompt }, /* @__PURE__ */ React.createElement(Text, { style: styles.promptLabel }, "THE PROBLEM"), /* @__PURE__ */ React.createElement(Text, { style: styles.promptText }, short(framework.label, 120))), framework.branches.slice(0, 3).map((branch, index) => /* @__PURE__ */ React.createElement(View, { key: branch, style: styles.frameworkRow }, /* @__PURE__ */ React.createElement(Text, { style: [styles.frameworkNumber, { color: world.colors[index % 3] }] }, index + 1), /* @__PURE__ */ React.createElement(Text, { style: styles.frameworkText }, short(branch, 92))))) : STORY_HERO_STEPS.map((item, index) => /* @__PURE__ */ React.createElement(View, { key: item.letter, style: styles.frameworkRow }, /* @__PURE__ */ React.createElement(Text, { style: [styles.frameworkNumber, { color: world.colors[index % 3] }] }, item.letter), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.frameworkText }, item.label), /* @__PURE__ */ React.createElement(Text, { style: styles.personaText }, item.prompt)))), /* @__PURE__ */ React.createElement(Coach, { text: path === "consulting" ? "Split the problem into parts that don't overlap." : "Keep the setup short. Spend most time on what you did." }), /* @__PURE__ */ React.createElement(Action, { label: "Enter pressure round", color: world.colors[0], onPress: () => next("pressure") })), stage === "pressure" && pressure && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "No warm-up. Make the call."), /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, path === "consulting" && questions.mentalMathQuestions.length ? "Mental math under pressure." : "One choice. No essay."), /* @__PURE__ */ React.createElement(View, { style: styles.prompt }, /* @__PURE__ */ React.createElement(Text, { style: styles.promptText }, short(pressure.question, 170))), /* @__PURE__ */ React.createElement(View, { style: styles.options }, pressure.options.map((option, index) => {
+  if (marketLoading || questions.loading) return <View style={styles.center}><ActivityIndicator size="large" color={COLORS.accent} /></View>;
+  if (!path) return <InterviewHome
+    userId={user?.id}
+    marketId={marketId}
+    readiness={readiness}
+    nextQuestion={mock?.question}
+    topInset={insets.top}
+    bottomInset={insets.bottom}
+    onClose={() => router.back()}
+    onOpenBrief={() => router.push("/deliverable")}
+    onWarmUp={() => router.push({ pathname: "/leo-call", params: { marketId: marketId ?? "", mode: "interview" } })}
+    onStart={() => {
+      setPersona(personaForTrack(track));
+      setPath("consulting");
+      setStage("response");
+    }}
+    onSchool={() => {
+      setPersona("recruiter");
+      setPath("academic");
+      setStage("brief");
+    }}
+  />;
+  return <View style={[styles.root, { paddingTop: insets.top + 8 }]}><View style={styles.header}><TouchableOpacity onPress={() => router.back()} style={styles.close}><Feather name="x" size={22} color={COLORS.textPrimary} /></TouchableOpacity><View style={{ flex: 1 }}><Text style={styles.headerTitle}>{marketName} Interview</Text><Text style={styles.headerSub}>{INTERVIEW_PERSONAS[persona].label}</Text></View><Image source={LEO} style={styles.leoSmall} resizeMode="contain" /></View><View style={styles.rail}>{STAGES.map((item, index) => <View key={item.key} style={[styles.railSegment, { backgroundColor: index <= stageIndex ? world.colors[0] : COLORS.border }]} />)}</View><ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 28 }]} showsVerticalScrollIndicator={false}><Text style={[styles.stageLabel, { color: world.colors[0] }]}>{STAGES[stageIndex].label.toUpperCase()} · {stageIndex + 1}/5</Text>{stage === "brief" && <><Text style={styles.title}>Pick your interviewer.</Text><Text style={styles.subtitle}>Your coach changes what a strong answer sounds like.</Text><View style={styles.personas}>{Object.entries(INTERVIEW_PERSONAS).map(([key, item]) => <TouchableOpacity key={key} onPress={() => setPersona(key)} style={[styles.persona, persona === key && { borderColor: item.color, backgroundColor: `${item.color}10` }]}><Feather name={item.icon} size={19} color={item.color} /><View style={{ flex: 1 }}><Text style={styles.personaTitle}>{item.label}</Text><Text style={styles.personaText}>{short(item.description, 58)}</Text></View>{persona === key && <Feather name="check-circle" size={18} color={item.color} />}</TouchableOpacity>)}</View><Coach text="I’ll listen for structure, evidence, and whether you actually answered the question." onSpeak={() => playCoach("I will listen for structure, evidence, and whether you actually answered the question.")} speaking={speaking} /><Action label="Build my framework" color={world.colors[0]} onPress={() => next("framework")} /></>}{stage === "framework" && <><Text style={styles.title}>{path === "consulting" ? "Build the frame." : "Build the story."}</Text>{path === "consulting" ? <><View style={styles.prompt}><Text style={styles.promptLabel}>THE PROBLEM</Text><Text style={styles.promptText}>{short(framework.label, 120)}</Text></View>{framework.branches.slice(0, 3).map((branch, index) => <View key={branch} style={styles.frameworkRow}><Text style={[styles.frameworkNumber, { color: world.colors[index % 3] }]}>{index + 1}</Text><Text style={styles.frameworkText}>{short(branch, 92)}</Text></View>)}</> : STORY_HERO_STEPS.map((item, index) => <View key={item.letter} style={styles.frameworkRow}><Text style={[styles.frameworkNumber, { color: world.colors[index % 3] }]}>{item.letter}</Text><View style={{ flex: 1 }}><Text style={styles.frameworkText}>{item.label}</Text><Text style={styles.personaText}>{item.prompt}</Text></View></View>)}<Coach text={path === "consulting" ? "Split the problem into parts that don't overlap." : "Keep the setup short. Spend most time on what you did."} /><Action label="Enter pressure round" color={world.colors[0]} onPress={() => next("pressure")} /></>}{stage === "pressure" && pressure && <><Text style={styles.title}>No warm-up. Make the call.</Text><Text style={styles.subtitle}>{path === "consulting" && questions.mentalMathQuestions.length ? "Mental math under pressure." : "One choice. No essay."}</Text><View style={styles.prompt}><Text style={styles.promptText}>{short(pressure.question, 170)}</Text></View><View style={styles.options}>{pressure.options.map((option, index) => {
     const revealed = pressureChoice !== null;
     const correct = index === pressure.correctIndex;
     const picked = index === pressureChoice;
-    return /* @__PURE__ */ React.createElement(TouchableOpacity, { key: `${option}-${index}`, disabled: revealed, onPress: () => choosePressure(index), style: [styles.option, revealed && correct && styles.correct, revealed && picked && !correct && styles.wrong] }, /* @__PURE__ */ React.createElement(Text, { style: styles.optionLetter }, String.fromCharCode(65 + index)), /* @__PURE__ */ React.createElement(Text, { style: styles.optionText }, short(option, 90)));
-  })), pressureChoice !== null && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: [styles.feedback, { backgroundColor: pressureCorrect ? COLORS.successSoft : COLORS.errorSoft }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.feedbackTitle }, pressureCorrect ? "Correct." : "Not quite. Here's why:"), /* @__PURE__ */ React.createElement(Text, { style: styles.feedbackText }, short(pressure.explanation, 155))), /* @__PURE__ */ React.createElement(Action, { label: "Answer the question", color: world.colors[0], onPress: () => next("response") }))), stage === "response" && mock && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Answer out loud\u2014or type."), /* @__PURE__ */ React.createElement(View, { style: styles.prompt }, /* @__PURE__ */ React.createElement(Text, { style: styles.promptLabel }, short(mock.scenario, 95)), /* @__PURE__ */ React.createElement(Text, { style: styles.promptText }, short(mock.question, 180))), /* @__PURE__ */ React.createElement(TextInput, { value: response, onChangeText: setResponse, multiline: true, maxLength: 1200, style: styles.input, placeholder: "Lead with your answer. Then prove it.", placeholderTextColor: COLORS.textMuted }), /* @__PURE__ */ React.createElement(View, { style: styles.responseActions }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: recording ? stopRecording : startRecording, style: [styles.record, recording && styles.recording] }, /* @__PURE__ */ React.createElement(Feather, { name: recording ? "square" : "mic", size: 18, color: recording ? COLORS.bg0 : world.colors[0] }), /* @__PURE__ */ React.createElement(Text, { style: [styles.recordText, recording && { color: COLORS.bg0 }] }, recording ? "Stop" : "Record")), /* @__PURE__ */ React.createElement(Text, { style: styles.count }, response.trim().split(/\s+/).filter(Boolean).length, " words")), /* @__PURE__ */ React.createElement(Action, { label: submitting ? "Sophia is grading\u2026" : "Lock answer", color: world.colors[0], disabled: submitting || response.trim().length < 20, onPress: submit })), stage === "verdict" && feedback && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(LinearGradient, { colors: [scoreColor(feedback.score), world.colors[1]], style: styles.verdict }, /* @__PURE__ */ React.createElement(Text, { style: styles.verdictLabel }, "INTERVIEW VERDICT"), /* @__PURE__ */ React.createElement(Text, { style: styles.verdictScore }, Math.round((feedback.score || 5) * 10)), /* @__PURE__ */ React.createElement(Text, { style: styles.verdictGrade }, gradeLabel(feedback.score))), /* @__PURE__ */ React.createElement(Coach, { text: feedback.sophiaSays || "The structure is forming. Make every sentence earn its place.", onSpeak: () => playCoach(feedback.sophiaSays), speaking }), /* @__PURE__ */ React.createElement(Debrief, { icon: "check-circle", title: "Keep", body: feedback.whatWentWell, color: COLORS.success }), /* @__PURE__ */ React.createElement(Debrief, { icon: "target", title: "Fix next", body: feedback.roomForImprovement, color: COLORS.warning }), /* @__PURE__ */ React.createElement(Debrief, { icon: "zap", title: "Sharper version", body: feedback.betterVersion, color: world.colors[0] }), mock && mock.buzzwords.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.debrief }, /* @__PURE__ */ React.createElement(Feather, { name: "book-open", size: 19, color: world.colors[0] }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: [styles.debriefTitle, { color: world.colors[0] }] }, "Words a pro would use"), /* @__PURE__ */ React.createElement(View, { style: [styles.keywordRow, { marginTop: 6 }] }, mock.buzzwords.slice(0, 6).map((word) => /* @__PURE__ */ React.createElement(View, { key: word, style: styles.keyword }, /* @__PURE__ */ React.createElement(Text, { style: styles.keywordText }, word)))))), /* @__PURE__ */ React.createElement(Action, { label: "Bank result", color: world.colors[0], onPress: bankResult }), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => {
+    return <TouchableOpacity key={`${option}-${index}`} disabled={revealed} onPress={() => choosePressure(index)} style={[styles.option, revealed && correct && styles.correct, revealed && picked && !correct && styles.wrong]}><Text style={styles.optionLetter}>{String.fromCharCode(65 + index)}</Text><Text style={styles.optionText}>{short(option, 90)}</Text></TouchableOpacity>;
+  })}</View>{pressureChoice !== null && <><View style={[styles.feedback, { backgroundColor: pressureCorrect ? COLORS.successSoft : COLORS.errorSoft }]}><Text style={styles.feedbackTitle}>{pressureCorrect ? "Correct." : "Not quite. Here's why:"}</Text><Text style={styles.feedbackText}>{short(pressure.explanation, 155)}</Text></View><Action label="Answer the question" color={world.colors[0]} onPress={() => next("response")} /></>}</>}{stage === "response" && mock && <><Text style={styles.title}>Answer out loud—or type.</Text><View style={styles.prompt}><Text style={styles.promptLabel}>{short(mock.scenario, 95)}</Text><Text style={styles.promptText}>{short(mock.question, 180)}</Text></View><TextInput value={response} onChangeText={setResponse} multiline maxLength={1200} style={styles.input} placeholder="Lead with your answer. Then prove it." placeholderTextColor={COLORS.textMuted} /><View style={styles.responseActions}><TouchableOpacity onPress={recording ? stopRecording : startRecording} style={[styles.record, recording && styles.recording]}><Feather name={recording ? "square" : "mic"} size={18} color={recording ? COLORS.bg0 : world.colors[0]} /><Text style={[styles.recordText, recording && { color: COLORS.bg0 }]}>{recording ? "Stop" : "Record"}</Text></TouchableOpacity><Text style={styles.count}>{response.trim().split(/\s+/).filter(Boolean).length} words</Text></View><Action label={submitting ? "Leo is grading\u2026" : "Lock answer"} color={world.colors[0]} disabled={submitting || response.trim().length < 20} onPress={submit} /></>}{stage === "verdict" && feedback && <><LinearGradient colors={[scoreColor(feedback.score), world.colors[1]]} style={styles.verdict}><Text style={styles.verdictLabel}>INTERVIEW VERDICT</Text><Text style={styles.verdictScore}>{Math.round((feedback.score || 5) * 10)}</Text><Text style={styles.verdictGrade}>{gradeLabel(feedback.score)}</Text></LinearGradient><Coach text={feedback.leoSays || feedback.sophiaSays || "The structure is forming. Make every sentence earn its place."} onSpeak={() => playCoach(feedback.leoSays || feedback.sophiaSays)} speaking={speaking} /><Debrief icon="check-circle" title="Keep" body={feedback.whatWentWell} color={COLORS.success} /><Debrief icon="target" title="Fix next" body={feedback.roomForImprovement} color={COLORS.warning} /><Debrief icon="zap" title="Sharper version" body={feedback.betterVersion} color={world.colors[0]} />{mock && mock.buzzwords.length > 0 && <View style={styles.debrief}><Feather name="book-open" size={19} color={world.colors[0]} /><View style={{ flex: 1 }}><Text style={[styles.debriefTitle, { color: world.colors[0] }]}>Words a pro would use</Text><View style={[styles.keywordRow, { marginTop: 6 }]}>{mock.buzzwords.slice(0, 6).map((word) => <View key={word} style={styles.keyword}><Text style={styles.keywordText}>{word}</Text></View>)}</View></View></View>}<Action label="Bank result" color={world.colors[0]} onPress={bankResult} /><TouchableOpacity onPress={() => {
     setFeedback(null);
     setResponse("");
     setPressureChoice(null);
     setPressureCorrect(false);
     rollQuestions();
     setStage("brief");
-  }, style: styles.retry }, /* @__PURE__ */ React.createElement(Text, { style: styles.retryText }, "Run another mission")))));
-}
-function PathCard({ icon, title, subtitle, color, onPress }) {
-  return /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress, style: styles.pathCard }, /* @__PURE__ */ React.createElement(View, { style: [styles.pathIcon, { backgroundColor: `${color}16` }] }, /* @__PURE__ */ React.createElement(Feather, { name: icon, size: 24, color })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.pathTitle }, title), /* @__PURE__ */ React.createElement(Text, { style: styles.pathSubtitle }, subtitle)), /* @__PURE__ */ React.createElement(Feather, { name: "arrow-right", size: 20, color: COLORS.textMuted }));
+  }} style={styles.retry}><Text style={styles.retryText}>Run another mission</Text></TouchableOpacity></>}</ScrollView></View>;
 }
 function Coach({ text, onSpeak, speaking }) {
-  return /* @__PURE__ */ React.createElement(View, { style: styles.coach }, /* @__PURE__ */ React.createElement(Image, { source: SOPHIA, style: styles.coachAvatar }), /* @__PURE__ */ React.createElement(Text, { style: styles.coachText }, text), onSpeak && /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: onSpeak }, /* @__PURE__ */ React.createElement(Feather, { name: speaking ? "volume-2" : "volume-1", size: 18, color: COLORS.accent })));
+  return <View style={styles.coach}><Image source={LEO} style={styles.coachAvatar} resizeMode="contain" /><Text style={styles.coachText}>{text}</Text>{onSpeak && <TouchableOpacity onPress={onSpeak}><Feather name={speaking ? "volume-2" : "volume-1"} size={18} color={COLORS.accent} /></TouchableOpacity>}</View>;
 }
 function Action({ label, color, onPress, disabled }) {
-  return /* @__PURE__ */ React.createElement(TouchableOpacity, { disabled, onPress, style: [styles.action, { backgroundColor: color }, disabled && styles.disabled] }, /* @__PURE__ */ React.createElement(Text, { style: styles.actionText }, label), /* @__PURE__ */ React.createElement(Feather, { name: "arrow-right", size: 18, color: COLORS.bg0 }));
+  return <TouchableOpacity disabled={disabled} onPress={onPress} style={[styles.action, { backgroundColor: color }, disabled && styles.disabled]}><Text style={styles.actionText}>{label}</Text><Feather name="arrow-right" size={18} color={COLORS.bg0} /></TouchableOpacity>;
 }
 function Debrief({ icon, title, body, color }) {
-  return /* @__PURE__ */ React.createElement(View, { style: styles.debrief }, /* @__PURE__ */ React.createElement(Feather, { name: icon, size: 19, color }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: [styles.debriefTitle, { color }] }, title), /* @__PURE__ */ React.createElement(Text, { style: styles.debriefBody }, body || "No note this round.")));
+  return <View style={styles.debrief}><Feather name={icon} size={19} color={color} /><View style={{ flex: 1 }}><Text style={[styles.debriefTitle, { color }]}>{title}</Text><Text style={styles.debriefBody}>{body || "No note this round."}</Text></View></View>;
 }
 const scoreColor = (score = 5) => score >= 8 ? "#16A34A" : score >= 6 ? "#F59E0B" : "#EF4444";
 const gradeLabel = (score = 5) => score >= 9 ? "Offer-ready" : score >= 7.5 ? "Strong signal" : score >= 6 ? "Promising" : "Needs another rep";
@@ -291,10 +283,6 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: COLORS.bg0 },
   pathHero: { height: 335, paddingHorizontal: 22, paddingBottom: 28, justifyContent: "flex-end", overflow: "hidden" },
   close: { width: 42, height: 42, alignItems: "center", justifyContent: "center" },
-  sophiaHero: { position: "absolute", width: 120, height: 120, right: 18, top: 60, resizeMode: "cover", borderRadius: 60, opacity: 0.95 },
-  kickerLight: { color: COLORS.bg0, fontSize: 11, fontWeight: "900", letterSpacing: 1.2 },
-  heroTitle: { color: COLORS.bg0, fontSize: 31, lineHeight: 35, fontWeight: "900", maxWidth: 220, marginTop: 8 },
-  heroBody: { color: COLORS.bg0, opacity: 0.82, fontSize: 15, marginTop: 8, maxWidth: 215 },
   pathBody: { padding: 18, gap: 12 },
   pathCard: { flexDirection: "row", alignItems: "center", minHeight: 92, padding: 16, borderWidth: 1, borderColor: COLORS.border, borderRadius: 16, gap: 14, backgroundColor: COLORS.bg2 },
   pathIcon: { width: 50, height: 50, borderRadius: 14, alignItems: "center", justifyContent: "center" },
@@ -308,7 +296,7 @@ const styles = StyleSheet.create({
   header: { height: 58, paddingHorizontal: 10, flexDirection: "row", alignItems: "center", gap: 8 },
   headerTitle: { color: COLORS.textPrimary, fontWeight: "900", fontSize: 15 },
   headerSub: { color: COLORS.textMuted, fontSize: 11, marginTop: 1 },
-  sophiaSmall: { width: 38, height: 38, borderRadius: 19, marginRight: 6 },
+  leoSmall: { width: 40, height: 40, marginRight: 6 },
   rail: { flexDirection: "row", gap: 4, paddingHorizontal: 16 },
   railSegment: { flex: 1, height: 5, borderRadius: 3 },
   scroll: { padding: 20, gap: 14 },
@@ -320,7 +308,7 @@ const styles = StyleSheet.create({
   personaTitle: { fontSize: 15, fontWeight: "800", color: COLORS.textPrimary },
   personaText: { fontSize: 12, lineHeight: 17, color: COLORS.textSecondary, marginTop: 2 },
   coach: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderRadius: 15, backgroundColor: COLORS.accentSoft },
-  coachAvatar: { width: 42, height: 42, borderRadius: 21 },
+  coachAvatar: { width: 44, height: 44 },
   coachText: { flex: 1, fontSize: 13, lineHeight: 18, fontWeight: "600", color: COLORS.textPrimary },
   prompt: { padding: 18, borderRadius: 16, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border },
   promptLabel: { fontSize: 10, color: COLORS.textMuted, fontWeight: "900", letterSpacing: 1, marginBottom: 7 },

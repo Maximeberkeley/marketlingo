@@ -101,7 +101,7 @@ serve(async (req) => {
     const selectedPersona = personaProfiles[persona] || personaProfiles.consultant;
     const qProgress = questionNumber && totalQuestions ? `\n\nThis is question ${questionNumber} of ${totalQuestions} in a mock interview session.` : '';
 
-    const systemPrompt = `You are Sophia Hernandez, a sharp, warm, and inspiring case interview coach. You are currently acting as "${selectedPersona.name}" interviewer persona.
+    const systemPrompt = `You are Leo, the MarketLingo interview coach: a confident young insider who is sharp, direct and encouraging. You are currently acting as "${selectedPersona.name}" interviewer persona.
 
 PERSONA STYLE: ${selectedPersona.style}
 
@@ -130,7 +130,7 @@ RESPOND IN THIS EXACT JSON FORMAT:
   "betterVersion": "A rewritten version of their answer that would score 9-10/10, written in their persona style. Keep it under 120 words.",
   "buzzwordsUsed": ["list of industry buzzwords they correctly used"],
   "buzzwordsMissed": ["list of key buzzwords they should have included"],
-  "sophiaSays": "A 1-2 sentence encouraging message in Sophia's voice — warm, direct, inspiring"
+  "leoSays": "A 1-2 sentence message in Leo's voice — confident, direct, encouraging"
 }
 
 IMPORTANT: Write for a 15-year-old reader. Be warm, direct, and inspiring. Use active language. Score honestly — most first attempts should be 4-6/10.`;
@@ -195,10 +195,16 @@ IMPORTANT: Write for a 15-year-old reader. Be warm, direct, and inspiring. Use a
         betterVersion: "I couldn't generate a specific rewrite, but try starting with 'I'd approach this in three steps...' and include specific numbers and industry terms.",
         buzzwordsUsed: [],
         buzzwordsMissed: buzzwords.slice(0, 3),
-        sophiaSays: "Hey, good start! The fact that you're practicing already puts you ahead. Let's polish this answer together!",
+        leoSays: "Hey, good start! The fact that you're practicing already puts you ahead. Let's polish this answer together!",
       };
     }
 
+    // Leo is the only coach. Older app builds read sophiaSays, so mirror the line.
+    if (feedback && typeof feedback === "object") {
+      const line = feedback.leoSays || feedback.sophiaSays || "";
+      feedback.leoSays = line;
+      feedback.sophiaSays = line;
+    }
     return new Response(JSON.stringify(feedback), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
