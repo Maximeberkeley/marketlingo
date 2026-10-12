@@ -100,35 +100,14 @@ function DailyLeoScreen() {
   if (loading || !data || !content) {
     return <View style={styles.loading}><ActivityIndicator color={COLORS.accent} /></View>;
   }
-  return <View style={[styles.root, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 22 }]}>
-      <View style={styles.heading}>
-        <Text style={styles.eyebrow}>{content.eyebrow}</Text>
-        <Text style={styles.title}>
-          {data.streak > 0 ? `Welcome back \u2014 ${data.streak} ${data.streak === 1 ? "day" : "days"} in a row` : "Welcome back to your market"}
-        </Text>
-      </View>
-
-      <View style={styles.scene}>
-        <SpeechBubble text={content.line} tail="bottom-center" tone="purple" style={styles.bubble} />
-        <View style={styles.leoWrap}><LeoCharacter size="xl" animation={content.mood} still /></View>
-      </View>
-
-
-      <View style={styles.footer}>
-        <Text style={styles.caption}>One lesson. About five minutes. That is the whole day.</Text>
-        <TouchableOpacity
+  return <View style={[styles.root, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 22 }]}><View style={styles.heading}><Text style={styles.eyebrow}>{content.eyebrow}</Text><Text style={styles.title}>{data.streak > 0 ? `Welcome back \u2014 ${data.streak} ${data.streak === 1 ? "day" : "days"} in a row` : "Welcome back to your market"}</Text></View><View style={styles.scene}><SpeechBubble text={content.line} tail="bottom-center" showLabel style={styles.bubble} /><View style={styles.leoWrap}><LeoCharacter size="xl" animation={content.mood} still /></View></View><View style={styles.footer}><Text style={styles.caption}>One lesson. About five minutes. That is the whole day.</Text><TouchableOpacity
     style={styles.continueButton}
     activeOpacity={0.88}
     onPress={() => {
       triggerHaptic("medium");
       router.replace("/(tabs)/home");
     }}
-  >
-          <Text style={styles.continueText}>Continue</Text>
-          <Feather name="arrow-right" size={20} color="#FFFFFF" />
-        </TouchableOpacity>
-      </View>
-    </View>;
+  ><Text style={styles.continueText}>Continue</Text><Feather name="arrow-right" size={20} color="#FFFFFF" /></TouchableOpacity></View></View>;
 }
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg0, paddingHorizontal: 22, justifyContent: "space-between" },
@@ -136,7 +115,7 @@ const styles = StyleSheet.create({
   heading: { paddingTop: 20 },
   eyebrow: { fontSize: 11, fontWeight: "900", color: COLORS.accent, letterSpacing: 1.2, marginBottom: 10 },
   title: { fontSize: 32, lineHeight: 38, fontWeight: "900", color: COLORS.textPrimary, maxWidth: 330 },
-  scene: { flex: 1, minHeight: 310, flexDirection: 'column', alignItems: "center", justifyContent: "center" },
+  scene: { flex: 1, minHeight: 310, flexDirection: "column", alignItems: "center", justifyContent: "center" },
   // Full width and no clipping: the umbrella and tail must stay in frame.
   leoWrap: { width: 208, height: 208, justifyContent: "center", alignItems: "center" },
   bubble: { maxWidth: 260, marginBottom: 8 },

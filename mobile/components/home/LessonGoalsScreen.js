@@ -14,43 +14,7 @@ function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1, isBit
   const marketName = getMarketName(marketId || "aerospace");
   const goals = useMemo(() => lessonGoalLabels(objectives, slides), [objectives, slides]);
   const safeGoals = goals.length ? goals : ["Read the signal", "Make the call", "Keep the insight"];
-  return <View style={[styles.root, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 18 }]}>
-      <TouchableOpacity onPress={onBack} style={styles.back} accessibilityLabel="Back to home">
-        <Feather name="x" size={22} color={COLORS.textPrimary} />
-      </TouchableOpacity>
-
-      <LinearGradient colors={[world.colors[0], world.colors[1]]} style={styles.hero}>
-        <Image source={world.illustration} style={styles.illustration} />
-        <Text style={styles.kicker}>{isBite ? "QUICK BITE" : `DAY ${day}`}</Text>
-        <Text style={styles.title}>{title}</Text>
-        <View style={styles.timeChip}>
-          <Feather name="clock" size={14} color={COLORS.bg0} />
-          <Text style={styles.timeText}>{marketName} · {isBite ? "1 min" : "6 min"}</Text>
-        </View>
-      </LinearGradient>
-
-      <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.heading}>{goals.length ? "In this lesson" : "Your next lesson"}</Text>
-        <View style={styles.goals}>
-          {safeGoals.map((goal, index) => <View key={`${goal}-${index}`} style={styles.goalRow}>
-              <View style={[styles.number, { backgroundColor: world.colors[index % world.colors.length] }]}>
-                <Text style={styles.numberText}>{index + 1}</Text>
-              </View>
-              <Text style={styles.goalText}>{goal}</Text>
-            </View>)}
-        </View>
-
-        <View style={styles.leoRow}>
-          <SpeechBubble text="Three sharp moves. Then make the call." tail="bottom-center" compact style={styles.leoBalloon} textStyle={styles.leoLine} />
-          <Image source={require("../../assets/mascot/leo-reference.png")} style={styles.leo} />
-        </View>
-      </ScrollView>
-
-      <TouchableOpacity style={[styles.start, { backgroundColor: world.colors[0], shadowColor: world.colors[0] }]} onPress={onStart} activeOpacity={0.86}>
-        <Text style={styles.startText}>Start mission</Text>
-        <Feather name="arrow-right" size={19} color={COLORS.bg0} />
-      </TouchableOpacity>
-    </View>;
+  return <View style={[styles.root, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 18 }]}><TouchableOpacity onPress={onBack} style={styles.back} accessibilityLabel="Back to home"><Feather name="x" size={22} color={COLORS.textPrimary} /></TouchableOpacity><LinearGradient colors={[world.colors[0], world.colors[1]]} style={styles.hero}><Image source={world.illustration} style={styles.illustration} /><Text style={styles.kicker}>{isBite ? "QUICK BITE" : `DAY ${day}`}</Text><Text style={styles.title}>{title}</Text><View style={styles.timeChip}><Feather name="clock" size={14} color={COLORS.bg0} /><Text style={styles.timeText}>{marketName} · {isBite ? "1 min" : "6 min"}</Text></View></LinearGradient><ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false}><Text style={styles.heading}>{goals.length ? "In this lesson" : "Your next lesson"}</Text><View style={styles.goals}>{safeGoals.map((goal, index) => <View key={`${goal}-${index}`} style={styles.goalRow}><View style={[styles.number, { backgroundColor: world.colors[index % world.colors.length] }]}><Text style={styles.numberText}>{index + 1}</Text></View><Text style={styles.goalText}>{goal}</Text></View>)}</View><View style={styles.leoRow}><SpeechBubble text="Three sharp moves. Then make the call." tail="bottom-center" showLabel style={styles.leoBalloon} /><Image source={require("../../assets/mascot/leo-reference.png")} style={styles.leo} /></View></ScrollView><TouchableOpacity style={[styles.start, { backgroundColor: world.colors[0], shadowColor: world.colors[0] }]} onPress={onStart} activeOpacity={0.86}><Text style={styles.startText}>Start mission</Text><Feather name="arrow-right" size={19} color={COLORS.bg0} /></TouchableOpacity></View>;
 }
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg0, paddingHorizontal: 16 },
@@ -70,7 +34,7 @@ const styles = StyleSheet.create({
   number: { width: 30, height: 30, borderRadius: 9, alignItems: "center", justifyContent: "center" },
   numberText: { color: COLORS.bg0, fontSize: 14, fontWeight: "900" },
   goalText: { flex: 1, fontSize: 15, lineHeight: 20, color: COLORS.textPrimary, fontWeight: "700" },
-  leoRow: { flexDirection: 'column', alignItems: 'center', gap: 6, marginTop: 14 },
+  leoRow: { flexDirection: "column", alignItems: "center", gap: 6, marginTop: 14 },
   leo: { width: 44, height: 44, resizeMode: "contain" },
   leoBalloon: {},
   leoLine: { color: COLORS.textSecondary, fontSize: 13, lineHeight: 18, fontWeight: "600" },
