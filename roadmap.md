@@ -1,5 +1,10 @@
 # MarketLingo roadmap
 
+## Oct 12 — Interview contrast and Leo voice
+- [x] Fix Interview readiness surfaces in both phone sources; primary/secondary text contrast checks pass in dark and light themes.
+- [x] Change all Leo voice declarations to Liam (young, confident American), preserve other mentor voices and deploy TTS; live service returned valid MP3 audio (200, 4.9 seconds).
+- [ ] Verify Interview readiness and listen to Leo in the next phone build (blocked: no iOS device/simulator).
+
 ## Oct 12 — Symbol and notification framing
 - [x] Enlarge lesson-intro Leo to 112×136 on the left beside his bubble, using the confident smiling pose; synchronize both sources and check text space at widths 320–430.
 - [x] Match welcome-back streak and XP symbols to the app's flame and bottle in both phone sources.
