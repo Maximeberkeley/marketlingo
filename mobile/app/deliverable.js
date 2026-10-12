@@ -7,6 +7,8 @@
  * faded as a starting point and never count as written.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { InterviewTargetForm } from '../components/interview/InterviewTargetForm';
+import { useInterviewReadiness } from '../hooks/useInterviewReadiness';
 import { ActivityIndicator, Alert, Animated, InputAccessoryView, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Share, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -43,6 +45,7 @@ export default function DeliverableScreen() {
     const { progress, availableDay } = useUserProgress(marketId);
     const goal = progress?.learning_goal ?? null;
     const deliverable = useDeliverable(marketId, goal);
+  const interviewPrep = useInterviewReadiness(marketId);
     const marketName = getMarketName(marketId);
     const day = availableDay || 1;
     const weeklyPrompt = useMemo(() => (isConsolidationDay(day) ? consolidationSection(deliverable.template, day) : null), [day, deliverable.template]);
@@ -268,6 +271,11 @@ export default function DeliverableScreen() {
           <Text style={styles.eyebrow}>{`${marketName.toUpperCase()} · ${template.title.toUpperCase()}`}</Text>
           <Text style={styles.title}>{template.title}</Text>
           <Text style={styles.count}>{`${filledSections} of ${total} sections written by you`}</Text>
+          {template.title === 'Interview Brief' && (
+            <View style={{ marginTop: 14 }}>
+              <InterviewTargetForm target={interviewPrep.target} onSave={interviewPrep.saveTarget} />
+            </View>
+          )}
           <View style={styles.segments}>
             {template.sections.map(section => (<ProgressSegment key={section.key} filled={(bySection[section.key]?.length ?? 0) > 0}/>))}
           </View>

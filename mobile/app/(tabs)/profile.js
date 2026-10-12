@@ -258,6 +258,11 @@ function ProfileScreen() {
           </View>
         </View>
 
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>INTERVIEW</Text>
+          <InterviewTargetForm target={interviewPrep.target} onSave={interviewPrep.saveTarget} />
+        </View>
+
         {
     /* The learner's own document, always one tap away. */
   }
