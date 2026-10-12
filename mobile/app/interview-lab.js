@@ -241,7 +241,7 @@ export default function InterviewLabScreen() {
           visible={showReadiness}
           readiness={readiness}
           onClose={() => setShowReadiness(false)}
-          onOpenBrief={() => { setShowReadiness(false); router.push('/deliverable' as any); }}
+          onOpenBrief={() => { setShowReadiness(false); router.push('/deliverable'); }}
           onStartMock={() => { setShowReadiness(false); setPath(track === 'behavioral' ? 'academic' : 'consulting'); setStage('response'); }}
         />
     </View>);

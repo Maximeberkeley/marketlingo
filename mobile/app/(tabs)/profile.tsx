@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
 import { InterviewTargetForm } from '../../components/interview/InterviewTargetForm';
 import { useInterviewReadiness } from '../../hooks/useInterviewReadiness';
+import React, { useState, useEffect, useRef } from 'react';
+import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Share,
   ActivityIndicator, Modal, Animated, Image,
 } from 'react-native';
