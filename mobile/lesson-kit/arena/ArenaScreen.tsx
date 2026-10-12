@@ -340,19 +340,23 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
         </View>
       </View>
 
-      {/* Timer */}
-      <View style={styles.timerTrack}>
-        <Animated.View
-          style={[
-            styles.timerFill,
-            { width: timerWidth, backgroundColor: urgent ? tokens.color.incorrect : tokens.color.accent },
-          ]}
-        />
-      </View>
-      {!passive && (
-        <Text style={[styles.timerLabel, urgent && { color: tokens.color.incorrect }]}>
-          {phase === 'feedback' ? 'Locked' : `${timeLeft}s left`}
-        </Text>
+      {/* Timer — hidden behind the round-intro card until Start is tapped */}
+      {!showWaveIntro && (
+        <>
+          <View style={styles.timerTrack}>
+            <Animated.View
+              style={[
+                styles.timerFill,
+                { width: timerWidth, backgroundColor: urgent ? tokens.color.incorrect : tokens.color.accent },
+              ]}
+            />
+          </View>
+          {!passive && (
+            <Text style={[styles.timerLabel, urgent && { color: tokens.color.incorrect }]}>
+              {phase === 'feedback' ? 'Locked' : `${timeLeft}s left`}
+            </Text>
+          )}
+        </>
       )}
 
       {lastGain !== null && (
