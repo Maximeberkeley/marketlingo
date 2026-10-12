@@ -383,7 +383,7 @@ export default function PracticeScreen() {
         {studied.lessons.length > 0 ? <PremiumCarousel cards={ACTIVITY_CARDS} title="From your lessons" /> : null}
 
         {/* Labs */}
-        <PremiumCarousel cards={LAB_CARDS.filter(card => card.id !== 'investment' || goal === 'invest')} title="Interview" />
+        <PremiumCarousel cards={LAB_CARDS.filter(card => card.id !== 'investment' || goal === 'invest')} title="More practice" />
 
       </ScrollView>
     </View>
