@@ -1,3 +1,4 @@
+import { trackEvent } from '../lib/analytics';
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
@@ -69,6 +70,7 @@ export function useInterviewReadiness(marketId?: string | null): InterviewReadin
   const saveTarget = useCallback(async (t: InterviewTarget | null) => {
     if (!user || !marketId) return;
     await saveInterviewTarget(user.id, marketId, t);
+    trackEvent('interview_target_saved', { hasTarget: !!t, hasDate: !!t?.date, role: t?.role ?? null });
     setTarget(t);
   }, [user?.id, marketId]);
 

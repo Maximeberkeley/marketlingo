@@ -12,6 +12,7 @@ import { COLORS } from '../lib/constants';
 import { useSelectedMarket } from '../hooks/useSelectedMarket';
 import { useInterviewQuestions } from '../hooks/useInterviewQuestions';
 import { useAuth } from '../hooks/useAuth';
+import { trackEvent } from '../lib/analytics';
 import { useUserXP } from '../hooks/useUserXP';
 import { usePracticeRewards } from '../hooks/usePracticeRewards';
 import { useCollectibles } from '../hooks/useCollectibles';
@@ -48,6 +49,7 @@ const short = (value?: string, max = 155) => {
 export default function InterviewLabScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  React.useEffect(() => { trackEvent('interview_practice_started', {}); }, []);
   const { marketId, loading: marketLoading } = useSelectedMarket();
   const world = getMarketWorld(marketId);
   const marketName = getMarketName(marketId);
@@ -163,6 +165,7 @@ export default function InterviewLabScreen() {
       });
       if (error) throw error;
       const result = data as Feedback;
+      trackEvent('interview_feedback_received', { score: Math.round((result.score || 5) * 10) });
       setFeedback(result);
       setStage('verdict');
       const score = Math.round((result.score || 5) * 10);

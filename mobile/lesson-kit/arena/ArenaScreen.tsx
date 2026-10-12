@@ -23,6 +23,7 @@ import { ExerciseState } from '../exercises/types';
 import { Exercise } from '../types';
 import { ArenaWave, rankForScore } from './buildArena';
 import { playSound } from '../../lib/sounds';
+import { trackEvent } from '../../lib/analytics';
 import { getMarketWorld } from '../../data/marketWorlds';
 
 const START_SHIELDS = 2;
@@ -52,6 +53,7 @@ interface Props {
  * Speed and combos multiply the score; shields absorb misses until sudden death.
  */
 export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish, onQuestionSeen }: Props) {
+  useEffect(() => { trackEvent('quiz_started', { marketId: marketId ?? null }); }, []);
   const insets = useSafeAreaInsets();
   const world = getMarketWorld(marketId);
 
@@ -280,6 +282,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
             onPress={() => {
               if (banking) return;
               setBanking(true);
+              trackEvent('quiz_finished', { correct, total: graded });
               onFinish({
                 score,
                 correct,

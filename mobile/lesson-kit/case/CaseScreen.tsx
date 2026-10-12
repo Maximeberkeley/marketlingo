@@ -15,6 +15,7 @@ import { DeepCase, CaseGrade, gradeCase } from './buildCase';
 import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { BriefingReader } from '../components/BriefingReader';
+import { trackEvent } from '../../lib/analytics';
 
 type Confidence = 'low' | 'medium' | 'high';
 
@@ -62,6 +63,7 @@ interface Props {
  * is a graded verdict and the reasoning behind it.
  */
 export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal }: Props) {
+  React.useEffect(() => { trackEvent('case_started', { caseId: deepCase.id }); }, [deepCase.id]);
   const CONVICTION = goal === 'invest' ? CONFIDENCE : PLAIN_CONFIDENCE;
   const insets = useSafeAreaInsets();
   const world = getMarketWorld(marketId);
