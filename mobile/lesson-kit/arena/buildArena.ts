@@ -107,7 +107,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
         const keys = quizQuestionKeys(exercise);
         if (keys.some(key => used.has(key))) continue;
         keys.forEach(key => used.add(key));
-        selected.push(exercise);
+        selected.push({ ...exercise, id: `${exercise.id}-${attempt}-${selected.length}` });
         if (selected.length === limit) break;
       }
     }
