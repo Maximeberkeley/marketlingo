@@ -15,12 +15,10 @@
 - Select Say it prompts using shared lesson-section hints, requiring unwritten matches to reach half the strongest score and ignoring single-number-only signals; reject punctuation-only rewrites in editor and save hook, because relevance and authorship must hold beyond presentation.
 - Persist dossier editor snapshots on-device scoped to learner, market, and goal; edit learner entries in place and commit only through Save or Return; Cancel and unchanged Return close without discarding drafts or refocusing, because keyboard dismissal must not silently publish learner text.
 - Never drive icon-component props (e.g. vector icon colour) through Animated; crossfade static icons inside an Animated.View, because icon wrappers forward setNativeProps to a child that lacks it and crash release builds.
-
-- Keep the learner's interview target (company, role, date) on-device per learner and market, and derive readiness, sprint/weekly plans and question track from it in one shared phone module, because Profile, Brief and the Interview Lab must agree.
 - Leo speech bubbles carry one whole line of about eight words above Leo, chosen from contextual candidates rather than cut down, because long or truncated bubbles break the mascot's voice.
 - Leo calls go through one server function (turn + recap) with the call type, lesson, Brief, goal, level and interview target, while the phone owns rotation, the daily limit and Brief saving, because the model must stay server-side and learner lines must be saved as the learner's own.
 - Resolve displayed lesson titles and catch-up labels through the shared lesson identity helpers, because authored lessons and calendar days can differ from section names and credited study days.
 - Keep quiz history scoped to learner and market on-device, key it by question content and record only displayed questions; never relax exclusion when the pool is exhausted, because shuffled IDs and aborted runs must not permit seven-day repeats.
 - Goal-filter authored/generated copy and teach the takeaway before fallback checks; grounding must stay visible.
 - Keep syllabus reviews additive in server prompts and phone promises; reviews must not replace angles or change day-to-topic mapping.
-- Interview Lab picks its path from the saved interview target's role track (never asks Job vs School up front), and technical/behavioral tracks draw from the on-device TRACK_MOCKS bank before the question table, because technical roles must never get consulting cases or mental math.
+- Subdirectories have their own AGENTS.md (e.g. mobile/); read it before changing files there.
