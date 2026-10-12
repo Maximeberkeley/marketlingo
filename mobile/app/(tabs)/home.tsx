@@ -397,7 +397,7 @@ export default function HomeScreen() {
     if (lessonCompletedToday) return;
 
     const openLesson = () => {
-      if (lessonStack) { setOpenedLessonDay(null); session.handleOpenStack(lessonStack); }
+      if (lessonStack) { session.handleOpenStack(lessonStack); }
     };
     const timedWindow = currentLeoNudgeWindow();
     const timedTimer = timedWindow ? setTimeout(() => {
@@ -492,7 +492,6 @@ export default function HomeScreen() {
         onStart={() => {
           returnVisit.dismiss();
           if (lessonCompletedToday || !lessonStack) return;
-          setOpenedLessonDay(null);
           session.handleOpenStack(lessonStack);
         }}
         lessonDone={lessonCompletedToday}
