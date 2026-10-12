@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing, ScrollView } from "react-native";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -13,13 +13,18 @@ function WelcomeBackModal({
   streak,
   marketId,
   marketName,
-  onClose
+  onClose,
+  onStart,
+  lessonDone
 }) {
   const scale = useRef(new Animated.Value(0.9)).current;
   const fade = useRef(new Animated.Value(0)).current;
   const barFill = useRef(new Animated.Value(0)).current;
-  const nextLevelXP = xpToNextLevel && xpToNextLevel > 0 ? xpToNextLevel : 100;
-  const progressRatio = Math.max(0, Math.min(1, nextLevelXP > 0 ? xp % nextLevelXP / nextLevelXP : 0));
+  const levelStart = (level - 1) * (level - 1) * 50;
+  const levelEnd = level * level * 50;
+  const xpLeft = Math.max(0, typeof xpToNextLevel === "number" && xpToNextLevel > 0 ? xpToNextLevel : levelEnd - xp);
+  const span = Math.max(1, levelEnd - levelStart);
+  const progressRatio = Math.max(0, Math.min(1, 1 - xpLeft / span));
   useEffect(() => {
     if (!visible) {
       scale.setValue(0.9);
@@ -40,58 +45,27 @@ function WelcomeBackModal({
       useNativeDriver: false
     }).start();
   }, [visible, progressRatio]);
-  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.backdrop}>
-        <Animated.View style={[styles.card, { opacity: fade, transform: [{ scale }] }]}>
-          <LinearGradient
-    colors={["#7C3AED", "#8B5CF6", "#A78BFA"]}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 1 }}
-    style={styles.hero}
-  >
-            <View style={styles.mascotWrap}>
-              <FoxMascot industry={marketId || "aerospace"} size={120} />
-            </View>
-            <Text style={styles.heroKicker}>WELCOME BACK</Text>
-            <Text style={styles.heroTitle}>Level {level}</Text>
-            <Text style={styles.heroSub}>{marketName} insider</Text>
-          </LinearGradient>
-
-          <ScrollView style={styles.bodyScroll} contentContainerStyle={styles.body} showsVerticalScrollIndicator={false} bounces={false}>
-            <View style={styles.barTrack}>
-              <Animated.View
-    style={[
-      styles.barFill,
-      { width: barFill.interpolate({ inputRange: [0, 1], outputRange: ["4%", "100%"] }) }
-    ]}
-  />
-            </View>
-            <Text style={styles.barLabel}>
-              {xp.toLocaleString()} XP total · next level at {nextLevelXP} XP
-            </Text>
-
-            <View style={styles.statRow}>
-              <View style={styles.stat}>
-                <MaterialCommunityIcons name="fire" size={22} color={COLORS.streak} />
-                <Text style={styles.statValue}>{streak}</Text>
-                <Text style={styles.statLabel}>day streak</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.stat}>
-                <MaterialCommunityIcons name="flask" size={24} color={COLORS.xpBadgeIcon} />
-                <Text style={styles.statValue}>{xp.toLocaleString()}</Text>
-                <Text style={styles.statLabel}>total XP</Text>
-              </View>
-            </View>
-
-            <TouchableOpacity style={styles.cta} onPress={onClose} activeOpacity={0.9}>
-              <Text style={styles.ctaText}>Start today's lesson</Text>
-              <Feather name="arrow-right" size={17} color="#FFFFFF" />
-            </TouchableOpacity>
-          </ScrollView>
-        </Animated.View>
-      </View>
-    </Modal>;
+  return /* @__PURE__ */ React.createElement(Modal, { visible, transparent: true, animationType: "fade", onRequestClose: onClose }, /* @__PURE__ */ React.createElement(View, { style: styles.backdrop }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.card, { opacity: fade, transform: [{ scale }] }] }, /* @__PURE__ */ React.createElement(
+    LinearGradient,
+    {
+      colors: ["#7C3AED", "#8B5CF6", "#A78BFA"],
+      start: { x: 0, y: 0 },
+      end: { x: 1, y: 1 },
+      style: styles.hero
+    },
+    /* @__PURE__ */ React.createElement(View, { style: styles.mascotWrap }, /* @__PURE__ */ React.createElement(FoxMascot, { industry: marketId || "aerospace", size: 120 })),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.heroKicker }, "WELCOME BACK"),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.heroTitle }, "Level ", level),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.heroSub }, marketName, " insider")
+  ), /* @__PURE__ */ React.createElement(ScrollView, { style: styles.bodyScroll, contentContainerStyle: styles.body, showsVerticalScrollIndicator: false, bounces: false }, /* @__PURE__ */ React.createElement(View, { style: styles.barTrack }, /* @__PURE__ */ React.createElement(
+    Animated.View,
+    {
+      style: [
+        styles.barFill,
+        { width: barFill.interpolate({ inputRange: [0, 1], outputRange: ["4%", "100%"] }) }
+      ]
+    }
+  )), /* @__PURE__ */ React.createElement(Text, { style: styles.barLabel }, xpLeft.toLocaleString(), " XP to Level ", level + 1), /* @__PURE__ */ React.createElement(View, { style: styles.statRow }, /* @__PURE__ */ React.createElement(View, { style: styles.stat }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "fire", size: 22, color: COLORS.streak }), /* @__PURE__ */ React.createElement(Text, { style: styles.statValue }, streak), /* @__PURE__ */ React.createElement(Text, { style: styles.statLabel }, "day streak")), /* @__PURE__ */ React.createElement(View, { style: styles.statDivider }), /* @__PURE__ */ React.createElement(View, { style: styles.stat }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "flask", size: 24, color: COLORS.xpBadgeIcon }), /* @__PURE__ */ React.createElement(Text, { style: styles.statValue }, xp.toLocaleString()), /* @__PURE__ */ React.createElement(Text, { style: styles.statLabel }, "total XP"))), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.cta, onPress: lessonDone ? onClose : onStart ?? onClose, activeOpacity: 0.9 }, /* @__PURE__ */ React.createElement(Text, { style: styles.ctaText }, lessonDone ? "Keep going" : "Start today's lesson"), /* @__PURE__ */ React.createElement(Feather, { name: "arrow-right", size: 17, color: "#FFFFFF" }))))));
 }
 const styles = StyleSheet.create({
   backdrop: {

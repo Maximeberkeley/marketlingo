@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import {
   View,
@@ -44,6 +44,7 @@ import "../../components/league/LeagueCeremonyModal";
 import { useLeague } from "../../hooks/useLeague";
 import { useWeeklyRecap } from "../../hooks/useWeeklyRecap";
 import { useCollectibles } from "../../hooks/useCollectibles";
+import { lessonDayLabel } from "../../lib/lessonIdentity";
 import { LessonGoalsScreen } from "../../components/home/LessonGoalsScreen";
 import { useDeliverable } from "../../hooks/useDeliverable";
 import { useFocusTopic } from "../../hooks/useFocusTopic";
@@ -245,9 +246,11 @@ function HomeScreen() {
     });
   }, [openStackId, selectedMarket, user, session.showReader]);
   const openingLesson = useRef(false);
-  const openLessonById = useCallback(async (stackId) => {
+  const [openedLessonDay, setOpenedLessonDay] = useState(null);
+  const openLessonById = useCallback(async (stackId, day) => {
     if (openingLesson.current) return;
     openingLesson.current = true;
+    setOpenedLessonDay(typeof day === "number" && day > 0 ? day : null);
     try {
       const { data: stack } = await supabase.from("stacks").select("id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)").eq("id", stackId).not("published_at", "is", null).single();
       if (stack && stack.slides?.length > 0) {
@@ -322,7 +325,10 @@ function HomeScreen() {
     hasTriggeredWelcome.current = true;
     if (lessonCompletedToday) return;
     const openLesson = () => {
-      if (lessonStack) session.handleOpenStack(lessonStack);
+      if (lessonStack) {
+        setOpenedLessonDay(null);
+        session.handleOpenStack(lessonStack);
+      }
     };
     const timedWindow = currentLeoNudgeWindow();
     const timedTimer = timedWindow ? setTimeout(() => {
@@ -381,160 +387,168 @@ function HomeScreen() {
     if (hour < 17) return getRandomGreeting("afternoon");
     return getRandomGreeting("evening");
   });
-  if (loading || authLoading || !bootReady) return <HomeSkeleton />;
+  if (loading || authLoading || !bootReady) return /* @__PURE__ */ React.createElement(HomeSkeleton, null);
   const marketIllustration = MARKET_ILLUSTRATIONS[selectedMarket || "aerospace"] || MARKET_ILLUSTRATIONS.aerospace;
   const marketGradient = MARKET_GRADIENTS[selectedMarket || "aerospace"] || MARKET_GRADIENTS.aerospace;
   const marketAccent = marketGradient[0];
   const journeyProgress = (currentDay || 1) / 180 * 100;
-  return <View style={styles.container}>
-      {
-    /* Pro interstitial ad */
-  }
-      {
-    /* Leo popup overlay */
-  }
-      <LeoPopup message={leoPopups.currentMessage} onDismiss={leoPopups.dismiss} />
-
-      <WelcomeBackModal
-    visible={returnVisit.isReturningVisit && !session.showReader}
-    level={xpData?.current_level || 1}
-    xp={xpData?.total_xp || 0}
-    xpToNextLevel={xpData?.xp_to_next_level}
-    streak={streak}
-    marketId={selectedMarket || "aerospace"}
-    marketName={getMarketName(selectedMarket || "aerospace")}
-    onClose={returnVisit.dismiss}
-  />
-      <LeoStreakGift
-    marketId={selectedMarketLocal || selectedMarket}
-    userId={user?.id}
-    blocked={session.showReader || returnVisit.isReturningVisit}
-    onRestored={() => fetchData?.()}
-  />
-
-      {
-    /* Leo voice chat — fullscreen immersive */
-  }
-      <LeoVoiceChatOverlay
-    visible={showLeoChat}
-    onClose={() => setShowLeoChat(false)}
-    marketId={selectedMarket || void 0}
-    lessonContext={`${getMarketName(selectedMarket || "aerospace")} industry learning \u2014 Day ${currentDay}`}
-  />
-      {
-    /* Collectible cards are hidden for now; only streak, Interview Brief and readiness stay visible. */
-  }
-
-      {session.showGoals && session.activeStack ? <LessonGoalsScreen
-    title={session.activeStack.title}
-    slides={session.activeStack.slides}
-    objectives={session.activeStack.metadata?.learning_objectives}
-    marketId={selectedMarket || void 0}
-    day={currentDay}
-    isBite={session.activeBiteIndex !== null}
-    onStart={session.beginLesson}
-    onBack={session.closeReader}
-  /> : session.showReader && session.activeStack ? <SlideReader
-    stackTitle={session.activeStack.title}
-    stackType={session.activeStack.stack_type}
-    slides={session.activeStack.slides.map((s) => ({
-      slideNumber: s.slide_number,
-      title: s.title,
-      body: s.body,
-      sources: s.sources
-    }))}
-    onClose={session.closeReader}
-    onComplete={session.activeBiteIndex !== null ? session.handleBiteComplete : async (reviewMode, timeSpentSeconds, accuracy) => {
-      const synced = await session.handleStackComplete(reviewMode, timeSpentSeconds);
-      if (!synced || reviewMode || !selectedMarket || !session.activeStack?.id) return;
-      const rewards = await evaluateRewards(
-        "lesson",
-        `lesson:${selectedMarket}:${session.activeStack.id}`,
-        accuracy
-      );
-    }}
-    onSaveInsight={session.handleSaveInsight}
-    onAddNote={session.handleAddNote}
-    marketId={selectedMarket || void 0}
-    stackId={session.activeStack.id}
-    learningGoal={learningGoal}
-    isReview={(() => {
-      return (progress?.completed_stacks || []).includes(session.activeStack.id);
-    })()}
-    isProUser={isProUser}
-    streakDays={streak}
-    dayNumber={stackDayNumber(session.activeStack) || currentDay}
-    metadata={session.activeStack.metadata}
-    authoredLesson={session.activeStack.authored_lesson}
-  /> : session.showSessionComplete ? <SessionCompleteCard
-    dayNumber={session.activeStack ? stackDayNumber(session.activeStack) || currentDay : currentDay}
-    marketName={getMarketName(selectedMarket || "aerospace")}
-    marketEmoji=""
-    xpEarned={session.sessionXPEarned}
-    streak={streak}
-    lessonTitle={session.activeStack?.title || lessonStack?.title || "Lesson"}
-    totalXP={xpData?.total_xp || 0}
-    stageName={currentStage.name}
-    onContinue={() => {
-      session.dismissSessionComplete();
-    }}
-    onDismiss={() => {
-      session.dismissSessionComplete();
-    }}
-  /> : selectedMarket ? <CourseJourney
-    marketId={selectedMarket}
-    currentDay={currentDay}
-    learningGoal={learningGoal}
-    completedStackIds={progress?.completed_stacks || []}
-    streak={streak}
-    totalXp={xpData?.total_xp || 0}
-    level={xpData?.current_level || 1}
-    lessonCompletedToday={completedOnClockDay}
-    completedTodayStackId={completedOnClockDay ? dailyCompletion?.completed_stack_id : null}
-    isFocused={courseFocused}
-    arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
-    caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
-    intelReadToday={intelHabit.readToday}
-    intelTarget={intelHabit.target}
-    rescueAvailable={Boolean(streakCountdown)}
-    streakCountdown={streakCountdown}
-    safeTop={insets.top}
-    onOpenLesson={(stackId) => {
-      void openLessonById(stackId);
-    }}
-    onAskLeo={() => setShowLeoChat(true)}
-    belowToday={deliverable.loading ? null : <TouchableOpacity
-      style={styles.dossierChip}
-      activeOpacity={0.85}
-      accessibilityRole="button"
-      onPress={() => {
-        triggerHaptic("light");
-        router.push("/deliverable");
-      }}
-    >
-              <Feather name="file-text" size={14} color={COLORS.accent} />
-              <Text style={styles.dossierChipText} numberOfLines={1}>
-                {`${deliverable.template.title} \xB7 ${deliverable.filledSections} of ${deliverable.template.sections.length} sections`}
-              </Text>
-              <Feather name="chevron-right" size={14} color={COLORS.textMuted} />
-            </TouchableOpacity>}
-  /> : <HomeSkeleton />}
-
-      <MilestoneShareCard
-    visible={milestone.visible}
-    type={milestone.type}
-    data={milestone.data}
-    onDismiss={dismissMilestone}
-  />
-
-      <AchievementPopup
-    visible={!!achievementPopup && !leoPopups.currentMessage}
-    achievement={achievementPopup}
-    onDismiss={() => setAchievementPopup(null)}
-  />
-
-      {false}
-    </View>;
+  return /* @__PURE__ */ React.createElement(View, { style: styles.container }, /* @__PURE__ */ React.createElement(LeoPopup, { message: leoPopups.currentMessage, onDismiss: leoPopups.dismiss }), /* @__PURE__ */ React.createElement(
+    WelcomeBackModal,
+    {
+      visible: returnVisit.isReturningVisit && !session.showReader,
+      level: xpData?.current_level || 1,
+      xp: xpData?.total_xp || 0,
+      xpToNextLevel: xpData?.xp_to_next_level,
+      streak,
+      marketId: selectedMarket || "aerospace",
+      marketName: getMarketName(selectedMarket || "aerospace"),
+      onClose: returnVisit.dismiss,
+      onStart: () => {
+        returnVisit.dismiss();
+        if (lessonCompletedToday || !lessonStack) return;
+        setOpenedLessonDay(null);
+        session.handleOpenStack(lessonStack);
+      },
+      lessonDone: lessonCompletedToday
+    }
+  ), /* @__PURE__ */ React.createElement(
+    LeoStreakGift,
+    {
+      marketId: selectedMarketLocal || selectedMarket,
+      userId: user?.id,
+      blocked: session.showReader || returnVisit.isReturningVisit,
+      onRestored: () => fetchData?.()
+    }
+  ), /* @__PURE__ */ React.createElement(
+    LeoVoiceChatOverlay,
+    {
+      visible: showLeoChat,
+      onClose: () => setShowLeoChat(false),
+      marketId: selectedMarket || void 0,
+      lessonContext: `${getMarketName(selectedMarket || "aerospace")} industry learning \u2014 Day ${currentDay}`
+    }
+  ), session.showGoals && session.activeStack ? /* @__PURE__ */ React.createElement(
+    LessonGoalsScreen,
+    {
+      title: session.activeStack.title,
+      slides: session.activeStack.slides,
+      objectives: session.activeStack.metadata?.learning_objectives,
+      marketId: selectedMarket || void 0,
+      day: openedLessonDay ?? currentDay,
+      dayLabel: openedLessonDay && openedLessonDay < currentDay && !completedOnClockDay ? lessonDayLabel(openedLessonDay, currentDay, false) : void 0,
+      isBite: session.activeBiteIndex !== null,
+      onStart: session.beginLesson,
+      onBack: session.closeReader
+    }
+  ) : session.showReader && session.activeStack ? /* @__PURE__ */ React.createElement(
+    SlideReader,
+    {
+      stackTitle: session.activeStack.title,
+      stackType: session.activeStack.stack_type,
+      slides: session.activeStack.slides.map((s) => ({
+        slideNumber: s.slide_number,
+        title: s.title,
+        body: s.body,
+        sources: s.sources
+      })),
+      onClose: session.closeReader,
+      onComplete: session.activeBiteIndex !== null ? session.handleBiteComplete : async (reviewMode, timeSpentSeconds, accuracy) => {
+        const synced = await session.handleStackComplete(reviewMode, timeSpentSeconds);
+        if (!synced || reviewMode || !selectedMarket || !session.activeStack?.id) return;
+        const rewards = await evaluateRewards(
+          "lesson",
+          `lesson:${selectedMarket}:${session.activeStack.id}`,
+          accuracy
+        );
+      },
+      onSaveInsight: session.handleSaveInsight,
+      onAddNote: session.handleAddNote,
+      marketId: selectedMarket || void 0,
+      stackId: session.activeStack.id,
+      learningGoal,
+      isReview: (() => {
+        return (progress?.completed_stacks || []).includes(session.activeStack.id);
+      })(),
+      isProUser,
+      streakDays: streak,
+      dayNumber: stackDayNumber(session.activeStack) || currentDay,
+      metadata: session.activeStack.metadata,
+      authoredLesson: session.activeStack.authored_lesson
+    }
+  ) : session.showSessionComplete ? /* @__PURE__ */ React.createElement(
+    SessionCompleteCard,
+    {
+      dayNumber: session.activeStack ? stackDayNumber(session.activeStack) || currentDay : currentDay,
+      marketName: getMarketName(selectedMarket || "aerospace"),
+      marketEmoji: "",
+      xpEarned: session.sessionXPEarned,
+      streak,
+      lessonTitle: session.activeStack?.title || lessonStack?.title || "Lesson",
+      totalXP: xpData?.total_xp || 0,
+      stageName: currentStage.name,
+      onContinue: () => {
+        session.dismissSessionComplete();
+      },
+      onDismiss: () => {
+        session.dismissSessionComplete();
+      }
+    }
+  ) : selectedMarket ? /* @__PURE__ */ React.createElement(
+    CourseJourney,
+    {
+      marketId: selectedMarket,
+      currentDay,
+      learningGoal,
+      completedStackIds: progress?.completed_stacks || [],
+      streak,
+      totalXp: xpData?.total_xp || 0,
+      level: xpData?.current_level || 1,
+      lessonCompletedToday: completedOnClockDay,
+      completedTodayStackId: completedOnClockDay ? dailyCompletion?.completed_stack_id : null,
+      isFocused: courseFocused,
+      arenaCompletedToday: (dailyCompletion?.drills_completed || 0) > 0,
+      caseCompletedToday: (dailyCompletion?.games_completed || 0) > 0,
+      intelReadToday: intelHabit.readToday,
+      intelTarget: intelHabit.target,
+      rescueAvailable: Boolean(streakCountdown),
+      streakCountdown,
+      safeTop: insets.top,
+      onOpenLesson: (stackId, day) => {
+        void openLessonById(stackId, day);
+      },
+      onAskLeo: () => setShowLeoChat(true),
+      belowToday: deliverable.loading ? null : /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
+        {
+          style: styles.dossierChip,
+          activeOpacity: 0.85,
+          accessibilityRole: "button",
+          onPress: () => {
+            triggerHaptic("light");
+            router.push("/deliverable");
+          }
+        },
+        /* @__PURE__ */ React.createElement(Feather, { name: "file-text", size: 14, color: COLORS.accent }),
+        /* @__PURE__ */ React.createElement(Text, { style: styles.dossierChipText, numberOfLines: 1 }, `${deliverable.template.title} \xB7 ${deliverable.filledSections} of ${deliverable.template.sections.length} sections`),
+        /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 14, color: COLORS.textMuted })
+      )
+    }
+  ) : /* @__PURE__ */ React.createElement(HomeSkeleton, null), /* @__PURE__ */ React.createElement(
+    MilestoneShareCard,
+    {
+      visible: milestone.visible,
+      type: milestone.type,
+      data: milestone.data,
+      onDismiss: dismissMilestone
+    }
+  ), /* @__PURE__ */ React.createElement(
+    AchievementPopup,
+    {
+      visible: !!achievementPopup && !leoPopups.currentMessage,
+      achievement: achievementPopup,
+      onDismiss: () => setAchievementPopup(null)
+    }
+  ), false);
 }
 const styles = StyleSheet.create({
   dossierChip: {
