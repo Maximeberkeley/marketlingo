@@ -5,7 +5,8 @@ import {
   Modal,
   TouchableOpacity,
   StyleSheet,
-  Animated
+  Animated,
+  ScrollView
 } from "react-native";
 import * as ExpoNotifications from "expo-notifications";
 import { Feather } from "@expo/vector-icons";
@@ -50,6 +51,7 @@ function NotificationOnboarding({ visible, onComplete }) {
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={() => onComplete(false)}>
       <View style={styles.backdrop}>
         <View style={styles.card}>
+          <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
           <Animated.View style={{ transform: [{ translateX: slideAnim }] }}>
             {step === 0 ? <>
                 {
@@ -135,6 +137,7 @@ function NotificationOnboarding({ visible, onComplete }) {
                 </Text>
               </>}
           </Animated.View>
+          </ScrollView>
         </View>
       </View>
     </Modal>;
@@ -153,6 +156,7 @@ const styles = StyleSheet.create({
     padding: 24,
     width: "100%",
     maxWidth: 400,
+    maxHeight: "88%",
     borderWidth: 1,
     borderColor: COLORS.border,
     overflow: "hidden"
