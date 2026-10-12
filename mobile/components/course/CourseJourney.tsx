@@ -119,6 +119,7 @@ interface CourseJourneyProps {
   level: number;
   lessonCompletedToday: boolean;
   isFocused: boolean;
+  completedTodayStackId?: string | null;
   arenaCompletedToday?: boolean;
   caseCompletedToday?: boolean;
   intelReadToday: number;
@@ -262,7 +263,8 @@ function SectionCluster({
     return <View style={styles.sectionBlock}><SectionHeader section={section} title={title} onPress={onHeader} /></View>;
   }
 
-  const moduleComplete = (kind: ModuleKind) => {
+   const lessonDone = activeSection ? lessonCompletedToday || Boolean(lesson?.completed) : Boolean(lesson?.completed);
+   const moduleComplete = (kind: ModuleKind) => {
     if (!activeSection) return kind === 'lesson' && Boolean(lesson?.completed);
     if (kind === 'lesson') return lessonCompletedToday || Boolean(lesson?.completed);
     if (kind === 'arena') return arenaCompletedToday;
@@ -320,15 +322,15 @@ function SectionCluster({
           return (
             <Coin
               key={module.kind}
-              label={activeSection && module.kind === 'lesson' && !lessonCompletedToday ? 'Start here' : module.label}
+              label={activeSection && module.kind === 'lesson' && !lessonDone ? 'Start here' : module.label}
               icon={module.icon}
               position={module.position}
               locked={locked}
-              completed={activeSection && module.kind === 'lesson' ? lessonCompletedToday : moduleComplete(module.kind)}
-              emphasis={activeSection && module.kind === 'lesson' && !lessonCompletedToday}
-              pulse={isFocused && activeSection && module.kind === 'lesson' && !lessonCompletedToday && !reduceMotion}
-              muted={activeSection && module.kind !== 'lesson' && !lessonCompletedToday}
-              reveal={activeSection && module.kind !== 'lesson' ? activityReveal[['notes', 'arena', 'intel', 'case'].indexOf(module.kind)] : undefined}
+              completed={module.kind === 'lesson' ? lessonDone : moduleComplete(module.kind)}
+              emphasis={activeSection && module.kind === 'lesson' && !lessonDone}
+              pulse={isFocused && activeSection && module.kind === 'lesson' && !lessonDone && !reduceMotion}
+              muted={activeSection && module.kind !== 'lesson' && !lessonDone}
+              reveal={activeSection && module.kind !== 'lesson' && !(lessonDone && !lessonCompletedToday) ? activityReveal[['notes', 'arena', 'intel', 'case'].indexOf(module.kind)] : undefined}
               onPress={() => onModule(module.kind)}
             />
           );
@@ -436,6 +438,7 @@ export function CourseJourney({
   totalXp,
   level,
   lessonCompletedToday,
+  completedTodayStackId,
   isFocused,
   arenaCompletedToday = false,
   caseCompletedToday = false,
@@ -485,7 +488,12 @@ export function CourseJourney({
       void AsyncStorage.setItem(revealKey, 'seen').catch(() => {});
     };
     void reveal();
-    return () => { active = false; animation?.stop(); };
+    return () => {
+      active = false;
+      animation?.stop();
+      // A focus change must not strand the reveal half-grey.
+      activityReveal.forEach(value => value.setValue(1));
+    };
   }, [lessonCompletedToday, isFocused, loading, revealKey, reduceMotion, activityReveal, seenReveals]);
   const listRef = useRef<FlatList<SectionAccess>>(null);
   const initialPositioned = useRef(false);
@@ -538,7 +546,7 @@ export function CourseJourney({
         if (completed.has(stack.id)) completedByDay.set(day, true);
         const goalMatch = tags.includes(goalTag);
         const existing = byDay.get(day);
-        if (!existing || (goalMatch && !existing.goalMatch)) byDay.set(day, { id: stack.id, title: stack.title, goalMatch });
+         if (!existing || stack.id === completedTodayStackId || (existing.id !== completedTodayStackId && goalMatch && !existing.goalMatch)) byDay.set(day, { id: stack.id, title: stack.title, goalMatch });
       });
       setLessons(Array.from({ length: TOTAL_DAYS }, (_, index) => {
         const day = index + 1;
@@ -558,7 +566,7 @@ export function CourseJourney({
     };
     void load();
     return () => { active = false; };
-  }, [marketId, learningGoal, completedStackIds, loadKey]);
+  }, [marketId, learningGoal, completedStackIds, completedTodayStackId, loadKey]);
 
   const completedDays = useMemo(() => new Set(lessons.filter(item => item.completed).map(item => item.day)), [lessons]);
   const sections = useMemo(() => resolveCourseSections(currentDay, completedDays), [currentDay, completedDays]);
@@ -676,19 +684,21 @@ export function CourseJourney({
           </View>
         )}
         renderItem={({ item: section }) => {
-          const lesson = lessons.find(entry => entry.day === section.displayDay);
-          const displayedLesson = lessons.find(entry => entry.day === section.displayDay);
+          const activeSection = section.index === focusedSectionIndex;
+          const creditedLesson = activeSection && lessonCompletedToday ? lessons.find(entry => entry.stackId === completedTodayStackId) : undefined;
+          const lesson = creditedLesson || lessons.find(entry => entry.day === section.displayDay);
+          const displayedLesson = lesson;
           const sectionLead = lessons.find(entry => entry.day === section.startDay);
           // Never show a syllabus facet label ("What it is") as a lesson title: fall back to the latest real lesson title.
-          const latestReal = [...lessons].filter(entry => entry.day <= section.displayDay && entry.title && entry.day >= section.startDay).sort((x, y) => y.day - x.day)[0];
+          const isRealTitle = (entry: CourseLesson | undefined) => Boolean(entry?.authored && entry.title.trim() && !/^what it is[.!?]?$/i.test(entry.title.trim()));
+          const latestReal = [...lessons].filter(entry => entry.day <= section.displayDay && isRealTitle(entry)).sort((x, y) => y.day - x.day)[0];
           const weekTitle = section.unlocked
-            ? displayedLesson?.title || latestReal?.title || themes[section.index] || `Day ${section.displayDay}`
+            ? (isRealTitle(displayedLesson) ? displayedLesson?.title : latestReal?.title) || themes[section.index] || `Day ${section.displayDay}`
             : themes[section.index] || sectionLead?.title || dayPromise(marketId, section.startDay);
-          const activeSection = section.index === focusedSectionIndex;
           return (
             <View>
             <SectionCluster
-              section={section}
+              section={creditedLesson ? { ...section, displayDay: creditedLesson.day } : section}
               lesson={lesson}
               title={themes[section.index] || `Section ${section.index + 1}`}
               weekTitle={weekTitle}
@@ -705,7 +715,11 @@ export function CourseJourney({
               onLeo={() => onAskLeo(section.displayDay)}
               onModule={kind => handleModule(section, lesson, kind)}
             />
-            {activeSection ? belowToday : null}
+             {activeSection && lessonCompletedToday ? <View style={styles.completionNotice} accessibilityRole="text">
+               <Feather name="check-circle" size={16} color={COLORS.accent} />
+               <Text style={styles.completionNoticeText}>Today's done. Your streak is safe.</Text>
+             </View> : null}
+             {activeSection ? belowToday : null}
             </View>
           );
         }}
@@ -797,6 +811,8 @@ export function CourseJourney({
 }
 
 const styles = StyleSheet.create({
+  completionNotice: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginHorizontal: 20, marginBottom: 12, paddingVertical: 10 },
+  completionNoticeText: { ...TYPE.caption, color: COLORS.textPrimary, flexShrink: 1 },
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   listContent: { paddingBottom: 110 },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, backgroundColor: COLORS.bg0, paddingHorizontal: 28 },
