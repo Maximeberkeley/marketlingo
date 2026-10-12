@@ -72,7 +72,7 @@ function useHomeData(userId, progress, xpData, lessonCompletedToday) {
       const familiarityLevel = profile.familiarity_level || "beginner";
       const { data: userProgress, error: progressError } = await supabase.from("user_progress").select("start_date, learning_goal, familiarity_level, completed_stacks").eq("user_id", userId).eq("market_id", market).maybeSingle();
       if (progressError && progressError.code !== "PGRST116") {
-        log.warn("[HomeData] Failed to load progress:", progressError.message);
+        throw progressError;
       }
       const learningGoalValue = userProgress?.learning_goal || "curiosity";
       setLearningGoal(learningGoalValue);

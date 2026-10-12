@@ -1,5 +1,4 @@
-import { jsx, jsxs } from "react/jsx-runtime";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -36,7 +35,7 @@ function presentation(data) {
     return {
       mood: "thinking",
       eyebrow: "GOOD EVENING",
-      line: `Today's ${market} idea is short and good.`
+      line: `Today's ${market} idea is ready.`
     };
   }
   if (hour >= 12) {
@@ -49,7 +48,7 @@ function presentation(data) {
   return {
     mood: "reading",
     eyebrow: "GOOD MORNING",
-    line: `${market} moved overnight. I took notes.`
+    line: `Today's ${market} idea is ready.`
   };
 }
 function DailyLeoScreen() {
@@ -99,36 +98,21 @@ function DailyLeoScreen() {
   }, [user]);
   const content = useMemo(() => data ? presentation(data) : null, [data]);
   if (loading || !data || !content) {
-    return /* @__PURE__ */ jsx(View, { style: styles.loading, children: /* @__PURE__ */ jsx(ActivityIndicator, { color: COLORS.accent }) });
+    return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(ActivityIndicator, { color: COLORS.accent }));
   }
-  return /* @__PURE__ */ jsxs(View, { style: [styles.root, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 22 }], children: [
-    /* @__PURE__ */ jsxs(View, { style: styles.heading, children: [
-      /* @__PURE__ */ jsx(Text, { style: styles.eyebrow, children: content.eyebrow }),
-      /* @__PURE__ */ jsx(Text, { style: styles.title, children: data.streak > 0 ? `Welcome back \u2014 ${data.streak} ${data.streak === 1 ? "day" : "days"} in a row` : "Welcome back to your market" })
-    ] }),
-    /* @__PURE__ */ jsxs(View, { style: styles.scene, children: [
-      /* @__PURE__ */ jsx(SpeechBubble, { text: content.line, tail: "bottom-center", showLabel: true, style: styles.bubble }),
-      /* @__PURE__ */ jsx(View, { style: styles.leoWrap, children: /* @__PURE__ */ jsx(LeoCharacter, { size: "xl", animation: content.mood, still: true }) })
-    ] }),
-    /* @__PURE__ */ jsxs(View, { style: styles.footer, children: [
-      /* @__PURE__ */ jsx(Text, { style: styles.caption, children: "One lesson. About five minutes." }),
-      /* @__PURE__ */ jsxs(
-        TouchableOpacity,
-        {
-          style: styles.continueButton,
-          activeOpacity: 0.88,
-          onPress: () => {
-            triggerHaptic("medium");
-            router.replace("/(tabs)/home");
-          },
-          children: [
-            /* @__PURE__ */ jsx(Text, { style: styles.continueText, children: "Continue" }),
-            /* @__PURE__ */ jsx(Feather, { name: "arrow-right", size: 20, color: "#FFFFFF" })
-          ]
-        }
-      )
-    ] })
-  ] });
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 22 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.heading }, /* @__PURE__ */ React.createElement(Text, { style: styles.eyebrow }, content.eyebrow), /* @__PURE__ */ React.createElement(Text, { style: styles.title }, data.streak > 0 ? `Welcome back \u2014 ${data.streak} ${data.streak === 1 ? "day" : "days"} in a row` : "Welcome back to your market")), /* @__PURE__ */ React.createElement(View, { style: styles.scene }, /* @__PURE__ */ React.createElement(SpeechBubble, { text: content.line, tail: "bottom-center", showLabel: true, style: styles.bubble }), /* @__PURE__ */ React.createElement(View, { style: styles.leoWrap }, /* @__PURE__ */ React.createElement(LeoCharacter, { size: "xl", animation: content.mood, still: true }))), /* @__PURE__ */ React.createElement(View, { style: styles.footer }, /* @__PURE__ */ React.createElement(Text, { style: styles.caption }, "One lesson. About five minutes."), /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      style: styles.continueButton,
+      activeOpacity: 0.88,
+      onPress: () => {
+        triggerHaptic("medium");
+        router.replace("/(tabs)/home");
+      }
+    },
+    /* @__PURE__ */ React.createElement(Text, { style: styles.continueText }, "Continue"),
+    /* @__PURE__ */ React.createElement(Feather, { name: "arrow-right", size: 20, color: "#FFFFFF" })
+  )));
 }
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg0, paddingHorizontal: 22, justifyContent: "space-between" },
