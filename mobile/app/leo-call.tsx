@@ -74,7 +74,7 @@ export default function LeoCallScreen() {
     ? (latestLesson.slides[latestLesson.slides.length - 1]?.body || '').replace(/\s+/g, ' ').trim().slice(0, 400) || undefined
     : undefined;
   const { user } = useAuth();
-  const { progress } = useUserProgress(marketId);
+  const { progress, loading: progressLoading } = useUserProgress(marketId);
   const goal = (progress as { learning_goal?: string } | null)?.learning_goal ?? null;
   const level = (progress as { familiarity_level?: string } | null)?.familiarity_level ?? null;
   const dossier = useDeliverable(marketId, goal);
