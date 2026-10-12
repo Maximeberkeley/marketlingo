@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: SCREEN_WIDTH - 48,
+    maxHeight: '88%',
     backgroundColor: COLORS.bg1,
     borderRadius: 24,
     borderWidth: 1.5,
@@ -161,6 +162,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingTop: 10,
     position: 'relative',
+  },
+  contentScroll: {
+    alignSelf: 'stretch',
+    flexGrow: 0,
+    flexShrink: 1,
   },
   glowRing: {
     position: 'absolute',
