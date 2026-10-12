@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   scene: { flex: 1, minHeight: 310, flexDirection: "column", alignItems: "center", justifyContent: "center" },
   // Full width and no clipping: the umbrella and tail must stay in frame.
   leoWrap: { width: 208, height: 208, justifyContent: "center", alignItems: "center" },
-  bubble: { maxWidth: 260, marginBottom: 8 },
+  bubble: { maxWidth: 260, marginBottom: 8, alignSelf: "center" },
   footer: { gap: 14 },
   caption: { color: COLORS.textSecondary, fontSize: 13, lineHeight: 19, textAlign: "center", fontWeight: "600" },
   continueButton: { height: 58, borderRadius: 18, backgroundColor: COLORS.accent, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, ...SHADOWS.accent },
