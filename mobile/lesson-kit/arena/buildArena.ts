@@ -130,7 +130,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
       ...fromStudied(studied, checkTamper, 'a3-tamper'),
       trainerCall(trainerPool[0], 'a3-call1'),
       trainerCall(trainerPool[1], 'a3-call2'),
-      drillSpotFake(drills, 'a3-fake', 'Sudden death. Spot the false claim.'),
+      drillSpotFake(drills, 'a3-fake', 'One of these is false. Which one?'),
       pack ? packSpeedRound(pack, 'a3-speed') : null,
     ],
     3,
@@ -139,24 +139,24 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   const waves: ArenaWave[] = [
     {
       key: 'warmup',
-      name: 'Warm-up',
-      tagline: 'Get your eye in. 20 seconds a call.',
+      name: 'Round 1',
+      tagline: 'Round 1 · 20 seconds per question',
       seconds: 20,
       multiplier: 1,
       exercises: wave1,
     },
     {
       key: 'pressure',
-      name: 'Pressure',
-      tagline: 'Clock tightens. Combos pay double.',
+      name: 'Round 2',
+      tagline: 'Round 2 · 15 seconds per question',
       seconds: 15,
       multiplier: 2,
       exercises: wave2,
     },
     {
       key: 'sudden',
-      name: 'Sudden death',
-      tagline: 'Triple points. One miss ends the run.',
+      name: 'Round 3',
+      tagline: 'Round 3 · 25 seconds per question',
       seconds: 25,
       multiplier: 3,
       exercises: wave3,
@@ -174,10 +174,10 @@ export interface ArenaRank {
 }
 
 export const ARENA_RANKS: ArenaRank[] = [
-  { key: 'diamond', label: 'Diamond Desk', color: '#38BDF8', min: 900 },
-  { key: 'gold', label: 'Gold Desk', color: '#F59E0B', min: 600 },
-  { key: 'silver', label: 'Silver Desk', color: '#94A3B8', min: 350 },
-  { key: 'bronze', label: 'Bronze Desk', color: '#FB923C', min: 0 },
+  { key: 'diamond', label: 'Excellent', color: '#38BDF8', min: 900 },
+  { key: 'gold', label: 'Strong', color: '#F59E0B', min: 600 },
+  { key: 'silver', label: 'Good', color: '#94A3B8', min: 350 },
+  { key: 'bronze', label: 'Keep going', color: '#FB923C', min: 0 },
 ];
 
 export function rankForScore(score: number): ArenaRank {

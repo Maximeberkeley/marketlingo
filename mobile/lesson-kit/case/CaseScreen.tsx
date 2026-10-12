@@ -19,9 +19,9 @@ import { BriefingReader } from '../components/BriefingReader';
 type Confidence = 'low' | 'medium' | 'high';
 
 const CONFIDENCE: { key: Confidence; label: string; note: string }[] = [
-  { key: 'low', label: 'Hedge it', note: 'Half position, revisit next week' },
-  { key: 'medium', label: 'Stand by it', note: 'Normal conviction' },
-  { key: 'high', label: 'Bet the desk', note: 'High conviction, size up' },
+  { key: 'low', label: 'Not sure', note: 'Small position, check again next week' },
+  { key: 'medium', label: 'Fairly sure', note: 'Normal position' },
+  { key: 'high', label: 'Certain', note: 'Larger position' },
 ];
 
 /** Investors size positions; everyone else just states how sure they are. */
@@ -159,7 +159,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
             <DebriefStat icon="flag" label="Final call" value={callCorrect ? 'Correct' : 'Missed'} />
             <DebriefStat
               icon="activity"
-              label="Conviction"
+              label="How sure"
               value={CONVICTION.find(c => c.key === confidence)?.label || 'Standard'}
             />
           </View>
@@ -225,7 +225,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
     ? 'Open the case'
     : phase === 'feedback'
       ? stageIndex === deepCase.stages.length - 1
-        ? 'See the verdict'
+        ? 'See your result'
         : 'Next stage'
       : isCall
         ? 'Make the call'
@@ -277,7 +277,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
           <View style={styles.convictionChip}>
             <Feather name="activity" size={12} color={tokens.color.accent} />
             <Text style={styles.convictionChipText}>
-              Conviction: {CONVICTION.find(c => c.key === confidence)?.label}
+              How sure: {CONVICTION.find(c => c.key === confidence)?.label}
             </Text>
           </View>
         )}
@@ -298,7 +298,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
       <Modal visible={askConfidence} transparent animationType="slide">
         <View style={styles.sheetBackdrop}>
           <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>How much conviction?</Text>
+            <Text style={styles.sheetTitle}>How sure are you?</Text>
             <Text style={styles.sheetBody}>
               Calibration counts. Being loudly wrong costs more than being quietly right.
             </Text>

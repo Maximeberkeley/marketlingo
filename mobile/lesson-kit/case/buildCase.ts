@@ -101,18 +101,18 @@ export function buildCase(input: CaseInput): DeepCase | null {
   stages.push({
     key: 'brief',
     label: 'Brief',
-    hint: 'Read the room before you read the numbers.',
+    hint: '',
     exercise: {
       kind: 'coldOpen',
       id: 'case-brief',
       eyebrow: `${input.marketName.toUpperCase()} CASE`,
       headline: briefHeadline,
       kicker: lead?.day
-        ? `Built on what you studied — day ${lead.day}. Four stages, one call.`
-        : 'Four stages. One call at the end.',
+        ? `From your day ${lead.day} lesson. A real situation. What would you do?`
+        : 'A real situation. What would you do?',
       fullText: lead?.slides?.[1]?.body || lead?.slides?.[0]?.body || scenario?.scenario,
       detailTitle: briefDetail,
-      leo: { line: 'Take the brief slowly. The trap is usually in the first sentence.', mood: 'thinking' },
+      leo: { line: 'Read the first sentence carefully.', mood: 'thinking' },
     } as Exercise,
   });
 
@@ -127,8 +127,8 @@ export function buildCase(input: CaseInput): DeepCase | null {
     stages.push({
       key: 'evidence',
       label: 'Evidence',
-      hint: 'Separate the signal from the noise.',
-      exercise: { ...evidence, leo: { line: 'Weak evidence sinks strong calls. Check it first.', mood: 'idle' } },
+      hint: '',
+      exercise: { ...evidence, leo: { line: 'Check the facts first.', mood: 'idle' } },
     });
   }
 
@@ -141,16 +141,16 @@ export function buildCase(input: CaseInput): DeepCase | null {
     stages.push({
       key: 'numbers',
       label: 'Numbers',
-      hint: 'Size it before you decide.',
-      exercise: { ...numbers, leo: { line: 'Get the order of magnitude right. Precision comes later.', mood: 'idle' } },
+      hint: '',
+      exercise: { ...numbers, leo: { line: 'Get roughly the right size.', mood: 'idle' } },
     });
   }
 
   stages.push({
     key: 'call',
-    label: 'The Call',
-    hint: 'Commit, then live with it.',
-    exercise: { ...call, leo: { line: 'This is the moment. Make the call you would defend out loud.', mood: 'thinking' } },
+    label: 'Your choice',
+    hint: '',
+    exercise: { ...call, leo: { line: 'Pick the answer you could explain.', mood: 'thinking' } },
   });
 
   return {
@@ -182,20 +182,20 @@ export function gradeCase(
     return {
       grade: 'A',
       note: boldRight
-        ? 'Right call, high conviction, evidence to back it. That is how a desk earns trust.'
-        : 'Right call with clean work. Next time back it with more conviction.',
+        ? 'Right answer, and you were sure. Well done.'
+        : 'Right answer. You can trust yourself more next time.',
     };
   }
   if (callCorrect) {
-    return { grade: 'B', note: 'You got the call. Tighten the evidence work and this becomes an A.' };
+    return { grade: 'B', note: 'Right answer. Check the facts more closely next time.' };
   }
   if (accuracy >= 0.6) {
     return {
       grade: 'C',
       note: boldWrong
-        ? 'Solid analysis, wrong call, too much conviction. Calibration is the lesson here.'
-        : 'The analysis held up. The final judgement did not. Re-read the brief.',
+        ? 'Good work on the facts. Wrong final answer, and you were too sure.'
+        : 'Good work on the facts. Wrong final answer. Re-read the situation.',
     };
   }
-  return { grade: 'D', note: 'The evidence slipped early and the call followed it. Run this case again.' };
+  return { grade: 'D', note: 'A few early answers were off. Try this case again.' };
 }
