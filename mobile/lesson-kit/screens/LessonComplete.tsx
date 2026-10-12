@@ -9,6 +9,8 @@ import { triggerHaptic } from '../../lib/haptics';
 import { lessonRewards, scoreHeadline } from './lessonRewards';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useDeliverable } from '../../hooks/useDeliverable';
+import { useAuth } from '../../hooks/useAuth';
+import { hasCalledToday } from '../../lib/leoCall';
 
 interface Props {
   correct: number;
@@ -26,6 +28,9 @@ interface Props {
   leoQuestions?: number;
   /** Market the lesson belongs to — used for the intel nudge. */
   marketId?: string;
+  /** Today's lesson title and takeaway — passed to the Leo call. */
+  lessonTitle?: string;
+  takeaway?: string;
 }
 
 function formatTime(seconds: number) {
@@ -46,7 +51,16 @@ export function LessonComplete({
   doneLabel = 'Continue',
   leoQuestions = 0,
   marketId,
+  lessonTitle,
+  takeaway,
 }: Props) {
+  const { user } = useAuth();
+  const [calledToday, setCalledToday] = useState(false);
+  useEffect(() => {
+    let live = true;
+    hasCalledToday(user?.id).then(v => { if (live) setCalledToday(v); });
+    return () => { live = false; };
+  }, [user?.id]);
   const { progress } = useUserProgress(marketId);
   const goal = (progress as { learning_goal?: string } | null)?.learning_goal ?? null;
   const dossier = useDeliverable(marketId, goal);
@@ -136,6 +150,22 @@ export function LessonComplete({
       )}
 
       <TouchableOpacity
+        accessibilityRole="button"
+        accessibilityLabel={calledToday ? 'Next call tomorrow' : 'Call Leo, 3 minutes'}
+        disabled={calledToday}
+        style={[styles.callBtn, calledToday && { opacity: 0.55 }]}
+        activeOpacity={0.8}
+        onPress={() => {
+          triggerHaptic('medium');
+          onDone(totalXp);
+          router.push({ pathname: '/leo-call', params: { marketId: marketId ?? '', lessonTitle: lessonTitle ?? '', takeaway: takeaway ?? '' } });
+        }}
+      >
+        <Feather name="phone" size={16} color={tokens.color.accent} />
+        <Text style={styles.callBtnText}>{calledToday ? 'Next call tomorrow' : 'Call Leo · 3 min'}</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
         accessibilityRole="link"
         accessibilityLabel="Today's intel · 3 stories →"
         style={styles.intelLink}
@@ -183,6 +213,8 @@ const styles = StyleSheet.create({
     gap: tokens.space.sm,
     backgroundColor: tokens.color.bg,
   },
+  callBtn: { alignSelf: 'stretch', minHeight: 50, borderRadius: 14, borderWidth: 1.5, borderColor: tokens.color.accent, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 12 },
+  callBtnText: { fontSize: tokens.font.body, fontWeight: '700', color: tokens.color.accent },
   intelLink: { minHeight: 44, justifyContent: 'center', alignSelf: 'stretch', alignItems: 'center' },
   intelLinkText: { fontSize: tokens.font.caption + 1, color: tokens.color.accent, fontWeight: '600', textAlign: 'center' },
 

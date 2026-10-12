@@ -316,6 +316,8 @@ export function LessonScreen({
         streakDays={streakDays}
         doneLabel={doneLabel}
         marketId={marketId}
+        lessonTitle={lesson.title}
+        takeaway={lessonTakeaway(lesson.exercises)}
         leoQuestions={leoMessages.filter(m => m.role === 'user').length}
         onDone={xp =>
           onFinish({
