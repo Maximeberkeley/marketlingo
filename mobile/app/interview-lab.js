@@ -19,6 +19,9 @@ import { INTERVIEW_PERSONAS, MECE_FRAMEWORKS, STORY_HERO_STEPS } from '../lib/in
 import { speakAsSophia, transcribeAudio } from '../lib/interviewVoice';
 import { triggerHaptic } from '../lib/haptics';
 import { log } from '../lib/logger';
+import { useInterviewReadiness } from '../hooks/useInterviewReadiness';
+import { ReadinessCard } from '../components/interview/ReadinessCard';
+import { roleTrack, TRACK_LABEL } from '../lib/interviewPrep';
 const SOPHIA = require('../assets/mentors/mentor-sophia.png');
 const STAGES = [
     { key: 'brief', label: 'Brief' }, { key: 'framework', label: 'Frame' },
@@ -52,7 +55,16 @@ export default function InterviewLabScreen() {
     const recordingRef = useRef(null);
     const soundRef = useRef(null);
     const questions = useInterviewQuestions(marketId, path || 'consulting');
-    const { addXP } = useUserXP(marketId);
+    const readiness = useInterviewReadiness(marketId);
+  const track = readiness.target ? roleTrack(readiness.target.role) : null;
+  const [showReadiness, setShowReadiness] = useState(false);
+  const readinessShown = useRef(false);
+  useEffect(() => {
+    if (readiness.loading || readinessShown.current || !user) return;
+    readinessShown.current = true;
+    setShowReadiness(true);
+  }, [readiness.loading, user]);
+  const { addXP } = useUserXP(marketId);
     const { recordCaseRun } = usePracticeRewards();
     const { evaluateRewards } = useCollectibles(marketId);
     const [mockIdx, setMockIdx] = useState(0);
@@ -68,19 +80,26 @@ export default function InterviewLabScreen() {
     used.add(pick);
     return pick;
   };
-  const pressurePoolSize = path === 'consulting' && questions.mentalMathQuestions.length ? questions.mentalMathQuestions.length : questions.mcqQuestions.length;
+  const pressurePoolSize = path === 'consulting' && track !== 'technical' && questions.mentalMathQuestions.length ? questions.mentalMathQuestions.length : questions.mcqQuestions.length;
   const rollQuestions = useCallback(() => {
-    setMockIdx(pickUnused(questions.mockQuestions.length, usedMock.current));
+    const technical = track === 'technical'
+      ? questions.mockQuestions.map((m, i) => (/certif|technical|system|standard|regulat|engineer|architect|safety|spec/i.test(`${m.scenario} ${m.question}`) ? i : -1)).filter(i => i >= 0 && !usedMock.current.has(i))
+      : [];
+    if (technical.length) {
+      const pick = technical[Math.floor(Math.random() * technical.length)];
+      usedMock.current.add(pick);
+      setMockIdx(pick);
+    } else setMockIdx(pickUnused(questions.mockQuestions.length, usedMock.current));
     setPressureIdx(pickUnused(pressurePoolSize, usedPressure.current));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [questions.mockQuestions.length, pressurePoolSize]);
+  }, [questions.mockQuestions, pressurePoolSize, track]);
   useEffect(() => { usedMock.current.clear(); usedPressure.current.clear(); rollQuestions(); }, [rollQuestions, path]);
   const mock = questions.mockQuestions[mockIdx] || questions.mockQuestions[0];
     const pressure = useMemo(() => {
-        if (path === 'consulting' && questions.mentalMathQuestions.length)
+        if (path === 'consulting' && track !== 'technical' && questions.mentalMathQuestions.length)
             return questions.mentalMathQuestions[pressureIdx % questions.mentalMathQuestions.length];
         return questions.mcqQuestions.length ? questions.mcqQuestions[pressureIdx % questions.mcqQuestions.length] : undefined;
-    }, [path, pressureIdx, questions.mentalMathQuestions, questions.mcqQuestions]);
+    }, [path, track, pressureIdx, questions.mentalMathQuestions, questions.mcqQuestions]);
     const framework = MECE_FRAMEWORKS[marketId] || MECE_FRAMEWORKS.aerospace;
     const stageIndex = Math.max(0, STAGES.findIndex(item => item.key === stage));
     useEffect(() => () => {
@@ -216,6 +235,16 @@ export default function InterviewLabScreen() {
         <PathCard icon="briefcase" title="Future Pro" subtitle="Cases, math, and structured answers" color={world.colors[0]} onPress={() => setPath('consulting')}/>
         <PathCard icon="award" title="Academic Star" subtitle="Impact stories and scholarship answers" color={world.colors[1]} onPress={() => setPath('academic')}/>
         <Text style={styles.smallPrint}>Sophia coaches every run. Voice is optional.</Text>
+        {track && <TouchableOpacity onPress={() => setShowReadiness(true)}><Text style={styles.smallPrint}>{`${readiness.target?.role} · ${TRACK_LABEL[track]} · Readiness ${readiness.percent}%`}</Text></TouchableOpacity>}
+      </View>
+        <ReadinessCard
+          visible={showReadiness}
+          readiness={readiness}
+          onClose={() => setShowReadiness(false)}
+          onOpenBrief={() => { setShowReadiness(false); router.push('/deliverable' as any); }}
+          onStartMock={() => { setShowReadiness(false); setPath(track === 'behavioral' ? 'academic' : 'consulting'); setStage('response'); }}
+        />
+      <View>
       </View>
     </View>);
     return (<View style={[styles.root, { paddingTop: insets.top + 8 }]}>
