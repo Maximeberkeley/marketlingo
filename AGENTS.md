@@ -23,3 +23,4 @@
 - Keep quiz history scoped to learner and market on-device, key it by question content and record only displayed questions; never relax exclusion when the pool is exhausted, because shuffled IDs and aborted runs must not permit seven-day repeats.
 - Goal-filter authored/generated copy and teach the takeaway before fallback checks; grounding must stay visible.
 - Keep syllabus reviews additive in server prompts and phone promises; reviews must not replace angles or change day-to-topic mapping.
+- Interview Lab picks its path from the saved interview target's role track (never asks Job vs School up front), and technical/behavioral tracks draw from the on-device TRACK_MOCKS bank before the question table, because technical roles must never get consulting cases or mental math.

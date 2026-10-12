@@ -246,3 +246,11 @@
 ### Oct 12 — Follow-up fixes (queued)
 - [x] Lesson intro day computed from the lesson itself (home.tsx introDay = stackDayNumber(session.activeStack) ?? currentDay; label via lessonDayLabel) for all entry points (.tsx/.js)
 - [x] Leo call opener context: useStudiedLessons + useDeliverable report loading while marketId differs from loaded marketId; leo-call waits for useUserProgress before first turn (.tsx/.js). Needs phone verification (first turn must carry industry, goal, level, lesson title + takeaway, Brief lines)
+
+### Oct 12 — Interview Lab rebuilt around what we know
+- [x] No Job/Scholarship choice: path from saved interview role (technical/behavioral/case), else job path, role-neutral; school link at bottom
+- [x] Top card: "{Company} {role} · N days left" + today's step + "Answer today's question"; no target: next question + one-time "Have an interview coming? Add it"
+- [x] Warm up with Leo as secondary row; readiness % small until above 0; plan visible when dated; dates "Oct 12"
+- [x] Leo only coach (screen, feedback, voice, feedback server copy; server mirrors old field for older builds)
+- [x] Technical roles: no cases or mental math; aerospace starter bank 10 technical + 6 behavioral (on-device)
+- [ ] Web Interview Lab page still shows Sophia (phone-first; not changed)
