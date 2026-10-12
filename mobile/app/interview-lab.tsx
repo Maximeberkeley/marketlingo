@@ -122,6 +122,9 @@ export default function InterviewLabScreen() {
   }, [allowMath, pressureIdx, questions.mentalMathQuestions, questions.mcqQuestions]);
   const framework = MECE_FRAMEWORKS[marketId] || MECE_FRAMEWORKS.aerospace;
   const stageIndex = Math.max(0, STAGES.findIndex(item => item.key === stage));
+  const startIndex = Math.max(0, STAGES.findIndex(item => item.key === startStage));
+  const visibleStages = STAGES.slice(startIndex);
+  const visibleIndex = Math.max(0, stageIndex - startIndex);
 
   useEffect(() => () => {
     soundRef.current?.unloadAsync().catch(() => {});
@@ -225,8 +228,16 @@ export default function InterviewLabScreen() {
       onClose={() => router.back()}
       onOpenBrief={() => router.push('/deliverable' as any)}
       onWarmUp={() => router.push({ pathname: '/leo-call', params: { marketId: marketId ?? '', mode: 'interview' } } as any)}
-      onStart={() => { setPersona(personaForTrack(track)); setPath('consulting'); setStage('response'); }}
-      onSchool={() => { setPersona('recruiter'); setPath('academic'); setStage('brief'); }}
+      onStart={(question?: string) => {
+        setPersona(personaForTrack(track));
+        if (question && question !== poolMock?.question) {
+          setLockedMock({ id: `card-${Date.now()}`, scenario: target?.company ? `${target.company} interview` : 'Mock interview', question, buzzwords: [], sampleAnswer: '' } as any);
+        } else if (poolMock) {
+          setLockedMock(poolMock);
+        }
+        setStartStage('response'); setPath('consulting'); setStage('response');
+      }}
+      onSchool={() => { setPersona('recruiter'); setStartStage('brief'); setPath('academic'); setStage('brief'); }}
     />
   );
 
