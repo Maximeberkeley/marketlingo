@@ -5,8 +5,8 @@
 // takes a different angle on it, in a fixed arc:
 //   what it is → how the money moves → who holds the power → the numbers that
 //   decide → the rule or risk that binds it → where it breaks
-// Every seventh day of the whole programme is a consolidation day: no new
-// concept, the week's most important idea retrieved and connected.
+// Every seventh day adds a short review alongside the scheduled angle.
+// Review never replaces a facet: all 30 topics retain their six angles.
 //
 // Same day number + same market always resolves to the same concept, so the
 // generator, the app and the learner's roadmap never disagree.
@@ -71,7 +71,7 @@ const FACET_BY_KEY = new Map(FACET_ARC.map(f => [f.key, f]));
 
 export const TOTAL_DAYS = 180;
 
-/** Consolidation lands on every seventh day of the programme. */
+/** A short review accompanies the scheduled angle every seventh day. */
 export const isConsolidationDay = (day: number) => day > 0 && day % 7 === 0;
 
 /**
@@ -100,7 +100,7 @@ export function syllabusDay(marketId: string, day: number): SyllabusDay {
     facetKey: facet.key,
     facetLabel: facet.label,
     angle: consolidation
-      ? `This is a CONSOLIDATION day. Introduce NO new concept. Take the single most important idea from this week of "${monthInfo?.theme}" and make the learner retrieve it: restate it precisely, show it working in a second real case, and have them connect it to the week before.`
+      ? `${facet.angle} This day ALSO includes a short review: briefly retrieve an already-taught idea from this week and connect it to today's angle on "${topics[topicIndex]}". Teach today's scheduled angle in full; the review must not replace it or introduce a second new concept.`
       : facet.angle,
     isConsolidation: consolidation,
   };
