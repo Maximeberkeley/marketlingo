@@ -811,6 +811,8 @@ export function CourseJourney({
 }
 
 const styles = StyleSheet.create({
+  completionNotice: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginHorizontal: 20, marginBottom: 12, paddingVertical: 10 },
+  completionNoticeText: { ...TYPE.caption, color: COLORS.textPrimary, flexShrink: 1 },
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   listContent: { paddingBottom: 110 },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, backgroundColor: COLORS.bg0, paddingHorizontal: 28 },
