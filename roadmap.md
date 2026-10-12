@@ -1,6 +1,7 @@
 # MarketLingo roadmap
 
 ## Oct 12 — Symbol and notification framing
+- [ ] Enlarge Leo and place him left beside his bubble in the newly supplied screenshot, choosing contextual expressive artwork.
 - [x] Match welcome-back streak and XP symbols to the app's flame and bottle in both phone sources.
 - [x] Widen the in-app notification shown in the screenshot to the screen width with 16px side margins in both phone sources; style checks passed at widths 320–768 and syntax checks passed.
 - [ ] Verify notification framing on an iPhone (blocked: no iOS device/simulator; requires the next phone build).
