@@ -3,7 +3,6 @@ import {
   View,
   Text,
   ScrollView,
-  Pressable,
   TouchableOpacity,
   StyleSheet,
   Animated,
@@ -23,7 +22,6 @@ import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { getMarketName } from '../../lib/markets';
-import { ShortcutRow, ShortcutGallery, useShortcuts } from '../../components/practice/ShortcutIslands';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - 40; // Full width with 20px padding each side
@@ -220,9 +218,6 @@ export default function PracticeScreen() {
   const [goal, setGoal] = useState<string | null>(null);
   const studied = useStudiedLessons(selectedMarket || undefined);
   const headerAnim = useRef(new Animated.Value(0)).current;
-  const shortcuts = useShortcuts();
-  const [editing, setEditing] = useState(false);
-  const [galleryOpen, setGalleryOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -268,9 +263,7 @@ export default function PracticeScreen() {
           paddingBottom: insets.bottom + 100,
         }}
         showsVerticalScrollIndicator={false}
-        onScrollBeginDrag={() => setEditing(false)}
       >
-        <Pressable onPress={() => setEditing(false)}>
         {/* Header */}
         <Animated.View
           style={[
