@@ -15,6 +15,7 @@ import { useLearningGoal } from '../hooks/useLearningGoal';
 import { getMarketName } from '../lib/markets';
 import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
+import { trackEvent } from '../lib/analytics';
 
 export default function DeepCaseRoute() {
   const { day } = useLocalSearchParams<{ day?: string }>();
@@ -77,6 +78,7 @@ export default function DeepCaseRoute() {
   }
 
   const handleFinish = async (result: CaseResult) => {
+    trackEvent('case_finished', { grade: result.grade, caseId: deepCase.id });
     try {
       await recordCaseRun(result.grade);
       await addXP(result.xp, 'deep_case', deepCase.id, `Deep Case graded ${result.grade}`);

@@ -1,5 +1,4 @@
-import { jsx, jsxs } from "react/jsx-runtime";
-import { useMemo, useCallback, useRef } from "react";
+import React, { useMemo, useCallback, useRef } from "react";
 import { ActivityIndicator, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { LessonScreen } from "../../lesson-kit/screens/LessonScreen";
@@ -104,31 +103,23 @@ function LessonKitReader({
   const extraActions = useCallback(
     (exerciseIndex, dismiss, exercise) => {
       const slideNumber = (exercise?.kind === "microInsight" ? exercise.sourceSlideNumber : void 0) ?? slideNumbers[exerciseIndex] ?? 1;
-      return /* @__PURE__ */ jsxs(View, { style: styles.actions, children: [
-        /* @__PURE__ */ jsxs(TouchableOpacity, { style: styles.action, onPress: () => {
-          dismiss();
-          onAddNote(slideNumber);
-        }, children: [
-          /* @__PURE__ */ jsx(Feather, { name: "edit-3", size: 16, color: tokens.color.textSecondary }),
-          /* @__PURE__ */ jsx(Text, { style: styles.actionText, children: "Note" })
-        ] }),
-        /* @__PURE__ */ jsxs(TouchableOpacity, { style: styles.action, onPress: () => {
-          dismiss();
-          onSaveInsight(slideNumber);
-        }, children: [
-          /* @__PURE__ */ jsx(Feather, { name: "bookmark", size: 16, color: tokens.color.textSecondary }),
-          /* @__PURE__ */ jsx(Text, { style: styles.actionText, children: "Save" })
-        ] })
-      ] });
+      return /* @__PURE__ */ React.createElement(View, { style: styles.actions }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.action, onPress: () => {
+        dismiss();
+        onAddNote(slideNumber);
+      } }, /* @__PURE__ */ React.createElement(Feather, { name: "edit-3", size: 16, color: tokens.color.textSecondary }), /* @__PURE__ */ React.createElement(Text, { style: styles.actionText }, "Note")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.action, onPress: () => {
+        dismiss();
+        onSaveInsight(slideNumber);
+      } }, /* @__PURE__ */ React.createElement(Feather, { name: "bookmark", size: 16, color: tokens.color.textSecondary }), /* @__PURE__ */ React.createElement(Text, { style: styles.actionText }, "Save")));
     },
     [slideNumbers, onAddNote, onSaveInsight]
   );
-  if (!defaultSectionKey) return /* @__PURE__ */ jsx(View, { style: styles.opening, children: /* @__PURE__ */ jsx(ActivityIndicator, { color: tokens.color.accent }) });
-  return /* @__PURE__ */ jsx(DeepDiveProvider, { stackId, learningGoal, children: /* @__PURE__ */ jsx(
+  if (!defaultSectionKey) return /* @__PURE__ */ React.createElement(View, { style: styles.opening }, /* @__PURE__ */ React.createElement(ActivityIndicator, { color: tokens.color.accent }));
+  return /* @__PURE__ */ React.createElement(DeepDiveProvider, { stackId, learningGoal }, /* @__PURE__ */ React.createElement(
     LessonScreen,
     {
       lesson,
       marketId,
+      stackId,
       onExit: onClose,
       onFinish: ({ timeSpentSeconds, correct, total }) => onComplete(
         isReview,
@@ -140,7 +131,7 @@ function LessonKitReader({
       streakDays,
       confirmExit: !isReview
     }
-  ) });
+  ));
 }
 const styles = StyleSheet.create({
   opening: { flex: 1, alignItems: "center", justifyContent: "center" },

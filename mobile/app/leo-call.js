@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -26,6 +26,7 @@ import { isLeoMutedSync, loadLeoMuted } from "../lib/voicePrefs";
 import { triggerHaptic } from "../lib/haptics";
 import { log } from "../lib/logger";
 import { useAuth } from "../hooks/useAuth";
+import { trackEvent } from "../lib/analytics";
 import { useUserProgress } from "../hooks/useUserProgress";
 import { useDeliverable } from "../hooks/useDeliverable";
 import { useUserXP } from "../hooks/useUserXP";
@@ -80,6 +81,9 @@ function LeoCallScreen() {
   const { addXP } = useUserXP(marketId);
   const [phase, setPhase] = useState("loading");
   const [callType, setCallType] = useState("explain");
+  const callStartRef = useRef(0);
+  const callTypeRef = useRef(callType);
+  callTypeRef.current = callType;
   const [target, setTarget] = useState(null);
   const [messages, setMessages] = useState([]);
   const [pose, setPose] = useState("thinking");
@@ -148,7 +152,10 @@ function LeoCallScreen() {
         setPhase("limit");
         return;
       }
-      setCallType(params.mode === "interview" ? "interview" : rotated);
+      const chosenType = params.mode === "interview" ? "interview" : rotated;
+      setCallType(chosenType);
+      callStartRef.current = Date.now();
+      trackEvent("leo_call_started", { callType: chosenType });
       setPhase("live");
       Audio.requestPermissionsAsync().catch(() => {
       });
@@ -190,6 +197,11 @@ function LeoCallScreen() {
     triggerHaptic("medium");
     const history = messagesRef.current;
     const turns = history.filter((m) => m.role === "user").length;
+    trackEvent("leo_call_ended", {
+      callType: callTypeRef.current,
+      seconds: callStartRef.current ? Math.round((Date.now() - callStartRef.current) / 1e3) : 0,
+      learnerTurns: turns
+    });
     setPhase("recap");
     if (turns === 0) return;
     if (user) advanceCallType(user.id);
@@ -342,54 +354,72 @@ function LeoCallScreen() {
     if (ok) {
       setBriefSaved(true);
       triggerHaptic("success");
+      trackEvent("leo_call_brief_line_saved", { callType, sectionKey: recap.sectionKey ?? null });
     }
-  }, [briefDraft, recap, dossier]);
+  }, [briefDraft, recap, dossier, callType]);
   const label = CALL_TYPE_LABEL[callType];
   const status = recording ? "Listening\u2026" : busy ? "Leo is thinking\u2026" : speaking ? "Leo is talking" : "Hold to talk";
   const overTime = elapsed >= CALL_SECONDS;
   if (phase === "limit") {
-    return <View style={[styles.dark, styles.center, { paddingTop: insets.top, paddingBottom: insets.bottom + 24 }]}><StatusBar barStyle="light-content" /><Image source={require("../assets/mascot/leo-sleeping.png")} style={styles.leoSmall} resizeMode="contain" /><Text style={styles.limitTitle}>Next call tomorrow</Text><Text style={styles.limitBody}>You’ve had today’s call with Leo. He’ll be ready again after midnight.</Text><TouchableOpacity style={styles.ghostBtn} onPress={() => router.back()}><Text style={styles.ghostText}>Back</Text></TouchableOpacity></View>;
+    return /* @__PURE__ */ React.createElement(View, { style: [styles.dark, styles.center, { paddingTop: insets.top, paddingBottom: insets.bottom + 24 }] }, /* @__PURE__ */ React.createElement(StatusBar, { barStyle: "light-content" }), /* @__PURE__ */ React.createElement(Image, { source: require("../assets/mascot/leo-sleeping.png"), style: styles.leoSmall, resizeMode: "contain" }), /* @__PURE__ */ React.createElement(Text, { style: styles.limitTitle }, "Next call tomorrow"), /* @__PURE__ */ React.createElement(Text, { style: styles.limitBody }, "You\u2019ve had today\u2019s call with Leo. He\u2019ll be ready again after midnight."), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.ghostBtn, onPress: () => router.back() }, /* @__PURE__ */ React.createElement(Text, { style: styles.ghostText }, "Back")));
   }
   if (phase === "recap") {
     const sectionTitle = dossier.template.sections.find((s) => s.key === recap?.sectionKey)?.title;
-    return <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : void 0} style={styles.light}><ScrollView contentContainerStyle={[styles.recapBody, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 32 }]} keyboardShouldPersistTaps="handled"><Image source={POSE.talking} style={styles.leoRecap} resizeMode="contain" /><Text style={styles.recapTitle}>{learnerTurns ? "Nice call." : "Call ended"}</Text><Text style={styles.recapSub}>{learnerTurns ? `${label.title} \xB7 ${fmt(elapsed)}` : "You didn\u2019t say anything this time \u2014 no worries."}</Text>{recapLoading && <ActivityIndicator color={COLORS.accent} style={{ marginTop: 24 }} />}{recap && <View style={styles.recapCard}><RecapRow icon="check" label="You explained well" text={recap.explainedWell} /><RecapRow icon="arrow-up-right" label="Next time" text={recap.nextTime} />{!!recap.insiderWord && <RecapRow icon="key" label="Insider word you used" text={recap.insiderWord} last />}</View>}{recap?.briefLine ? <View style={styles.briefCard}><Text style={styles.briefEyebrow}>{`ADD TO MY ${dossier.template.title.toUpperCase()}${sectionTitle ? ` \xB7 ${sectionTitle.toUpperCase()}` : ""}`}</Text><TextInput
-      value={briefDraft}
-      onChangeText={(t) => {
-        setBriefDraft(t);
-        setBriefSaved(false);
-      }}
-      multiline
-      editable={!briefSaved}
-      style={styles.briefInput}
-      placeholder="Your line"
-      placeholderTextColor={COLORS.textMuted}
-    /><TouchableOpacity disabled={briefSaved || briefDraft.trim().length < 3} onPress={saveBrief} style={[styles.briefBtn, briefSaved && styles.briefBtnDone]}><Text style={styles.briefBtnText}>{briefSaved ? "Added \u2713" : `Add to my ${dossier.template.title}`}</Text></TouchableOpacity></View> : null}{xpAwarded && <Text style={styles.xp}>{`+${CALL_XP} XP`}</Text>}<TouchableOpacity style={styles.primaryBtn} onPress={() => router.back()}><Text style={styles.primaryText}>Done</Text></TouchableOpacity></ScrollView></KeyboardAvoidingView>;
+    return /* @__PURE__ */ React.createElement(KeyboardAvoidingView, { behavior: Platform.OS === "ios" ? "padding" : void 0, style: styles.light }, /* @__PURE__ */ React.createElement(ScrollView, { contentContainerStyle: [styles.recapBody, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 32 }], keyboardShouldPersistTaps: "handled" }, /* @__PURE__ */ React.createElement(Image, { source: POSE.talking, style: styles.leoRecap, resizeMode: "contain" }), /* @__PURE__ */ React.createElement(Text, { style: styles.recapTitle }, learnerTurns ? "Nice call." : "Call ended"), /* @__PURE__ */ React.createElement(Text, { style: styles.recapSub }, learnerTurns ? `${label.title} \xB7 ${fmt(elapsed)}` : "You didn\u2019t say anything this time \u2014 no worries."), recapLoading && /* @__PURE__ */ React.createElement(ActivityIndicator, { color: COLORS.accent, style: { marginTop: 24 } }), recap && /* @__PURE__ */ React.createElement(View, { style: styles.recapCard }, /* @__PURE__ */ React.createElement(RecapRow, { icon: "check", label: "You explained well", text: recap.explainedWell }), /* @__PURE__ */ React.createElement(RecapRow, { icon: "arrow-up-right", label: "Next time", text: recap.nextTime }), !!recap.insiderWord && /* @__PURE__ */ React.createElement(RecapRow, { icon: "key", label: "Insider word you used", text: recap.insiderWord, last: true })), recap?.briefLine ? /* @__PURE__ */ React.createElement(View, { style: styles.briefCard }, /* @__PURE__ */ React.createElement(Text, { style: styles.briefEyebrow }, `ADD TO MY ${dossier.template.title.toUpperCase()}${sectionTitle ? ` \xB7 ${sectionTitle.toUpperCase()}` : ""}`), /* @__PURE__ */ React.createElement(
+      TextInput,
+      {
+        value: briefDraft,
+        onChangeText: (t) => {
+          setBriefDraft(t);
+          setBriefSaved(false);
+        },
+        multiline: true,
+        editable: !briefSaved,
+        style: styles.briefInput,
+        placeholder: "Your line",
+        placeholderTextColor: COLORS.textMuted
+      }
+    ), /* @__PURE__ */ React.createElement(TouchableOpacity, { disabled: briefSaved || briefDraft.trim().length < 3, onPress: saveBrief, style: [styles.briefBtn, briefSaved && styles.briefBtnDone] }, /* @__PURE__ */ React.createElement(Text, { style: styles.briefBtnText }, briefSaved ? "Added \u2713" : `Add to my ${dossier.template.title}`))) : null, xpAwarded && /* @__PURE__ */ React.createElement(Text, { style: styles.xp }, `+${CALL_XP} XP`), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.primaryBtn, onPress: () => router.back() }, /* @__PURE__ */ React.createElement(Text, { style: styles.primaryText }, "Done"))));
   }
-  return <View style={[styles.dark, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 20 }]}><StatusBar barStyle="light-content" /><View style={styles.top}><View><Text style={styles.callType}>{label.title}</Text><Text style={[styles.timer, overTime && { color: COLORS.warning }]}>{phase === "live" ? fmt(elapsed) : " "}</Text></View><TouchableOpacity
-    accessibilityLabel={captions ? "Hide captions" : "Show captions"}
-    onPress={() => {
-      triggerHaptic("light");
-      setCaptions((c) => !c);
-    }}
-    style={[styles.ccBtn, captions && styles.ccOn]}
-  ><Text style={[styles.ccText, captions && { color: "#15171B" }]}>CC</Text></TouchableOpacity></View><View style={styles.stage}><Animated.View style={{ opacity: fade }}><Image source={POSE[pose]} style={styles.leo} resizeMode="contain" /></Animated.View><Text style={styles.status}>{phase === "loading" ? "Calling Leo\u2026" : phase === "error" ? "Couldn\u2019t reach Leo" : status}</Text>{captions && phase === "live" && <View style={styles.captions}>{!!lastLeo && <Text style={styles.capLeo}>{lastLeo}</Text>}{!!lastLearner && <Text style={styles.capYou}>{`You: ${lastLearner}`}</Text>}</View>}{!!error && <Text style={styles.error}>{error}</Text>}{!!helper && <View style={styles.helper}><Text style={styles.helperText}>{helper}</Text></View>}</View><View style={styles.controls}><TouchableOpacity
-    accessibilityLabel="Help me"
-    disabled={phase !== "live"}
-    onPress={() => {
-      triggerHaptic("light");
-      setHelper(sentenceStarter(callType, learnerTurns, context.takeaway));
-    }}
-    style={styles.sideBtn}
-  ><Feather name="help-circle" size={20} color="#F2F4F8" /><Text style={styles.sideText}>Help me</Text></TouchableOpacity><Pressable
-    accessibilityLabel="Hold to talk"
-    disabled={phase !== "live" || busy}
-    onPressIn={startTalking}
-    onPressOut={stopTalking}
-    style={styles.talkWrap}
-  ><Animated.View style={[styles.talkRing, { opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [0, 0.5] }), transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }] }]} /><View style={[styles.talkBtn, recording && styles.talkActive, (busy || phase !== "live") && { opacity: 0.5 }]}>{busy ? <ActivityIndicator color="#FFFFFF" /> : <Feather name="mic" size={34} color="#FFFFFF" />}</View></Pressable><TouchableOpacity accessibilityLabel="Hang up" onPress={() => phase === "error" ? router.back() : finishCall()} style={styles.hangBtn}><Feather name="phone-off" size={22} color="#FFFFFF" /></TouchableOpacity></View></View>;
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.dark, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 20 }] }, /* @__PURE__ */ React.createElement(StatusBar, { barStyle: "light-content" }), /* @__PURE__ */ React.createElement(View, { style: styles.top }, /* @__PURE__ */ React.createElement(View, null, /* @__PURE__ */ React.createElement(Text, { style: styles.callType }, label.title), /* @__PURE__ */ React.createElement(Text, { style: [styles.timer, overTime && { color: COLORS.warning }] }, phase === "live" ? fmt(elapsed) : " ")), /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      accessibilityLabel: captions ? "Hide captions" : "Show captions",
+      onPress: () => {
+        triggerHaptic("light");
+        setCaptions((c) => !c);
+      },
+      style: [styles.ccBtn, captions && styles.ccOn]
+    },
+    /* @__PURE__ */ React.createElement(Text, { style: [styles.ccText, captions && { color: "#15171B" }] }, "CC")
+  )), /* @__PURE__ */ React.createElement(View, { style: styles.stage }, /* @__PURE__ */ React.createElement(Animated.View, { style: { opacity: fade } }, /* @__PURE__ */ React.createElement(Image, { source: POSE[pose], style: styles.leo, resizeMode: "contain" })), /* @__PURE__ */ React.createElement(Text, { style: styles.status }, phase === "loading" ? "Calling Leo\u2026" : phase === "error" ? "Couldn\u2019t reach Leo" : status), captions && phase === "live" && /* @__PURE__ */ React.createElement(View, { style: styles.captions }, !!lastLeo && /* @__PURE__ */ React.createElement(Text, { style: styles.capLeo }, lastLeo), !!lastLearner && /* @__PURE__ */ React.createElement(Text, { style: styles.capYou }, `You: ${lastLearner}`)), !!error && /* @__PURE__ */ React.createElement(Text, { style: styles.error }, error), !!helper && /* @__PURE__ */ React.createElement(View, { style: styles.helper }, /* @__PURE__ */ React.createElement(Text, { style: styles.helperText }, helper))), /* @__PURE__ */ React.createElement(View, { style: styles.controls }, /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      accessibilityLabel: "Help me",
+      disabled: phase !== "live",
+      onPress: () => {
+        triggerHaptic("light");
+        setHelper(sentenceStarter(callType, learnerTurns, context.takeaway));
+      },
+      style: styles.sideBtn
+    },
+    /* @__PURE__ */ React.createElement(Feather, { name: "help-circle", size: 20, color: "#F2F4F8" }),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.sideText }, "Help me")
+  ), /* @__PURE__ */ React.createElement(
+    Pressable,
+    {
+      accessibilityLabel: "Hold to talk",
+      disabled: phase !== "live" || busy,
+      onPressIn: startTalking,
+      onPressOut: stopTalking,
+      style: styles.talkWrap
+    },
+    /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.talkRing, { opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [0, 0.5] }), transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }] }] }),
+    /* @__PURE__ */ React.createElement(View, { style: [styles.talkBtn, recording && styles.talkActive, (busy || phase !== "live") && { opacity: 0.5 }] }, busy ? /* @__PURE__ */ React.createElement(ActivityIndicator, { color: "#FFFFFF" }) : /* @__PURE__ */ React.createElement(Feather, { name: "mic", size: 34, color: "#FFFFFF" }))
+  ), /* @__PURE__ */ React.createElement(TouchableOpacity, { accessibilityLabel: "Hang up", onPress: () => phase === "error" ? router.back() : finishCall(), style: styles.hangBtn }, /* @__PURE__ */ React.createElement(Feather, { name: "phone-off", size: 22, color: "#FFFFFF" }))));
 }
 function RecapRow({ icon, label, text, last }) {
-  return <View style={[styles.recapRow, !last && styles.recapDivider]}><Feather name={icon} size={16} color={COLORS.accent} style={{ marginTop: 2 }} /><View style={{ flex: 1 }}><Text style={styles.recapLabel}>{label}</Text><Text style={styles.recapText}>{text}</Text></View></View>;
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.recapRow, !last && styles.recapDivider] }, /* @__PURE__ */ React.createElement(Feather, { name: icon, size: 16, color: COLORS.accent, style: { marginTop: 2 } }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.recapLabel }, label), /* @__PURE__ */ React.createElement(Text, { style: styles.recapText }, text)));
 }
 const DARK = "#15171B";
 const styles = StyleSheet.create({

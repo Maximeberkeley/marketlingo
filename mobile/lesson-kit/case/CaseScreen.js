@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -13,6 +13,7 @@ import { gradeCase } from "./buildCase";
 import { playSound } from "../../lib/sounds";
 import { getMarketWorld } from "../../data/marketWorlds";
 import { BriefingReader } from "../components/BriefingReader";
+import { trackEvent } from "../../lib/analytics";
 const CONFIDENCE = [
   { key: "low", label: "Not sure", note: "Small position, check again next week" },
   { key: "medium", label: "Fairly sure", note: "Normal position" },
@@ -30,6 +31,9 @@ const GRADE_COLOR = {
   D: "#EF4444"
 };
 function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal }) {
+  React.useEffect(() => {
+    trackEvent("case_started", { caseId: deepCase.id });
+  }, [deepCase.id]);
   const CONVICTION = goal === "invest" ? CONFIDENCE : PLAIN_CONFIDENCE;
   const insets = useSafeAreaInsets();
   const world = getMarketWorld(marketId);
@@ -104,177 +108,100 @@ function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal }) 
   if (debrief) {
     const result = gradeCase(correct, graded, callCorrect, confidence || "medium");
     const xp = { A: 90, B: 70, C: 45, D: 25 }[result.grade];
-    return <View style={[styles.root, { paddingTop: insets.top + 12 }]}>
-        <ScrollView contentContainerStyle={styles.debriefScroll} showsVerticalScrollIndicator={false}>
-          <LinearGradient
-      colors={[GRADE_COLOR[result.grade], world.colors[1]]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.gradeHero}
-    >
-            <Text style={styles.gradeKicker}>CASE VERDICT</Text>
-            <Text style={styles.gradeLetter}>{result.grade}</Text>
-            <Text style={styles.gradeNote}>{result.note}</Text>
-          </LinearGradient>
-
-          <View style={styles.debriefRow}>
-            <DebriefStat icon="check-circle" label="Stages right" value={`${correct + Math.max(0, deepCase.stages.length - graded)}/${deepCase.stages.length}`} />
-            <DebriefStat icon="flag" label="Final call" value={callCorrect ? "Correct" : "Missed"} />
-            <DebriefStat
-      icon="activity"
-      label="How sure"
-      value={CONVICTION.find((c) => c.key === confidence)?.label || "Standard"}
-    />
-          </View>
-
-          {!!deepCase.proReasoning && <DebriefBlock icon="award" title="How a pro reads it" body={deepCase.proReasoning} tint={tokens.color.accent} />}
-          {!!deepCase.commonMistake && <DebriefBlock icon="alert-triangle" title="Where most people slip" body={deepCase.commonMistake} tint={tokens.color.signalEnergy} />}
-          {!!deepCase.mentalModel && <DebriefBlock icon="compass" title="Keep this model" body={deepCase.mentalModel} tint={tokens.color.signalData} />}
-
-          <LeoCoach
-      line={`That is one more ${marketName} case in the bank. Cases like this are what interviews are made of.`}
-      mood={result.grade === "A" || result.grade === "B" ? "celebrate" : "thinking"}
-    />
-
-           <PrimaryButton
-      label={banking ? "Saving your case\u2026" : `Bank +${xp} XP`}
-      variant={banking ? "disabled" : "primary"}
-      onPress={() => {
-        if (banking) return;
-        setBanking(true);
-        onFinish({
-          grade: result.grade,
-          correct,
-          total: graded,
-          callCorrect,
-          confidence: confidence || "medium",
-          xp
-        });
-      }}
-    />
-           <TouchableOpacity style={styles.ghostBtn} onPress={onExit} disabled={banking} activeOpacity={0.8}>
-            <Text style={styles.ghostText}>Back to practice</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>;
+    return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 12 }] }, /* @__PURE__ */ React.createElement(ScrollView, { contentContainerStyle: styles.debriefScroll, showsVerticalScrollIndicator: false }, /* @__PURE__ */ React.createElement(
+      LinearGradient,
+      {
+        colors: [GRADE_COLOR[result.grade], world.colors[1]],
+        start: { x: 0, y: 0 },
+        end: { x: 1, y: 1 },
+        style: styles.gradeHero
+      },
+      /* @__PURE__ */ React.createElement(Text, { style: styles.gradeKicker }, "CASE VERDICT"),
+      /* @__PURE__ */ React.createElement(Text, { style: styles.gradeLetter }, result.grade),
+      /* @__PURE__ */ React.createElement(Text, { style: styles.gradeNote }, result.note)
+    ), /* @__PURE__ */ React.createElement(View, { style: styles.debriefRow }, /* @__PURE__ */ React.createElement(DebriefStat, { icon: "check-circle", label: "Stages right", value: `${correct + Math.max(0, deepCase.stages.length - graded)}/${deepCase.stages.length}` }), /* @__PURE__ */ React.createElement(DebriefStat, { icon: "flag", label: "Final call", value: callCorrect ? "Correct" : "Missed" }), /* @__PURE__ */ React.createElement(
+      DebriefStat,
+      {
+        icon: "activity",
+        label: "How sure",
+        value: CONVICTION.find((c) => c.key === confidence)?.label || "Standard"
+      }
+    )), !!deepCase.proReasoning && /* @__PURE__ */ React.createElement(DebriefBlock, { icon: "award", title: "How a pro reads it", body: deepCase.proReasoning, tint: tokens.color.accent }), !!deepCase.commonMistake && /* @__PURE__ */ React.createElement(DebriefBlock, { icon: "alert-triangle", title: "Where most people slip", body: deepCase.commonMistake, tint: tokens.color.signalEnergy }), !!deepCase.mentalModel && /* @__PURE__ */ React.createElement(DebriefBlock, { icon: "compass", title: "Keep this model", body: deepCase.mentalModel, tint: tokens.color.signalData }), /* @__PURE__ */ React.createElement(
+      LeoCoach,
+      {
+        line: `That is one more ${marketName} case in the bank. Cases like this are what interviews are made of.`,
+        mood: result.grade === "A" || result.grade === "B" ? "celebrate" : "thinking"
+      }
+    ), /* @__PURE__ */ React.createElement(
+      PrimaryButton,
+      {
+        label: banking ? "Saving your case\u2026" : `Bank +${xp} XP`,
+        variant: banking ? "disabled" : "primary",
+        onPress: () => {
+          if (banking) return;
+          setBanking(true);
+          onFinish({
+            grade: result.grade,
+            correct,
+            total: graded,
+            callCorrect,
+            confidence: confidence || "medium",
+            xp
+          });
+        }
+      }
+    ), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.ghostBtn, onPress: onExit, disabled: banking, activeOpacity: 0.8 }, /* @__PURE__ */ React.createElement(Text, { style: styles.ghostText }, "Back to practice"))));
   }
   if (!stage) {
-    return <View style={[styles.root, styles.centered]}>
-        <Text style={styles.emptyTitle}>No case ready</Text>
-        <Text style={styles.emptyBody}>We need more {marketName} case material. Try a lesson first.</Text>
-        <PrimaryButton label="Back to practice" onPress={onExit} />
-      </View>;
+    return /* @__PURE__ */ React.createElement(View, { style: [styles.root, styles.centered] }, /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "No case ready"), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyBody }, "We need more ", marketName, " case material. Try a lesson first."), /* @__PURE__ */ React.createElement(PrimaryButton, { label: "Back to practice", onPress: onExit }));
   }
   const buttonVariant = phase === "feedback" ? state.isCorrect ? "correct" : "incorrect" : passive || state.canCheck ? "primary" : "disabled";
   const buttonLabel = passive ? "Open the case" : phase === "feedback" ? stageIndex === deepCase.stages.length - 1 ? "See your result" : "Next stage" : isCall ? "Make the call" : "Check my read";
-  return <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
-      {
-    /* Stage rail */
-  }
-      <View style={styles.railRow}>
-        <TouchableOpacity onPress={() => setShowExit(true)} hitSlop={10} style={{ width: 34 }}>
-          <Feather name="x" size={20} color={tokens.color.textMuted} />
-        </TouchableOpacity>
-        <View style={styles.rail}>
-          {deepCase.stages.map((s, i) => {
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 8 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.railRow }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => setShowExit(true), hitSlop: 10, style: { width: 34 } }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 20, color: tokens.color.textMuted })), /* @__PURE__ */ React.createElement(View, { style: styles.rail }, deepCase.stages.map((s, i) => {
     const done = i < stageIndex;
     const active = i === stageIndex;
-    return <View key={s.key} style={styles.railItem}>
-                <View
-      style={[
-        styles.railDot,
-        done && { backgroundColor: tokens.color.correct, borderColor: tokens.color.correct },
-        active && { borderColor: tokens.color.accent, backgroundColor: tokens.color.accentSoft }
-      ]}
-    >
-                  {done ? <Feather name="check" size={11} color="#FFFFFF" /> : <Text style={[styles.railNum, active && { color: tokens.color.accent }]}>{i + 1}</Text>}
-                </View>
-                <Text style={[styles.railLabel, active && { color: tokens.color.text, fontWeight: "800" }]}>
-                  {s.label}
-                </Text>
-              </View>;
-  })}
-        </View>
-      </View>
-
-      {stage.hint ? <Text style={styles.stageHint}>{stage.hint}</Text> : null}
-
-      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
-        {!!stage.exercise.leo?.line && <LeoCoach line={stage.exercise.leo.line} mood={stage.exercise.leo.mood} />}
-        {renderExerciseByKind(stage.exercise, phase, setState)}
-        {isCall && confidence && phase === "answering" && <View style={styles.convictionChip}>
-            <Feather name="activity" size={12} color={tokens.color.accent} />
-            <Text style={styles.convictionChipText}>
-              How sure: {CONVICTION.find((c) => c.key === confidence)?.label}
-            </Text>
-          </View>}
-      </ScrollView>
-
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
-        {phase === "feedback" && !passive && <FeedbackFooter
-    isCorrect={state.isCorrect}
-    explanation={stage.exercise.explanation}
-    correctAnswer={correctAnswerText}
-  />}
-        <PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant} />
-      </View>
-
+    return /* @__PURE__ */ React.createElement(View, { key: s.key, style: styles.railItem }, /* @__PURE__ */ React.createElement(
+      View,
       {
-    /* Conviction sheet before the final call */
-  }
-      <Modal visible={askConfidence} transparent animationType="slide">
-        <View style={styles.sheetBackdrop}>
-          <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>How sure are you?</Text>
-            <Text style={styles.sheetBody}>
-              Calibration counts. Being loudly wrong costs more than being quietly right.
-            </Text>
-            {CONVICTION.map((opt) => <TouchableOpacity
-    key={opt.key}
-    style={styles.convictionOption}
-    activeOpacity={0.86}
-    onPress={() => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {
-      });
-      setConfidence(opt.key);
-      setAskConfidence(false);
-      check();
-    }}
-  >
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.convictionLabel}>{opt.label}</Text>
-                  <Text style={styles.convictionNote}>{opt.note}</Text>
-                </View>
-                <Feather name="chevron-right" size={18} color={tokens.color.textMuted} />
-              </TouchableOpacity>)}
-          </View>
-        </View>
-      </Modal>
-
-      <Modal visible={showExit} transparent animationType="fade">
-        <View style={styles.sheetBackdrop}>
-          <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>Leave the case?</Text>
-            <Text style={styles.sheetBody}>You will lose your progress on this case.</Text>
-            <PrimaryButton label="Stay on the case" onPress={() => setShowExit(false)} />
-            <TouchableOpacity style={styles.ghostBtn} onPress={onExit} activeOpacity={0.8}>
-              <Text style={styles.ghostText}>Leave</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    </View>;
+        style: [
+          styles.railDot,
+          done && { backgroundColor: tokens.color.correct, borderColor: tokens.color.correct },
+          active && { borderColor: tokens.color.accent, backgroundColor: tokens.color.accentSoft }
+        ]
+      },
+      done ? /* @__PURE__ */ React.createElement(Feather, { name: "check", size: 11, color: "#FFFFFF" }) : /* @__PURE__ */ React.createElement(Text, { style: [styles.railNum, active && { color: tokens.color.accent }] }, i + 1)
+    ), /* @__PURE__ */ React.createElement(Text, { style: [styles.railLabel, active && { color: tokens.color.text, fontWeight: "800" }] }, s.label));
+  }))), stage.hint ? /* @__PURE__ */ React.createElement(Text, { style: styles.stageHint }, stage.hint) : null, /* @__PURE__ */ React.createElement(ScrollView, { contentContainerStyle: styles.body, showsVerticalScrollIndicator: false }, !!stage.exercise.leo?.line && /* @__PURE__ */ React.createElement(LeoCoach, { line: stage.exercise.leo.line, mood: stage.exercise.leo.mood }), renderExerciseByKind(stage.exercise, phase, setState), isCall && confidence && phase === "answering" && /* @__PURE__ */ React.createElement(View, { style: styles.convictionChip }, /* @__PURE__ */ React.createElement(Feather, { name: "activity", size: 12, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.convictionChipText }, "How sure: ", CONVICTION.find((c) => c.key === confidence)?.label))), /* @__PURE__ */ React.createElement(View, { style: [styles.footer, { paddingBottom: insets.bottom + 12 }] }, phase === "feedback" && !passive && /* @__PURE__ */ React.createElement(
+    FeedbackFooter,
+    {
+      isCorrect: state.isCorrect,
+      explanation: stage.exercise.explanation,
+      correctAnswer: correctAnswerText
+    }
+  ), /* @__PURE__ */ React.createElement(PrimaryButton, { label: buttonLabel, onPress: onAction, variant: buttonVariant })), /* @__PURE__ */ React.createElement(Modal, { visible: askConfidence, transparent: true, animationType: "slide" }, /* @__PURE__ */ React.createElement(View, { style: styles.sheetBackdrop }, /* @__PURE__ */ React.createElement(View, { style: styles.sheet }, /* @__PURE__ */ React.createElement(Text, { style: styles.sheetTitle }, "How sure are you?"), /* @__PURE__ */ React.createElement(Text, { style: styles.sheetBody }, "Calibration counts. Being loudly wrong costs more than being quietly right."), CONVICTION.map((opt) => /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      key: opt.key,
+      style: styles.convictionOption,
+      activeOpacity: 0.86,
+      onPress: () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {
+        });
+        setConfidence(opt.key);
+        setAskConfidence(false);
+        check();
+      }
+    },
+    /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.convictionLabel }, opt.label), /* @__PURE__ */ React.createElement(Text, { style: styles.convictionNote }, opt.note)),
+    /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 18, color: tokens.color.textMuted })
+  ))))), /* @__PURE__ */ React.createElement(Modal, { visible: showExit, transparent: true, animationType: "fade" }, /* @__PURE__ */ React.createElement(View, { style: styles.sheetBackdrop }, /* @__PURE__ */ React.createElement(View, { style: styles.sheet }, /* @__PURE__ */ React.createElement(Text, { style: styles.sheetTitle }, "Leave the case?"), /* @__PURE__ */ React.createElement(Text, { style: styles.sheetBody }, "You will lose your progress on this case."), /* @__PURE__ */ React.createElement(PrimaryButton, { label: "Stay on the case", onPress: () => setShowExit(false) }), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.ghostBtn, onPress: onExit, activeOpacity: 0.8 }, /* @__PURE__ */ React.createElement(Text, { style: styles.ghostText }, "Leave"))))));
 }
 function DebriefStat({
   icon,
   label,
   value
 }) {
-  return <View style={styles.debriefStat}>
-      <Feather name={icon} size={14} color={tokens.color.accent} />
-      <Text style={styles.debriefValue}>{value}</Text>
-      <Text style={styles.debriefLabel}>{label}</Text>
-    </View>;
+  return /* @__PURE__ */ React.createElement(View, { style: styles.debriefStat }, /* @__PURE__ */ React.createElement(Feather, { name: icon, size: 14, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.debriefValue }, value), /* @__PURE__ */ React.createElement(Text, { style: styles.debriefLabel }, label));
 }
 function DebriefBlock({
   icon,
@@ -284,20 +211,7 @@ function DebriefBlock({
 }) {
   const [showDetail, setShowDetail] = useState(false);
   const long = body.length > 180;
-  return <>
-      <View style={styles.debriefBlock}>
-        <View style={styles.debriefHead}>
-          <Feather name={icon} size={14} color={tint} />
-          <Text style={[styles.debriefTitle, { color: tint }]}>{title}</Text>
-        </View>
-        <Text style={styles.debriefBody} numberOfLines={long ? 3 : void 0}>{body}</Text>
-        {long && <TouchableOpacity accessibilityRole="button" style={styles.debriefMore} onPress={() => setShowDetail(true)}>
-            <Text style={[styles.debriefMoreText, { color: tint }]}>Read full reasoning</Text>
-            <Feather name="arrow-up-right" size={14} color={tint} />
-          </TouchableOpacity>}
-      </View>
-      <BriefingReader visible={showDetail} eyebrow="CASE DEBRIEF" title={title} text={body} onClose={() => setShowDetail(false)} />
-    </>;
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: styles.debriefBlock }, /* @__PURE__ */ React.createElement(View, { style: styles.debriefHead }, /* @__PURE__ */ React.createElement(Feather, { name: icon, size: 14, color: tint }), /* @__PURE__ */ React.createElement(Text, { style: [styles.debriefTitle, { color: tint }] }, title)), /* @__PURE__ */ React.createElement(Text, { style: styles.debriefBody, numberOfLines: long ? 3 : void 0 }, body), long && /* @__PURE__ */ React.createElement(TouchableOpacity, { accessibilityRole: "button", style: styles.debriefMore, onPress: () => setShowDetail(true) }, /* @__PURE__ */ React.createElement(Text, { style: [styles.debriefMoreText, { color: tint }] }, "Read full reasoning"), /* @__PURE__ */ React.createElement(Feather, { name: "arrow-up-right", size: 14, color: tint }))), /* @__PURE__ */ React.createElement(BriefingReader, { visible: showDetail, eyebrow: "CASE DEBRIEF", title, text: body, onClose: () => setShowDetail(false) }));
 }
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: tokens.color.bg },

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, ScrollView, StyleSheet, Modal, TouchableOpacity, Animated, Easing, AccessibilityInfo } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
@@ -26,6 +26,7 @@ import { playSound } from "../../lib/sounds";
 import { getMarketWorld } from "../../data/marketWorlds";
 import { AskLeoOverlay } from "../../components/ai/AskLeoOverlay";
 import { normalizedCopy, readingCardKind } from "../cardPresentation";
+import { trackEvent } from "../../lib/analytics";
 function lessonTakeaway(exercises) {
   const reading = exercises.filter((e) => e.kind === "info" || e.kind === "microInsight");
   const card = reading.find((e) => readingCardKind(e) === "takeaway") ?? reading[reading.length - 1];
@@ -57,7 +58,8 @@ function LessonScreen({
   streakDays,
   confirmExit = true,
   marketId,
-  onSaveLeoAnswer
+  onSaveLeoAnswer,
+  stackId
 }) {
   const insets = useSafeAreaInsets();
   const [queue, setQueue] = useState(lesson.exercises);
@@ -247,13 +249,17 @@ function LessonScreen({
       return next;
     });
   }, [missed, index]);
+  const exitLesson = useCallback(() => {
+    if (!finished) trackEvent("lesson_exit", { stackId: stackId || lesson.id || null, beatIndex: index });
+    onExit();
+  }, [finished, stackId, lesson.id, index, onExit]);
   const handleExitPress = useCallback(() => {
     if (!confirmExit || finished) {
-      onExit();
+      exitLesson();
       return;
     }
     setShowExitPrompt(true);
-  }, [confirmExit, finished, onExit]);
+  }, [confirmExit, finished, exitLesson]);
   const feedbackExplanation = exercise && "explanation" in exercise ? normalizedCopy(exercise.explanation || "") : "";
   const answerCopy = exercise && exercise.kind === "multipleChoice" ? normalizedCopy(exercise.options[exercise.correctIndex] || "") : "";
   const repeatsAnswer = Boolean(answerCopy && feedbackExplanation.includes(answerCopy));
@@ -270,129 +276,149 @@ function LessonScreen({
   }, [exercise]);
   if (finished || !exercise) {
     const timeSpentSeconds = Math.round((Date.now() - startedAt.current) / 1e3);
-    return <LessonComplete
-      correct={correctCount}
-      total={gradedCount}
-      baseXp={correctCount * xpPerCorrect}
-      bestCombo={bestCombo}
-      heartsLeft={livesEnabled ? hearts : void 0}
-      timeSpentSeconds={timeSpentSeconds}
-      streakDays={streakDays}
-      doneLabel={doneLabel}
-      marketId={marketId}
-      lessonTitle={lesson.title}
-      takeaway={lessonTakeaway(lesson.exercises)}
-      leoQuestions={leoMessages.filter((m) => m.role === "user").length}
-      onDone={(xp) => onFinish({
+    return /* @__PURE__ */ React.createElement(
+      LessonComplete,
+      {
         correct: correctCount,
         total: gradedCount,
-        xp,
-        timeSpentSeconds
-      })}
-    />;
+        baseXp: correctCount * xpPerCorrect,
+        bestCombo,
+        heartsLeft: livesEnabled ? hearts : void 0,
+        timeSpentSeconds,
+        streakDays,
+        doneLabel,
+        marketId,
+        lessonTitle: lesson.title,
+        takeaway: lessonTakeaway(lesson.exercises),
+        leoQuestions: leoMessages.filter((m) => m.role === "user").length,
+        onDone: (xp) => onFinish({
+          correct: correctCount,
+          total: gradedCount,
+          xp,
+          timeSpentSeconds
+        })
+      }
+    );
   }
   const buttonVariant = combined && !combinedFits ? "disabled" : phase === "feedback" || isInfo || state.canCheck ? "primary" : "disabled";
   const buttonLabel = isInfo ? "Continue" : phase === "answering" ? "Check" : "Continue";
-  return <View style={[styles.root, { paddingTop: insets.top }]}><LessonHeader
-    progress={progress}
-    onExit={handleExitPress}
-    onAskLeo={() => openLeo()}
-    onMore={renderExtraActions ? () => setShowActions((value) => !value) : void 0}
-    menuOpen={showActions}
-  />{!!pop && <Animated.View
-    key={exercise.id}
-    pointerEvents="none"
-    style={[
-      styles.pop,
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top }] }, /* @__PURE__ */ React.createElement(
+    LessonHeader,
+    {
+      progress,
+      onExit: handleExitPress,
+      onAskLeo: () => openLeo(),
+      onMore: renderExtraActions ? () => setShowActions((value) => !value) : void 0,
+      menuOpen: showActions
+    }
+  ), !!pop && /* @__PURE__ */ React.createElement(
+    Animated.View,
+    {
+      key: exercise.id,
+      pointerEvents: "none",
+      style: [
+        styles.pop,
+        {
+          opacity: popAnim.interpolate({ inputRange: [0, 0.15, 1], outputRange: [0, 1, 0] }),
+          transform: [
+            { translateY: popAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -46] }) }
+          ]
+        }
+      ]
+    },
+    /* @__PURE__ */ React.createElement(Text, { style: styles.popText }, pop)
+  ), /* @__PURE__ */ React.createElement(
+    ScrollView,
+    {
+      ref: scrollRef,
+      style: styles.scroll,
+      onLayout: (event) => setCardSpace(Math.max(0, event.nativeEvent.layout.height - 48)),
+      contentContainerStyle: [styles.content, exercise.kind === "coldOpen" && styles.coverContent],
+      keyboardShouldPersistTaps: "handled"
+    },
+    exercise.kind !== "coldOpen" && /* @__PURE__ */ React.createElement(View, { style: styles.upperSpace }),
+    /* @__PURE__ */ React.createElement(
+      Animated.View,
       {
-        opacity: popAnim.interpolate({ inputRange: [0, 0.15, 1], outputRange: [0, 1, 0] }),
-        transform: [
-          { translateY: popAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -46] }) }
-        ]
-      }
-    ]}
-  ><Text style={styles.popText}>{pop}</Text></Animated.View>}<ScrollView
-    ref={scrollRef}
-    style={styles.scroll}
-    onLayout={(event) => setCardSpace(Math.max(0, event.nativeEvent.layout.height - 48))}
-    contentContainerStyle={[styles.content, exercise.kind === "coldOpen" && styles.coverContent]}
-    keyboardShouldPersistTaps="handled"
-  >{exercise.kind !== "coldOpen" && <View style={styles.upperSpace} />}<Animated.View
-    onLayout={(event) => {
-      if (combined) setMeasuredCard({ id: exercise.id, height: event.nativeEvent.layout.height });
-    }}
-    style={[styles.beat, exercise.kind === "coldOpen" && styles.fullBleed, { opacity: combined && !combinedFits ? 0 : enter, transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]}
-  >{exercise.kind === "sayIt" ? <SayIt key={exercise.id} exercise={exercise} marketId={marketId} onDone={continueLesson} /> : renderExercise(exercise, phase, handleChange)}</Animated.View>{exercise.kind !== "coldOpen" && <View style={styles.lowerSpace} />}</ScrollView>{phase === "feedback" && !isInfo && <FeedbackFooter
-    key={exercise.id}
-    isCorrect={state.isCorrect}
-    explanation={"explanation" in exercise ? exercise.explanation : void 0}
-    correctAnswer={state.isCorrect || repeatsAnswer ? void 0 : correctAnswerText}
-  />}{exercise.kind === "sayIt" ? <View style={{ height: insets.bottom + tokens.space.lg }} /> : <View style={[styles.footer, { paddingBottom: insets.bottom + tokens.space.lg }]}><PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant} /></View>}<Modal visible={showActions} transparent animationType="fade" onRequestClose={() => setShowActions(false)}><View style={styles.menuLayer}><TouchableOpacity style={StyleSheet.absoluteFillObject} activeOpacity={1} onPress={() => setShowActions(false)} accessibilityRole="button" accessibilityLabel="Dismiss lesson actions" /><View style={[styles.actionsMenu, { marginTop: insets.top + 64 }]}>{renderExtraActions?.(actionIndex, () => setShowActions(false), exercise)}</View></View></Modal>{
-    /* Leave confirmation — loss aversion */
-  }<Modal visible={showExitPrompt} transparent animationType="fade" onRequestClose={() => setShowExitPrompt(false)}><View style={styles.backdrop}><View style={styles.sheet}><Text style={styles.sheetTitle}>Leave now?</Text><Text style={styles.sheetBody}>
-              You'll lose your progress in this lesson{typeof streakDays === "number" && streakDays > 0 ? ` and put your ${streakDays}-day streak at risk` : ""}.
-            </Text><PrimaryButton label="Keep learning" onPress={() => setShowExitPrompt(false)} /><TouchableOpacity onPress={() => {
+        onLayout: (event) => {
+          if (combined) setMeasuredCard({ id: exercise.id, height: event.nativeEvent.layout.height });
+        },
+        style: [styles.beat, exercise.kind === "coldOpen" && styles.fullBleed, { opacity: combined && !combinedFits ? 0 : enter, transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]
+      },
+      exercise.kind === "sayIt" ? /* @__PURE__ */ React.createElement(SayIt, { key: exercise.id, exercise, marketId, stackId: stackId || lesson.id, onDone: continueLesson }) : renderExercise(exercise, phase, handleChange)
+    ),
+    exercise.kind !== "coldOpen" && /* @__PURE__ */ React.createElement(View, { style: styles.lowerSpace })
+  ), phase === "feedback" && !isInfo && /* @__PURE__ */ React.createElement(
+    FeedbackFooter,
+    {
+      key: exercise.id,
+      isCorrect: state.isCorrect,
+      explanation: "explanation" in exercise ? exercise.explanation : void 0,
+      correctAnswer: state.isCorrect || repeatsAnswer ? void 0 : correctAnswerText
+    }
+  ), exercise.kind === "sayIt" ? /* @__PURE__ */ React.createElement(View, { style: { height: insets.bottom + tokens.space.lg } }) : /* @__PURE__ */ React.createElement(View, { style: [styles.footer, { paddingBottom: insets.bottom + tokens.space.lg }] }, /* @__PURE__ */ React.createElement(PrimaryButton, { label: buttonLabel, onPress: onAction, variant: buttonVariant })), /* @__PURE__ */ React.createElement(Modal, { visible: showActions, transparent: true, animationType: "fade", onRequestClose: () => setShowActions(false) }, /* @__PURE__ */ React.createElement(View, { style: styles.menuLayer }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: StyleSheet.absoluteFillObject, activeOpacity: 1, onPress: () => setShowActions(false), accessibilityRole: "button", accessibilityLabel: "Dismiss lesson actions" }), /* @__PURE__ */ React.createElement(View, { style: [styles.actionsMenu, { marginTop: insets.top + 64 }] }, renderExtraActions?.(actionIndex, () => setShowActions(false), exercise)))), /* @__PURE__ */ React.createElement(Modal, { visible: showExitPrompt, transparent: true, animationType: "fade", onRequestClose: () => setShowExitPrompt(false) }, /* @__PURE__ */ React.createElement(View, { style: styles.backdrop }, /* @__PURE__ */ React.createElement(View, { style: styles.sheet }, /* @__PURE__ */ React.createElement(Text, { style: styles.sheetTitle }, "Leave now?"), /* @__PURE__ */ React.createElement(Text, { style: styles.sheetBody }, "You'll lose your progress in this lesson", typeof streakDays === "number" && streakDays > 0 ? ` and put your ${streakDays}-day streak at risk` : "", "."), /* @__PURE__ */ React.createElement(PrimaryButton, { label: "Keep learning", onPress: () => setShowExitPrompt(false) }), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => {
     setShowExitPrompt(false);
-    onExit();
-  }} style={styles.ghost}><Text style={styles.ghostText}>Leave anyway</Text></TouchableOpacity></View></View></Modal>{
-    /* Out of hearts — offer a retry instead of ending the lesson */
-  }<Modal visible={livesEnabled && showHeartsPrompt} transparent animationType="fade" onRequestClose={() => setShowHeartsPrompt(false)}><View style={styles.backdrop}><View style={styles.sheet}><Text style={styles.sheetTitle}>Out of hearts</Text><Text style={styles.sheetBody}>
-              No problem — nothing is locked. Redo the questions you missed to lock the ideas in.
-            </Text><PrimaryButton label="Retry what I missed" onPress={retryMissed} /><TouchableOpacity
-    onPress={() => {
-      setShowHeartsPrompt(false);
-      setHearts(lesson.lives ?? MAX_HEARTS);
-    }}
-    style={styles.ghost}
-  ><Text style={styles.ghostText}>Keep going</Text></TouchableOpacity></View></View></Modal>{
-    /* Ask Leo — mid-lesson questions */
-  }<AskLeoOverlay
-    visible={showAskLeo}
-    onClose={() => {
-      setShowAskLeo(false);
-      setLeoAutoAsk(null);
-    }}
-    lessonContext={`Lesson: ${lesson.title}
+    exitLesson();
+  }, style: styles.ghost }, /* @__PURE__ */ React.createElement(Text, { style: styles.ghostText }, "Leave anyway"))))), /* @__PURE__ */ React.createElement(Modal, { visible: livesEnabled && showHeartsPrompt, transparent: true, animationType: "fade", onRequestClose: () => setShowHeartsPrompt(false) }, /* @__PURE__ */ React.createElement(View, { style: styles.backdrop }, /* @__PURE__ */ React.createElement(View, { style: styles.sheet }, /* @__PURE__ */ React.createElement(Text, { style: styles.sheetTitle }, "Out of hearts"), /* @__PURE__ */ React.createElement(Text, { style: styles.sheetBody }, "No problem \u2014 nothing is locked. Redo the questions you missed to lock the ideas in."), /* @__PURE__ */ React.createElement(PrimaryButton, { label: "Retry what I missed", onPress: retryMissed }), /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      onPress: () => {
+        setShowHeartsPrompt(false);
+        setHearts(lesson.lives ?? MAX_HEARTS);
+      },
+      style: styles.ghost
+    },
+    /* @__PURE__ */ React.createElement(Text, { style: styles.ghostText }, "Keep going")
+  )))), /* @__PURE__ */ React.createElement(
+    AskLeoOverlay,
+    {
+      visible: showAskLeo,
+      onClose: () => {
+        setShowAskLeo(false);
+        setLeoAutoAsk(null);
+      },
+      lessonContext: `Lesson: ${lesson.title}
 World: ${world.worldName}
-Current beat: ${exerciseContext(exercise)}`}
-    contextLabel={exerciseContext(exercise).split("\n")[0] || lesson.title}
-    accentColor={world.colors[0]}
-    messages={leoMessages}
-    onMessagesChange={setLeoMessages}
-    autoAsk={leoAutoAsk}
-    onSaveAnswer={onSaveLeoAnswer ? (text) => onSaveLeoAnswer(text, actionIndex, exercise) : void 0}
-  /></View>;
+Current beat: ${exerciseContext(exercise)}`,
+      contextLabel: exerciseContext(exercise).split("\n")[0] || lesson.title,
+      accentColor: world.colors[0],
+      messages: leoMessages,
+      onMessagesChange: setLeoMessages,
+      autoAsk: leoAutoAsk,
+      onSaveAnswer: onSaveLeoAnswer ? (text) => onSaveLeoAnswer(text, actionIndex, exercise) : void 0
+    }
+  ));
 }
 function renderExercise(exercise, phase, onChange) {
   switch (exercise.kind) {
     case "info":
-      return <InfoCard exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(InfoCard, { exercise, phase, onChange });
     case "multipleChoice":
-      return <MultipleChoice exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(MultipleChoice, { exercise, phase, onChange });
     case "wordBank":
-      return <WordBank exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(WordBank, { exercise, phase, onChange });
     case "coldOpen":
-      return <ColdOpen exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(ColdOpen, { exercise, phase, onChange });
     case "microInsight":
-      return <MicroInsight exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(MicroInsight, { exercise, phase, onChange });
     case "sortSignal":
-      return <SortSignal exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(SortSignal, { exercise, phase, onChange });
     case "buildChain":
-      return <BuildChain exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(BuildChain, { exercise, phase, onChange });
     case "faceOff":
-      return <FaceOff exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(FaceOff, { exercise, phase, onChange });
     case "speedRound":
-      return <SpeedRound exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(SpeedRound, { exercise, phase, onChange });
     case "numberSense":
-      return <NumberSense exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(NumberSense, { exercise, phase, onChange });
     case "spotFake":
-      return <SpotTheFake exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(SpotTheFake, { exercise, phase, onChange });
     case "mapMarket":
-      return <MapMarket exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(MapMarket, { exercise, phase, onChange });
     case "chartRead":
-      return <ChartRead exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(ChartRead, { exercise, phase, onChange });
     case "theCall":
-      return <TheCall exercise={exercise} phase={phase} onChange={onChange} />;
+      return /* @__PURE__ */ React.createElement(TheCall, { exercise, phase, onChange });
     default:
       return null;
   }

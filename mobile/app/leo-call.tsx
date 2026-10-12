@@ -18,6 +18,7 @@ import { isLeoMutedSync, loadLeoMuted } from '../lib/voicePrefs';
 import { triggerHaptic } from '../lib/haptics';
 import { log } from '../lib/logger';
 import { useAuth } from '../hooks/useAuth';
+import { trackEvent } from '../lib/analytics';
 import { useUserProgress } from '../hooks/useUserProgress';
 import { useDeliverable } from '../hooks/useDeliverable';
 import { useUserXP } from '../hooks/useUserXP';
@@ -72,6 +73,9 @@ export default function LeoCallScreen() {
 
   const [phase, setPhase] = useState<Phase>('loading');
   const [callType, setCallType] = useState<LeoCallType>('explain');
+  const callStartRef = useRef(0);
+  const callTypeRef = useRef(callType);
+  callTypeRef.current = callType;
   const [target, setTarget] = useState<InterviewTarget | null>(null);
   const [messages, setMessages] = useState<LeoCallMessage[]>([]);
   const [pose, setPose] = useState<Pose>('thinking');
@@ -143,7 +147,10 @@ export default function LeoCallScreen() {
       if (isMuted) setCaptions(true);
       setTarget(savedTarget);
       if (called) { setPhase('limit'); return; }
-      setCallType(params.mode === 'interview' ? 'interview' : rotated);
+      const chosenType = params.mode === 'interview' ? 'interview' : rotated;
+      setCallType(chosenType);
+      callStartRef.current = Date.now();
+      trackEvent('leo_call_started', { callType: chosenType });
       setPhase('live');
       Audio.requestPermissionsAsync().catch(() => {});
     })();
@@ -177,6 +184,11 @@ export default function LeoCallScreen() {
     triggerHaptic('medium');
     const history = messagesRef.current;
     const turns = history.filter(m => m.role === 'user').length;
+    trackEvent('leo_call_ended', {
+      callType: callTypeRef.current,
+      seconds: callStartRef.current ? Math.round((Date.now() - callStartRef.current) / 1000) : 0,
+      learnerTurns: turns,
+    });
     setPhase('recap');
     if (turns === 0) return;
     if (user) advanceCallType(user.id);
@@ -299,8 +311,8 @@ export default function LeoCallScreen() {
     const text = briefDraft.trim();
     if (!recap || text.length < 3) return;
     const ok = await dossier.addLine(recap.sectionKey || dossier.template.sections[0].key, text, undefined, 'learner');
-    if (ok) { setBriefSaved(true); triggerHaptic('success'); }
-  }, [briefDraft, recap, dossier]);
+    if (ok) { setBriefSaved(true); triggerHaptic('success'); trackEvent('leo_call_brief_line_saved', { callType, sectionKey: recap.sectionKey ?? null }); }
+  }, [briefDraft, recap, dossier, callType]);
 
   const label = CALL_TYPE_LABEL[callType];
   const status = recording ? 'Listening…' : busy ? 'Leo is thinking…' : speaking ? 'Leo is talking' : 'Hold to talk';

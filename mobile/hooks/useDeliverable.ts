@@ -5,6 +5,7 @@
  * wrote. Older auto-filled lines (source 'lesson') are shown only as suggestions. Every write
  * is stamped with the LOCAL day the learner is on, never a UTC timestamp.
  */
+import { trackEvent } from '../lib/analytics';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { supabase } from '../lib/supabase';
@@ -92,6 +93,7 @@ export function useDeliverable(marketId?: string, goal?: string | null) {
           log.warn('[useDeliverable] Could not save line:', error.message);
           return false;
         }
+        if (source === 'learner') trackEvent('dossier_line_saved', { source: 'learner', sectionKey, marketId: marketId ?? null });
         await load(false);
         return true;
       } catch (err) {

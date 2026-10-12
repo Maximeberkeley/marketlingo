@@ -31,6 +31,7 @@ import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useAuth } from '../hooks/useAuth';
+import { trackEvent } from '../lib/analytics';
 
 import { COLORS, TYPE } from '../lib/constants';
 import { getMarketName } from '../lib/markets';
@@ -60,6 +61,7 @@ function ProgressSegment({ filled }: { filled: boolean }) {
 export default function DeliverableScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  useEffect(() => { trackEvent('dossier_opened', {}); }, []);
   const params = useLocalSearchParams<{ section?: string }>();
   const { marketId, loading: marketLoading } = useSelectedMarket();
   const { progress, availableDay } = useUserProgress(marketId);
@@ -249,6 +251,7 @@ export default function DeliverableScreen() {
     triggerHaptic('light');
     try {
       await Share.share({ message: deliverable.exportText(marketName) });
+      trackEvent('dossier_exported', { marketId: marketId ?? null });
     } catch (error) {
       log.warn('[Deliverable] Share cancelled:', error);
     }

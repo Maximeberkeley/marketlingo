@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { CaseScreen } from "../lesson-kit/case/CaseScreen";
@@ -14,6 +14,7 @@ import { useLearningGoal } from "../hooks/useLearningGoal";
 import { getMarketName } from "../lib/markets";
 import { COLORS, TYPE } from "../lib/constants";
 import { log } from "../lib/logger";
+import { trackEvent } from "../lib/analytics";
 function DeepCaseRoute() {
   const { day } = useLocalSearchParams();
   const preferredDay = day ? Number(day) : void 0;
@@ -38,30 +39,16 @@ function DeepCaseRoute() {
     [marketId, marketName, content.trainer, content.drills, content.stats, studied.lessons]
   );
   if (marketLoading || content.isLoading || rewardsLoading || studied.isLoading) {
-    return <View style={styles.loading}>
-        <ActivityIndicator size="large" color={COLORS.accent} />
-        <Text style={styles.loadingText}>Pulling a live {marketName} case…</Text>
-      </View>;
+    return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "Pulling a live ", marketName, " case\u2026"));
   }
   if (studied.lessons.length === 0) {
-    return <View style={styles.loading}>
-        <Image source={require("../assets/mascot/leo-thinking.png")} style={styles.leo} resizeMode="contain" accessibilityLabel="Leo is thinking" />
-        <Text style={styles.emptyTitle}>Your first case starts in the course</Text>
-        <Text style={styles.loadingText}>Complete a lesson first. Your case will use its real claims, mechanisms, and numbers.</Text>
-        <TouchableOpacity style={styles.courseButton} onPress={() => router.replace("/(tabs)/home")} accessibilityRole="button">
-          <Text style={styles.courseButtonText}>Go to Course</Text>
-        </TouchableOpacity>
-      </View>;
+    return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(Image, { source: require("../assets/mascot/leo-thinking.png"), style: styles.leo, resizeMode: "contain", accessibilityLabel: "Leo is thinking" }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "Your first case starts in the course"), /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "Complete a lesson first. Your case will use its real claims, mechanisms, and numbers."), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.courseButton, onPress: () => router.replace("/(tabs)/home"), accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { style: styles.courseButtonText }, "Go to Course")));
   }
   if (!deepCase) {
-    return <View style={styles.loading}>
-        <Text style={styles.emptyTitle}>No case ready yet</Text>
-        <Text style={styles.loadingText}>
-          Finish a lesson or two in {marketName} and a case will open up here.
-        </Text>
-      </View>;
+    return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "No case ready yet"), /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "Finish a lesson or two in ", marketName, " and a case will open up here."));
   }
   const handleFinish = async (result) => {
+    trackEvent("case_finished", { grade: result.grade, caseId: deepCase.id });
     try {
       await recordCaseRun(result.grade);
       await addXP(result.xp, "deep_case", deepCase.id, `Deep Case graded ${result.grade}`);
@@ -72,14 +59,17 @@ function DeepCaseRoute() {
     }
     router.back();
   };
-  return <CaseScreen
-    deepCase={deepCase}
-    marketId={marketId}
-    marketName={marketName}
-    goal={learningGoal}
-    onExit={() => router.back()}
-    onFinish={handleFinish}
-  />;
+  return /* @__PURE__ */ React.createElement(
+    CaseScreen,
+    {
+      deepCase,
+      marketId,
+      marketName,
+      goal: learningGoal,
+      onExit: () => router.back(),
+      onFinish: handleFinish
+    }
+  );
 }
 const styles = StyleSheet.create({
   loading: {
