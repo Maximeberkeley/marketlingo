@@ -17,7 +17,8 @@ interface Props {
   topInset: number;
   bottomInset: number;
   onClose: () => void;
-  onStart: () => void;
+  /** Opens the answer screen with exactly the question shown on the card. */
+  onStart: (question?: string) => void;
   onWarmUp: () => void;
   onOpenBrief: () => void;
   onSchool: () => void;
@@ -79,7 +80,7 @@ export function InterviewHome({ userId, marketId, readiness, nextQuestion, topIn
             <Text style={styles.stepText}>{nextQuestion}</Text>
           ) : null}
 
-          <TouchableOpacity style={styles.primary} activeOpacity={0.88} onPress={() => { triggerHaptic('medium'); onStart(); }}>
+          <TouchableOpacity style={styles.primary} activeOpacity={0.88} onPress={() => { triggerHaptic('medium'); onStart(target && today ? today.mock : nextQuestion); }}>
             <Text style={styles.primaryText}>{target ? 'Answer today’s question' : 'Answer a mock question'}</Text>
           </TouchableOpacity>
 
