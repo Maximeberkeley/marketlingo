@@ -80,7 +80,7 @@ function LeoCallScreen() {
   const latestLesson = params.lessonTitle ? null : studied.lessons[0] ?? null;
   const fallbackTakeaway = latestLesson ? (latestLesson.slides[latestLesson.slides.length - 1]?.body || "").replace(/\s+/g, " ").trim().slice(0, 400) || void 0 : void 0;
   const { user } = useAuth();
-  const { progress } = useUserProgress(marketId);
+  const { progress, loading: progressLoading } = useUserProgress(marketId);
   const goal = progress?.learning_goal ?? null;
   const level = progress?.familiarity_level ?? null;
   const dossier = useDeliverable(marketId, goal);
@@ -141,7 +141,7 @@ function LeoCallScreen() {
     });
   }, [fade]);
   useEffect(() => {
-    if (!user || !marketId || dossier.loading || !params.lessonTitle && studied.isLoading) return;
+    if (!user || !marketId || progressLoading || dossier.loading || !params.lessonTitle && studied.isLoading) return;
     let cancelled = false;
     (async () => {
       const [called, rotated, savedTarget, isMuted] = await Promise.all([
@@ -169,7 +169,7 @@ function LeoCallScreen() {
     return () => {
       cancelled = true;
     };
-  }, [user, dossier.loading, marketId, params.mode, params.lessonTitle, studied.isLoading]);
+  }, [user, dossier.loading, marketId, params.mode, params.lessonTitle, studied.isLoading, progressLoading]);
   useEffect(() => {
     if (phase !== "live") return;
     const id = setInterval(() => setElapsed((s) => s + 1), 1e3);

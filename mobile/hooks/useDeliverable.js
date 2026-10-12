@@ -7,10 +7,13 @@ function useDeliverable(marketId, goal) {
   const template = useMemo(() => deliverableFor(goal), [goal]);
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadedKey, setLoadedKey] = useState(null);
   const load = useCallback(async (showLoading = true) => {
+    const loadedForKey = marketId ? `${marketId}:${template.goal}` : null;
     if (!marketId) {
       setEntries([]);
       setLoading(false);
+      setLoadedKey(null);
       return;
     }
     if (showLoading) setLoading(true);
@@ -39,6 +42,7 @@ function useDeliverable(marketId, goal) {
       log.warn("[useDeliverable] Lookup failed:", err);
     } finally {
       setLoading(false);
+      setLoadedKey(loadedForKey);
     }
   }, [marketId, template.goal]);
   useEffect(() => {
@@ -160,7 +164,7 @@ function useDeliverable(marketId, goal) {
     replaceSuggestion,
     completion,
     filledSections,
-    loading,
+    loading: loading || loadedKey !== (marketId ? `${marketId}:${template.goal}` : null),
     addLine,
     updateLine,
     removeLine,

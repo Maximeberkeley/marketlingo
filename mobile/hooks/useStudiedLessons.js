@@ -14,11 +14,13 @@ const matchesFocus = (lesson, keywords) => {
 function useStudiedLessons(marketId, focusKeywords = [], preferredDay) {
   const [lessons, setLessons] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadedMarketId, setLoadedMarketId] = useState(void 0);
   const focusSignature = focusKeywords.join("|");
   const load = useCallback(async () => {
     if (!marketId) {
       setLessons([]);
       setIsLoading(false);
+      setLoadedMarketId(marketId);
       return;
     }
     setIsLoading(true);
@@ -74,12 +76,13 @@ function useStudiedLessons(marketId, focusKeywords = [], preferredDay) {
       setLessons([]);
     } finally {
       setIsLoading(false);
+      setLoadedMarketId(marketId);
     }
   }, [marketId, focusSignature, preferredDay]);
   useFocusEffect(useCallback(() => {
     void load();
   }, [load]));
-  return { lessons, isLoading, reload: load };
+  return { lessons, isLoading: isLoading || loadedMarketId !== marketId, reload: load };
 }
 export {
   useStudiedLessons
