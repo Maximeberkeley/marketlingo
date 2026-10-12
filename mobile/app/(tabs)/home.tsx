@@ -360,6 +360,8 @@ export default function HomeScreen() {
     void refreshStreakData.current.refetchProgress();
   }, [clockDay]);
   const streakCountdown = streakCountdownLabel(streak, completedOnClockDay, clockNow);
+  // The lesson intro always shows the lesson's own day, never the calendar tap day.
+  const introDay = stackDayNumber(session.activeStack) ?? currentDay;
 
   // Calculate if we're in the critical 2-hour window
   // Daily quests
