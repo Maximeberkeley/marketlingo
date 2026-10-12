@@ -52,12 +52,17 @@ const matchesFocus = (lesson: StudiedLesson, keywords: string[]) => {
 export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [], preferredDay?: number) {
   const [lessons, setLessons] = useState<StudiedLesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  // The market the loaded lessons belong to. Consumers must see loading while
+  // it differs from the requested market, or a market switch briefly exposes
+  // another market's lessons.
+  const [loadedMarketId, setLoadedMarketId] = useState<string | undefined>(undefined);
   const focusSignature = focusKeywords.join('|');
 
   const load = useCallback(async () => {
     if (!marketId) {
       setLessons([]);
       setIsLoading(false);
+      setLoadedMarketId(marketId);
       return;
     }
     setIsLoading(true);
@@ -145,10 +150,11 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
       setLessons([]);
     } finally {
       setIsLoading(false);
+      setLoadedMarketId(marketId);
     }
   }, [marketId, focusSignature, preferredDay]);
 
   useFocusEffect(useCallback(() => { void load(); }, [load]));
 
-  return { lessons, isLoading, reload: load };
+  return { lessons, isLoading: isLoading || loadedMarketId !== marketId, reload: load };
 }

@@ -26,11 +26,17 @@ export function useDeliverable(marketId?: string, goal?: string | null) {
   const template: DeliverableTemplate = useMemo(() => deliverableFor(goal), [goal]);
   const [entries, setEntries] = useState<DeliverableEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  // The market+goal the loaded entries belong to. Consumers must see loading
+  // while it differs from the requested pair, or a market switch briefly
+  // exposes another market's Brief.
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
 
   const load = useCallback(async (showLoading = true) => {
+    const loadedForKey = marketId ? `${marketId}:${template.goal}` : null;
     if (!marketId) {
       setEntries([]);
       setLoading(false);
+      setLoadedKey(null);
       return;
     }
     if (showLoading) setLoading(true);
@@ -66,6 +72,7 @@ export function useDeliverable(marketId?: string, goal?: string | null) {
       log.warn('[useDeliverable] Lookup failed:', err);
     } finally {
       setLoading(false);
+      setLoadedKey(loadedForKey);
     }
   }, [marketId, template.goal]);
 
