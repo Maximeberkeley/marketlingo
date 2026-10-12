@@ -38,7 +38,7 @@ function presentation(data: Reminder) {
     return {
       mood: 'reading' as LeoAnim,
       eyebrow: 'GOOD EVENING',
-      line: `One quiet ${market} idea, ready for you.`,
+      line: `Today's ${market} idea is ready.`,
     };
   }
   if (hour >= 18) {
@@ -132,7 +132,7 @@ export default function DailyLeoScreen() {
 
 
       <View style={styles.footer}>
-        <Text style={styles.caption}>One lesson. About five minutes. That is the whole day.</Text>
+        <Text style={styles.caption}>One lesson. About five minutes. That's it for today.</Text>
         <TouchableOpacity
           style={styles.continueButton}
           activeOpacity={0.88}

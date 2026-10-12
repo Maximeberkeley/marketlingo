@@ -4,8 +4,7 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Animated,
-  Image
+  Animated
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -138,10 +137,8 @@ function GoalScreen() {
     showsVerticalScrollIndicator={false}
     style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
   ><TouchableOpacity style={styles.backButton} onPress={() => router.back()}><Feather name="arrow-left" size={20} color={COLORS.accent} /><Text style={styles.backButtonText}>Back</Text></TouchableOpacity>{
-    /* Header with Leo */
-  }<View style={styles.header}><LeoCharacter size="lg" animation="idle" /><Text style={styles.title}>Why are you learning?</Text><Text style={styles.subtitle}>I'll prioritize content that matches your goal</Text></View>{
-    /* Leo reaction */
-  }{selectedGoal && <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}><SpeechBubble text={LEO_REACTIONS[selectedGoal]} tail="bottom-center" showLabel style={styles.reactionBalloon} /><Image source={require("../../assets/mascot/leo-reference.png")} style={{ width: 40, height: 40, resizeMode: "contain" }} /></Animated.View>}{
+    /* Header with Leo — his reply sits directly under him, corner pointing up */
+  }<View style={styles.header}><LeoCharacter size="lg" animation="idle" />{selectedGoal && <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}><SpeechBubble text={LEO_REACTIONS[selectedGoal]} tail="top-center" style={styles.reactionBalloon} /></Animated.View>}<Text style={styles.title}>Why are you learning?</Text><Text style={styles.subtitle}>I'll prioritize content that matches your goal</Text></View>{
     /* Goal Cards — full-width linear rows */
   }<View style={styles.cardsContainer}>{goalOptions.map((goal, index) => {
     const isSelected = selectedGoal === goal.id;
@@ -184,13 +181,9 @@ const styles = StyleSheet.create({
   title: { ...TYPE.h1, color: COLORS.textPrimary, marginTop: 12, textAlign: "center" },
   subtitle: { ...TYPE.body, color: COLORS.textSecondary, textAlign: "center", marginTop: 4 },
   reactionBubble: {
-    flexDirection: "column",
-    alignItems: "center",
-    gap: 4,
-    marginBottom: 16
+    marginVertical: 10
   },
-  reactionBalloon: {},
-  reactionText: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 18 },
+  reactionBalloon: { alignSelf: "center" },
   cardsContainer: { gap: 12 },
   card: {
     backgroundColor: COLORS.bg2,

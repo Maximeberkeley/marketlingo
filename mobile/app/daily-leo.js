@@ -28,7 +28,7 @@ function presentation(data) {
     return {
       mood: "reading",
       eyebrow: "GOOD EVENING",
-      line: `One quiet ${market} idea, ready for you.`
+      line: `Today's ${market} idea is ready.`
     };
   }
   if (hour >= 18) {
@@ -100,7 +100,7 @@ function DailyLeoScreen() {
   if (loading || !data || !content) {
     return <View style={styles.loading}><ActivityIndicator color={COLORS.accent} /></View>;
   }
-  return <View style={[styles.root, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 22 }]}><View style={styles.heading}><Text style={styles.eyebrow}>{content.eyebrow}</Text><Text style={styles.title}>{data.streak > 0 ? `Welcome back \u2014 ${data.streak} ${data.streak === 1 ? "day" : "days"} in a row` : "Welcome back to your market"}</Text></View><View style={styles.scene}><SpeechBubble text={content.line} tail="bottom-center" showLabel style={styles.bubble} /><View style={styles.leoWrap}><LeoCharacter size="xl" animation={content.mood} still /></View></View><View style={styles.footer}><Text style={styles.caption}>One lesson. About five minutes. That is the whole day.</Text><TouchableOpacity
+  return <View style={[styles.root, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 22 }]}><View style={styles.heading}><Text style={styles.eyebrow}>{content.eyebrow}</Text><Text style={styles.title}>{data.streak > 0 ? `Welcome back \u2014 ${data.streak} ${data.streak === 1 ? "day" : "days"} in a row` : "Welcome back to your market"}</Text></View><View style={styles.scene}><SpeechBubble text={content.line} tail="bottom-center" showLabel style={styles.bubble} /><View style={styles.leoWrap}><LeoCharacter size="xl" animation={content.mood} still /></View></View><View style={styles.footer}><Text style={styles.caption}>One lesson. About five minutes. That's it for today.</Text><TouchableOpacity
     style={styles.continueButton}
     activeOpacity={0.88}
     onPress={() => {

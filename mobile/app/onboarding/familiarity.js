@@ -5,8 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  Animated,
-  Image
+  Animated
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { localDateString } from "../../lib/dayMath";
@@ -19,7 +18,7 @@ import { supabase } from "../../lib/supabase";
 import { NotificationOnboarding } from "../../components/onboarding/NotificationOnboarding";
 import { applyDemoXP } from "../../lib/demoXPBridge";
 import { OnboardingProgress } from "../../components/onboarding/OnboardingProgress";
-import { MascotAvatar } from "../../components/mascot/MascotAvatar";
+import { LeoCharacter } from "../../components/mascot/LeoCharacter";
 import { SpeechBubble } from "../../components/ui/SpeechBubble";
 import { triggerHaptic } from "../../lib/haptics";
 import { log } from "../../lib/logger";
@@ -183,11 +182,9 @@ function FamiliarityScreen() {
     /* Back Button */
   }<TouchableOpacity style={styles.backButton} onPress={handleBack}><Text style={styles.backButtonText}>← Back</Text></TouchableOpacity>{
     /* Header */
-  }<View style={styles.header}><MascotAvatar size="lg" /><Text style={styles.title}>Your Experience Level</Text><Text style={styles.subtitle}>
+  }<View style={styles.header}><LeoCharacter size="lg" animation="idle" />{selectedLevel && <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}><SpeechBubble text={LEO_LEVEL_REACTIONS[selectedLevel]} tail="top-center" style={styles.reactionBalloon} /></Animated.View>}<Text style={styles.title}>Your Experience Level</Text><Text style={styles.subtitle}>
             I'll adapt the content depth to match your knowledge
           </Text></View>{
-    /* Leo reaction bubble */
-  }{selectedLevel && <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}><SpeechBubble text={LEO_LEVEL_REACTIONS[selectedLevel]} tail="bottom-center" showLabel style={styles.reactionBalloon} /><Image source={require("../../assets/mascot/leo-reference.png")} style={{ width: 40, height: 40, resizeMode: "contain" }} /></Animated.View>}{
     /* Level Cards */
   }<View style={styles.cardsContainer}>{FAMILIARITY_LEVELS.map((level, index) => <Animated.View
     key={level.id}
@@ -266,19 +263,9 @@ const styles = StyleSheet.create({
     lineHeight: 22
   },
   reactionBubble: {
-    flexDirection: "column",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 16
+    marginVertical: 10
   },
-  reactionBalloon: {},
-  reactionEmoji: { fontSize: 24 },
-  reactionText: {
-    flex: 1,
-    fontSize: 13,
-    color: COLORS.textSecondary,
-    lineHeight: 18
-  },
+  reactionBalloon: { alignSelf: "center" },
   cardsContainer: {
     gap: 12
   },
