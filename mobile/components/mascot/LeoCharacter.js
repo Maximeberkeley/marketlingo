@@ -26,9 +26,7 @@ function LeoProvider({ children }) {
       triggerFailure,
       triggerCelebrating
     }}
-  >
-      {children}
-    </LeoContext.Provider>;
+  >{children}</LeoContext.Provider>;
 }
 function useLeo() {
   const context = useContext(LeoContext);
@@ -68,7 +66,7 @@ const LEO_IMAGES = {
   sleeping: require("../../assets/mascot/leo-sleeping.png"),
   sassy: require("../../assets/mascot/leo-sassy.png"),
   licking: require("../../assets/mascot/leo-licking.png"),
-  reading: { uri: `https://www.market-verse.com${require("../../assets/mascot/leo-reading-oct11.png.asset.json").url}` },
+  reading: require("../../assets/mascot/leo-reading-oct11.png"),
   trophy: require("../../assets/mascot/leo-trophy.png")
 };
 function LeoCharacter({
@@ -110,21 +108,17 @@ function LeoCharacter({
     }
   }, [animation, bounceAnim]);
   const imageSource = LEO_IMAGES[animation] || LEO_IMAGES.idle;
-  return <View style={[styles.container, { width: px, height: px }]}>
-      <Animated.View
+  return <View style={[styles.container, { width: px, height: px }]}><Animated.View
     style={still ? styles.stillImageWrapper : {
       width: "100%",
       height: "100%",
       transform: [{ scale: breatheAnim }, { translateY: bounceAnim }]
     }}
-  >
-        <Image
+  ><Image
     source={imageSource}
     resizeMode="contain"
     style={styles.image}
-  />
-      </Animated.View>
-    </View>;
+  /></Animated.View></View>;
 }
 const styles = StyleSheet.create({
   container: {
