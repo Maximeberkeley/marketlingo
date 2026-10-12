@@ -58,8 +58,8 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1
         </View>
 
         <View style={styles.leoRow}>
-          <SpeechBubble text="Three sharp moves. Then make the call." tail="bottom-center" showLabel style={styles.leoBalloon} />
-          <Image source={require('../../assets/mascot/leo-reference.png')} style={styles.leo} />
+          <Image source={require('../../assets/mascot/leo-sassy.png')} style={styles.leo} />
+          <SpeechBubble text="Three sharp moves. Then make the call." tail="left" showLabel style={styles.leoBalloon} />
         </View>
       </ScrollView>
 
@@ -89,9 +89,9 @@ const styles = StyleSheet.create({
   number: { width: 30, height: 30, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
   numberText: { color: COLORS.bg0, fontSize: 14, fontWeight: '900' },
   goalText: { flex: 1, fontSize: 15, lineHeight: 20, color: COLORS.textPrimary, fontWeight: '700' },
-  leoRow: { flexDirection: 'column', alignItems: 'center', gap: 6, marginTop: 14 },
-  leo: { width: 44, height: 44, resizeMode: 'contain' },
-  leoBalloon: {},
+  leoRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 18 },
+  leo: { width: 112, height: 136, flexShrink: 0, resizeMode: 'contain' },
+  leoBalloon: { flexShrink: 1, alignSelf: 'center' },
   leoLine: { color: COLORS.textSecondary, fontSize: 13, lineHeight: 18, fontWeight: '600' },
   start: { height: 56, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, shadowOffset: { width: 0, height: 7 }, shadowOpacity: 0.34, shadowRadius: 16, elevation: 10 },
   startText: { color: COLORS.bg0, fontSize: 17, fontWeight: '900' },

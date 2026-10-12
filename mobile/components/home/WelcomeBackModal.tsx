@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing, ScrollView } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { FoxMascot } from '../mascot/FoxMascot';
@@ -92,13 +92,13 @@ export function WelcomeBackModal({
 
             <View style={styles.statRow}>
               <View style={styles.stat}>
-                <Feather name="activity" size={15} color={COLORS.streak} />
+                <MaterialCommunityIcons name="fire" size={22} color={COLORS.streak} />
                 <Text style={styles.statValue}>{streak}</Text>
                 <Text style={styles.statLabel}>day streak</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.stat}>
-                <Feather name="zap" size={15} color={COLORS.accent} />
+                <MaterialCommunityIcons name="flask" size={24} color={COLORS.xpBadgeIcon} />
                 <Text style={styles.statValue}>{xp.toLocaleString()}</Text>
                 <Text style={styles.statLabel}>total XP</Text>
               </View>
