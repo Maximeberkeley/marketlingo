@@ -86,9 +86,15 @@ export default function InterviewLabScreen() {
     used.add(pick);
     return pick;
   };
-  // Technical and behavioral roles use their own bank first; never consulting cases for a technical role.
+  // Technical and behavioral roles use their own bank first; never consulting cases or
+  // mental math unless the role is genuinely a case track. No saved target = join_industry
+  // default: technical + behavioral bank.
   const mockPool = useMemo(() => {
     if (path !== 'consulting') return questions.mockQuestions;
+    if (track === null) {
+      const bank = [...trackMocks(marketId, 'technical'), ...trackMocks(marketId, 'behavioral')];
+      return bank.length ? bank : questions.mockQuestions;
+    }
     const bank = trackMocks(marketId, track);
     if (track === 'technical') {
       const fit = questions.mockQuestions.filter(m => /certif|technical|system|standard|regulat|engineer|architect|safety|spec/i.test(`${m.scenario} ${m.question}`));
@@ -96,7 +102,7 @@ export default function InterviewLabScreen() {
     }
     return bank.length ? bank : questions.mockQuestions;
   }, [path, track, marketId, questions.mockQuestions]);
-  const allowMath = path === 'consulting' && (track === 'case' || track === null);
+  const allowMath = path === 'consulting' && track === 'case';
   const pressurePoolSize = allowMath && questions.mentalMathQuestions.length ? questions.mentalMathQuestions.length : questions.mcqQuestions.length;
   const rollQuestions = useCallback(() => {
     setMockIdx(pickUnused(mockPool.length, usedMock.current));
@@ -104,13 +110,21 @@ export default function InterviewLabScreen() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mockPool, pressurePoolSize]);
   useEffect(() => { usedMock.current.clear(); usedPressure.current.clear(); rollQuestions(); }, [rollQuestions, path]);
-  const mock = mockPool[mockIdx] || mockPool[0];
+  const poolMock = mockPool[mockIdx] || mockPool[0];
+  // The question shown on the home card is the question that opens on tap — locked at start.
+  const [lockedMock, setLockedMock] = useState<typeof poolMock | null>(null);
+  const mock = lockedMock || poolMock;
+  // Steps count from the stage the run actually started on (direct starts skip Brief/Frame).
+  const [startStage, setStartStage] = useState<Stage>('brief');
   const pressure = useMemo(() => {
     if (allowMath && questions.mentalMathQuestions.length) return questions.mentalMathQuestions[pressureIdx % questions.mentalMathQuestions.length];
     return questions.mcqQuestions.length ? questions.mcqQuestions[pressureIdx % questions.mcqQuestions.length] : undefined;
   }, [allowMath, pressureIdx, questions.mentalMathQuestions, questions.mcqQuestions]);
   const framework = MECE_FRAMEWORKS[marketId] || MECE_FRAMEWORKS.aerospace;
   const stageIndex = Math.max(0, STAGES.findIndex(item => item.key === stage));
+  const startIndex = Math.max(0, STAGES.findIndex(item => item.key === startStage));
+  const visibleStages = STAGES.slice(startIndex);
+  const visibleIndex = Math.max(0, stageIndex - startIndex);
 
   useEffect(() => () => {
     soundRef.current?.unloadAsync().catch(() => {});
@@ -214,8 +228,16 @@ export default function InterviewLabScreen() {
       onClose={() => router.back()}
       onOpenBrief={() => router.push('/deliverable' as any)}
       onWarmUp={() => router.push({ pathname: '/leo-call', params: { marketId: marketId ?? '', mode: 'interview' } } as any)}
-      onStart={() => { setPersona(personaForTrack(track)); setPath('consulting'); setStage('response'); }}
-      onSchool={() => { setPersona('recruiter'); setPath('academic'); setStage('brief'); }}
+      onStart={(question?: string) => {
+        setPersona(personaForTrack(track));
+        if (question && question !== poolMock?.question) {
+          setLockedMock({ id: `card-${Date.now()}`, scenario: readiness.target?.company ? `${readiness.target.company} interview` : 'Mock interview', question, buzzwords: [], sampleAnswer: '' } as any);
+        } else if (poolMock) {
+          setLockedMock(poolMock);
+        }
+        setStartStage('response'); setPath('consulting'); setStage('response');
+      }}
+      onSchool={() => { setPersona('recruiter'); setStartStage('brief'); setPath('academic'); setStage('brief'); }}
     />
   );
 
@@ -226,9 +248,9 @@ export default function InterviewLabScreen() {
         <View style={{ flex: 1 }}><Text style={styles.headerTitle}>{marketName} Interview</Text><Text style={styles.headerSub}>{INTERVIEW_PERSONAS[persona].label}</Text></View>
         <Image source={LEO} style={styles.leoSmall} resizeMode="contain" />
       </View>
-      <View style={styles.rail}>{STAGES.map((item, index) => <View key={item.key} style={[styles.railSegment, { backgroundColor: index <= stageIndex ? world.colors[0] : COLORS.border }]} />)}</View>
+      <View style={styles.rail}>{visibleStages.map((item, index) => <View key={item.key} style={[styles.railSegment, { backgroundColor: index <= visibleIndex ? COLORS.accent : COLORS.border }]} />)}</View>
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 28 }]} showsVerticalScrollIndicator={false}>
-        <Text style={[styles.stageLabel, { color: world.colors[0] }]}>{STAGES[stageIndex].label.toUpperCase()} · {stageIndex + 1}/5</Text>
+        <Text style={[styles.stageLabel, { color: COLORS.accent }]}>{STAGES[stageIndex].label.toUpperCase()} · {visibleIndex + 1}/{visibleStages.length}</Text>
 
         {stage === 'brief' && <>
           <Text style={styles.title}>Pick your interviewer.</Text><Text style={styles.subtitle}>Your coach changes what a strong answer sounds like.</Text>
@@ -284,7 +306,7 @@ export default function InterviewLabScreen() {
           <Debrief icon="zap" title="Sharper version" body={feedback.betterVersion} color={world.colors[0]} />
           {mock && mock.buzzwords.length > 0 && <View style={styles.debrief}><Feather name="book-open" size={19} color={world.colors[0]} /><View style={{ flex: 1 }}><Text style={[styles.debriefTitle, { color: world.colors[0] }]}>Words a pro would use</Text><View style={[styles.keywordRow, { marginTop: 6 }]}>{mock.buzzwords.slice(0, 6).map(word => <View key={word} style={styles.keyword}><Text style={styles.keywordText}>{word}</Text></View>)}</View></View></View>}
           <Action label="Bank result" color={world.colors[0]} onPress={bankResult} />
-          <TouchableOpacity onPress={() => { setFeedback(null); setResponse(''); setPressureChoice(null); setPressureCorrect(false); rollQuestions(); setStage('brief'); }} style={styles.retry}><Text style={styles.retryText}>Run another mission</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => { setFeedback(null); setResponse(''); setPressureChoice(null); setPressureCorrect(false); setLockedMock(null); rollQuestions(); setStartStage('brief'); setStage('brief'); }} style={styles.retry}><Text style={styles.retryText}>Run another mission</Text></TouchableOpacity>
         </>}
       </ScrollView>
     </View>

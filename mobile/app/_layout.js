@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useRef } from "react";
 import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";

@@ -254,3 +254,12 @@
 - [x] Leo only coach (screen, feedback, voice, feedback server copy; server mirrors old field for older builds)
 - [x] Technical roles: no cases or mental math; aerospace starter bank 10 technical + 6 behavioral (on-device)
 - [ ] Web Interview Lab page still shows Sophia (phone-first; not changed)
+
+## Oct 12 — Launch crash and interview fixes
+- [x] Add missing React import to app/_layout.js (launch crash "React is not defined"); scanned all .js twins, no others affected; rule added to mobile/AGENTS.md.
+- [x] Lock the home card question and open exactly that question on tap (lockedMock, onStart(question)).
+- [x] roleTrack: unknown/student/intern roles default to technical; case only for consulting/strategy/analyst.
+- [x] No saved target: serve technical + behavioral on-device bank; mental math only for case track.
+- [x] Sprint plan rotates concept/behavioral/technical/news/Brief lines, never the same line two days running.
+- [x] Answer screen rail and step label use accent violet; step count starts at 1 for direct starts.
+- [ ] Verify launch and Interview Lab flow in the next phone build (blocked: no iOS device/simulator).
