@@ -54,15 +54,15 @@ const goalOptions = [
     title: "Pure curiosity",
     subtitle: "Explorer Mode",
     color: "#F59E0B",
-    description: 'Discover big-picture trends, fascinating history, and "wow factor" insights',
+    description: "Discover big-picture trends and the history behind them",
     emphasis: ["Trend analysis", "Industry history", "Key innovations"]
   }
 ];
 const LEO_REACTIONS = {
   join_industry: "I'll prep you for the interview.",
   invest: "Let's sharpen your investment thesis.",
-  build_startup: "You do not need an idea yet. We\u2019ll find a gap worth solving.",
-  curiosity: "Curiosity is a superpower \u2014 let's explore together!"
+  build_startup: "We'll find a gap worth solving.",
+  curiosity: "Good choice. Let's explore."
 };
 const DESTINATIONS = {
   join_industry: "In 30 days you\u2019ll hold your own in an interview with someone who works in this industry.",
@@ -227,7 +227,7 @@ function GoalScreen() {
       </Animated.ScrollView>
 
       <StickyBottomCTA
-    title={isSubmitting ? "Saving..." : "Commit to my goal"}
+    title={isSubmitting ? "Saving..." : "Continue"}
     onPress={handleContinue}
     disabled={!selectedGoal || isSubmitting}
   />
@@ -248,9 +248,9 @@ const styles = StyleSheet.create({
   title: { ...TYPE.h1, color: COLORS.textPrimary, marginTop: 12, textAlign: "center" },
   subtitle: { ...TYPE.body, color: COLORS.textSecondary, textAlign: "center", marginTop: 4 },
   reactionBubble: {
-    flexDirection: 'column',
+    flexDirection: "column",
     alignItems: "center",
-    gap: 10,
+    gap: 4,
     marginBottom: 16
   },
   reactionBalloon: {},

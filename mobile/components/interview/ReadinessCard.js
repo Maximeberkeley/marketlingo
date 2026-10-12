@@ -5,7 +5,7 @@ import { COLORS } from "../../lib/constants";
 import { buildSprintPlan, daysUntil, weekKey } from "../../lib/interviewPrep";
 import { InterviewTargetForm } from "./InterviewTargetForm";
 import { triggerHaptic } from "../../lib/haptics";
-function ReadinessCard({ visible, readiness, onClose, onStartMock, onOpenBrief }) {
+function ReadinessCard({ visible, inline = false, readiness, onClose, onStartMock, onOpenBrief }) {
   const rise = useRef(new Animated.Value(0)).current;
   const [answered, setAnswered] = useState({});
   useEffect(() => {
@@ -21,14 +21,7 @@ function ReadinessCard({ visible, readiness, onClose, onStartMock, onOpenBrief }
   );
   const weekly = target && !target.date;
   const translateY = rise.interpolate({ inputRange: [0, 1], outputRange: [40, 0] });
-  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.backdrop}>
-        <Animated.View style={[styles.glass, { opacity: rise, transform: [{ translateY }] }]}>
-          <View style={styles.sheen} pointerEvents="none" />
-          <TouchableOpacity onPress={onClose} hitSlop={12} style={styles.close} accessibilityLabel="Close">
-            <Feather name="x" size={18} color={COLORS.textMuted} />
-          </TouchableOpacity>
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 6 }}>
+  const body = <>
             <Text style={styles.eyebrow}>INTERVIEW READINESS</Text>
             <View style={styles.scoreRow}>
               <Text style={styles.score}>{percent}%</Text>
@@ -87,6 +80,22 @@ ${target.company}${days != null && days >= 0 ? ` \xB7 ${days === 0 ? "today" : `
               </View>}
 
             {target && !sprint && !weekly && <TouchableOpacity onPress={onStartMock} style={styles.primary}><Text style={styles.primaryText}>Start a mock</Text></TouchableOpacity>}
+          </>;
+  if (inline) {
+    return <View style={[styles.glass, styles.inline]}>
+        <View style={styles.sheen} pointerEvents="none" />
+        {body}
+      </View>;
+  }
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <View style={styles.backdrop}>
+        <Animated.View style={[styles.glass, { opacity: rise, transform: [{ translateY }] }]}>
+          <View style={styles.sheen} pointerEvents="none" />
+          <TouchableOpacity onPress={onClose} hitSlop={12} style={styles.close} accessibilityLabel="Close">
+            <Feather name="x" size={18} color={COLORS.textMuted} />
+          </TouchableOpacity>
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 6 }}>
+            {body}
           </ScrollView>
         </Animated.View>
       </View>
@@ -108,6 +117,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 16 },
     elevation: 14
   },
+  inline: { maxHeight: void 0, elevation: 3, shadowOpacity: 0.08, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, borderColor: COLORS.border },
   sheen: { position: "absolute", top: -60, left: -40, right: -40, height: 140, backgroundColor: "rgba(139,92,246,0.08)", borderRadius: 140 },
   close: { position: "absolute", right: 16, top: 16, zIndex: 2 },
   eyebrow: { fontSize: 11, fontWeight: "800", letterSpacing: 1.4, color: COLORS.accent },

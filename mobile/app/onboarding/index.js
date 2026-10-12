@@ -123,7 +123,7 @@ function OnboardingScreen() {
           <LeoCharacter size="lg" animation="waving" />
           <Text style={styles.title}>Choose your industry</Text>
           <Text style={styles.subtitle}>
-            Your 6-month mastery journey starts here
+            Pick your industry
           </Text>
           {!user && <TouchableOpacity onPress={() => router.push("/auth")} activeOpacity={0.7} style={{ marginTop: 10 }}>
               <Text style={{ color: COLORS.accent, fontWeight: "700", fontSize: 15 }}>I already have an account</Text>
