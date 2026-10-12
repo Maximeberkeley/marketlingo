@@ -129,7 +129,7 @@ interface CourseJourneyProps {
   rescueAvailable?: boolean;
   streakCountdown?: string | null;
   safeTop: number;
-  onOpenLesson: (stackId: string) => void;
+  onOpenLesson: (stackId: string, day?: number) => void;
   onAskLeo: (day?: number) => void;
   /** Small card shown under today's lesson section (the learner's dossier progress). */
   belowToday?: React.ReactNode;
@@ -621,7 +621,7 @@ export function CourseJourney({
     triggerHaptic('light');
     playSound('tap').catch(() => {});
     if (kind === 'lesson') {
-      if (lesson?.stackId && lesson.day <= currentDay) onOpenLesson(lesson.stackId);
+      if (lesson?.stackId && lesson.day <= currentDay) onOpenLesson(lesson.stackId, lesson.day);
       else Alert.alert('Lesson unavailable', 'This lesson is not ready yet. Your progress is safe.');
     } else if (kind === 'arena') {
       router.push({ pathname: '/arena', params: { day: String(section.displayDay) } });
@@ -734,7 +734,7 @@ export function CourseJourney({
         onClose={() => setPreviewSection(null)}
         onOpenLesson={lesson => {
           setPreviewSection(null);
-          if (lesson.stackId) onOpenLesson(lesson.stackId);
+          if (lesson.stackId) onOpenLesson(lesson.stackId, lesson.day);
         }}
       />
       <Modal
