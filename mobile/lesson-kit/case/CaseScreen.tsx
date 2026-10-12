@@ -266,7 +266,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
         </View>
       </View>
 
-      <Text style={styles.stageHint}>{stage.hint}</Text>
+      {stage.hint ? <Text style={styles.stageHint}>{stage.hint}</Text> : null}
 
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         {!!stage.exercise.leo?.line && (
