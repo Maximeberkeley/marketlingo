@@ -30,6 +30,7 @@ import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { AskLeoOverlay, LeoMessage } from '../../components/ai/AskLeoOverlay';
 import { normalizedCopy, readingCardKind } from '../cardPresentation';
+import { trackEvent } from '../../lib/analytics';
 
 /** Flatten the current beat's visible text into a context string for Leo. */
 /** The lesson's takeaway card text (or its last reading card), for the Leo call. */
@@ -75,6 +76,8 @@ export interface LessonScreenProps {
   marketId?: string;
   /** Saves one of Leo's answers to the learner's notes. */
   onSaveLeoAnswer?: (text: string, exerciseIndex: number, exercise?: Exercise) => void;
+  /** Analytics: the lesson stack being played. */
+  stackId?: string;
 }
 
 export function LessonScreen({
@@ -88,6 +91,7 @@ export function LessonScreen({
   confirmExit = true,
   marketId,
   onSaveLeoAnswer,
+  stackId,
 }: LessonScreenProps) {
   const insets = useSafeAreaInsets();
   const [queue, setQueue] = useState<Exercise[]>(lesson.exercises);
@@ -287,13 +291,18 @@ export function LessonScreen({
     });
   }, [missed, index]);
 
+  const exitLesson = useCallback(() => {
+    if (!finished) trackEvent('lesson_exit', { stackId: stackId || lesson.id || null, beatIndex: index });
+    onExit();
+  }, [finished, stackId, lesson.id, index, onExit]);
+
   const handleExitPress = useCallback(() => {
     if (!confirmExit || finished) {
-      onExit();
+      exitLesson();
       return;
     }
     setShowExitPrompt(true);
-  }, [confirmExit, finished, onExit]);
+  }, [confirmExit, finished, exitLesson]);
 
   /** The feedback explanation already quotes the correct sentence; don't print it twice. */
   const feedbackExplanation = exercise && 'explanation' in exercise ? normalizedCopy(exercise.explanation || '') : '';
@@ -385,7 +394,7 @@ export function LessonScreen({
           onLayout={event => { if (combined) setMeasuredCard({ id: exercise.id, height: event.nativeEvent.layout.height }); }}
           style={[styles.beat, exercise.kind === 'coldOpen' && styles.fullBleed, { opacity: combined && !combinedFits ? 0 : enter, transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]} >
           {exercise.kind === 'sayIt'
-            ? <SayIt key={exercise.id} exercise={exercise} marketId={marketId} onDone={continueLesson} />
+            ? <SayIt key={exercise.id} exercise={exercise} marketId={marketId} stackId={stackId || lesson.id} onDone={continueLesson} />
             : renderExercise(exercise, phase, handleChange)}
         </Animated.View>
         {exercise.kind !== 'coldOpen' && <View style={styles.lowerSpace} />}
@@ -429,7 +438,7 @@ export function LessonScreen({
                 : ''}.
             </Text>
             <PrimaryButton label="Keep learning" onPress={() => setShowExitPrompt(false)} />
-            <TouchableOpacity onPress={() => { setShowExitPrompt(false); onExit(); }} style={styles.ghost}>
+            <TouchableOpacity onPress={() => { setShowExitPrompt(false); exitLesson(); }} style={styles.ghost}>
               <Text style={styles.ghostText}>Leave anyway</Text>
             </TouchableOpacity>
           </View>

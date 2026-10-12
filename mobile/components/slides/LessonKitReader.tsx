@@ -204,6 +204,7 @@ export function LessonKitReader({
       <LessonScreen
         lesson={lesson}
         marketId={marketId}
+        stackId={stackId}
         onExit={onClose}
         onFinish={({ timeSpentSeconds, correct, total }) => onComplete(
           isReview,

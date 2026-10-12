@@ -4,19 +4,21 @@ import { tokens } from '../theme/tokens';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { useDeliverable } from '../../hooks/useDeliverable';
 import type { SayItExercise } from '../types';
+import { trackEvent } from '../../lib/analytics';
 
 interface Props {
   exercise: SayItExercise;
   marketId?: string;
   /** Moves on to the end screen. Skipping never costs XP or streak. */
   onDone: () => void;
+  stackId?: string;
 }
 
 /**
  * Last beat of a lesson: the learner writes one sentence into a dossier
  * section, then checks it against the lesson's takeaway. No grading.
  */
-export function SayIt({ exercise, marketId, onDone }: Props) {
+export function SayIt({ exercise, marketId, onDone, stackId }: Props) {
   const dossier = useDeliverable(marketId, exercise.learningGoal);
   const { template, firstOpenSection, loading } = dossier;
   const [sectionKey, setSectionKey] = useState<string | null>(null);
@@ -35,6 +37,16 @@ export function SayIt({ exercise, marketId, onDone }: Props) {
   }, [sectionKey, loading, firstOpenSection, template.sections, exercise.sectionKey]);
 
   const section = template.sections.find(s => s.key === sectionKey) ?? template.sections[0];
+  const shownRef = React.useRef(false);
+  useEffect(() => {
+    if (shownRef.current || !sectionKey) return;
+    shownRef.current = true;
+    trackEvent('say_it_shown', { stackId: stackId ?? null, sectionKey });
+  }, [sectionKey, stackId]);
+  const skip = () => {
+    trackEvent('say_it_skipped', { stackId: stackId ?? null, sectionKey: section?.key ?? null });
+    onDone();
+  };
   const canAdd = text.trim().length >= 3 && !saving && !!marketId;
 
   const add = async () => {
@@ -44,7 +56,10 @@ export function SayIt({ exercise, marketId, onDone }: Props) {
     setFailed(false);
     const ok = await dossier.addLine(section.key, text, exercise.dayNumber, 'learner');
     setSaving(false);
-    if (ok) setSaved(text.trim());
+    if (ok) {
+      setSaved(text.trim());
+      trackEvent('say_it_saved', { stackId: stackId ?? null, sectionKey: section.key });
+    }
     else setFailed(true);
   };
 
@@ -114,7 +129,7 @@ export function SayIt({ exercise, marketId, onDone }: Props) {
         onPress={add}
         variant={canAdd ? 'primary' : 'disabled'}
       />
-      <TouchableOpacity onPress={onDone} style={styles.skip} hitSlop={10} accessibilityRole="link" disabled={saving}>
+      <TouchableOpacity onPress={skip} style={styles.skip} hitSlop={10} accessibilityRole="link" disabled={saving}>
         <Text style={styles.skipText}>Skip</Text>
       </TouchableOpacity>
     </View>

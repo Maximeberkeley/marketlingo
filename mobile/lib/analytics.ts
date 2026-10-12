@@ -39,7 +39,24 @@ export type AnalyticsEvent =
   | 'ai_cancelled'
   | 'notification_permission_requested'
   | 'notification_permission_accepted'
-  | 'session_return';
+  | 'session_return'
+  | 'say_it_shown'
+  | 'say_it_saved'
+  | 'say_it_skipped'
+  | 'dossier_opened'
+  | 'dossier_line_saved'
+  | 'dossier_exported'
+  | 'leo_call_started'
+  | 'leo_call_ended'
+  | 'leo_call_brief_line_saved'
+  | 'interview_practice_started'
+  | 'interview_feedback_received'
+  | 'interview_target_saved'
+  | 'quiz_started'
+  | 'quiz_finished'
+  | 'case_started'
+  | 'case_finished'
+  | 'lesson_exit';
 
 
 interface EventProperties {
