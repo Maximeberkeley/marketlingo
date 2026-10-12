@@ -4,6 +4,7 @@ import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
 import { supabase } from '../../lib/supabase';
 import { localDateString } from '../../lib/dayMath';
+import { SpeechBubble } from '../ui/SpeechBubble';
 
 const SAD_LEO = require('../../assets/mascot/leo-rain.png');
 const HAPPY_LEO = require('../../assets/mascot/leo-celebrating.png');
