@@ -217,6 +217,20 @@ export default function InterviewLabScreen() {
             onStartMock={() => { setPath(track === 'behavioral' ? 'academic' : 'consulting'); setStage('response'); }}
           />
         ) : null}
+        <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel="Warm up with Leo"
+          activeOpacity={0.85}
+          style={styles.warmUp}
+          onPress={() => { triggerHaptic('medium'); router.push({ pathname: '/leo-call', params: { marketId: marketId ?? '', mode: 'interview' } } as any); }}
+        >
+          <Image source={require('../assets/mascot/leo-waving.png')} style={styles.warmUpLeo} resizeMode="contain" />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.warmUpTitle}>Warm up with Leo</Text>
+            <Text style={styles.warmUpSub}>{readiness.target?.company ? `3-min call · Leo plays your ${readiness.target.company} interviewer` : '3-min call · Leo plays your interviewer'}</Text>
+          </View>
+          <Feather name="phone" size={18} color={COLORS.accent} />
+        </TouchableOpacity>
         <PathCard icon="briefcase" title="Job interview" subtitle="Cases, numbers and clear answers" color={world.colors[0]} onPress={() => setPath('consulting')} />
         <PathCard icon="award" title="Scholarship or school interview" subtitle="Stories about what you did and why" color={world.colors[1]} onPress={() => setPath('academic')} />
         <Text style={styles.smallPrint}>Sophia coaches every run. Voice is optional.</Text>
@@ -311,6 +325,7 @@ const styles = StyleSheet.create({
   pathHero: { height: 335, paddingHorizontal: 22, paddingBottom: 28, justifyContent: 'flex-end', overflow: 'hidden' }, close: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
   sophiaHero: { position: 'absolute', width: 120, height: 120, right: 18, top: 60, resizeMode: 'cover', borderRadius: 60, opacity: 0.95 }, kickerLight: { color: COLORS.bg0, fontSize: 11, fontWeight: '900', letterSpacing: 1.2 }, heroTitle: { color: COLORS.bg0, fontSize: 31, lineHeight: 35, fontWeight: '900', maxWidth: 220, marginTop: 8 }, heroBody: { color: COLORS.bg0, opacity: 0.82, fontSize: 15, marginTop: 8, maxWidth: 215 },
   pathBody: { padding: 18, gap: 12 }, pathCard: { flexDirection: 'row', alignItems: 'center', minHeight: 92, padding: 16, borderWidth: 1, borderColor: COLORS.border, borderRadius: 16, gap: 14, backgroundColor: COLORS.bg2 }, pathIcon: { width: 50, height: 50, borderRadius: 14, alignItems: 'center', justifyContent: 'center' }, pathTitle: { fontSize: 18, fontWeight: '900', color: COLORS.textPrimary }, pathSubtitle: { fontSize: 13, color: COLORS.textSecondary, marginTop: 4 }, smallPrint: { color: COLORS.textMuted, fontSize: 12, textAlign: 'center', marginTop: 8 },
+  warmUp: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 18, borderWidth: 1.5, borderColor: COLORS.accent, backgroundColor: COLORS.bg2, marginBottom: 12 }, warmUpLeo: { width: 48, height: 48 }, warmUpTitle: { color: COLORS.textPrimary, fontWeight: '800', fontSize: 16 }, warmUpSub: { color: COLORS.textSecondary, fontSize: 13, marginTop: 2 },
   header: { height: 58, paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center', gap: 8 }, headerTitle: { color: COLORS.textPrimary, fontWeight: '900', fontSize: 15 }, headerSub: { color: COLORS.textMuted, fontSize: 11, marginTop: 1 }, sophiaSmall: { width: 38, height: 38, borderRadius: 19, marginRight: 6 }, rail: { flexDirection: 'row', gap: 4, paddingHorizontal: 16 }, railSegment: { flex: 1, height: 5, borderRadius: 3 },
   scroll: { padding: 20, gap: 14 }, stageLabel: { fontSize: 11, fontWeight: '900', letterSpacing: 1 }, title: { color: COLORS.textPrimary, fontSize: 27, lineHeight: 32, fontWeight: '900' }, subtitle: { color: COLORS.textSecondary, fontSize: 15, lineHeight: 21 },
   personas: { gap: 10 }, persona: { minHeight: 72, borderRadius: 15, borderWidth: 2, borderColor: COLORS.border, padding: 13, flexDirection: 'row', gap: 12, alignItems: 'center' }, personaTitle: { fontSize: 15, fontWeight: '800', color: COLORS.textPrimary }, personaText: { fontSize: 12, lineHeight: 17, color: COLORS.textSecondary, marginTop: 2 },
