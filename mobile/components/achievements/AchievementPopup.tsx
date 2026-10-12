@@ -131,7 +131,7 @@ export function AchievementPopup({ visible, achievement, onDismiss }: Achievemen
               <Feather name="zap" size={16} color="#FBBF24" />
               <Text style={styles.xpText}>+{achievement.xpReward} XP</Text>
             </View>
-          </View>
+          </ScrollView>
 
           {/* Dismiss button */}
           <TouchableOpacity style={[styles.dismissBtn, { backgroundColor: tier.color }]} onPress={onDismiss}>
