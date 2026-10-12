@@ -1,5 +1,10 @@
 # MarketLingo roadmap
 
+## Oct 12 — Last polish
+- [ ] Keep credited Home completion checked and coloured; show Today's done inline under the ring and use real lesson titles.
+- [ ] Compact Practice cards to icon/title/one-line/Start, remove repeated labels, simplify quiz intro, and make Log out plain grey text.
+- [ ] Synchronize phone TSX/JS pairs and run focused regression checks.
+
 ## Merged card list fixes
 - [x] Restrict rows to unquoted first sentences and keep subsequent copy regular body text.
 - [x] Restore separate original cards when native layout exceeds available space; preserve Note/Save source mapping and synchronize six paired sources.
