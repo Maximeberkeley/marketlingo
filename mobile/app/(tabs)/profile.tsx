@@ -42,6 +42,14 @@ const MARKET_ILLUSTRATIONS: Record<string, any> = {
   neuroscience: require('../../assets/illustrations/neuroscience.png'),
 };
 
+function goalSentence(goal: string | null, market: string): string {
+  const m = market.toLowerCase();
+  if (goal === 'invest') return `Learning to invest in ${m}`;
+  if (goal === 'build_startup') return `Building a ${m} startup`;
+  if (goal === 'curiosity') return `Exploring ${m}`;
+  return `Getting ready for ${/^[aeiou]/.test(m) ? 'an' : 'a'} ${m} job`;
+}
+
 type LearningGoal = 'join_industry' | 'invest' | 'build_startup' | 'curiosity';
 
 const GOAL_OPTIONS: { id: LearningGoal; icon: keyof typeof Feather.glyphMap; title: string; color: string }[] = [
@@ -237,217 +245,62 @@ export default function ProfileScreen() {
           <View style={styles.headerRight} />
         </Animated.View>
 
-        {/* XP & Stage */}
         <Animated.View style={animStyle(bodyAnim)}>
-        {xpData && (
-          <View style={styles.stageCard}>
-            <View style={styles.stageHeader}>
-              <Feather name="bar-chart-2" size={18} color={COLORS.accent} />
-              <View style={{ flex: 1 }}>
-                <Text style={styles.stageTitle}>Stage {currentStage.stage}: {currentStage.name}</Text>
-                <Text style={styles.stageDesc}>{currentStage.description}</Text>
-              </View>
-              <Text style={styles.xpText}>{xpData.total_xp.toLocaleString()} XP</Text>
-            </View>
-            <ProgressBar progress={stageProgress} />
-          </View>
-        )}
-
-        {/* Certificate */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>CERTIFICATION</Text>
-          <View style={styles.certCard}>
-            <View style={styles.certRow}>
-              <View style={[styles.certIcon, isCertEligible && { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
-                <Feather name="award" size={24} color={COLORS.accent} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.certTitle}>
-                  {isCertEligible ? 'Certificate Unlocked!' : 'Industry Mastery Certificate'}
-                </Text>
-                <Text style={styles.certSubtitle}>
-                  {isCertEligible ? 'Download and share your achievement' : 'Complete all 180 days to unlock'}
-                </Text>
-              </View>
-            </View>
-            {!isCertEligible && (
-              <View style={{ marginTop: 12 }}>
-                <View style={styles.certProgressRow}>
-                  <Text style={styles.certProgressLabel}>Progress</Text>
-                  <Text style={styles.certProgressLabel}>{certProgress} / 180 days</Text>
-                </View>
-                <ProgressBar progress={certPercentage} height={6} />
-              </View>
-            )}
-            <TouchableOpacity
-              style={[styles.certButton, !isCertEligible && { opacity: 0.5 }]}
-              disabled={!isCertEligible}
-            >
-              <Text style={styles.certButtonText}>
-                {isCertEligible ? 'View Certificate' : `${certPercentage}% Complete`}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <TouchableOpacity style={styles.stageCard} activeOpacity={0.85} onPress={() => setShowChangeWarning(true)}>
+          <Text style={styles.stageTitle}>{goalSentence(currentGoal, getMarketName(selectedMarket || 'aerospace'))}</Text>
+          <Text style={styles.stageDesc}>Change industry ›</Text>
+        </TouchableOpacity>
 
         <View style={styles.section}>
-
           <Text style={styles.sectionTitle}>INTERVIEW</Text>
-
           <InterviewTargetForm target={interviewPrep.target} onSave={interviewPrep.saveTarget} />
-
         </View>
 
-
-        {/* The learner's own document, always one tap away. */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>YOUR DOSSIER</Text>
           <TouchableOpacity
-            style={styles.collectionCard}
+            style={styles.menuItem}
             activeOpacity={0.88}
             onPress={() => { triggerHaptic('light'); router.push('/deliverable' as any); }}
           >
-            <View style={[styles.collectionIcon, { backgroundColor: COLORS.accent }]}>
-              <Feather name="file-text" size={24} color="#FFFFFF" />
+            <View style={[styles.menuIcon, { backgroundColor: COLORS.accentSoft }]}>
+              <Feather name="file-text" size={18} color={COLORS.accent} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>
-                {dossier.template?.title || 'Your living dossier'}
-              </Text>
-              <Text style={styles.menuSubtitle}>
-                {`${Math.round(dossier.completion)}% written · ${dossierRankInfo.title}`}
-              </Text>
+              <Text style={styles.menuTitle}>Interview Brief</Text>
+              <Text style={styles.menuSubtitle}>{`${Math.round(dossier.completion)}% written`}</Text>
             </View>
-            <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
+            <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
-        </View>
 
-        {/* Learning Preferences */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>INSIDER COLLECTION</Text>
-
-          <TouchableOpacity style={styles.collectionCard} onPress={() => router.push('/collection' as any)}>
-            <View style={[styles.collectionIcon, { backgroundColor: getMarketWorld(selectedMarket).colors[0] }]}>
-              <Feather name={featuredCard ? 'award' : 'layers'} size={24} color="#FFFFFF" />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>{featuredCard?.name || 'Choose your featured card'}</Text>
-              <Text style={styles.menuSubtitle}>{featuredCard?.specialty || `${cards.filter(card => card.owned).length} cards discovered`}</Text>
-            </View>
-            <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>LEARNING PREFERENCES</Text>
           <TouchableOpacity style={styles.menuItem} onPress={() => setShowGoalPicker(true)}>
-            <View style={[styles.menuIcon, { backgroundColor: currentGoal ? (GOAL_OPTIONS.find(g => g.id === currentGoal)?.color || COLORS.accent) + '20' : COLORS.bg1 }]}>
-              <Feather
-                name={GOAL_OPTIONS.find(g => g.id === currentGoal)?.icon || 'target'}
-                size={18}
-                color={GOAL_OPTIONS.find(g => g.id === currentGoal)?.color || COLORS.accent}
-              />
+            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
+              <Feather name={GOAL_OPTIONS.find(g => g.id === currentGoal)?.icon || 'target'} size={18} color={COLORS.accent} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>Learning Goal</Text>
-              <Text style={styles.menuSubtitle}>
-                {GOAL_OPTIONS.find(g => g.id === currentGoal)?.title || 'Not set'}
-              </Text>
+              <Text style={styles.menuTitle}>Goal</Text>
+              <Text style={styles.menuSubtitle}>{GOAL_OPTIONS.find(g => g.id === currentGoal)?.title || 'Not set'}</Text>
             </View>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => setShowLevelPicker(true)}>
-            <View style={[styles.menuIcon, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
-              <Feather name="sliders" size={18} color="#10B981" />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>Experience Level</Text>
-              <Text style={styles.menuSubtitle}>
-                {FAMILIARITY_LEVELS.find(l => l.id === currentLevel)?.name || 'Not set'}
-              </Text>
-            </View>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>CURRENT MARKET</Text>
-          <TouchableOpacity style={styles.menuItem} onPress={() => setShowChangeWarning(true)}>
-            <View style={[styles.menuIcon, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]}>
-              {MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace'] ? (
-                <Image source={MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace']} style={styles.menuIconImg} />
-              ) : (
-                <Feather name="bar-chart-2" size={18} color={COLORS.accent} />
-              )}
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>{getMarketName(selectedMarket || 'aerospace')}</Text>
-              <Text style={styles.menuSubtitle}>6-month journey</Text>
-            </View>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Data */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>DATA</Text>
-          <TouchableOpacity style={styles.menuItem} onPress={handleExportNotebook}>
             <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
-              <Feather name="edit-3" size={18} color="#8B5CF6" />
+              <Feather name="sliders" size={18} color={COLORS.accent} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>Export Notebook</Text>
-              <Text style={styles.menuSubtitle}>Download as Markdown</Text>
-            </View>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Account */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>ACCOUNT</Text>
-
-          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/passport' as any)}>
-            <View style={[styles.menuIcon, { backgroundColor: 'rgba(99, 102, 241, 0.2)' }]}>
-              <Feather name="globe" size={18} color="#6366F1" />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>Industry Passport</Text>
-              <Text style={styles.menuSubtitle}>Your learning journey stamps</Text>
+              <Text style={styles.menuTitle}>Level</Text>
+              <Text style={styles.menuSubtitle}>{FAMILIARITY_LEVELS.find(l => l.id === currentLevel)?.name || 'Not set'}</Text>
             </View>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/settings' as any)}>
-            <View style={[styles.menuIcon, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-              <Feather name="settings" size={18} color="#3B82F6" />
+            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
+              <Feather name="settings" size={18} color={COLORS.accent} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.menuTitle}>Settings</Text>
-              <Text style={styles.menuSubtitle}>Notifications & preferences</Text>
-            </View>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/achievements' as any)}>
-            <View style={[styles.menuIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
-              <Feather name="award" size={18} color="#F59E0B" />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>Achievements</Text>
-              <Text style={styles.menuSubtitle}>Badges & milestones</Text>
-            </View>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/collection' as any)}>
-            <View style={[styles.menuIcon, { backgroundColor: 'rgba(6, 182, 212, 0.15)' }]}>
-              <Feather name="layers" size={18} color="#0891B2" />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>Insider Collection</Text>
-              <Text style={styles.menuSubtitle}>Archetype cards from every market</Text>
+              <Text style={styles.menuSubtitle}>Notifications and account</Text>
             </View>
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
@@ -463,6 +316,9 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
+        <TouchableOpacity onPress={() => router.push('/achievements' as any)} hitSlop={10}>
+          <Text style={[styles.versionText, { color: COLORS.accent, marginBottom: 6 }]}>Achievements</Text>
+        </TouchableOpacity>
         <Text style={styles.versionText}>MarketLingo v1.1.1</Text>
         </Animated.View>
       </ScrollView>
