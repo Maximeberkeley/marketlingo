@@ -34,7 +34,7 @@ const config: Record<MilestoneType, {
     emoji: "🔥",
     gradient: "from-orange-500/20 to-orange-600/5",
     getTitle: (v) => `${v}-Day Streak!`,
-    getSubtitle: () => "Consistency is the ultimate superpower",
+    getSubtitle: () => "Keep it going tomorrow.",
   },
   level_up: {
     emoji: "⚡",
