@@ -48,9 +48,9 @@ interface CardData {
 const ACTIVITY_CARDS: CardData[] = [
   {
     id: 'arena',
-    title: 'Daily Arena',
-    subtitle: 'Three Waves. One Clock.',
-    description: 'Fast industry calls with combos, shields, and a sudden-death finish.',
+    title: 'Daily quiz',
+    subtitle: 'Daily quiz · 3 rounds · 3 min',
+    description: 'Quick questions on what you studied.',
     icon: 'zap',
     iconColor: '#FDE68A',
     gradientColors: ['#92400E', '#B45309', '#D97706'] as const,
@@ -61,9 +61,9 @@ const ACTIVITY_CARDS: CardData[] = [
   },
   {
     id: 'deep-case',
-    title: 'Deep Case',
-    subtitle: 'Four Stages. One Verdict.',
-    description: 'Study the evidence, read the numbers, and defend your final call.',
+    title: 'Case',
+    subtitle: 'A real situation',
+    description: 'A real situation. What would you do?',
     icon: 'briefcase',
     iconColor: '#C7D2FE',
     gradientColors: ['#1E1B4B', '#312E81', '#4338CA'] as const,
@@ -77,9 +77,9 @@ const ACTIVITY_CARDS: CardData[] = [
 const LAB_CARDS: CardData[] = [
   {
     id: 'interview-lab',
-    title: 'Interview Lab',
-    subtitle: 'Case Prep Simulator',
-    description: 'Mock interviews with focused coaching and realistic pressure.',
+    title: 'Interview practice',
+    subtitle: 'Mock interview',
+    description: 'Practice an interview question. Get feedback in 2 minutes.',
     icon: 'mic',
     iconColor: '#C4B5FD',
     gradientColors: ['#1E1B4B', '#4338CA', '#7C3AED'] as const,
@@ -90,43 +90,14 @@ const LAB_CARDS: CardData[] = [
   {
     id: 'investment',
     title: 'Investment Lab',
-    subtitle: 'Portfolio Decisions',
-    description: 'Real-world analysis and portfolio building.',
+    subtitle: 'For investors',
+    description: 'Look at a company and decide if you would invest.',
     icon: 'trending-up',
     iconColor: '#A7F3D0',
     gradientColors: ['#064E3B', '#047857', '#059669'] as const,
     accentGlow: 'rgba(5, 150, 105, 0.4)',
     path: '/investment-lab',
     heroImage: require('../../assets/cards/investment-lab-hero.jpg'),
-  },
-];
-
-const COMPETE_CARDS: CardData[] = [
-  {
-    id: 'league',
-    title: 'Monthly League',
-    subtitle: 'Season Promotion Race',
-    description: 'Climb this month’s XP table and earn your next trophy tier.',
-    icon: 'award',
-    iconColor: '#BFDBFE',
-    gradientColors: ['#1E3A8A', '#1D4ED8', '#3B82F6'] as const,
-    accentGlow: 'rgba(59, 130, 246, 0.4)',
-    path: '/league',
-    heroImage: require('../../assets/illustrations/monthly-league-hero.png'),
-    tag: 'SEASON',
-  },
-  {
-    id: 'leaderboard',
-    title: 'Friends & Rivals',
-    subtitle: 'Social Standings',
-    description: 'See who is building industry fluency alongside you.',
-    icon: 'users',
-    iconColor: '#FDE68A',
-    gradientColors: ['#7C2D12', '#B45309', '#F59E0B'] as const,
-    accentGlow: 'rgba(245, 158, 11, 0.4)',
-    path: '/friends',
-    heroImage: require('../../assets/illustrations/friends-rivals-hero.png'),
-    tag: 'SOCIAL',
   },
 ];
 
@@ -231,10 +202,8 @@ function PremiumCard({ card, index }: { card: CardData; index: number }) {
           source={card.heroImage}
           style={styles.heroImageBg}
           imageStyle={styles.heroImageStyle}
-          resizeMode="cover"
+          resizeMode="contain"
         >
-          {/* Dark gradient overlay for readability */}
-          <View style={styles.heroOverlay} />
           
           {/* Floating tag */}
           {card.tag && (
@@ -313,6 +282,7 @@ export default function PracticeScreen() {
   const { user } = useAuth();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [goal, setGoal] = useState<string | null>(null);
   const studied = useStudiedLessons(selectedMarket || undefined);
   const headerAnim = useRef(new Animated.Value(0)).current;
 
@@ -324,7 +294,11 @@ export default function PracticeScreen() {
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
-        if (data?.selected_market) setSelectedMarket(data.selected_market);
+        if (data?.selected_market) {
+          setSelectedMarket(data.selected_market);
+          supabase.from('user_progress').select('learning_goal').eq('user_id', user.id).eq('market_id', data.selected_market).maybeSingle()
+            .then(({ data: prog }) => setGoal((prog as any)?.learning_goal || null));
+        }
         setLoading(false);
       });
   }, [user]);
@@ -409,9 +383,7 @@ export default function PracticeScreen() {
         {studied.lessons.length > 0 ? <PremiumCarousel cards={ACTIVITY_CARDS} title="From your lessons" /> : null}
 
         {/* Labs */}
-        <PremiumCarousel cards={LAB_CARDS} title="Labs" />
-
-        <PremiumCarousel cards={COMPETE_CARDS} title="Compete" />
+        <PremiumCarousel cards={LAB_CARDS.filter(card => card.id !== 'investment' || goal === 'invest')} title="Interview" />
 
       </ScrollView>
     </View>
@@ -541,6 +513,10 @@ const styles = StyleSheet.create({
   /* Hero image area */
   heroImageBg: {
     height: 160,
+    backgroundColor: '#F3EEF8',
+    borderTopLeftRadius: 21,
+    borderTopRightRadius: 21,
+    overflow: 'hidden',
     justifyContent: 'flex-end',
   },
   heroImageStyle: {
