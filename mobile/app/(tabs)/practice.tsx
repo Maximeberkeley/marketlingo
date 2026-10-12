@@ -330,7 +330,6 @@ const styles = StyleSheet.create({
 
   /* Header */
   header: { paddingHorizontal: 20, marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  addBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
   headerTitle: {
     ...TYPE.hero,
     fontSize: 32,
