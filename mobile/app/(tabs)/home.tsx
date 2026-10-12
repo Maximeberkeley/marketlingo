@@ -494,7 +494,7 @@ export default function HomeScreen() {
         marketId={selectedMarket || undefined}
         lessonContext={`${getMarketName(selectedMarket || 'aerospace')} industry learning — Day ${currentDay}`}
       />
-      <CardRevealModal card={revealedCard} marketId={selectedMarket || undefined} onClose={() => setRevealedCard(null)} />
+      {/* Collectible cards are hidden for now; only streak, Interview Brief and readiness stay visible. */}
 
       {session.showGoals && session.activeStack ? (
         <LessonGoalsScreen
@@ -608,7 +608,7 @@ export default function HomeScreen() {
       />
 
       <AchievementPopup
-        visible={!!achievementPopup}
+        visible={!!achievementPopup && !leoPopups.currentMessage && !revealedCard}
         achievement={achievementPopup}
         onDismiss={() => setAchievementPopup(null)}
       />
