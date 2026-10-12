@@ -29,6 +29,7 @@ import { playSound } from '../../lib/sounds';
 import { StreakBadge } from '../ui/StreakBadge';
 import { XPBadge } from '../ui/XPBadge';
 import { LeoCharacter } from '../mascot/LeoCharacter';
+import { HomeSkeleton } from '../home/HomeSkeleton';
 
 function MovingLessonTitle({ title, long, active }: { title: string; long: boolean; active: boolean }) {
   const sweep = useRef(new Animated.Value(0)).current;
@@ -625,12 +626,7 @@ export function CourseJourney({
   };
 
   if (loading) {
-    return (
-      <View style={styles.loading}>
-        <View style={styles.loadingCoin} />
-        <Text style={styles.loadingText}>Building your course…</Text>
-      </View>
-    );
+    return <HomeSkeleton />;
   }
 
   if (loadError && loadedMarket.current !== marketId) {

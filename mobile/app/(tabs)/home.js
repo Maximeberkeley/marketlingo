@@ -128,7 +128,8 @@ function HomeScreen() {
     isLessonCompletedToday,
     addXP,
     refetch: refetchXP,
-    loading: xpLoading
+    loading: xpLoading,
+    completionReady
   } = useUserXP(selectedMarketLocal || void 0);
   const lessonCompletedToday = isLessonCompletedToday();
   const stackDayNumber = (stack) => {
@@ -167,11 +168,9 @@ function HomeScreen() {
   useEffect(() => {
     if (selectedMarket) setSelectedMarketLocal(selectedMarket);
   }, [selectedMarket]);
-  const [bootReady, setBootReady] = useState(false);
-  useEffect(() => {
-    if (bootReady || authLoading || loading || xpLoading || progressLoading || !selectedMarket) return;
-    setBootReady(true);
-  }, [bootReady, authLoading, loading, xpLoading, progressLoading, selectedMarket]);
+  const bootReady = Boolean(
+    user && selectedMarket && selectedMarketLocal === selectedMarket && progress?.user_id === user.id && progress?.market_id === selectedMarket && xpData?.user_id === user.id && xpData?.market_id === selectedMarket && completionReady && lessonStack?.id && currentDay > 0
+  );
   const { dueCount } = useSpacedRepetition(selectedMarketLocal || void 0);
   const deliverable = useDeliverable(selectedMarketLocal || void 0, learningGoal);
   const focusTopic = useFocusTopic(selectedMarketLocal || void 0, currentDay || 1);

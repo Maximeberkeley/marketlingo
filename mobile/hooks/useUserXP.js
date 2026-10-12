@@ -29,6 +29,8 @@ function useUserXP(marketId) {
   const [xpData, setXpData] = useState(null);
   const [dailyCompletion, setDailyCompletion] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [completionLoadedKey, setCompletionLoadedKey] = useState(null);
+  const completionKey = user && marketId ? `${user.id}:${marketId}:${localDateString()}` : null;
   const ensureXPRecord = useCallback(async () => {
     if (!user || !marketId) return null;
     if (xpData && xpData.user_id === user.id && xpData.market_id === marketId) {
@@ -90,8 +92,10 @@ function useUserXP(marketId) {
       const { data: todayCompletion, error: completionError } = await supabase.from("daily_completions").select("*").eq("user_id", user.id).eq("market_id", marketId).eq("completion_date", today).maybeSingle();
       if (completionError && completionError.code !== "PGRST116") {
         log.error("Error fetching daily completion:", completionError);
+        return;
       }
       setDailyCompletion(todayCompletion || null);
+      if (ensuredXP) setCompletionLoadedKey(`${user.id}:${marketId}:${today}`);
     } catch (error) {
       log.warn("[UserXP] Failed to load XP data:", error);
     } finally {
@@ -205,6 +209,7 @@ function useUserXP(marketId) {
   return {
     xpData,
     dailyCompletion,
+    completionReady: completionKey !== null && completionLoadedKey === completionKey,
     loading,
     addXP,
     completeLessonForToday,

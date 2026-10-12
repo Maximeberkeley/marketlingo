@@ -35,6 +35,9 @@ export function useUserXP(marketId?: string) {
   const [xpData, setXpData] = useState<UserXP | null>(null);
   const [dailyCompletion, setDailyCompletion] = useState<DailyCompletion | null>(null);
   const [loading, setLoading] = useState(true);
+  // Null is a valid result for today, but an unqueried day is not ready.
+  const [completionLoadedKey, setCompletionLoadedKey] = useState<string | null>(null);
+  const completionKey = user && marketId ? `${user.id}:${marketId}:${localDateString()}` : null;
 
   const ensureXPRecord = useCallback(async () => {
     if (!user || !marketId) return null;
@@ -133,9 +136,11 @@ export function useUserXP(marketId?: string) {
 
       if (completionError && completionError.code !== 'PGRST116') {
         log.error('Error fetching daily completion:', completionError);
+        return;
       }
 
       setDailyCompletion(todayCompletion || null);
+      if (ensuredXP) setCompletionLoadedKey(`${user.id}:${marketId}:${today}`);
     } catch (error) {
       log.warn('[UserXP] Failed to load XP data:', error);
     } finally {
@@ -313,6 +318,7 @@ export function useUserXP(marketId?: string) {
   return {
     xpData,
     dailyCompletion,
+    completionReady: completionKey !== null && completionLoadedKey === completionKey,
     loading,
     addXP,
     completeLessonForToday,
