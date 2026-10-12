@@ -401,7 +401,6 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
             style={styles.waveCard}
           >
             <Text style={styles.waveKicker}>Round {waveIndex + 1} of {waves.length}</Text>
-            <Text style={styles.waveName}>{wave.name}</Text>
             <View style={styles.waveMetaRow}>
               <View style={styles.waveMeta}>
                 <Feather name="clock" size={12} color="#FFFFFF" />
