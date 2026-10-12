@@ -33,13 +33,17 @@ export async function saveInterviewTarget(userId: string, marketId: string, targ
   await AsyncStorage.setItem(key(userId, marketId), JSON.stringify(target));
 }
 
-/** Tech roles get technical/certification questions, recruiters get STAR stories, consultants get cases. */
+/**
+ * Tech roles get technical/certification questions, recruiters get STAR stories,
+ * consultants get cases. 'case' is only for roles that name consulting, strategy
+ * or analyst work; anything unknown (and every student/intern role) is technical,
+ * so engineering learners never get consulting cases or mental math.
+ */
 export function roleTrack(role?: string | null): RoleTrack {
   const r = (role || '').toLowerCase();
   if (/(recruit|talent|hr\b|human resources|people ops|sourcer)/.test(r)) return 'behavioral';
-  if (/(consult|strategy|advisor|analyst at|associate at|case)/.test(r)) return 'case';
-  if (/(tech|engineer|developer|architect|lead|scientist|devops|data|it\b|cto|software|technical)/.test(r)) return 'technical';
-  return 'case';
+  if (/(consult|strategy|strategist|analyst|case)/.test(r)) return 'case';
+  return 'technical';
 }
 
 export const TRACK_LABEL: Record<RoleTrack, string> = {
