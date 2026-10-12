@@ -45,20 +45,20 @@ function presentation(data: Reminder) {
     return {
       mood: 'thinking' as LeoAnim,
       eyebrow: 'GOOD EVENING',
-      line: `Today's ${market} idea is short and good.`,
+      line: `Today's ${market} idea is ready.`,
     };
   }
   if (hour >= 12) {
     return {
       mood: 'sassy' as LeoAnim,
       eyebrow: 'GOOD AFTERNOON',
-      line: `One ${market} idea. Five minutes. Let's go.`,
+      line: `Today's ${market} idea is ready.`,
     };
   }
   return {
     mood: 'reading' as LeoAnim,
     eyebrow: 'GOOD MORNING',
-    line: `${market} moved overnight. I took notes.`,
+    line: `Today's ${market} idea is ready.`,
   };
 }
 
@@ -132,7 +132,7 @@ export default function DailyLeoScreen() {
 
 
       <View style={styles.footer}>
-        <Text style={styles.caption}>One lesson. About five minutes. That's it for today.</Text>
+        <Text style={styles.caption}>One lesson. About five minutes.</Text>
         <TouchableOpacity
           style={styles.continueButton}
           activeOpacity={0.88}

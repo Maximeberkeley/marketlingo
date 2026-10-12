@@ -11,6 +11,7 @@
  * market with thin lesson text still plays.
  */
 import { Exercise } from '../types';
+import { quizQuestionKeys } from '../../lib/quizHistory';
 import { getIndustryPack } from '../industry/packs';
 import type { DrillRow, IndustryStatRow, TrainerScenarioRow } from '../../hooks/useIndustryContent';
 import type { SlideLike } from '../sequencer/extract';
@@ -63,6 +64,7 @@ export interface ArenaInput {
   stats: IndustryStatRow[];
   /** Lessons behind the learner, newest first. */
   studied?: StudiedLessonInput[];
+  seenQuestionKeys?: Set<string>;
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -89,17 +91,32 @@ function fromStudied(
   prefix: string,
 ): (Exercise | null)[] {
   if (!studied?.length) return [];
-  return studied.slice(0, 4).map((lesson, i) => build(lesson.slides, `${prefix}-${i}`));
+  return studied.map((lesson, i) => build(lesson.slides, `${prefix}-${i}`));
 }
 
 export function buildArena(input: ArenaInput): ArenaWave[] {
   const pack = getIndustryPack(input.marketId);
   const { trainer, drills, stats, studied } = input;
   const trainerPool = shuffle(trainer);
+  const used = new Set(input.seenQuestionKeys || []);
+  const fresh = (make: () => (Exercise | null)[], limit: number): Exercise[] => {
+    const selected: Exercise[] = [];
+    // Retry randomized builders to find unseen questions; never relax the seven-day rule.
+    for (let attempt = 0; attempt < 12 && selected.length < limit; attempt += 1) {
+      for (const exercise of clean(make(), 1000)) {
+        const keys = quizQuestionKeys(exercise);
+        if (keys.some(key => used.has(key))) continue;
+        keys.forEach(key => used.add(key));
+        selected.push({ ...exercise, id: `${exercise.id}-${attempt}-${selected.length}` });
+        if (selected.length === limit) break;
+      }
+    }
+    return selected;
+  };
 
   // ── Wave 1 — recognition of what the lessons taught ──
-  const wave1 = clean(
-    [
+  const wave1 = fresh(
+    () => [
       ...fromStudied(studied, (slides, id) => checkDefinition(termsFromSlides(slides), id), 'a1-def'),
       ...fromStudied(studied, checkClaim, 'a1-claim'),
       pack ? packFaceOff(pack, 'a1-faceoff') : null,
@@ -111,8 +128,8 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   );
 
   // ── Wave 2 — the mechanisms and figures from those lessons ──
-  const wave2 = clean(
-    [
+  const wave2 = fresh(
+    () => [
       ...fromStudied(studied, checkMechanism, 'a2-mech'),
       ...fromStudied(studied, checkFigure, 'a2-fig'),
       pack ? packChain(pack, 'a2-chain') : null,
@@ -125,11 +142,10 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   );
 
   // ── Wave 3 — sudden death, double points ──
-  const wave3 = clean(
-    [
+  const wave3 = fresh(
+    () => [
       ...fromStudied(studied, checkTamper, 'a3-tamper'),
-      trainerCall(trainerPool[0], 'a3-call1'),
-      trainerCall(trainerPool[1], 'a3-call2'),
+      ...trainerPool.map((scenario, index) => trainerCall(scenario, `a3-call-${index}`)),
       drillSpotFake(drills, 'a3-fake', 'One of these is false. Which one?'),
       pack ? packSpeedRound(pack, 'a3-speed') : null,
     ],

@@ -1,3 +1,4 @@
+import { jsx, jsxs } from "react/jsx-runtime";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -30,6 +31,7 @@ import { StreakBadge } from "../ui/StreakBadge";
 import { XPBadge } from "../ui/XPBadge";
 import { LeoCharacter } from "../mascot/LeoCharacter";
 import { HomeSkeleton } from "../home/HomeSkeleton";
+import { lessonDayLabel, realLessonTitle } from "../../lib/lessonIdentity";
 function MovingLessonTitle({ title, long, active }) {
   const sweep = useRef(new Animated.Value(0)).current;
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -56,25 +58,23 @@ function MovingLessonTitle({ title, long, active }) {
     };
   }, [active, reduceMotion, sweep, title]);
   if (!active || reduceMotion) {
-    return <Text style={[styles.weekTitle, long && styles.weekTitleLong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.78}>{title}</Text>;
+    return /* @__PURE__ */ jsx(Text, { style: [styles.weekTitle, long && styles.weekTitleLong], numberOfLines: 2, adjustsFontSizeToFit: true, minimumFontScale: 0.78, children: title });
   }
   const letters = [...title].length;
-  return <Text style={[styles.weekTitle, long && styles.weekTitleLong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.78} accessible accessibilityLabel={title}>
-      {[...title].map((letter, index) => {
+  return /* @__PURE__ */ jsx(Text, { style: [styles.weekTitle, long && styles.weekTitleLong], numberOfLines: 2, adjustsFontSizeToFit: true, minimumFontScale: 0.78, accessible: true, accessibilityLabel: title, children: [...title].map((letter, index) => {
     const progress = (index + 1) / (letters + 1);
     const width = Math.min(0.095, 2.5 / (letters + 1));
     const range = [0, progress - width, progress, progress + width, 1];
     const peak = isDark ? COLORS.textOnAccent : COLORS.accent;
-    return <Animated.Text key={index} accessible={false} style={isDark ? {
+    return /* @__PURE__ */ jsx(Animated.Text, { accessible: false, style: isDark ? {
       color: sweep.interpolate({ inputRange: range, outputRange: [COLORS.textPrimary, COLORS.textPrimary, peak, COLORS.textPrimary, COLORS.textPrimary] }),
       textShadowColor: sweep.interpolate({ inputRange: range, outputRange: [COLORS.bg0, COLORS.bg0, COLORS.accent, COLORS.bg0, COLORS.bg0] }),
       textShadowOffset: { width: 0, height: 0 },
       textShadowRadius: 6
     } : {
       color: sweep.interpolate({ inputRange: range, outputRange: [COLORS.textPrimary, COLORS.textPrimary, peak, COLORS.textPrimary, COLORS.textPrimary] })
-    }}>{letter}</Animated.Text>;
-  })}
-    </Text>;
+    }, children: letter }, index);
+  }) });
 }
 const MARKET_ILLUSTRATIONS = {
   aerospace: require("../../assets/illustrations/aerospace.png"),
@@ -105,25 +105,28 @@ function SectionHeader({
   title,
   onPress
 }) {
-  return <TouchableOpacity
-    style={[styles.sectionHeader, !section.unlocked && styles.sectionHeaderLocked]}
-    onPress={onPress}
-    activeOpacity={0.9}
-    accessibilityRole="button"
-    accessibilityLabel={`Preview Section ${section.index + 1}, ${title}. ${section.completedCount} of 30 lessons complete`}
-  >
-      <View style={styles.sectionHeaderCopy}>
-        <Text style={[styles.sectionEyebrow, !section.unlocked && styles.lockedText]}>SECTION {section.index + 1}</Text>
-        <Text style={[styles.sectionTitle, !section.unlocked && styles.lockedText]} numberOfLines={2}>{title}</Text>
-        <Text style={[styles.sectionProgress, !section.unlocked && styles.lockedText]}>{section.unlocked ? `${section.completedCount} / 30 lessons` : `Unlocks after Section ${section.index}`}</Text>
-        {section.unlocked && <View style={styles.sectionTrack}>
-          <View style={[styles.sectionFill, { width: `${section.completedCount / 30 * 100}%` }]} />
-        </View>}
-      </View>
-      <View style={styles.headerArrow}>
-        <Feather name="chevron-right" size={26} color={section.unlocked ? COLORS.textOnAccent : COLORS.courseMutedText} />
-      </View>
-    </TouchableOpacity>;
+  return /* @__PURE__ */ jsxs(
+    TouchableOpacity,
+    {
+      style: [styles.sectionHeader, !section.unlocked && styles.sectionHeaderLocked],
+      onPress,
+      activeOpacity: 0.9,
+      accessibilityRole: "button",
+      accessibilityLabel: `Preview Section ${section.index + 1}, ${title}. ${section.completedCount} of 30 lessons complete`,
+      children: [
+        /* @__PURE__ */ jsxs(View, { style: styles.sectionHeaderCopy, children: [
+          /* @__PURE__ */ jsxs(Text, { style: [styles.sectionEyebrow, !section.unlocked && styles.lockedText], children: [
+            "SECTION ",
+            section.index + 1
+          ] }),
+          /* @__PURE__ */ jsx(Text, { style: [styles.sectionTitle, !section.unlocked && styles.lockedText], numberOfLines: 2, children: title }),
+          /* @__PURE__ */ jsx(Text, { style: [styles.sectionProgress, !section.unlocked && styles.lockedText], children: section.unlocked ? `${section.completedCount} / 30 lessons` : `Unlocks after Section ${section.index}` }),
+          section.unlocked && /* @__PURE__ */ jsx(View, { style: styles.sectionTrack, children: /* @__PURE__ */ jsx(View, { style: [styles.sectionFill, { width: `${section.completedCount / 30 * 100}%` }] }) })
+        ] }),
+        /* @__PURE__ */ jsx(View, { style: styles.headerArrow, children: /* @__PURE__ */ jsx(Feather, { name: "chevron-right", size: 26, color: section.unlocked ? COLORS.textOnAccent : COLORS.courseMutedText }) })
+      ]
+    }
+  );
 }
 function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, pulse = false, reveal, muted = false }) {
   const pulseValue = useRef(new Animated.Value(0)).current;
@@ -141,23 +144,19 @@ function Coin({ label, icon, position, locked, completed, onPress, emphasis = fa
   const iconName = locked ? "lock" : completed ? "check" : icon;
   const iconColor = reveal ? COLORS.courseMutedText : muted || locked ? COLORS.courseMutedText : COLORS.textOnAccent;
   const labelColor = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedText, COLORS.accent] }) : muted || locked ? COLORS.courseMutedText : COLORS.accent;
-  return <View style={[styles.coinPosition, position]}>
-      <View style={styles.coinSlot}>
-        {pulse && <Animated.View pointerEvents="none" style={[styles.lessonPulse, {
-    opacity: pulseValue.interpolate({ inputRange: [0, 1], outputRange: [0.08, 0.18] }),
-    transform: [{ scale: pulseValue.interpolate({ inputRange: [0, 1], outputRange: [1, 1.14] }) }]
-  }]} />}
-        <TouchableOpacity onPress={onPress} activeOpacity={0.82} accessibilityRole="button" accessibilityLabel={`${label}${locked ? ", locked" : completed ? ", complete" : ""}`} style={styles.coinTouch}>
-          <Animated.View style={[styles.coinFace, { backgroundColor: fill, transform: [{ scale: emphasis ? 1.12 : 1 }] }]}>
-            <Feather name={iconName} size={29} color={iconColor} />
-            {reveal && <Animated.View pointerEvents="none" style={[styles.coinIconOverlay, { opacity: reveal }]}>
-              <Feather name={iconName} size={29} color={COLORS.textOnAccent} />
-            </Animated.View>}
-          </Animated.View>
-        </TouchableOpacity>
-      </View>
-      <Animated.Text style={[styles.coinLabel, { color: labelColor }]} numberOfLines={1}>{label}</Animated.Text>
-    </View>;
+  return /* @__PURE__ */ jsxs(View, { style: [styles.coinPosition, position], children: [
+    /* @__PURE__ */ jsxs(View, { style: styles.coinSlot, children: [
+      pulse && /* @__PURE__ */ jsx(Animated.View, { pointerEvents: "none", style: [styles.lessonPulse, {
+        opacity: pulseValue.interpolate({ inputRange: [0, 1], outputRange: [0.08, 0.18] }),
+        transform: [{ scale: pulseValue.interpolate({ inputRange: [0, 1], outputRange: [1, 1.14] }) }]
+      }] }),
+      /* @__PURE__ */ jsx(TouchableOpacity, { onPress, activeOpacity: 0.82, accessibilityRole: "button", accessibilityLabel: `${label}${locked ? ", locked" : completed ? ", complete" : ""}`, style: styles.coinTouch, children: /* @__PURE__ */ jsxs(Animated.View, { style: [styles.coinFace, { backgroundColor: fill, transform: [{ scale: emphasis ? 1.12 : 1 }] }], children: [
+        /* @__PURE__ */ jsx(Feather, { name: iconName, size: 29, color: iconColor }),
+        reveal && /* @__PURE__ */ jsx(Animated.View, { pointerEvents: "none", style: [styles.coinIconOverlay, { opacity: reveal }], children: /* @__PURE__ */ jsx(Feather, { name: iconName, size: 29, color: COLORS.textOnAccent }) })
+      ] }) })
+    ] }),
+    /* @__PURE__ */ jsx(Animated.Text, { style: [styles.coinLabel, { color: labelColor }], numberOfLines: 1, children: label })
+  ] });
 }
 function SectionCluster({
   section,
@@ -175,10 +174,11 @@ function SectionCluster({
   onLeo,
   onHeader,
   activityReveal,
-  reduceMotion
+  reduceMotion,
+  calendarDay
 }) {
   if (!section.unlocked) {
-    return <View style={styles.sectionBlock}><SectionHeader section={section} title={title} onPress={onHeader} /></View>;
+    return /* @__PURE__ */ jsx(View, { style: styles.sectionBlock, children: /* @__PURE__ */ jsx(SectionHeader, { section, title, onPress: onHeader }) });
   }
   const lessonDone = activeSection ? lessonCompletedToday || Boolean(lesson?.completed) : Boolean(lesson?.completed);
   const moduleComplete = (kind) => {
@@ -194,67 +194,78 @@ function SectionCluster({
   const orbitCircumference = 2 * Math.PI * orbitRadius;
   const orbitOffset = orbitCircumference * (1 - coreCompleted / 4);
   const longTitle = weekTitle.length > 35;
-  return <View style={styles.sectionBlock}>
-      <SectionHeader section={section} title={title} onPress={onHeader} />
-      <View style={styles.weekHeading}>
-        <View style={styles.weekHeadingCopy}>
-          <Text style={styles.weekEyebrow}>{section.unlocked ? `DAY ${section.displayDay}` : `DAYS ${section.startDay}\u2013${section.endDay}`}</Text>
-          {!section.unlocked ? <Text style={[styles.weekTitle, styles.lockedText]}>{weekTitle}</Text> : <MovingLessonTitle title={weekTitle} long={longTitle} active={isFocused && activeSection && section.unlocked && !lessonCompletedToday && !lesson?.completed} />}
-          <Text style={styles.lessonMeta}>{marketName} · 6 min</Text>
-        </View>
-        {!section.unlocked ? <View style={styles.lockPill}>
-            <Feather name="lock" size={12} color={COLORS.textMuted} />
-            <Text style={styles.lockPillText}>Unlocks after Section {section.index}</Text>
-          </View> : null}
-      </View>
-
-      <View style={[styles.cluster, !section.unlocked && styles.clusterLocked]}>
-        <Svg width={268} height={268} style={styles.orbitSvg} pointerEvents="none">
-          <Circle cx={134} cy={134} r={orbitRadius} fill="none" stroke={COLORS.accentMedium} strokeWidth={3} />
-          <Circle
-    cx={134}
-    cy={134}
-    r={orbitRadius}
-    fill="none"
-    stroke={COLORS.accent}
-    strokeWidth={4}
-    strokeLinecap="round"
-    strokeDasharray={`${orbitCircumference} ${orbitCircumference}`}
-    strokeDashoffset={orbitOffset}
-    rotation={-90}
-    origin="134, 134"
-  />
-        </Svg>
-        {MODULES.map((module, index) => <View key={`marker-${module.kind}`} style={[styles.orbitMarker, styles[`orbitMarker${index}`], moduleComplete(module.kind) && styles.orbitMarkerComplete]} />)}
-        {MODULES.map((module) => {
-    const locked = !section.unlocked && module.kind !== "notes";
-    return <Coin
-      key={module.kind}
-      label={activeSection && module.kind === "lesson" && !lessonDone ? "Start here" : module.label}
-      icon={module.icon}
-      position={module.position}
-      locked={locked}
-      completed={module.kind === "lesson" ? lessonDone : moduleComplete(module.kind)}
-      emphasis={activeSection && module.kind === "lesson" && !lessonDone}
-      pulse={isFocused && activeSection && module.kind === "lesson" && !lessonDone && !reduceMotion}
-      muted={activeSection && module.kind !== "lesson" && !lessonDone}
-      reveal={activeSection && module.kind !== "lesson" && !(lessonDone && !lessonCompletedToday) ? activityReveal[["notes", "arena", "intel", "case"].indexOf(module.kind)] : void 0}
-      onPress={() => onModule(module.kind)}
-    />;
-  })}
-        <TouchableOpacity
-    style={styles.leoCenter}
-    onPress={onLeo}
-    activeOpacity={0.82}
-    accessibilityRole="button"
-    accessibilityLabel={`Ask Leo about ${title}`}
-  >
-          <View style={styles.leoVisual} pointerEvents="none">
-            <LeoCharacter size="course" animation={(activeSection ? lessonCompletedToday : Boolean(lesson?.completed)) ? "reading" : "sleeping"} still />
-          </View>
-        </TouchableOpacity>
-      </View>
-    </View>;
+  return /* @__PURE__ */ jsxs(View, { style: styles.sectionBlock, children: [
+    /* @__PURE__ */ jsx(SectionHeader, { section, title, onPress: onHeader }),
+    /* @__PURE__ */ jsxs(View, { style: styles.weekHeading, children: [
+      /* @__PURE__ */ jsxs(View, { style: styles.weekHeadingCopy, children: [
+        /* @__PURE__ */ jsx(Text, { style: styles.weekEyebrow, children: lessonDayLabel(section.displayDay, calendarDay, lessonDone) }),
+        !section.unlocked ? /* @__PURE__ */ jsx(Text, { style: [styles.weekTitle, styles.lockedText], children: weekTitle }) : /* @__PURE__ */ jsx(MovingLessonTitle, { title: weekTitle, long: longTitle, active: isFocused && activeSection && section.unlocked && !lessonCompletedToday && !lesson?.completed }),
+        /* @__PURE__ */ jsxs(Text, { style: styles.lessonMeta, children: [
+          marketName,
+          " \xB7 6 min"
+        ] })
+      ] }),
+      !section.unlocked ? /* @__PURE__ */ jsxs(View, { style: styles.lockPill, children: [
+        /* @__PURE__ */ jsx(Feather, { name: "lock", size: 12, color: COLORS.textMuted }),
+        /* @__PURE__ */ jsxs(Text, { style: styles.lockPillText, children: [
+          "Unlocks after Section ",
+          section.index
+        ] })
+      ] }) : null
+    ] }),
+    /* @__PURE__ */ jsxs(View, { style: [styles.cluster, !section.unlocked && styles.clusterLocked], children: [
+      /* @__PURE__ */ jsxs(Svg, { width: 268, height: 268, style: styles.orbitSvg, pointerEvents: "none", children: [
+        /* @__PURE__ */ jsx(Circle, { cx: 134, cy: 134, r: orbitRadius, fill: "none", stroke: COLORS.accentMedium, strokeWidth: 3 }),
+        /* @__PURE__ */ jsx(
+          Circle,
+          {
+            cx: 134,
+            cy: 134,
+            r: orbitRadius,
+            fill: "none",
+            stroke: COLORS.accent,
+            strokeWidth: 4,
+            strokeLinecap: "round",
+            strokeDasharray: `${orbitCircumference} ${orbitCircumference}`,
+            strokeDashoffset: orbitOffset,
+            rotation: -90,
+            origin: "134, 134"
+          }
+        )
+      ] }),
+      MODULES.map((module, index) => /* @__PURE__ */ jsx(View, { style: [styles.orbitMarker, styles[`orbitMarker${index}`], moduleComplete(module.kind) && styles.orbitMarkerComplete] }, `marker-${module.kind}`)),
+      MODULES.map((module) => {
+        const locked = !section.unlocked && module.kind !== "notes";
+        return /* @__PURE__ */ jsx(
+          Coin,
+          {
+            label: activeSection && module.kind === "lesson" && !lessonDone ? "Start here" : module.label,
+            icon: module.icon,
+            position: module.position,
+            locked,
+            completed: module.kind === "lesson" ? lessonDone : moduleComplete(module.kind),
+            emphasis: activeSection && module.kind === "lesson" && !lessonDone,
+            pulse: isFocused && activeSection && module.kind === "lesson" && !lessonDone && !reduceMotion,
+            muted: activeSection && module.kind !== "lesson" && !lessonDone,
+            reveal: activeSection && module.kind !== "lesson" && !(lessonDone && !lessonCompletedToday) ? activityReveal[["notes", "arena", "intel", "case"].indexOf(module.kind)] : void 0,
+            onPress: () => onModule(module.kind)
+          },
+          module.kind
+        );
+      }),
+      /* @__PURE__ */ jsx(
+        TouchableOpacity,
+        {
+          style: styles.leoCenter,
+          onPress: onLeo,
+          activeOpacity: 0.82,
+          accessibilityRole: "button",
+          accessibilityLabel: `Ask Leo about ${title}`,
+          children: /* @__PURE__ */ jsx(View, { style: styles.leoVisual, pointerEvents: "none", children: /* @__PURE__ */ jsx(LeoCharacter, { size: "course", animation: (activeSection ? lessonCompletedToday : Boolean(lesson?.completed)) ? "reading" : "sleeping", still: true }) })
+        }
+      )
+    ] })
+  ] });
 }
 function CurriculumPreview({
   visible,
@@ -267,52 +278,58 @@ function CurriculumPreview({
 }) {
   if (!section) return null;
   const sectionLessons = lessons.filter((item) => item.day >= section.startDay && item.day <= section.endDay);
-  return <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <View style={styles.previewScreen}>
-        <View style={styles.previewHeader}>
-          <View style={styles.previewHeadingCopy}>
-            <Text style={styles.previewEyebrow}>SECTION {section.index + 1} · 30 DAYS</Text>
-            <Text style={styles.previewTitle} numberOfLines={2}>{title}</Text>
-          </View>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose} accessibilityLabel="Close curriculum">
-            <Feather name="x" size={22} color={COLORS.textPrimary} />
-          </TouchableOpacity>
-        </View>
-        <ScrollView contentContainerStyle={styles.previewList} showsVerticalScrollIndicator={false}>
-          {!section.unlocked ? <View style={styles.previewNotice}>
-              <Feather name="eye" size={18} color={COLORS.courseHeader} />
-              <Text style={styles.previewNoticeText}>Preview the curriculum now. Lessons open after the previous section’s 30 lessons are complete.</Text>
-            </View> : null}
-          {sectionLessons.map((item) => {
-    const calendarLocked = item.day > currentDay;
-    const locked = !section.unlocked || calendarLocked || !item.stackId;
-    return <TouchableOpacity
-      key={item.day}
-      style={[styles.lessonRow, locked && styles.lessonRowLocked]}
-      disabled={locked}
-      onPress={() => onOpenLesson(item)}
-      accessibilityRole="button"
-      accessibilityLabel={`Day ${item.day}, ${item.title}${locked ? ", locked" : item.completed ? ", complete" : ""}`}
-      accessibilityState={{ disabled: locked }}
-    >
-                <View style={[styles.dayCircle, item.completed && styles.dayCircleComplete]}>
-                  {item.completed ? <Feather name="check" size={15} color={COLORS.textOnAccent} /> : <Text style={[styles.dayNumber, locked && styles.lockedText]}>{item.day}</Text>}
-                </View>
-                <View style={styles.lessonCopy}>
-                  <Text
-      style={[styles.lessonTitle, item.title.length > 35 && styles.lessonTitleLong, locked && styles.lockedText]}
-      numberOfLines={2}
-      adjustsFontSizeToFit
-      minimumFontScale={0.82}
-    >{item.title}</Text>
-                  <Text style={styles.lessonDescription} numberOfLines={2}>{item.description}</Text>
-                </View>
-                <Feather name={locked ? "lock" : "chevron-right"} size={17} color={locked ? COLORS.textMuted : COLORS.courseHeader} />
-              </TouchableOpacity>;
-  })}
-        </ScrollView>
-      </View>
-    </Modal>;
+  return /* @__PURE__ */ jsx(Modal, { visible, animationType: "slide", presentationStyle: "pageSheet", onRequestClose: onClose, children: /* @__PURE__ */ jsxs(View, { style: styles.previewScreen, children: [
+    /* @__PURE__ */ jsxs(View, { style: styles.previewHeader, children: [
+      /* @__PURE__ */ jsxs(View, { style: styles.previewHeadingCopy, children: [
+        /* @__PURE__ */ jsxs(Text, { style: styles.previewEyebrow, children: [
+          "SECTION ",
+          section.index + 1,
+          " \xB7 30 DAYS"
+        ] }),
+        /* @__PURE__ */ jsx(Text, { style: styles.previewTitle, numberOfLines: 2, children: title })
+      ] }),
+      /* @__PURE__ */ jsx(TouchableOpacity, { style: styles.closeButton, onPress: onClose, accessibilityLabel: "Close curriculum", children: /* @__PURE__ */ jsx(Feather, { name: "x", size: 22, color: COLORS.textPrimary }) })
+    ] }),
+    /* @__PURE__ */ jsxs(ScrollView, { contentContainerStyle: styles.previewList, showsVerticalScrollIndicator: false, children: [
+      !section.unlocked ? /* @__PURE__ */ jsxs(View, { style: styles.previewNotice, children: [
+        /* @__PURE__ */ jsx(Feather, { name: "eye", size: 18, color: COLORS.courseHeader }),
+        /* @__PURE__ */ jsx(Text, { style: styles.previewNoticeText, children: "Preview the curriculum now. Lessons open after the previous section\u2019s 30 lessons are complete." })
+      ] }) : null,
+      sectionLessons.map((item) => {
+        const calendarLocked = item.day > currentDay;
+        const locked = !section.unlocked || calendarLocked || !item.stackId;
+        return /* @__PURE__ */ jsxs(
+          TouchableOpacity,
+          {
+            style: [styles.lessonRow, locked && styles.lessonRowLocked],
+            disabled: locked,
+            onPress: () => onOpenLesson(item),
+            accessibilityRole: "button",
+            accessibilityLabel: `Day ${item.day}, ${item.title}${locked ? ", locked" : item.completed ? ", complete" : ""}`,
+            accessibilityState: { disabled: locked },
+            children: [
+              /* @__PURE__ */ jsx(View, { style: [styles.dayCircle, item.completed && styles.dayCircleComplete], children: item.completed ? /* @__PURE__ */ jsx(Feather, { name: "check", size: 15, color: COLORS.textOnAccent }) : /* @__PURE__ */ jsx(Text, { style: [styles.dayNumber, locked && styles.lockedText], children: item.day }) }),
+              /* @__PURE__ */ jsxs(View, { style: styles.lessonCopy, children: [
+                /* @__PURE__ */ jsx(
+                  Text,
+                  {
+                    style: [styles.lessonTitle, item.title.length > 35 && styles.lessonTitleLong, locked && styles.lockedText],
+                    numberOfLines: 2,
+                    adjustsFontSizeToFit: true,
+                    minimumFontScale: 0.82,
+                    children: item.title
+                  }
+                ),
+                /* @__PURE__ */ jsx(Text, { style: styles.lessonDescription, numberOfLines: 2, children: item.description })
+              ] }),
+              /* @__PURE__ */ jsx(Feather, { name: locked ? "lock" : "chevron-right", size: 17, color: locked ? COLORS.textMuted : COLORS.courseHeader })
+            ]
+          },
+          item.day
+        );
+      })
+    ] })
+  ] }) });
 }
 function CourseJourney({
   marketId,
@@ -408,7 +425,7 @@ function CourseJourney({
     const load = async () => {
       if (loadedMarket.current !== marketId) setLoading(true);
       setLoadError(false);
-      const { data, error } = await supabase.from("stacks").select("id, title, tags, created_at").eq("market_id", marketId).contains("tags", ["MICRO_LESSON"]).not("published_at", "is", null).order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("stacks").select("id, title, tags, created_at, authored_lesson").eq("market_id", marketId).contains("tags", ["MICRO_LESSON"]).not("published_at", "is", null).order("created_at", { ascending: false });
       if (!active) return;
       if (error) {
         setLoadError(true);
@@ -428,7 +445,7 @@ function CourseJourney({
         if (completed.has(stack.id)) completedByDay.set(day, true);
         const goalMatch = tags.includes(goalTag);
         const existing = byDay.get(day);
-        if (!existing || stack.id === completedTodayStackId || existing.id !== completedTodayStackId && goalMatch && !existing.goalMatch) byDay.set(day, { id: stack.id, title: stack.title, goalMatch });
+        if (!existing || stack.id === completedTodayStackId || existing.id !== completedTodayStackId && goalMatch && !existing.goalMatch) byDay.set(day, { id: stack.id, title: realLessonTitle(stack), goalMatch });
       });
       setLessons(Array.from({ length: TOTAL_DAYS }, (_, index) => {
         const day = index + 1;
@@ -454,9 +471,13 @@ function CourseJourney({
   const completedDays = useMemo(() => new Set(lessons.filter((item) => item.completed).map((item) => item.day)), [lessons]);
   const sections = useMemo(() => resolveCourseSections(currentDay, completedDays), [currentDay, completedDays]);
   const focusedSectionIndex = useMemo(() => {
+    const credited = lessonCompletedToday ? lessons.find((lesson) => lesson.stackId === completedTodayStackId) : void 0;
+    if (credited) return Math.floor((credited.day - 1) / 30);
+    const nextUnfinished = sections.find((section) => section.unlocked && section.displayDay <= currentDay && !completedDays.has(section.displayDay));
+    if (nextUnfinished) return nextUnfinished.index;
     const calendarSection = Math.min(sections.length - 1, Math.floor((Math.max(1, currentDay) - 1) / 30));
     return sections[calendarSection]?.unlocked ? calendarSection : latestAccessibleSection(sections);
-  }, [currentDay, sections]);
+  }, [currentDay, sections, lessons, completedDays, lessonCompletedToday, completedTodayStackId]);
   useEffect(() => {
     if (loading || sections.length === 0 || initialPositioned.current) return;
     const timer = setTimeout(() => {
@@ -507,169 +528,188 @@ function CourseJourney({
     }
   };
   if (loading) {
-    return <HomeSkeleton />;
+    return /* @__PURE__ */ jsx(HomeSkeleton, {});
   }
   if (loadError && loadedMarket.current !== marketId) {
-    return <View style={styles.loading}>
-        <Feather name="wifi-off" size={28} color={COLORS.textMuted} />
-        <Text style={styles.emptyTitle}>Your course could not load</Text>
-        <Text style={styles.loadingText}>Your progress is safe. Reconnect and try again.</Text>
-        <TouchableOpacity style={styles.retryButton} onPress={() => setLoadKey((key) => key + 1)}>
-          <Text style={styles.retryText}>Try again</Text>
-        </TouchableOpacity>
-      </View>;
+    return /* @__PURE__ */ jsxs(View, { style: styles.loading, children: [
+      /* @__PURE__ */ jsx(Feather, { name: "wifi-off", size: 28, color: COLORS.textMuted }),
+      /* @__PURE__ */ jsx(Text, { style: styles.emptyTitle, children: "Your course could not load" }),
+      /* @__PURE__ */ jsx(Text, { style: styles.loadingText, children: "Your progress is safe. Reconnect and try again." }),
+      /* @__PURE__ */ jsx(TouchableOpacity, { style: styles.retryButton, onPress: () => setLoadKey((key) => key + 1), children: /* @__PURE__ */ jsx(Text, { style: styles.retryText, children: "Try again" }) })
+    ] });
   }
-  return <View style={[styles.container, { paddingTop: safeTop }]}>
-      {loadError && <TouchableOpacity style={styles.retryButton} onPress={() => setLoadKey((key) => key + 1)} accessibilityRole="button">
-          <Text style={styles.retryText}>Couldn't refresh · Try again</Text>
-        </TouchableOpacity>}
-      <FlatList
-    ref={listRef}
-    data={sections}
-    keyExtractor={(item) => String(item.index)}
-    showsVerticalScrollIndicator={false}
-    initialNumToRender={3}
-    scrollEnabled
-    keyboardShouldPersistTaps="handled"
-    contentContainerStyle={styles.listContent}
-    onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: Math.max(0, index * 540), animated: false })}
-    ListHeaderComponent={<View style={[styles.topHeader, { paddingTop: 10 }]}>
-            <TouchableOpacity
-      style={styles.industryBadge}
-      onPress={openIndustryDetails}
-      activeOpacity={0.82}
-      accessibilityRole="button"
-      accessibilityLabel={`Current industry: ${marketName}. Open industry details`}
-    >
-              <Image source={marketIllustration} style={styles.industryImage} resizeMode="contain" />
-            </TouchableOpacity>
-            <View style={styles.badges}>
-              <TouchableOpacity disabled={!rescueAvailable} onPress={() => router.push("/streak-rescue")} accessibilityLabel={rescueAvailable ? `Streak rescue, ${streakCountdown || "available now"}` : `${streak}-day streak`}>
-                <StreakBadge count={streak} />
-              </TouchableOpacity>
-              {streakCountdown ? <Text style={styles.streakCountdown} accessibilityLabel={`${streakCountdown} left to study today`}>{streakCountdown}</Text> : null}
-              <XPBadge xp={totalXp} level={level} />
-            </View>
-          </View>}
-    renderItem={({ item: section }) => {
-      const activeSection = section.index === focusedSectionIndex;
-      const creditedLesson = activeSection && lessonCompletedToday ? lessons.find((entry) => entry.stackId === completedTodayStackId) : void 0;
-      const lesson = creditedLesson || lessons.find((entry) => entry.day === section.displayDay);
-      const displayedLesson = lesson;
-      const sectionLead = lessons.find((entry) => entry.day === section.startDay);
-      const isRealTitle = (entry) => Boolean(entry?.authored && entry.title.trim() && !/^what it is[.!?]?$/i.test(entry.title.trim()));
-      const latestReal = [...lessons].filter((entry) => entry.day <= section.displayDay && isRealTitle(entry)).sort((x, y) => y.day - x.day)[0];
-      const weekTitle = section.unlocked ? (isRealTitle(displayedLesson) ? displayedLesson?.title : latestReal?.title) || themes[section.index] || `Day ${section.displayDay}` : themes[section.index] || sectionLead?.title || dayPromise(marketId, section.startDay);
-      return <View>
-            <SectionCluster
-        section={creditedLesson ? { ...section, displayDay: creditedLesson.day } : section}
-        lesson={lesson}
-        title={themes[section.index] || `Section ${section.index + 1}`}
-        weekTitle={weekTitle}
-        marketName={marketName}
-        activeSection={activeSection}
-        lessonCompletedToday={lessonCompletedToday}
-        isFocused={isFocused}
-        activityReveal={activityReveal}
-        reduceMotion={reduceMotion}
-        arenaCompletedToday={arenaCompletedToday}
-        caseCompletedToday={caseCompletedToday}
-        intelDone={intelReadToday >= intelTarget}
-        onHeader={() => setPreviewSection(section)}
-        onLeo={() => onAskLeo(section.displayDay)}
-        onModule={(kind) => handleModule(section, lesson, kind)}
-      />
-             {activeSection && lessonCompletedToday ? <View style={styles.completionNotice} accessibilityRole="text">
-               <Feather name="check-circle" size={16} color={COLORS.accent} />
-               <Text style={styles.completionNoticeText}>Today's done. Your streak is safe.</Text>
-             </View> : null}
-             {activeSection ? belowToday : null}
-            </View>;
-    }}
-  />
-      <CurriculumPreview
-    visible={Boolean(previewSection)}
-    section={previewSection}
-    title={previewSection ? themes[previewSection.index] || `Section ${previewSection.index + 1}` : ""}
-    lessons={lessons}
-    currentDay={currentDay}
-    onClose={() => setPreviewSection(null)}
-    onOpenLesson={(lesson) => {
-      setPreviewSection(null);
-      if (lesson.stackId) onOpenLesson(lesson.stackId);
-    }}
-  />
-      <Modal
-    visible={showIndustryDetails}
-    transparent
-    animationType="fade"
-    statusBarTranslucent
-    onRequestClose={() => setShowIndustryDetails(false)}
-  >
-        <View style={styles.industryModal}>
-          <TouchableOpacity
-    style={styles.industryBackdrop}
-    onPress={() => setShowIndustryDetails(false)}
-    accessibilityLabel="Close industry details"
-  />
-          <View style={styles.industrySheet} accessibilityViewIsModal>
-            <View style={styles.industryHandle} />
-            <View style={styles.industrySheetHeading}>
-              <View style={styles.industryArtwork}>
-                <Image source={marketIllustration} style={styles.industryArtworkImage} resizeMode="contain" />
-              </View>
-              <TouchableOpacity
-    style={styles.industryClose}
-    onPress={() => setShowIndustryDetails(false)}
-    accessibilityLabel="Close industry details"
-  >
-                <Feather name="x" size={20} color={COLORS.textSecondary} />
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.industryEyebrow}>YOUR INDUSTRY</Text>
-            <Text style={styles.industryTitle}>{marketName}</Text>
-            {marketDescription ? <Text style={styles.industryDescription}>{marketDescription}</Text> : null}
-            <View style={styles.industryDivider} />
-            <View style={styles.industryProgressRow}>
-              <View style={styles.industryProgressIcon}>
-                <Feather name="book-open" size={18} color={COLORS.accent} />
-              </View>
-              <View style={styles.industryProgressCopy}>
-                <Text style={styles.industryProgressTitle}>Your course</Text>
-                <Text style={styles.industryProgressDetail}>
-                  {lessons.filter((item) => item.completed).length} of {TOTAL_DAYS} lessons complete · {themes[focusedSectionIndex] || "Foundations"}
-                </Text>
-              </View>
-            </View>
-            <TouchableOpacity
-    style={styles.industryAction}
-    onPress={() => {
-      setShowIndustryDetails(false);
-      setPreviewSection(sections[focusedSectionIndex] || null);
-    }}
-    accessibilityRole="button"
-    accessibilityLabel={`Explore ${marketName} course`}
-  >
-              <Text style={styles.industryActionText}>Explore course</Text>
-              <Feather name="arrow-right" size={18} color={COLORS.textOnAccent} />
-            </TouchableOpacity>
-            <TouchableOpacity
-    style={styles.industrySecondaryAction}
-    onPress={() => {
-      setShowIndustryDetails(false);
-      router.push("/(tabs)/roadmap");
-    }}
-    accessibilityRole="button"
-    accessibilityLabel={`Read ${marketName} industry intel`}
-  >
-              <Feather name="radio" size={18} color={COLORS.accent} />
-              <Text style={styles.industrySecondaryText}>Read industry intel</Text>
-              <Feather name="arrow-up-right" size={16} color={COLORS.textMuted} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    </View>;
+  return /* @__PURE__ */ jsxs(View, { style: [styles.container, { paddingTop: safeTop }], children: [
+    loadError && /* @__PURE__ */ jsx(TouchableOpacity, { style: styles.retryButton, onPress: () => setLoadKey((key) => key + 1), accessibilityRole: "button", children: /* @__PURE__ */ jsx(Text, { style: styles.retryText, children: "Couldn't refresh \xB7 Try again" }) }),
+    /* @__PURE__ */ jsx(
+      FlatList,
+      {
+        ref: listRef,
+        data: sections,
+        keyExtractor: (item) => String(item.index),
+        showsVerticalScrollIndicator: false,
+        initialNumToRender: 3,
+        scrollEnabled: true,
+        keyboardShouldPersistTaps: "handled",
+        contentContainerStyle: styles.listContent,
+        onScrollToIndexFailed: ({ index }) => listRef.current?.scrollToOffset({ offset: Math.max(0, index * 540), animated: false }),
+        ListHeaderComponent: /* @__PURE__ */ jsxs(View, { style: [styles.topHeader, { paddingTop: 10 }], children: [
+          /* @__PURE__ */ jsx(
+            TouchableOpacity,
+            {
+              style: styles.industryBadge,
+              onPress: openIndustryDetails,
+              activeOpacity: 0.82,
+              accessibilityRole: "button",
+              accessibilityLabel: `Current industry: ${marketName}. Open industry details`,
+              children: /* @__PURE__ */ jsx(Image, { source: marketIllustration, style: styles.industryImage, resizeMode: "contain" })
+            }
+          ),
+          /* @__PURE__ */ jsxs(View, { style: styles.badges, children: [
+            /* @__PURE__ */ jsx(TouchableOpacity, { disabled: !rescueAvailable, onPress: () => router.push("/streak-rescue"), accessibilityLabel: rescueAvailable ? `Streak rescue, ${streakCountdown || "available now"}` : `${streak}-day streak`, children: /* @__PURE__ */ jsx(StreakBadge, { count: streak }) }),
+            streakCountdown ? /* @__PURE__ */ jsx(Text, { style: styles.streakCountdown, accessibilityLabel: `${streakCountdown} left to study today`, children: streakCountdown }) : null,
+            /* @__PURE__ */ jsx(XPBadge, { xp: totalXp, level })
+          ] })
+        ] }),
+        renderItem: ({ item: section }) => {
+          const activeSection = section.index === focusedSectionIndex;
+          const creditedLesson = activeSection && lessonCompletedToday ? lessons.find((entry) => entry.stackId === completedTodayStackId) : void 0;
+          const lesson = creditedLesson || lessons.find((entry) => entry.day === section.displayDay);
+          const displayedLesson = lesson;
+          const sectionLead = lessons.find((entry) => entry.day === section.startDay);
+          const weekTitle = section.unlocked ? displayedLesson?.stackId ? displayedLesson.title : "Lesson not available yet" : themes[section.index] || sectionLead?.title || dayPromise(marketId, section.startDay);
+          return /* @__PURE__ */ jsxs(View, { children: [
+            /* @__PURE__ */ jsx(
+              SectionCluster,
+              {
+                section: creditedLesson ? { ...section, displayDay: creditedLesson.day } : section,
+                lesson,
+                title: themes[section.index] || `Section ${section.index + 1}`,
+                weekTitle,
+                marketName,
+                activeSection,
+                lessonCompletedToday,
+                isFocused,
+                activityReveal,
+                reduceMotion,
+                calendarDay: currentDay,
+                arenaCompletedToday,
+                caseCompletedToday,
+                intelDone: intelReadToday >= intelTarget,
+                onHeader: () => setPreviewSection(section),
+                onLeo: () => onAskLeo(section.displayDay),
+                onModule: (kind) => handleModule(section, lesson, kind)
+              }
+            ),
+            activeSection && lessonCompletedToday ? /* @__PURE__ */ jsxs(View, { style: styles.completionNotice, accessibilityRole: "text", children: [
+              /* @__PURE__ */ jsx(Feather, { name: "check-circle", size: 16, color: COLORS.accent }),
+              /* @__PURE__ */ jsx(Text, { style: styles.completionNoticeText, children: "Today's done. Your streak is safe." })
+            ] }) : null,
+            activeSection ? belowToday : null
+          ] });
+        }
+      }
+    ),
+    /* @__PURE__ */ jsx(
+      CurriculumPreview,
+      {
+        visible: Boolean(previewSection),
+        section: previewSection,
+        title: previewSection ? themes[previewSection.index] || `Section ${previewSection.index + 1}` : "",
+        lessons,
+        currentDay,
+        onClose: () => setPreviewSection(null),
+        onOpenLesson: (lesson) => {
+          setPreviewSection(null);
+          if (lesson.stackId) onOpenLesson(lesson.stackId);
+        }
+      }
+    ),
+    /* @__PURE__ */ jsx(
+      Modal,
+      {
+        visible: showIndustryDetails,
+        transparent: true,
+        animationType: "fade",
+        statusBarTranslucent: true,
+        onRequestClose: () => setShowIndustryDetails(false),
+        children: /* @__PURE__ */ jsxs(View, { style: styles.industryModal, children: [
+          /* @__PURE__ */ jsx(
+            TouchableOpacity,
+            {
+              style: styles.industryBackdrop,
+              onPress: () => setShowIndustryDetails(false),
+              accessibilityLabel: "Close industry details"
+            }
+          ),
+          /* @__PURE__ */ jsxs(View, { style: styles.industrySheet, accessibilityViewIsModal: true, children: [
+            /* @__PURE__ */ jsx(View, { style: styles.industryHandle }),
+            /* @__PURE__ */ jsxs(View, { style: styles.industrySheetHeading, children: [
+              /* @__PURE__ */ jsx(View, { style: styles.industryArtwork, children: /* @__PURE__ */ jsx(Image, { source: marketIllustration, style: styles.industryArtworkImage, resizeMode: "contain" }) }),
+              /* @__PURE__ */ jsx(
+                TouchableOpacity,
+                {
+                  style: styles.industryClose,
+                  onPress: () => setShowIndustryDetails(false),
+                  accessibilityLabel: "Close industry details",
+                  children: /* @__PURE__ */ jsx(Feather, { name: "x", size: 20, color: COLORS.textSecondary })
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsx(Text, { style: styles.industryEyebrow, children: "YOUR INDUSTRY" }),
+            /* @__PURE__ */ jsx(Text, { style: styles.industryTitle, children: marketName }),
+            marketDescription ? /* @__PURE__ */ jsx(Text, { style: styles.industryDescription, children: marketDescription }) : null,
+            /* @__PURE__ */ jsx(View, { style: styles.industryDivider }),
+            /* @__PURE__ */ jsxs(View, { style: styles.industryProgressRow, children: [
+              /* @__PURE__ */ jsx(View, { style: styles.industryProgressIcon, children: /* @__PURE__ */ jsx(Feather, { name: "book-open", size: 18, color: COLORS.accent }) }),
+              /* @__PURE__ */ jsxs(View, { style: styles.industryProgressCopy, children: [
+                /* @__PURE__ */ jsx(Text, { style: styles.industryProgressTitle, children: "Your course" }),
+                /* @__PURE__ */ jsxs(Text, { style: styles.industryProgressDetail, children: [
+                  lessons.filter((item) => item.completed).length,
+                  " of ",
+                  TOTAL_DAYS,
+                  " lessons complete \xB7 ",
+                  themes[focusedSectionIndex] || "Foundations"
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxs(
+              TouchableOpacity,
+              {
+                style: styles.industryAction,
+                onPress: () => {
+                  setShowIndustryDetails(false);
+                  setPreviewSection(sections[focusedSectionIndex] || null);
+                },
+                accessibilityRole: "button",
+                accessibilityLabel: `Explore ${marketName} course`,
+                children: [
+                  /* @__PURE__ */ jsx(Text, { style: styles.industryActionText, children: "Explore course" }),
+                  /* @__PURE__ */ jsx(Feather, { name: "arrow-right", size: 18, color: COLORS.textOnAccent })
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxs(
+              TouchableOpacity,
+              {
+                style: styles.industrySecondaryAction,
+                onPress: () => {
+                  setShowIndustryDetails(false);
+                  router.push("/(tabs)/roadmap");
+                },
+                accessibilityRole: "button",
+                accessibilityLabel: `Read ${marketName} industry intel`,
+                children: [
+                  /* @__PURE__ */ jsx(Feather, { name: "radio", size: 18, color: COLORS.accent }),
+                  /* @__PURE__ */ jsx(Text, { style: styles.industrySecondaryText, children: "Read industry intel" }),
+                  /* @__PURE__ */ jsx(Feather, { name: "arrow-up-right", size: 16, color: COLORS.textMuted })
+                ]
+              }
+            )
+          ] })
+        ] })
+      }
+    )
+  ] });
 }
 const styles = StyleSheet.create({
   completionNotice: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, marginHorizontal: 20, marginBottom: 12, paddingVertical: 10 },

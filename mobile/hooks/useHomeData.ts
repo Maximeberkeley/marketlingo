@@ -11,6 +11,7 @@ import { scheduleStreakNotifications } from '../lib/streakNotifications';
 import { log } from '../lib/logger';
 import { calculateAvailableDay } from '../lib/dayMath';
 import { goalContentTag } from '../lib/goals';
+import { realLessonTitle } from '../lib/lessonIdentity';
 
 interface NewsItem {
   id: string;
@@ -136,13 +137,13 @@ export function useHomeData(
       // Get learning goal for content filtering
       const { data: userProgress, error: progressError } = await supabase
         .from('user_progress')
-        .select('start_date, learning_goal, familiarity_level')
+        .select('start_date, learning_goal, familiarity_level, completed_stacks')
         .eq('user_id', userId)
         .eq('market_id', market)
         .maybeSingle();
 
       if (progressError && progressError.code !== 'PGRST116') {
-        log.warn('[HomeData] Failed to load progress:', progressError.message);
+        throw progressError;
       }
 
       const learningGoalValue = userProgress?.learning_goal || 'curiosity';
@@ -157,7 +158,18 @@ export function useHomeData(
       // shifted the day by one west of UTC, so Home and progress disagreed.)
       const calcDay = calculateAvailableDay(userProgress?.start_date);
       setCurrentDay(calcDay);
-      const dayTag = `day-${calcDay}`;
+      const completedIds = userProgress?.completed_stacks || [];
+      const completedDays = new Set<number>();
+      if (completedIds.length) {
+        const { data: credited, error } = await supabase.from('stacks').select('tags').in('id', completedIds).eq('market_id', market);
+        if (error) throw error;
+        (credited || []).forEach(stack => {
+          const tag = (stack.tags || []).find((value: string) => /^day-\d+$/.test(value));
+          if (tag) completedDays.add(Number(tag.slice(4)));
+        });
+      }
+      const lessonDay = Array.from({ length: calcDay }, (_, i) => i + 1).find(day => !completedDays.has(day)) || calcDay;
+      const dayTag = `day-${lessonDay}`;
 
       // Fetch lesson stack with progressive fallbacks:
       // 1. Try goal + level + day (most specific)
@@ -218,7 +230,7 @@ export function useHomeData(
             const dayNum = dayMatch ? parseInt(dayMatch.replace('day-', ''), 10) : 999;
             return { ...stack, dayNum };
           });
-          const validLessons = lessonsWithDays.filter((l: any) => l.dayNum <= calcDay);
+          const validLessons = lessonsWithDays.filter((l: any) => l.dayNum <= lessonDay);
           const selectedLesson = validLessons.length > 0
             ? validLessons.reduce((max: any, l: any) => (l.dayNum > max.dayNum ? l : max))
             : lessonsWithDays.length > 0
@@ -234,6 +246,7 @@ export function useHomeData(
         const stack = validLesson as any;
         setLessonStack({
           ...stack,
+          title: realLessonTitle(stack),
           tags: stack.tags || [],
           slides: ((stack.slides as any[]) || [])
             .sort((a: any, b: any) => a.slide_number - b.slide_number)

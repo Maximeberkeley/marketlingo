@@ -50,7 +50,7 @@ const stripStartup = (s: string) => {
   return rest === s ? s : rest.charAt(0).toUpperCase() + rest.slice(1);
 };
 
-/** Strip the "For your startup:" prefix unless the learner is building a startup. */
+/** Keep industry facts, but remove direct startup-builder instructions for other goals. */
 export function filterForGoal(text: string, learningGoal?: string | null): string {
   if (learningGoal === 'build_startup') return text;
   return (text || '')
@@ -58,12 +58,57 @@ export function filterForGoal(text: string, learningGoal?: string | null): strin
     .map(line =>
       splitSentences(line)
         .map(stripStartup)
+        .map(s => s
+          .replace(/\b(?:your\s+)?startup superpower\b/gi, 'key advantage')
+          .replace(/\bbuild your\b(?=[^.!?]*\bfrom day one\b)/gi, 'Develop the')
+          .replace(/\bfrom day one\b/gi, 'from the start')
+          .replace(/\bstartups don['’]t\b/gi, 'New companies do not'))
         .filter(s => s.trim())
         .join(' '),
     )
     .filter((line, i, all) => line.trim() || (i > 0 && all[i - 1].trim()))
     .join('\n')
     .trim();
+}
+
+/** Sanitize authored copy too, without altering IDs, sources, option order or grading. */
+export function lessonForGoal(lesson: Lesson, goal?: string | null): Lesson {
+  const copyFields = new Set(['title', 'subtitle', 'headline', 'kicker', 'eyebrow', 'text', 'body',
+    'highlight', 'fullText', 'detailTitle', 'prompt', 'situation', 'explanation', 'takeaway',
+    'line', 'term', 'definition', 'name', 'note', 'why']);
+  const copyArrays = new Set(['options', 'bullets', 'consequences', 'steps', 'answer', 'distractors', 'statements']);
+  const sanitize = (value: any, field = ''): any => {
+    if (typeof value === 'string') return copyFields.has(field) || copyArrays.has(field) ? filterForGoal(value, goal) : value;
+    if (Array.isArray(value)) return value.map(item => sanitize(item, field));
+    if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, sanitize(item, key)]));
+    return value;
+  };
+  return sanitize(lesson) as Lesson;
+}
+
+/** An applied decision, not an invented fact: the correct advice follows the taught rule. */
+export function checkApplyIt(takeaway: string, id: string): MultipleChoiceExercise | null {
+  const rule = splitSentences(clean(takeaway))[0];
+  if (!rule) return null;
+  let prompt = `Apply it: your team must choose between two plans. One follows this rule and the more popular one ignores it: “${rule}” What should you recommend?`;
+  let correct = 'Choose the plan that follows the rule, and explain why it fits.';
+  let decoys = ['Choose the popular plan without checking the rule.', 'Treat both plans as equal despite their different fit with the rule.'];
+  if (/\bbuyer\b/i.test(rule) && /\buser\b/i.test(rule) && /\b(signs?|pays?|budget|contract)\b/i.test(rule)) {
+    prompt = 'Apply it: the person using a product likes it, but someone else must approve the purchase. Who should you ask about the buying decision?';
+    correct = 'Ask the buyer who approves the purchase.';
+    decoys = ['Ask only the user and assume approval will follow.', 'Treat the user and buyer as the same person.'];
+  } else if (/fixed.price/i.test(rule) && /\b(contractor|supplier)\b/i.test(rule) && /\b(overrun|risk|extra cost)\b/i.test(rule)) {
+    prompt = 'Apply it: a supplier accepts a fixed-price contract and the work costs more than planned. What should the supplier prepare for?';
+    correct = 'The supplier may have to absorb the extra cost.';
+    decoys = ['The agreed price automatically rises with every extra cost.', 'The extra cost disappears because the price is fixed.'];
+  }
+  const options = shuffle([correct, ...decoys]);
+  return {
+    kind: 'multipleChoice', id,
+    prompt,
+    options, correctIndex: options.indexOf(correct),
+    explanation: `The plan should follow the rule you just read: ${rule}`,
+  };
 }
 
 /** The exact text a card shows on screen (respecting its display limits). */
@@ -161,7 +206,7 @@ export function buildBeats(
 ): BeatBuildResult {
   const goal = industry?.learningGoal;
   const slides: SlideLike[] = rawSlides
-    .map(s => ({ ...s, body: filterForGoal(s.body, goal) }))
+    .map(s => ({ ...s, title: filterForGoal(s.title || '', goal), body: filterForGoal(s.body, goal) }))
     .filter(s => s.body.trim().length > 0);
   const pack: IndustryPack | null = getIndustryPack(industry?.marketId);
 
@@ -195,10 +240,11 @@ export function buildBeats(
   });
 
   // 3. Final check — still only what was shown.
-  push(checkShown(seen, usedTruths, 'beat-check-final'), lastSlide);
+  if (push(checkShown(seen, usedTruths, 'beat-check-final'), lastSlide)) checkCount += 1;
 
   // 4. Takeaway, plus a cliffhanger for tomorrow.
-  const takeaway = filterForGoal((metadata?.key_takeaway || '').trim(), goal);
+  const takeaway = filterForGoal((metadata?.key_takeaway || '').trim(), goal) ||
+    (checkCount === 0 ? seen[seen.length - 1] || splitSentences(slides[slides.length - 1]?.body || '')[0] || '' : '');
   if (takeaway.length >= 12) {
     push(
       {
@@ -206,7 +252,7 @@ export function buildBeats(
         id: 'beat-takeaway',
         eyebrow: 'Lock it in',
         text: takeaway,
-        highlight: metadata?.next_preview?.trim() ? `Tomorrow: ${metadata.next_preview.trim()}` : undefined,
+        highlight: metadata?.next_preview?.trim() ? `Tomorrow: ${filterForGoal(metadata.next_preview.trim(), goal)}` : undefined,
         fullText: [metadata?.recap_bridge, takeaway, metadata?.next_preview]
           .map(value => filterForGoal(value || '', goal))
           .filter(value => Boolean(value.trim()))
@@ -215,6 +261,14 @@ export function buildBeats(
       },
       lastSlide,
     );
+  }
+
+  // Teach the takeaway visibly before asking the application question.
+  if (checkCount === 0 && takeaway) {
+    if (!exercises.some(ex => ex.id === 'beat-takeaway')) {
+      push({ kind: 'microInsight', id: 'beat-takeaway', eyebrow: 'The rule', text: takeaway }, lastSlide);
+    }
+    push(checkApplyIt(cardCopy(exercises.find(ex => ex.id === 'beat-takeaway') || exercises[exercises.length - 1]).filter(Boolean).join(' '), 'beat-apply-it'), lastSlide);
   }
 
   const merged = mergeThinReadingCards(exercises, slideNumbers);

@@ -1,3 +1,4 @@
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
@@ -22,7 +23,7 @@ import { rankForScore } from "./buildArena";
 import { playSound } from "../../lib/sounds";
 import { getMarketWorld } from "../../data/marketWorlds";
 const START_SHIELDS = 2;
-function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish }) {
+function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish, onQuestionSeen }) {
   const insets = useSafeAreaInsets();
   const world = getMarketWorld(marketId);
   const [waveIndex, setWaveIndex] = useState(0);
@@ -44,6 +45,9 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish 
   const wave = waves[waveIndex];
   const exercise = wave?.exercises[beatIndex];
   const passive = isPassiveKind(exercise?.kind);
+  useEffect(() => {
+    if (exercise && !showWaveIntro && !ended && !passive) onQuestionSeen?.(exercise);
+  }, [exercise, showWaveIntro, ended, passive, onQuestionSeen]);
   const timerAnim = useRef(new Animated.Value(1)).current;
   const gainAnim = useRef(new Animated.Value(0)).current;
   const scoreScale = useRef(new Animated.Value(1)).current;
@@ -189,208 +193,203 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish 
     const rank = rankForScore(score);
     const xp = Math.max(10, Math.round(score / 8) + correct * 4);
     const newBest = score > bestScore;
-    return <View style={[styles.root, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 20 }]}>
-        <ScrollView contentContainerStyle={styles.summaryScroll} showsVerticalScrollIndicator={false}>
-          <LinearGradient
-      colors={[rank.color, world.colors[1]]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.summaryHero}
-    >
-            <Text style={styles.summaryKicker}>DAILY QUIZ</Text>
-            <Text style={styles.summaryScore}>{`${correct} of ${graded}`}</Text>
-            <Text style={styles.summaryRank}>right</Text>
-            {newBest && <View style={styles.bestPill}>
-                <Feather name="trending-up" size={11} color="#FFFFFF" />
-                <Text style={styles.bestPillText}>NEW PERSONAL BEST</Text>
-              </View>}
-          </LinearGradient>
-
-          <View style={styles.statGrid}>
-            <SummaryStat icon="check-circle" label="Correct" value={`${correct}/${graded}`} />
-            <SummaryStat icon="star" label="Score" value={`${score}`} />
-            <SummaryStat icon="layers" label="Round" value={`${waveIndex + 1}/${waves.length}`} />
-            <SummaryStat icon="award" label="XP earned" value={`+${xp}`} />
-          </View>
-
-          <LeoCoach
-      line={ended.survived ? `${correct} of ${graded} right. See you tomorrow.` : `${correct} of ${graded} right. Try again tomorrow.`}
-      mood={ended.survived ? "celebrate" : "thinking"}
-    />
-
-          <View style={{ height: 12 }} />
-          <PrimaryButton
-      label={banking ? "Saving\u2026" : `Collect +${xp} XP`}
-      variant={banking ? "disabled" : "primary"}
-      onPress={() => {
-        if (banking) return;
-        setBanking(true);
-        onFinish({
-          score,
-          correct,
-          total: graded,
-          bestCombo,
-          waveReached: waveIndex + 1,
-          survived: ended.survived,
-          xp
-        });
-      }}
-    />
-          <TouchableOpacity style={styles.ghostBtn} onPress={onExit} disabled={banking} activeOpacity={0.8}>
-            <Text style={styles.ghostText}>Back to {marketName} practice</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>;
+    return /* @__PURE__ */ jsx(View, { style: [styles.root, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 20 }], children: /* @__PURE__ */ jsxs(ScrollView, { contentContainerStyle: styles.summaryScroll, showsVerticalScrollIndicator: false, children: [
+      /* @__PURE__ */ jsxs(
+        LinearGradient,
+        {
+          colors: [rank.color, world.colors[1]],
+          start: { x: 0, y: 0 },
+          end: { x: 1, y: 1 },
+          style: styles.summaryHero,
+          children: [
+            /* @__PURE__ */ jsx(Text, { style: styles.summaryKicker, children: "DAILY QUIZ" }),
+            /* @__PURE__ */ jsx(Text, { style: styles.summaryScore, children: `${correct} of ${graded}` }),
+            /* @__PURE__ */ jsx(Text, { style: styles.summaryRank, children: "right" }),
+            newBest && /* @__PURE__ */ jsxs(View, { style: styles.bestPill, children: [
+              /* @__PURE__ */ jsx(Feather, { name: "trending-up", size: 11, color: "#FFFFFF" }),
+              /* @__PURE__ */ jsx(Text, { style: styles.bestPillText, children: "NEW PERSONAL BEST" })
+            ] })
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxs(View, { style: styles.statGrid, children: [
+        /* @__PURE__ */ jsx(SummaryStat, { icon: "check-circle", label: "Correct", value: `${correct}/${graded}` }),
+        /* @__PURE__ */ jsx(SummaryStat, { icon: "star", label: "Score", value: `${score}` }),
+        /* @__PURE__ */ jsx(SummaryStat, { icon: "layers", label: "Round", value: `${waveIndex + 1}/${waves.length}` }),
+        /* @__PURE__ */ jsx(SummaryStat, { icon: "award", label: "XP earned", value: `+${xp}` })
+      ] }),
+      /* @__PURE__ */ jsx(
+        LeoCoach,
+        {
+          line: ended.survived ? `${correct} of ${graded} right. See you tomorrow.` : `${correct} of ${graded} right. Try again tomorrow.`,
+          mood: ended.survived ? "celebrate" : "thinking"
+        }
+      ),
+      /* @__PURE__ */ jsx(View, { style: { height: 12 } }),
+      /* @__PURE__ */ jsx(
+        PrimaryButton,
+        {
+          label: banking ? "Saving\u2026" : `Collect +${xp} XP`,
+          variant: banking ? "disabled" : "primary",
+          onPress: () => {
+            if (banking) return;
+            setBanking(true);
+            onFinish({
+              score,
+              correct,
+              total: graded,
+              bestCombo,
+              waveReached: waveIndex + 1,
+              survived: ended.survived,
+              xp
+            });
+          }
+        }
+      ),
+      /* @__PURE__ */ jsx(TouchableOpacity, { style: styles.ghostBtn, onPress: onExit, disabled: banking, activeOpacity: 0.8, children: /* @__PURE__ */ jsxs(Text, { style: styles.ghostText, children: [
+        "Back to ",
+        marketName,
+        " practice"
+      ] }) })
+    ] }) });
   }
   if (!wave || !exercise) {
-    return <View style={[styles.root, styles.centered]}>
-        <Text style={styles.emptyTitle}>The arena is resting</Text>
-        <Text style={styles.emptyBody}>
-          We need a little more {marketName} material before the next run. Try a lesson first.
-        </Text>
-        <PrimaryButton label="Back to practice" onPress={onExit} />
-      </View>;
+    return /* @__PURE__ */ jsxs(View, { style: [styles.root, styles.centered], children: [
+      /* @__PURE__ */ jsx(Text, { style: styles.emptyTitle, children: "The arena is resting" }),
+      /* @__PURE__ */ jsxs(Text, { style: styles.emptyBody, children: [
+        "We need a little more ",
+        marketName,
+        " material before the next run. Try a lesson first."
+      ] }),
+      /* @__PURE__ */ jsx(PrimaryButton, { label: "Back to practice", onPress: onExit })
+    ] });
   }
   const timerWidth = timerAnim.interpolate({ inputRange: [0, 1], outputRange: ["0%", "100%"] });
   const urgent = timeLeft <= 5 && phase === "answering";
   const buttonVariant = phase === "feedback" ? state.isCorrect ? "correct" : "incorrect" : passive || state.canCheck ? "primary" : "disabled";
   const buttonLabel = passive ? "Continue" : phase === "feedback" ? "Next" : "Lock it in";
-  return <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+  return /* @__PURE__ */ jsxs(View, { style: [styles.root, { paddingTop: insets.top + 8 }], children: [
+    /* @__PURE__ */ jsxs(View, { style: styles.hud, children: [
+      /* @__PURE__ */ jsx(TouchableOpacity, { onPress: () => setShowExit(true), style: styles.hudExit, hitSlop: 10, children: /* @__PURE__ */ jsx(Feather, { name: "x", size: 20, color: tokens.color.textMuted }) }),
+      /* @__PURE__ */ jsxs(View, { style: styles.hudCenter, children: [
+        /* @__PURE__ */ jsxs(Text, { style: styles.hudWave, children: [
+          "ROUND ",
+          waveIndex + 1,
+          " OF ",
+          waves.length
+        ] }),
+        /* @__PURE__ */ jsx(Animated.Text, { style: [styles.hudScore, { transform: [{ scale: scoreScale }] }], children: score })
+      ] }),
+      /* @__PURE__ */ jsx(View, { style: styles.hudRight })
+    ] }),
+    !showWaveIntro && /* @__PURE__ */ jsxs(Fragment, { children: [
+      /* @__PURE__ */ jsx(View, { style: styles.timerTrack, children: /* @__PURE__ */ jsx(
+        Animated.View,
+        {
+          style: [
+            styles.timerFill,
+            { width: timerWidth, backgroundColor: urgent ? tokens.color.incorrect : tokens.color.accent }
+          ]
+        }
+      ) }),
+      !passive && /* @__PURE__ */ jsx(Text, { style: [styles.timerLabel, urgent && { color: tokens.color.incorrect }], children: phase === "feedback" ? "Locked" : `${timeLeft}s left` })
+    ] }),
+    lastGain !== null && /* @__PURE__ */ jsx(
+      Animated.View,
       {
-    /* Top HUD */
-  }
-      <View style={styles.hud}>
-        <TouchableOpacity onPress={() => setShowExit(true)} style={styles.hudExit} hitSlop={10}>
-          <Feather name="x" size={20} color={tokens.color.textMuted} />
-        </TouchableOpacity>
-
-        <View style={styles.hudCenter}>
-          <Text style={styles.hudWave}>
-            ROUND {waveIndex + 1} OF {waves.length}
-          </Text>
-          <Animated.Text style={[styles.hudScore, { transform: [{ scale: scoreScale }] }]}>
-            {score}
-          </Animated.Text>
-        </View>
-
-        <View style={styles.hudRight}>
-        </View>
-      </View>
-
+        style: [
+          styles.gain,
+          {
+            opacity: gainAnim.interpolate({ inputRange: [0, 0.2, 1], outputRange: [0, 1, 0] }),
+            transform: [
+              { translateY: gainAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -26] }) }
+            ]
+          }
+        ],
+        children: /* @__PURE__ */ jsxs(Text, { style: styles.gainText, children: [
+          "+",
+          lastGain
+        ] })
+      }
+    ),
+    /* @__PURE__ */ jsx(
+      ScrollView,
       {
-    /* Timer — hidden behind the round-intro card until Start is tapped */
-  }
-      {!showWaveIntro && <>
-          <View style={styles.timerTrack}>
-            <Animated.View
-    style={[
-      styles.timerFill,
-      { width: timerWidth, backgroundColor: urgent ? tokens.color.incorrect : tokens.color.accent }
-    ]}
-  />
-          </View>
-          {!passive && <Text style={[styles.timerLabel, urgent && { color: tokens.color.incorrect }]}>
-              {phase === "feedback" ? "Locked" : `${timeLeft}s left`}
-            </Text>}
-        </>}
-
-      {lastGain !== null && <Animated.View
-    style={[
-      styles.gain,
+        contentContainerStyle: styles.body,
+        showsVerticalScrollIndicator: false,
+        keyboardShouldPersistTaps: "handled",
+        children: !showWaveIntro ? /* @__PURE__ */ jsxs(Fragment, { children: [
+          !!exercise.leo?.line && /* @__PURE__ */ jsx(LeoCoach, { line: exercise.leo.line, mood: exercise.leo.mood }),
+          renderExerciseByKind(exercise, phase, setState)
+        ] }) : null
+      }
+    ),
+    /* @__PURE__ */ jsxs(View, { style: [styles.footer, { paddingBottom: insets.bottom + 12 }], children: [
+      phase === "feedback" && !passive && /* @__PURE__ */ jsx(
+        FeedbackFooter,
+        {
+          isCorrect: state.isCorrect,
+          explanation: exercise.explanation,
+          correctAnswer: correctAnswerText
+        }
+      ),
+      /* @__PURE__ */ jsx(PrimaryButton, { label: buttonLabel, onPress: onAction, variant: buttonVariant })
+    ] }),
+    /* @__PURE__ */ jsx(Modal, { visible: showWaveIntro, transparent: true, animationType: "fade", children: /* @__PURE__ */ jsx(View, { style: styles.waveBackdrop, children: /* @__PURE__ */ jsxs(
+      LinearGradient,
       {
-        opacity: gainAnim.interpolate({ inputRange: [0, 0.2, 1], outputRange: [0, 1, 0] }),
-        transform: [
-          { translateY: gainAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -26] }) }
+        colors: [world.colors[0], world.colors[1]],
+        start: { x: 0, y: 0 },
+        end: { x: 1, y: 1 },
+        style: styles.waveCard,
+        children: [
+          /* @__PURE__ */ jsxs(Text, { style: styles.waveKicker, children: [
+            "Round ",
+            waveIndex + 1,
+            " of ",
+            waves.length
+          ] }),
+          /* @__PURE__ */ jsx(View, { style: styles.waveMetaRow, children: /* @__PURE__ */ jsxs(View, { style: styles.waveMeta, children: [
+            /* @__PURE__ */ jsx(Feather, { name: "clock", size: 12, color: "#FFFFFF" }),
+            /* @__PURE__ */ jsxs(Text, { style: styles.waveMetaText, children: [
+              wave.seconds,
+              " seconds per question"
+            ] })
+          ] }) }),
+          /* @__PURE__ */ jsx(
+            TouchableOpacity,
+            {
+              style: styles.waveBtn,
+              activeOpacity: 0.9,
+              onPress: () => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {
+                });
+                setShowWaveIntro(false);
+              },
+              children: /* @__PURE__ */ jsx(Text, { style: styles.waveBtnText, children: "Start" })
+            }
+          )
         ]
       }
-    ]}
-  >
-          <Text style={styles.gainText}>+{lastGain}</Text>
-        </Animated.View>}
-
-      <ScrollView
-    contentContainerStyle={styles.body}
-    showsVerticalScrollIndicator={false}
-    keyboardShouldPersistTaps="handled"
-  >
-        {
-    /* The question stays behind the round-intro card until Start is tapped */
-  }
-        {!showWaveIntro ? <>
-            {!!exercise.leo?.line && <LeoCoach line={exercise.leo.line} mood={exercise.leo.mood} />}
-            {renderExerciseByKind(exercise, phase, setState)}
-          </> : null}
-      </ScrollView>
-
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
-        {phase === "feedback" && !passive && <FeedbackFooter
-    isCorrect={state.isCorrect}
-    explanation={exercise.explanation}
-    correctAnswer={correctAnswerText}
-  />}
-        <PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant} />
-      </View>
-
-      {
-    /* Wave intro */
-  }
-      <Modal visible={showWaveIntro} transparent animationType="fade">
-        <View style={styles.waveBackdrop}>
-          <LinearGradient
-    colors={[world.colors[0], world.colors[1]]}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 1 }}
-    style={styles.waveCard}
-  >
-            <Text style={styles.waveKicker}>Round {waveIndex + 1} of {waves.length}</Text>
-            <View style={styles.waveMetaRow}>
-              <View style={styles.waveMeta}>
-                <Feather name="clock" size={12} color="#FFFFFF" />
-                <Text style={styles.waveMetaText}>{wave.seconds} seconds per question</Text>
-              </View>
-            </View>
-            <TouchableOpacity
-    style={styles.waveBtn}
-    activeOpacity={0.9}
-    onPress={() => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {
-      });
-      setShowWaveIntro(false);
-    }}
-  >
-              <Text style={styles.waveBtnText}>Start</Text>
-            </TouchableOpacity>
-          </LinearGradient>
-        </View>
-      </Modal>
-
-      {
-    /* Exit confirm */
-  }
-      <Modal visible={showExit} transparent animationType="fade">
-        <View style={styles.exitBackdrop}>
-          <View style={styles.exitSheet}>
-            <Text style={styles.exitTitle}>Leave the run?</Text>
-            <Text style={styles.exitBody}>Your score for this run won't be banked.</Text>
-            <PrimaryButton label="Keep going" onPress={() => setShowExit(false)} />
-            <TouchableOpacity style={styles.ghostBtn} onPress={onExit} activeOpacity={0.8}>
-              <Text style={styles.ghostText}>Leave</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    </View>;
+    ) }) }),
+    /* @__PURE__ */ jsx(Modal, { visible: showExit, transparent: true, animationType: "fade", children: /* @__PURE__ */ jsx(View, { style: styles.exitBackdrop, children: /* @__PURE__ */ jsxs(View, { style: styles.exitSheet, children: [
+      /* @__PURE__ */ jsx(Text, { style: styles.exitTitle, children: "Leave the run?" }),
+      /* @__PURE__ */ jsx(Text, { style: styles.exitBody, children: "Your score for this run won't be banked." }),
+      /* @__PURE__ */ jsx(PrimaryButton, { label: "Keep going", onPress: () => setShowExit(false) }),
+      /* @__PURE__ */ jsx(TouchableOpacity, { style: styles.ghostBtn, onPress: onExit, activeOpacity: 0.8, children: /* @__PURE__ */ jsx(Text, { style: styles.ghostText, children: "Leave" }) })
+    ] }) }) })
+  ] });
 }
 function SummaryStat({
   icon,
   label,
   value
 }) {
-  return <View style={styles.statCard}>
-      <Feather name={icon} size={15} color={tokens.color.accent} />
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>;
+  return /* @__PURE__ */ jsxs(View, { style: styles.statCard, children: [
+    /* @__PURE__ */ jsx(Feather, { name: icon, size: 15, color: tokens.color.accent }),
+    /* @__PURE__ */ jsx(Text, { style: styles.statValue, children: value }),
+    /* @__PURE__ */ jsx(Text, { style: styles.statLabel, children: label })
+  ] });
 }
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: tokens.color.bg },

@@ -44,13 +44,14 @@ interface Props {
   bestScore: number;
   onExit: () => void;
   onFinish: (result: ArenaResult) => void;
+  onQuestionSeen?: (exercise: Exercise) => void;
 }
 
 /**
  * Daily Arena — a timed, escalating run through the market's own material.
  * Speed and combos multiply the score; shields absorb misses until sudden death.
  */
-export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish }: Props) {
+export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish, onQuestionSeen }: Props) {
   const insets = useSafeAreaInsets();
   const world = getMarketWorld(marketId);
 
@@ -74,6 +75,9 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
   const wave = waves[waveIndex];
   const exercise: Exercise | undefined = wave?.exercises[beatIndex];
   const passive = isPassiveKind(exercise?.kind);
+  useEffect(() => {
+    if (exercise && !showWaveIntro && !ended && !passive) onQuestionSeen?.(exercise);
+  }, [exercise, showWaveIntro, ended, passive, onQuestionSeen]);
 
   const timerAnim = useRef(new Animated.Value(1)).current;
   const gainAnim = useRef(new Animated.Value(0)).current;

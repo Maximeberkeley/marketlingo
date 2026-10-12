@@ -30,6 +30,7 @@ import { StreakBadge } from '../ui/StreakBadge';
 import { XPBadge } from '../ui/XPBadge';
 import { LeoCharacter } from '../mascot/LeoCharacter';
 import { HomeSkeleton } from '../home/HomeSkeleton';
+import { lessonDayLabel, realLessonTitle } from '../../lib/lessonIdentity';
 
 function MovingLessonTitle({ title, long, active }: { title: string; long: boolean; active: boolean }) {
   const sweep = useRef(new Animated.Value(0)).current;
@@ -242,6 +243,7 @@ function SectionCluster({
   onHeader,
   activityReveal,
   reduceMotion,
+  calendarDay,
 }: {
   section: SectionAccess;
   lesson?: CourseLesson;
@@ -259,6 +261,7 @@ function SectionCluster({
   onHeader: () => void;
   activityReveal: Animated.Value[];
   reduceMotion: boolean;
+  calendarDay: number;
 }) {
   if (!section.unlocked) {
     return <View style={styles.sectionBlock}><SectionHeader section={section} title={title} onPress={onHeader} /></View>;
@@ -285,7 +288,7 @@ function SectionCluster({
       <SectionHeader section={section} title={title} onPress={onHeader} />
       <View style={styles.weekHeading}>
         <View style={styles.weekHeadingCopy}>
-          <Text style={styles.weekEyebrow}>{section.unlocked ? `DAY ${section.displayDay}` : `DAYS ${section.startDay}–${section.endDay}`}</Text>
+          <Text style={styles.weekEyebrow}>{lessonDayLabel(section.displayDay, calendarDay, lessonDone)}</Text>
           {!section.unlocked ? <Text style={[styles.weekTitle, styles.lockedText]}>{weekTitle}</Text> : <MovingLessonTitle title={weekTitle} long={longTitle} active={isFocused && activeSection && section.unlocked && !lessonCompletedToday && !lesson?.completed} />}
           <Text style={styles.lessonMeta}>{marketName} · 6 min</Text>
         </View>
@@ -523,7 +526,7 @@ export function CourseJourney({
       setLoadError(false);
       const { data, error } = await supabase
         .from('stacks')
-        .select('id, title, tags, created_at')
+        .select('id, title, tags, created_at, authored_lesson')
         .eq('market_id', marketId)
         .contains('tags', ['MICRO_LESSON'])
         .not('published_at', 'is', null)
@@ -547,7 +550,7 @@ export function CourseJourney({
         if (completed.has(stack.id)) completedByDay.set(day, true);
         const goalMatch = tags.includes(goalTag);
         const existing = byDay.get(day);
-         if (!existing || stack.id === completedTodayStackId || (existing.id !== completedTodayStackId && goalMatch && !existing.goalMatch)) byDay.set(day, { id: stack.id, title: stack.title, goalMatch });
+         if (!existing || stack.id === completedTodayStackId || (existing.id !== completedTodayStackId && goalMatch && !existing.goalMatch)) byDay.set(day, { id: stack.id, title: realLessonTitle(stack), goalMatch });
       });
       setLessons(Array.from({ length: TOTAL_DAYS }, (_, index) => {
         const day = index + 1;
@@ -572,9 +575,13 @@ export function CourseJourney({
   const completedDays = useMemo(() => new Set(lessons.filter(item => item.completed).map(item => item.day)), [lessons]);
   const sections = useMemo(() => resolveCourseSections(currentDay, completedDays), [currentDay, completedDays]);
   const focusedSectionIndex = useMemo(() => {
+    const credited = lessonCompletedToday ? lessons.find(lesson => lesson.stackId === completedTodayStackId) : undefined;
+    if (credited) return Math.floor((credited.day - 1) / 30);
+    const nextUnfinished = sections.find(section => section.unlocked && section.displayDay <= currentDay && !completedDays.has(section.displayDay));
+    if (nextUnfinished) return nextUnfinished.index;
     const calendarSection = Math.min(sections.length - 1, Math.floor((Math.max(1, currentDay) - 1) / 30));
     return sections[calendarSection]?.unlocked ? calendarSection : latestAccessibleSection(sections);
-  }, [currentDay, sections]);
+  }, [currentDay, sections, lessons, completedDays, lessonCompletedToday, completedTodayStackId]);
 
   useEffect(() => {
     if (loading || sections.length === 0 || initialPositioned.current) return;
@@ -685,11 +692,8 @@ export function CourseJourney({
           const lesson = creditedLesson || lessons.find(entry => entry.day === section.displayDay);
           const displayedLesson = lesson;
           const sectionLead = lessons.find(entry => entry.day === section.startDay);
-          // Never show a syllabus facet label ("What it is") as a lesson title: fall back to the latest real lesson title.
-          const isRealTitle = (entry: CourseLesson | undefined) => Boolean(entry?.authored && entry.title.trim() && !/^what it is[.!?]?$/i.test(entry.title.trim()));
-          const latestReal = [...lessons].filter(entry => entry.day <= section.displayDay && isRealTitle(entry)).sort((x, y) => y.day - x.day)[0];
           const weekTitle = section.unlocked
-            ? (isRealTitle(displayedLesson) ? displayedLesson?.title : latestReal?.title) || themes[section.index] || `Day ${section.displayDay}`
+            ? (displayedLesson?.stackId ? displayedLesson.title : 'Lesson not available yet')
             : themes[section.index] || sectionLead?.title || dayPromise(marketId, section.startDay);
           return (
             <View>
@@ -704,6 +708,7 @@ export function CourseJourney({
                isFocused={isFocused}
                activityReveal={activityReveal}
                reduceMotion={reduceMotion}
+               calendarDay={currentDay}
               arenaCompletedToday={arenaCompletedToday}
               caseCompletedToday={caseCompletedToday}
               intelDone={intelReadToday >= intelTarget}
