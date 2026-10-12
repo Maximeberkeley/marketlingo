@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -15,13 +15,18 @@ interface Props {
   objectives?: string[];
   marketId?: string;
   day?: number;
+  /** Lesson's own label, e.g. "Catch up: Day 1"; defaults to DAY {day}. */
+  dayLabel?: string;
   isBite?: boolean;
   onStart: () => void;
   onBack: () => void;
 }
 
-export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1, isBite, onStart, onBack }: Props) {
+export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1, dayLabel, isBite, onStart, onBack }: Props) {
   const insets = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
+  // iPhone SE and other short screens: compact hero and Leo so nothing sits under Start.
+  const compact = height < 720;
   const world = getMarketWorld(marketId);
   const marketName = getMarketName(marketId || 'aerospace');
   const goals = useMemo(() => lessonGoalLabels(objectives, slides), [objectives, slides]);
@@ -34,17 +39,17 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1
         <Feather name="x" size={22} color={COLORS.textPrimary} />
       </TouchableOpacity>
 
-      <LinearGradient colors={[world.colors[0], world.colors[1]]} style={styles.hero}>
-        <Image source={world.illustration} style={styles.illustration} />
-        <Text style={styles.kicker}>{isBite ? 'QUICK BITE' : `DAY ${day}`}</Text>
-        <Text style={styles.title}>{title}</Text>
+      <LinearGradient colors={[world.colors[0], world.colors[1]]} style={[styles.hero, compact && styles.heroCompact]}>
+        <Image source={world.illustration} style={[styles.illustration, compact && styles.illustrationCompact]} />
+        <Text style={styles.kicker}>{isBite ? 'QUICK BITE' : (dayLabel ?? `DAY ${day}`).toUpperCase()}</Text>
+        <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={3}>{title}</Text>
         <View style={styles.timeChip}>
           <Feather name="clock" size={14} color={COLORS.bg0} />
           <Text style={styles.timeText}>{marketName} · {isBite ? '1 min' : '6 min'}</Text>
         </View>
       </LinearGradient>
 
-      <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.body} contentContainerStyle={[styles.bodyContent, compact && styles.bodyContentCompact]} showsVerticalScrollIndicator={false}>
         <Text style={styles.heading}>{goals.length ? 'In this lesson' : 'Your next lesson'}</Text>
         <View style={styles.goals}>
           {safeGoals.map((goal, index) => (
@@ -57,8 +62,8 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1
           ))}
         </View>
 
-        <View style={styles.leoRow}>
-          <Image source={require('../../assets/mascot/leo-sassy.png')} style={styles.leo} />
+        <View style={[styles.leoRow, compact && styles.leoRowCompact]}>
+          <Image source={require('../../assets/mascot/leo-sassy.png')} style={[styles.leo, compact && styles.leoCompact]} />
           <SpeechBubble text="Three sharp moves. Then make the call." tail="left" showLabel style={styles.leoBalloon} />
         </View>
       </ScrollView>
@@ -80,7 +85,13 @@ const styles = StyleSheet.create({
   title: { color: COLORS.bg0, fontSize: 29, lineHeight: 34, fontWeight: '700', maxWidth: '76%', marginTop: 7 },
   timeChip: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 14 },
   timeText: { color: COLORS.bg0, fontSize: 13, fontWeight: '700' },
-  body: { flex: 1 },
+  heroCompact: { minHeight: 150, padding: 18 },
+  illustrationCompact: { width: 124, height: 124, right: -10, top: -4 },
+  titleCompact: { fontSize: 23, lineHeight: 28 },
+  bodyContentCompact: { paddingTop: 12, paddingBottom: 12 },
+  leoRowCompact: { marginTop: 10 },
+  leoCompact: { width: 86, height: 104 },
+  body: { flex: 1, marginBottom: 12 },
   bodyContent: { paddingTop: 18, paddingBottom: 14 },
   heading: { fontSize: 19, fontWeight: '800', color: COLORS.textPrimary },
   subheading: { marginTop: 4, fontSize: 15, color: COLORS.textSecondary },
