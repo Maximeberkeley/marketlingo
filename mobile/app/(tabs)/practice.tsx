@@ -292,8 +292,6 @@ export default function PracticeScreen() {
           </View>
         </Animated.View>
 
-        <ShortcutRow ids={shortcuts.ids} editing={editing} setEditing={setEditing} onRemove={shortcuts.remove} onAdd={() => { setEditing(false); setGalleryOpen(true); }} />
-
         <View style={styles.groundedBand}>
           <View style={styles.groundedIcon}>
             <Feather name={studied.lessons.length > 0 ? 'check-circle' : 'book-open'} size={18} color={studied.lessons.length > 0 ? COLORS.success : COLORS.accent} />
