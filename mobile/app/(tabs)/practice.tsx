@@ -318,15 +318,7 @@ export default function PracticeScreen() {
         {/* Labs */}
         <PremiumCarousel cards={LAB_CARDS.filter(card => card.id !== 'investment' || goal === 'invest')} title="More practice" />
 
-        </Pressable>
       </ScrollView>
-      <ShortcutGallery
-        visible={galleryOpen}
-        ids={shortcuts.ids}
-        onAdd={shortcuts.add}
-        onRemove={shortcuts.remove}
-        onClose={() => setGalleryOpen(false)}
-      />
     </View>
   );
 }
