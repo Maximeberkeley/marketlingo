@@ -18,10 +18,10 @@ function fmt(n: number, unit?: string) {
 /** Number Sense — drag the dial, then watch the real number land. */
 export function NumberSense({ exercise, phase, onChange }: ExerciseProps<NumberSenseExercise>) {
   const [width, setWidth] = useState(0);
-  const [ratio, setRatio] = useState(0.5);
+  const [ratio, setRatio] = useState(0);
   const [touched, setTouched] = useState(false);
-  const startRatio = useRef(0.5);
-  const ratioRef = useRef(0.5);
+  const startRatio = useRef(0);
+  const ratioRef = useRef(0);
   const widthRef = useRef(0);
   const phaseRef = useRef(phase);
   const reveal = useRef(new Animated.Value(0)).current;
@@ -37,10 +37,10 @@ export function NumberSense({ exercise, phase, onChange }: ExerciseProps<NumberS
   phaseRef.current = phase;
 
   useEffect(() => {
-    setRatio(0.5);
+    setRatio(0);
     setTouched(false);
     reveal.setValue(0);
-    onChange({ canCheck: false, isCorrect: false });
+    onChange({ canCheck: true, isCorrect: Math.abs(exercise.min - exercise.value) / (exercise.max - exercise.min) <= (exercise.tolerance ?? 0.12) });
   }, [exercise.id]);
 
   useEffect(() => {
@@ -78,7 +78,7 @@ export function NumberSense({ exercise, phase, onChange }: ExerciseProps<NumberS
   ).current;
 
   useEffect(() => {
-    if (touched) onChange({ canCheck: true, isCorrect: correct });
+    onChange({ canCheck: true, isCorrect: correct });
   }, [ratio, touched, correct]);
 
   const targetRatio = (exercise.value - exercise.min) / (exercise.max - exercise.min);

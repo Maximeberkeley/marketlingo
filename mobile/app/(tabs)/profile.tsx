@@ -1,3 +1,5 @@
+import { InterviewTargetForm } from '../../components/interview/InterviewTargetForm';
+import { useInterviewReadiness } from '../../hooks/useInterviewReadiness';
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Share,
@@ -70,6 +72,7 @@ export default function ProfileScreen() {
   // The living dossier is the learner's own document: it deserves a permanent door.
   const dossier = useDeliverable(selectedMarket || undefined, currentGoal);
   const dossierRankInfo = dossierRank(dossier.completion);
+  const interviewPrep = useInterviewReadiness(selectedMarket);
 
 
   useEffect(() => {
@@ -286,6 +289,15 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
         </View>
+
+        <View style={styles.section}>
+
+          <Text style={styles.sectionTitle}>INTERVIEW</Text>
+
+          <InterviewTargetForm target={interviewPrep.target} onSave={interviewPrep.saveTarget} />
+
+        </View>
+
 
         {/* The learner's own document, always one tap away. */}
         <View style={styles.section}>

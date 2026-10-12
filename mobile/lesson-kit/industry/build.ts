@@ -42,7 +42,7 @@ export function packFaceOff(pack: IndustryPack, id: string): FaceOffExercise | n
 export function packChain(pack: IndustryPack, id: string): BuildChainExercise | null {
   const item = pick(pack.chains);
   if (!item || item.steps.length < 3) return null;
-  return { kind: 'buildChain', id, prompt: item.prompt, steps: item.steps, explanation: item.explanation };
+  return { kind: 'buildChain', id, prompt: item.prompt, steps: item.steps.slice(0, 4), explanation: item.explanation };
 }
 
 export function packMap(pack: IndustryPack, id: string): MapMarketExercise | null {
@@ -176,19 +176,35 @@ export function statLeoLine(s: IndustryStatRow): string {
 }
 
 /** Guess the real figure on a dial, then see the sourced answer. */
+/** Widen a stat range asymmetrically so the real value never sits at the midpoint. */
+export function widenRange(value: number, min: number, max: number): { min: number; max: number } {
+  let span = Math.abs(max - min);
+  if (!Number.isFinite(span) || span <= 0) span = Math.abs(value) || 1;
+  // Answer lands at 20–38% or 62–80% of the track.
+  const low = Math.random() < 0.5;
+  const pos = low ? 0.2 + Math.random() * 0.18 : 0.62 + Math.random() * 0.18;
+  const total = span * 1.6;
+  let lo = value - total * pos;
+  let hi = lo + total;
+  if (min >= 0 && lo < 0) { lo = 0; hi = value > 0 ? value / (low ? 0.3 : 0.7) : total; }
+  const step = Math.pow(10, Math.max(0, Math.floor(Math.log10(Math.max(hi - lo, 1))) - 1));
+  return { min: Math.floor(lo / step) * step, max: Math.ceil(hi / step) * step };
+}
+
 export function statNumberSense(stats: IndustryStatRow[], id: string): NumberSenseExercise | null {
   const s = pick(stats);
   if (!s) return null;
+  const range = widenRange(s.value, s.min_value, s.max_value);
   return {
     kind: 'numberSense',
     id,
     prompt: s.label,
-    min: s.min_value,
-    max: s.max_value,
+    min: range.min,
+    max: range.max,
     value: s.value,
     unit: s.unit || undefined,
     tolerance: 0.15,
-    explanation: `${statCredit(s)}${s.trend_note ? `. ${s.trend_note}` : ''}`,
+    explanation: `${s.trend_note ? `${s.trend_note.trim().replace(/\.?$/, '.')} ` : ''}Source: ${statCredit(s)}.`,
   };
 }
 

@@ -1,3 +1,5 @@
+import { InterviewTargetForm } from '../../components/interview/InterviewTargetForm';
+import { useInterviewReadiness } from '../../hooks/useInterviewReadiness';
 import { useState, useEffect, useRef } from "react";
 import {
   View,
@@ -68,6 +70,7 @@ function ProfileScreen() {
   const featuredCard = cards.find((card) => card.id === featuredId);
   const dossier = useDeliverable(selectedMarket || void 0, currentGoal);
   const dossierRankInfo = dossierRank(dossier.completion);
+  const interviewPrep = useInterviewReadiness(selectedMarket);
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user) return;
@@ -253,6 +256,11 @@ function ProfileScreen() {
               </Text>
             </TouchableOpacity>
           </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>INTERVIEW</Text>
+          <InterviewTargetForm target={interviewPrep.target} onSave={interviewPrep.saveTarget} />
         </View>
 
         {

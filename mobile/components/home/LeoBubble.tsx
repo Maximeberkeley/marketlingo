@@ -42,12 +42,12 @@ export function LeoBubble({ message, animation }: LeoBubbleProps) {
       {/* Glow behind Leo */}
       <Animated.View style={[styles.glow, { opacity: glowPulse }]} />
 
-      <Animated.View style={[styles.leoWrap, { transform: [{ scale: leoScale }] }]}>
-        <LeoCharacter size="lg" animation={animation} />
+      <Animated.View style={[styles.bubbleWrap, { opacity: bubbleOpacity, transform: [{ scale: bubbleScale }] }]}> 
+        <SpeechBubble text={message} tail="bottom-center" tone="purple" textStyle={styles.bubbleText} />
       </Animated.View>
 
-      <Animated.View style={[styles.bubbleWrap, { opacity: bubbleOpacity, transform: [{ scale: bubbleScale }] }]}> 
-        <SpeechBubble text={message} tail="top-center" tone="purple" textStyle={styles.bubbleText} />
+      <Animated.View style={[styles.leoWrap, { transform: [{ scale: leoScale }] }]}>
+        <LeoCharacter size="lg" animation={animation} />
       </Animated.View>
     </View>
   );
@@ -68,9 +68,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accent,
   },
   leoWrap: {
-    marginBottom: 10,
+    marginTop: 4,
   },
-  bubbleWrap: { maxWidth: '88%' },
+  bubbleWrap: { maxWidth: '88%', marginBottom: 10 },
   bubbleText: {
     fontSize: 15,
     color: COLORS.textSecondary,

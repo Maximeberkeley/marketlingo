@@ -22,6 +22,9 @@ import { InterviewPath, InterviewPersona, INTERVIEW_PERSONAS, MECE_FRAMEWORKS, S
 import { speakAsSophia, transcribeAudio } from '../lib/interviewVoice';
 import { triggerHaptic } from '../lib/haptics';
 import { log } from '../lib/logger';
+import { useInterviewReadiness } from '../hooks/useInterviewReadiness';
+import { ReadinessCard } from '../components/interview/ReadinessCard';
+import { roleTrack, TRACK_LABEL } from '../lib/interviewPrep';
 
 const SOPHIA = require('../assets/mentors/mentor-sophia.png');
 type Stage = 'brief' | 'framework' | 'pressure' | 'response' | 'verdict';
@@ -62,15 +65,51 @@ export default function InterviewLabScreen() {
   const recordingRef = useRef<Audio.Recording | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
   const questions = useInterviewQuestions(marketId, path || 'consulting');
+  const readiness = useInterviewReadiness(marketId);
+  const track = readiness.target ? roleTrack(readiness.target.role) : null;
+  const [showReadiness, setShowReadiness] = useState(false);
+  const readinessShown = useRef(false);
+  useEffect(() => {
+    if (readiness.loading || readinessShown.current || !user) return;
+    readinessShown.current = true;
+    setShowReadiness(true);
+  }, [readiness.loading, user]);
   const { addXP } = useUserXP(marketId);
   const { recordCaseRun } = usePracticeRewards();
   const { evaluateRewards } = useCollectibles(marketId);
 
-  const mock = questions.mockQuestions[0];
+  const [mockIdx, setMockIdx] = useState(0);
+  const [pressureIdx, setPressureIdx] = useState(0);
+  const usedMock = useRef<Set<number>>(new Set());
+  const usedPressure = useRef<Set<number>>(new Set());
+  const pickUnused = (size: number, used: Set<number>): number => {
+    if (size <= 0) return 0;
+    if (used.size >= size) used.clear();
+    const open: number[] = [];
+    for (let i = 0; i < size; i++) if (!used.has(i)) open.push(i);
+    const pick = open[Math.floor(Math.random() * open.length)];
+    used.add(pick);
+    return pick;
+  };
+  const pressurePoolSize = path === 'consulting' && track !== 'technical' && questions.mentalMathQuestions.length ? questions.mentalMathQuestions.length : questions.mcqQuestions.length;
+  const rollQuestions = useCallback(() => {
+    const technical = track === 'technical'
+      ? questions.mockQuestions.map((m, i) => (/certif|technical|system|standard|regulat|engineer|architect|safety|spec/i.test(`${m.scenario} ${m.question}`) ? i : -1)).filter(i => i >= 0 && !usedMock.current.has(i))
+      : [];
+    if (technical.length) {
+      const pick = technical[Math.floor(Math.random() * technical.length)];
+      usedMock.current.add(pick);
+      setMockIdx(pick);
+    } else setMockIdx(pickUnused(questions.mockQuestions.length, usedMock.current));
+    setPressureIdx(pickUnused(pressurePoolSize, usedPressure.current));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questions.mockQuestions, pressurePoolSize, track]);
+  useEffect(() => { usedMock.current.clear(); usedPressure.current.clear(); rollQuestions(); }, [rollQuestions, path]);
+  const mock = questions.mockQuestions[mockIdx] || questions.mockQuestions[0];
   const pressure = useMemo(() => {
-    if (path === 'consulting' && questions.mentalMathQuestions.length) return questions.mentalMathQuestions[0];
-    return questions.mcqQuestions[0];
-  }, [path, questions.mentalMathQuestions, questions.mcqQuestions]);
+    if (path === 'consulting' && track !== 'technical' && questions.mentalMathQuestions.length) return questions.mentalMathQuestions[pressureIdx % questions.mentalMathQuestions.length];
+    return questions.mcqQuestions.length ? questions.mcqQuestions[pressureIdx % questions.mcqQuestions.length] : undefined;
+  }, [path, track, pressureIdx, questions.mentalMathQuestions, questions.mcqQuestions]);
   const framework = MECE_FRAMEWORKS[marketId] || MECE_FRAMEWORKS.aerospace;
   const stageIndex = Math.max(0, STAGES.findIndex(item => item.key === stage));
 
@@ -177,7 +216,15 @@ export default function InterviewLabScreen() {
         <PathCard icon="briefcase" title="Future Pro" subtitle="Cases, math, and structured answers" color={world.colors[0]} onPress={() => setPath('consulting')} />
         <PathCard icon="award" title="Academic Star" subtitle="Impact stories and scholarship answers" color={world.colors[1]} onPress={() => setPath('academic')} />
         <Text style={styles.smallPrint}>Sophia coaches every run. Voice is optional.</Text>
+        {track && <TouchableOpacity onPress={() => setShowReadiness(true)}><Text style={styles.smallPrint}>{`${readiness.target?.role} · ${TRACK_LABEL[track]} · Readiness ${readiness.percent}%`}</Text></TouchableOpacity>}
       </View>
+        <ReadinessCard
+          visible={showReadiness}
+          readiness={readiness}
+          onClose={() => setShowReadiness(false)}
+          onOpenBrief={() => { setShowReadiness(false); router.push('/deliverable' as any); }}
+          onStartMock={() => { setShowReadiness(false); setPath(track === 'behavioral' ? 'academic' : 'consulting'); setStage('response'); }}
+        />
     </View>
   );
 
@@ -228,7 +275,6 @@ export default function InterviewLabScreen() {
         {stage === 'response' && mock && <>
           <Text style={styles.title}>Answer out loud—or type.</Text>
           <View style={styles.prompt}><Text style={styles.promptLabel}>{short(mock.scenario, 95)}</Text><Text style={styles.promptText}>{short(mock.question, 180)}</Text></View>
-          <View style={styles.keywordRow}>{mock.buzzwords.slice(0, 4).map(word => <View key={word} style={styles.keyword}><Text style={styles.keywordText}>{word}</Text></View>)}</View>
           <TextInput value={response} onChangeText={setResponse} multiline maxLength={1200} style={styles.input} placeholder="Lead with your answer. Then prove it." placeholderTextColor={COLORS.textMuted} />
           <View style={styles.responseActions}>
             <TouchableOpacity onPress={recording ? stopRecording : startRecording} style={[styles.record, recording && styles.recording]}><Feather name={recording ? 'square' : 'mic'} size={18} color={recording ? COLORS.bg0 : world.colors[0]} /><Text style={[styles.recordText, recording && { color: COLORS.bg0 }]}>{recording ? 'Stop' : 'Record'}</Text></TouchableOpacity>
@@ -241,12 +287,13 @@ export default function InterviewLabScreen() {
           <LinearGradient colors={[scoreColor(feedback.score), world.colors[1]]} style={styles.verdict}>
             <Text style={styles.verdictLabel}>INTERVIEW VERDICT</Text><Text style={styles.verdictScore}>{Math.round((feedback.score || 5) * 10)}</Text><Text style={styles.verdictGrade}>{gradeLabel(feedback.score)}</Text>
           </LinearGradient>
-          <Coach text={short(feedback.sophiaSays || 'The structure is forming. Make every sentence earn its place.', 150)} onSpeak={() => playCoach(feedback.sophiaSays)} speaking={speaking} />
-          <Debrief icon="check-circle" title="Keep" body={short(feedback.whatWentWell, 150)} color={COLORS.success} />
-          <Debrief icon="target" title="Fix next" body={short(feedback.roomForImprovement, 150)} color={COLORS.warning} />
-          <Debrief icon="zap" title="Sharper version" body={short(feedback.betterVersion, 190)} color={world.colors[0]} />
+          <Coach text={feedback.sophiaSays || 'The structure is forming. Make every sentence earn its place.'} onSpeak={() => playCoach(feedback.sophiaSays)} speaking={speaking} />
+          <Debrief icon="check-circle" title="Keep" body={feedback.whatWentWell} color={COLORS.success} />
+          <Debrief icon="target" title="Fix next" body={feedback.roomForImprovement} color={COLORS.warning} />
+          <Debrief icon="zap" title="Sharper version" body={feedback.betterVersion} color={world.colors[0]} />
+          {mock && mock.buzzwords.length > 0 && <View style={styles.debrief}><Feather name="book-open" size={19} color={world.colors[0]} /><View style={{ flex: 1 }}><Text style={[styles.debriefTitle, { color: world.colors[0] }]}>Words a pro would use</Text><View style={[styles.keywordRow, { marginTop: 6 }]}>{mock.buzzwords.slice(0, 6).map(word => <View key={word} style={styles.keyword}><Text style={styles.keywordText}>{word}</Text></View>)}</View></View></View>}
           <Action label="Bank result" color={world.colors[0]} onPress={bankResult} />
-          <TouchableOpacity onPress={() => { setFeedback(null); setResponse(''); setPressureChoice(null); setStage('brief'); }} style={styles.retry}><Text style={styles.retryText}>Run another mission</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => { setFeedback(null); setResponse(''); setPressureChoice(null); setPressureCorrect(false); rollQuestions(); setStage('brief'); }} style={styles.retry}><Text style={styles.retryText}>Run another mission</Text></TouchableOpacity>
         </>}
       </ScrollView>
     </View>

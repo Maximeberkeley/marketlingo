@@ -38,27 +38,27 @@ function presentation(data: Reminder) {
     return {
       mood: 'reading' as LeoAnim,
       eyebrow: 'GOOD EVENING',
-      line: `Quiet hours are the best hours. I have one ${market} idea ready for you.`,
+      line: `One quiet ${market} idea, ready for you.`,
     };
   }
   if (hour >= 18) {
     return {
       mood: 'thinking' as LeoAnim,
       eyebrow: 'GOOD EVENING',
-      line: `Welcome back. Today's ${market} idea is short, and it is a good one.`,
+      line: `Today's ${market} idea is short and good.`,
     };
   }
   if (hour >= 12) {
     return {
       mood: 'sassy' as LeoAnim,
       eyebrow: 'GOOD AFTERNOON',
-      line: `Good to see you. One ${market} idea, and you walk away knowing something new.`,
+      line: `One ${market} idea. Five minutes. Let's go.`,
     };
   }
   return {
     mood: 'reading' as LeoAnim,
     eyebrow: 'GOOD MORNING',
-    line: `${market} moved while you slept. Conveniently, I took notes.`,
+    line: `${market} moved overnight. I took notes.`,
   };
 }
 
@@ -126,8 +126,8 @@ export default function DailyLeoScreen() {
       </View>
 
       <View style={styles.scene}>
+        <SpeechBubble text={content.line} tail="bottom-center" tone="purple" style={styles.bubble} />
         <View style={styles.leoWrap}><LeoCharacter size="xl" animation={content.mood} still /></View>
-        <SpeechBubble text={content.line} tail="left" tone="purple" style={styles.bubble} />
       </View>
 
 
@@ -152,10 +152,10 @@ const styles = StyleSheet.create({
   heading: { paddingTop: 20 },
   eyebrow: { fontSize: 11, fontWeight: '900', color: COLORS.accent, letterSpacing: 1.2, marginBottom: 10 },
   title: { fontSize: 32, lineHeight: 38, fontWeight: '900', color: COLORS.textPrimary, maxWidth: 330 },
-  scene: { flex: 1, minHeight: 310, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  scene: { flex: 1, minHeight: 310, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
   // Full width and no clipping: the umbrella and tail must stay in frame.
   leoWrap: { width: 208, height: 208, justifyContent: 'center', alignItems: 'center' },
-  bubble: { flex: 1, maxWidth: 186, marginLeft: 2 },
+  bubble: { maxWidth: 260, marginBottom: 8 },
 
   footer: { gap: 14 },
   caption: { color: COLORS.textSecondary, fontSize: 13, lineHeight: 19, textAlign: 'center', fontWeight: '600' },

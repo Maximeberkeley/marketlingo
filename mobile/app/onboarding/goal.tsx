@@ -76,10 +76,10 @@ const goalOptions: GoalOption[] = [
 ];
 
 const LEO_REACTIONS: Record<LearningGoal, string> = {
-  join_industry: "Great choice! I'll prep you like a recruiter's dream candidate.",
-  invest: "Love it! Let's sharpen your investment thesis.",
-  build_startup: "You do not need an idea yet. We’ll find a gap worth solving.",
-  curiosity: "Curiosity is a superpower — let's explore together!",
+  join_industry: "I'll prep you for the interview.",
+  invest: "Let's sharpen your investment thesis.",
+  build_startup: "We'll find a gap worth solving.",
+  curiosity: "Curiosity is a superpower. Let's explore.",
 };
 
 /**
@@ -191,8 +191,8 @@ export default function GoalScreen() {
         {/* Leo reaction */}
         {selectedGoal && (
           <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}>
-            <Image source={require('../../assets/mascot/leo-reference.png')} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
-            <SpeechBubble text={LEO_REACTIONS[selectedGoal]} tail="left" compact style={styles.reactionBalloon} textStyle={styles.reactionText} />
+            <SpeechBubble text={LEO_REACTIONS[selectedGoal]} tail="bottom-center" compact style={styles.reactionBalloon} textStyle={styles.reactionText} />
+            <Image source={require('../../assets/mascot/leo-reference.png')} style={{ width: 40, height: 40, resizeMode: 'contain' }} />
           </Animated.View>
         )}
 
@@ -285,10 +285,10 @@ const styles = StyleSheet.create({
   title: { ...TYPE.h1, color: COLORS.textPrimary, marginTop: 12, textAlign: 'center' },
   subtitle: { ...TYPE.body, color: COLORS.textSecondary, textAlign: 'center', marginTop: 4 },
   reactionBubble: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
+    flexDirection: 'column', alignItems: 'center', gap: 4,
     marginBottom: 16,
   },
-  reactionBalloon: { flex: 1 },
+  reactionBalloon: {},
   reactionText: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 18 },
   cardsContainer: { gap: 12 },
   card: {

@@ -27,15 +27,15 @@ export const getRandomCharacter = (marketId) => {
 const getDefaultMessage = (type, charName, slideIndex, totalSlides) => {
     const isLeo = charName === 'Leo';
     switch (type) {
-        case 'intro': return isLeo ? "Let's dive in together! " : "I'll guide you through this one. Ready?";
+        case 'intro': return isLeo ? "Let's dive in together." : "I'll guide you. Ready?";
         case 'midpoint': {
             const progress = slideIndex && totalSlides ? `${Math.round((slideIndex / totalSlides) * 100)}%` : 'halfway';
-            return isLeo ? `You're ${progress} there! Keep it up! ` : `Great progress! ${progress} complete.`;
+            return isLeo ? `${progress} there. Keep it up.` : `${progress} done. Keep going.`;
         }
-        case 'complete': return isLeo ? 'You crushed it! ' : 'Amazing work! You should be proud.';
-        case 'encourage': return isLeo ? "You've got this! Don't give up!" : "Keep pushing—you're learning!";
-        case 'tip': return isLeo ? 'Pro tip incoming! ' : "Here's something to remember...";
-        default: return 'Hey there! ';
+        case 'complete': return isLeo ? 'You crushed it.' : 'Amazing work. Be proud.';
+        case 'encourage': return isLeo ? "You've got this. Keep going." : "Keep pushing. You're learning.";
+        case 'tip': return isLeo ? 'Pro tip incoming.' : "Remember this one.";
+        default: return 'Hey there.';
     }
 };
 const BG_TINTS = {
@@ -81,11 +81,11 @@ export function MascotBreak({ type, message, characterId, marketId, slideIndex, 
     const avatarSource = isLeo ? LEO_STICKER : MENTOR_IMAGES[character.id];
     return (<Animated.View style={[styles.container, { backgroundColor: BG_TINTS[type], opacity, transform: [{ scale }] }]}>
       <TouchableOpacity activeOpacity={onDismiss ? 0.8 : 1} onPress={onDismiss ? () => { setDismissed(true); onDismiss(); } : undefined}>
+        <SpeechBubble text={displayMessage} tail="bottom-center" style={styles.bubbleContainer} textStyle={styles.bubbleText} />
         <Animated.View style={{ transform: [{ translateY: bobY }] }}>
           <Image source={avatarSource} style={[styles.avatar, isLeo ? styles.leoAvatar : styles.mentorAvatar]}/>
         </Animated.View>
         <Text style={styles.charName}>{character.name}</Text>
-        <SpeechBubble text={displayMessage} tail="top-center" style={styles.bubbleContainer} textStyle={styles.bubbleText}/>
         {onDismiss && <Text style={styles.tapHint}>Tap to continue</Text>}
       </TouchableOpacity>
     </Animated.View>);
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     leoAvatar: { width: 100, height: 100 },
     mentorAvatar: { width: 88, height: 88, borderRadius: 44, borderWidth: 3, borderColor: COLORS.border },
     charName: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary, textAlign: 'center', marginTop: 8 },
-    bubbleContainer: { marginTop: 12, maxWidth: 260 },
+    bubbleContainer: { marginBottom: 12, maxWidth: 260 },
     bubbleText: { fontSize: 14, color: COLORS.textPrimary, textAlign: 'center', lineHeight: 20 },
     tapHint: { marginTop: 12, fontSize: 12, color: COLORS.textMuted, textAlign: 'center', opacity: 0.7 },
     inlineRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },

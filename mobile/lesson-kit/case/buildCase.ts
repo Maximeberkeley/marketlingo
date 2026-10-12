@@ -79,8 +79,8 @@ export function buildCase(input: CaseInput): DeepCase | null {
 
   // The call tests the lesson first: a claim from what the learner actually read.
   // A real market scenario only stands in when no studied lesson can carry it.
-  const call =
-    checkClaim(lessonSlides, 'case-call-claim') || trainerCall(scenario, 'case-call');
+  const scenarioCall = scenario ? trainerCall(scenario, 'case-call') : null;
+  const call = scenarioCall || checkClaim(lessonSlides, 'case-call-claim');
   if (!call) return null;
 
   const stages: CaseStage[] = [];
@@ -158,9 +158,10 @@ export function buildCase(input: CaseInput): DeepCase | null {
     title: briefDetail,
     situation: lead?.slides?.[0]?.body || scenario?.scenario || briefHeadline,
     stages,
-    proReasoning: scenario?.feedback_pro_reasoning ?? null,
-    commonMistake: scenario?.feedback_common_mistake ?? null,
-    mentalModel: scenario?.feedback_mental_model ?? null,
+    // The debrief belongs to the scenario behind the call, never a different one.
+    proReasoning: scenarioCall ? scenario?.feedback_pro_reasoning ?? null : null,
+    commonMistake: scenarioCall ? scenario?.feedback_common_mistake ?? null : null,
+    mentalModel: scenarioCall ? scenario?.feedback_mental_model ?? null : null,
   };
 }
 

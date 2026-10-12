@@ -78,7 +78,7 @@ export function useLeoPopups(options: UseLeoPopupsOptions = {}) {
     enqueue({
       category: 'achievement',
       title: 'Today’s briefing is complete',
-      body: 'Your streak is secure. The Arena and Intel can now reinforce what you learned.',
+      body: 'Today’s done. Your streak is safe.',
       actionLabel: 'Continue',
       onAction,
       duration: 6500,

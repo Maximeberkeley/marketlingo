@@ -16,6 +16,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, SHADOWS } from '../../lib/constants';
+import { pickBubbleLine } from '../../lib/leoLines';
 
 const LEO_IMAGE = require('../../assets/mascot/leo-rain.png');
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -109,10 +110,6 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
         }}
         style={styles.touchable}
       >
-        {/* Leo avatar */}
-        <View style={styles.leoWrap}>
-          <Image source={LEO_IMAGE} style={styles.leoImage} />
-        </View>
 
         {/* Content */}
         <View style={styles.content}>
@@ -126,8 +123,7 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.title}>{message.title}</Text>
-          <Text style={styles.body}>{message.body}</Text>
+          <Text style={styles.title} numberOfLines={2}>{pickBubbleLine([message.body, message.title], message.title)}</Text>
 
           {message.actionLabel && (
             <TouchableOpacity
@@ -141,6 +137,11 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
               <Text style={styles.actionText}>{message.actionLabel}</Text>
             </TouchableOpacity>
           )}
+        </View>
+        <View style={styles.bubbleTail} />
+        {/* Leo avatar */}
+        <View style={styles.leoWrap}>
+          <Image source={LEO_IMAGE} style={styles.leoImage} />
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -156,7 +157,14 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
   touchable: {
-    flexDirection: 'row',
+    flexDirection: 'column',
+    alignItems: 'center',
+    alignSelf: 'center',
+    maxWidth: 320,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    elevation: 0,
+    shadowOpacity: 0,
     backgroundColor: COLORS.bg2,
     borderRadius: 20,
     paddingVertical: 13,
@@ -173,9 +181,7 @@ const styles = StyleSheet.create({
   leoWrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 8,
-    marginTop: -28,
-    marginLeft: -8,
+    marginTop: 2,
   },
   leoImage: {
     width: 82,
@@ -183,7 +189,24 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   content: {
-    flex: 1,
+    alignSelf: 'stretch',
+    backgroundColor: COLORS.bg2,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    ...SHADOWS.lg,
+  },
+  bubbleTail: {
+    width: 14,
+    height: 14,
+    marginTop: -8,
+    backgroundColor: COLORS.bg2,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: COLORS.border,
+    transform: [{ rotate: '45deg' }],
   },
   header: {
     flexDirection: 'row',
