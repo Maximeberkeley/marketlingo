@@ -10,7 +10,6 @@ import {
   StyleSheet,
   Animated,
   TouchableOpacity,
-  Dimensions,
   Image,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
@@ -19,7 +18,6 @@ import { COLORS, SHADOWS } from '../../lib/constants';
 import { pickBubbleLine } from '../../lib/leoLines';
 
 const LEO_IMAGE = require('../../assets/mascot/leo-rain.png');
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // ── Message Categories ──
 export type LeoPopupCategory = 'social' | 'game' | 'learning' | 'streak' | 'achievement' | 'tip';
@@ -159,8 +157,7 @@ const styles = StyleSheet.create({
   touchable: {
     flexDirection: 'column',
     alignItems: 'center',
-    alignSelf: 'center',
-    maxWidth: 320,
+    alignSelf: 'stretch',
     backgroundColor: 'transparent',
     borderWidth: 0,
     elevation: 0,

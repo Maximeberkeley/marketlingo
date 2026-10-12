@@ -4,13 +4,12 @@
  * Auto-dismisses after a timeout or on tap.
  */
 import React, { useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableOpacity, Dimensions, Image, } from 'react-native';
+import { View, Text, StyleSheet, Animated, TouchableOpacity, Image, } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, SHADOWS } from '../../lib/constants';
 import { pickBubbleLine } from '../../lib/leoLines';
-const LEO_IMAGE = require('../../assets/mascot/leo-reference.png');
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const LEO_IMAGE = require('../../assets/mascot/leo-rain.png');
 const CATEGORY_CONFIG = {
     social: { icon: 'users', color: '#8B5CF6', leoMood: 'waving' },
     game: { icon: 'zap', color: '#F59E0B', leoMood: 'celebrating' },
@@ -112,8 +111,7 @@ const styles = StyleSheet.create({
     touchable: {
         flexDirection: 'column',
     alignItems: 'center',
-    alignSelf: 'center',
-    maxWidth: 320,
+    alignSelf: 'stretch',
     backgroundColor: 'transparent',
     borderWidth: 0,
     elevation: 0,
