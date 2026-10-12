@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Modal, View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { Modal, View, Text, StyleSheet, Animated, TouchableOpacity, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { CollectibleCard } from '../../hooks/useCollectibles';
@@ -21,15 +21,17 @@ export function CardRevealModal({ card, marketId, onClose }: { card: Partial<Col
     <Modal visible={!!card} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <Animated.View style={[styles.card, { borderColor: world.colors[2], transform: [{ scale }] }]}>
-          <Text style={[styles.rarity, { color: world.colors[0] }]}>{(card?.rarity || 'new').toUpperCase()} DISCOVERY</Text>
-          <View style={[styles.icon, { backgroundColor: world.colors[0] }]}><Feather name="compass" size={34} color="#FFFFFF" /></View>
-          <Text style={styles.name}>{card?.name}</Text>
-          <Text style={styles.role}>{card?.role}</Text>
-          <Text style={styles.insight}>{card?.insight}</Text>
-          <Text style={styles.leo}>Leo: “You earned this. It marks what you can now see.”</Text>
-          <TouchableOpacity style={[styles.button, { backgroundColor: world.colors[0] }]} onPress={onClose}>
-            <Text style={styles.buttonText}>Add to collection</Text>
-          </TouchableOpacity>
+          <ScrollView showsVerticalScrollIndicator={false} bounces={false} contentContainerStyle={styles.cardContent}>
+            <Text style={[styles.rarity, { color: world.colors[0] }]}>{(card?.rarity || 'new').toUpperCase()} DISCOVERY</Text>
+            <View style={[styles.icon, { backgroundColor: world.colors[0] }]}><Feather name="compass" size={34} color="#FFFFFF" /></View>
+            <Text style={styles.name}>{card?.name}</Text>
+            <Text style={styles.role}>{card?.role}</Text>
+            <Text style={styles.insight}>{card?.insight}</Text>
+            <Text style={styles.leo}>Leo: “You earned this. It marks what you can now see.”</Text>
+            <TouchableOpacity style={[styles.button, { backgroundColor: world.colors[0] }]} onPress={onClose}>
+              <Text style={styles.buttonText}>Add to collection</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </Animated.View>
       </View>
     </Modal>
@@ -38,7 +40,8 @@ export function CardRevealModal({ card, marketId, onClose }: { card: Partial<Col
 
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(15,23,42,0.82)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  card: { width: '100%', backgroundColor: COLORS.bg2, borderRadius: 20, borderWidth: 3, padding: 24, alignItems: 'center' },
+  card: { width: '100%', maxHeight: '86%', backgroundColor: COLORS.bg2, borderRadius: 20, borderWidth: 3, padding: 24 },
+  cardContent: { alignItems: 'center' },
   rarity: { fontSize: 11, fontWeight: '900' }, icon: { width: 72, height: 72, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginVertical: 18 },
   name: { fontSize: 27, fontWeight: '900', color: '#111827', textAlign: 'center' }, role: { fontSize: 13, fontWeight: '800', color: '#64748B', marginTop: 4 },
   insight: { fontSize: 15, lineHeight: 22, color: '#334155', textAlign: 'center', marginTop: 18 }, leo: { fontSize: 13, lineHeight: 19, color: '#64748B', fontStyle: 'italic', marginTop: 14, textAlign: 'center' },

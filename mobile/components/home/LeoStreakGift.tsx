@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing, Image } from 'react-native';
+import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing, Image, ScrollView } from 'react-native';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
 import { supabase } from '../../lib/supabase';
@@ -78,6 +78,7 @@ export function LeoStreakGift({ marketId, userId, blocked, onRestored }: Props) 
     <Modal visible={visible && !blocked} transparent animationType="fade" onRequestClose={() => setVisible(false)}>
       <View style={styles.backdrop}>
         <Animated.View style={[styles.card, { transform: [{ scale: pop }] }]}>
+          <ScrollView showsVerticalScrollIndicator={false} bounces={false} contentContainerStyle={styles.cardContent}>
           <Text style={styles.eyebrow}>{found ? 'LEO FOUND SOMETHING' : 'STREAK RETURNED'}</Text>
           <Animated.View style={{ transform: [{ translateY }] }}>
             <Image source={found ? SAD_LEO : HAPPY_LEO} style={styles.leo} resizeMode="contain" />
@@ -105,6 +106,7 @@ export function LeoStreakGift({ marketId, userId, blocked, onRestored }: Props) 
               </TouchableOpacity>
             </>
           )}
+          </ScrollView>
         </Animated.View>
       </View>
     </Modal>
@@ -114,9 +116,10 @@ export function LeoStreakGift({ marketId, userId, blocked, onRestored }: Props) 
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 24 },
   card: {
-    width: '100%', maxWidth: 360, borderRadius: 28, padding: 24, alignItems: 'center',
+    width: '100%', maxWidth: 360, maxHeight: '88%', borderRadius: 28, padding: 24,
     backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, ...(SHADOWS as any).lg,
   },
+  cardContent: { alignItems: 'center' },
   eyebrow: { ...(TYPE as any).caption, color: COLORS.accent, fontWeight: '800', letterSpacing: 1.4, fontSize: 12 },
   leo: { width: 176, height: 176, marginVertical: 8 },
   title: { color: COLORS.textPrimary, fontSize: 22, fontWeight: '800', textAlign: 'center', marginBottom: 8 },

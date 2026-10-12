@@ -4,7 +4,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Modal,
-  Share
+  Share,
+  ScrollView
 } from "react-native";
 import { COLORS } from "../../lib/constants";
 const milestoneConfig = {
@@ -76,6 +77,7 @@ Leveling up my market knowledge with MarketLingo `;
   return <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.card}>
+          <ScrollView showsVerticalScrollIndicator={false} bounces={false} contentContainerStyle={styles.cardContent}>
           {
     /* Badge circle */
   }
@@ -119,6 +121,7 @@ Leveling up my market knowledge with MarketLingo `;
               <Text style={styles.dismissBtnText}>Continue</Text>
             </TouchableOpacity>
           </View>
+          </ScrollView>
         </View>
       </View>
     </Modal>;
@@ -134,12 +137,15 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 340,
+    maxHeight: "88%",
     backgroundColor: COLORS.bg2,
     borderRadius: 24,
     padding: 28,
-    alignItems: "center",
     borderWidth: 1,
     borderColor: COLORS.border
+  },
+  cardContent: {
+    alignItems: "center"
   },
   badgeCircle: {
     width: 80,

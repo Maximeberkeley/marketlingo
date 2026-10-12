@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, Modal, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, Modal, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { getMarketName } from '../../lib/markets';
@@ -28,6 +29,7 @@ const TOUR = [
 ];
 
 export function FeatureTour({ visible, marketId, goal = 'curiosity', onComplete }: Props) {
+  const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);
   const promise = PROMISES[goal || 'curiosity'];
   const pages = useMemo(() => [
@@ -44,19 +46,21 @@ export function FeatureTour({ visible, marketId, goal = 'curiosity', onComplete 
 
   return (
     <Modal visible={visible} animationType="fade" onRequestClose={finish}>
-      <View style={styles.root}>
+      <View style={[styles.root, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]}>
         <View style={styles.topRow}>
           <Text style={styles.counter}>{index + 1} / {pages.length}</Text>
           <TouchableOpacity onPress={finish} style={styles.skip}><Text style={styles.skipText}>Skip</Text></TouchableOpacity>
         </View>
 
-        <View style={styles.visual}>
-          <View style={styles.iconWrap}><Feather name={page.icon} size={42} color={COLORS.accent} /></View>
-          <Image source={require('../../assets/mascot/leo-reference.png')} style={styles.leo} />
-        </View>
-        <Text style={styles.eyebrow}>{index === 0 ? 'YOUR LEARNING PROMISE' : 'MARKETLINGO IN 3 MINUTES'}</Text>
-        <Text style={styles.title}>{page.title}</Text>
-        <Text style={styles.body}>{page.body}</Text>
+        <ScrollView style={styles.middleScroll} contentContainerStyle={styles.middleContent} showsVerticalScrollIndicator={false} bounces={false}>
+          <View style={styles.visual}>
+            <View style={styles.iconWrap}><Feather name={page.icon} size={42} color={COLORS.accent} /></View>
+            <Image source={require('../../assets/mascot/leo-reference.png')} style={styles.leo} />
+          </View>
+          <Text style={styles.eyebrow}>{index === 0 ? 'YOUR LEARNING PROMISE' : 'MARKETLINGO IN 3 MINUTES'}</Text>
+          <Text style={styles.title}>{page.title}</Text>
+          <Text style={styles.body}>{page.body}</Text>
+        </ScrollView>
 
         <View style={styles.dots}>
           {pages.map((_, dot) => <View key={dot} style={[styles.dot, dot === index && styles.dotActive]} />)}
@@ -71,7 +75,9 @@ export function FeatureTour({ visible, marketId, goal = 'curiosity', onComplete 
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: COLORS.bg0, paddingHorizontal: 24, paddingTop: 60, paddingBottom: 34 },
+  root: { flex: 1, backgroundColor: COLORS.bg0, paddingHorizontal: 24 },
+  middleScroll: { flexGrow: 0, flexShrink: 1 },
+  middleContent: { alignItems: 'stretch' },
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   counter: { color: COLORS.textMuted, fontWeight: '800', fontSize: 12 },
   skip: { paddingHorizontal: 8, paddingVertical: 8 },

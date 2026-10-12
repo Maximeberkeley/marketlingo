@@ -1,13 +1,12 @@
-"use strict";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing, Image } from "react-native";
+import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing, Image, ScrollView } from "react-native";
 import { COLORS, SHADOWS, TYPE } from "../../lib/constants";
 import { triggerHaptic } from "../../lib/haptics";
 import { supabase } from "../../lib/supabase";
 import { localDateString } from "../../lib/dayMath";
 const SAD_LEO = require("../../assets/mascot/leo-rain.png");
 const HAPPY_LEO = require("../../assets/mascot/leo-celebrating.png");
-export function LeoStreakGift({ marketId, userId, blocked, onRestored }) {
+function LeoStreakGift({ marketId, userId, blocked, onRestored }) {
   const [lost, setLost] = useState(0);
   const [visible, setVisible] = useState(false);
   const [phase, setPhase] = useState("found");
@@ -61,6 +60,7 @@ export function LeoStreakGift({ marketId, userId, blocked, onRestored }) {
   return <Modal visible={visible && !blocked} transparent animationType="fade" onRequestClose={() => setVisible(false)}>
       <View style={styles.backdrop}>
         <Animated.View style={[styles.card, { transform: [{ scale: pop }] }]}>
+          <ScrollView showsVerticalScrollIndicator={false} bounces={false} contentContainerStyle={styles.cardContent}>
           <Text style={styles.eyebrow}>{found ? "LEO FOUND SOMETHING" : "STREAK RETURNED"}</Text>
           <Animated.View style={{ transform: [{ translateY }] }}>
             <Image source={found ? SAD_LEO : HAPPY_LEO} style={styles.leo} resizeMode="contain" />
@@ -84,6 +84,7 @@ export function LeoStreakGift({ marketId, userId, blocked, onRestored }) {
                 <Text style={styles.ctaText}>Deal, Leo</Text>
               </TouchableOpacity>
             </>}
+          </ScrollView>
         </Animated.View>
       </View>
     </Modal>;
@@ -93,14 +94,15 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 360,
+    maxHeight: "88%",
     borderRadius: 28,
     padding: 24,
-    alignItems: "center",
     backgroundColor: COLORS.bg1,
     borderWidth: 1,
     borderColor: COLORS.border,
     ...SHADOWS.lg
   },
+  cardContent: { alignItems: "center" },
   eyebrow: { ...TYPE.caption, color: COLORS.accent, fontWeight: "800", letterSpacing: 1.4, fontSize: 12 },
   leo: { width: 176, height: 176, marginVertical: 8 },
   title: { color: COLORS.textPrimary, fontSize: 22, fontWeight: "800", textAlign: "center", marginBottom: 8 },
@@ -109,3 +111,6 @@ const styles = StyleSheet.create({
   ctaText: { color: COLORS.textOnAccent, fontSize: 17, fontWeight: "800" },
   note: { color: COLORS.textMuted, fontSize: 13, marginTop: 12 }
 });
+export {
+  LeoStreakGift
+};

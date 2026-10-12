@@ -8,6 +8,7 @@ import {
   Image,
   Animated,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import { COLORS } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
@@ -110,7 +111,12 @@ export function AchievementPopup({ visible, achievement, onDismiss }: Achievemen
           </Animated.View>
 
           {/* Content */}
-          <View style={styles.content}>
+          <ScrollView
+            style={styles.contentScroll}
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          >
             {/* Tier badge */}
             <View style={[styles.tierBadge, { backgroundColor: tier.bg, borderColor: tier.border }]}>
               <Text style={[styles.tierText, { color: tier.color }]}>{tier.label}</Text>
@@ -125,7 +131,7 @@ export function AchievementPopup({ visible, achievement, onDismiss }: Achievemen
               <Feather name="zap" size={16} color="#FBBF24" />
               <Text style={styles.xpText}>+{achievement.xpReward} XP</Text>
             </View>
-          </View>
+          </ScrollView>
 
           {/* Dismiss button */}
           <TouchableOpacity style={[styles.dismissBtn, { backgroundColor: tier.color }]} onPress={onDismiss}>
@@ -147,6 +153,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: SCREEN_WIDTH - 48,
+    maxHeight: '88%',
     backgroundColor: COLORS.bg1,
     borderRadius: 24,
     borderWidth: 1.5,
@@ -155,6 +162,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingTop: 10,
     position: 'relative',
+  },
+  contentScroll: {
+    alignSelf: 'stretch',
+    flexGrow: 0,
+    flexShrink: 1,
   },
   glowRing: {
     position: 'absolute',

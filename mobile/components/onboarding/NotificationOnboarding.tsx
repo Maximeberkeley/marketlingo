@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Animated,
   Platform,
+  ScrollView,
 } from 'react-native';
 import * as ExpoNotifications from 'expo-notifications';
 import { Feather } from '@expo/vector-icons';
@@ -66,6 +67,7 @@ export function NotificationOnboarding({ visible, onComplete }: NotificationOnbo
     <Modal visible={visible} transparent animationType="fade" onRequestClose={() => onComplete(false)}>
       <View style={styles.backdrop}>
         <View style={styles.card}>
+          <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
           <Animated.View style={{ transform: [{ translateX: slideAnim }] }}>
             {step === 0 ? (
               <>
@@ -151,6 +153,7 @@ export function NotificationOnboarding({ visible, onComplete }: NotificationOnbo
               </>
             )}
           </Animated.View>
+          </ScrollView>
         </View>
       </View>
     </Modal>
@@ -164,7 +167,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: COLORS.bg1, borderRadius: 24, padding: 24,
-    width: '100%', maxWidth: 400,
+    width: '100%', maxWidth: 400, maxHeight: '88%',
     borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden',
   },
   heroWrap: { alignItems: 'center', marginBottom: 24 },

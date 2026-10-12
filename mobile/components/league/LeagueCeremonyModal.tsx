@@ -4,7 +4,7 @@
  * Shown once per finished season: the badge rises and the result lands.
  */
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Easing, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, SHADOWS } from '../../lib/constants';
 import { triggerCelebration, triggerHaptic } from '../../lib/haptics';
@@ -81,6 +81,7 @@ export function LeagueCeremonyModal({ visible, tier, result, finalRank, onClose,
       <View style={styles.backdrop}>
         <View style={styles.card}>
           <View style={[styles.topBand, { backgroundColor: meta.color }]} />
+          <ScrollView showsVerticalScrollIndicator={false} bounces={false} contentContainerStyle={styles.cardContent}>
           <Text style={styles.eyebrow}>SEASON CLOSED</Text>
 
           <Animated.View
@@ -126,6 +127,7 @@ export function LeagueCeremonyModal({ visible, tier, result, finalRank, onClose,
           <TouchableOpacity style={styles.secondaryBtn} onPress={onClose}>
             <Text style={styles.secondaryBtnText}>Later</Text>
           </TouchableOpacity>
+          </ScrollView>
         </View>
       </View>
     </Modal>
@@ -134,7 +136,8 @@ export function LeagueCeremonyModal({ visible, tier, result, finalRank, onClose,
 
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(15,23,42,0.55)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  card: { width: '100%', backgroundColor: COLORS.bg2, borderRadius: 24, padding: 24, alignItems: 'center', overflow: 'hidden', ...SHADOWS.md },
+  card: { width: '100%', maxHeight: '88%', backgroundColor: COLORS.bg2, borderRadius: 24, overflow: 'hidden', ...SHADOWS.md },
+  cardContent: { padding: 24, paddingTop: 31, alignItems: 'center' },
   topBand: { position: 'absolute', top: 0, left: 0, right: 0, height: 7 },
   eyebrow: { fontSize: 11, fontWeight: '800', letterSpacing: 1.2, color: COLORS.textMuted, marginBottom: 16 },
   badgeWrap: { width: 150, height: 150, borderRadius: 75, borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginBottom: 20, gap: 6 },
