@@ -45,7 +45,7 @@ function presentation(data: Reminder) {
     return {
       mood: 'thinking' as LeoAnim,
       eyebrow: 'GOOD EVENING',
-      line: `Today's ${market} idea is short and good.`,
+      line: `Today's ${market} idea is ready.`,
     };
   }
   if (hour >= 12) {
@@ -58,7 +58,7 @@ function presentation(data: Reminder) {
   return {
     mood: 'reading' as LeoAnim,
     eyebrow: 'GOOD MORNING',
-    line: `${market} moved overnight. I took notes.`,
+    line: `Today's ${market} idea is ready.`,
   };
 }
 

@@ -90,12 +90,22 @@ export function lessonForGoal(lesson: Lesson, goal?: string | null): Lesson {
 export function checkApplyIt(takeaway: string, id: string): MultipleChoiceExercise | null {
   const rule = splitSentences(clean(takeaway))[0];
   if (!rule) return null;
-  const correct = `Revise the plan using this rule: ${rule}`;
-  const options = shuffle([correct, 'Keep the plan unchanged, even though it contradicts the rule.',
-    'Pick the most popular plan without checking whether it follows the rule.']);
+  let prompt = `Apply it: your team must choose between two plans. One follows this rule and the more popular one ignores it: “${rule}” What should you recommend?`;
+  let correct = 'Choose the plan that follows the rule, and explain why it fits.';
+  let decoys = ['Choose the popular plan without checking the rule.', 'Treat both plans as equal despite their different fit with the rule.'];
+  if (/\bbuyer\b/i.test(rule) && /\buser\b/i.test(rule) && /\b(signs?|pays?|budget|contract)\b/i.test(rule)) {
+    prompt = 'Apply it: the person using a product likes it, but someone else must approve the purchase. Who should you ask about the buying decision?';
+    correct = 'Ask the buyer who approves the purchase.';
+    decoys = ['Ask only the user and assume approval will follow.', 'Treat the user and buyer as the same person.'];
+  } else if (/fixed.price/i.test(rule) && /\b(contractor|supplier)\b/i.test(rule) && /\b(overrun|risk|extra cost)\b/i.test(rule)) {
+    prompt = 'Apply it: a supplier accepts a fixed-price contract and the work costs more than planned. What should the supplier prepare for?';
+    correct = 'The supplier may have to absorb the extra cost.';
+    decoys = ['The agreed price automatically rises with every extra cost.', 'The extra cost disappears because the price is fixed.'];
+  }
+  const options = shuffle([correct, ...decoys]);
   return {
     kind: 'multipleChoice', id,
-    prompt: 'Apply it: a colleague proposes a plan that contradicts the lesson’s rule. What is the best next step?',
+    prompt,
     options, correctIndex: options.indexOf(correct),
     explanation: `The plan should follow the rule you just read: ${rule}`,
   };

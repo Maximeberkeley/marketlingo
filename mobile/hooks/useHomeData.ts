@@ -143,7 +143,7 @@ export function useHomeData(
         .maybeSingle();
 
       if (progressError && progressError.code !== 'PGRST116') {
-        log.warn('[HomeData] Failed to load progress:', progressError.message);
+        throw progressError;
       }
 
       const learningGoalValue = userProgress?.learning_goal || 'curiosity';
