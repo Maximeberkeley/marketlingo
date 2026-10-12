@@ -14,3 +14,6 @@
 - Select Say it prompts using shared lesson-section hints, requiring unwritten matches to reach half the strongest score and ignoring single-number-only signals; reject punctuation-only rewrites in editor and save hook, because relevance and authorship must hold beyond presentation.
 - Persist dossier editor snapshots on-device scoped to learner, market, and goal; edit learner entries in place and commit only through Save or Return; Cancel and unchanged Return close without discarding drafts or refocusing, because keyboard dismissal must not silently publish learner text.
 - Never drive icon-component props (e.g. vector icon colour) through Animated; crossfade static icons inside an Animated.View, because icon wrappers forward setNativeProps to a child that lacks it and crash release builds.
+
+- Keep the learner's interview target (company, role, date) on-device per learner and market, and derive readiness, sprint/weekly plans and question track from it in one shared phone module, because Profile, Brief and the Interview Lab must agree.
+- Leo speech bubbles carry one whole line of about eight words above Leo, chosen from contextual candidates rather than cut down, because long or truncated bubbles break the mascot's voice.
