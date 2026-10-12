@@ -1,5 +1,9 @@
 # MarketLingo roadmap
 
+## Oct 12 — Interview contrast and Leo voice
+- [ ] Fix Interview readiness surfaces for readable dark-mode text in both phone sources.
+- [ ] Change Leo to a confident young-adult American voice while preserving other mentor voices; verify voice delivery.
+
 ## Oct 12 — Symbol and notification framing
 - [x] Enlarge lesson-intro Leo to 112×136 on the left beside his bubble, using the confident smiling pose; synchronize both sources and check text space at widths 320–430.
 - [x] Match welcome-back streak and XP symbols to the app's flame and bottle in both phone sources.
