@@ -1,5 +1,8 @@
 # MarketLingo roadmap
 
+## Oct 12 — Syllabus review correction
+- [ ] Preserve every topic angle and add review alongside the seventh-day topic; align generator and phone wording, sync JavaScript, and test all 180 days.
+
 ## Oct 12 — Day-4 fixes
 - [x] Simplify welcome copy; show exact generated/hand-written day titles and clear catch-up labels.
 - [x] Guarantee a takeaway-grounded application question when no number check exists and remove startup-addressed copy for other goals.
