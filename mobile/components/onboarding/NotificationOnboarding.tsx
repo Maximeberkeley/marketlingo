@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Animated,
   Platform,
+  ScrollView,
 } from 'react-native';
 import * as ExpoNotifications from 'expo-notifications';
 import { Feather } from '@expo/vector-icons';

@@ -7,6 +7,7 @@ import {
   Modal,
   Share,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { COLORS } from '../../lib/constants';
 
