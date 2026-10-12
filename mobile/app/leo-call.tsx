@@ -165,7 +165,7 @@ export default function LeoCallScreen() {
       Audio.requestPermissionsAsync().catch(() => {});
     })();
     return () => { cancelled = true; };
-  }, [user, dossier.loading, marketId, params.mode, params.lessonTitle, studied.isLoading]);
+  }, [user, dossier.loading, marketId, params.mode, params.lessonTitle, studied.isLoading, progressLoading]);
 
   // Timer.
   useEffect(() => {
