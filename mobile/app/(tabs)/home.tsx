@@ -145,11 +145,12 @@ export default function HomeScreen() {
 
   const [selectedMarketLocal, setSelectedMarketLocal] = useState<string | null>(null);
   const [revealedCard, setRevealedCard] = useState<Partial<CollectibleCard> | null>(null);
-  const { progress, completeStack, updateStreak, refetch: refetchProgress } = useUserProgress(selectedMarketLocal || undefined);
+  const { progress, completeStack, updateStreak, refetch: refetchProgress, loading: progressLoading } = useUserProgress(selectedMarketLocal || undefined);
   const {
     xpData, dailyCompletion, completeLessonForToday,
     getCurrentStage, getProgressToNextStage, isLessonCompletedToday, addXP,
     refetch: refetchXP,
+    loading: xpLoading,
   } = useUserXP(selectedMarketLocal || undefined);
 
   const lessonCompletedToday = isLessonCompletedToday();
@@ -184,6 +185,16 @@ export default function HomeScreen() {
   useEffect(() => {
     if (selectedMarket) setSelectedMarketLocal(selectedMarket);
   }, [selectedMarket]);
+
+  // The ring must never render from defaults ("Day 1", "Start here"): keep the
+  // skeleton up until progress and today's completion have actually loaded.
+  // A sticky flag rather than the transient loading booleans, so later
+  // refetches (tab focus, midnight tick) never flash the skeleton again.
+  const [bootReady, setBootReady] = useState(false);
+  useEffect(() => {
+    if (bootReady || authLoading || loading || xpLoading || progressLoading || !selectedMarket) return;
+    setBootReady(true);
+  }, [bootReady, authLoading, loading, xpLoading, progressLoading, selectedMarket]);
 
   const { dueCount } = useSpacedRepetition(selectedMarketLocal || undefined);
   const deliverable = useDeliverable(selectedMarketLocal || undefined, learningGoal);
@@ -453,7 +464,7 @@ export default function HomeScreen() {
     return getRandomGreeting('evening');
   });
 
-  if (loading || authLoading) return <HomeSkeleton />;
+  if (loading || authLoading || !bootReady) return <HomeSkeleton />;
 
   const marketIllustration = MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace'] || MARKET_ILLUSTRATIONS.aerospace;
   const marketGradient = MARKET_GRADIENTS[selectedMarket || 'aerospace'] || MARKET_GRADIENTS.aerospace;

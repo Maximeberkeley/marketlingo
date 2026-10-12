@@ -118,7 +118,7 @@ function HomeScreen() {
   const { openStackId } = useLocalSearchParams();
   const [selectedMarketLocal, setSelectedMarketLocal] = useState(null);
   const [revealedCard, setRevealedCard] = useState(null);
-  const { progress, completeStack, updateStreak, refetch: refetchProgress } = useUserProgress(selectedMarketLocal || void 0);
+  const { progress, completeStack, updateStreak, refetch: refetchProgress, loading: progressLoading } = useUserProgress(selectedMarketLocal || void 0);
   const {
     xpData,
     dailyCompletion,
@@ -127,7 +127,8 @@ function HomeScreen() {
     getProgressToNextStage,
     isLessonCompletedToday,
     addXP,
-    refetch: refetchXP
+    refetch: refetchXP,
+    loading: xpLoading
   } = useUserXP(selectedMarketLocal || void 0);
   const lessonCompletedToday = isLessonCompletedToday();
   const stackDayNumber = (stack) => {
@@ -166,6 +167,11 @@ function HomeScreen() {
   useEffect(() => {
     if (selectedMarket) setSelectedMarketLocal(selectedMarket);
   }, [selectedMarket]);
+  const [bootReady, setBootReady] = useState(false);
+  useEffect(() => {
+    if (bootReady || authLoading || loading || xpLoading || progressLoading || !selectedMarket) return;
+    setBootReady(true);
+  }, [bootReady, authLoading, loading, xpLoading, progressLoading, selectedMarket]);
   const { dueCount } = useSpacedRepetition(selectedMarketLocal || void 0);
   const deliverable = useDeliverable(selectedMarketLocal || void 0, learningGoal);
   const focusTopic = useFocusTopic(selectedMarketLocal || void 0, currentDay || 1);
@@ -376,7 +382,7 @@ function HomeScreen() {
     if (hour < 17) return getRandomGreeting("afternoon");
     return getRandomGreeting("evening");
   });
-  if (loading || authLoading) return <HomeSkeleton />;
+  if (loading || authLoading || !bootReady) return <HomeSkeleton />;
   const marketIllustration = MARKET_ILLUSTRATIONS[selectedMarket || "aerospace"] || MARKET_ILLUSTRATIONS.aerospace;
   const marketGradient = MARKET_GRADIENTS[selectedMarket || "aerospace"] || MARKET_GRADIENTS.aerospace;
   const marketAccent = marketGradient[0];
