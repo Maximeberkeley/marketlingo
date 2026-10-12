@@ -4,6 +4,7 @@ import { COLORS, SHADOWS, TYPE } from "../../lib/constants";
 import { triggerHaptic } from "../../lib/haptics";
 import { supabase } from "../../lib/supabase";
 import { localDateString } from "../../lib/dayMath";
+import { SpeechBubble } from "../ui/SpeechBubble";
 const SAD_LEO = require("../../assets/mascot/leo-rain.png");
 const HAPPY_LEO = require("../../assets/mascot/leo-celebrating.png");
 function LeoStreakGift({ marketId, userId, blocked, onRestored }) {
@@ -57,37 +58,12 @@ function LeoStreakGift({ marketId, userId, blocked, onRestored }) {
   }, [marketId, busy, lost, onRestored]);
   const translateY = bob.interpolate({ inputRange: [0, 1], outputRange: [0, -6] });
   const found = phase === "found";
-  return <Modal visible={visible && !blocked} transparent animationType="fade" onRequestClose={() => setVisible(false)}>
-      <View style={styles.backdrop}>
-        <Animated.View style={[styles.card, { transform: [{ scale: pop }] }]}>
-          <ScrollView showsVerticalScrollIndicator={false} bounces={false} contentContainerStyle={styles.cardContent}>
-          <Text style={styles.eyebrow}>{found ? "LEO FOUND SOMETHING" : "STREAK RETURNED"}</Text>
-          <Animated.View style={{ transform: [{ translateY }] }}>
-            <Image source={found ? SAD_LEO : HAPPY_LEO} style={styles.leo} resizeMode="contain" />
-          </Animated.View>
-          {found ? <>
-              <Text style={styles.title}>Your {lost}-day streak was out in the rain</Text>
-              <Text style={styles.body}>
-                I found it sitting alone by the door yesterday. Lonely. A little soggy. It clearly missed you.
-                I kept it warm for you — want it back?
-              </Text>
-              <TouchableOpacity style={styles.cta} onPress={claim} disabled={busy} accessibilityRole="button">
-                <Text style={styles.ctaText}>{busy ? "One moment\u2026" : "Take my streak back"}</Text>
-              </TouchableOpacity>
-              <Text style={styles.note}>Leo can do this once a week.</Text>
-            </> : <>
-              <Text style={styles.title}>{restored} days. Safe and sound.</Text>
-              <Text style={styles.body}>
-                There. Good as new. Now do me a favour — finish today's lesson so it never has to wait outside again.
-              </Text>
-              <TouchableOpacity style={styles.cta} onPress={() => setVisible(false)} accessibilityRole="button">
-                <Text style={styles.ctaText}>Deal, Leo</Text>
-              </TouchableOpacity>
-            </>}
-          </ScrollView>
-        </Animated.View>
-      </View>
-    </Modal>;
+  return <Modal visible={visible && !blocked} transparent animationType="fade" onRequestClose={() => setVisible(false)}><View style={styles.backdrop}><Animated.View style={[styles.card, { transform: [{ scale: pop }] }]}><ScrollView showsVerticalScrollIndicator={false} bounces={false} contentContainerStyle={styles.cardContent}><Text style={styles.eyebrow}>{found ? "LEO FOUND SOMETHING" : "STREAK RETURNED"}</Text><Animated.View style={{ transform: [{ translateY }] }}><Image source={found ? SAD_LEO : HAPPY_LEO} style={styles.leo} resizeMode="contain" /></Animated.View>{found ? <><SpeechBubble tail="top-center" showLabel style={styles.speech}><Text style={styles.speechText}>
+                  Your {lost}-day streak was out in the rain. I found it sitting alone by the door yesterday.
+                  Lonely. A little soggy. I kept it warm for you — want it back?
+                </Text></SpeechBubble><TouchableOpacity style={styles.cta} onPress={claim} disabled={busy} accessibilityRole="button"><Text style={styles.ctaText}>{busy ? "One moment\u2026" : "Take my streak back"}</Text></TouchableOpacity><Text style={styles.note}>Leo can do this once a week.</Text></> : <><SpeechBubble tail="top-center" showLabel style={styles.speech}><Text style={styles.speechText}>{restored} days. Safe and sound. Now do me a favour — finish today's lesson so it never
+                  has to wait outside again.
+                </Text></SpeechBubble><TouchableOpacity style={styles.cta} onPress={() => setVisible(false)} accessibilityRole="button"><Text style={styles.ctaText}>Deal, Leo</Text></TouchableOpacity></>}</ScrollView></Animated.View></View></Modal>;
 }
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.6)", alignItems: "center", justifyContent: "center", padding: 24 },
@@ -105,8 +81,8 @@ const styles = StyleSheet.create({
   cardContent: { alignItems: "center" },
   eyebrow: { ...TYPE.caption, color: COLORS.accent, fontWeight: "800", letterSpacing: 1.4, fontSize: 12 },
   leo: { width: 176, height: 176, marginVertical: 8 },
-  title: { color: COLORS.textPrimary, fontSize: 22, fontWeight: "800", textAlign: "center", marginBottom: 8 },
-  body: { color: COLORS.textSecondary, fontSize: 16, lineHeight: 23, textAlign: "center", marginBottom: 20 },
+  speech: { alignSelf: "stretch", maxWidth: 300, marginBottom: 20 },
+  speechText: { color: COLORS.textPrimary, fontSize: 16, lineHeight: 24, fontWeight: "500" },
   cta: { alignSelf: "stretch", backgroundColor: COLORS.accent, borderRadius: 18, paddingVertical: 15, alignItems: "center", ...SHADOWS.md },
   ctaText: { color: COLORS.textOnAccent, fontSize: 17, fontWeight: "800" },
   note: { color: COLORS.textMuted, fontSize: 13, marginTop: 12 }

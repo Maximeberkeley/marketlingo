@@ -133,41 +133,17 @@ function GoalScreen() {
       setIsSubmitting(false);
     }
   };
-  return <View style={[styles.container, { paddingTop: insets.top }]}>
-      <OnboardingProgress currentStep={1} totalSteps={3} labels={STEP_LABELS} />
-
-      <Animated.ScrollView
+  return <View style={[styles.container, { paddingTop: insets.top }]}><OnboardingProgress currentStep={1} totalSteps={3} labels={STEP_LABELS} /><Animated.ScrollView
     contentContainerStyle={styles.scrollContent}
     showsVerticalScrollIndicator={false}
     style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
-  >
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Feather name="arrow-left" size={20} color={COLORS.accent} />
-          <Text style={styles.backButtonText}>Back</Text>
-        </TouchableOpacity>
-
-        {
+  ><TouchableOpacity style={styles.backButton} onPress={() => router.back()}><Feather name="arrow-left" size={20} color={COLORS.accent} /><Text style={styles.backButtonText}>Back</Text></TouchableOpacity>{
     /* Header with Leo */
-  }
-        <View style={styles.header}>
-          <LeoCharacter size="lg" animation="idle" />
-          <Text style={styles.title}>Why are you learning?</Text>
-          <Text style={styles.subtitle}>I'll prioritize content that matches your goal</Text>
-        </View>
-
-        {
+  }<View style={styles.header}><LeoCharacter size="lg" animation="idle" /><Text style={styles.title}>Why are you learning?</Text><Text style={styles.subtitle}>I'll prioritize content that matches your goal</Text></View>{
     /* Leo reaction */
-  }
-        {selectedGoal && <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}>
-            <SpeechBubble text={LEO_REACTIONS[selectedGoal]} tail="bottom-center" compact style={styles.reactionBalloon} textStyle={styles.reactionText} />
-            <Image source={require("../../assets/mascot/leo-reference.png")} style={{ width: 40, height: 40, resizeMode: "contain" }} />
-          </Animated.View>}
-
-        {
+  }{selectedGoal && <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}><SpeechBubble text={LEO_REACTIONS[selectedGoal]} tail="bottom-center" showLabel style={styles.reactionBalloon} /><Image source={require("../../assets/mascot/leo-reference.png")} style={{ width: 40, height: 40, resizeMode: "contain" }} /></Animated.View>}{
     /* Goal Cards — full-width linear rows */
-  }
-        <View style={styles.cardsContainer}>
-          {goalOptions.map((goal, index) => {
+  }<View style={styles.cardsContainer}>{goalOptions.map((goal, index) => {
     const isSelected = selectedGoal === goal.id;
     return <Animated.View
       key={goal.id}
@@ -180,58 +156,18 @@ function GoalScreen() {
           })
         }]
       }}
-    >
-                <TouchableOpacity
+    ><TouchableOpacity
       style={[styles.card, isSelected && styles.cardSelected]}
       onPress={() => handleSelect(goal.id)}
       activeOpacity={0.7}
-    >
-                  <View style={styles.cardRow}>
-                    <View style={[styles.iconBox, { backgroundColor: goal.color + "14" }, isSelected && { backgroundColor: goal.color }]}>
-                      <Feather name={goal.icon} size={22} color={isSelected ? "#fff" : goal.color} />
-                    </View>
-                    <View style={styles.cardContent}>
-                      <View style={styles.cardTitleRow}>
-                        <View style={{ flex: 1 }}>
-                          <Text style={styles.cardTitle}>{goal.title}</Text>
-                          <Text style={[styles.cardSubtitle, { color: goal.color }]}>{goal.subtitle}</Text>
-                        </View>
-                        {isSelected && <View style={styles.checkmark}>
-                            <Feather name="check" size={14} color="#fff" />
-                          </View>}
-                      </View>
-                      <Text style={styles.cardDescription}>{goal.description}</Text>
-                      <View style={styles.chipRow}>
-                        {goal.emphasis.map((item) => <View key={item} style={styles.chip}>
-                            <Text style={styles.chipText}>{item}</Text>
-                          </View>)}
-                      </View>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              </Animated.View>;
-  })}
-        </View>
-
-        {selectedGoal && <View style={styles.destinationBox}>
-            <Text style={styles.destinationLabel}>WHERE THIS TAKES YOU</Text>
-            <Text style={styles.destinationText}>{DESTINATIONS[selectedGoal]}</Text>
-          </View>}
-
-        <View style={styles.infoBox}>
-          <Feather name="info" size={14} color={COLORS.textMuted} />
-          <Text style={styles.infoText}>
+    ><View style={styles.cardRow}><View style={[styles.iconBox, { backgroundColor: goal.color + "14" }, isSelected && { backgroundColor: goal.color }]}><Feather name={goal.icon} size={22} color={isSelected ? "#fff" : goal.color} /></View><View style={styles.cardContent}><View style={styles.cardTitleRow}><View style={{ flex: 1 }}><Text style={styles.cardTitle}>{goal.title}</Text><Text style={[styles.cardSubtitle, { color: goal.color }]}>{goal.subtitle}</Text></View>{isSelected && <View style={styles.checkmark}><Feather name="check" size={14} color="#fff" /></View>}</View><Text style={styles.cardDescription}>{goal.description}</Text><View style={styles.chipRow}>{goal.emphasis.map((item) => <View key={item} style={styles.chip}><Text style={styles.chipText}>{item}</Text></View>)}</View></View></View></TouchableOpacity></Animated.View>;
+  })}</View>{selectedGoal && <View style={styles.destinationBox}><Text style={styles.destinationLabel}>WHERE THIS TAKES YOU</Text><Text style={styles.destinationText}>{DESTINATIONS[selectedGoal]}</Text></View>}<View style={styles.infoBox}><Feather name="info" size={14} color={COLORS.textMuted} /><Text style={styles.infoText}>
             You can change this anytime in Settings. Your goal shapes content priority, not access.
-          </Text>
-        </View>
-      </Animated.ScrollView>
-
-      <StickyBottomCTA
+          </Text></View></Animated.ScrollView><StickyBottomCTA
     title={isSubmitting ? "Saving..." : "Continue"}
     onPress={handleContinue}
     disabled={!selectedGoal || isSubmitting}
-  />
-    </View>;
+  /></View>;
 }
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },

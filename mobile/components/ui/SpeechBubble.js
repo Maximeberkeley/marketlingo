@@ -1,57 +1,55 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { COLORS, SHADOWS } from '../../lib/constants';
-const tones = {
-    neutral: { background: COLORS.bg2, border: COLORS.border },
-    purple: { background: COLORS.bg2, border: COLORS.accentMedium },
-    warm: { background: COLORS.bg2, border: COLORS.warningSoft },
-    success: { background: COLORS.bg2, border: COLORS.successSoft },
-};
-export function SpeechBubble({ children, text, tail = 'left', tone = 'neutral', compact = false, style, textStyle, }) {
-    const palette = tones[tone];
-    return (<View style={[styles.wrap, tail === 'left' ? styles.hugStart : tail === 'right' ? styles.hugEnd : styles.hugCenter, style]}>
-      <View style={[
-            styles.tail,
-            styles[`tail_${tail}`],
-            { backgroundColor: palette.background, borderColor: palette.border },
-        ]}/>
-      <View style={[
-            styles.balloon,
-            compact && styles.balloonCompact,
-            { backgroundColor: palette.background, borderColor: palette.border },
-        ]}>
-        {children ?? <Text numberOfLines={2} style={[styles.text, compact && styles.textCompact, textStyle]}>{text}</Text>}
-      </View>
-    </View>);
+import { StyleSheet, Text, View } from "react-native";
+import { COLORS } from "../../lib/constants";
+import { isDark } from "../../lib/theme";
+const BUBBLE_BG = isDark ? "#2A2440" : "#F3EEFE";
+function pointerRadius(tail) {
+  switch (tail) {
+    case "left":
+      return { borderTopLeftRadius: 6 };
+    case "right":
+      return { borderTopRightRadius: 6 };
+    case "top-left":
+      return { borderTopLeftRadius: 6 };
+    case "top-center":
+      return { borderTopLeftRadius: 6 };
+    case "bottom-center":
+    default:
+      return { borderBottomLeftRadius: 6 };
+  }
+}
+function SpeechBubble({
+  children,
+  text,
+  tail = "left",
+  showLabel = false,
+  style,
+  textStyle
+}) {
+  return <View style={[styles.wrap, style]}>{showLabel && <Text style={styles.label}>Leo</Text>}<View style={[styles.balloon, pointerRadius(tail)]}>{children ?? <Text style={[styles.text, textStyle]}>{text}</Text>}</View></View>;
 }
 const styles = StyleSheet.create({
-    wrap: { position: 'relative', maxWidth: 280 },
-  hugStart: { alignSelf: 'flex-start' },
-  hugEnd: { alignSelf: 'flex-end' },
-  hugCenter: { alignSelf: 'center' },
-    balloon: {
-        borderRadius: 24,
-        borderWidth: 1.5,
-        paddingHorizontal: 18,
-        paddingVertical: 14,
-        minHeight: 48,
-        justifyContent: 'center',
-        ...SHADOWS.sm,
-    },
-    balloonCompact: { borderRadius: 19, paddingHorizontal: 14, paddingVertical: 10, minHeight: 40 },
-    text: { color: COLORS.textPrimary, fontSize: 15, lineHeight: 21, fontWeight: '700' },
-    textCompact: { fontSize: 13, lineHeight: 18 },
-    tail: {
-        position: 'absolute',
-        width: 18,
-        height: 18,
-        borderWidth: 1.5,
-        transform: [{ rotate: '45deg' }],
-        zIndex: 0,
-    },
-    tail_left: { left: -7, top: '50%', marginTop: -9, borderTopWidth: 0, borderRightWidth: 0 },
-    tail_right: { right: -7, top: '50%', marginTop: -9, borderBottomWidth: 0, borderLeftWidth: 0 },
-    'tail_top-left': { left: 28, top: -7, borderRightWidth: 0, borderBottomWidth: 0 },
-    'tail_top-center': { left: '50%', top: -7, marginLeft: -9, borderRightWidth: 0, borderBottomWidth: 0 },
-  'tail_bottom-center': { left: '50%', bottom: -7, marginLeft: -9, borderLeftWidth: 0, borderTopWidth: 0 },
+  wrap: { alignSelf: "flex-start", maxWidth: 260 },
+  label: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: COLORS.accent,
+    marginBottom: 4,
+    marginLeft: 4
+  },
+  balloon: {
+    backgroundColor: BUBBLE_BG,
+    borderRadius: 22,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    alignSelf: "flex-start"
+  },
+  text: {
+    color: COLORS.textPrimary,
+    fontSize: 16,
+    lineHeight: 24,
+    fontWeight: "500"
+  }
 });
+export {
+  SpeechBubble
+};

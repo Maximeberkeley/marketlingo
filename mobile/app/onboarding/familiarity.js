@@ -26,7 +26,7 @@ import { log } from "../../lib/logger";
 import { FeatureTour } from "../../components/onboarding/FeatureTour";
 const STEP_LABELS = ["Industry", "Goal", "Level"];
 const LEO_LEVEL_REACTIONS = {
-  beginner: "Perfect \u2014 we'll start from scratch! No jargon, I promise.",
+  beginner: "From scratch. No jargon, I promise.",
   intermediate: "Skipping basics. Straight to the good stuff.",
   advanced: "Expert mode unlocked. Let's go deep."
 };
@@ -173,48 +173,23 @@ function FamiliarityScreen() {
   const handleBack = () => {
     router.back();
   };
-  return <View style={[styles.container, { paddingTop: insets.top }]}>
-      {
+  return <View style={[styles.container, { paddingTop: insets.top }]}>{
     /* Progress */
-  }
-      <OnboardingProgress currentStep={2} totalSteps={3} labels={STEP_LABELS} />
-
-      <Animated.ScrollView
+  }<OnboardingProgress currentStep={2} totalSteps={3} labels={STEP_LABELS} /><Animated.ScrollView
     contentContainerStyle={styles.scrollContent}
     showsVerticalScrollIndicator={false}
     style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
-  >
-        {
+  >{
     /* Back Button */
-  }
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Text style={styles.backButtonText}>← Back</Text>
-        </TouchableOpacity>
-
-        {
+  }<TouchableOpacity style={styles.backButton} onPress={handleBack}><Text style={styles.backButtonText}>← Back</Text></TouchableOpacity>{
     /* Header */
-  }
-        <View style={styles.header}>
-          <MascotAvatar size="lg" />
-          <Text style={styles.title}>Your Experience Level</Text>
-          <Text style={styles.subtitle}>
+  }<View style={styles.header}><MascotAvatar size="lg" /><Text style={styles.title}>Your Experience Level</Text><Text style={styles.subtitle}>
             I'll adapt the content depth to match your knowledge
-          </Text>
-        </View>
-
-        {
+          </Text></View>{
     /* Leo reaction bubble */
-  }
-        {selectedLevel && <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}>
-            <SpeechBubble text={LEO_LEVEL_REACTIONS[selectedLevel]} tail="bottom-center" compact style={styles.reactionBalloon} textStyle={styles.reactionText} />
-            <Image source={require("../../assets/mascot/leo-reference.png")} style={{ width: 40, height: 40, resizeMode: "contain" }} />
-          </Animated.View>}
-
-        {
+  }{selectedLevel && <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}><SpeechBubble text={LEO_LEVEL_REACTIONS[selectedLevel]} tail="bottom-center" showLabel style={styles.reactionBalloon} /><Image source={require("../../assets/mascot/leo-reference.png")} style={{ width: 40, height: 40, resizeMode: "contain" }} /></Animated.View>}{
     /* Level Cards */
-  }
-        <View style={styles.cardsContainer}>
-          {FAMILIARITY_LEVELS.map((level, index) => <Animated.View
+  }<View style={styles.cardsContainer}>{FAMILIARITY_LEVELS.map((level, index) => <Animated.View
     key={level.id}
     style={{
       opacity: fadeAnim,
@@ -225,69 +200,34 @@ function FamiliarityScreen() {
         })
       }]
     }}
-  >
-              <TouchableOpacity
+  ><TouchableOpacity
     style={[
       styles.card,
       selectedLevel === level.id && styles.cardSelected
     ]}
     onPress={() => handleSelect(level.id)}
     activeOpacity={0.7}
-  >
-                <View style={styles.cardContent}>
-                  <View style={styles.cardIndex}>
-                    <Text style={styles.cardIndexText}>{index + 1}</Text>
-                  </View>
-
-                  <View style={styles.cardText}>
-                    <Text style={styles.cardTitle}>{level.name}</Text>
-                    <Text style={styles.cardDescription}>{level.description}</Text>
-                  </View>
-                </View>
-                {selectedLevel === level.id && <View style={styles.checkmark}>
-                    <Text style={styles.checkmarkText}>✓</Text>
-                  </View>}
-              </TouchableOpacity>
-            </Animated.View>)}
-        </View>
-
-        {
+  ><View style={styles.cardContent}><View style={styles.cardIndex}><Text style={styles.cardIndexText}>{index + 1}</Text></View><View style={styles.cardText}><Text style={styles.cardTitle}>{level.name}</Text><Text style={styles.cardDescription}>{level.description}</Text></View></View>{selectedLevel === level.id && <View style={styles.checkmark}><Text style={styles.checkmarkText}>✓</Text></View>}</TouchableOpacity></Animated.View>)}</View>{
     /* Almost done indicator */
-  }
-        <View style={styles.almostDone}>
-          <Text style={styles.almostDoneEmoji}>·</Text>
-          <Text style={styles.almostDoneText}>
+  }<View style={styles.almostDone}><Text style={styles.almostDoneEmoji}>·</Text><Text style={styles.almostDoneText}>
             Almost done! One more tap and you're in.
-          </Text>
-        </View>
-
-        {
+          </Text></View>{
     /* Info Box */
-  }
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText}>
+  }<View style={styles.infoBox}><Text style={styles.infoText}>
             You can change this anytime in Settings
-          </Text>
-        </View>
-      </Animated.ScrollView>
-
-      <StickyBottomCTA
+          </Text></View></Animated.ScrollView><StickyBottomCTA
     title="Start Learning"
     onPress={handleContinue}
     disabled={!selectedLevel}
-  />
-
-      <NotificationOnboarding
+  /><NotificationOnboarding
     visible={showNotifOnboarding}
     onComplete={handleNotifComplete}
-  />
-      <FeatureTour
+  /><FeatureTour
     visible={showFeatureTour}
     marketId={selectedMarket}
     goal={learningGoal}
     onComplete={handleTourComplete}
-  />
-    </View>;
+  /></View>;
 }
 const styles = StyleSheet.create({
   container: {
@@ -326,7 +266,7 @@ const styles = StyleSheet.create({
     lineHeight: 22
   },
   reactionBubble: {
-    flexDirection: 'column',
+    flexDirection: "column",
     alignItems: "center",
     gap: 10,
     marginBottom: 16

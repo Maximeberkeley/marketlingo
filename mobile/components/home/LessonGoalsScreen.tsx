@@ -58,7 +58,7 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1
         </View>
 
         <View style={styles.leoRow}>
-          <SpeechBubble text="Three sharp moves. Then make the call." tail="bottom-center" compact style={styles.leoBalloon} textStyle={styles.leoLine} />
+          <SpeechBubble text="Three sharp moves. Then make the call." tail="bottom-center" showLabel style={styles.leoBalloon} />
           <Image source={require('../../assets/mascot/leo-reference.png')} style={styles.leo} />
         </View>
       </ScrollView>

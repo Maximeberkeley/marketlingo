@@ -77,36 +77,18 @@ function LeoInterstitial({ type, progress, slideTitle, customMessage }) {
       useNativeDriver: false
     }).start();
   }, []);
-  return <Animated.View style={[styles.container, { opacity: opacityAnim, transform: [{ scale: scaleAnim }] }]}>
-      {
+  return <Animated.View style={[styles.container, { opacity: opacityAnim, transform: [{ scale: scaleAnim }] }]}>{
     /* Leo with glow */
-  }
-      <View style={styles.leoContainer}>
-        <View style={[styles.glow, { backgroundColor: accent + "20" }]} />
-        <Animated.Image
+  }<View style={styles.leoContainer}><View style={[styles.glow, { backgroundColor: accent + "20" }]} /><Animated.Image
     source={LEO_IMAGE}
     style={[styles.leoImage, { transform: [{ translateY: bounceAnim }] }]}
-  />
-      </View>
-
-      {
+  /></View>{
     /* Type icon */
-  }
-      <View style={[styles.iconCircle, { backgroundColor: accent + "20" }]}>
-        <Feather name={TYPE_FEATHER_ICONS[type]} size={22} color={accent} />
-      </View>
-
-      {
+  }<View style={[styles.iconCircle, { backgroundColor: accent + "20" }]}><Feather name={TYPE_FEATHER_ICONS[type]} size={22} color={accent} /></View>{
     /* Message */
-  }
-      <SpeechBubble text={message} tail="top-center" tone="purple" style={styles.messageBubble} textStyle={[styles.message, { color: accent }]} />
-
-      {
+  }<SpeechBubble text={message} tail="top-center" showLabel style={styles.messageBubble} />{
     /* Progress indicator */
-  }
-      <View style={styles.progressContainer}>
-        <View style={styles.progressTrack}>
-          <Animated.View
+  }<View style={styles.progressContainer}><View style={styles.progressTrack}><Animated.View
     style={[
       styles.progressFill,
       {
@@ -117,16 +99,9 @@ function LeoInterstitial({ type, progress, slideTitle, customMessage }) {
         })
       }
     ]}
-  />
-        </View>
-        <Text style={styles.progressText}>{Math.round(progress * 100)}% complete</Text>
-      </View>
-
-      {
+  /></View><Text style={styles.progressText}>{Math.round(progress * 100)}% complete</Text></View>{
     /* Tap hint */
-  }
-      <Text style={styles.tapHint}>Tap to continue</Text>
-    </Animated.View>;
+  }<Text style={styles.tapHint}>Tap to continue</Text></Animated.View>;
 }
 function shouldShowLeoCard(cardIndex, totalCards) {
   if (cardIndex < 3 || cardIndex >= totalCards - 2) return null;

@@ -4,6 +4,7 @@ import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
 import { supabase } from '../../lib/supabase';
 import { localDateString } from '../../lib/dayMath';
+import { SpeechBubble } from '../ui/SpeechBubble';
 
 const SAD_LEO = require('../../assets/mascot/leo-rain.png');
 const HAPPY_LEO = require('../../assets/mascot/leo-celebrating.png');
@@ -85,11 +86,12 @@ export function LeoStreakGift({ marketId, userId, blocked, onRestored }: Props) 
           </Animated.View>
           {found ? (
             <>
-              <Text style={styles.title}>Your {lost}-day streak was out in the rain</Text>
-              <Text style={styles.body}>
-                I found it sitting alone by the door yesterday. Lonely. A little soggy. It clearly missed you.
-                I kept it warm for you — want it back?
-              </Text>
+              <SpeechBubble tail="top-center" showLabel style={styles.speech}>
+                <Text style={styles.speechText}>
+                  Your {lost}-day streak was out in the rain. I found it sitting alone by the door yesterday.
+                  Lonely. A little soggy. I kept it warm for you — want it back?
+                </Text>
+              </SpeechBubble>
               <TouchableOpacity style={styles.cta} onPress={claim} disabled={busy} accessibilityRole="button">
                 <Text style={styles.ctaText}>{busy ? 'One moment…' : 'Take my streak back'}</Text>
               </TouchableOpacity>
@@ -97,10 +99,12 @@ export function LeoStreakGift({ marketId, userId, blocked, onRestored }: Props) 
             </>
           ) : (
             <>
-              <Text style={styles.title}>{restored} days. Safe and sound.</Text>
-              <Text style={styles.body}>
-                There. Good as new. Now do me a favour — finish today's lesson so it never has to wait outside again.
-              </Text>
+              <SpeechBubble tail="top-center" showLabel style={styles.speech}>
+                <Text style={styles.speechText}>
+                  {restored} days. Safe and sound. Now do me a favour — finish today's lesson so it never
+                  has to wait outside again.
+                </Text>
+              </SpeechBubble>
               <TouchableOpacity style={styles.cta} onPress={() => setVisible(false)} accessibilityRole="button">
                 <Text style={styles.ctaText}>Deal, Leo</Text>
               </TouchableOpacity>
@@ -122,8 +126,8 @@ const styles = StyleSheet.create({
   cardContent: { alignItems: 'center' },
   eyebrow: { ...(TYPE as any).caption, color: COLORS.accent, fontWeight: '800', letterSpacing: 1.4, fontSize: 12 },
   leo: { width: 176, height: 176, marginVertical: 8 },
-  title: { color: COLORS.textPrimary, fontSize: 22, fontWeight: '800', textAlign: 'center', marginBottom: 8 },
-  body: { color: COLORS.textSecondary, fontSize: 16, lineHeight: 23, textAlign: 'center', marginBottom: 20 },
+  speech: { alignSelf: 'stretch', maxWidth: 300, marginBottom: 20 },
+  speechText: { color: COLORS.textPrimary, fontSize: 16, lineHeight: 24, fontWeight: '500' },
   cta: { alignSelf: 'stretch', backgroundColor: COLORS.accent, borderRadius: 18, paddingVertical: 15, alignItems: 'center', ...(SHADOWS as any).md },
   ctaText: { color: COLORS.textOnAccent, fontSize: 17, fontWeight: '800' },
   note: { color: COLORS.textMuted, fontSize: 13, marginTop: 12 },

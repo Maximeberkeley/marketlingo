@@ -113,7 +113,7 @@ export function MascotBreak({ type, message, characterId, marketId, slideIndex, 
   return (
     <Animated.View style={[styles.container, { backgroundColor: BG_TINTS[type], opacity, transform: [{ scale }] }]}>
       <TouchableOpacity activeOpacity={onDismiss ? 0.8 : 1} onPress={onDismiss ? () => { setDismissed(true); onDismiss(); } : undefined}>
-        <SpeechBubble text={displayMessage} tail="bottom-center" style={styles.bubbleContainer} textStyle={styles.bubbleText} />
+        <SpeechBubble text={displayMessage} tail="bottom-center" showLabel style={styles.bubbleContainer} />
         <Animated.View style={{ transform: [{ translateY: bobY }] }}>
           <Image source={avatarSource} style={[styles.avatar, isLeo ? styles.leoAvatar : styles.mentorAvatar]} />
         </Animated.View>
@@ -155,7 +155,7 @@ export function InlineMascot({ characterId, marketId, message, position = 'left'
   return (
     <View style={[styles.inlineRow, position === 'right' && styles.inlineRowReverse]}>
       <Image source={avatarSource} style={[styles.inlineAvatar, { width: dim, height: dim, borderRadius: character.isLeo ? 0 : dim / 2 }]} />
-      {message && <SpeechBubble text={message} tail={position === 'right' ? 'right' : 'left'} compact style={styles.inlineBubble} textStyle={styles.inlineBubbleText} />}
+      {message && <SpeechBubble text={message} tail={position === 'right' ? 'right' : 'left'} style={styles.inlineBubble} />}
     </View>
   );
 }
