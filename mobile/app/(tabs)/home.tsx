@@ -464,7 +464,7 @@ export default function HomeScreen() {
     return getRandomGreeting('evening');
   });
 
-  if (loading || authLoading) return <HomeSkeleton />;
+  if (loading || authLoading || !bootReady) return <HomeSkeleton />;
 
   const marketIllustration = MARKET_ILLUSTRATIONS[selectedMarket || 'aerospace'] || MARKET_ILLUSTRATIONS.aerospace;
   const marketGradient = MARKET_GRADIENTS[selectedMarket || 'aerospace'] || MARKET_GRADIENTS.aerospace;
