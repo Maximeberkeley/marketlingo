@@ -239,7 +239,7 @@
 - [x] iPhone SE: compact intro so Leo stays above Start
 - [x] Welcome back: "Start today's lesson" opens the lesson; XP line reads "N XP to Level L+1"
 
-### Oct 12 — Remove Practice shortcuts (in progress)
+### Oct 12 — Remove Practice shortcuts
 - [x] Delete ShortcutIslands, strip all usage from practice tab (.tsx/.js), clear storage key on app start
 - [x] You tab: League + Friends rows after Interview Brief (.tsx/.js)
 
