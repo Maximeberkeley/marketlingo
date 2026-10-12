@@ -136,6 +136,7 @@ export default function RootLayout() {
                 <Stack.Screen name="leaderboard" />
                 <Stack.Screen name="settings" />
                 <Stack.Screen name="interview-lab" />
+                <Stack.Screen name="leo-call" options={{ animation: 'fade', gestureEnabled: false }} />
                 <Stack.Screen name="investment-lab" />
                 <Stack.Screen name="investment-module" />
                 <Stack.Screen name="investment-certificate" />

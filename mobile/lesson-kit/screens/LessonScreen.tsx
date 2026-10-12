@@ -29,9 +29,19 @@ import { Exercise, Lesson } from '../types';
 import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { AskLeoOverlay, LeoMessage } from '../../components/ai/AskLeoOverlay';
-import { normalizedCopy } from '../cardPresentation';
+import { normalizedCopy, readingCardKind } from '../cardPresentation';
 
 /** Flatten the current beat's visible text into a context string for Leo. */
+/** The lesson's takeaway card text (or its last reading card), for the Leo call. */
+function lessonTakeaway(exercises: Exercise[]): string {
+  const reading = exercises.filter(e => e.kind === 'info' || e.kind === 'microInsight');
+  const card = reading.find(e => readingCardKind(e) === 'takeaway') ?? reading[reading.length - 1];
+  if (!card) return '';
+  const rec = card as unknown as Record<string, unknown>;
+  const text = [rec.title, rec.text, rec.body].filter(v => typeof v === 'string' && v).join(' — ');
+  return text.slice(0, 300);
+}
+
 function exerciseContext(exercise?: Exercise): string {
   if (!exercise) return '';
   const e = exercise as unknown as Record<string, unknown>;
@@ -316,6 +326,8 @@ export function LessonScreen({
         streakDays={streakDays}
         doneLabel={doneLabel}
         marketId={marketId}
+        lessonTitle={lesson.title}
+        takeaway={lessonTakeaway(lesson.exercises)}
         leoQuestions={leoMessages.filter(m => m.role === 'user').length}
         onDone={xp =>
           onFinish({

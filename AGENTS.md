@@ -18,3 +18,4 @@
 
 - Keep the learner's interview target (company, role, date) on-device per learner and market, and derive readiness, sprint/weekly plans and question track from it in one shared phone module, because Profile, Brief and the Interview Lab must agree.
 - Leo speech bubbles carry one whole line of about eight words above Leo, chosen from contextual candidates rather than cut down, because long or truncated bubbles break the mascot's voice.
+- Leo calls go through one server function (turn + recap) with the call type, lesson, Brief, goal, level and interview target, while the phone owns rotation, the daily limit and Brief saving, because the model must stay server-side and learner lines must be saved as the learner's own.
