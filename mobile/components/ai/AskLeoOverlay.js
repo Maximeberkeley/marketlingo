@@ -25,7 +25,7 @@ import { AIConsentModal } from "./AIConsentModal";
 import { transcribeAudio } from "../../lib/interviewVoice";
 import { LeoCharacter } from "../mascot/LeoCharacter";
 import { log } from "../../lib/logger";
-const LEO_VOICE_ID = "TX3LPaxmHKxFdv7VOQHJ";
+const LEO_VOICE_ID = "miHBUIuwiPKbRiTC0oIz";
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 const MODES = [

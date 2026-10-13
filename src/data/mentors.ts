@@ -22,7 +22,7 @@ export interface Mentor {
   };
 }
 
-export const LEO_VOICE_ID = 'TX3LPaxmHKxFdv7VOQHJ';
+export const LEO_VOICE_ID = 'miHBUIuwiPKbRiTC0oIz';
 
 export const mentors: Mentor[] = [
   {

@@ -33,7 +33,7 @@ import { log } from '../../lib/logger';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 const LEO_STUDY_SCENE = require('../../assets/mascot/leo-voice-study.png');
-const LEO_VOICE_ID = 'TX3LPaxmHKxFdv7VOQHJ'; // Liam — young, confident American
+const LEO_VOICE_ID = 'miHBUIuwiPKbRiTC0oIz'; // the workspace voice named "Leo"
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
 

@@ -1,10 +1,10 @@
 // Voice assignments:
-// Leo (mascot)  → Liam (young, confident American): TX3LPaxmHKxFdv7VOQHJ
+// Leo (mascot)  → workspace voice "Leo": miHBUIuwiPKbRiTC0oIz
 // Maya Chen     → Alice (sharp, analytical female): Xb7hH8MSUJpSbSDYk0k2
 // Dr. Alex      → Brian (patient, authoritative male): nPczCjzI2devNBz1zQrb
 // Kai Johnson   → Chris (energetic, upbeat male): iP95p4xoKVk53GoZ742B
 // Sophia        → Sophia (workspace voice): MtzY9FD6OSlkIuEBAHn3
-export const LEO_VOICE_ID = 'TX3LPaxmHKxFdv7VOQHJ';
+export const LEO_VOICE_ID = 'miHBUIuwiPKbRiTC0oIz';
 export const mentors = [
     {
         id: 'maya',
