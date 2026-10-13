@@ -62,6 +62,7 @@ export async function saveInterviewTarget(userId: string, marketId: string, targ
  */
 export function roleTrack(role?: string | null): RoleTrack {
   const r = (role || '').toLowerCase();
+  if (isEarlyCareerRole(role)) return 'technical';
   if (/(recruit|talent|hr\b|human resources|people ops|sourcer)/.test(r)) return 'behavioral';
   if (/(consult|strategy|strategist|analyst|case)/.test(r)) return 'case';
   return 'technical';
