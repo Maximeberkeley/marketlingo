@@ -99,9 +99,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 32,
     borderRadius: tokens.radius.pill,
-    backgroundColor: '#171B26',
+    backgroundColor: tokens.color.coldOpen,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  vs: { color: '#FFFFFF', fontSize: 12, fontWeight: '900', letterSpacing: 1 },
+  vs: { color: tokens.color.coldOpenText, fontSize: 12, fontWeight: '900', letterSpacing: 1 },
 });
