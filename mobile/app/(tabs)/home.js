@@ -53,6 +53,7 @@ import { useIntelHabit } from "../../hooks/useIntelHabit";
 import { localDateString, streakCountdownLabel } from "../../lib/dayMath";
 import { claimLeoNudge, currentLeoNudgeWindow, getLeoNudge } from "../../lib/leoNudges";
 import { contextualLeoLine } from "../../lib/leoLines";
+import { useLessonTabsHidden } from "../../lib/lessonNavigation";
 const MARKET_ILLUSTRATIONS = {
   aerospace: require("../../assets/illustrations/aerospace.png"),
   ai: require("../../assets/illustrations/ai.png"),
@@ -407,6 +408,7 @@ function HomeScreen() {
     return getRandomGreeting("evening");
   });
   const activeLessonScreen = session.showGoals || session.showReader || session.showSessionComplete;
+  useLessonTabsHidden(courseFocused && activeLessonScreen);
   if (!activeLessonScreen && (loading || authLoading || !bootReady)) return /* @__PURE__ */ React.createElement(HomeSkeleton, null);
   const marketIllustration = MARKET_ILLUSTRATIONS[selectedMarket || "aerospace"] || MARKET_ILLUSTRATIONS.aerospace;
   const marketGradient = MARKET_GRADIENTS[selectedMarket || "aerospace"] || MARKET_GRADIENTS.aerospace;
