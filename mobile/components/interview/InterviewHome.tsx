@@ -14,6 +14,8 @@ interface Props {
   readiness: InterviewReadiness;
   /** Question text shown on the card when there is no saved interview. */
   nextQuestion?: string;
+  /** Role question bank used for today's question and plan rows. */
+  bank?: { technical: string[]; behavioral: string[] };
   topInset: number;
   bottomInset: number;
   onClose: () => void;
@@ -27,7 +29,7 @@ interface Props {
 const askedKey = (u: string, m: string) => `ml_interview_target_asked:${u}:${m}`;
 
 /** Interview Lab landing: built from what the learner already told us (goal, saved interview). */
-export function InterviewHome({ userId, marketId, readiness, nextQuestion, topInset, bottomInset, onClose, onStart, onWarmUp, onOpenBrief, onSchool }: Props) {
+export function InterviewHome({ userId, marketId, readiness, nextQuestion, bank, topInset, bottomInset, onClose, onStart, onWarmUp, onOpenBrief, onSchool }: Props) {
   const { target, percent, parts, concepts, news } = readiness;
   const days = daysUntil(target?.date);
   const [asked, setAsked] = useState(true);
@@ -46,8 +48,8 @@ export function InterviewHome({ userId, marketId, readiness, nextQuestion, topIn
   const sprint = useMemo(() => {
     if (!target) return [];
     const left = days != null && days >= 0 ? Math.min(days, 13) : 0;
-    return buildSprintPlan({ target, daysLeft: left, concepts, news });
-  }, [target?.updatedAt, days, concepts.join('|'), news.join('|')]);
+    return buildSprintPlan({ target, daysLeft: left, concepts, news, bank });
+  }, [bank, target?.updatedAt, days, concepts.join('|'), news.join('|')]);
   const today = sprint[0];
   const datedSprint = !!target && days != null && days >= 0 && days < 14;
 
@@ -74,7 +76,7 @@ export function InterviewHome({ userId, marketId, readiness, nextQuestion, topIn
             <>
               <Text style={styles.stepLabel}>{`TODAY · ${today.dateLabel.toUpperCase()}`}</Text>
               <Text style={styles.stepText}>{today.mock}</Text>
-              {!today.fullMock && <Text style={styles.stepMeta}>{`Concept: ${today.concept}`}</Text>}
+              {!today.fullMock && <Text style={styles.stepMeta}>{`Link it to: ${today.concept}`}</Text>}
             </>
           ) : nextQuestion ? (
             <Text style={styles.stepText}>{nextQuestion}</Text>
@@ -110,7 +112,10 @@ export function InterviewHome({ userId, marketId, readiness, nextQuestion, topIn
             {sprint.slice(1).map(d => (
               <View key={d.day} style={styles.planRow}>
                 <Text style={styles.planDate}>{d.dateLabel}</Text>
-                <Text style={styles.planText}>{d.fullMock ? d.mock : d.concept}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.planText}>{d.label}</Text>
+                  {!d.fullMock && <Text style={styles.planSub}>{d.concept}</Text>}
+                </View>
               </View>
             ))}
           </View>
@@ -174,6 +179,7 @@ const styles = StyleSheet.create({
   planRow: { flexDirection: 'row', gap: 12, paddingVertical: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.border },
   planDate: { width: 52, fontSize: 13, fontWeight: '800', color: COLORS.textMuted },
   planText: { flex: 1, fontSize: 14, lineHeight: 19, color: COLORS.textPrimary },
+  planSub: { color: COLORS.textSecondary, fontSize: 13, marginTop: 2 },
   readyHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
   percentSmall: { fontSize: 14, fontWeight: '800', color: COLORS.textMuted },
   percentBig: { fontSize: 24, fontWeight: '900', color: COLORS.textPrimary },

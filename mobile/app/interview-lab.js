@@ -88,7 +88,7 @@ function InterviewLabScreen() {
     return pick;
   };
   const mockPool = useMemo(() => {
-    if (path !== "consulting") return questions.mockQuestions;
+    if (path && path !== "consulting") return questions.mockQuestions;
     if (track === null) {
       const bank2 = [...trackMocks(marketId, "technical"), ...trackMocks(marketId, "behavioral")];
       return bank2.length ? bank2 : questions.mockQuestions;
@@ -100,6 +100,11 @@ function InterviewLabScreen() {
     }
     return bank.length ? bank : questions.mockQuestions;
   }, [path, track, marketId, questions.mockQuestions]);
+  const roleBank = useMemo(() => {
+    const t = track === null || track === "technical" ? trackMocks(marketId, "technical").map((m) => m.question) : [];
+    const b = track === null || track === "behavioral" || track === "technical" ? trackMocks(marketId, "behavioral").map((m) => m.question) : [];
+    return { technical: t, behavioral: b };
+  }, [marketId, track]);
   const allowMath = path === "consulting" && track === "case";
   const pressurePoolSize = allowMath && questions.mentalMathQuestions.length ? questions.mentalMathQuestions.length : questions.mcqQuestions.length;
   const rollQuestions = useCallback(() => {
@@ -249,6 +254,7 @@ function InterviewLabScreen() {
       marketId,
       readiness,
       nextQuestion: mock?.question,
+      bank: roleBank,
       topInset: insets.top,
       bottomInset: insets.bottom,
       onClose: () => router.back(),
@@ -256,7 +262,10 @@ function InterviewLabScreen() {
       onWarmUp: () => router.push({ pathname: "/leo-call", params: { marketId: marketId ?? "", mode: "interview" } }),
       onStart: (question) => {
         setPersona(personaForTrack(track));
-        if (question && question !== poolMock?.question) {
+        const match = question ? [...mockPool, ...trackMocks(marketId, "technical"), ...trackMocks(marketId, "behavioral")].find((m) => m.question === question) : void 0;
+        if (match) {
+          setLockedMock(match);
+        } else if (question && question !== poolMock?.question) {
           setLockedMock({ id: `card-${Date.now()}`, scenario: readiness.target?.company ? `${readiness.target.company} interview` : "Mock interview", question, buzzwords: [], sampleAnswer: "" });
         } else if (poolMock) {
           setLockedMock(poolMock);
@@ -293,7 +302,7 @@ function Coach({ text, onSpeak, speaking }) {
   return /* @__PURE__ */ React.createElement(View, { style: styles.coach }, /* @__PURE__ */ React.createElement(Image, { source: LEO, style: styles.coachAvatar, resizeMode: "contain" }), /* @__PURE__ */ React.createElement(Text, { style: styles.coachText }, text), onSpeak && /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: onSpeak }, /* @__PURE__ */ React.createElement(Feather, { name: speaking ? "volume-2" : "volume-1", size: 18, color: COLORS.accent })));
 }
 function Action({ label, color, onPress, disabled }) {
-  return /* @__PURE__ */ React.createElement(TouchableOpacity, { disabled, onPress, style: [styles.action, { backgroundColor: color }, disabled && styles.disabled] }, /* @__PURE__ */ React.createElement(Text, { style: styles.actionText }, label), /* @__PURE__ */ React.createElement(Feather, { name: "arrow-right", size: 18, color: COLORS.bg0 }));
+  return /* @__PURE__ */ React.createElement(TouchableOpacity, { disabled, onPress, style: [styles.action, { backgroundColor: disabled ? COLORS.accent : color }, disabled && styles.disabled] }, /* @__PURE__ */ React.createElement(Text, { style: styles.actionText }, label), /* @__PURE__ */ React.createElement(Feather, { name: "arrow-right", size: 18, color: COLORS.bg0 }));
 }
 function Debrief({ icon, title, body, color }) {
   return /* @__PURE__ */ React.createElement(View, { style: styles.debrief }, /* @__PURE__ */ React.createElement(Feather, { name: icon, size: 19, color }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: [styles.debriefTitle, { color }] }, title), /* @__PURE__ */ React.createElement(Text, { style: styles.debriefBody }, body || "No note this round.")));
@@ -358,7 +367,7 @@ const styles = StyleSheet.create({
   count: { color: COLORS.textMuted, fontSize: 12 },
   action: { height: 56, borderRadius: 16, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 9, marginTop: 4 },
   actionText: { color: COLORS.bg0, fontSize: 16, fontWeight: "900" },
-  disabled: { opacity: 0.4 },
+  disabled: { opacity: 0.3 },
   verdict: { minHeight: 210, borderRadius: 20, alignItems: "center", justifyContent: "center" },
   verdictLabel: { color: COLORS.bg0, fontSize: 11, fontWeight: "900", letterSpacing: 1.2 },
   verdictScore: { color: COLORS.bg0, fontSize: 72, lineHeight: 78, fontWeight: "900" },
