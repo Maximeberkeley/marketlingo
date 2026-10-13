@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { getMonthlyStandings, standingName } from '../lib/socialStandings';
 import { log } from '../lib/logger';
 function getRankIcon(rank) {
@@ -133,13 +133,13 @@ export default function LeaderboardScreen() {
                     <View style={styles.userMeta}>
                       <Text style={styles.levelText}>Lv. {entry.current_level}</Text>
                       {entry.current_streak > 0 && (<View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-                          <Feather name="activity" size={12} color={COLORS.orange}/>
+                          <MaterialCommunityIcons name="fire" size={13} color={COLORS.streak} />
                           <Text style={styles.streakText}>{entry.current_streak}</Text>
                         </View>)}
                     </View>
                   </View>
                   <View style={styles.xpChip}>
-                    <Feather name="zap" size={12} color={COLORS.accent}/>
+                    <MaterialCommunityIcons name="flask" size={13} color={COLORS.xpBadgeIcon} />
                     <Text style={styles.xpValue}>{entry.total_xp.toLocaleString()}</Text>
                   </View>
                 </View>);
