@@ -9,11 +9,11 @@ const NUMBER = /^\$?\d/i;
 function figures(text, keyPrefix) {
   return text.split(SIGNAL).map((part, index) => NUMBER.test(part) ? /* @__PURE__ */ React.createElement(Text, { key: `${keyPrefix}-${index}`, style: { fontWeight: "800" } }, part) : part);
 }
-function ColorText({ text, style, maxSentences = 2, maxLength = 170, numberOfLines, glossary = false }) {
+function ColorText({ text, style, maxSentences = 2, maxLength = 170, numberOfLines, glossary = false, keyTerms }) {
   const { marketId } = useDeepDiveTarget();
   const [open, setOpen] = useState(null);
   const shown = shortText(text, maxSentences, maxLength);
-  const terms = useMemo(() => glossary ? glossaryFor(marketId) : null, [glossary, marketId]);
+  const terms = useMemo(() => glossary ? glossaryFor(marketId, keyTerms) : null, [glossary, marketId, keyTerms]);
   const content = useMemo(() => {
     if (!terms) return figures(shown, "f");
     const out = [];
