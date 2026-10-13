@@ -1,6 +1,7 @@
 # MarketLingo roadmap
 
 ## Oct 13 — Practice artwork, protected sessions and Intel credit
+- [ ] Reduce lesson-completion XP banking delay and correct related loading-screen transitions.
 - [ ] Match flashcards to Daily quiz, research to Case, microphone to Interview and charts to Investment.
 - [ ] Disable swipe-back during practice sessions and keep result bubbles clear of copy and buttons; sync phone source pairs.
 - [ ] Make completed Intel count toward its Home circle and verify with focused tests.
