@@ -25,7 +25,7 @@ import { triggerHaptic } from '../lib/haptics';
 import { log } from '../lib/logger';
 import { useInterviewReadiness } from '../hooks/useInterviewReadiness';
 import { InterviewHome } from '../components/interview/InterviewHome';
-import { personaForTrack, roleTrack } from '../lib/interviewPrep';
+import { isEarlyCareerRole, orderInterviewMocks, pickInterviewIndex, personaForTrack, roleTrack } from '../lib/interviewPrep';
 
 const LEO = require('../assets/mascot/leo-idle.png');
 type Stage = 'brief' | 'framework' | 'pressure' | 'response' | 'verdict';
@@ -69,6 +69,7 @@ export default function InterviewLabScreen() {
   const questions = useInterviewQuestions(marketId, path || 'consulting');
   const readiness = useInterviewReadiness(marketId);
   const track = readiness.target ? roleTrack(readiness.target.role) : null;
+  const foundationsFirst = isEarlyCareerRole(readiness.target?.role);
   const { addXP } = useUserXP(marketId);
   const { recordCaseRun } = usePracticeRewards();
   const { evaluateRewards } = useCollectibles(marketId);
@@ -77,15 +78,6 @@ export default function InterviewLabScreen() {
   const [pressureIdx, setPressureIdx] = useState(0);
   const usedMock = useRef<Set<number>>(new Set());
   const usedPressure = useRef<Set<number>>(new Set());
-  const pickUnused = (size: number, used: Set<number>): number => {
-    if (size <= 0) return 0;
-    if (used.size >= size) used.clear();
-    const open: number[] = [];
-    for (let i = 0; i < size; i++) if (!used.has(i)) open.push(i);
-    const pick = open[Math.floor(Math.random() * open.length)];
-    used.add(pick);
-    return pick;
-  };
   // Technical and behavioral roles use their own bank first; never consulting cases or
   // mental math unless the role is genuinely a case track. No saved target = join_industry
   // default: technical + behavioral bank.
@@ -98,23 +90,23 @@ export default function InterviewLabScreen() {
     const bank = trackMocks(marketId, track);
     if (track === 'technical') {
       const fit = questions.mockQuestions.filter(m => /certif|technical|system|standard|regulat|engineer|architect|safety|spec/i.test(`${m.scenario} ${m.question}`));
-      return bank.length || fit.length ? [...bank, ...fit] : questions.mockQuestions;
+      return bank.length || fit.length ? orderInterviewMocks([...bank, ...trackMocks(marketId, 'behavioral'), ...fit], readiness.target?.role) : questions.mockQuestions;
     }
     return bank.length ? bank : questions.mockQuestions;
-  }, [path, track, marketId, questions.mockQuestions]);
+  }, [path, track, marketId, questions.mockQuestions, readiness.target?.role]);
   // Real role questions for the landing card and plan: the same bank the answer screen uses.
   const roleBank = useMemo(() => {
-    const t = track === null || track === 'technical' ? trackMocks(marketId, 'technical').map(m => m.question) : [];
+    const t = track === null || track === 'technical' ? orderInterviewMocks(trackMocks(marketId, 'technical'), readiness.target?.role).map(m => m.question) : [];
     const b = track === null || track === 'behavioral' || track === 'technical' ? trackMocks(marketId, 'behavioral').map(m => m.question) : [];
     return { technical: t, behavioral: b };
-  }, [marketId, track]);
+  }, [marketId, track, readiness.target?.role]);
   const allowMath = path === 'consulting' && track === 'case';
   const pressurePoolSize = allowMath && questions.mentalMathQuestions.length ? questions.mentalMathQuestions.length : questions.mcqQuestions.length;
   const rollQuestions = useCallback(() => {
-    setMockIdx(pickUnused(mockPool.length, usedMock.current));
-    setPressureIdx(pickUnused(pressurePoolSize, usedPressure.current));
+    setMockIdx(pickInterviewIndex(mockPool.length, usedMock.current, foundationsFirst));
+    setPressureIdx(pickInterviewIndex(pressurePoolSize, usedPressure.current));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mockPool, pressurePoolSize]);
+  }, [mockPool, pressurePoolSize, foundationsFirst]);
   useEffect(() => { usedMock.current.clear(); usedPressure.current.clear(); rollQuestions(); }, [rollQuestions, path]);
   const poolMock = mockPool[mockIdx] || mockPool[0];
   // The question shown on the home card is the question that opens on tap — locked at start.
@@ -229,6 +221,7 @@ export default function InterviewLabScreen() {
       marketId={marketId}
       readiness={readiness}
       nextQuestion={mock?.question}
+      questionBank={mockPool}
       bank={roleBank}
       topInset={insets.top}
       bottomInset={insets.bottom}
@@ -297,7 +290,7 @@ export default function InterviewLabScreen() {
 
         {stage === 'response' && mock && <>
           <Text style={styles.title}>Answer out loud—or type.</Text>
-          <View style={styles.prompt}><Text style={styles.promptLabel}>{short(mock.scenario, 95)}</Text><Text style={styles.promptText}>{short(mock.question, 180)}</Text></View>
+          <View style={styles.prompt}>{mock.scenario ? <Text style={styles.scenarioText}>{mock.scenario}</Text> : null}<Text style={styles.promptText}>{mock.question}</Text></View>
           <TextInput value={response} onChangeText={setResponse} multiline maxLength={1200} style={styles.input} placeholder="Lead with your answer. Then prove it." placeholderTextColor={COLORS.textMuted} />
           <View style={styles.responseActions}>
             <TouchableOpacity onPress={recording ? stopRecording : startRecording} style={[styles.record, recording && styles.recording]}><Feather name={recording ? 'square' : 'mic'} size={18} color={recording ? COLORS.bg0 : world.colors[0]} /><Text style={[styles.recordText, recording && { color: COLORS.bg0 }]}>{recording ? 'Stop' : 'Record'}</Text></TouchableOpacity>
@@ -339,6 +332,7 @@ const styles = StyleSheet.create({
   personas: { gap: 10 }, persona: { minHeight: 72, borderRadius: 15, borderWidth: 2, borderColor: COLORS.border, padding: 13, flexDirection: 'row', gap: 12, alignItems: 'center' }, personaTitle: { fontSize: 15, fontWeight: '800', color: COLORS.textPrimary }, personaText: { fontSize: 12, lineHeight: 17, color: COLORS.textSecondary, marginTop: 2 },
   coach: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: 15, backgroundColor: COLORS.accentSoft }, coachAvatar: { width: 44, height: 44 }, coachText: { flex: 1, fontSize: 13, lineHeight: 18, fontWeight: '600', color: COLORS.textPrimary },
   prompt: { padding: 18, borderRadius: 16, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border }, promptLabel: { fontSize: 10, color: COLORS.textMuted, fontWeight: '900', letterSpacing: 1, marginBottom: 7 }, promptText: { fontSize: 19, lineHeight: 25, color: COLORS.textPrimary, fontWeight: '800' },
+  scenarioText: { fontSize: 14, lineHeight: 20, fontWeight: '400', color: COLORS.textSecondary, marginBottom: 7 },
   frameworkRow: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 14, borderBottomWidth: 1, borderBottomColor: COLORS.border }, frameworkNumber: { width: 28, fontSize: 22, fontWeight: '900', textAlign: 'center' }, frameworkText: { flex: 1, fontSize: 15, lineHeight: 20, fontWeight: '700', color: COLORS.textPrimary },
   options: { gap: 9 }, option: { minHeight: 60, padding: 12, borderRadius: 14, borderWidth: 2, borderColor: COLORS.border, flexDirection: 'row', alignItems: 'center', gap: 11 }, optionLetter: { width: 28, height: 28, textAlign: 'center', textAlignVertical: 'center', borderRadius: 8, backgroundColor: COLORS.bg1, color: COLORS.textSecondary, fontWeight: '900' }, optionText: { flex: 1, color: COLORS.textPrimary, fontSize: 14, lineHeight: 19, fontWeight: '600' }, correct: { borderColor: COLORS.success, backgroundColor: COLORS.successSoft }, wrong: { borderColor: COLORS.error, backgroundColor: COLORS.errorSoft },
   feedback: { padding: 14, borderRadius: 14 }, feedbackTitle: { fontSize: 15, fontWeight: '900', color: COLORS.textPrimary }, feedbackText: { fontSize: 13, lineHeight: 18, color: COLORS.textSecondary, marginTop: 4 },
