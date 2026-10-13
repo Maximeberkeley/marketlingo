@@ -6,6 +6,16 @@ import { colonList } from "../cardPresentation";
 import { interviewQA } from "../glossary";
 import { tokens } from "../theme/tokens";
 const ALL = { maxSentences: 1e4, maxLength: 1e6, glossary: true };
+function readingTermCopy(text, body = "", evidence = false, preserveCover = false) {
+  const qa = interviewQA([text, body].filter(Boolean).join(" "));
+  if (qa) return { precedingText: [qa.before, qa.question, qa.answer], excludedText: [] };
+  const list = preserveCover ? null : colonList(text);
+  const headline = list?.headline || text;
+  return {
+    precedingText: [...evidence ? [headline] : [], ...list?.items || [], [list?.body, body].filter(Boolean).join("\n\n")],
+    excludedText: evidence ? [] : [headline]
+  };
+}
 function ReadingCopy({ text, body = "", evidence = false, preserveCover = false, keyTerms, precedingText = [], excludedText = [] }) {
   const copyProps = { ...ALL, keyTerms, excludedText };
   const qa = interviewQA([text, body].filter(Boolean).join(" "));
@@ -36,5 +46,6 @@ const styles = StyleSheet.create({
   answer: { fontSize: 17, lineHeight: 26, color: tokens.color.text }
 });
 export {
-  ReadingCopy
+  ReadingCopy,
+  readingTermCopy
 };
