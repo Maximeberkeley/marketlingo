@@ -1,12 +1,17 @@
-/**
- * Which lesson the reading view belongs to, so the deep layer can be fetched
- * on demand from inside the reader without threading props through every beat.
- */
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext } from "react";
 const DeepDiveContext = createContext({});
-export function DeepDiveProvider({ stackId, learningGoal, children, }) {
-    return (<DeepDiveContext.Provider value={{ stackId, learningGoal }}>{children}</DeepDiveContext.Provider>);
+function DeepDiveProvider({
+  stackId,
+  learningGoal,
+  marketId,
+  children
+}) {
+  return /* @__PURE__ */ React.createElement(DeepDiveContext.Provider, { value: { stackId, learningGoal, marketId } }, children);
 }
-export function useDeepDiveTarget() {
-    return useContext(DeepDiveContext);
+function useDeepDiveTarget() {
+  return useContext(DeepDiveContext);
 }
+export {
+  DeepDiveProvider,
+  useDeepDiveTarget
+};
