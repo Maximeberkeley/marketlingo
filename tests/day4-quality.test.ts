@@ -8,17 +8,13 @@ const rule = 'The buyer signs the contract, while the user works with the produc
 const slides = [{ slideNumber: 1, title: 'Buyer ≠ User', body: `${rule} Ask the buyer about budgets and the user about daily work.` }];
 
 describe('Day-4 lesson quality', () => {
-  it('teaches the rule before a three-option applied question with correct grading', () => {
+  it('keeps lessons without written questions reading-only, preserving the takeaway', () => {
     const { lesson } = buildBeats('Buyer ≠ User', slides, { key_takeaway: rule }, { learningGoal: 'join_industry' });
-    const index = lesson.exercises.findIndex(e => e.id === 'beat-apply-it');
-    expect(index).toBeGreaterThan(0);
-    expect(lesson.exercises.slice(0, index).some(e => e.kind === 'microInsight' && e.text === rule)).toBe(true);
-    const check = lesson.exercises[index];
-    if (check.kind !== 'multipleChoice') throw new Error('Missing applied check');
-    expect(check.options).toHaveLength(3);
-    expect(check.options[check.correctIndex]).toBe('Ask the buyer who approves the purchase.');
-    expect(check.explanation).toContain(rule);
-    expect(buildBeats('Buyer ≠ User', slides).lesson.exercises.some(e => e.kind === 'multipleChoice')).toBe(true);
+    expect(lesson.exercises.some(e => e.kind === 'multipleChoice')).toBe(false);
+    expect(lesson.exercises.some(e => e.kind === 'microInsight' && e.text === rule)).toBe(true);
+    expect(buildBeats('Buyer ≠ User', slides).lesson.exercises.some(e => e.kind === 'multipleChoice')).toBe(false);
+    const numeric = Array.from({ length: 5 }, (_, i) => ({ slideNumber: i + 1, title: 'Orders', body: `There are ${100 + i} aircraft on order. Deliveries take ${20 + i} months.` }));
+    expect(buildBeats('Orders', numeric).lesson.exercises.every(e => ['microInsight', 'coldOpen'].includes(e.kind))).toBe(true);
   });
 
   it('keeps startup copy for builders and rewrites it in generated and authored lessons for other goals', () => {

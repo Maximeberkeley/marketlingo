@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { glossaryFor } from '../mobile/lesson-kit/glossary';
+import { glossaryFor, cardGlossaryMatches } from '../mobile/lesson-kit/glossary';
 
 function highlighted(text: string, market = 'aerospace') {
   const glossary = glossaryFor(market);
@@ -9,6 +9,14 @@ function highlighted(text: string, market = 'aerospace') {
 }
 
 describe('Lesson terms throughout the early curriculum', () => {
+  it('highlights only first occurrences, at most three across separate blocks', () => {
+    const glossary = glossaryFor('aerospace');
+    const first = 'Tier 1 and Tier 1s use OEMs and backlog.';
+    expect(cardGlossaryMatches(first, glossary).map(m => m.text)).toEqual(['Tier 1', 'OEMs', 'backlog']);
+    expect(cardGlossaryMatches('Backlogs, certification and EASA.', glossary, [first])).toEqual([]);
+    expect(cardGlossaryMatches('DERs and FAA oversee certification.', glossary, [], ['DERs are FAA-delegated specialists.']).map(m => m.text)).toEqual(['certification']);
+    expect(cardGlossaryMatches(first, glossary)).toEqual(cardGlossaryMatches(first, glossary));
+  });
   it.each([
     'Tier 1 OEMs supply chain aftermarket',
     'installed base working capital milestone payments',

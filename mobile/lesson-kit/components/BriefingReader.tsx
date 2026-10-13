@@ -120,6 +120,8 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
               maxLength={10000}
               glossary
               keyTerms={keyTerms}
+              excludedText={[title]}
+              precedingText={sections.slice(0, index)}
             />
           ))}
 
@@ -152,7 +154,7 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
             <View style={styles.deep}>
               <Text style={styles.sectionLabel}>DEEP LAYER</Text>
               <Text style={styles.deepConcept}>{deepDive.concept}</Text>
-              <ColorText text={deepDive.summary} style={styles.body} maxSentences={10000} maxLength={1000000} glossary keyTerms={deepDive.key_terms} />
+              <ColorText text={deepDive.summary} style={styles.body} maxSentences={10000} maxLength={1000000} glossary keyTerms={deepDive.key_terms} excludedText={[title, deepDive.concept]} precedingText={sections} />
 
               {!!deepDive.mechanism?.length && (
                 <View style={styles.deepBlock}>
@@ -162,7 +164,7 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
                       <Text style={styles.stepIndex}>{index + 1}</Text>
                       <View style={styles.stepCopy}>
                         <Text style={styles.stepLabel}>{step.step}</Text>
-                        <ColorText text={step.detail} style={styles.stepDetail} maxSentences={10000} maxLength={1000000} glossary keyTerms={deepDive.key_terms} />
+                        <ColorText text={step.detail} style={styles.stepDetail} maxSentences={10000} maxLength={1000000} glossary keyTerms={deepDive.key_terms} excludedText={[title, deepDive.concept, step.step]} precedingText={[...sections, deepDive.summary, ...deepDive.mechanism.slice(0, index).map(item => item.detail)]} />
                       </View>
                     </View>
                   ))}
@@ -174,7 +176,7 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
                   <Text style={styles.deepHeading}>In the real world</Text>
                   <Text style={styles.caseCompany}>{deepDive.case_study.company}</Text>
                   {!!deepDive.case_study.situation && (
-                    <ColorText text={deepDive.case_study.situation} style={styles.stepDetail} maxSentences={10000} maxLength={1000000} glossary keyTerms={deepDive.key_terms} />
+                    <ColorText text={deepDive.case_study.situation} style={styles.stepDetail} maxSentences={10000} maxLength={1000000} glossary keyTerms={deepDive.key_terms} excludedText={[title, deepDive.concept]} precedingText={[...sections, deepDive.summary, ...(deepDive.mechanism || []).map(item => item.detail)]} />
                   )}
                   {deepDive.case_study.figures?.map((figure, index) => (
                     <View key={`${index}-fig`} style={styles.figureRow}>
@@ -183,7 +185,7 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
                     </View>
                   ))}
                   {!!deepDive.case_study.outcome && (
-                    <ColorText text={deepDive.case_study.outcome} style={styles.stepDetail} maxSentences={10000} maxLength={1000000} glossary keyTerms={deepDive.key_terms} />
+                    <ColorText text={deepDive.case_study.outcome} style={styles.stepDetail} maxSentences={10000} maxLength={1000000} glossary keyTerms={deepDive.key_terms} excludedText={[title, deepDive.concept]} precedingText={[...sections, deepDive.summary, ...(deepDive.mechanism || []).map(item => item.detail), deepDive.case_study.situation || '']} />
                   )}
                 </View>
               )}

@@ -42,10 +42,12 @@ describe('Practice clarity', () => {
   it('maps each supplied drawing to its real activity', () => {
     const map = read('mobile/lib/interviewArtwork.ts');
     for (const [key, art] of [['quiz', 'flashcards'], ['case', 'research'], ['practice', 'speaking'], ['investment', 'analysis']]) {
-      expect(map).toContain(`${key}: { uri: new URL(${art}.url`);
+      expect(map).toContain(`${key}: ${art}`);
+      expect(map).toContain(`require('../assets/illustrations/interview-${art}.jpg')`);
       expect(read('mobile/app/(tabs)/practice.tsx')).toContain(`hero: INTERVIEW_ARTWORK.${key}`);
     }
     expect(read('mobile/app/(tabs)/practice.tsx')).not.toContain('daily-arena-hero.jpg');
+    expect(map).not.toMatch(/https:|\.asset\.json|new URL/);
   });
   it('disables both native back gestures on all practice routes', () => {
     const source = read('mobile/app/_layout.tsx');

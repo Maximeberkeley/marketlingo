@@ -5,6 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
+import { LessonNavigationProvider, useLessonNavigation } from '../../lib/lessonNavigation';
 
 const TAB_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   home: 'home',
@@ -45,13 +46,19 @@ function TabBarIcon({ name, focused }: { name: string; focused: boolean }) {
 }
 
 export default function TabLayout() {
+  return <LessonNavigationProvider><TabNavigator /></LessonNavigationProvider>;
+}
+
+function TabNavigator() {
   const insets = useSafeAreaInsets();
+  const { hidden } = useLessonNavigation();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
+          display: hidden ? 'none' : 'flex',
           backgroundColor: COLORS.bg0,
           borderTopColor: COLORS.border,
           borderTopWidth: StyleSheet.hairlineWidth,
