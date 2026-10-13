@@ -67,7 +67,7 @@ export const mentors: Mentor[] = [
     avatar: mentorSophia,
     greeting: "Hey there! Ready to unlock your next level of growth? I'm here to help you shine.",
     specialties: ["Customer relationships", "Strategic partnerships", "Team building", "Neurotech", "Regulatory navigation"],
-    voiceId: 'pFZP5JQG7iQjIQuC4Bku', // Lily
+    voiceId: 'MtzY9FD6OSlkIuEBAHn3', // Sophia
     expressions: {
       thinking: ["Hmm, let me think...", "That's a deep one!", "Interesting angle..."],
       cheering: ["You're crushing it! 🎉", "Amazing work!", "Yes! Nailed it! 💪", "I knew you could do it!"],
