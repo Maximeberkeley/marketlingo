@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack, router } from 'expo-router';
@@ -131,20 +131,20 @@ export default function RootLayout() {
                 <Stack.Screen name="deliverable" options={{ animation: 'fade' }} />
                 <Stack.Screen name="focus" />
                 <Stack.Screen name="streak-rescue" />
-                <Stack.Screen name="arena" options={{ animation: 'fade' }} />
-                <Stack.Screen name="deep-case" options={{ animation: 'fade' }} />
-                <Stack.Screen name="trainer" />
-                <Stack.Screen name="games" />
-                <Stack.Screen name="drills" />
+                <Stack.Screen name="arena" options={{ animation: 'fade', gestureEnabled: false, fullScreenGestureEnabled: false }} />
+                <Stack.Screen name="deep-case" options={{ animation: 'fade', gestureEnabled: false, fullScreenGestureEnabled: false }} />
+                <Stack.Screen name="trainer" options={{ gestureEnabled: false, fullScreenGestureEnabled: false }} />
+                <Stack.Screen name="games" options={{ gestureEnabled: false, fullScreenGestureEnabled: false }} />
+                <Stack.Screen name="drills" options={{ gestureEnabled: false, fullScreenGestureEnabled: false }} />
                 <Stack.Screen name="summaries" />
                 <Stack.Screen name="achievements" />
                 <Stack.Screen name="collection" />
                 <Stack.Screen name="leaderboard" />
                 <Stack.Screen name="settings" />
-                <Stack.Screen name="interview-lab" />
+                <Stack.Screen name="interview-lab" options={{ gestureEnabled: false, fullScreenGestureEnabled: false }} />
                 <Stack.Screen name="leo-call" options={{ animation: 'fade', gestureEnabled: false }} />
-                <Stack.Screen name="investment-lab" />
-                <Stack.Screen name="investment-module" />
+                <Stack.Screen name="investment-lab" options={{ gestureEnabled: false, fullScreenGestureEnabled: false }} />
+                <Stack.Screen name="investment-module" options={{ gestureEnabled: false, fullScreenGestureEnabled: false }} />
                 <Stack.Screen name="investment-certificate" />
                 <Stack.Screen name="investment-watchlist" />
                 <Stack.Screen name="regulatory-hub" />

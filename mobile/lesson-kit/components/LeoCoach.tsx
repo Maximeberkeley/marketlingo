@@ -87,8 +87,11 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
         </View>
 
         {/* Clean illustrated speech balloon — one shape and one integrated tail. */}
-        {speaking ? (
+        <View style={styles.bubbleSlot}>
           <Animated.View
+            pointerEvents={speaking ? 'auto' : 'none'}
+            accessibilityElementsHidden={!speaking}
+            importantForAccessibility={speaking ? 'auto' : 'no-hide-descendants'}
             style={[
               styles.bubbleWrap,
               { opacity: enter, transform: [{ scale: pop }, { translateY: rise }] },
@@ -98,9 +101,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
               <ColorText text={line} style={styles.text} maxSentences={2} maxLength={110} />
             </SpeechBubble>
           </Animated.View>
-        ) : (
-          <View style={styles.bubbleWrap} pointerEvents="none" />
-        )}
+        </View>
       </View>
     </View>
   );
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
     marginBottom: tokens.space.sm,
   },
   scene: {
-    height: SCENE_H,
+    minHeight: SCENE_H,
     flexDirection: 'row',
     alignItems: 'flex-end',
   },
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     zIndex: 1,
   },
-  bubbleWrap: {
+  bubbleSlot: {
     flex: 1,
     alignSelf: 'center',
     marginRight: tokens.space.sm,
@@ -135,6 +136,7 @@ const styles = StyleSheet.create({
     // Always above Leo — even if his artwork overhangs, the words stay readable.
     zIndex: 2,
   },
+  bubbleWrap: { width: '100%' },
   bubble: { width: '100%' },
   text: {
     fontSize: 16,
