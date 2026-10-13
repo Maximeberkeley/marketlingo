@@ -1,5 +1,11 @@
 # MarketLingo roadmap
 
+## Oct 13 — Voices, interview artwork, lesson glossary
+- [ ] Confirm Leo's exact workspace voice and assign Sophia's previous Lily voice.
+- [ ] Upload and use all four supplied interview illustrations.
+- [ ] Extend meaningful purple lesson definitions across the first 15 days and synchronize phone source pairs.
+- [ ] Run focused voice, artwork and glossary checks; native appearance requires an iPhone build.
+
 ## Oct 13 — Notes orbit progress
 - [x] Include today's saved notebook note in the five-activity Home circle and refresh on return, scoped to learner, industry and local day; synchronize phone sources and test the ring.
 - [ ] Verify saving a note and returning Home on iPhone (blocked: no iOS device/simulator).
