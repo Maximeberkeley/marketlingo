@@ -64,7 +64,7 @@ export interface LessonScreenProps {
   lesson: Lesson;
   onExit: () => void;
   /** Fired when the learner finishes the lesson and taps the final CTA. */
-  onFinish: (result: { correct: number; total: number; xp: number; timeSpentSeconds: number }) => void;
+  onFinish: (result: { correct: number; total: number; xp: number; timeSpentSeconds: number }) => void | boolean | Promise<void | boolean>;
   xpPerCorrect?: number;
   /** Rendered in the header overflow menu (e.g. Note / Save). */
   renderExtraActions?: (exerciseIndex: number, dismiss: () => void, exercise?: Exercise) => React.ReactNode;

@@ -22,7 +22,7 @@ interface Props {
   timeSpentSeconds?: number;
   streakDays?: number;
   /** Receives the final XP total (base + bonus). */
-  onDone: (xp: number) => void;
+  onDone: (xp: number) => void | boolean | Promise<void | boolean>;
   doneLabel?: string;
   /** How many things the learner asked Leo during the lesson. */
   leoQuestions?: number;
@@ -72,6 +72,20 @@ export function LessonComplete({
   const totalXp = bonuses.reduce((sum, line) => sum + line.xp, 0);
 
   const [shown, setShown] = useState(0);
+  const [saving, setSaving] = useState(false);
+  const saveInFlight = useRef(false);
+  const finish = async (navigate?: () => void) => {
+    if (saveInFlight.current) return;
+    saveInFlight.current = true;
+    setSaving(true);
+    try {
+      const saved = await onDone(totalXp);
+      if (saved !== false) navigate?.();
+    } finally {
+      saveInFlight.current = false;
+      setSaving(false);
+    }
+  };
 
   useEffect(() => {
     playSound('celebration').catch(() => {});
@@ -128,11 +142,11 @@ export function LessonComplete({
       {!dossier.loading && (
         <TouchableOpacity
           style={styles.dossierCard}
+          disabled={saving}
           activeOpacity={0.85}
           onPress={() => {
             triggerHaptic('medium');
-            onDone(totalXp);
-            router.push({ pathname: '/deliverable', params: nextSection ? { section: nextSection.key } : {} });
+            void finish(() => router.push({ pathname: '/deliverable', params: nextSection ? { section: nextSection.key } : {} }));
           }}
         >
           <View style={styles.dossierIcon}>
@@ -152,13 +166,12 @@ export function LessonComplete({
       <TouchableOpacity
         accessibilityRole="button"
         accessibilityLabel={calledToday ? 'Next call tomorrow' : 'Call Leo, 3 minutes'}
-        disabled={calledToday}
+        disabled={calledToday || saving}
         style={[styles.callBtn, calledToday && { opacity: 0.55 }]}
         activeOpacity={0.8}
         onPress={() => {
           triggerHaptic('medium');
-          onDone(totalXp);
-          router.push({ pathname: '/leo-call', params: { marketId: marketId ?? '', lessonTitle: lessonTitle ?? '', takeaway: takeaway ?? '' } });
+          void finish(() => router.push({ pathname: '/leo-call', params: { marketId: marketId ?? '', lessonTitle: lessonTitle ?? '', takeaway: takeaway ?? '' } }));
         }}
       >
         <Feather name="phone" size={16} color={tokens.color.accent} />
@@ -169,21 +182,22 @@ export function LessonComplete({
         accessibilityRole="link"
         accessibilityLabel="Today's intel · 3 stories →"
         style={styles.intelLink}
+        disabled={saving}
         activeOpacity={0.7}
         onPress={() => {
           triggerHaptic('light');
-          onDone(totalXp);
-          router.push({ pathname: '/(tabs)/roadmap', params: { autoOpen: '1' } });
+          void finish(() => router.push({ pathname: '/(tabs)/roadmap', params: { autoOpen: '1' } }));
         }}
       >
         <Text style={styles.intelLinkText}>Today's intel · 3 stories →</Text>
       </TouchableOpacity>
 
       <PrimaryButton
-        label={doneLabel}
+        label={saving ? 'Saving your XP…' : doneLabel}
+        variant={saving ? 'disabled' : 'primary'}
         onPress={() => {
           triggerHaptic('light');
-          onDone(totalXp);
+          void finish();
         }}
         style={styles.cta}
       />
