@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { runInNewContext } from 'node:vm';
 import { cardGlossaryMatches, glossaryFor, interviewQA } from '../mobile/lesson-kit/glossary';
 import { colonList } from '../mobile/lesson-kit/cardPresentation';
-import { tokens } from '../mobile/lesson-kit/theme/tokens';
+const tokens = { color: {}, space: {}, radius: {} };
 
 const read = (path: string) => readFileSync(path, 'utf8');
 const transform = (source: string, loader = 'tsx', format = 'cjs') => execFileSync(process.execPath,
