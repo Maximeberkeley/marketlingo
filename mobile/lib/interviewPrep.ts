@@ -16,6 +16,27 @@ export interface InterviewTarget {
 
 export type RoleTrack = 'technical' | 'behavioral' | 'case';
 
+/** Early-career learners work through foundations before specialist prompts. */
+export function isEarlyCareerRole(role?: string | null): boolean {
+  return /\b(intern\w*|co[\s-]?op|student|new[\s-]?grad\w*)\b/i.test(role || '');
+}
+
+export function orderInterviewMocks<T extends { id?: string }>(mocks: T[], role?: string | null): T[] {
+  if (!isEarlyCareerRole(role)) return mocks;
+  const basics = new Set(['aero-tech-2', 'aero-tech-3', 'aero-tech-7', 'aero-tech-10']);
+  const rank = (m: T) => m.id?.startsWith('aero-beh-') ? 0 : basics.has(m.id || '') ? 1 : 2;
+  return [...mocks].sort((a, b) => rank(a) - rank(b));
+}
+
+export function pickInterviewIndex(size: number, used: Set<number>, foundationsFirst = false): number {
+  if (size <= 0) return 0;
+  if (used.size >= size) used.clear();
+  const open = Array.from({ length: size }, (_, i) => i).filter(i => !used.has(i));
+  const index = foundationsFirst ? open[0] : open[Math.floor(Math.random() * open.length)];
+  used.add(index);
+  return index;
+}
+
 const key = (userId: string, marketId: string) => `ml_interview_target:${userId}:${marketId}`;
 
 export async function loadInterviewTarget(userId?: string | null, marketId?: string | null): Promise<InterviewTarget | null> {
@@ -41,6 +62,7 @@ export async function saveInterviewTarget(userId: string, marketId: string, targ
  */
 export function roleTrack(role?: string | null): RoleTrack {
   const r = (role || '').toLowerCase();
+  if (isEarlyCareerRole(role)) return 'technical';
   if (/(recruit|talent|hr\b|human resources|people ops|sourcer)/.test(r)) return 'behavioral';
   if (/(consult|strategy|strategist|analyst|case)/.test(r)) return 'case';
   return 'technical';
@@ -116,6 +138,12 @@ export interface SprintDay {
   fullMock: boolean;
 }
 
+/** A concept subtitle must describe a concept task, not falsely ground a bank question. */
+export function planConceptSubtitle(day: SprintDay): string | null {
+  if (day.kind !== 'concept' && day.kind !== 'brief') return null;
+  return day.label.toLowerCase().includes(day.concept.toLowerCase()) ? null : day.concept;
+}
+
 function addDays(iso: string, n: number): string {
   const [y, m, d] = iso.split('-').map(Number);
   const dt = new Date(Date.UTC(y, m - 1, d + n));
@@ -160,13 +188,14 @@ export function buildSprintPlan(opts: {
   const behav = opts.bank?.behavioral || [];
   // Day seed so today's question changes every day and never repeats two days running.
   const seed = Math.floor(Date.parse(`${today}T00:00:00Z`) / 86400000) || 0;
-  const pickQ = (list: string[], n: number) => list[(seed + n) % list.length];
+  const foundationsFirst = isEarlyCareerRole(opts.target.role);
+  const pickQ = (list: string[], n: number) => list[((foundationsFirst ? 0 : seed) + n) % list.length];
   type Line = { kind: SprintDay['kind']; label: string; mock: string; newsTitle?: string };
   const qKinds: Array<(n: number, c: string) => Line> = [];
   if (tech.length) qKinds.push(n => ({ kind: 'technical', label: 'Technical question', mock: pickQ(tech, n) }));
   if (behav.length) qKinds.push(n => ({ kind: 'behavioral', label: 'Behavioral question', mock: pickQ(behav, n) }));
   if (!qKinds.length) qKinds.push((_n, c) => ({ kind: 'concept', label: 'Concept question', mock: `Explain ${c.toLowerCase()} to a ${company} interviewer in ninety seconds.` }));
-  if (qKinds.length === 2 && seed % 2 === 1) qKinds.reverse();
+  if (qKinds.length === 2 && (foundationsFirst || seed % 2 === 1)) qKinds.reverse();
   const slots: Array<(i: number, c: string, n: number) => Line> = qKinds.map(f => (_i: number, c: string, n: number) => f(n, c));
   if (opts.news.length) slots.push(i => { const t = opts.news[i % opts.news.length]; return { kind: 'news', label: `Current events: ${t}`, mock: `Be ready to discuss: ${t}`, newsTitle: t }; });
   slots.push((_i, c) => ({ kind: 'brief', label: `Brief line: ${c}`, mock: `Write one Brief line about ${c.toLowerCase()} you could say out loud.` }));

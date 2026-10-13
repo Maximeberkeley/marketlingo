@@ -3,7 +3,8 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
-import { buildSprintPlan, daysUntil, shortDate, weekKey } from '../../lib/interviewPrep';
+import { buildSprintPlan, daysUntil, planConceptSubtitle, shortDate, weekKey } from '../../lib/interviewPrep';
+import type { MockPrompt } from '../../lib/interviewLabData';
 import type { InterviewReadiness } from '../../hooks/useInterviewReadiness';
 import { InterviewTargetForm } from './InterviewTargetForm';
 import { triggerHaptic } from '../../lib/haptics';
@@ -14,6 +15,7 @@ interface Props {
   readiness: InterviewReadiness;
   /** Question text shown on the card when there is no saved interview. */
   nextQuestion?: string;
+  questionBank?: MockPrompt[];
   /** Role question bank used for today's question and plan rows. */
   bank?: { technical: string[]; behavioral: string[] };
   topInset: number;
@@ -29,7 +31,7 @@ interface Props {
 const askedKey = (u: string, m: string) => `ml_interview_target_asked:${u}:${m}`;
 
 /** Interview Lab landing: built from what the learner already told us (goal, saved interview). */
-export function InterviewHome({ userId, marketId, readiness, nextQuestion, bank, topInset, bottomInset, onClose, onStart, onWarmUp, onOpenBrief, onSchool }: Props) {
+export function InterviewHome({ userId, marketId, readiness, nextQuestion, questionBank = [], bank, topInset, bottomInset, onClose, onStart, onWarmUp, onOpenBrief, onSchool }: Props) {
   const { target, percent, parts, concepts, news } = readiness;
   const days = daysUntil(target?.date);
   const [asked, setAsked] = useState(true);
@@ -52,6 +54,8 @@ export function InterviewHome({ userId, marketId, readiness, nextQuestion, bank,
   }, [bank, target?.updatedAt, days, concepts.join('|'), news.join('|')]);
   const today = sprint[0];
   const datedSprint = !!target && days != null && days >= 0 && days < 14;
+  const cardQuestion = target && today ? today.mock : nextQuestion;
+  const cardScenario = questionBank.find(q => q.question === cardQuestion)?.scenario;
 
   const headline = target
     ? `${target.company} ${target.role}`
@@ -75,14 +79,18 @@ export function InterviewHome({ userId, marketId, readiness, nextQuestion, bank,
           {target && today ? (
             <>
               <Text style={styles.stepLabel}>{`TODAY · ${today.dateLabel.toUpperCase()}`}</Text>
+              {cardScenario ? <Text style={styles.scenario} numberOfLines={1}>{cardScenario}</Text> : null}
               <Text style={styles.stepText}>{today.mock}</Text>
-              {!today.fullMock && <Text style={styles.stepMeta}>{`Link it to: ${today.concept}`}</Text>}
+              {today.kind === 'concept' && <Text style={styles.stepMeta}>{`Link it to: ${today.concept}`}</Text>}
             </>
           ) : nextQuestion ? (
-            <Text style={styles.stepText}>{nextQuestion}</Text>
+            <>
+              {cardScenario ? <Text style={styles.scenario} numberOfLines={1}>{cardScenario}</Text> : null}
+              <Text style={styles.stepText}>{nextQuestion}</Text>
+            </>
           ) : null}
 
-          <TouchableOpacity style={styles.primary} activeOpacity={0.88} onPress={() => { triggerHaptic('medium'); onStart(target && today ? today.mock : nextQuestion); }}>
+          <TouchableOpacity style={styles.primary} activeOpacity={0.88} onPress={() => { triggerHaptic('medium'); onStart(cardQuestion); }}>
             <Text style={styles.primaryText}>{target ? 'Answer today’s question' : 'Answer a mock question'}</Text>
           </TouchableOpacity>
 
@@ -114,7 +122,7 @@ export function InterviewHome({ userId, marketId, readiness, nextQuestion, bank,
                 <Text style={styles.planDate}>{d.dateLabel}</Text>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.planText}>{d.label}</Text>
-                  {!d.fullMock && <Text style={styles.planSub}>{d.concept}</Text>}
+                  {planConceptSubtitle(d) ? <Text style={styles.planSub}>{planConceptSubtitle(d)}</Text> : null}
                 </View>
               </View>
             ))}
@@ -164,6 +172,7 @@ const styles = StyleSheet.create({
   countdown: { color: COLORS.accent },
   stepLabel: { marginTop: 14, fontSize: 11, fontWeight: '800', color: COLORS.textMuted },
   stepText: { marginTop: 8, fontSize: 17, lineHeight: 24, fontWeight: '700', color: COLORS.textPrimary },
+  scenario: { marginTop: 10, fontSize: 14, lineHeight: 20, fontWeight: '400', color: COLORS.textSecondary },
   stepMeta: { marginTop: 6, fontSize: 13, color: COLORS.textSecondary },
   primary: { marginTop: 18, height: 54, borderRadius: 16, backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center' },
   primaryText: { color: COLORS.textOnAccent, fontSize: 16, fontWeight: '900' },
