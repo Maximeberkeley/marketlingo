@@ -1,5 +1,11 @@
 # MarketLingo roadmap
 
+## Oct 13 — Focused lessons and offline artwork
+- [ ] Limit definitions to first occurrences, three per card, never headlines.
+- [ ] Skip daily lesson quizzes when no real written question exists.
+- [ ] Hide tabs throughout lesson introduction, reading and completion, restoring them on exit.
+- [ ] Bundle the four supplied drawings in Daily quiz / Deep Case / Interview / Investment order; synchronize phone source pairs and test.
+
 ## Oct 13 — Practice artwork, protected sessions and Intel credit
 - [x] Remove redundant streak/reminder/Home refresh waits from lesson banking; keep results visible while saving, guard repeated taps and defer secondary navigation until successful saving. Fresh XP reads no longer retrigger their own loading effect.
 - [x] Match flashcards to Daily quiz, research to Case, microphone to Interview and charts/calculator/coins to Investment Lab; visually inspected all supplied drawings.
