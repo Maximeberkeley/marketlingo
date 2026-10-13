@@ -98,6 +98,28 @@ function glossaryFor(marketId, lessonTerms = []) {
   };
   return { pattern, lookup };
 }
+function cardGlossaryMatches(text, glossary, precedingText = [], excludedText = []) {
+  const seen = /* @__PURE__ */ new Set();
+  let count = 0;
+  const scan = (copy, eligible) => {
+    const matches = [];
+    if (!glossary) return matches;
+    for (const match of copy.matchAll(glossary.pattern)) {
+      const entry = glossary.lookup(match[0]);
+      if (!entry) continue;
+      const key = entry.term.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      if (!eligible || count >= 3) continue;
+      count += 1;
+      matches.push({ index: match.index ?? 0, text: match[0], entry });
+    }
+    return matches;
+  };
+  excludedText.forEach((copy) => scan(copy, false));
+  precedingText.forEach((copy) => scan(copy, true));
+  return scan(text, true);
+}
 function interviewQA(text) {
   const m = text.match(/^([\s\S]*?)\b(?:INTERVIEW\s+Q(?:UESTION)?|Q)\s*:\s*([\s\S]+?)\s*\b(?:MODEL\s+ANSWER|SAMPLE\s+ANSWER|A)\s*:\s*([\s\S]+)$/);
   if (!m) return null;
@@ -107,6 +129,7 @@ function interviewQA(text) {
   return question && answer ? { before: m[1].trim(), question, answer } : null;
 }
 export {
+  cardGlossaryMatches,
   glossaryFor,
   interviewQA
 };
