@@ -8,7 +8,9 @@ const transform = (source: string, loader: string, format = 'esm') => execFileSy
   ['--input-type=module', '-e', `import {transformSync} from 'esbuild'; process.stdout.write(transformSync(${JSON.stringify(source)}, {loader:${JSON.stringify(loader)},jsx:'transform',format:${JSON.stringify(format)},target:'es2020'}).code);`], { encoding: 'utf8' });
 const pairs = ['mobile/lib/interviewArtwork', 'mobile/app/(tabs)/practice', 'mobile/app/_layout',
   'mobile/lesson-kit/components/LeoCoach', 'mobile/lesson-kit/case/CaseScreen',
-  'mobile/hooks/useIntelHabit', 'mobile/components/home/DailyNews', 'mobile/app/(tabs)/home'];
+  'mobile/hooks/useIntelHabit', 'mobile/components/home/DailyNews', 'mobile/app/(tabs)/home',
+  'mobile/hooks/useSessionFlow', 'mobile/hooks/useUserXP',
+  'mobile/lesson-kit/screens/LessonComplete', 'mobile/lesson-kit/screens/LessonScreen'];
 
 function intelHarness() {
   const values: any[] = [];
@@ -87,11 +89,58 @@ describe('Practice clarity', () => {
   });
   it('keeps all touched JavaScript copies synchronized and imports React', () => {
     for (const path of pairs) {
-      const ext = path.endsWith('interviewArtwork') || path.endsWith('useIntelHabit') ? 'ts' : 'tsx';
+      const ext = path.includes('/hooks/') || path.endsWith('interviewArtwork') ? 'ts' : 'tsx';
       const expected = transform(read(path + '.' + ext), ext);
       const js = read(path + '.js');
       expect(js).toBe(expected);
       if (js.includes('React.createElement')) expect(js).toContain('import React');
     }
+  });
+  it('keeps the lesson visible while banking and never waits for the Home refresh', async () => {
+    const source = read('mobile/hooks/useSessionFlow.ts').replace(/^import .*;\n/gm, '');
+    const values: any[] = []; let cursor = 0;
+    let resolveCredit: (() => void) | undefined;
+    const credit = new Promise<void>(resolve => { resolveCredit = resolve; });
+    const calls: string[] = [];
+    const context: any = { module: { exports: {} }, exports: {},
+      useState: (initial: any) => { const i = cursor++; if (!(i in values)) values[i] = initial; return [values[i], (value: any) => { values[i] = value; }]; },
+      useCallback: (fn: any) => fn, Alert: { alert: () => {} },
+      triggerHaptic: () => {}, trackEvent: () => {}, log: { error: () => {} },
+      getMarketName: () => 'Aerospace', getMarketEmoji: () => '',
+    };
+    runInNewContext(transform(source, 'ts', 'cjs'), context);
+    const props: any = { progress: { current_streak: 0 }, selectedMarket: 'aerospace',
+      completeStack: async () => { calls.push('stack'); },
+      completeLessonForToday: async () => { calls.push('credit'); await credit; },
+      updateStreak: async () => { calls.push('streak'); return { current_streak: 1 }; },
+      checkStreakMilestone: () => {}, checkLevelMilestone: () => {},
+      xpRewardLessonComplete: 50,
+      onDataRefresh: async () => { throw new Error('Must not refresh before confirmation'); },
+    };
+    const render = () => { cursor = 0; return context.module.exports.useSessionFlow(props); };
+    render().handleOpenStack({ id: 'stack-1', stack_type: 'MICRO_LESSON' });
+    render().handleGoalsStart();
+    const pending = render().handleStackComplete(false, 60);
+    await Promise.resolve(); await Promise.resolve();
+    expect(render().showReader).toBe(true);
+    expect(render().showSessionComplete).toBe(false);
+    resolveCredit?.();
+    expect(await pending).toBe(true);
+    expect(render().showReader).toBe(false);
+    expect(render().showSessionComplete).toBe(true);
+    expect(render().sessionXPEarned).toBe(50);
+    expect(calls).toEqual(['stack', 'credit', 'streak']);
+  });
+  it('guards completion buttons and secondary navigation until saving succeeds', () => {
+    const source = read('mobile/lesson-kit/screens/LessonComplete.tsx');
+    expect(source).toContain('if (saveInFlight.current) return');
+    expect(source).toContain('const saved = await onDone(totalXp)');
+    expect(source).toContain('if (saved !== false) navigate?.()');
+    expect(source).toContain("saving ? 'Saving your XP…'");
+    const xp = read('mobile/hooks/useUserXP.ts');
+    expect(xp).toContain('ensureXPRecord(true)');
+    expect(xp).not.toContain('[user, marketId, xpData]');
+    expect(xp).not.toContain('await cancelRollingLeoNudges()');
+    expect(read('mobile/app/(tabs)/home.tsx')).toContain('if (!activeLessonScreen &&');
   });
 });
