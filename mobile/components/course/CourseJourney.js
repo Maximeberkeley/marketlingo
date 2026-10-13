@@ -148,6 +148,7 @@ function SectionCluster({
   lessonCompletedToday,
   arenaCompletedToday,
   caseCompletedToday,
+  notesCompletedToday,
   intelDone,
   isFocused,
   onModule,
@@ -167,12 +168,13 @@ function SectionCluster({
     if (kind === "arena") return arenaCompletedToday;
     if (kind === "case") return caseCompletedToday;
     if (kind === "intel") return intelDone;
+    if (kind === "notes") return notesCompletedToday;
     return false;
   };
-  const coreCompleted = ["lesson", "arena", "case", "intel"].filter((kind) => moduleComplete(kind)).length;
+  const coreCompleted = MODULES.filter((module) => moduleComplete(module.kind)).length;
   const orbitRadius = 132.5;
   const orbitCircumference = 2 * Math.PI * orbitRadius;
-  const orbitOffset = orbitCircumference * (1 - coreCompleted / 4);
+  const orbitOffset = orbitCircumference * (1 - coreCompleted / MODULES.length);
   const longTitle = weekTitle.length > 35;
   return /* @__PURE__ */ React.createElement(View, { style: styles.sectionBlock }, /* @__PURE__ */ React.createElement(SectionHeader, { section, title, onPress: onHeader }), /* @__PURE__ */ React.createElement(View, { style: styles.weekHeading }, /* @__PURE__ */ React.createElement(View, { style: styles.weekHeadingCopy }, /* @__PURE__ */ React.createElement(Text, { style: styles.weekEyebrow }, lessonDayLabel(section.displayDay, calendarDay, lessonDone)), !section.unlocked ? /* @__PURE__ */ React.createElement(Text, { style: [styles.weekTitle, styles.lockedText] }, weekTitle) : /* @__PURE__ */ React.createElement(MovingLessonTitle, { title: weekTitle, long: longTitle, active: isFocused && activeSection && section.unlocked && !lessonCompletedToday && !lesson?.completed }), /* @__PURE__ */ React.createElement(Text, { style: styles.lessonMeta }, marketName, " \xB7 6 min")), !section.unlocked ? /* @__PURE__ */ React.createElement(View, { style: styles.lockPill }, /* @__PURE__ */ React.createElement(Feather, { name: "lock", size: 12, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.lockPillText }, "Unlocks after Section ", section.index)) : null), /* @__PURE__ */ React.createElement(View, { style: [styles.cluster, !section.unlocked && styles.clusterLocked] }, /* @__PURE__ */ React.createElement(Svg, { width: 268, height: 268, style: styles.orbitSvg, pointerEvents: "none" }, /* @__PURE__ */ React.createElement(Circle, { cx: 134, cy: 134, r: orbitRadius, fill: "none", stroke: COLORS.accentMedium, strokeWidth: 3 }), /* @__PURE__ */ React.createElement(
     Circle,
@@ -202,8 +204,8 @@ function SectionCluster({
         completed: module.kind === "lesson" ? lessonDone : moduleComplete(module.kind),
         emphasis: activeSection && module.kind === "lesson" && !lessonDone,
         pulse: isFocused && activeSection && module.kind === "lesson" && !lessonDone && !reduceMotion,
-        muted: activeSection && module.kind !== "lesson" && !lessonDone,
-        reveal: activeSection && module.kind !== "lesson" && !(lessonDone && !lessonCompletedToday) ? activityReveal[["notes", "arena", "intel", "case"].indexOf(module.kind)] : void 0,
+        muted: activeSection && module.kind !== "lesson" && !lessonDone && !moduleComplete(module.kind),
+        reveal: activeSection && module.kind !== "lesson" && !moduleComplete(module.kind) && !(lessonDone && !lessonCompletedToday) ? activityReveal[["notes", "arena", "intel", "case"].indexOf(module.kind)] : void 0,
         onPress: () => onModule(module.kind)
       }
     );
@@ -272,6 +274,7 @@ function CourseJourney({
   isFocused,
   arenaCompletedToday = false,
   caseCompletedToday = false,
+  notesCompletedToday = false,
   intelReadToday,
   intelTarget,
   rescueAvailable = false,
@@ -507,6 +510,7 @@ function CourseJourney({
             calendarDay: currentDay,
             arenaCompletedToday,
             caseCompletedToday,
+            notesCompletedToday,
             intelDone: intelReadToday >= intelTarget,
             onHeader: () => setPreviewSection(section),
             onLeo: () => onAskLeo(section.displayDay),
