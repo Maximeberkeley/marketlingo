@@ -80,7 +80,7 @@ function dateLabel(iso) {
   return shortDate(iso);
 }
 function personaForTrack(track) {
-  return track === "technical" ? "tech_lead" : track === "behavioral" ? "recruiter" : "consultant";
+  return track === "behavioral" ? "recruiter" : track === "case" ? "consultant" : "tech_lead";
 }
 function buildSprintPlan(opts) {
   const today = opts.today || localDateString();
@@ -89,41 +89,38 @@ function buildSprintPlan(opts) {
   const role = opts.target.role || "the role";
   const concepts = opts.concepts.length ? opts.concepts : ["Your strongest market idea"];
   const conceptAt = (i) => concepts[i % concepts.length];
-  const lines = [
-    (i) => {
-      const c = conceptAt(i);
-      return { concept: c, mock: `How would you apply ${c.toLowerCase()} in your first month at ${company}?` };
-    },
-    (i) => {
-      const c = conceptAt(i + 1);
-      return { concept: c, mock: `Tell ${company} about a time you handled ${c.toLowerCase()} (STAR).` };
-    },
-    (i) => {
-      const c = conceptAt(i + 2);
-      return { concept: c, mock: `Explain ${c.toLowerCase()} to a ${company} interviewer in ninety seconds.` };
-    },
-    (i) => {
-      const title = opts.news.length ? opts.news[i % opts.news.length] : null;
-      return title ? { concept: "Current events", mock: `Be ready to discuss: ${title}`, newsTitle: title } : { concept: conceptAt(i + 3), mock: `Write one Brief line about ${conceptAt(i + 3).toLowerCase()} you could say out loud.` };
-    },
-    (i) => {
-      const c = conceptAt(i + 4);
-      return { concept: c, mock: `Write one Brief line about ${c.toLowerCase()} you could say out loud.` };
-    }
-  ];
+  const tech = opts.bank?.technical || [];
+  const behav = opts.bank?.behavioral || [];
+  const seed = Math.floor(Date.parse(`${today}T00:00:00Z`) / 864e5) || 0;
+  const pickQ = (list, n) => list[(seed + n) % list.length];
+  const qKinds = [];
+  if (tech.length) qKinds.push((n) => ({ kind: "technical", label: "Technical question", mock: pickQ(tech, n) }));
+  if (behav.length) qKinds.push((n) => ({ kind: "behavioral", label: "Behavioral question", mock: pickQ(behav, n) }));
+  if (!qKinds.length) qKinds.push((_n, c) => ({ kind: "concept", label: "Concept question", mock: `Explain ${c.toLowerCase()} to a ${company} interviewer in ninety seconds.` }));
+  if (qKinds.length === 2 && seed % 2 === 1) qKinds.reverse();
+  const slots = qKinds.map((f) => (_i, c, n) => f(n, c));
+  if (opts.news.length) slots.push((i) => {
+    const t = opts.news[i % opts.news.length];
+    return { kind: "news", label: `Current events: ${t}`, mock: `Be ready to discuss: ${t}`, newsTitle: t };
+  });
+  slots.push((_i, c) => ({ kind: "brief", label: `Brief line: ${c}`, mock: `Write one Brief line about ${c.toLowerCase()} you could say out loud.` }));
   const out = [];
-  let lastMock = "";
+  const counts = /* @__PURE__ */ new Map();
   for (let i = 0; i < total; i++) {
     const last = i === total - 1 && total > 1;
-    let entry = lines[i % lines.length](i);
-    if (entry.mock === lastMock) entry = lines[(i + 1) % lines.length](i);
-    lastMock = entry.mock;
+    const c = conceptAt(i);
+    const slot = i % slots.length;
+    const n = counts.get(slot) || 0;
+    counts.set(slot, n + 1);
+    const entry = slots[slot](i, c, n);
     out.push({
       day: i + 1,
       dateLabel: dateLabel(addDays(today, i)),
-      concept: entry.concept,
+      concept: c,
       mock: last ? `Full mock interview for ${role} at ${company}.` : entry.mock,
-      news: entry.newsTitle ? { title: entry.newsTitle, howToMention: `Bring it up when they ask what's changing in the industry: say what happened, then what it means for ${company}.` } : null,
+      label: last ? "Full mock interview" : entry.label,
+      kind: last ? "full" : entry.kind,
+      news: !last && entry.newsTitle ? { title: entry.newsTitle, howToMention: `Bring it up when they ask what's changing in the industry: say what happened, then what it means for ${company}.` } : null,
       fullMock: last
     });
   }
