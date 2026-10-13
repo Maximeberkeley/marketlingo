@@ -1,13 +1,24 @@
-// @vitest-environment node
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { transformSync } from 'esbuild';
+import { execFileSync } from 'node:child_process';
 import { runInNewContext } from 'node:vm';
+
+// Run the transformer in Node so native text encoders never mix with jsdom's realm.
+function transformed(file: string, format: string) {
+  return execFileSync(process.execPath, ['--input-type=module', '-e', `
+    import { transformSync } from 'esbuild';
+    import { readFileSync } from 'node:fs';
+    process.stdout.write(transformSync(readFileSync(${JSON.stringify(file)}, 'utf8'), {
+      loader: ${JSON.stringify(file.endsWith('tsx') ? 'tsx' : 'ts')},
+      format: ${JSON.stringify(format)}, jsx: 'transform'
+    }).code);
+  `], { encoding: 'utf8' });
+}
 
 // Exercise the actual phone modules without loading native bridges in jsdom.
 function phoneModule(file: string) {
   const exports = {};
-  const code = transformSync(readFileSync(file, 'utf8'), { loader: 'ts', format: 'cjs' }).code;
+  const code = transformed(file, 'cjs');
   const module = { exports };
   runInNewContext(code, { module, exports, require: (id: string) => {
     if (id.includes('dayMath')) return { localDateString: () => '2026-10-13' };
@@ -66,7 +77,7 @@ describe('Interview Lab final polish', () => {
 
   it('matches generated JavaScript twins and retains required React imports', () => {
     for (const source of ['mobile/lib/interviewPrep.ts', 'mobile/components/interview/InterviewHome.tsx', 'mobile/app/interview-lab.tsx']) {
-      const expected = transformSync(readFileSync(source, 'utf8'), { loader: source.endsWith('tsx') ? 'tsx' : 'ts', format: 'esm', jsx: 'transform' }).code;
+      const expected = transformed(source, 'esm');
       expect(readFileSync(source.replace(/\.tsx?$/, '.js'), 'utf8')).toBe(expected);
       if (expected.includes('React.createElement')) expect(expected).toMatch(/import React\b/);
     }
