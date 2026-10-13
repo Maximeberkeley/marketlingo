@@ -9,36 +9,40 @@ import { tokens } from '../theme/tokens';
 const ALL = { maxSentences: 10000, maxLength: 1000000, glossary: true } as const;
 
 /** Shared editorial copy and list rows; receives only the card's disclosed text. */
-export function ReadingCopy({ text, body = '', evidence = false, preserveCover = false, keyTerms }: {
+export function ReadingCopy({ text, body = '', evidence = false, preserveCover = false, keyTerms, precedingText = [], excludedText = [] }: {
   text: string; body?: string; evidence?: boolean; preserveCover?: boolean; keyTerms?: readonly GlossaryEntry[];
+  precedingText?: readonly string[]; excludedText?: readonly string[];
 }) {
-  const copyProps = { ...ALL, keyTerms };
+  const copyProps = { ...ALL, keyTerms, excludedText };
   const qa = interviewQA([text, body].filter(Boolean).join(' '));
   if (qa) {
     return <View style={styles.wrap}>
-      {!!qa.before && <ColorText text={qa.before} style={styles.body} {...copyProps} />}
+      {!!qa.before && <ColorText text={qa.before} style={styles.body} {...copyProps} precedingText={precedingText} />}
       <View style={styles.qCard}>
         <Text style={styles.chip}>INTERVIEW QUESTION</Text>
-        <ColorText text={qa.question} style={styles.question} {...copyProps} />
+        <ColorText text={qa.question} style={styles.question} {...copyProps} precedingText={[...precedingText, qa.before]} />
       </View>
       <View style={styles.aCard}>
         <Text style={[styles.chip, styles.aChip]}>SAMPLE ANSWER</Text>
-        <ColorText text={qa.answer} style={styles.answer} {...copyProps} />
+        <ColorText text={qa.answer} style={styles.answer} {...copyProps} precedingText={[...precedingText, qa.before, qa.question]} />
       </View>
     </View>;
   }
   const headlineList = preserveCover ? null : colonList(text);
   const followingBody = [headlineList?.body, body].filter(Boolean).join('\n\n');
+  const headline = headlineList?.headline || text;
+  const ignored = [...excludedText, ...(!evidence ? [headline] : [])];
+  const previous = [...precedingText, ...(evidence ? [headline] : [])];
   const rows = (items: string[]) => <View>{items.map((item, index) => (
     <View key={`${index}-${item}`} style={[styles.row, index > 0 && styles.divider]}>
       <Feather name="check" size={15} color={tokens.color.accent} style={styles.check} />
-      <ColorText text={item} style={styles.rowText} {...copyProps} />
+      <ColorText text={item} style={styles.rowText} {...copyProps} excludedText={ignored} precedingText={[...previous, ...items.slice(0, index)]} />
     </View>
   ))}</View>;
   return <View style={styles.wrap}>
-    {!!text && <ColorText text={headlineList?.headline || text} style={evidence ? styles.body : styles.headline} {...copyProps} />}
+    {!!text && <ColorText text={headline} style={evidence ? styles.body : styles.headline} {...copyProps} glossary={evidence} precedingText={precedingText} />}
     {headlineList && rows(headlineList.items)}
-    {!!followingBody && <ColorText text={followingBody} style={styles.body} {...copyProps} />}
+    {!!followingBody && <ColorText text={followingBody} style={styles.body} {...copyProps} excludedText={ignored} precedingText={[...previous, ...(headlineList?.items || [])]} />}
   </View>;
 }
 

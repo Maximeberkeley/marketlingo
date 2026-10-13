@@ -33,7 +33,7 @@ export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightE
       </View>
       {!!highlight && (
         <View style={styles.highlight}>
-          <ReadingCopy text="" body={highlight} preserveCover={kind === 'takeaway'} keyTerms={cardTerms(exercise)} />
+          <ReadingCopy text="" body={highlight} preserveCover={kind === 'takeaway'} keyTerms={cardTerms(exercise)} precedingText={kind === 'evidence' ? [headline, body] : [body]} excludedText={kind === 'evidence' ? [] : [headline]} />
         </View>
       )}
       {!!keyTerm && (

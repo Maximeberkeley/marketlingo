@@ -34,7 +34,7 @@ export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
       {exercise.bullets?.slice(0, 2).map((b, i) => (
         <View key={i} style={styles.bulletRow}>
           <View style={styles.dot} />
-          <ColorText text={shortText(b, 1, 90)} style={styles.bullet} maxSentences={1} maxLength={90} glossary keyTerms={terms} />
+          <ColorText text={shortText(b, 1, 90)} style={styles.bullet} maxSentences={1} maxLength={90} glossary keyTerms={terms} excludedText={[title]} precedingText={[bodyIsEcho ? '' : body, ...(exercise.bullets || []).slice(0, i).map(line => shortText(line, 1, 90))]} />
         </View>
       ))}
 
