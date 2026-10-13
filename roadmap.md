@@ -1,10 +1,10 @@
 # MarketLingo roadmap
 
 ## Oct 13 — Practice artwork, protected sessions and Intel credit
-- [ ] Reduce lesson-completion XP banking delay and correct related loading-screen transitions.
-- [ ] Match flashcards to Daily quiz, research to Case, microphone to Interview and charts to Investment.
-- [ ] Disable swipe-back during practice sessions and keep result bubbles clear of copy and buttons; sync phone source pairs.
-- [ ] Make completed Intel count toward its Home circle and verify with focused tests.
+- [x] Remove redundant streak/reminder/Home refresh waits from lesson banking; keep results visible while saving, guard repeated taps and defer secondary navigation until successful saving. Fresh XP reads no longer retrigger their own loading effect.
+- [x] Match flashcards to Daily quiz, research to Case, microphone to Interview and charts/calculator/coins to Investment Lab; visually inspected all supplied drawings.
+- [x] Disable native swipe-back during practice sessions and reserve growing bubble space clear of buttons; synchronize phone source pairs.
+- [x] Credit a completed Intel quiz to its Home circle, preserving the daily reading reward; 42 focused tests pass, including save-confirmation flow, Intel readback, note orbit and source parity. Preview build OK.
 - [ ] Verify on iPhone (blocked: no iOS device/simulator).
 
 ## Oct 13 — Voices, interview artwork, lesson glossary
