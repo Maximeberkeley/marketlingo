@@ -3,7 +3,7 @@
 // Maya Chen     → Alice (sharp, analytical female): Xb7hH8MSUJpSbSDYk0k2
 // Dr. Alex      → Brian (patient, authoritative male): nPczCjzI2devNBz1zQrb
 // Kai Johnson   → Chris (energetic, upbeat male): iP95p4xoKVk53GoZ742B
-// Sophia        → Sophia (workspace voice): MtzY9FD6OSlkIuEBAHn3
+// Lily (Sophia’s previous voice)        → Lily (Sophia’s previous voice): pFZP5JQG7iQjIQuC4Bku
 export const LEO_VOICE_ID = 'miHBUIuwiPKbRiTC0oIz';
 export const mentors = [
     {
@@ -48,7 +48,7 @@ export const mentors = [
         emoji: '✨',
         greeting: "Hey there! Ready to unlock your next level of growth? I'm here to help you shine.",
         specialties: ['Customer relationships', 'Strategic partnerships', 'Neurotech', 'Regulatory navigation'],
-        voiceId: 'MtzY9FD6OSlkIuEBAHn3', // Sophia
+        voiceId: 'pFZP5JQG7iQjIQuC4Bku', // Lily (Sophia’s previous voice)
         expressions: {
             thinking: ['Hmm, let me think...', "That's a deep one!", 'Interesting angle...'],
             cheering: ["You're crushing it! ", 'Amazing work!', 'Yes! Nailed it! ', 'I knew you could do it!'],
