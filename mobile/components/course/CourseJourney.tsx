@@ -531,7 +531,7 @@ export function CourseJourney({
       setLoadError(false);
       const { data, error } = await supabase
         .from('stacks')
-        .select('id, title, tags, created_at, authored_lesson')
+        .select('id, title, tags, created_at, authored_lesson, slides(count)')
         .eq('market_id', marketId)
         .contains('tags', ['MICRO_LESSON'])
         .not('published_at', 'is', null)
@@ -553,6 +553,8 @@ export function CourseJourney({
         const day = tag ? Number(tag.slice(4)) : NaN;
         if (!Number.isFinite(day) || day < 1 || day > TOTAL_DAYS) return;
         if (completed.has(stack.id)) completedByDay.set(day, true);
+        // Legacy stacks without slides cannot open; never surface them as a day's lesson.
+        if (!(stack.slides?.[0]?.count > 0) && !stack.authored_lesson) return;
         const goalMatch = tags.includes(goalTag);
         const existing = byDay.get(day);
          if (!existing || stack.id === completedTodayStackId || (existing.id !== completedTodayStackId && goalMatch && !existing.goalMatch)) byDay.set(day, { id: stack.id, title: realLessonTitle(stack), goalMatch });
