@@ -129,7 +129,7 @@ function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal }) 
     )), !!deepCase.proReasoning && /* @__PURE__ */ React.createElement(DebriefBlock, { icon: "award", title: "How a pro reads it", body: deepCase.proReasoning, tint: tokens.color.accent }), !!deepCase.commonMistake && /* @__PURE__ */ React.createElement(DebriefBlock, { icon: "alert-triangle", title: "Where most people slip", body: deepCase.commonMistake, tint: tokens.color.signalEnergy }), !!deepCase.mentalModel && /* @__PURE__ */ React.createElement(DebriefBlock, { icon: "compass", title: "Keep this model", body: deepCase.mentalModel, tint: tokens.color.signalData }), /* @__PURE__ */ React.createElement(
       LeoCoach,
       {
-        line: `That is one more ${marketName} case in the bank. Cases like this are what interviews are made of.`,
+        line: "Another case solved. Your reasoning is getting sharper.",
         mood: result.grade === "A" || result.grade === "B" ? "celebrate" : "thinking"
       }
     ), /* @__PURE__ */ React.createElement(

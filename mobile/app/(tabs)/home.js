@@ -295,6 +295,10 @@ function HomeScreen() {
     if (!session.showReader) void reloadDossier();
   }, [session.showReader, reloadDossier]);
   const clockDay = localDateString(clockNow);
+  const refreshIntel = intelHabit.refresh;
+  useEffect(() => {
+    if (courseFocused) void refreshIntel();
+  }, [courseFocused, clockDay, refreshIntel]);
   const [notesCompletedToday, setNotesCompletedToday] = useState(false);
   useEffect(() => {
     let active = true;
@@ -523,7 +527,7 @@ function HomeScreen() {
       arenaCompletedToday: (dailyCompletion?.drills_completed || 0) > 0,
       caseCompletedToday: (dailyCompletion?.games_completed || 0) > 0,
       notesCompletedToday,
-      intelReadToday: intelHabit.readToday,
+      intelReadToday: intelHabit.done ? intelHabit.target : intelHabit.readToday,
       intelTarget: intelHabit.target,
       rescueAvailable: Boolean(streakCountdown),
       streakCountdown,

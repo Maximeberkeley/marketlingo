@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -94,47 +94,24 @@ function getImpactFromContent(title, summary) {
 function FeaturedCarousel({ items, onSelect }) {
   const scrollX = useRef(new Animated.Value(0)).current;
   if (items.length === 0) return null;
-  return <View style={s.featuredCarousel}>
-      <Animated.ScrollView
-    horizontal
-    showsHorizontalScrollIndicator={false}
-    snapToInterval={FEATURED_CARD_WIDTH + 12}
-    decelerationRate="fast"
-    contentContainerStyle={s.featuredTrack}
-    onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: false })}
-    scrollEventThrottle={16}
-  >
-        {items.map((item, i) => {
-    const inputRange = [(i - 1) * (FEATURED_CARD_WIDTH + 12), i * (FEATURED_CARD_WIDTH + 12), (i + 1) * (FEATURED_CARD_WIDTH + 12)];
-    const scale = scrollX.interpolate({ inputRange, outputRange: [0.95, 1, 0.95], extrapolate: "clamp" });
-    const opacity = scrollX.interpolate({ inputRange, outputRange: [0.7, 1, 0.7], extrapolate: "clamp" });
-    return <Animated.View key={item.id} style={{ transform: [{ scale }], opacity, width: FEATURED_CARD_WIDTH }}>
-              <TouchableOpacity activeOpacity={0.85} onPress={() => onSelect(item)} style={s.featuredCard}>
-                {item?.imageUrl ? <Image source={{ uri: item.imageUrl }} style={s.featuredImage} resizeMode="cover" /> : <View style={[s.featuredImage, { backgroundColor: GRADIENT_SETS[i % GRADIENT_SETS.length][0] }]} />}
-                <View style={s.featuredOverlay} />
-                <View style={s.featuredContent}>
-                  <View style={s.featuredTopRow}>
-                    <View style={s.featuredBadge}>
-                      <Text style={s.featuredBadgeText}>{(item?.categoryTag || "Industry").toUpperCase()}</Text>
-                    </View>
-                  </View>
-                  <Text style={s.featuredTitle} numberOfLines={2}>{item?.title || "Untitled Story"}</Text>
-                  {item?.summary ? <Text style={s.featuredSummary} numberOfLines={1}>{item.summary}</Text> : null}
-                  <View style={s.featuredMeta}>
-                    <Text style={s.featuredSource}>{item?.sourceName || "Industry News"}</Text>
-                    <Text style={s.featuredDate}>{item?.publishedAt || "Recent"}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            </Animated.View>;
-  })}
-      </Animated.ScrollView>
-
-      {
-    /* Carousel dots */
-  }
-      <View style={s.dotsRow}>
-        {items.map((_, i) => {
+  return /* @__PURE__ */ React.createElement(View, { style: s.featuredCarousel }, /* @__PURE__ */ React.createElement(
+    Animated.ScrollView,
+    {
+      horizontal: true,
+      showsHorizontalScrollIndicator: false,
+      snapToInterval: FEATURED_CARD_WIDTH + 12,
+      decelerationRate: "fast",
+      contentContainerStyle: s.featuredTrack,
+      onScroll: Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: false }),
+      scrollEventThrottle: 16
+    },
+    items.map((item, i) => {
+      const inputRange = [(i - 1) * (FEATURED_CARD_WIDTH + 12), i * (FEATURED_CARD_WIDTH + 12), (i + 1) * (FEATURED_CARD_WIDTH + 12)];
+      const scale = scrollX.interpolate({ inputRange, outputRange: [0.95, 1, 0.95], extrapolate: "clamp" });
+      const opacity = scrollX.interpolate({ inputRange, outputRange: [0.7, 1, 0.7], extrapolate: "clamp" });
+      return /* @__PURE__ */ React.createElement(Animated.View, { key: item.id, style: { transform: [{ scale }], opacity, width: FEATURED_CARD_WIDTH } }, /* @__PURE__ */ React.createElement(TouchableOpacity, { activeOpacity: 0.85, onPress: () => onSelect(item), style: s.featuredCard }, item?.imageUrl ? /* @__PURE__ */ React.createElement(Image, { source: { uri: item.imageUrl }, style: s.featuredImage, resizeMode: "cover" }) : /* @__PURE__ */ React.createElement(View, { style: [s.featuredImage, { backgroundColor: GRADIENT_SETS[i % GRADIENT_SETS.length][0] }] }), /* @__PURE__ */ React.createElement(View, { style: s.featuredOverlay }), /* @__PURE__ */ React.createElement(View, { style: s.featuredContent }, /* @__PURE__ */ React.createElement(View, { style: s.featuredTopRow }, /* @__PURE__ */ React.createElement(View, { style: s.featuredBadge }, /* @__PURE__ */ React.createElement(Text, { style: s.featuredBadgeText }, (item?.categoryTag || "Industry").toUpperCase()))), /* @__PURE__ */ React.createElement(Text, { style: s.featuredTitle, numberOfLines: 2 }, item?.title || "Untitled Story"), item?.summary ? /* @__PURE__ */ React.createElement(Text, { style: s.featuredSummary, numberOfLines: 1 }, item.summary) : null, /* @__PURE__ */ React.createElement(View, { style: s.featuredMeta }, /* @__PURE__ */ React.createElement(Text, { style: s.featuredSource }, item?.sourceName || "Industry News"), /* @__PURE__ */ React.createElement(Text, { style: s.featuredDate }, item?.publishedAt || "Recent")))));
+    })
+  ), /* @__PURE__ */ React.createElement(View, { style: s.dotsRow }, items.map((_, i) => {
     const dotWidth = scrollX.interpolate({
       inputRange: [(i - 1) * (FEATURED_CARD_WIDTH + 12), i * (FEATURED_CARD_WIDTH + 12), (i + 1) * (FEATURED_CARD_WIDTH + 12)],
       outputRange: [6, 18, 6],
@@ -145,10 +122,8 @@ function FeaturedCarousel({ items, onSelect }) {
       outputRange: [0.3, 1, 0.3],
       extrapolate: "clamp"
     });
-    return <Animated.View key={i} style={[s.dot, { width: dotWidth, opacity: dotOpacity }]} />;
-  })}
-      </View>
-    </View>;
+    return /* @__PURE__ */ React.createElement(Animated.View, { key: i, style: [s.dot, { width: dotWidth, opacity: dotOpacity }] });
+  })));
 }
 function NewsFeedCard({
   item,
@@ -163,42 +138,29 @@ function NewsFeedCard({
       Animated.timing(opacityAnim, { toValue: 1, duration: 300, delay: index * 50, useNativeDriver: true })
     ]).start();
   }, []);
-  return <Animated.View style={{ transform: [{ translateY: slideAnim }], opacity: opacityAnim }}>
-      <TouchableOpacity activeOpacity={0.8} onPress={() => onSelect(item)} style={s.feedCard}>
-        {
-    /* Text content */
-  }
-        <View style={s.feedCardText}>
-          <Text style={s.feedSource} numberOfLines={1}>{item?.sourceName || "Industry News"}</Text>
-          <Text style={s.feedTitle} numberOfLines={3}>{item?.title || "Untitled Story"}</Text>
-          <View style={s.feedFooter}>
-            <Text style={s.feedDate}>{item?.publishedAt || "Recent"}</Text>
-            <Feather name="more-horizontal" size={19} color={COLORS.intelMuted} />
-          </View>
-        </View>
-
-        {
-    /* Image thumbnail on right */
-  }
-        <View style={s.feedThumb}>
-          {item.imageUrl ? <Image source={{ uri: item.imageUrl }} style={s.feedThumbImage} resizeMode="cover" /> : <View style={[s.feedThumbImage, { alignItems: "center", justifyContent: "center", backgroundColor: COLORS.accentSoft }]}>
-              <Feather name="file-text" size={20} color={COLORS.accent} style={{ opacity: 0.5 }} />
-            </View>}
-        </View>
-      </TouchableOpacity>
-
-    </Animated.View>;
+  return /* @__PURE__ */ React.createElement(Animated.View, { style: { transform: [{ translateY: slideAnim }], opacity: opacityAnim } }, /* @__PURE__ */ React.createElement(TouchableOpacity, { activeOpacity: 0.8, onPress: () => onSelect(item), style: s.feedCard }, /* @__PURE__ */ React.createElement(View, { style: s.feedCardText }, /* @__PURE__ */ React.createElement(Text, { style: s.feedSource, numberOfLines: 1 }, item?.sourceName || "Industry News"), /* @__PURE__ */ React.createElement(Text, { style: s.feedTitle, numberOfLines: 3 }, item?.title || "Untitled Story"), /* @__PURE__ */ React.createElement(View, { style: s.feedFooter }, /* @__PURE__ */ React.createElement(Text, { style: s.feedDate }, item?.publishedAt || "Recent"), /* @__PURE__ */ React.createElement(Feather, { name: "more-horizontal", size: 19, color: COLORS.intelMuted }))), /* @__PURE__ */ React.createElement(View, { style: s.feedThumb }, item.imageUrl ? /* @__PURE__ */ React.createElement(Image, { source: { uri: item.imageUrl }, style: s.feedThumbImage, resizeMode: "cover" }) : /* @__PURE__ */ React.createElement(View, { style: [s.feedThumbImage, { alignItems: "center", justifyContent: "center", backgroundColor: COLORS.accentSoft }] }, /* @__PURE__ */ React.createElement(Feather, { name: "file-text", size: 20, color: COLORS.accent, style: { opacity: 0.5 } })))));
 }
 function QuizModal({
   article,
   marketId,
-  onClose
+  onClose,
+  onComplete
 }) {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentQ, setCurrentQ] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [score, setScore] = useState(0);
+  const completedArticle = useRef(null);
+  useEffect(() => {
+    if (!article) {
+      completedArticle.current = null;
+      return;
+    }
+    if (loading || questions.length === 0 || currentQ < questions.length || completedArticle.current === article.id) return;
+    completedArticle.current = article.id;
+    onComplete(article.id);
+  }, [article, loading, questions.length, currentQ, onComplete]);
   useEffect(() => {
     if (article) {
       generateQuiz();
@@ -257,106 +219,58 @@ No other text, just the JSON array.`
   if (!article) return null;
   const q = questions[currentQ];
   const isComplete = currentQ >= questions.length && questions.length > 0;
-  return <Modal visible={!!article} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={qz.backdrop}>
-        <View style={qz.sheet}>
-          <View style={qz.handleRow}>
-            <View style={qz.handle} />
-          </View>
-
-          {
-    /* Header */
-  }
-          <View style={qz.header}>
-            <View style={qz.headerIcon}>
-              <Feather name="help-circle" size={16} color={COLORS.accent} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={qz.headerTitle}>News Quiz</Text>
-              <Text style={qz.headerSub} numberOfLines={1}>{article.title}</Text>
-            </View>
-            <TouchableOpacity onPress={onClose}>
-              <Feather name="x" size={20} color={COLORS.textMuted} />
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView
-    style={qz.bodyScroll}
-    contentContainerStyle={qz.bodyScrollContent}
-    showsVerticalScrollIndicator={false}
-    bounces={false}
-  >
-            {loading ? <View style={qz.loadingBox}>
-                <ActivityIndicator size="small" color={COLORS.accent} />
-                <Text style={qz.loadingText}>Generating quiz from this article...</Text>
-              </View> : isComplete ? <View style={qz.completeBox}>
-                <Text style={qz.completeEmoji}>{score === questions.length ? "\u{1F389}" : score > 0 ? "\u{1F44F}" : "\u{1F4D6}"}</Text>
-                <Text style={qz.completeTitle}>
-                  {score === questions.length ? "Perfect!" : score > 0 ? "Nice work!" : "Keep learning!"}
-                </Text>
-                <Text style={qz.completeScore}>{score}/{questions.length} correct</Text>
-                <TouchableOpacity onPress={onClose} style={qz.doneBtn}>
-                  <Text style={qz.doneBtnText}>Done</Text>
-                </TouchableOpacity>
-              </View> : q ? <View style={qz.questionBox}>
-                <Text style={qz.qNumber}>Question {currentQ + 1} of {questions.length}</Text>
-                <Text style={qz.qText}>{q.question}</Text>
-
-                {q.options.map((opt, i) => {
-    const isSelected = selectedAnswer === i;
-    const isCorrect = i === q.correctIndex;
-    const showResult = selectedAnswer !== null;
-    return <TouchableOpacity
-      key={i}
-      style={[
-        qz.optionBtn,
-        showResult && isCorrect && qz.optionCorrect,
-        showResult && isSelected && !isCorrect && qz.optionWrong,
-        !showResult && isSelected && qz.optionSelected
-      ]}
-      onPress={() => {
-        if (selectedAnswer !== null) return;
-        setSelectedAnswer(i);
-        if (i === q.correctIndex) setScore((s2) => s2 + 1);
-        triggerHaptic(i === q.correctIndex ? "success" : "error");
-      }}
-      activeOpacity={0.7}
-      disabled={selectedAnswer !== null}
-    >
-                      <Text style={[
-      qz.optionText,
-      showResult && isCorrect && { color: "#059669", fontWeight: "700" },
-      showResult && isSelected && !isCorrect && { color: "#EF4444" }
-    ]}>
-                        {opt}
-                      </Text>
-                      {showResult && isCorrect && <Feather name="check-circle" size={16} color="#059669" />}
-                      {showResult && isSelected && !isCorrect && <Feather name="x-circle" size={16} color="#EF4444" />}
-                    </TouchableOpacity>;
-  })}
-
-                {selectedAnswer !== null && <View style={qz.explainBox}>
-                    <Feather name="info" size={13} color={COLORS.accent} />
-                    <Text style={qz.explainText}>{q.explanation}</Text>
-                  </View>}
-
-                {selectedAnswer !== null && <TouchableOpacity
-    style={qz.nextBtn}
-    onPress={() => {
-      setSelectedAnswer(null);
-      setCurrentQ((c) => c + 1);
-    }}
-  >
-                    <Text style={qz.nextBtnText}>
-                      {currentQ + 1 < questions.length ? "Next Question" : "See Results"}
-                    </Text>
-                    <Feather name="arrow-right" size={14} color="#fff" />
-                  </TouchableOpacity>}
-              </View> : null}
-          </ScrollView>
-        </View>
-      </View>
-    </Modal>;
+  return /* @__PURE__ */ React.createElement(Modal, { visible: !!article, transparent: true, animationType: "slide", onRequestClose: onClose }, /* @__PURE__ */ React.createElement(View, { style: qz.backdrop }, /* @__PURE__ */ React.createElement(View, { style: qz.sheet }, /* @__PURE__ */ React.createElement(View, { style: qz.handleRow }, /* @__PURE__ */ React.createElement(View, { style: qz.handle })), /* @__PURE__ */ React.createElement(View, { style: qz.header }, /* @__PURE__ */ React.createElement(View, { style: qz.headerIcon }, /* @__PURE__ */ React.createElement(Feather, { name: "help-circle", size: 16, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: qz.headerTitle }, "News Quiz"), /* @__PURE__ */ React.createElement(Text, { style: qz.headerSub, numberOfLines: 1 }, article.title)), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: onClose }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 20, color: COLORS.textMuted }))), /* @__PURE__ */ React.createElement(
+    ScrollView,
+    {
+      style: qz.bodyScroll,
+      contentContainerStyle: qz.bodyScrollContent,
+      showsVerticalScrollIndicator: false,
+      bounces: false
+    },
+    loading ? /* @__PURE__ */ React.createElement(View, { style: qz.loadingBox }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: qz.loadingText }, "Generating quiz from this article...")) : isComplete ? /* @__PURE__ */ React.createElement(View, { style: qz.completeBox }, /* @__PURE__ */ React.createElement(Text, { style: qz.completeEmoji }, score === questions.length ? "\u{1F389}" : score > 0 ? "\u{1F44F}" : "\u{1F4D6}"), /* @__PURE__ */ React.createElement(Text, { style: qz.completeTitle }, score === questions.length ? "Perfect!" : score > 0 ? "Nice work!" : "Keep learning!"), /* @__PURE__ */ React.createElement(Text, { style: qz.completeScore }, score, "/", questions.length, " correct"), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: onClose, style: qz.doneBtn }, /* @__PURE__ */ React.createElement(Text, { style: qz.doneBtnText }, "Done"))) : q ? /* @__PURE__ */ React.createElement(View, { style: qz.questionBox }, /* @__PURE__ */ React.createElement(Text, { style: qz.qNumber }, "Question ", currentQ + 1, " of ", questions.length), /* @__PURE__ */ React.createElement(Text, { style: qz.qText }, q.question), q.options.map((opt, i) => {
+      const isSelected = selectedAnswer === i;
+      const isCorrect = i === q.correctIndex;
+      const showResult = selectedAnswer !== null;
+      return /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
+        {
+          key: i,
+          style: [
+            qz.optionBtn,
+            showResult && isCorrect && qz.optionCorrect,
+            showResult && isSelected && !isCorrect && qz.optionWrong,
+            !showResult && isSelected && qz.optionSelected
+          ],
+          onPress: () => {
+            if (selectedAnswer !== null) return;
+            setSelectedAnswer(i);
+            if (i === q.correctIndex) setScore((s2) => s2 + 1);
+            triggerHaptic(i === q.correctIndex ? "success" : "error");
+          },
+          activeOpacity: 0.7,
+          disabled: selectedAnswer !== null
+        },
+        /* @__PURE__ */ React.createElement(Text, { style: [
+          qz.optionText,
+          showResult && isCorrect && { color: "#059669", fontWeight: "700" },
+          showResult && isSelected && !isCorrect && { color: "#EF4444" }
+        ] }, opt),
+        showResult && isCorrect && /* @__PURE__ */ React.createElement(Feather, { name: "check-circle", size: 16, color: "#059669" }),
+        showResult && isSelected && !isCorrect && /* @__PURE__ */ React.createElement(Feather, { name: "x-circle", size: 16, color: "#EF4444" })
+      );
+    }), selectedAnswer !== null && /* @__PURE__ */ React.createElement(View, { style: qz.explainBox }, /* @__PURE__ */ React.createElement(Feather, { name: "info", size: 13, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: qz.explainText }, q.explanation)), selectedAnswer !== null && /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        style: qz.nextBtn,
+        onPress: () => {
+          setSelectedAnswer(null);
+          setCurrentQ((c) => c + 1);
+        }
+      },
+      /* @__PURE__ */ React.createElement(Text, { style: qz.nextBtnText }, currentQ + 1 < questions.length ? "Next Question" : "See Results"),
+      /* @__PURE__ */ React.createElement(Feather, { name: "arrow-right", size: 14, color: "#fff" })
+    )) : null
+  ))));
 }
 function ArticleDetailSheet({
   article,
@@ -441,97 +355,38 @@ function ArticleDetailSheet({
   if (!article) return null;
   const translateY = slideAnim.interpolate({ inputRange: [0, 1], outputRange: [0, Dimensions.get("window").height] });
   const isHighImpact = (article.impact || getImpactFromContent(article.title, article.summary)) === "high";
-  return <Modal visible={!!article} transparent animationType="none" onRequestClose={handleClose}>
-      <View style={ds.backdrop}>
-        <TouchableOpacity style={StyleSheet.absoluteFill} onPress={handleClose} activeOpacity={1} />
-        <Animated.View style={[ds.sheet, { transform: [{ translateY }] }]}>
-          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : void 0} style={{ flex: 1 }}>
-            <View style={ds.handleRow}><View style={ds.handle} /></View>
-
-            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} bounces={true}>
-              {article.imageUrl ? <View style={ds.heroContainer}>
-                  <Image source={{ uri: article.imageUrl }} style={ds.heroImage} resizeMode="cover" />
-                  <View style={[ds.heroGradient, { backgroundColor: "rgba(255,255,255,0.3)" }]} />
-                </View> : null}
-
-              <View style={ds.contentPad}>
-                <View style={ds.metaRow}>
-                  <View style={[ds.badge, { backgroundColor: COLORS.accentSoft }]}>
-                    <Text style={[ds.badgeText, { color: COLORS.accent }]}>{(article.categoryTag || "Industry").toUpperCase()}</Text>
-                  </View>
-                  {isHighImpact && <View style={ds.highImpactPill}>
-                      <Feather name="alert-circle" size={10} color="#EF4444" />
-                      <Text style={ds.highImpactText}>High Impact</Text>
-                    </View>}
-                  <Text style={ds.metaSource}>{article.sourceName}</Text>
-                  <Text style={ds.metaDate}>{article.publishedAt}</Text>
-                </View>
-
-                <Text style={ds.title}>{article.title}</Text>
-                {article.summary ? <Text style={ds.summary}>{article.summary}</Text> : null}
-
-                <TouchableOpacity onPress={() => {
+  return /* @__PURE__ */ React.createElement(Modal, { visible: !!article, transparent: true, animationType: "none", onRequestClose: handleClose }, /* @__PURE__ */ React.createElement(View, { style: ds.backdrop }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: StyleSheet.absoluteFill, onPress: handleClose, activeOpacity: 1 }), /* @__PURE__ */ React.createElement(Animated.View, { style: [ds.sheet, { transform: [{ translateY }] }] }, /* @__PURE__ */ React.createElement(KeyboardAvoidingView, { behavior: Platform.OS === "ios" ? "padding" : void 0, style: { flex: 1 } }, /* @__PURE__ */ React.createElement(View, { style: ds.handleRow }, /* @__PURE__ */ React.createElement(View, { style: ds.handle })), /* @__PURE__ */ React.createElement(ScrollView, { style: { flex: 1 }, showsVerticalScrollIndicator: false, bounces: true }, article.imageUrl ? /* @__PURE__ */ React.createElement(View, { style: ds.heroContainer }, /* @__PURE__ */ React.createElement(Image, { source: { uri: article.imageUrl }, style: ds.heroImage, resizeMode: "cover" }), /* @__PURE__ */ React.createElement(View, { style: [ds.heroGradient, { backgroundColor: "rgba(255,255,255,0.3)" }] })) : null, /* @__PURE__ */ React.createElement(View, { style: ds.contentPad }, /* @__PURE__ */ React.createElement(View, { style: ds.metaRow }, /* @__PURE__ */ React.createElement(View, { style: [ds.badge, { backgroundColor: COLORS.accentSoft }] }, /* @__PURE__ */ React.createElement(Text, { style: [ds.badgeText, { color: COLORS.accent }] }, (article.categoryTag || "Industry").toUpperCase())), isHighImpact && /* @__PURE__ */ React.createElement(View, { style: ds.highImpactPill }, /* @__PURE__ */ React.createElement(Feather, { name: "alert-circle", size: 10, color: "#EF4444" }), /* @__PURE__ */ React.createElement(Text, { style: ds.highImpactText }, "High Impact")), /* @__PURE__ */ React.createElement(Text, { style: ds.metaSource }, article.sourceName), /* @__PURE__ */ React.createElement(Text, { style: ds.metaDate }, article.publishedAt)), /* @__PURE__ */ React.createElement(Text, { style: ds.title }, article.title), article.summary ? /* @__PURE__ */ React.createElement(Text, { style: ds.summary }, article.summary) : null, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => {
     if (article.sourceUrl) Linking.openURL(article.sourceUrl).catch(() => {
     });
-  }} style={ds.sourceLink}>
-                  <Feather name="external-link" size={14} color={COLORS.accent} />
-                  <Text style={ds.sourceLinkText}>Read full article</Text>
-                </TouchableOpacity>
-
-                <View style={ds.aiSection}>
-                  <Text style={ds.aiSectionTitle}>AI-POWERED INSIGHTS</Text>
-                  <View style={ds.aiButtonsRow}>
-                    {[
+  }, style: ds.sourceLink }, /* @__PURE__ */ React.createElement(Feather, { name: "external-link", size: 14, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: ds.sourceLinkText }, "Read full article")), /* @__PURE__ */ React.createElement(View, { style: ds.aiSection }, /* @__PURE__ */ React.createElement(Text, { style: ds.aiSectionTitle }, "AI-POWERED INSIGHTS"), /* @__PURE__ */ React.createElement(View, { style: ds.aiButtonsRow }, [
     { mode: "discuss", icon: "message-circle", label: "Discuss" },
     { mode: "summarize", icon: "file-text", label: "Summarize" },
     { mode: "why", icon: "zap", label: "Why it matters" }
-  ].map(({ mode, icon, label }) => <TouchableOpacity
-    key={mode}
-    onPress={() => {
-      resetAi();
-      handleAiAction(mode);
-    }}
-    style={[ds.aiBtn, aiMode === mode && ds.aiBtnActive]}
-    activeOpacity={0.7}
-  >
-                        <Feather name={icon} size={13} color={aiMode === mode ? COLORS.accent : COLORS.textMuted} />
-                        <Text style={[ds.aiBtnText, aiMode === mode && { color: COLORS.accent }]}>{label}</Text>
-                      </TouchableOpacity>)}
-                  </View>
-
-                  {aiLoading || aiResponse ? <View style={ds.aiResponseBox}>
-                      {aiLoading && !aiResponse ? <View style={ds.aiLoadingRow}>
-                          <ActivityIndicator size="small" color={COLORS.accent} />
-                          <Text style={ds.aiLoadingText}>Analyzing...</Text>
-                        </View> : aiMode === "discuss" ? <View>
-                          {chatMessages.map((msg, i) => <Text key={i} style={[ds.chatMsg, msg.role === "user" ? ds.chatMsgUser : ds.chatMsgAi]}>{msg.content}</Text>)}
-                          {aiLoading && <View style={ds.aiLoadingRow}>
-                              <ActivityIndicator size="small" color={COLORS.accent} />
-                              <Text style={ds.aiLoadingText}>Thinking...</Text>
-                            </View>}
-                          <View style={ds.chatInputRow}>
-                            <TextInput
-    value={chatInput}
-    onChangeText={setChatInput}
-    placeholder="Ask a follow-up..."
-    placeholderTextColor={COLORS.textMuted}
-    style={ds.chatInput}
-    onSubmitEditing={handleChatSend}
-    returnKeyType="send"
-  />
-                            <TouchableOpacity onPress={handleChatSend} disabled={!chatInput.trim() || aiLoading} style={[ds.chatSendBtn, (!chatInput.trim() || aiLoading) && { opacity: 0.4 }]}>
-                              <Feather name="send" size={14} color="#fff" />
-                            </TouchableOpacity>
-                          </View>
-                        </View> : <Text style={ds.aiResponseText}>{aiResponse}</Text>}
-                    </View> : null}
-                </View>
-              </View>
-            </ScrollView>
-          </KeyboardAvoidingView>
-        </Animated.View>
-      </View>
-    </Modal>;
+  ].map(({ mode, icon, label }) => /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      key: mode,
+      onPress: () => {
+        resetAi();
+        handleAiAction(mode);
+      },
+      style: [ds.aiBtn, aiMode === mode && ds.aiBtnActive],
+      activeOpacity: 0.7
+    },
+    /* @__PURE__ */ React.createElement(Feather, { name: icon, size: 13, color: aiMode === mode ? COLORS.accent : COLORS.textMuted }),
+    /* @__PURE__ */ React.createElement(Text, { style: [ds.aiBtnText, aiMode === mode && { color: COLORS.accent }] }, label)
+  ))), aiLoading || aiResponse ? /* @__PURE__ */ React.createElement(View, { style: ds.aiResponseBox }, aiLoading && !aiResponse ? /* @__PURE__ */ React.createElement(View, { style: ds.aiLoadingRow }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: ds.aiLoadingText }, "Analyzing...")) : aiMode === "discuss" ? /* @__PURE__ */ React.createElement(View, null, chatMessages.map((msg, i) => /* @__PURE__ */ React.createElement(Text, { key: i, style: [ds.chatMsg, msg.role === "user" ? ds.chatMsgUser : ds.chatMsgAi] }, msg.content)), aiLoading && /* @__PURE__ */ React.createElement(View, { style: ds.aiLoadingRow }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: ds.aiLoadingText }, "Thinking...")), /* @__PURE__ */ React.createElement(View, { style: ds.chatInputRow }, /* @__PURE__ */ React.createElement(
+    TextInput,
+    {
+      value: chatInput,
+      onChangeText: setChatInput,
+      placeholder: "Ask a follow-up...",
+      placeholderTextColor: COLORS.textMuted,
+      style: ds.chatInput,
+      onSubmitEditing: handleChatSend,
+      returnKeyType: "send"
+    }
+  ), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: handleChatSend, disabled: !chatInput.trim() || aiLoading, style: [ds.chatSendBtn, (!chatInput.trim() || aiLoading) && { opacity: 0.4 }] }, /* @__PURE__ */ React.createElement(Feather, { name: "send", size: 14, color: "#fff" })))) : /* @__PURE__ */ React.createElement(Text, { style: ds.aiResponseText }, aiResponse)) : null)))))));
 }
 function DailyNews({ marketId, learningGoal, autoOpen = false }) {
   const [news, setNews] = useState([]);
@@ -666,129 +521,66 @@ Help them understand the key implications.`,
   const midStoryIds = new Set(midStories.length >= 2 ? midStories.map((item) => item.id) : []);
   const remainingFeed = feed.slice(2).filter((item) => !midStoryIds.has(item.id));
   const selectStory = (item) => openStory(news, news.findIndex((n) => n.id === item.id));
-  return <View style={s.container}>
-      {
-    /* Loading */
-  }
-      {isLoading && <View style={s.loadingContainer}>
-          {[1, 2, 3].map((i) => <View key={i} style={s.skeletonCard}>
-              <View style={s.skeletonLine} />
-              <View style={[s.skeletonLine, { width: "75%" }]} />
-              <View style={[s.skeletonLine, { width: "40%", height: 10 }]} />
-            </View>)}
-        </View>}
-
-      {
-    /* Error */
-  }
-      {!isLoading && error && <View style={s.emptyCard}>
-          <Text style={s.emptyText}>{error}</Text>
-          <TouchableOpacity onPress={() => fetchNews(true)} style={s.retryBtn}>
-            <Text style={s.retryText}>Try Again</Text>
-          </TouchableOpacity>
-        </View>}
-
-      {
-    /* Content */
-  }
-      {!isLoading && !error && news.length > 0 && <View>
-          {
-    /* Featured horizontal carousel */
-  }
-          {featured.length > 0 && <FeaturedCarousel items={featured} onSelect={selectStory} />}
-
-          {
-    /* Feed section label */
-  }
-          {feed.length > 0 && featured.length > 0 && <View style={s.feedSectionHeader}>
-              <View style={s.feedSectionLine} />
-              <Text style={s.feedSectionLabel}>LATEST</Text>
-              <View style={s.feedSectionLine} />
-            </View>}
-
-          {
-    /* Vertical feed */
-  }
-          <View style={s.feedList}>
-            {feed.slice(0, 2).map((item, index) => <NewsFeedCard
-    key={item.id}
-    item={item}
-    index={index}
-    onSelect={selectStory}
-  />)}
-            {midStoryIds.size >= 2 ? <View style={s.midFeedCarousel}>
-                <FeaturedCarousel items={midStories} onSelect={selectStory} />
-              </View> : null}
-            {remainingFeed.map((item, index) => <NewsFeedCard
-    key={item.id}
-    item={item}
-    index={index + 2}
-    onSelect={selectStory}
-  />)}
-          </View>
-        </View>}
-
-      {
-    /* Empty */
-  }
-      {!isLoading && !error && news.length === 0 && <View style={s.emptyCard}>
-          <Feather name="inbox" size={28} color={COLORS.textMuted} style={{ marginBottom: 8 }} />
-          <Text style={s.emptyText}>No news available right now</Text>
-          <TouchableOpacity onPress={() => fetchNews(true)} style={s.retryBtn}>
-            <Text style={s.retryText}>Fetch News</Text>
-          </TouchableOpacity>
-        </View>}
-
-      {lastFetched && !isLoading && news.length > 0 && <Text style={s.lastUpdated}>Updated {lastFetched.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</Text>}
-
-      {
-    /* Immersive News Overlay */
-  }
-      <ImmersiveNewsOverlay
-    visible={immersiveIndex >= 0}
-    articles={news}
-    initialIndex={immersiveIndex >= 0 ? immersiveIndex : 0}
-    onClose={() => setImmersiveIndex(-1)}
-    onOpenChat={(article) => {
-      const ctx = `The user wants to discuss this ${marketId} industry news article:
+  return /* @__PURE__ */ React.createElement(View, { style: s.container }, isLoading && /* @__PURE__ */ React.createElement(View, { style: s.loadingContainer }, [1, 2, 3].map((i) => /* @__PURE__ */ React.createElement(View, { key: i, style: s.skeletonCard }, /* @__PURE__ */ React.createElement(View, { style: s.skeletonLine }), /* @__PURE__ */ React.createElement(View, { style: [s.skeletonLine, { width: "75%" }] }), /* @__PURE__ */ React.createElement(View, { style: [s.skeletonLine, { width: "40%", height: 10 }] })))), !isLoading && error && /* @__PURE__ */ React.createElement(View, { style: s.emptyCard }, /* @__PURE__ */ React.createElement(Text, { style: s.emptyText }, error), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => fetchNews(true), style: s.retryBtn }, /* @__PURE__ */ React.createElement(Text, { style: s.retryText }, "Try Again"))), !isLoading && !error && news.length > 0 && /* @__PURE__ */ React.createElement(View, null, featured.length > 0 && /* @__PURE__ */ React.createElement(FeaturedCarousel, { items: featured, onSelect: selectStory }), feed.length > 0 && featured.length > 0 && /* @__PURE__ */ React.createElement(View, { style: s.feedSectionHeader }, /* @__PURE__ */ React.createElement(View, { style: s.feedSectionLine }), /* @__PURE__ */ React.createElement(Text, { style: s.feedSectionLabel }, "LATEST"), /* @__PURE__ */ React.createElement(View, { style: s.feedSectionLine })), /* @__PURE__ */ React.createElement(View, { style: s.feedList }, feed.slice(0, 2).map((item, index) => /* @__PURE__ */ React.createElement(
+    NewsFeedCard,
+    {
+      key: item.id,
+      item,
+      index,
+      onSelect: selectStory
+    }
+  )), midStoryIds.size >= 2 ? /* @__PURE__ */ React.createElement(View, { style: s.midFeedCarousel }, /* @__PURE__ */ React.createElement(FeaturedCarousel, { items: midStories, onSelect: selectStory })) : null, remainingFeed.map((item, index) => /* @__PURE__ */ React.createElement(
+    NewsFeedCard,
+    {
+      key: item.id,
+      item,
+      index: index + 2,
+      onSelect: selectStory
+    }
+  )))), !isLoading && !error && news.length === 0 && /* @__PURE__ */ React.createElement(View, { style: s.emptyCard }, /* @__PURE__ */ React.createElement(Feather, { name: "inbox", size: 28, color: COLORS.textMuted, style: { marginBottom: 8 } }), /* @__PURE__ */ React.createElement(Text, { style: s.emptyText }, "No news available right now"), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => fetchNews(true), style: s.retryBtn }, /* @__PURE__ */ React.createElement(Text, { style: s.retryText }, "Fetch News"))), lastFetched && !isLoading && news.length > 0 && /* @__PURE__ */ React.createElement(Text, { style: s.lastUpdated }, "Updated ", lastFetched.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })), /* @__PURE__ */ React.createElement(
+    ImmersiveNewsOverlay,
+    {
+      visible: immersiveIndex >= 0,
+      articles: news,
+      initialIndex: immersiveIndex >= 0 ? immersiveIndex : 0,
+      onClose: () => setImmersiveIndex(-1),
+      onOpenChat: (article) => {
+        const ctx = `The user wants to discuss this ${marketId} industry news article:
 
 Title: "${article.title}"
 Source: ${article.sourceName}
 Summary: ${article.summary ?? "N/A"}
 
 Help them understand the key implications.`;
-      setChatContext(ctx);
-      setChatNewsItem(article);
-    }}
-    onArticleView={(article) => intel.recordRead(article.id)}
-    onQuiz={(article) => {
-      setImmersiveIndex(-1);
-      setQuizArticle(article);
-    }}
-    marketId={marketId}
-    learningGoal={learningGoal}
-  />
-
-      {
-    /* Quiz Modal */
-  }
-      <QuizModal
-    article={quizArticle}
-    marketId={marketId}
-    onClose={() => setQuizArticle(null)}
-  />
-
-      {
-    /* AI Chat overlay */
-  }
-      {chatNewsItem && <MentorChatOverlay
-    visible={!!chatNewsItem}
-    mentor={kaiMentor}
-    onClose={() => setChatNewsItem(null)}
-    context={chatContext}
-    marketId={marketId}
-  />}
-    </View>;
+        setChatContext(ctx);
+        setChatNewsItem(article);
+      },
+      onArticleView: (article) => intel.recordRead(article.id),
+      onQuiz: (article) => {
+        setImmersiveIndex(-1);
+        setQuizArticle(article);
+      },
+      marketId,
+      learningGoal
+    }
+  ), /* @__PURE__ */ React.createElement(
+    QuizModal,
+    {
+      article: quizArticle,
+      marketId,
+      onClose: () => setQuizArticle(null),
+      onComplete: intel.recordComplete
+    }
+  ), chatNewsItem && /* @__PURE__ */ React.createElement(
+    MentorChatOverlay,
+    {
+      visible: !!chatNewsItem,
+      mentor: kaiMentor,
+      onClose: () => setChatNewsItem(null),
+      context: chatContext,
+      marketId
+    }
+  ));
 }
 const INTEL = {
   background: COLORS.intelBackground,

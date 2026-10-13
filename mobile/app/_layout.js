@@ -1,5 +1,4 @@
-import React from "react";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, router } from "expo-router";
@@ -109,20 +108,20 @@ function RootLayout() {
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "deliverable", options: { animation: "fade" } }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "focus" }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "streak-rescue" }),
-    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "arena", options: { animation: "fade" } }),
-    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "deep-case", options: { animation: "fade" } }),
-    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "trainer" }),
-    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "games" }),
-    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "drills" }),
+    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "arena", options: { animation: "fade", gestureEnabled: false, fullScreenGestureEnabled: false } }),
+    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "deep-case", options: { animation: "fade", gestureEnabled: false, fullScreenGestureEnabled: false } }),
+    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "trainer", options: { gestureEnabled: false, fullScreenGestureEnabled: false } }),
+    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "games", options: { gestureEnabled: false, fullScreenGestureEnabled: false } }),
+    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "drills", options: { gestureEnabled: false, fullScreenGestureEnabled: false } }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "summaries" }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "achievements" }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "collection" }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "leaderboard" }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "settings" }),
-    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "interview-lab" }),
+    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "interview-lab", options: { gestureEnabled: false, fullScreenGestureEnabled: false } }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "leo-call", options: { animation: "fade", gestureEnabled: false } }),
-    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "investment-lab" }),
-    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "investment-module" }),
+    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "investment-lab", options: { gestureEnabled: false, fullScreenGestureEnabled: false } }),
+    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "investment-module", options: { gestureEnabled: false, fullScreenGestureEnabled: false } }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "investment-certificate" }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "investment-watchlist" }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "regulatory-hub" }),
