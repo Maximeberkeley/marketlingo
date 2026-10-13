@@ -8,6 +8,18 @@ import { tokens } from '../theme/tokens';
 
 const ALL = { maxSentences: 10000, maxLength: 1000000, glossary: true } as const;
 
+/** The exact definition-eligible blocks, in display order, for sibling copy. */
+export function readingTermCopy(text: string, body = '', evidence = false, preserveCover = false) {
+  const qa = interviewQA([text, body].filter(Boolean).join(' '));
+  if (qa) return { precedingText: [qa.before, qa.question, qa.answer], excludedText: [] };
+  const list = preserveCover ? null : colonList(text);
+  const headline = list?.headline || text;
+  return {
+    precedingText: [...(evidence ? [headline] : []), ...(list?.items || []), [list?.body, body].filter(Boolean).join('\n\n')],
+    excludedText: evidence ? [] : [headline],
+  };
+}
+
 /** Shared editorial copy and list rows; receives only the card's disclosed text. */
 export function ReadingCopy({ text, body = '', evidence = false, preserveCover = false, keyTerms, precedingText = [], excludedText = [] }: {
   text: string; body?: string; evidence?: boolean; preserveCover?: boolean; keyTerms?: readonly GlossaryEntry[];

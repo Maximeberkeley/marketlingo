@@ -9,7 +9,7 @@ import { ColorText } from '../components/ColorText';
 import { shortLabel, shortText } from '../text';
 import { BriefingReader } from '../components/BriefingReader';
 import { cardCopy, cardTerms, hasExtraBriefing, readingCardKind } from '../cardPresentation';
-import { ReadingCopy } from '../components/ReadingCopy';
+import { ReadingCopy, readingTermCopy } from '../components/ReadingCopy';
 
 /** Micro-insight — two lines max, big type, one idea to carry forward. */
 export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightExercise>) {
@@ -33,7 +33,7 @@ export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightE
       </View>
       {!!highlight && (
         <View style={styles.highlight}>
-          <ReadingCopy text="" body={highlight} preserveCover={kind === 'takeaway'} keyTerms={cardTerms(exercise)} precedingText={kind === 'evidence' ? [headline, body] : [body]} excludedText={kind === 'evidence' ? [] : [headline]} />
+          <ReadingCopy text="" body={highlight} preserveCover={kind === 'takeaway'} keyTerms={cardTerms(exercise)} {...readingTermCopy(headline, body, kind === 'evidence', kind === 'takeaway')} />
         </View>
       )}
       {!!keyTerm && (
