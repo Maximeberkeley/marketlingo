@@ -200,7 +200,7 @@ export function LessonKitReader({
   if (!defaultSectionKey) return <View style={styles.opening}><ActivityIndicator color={tokens.color.accent} /></View>;
 
   return (
-    <DeepDiveProvider stackId={stackId} learningGoal={learningGoal}>
+    <DeepDiveProvider stackId={stackId} learningGoal={learningGoal} marketId={marketId}>
       <LessonScreen
         lesson={lesson}
         marketId={marketId}

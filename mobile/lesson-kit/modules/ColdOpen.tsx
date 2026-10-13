@@ -25,7 +25,7 @@ export function ColdOpen({ exercise, onChange }: ExerciseProps<ColdOpenExercise>
         <View style={styles.coverSky} />
         <View style={styles.coverCopy}>
         {!!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow).toUpperCase()}</Text>}
-        <ColorText text={exercise.headline} style={styles.headline} maxSentences={4} maxLength={260} />
+        <ColorText text={exercise.headline} style={styles.headline} maxSentences={4} maxLength={260} glossary />
         {!!exercise.kicker && <ColorText text={exercise.kicker} style={styles.kicker} maxSentences={1} maxLength={80} />}
         {hasBriefing && (
           <TouchableOpacity
