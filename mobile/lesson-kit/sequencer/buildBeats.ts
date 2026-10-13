@@ -10,10 +10,10 @@
  * ordering, sort-by-title, fill-the-gap numbers, market packs) are no longer
  * produced here. Their components stay in the kit for hand-written lessons.
  */
-import { Exercise, KeyTerm, Lesson, MultipleChoiceExercise } from '../types';
+import { Exercise, KeyTerm, Lesson } from '../types';
 import { IndustryPack, getIndustryPack } from '../industry/packs';
 import type { DrillRow, IndustryStatRow, TrainerScenarioRow } from '../../hooks/useIndustryContent';
-import { SlideLike, makeColdOpen, makeMicroInsight, norm, sentences, shuffle } from './extract';
+import { SlideLike, makeColdOpen, makeMicroInsight, sentences } from './extract';
 import { splitSentences } from '../../lib/textUtils';
 import { cardCopy, readingCardKind } from '../cardPresentation';
 
@@ -86,31 +86,6 @@ export function lessonForGoal(lesson: Lesson, goal?: string | null): Lesson {
   return sanitize(lesson) as Lesson;
 }
 
-/** An applied decision, not an invented fact: the correct advice follows the taught rule. */
-export function checkApplyIt(takeaway: string, id: string): MultipleChoiceExercise | null {
-  const rule = splitSentences(clean(takeaway))[0];
-  if (!rule) return null;
-  let prompt = `Apply it: your team must choose between two plans. One follows this rule and the more popular one ignores it: “${rule}” What should you recommend?`;
-  let correct = 'Choose the plan that follows the rule, and explain why it fits.';
-  let decoys = ['Choose the popular plan without checking the rule.', 'Treat both plans as equal despite their different fit with the rule.'];
-  if (/\bbuyer\b/i.test(rule) && /\buser\b/i.test(rule) && /\b(signs?|pays?|budget|contract)\b/i.test(rule)) {
-    prompt = 'Apply it: the person using a product likes it, but someone else must approve the purchase. Who should you ask about the buying decision?';
-    correct = 'Ask the buyer who approves the purchase.';
-    decoys = ['Ask only the user and assume approval will follow.', 'Treat the user and buyer as the same person.'];
-  } else if (/fixed.price/i.test(rule) && /\b(contractor|supplier)\b/i.test(rule) && /\b(overrun|risk|extra cost)\b/i.test(rule)) {
-    prompt = 'Apply it: a supplier accepts a fixed-price contract and the work costs more than planned. What should the supplier prepare for?';
-    correct = 'The supplier may have to absorb the extra cost.';
-    decoys = ['The agreed price automatically rises with every extra cost.', 'The extra cost disappears because the price is fixed.'];
-  }
-  const options = shuffle([correct, ...decoys]);
-  return {
-    kind: 'multipleChoice', id,
-    prompt,
-    options, correctIndex: options.indexOf(correct),
-    explanation: `The plan should follow the rule you just read: ${rule}`,
-  };
-}
-
 /** The exact text a card shows on screen (respecting its display limits). */
 function visibleLines(ex: Exercise): string[] {
   const e = ex as any;
@@ -155,49 +130,6 @@ export function mergeThinReadingCards(exercises: Exercise[], slideNumbers: numbe
   return { lesson: { id: '', title: '', exercises: merged }, slideNumbers: numbers };
 }
 
-const isYear = (n: number) => Number.isInteger(n) && n >= 1900 && n <= 2099;
-
-/** Change one real quantity in a sentence (never a year or a designation). */
-function alterNumber(sentence: string): string | null {
-  for (const match of sentence.matchAll(/\d{1,4}(?:[.,]\d{1,2})?/g)) {
-    const token = match[0];
-    const at = match.index ?? 0;
-    if (/[A-Za-z-]$/.test(sentence.slice(Math.max(0, at - 1), at))) continue;
-    const raw = parseFloat(token.replace(',', '.'));
-    if (!isFinite(raw) || raw <= 0 || isYear(raw)) continue;
-    const next = raw > 10 ? Math.max(1, Math.round(raw * 0.2)) : Math.round(raw * 7);
-    if (next === raw || isYear(next)) continue;
-    return sentence.slice(0, at) + String(next) + sentence.slice(at + token.length);
-  }
-  return null;
-}
-
-/** "Which matches what you read?" — answer and altered options all come from shown text. */
-function checkShown(seen: string[], used: Set<string>, id: string): MultipleChoiceExercise | null {
-  for (const truth of shuffle(seen)) {
-    if (used.has(norm(truth))) continue;
-    const lies = [truth, ...seen.filter(s => norm(s) !== norm(truth))]
-      .map(alterNumber)
-      .filter((s): s is string => typeof s === 'string' && norm(s) !== norm(truth))
-      .filter(s => !used.has(`lie:${norm(s)}`));
-    const uniqueLies = lies.filter((s, i) => lies.findIndex(o => norm(o) === norm(s)) === i).slice(0, 2);
-    if (uniqueLies.length < 2) continue;
-    const options = shuffle([truth, ...uniqueLies]);
-    if (new Set(options.map(norm)).size !== options.length) continue;
-    used.add(norm(truth));
-    uniqueLies.forEach(l => used.add(`lie:${norm(l)}`));
-    return {
-      kind: 'multipleChoice',
-      id,
-      prompt: 'Which of these matches what you just read?',
-      options,
-      correctIndex: options.indexOf(truth),
-      explanation: `Straight from what you just read: ${truth}`,
-    };
-  }
-  return null;
-}
-
 export function buildBeats(
   stackTitle: string,
   rawSlides: SlideLike[],
@@ -213,7 +145,6 @@ export function buildBeats(
   const exercises: Exercise[] = [];
   const slideNumbers: number[] = [];
   const seen: string[] = [];
-  const usedTruths = new Set<string>();
   const push = (ex: Exercise | null, slideNumber: number, leo?: Exercise['leo']) => {
     if (!ex) return false;
     exercises.push(leo ? { ...ex, leo } : ex);
@@ -228,23 +159,14 @@ export function buildBeats(
   // 1. Cold open — the lesson's own line.
   push(makeColdOpen(slides, 'beat-open', pack ? pack.eyebrow : undefined), firstSlide);
 
-  // 2. Insight card per slide, with a check on already-shown text in between.
-  let checkCount = 0;
-  slides.forEach((slide, slideIdx) => {
+  // Legacy slide-only lessons are reading-only. Real written checks live in
+  // authored_lesson; never invent questions from numbers or a takeaway.
+  slides.forEach(slide => {
     push(makeMicroInsight(slide, `beat-insight-${slide.slideNumber}`, slide.title), slide.slideNumber);
-    const isLast = slideIdx === slides.length - 1;
-    if (!isLast && slideIdx % 2 === 1) {
-      const added = push(checkShown(seen, usedTruths, `beat-check-${checkCount + 1}`), slide.slideNumber);
-      if (added) checkCount += 1;
-    }
   });
 
-  // 3. Final check — still only what was shown.
-  if (push(checkShown(seen, usedTruths, 'beat-check-final'), lastSlide)) checkCount += 1;
-
-  // 4. Takeaway, plus a cliffhanger for tomorrow.
   const takeaway = filterForGoal((metadata?.key_takeaway || '').trim(), goal) ||
-    (checkCount === 0 ? seen[seen.length - 1] || splitSentences(slides[slides.length - 1]?.body || '')[0] || '' : '');
+    seen[seen.length - 1] || splitSentences(slides[slides.length - 1]?.body || '')[0] || '';
   if (takeaway.length >= 12) {
     push(
       {
@@ -261,14 +183,6 @@ export function buildBeats(
       },
       lastSlide,
     );
-  }
-
-  // Teach the takeaway visibly before asking the application question.
-  if (checkCount === 0 && takeaway) {
-    if (!exercises.some(ex => ex.id === 'beat-takeaway')) {
-      push({ kind: 'microInsight', id: 'beat-takeaway', eyebrow: 'The rule', text: takeaway }, lastSlide);
-    }
-    push(checkApplyIt(cardCopy(exercises.find(ex => ex.id === 'beat-takeaway') || exercises[exercises.length - 1]).filter(Boolean).join(' '), 'beat-apply-it'), lastSlide);
   }
 
   const merged = mergeThinReadingCards(exercises, slideNumbers);
