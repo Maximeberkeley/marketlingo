@@ -114,7 +114,7 @@ function LessonKitReader({
     [slideNumbers, onAddNote, onSaveInsight]
   );
   if (!defaultSectionKey) return /* @__PURE__ */ React.createElement(View, { style: styles.opening }, /* @__PURE__ */ React.createElement(ActivityIndicator, { color: tokens.color.accent }));
-  return /* @__PURE__ */ React.createElement(DeepDiveProvider, { stackId, learningGoal }, /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement(DeepDiveProvider, { stackId, learningGoal, marketId }, /* @__PURE__ */ React.createElement(
     LessonScreen,
     {
       lesson,
