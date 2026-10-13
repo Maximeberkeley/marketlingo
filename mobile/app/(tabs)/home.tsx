@@ -353,6 +353,24 @@ export default function HomeScreen() {
 
   // Crossing local midnight invalidates yesterday's completion even if the screen stays open.
   const clockDay = localDateString(clockNow);
+  const [notesCompletedToday, setNotesCompletedToday] = useState(false);
+  useEffect(() => {
+    let active = true;
+    setNotesCompletedToday(false);
+    if (!courseFocused || !user?.id || !selectedMarketLocal) return;
+    // Device-local midnight boundaries, serialized to UTC for the timestamp query.
+    const start = new Date(clockNow);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+    void (async () => {
+      const { data, error } = await supabase.from('notes').select('id')
+        .eq('user_id', user.id).eq('market_id', selectedMarketLocal)
+        .gte('created_at', start.toISOString()).lt('created_at', end.toISOString()).limit(1);
+      if (active && !error) setNotesCompletedToday(Boolean(data?.length));
+    })().catch(error => log.warn('[Home] Could not refresh daily notes:', error));
+    return () => { active = false; };
+  }, [courseFocused, user?.id, selectedMarketLocal, clockDay]);
   const completedOnClockDay = Boolean(dailyCompletion?.lesson_completed && dailyCompletion.completion_date === clockDay);
   useEffect(() => {
     if (clockDay !== localDateString()) return;
@@ -591,6 +609,7 @@ export default function HomeScreen() {
           isFocused={courseFocused}
           arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
           caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
+          notesCompletedToday={notesCompletedToday}
           intelReadToday={intelHabit.readToday}
           intelTarget={intelHabit.target}
           rescueAvailable={Boolean(streakCountdown)}

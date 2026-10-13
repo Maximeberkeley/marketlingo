@@ -124,6 +124,7 @@ interface CourseJourneyProps {
   completedTodayStackId?: string | null;
   arenaCompletedToday?: boolean;
   caseCompletedToday?: boolean;
+  notesCompletedToday?: boolean;
   intelReadToday: number;
   intelTarget: number;
   rescueAvailable?: boolean;
@@ -236,6 +237,7 @@ function SectionCluster({
   lessonCompletedToday,
   arenaCompletedToday,
   caseCompletedToday,
+  notesCompletedToday,
   intelDone,
   isFocused,
   onModule,
@@ -254,6 +256,7 @@ function SectionCluster({
   lessonCompletedToday: boolean;
   arenaCompletedToday: boolean;
   caseCompletedToday: boolean;
+  notesCompletedToday: boolean;
   intelDone: boolean;
   isFocused: boolean;
   onModule: (kind: ModuleKind) => void;
@@ -274,13 +277,14 @@ function SectionCluster({
     if (kind === 'arena') return arenaCompletedToday;
     if (kind === 'case') return caseCompletedToday;
     if (kind === 'intel') return intelDone;
+    if (kind === 'notes') return notesCompletedToday;
     return false;
   };
-  const coreCompleted = (['lesson', 'arena', 'case', 'intel'] as ModuleKind[])
-    .filter(kind => moduleComplete(kind)).length;
+  const coreCompleted = MODULES
+    .filter(module => moduleComplete(module.kind)).length;
   const orbitRadius = 132.5;
   const orbitCircumference = 2 * Math.PI * orbitRadius;
-  const orbitOffset = orbitCircumference * (1 - coreCompleted / 4);
+  const orbitOffset = orbitCircumference * (1 - coreCompleted / MODULES.length);
   const longTitle = weekTitle.length > 35;
 
   return (
@@ -333,8 +337,8 @@ function SectionCluster({
               completed={module.kind === 'lesson' ? lessonDone : moduleComplete(module.kind)}
               emphasis={activeSection && module.kind === 'lesson' && !lessonDone}
               pulse={isFocused && activeSection && module.kind === 'lesson' && !lessonDone && !reduceMotion}
-              muted={activeSection && module.kind !== 'lesson' && !lessonDone}
-              reveal={activeSection && module.kind !== 'lesson' && !(lessonDone && !lessonCompletedToday) ? activityReveal[['notes', 'arena', 'intel', 'case'].indexOf(module.kind)] : undefined}
+              muted={activeSection && module.kind !== 'lesson' && !lessonDone && !moduleComplete(module.kind)}
+              reveal={activeSection && module.kind !== 'lesson' && !moduleComplete(module.kind) && !(lessonDone && !lessonCompletedToday) ? activityReveal[['notes', 'arena', 'intel', 'case'].indexOf(module.kind)] : undefined}
               onPress={() => onModule(module.kind)}
             />
           );
@@ -446,6 +450,7 @@ export function CourseJourney({
   isFocused,
   arenaCompletedToday = false,
   caseCompletedToday = false,
+  notesCompletedToday = false,
   intelReadToday,
   intelTarget,
   rescueAvailable = false,
@@ -711,6 +716,7 @@ export function CourseJourney({
                calendarDay={currentDay}
               arenaCompletedToday={arenaCompletedToday}
               caseCompletedToday={caseCompletedToday}
+              notesCompletedToday={notesCompletedToday}
               intelDone={intelReadToday >= intelTarget}
               onHeader={() => setPreviewSection(section)}
               onLeo={() => onAskLeo(section.displayDay)}
