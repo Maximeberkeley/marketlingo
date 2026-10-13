@@ -4,7 +4,10 @@ import speaking from '../assets/illustrations/interview-speaking.png.asset.json'
 import analysis from '../assets/illustrations/interview-analysis.png.asset.json';
 
 export const INTERVIEW_ARTWORK = {
-  practice: { uri: new URL(flashcards.url, 'https://www.market-verse.com').href },
+  quiz: { uri: new URL(flashcards.url, 'https://www.market-verse.com').href },
+  case: { uri: new URL(research.url, 'https://www.market-verse.com').href },
+  investment: { uri: new URL(analysis.url, 'https://www.market-verse.com').href },
+  practice: { uri: new URL(speaking.url, 'https://www.market-verse.com').href },
   framework: { uri: new URL(research.url, 'https://www.market-verse.com').href },
   response: { uri: new URL(speaking.url, 'https://www.market-verse.com').href },
   verdict: { uri: new URL(analysis.url, 'https://www.market-verse.com').href },

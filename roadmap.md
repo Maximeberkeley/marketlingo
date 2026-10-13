@@ -1,5 +1,11 @@
 # MarketLingo roadmap
 
+## Oct 13 — Practice artwork, protected sessions and Intel credit
+- [ ] Match flashcards to Daily quiz, research to Case, microphone to Interview and charts to Investment.
+- [ ] Disable swipe-back during practice sessions and keep result bubbles clear of copy and buttons; sync phone source pairs.
+- [ ] Make completed Intel count toward its Home circle and verify with focused tests.
+- [ ] Verify on iPhone (blocked: no iOS device/simulator).
+
 ## Oct 13 — Voices, interview artwork, lesson glossary
 - [x] Confirm Leo's exact workspace voice and assign Sophia's previous Lily voice; both deployed speech requests returned valid MP3s.
 - [x] Upload and use all four supplied interview illustrations: Practice, framework, answer and verdict; all image addresses returned PNGs successfully.
