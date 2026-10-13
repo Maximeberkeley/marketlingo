@@ -17,7 +17,14 @@ import { Feather } from '@expo/vector-icons';
 import { COLORS, SHADOWS } from '../../lib/constants';
 import { pickBubbleLine } from '../../lib/leoLines';
 
-const LEO_IMAGE = require('../../assets/mascot/leo-rain.png');
+// Mood-matched Leo artwork — the notification shows the Leo that fits its category.
+const LEO_MOOD_IMAGES: Record<string, number> = {
+  waving: require('../../assets/mascot/leo-waving.png'),
+  celebrating: require('../../assets/mascot/leo-celebrating.png'),
+  thinking: require('../../assets/mascot/leo-thinking.png'),
+  idle: require('../../assets/mascot/leo-idle.png'),
+};
+const LEO_IMAGE = LEO_MOOD_IMAGES.idle;
 
 // ── Message Categories ──
 export type LeoPopupCategory = 'social' | 'game' | 'learning' | 'streak' | 'achievement' | 'tip';
@@ -139,7 +146,7 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
         <View style={styles.bubbleTail} />
         {/* Leo avatar */}
         <View style={styles.leoWrap}>
-          <Image source={LEO_IMAGE} style={styles.leoImage} />
+          <Image source={LEO_MOOD_IMAGES[config.leoMood] ?? LEO_IMAGE} style={styles.leoImage} />
         </View>
       </TouchableOpacity>
     </Animated.View>
