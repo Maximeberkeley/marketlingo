@@ -13,6 +13,7 @@ interface Props {
   numberOfLines?: number;
   /** Tint known industry terms and show their definition on tap. */
   glossary?: boolean;
+  keyTerms?: readonly GlossaryEntry[];
 }
 
 const SIGNAL = /(\$?\d[\d,.]*(?:%|[KMBT])?)/gi;
@@ -25,11 +26,11 @@ function figures(text: string, keyPrefix: string) {
 }
 
 /** Figures are bold and inherit their surrounding text color, including feedback. */
-export function ColorText({ text, style, maxSentences = 2, maxLength = 170, numberOfLines, glossary = false }: Props) {
+export function ColorText({ text, style, maxSentences = 2, maxLength = 170, numberOfLines, glossary = false, keyTerms }: Props) {
   const { marketId } = useDeepDiveTarget();
   const [open, setOpen] = useState<GlossaryEntry | null>(null);
   const shown = shortText(text, maxSentences, maxLength);
-  const terms = useMemo(() => (glossary ? glossaryFor(marketId) : null), [glossary, marketId]);
+  const terms = useMemo(() => (glossary ? glossaryFor(marketId, keyTerms) : null), [glossary, marketId, keyTerms]);
 
   const content = useMemo(() => {
     if (!terms) return figures(shown, 'f');

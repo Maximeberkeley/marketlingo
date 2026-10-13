@@ -8,6 +8,7 @@ import {
   Animated,
   ActivityIndicator,
   Image,
+  ImageSourcePropType,
   Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
@@ -22,6 +23,7 @@ import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { getMarketName } from '../../lib/markets';
+import { INTERVIEW_ARTWORK } from '../../lib/interviewArtwork';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - 40; // Full width with 20px padding each side
@@ -35,7 +37,7 @@ interface CardData {
   icon: keyof typeof Feather.glyphMap;
   path: string;
   isPro?: boolean;
-  hero?: number;
+  hero?: ImageSourcePropType;
 }
 
 const ACTIVITY_CARDS: CardData[] = [
@@ -64,7 +66,7 @@ const LAB_CARDS: CardData[] = [
     description: 'Answer a question. Get useful feedback.',
     icon: 'mic',
     path: '/interview-lab',
-    hero: require('../../assets/illustrations/interview-lab-hero.png'),
+    hero: INTERVIEW_ARTWORK.practice,
   },
   {
     id: 'investment',

@@ -3,26 +3,27 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { ColorText } from './ColorText';
 import { colonList } from '../cardPresentation';
-import { interviewQA } from '../glossary';
+import { interviewQA, GlossaryEntry } from '../glossary';
 import { tokens } from '../theme/tokens';
 
 const ALL = { maxSentences: 10000, maxLength: 1000000, glossary: true } as const;
 
 /** Shared editorial copy and list rows; receives only the card's disclosed text. */
-export function ReadingCopy({ text, body = '', evidence = false, preserveCover = false }: {
-  text: string; body?: string; evidence?: boolean; preserveCover?: boolean;
+export function ReadingCopy({ text, body = '', evidence = false, preserveCover = false, keyTerms }: {
+  text: string; body?: string; evidence?: boolean; preserveCover?: boolean; keyTerms?: readonly GlossaryEntry[];
 }) {
+  const copyProps = { ...ALL, keyTerms };
   const qa = interviewQA([text, body].filter(Boolean).join(' '));
   if (qa) {
     return <View style={styles.wrap}>
-      {!!qa.before && <ColorText text={qa.before} style={styles.body} {...ALL} />}
+      {!!qa.before && <ColorText text={qa.before} style={styles.body} {...copyProps} />}
       <View style={styles.qCard}>
         <Text style={styles.chip}>INTERVIEW QUESTION</Text>
-        <ColorText text={qa.question} style={styles.question} {...ALL} />
+        <ColorText text={qa.question} style={styles.question} {...copyProps} />
       </View>
       <View style={styles.aCard}>
         <Text style={[styles.chip, styles.aChip]}>SAMPLE ANSWER</Text>
-        <ColorText text={qa.answer} style={styles.answer} {...ALL} />
+        <ColorText text={qa.answer} style={styles.answer} {...copyProps} />
       </View>
     </View>;
   }
@@ -31,13 +32,13 @@ export function ReadingCopy({ text, body = '', evidence = false, preserveCover =
   const rows = (items: string[]) => <View>{items.map((item, index) => (
     <View key={`${index}-${item}`} style={[styles.row, index > 0 && styles.divider]}>
       <Feather name="check" size={15} color={tokens.color.accent} style={styles.check} />
-      <ColorText text={item} style={styles.rowText} {...ALL} />
+      <ColorText text={item} style={styles.rowText} {...copyProps} />
     </View>
   ))}</View>;
   return <View style={styles.wrap}>
-    {!!text && <ColorText text={headlineList?.headline || text} style={evidence ? styles.body : styles.headline} {...ALL} />}
+    {!!text && <ColorText text={headlineList?.headline || text} style={evidence ? styles.body : styles.headline} {...copyProps} />}
     {headlineList && rows(headlineList.items)}
-    {!!followingBody && <ColorText text={followingBody} style={styles.body} {...ALL} />}
+    {!!followingBody && <ColorText text={followingBody} style={styles.body} {...copyProps} />}
   </View>;
 }
 

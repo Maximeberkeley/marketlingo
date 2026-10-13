@@ -1,4 +1,6 @@
 <!-- Phone app rules -->
+- Resolve inline lesson definitions from the market glossary plus each reading card’s authored key terms, including full briefings; keep graded choices definition-free because help must not disclose an answer before grading.
+- Use the shared interview artwork mapping for Practice and interview stages, because each uploaded illustration should consistently represent its activity without changing question selection.
 - Count all five Home orbit activities, including a saved note in the learner's current market and local day, and refresh note evidence on focus; notebook notes never become Brief entries or earn lesson credit.
 - Keep the learner's interview target (company, role, date) on-device per learner and market, and derive readiness, sprint/weekly plans and question track from it in one shared phone module, because Profile, Brief and the Interview Lab must agree.
 - Interview Lab picks its path from the saved interview target's role track (never asks Job vs School up front), and technical/behavioral tracks draw from the on-device TRACK_MOCKS bank before the question table, because technical roles must never get consulting cases or mental math.

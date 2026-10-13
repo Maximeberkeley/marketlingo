@@ -28,13 +28,13 @@ export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
     <View style={[styles.wrap, kind === 'takeaway' && styles.takeaway]}>
       {kind === 'takeaway' ? <Text style={styles.eyebrow}>The rule</Text> : !!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow)}</Text>}
       <View style={kind === 'evidence' ? styles.evidence : undefined}>
-        <ReadingCopy text={title} body={bodyIsEcho ? '' : body} preserveCover={kind === 'takeaway'} />
+        <ReadingCopy text={title} body={bodyIsEcho ? '' : body} preserveCover={kind === 'takeaway'} keyTerms={terms} />
       </View>
 
       {exercise.bullets?.slice(0, 2).map((b, i) => (
         <View key={i} style={styles.bulletRow}>
           <View style={styles.dot} />
-          <ColorText text={shortText(b, 1, 90)} style={styles.bullet} maxSentences={1} maxLength={90} />
+          <ColorText text={shortText(b, 1, 90)} style={styles.bullet} maxSentences={1} maxLength={90} glossary keyTerms={terms} />
         </View>
       ))}
 
