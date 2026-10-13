@@ -265,6 +265,7 @@
 - [ ] Verify launch and Interview Lab flow in the next phone build (blocked: no iOS device/simulator).
 
 ## Oct 13 — Final Interview Lab polish
-- [ ] Show normal-case 14px scenarios on the card and answer screen; show concept links only for concept-generated questions.
-- [ ] Limit plan second lines to nonduplicated concepts on concept/Brief tasks.
-- [ ] Prioritize behavioral and basic technical questions for early-career roles across card, answer and sprint; synchronize JavaScript twins and run focused checks.
+- [x] Show normal-case 14px scenarios on the card and answer screen; show concept links only for concept-generated questions.
+- [x] Limit plan second lines to nonduplicated concepts on concept/Brief tasks.
+- [x] Prioritize behavioral and basic technical questions for early-career roles across card, answer and sprint; synchronize JavaScript twins and run focused checks.
+- [ ] Verify card-to-answer appearance on an iPhone (blocked: no iOS device/simulator); 17 focused/regression tests pass and all three source pairs match.
