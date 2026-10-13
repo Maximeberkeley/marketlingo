@@ -1,5 +1,12 @@
 # MarketLingo roadmap
 
+## Oct 13 — Practice artwork, protected sessions and Intel credit
+- [x] Remove redundant streak/reminder/Home refresh waits from lesson banking; keep results visible while saving, guard repeated taps and defer secondary navigation until successful saving. Fresh XP reads no longer retrigger their own loading effect.
+- [x] Match flashcards to Daily quiz, research to Case, microphone to Interview and charts/calculator/coins to Investment Lab; visually inspected all supplied drawings.
+- [x] Disable native swipe-back during practice sessions and reserve growing bubble space clear of buttons; synchronize phone source pairs.
+- [x] Credit a completed Intel quiz to its Home circle, preserving the daily reading reward; 42 focused tests pass, including save-confirmation flow, Intel readback, note orbit and source parity. Preview build OK.
+- [ ] Verify on iPhone (blocked: no iOS device/simulator).
+
 ## Oct 13 — Voices, interview artwork, lesson glossary
 - [x] Confirm Leo's exact workspace voice and assign Sophia's previous Lily voice; both deployed speech requests returned valid MP3s.
 - [x] Upload and use all four supplied interview illustrations: Practice, framework, answer and verdict; all image addresses returned PNGs successfully.

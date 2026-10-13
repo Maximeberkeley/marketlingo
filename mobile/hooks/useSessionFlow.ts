@@ -84,8 +84,8 @@ export function useSessionFlow({
   }, [lessonStack]);
 
   const handleStackComplete = useCallback(async (isReviewMode: boolean, timeSpentSeconds: number): Promise<boolean> => {
-    setShowReader(false);
     if (isReviewMode) {
+      setShowReader(false);
       setActiveStack(null);
       Alert.alert('Great review!', 'Keep up the good work.');
       return false;
@@ -117,7 +117,6 @@ export function useSessionFlow({
           const alreadyCompleted = progress.completed_stacks?.includes(activeStack.id);
           if (!alreadyCompleted) await completeStack(activeStack.id);
           await addXP(earnedXP, 'extra_practice', activeStack.id, 'Extra lesson today');
-          await onDataRefresh();
           synced = true;
         } else {
           await completeStack(activeStack.id);
@@ -138,8 +137,7 @@ export function useSessionFlow({
             checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
           }
           // The dossier is written by the learner only (see the lesson's "Say it" step).
-          // Refresh progress before showing the completion screen.
-          await onDataRefresh();
+          // All required writes are saved; a full Home/news refresh is not banking.
           synced = true;
         }
       }
@@ -160,6 +158,7 @@ export function useSessionFlow({
     });
     setSessionXPEarned(earnedXP);
     setShowSessionComplete(true);
+    setShowReader(false);
     return synced;
   }, [activeStack, progress, xpData, selectedMarket, lessonCompletedToday, completeStack, updateStreak, completeLessonForToday, addXP, checkStreakMilestone, checkLevelMilestone, xpRewardLessonComplete, xpRewardStreakBonus, onDataRefresh]);
 

@@ -287,16 +287,26 @@ function QuizModal({
   article,
   marketId,
   onClose,
+  onComplete,
 }: {
   article: NewsItem | null;
   marketId: string;
   onClose: () => void;
+  onComplete: (articleId: string) => void;
 }) {
   const [questions, setQuestions] = useState<NewsQuizQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentQ, setCurrentQ] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [score, setScore] = useState(0);
+  const completedArticle = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!article) { completedArticle.current = null; return; }
+    if (loading || questions.length === 0 || currentQ < questions.length || completedArticle.current === article.id) return;
+    completedArticle.current = article.id;
+    onComplete(article.id);
+  }, [article, loading, questions.length, currentQ, onComplete]);
 
   useEffect(() => {
     if (article) {
@@ -939,6 +949,7 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
         article={quizArticle}
         marketId={marketId}
         onClose={() => setQuizArticle(null)}
+        onComplete={intel.recordComplete}
       />
 
       {/* AI Chat overlay */}

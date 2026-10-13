@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Animated, Image } from "react-native";
 import { tokens } from "../theme/tokens";
 import { LeoCharacter } from "../../components/mascot/LeoCharacter";
@@ -40,18 +40,19 @@ function LeoCoach({ line, mood = "idle", accent = tokens.color.accent }) {
   const rise = enter.interpolate({ inputRange: [0, 1], outputRange: [6, 0] });
   const moodTint = mood === "correct" || mood === "celebrate" ? tokens.color.correct : mood === "incorrect" ? tokens.color.incorrect : accent;
   const scene = SCENES[mood];
-  return <View style={styles.wrap}>{
-    /* A clean, quiet stage: no tint, no aura — Leo and his bubble only. */
-  }<View style={styles.scene}>{scene ? <Image source={scene} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}{
-    /* Leo — anchored, completely still, never overlapping his bubble */
-  }<View style={styles.leo} pointerEvents="none"><LeoCharacter animation={ANIM[mood]} size="sm" still /></View>{
-    /* Clean illustrated speech balloon — one shape and one integrated tail. */
-  }{speaking ? <Animated.View
-    style={[
-      styles.bubbleWrap,
-      { opacity: enter, transform: [{ scale: pop }, { translateY: rise }] }
-    ]}
-  ><SpeechBubble tail="left" showLabel style={styles.bubble}><ColorText text={line} style={styles.text} maxSentences={2} maxLength={110} /></SpeechBubble></Animated.View> : <View style={styles.bubbleWrap} pointerEvents="none" />}</View></View>;
+  return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(View, { style: styles.scene }, scene ? /* @__PURE__ */ React.createElement(Image, { source: scene, style: StyleSheet.absoluteFill, resizeMode: "cover" }) : null, /* @__PURE__ */ React.createElement(View, { style: styles.leo, pointerEvents: "none" }, /* @__PURE__ */ React.createElement(LeoCharacter, { animation: ANIM[mood], size: "sm", still: true })), /* @__PURE__ */ React.createElement(View, { style: styles.bubbleSlot }, /* @__PURE__ */ React.createElement(
+    Animated.View,
+    {
+      pointerEvents: speaking ? "auto" : "none",
+      accessibilityElementsHidden: !speaking,
+      importantForAccessibility: speaking ? "auto" : "no-hide-descendants",
+      style: [
+        styles.bubbleWrap,
+        { opacity: enter, transform: [{ scale: pop }, { translateY: rise }] }
+      ]
+    },
+    /* @__PURE__ */ React.createElement(SpeechBubble, { tail: "left", showLabel: true, style: styles.bubble }, /* @__PURE__ */ React.createElement(ColorText, { text: line, style: styles.text, maxSentences: 2, maxLength: 110 }))
+  ))));
 }
 const SCENE_H = 112;
 const styles = StyleSheet.create({
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
     marginBottom: tokens.space.sm
   },
   scene: {
-    height: SCENE_H,
+    minHeight: SCENE_H,
     flexDirection: "row",
     alignItems: "flex-end"
   },
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     zIndex: 1
   },
-  bubbleWrap: {
+  bubbleSlot: {
     flex: 1,
     alignSelf: "center",
     marginRight: tokens.space.sm,
@@ -81,6 +82,7 @@ const styles = StyleSheet.create({
     // Always above Leo — even if his artwork overhangs, the words stay readable.
     zIndex: 2
   },
+  bubbleWrap: { width: "100%" },
   bubble: { width: "100%" },
   text: {
     fontSize: 16,

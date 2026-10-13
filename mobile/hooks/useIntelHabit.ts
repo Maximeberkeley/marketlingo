@@ -9,6 +9,7 @@ export const INTEL_DAILY_TARGET = 3;
 export const INTEL_HABIT_XP = 20;
 
 const EVENT = 'intel_read';
+const COMPLETE_EVENT = 'intel_completed';
 
 /** Start of the learner's LOCAL calendar day, as an ISO timestamp. */
 function localDayStartISO(): string {
@@ -25,28 +26,34 @@ export function useIntelHabit(marketId?: string) {
   const { user } = useAuth();
   const [readToday, setReadToday] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [completedToday, setCompletedToday] = useState(false);
   const seen = useRef<Set<string>>(new Set());
   const rewarded = useRef(false);
 
   const refresh = useCallback(async () => {
-    if (!user) { setReadToday(0); setLoading(false); return; }
+    if (!user || !marketId) { setReadToday(0); setCompletedToday(false); setLoading(false); return; }
+    setLoading(true);
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('analytics_events')
-        .select('properties')
+        .select('event, properties')
         .eq('user_id', user.id)
-        .eq('event', EVENT)
+        .in('event', [EVENT, COMPLETE_EVENT])
         .gte('occurred_at', localDayStartISO());
+      if (error) throw error;
 
       const ids = new Set<string>();
+      let complete = false;
       (data || []).forEach((row: any) => {
         const props = (row?.properties || {}) as Record<string, unknown>;
-        if (marketId && props.market_id && props.market_id !== marketId) return;
+        if (props.market_id !== marketId) return;
+        if (row.event === COMPLETE_EVENT) { complete = true; return; }
         const id = typeof props.article_id === 'string' ? props.article_id : '';
         if (id) ids.add(id);
       });
       seen.current = ids;
       setReadToday(ids.size);
+      setCompletedToday(complete);
     } catch (e) {
       log.warn('useIntelHabit refresh failed', e);
     } finally {
@@ -55,6 +62,18 @@ export function useIntelHabit(marketId?: string) {
   }, [user, marketId]);
 
   useEffect(() => { refresh(); }, [refresh]);
+
+  /** A finished article quiz credits the Intel circle regardless of its score. */
+  const recordComplete = useCallback(async (articleId: string) => {
+    if (!user || !marketId || !articleId) return;
+    const { error } = await supabase.from('analytics_events').insert({
+      user_id: user.id,
+      event: COMPLETE_EVENT,
+      properties: { article_id: articleId, market_id: marketId },
+    });
+    if (error) { log.warn('intel completion not recorded', error); return; }
+    setCompletedToday(true);
+  }, [user, marketId]);
 
   const bankReward = useCallback(async () => {
     if (!user || !marketId || rewarded.current) return;
@@ -89,17 +108,20 @@ export function useIntelHabit(marketId?: string) {
 
   /** Record that the learner opened one intel story. Safe to call repeatedly. */
   const recordRead = useCallback(async (articleId: string) => {
-    if (!user || !articleId || seen.current.has(articleId)) return;
+    if (!user || !marketId || !articleId || seen.current.has(articleId)) return;
     seen.current.add(articleId);
     const next = seen.current.size;
     setReadToday(next);
     try {
-      await supabase.from('analytics_events').insert({
+      const { error } = await supabase.from('analytics_events').insert({
         user_id: user.id,
         event: EVENT,
         properties: { article_id: articleId, market_id: marketId ?? null },
       });
+      if (error) throw error;
     } catch (e) {
+      seen.current.delete(articleId);
+      setReadToday(seen.current.size);
       log.warn('intel read not recorded', e);
     }
     if (next >= INTEL_DAILY_TARGET) bankReward();
@@ -111,9 +133,10 @@ export function useIntelHabit(marketId?: string) {
     readToday,
     target: INTEL_DAILY_TARGET,
     remaining,
-    done: remaining === 0,
+    done: completedToday || remaining === 0,
     loading,
     recordRead,
+    recordComplete,
     refresh,
   };
 }

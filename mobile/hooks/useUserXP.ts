@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { UserXP, DailyCompletion } from '../lib/types';
@@ -33,17 +33,20 @@ export const STARTUP_STAGES = [
 export function useUserXP(marketId?: string) {
   const { user } = useAuth();
   const [xpData, setXpData] = useState<UserXP | null>(null);
+  const xpRef = useRef(xpData);
+  xpRef.current = xpData;
   const [dailyCompletion, setDailyCompletion] = useState<DailyCompletion | null>(null);
   const [loading, setLoading] = useState(true);
   // Null is a valid result for today, but an unqueried day is not ready.
   const [completionLoadedKey, setCompletionLoadedKey] = useState<string | null>(null);
   const completionKey = user && marketId ? `${user.id}:${marketId}:${localDateString()}` : null;
 
-  const ensureXPRecord = useCallback(async () => {
+  const ensureXPRecord = useCallback(async (fresh = false) => {
     if (!user || !marketId) return null;
 
-    if (xpData && xpData.user_id === user.id && xpData.market_id === marketId) {
-      return xpData;
+    const cachedXP = xpRef.current;
+    if (!fresh && cachedXP && cachedXP.user_id === user.id && cachedXP.market_id === marketId) {
+      return cachedXP;
     }
 
     try {
@@ -107,7 +110,7 @@ export function useUserXP(marketId?: string) {
       log.warn('[UserXP] Failed to ensure XP record:', error);
       return null;
     }
-  }, [user, marketId, xpData]);
+  }, [user, marketId]);
 
   const fetchXPData = useCallback(async () => {
     if (!user || !marketId) {
@@ -120,7 +123,7 @@ export function useUserXP(marketId?: string) {
     setLoading(true);
 
     try {
-      const ensuredXP = await ensureXPRecord();
+      const ensuredXP = await ensureXPRecord(true);
       if (ensuredXP) {
         setXpData(ensuredXP);
       }
@@ -280,15 +283,9 @@ export function useUserXP(marketId?: string) {
       await addXP(XP_REWARDS.LESSON_COMPLETE, 'lesson', stackId, 'Completed daily lesson');
     }
 
-    // Streak is recomputed from local calendar days, so finishing a lesson at
-    // 23:50 and again at 00:10 counts as two separate days — and nothing else.
-    const { error: streakError } = await supabase.rpc('sync_local_streak', {
-      p_market_id: marketId,
-      p_today: today,
-    });
-    if (streakError) log.warn('Streak sync after lesson failed:', streakError.message);
-
-    await cancelRollingLeoNudges();
+    // The session syncs the local-day streak once after this credit is saved.
+    // Native reminder cleanup must not delay the learner's bank confirmation.
+    void cancelRollingLeoNudges().catch(error => log.warn('Reminder cleanup failed:', error));
 
     return data;
   };

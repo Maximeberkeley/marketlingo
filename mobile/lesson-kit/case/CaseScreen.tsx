@@ -177,7 +177,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
           )}
 
           <LeoCoach
-            line={`That is one more ${marketName} case in the bank. Cases like this are what interviews are made of.`}
+            line="Another case solved. Your reasoning is getting sharper."
             mood={result.grade === 'A' || result.grade === 'B' ? 'celebrate' : 'thinking'}
           />
 

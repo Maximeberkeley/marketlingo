@@ -47,7 +47,7 @@ const ACTIVITY_CARDS: CardData[] = [
     description: 'Quick questions on what you studied.',
     icon: 'zap',
     path: '/arena',
-    hero: require('../../assets/cards/daily-arena-hero.jpg'),
+    hero: INTERVIEW_ARTWORK.quiz,
   },
   {
     id: 'deep-case',
@@ -55,7 +55,7 @@ const ACTIVITY_CARDS: CardData[] = [
     description: 'A real situation. What would you do?',
     icon: 'briefcase',
     path: '/deep-case',
-    hero: require('../../assets/cards/deep-case-hero.jpg'),
+    hero: INTERVIEW_ARTWORK.case,
   },
 ];
 
@@ -74,6 +74,7 @@ const LAB_CARDS: CardData[] = [
     description: 'Would you invest in this company?',
     icon: 'trending-up',
     path: '/investment-lab',
+    hero: INTERVIEW_ARTWORK.investment,
   },
 ];
 

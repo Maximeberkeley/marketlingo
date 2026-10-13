@@ -295,6 +295,10 @@ function HomeScreen() {
     if (!session.showReader) void reloadDossier();
   }, [session.showReader, reloadDossier]);
   const clockDay = localDateString(clockNow);
+  const refreshIntel = intelHabit.refresh;
+  useEffect(() => {
+    if (courseFocused) void refreshIntel();
+  }, [courseFocused, clockDay, refreshIntel]);
   const [notesCompletedToday, setNotesCompletedToday] = useState(false);
   useEffect(() => {
     let active = true;
@@ -402,7 +406,8 @@ function HomeScreen() {
     if (hour < 17) return getRandomGreeting("afternoon");
     return getRandomGreeting("evening");
   });
-  if (loading || authLoading || !bootReady) return /* @__PURE__ */ React.createElement(HomeSkeleton, null);
+  const activeLessonScreen = session.showGoals || session.showReader || session.showSessionComplete;
+  if (!activeLessonScreen && (loading || authLoading || !bootReady)) return /* @__PURE__ */ React.createElement(HomeSkeleton, null);
   const marketIllustration = MARKET_ILLUSTRATIONS[selectedMarket || "aerospace"] || MARKET_ILLUSTRATIONS.aerospace;
   const marketGradient = MARKET_GRADIENTS[selectedMarket || "aerospace"] || MARKET_GRADIENTS.aerospace;
   const marketAccent = marketGradient[0];
@@ -523,7 +528,7 @@ function HomeScreen() {
       arenaCompletedToday: (dailyCompletion?.drills_completed || 0) > 0,
       caseCompletedToday: (dailyCompletion?.games_completed || 0) > 0,
       notesCompletedToday,
-      intelReadToday: intelHabit.readToday,
+      intelReadToday: intelHabit.done ? intelHabit.target : intelHabit.readToday,
       intelTarget: intelHabit.target,
       rescueAvailable: Boolean(streakCountdown),
       streakCountdown,

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -52,6 +52,20 @@ function LessonComplete({
   const bonuses = useRef(lessonRewards(baseXp, accuracy, total, bestCombo, heartsLeft, timeSpentSeconds)).current;
   const totalXp = bonuses.reduce((sum, line) => sum + line.xp, 0);
   const [shown, setShown] = useState(0);
+  const [saving, setSaving] = useState(false);
+  const saveInFlight = useRef(false);
+  const finish = async (navigate) => {
+    if (saveInFlight.current) return;
+    saveInFlight.current = true;
+    setSaving(true);
+    try {
+      const saved = await onDone(totalXp);
+      if (saved !== false) navigate?.();
+    } finally {
+      saveInFlight.current = false;
+      setSaving(false);
+    }
+  };
   useEffect(() => {
     playSound("celebration").catch(() => {
     });
@@ -65,54 +79,82 @@ function LessonComplete({
     }, 350 + shown * 300);
     return () => clearTimeout(t);
   }, [shown, bonuses.length]);
-  return <ScrollView
-    style={styles.scroll}
-    contentContainerStyle={styles.wrap}
-    showsVerticalScrollIndicator={false}
-  ><Image source={require("../../assets/mascot/leo-celebrating.png")} style={styles.leoHero} resizeMode="contain" /><Text style={styles.title}>{praise}</Text>{typeof streakDays === "number" && streakDays > 0 ? <Text style={styles.subtitle}>🔥 {streakDays}-day streak — come back tomorrow to keep it.</Text> : <Text style={styles.subtitle}>You just started a streak. Come back tomorrow to keep it.</Text>}<Text style={styles.xpBig}>+{totalXp} XP</Text>{total > 0 && <View style={styles.bonusList}>{bonuses.map((b, i) => <View key={i} style={styles.bonusRow}><Feather name="zap" size={14} color={tokens.color.accent} /><Text style={styles.bonusLabel}>{b.label}</Text><Text style={styles.bonusXp}>+{b.xp}</Text></View>)}</View>}{leoQuestions > 0 && <Text style={styles.leoLine}>
-          You asked Leo {leoQuestions} {leoQuestions === 1 ? "thing" : "things"}. That's how it sticks.
-        </Text>}<View style={styles.stats}>{total > 0 && <Stat label="Accuracy" value={`${accuracy}%`} />}{total > 0 && <Stat label="Correct" value={`${correct}/${total}`} />}<Stat label="Time" value={formatTime(timeSpentSeconds)} /></View>{
-    /* Real progress: only sections the learner wrote count. */
-  }{!dossier.loading && <TouchableOpacity
-    style={styles.dossierCard}
-    activeOpacity={0.85}
-    onPress={() => {
-      triggerHaptic("medium");
-      onDone(totalXp);
-      router.push({ pathname: "/deliverable", params: nextSection ? { section: nextSection.key } : {} });
-    }}
-  ><View style={styles.dossierIcon}><Feather name="file-text" size={18} color={tokens.color.accent} /></View><View style={{ flex: 1, minWidth: 0 }}><Text style={styles.dossierEyebrow}>{dossier.template.title.toUpperCase()}</Text><Text style={styles.dossierTitle}>{`${dossier.template.title} \xB7 ${dossier.filledSections} of ${sectionCount} sections written by you`}</Text><Text style={styles.dossierBody}>{nextSection ? `Next: ${nextSection.title}` : "Every section is written. Open it to review or export."}</Text></View><Feather name="chevron-right" size={18} color={tokens.color.accent} /></TouchableOpacity>}<TouchableOpacity
-    accessibilityRole="button"
-    accessibilityLabel={calledToday ? "Next call tomorrow" : "Call Leo, 3 minutes"}
-    disabled={calledToday}
-    style={[styles.callBtn, calledToday && { opacity: 0.55 }]}
-    activeOpacity={0.8}
-    onPress={() => {
-      triggerHaptic("medium");
-      onDone(totalXp);
-      router.push({ pathname: "/leo-call", params: { marketId: marketId ?? "", lessonTitle: lessonTitle ?? "", takeaway: takeaway ?? "" } });
-    }}
-  ><Feather name="phone" size={16} color={tokens.color.accent} /><Text style={styles.callBtnText}>{calledToday ? "Next call tomorrow" : "Call Leo \xB7 3 min"}</Text></TouchableOpacity><TouchableOpacity
-    accessibilityRole="link"
-    accessibilityLabel="Today's intel · 3 stories →"
-    style={styles.intelLink}
-    activeOpacity={0.7}
-    onPress={() => {
-      triggerHaptic("light");
-      onDone(totalXp);
-      router.push({ pathname: "/(tabs)/roadmap", params: { autoOpen: "1" } });
-    }}
-  ><Text style={styles.intelLinkText}>Today's intel · 3 stories →</Text></TouchableOpacity><PrimaryButton
-    label={doneLabel}
-    onPress={() => {
-      triggerHaptic("light");
-      onDone(totalXp);
-    }}
-    style={styles.cta}
-  /></ScrollView>;
+  return /* @__PURE__ */ React.createElement(
+    ScrollView,
+    {
+      style: styles.scroll,
+      contentContainerStyle: styles.wrap,
+      showsVerticalScrollIndicator: false
+    },
+    /* @__PURE__ */ React.createElement(Image, { source: require("../../assets/mascot/leo-celebrating.png"), style: styles.leoHero, resizeMode: "contain" }),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.title }, praise),
+    typeof streakDays === "number" && streakDays > 0 ? /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "\u{1F525} ", streakDays, "-day streak \u2014 come back tomorrow to keep it.") : /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "You just started a streak. Come back tomorrow to keep it."),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.xpBig }, "+", totalXp, " XP"),
+    total > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.bonusList }, bonuses.map((b, i) => /* @__PURE__ */ React.createElement(View, { key: i, style: styles.bonusRow }, /* @__PURE__ */ React.createElement(Feather, { name: "zap", size: 14, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.bonusLabel }, b.label), /* @__PURE__ */ React.createElement(Text, { style: styles.bonusXp }, "+", b.xp)))),
+    leoQuestions > 0 && /* @__PURE__ */ React.createElement(Text, { style: styles.leoLine }, "You asked Leo ", leoQuestions, " ", leoQuestions === 1 ? "thing" : "things", ". That's how it sticks."),
+    /* @__PURE__ */ React.createElement(View, { style: styles.stats }, total > 0 && /* @__PURE__ */ React.createElement(Stat, { label: "Accuracy", value: `${accuracy}%` }), total > 0 && /* @__PURE__ */ React.createElement(Stat, { label: "Correct", value: `${correct}/${total}` }), /* @__PURE__ */ React.createElement(Stat, { label: "Time", value: formatTime(timeSpentSeconds) })),
+    !dossier.loading && /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        style: styles.dossierCard,
+        disabled: saving,
+        activeOpacity: 0.85,
+        onPress: () => {
+          triggerHaptic("medium");
+          void finish(() => router.push({ pathname: "/deliverable", params: nextSection ? { section: nextSection.key } : {} }));
+        }
+      },
+      /* @__PURE__ */ React.createElement(View, { style: styles.dossierIcon }, /* @__PURE__ */ React.createElement(Feather, { name: "file-text", size: 18, color: tokens.color.accent })),
+      /* @__PURE__ */ React.createElement(View, { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.dossierEyebrow }, dossier.template.title.toUpperCase()), /* @__PURE__ */ React.createElement(Text, { style: styles.dossierTitle }, `${dossier.template.title} \xB7 ${dossier.filledSections} of ${sectionCount} sections written by you`), /* @__PURE__ */ React.createElement(Text, { style: styles.dossierBody }, nextSection ? `Next: ${nextSection.title}` : "Every section is written. Open it to review or export.")),
+      /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 18, color: tokens.color.accent })
+    ),
+    /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        accessibilityRole: "button",
+        accessibilityLabel: calledToday ? "Next call tomorrow" : "Call Leo, 3 minutes",
+        disabled: calledToday || saving,
+        style: [styles.callBtn, calledToday && { opacity: 0.55 }],
+        activeOpacity: 0.8,
+        onPress: () => {
+          triggerHaptic("medium");
+          void finish(() => router.push({ pathname: "/leo-call", params: { marketId: marketId ?? "", lessonTitle: lessonTitle ?? "", takeaway: takeaway ?? "" } }));
+        }
+      },
+      /* @__PURE__ */ React.createElement(Feather, { name: "phone", size: 16, color: tokens.color.accent }),
+      /* @__PURE__ */ React.createElement(Text, { style: styles.callBtnText }, calledToday ? "Next call tomorrow" : "Call Leo \xB7 3 min")
+    ),
+    /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        accessibilityRole: "link",
+        accessibilityLabel: "Today's intel \xB7 3 stories \u2192",
+        style: styles.intelLink,
+        disabled: saving,
+        activeOpacity: 0.7,
+        onPress: () => {
+          triggerHaptic("light");
+          void finish(() => router.push({ pathname: "/(tabs)/roadmap", params: { autoOpen: "1" } }));
+        }
+      },
+      /* @__PURE__ */ React.createElement(Text, { style: styles.intelLinkText }, "Today's intel \xB7 3 stories \u2192")
+    ),
+    /* @__PURE__ */ React.createElement(
+      PrimaryButton,
+      {
+        label: saving ? "Saving your XP\u2026" : doneLabel,
+        variant: saving ? "disabled" : "primary",
+        onPress: () => {
+          triggerHaptic("light");
+          void finish();
+        },
+        style: styles.cta
+      }
+    )
+  );
 }
 function Stat({ label, value }) {
-  return <View style={styles.stat}><Text style={styles.statValue}>{value}</Text><Text style={styles.statLabel}>{label}</Text></View>;
+  return /* @__PURE__ */ React.createElement(View, { style: styles.stat }, /* @__PURE__ */ React.createElement(Text, { style: styles.statValue }, value), /* @__PURE__ */ React.createElement(Text, { style: styles.statLabel }, label));
 }
 const styles = StyleSheet.create({
   leoHero: { width: 132, height: 132, alignSelf: "center", marginBottom: 8 },
