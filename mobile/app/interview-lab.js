@@ -31,7 +31,7 @@ import { triggerHaptic } from "../lib/haptics";
 import { log } from "../lib/logger";
 import { useInterviewReadiness } from "../hooks/useInterviewReadiness";
 import { InterviewHome } from "../components/interview/InterviewHome";
-import { personaForTrack, roleTrack } from "../lib/interviewPrep";
+import { isEarlyCareerRole, orderInterviewMocks, pickInterviewIndex, personaForTrack, roleTrack } from "../lib/interviewPrep";
 const LEO = require("../assets/mascot/leo-idle.png");
 const STAGES = [
   { key: "brief", label: "Brief" },
@@ -71,6 +71,7 @@ function InterviewLabScreen() {
   const questions = useInterviewQuestions(marketId, path || "consulting");
   const readiness = useInterviewReadiness(marketId);
   const track = readiness.target ? roleTrack(readiness.target.role) : null;
+  const foundationsFirst = isEarlyCareerRole(readiness.target?.role);
   const { addXP } = useUserXP(marketId);
   const { recordCaseRun } = usePracticeRewards();
   const { evaluateRewards } = useCollectibles(marketId);
@@ -78,15 +79,6 @@ function InterviewLabScreen() {
   const [pressureIdx, setPressureIdx] = useState(0);
   const usedMock = useRef(/* @__PURE__ */ new Set());
   const usedPressure = useRef(/* @__PURE__ */ new Set());
-  const pickUnused = (size, used) => {
-    if (size <= 0) return 0;
-    if (used.size >= size) used.clear();
-    const open = [];
-    for (let i = 0; i < size; i++) if (!used.has(i)) open.push(i);
-    const pick = open[Math.floor(Math.random() * open.length)];
-    used.add(pick);
-    return pick;
-  };
   const mockPool = useMemo(() => {
     if (path && path !== "consulting") return questions.mockQuestions;
     if (track === null) {
@@ -96,21 +88,21 @@ function InterviewLabScreen() {
     const bank = trackMocks(marketId, track);
     if (track === "technical") {
       const fit = questions.mockQuestions.filter((m) => /certif|technical|system|standard|regulat|engineer|architect|safety|spec/i.test(`${m.scenario} ${m.question}`));
-      return bank.length || fit.length ? [...bank, ...fit] : questions.mockQuestions;
+      return bank.length || fit.length ? orderInterviewMocks([...bank, ...trackMocks(marketId, "behavioral"), ...fit], readiness.target?.role) : questions.mockQuestions;
     }
     return bank.length ? bank : questions.mockQuestions;
-  }, [path, track, marketId, questions.mockQuestions]);
+  }, [path, track, marketId, questions.mockQuestions, readiness.target?.role]);
   const roleBank = useMemo(() => {
-    const t = track === null || track === "technical" ? trackMocks(marketId, "technical").map((m) => m.question) : [];
+    const t = track === null || track === "technical" ? orderInterviewMocks(trackMocks(marketId, "technical"), readiness.target?.role).map((m) => m.question) : [];
     const b = track === null || track === "behavioral" || track === "technical" ? trackMocks(marketId, "behavioral").map((m) => m.question) : [];
     return { technical: t, behavioral: b };
-  }, [marketId, track]);
+  }, [marketId, track, readiness.target?.role]);
   const allowMath = path === "consulting" && track === "case";
   const pressurePoolSize = allowMath && questions.mentalMathQuestions.length ? questions.mentalMathQuestions.length : questions.mcqQuestions.length;
   const rollQuestions = useCallback(() => {
-    setMockIdx(pickUnused(mockPool.length, usedMock.current));
-    setPressureIdx(pickUnused(pressurePoolSize, usedPressure.current));
-  }, [mockPool, pressurePoolSize]);
+    setMockIdx(pickInterviewIndex(mockPool.length, usedMock.current, foundationsFirst));
+    setPressureIdx(pickInterviewIndex(pressurePoolSize, usedPressure.current));
+  }, [mockPool, pressurePoolSize, foundationsFirst]);
   useEffect(() => {
     usedMock.current.clear();
     usedPressure.current.clear();
@@ -254,6 +246,7 @@ function InterviewLabScreen() {
       marketId,
       readiness,
       nextQuestion: mock?.question,
+      questionBank: mockPool,
       bank: roleBank,
       topInset: insets.top,
       bottomInset: insets.bottom,
@@ -287,7 +280,7 @@ function InterviewLabScreen() {
     const correct = index === pressure.correctIndex;
     const picked = index === pressureChoice;
     return /* @__PURE__ */ React.createElement(TouchableOpacity, { key: `${option}-${index}`, disabled: revealed, onPress: () => choosePressure(index), style: [styles.option, revealed && correct && styles.correct, revealed && picked && !correct && styles.wrong] }, /* @__PURE__ */ React.createElement(Text, { style: styles.optionLetter }, String.fromCharCode(65 + index)), /* @__PURE__ */ React.createElement(Text, { style: styles.optionText }, short(option, 90)));
-  })), pressureChoice !== null && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: [styles.feedback, { backgroundColor: pressureCorrect ? COLORS.successSoft : COLORS.errorSoft }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.feedbackTitle }, pressureCorrect ? "Correct." : "Not quite. Here's why:"), /* @__PURE__ */ React.createElement(Text, { style: styles.feedbackText }, short(pressure.explanation, 155))), /* @__PURE__ */ React.createElement(Action, { label: "Answer the question", color: world.colors[0], onPress: () => next("response") }))), stage === "response" && mock && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Answer out loud\u2014or type."), /* @__PURE__ */ React.createElement(View, { style: styles.prompt }, /* @__PURE__ */ React.createElement(Text, { style: styles.promptLabel }, short(mock.scenario, 95)), /* @__PURE__ */ React.createElement(Text, { style: styles.promptText }, short(mock.question, 180))), /* @__PURE__ */ React.createElement(TextInput, { value: response, onChangeText: setResponse, multiline: true, maxLength: 1200, style: styles.input, placeholder: "Lead with your answer. Then prove it.", placeholderTextColor: COLORS.textMuted }), /* @__PURE__ */ React.createElement(View, { style: styles.responseActions }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: recording ? stopRecording : startRecording, style: [styles.record, recording && styles.recording] }, /* @__PURE__ */ React.createElement(Feather, { name: recording ? "square" : "mic", size: 18, color: recording ? COLORS.bg0 : world.colors[0] }), /* @__PURE__ */ React.createElement(Text, { style: [styles.recordText, recording && { color: COLORS.bg0 }] }, recording ? "Stop" : "Record")), /* @__PURE__ */ React.createElement(Text, { style: styles.count }, response.trim().split(/\s+/).filter(Boolean).length, " words")), /* @__PURE__ */ React.createElement(Action, { label: submitting ? "Leo is grading\u2026" : "Lock answer", color: world.colors[0], disabled: submitting || response.trim().length < 20, onPress: submit })), stage === "verdict" && feedback && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(LinearGradient, { colors: [scoreColor(feedback.score), world.colors[1]], style: styles.verdict }, /* @__PURE__ */ React.createElement(Text, { style: styles.verdictLabel }, "INTERVIEW VERDICT"), /* @__PURE__ */ React.createElement(Text, { style: styles.verdictScore }, Math.round((feedback.score || 5) * 10)), /* @__PURE__ */ React.createElement(Text, { style: styles.verdictGrade }, gradeLabel(feedback.score))), /* @__PURE__ */ React.createElement(Coach, { text: feedback.leoSays || feedback.sophiaSays || "The structure is forming. Make every sentence earn its place.", onSpeak: () => playCoach(feedback.leoSays || feedback.sophiaSays), speaking }), /* @__PURE__ */ React.createElement(Debrief, { icon: "check-circle", title: "Keep", body: feedback.whatWentWell, color: COLORS.success }), /* @__PURE__ */ React.createElement(Debrief, { icon: "target", title: "Fix next", body: feedback.roomForImprovement, color: COLORS.warning }), /* @__PURE__ */ React.createElement(Debrief, { icon: "zap", title: "Sharper version", body: feedback.betterVersion, color: world.colors[0] }), mock && mock.buzzwords.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.debrief }, /* @__PURE__ */ React.createElement(Feather, { name: "book-open", size: 19, color: world.colors[0] }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: [styles.debriefTitle, { color: world.colors[0] }] }, "Words a pro would use"), /* @__PURE__ */ React.createElement(View, { style: [styles.keywordRow, { marginTop: 6 }] }, mock.buzzwords.slice(0, 6).map((word) => /* @__PURE__ */ React.createElement(View, { key: word, style: styles.keyword }, /* @__PURE__ */ React.createElement(Text, { style: styles.keywordText }, word)))))), /* @__PURE__ */ React.createElement(Action, { label: "Bank result", color: world.colors[0], onPress: bankResult }), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => {
+  })), pressureChoice !== null && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: [styles.feedback, { backgroundColor: pressureCorrect ? COLORS.successSoft : COLORS.errorSoft }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.feedbackTitle }, pressureCorrect ? "Correct." : "Not quite. Here's why:"), /* @__PURE__ */ React.createElement(Text, { style: styles.feedbackText }, short(pressure.explanation, 155))), /* @__PURE__ */ React.createElement(Action, { label: "Answer the question", color: world.colors[0], onPress: () => next("response") }))), stage === "response" && mock && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Answer out loud\u2014or type."), /* @__PURE__ */ React.createElement(View, { style: styles.prompt }, mock.scenario ? /* @__PURE__ */ React.createElement(Text, { style: styles.scenarioText }, mock.scenario) : null, /* @__PURE__ */ React.createElement(Text, { style: styles.promptText }, mock.question)), /* @__PURE__ */ React.createElement(TextInput, { value: response, onChangeText: setResponse, multiline: true, maxLength: 1200, style: styles.input, placeholder: "Lead with your answer. Then prove it.", placeholderTextColor: COLORS.textMuted }), /* @__PURE__ */ React.createElement(View, { style: styles.responseActions }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: recording ? stopRecording : startRecording, style: [styles.record, recording && styles.recording] }, /* @__PURE__ */ React.createElement(Feather, { name: recording ? "square" : "mic", size: 18, color: recording ? COLORS.bg0 : world.colors[0] }), /* @__PURE__ */ React.createElement(Text, { style: [styles.recordText, recording && { color: COLORS.bg0 }] }, recording ? "Stop" : "Record")), /* @__PURE__ */ React.createElement(Text, { style: styles.count }, response.trim().split(/\s+/).filter(Boolean).length, " words")), /* @__PURE__ */ React.createElement(Action, { label: submitting ? "Leo is grading\u2026" : "Lock answer", color: world.colors[0], disabled: submitting || response.trim().length < 20, onPress: submit })), stage === "verdict" && feedback && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(LinearGradient, { colors: [scoreColor(feedback.score), world.colors[1]], style: styles.verdict }, /* @__PURE__ */ React.createElement(Text, { style: styles.verdictLabel }, "INTERVIEW VERDICT"), /* @__PURE__ */ React.createElement(Text, { style: styles.verdictScore }, Math.round((feedback.score || 5) * 10)), /* @__PURE__ */ React.createElement(Text, { style: styles.verdictGrade }, gradeLabel(feedback.score))), /* @__PURE__ */ React.createElement(Coach, { text: feedback.leoSays || feedback.sophiaSays || "The structure is forming. Make every sentence earn its place.", onSpeak: () => playCoach(feedback.leoSays || feedback.sophiaSays), speaking }), /* @__PURE__ */ React.createElement(Debrief, { icon: "check-circle", title: "Keep", body: feedback.whatWentWell, color: COLORS.success }), /* @__PURE__ */ React.createElement(Debrief, { icon: "target", title: "Fix next", body: feedback.roomForImprovement, color: COLORS.warning }), /* @__PURE__ */ React.createElement(Debrief, { icon: "zap", title: "Sharper version", body: feedback.betterVersion, color: world.colors[0] }), mock && mock.buzzwords.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.debrief }, /* @__PURE__ */ React.createElement(Feather, { name: "book-open", size: 19, color: world.colors[0] }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: [styles.debriefTitle, { color: world.colors[0] }] }, "Words a pro would use"), /* @__PURE__ */ React.createElement(View, { style: [styles.keywordRow, { marginTop: 6 }] }, mock.buzzwords.slice(0, 6).map((word) => /* @__PURE__ */ React.createElement(View, { key: word, style: styles.keyword }, /* @__PURE__ */ React.createElement(Text, { style: styles.keywordText }, word)))))), /* @__PURE__ */ React.createElement(Action, { label: "Bank result", color: world.colors[0], onPress: bankResult }), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => {
     setFeedback(null);
     setResponse("");
     setPressureChoice(null);
@@ -344,6 +337,7 @@ const styles = StyleSheet.create({
   prompt: { padding: 18, borderRadius: 16, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border },
   promptLabel: { fontSize: 10, color: COLORS.textMuted, fontWeight: "900", letterSpacing: 1, marginBottom: 7 },
   promptText: { fontSize: 19, lineHeight: 25, color: COLORS.textPrimary, fontWeight: "800" },
+  scenarioText: { fontSize: 14, lineHeight: 20, fontWeight: "400", color: COLORS.textSecondary, marginBottom: 7 },
   frameworkRow: { flexDirection: "row", alignItems: "center", gap: 14, padding: 14, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   frameworkNumber: { width: 28, fontSize: 22, fontWeight: "900", textAlign: "center" },
   frameworkText: { flex: 1, fontSize: 15, lineHeight: 20, fontWeight: "700", color: COLORS.textPrimary },

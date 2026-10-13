@@ -1,5 +1,22 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { localDateString } from "./dayMath";
+function isEarlyCareerRole(role) {
+  return /\b(intern\w*|co[\s-]?op|student|new[\s-]?grad\w*)\b/i.test(role || "");
+}
+function orderInterviewMocks(mocks, role) {
+  if (!isEarlyCareerRole(role)) return mocks;
+  const basics = /* @__PURE__ */ new Set(["aero-tech-2", "aero-tech-3", "aero-tech-7", "aero-tech-10"]);
+  const rank = (m) => m.id?.startsWith("aero-beh-") ? 0 : basics.has(m.id || "") ? 1 : 2;
+  return [...mocks].sort((a, b) => rank(a) - rank(b));
+}
+function pickInterviewIndex(size, used, foundationsFirst = false) {
+  if (size <= 0) return 0;
+  if (used.size >= size) used.clear();
+  const open = Array.from({ length: size }, (_, i) => i).filter((i) => !used.has(i));
+  const index = foundationsFirst ? open[0] : open[Math.floor(Math.random() * open.length)];
+  used.add(index);
+  return index;
+}
 const key = (userId, marketId) => `ml_interview_target:${userId}:${marketId}`;
 async function loadInterviewTarget(userId, marketId) {
   if (!userId || !marketId) return null;
@@ -65,6 +82,10 @@ function computeReadiness(i) {
   const percent = Math.round(parts.reduce((sum, p) => sum + p.ratio * p.weight, 0) * 100);
   return { percent, parts };
 }
+function planConceptSubtitle(day) {
+  if (day.kind !== "concept" && day.kind !== "brief") return null;
+  return day.label.toLowerCase().includes(day.concept.toLowerCase()) ? null : day.concept;
+}
 function addDays(iso, n) {
   const [y, m, d] = iso.split("-").map(Number);
   const dt = new Date(Date.UTC(y, m - 1, d + n));
@@ -92,12 +113,13 @@ function buildSprintPlan(opts) {
   const tech = opts.bank?.technical || [];
   const behav = opts.bank?.behavioral || [];
   const seed = Math.floor(Date.parse(`${today}T00:00:00Z`) / 864e5) || 0;
-  const pickQ = (list, n) => list[(seed + n) % list.length];
+  const foundationsFirst = isEarlyCareerRole(opts.target.role);
+  const pickQ = (list, n) => list[((foundationsFirst ? 0 : seed) + n) % list.length];
   const qKinds = [];
   if (tech.length) qKinds.push((n) => ({ kind: "technical", label: "Technical question", mock: pickQ(tech, n) }));
   if (behav.length) qKinds.push((n) => ({ kind: "behavioral", label: "Behavioral question", mock: pickQ(behav, n) }));
   if (!qKinds.length) qKinds.push((_n, c) => ({ kind: "concept", label: "Concept question", mock: `Explain ${c.toLowerCase()} to a ${company} interviewer in ninety seconds.` }));
-  if (qKinds.length === 2 && seed % 2 === 1) qKinds.reverse();
+  if (qKinds.length === 2 && (foundationsFirst || seed % 2 === 1)) qKinds.reverse();
   const slots = qKinds.map((f) => (_i, c, n) => f(n, c));
   if (opts.news.length) slots.push((i) => {
     const t = opts.news[i % opts.news.length];
@@ -138,9 +160,13 @@ export {
   buildSprintPlan,
   computeReadiness,
   daysUntil,
+  isEarlyCareerRole,
   loadInterviewTarget,
+  orderInterviewMocks,
   parseInterviewDate,
   personaForTrack,
+  pickInterviewIndex,
+  planConceptSubtitle,
   roleTrack,
   saveInterviewTarget,
   shortDate,
