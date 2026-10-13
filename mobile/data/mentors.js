@@ -1,5 +1,5 @@
 // Voice assignments:
-// Leo (mascot)  → Liam (young, confident American): miHBUIuwiPKbRiTC0oIz
+// Leo (mascot)  → workspace voice "Leo": miHBUIuwiPKbRiTC0oIz
 // Maya Chen     → Alice (sharp, analytical female): Xb7hH8MSUJpSbSDYk0k2
 // Dr. Alex      → Brian (patient, authoritative male): nPczCjzI2devNBz1zQrb
 // Kai Johnson   → Chris (energetic, upbeat male): iP95p4xoKVk53GoZ742B

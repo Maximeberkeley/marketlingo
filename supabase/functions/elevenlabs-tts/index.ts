@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Leo uses Liam: a young, confident American voice.
+// Leo uses the workspace voice named "Leo".
 const DEFAULT_VOICE_ID = "miHBUIuwiPKbRiTC0oIz";
 
 serve(async (req) => {
