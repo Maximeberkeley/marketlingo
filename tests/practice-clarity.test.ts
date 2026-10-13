@@ -1,10 +1,11 @@
-// @vitest-environment node
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { transformSync } from 'esbuild';
+import { execFileSync } from 'node:child_process';
 import { runInNewContext } from 'node:vm';
 
 const read = (path: string) => readFileSync(path, 'utf8');
+const transform = (source: string, loader: string, format = 'esm') => execFileSync(process.execPath,
+  ['--input-type=module', '-e', `import {transformSync} from 'esbuild'; process.stdout.write(transformSync(${JSON.stringify(source)}, {loader:${JSON.stringify(loader)},jsx:'transform',format:${JSON.stringify(format)},target:'es2020'}).code);`], { encoding: 'utf8' });
 const pairs = ['mobile/lib/interviewArtwork', 'mobile/app/(tabs)/practice', 'mobile/app/_layout',
   'mobile/lesson-kit/components/LeoCoach', 'mobile/lesson-kit/case/CaseScreen',
   'mobile/hooks/useIntelHabit', 'mobile/components/home/DailyNews', 'mobile/app/(tabs)/home'];
@@ -18,7 +19,7 @@ function intelHarness() {
   for (const method of ['select', 'eq', 'in', 'gte']) query[method] = () => query;
   query.then = (resolve: any) => Promise.resolve({ data: events, error: null }).then(resolve);
   const source = read('mobile/hooks/useIntelHabit.ts').replace(/^import .*;\n/gm, '');
-  const compiled = transformSync(source, { loader: 'ts', format: 'cjs' }).code;
+  const compiled = transform(source, 'ts', 'cjs');
   const context: any = { exports: {}, module: { exports: {} }, Date, Set, Math,
     useAuth: () => ({ user: { id: 'learner' } }),
     useState: (initial: any) => { const index = cursor++; if (!(index in values)) values[index] = initial; return [values[index], (v: any) => { values[index] = v; }]; },
@@ -87,7 +88,7 @@ describe('Practice clarity', () => {
   it('keeps all touched JavaScript copies synchronized and imports React', () => {
     for (const path of pairs) {
       const ext = path.endsWith('interviewArtwork') || path.endsWith('useIntelHabit') ? 'ts' : 'tsx';
-      const expected = transformSync(read(path + '.' + ext), { loader: ext, jsx: 'transform', format: 'esm', target: 'es2020' }).code;
+      const expected = transform(read(path + '.' + ext), ext);
       const js = read(path + '.js');
       expect(js).toBe(expected);
       if (js.includes('React.createElement')) expect(js).toContain('import React');
