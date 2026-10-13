@@ -1,10 +1,11 @@
 # MarketLingo roadmap
 
 ## Oct 13 — Focused lessons and offline artwork
-- [ ] Limit definitions to first occurrences, three per card, never headlines.
-- [ ] Skip daily lesson quizzes when no real written question exists.
-- [ ] Hide tabs throughout lesson introduction, reading and completion, restoring them on exit.
-- [ ] Bundle the four supplied drawings in Daily quiz / Deep Case / Interview / Investment order; synchronize phone source pairs and test.
+- [x] Limit definitions to first occurrences, three per card across copy blocks, never headlines; deterministic selection also covers full briefings.
+- [x] Skip invented daily lesson quizzes for slide-only lessons; preserve written authored exercises, takeaway, reflection and reading-only completion.
+- [x] Hide tabs throughout lesson introduction, reading and completion, restoring them on exit or blur through the shared phone navigation provider.
+- [x] Bundle optimized copies of the four supplied drawings in Daily quiz / Deep Case / Interview / Investment order (86–105 KB each); synchronize 12 phone source pairs. All 51 focused tests passed; preview build OK.
+- [ ] Verify tab transitions, definitions and offline artwork on iPhone (blocked: no iOS device/simulator; requires a new installed phone build).
 
 ## Oct 13 — Practice artwork, protected sessions and Intel credit
 - [x] Remove redundant streak/reminder/Home refresh waits from lesson banking; keep results visible while saving, guard repeated taps and defer secondary navigation until successful saving. Fresh XP reads no longer retrigger their own loading effect.
