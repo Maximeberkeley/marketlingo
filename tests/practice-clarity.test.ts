@@ -119,7 +119,7 @@ describe('Practice clarity', () => {
     };
     const render = () => { cursor = 0; return context.module.exports.useSessionFlow(props); };
     render().handleOpenStack({ id: 'stack-1', stack_type: 'MICRO_LESSON' });
-    render().handleGoalsStart();
+    render().beginLesson();
     const pending = render().handleStackComplete(false, 60);
     await Promise.resolve(); await Promise.resolve();
     expect(render().showReader).toBe(true);
