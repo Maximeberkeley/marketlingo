@@ -353,6 +353,8 @@ export default function HomeScreen() {
 
   // Crossing local midnight invalidates yesterday's completion even if the screen stays open.
   const clockDay = localDateString(clockNow);
+  const refreshIntel = intelHabit.refresh;
+  useEffect(() => { if (courseFocused) void refreshIntel(); }, [courseFocused, clockDay, refreshIntel]);
   const [notesCompletedToday, setNotesCompletedToday] = useState(false);
   useEffect(() => {
     let active = true;
@@ -610,7 +612,7 @@ export default function HomeScreen() {
           arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
           caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
           notesCompletedToday={notesCompletedToday}
-          intelReadToday={intelHabit.readToday}
+          intelReadToday={intelHabit.done ? intelHabit.target : intelHabit.readToday}
           intelTarget={intelHabit.target}
           rescueAvailable={Boolean(streakCountdown)}
           streakCountdown={streakCountdown}

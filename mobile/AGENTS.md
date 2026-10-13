@@ -4,6 +4,7 @@
 - Disable native back gestures on practice session routes, because abandoning a run must go through its explicit exit control, not an accidental swipe.
 - Reserve speech bubble space in normal layout before its entrance animation and allow it to grow with text, because fixed-height mascot rows overlap adjacent copy and buttons.
 - Count all five Home orbit activities, including a saved note in the learner's current market and local day, and refresh note evidence on focus; notebook notes never become Brief entries or earn lesson credit.
+- Resolve Intel circle credit from a completed article quiz or the daily reading target, scoped to learner, market and local day and refreshed on Course focus, because completing one Intel must visibly credit its orbit activity without changing reading XP rewards.
 - Keep the learner's interview target (company, role, date) on-device per learner and market, and derive readiness, sprint/weekly plans and question track from it in one shared phone module, because Profile, Brief and the Interview Lab must agree.
 - Interview Lab picks its path from the saved interview target's role track (never asks Job vs School up front), and technical/behavioral tracks draw from the on-device TRACK_MOCKS bank before the question table, because technical roles must never get consulting cases or mental math.
 - Regenerated .js twins that emit React.createElement must import React (add `import React from "react";` when the .tsx source imports only named hooks), because a missing import crashes the app at launch with "React is not defined".
