@@ -36,6 +36,7 @@ async function saveInterviewTarget(userId, marketId, target) {
 }
 function roleTrack(role) {
   const r = (role || "").toLowerCase();
+  if (isEarlyCareerRole(role)) return "technical";
   if (/(recruit|talent|hr\b|human resources|people ops|sourcer)/.test(r)) return "behavioral";
   if (/(consult|strategy|strategist|analyst|case)/.test(r)) return "case";
   return "technical";
