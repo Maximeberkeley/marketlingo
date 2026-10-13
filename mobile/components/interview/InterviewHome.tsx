@@ -79,13 +79,13 @@ export function InterviewHome({ userId, marketId, readiness, nextQuestion, quest
           {target && today ? (
             <>
               <Text style={styles.stepLabel}>{`TODAY · ${today.dateLabel.toUpperCase()}`}</Text>
-              {cardScenario ? <Text style={styles.scenario} numberOfLines={1}>{cardScenario}</Text> : null}
+              {cardScenario ? <Text style={styles.scenario} numberOfLines={2}>{cardScenario}</Text> : null}
               <Text style={styles.stepText}>{today.mock}</Text>
               {today.kind === 'concept' && <Text style={styles.stepMeta}>{`Link it to: ${today.concept}`}</Text>}
             </>
           ) : nextQuestion ? (
             <>
-              {cardScenario ? <Text style={styles.scenario} numberOfLines={1}>{cardScenario}</Text> : null}
+              {cardScenario ? <Text style={styles.scenario} numberOfLines={2}>{cardScenario}</Text> : null}
               <Text style={styles.stepText}>{nextQuestion}</Text>
             </>
           ) : null}
