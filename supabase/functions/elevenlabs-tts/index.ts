@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 // Leo uses Liam: a young, confident American voice.
-const DEFAULT_VOICE_ID = "TX3LPaxmHKxFdv7VOQHJ";
+const DEFAULT_VOICE_ID = "miHBUIuwiPKbRiTC0oIz";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {

@@ -57,7 +57,7 @@ export function LeoVoiceChatOverlay({ isOpen, onClose, marketId, leoImage }: Leo
             apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
             Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify({ text, voiceId: "TX3LPaxmHKxFdv7VOQHJ" }),
+          body: JSON.stringify({ text, voiceId: "miHBUIuwiPKbRiTC0oIz" }),
         }
       );
 

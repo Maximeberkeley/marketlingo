@@ -46,7 +46,7 @@ import {
   nextCallType,
   sentenceStarter
 } from "../lib/leoCall";
-const LEO_VOICE_ID = "TX3LPaxmHKxFdv7VOQHJ";
+const LEO_VOICE_ID = "miHBUIuwiPKbRiTC0oIz";
 const POSE = {
   talking: require("../assets/mascot/leo-waving.png"),
   listening: require("../assets/mascot/leo-idle.png"),
