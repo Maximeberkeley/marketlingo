@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "./useAuth";
 import { log } from "../lib/logger";
@@ -27,14 +27,17 @@ const STARTUP_STAGES = [
 function useUserXP(marketId) {
   const { user } = useAuth();
   const [xpData, setXpData] = useState(null);
+  const xpRef = useRef(xpData);
+  xpRef.current = xpData;
   const [dailyCompletion, setDailyCompletion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [completionLoadedKey, setCompletionLoadedKey] = useState(null);
   const completionKey = user && marketId ? `${user.id}:${marketId}:${localDateString()}` : null;
-  const ensureXPRecord = useCallback(async () => {
+  const ensureXPRecord = useCallback(async (fresh = false) => {
     if (!user || !marketId) return null;
-    if (xpData && xpData.user_id === user.id && xpData.market_id === marketId) {
-      return xpData;
+    const cachedXP = xpRef.current;
+    if (!fresh && cachedXP && cachedXP.user_id === user.id && cachedXP.market_id === marketId) {
+      return cachedXP;
     }
     try {
       const { data: existingXP, error: xpError } = await supabase.from("user_xp").select("*").eq("user_id", user.id).eq("market_id", marketId).maybeSingle();
@@ -74,7 +77,7 @@ function useUserXP(marketId) {
       log.warn("[UserXP] Failed to ensure XP record:", error);
       return null;
     }
-  }, [user, marketId, xpData]);
+  }, [user, marketId]);
   const fetchXPData = useCallback(async () => {
     if (!user || !marketId) {
       setXpData(null);
@@ -84,7 +87,7 @@ function useUserXP(marketId) {
     }
     setLoading(true);
     try {
-      const ensuredXP = await ensureXPRecord();
+      const ensuredXP = await ensureXPRecord(true);
       if (ensuredXP) {
         setXpData(ensuredXP);
       }
@@ -180,12 +183,7 @@ function useUserXP(marketId) {
     if (!alreadyDone) {
       await addXP(XP_REWARDS.LESSON_COMPLETE, "lesson", stackId, "Completed daily lesson");
     }
-    const { error: streakError } = await supabase.rpc("sync_local_streak", {
-      p_market_id: marketId,
-      p_today: today
-    });
-    if (streakError) log.warn("Streak sync after lesson failed:", streakError.message);
-    await cancelRollingLeoNudges();
+    void cancelRollingLeoNudges().catch((error2) => log.warn("Reminder cleanup failed:", error2));
     return data;
   };
   const getCurrentStage = () => {

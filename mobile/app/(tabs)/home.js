@@ -406,7 +406,8 @@ function HomeScreen() {
     if (hour < 17) return getRandomGreeting("afternoon");
     return getRandomGreeting("evening");
   });
-  if (loading || authLoading || !bootReady) return /* @__PURE__ */ React.createElement(HomeSkeleton, null);
+  const activeLessonScreen = session.showGoals || session.showReader || session.showSessionComplete;
+  if (!activeLessonScreen && (loading || authLoading || !bootReady)) return /* @__PURE__ */ React.createElement(HomeSkeleton, null);
   const marketIllustration = MARKET_ILLUSTRATIONS[selectedMarket || "aerospace"] || MARKET_ILLUSTRATIONS.aerospace;
   const marketGradient = MARKET_GRADIENTS[selectedMarket || "aerospace"] || MARKET_GRADIENTS.aerospace;
   const marketAccent = marketGradient[0];
