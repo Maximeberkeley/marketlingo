@@ -1,15 +1,15 @@
-import flashcards from "../assets/illustrations/interview-flashcards.png.asset.json";
-import research from "../assets/illustrations/interview-research.png.asset.json";
-import speaking from "../assets/illustrations/interview-speaking.png.asset.json";
-import analysis from "../assets/illustrations/interview-analysis.png.asset.json";
+const flashcards = require("../assets/illustrations/interview-flashcards.jpg");
+const research = require("../assets/illustrations/interview-research.jpg");
+const speaking = require("../assets/illustrations/interview-speaking.jpg");
+const analysis = require("../assets/illustrations/interview-analysis.jpg");
 const INTERVIEW_ARTWORK = {
-  quiz: { uri: new URL(flashcards.url, "https://www.market-verse.com").href },
-  case: { uri: new URL(research.url, "https://www.market-verse.com").href },
-  investment: { uri: new URL(analysis.url, "https://www.market-verse.com").href },
-  practice: { uri: new URL(speaking.url, "https://www.market-verse.com").href },
-  framework: { uri: new URL(research.url, "https://www.market-verse.com").href },
-  response: { uri: new URL(speaking.url, "https://www.market-verse.com").href },
-  verdict: { uri: new URL(analysis.url, "https://www.market-verse.com").href }
+  quiz: flashcards,
+  case: research,
+  investment: analysis,
+  practice: speaking,
+  framework: research,
+  response: speaking,
+  verdict: analysis
 };
 export {
   INTERVIEW_ARTWORK

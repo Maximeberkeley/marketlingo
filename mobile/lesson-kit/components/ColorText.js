@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { shortText } from "../text";
-import { glossaryFor } from "../glossary";
+import { glossaryFor, cardGlossaryMatches } from "../glossary";
 import { useDeepDiveTarget } from "./DeepDiveContext";
 import { tokens } from "../theme/tokens";
 const SIGNAL = /(\$?\d[\d,.]*(?:%|[KMBT])?)/gi;
@@ -9,7 +9,7 @@ const NUMBER = /^\$?\d/i;
 function figures(text, keyPrefix) {
   return text.split(SIGNAL).map((part, index) => NUMBER.test(part) ? /* @__PURE__ */ React.createElement(Text, { key: `${keyPrefix}-${index}`, style: { fontWeight: "800" } }, part) : part);
 }
-function ColorText({ text, style, maxSentences = 2, maxLength = 170, numberOfLines, glossary = false, keyTerms }) {
+function ColorText({ text, style, maxSentences = 2, maxLength = 170, numberOfLines, glossary = false, keyTerms, precedingText, excludedText }) {
   const { marketId } = useDeepDiveTarget();
   const [open, setOpen] = useState(null);
   const shown = shortText(text, maxSentences, maxLength);
@@ -18,17 +18,16 @@ function ColorText({ text, style, maxSentences = 2, maxLength = 170, numberOfLin
     if (!terms) return figures(shown, "f");
     const out = [];
     let last = 0;
-    for (const m of shown.matchAll(terms.pattern)) {
-      const entry = terms.lookup(m[0]);
-      const at = m.index ?? 0;
-      if (!entry) continue;
+    for (const m of cardGlossaryMatches(shown, terms, precedingText, excludedText)) {
+      const entry = m.entry;
+      const at = m.index;
       out.push(...figures(shown.slice(last, at), `p${at}`));
-      out.push(/* @__PURE__ */ React.createElement(Text, { key: `t${at}`, style: styles.term, onPress: () => setOpen(entry), suppressHighlighting: true }, m[0]));
-      last = at + m[0].length;
+      out.push(/* @__PURE__ */ React.createElement(Text, { key: `t${at}`, style: styles.term, onPress: () => setOpen(entry), suppressHighlighting: true }, m.text));
+      last = at + m.text.length;
     }
     out.push(...figures(shown.slice(last), "end"));
     return out;
-  }, [shown, terms]);
+  }, [shown, terms, precedingText, excludedText]);
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Text, { style, numberOfLines }, content), terms && /* @__PURE__ */ React.createElement(Modal, { visible: !!open, transparent: true, animationType: "fade", onRequestClose: () => setOpen(null) }, /* @__PURE__ */ React.createElement(Pressable, { style: styles.scrim, onPress: () => setOpen(null), accessibilityLabel: "Close definition" }, /* @__PURE__ */ React.createElement(View, { style: styles.sheet }, /* @__PURE__ */ React.createElement(Text, { style: styles.sheetTerm }, open?.term), /* @__PURE__ */ React.createElement(Text, { style: styles.sheetDef }, open?.definition), /* @__PURE__ */ React.createElement(Text, { style: styles.sheetHint }, "Tap anywhere to close")))));
 }
 const styles = StyleSheet.create({

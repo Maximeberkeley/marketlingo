@@ -1,6 +1,9 @@
 <!-- Phone app rules -->
 - Resolve inline lesson definitions from the market glossary plus each reading card’s authored key terms, including full briefings; keep graded choices definition-free because help must not disclose an answer before grading.
 - Use the shared activity artwork mapping for Practice and interview stages, because flashcards, research, speaking and analysis must represent the same activity consistently without changing question selection.
+- Resolve phone activity artwork through static local requires, because the installed app must render these drawings without website availability or cellular downloads.
+- Compute glossary occurrences from preceding disclosed copy rather than mutable render-time counters, because rerenders and multiple text blocks must preserve a deterministic card-wide limit.
+- Drive tab visibility through the lesson navigation provider from all Home session phases and restore it on blur/unmount, because introductions and saving screens are part of the focused lesson.
 - Disable native back gestures on practice session routes, because abandoning a run must go through its explicit exit control, not an accidental swipe.
 - Reserve speech bubble space in normal layout before its entrance animation and allow it to grow with text, because fixed-height mascot rows overlap adjacent copy and buttons.
 - Keep the lesson result mounted until required saving succeeds and defer secondary navigation until it does; refresh Home after dismissal, use a stable XP fetch callback with explicit fresh reads and sync streak once per lesson, because redundant queries and early unmounts cause slow banking and loading flashes.

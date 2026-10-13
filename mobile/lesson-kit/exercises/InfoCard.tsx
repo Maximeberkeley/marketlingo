@@ -8,7 +8,7 @@ import { ColorText } from '../components/ColorText';
 import { shortLabel, shortText } from '../text';
 import { BriefingReader } from '../components/BriefingReader';
 import { cardCopy, cardTerms, hasExtraBriefing, readingCardKind } from '../cardPresentation';
-import { ReadingCopy } from '../components/ReadingCopy';
+import { ReadingCopy, readingTermCopy } from '../components/ReadingCopy';
 
 export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
   const [showBriefing, setShowBriefing] = useState(false);
@@ -23,6 +23,7 @@ export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
   const bodyIsEcho =
     !!exercise.title &&
     normalize(exercise.body) === normalize(exercise.title);
+  const termCopy = readingTermCopy(title, bodyIsEcho ? '' : body, false, kind === 'takeaway');
 
   return (
     <View style={[styles.wrap, kind === 'takeaway' && styles.takeaway]}>
@@ -34,7 +35,7 @@ export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
       {exercise.bullets?.slice(0, 2).map((b, i) => (
         <View key={i} style={styles.bulletRow}>
           <View style={styles.dot} />
-          <ColorText text={shortText(b, 1, 90)} style={styles.bullet} maxSentences={1} maxLength={90} glossary keyTerms={terms} />
+          <ColorText text={shortText(b, 1, 90)} style={styles.bullet} maxSentences={1} maxLength={90} glossary keyTerms={terms} excludedText={termCopy.excludedText} precedingText={[...termCopy.precedingText, ...(exercise.bullets || []).slice(0, i).map(line => shortText(line, 1, 90))]} />
         </View>
       ))}
 

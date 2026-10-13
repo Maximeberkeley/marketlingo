@@ -110,6 +110,30 @@ export function glossaryFor(marketId?: string, lessonTerms: readonly GlossaryEnt
   return { pattern, lookup };
 }
 
+/** Pure, render-order-independent first-occurrence selection for a whole card. */
+export function cardGlossaryMatches(text: string, glossary: ReturnType<typeof glossaryFor>, precedingText: readonly string[] = [], excludedText: readonly string[] = []) {
+  const seen = new Set<string>();
+  let count = 0;
+  const scan = (copy: string, eligible: boolean) => {
+    const matches: { index: number; text: string; entry: GlossaryEntry }[] = [];
+    if (!glossary) return matches;
+    for (const match of copy.matchAll(glossary.pattern)) {
+      const entry = glossary.lookup(match[0]);
+      if (!entry) continue;
+      const key = entry.term.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      if (!eligible || count >= 3) continue;
+      count += 1;
+      matches.push({ index: match.index ?? 0, text: match[0], entry });
+    }
+    return matches;
+  };
+  excludedText.forEach(copy => scan(copy, false));
+  precedingText.forEach(copy => scan(copy, true));
+  return scan(text, true);
+}
+
 /** Splits "INTERVIEW Q: '...' MODEL ANSWER: '...'" copy into its two halves. */
 export function interviewQA(text: string): { question: string; answer: string; before: string } | null {
   const m = text.match(/^([\s\S]*?)\b(?:INTERVIEW\s+Q(?:UESTION)?|Q)\s*:\s*([\s\S]+?)\s*\b(?:MODEL\s+ANSWER|SAMPLE\s+ANSWER|A)\s*:\s*([\s\S]+)$/);

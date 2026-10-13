@@ -7,7 +7,7 @@ import { ColorText } from "../components/ColorText";
 import { shortLabel } from "../text";
 import { BriefingReader } from "../components/BriefingReader";
 import { cardCopy, cardTerms, hasExtraBriefing, readingCardKind } from "../cardPresentation";
-import { ReadingCopy } from "../components/ReadingCopy";
+import { ReadingCopy, readingTermCopy } from "../components/ReadingCopy";
 function MicroInsight({ exercise, onChange }) {
   const kind = readingCardKind(exercise);
   const [showBriefing, setShowBriefing] = useState(false);
@@ -18,7 +18,7 @@ function MicroInsight({ exercise, onChange }) {
   useEffect(() => {
     onChange({ canCheck: true, isCorrect: true });
   }, [exercise.id]);
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.wrap, kind === "takeaway" && styles.takeaway] }, kind === "takeaway" ? /* @__PURE__ */ React.createElement(Text, { style: styles.eyebrow }, "The rule") : !!exercise.eyebrow && /* @__PURE__ */ React.createElement(Text, { style: styles.eyebrow }, shortLabel(exercise.eyebrow).toUpperCase()), /* @__PURE__ */ React.createElement(View, { style: kind === "evidence" ? styles.evidence : void 0 }, /* @__PURE__ */ React.createElement(ReadingCopy, { text: headline, body, evidence: kind === "evidence", preserveCover: kind === "takeaway", keyTerms: cardTerms(exercise) })), !!highlight && /* @__PURE__ */ React.createElement(View, { style: styles.highlight }, /* @__PURE__ */ React.createElement(ReadingCopy, { text: "", body: highlight, preserveCover: kind === "takeaway", keyTerms: cardTerms(exercise) })), !!keyTerm && /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.wrap, kind === "takeaway" && styles.takeaway] }, kind === "takeaway" ? /* @__PURE__ */ React.createElement(Text, { style: styles.eyebrow }, "The rule") : !!exercise.eyebrow && /* @__PURE__ */ React.createElement(Text, { style: styles.eyebrow }, shortLabel(exercise.eyebrow).toUpperCase()), /* @__PURE__ */ React.createElement(View, { style: kind === "evidence" ? styles.evidence : void 0 }, /* @__PURE__ */ React.createElement(ReadingCopy, { text: headline, body, evidence: kind === "evidence", preserveCover: kind === "takeaway", keyTerms: cardTerms(exercise) })), !!highlight && /* @__PURE__ */ React.createElement(View, { style: styles.highlight }, /* @__PURE__ */ React.createElement(ReadingCopy, { text: "", body: highlight, preserveCover: kind === "takeaway", keyTerms: cardTerms(exercise), ...readingTermCopy(headline, body, kind === "evidence", kind === "takeaway") })), !!keyTerm && /* @__PURE__ */ React.createElement(
     TouchableOpacity,
     {
       accessibilityRole: "button",

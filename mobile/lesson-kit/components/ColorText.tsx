@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Modal, Pressable, StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
 import { shortText } from '../text';
-import { glossaryFor, GlossaryEntry } from '../glossary';
+import { glossaryFor, cardGlossaryMatches, GlossaryEntry } from '../glossary';
 import { useDeepDiveTarget } from './DeepDiveContext';
 import { tokens } from '../theme/tokens';
 
@@ -14,6 +14,8 @@ interface Props {
   /** Tint known industry terms and show their definition on tap. */
   glossary?: boolean;
   keyTerms?: readonly GlossaryEntry[];
+  precedingText?: readonly string[];
+  excludedText?: readonly string[];
 }
 
 const SIGNAL = /(\$?\d[\d,.]*(?:%|[KMBT])?)/gi;
@@ -26,7 +28,7 @@ function figures(text: string, keyPrefix: string) {
 }
 
 /** Figures are bold and inherit their surrounding text color, including feedback. */
-export function ColorText({ text, style, maxSentences = 2, maxLength = 170, numberOfLines, glossary = false, keyTerms }: Props) {
+export function ColorText({ text, style, maxSentences = 2, maxLength = 170, numberOfLines, glossary = false, keyTerms, precedingText, excludedText }: Props) {
   const { marketId } = useDeepDiveTarget();
   const [open, setOpen] = useState<GlossaryEntry | null>(null);
   const shown = shortText(text, maxSentences, maxLength);
@@ -36,17 +38,16 @@ export function ColorText({ text, style, maxSentences = 2, maxLength = 170, numb
     if (!terms) return figures(shown, 'f');
     const out: React.ReactNode[] = [];
     let last = 0;
-    for (const m of shown.matchAll(terms.pattern)) {
-      const entry = terms.lookup(m[0]);
-      const at = m.index ?? 0;
-      if (!entry) continue;
+    for (const m of cardGlossaryMatches(shown, terms, precedingText, excludedText)) {
+      const entry = m.entry;
+      const at = m.index;
       out.push(...figures(shown.slice(last, at), `p${at}`));
-      out.push(<Text key={`t${at}`} style={styles.term} onPress={() => setOpen(entry)} suppressHighlighting>{m[0]}</Text>);
-      last = at + m[0].length;
+      out.push(<Text key={`t${at}`} style={styles.term} onPress={() => setOpen(entry)} suppressHighlighting>{m.text}</Text>);
+      last = at + m.text.length;
     }
     out.push(...figures(shown.slice(last), 'end'));
     return out;
-  }, [shown, terms]);
+  }, [shown, terms, precedingText, excludedText]);
 
   return (
     <>
