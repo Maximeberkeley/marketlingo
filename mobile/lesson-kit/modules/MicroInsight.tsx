@@ -29,11 +29,11 @@ export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightE
     <View style={[styles.wrap, kind === 'takeaway' && styles.takeaway]}>
       {kind === 'takeaway' ? <Text style={styles.eyebrow}>The rule</Text> : !!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow).toUpperCase()}</Text>}
       <View style={kind === 'evidence' ? styles.evidence : undefined}>
-        <ReadingCopy text={headline} body={body} evidence={kind === 'evidence'} preserveCover={kind === 'takeaway'} />
+        <ReadingCopy text={headline} body={body} evidence={kind === 'evidence'} preserveCover={kind === 'takeaway'} keyTerms={cardTerms(exercise)} />
       </View>
       {!!highlight && (
         <View style={styles.highlight}>
-          <ReadingCopy text="" body={highlight} preserveCover={kind === 'takeaway'} />
+          <ReadingCopy text="" body={highlight} preserveCover={kind === 'takeaway'} keyTerms={cardTerms(exercise)} />
         </View>
       )}
       {!!keyTerm && (

@@ -67,7 +67,7 @@ export const mentors: Mentor[] = [
     avatar: mentorSophia,
     greeting: "Hey there! Ready to unlock your next level of growth? I'm here to help you shine.",
     specialties: ["Customer relationships", "Strategic partnerships", "Team building", "Neurotech", "Regulatory navigation"],
-    voiceId: 'MtzY9FD6OSlkIuEBAHn3', // Sophia
+    voiceId: 'pFZP5JQG7iQjIQuC4Bku', // Lily (Sophia’s previous voice)
     expressions: {
       thinking: ["Hmm, let me think...", "That's a deep one!", "Interesting angle..."],
       cheering: ["You're crushing it! 🎉", "Amazing work!", "Yes! Nailed it! 💪", "I knew you could do it!"],
@@ -81,12 +81,12 @@ export const mentors: Mentor[] = [
 export function getMentorForContext(context: string, marketId?: string): Mentor {
   const contextLower = context.toLowerCase();
   
-  // Sophia is the PRIMARY mentor for Neuroscience market
+  // Lily (Sophia’s previous voice) is the PRIMARY mentor for Neuroscience market
   if (marketId === "neuroscience" || contextLower.includes("neuro") || contextLower.includes("brain") || contextLower.includes("cognit") || contextLower.includes("mental health") || contextLower.includes("bci") || contextLower.includes("neural")) {
     return mentors.find(m => m.id === "sophia")!;
   }
   
-  // Sophia also appears for growth, partnerships, customer, scaling
+  // Lily (Sophia’s previous voice) also appears for growth, partnerships, customer, scaling
   if (contextLower.includes("growth") || contextLower.includes("customer") || contextLower.includes("partner") || contextLower.includes("scale") || contextLower.includes("team") || contextLower.includes("network")) {
     return mentors.find(m => m.id === "sophia")!;
   }

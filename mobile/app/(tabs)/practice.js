@@ -20,6 +20,7 @@ import { COLORS, SHADOWS, TYPE } from "../../lib/constants";
 import { useAuth } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabase";
 import { getMarketName } from "../../lib/markets";
+import { INTERVIEW_ARTWORK } from "../../lib/interviewArtwork";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = SCREEN_WIDTH - 40;
 const CARD_GAP = 16;
@@ -49,7 +50,7 @@ const LAB_CARDS = [
     description: "Answer a question. Get useful feedback.",
     icon: "mic",
     path: "/interview-lab",
-    hero: require("../../assets/illustrations/interview-lab-hero.png")
+    hero: INTERVIEW_ARTWORK.practice
   },
   {
     id: "investment",

@@ -1,5 +1,12 @@
 # MarketLingo roadmap
 
+## Oct 13 — Voices, interview artwork, lesson glossary
+- [x] Confirm Leo's exact workspace voice and assign Sophia's previous Lily voice; both deployed speech requests returned valid MP3s.
+- [x] Upload and use all four supplied interview illustrations: Practice, framework, answer and verdict; all image addresses returned PNGs successfully.
+- [x] Extend aerospace terms for the first 15 days and authored terms for every market across reading cards and briefings; synchronize ten phone source pairs without enabling definitions on graded choices.
+- [x] Run focused voice, artwork and glossary checks: 41 tests passed and preview build OK. Exported aerospace slides have no day-4/day-11 entries, so those days have topic-level tests, not real-content verification.
+- [ ] Verify updated pictures and tap-to-open definitions on iPhone (blocked: no iOS device/simulator).
+
 ## Oct 13 — Notes orbit progress
 - [x] Include today's saved notebook note in the five-activity Home circle and refresh on return, scoped to learner, industry and local day; synchronize phone sources and test the ring.
 - [ ] Verify saving a note and returning Home on iPhone (blocked: no iOS device/simulator).

@@ -118,6 +118,8 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
               style={index === 0 ? styles.lead : styles.body}
               maxSentences={100}
               maxLength={10000}
+              glossary
+              keyTerms={keyTerms}
             />
           ))}
 
@@ -150,7 +152,7 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
             <View style={styles.deep}>
               <Text style={styles.sectionLabel}>DEEP LAYER</Text>
               <Text style={styles.deepConcept}>{deepDive.concept}</Text>
-              <Text style={styles.body}>{deepDive.summary}</Text>
+              <ColorText text={deepDive.summary} style={styles.body} maxSentences={10000} maxLength={1000000} glossary keyTerms={deepDive.key_terms} />
 
               {!!deepDive.mechanism?.length && (
                 <View style={styles.deepBlock}>
@@ -160,7 +162,7 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
                       <Text style={styles.stepIndex}>{index + 1}</Text>
                       <View style={styles.stepCopy}>
                         <Text style={styles.stepLabel}>{step.step}</Text>
-                        <Text style={styles.stepDetail}>{step.detail}</Text>
+                        <ColorText text={step.detail} style={styles.stepDetail} maxSentences={10000} maxLength={1000000} glossary keyTerms={deepDive.key_terms} />
                       </View>
                     </View>
                   ))}
@@ -172,7 +174,7 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
                   <Text style={styles.deepHeading}>In the real world</Text>
                   <Text style={styles.caseCompany}>{deepDive.case_study.company}</Text>
                   {!!deepDive.case_study.situation && (
-                    <Text style={styles.stepDetail}>{deepDive.case_study.situation}</Text>
+                    <ColorText text={deepDive.case_study.situation} style={styles.stepDetail} maxSentences={10000} maxLength={1000000} glossary keyTerms={deepDive.key_terms} />
                   )}
                   {deepDive.case_study.figures?.map((figure, index) => (
                     <View key={`${index}-fig`} style={styles.figureRow}>
@@ -181,7 +183,7 @@ export function BriefingReader({ visible, title, eyebrow, text, keyTerms, source
                     </View>
                   ))}
                   {!!deepDive.case_study.outcome && (
-                    <Text style={styles.stepDetail}>{deepDive.case_study.outcome}</Text>
+                    <ColorText text={deepDive.case_study.outcome} style={styles.stepDetail} maxSentences={10000} maxLength={1000000} glossary keyTerms={deepDive.key_terms} />
                   )}
                 </View>
               )}

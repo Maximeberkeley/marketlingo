@@ -27,6 +27,8 @@ import { useInterviewReadiness } from '../hooks/useInterviewReadiness';
 import { InterviewHome } from '../components/interview/InterviewHome';
 import { isEarlyCareerRole, orderInterviewMocks, pickInterviewIndex, personaForTrack, roleTrack } from '../lib/interviewPrep';
 
+import { INTERVIEW_ARTWORK } from '../lib/interviewArtwork';
+
 const LEO = require('../assets/mascot/leo-idle.png');
 type Stage = 'brief' | 'framework' | 'pressure' | 'response' | 'verdict';
 type Feedback = {
@@ -269,6 +271,7 @@ export default function InterviewLabScreen() {
         </>}
 
         {stage === 'framework' && <>
+          <Image source={INTERVIEW_ARTWORK.framework} style={styles.stageArt} resizeMode="contain" />
           <Text style={styles.title}>{path === 'consulting' ? 'Build the frame.' : 'Build the story.'}</Text>
           {path === 'consulting' ? <>
             <View style={styles.prompt}><Text style={styles.promptLabel}>THE PROBLEM</Text><Text style={styles.promptText}>{short(framework.label, 120)}</Text></View>
@@ -289,6 +292,7 @@ export default function InterviewLabScreen() {
         </>}
 
         {stage === 'response' && mock && <>
+          <Image source={INTERVIEW_ARTWORK.response} style={styles.stageArt} resizeMode="contain" />
           <Text style={styles.title}>Answer out loud—or type.</Text>
           <View style={styles.prompt}>{mock.scenario ? <Text style={styles.scenarioText}>{mock.scenario}</Text> : null}<Text style={styles.promptText}>{mock.question}</Text></View>
           <TextInput value={response} onChangeText={setResponse} multiline maxLength={1200} style={styles.input} placeholder="Lead with your answer. Then prove it." placeholderTextColor={COLORS.textMuted} />
@@ -300,6 +304,7 @@ export default function InterviewLabScreen() {
         </>}
 
         {stage === 'verdict' && feedback && <>
+          <Image source={INTERVIEW_ARTWORK.verdict} style={styles.stageArt} resizeMode="contain" />
           <LinearGradient colors={[scoreColor(feedback.score), world.colors[1]]} style={styles.verdict}>
             <Text style={styles.verdictLabel}>INTERVIEW VERDICT</Text><Text style={styles.verdictScore}>{Math.round((feedback.score || 5) * 10)}</Text><Text style={styles.verdictGrade}>{gradeLabel(feedback.score)}</Text>
           </LinearGradient>
@@ -323,6 +328,7 @@ const scoreColor = (score = 5) => score >= 8 ? '#16A34A' : score >= 6 ? '#F59E0B
 const gradeLabel = (score = 5) => score >= 9 ? 'Offer-ready' : score >= 7.5 ? 'Strong signal' : score >= 6 ? 'Promising' : 'Needs another rep';
 
 const styles = StyleSheet.create({
+  stageArt: { width: '100%', aspectRatio: 2.5, maxHeight: 128, alignSelf: 'center' },
   root: { flex: 1, backgroundColor: COLORS.bg0 }, center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg0 },
   pathHero: { height: 335, paddingHorizontal: 22, paddingBottom: 28, justifyContent: 'flex-end', overflow: 'hidden' }, close: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
   pathBody: { padding: 18, gap: 12 }, pathCard: { flexDirection: 'row', alignItems: 'center', minHeight: 92, padding: 16, borderWidth: 1, borderColor: COLORS.border, borderRadius: 16, gap: 14, backgroundColor: COLORS.bg2 }, pathIcon: { width: 50, height: 50, borderRadius: 14, alignItems: 'center', justifyContent: 'center' }, pathTitle: { fontSize: 18, fontWeight: '900', color: COLORS.textPrimary }, pathSubtitle: { fontSize: 13, color: COLORS.textSecondary, marginTop: 4 }, smallPrint: { color: COLORS.textMuted, fontSize: 12, textAlign: 'center', marginTop: 8 },
