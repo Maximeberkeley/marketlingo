@@ -90,7 +90,7 @@ export default function InterviewLabScreen() {
   // mental math unless the role is genuinely a case track. No saved target = join_industry
   // default: technical + behavioral bank.
   const mockPool = useMemo(() => {
-    if (path !== 'consulting') return questions.mockQuestions;
+    if (path && path !== 'consulting') return questions.mockQuestions;
     if (track === null) {
       const bank = [...trackMocks(marketId, 'technical'), ...trackMocks(marketId, 'behavioral')];
       return bank.length ? bank : questions.mockQuestions;
@@ -102,6 +102,12 @@ export default function InterviewLabScreen() {
     }
     return bank.length ? bank : questions.mockQuestions;
   }, [path, track, marketId, questions.mockQuestions]);
+  // Real role questions for the landing card and plan: the same bank the answer screen uses.
+  const roleBank = useMemo(() => {
+    const t = track === null || track === 'technical' ? trackMocks(marketId, 'technical').map(m => m.question) : [];
+    const b = track === null || track === 'behavioral' || track === 'technical' ? trackMocks(marketId, 'behavioral').map(m => m.question) : [];
+    return { technical: t, behavioral: b };
+  }, [marketId, track]);
   const allowMath = path === 'consulting' && track === 'case';
   const pressurePoolSize = allowMath && questions.mentalMathQuestions.length ? questions.mentalMathQuestions.length : questions.mcqQuestions.length;
   const rollQuestions = useCallback(() => {
@@ -223,6 +229,7 @@ export default function InterviewLabScreen() {
       marketId={marketId}
       readiness={readiness}
       nextQuestion={mock?.question}
+      bank={roleBank}
       topInset={insets.top}
       bottomInset={insets.bottom}
       onClose={() => router.back()}
@@ -230,7 +237,10 @@ export default function InterviewLabScreen() {
       onWarmUp={() => router.push({ pathname: '/leo-call', params: { marketId: marketId ?? '', mode: 'interview' } } as any)}
       onStart={(question?: string) => {
         setPersona(personaForTrack(track));
-        if (question && question !== poolMock?.question) {
+        const match = question ? [...mockPool, ...trackMocks(marketId, 'technical'), ...trackMocks(marketId, 'behavioral')].find(m => m.question === question) : undefined;
+        if (match) {
+          setLockedMock(match);
+        } else if (question && question !== poolMock?.question) {
           setLockedMock({ id: `card-${Date.now()}`, scenario: readiness.target?.company ? `${readiness.target.company} interview` : 'Mock interview', question, buzzwords: [], sampleAnswer: '' } as any);
         } else if (poolMock) {
           setLockedMock(poolMock);
@@ -314,7 +324,7 @@ export default function InterviewLabScreen() {
 }
 
 function Coach({ text, onSpeak, speaking }: { text: string; onSpeak?: () => void; speaking?: boolean }) { return <View style={styles.coach}><Image source={LEO} style={styles.coachAvatar} resizeMode="contain" /><Text style={styles.coachText}>{text}</Text>{onSpeak && <TouchableOpacity onPress={onSpeak}><Feather name={speaking ? 'volume-2' : 'volume-1'} size={18} color={COLORS.accent} /></TouchableOpacity>}</View>; }
-function Action({ label, color, onPress, disabled }: { label: string; color: string; onPress: () => void; disabled?: boolean }) { return <TouchableOpacity disabled={disabled} onPress={onPress} style={[styles.action, { backgroundColor: color }, disabled && styles.disabled]}><Text style={styles.actionText}>{label}</Text><Feather name="arrow-right" size={18} color={COLORS.bg0} /></TouchableOpacity>; }
+function Action({ label, color, onPress, disabled }: { label: string; color: string; onPress: () => void; disabled?: boolean }) { return <TouchableOpacity disabled={disabled} onPress={onPress} style={[styles.action, { backgroundColor: disabled ? COLORS.accent : color }, disabled && styles.disabled]}><Text style={styles.actionText}>{label}</Text><Feather name="arrow-right" size={18} color={COLORS.bg0} /></TouchableOpacity>; }
 function Debrief({ icon, title, body, color }: { icon: keyof typeof Feather.glyphMap; title: string; body: string; color: string }) { return <View style={styles.debrief}><Feather name={icon} size={19} color={color} /><View style={{ flex: 1 }}><Text style={[styles.debriefTitle, { color }]}>{title}</Text><Text style={styles.debriefBody}>{body || 'No note this round.'}</Text></View></View>; }
 const scoreColor = (score = 5) => score >= 8 ? '#16A34A' : score >= 6 ? '#F59E0B' : '#EF4444';
 const gradeLabel = (score = 5) => score >= 9 ? 'Offer-ready' : score >= 7.5 ? 'Strong signal' : score >= 6 ? 'Promising' : 'Needs another rep';
@@ -333,7 +343,7 @@ const styles = StyleSheet.create({
   options: { gap: 9 }, option: { minHeight: 60, padding: 12, borderRadius: 14, borderWidth: 2, borderColor: COLORS.border, flexDirection: 'row', alignItems: 'center', gap: 11 }, optionLetter: { width: 28, height: 28, textAlign: 'center', textAlignVertical: 'center', borderRadius: 8, backgroundColor: COLORS.bg1, color: COLORS.textSecondary, fontWeight: '900' }, optionText: { flex: 1, color: COLORS.textPrimary, fontSize: 14, lineHeight: 19, fontWeight: '600' }, correct: { borderColor: COLORS.success, backgroundColor: COLORS.successSoft }, wrong: { borderColor: COLORS.error, backgroundColor: COLORS.errorSoft },
   feedback: { padding: 14, borderRadius: 14 }, feedbackTitle: { fontSize: 15, fontWeight: '900', color: COLORS.textPrimary }, feedbackText: { fontSize: 13, lineHeight: 18, color: COLORS.textSecondary, marginTop: 4 },
   keywordRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 }, keyword: { paddingHorizontal: 9, paddingVertical: 5, borderRadius: 8, backgroundColor: COLORS.accentSoft }, keywordText: { fontSize: 11, color: COLORS.accentDark, fontWeight: '800' }, input: { minHeight: 150, borderRadius: 16, borderWidth: 2, borderColor: COLORS.border, padding: 16, fontSize: 16, lineHeight: 23, color: COLORS.textPrimary, textAlignVertical: 'top' }, responseActions: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }, record: { height: 42, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', gap: 7 }, recording: { backgroundColor: COLORS.error, borderColor: COLORS.error }, recordText: { color: COLORS.textPrimary, fontWeight: '800' }, count: { color: COLORS.textMuted, fontSize: 12 },
-  action: { height: 56, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 9, marginTop: 4 }, actionText: { color: COLORS.bg0, fontSize: 16, fontWeight: '900' }, disabled: { opacity: 0.4 },
+  action: { height: 56, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 9, marginTop: 4 }, actionText: { color: COLORS.bg0, fontSize: 16, fontWeight: '900' }, disabled: { opacity: 0.3 },
   verdict: { minHeight: 210, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }, verdictLabel: { color: COLORS.bg0, fontSize: 11, fontWeight: '900', letterSpacing: 1.2 }, verdictScore: { color: COLORS.bg0, fontSize: 72, lineHeight: 78, fontWeight: '900' }, verdictGrade: { color: COLORS.bg0, fontSize: 16, fontWeight: '800' },
   debrief: { flexDirection: 'row', gap: 12, padding: 15, borderRadius: 15, borderWidth: 1, borderColor: COLORS.border }, debriefTitle: { fontSize: 13, fontWeight: '900' }, debriefBody: { fontSize: 14, lineHeight: 19, color: COLORS.textPrimary, marginTop: 3 }, retry: { alignItems: 'center', paddingVertical: 12 }, retryText: { color: COLORS.textSecondary, fontWeight: '800' },
 });
