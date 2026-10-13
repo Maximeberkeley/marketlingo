@@ -1,5 +1,9 @@
 # MarketLingo roadmap
 
+## Oct 13 — Notes orbit progress
+- [x] Include today's saved notebook note in the five-activity Home circle and refresh on return, scoped to learner, industry and local day; synchronize phone sources and test the ring.
+- [ ] Verify saving a note and returning Home on iPhone (blocked: no iOS device/simulator).
+
 ## Oct 12 — Interview contrast and Leo voice
 - [x] Fix Interview readiness surfaces in both phone sources; primary/secondary text contrast checks pass in dark and light themes.
 - [x] Change all Leo voice declarations to Liam (young, confident American), preserve other mentor voices and deploy TTS; live service returned valid MP3 audio (200, 4.9 seconds).
