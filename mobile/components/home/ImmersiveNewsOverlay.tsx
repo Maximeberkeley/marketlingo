@@ -56,7 +56,7 @@ interface ImmersiveNewsOverlayProps {
 // ── Constants ──
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 80;
-const SOPHIA_VOICE_ID = 'pFZP5JQG7iQjIQuC4Bku'; // Lily
+const SOPHIA_VOICE_ID = 'MtzY9FD6OSlkIuEBAHn3'; // Sophia
 const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_KEY || '';
 
