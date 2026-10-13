@@ -146,7 +146,7 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
         <View style={styles.bubbleTail} />
         {/* Leo avatar */}
         <View style={styles.leoWrap}>
-          <Image source={LEO_IMAGE} style={styles.leoImage} />
+          <Image source={LEO_MOOD_IMAGES[config.leoMood] ?? LEO_IMAGE} style={styles.leoImage} />
         </View>
       </TouchableOpacity>
     </Animated.View>
