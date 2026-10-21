@@ -220,6 +220,62 @@ export async function scheduleDailyFallbackReminders(): Promise<void> {
   } catch (error) {
     log.warn('[LeoNudges] Could not schedule daily fallbacks:', error);
   }
+  await scheduleLapseNudges();
+}
+
+/**
+ * Sassy "days of NOT learning" messages. Re-armed on every app open, so they
+ * only ever fire for learners who actually stayed away that long.
+ */
+export const LAPSE_DAYS = [2, 3, 5, 7, 14, 30] as const;
+
+export function lapseNudge(days: number, industry: string, displayName: string): { title: string; body: string } {
+  const lines: Record<number, { title: string; body: string }> = {
+    2: { title: `2 days of NOT learning ${industry}`, body: 'Bold strategy. Leo is taking notes.' },
+    3: { title: `3 days of NOT learning ${industry}`, body: 'Your streak called. It wants to talk.' },
+    5: { title: `5 days of NOT learning ${industry}`, body: `{name}, Leo is pretending he isn't hurt.` },
+    7: { title: `A whole week of NOT learning ${industry}`, body: 'Impressive. Not in a good way.' },
+    14: { title: `14 days of NOT learning ${industry}`, body: 'Leo has started talking to your empty seat.' },
+    30: { title: `30 days of NOT learning ${industry}`, body: 'Congrats!' },
+  };
+  const line = lines[days] ?? { title: `${days} days of NOT learning ${industry}`, body: 'Leo is still waiting.' };
+  return { title: line.title, body: personalized(line.body, displayName) };
+}
+
+async function scheduleLapseNudges(): Promise<void> {
+  try {
+    const Notifications = await loadNotifications();
+    if (!Notifications) return;
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    await Promise.all(scheduled
+      .filter(item => item.content.data?.type === 'lapse_nudge')
+      .map(item => Notifications.cancelScheduledNotificationAsync(item.identifier).catch(() => {})));
+    const permission = await Notifications.getPermissionsAsync();
+    if (permission.status !== 'granted') return;
+
+    const { markets } = await import('./markets');
+    const industryId = await storage.getIndustry();
+    const industry = markets.find(m => m.id === industryId)?.name ?? 'your industry';
+    const displayName = normalizeDisplayName(await storage.getDisplayName());
+
+    for (const days of LAPSE_DAYS) {
+      const fireAt = new Date();
+      fireAt.setDate(fireAt.getDate() + days);
+      fireAt.setHours(18, 45, 0, 0);
+      const script = lapseNudge(days, industry, displayName);
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: script.title,
+          body: script.body,
+          sound: true,
+          data: { type: 'lapse_nudge', route: '/(tabs)/home', days },
+        },
+        trigger: fireAt,
+      });
+    }
+  } catch (error) {
+    log.warn('[LeoNudges] Could not schedule lapse nudges:', error);
+  }
 }
 
 export async function cancelDailyFallbackReminders(): Promise<void> {
