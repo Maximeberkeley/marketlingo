@@ -73,6 +73,11 @@ async function transcribeVoice(uri: string): Promise<string> {
   }
 }
 
+function SubtitleBox({ disabled, children, style, onPress, ...rest }: any) {
+  if (disabled) return <View style={style}>{children}</View>;
+  return <TouchableOpacity style={style} onPress={onPress} {...rest}>{children}</TouchableOpacity>;
+}
+
 export function LeoVoiceChatOverlay({
   visible,
   onClose,
@@ -344,7 +349,7 @@ export function LeoVoiceChatOverlay({
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <Animated.View style={[st.container, { opacity: fadeAnim }]}>
-          <Image source={LEO_STUDY_SCENE} style={st.sceneImage} resizeMode="cover" fadeDuration={0} />
+          <Image source={LEO_STUDY_SCENE} style={st.sceneImage} resizeMode="contain" fadeDuration={0} />
           <View style={st.sceneShade} />
           <View style={st.bottomShade} />
 
@@ -380,9 +385,14 @@ export function LeoVoiceChatOverlay({
             </View>
           </View>
 
+          {subtitlesExpanded && (
+            <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={() => setSubtitlesExpanded(false)} accessibilityLabel="Close chat" />
+          )}
           <View style={[st.dialogStage, { bottom: insets.bottom + 154 }]}>
             <View style={st.dialogTail} />
-            <TouchableOpacity
+            <SubtitleBox
+              disabled={subtitlesExpanded}
+              
               style={st.subtitleBox}
               onPress={() => setSubtitlesExpanded(!subtitlesExpanded)}
               activeOpacity={0.9}
@@ -411,7 +421,7 @@ export function LeoVoiceChatOverlay({
               {!subtitlesExpanded && narrationText.length > 150 && (
                 <Text style={st.expandHint}>Tap to read more</Text>
               )}
-            </TouchableOpacity>
+            </SubtitleBox>
 
             <View style={st.statusContainer}>
               {isGenerating && (
@@ -520,9 +530,11 @@ const st = StyleSheet.create({
     backgroundColor: '#000',
   },
   sceneImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: '100%',
-    height: '100%',
+    position: 'absolute',
+    top: '9%',
+    left: '10%',
+    width: '80%',
+    height: '46%',
   },
   sceneShade: {
     ...StyleSheet.absoluteFillObject,

@@ -48,6 +48,11 @@ async function transcribeVoice(uri) {
     return "";
   }
 }
+function SubtitleBox({ disabled, children, style, onPress, ...rest }) {
+  if (disabled) return <View style={style}>{children}</View>;
+  return <TouchableOpacity style={style} onPress={onPress} {...rest}>{children}</TouchableOpacity>;
+}
+
 function LeoVoiceChatOverlay({
   visible,
   onClose,
@@ -293,7 +298,7 @@ function LeoVoiceChatOverlay({
     behavior={Platform.OS === "ios" ? "padding" : void 0}
   >
         <Animated.View style={[st.container, { opacity: fadeAnim }]}>
-          <Image source={LEO_STUDY_SCENE} style={st.sceneImage} resizeMode="cover" fadeDuration={0} />
+          <Image source={LEO_STUDY_SCENE} style={st.sceneImage} resizeMode="contain" fadeDuration={0} />
           <View style={st.sceneShade} />
           <View style={st.bottomShade} />
 
@@ -331,9 +336,14 @@ function LeoVoiceChatOverlay({
             </View>
           </View>
 
+          {subtitlesExpanded && (
+            <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={() => setSubtitlesExpanded(false)} accessibilityLabel="Close chat" />
+          )}
           <View style={[st.dialogStage, { bottom: insets.bottom + 154 }]}>
             <View style={st.dialogTail} />
-            <TouchableOpacity
+            <SubtitleBox
+              disabled={subtitlesExpanded}
+              
     style={st.subtitleBox}
     onPress={() => setSubtitlesExpanded(!subtitlesExpanded)}
     activeOpacity={0.9}
@@ -352,7 +362,7 @@ function LeoVoiceChatOverlay({
                   {narrationText || "Hey! \u{1F98A} Ask me anything about your industry!"}
                 </Text>}
               {!subtitlesExpanded && narrationText.length > 150 && <Text style={st.expandHint}>Tap to read more</Text>}
-            </TouchableOpacity>
+            </SubtitleBox>
 
             <View style={st.statusContainer}>
               {isGenerating && <Text style={st.statusText}>Preparing an answer</Text>}
@@ -452,9 +462,11 @@ const st = StyleSheet.create({
     backgroundColor: "#000"
   },
   sceneImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%"
+    position: 'absolute',
+    top: '9%',
+    left: '10%',
+    width: '80%',
+    height: '46%',
   },
   sceneShade: {
     ...StyleSheet.absoluteFillObject,
