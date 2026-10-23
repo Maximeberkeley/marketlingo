@@ -31,6 +31,7 @@ import { XPBadge } from "../ui/XPBadge";
 import { LeoCharacter } from "../mascot/LeoCharacter";
 import { HomeSkeleton } from "../home/HomeSkeleton";
 import { lessonDayLabel, realLessonTitle } from "../../lib/lessonIdentity";
+import { lessonPriority } from "../../lib/handwritten";
 function MovingLessonTitle({ title, long, active }) {
   const sweep = useRef(new Animated.Value(0)).current;
   const [reduceMotion, setReduceMotion] = useState(false);
