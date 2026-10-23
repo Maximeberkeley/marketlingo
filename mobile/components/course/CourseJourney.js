@@ -375,9 +375,9 @@ function CourseJourney({
         if (!Number.isFinite(day) || day < 1 || day > TOTAL_DAYS) return;
         if (completed.has(stack.id)) completedByDay.set(day, true);
         if (!(stack.slides?.[0]?.count > 0) && !stack.authored_lesson) return;
-        const goalMatch = tags.includes(goalTag);
+        const rank = lessonPriority(tags, goalTag, day);
         const existing = byDay.get(day);
-        if (!existing || stack.id === completedTodayStackId || existing.id !== completedTodayStackId && goalMatch && !existing.goalMatch) byDay.set(day, { id: stack.id, title: realLessonTitle(stack), goalMatch });
+        if (!existing || stack.id === completedTodayStackId || (existing.id !== completedTodayStackId && rank > existing.rank)) byDay.set(day, { id: stack.id, title: realLessonTitle(stack), rank });
       });
       setLessons(Array.from({ length: TOTAL_DAYS }, (_, index) => {
         const day = index + 1;
