@@ -212,19 +212,19 @@ const styles = StyleSheet.create({
     lineHeight: 20
   },
   xpBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: "rgba(251,191,36,0.12)",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(167,139,250,0.12)',
+    paddingHorizontal: 22,
+    paddingVertical: 10,
+    borderRadius: 999,
     borderWidth: 1,
-    borderColor: "rgba(251,191,36,0.3)",
-    marginTop: 4
+    borderColor: 'rgba(167,139,250,0.35)',
+    marginTop: 14,
   },
   xpText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "700",
     color: "#FBBF24"
   },

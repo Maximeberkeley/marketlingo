@@ -116,16 +116,19 @@ export function useAchievements(progress?: AchievementProgress) {
           // Actually add the XP reward to user's total
           try {
             // Get current XP data (includes market_id for FK constraint)
-            const { data: xpData } = await supabase
-              .from('user_xp')
-              .select('id, total_xp, market_id')
-              .eq('user_id', user.id)
-              .maybeSingle();
-
+            const { data: profileRow } = await supabase
+              .from('profiles').select('selected_market').eq('id', user.id).maybeSingle();
+            let marketId = profileRow?.selected_market || null;
+            if (!marketId) {
+              const { data: rows } = await supabase.from('user_xp').select('market_id')
+                .eq('user_id', user.id).order('updated_at', { ascending: false }).limit(1);
+              marketId = rows?.[0]?.market_id || null;
+            }
+            const xpData = marketId ? { market_id: marketId } : null;
             if (xpData) {
-              await supabase.from('user_xp')
-                .update({ total_xp: xpData.total_xp + achievement.xpReward })
-                .eq('id', xpData.id);
+              await supabase.rpc('increment_user_xp', {
+                p_user_id: user.id, p_market_id: xpData.market_id, p_amount: achievement.xpReward,
+              });
 
               await supabase.from('xp_transactions').insert({
                 user_id: user.id,
