@@ -166,6 +166,9 @@ export function useUserXP(marketId?: string) {
     const ensuredXP = await ensureXPRecord();
     if (!ensuredXP) return null;
 
+    // Optimistic: show the new total immediately while the server catches up
+    setXpData((prev: any) => prev ? { ...prev, total_xp: (prev.total_xp || 0) + amount } : prev);
+
     const { error: transactionError } = await supabase.from('xp_transactions').insert({
       user_id: user.id,
       market_id: marketId,

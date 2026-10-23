@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { COLORS } from '../../lib/constants';
 
 interface FloatingXPProps {
   amount: number;
@@ -41,7 +42,7 @@ export function FloatingXP({ amount, show, isPro = false }: FloatingXPProps) {
       ]}
       pointerEvents="none"
     >
-      <Feather name="zap" size={16} color="#FDE047" />
+      <MaterialCommunityIcons name="flask" size={16} color={COLORS.xpBadgeIcon} />
       <Text style={styles.text}>+{displayAmount} XP</Text>
       {isPro && <Text style={styles.proLabel}>1.5×</Text>}
     </Animated.View>

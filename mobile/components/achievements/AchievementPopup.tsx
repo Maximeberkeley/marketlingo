@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { COLORS } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
 const LEO_CELEBRATING = require('../../assets/mascot/leo-celebrating.png');
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -128,7 +128,7 @@ export function AchievementPopup({ visible, achievement, onDismiss }: Achievemen
 
             {/* XP reward */}
             <View style={styles.xpBadge}>
-              <Feather name="zap" size={16} color="#FBBF24" />
+              <MaterialCommunityIcons name="flask" size={16} color={COLORS.xpBadgeIcon} />
               <Text style={styles.xpText}>+{achievement.xpReward} XP</Text>
             </View>
           </ScrollView>
@@ -225,19 +225,19 @@ const styles = StyleSheet.create({
   xpBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    backgroundColor: 'rgba(251,191,36,0.12)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 12,
+    gap: 8,
+    backgroundColor: 'rgba(167,139,250,0.12)',
+    paddingHorizontal: 22,
+    paddingVertical: 10,
+    borderRadius: 999,
     borderWidth: 1,
-    borderColor: 'rgba(251,191,36,0.3)',
-    marginTop: 4,
+    borderColor: 'rgba(167,139,250,0.35)',
+    marginTop: 14,
   },
   xpText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
-    color: '#FBBF24',
+    color: COLORS.xpBadgeIcon,
   },
   dismissBtn: {
     marginTop: 16,

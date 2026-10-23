@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -47,6 +47,10 @@ async function transcribeVoice(uri) {
   } catch {
     return "";
   }
+}
+function SubtitleBox({ disabled, children, style, onPress, ...rest }) {
+  if (disabled) return /* @__PURE__ */ React.createElement(View, { style }, children);
+  return /* @__PURE__ */ React.createElement(TouchableOpacity, { style, onPress, ...rest }, children);
 }
 function LeoVoiceChatOverlay({
   visible,
@@ -286,165 +290,114 @@ function LeoVoiceChatOverlay({
     onClose();
   }, [onClose]);
   if (!visible) return null;
-  return <Modal visible={visible} animationType="none" transparent statusBarTranslucent>
-      <StatusBar barStyle="light-content" />
-      <KeyboardAvoidingView
-    style={{ flex: 1 }}
-    behavior={Platform.OS === "ios" ? "padding" : void 0}
-  >
-        <Animated.View style={[st.container, { opacity: fadeAnim }]}>
-          <Image source={LEO_STUDY_SCENE} style={st.sceneImage} resizeMode="cover" fadeDuration={0} />
-          <View style={st.sceneShade} />
-          <View style={st.bottomShade} />
-
-          {
-    /* Top bar */
-  }
-          <View style={[st.topBar, { paddingTop: insets.top + 12 }]}>
-            <View style={st.statusBadge}>
-              <Animated.View
-    style={[
-      st.liveDot,
+  return /* @__PURE__ */ React.createElement(Modal, { visible, animationType: "none", transparent: true, statusBarTranslucent: true }, /* @__PURE__ */ React.createElement(StatusBar, { barStyle: "light-content" }), /* @__PURE__ */ React.createElement(
+    KeyboardAvoidingView,
+    {
+      style: { flex: 1 },
+      behavior: Platform.OS === "ios" ? "padding" : void 0
+    },
+    /* @__PURE__ */ React.createElement(Animated.View, { style: [st.container, { opacity: fadeAnim }] }, /* @__PURE__ */ React.createElement(Image, { source: LEO_STUDY_SCENE, style: st.sceneImage, resizeMode: "contain", fadeDuration: 0 }), /* @__PURE__ */ React.createElement(View, { style: st.sceneShade }), /* @__PURE__ */ React.createElement(View, { style: st.bottomShade }), /* @__PURE__ */ React.createElement(View, { style: [st.topBar, { paddingTop: insets.top + 12 }] }, /* @__PURE__ */ React.createElement(View, { style: st.statusBadge }, /* @__PURE__ */ React.createElement(
+      Animated.View,
       {
-        opacity: livePulse,
-        backgroundColor: isSpeaking ? "#F97316" : isRecording ? "#EF4444" : "#10B981"
+        style: [
+          st.liveDot,
+          {
+            opacity: livePulse,
+            backgroundColor: isSpeaking ? "#F97316" : isRecording ? "#EF4444" : "#10B981"
+          }
+        ]
       }
-    ]}
-  />
-              <Text style={st.statusBadgeText}>
-                {isSpeaking ? "Speaking" : isRecording ? "Listening" : isGenerating ? "Thinking" : "Live"}
-              </Text>
-            </View>
-
-            <View style={st.topBarRight}>
-              <TouchableOpacity
-    style={[st.topBtn, showTextInput && st.topBtnActive]}
-    onPress={() => setShowTextInput(!showTextInput)}
-    accessibilityRole="button"
-    accessibilityLabel="Toggle text mode"
-  >
-                <Feather name="type" size={18} color="#fff" />
-              </TouchableOpacity>
-              <TouchableOpacity style={st.topBtn} onPress={handleClose} accessibilityRole="button" accessibilityLabel="Close Speak to Leo">
-                <Feather name="x" size={22} color="#fff" />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={[st.dialogStage, { bottom: insets.bottom + 154 }]}>
-            <View style={st.dialogTail} />
-            <TouchableOpacity
-    style={st.subtitleBox}
-    onPress={() => setSubtitlesExpanded(!subtitlesExpanded)}
-    activeOpacity={0.9}
-    accessibilityRole="button"
-    accessibilityLabel="Leo's latest response"
-  >
-              {isGenerating || isTranscribing ? <View style={st.statusRow}>
-                  <ActivityIndicator size="small" color="#FB7A22" />
-                  <Text style={st.subtitleText}>{isTranscribing ? "Transcribing\u2026" : "Leo is thinking\u2026"}</Text>
-                </View> : subtitlesExpanded && messages.length > 0 ? <ScrollView style={st.conversationScroll} contentContainerStyle={st.conversationContent} showsVerticalScrollIndicator>
-                  {messages.map((message, index) => <View key={`${message.role}-${index}`} style={[st.conversationBubble, message.role === "user" ? st.userConversationBubble : st.leoConversationBubble]}>
-                      <Text style={st.conversationRole}>{message.role === "user" ? "YOU" : "LEO"}</Text>
-                      <Text style={st.conversationText}>{message.content}</Text>
-                    </View>)}
-                </ScrollView> : <Text style={st.subtitleText} numberOfLines={4}>
-                  {narrationText || "Hey! \u{1F98A} Ask me anything about your industry!"}
-                </Text>}
-              {!subtitlesExpanded && narrationText.length > 150 && <Text style={st.expandHint}>Tap to read more</Text>}
-            </TouchableOpacity>
-
-            <View style={st.statusContainer}>
-              {isGenerating && <Text style={st.statusText}>Preparing an answer</Text>}
-              {isRecording && <View style={st.statusRow}>
-                  <Animated.View style={[st.recordDot, { opacity: glowAnim }]} />
-                  <Text style={st.statusText}>Listening… tap again to send</Text>
-                </View>}
-              {isSpeaking && !isGenerating && <Text style={st.statusText}>Leo is speaking…</Text>}
-            </View>
-          </View>
-
-          <View style={[st.bottomBar, { paddingBottom: insets.bottom + 16 }]}>
-            {showTextInput ? <View style={st.keyboardComposer}>
-                <TouchableOpacity style={st.keyboardDismiss} onPress={() => {
-    Keyboard.dismiss();
-    setShowTextInput(false);
-  }} accessibilityLabel="Hide keyboard">
-                  <Feather name="chevron-down" size={18} color="#fff" />
-                  <Text style={st.keyboardDismissText}>Hide keyboard</Text>
-                </TouchableOpacity>
-                <View style={st.textInputRow}>
-                  <TextInput
-    style={st.textInput}
-    value={textInput}
-    onChangeText={setTextInput}
-    placeholder="Type a message..."
-    placeholderTextColor="rgba(255,255,255,0.4)"
-    multiline
-    autoFocus
-    blurOnSubmit
-    maxLength={500}
-    returnKeyType="send"
-    onSubmitEditing={handleSendText}
-  />
-                <TouchableOpacity
-    style={[st.sendBtn, (!textInput.trim() || isGenerating) && { opacity: 0.4 }]}
-    onPress={handleSendText}
-    disabled={!textInput.trim() || isGenerating}
-  >
-                  <Feather name="arrow-up" size={18} color="#fff" />
-                </TouchableOpacity>
-                </View>
-              </View> : <View style={st.callToolbar}>
-                <TouchableOpacity
-    style={st.sideAction}
-    onPress={handleMute}
-    accessibilityRole="button"
-    accessibilityLabel={isMuted ? "Turn Leo's voice back on" : "Mute Leo's voice"}
-  >
-                  <View style={[st.sideActionCircle, isMuted && st.sideActionCircleActive]}>
-                    <Feather name={isMuted ? "volume-x" : "volume-2"} size={23} color="#fff" />
-                  </View>
-                  <Text style={st.sideActionLabel}>{isMuted ? "Muted" : "Mute"}</Text>
-
-                </TouchableOpacity>
-
-                <TouchableOpacity
-    style={st.primaryAction}
-    onPress={handleLeoTap}
-    activeOpacity={0.8}
-    disabled={isGenerating || isTranscribing}
-    accessibilityRole="button"
-    accessibilityLabel={isRecording ? "Stop and send recording" : "Talk to Leo"}
-  >
-                  <Animated.View
-    style={[
-      st.bigMicBtn,
-      isRecording && st.bigMicBtnRecording,
-      { opacity: isGenerating || isTranscribing ? 0.55 : 1 }
-    ]}
-  >
-                    <Feather name={isRecording ? "square" : "mic"} size={29} color="#fff" />
-                  </Animated.View>
-                  <Text style={st.primaryActionLabel}>{isRecording ? "Tap to send" : "Tap to talk to Leo"}</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-    style={st.sideAction}
-    onPress={() => setShowTextInput(true)}
-    accessibilityRole="button"
-    accessibilityLabel="Open keyboard"
-  >
-                  <View style={st.sideActionCircle}>
-                    <Feather name="command" size={22} color="#fff" />
-                  </View>
-                  <Text style={st.sideActionLabel}>Keyboard</Text>
-                </TouchableOpacity>
-              </View>}
-          </View>
-        </Animated.View>
-      </KeyboardAvoidingView>
-    </Modal>;
+    ), /* @__PURE__ */ React.createElement(Text, { style: st.statusBadgeText }, isSpeaking ? "Speaking" : isRecording ? "Listening" : isGenerating ? "Thinking" : "Live")), /* @__PURE__ */ React.createElement(View, { style: st.topBarRight }, /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        style: [st.topBtn, showTextInput && st.topBtnActive],
+        onPress: () => setShowTextInput(!showTextInput),
+        accessibilityRole: "button",
+        accessibilityLabel: "Toggle text mode"
+      },
+      /* @__PURE__ */ React.createElement(Feather, { name: "type", size: 18, color: "#fff" })
+    ), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: st.topBtn, onPress: handleClose, accessibilityRole: "button", accessibilityLabel: "Close Speak to Leo" }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 22, color: "#fff" })))), subtitlesExpanded && /* @__PURE__ */ React.createElement(TouchableOpacity, { style: StyleSheet.absoluteFill, activeOpacity: 1, onPress: () => setSubtitlesExpanded(false), accessibilityLabel: "Close chat" }), /* @__PURE__ */ React.createElement(View, { style: [st.dialogStage, { bottom: insets.bottom + 154 }] }, /* @__PURE__ */ React.createElement(View, { style: st.dialogTail }), /* @__PURE__ */ React.createElement(
+      SubtitleBox,
+      {
+        disabled: subtitlesExpanded,
+        style: st.subtitleBox,
+        onPress: () => setSubtitlesExpanded(!subtitlesExpanded),
+        activeOpacity: 0.9,
+        accessibilityRole: "button",
+        accessibilityLabel: "Leo's latest response"
+      },
+      isGenerating || isTranscribing ? /* @__PURE__ */ React.createElement(View, { style: st.statusRow }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: "#FB7A22" }), /* @__PURE__ */ React.createElement(Text, { style: st.subtitleText }, isTranscribing ? "Transcribing\u2026" : "Leo is thinking\u2026")) : subtitlesExpanded && messages.length > 0 ? /* @__PURE__ */ React.createElement(ScrollView, { style: st.conversationScroll, contentContainerStyle: st.conversationContent, showsVerticalScrollIndicator: true }, messages.map((message, index) => /* @__PURE__ */ React.createElement(View, { key: `${message.role}-${index}`, style: [st.conversationBubble, message.role === "user" ? st.userConversationBubble : st.leoConversationBubble] }, /* @__PURE__ */ React.createElement(Text, { style: st.conversationRole }, message.role === "user" ? "YOU" : "LEO"), /* @__PURE__ */ React.createElement(Text, { style: st.conversationText }, message.content)))) : /* @__PURE__ */ React.createElement(Text, { style: st.subtitleText, numberOfLines: 4 }, narrationText || "Hey! \u{1F98A} Ask me anything about your industry!"),
+      !subtitlesExpanded && narrationText.length > 150 && /* @__PURE__ */ React.createElement(Text, { style: st.expandHint }, "Tap to read more")
+    ), /* @__PURE__ */ React.createElement(View, { style: st.statusContainer }, isGenerating && /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "Preparing an answer"), isRecording && /* @__PURE__ */ React.createElement(View, { style: st.statusRow }, /* @__PURE__ */ React.createElement(Animated.View, { style: [st.recordDot, { opacity: glowAnim }] }), /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "Listening\u2026 tap again to send")), isSpeaking && !isGenerating && /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "Leo is speaking\u2026"))), /* @__PURE__ */ React.createElement(View, { style: [st.bottomBar, { paddingBottom: insets.bottom + 16 }] }, showTextInput ? /* @__PURE__ */ React.createElement(View, { style: st.keyboardComposer }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: st.keyboardDismiss, onPress: () => {
+      Keyboard.dismiss();
+      setShowTextInput(false);
+    }, accessibilityLabel: "Hide keyboard" }, /* @__PURE__ */ React.createElement(Feather, { name: "chevron-down", size: 18, color: "#fff" }), /* @__PURE__ */ React.createElement(Text, { style: st.keyboardDismissText }, "Hide keyboard")), /* @__PURE__ */ React.createElement(View, { style: st.textInputRow }, /* @__PURE__ */ React.createElement(
+      TextInput,
+      {
+        style: st.textInput,
+        value: textInput,
+        onChangeText: setTextInput,
+        placeholder: "Type a message...",
+        placeholderTextColor: "rgba(255,255,255,0.4)",
+        multiline: true,
+        autoFocus: true,
+        blurOnSubmit: true,
+        maxLength: 500,
+        returnKeyType: "send",
+        onSubmitEditing: handleSendText
+      }
+    ), /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        style: [st.sendBtn, (!textInput.trim() || isGenerating) && { opacity: 0.4 }],
+        onPress: handleSendText,
+        disabled: !textInput.trim() || isGenerating
+      },
+      /* @__PURE__ */ React.createElement(Feather, { name: "arrow-up", size: 18, color: "#fff" })
+    ))) : /* @__PURE__ */ React.createElement(View, { style: st.callToolbar }, /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        style: st.sideAction,
+        onPress: handleMute,
+        accessibilityRole: "button",
+        accessibilityLabel: isMuted ? "Turn Leo's voice back on" : "Mute Leo's voice"
+      },
+      /* @__PURE__ */ React.createElement(View, { style: [st.sideActionCircle, isMuted && st.sideActionCircleActive] }, /* @__PURE__ */ React.createElement(Feather, { name: isMuted ? "volume-x" : "volume-2", size: 23, color: "#fff" })),
+      /* @__PURE__ */ React.createElement(Text, { style: st.sideActionLabel }, isMuted ? "Muted" : "Mute")
+    ), /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        style: st.primaryAction,
+        onPress: handleLeoTap,
+        activeOpacity: 0.8,
+        disabled: isGenerating || isTranscribing,
+        accessibilityRole: "button",
+        accessibilityLabel: isRecording ? "Stop and send recording" : "Talk to Leo"
+      },
+      /* @__PURE__ */ React.createElement(
+        Animated.View,
+        {
+          style: [
+            st.bigMicBtn,
+            isRecording && st.bigMicBtnRecording,
+            { opacity: isGenerating || isTranscribing ? 0.55 : 1 }
+          ]
+        },
+        /* @__PURE__ */ React.createElement(Feather, { name: isRecording ? "square" : "mic", size: 29, color: "#fff" })
+      ),
+      /* @__PURE__ */ React.createElement(Text, { style: st.primaryActionLabel }, isRecording ? "Tap to send" : "Tap to talk to Leo")
+    ), /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        style: st.sideAction,
+        onPress: () => setShowTextInput(true),
+        accessibilityRole: "button",
+        accessibilityLabel: "Open keyboard"
+      },
+      /* @__PURE__ */ React.createElement(View, { style: st.sideActionCircle }, /* @__PURE__ */ React.createElement(Feather, { name: "command", size: 22, color: "#fff" })),
+      /* @__PURE__ */ React.createElement(Text, { style: st.sideActionLabel }, "Keyboard")
+    ))))
+  ));
 }
 const st = StyleSheet.create({
   container: {
@@ -452,9 +405,11 @@ const st = StyleSheet.create({
     backgroundColor: "#000"
   },
   sceneImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%"
+    position: "absolute",
+    top: "9%",
+    left: "10%",
+    width: "80%",
+    height: "46%"
   },
   sceneShade: {
     ...StyleSheet.absoluteFillObject,

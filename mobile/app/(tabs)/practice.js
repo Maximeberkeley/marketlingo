@@ -180,7 +180,7 @@ function PracticeScreen() {
       }).start();
     }
   }, [loading]);
-  if (loading) {
+  if (loading || studied.isLoading) {
     return /* @__PURE__ */ React.createElement(View, { style: [styles.container, styles.centered] }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }));
   }
   return /* @__PURE__ */ React.createElement(View, { style: styles.container }, /* @__PURE__ */ React.createElement(

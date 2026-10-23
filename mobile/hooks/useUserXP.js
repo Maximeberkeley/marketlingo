@@ -112,6 +112,7 @@ function useUserXP(marketId) {
     if (!user || !marketId) return null;
     const ensuredXP = await ensureXPRecord();
     if (!ensuredXP) return null;
+    setXpData((prev) => prev ? { ...prev, total_xp: (prev.total_xp || 0) + amount } : prev);
     const { error: transactionError } = await supabase.from("xp_transactions").insert({
       user_id: user.id,
       market_id: marketId,
