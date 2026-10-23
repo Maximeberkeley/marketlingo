@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 export function FloatingXP({ amount, show, isPro = false }) {
     const opacity = useRef(new Animated.Value(0)).current;
     const translateY = useRef(new Animated.Value(0)).current;
@@ -26,7 +26,7 @@ export function FloatingXP({ amount, show, isPro = false }) {
             styles.container,
             { opacity, transform: [{ translateY }, { scale }] },
         ]} pointerEvents="none">
-      <Feather name="zap" size={16} color="#FDE047"/>
+      <MaterialCommunityIcons name="flask" size={16} color={COLORS.xpBadgeIcon} />
       <Text style={styles.text}>+{displayAmount} XP</Text>
       {isPro && <Text style={styles.proLabel}>1.5×</Text>}
     </Animated.View>);

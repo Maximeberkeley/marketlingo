@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { tokens } from "../theme/tokens";
@@ -90,7 +90,7 @@ function LessonComplete({
     /* @__PURE__ */ React.createElement(Text, { style: styles.title }, praise),
     typeof streakDays === "number" && streakDays > 0 ? /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "\u{1F525} ", streakDays, "-day streak \u2014 come back tomorrow to keep it.") : /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "You just started a streak. Come back tomorrow to keep it."),
     /* @__PURE__ */ React.createElement(Text, { style: styles.xpBig }, "+", totalXp, " XP"),
-    total > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.bonusList }, bonuses.map((b, i) => /* @__PURE__ */ React.createElement(View, { key: i, style: styles.bonusRow }, /* @__PURE__ */ React.createElement(Feather, { name: "zap", size: 14, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.bonusLabel }, b.label), /* @__PURE__ */ React.createElement(Text, { style: styles.bonusXp }, "+", b.xp)))),
+    total > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.bonusList }, bonuses.map((b, i) => /* @__PURE__ */ React.createElement(View, { key: i, style: styles.bonusRow }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "flask", size: 14, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.bonusLabel }, b.label), /* @__PURE__ */ React.createElement(Text, { style: styles.bonusXp }, "+", b.xp)))),
     leoQuestions > 0 && /* @__PURE__ */ React.createElement(Text, { style: styles.leoLine }, "You asked Leo ", leoQuestions, " ", leoQuestions === 1 ? "thing" : "things", ". That's how it sticks."),
     /* @__PURE__ */ React.createElement(View, { style: styles.stats }, total > 0 && /* @__PURE__ */ React.createElement(Stat, { label: "Accuracy", value: `${accuracy}%` }), total > 0 && /* @__PURE__ */ React.createElement(Stat, { label: "Correct", value: `${correct}/${total}` }), /* @__PURE__ */ React.createElement(Stat, { label: "Time", value: formatTime(timeSpentSeconds) })),
     !dossier.loading && /* @__PURE__ */ React.createElement(

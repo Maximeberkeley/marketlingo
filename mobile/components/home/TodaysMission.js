@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, Easing, } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 function CircularProgress({ progress, size, strokeWidth, isCompleted, }) {
     const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -116,7 +116,7 @@ export function TodaysMission({ dayNumber, totalDays = 180, lessonTitle, marketE
               <Text style={styles.reviewBtnText}>Review</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.practiceBtn} onPress={onPractice} activeOpacity={0.7}>
-              <Feather name="zap" size={14} color="#fff"/>
+              <MaterialCommunityIcons name="flask" size={14} color={COLORS.xpBadgeIcon} />
               <Text style={styles.practiceBtnText}>Practice</Text>
             </TouchableOpacity>
           </View>) : (<Animated.View style={{ transform: [{ scale: pulseAnim }] }}>

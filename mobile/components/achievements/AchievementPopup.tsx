@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { COLORS } from '../../lib/constants';
 import { triggerHaptic } from '../../lib/haptics';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
 const LEO_CELEBRATING = require('../../assets/mascot/leo-celebrating.png');
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -128,7 +128,7 @@ export function AchievementPopup({ visible, achievement, onDismiss }: Achievemen
 
             {/* XP reward */}
             <View style={styles.xpBadge}>
-              <Feather name="zap" size={16} color="#FBBF24" />
+              <MaterialCommunityIcons name="flask" size={16} color={COLORS.xpBadgeIcon} />
               <Text style={styles.xpText}>+{achievement.xpReward} XP</Text>
             </View>
           </ScrollView>

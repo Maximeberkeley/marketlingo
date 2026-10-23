@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { tokens } from '../theme/tokens';
@@ -119,7 +119,7 @@ export function LessonComplete({
       {total > 0 && <View style={styles.bonusList}>
         {bonuses.map((b, i) => (
           <View key={i} style={styles.bonusRow}>
-            <Feather name="zap" size={14} color={tokens.color.accent} />
+            <MaterialCommunityIcons name="flask" size={14} color={tokens.color.accent} />
             <Text style={styles.bonusLabel}>{b.label}</Text>
             <Text style={styles.bonusXp}>+{b.xp}</Text>
           </View>

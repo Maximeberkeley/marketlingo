@@ -7,7 +7,7 @@ import {
   Animated,
   Easing,
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 
 interface TodaysMissionProps {
@@ -182,7 +182,7 @@ export function TodaysMission({
               <Text style={styles.reviewBtnText}>Review</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.practiceBtn} onPress={onPractice} activeOpacity={0.7}>
-              <Feather name="zap" size={14} color="#fff" />
+              <MaterialCommunityIcons name="flask" size={14} color={COLORS.xpBadgeIcon} />
               <Text style={styles.practiceBtnText}>Practice</Text>
             </TouchableOpacity>
           </View>

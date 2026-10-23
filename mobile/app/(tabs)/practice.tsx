@@ -250,7 +250,7 @@ export default function PracticeScreen() {
     }
   }, [loading]);
 
-  if (loading) {
+  if (loading || studied.isLoading) {
     return (
       <View style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color={COLORS.accent} />
