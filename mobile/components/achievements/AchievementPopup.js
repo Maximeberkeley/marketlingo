@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { COLORS } from "../../lib/constants";
 import { triggerHaptic } from "../../lib/haptics";
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 const LEO_CELEBRATING = require("../../assets/mascot/leo-celebrating.png");
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const TIER_STYLES = {
@@ -50,87 +50,62 @@ function AchievementPopup({ visible, achievement, onDismiss }) {
   }, [visible, achievement]);
   if (!achievement) return null;
   const tier = TIER_STYLES[achievement.tier] || TIER_STYLES.bronze;
-  return <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.overlay}>
-        <Animated.View
-    style={[
-      styles.card,
+  return /* @__PURE__ */ React.createElement(Modal, { visible, transparent: true, animationType: "fade" }, /* @__PURE__ */ React.createElement(View, { style: styles.overlay }, /* @__PURE__ */ React.createElement(
+    Animated.View,
+    {
+      style: [
+        styles.card,
+        {
+          transform: [{ scale: scaleAnim }],
+          borderColor: tier.border
+        }
+      ]
+    },
+    /* @__PURE__ */ React.createElement(
+      Animated.View,
       {
-        transform: [{ scale: scaleAnim }],
-        borderColor: tier.border
-      }
-    ]}
-  >
+        style: [
+          styles.glowRing,
           {
-    /* Glow effect */
-  }
-          <Animated.View
-    style={[
-      styles.glowRing,
-      {
-        borderColor: tier.color,
-        opacity: glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0.15, 0.4] }),
-        transform: [{ scale: glowAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] }) }]
-      }
-    ]}
-  />
-
-          {
-    /* Leo celebrating */
-  }
-          <Animated.View
-    style={[
-      styles.leoContainer,
-      {
-        transform: [
-          { scale: leoAnim },
-          { translateY: leoAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [40, -10, 0] }) },
-          { rotate: leoAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: ["0deg", "-5deg", "0deg"] }) }
+            borderColor: tier.color,
+            opacity: glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0.15, 0.4] }),
+            transform: [{ scale: glowAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] }) }]
+          }
         ]
       }
-    ]}
-  >
-            <Image source={LEO_CELEBRATING} style={styles.leoImage} resizeMode="contain" />
-          </Animated.View>
-
+    ),
+    /* @__PURE__ */ React.createElement(
+      Animated.View,
+      {
+        style: [
+          styles.leoContainer,
           {
-    /* Content */
-  }
-          <ScrollView
-    style={styles.contentScroll}
-    contentContainerStyle={styles.content}
-    showsVerticalScrollIndicator={false}
-    bounces={false}
-  >
-            {
-    /* Tier badge */
-  }
-            <View style={[styles.tierBadge, { backgroundColor: tier.bg, borderColor: tier.border }]}>
-              <Text style={[styles.tierText, { color: tier.color }]}>{tier.label}</Text>
-            </View>
-
-            <Text style={styles.title}>Achievement Unlocked!</Text>
-            <Text style={styles.achievementName}>{achievement.name}</Text>
-            <Text style={styles.description}>{achievement.description}</Text>
-
-            {
-    /* XP reward */
-  }
-            <View style={styles.xpBadge}>
-              <MaterialCommunityIcons name="flask" size={16} color={COLORS.xpBadgeIcon} />
-              <Text style={styles.xpText}>+{achievement.xpReward} XP</Text>
-            </View>
-          </ScrollView>
-
-          {
-    /* Dismiss button */
-  }
-          <TouchableOpacity style={[styles.dismissBtn, { backgroundColor: tier.color }]} onPress={onDismiss}>
-            <Text style={styles.dismissText}>Awesome!</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      </View>
-    </Modal>;
+            transform: [
+              { scale: leoAnim },
+              { translateY: leoAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [40, -10, 0] }) },
+              { rotate: leoAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: ["0deg", "-5deg", "0deg"] }) }
+            ]
+          }
+        ]
+      },
+      /* @__PURE__ */ React.createElement(Image, { source: LEO_CELEBRATING, style: styles.leoImage, resizeMode: "contain" })
+    ),
+    /* @__PURE__ */ React.createElement(
+      ScrollView,
+      {
+        style: styles.contentScroll,
+        contentContainerStyle: styles.content,
+        showsVerticalScrollIndicator: false,
+        bounces: false
+      },
+      /* @__PURE__ */ React.createElement(View, { style: [styles.tierBadge, { backgroundColor: tier.bg, borderColor: tier.border }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.tierText, { color: tier.color }] }, tier.label)),
+      /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Achievement Unlocked!"),
+      /* @__PURE__ */ React.createElement(Text, { style: styles.achievementName }, achievement.name),
+      /* @__PURE__ */ React.createElement(Text, { style: styles.description }, achievement.description),
+      /* @__PURE__ */ React.createElement(View, { style: styles.xpBadge }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "flask", size: 16, color: COLORS.xpBadgeIcon }), /* @__PURE__ */ React.createElement(Text, { style: styles.xpText }, "+", achievement.xpReward, " XP"))
+    ),
+    /* @__PURE__ */ React.createElement(TouchableOpacity, { style: [styles.dismissBtn, { backgroundColor: tier.color }], onPress: onDismiss }, /* @__PURE__ */ React.createElement(Text, { style: styles.dismissText }, "Awesome!"))
+  )));
 }
 const styles = StyleSheet.create({
   overlay: {
@@ -212,21 +187,21 @@ const styles = StyleSheet.create({
     lineHeight: 20
   },
   xpBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
-    backgroundColor: 'rgba(167,139,250,0.12)',
+    backgroundColor: "rgba(167,139,250,0.12)",
     paddingHorizontal: 22,
     paddingVertical: 10,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: 'rgba(167,139,250,0.35)',
-    marginTop: 14,
+    borderColor: "rgba(167,139,250,0.35)",
+    marginTop: 14
   },
   xpText: {
     fontSize: 15,
     fontWeight: "700",
-    color: "#FBBF24"
+    color: COLORS.xpBadgeIcon
   },
   dismissBtn: {
     marginTop: 16,
