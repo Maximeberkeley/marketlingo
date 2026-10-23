@@ -116,7 +116,7 @@ export function TodaysMission({ dayNumber, totalDays = 180, lessonTitle, marketE
               <Text style={styles.reviewBtnText}>Review</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.practiceBtn} onPress={onPractice} activeOpacity={0.7}>
-              <MaterialCommunityIcons name="flask" size={14} color={COLORS.xpBadgeIcon} />
+              <MaterialCommunityIcons name="flask" size={14} color="#fff" />
               <Text style={styles.practiceBtnText}>Practice</Text>
             </TouchableOpacity>
           </View>) : (<Animated.View style={{ transform: [{ scale: pulseAnim }] }}>

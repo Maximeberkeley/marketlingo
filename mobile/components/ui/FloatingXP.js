@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text } from 'react-native';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { COLORS } from '../../lib/constants';
 export function FloatingXP({ amount, show, isPro = false }) {
     const opacity = useRef(new Animated.Value(0)).current;
     const translateY = useRef(new Animated.Value(0)).current;
