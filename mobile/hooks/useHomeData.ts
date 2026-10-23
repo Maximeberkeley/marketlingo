@@ -11,6 +11,7 @@ import { scheduleStreakNotifications } from '../lib/streakNotifications';
 import { log } from '../lib/logger';
 import { calculateAvailableDay } from '../lib/dayMath';
 import { goalContentTag } from '../lib/goals';
+import { HANDWRITTEN_TAG, HANDWRITTEN_MAX_DAY } from '../lib/handwritten';
 import { realLessonTitle } from '../lib/lessonIdentity';
 
 interface NewsItem {
@@ -176,7 +177,14 @@ export function useHomeData(
       // 2. Try goal + day (without level)
       // 3. Try day only
       // 4. Closest available day
-      let { data: lessonStacks } = await supabase
+      // Days 1-5: a hand-written lesson (goal match first) wins over legacy stacks.
+      let handwritten: any = null;
+      if (lessonDay <= HANDWRITTEN_MAX_DAY) {
+        const { data: hw } = await supabase.from("stacks").select("id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)").eq("market_id", market).contains("tags", ["MICRO_LESSON", dayTag, HANDWRITTEN_TAG]).not("published_at", "is", null).order("created_at", { ascending: false }).limit(10);
+        const usable = (hw || []).filter((s: any) => s.slides?.length > 0);
+        handwritten = usable.find((s: any) => (s.tags || []).includes(goalTag)) || usable[0] || null;
+      }
+      let { data: lessonStacks } = handwritten ? { data: [handwritten] } : await supabase
         .from('stacks')
         .select('id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)')
         .eq('market_id', market)

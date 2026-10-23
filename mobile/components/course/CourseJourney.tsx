@@ -31,6 +31,7 @@ import { XPBadge } from '../ui/XPBadge';
 import { LeoCharacter } from '../mascot/LeoCharacter';
 import { HomeSkeleton } from '../home/HomeSkeleton';
 import { lessonDayLabel, realLessonTitle } from '../../lib/lessonIdentity';
+import { lessonPriority } from '../../lib/handwritten';
 
 function MovingLessonTitle({ title, long, active }: { title: string; long: boolean; active: boolean }) {
   const sweep = useRef(new Animated.Value(0)).current;
@@ -544,7 +545,7 @@ export function CourseJourney({
         return;
       }
       const goalTag = goalContentTag(learningGoal);
-      const byDay = new Map<number, { id: string; title: string; goalMatch: boolean }>();
+      const byDay = new Map<number, { id: string; title: string; rank: number }>();
       const completedByDay = new Map<number, boolean>();
       const completed = new Set(completedStackIds);
       (data || []).forEach((stack: any) => {
@@ -555,9 +556,9 @@ export function CourseJourney({
         if (completed.has(stack.id)) completedByDay.set(day, true);
         // Legacy stacks without slides cannot open; never surface them as a day's lesson.
         if (!(stack.slides?.[0]?.count > 0) && !stack.authored_lesson) return;
-        const goalMatch = tags.includes(goalTag);
+        const rank = lessonPriority(tags, goalTag, day);
         const existing = byDay.get(day);
-         if (!existing || stack.id === completedTodayStackId || (existing.id !== completedTodayStackId && goalMatch && !existing.goalMatch)) byDay.set(day, { id: stack.id, title: realLessonTitle(stack), goalMatch });
+        if (!existing || stack.id === completedTodayStackId || (existing.id !== completedTodayStackId && rank > existing.rank)) byDay.set(day, { id: stack.id, title: realLessonTitle(stack), rank });
       });
       setLessons(Array.from({ length: TOTAL_DAYS }, (_, index) => {
         const day = index + 1;

@@ -5,6 +5,7 @@ import { scheduleStreakNotifications } from "../lib/streakNotifications";
 import { log } from "../lib/logger";
 import { calculateAvailableDay } from "../lib/dayMath";
 import { goalContentTag } from "../lib/goals";
+import { HANDWRITTEN_TAG, HANDWRITTEN_MAX_DAY } from "../lib/handwritten";
 import { realLessonTitle } from "../lib/lessonIdentity";
 function normalizeSources(sources) {
   if (!Array.isArray(sources)) return [];
@@ -93,7 +94,14 @@ function useHomeData(userId, progress, xpData, lessonCompletedToday) {
       }
       const lessonDay = Array.from({ length: calcDay }, (_, i) => i + 1).find((day) => !completedDays.has(day)) || calcDay;
       const dayTag = `day-${lessonDay}`;
-      let { data: lessonStacks } = await supabase.from("stacks").select("id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)").eq("market_id", market).contains("tags", ["MICRO_LESSON", dayTag, goalTag, levelTag]).not("published_at", "is", null).order("created_at", { ascending: false }).limit(5);
+      // Days 1-5: a hand-written lesson (goal match first) wins over legacy stacks.
+      let handwritten = null;
+      if (lessonDay <= HANDWRITTEN_MAX_DAY) {
+        const { data: hw } = await supabase.from("stacks").select("id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)").eq("market_id", market).contains("tags", ["MICRO_LESSON", dayTag, HANDWRITTEN_TAG]).not("published_at", "is", null).order("created_at", { ascending: false }).limit(10);
+        const usable = (hw || []).filter((s) => s.slides?.length > 0);
+        handwritten = usable.find((s) => (s.tags || []).includes(goalTag)) || usable[0] || null;
+      }
+      let { data: lessonStacks } = handwritten ? { data: [handwritten] } : await supabase.from("stacks").select("id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)").eq("market_id", market).contains("tags", ["MICRO_LESSON", dayTag, goalTag, levelTag]).not("published_at", "is", null).order("created_at", { ascending: false }).limit(5);
       const hasSlides = (stacks) => (stacks || []).filter((s) => s.slides?.length > 0);
       if (!hasSlides(lessonStacks).length) {
         const { data: fb1 } = await supabase.from("stacks").select("id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)").eq("market_id", market).contains("tags", ["MICRO_LESSON", dayTag, goalTag]).not("published_at", "is", null).order("created_at", { ascending: false }).limit(5);
