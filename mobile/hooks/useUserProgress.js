@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabase";
 import { useAuth } from "./useAuth";
 import { log } from "../lib/logger";
 import { calculateAvailableDay, localDateString } from "../lib/dayMath";
+import { emitProgress, onProgress } from "../lib/progressEvents";
 function useUserProgress(marketId) {
   const { user } = useAuth();
   const [progress, setProgress] = useState(null);
@@ -51,6 +52,10 @@ function useUserProgress(marketId) {
   useEffect(() => {
     fetchProgress();
   }, [fetchProgress]);
+  useEffect(() => onProgress((row) => {
+    if (!user || !marketId) return;
+    if (row && row.user_id === user.id && row.market_id === marketId) setProgress(row);
+  }), [user, marketId]);
   const syncStreak = useCallback(async () => {
     if (!user || !marketId) return null;
     const { data, error } = await supabase.rpc("sync_local_streak", {
@@ -61,7 +66,10 @@ function useUserProgress(marketId) {
       log.warn("[UserProgress] Streak sync failed:", error.message);
       return null;
     }
-    if (data) setProgress(data);
+    if (data) {
+      setProgress(data);
+      emitProgress(data);
+    }
     return data;
   }, [user, marketId]);
   useEffect(() => {
@@ -80,6 +88,7 @@ function useUserProgress(marketId) {
     }).eq("id", progress.id).select().single();
     if (error || !data) throw error || new Error("Could not save the completed lesson.");
     setProgress(data);
+    emitProgress(data);
     return data;
   };
   const isTodayLessonCompleted = useCallback(

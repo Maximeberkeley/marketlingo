@@ -95,6 +95,7 @@ export function useIntelHabit(marketId?: string) {
         p_market_id: marketId,
         p_amount: INTEL_HABIT_XP,
       });
+      emitXP(null);
       await supabase.from('xp_transactions').insert({
         user_id: user.id,
         market_id: marketId,

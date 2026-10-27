@@ -130,6 +130,7 @@ export function useAchievements(progress?: AchievementProgress) {
               await supabase.rpc('increment_user_xp', {
                 p_user_id: user.id, p_market_id: xpData.market_id, p_amount: achievement.xpReward,
               });
+              emitXP(null);
 
               await supabase.from('xp_transactions').insert({
                 user_id: user.id,

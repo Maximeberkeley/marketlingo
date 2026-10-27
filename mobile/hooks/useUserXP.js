@@ -4,6 +4,7 @@ import { useAuth } from "./useAuth";
 import { log } from "../lib/logger";
 import { localDateString } from "../lib/dayMath";
 import { cancelRollingLeoNudges } from "../lib/leoNudges";
+import { emitXP, onXP } from "../lib/progressEvents";
 const XP_REWARDS = {
   LESSON_COMPLETE: 50,
   GAME_COMPLETE: 25,
@@ -108,6 +109,13 @@ function useUserXP(marketId) {
   useEffect(() => {
     fetchXPData();
   }, [fetchXPData]);
+  const refetchRef = useRef(fetchXPData);
+  refetchRef.current = fetchXPData;
+  useEffect(() => onXP((row) => {
+    if (!user || !marketId) return;
+    if (row && row.user_id === user.id && row.market_id === marketId) setXpData(row);
+    else if (!row) void refetchRef.current();
+  }), [user, marketId]);
   const addXP = async (amount, sourceType, sourceId, description) => {
     if (!user || !marketId) return null;
     const ensuredXP = await ensureXPRecord();
@@ -134,6 +142,9 @@ function useUserXP(marketId) {
     }
     if (!error && updatedXP) {
       setXpData(updatedXP);
+      emitXP(updatedXP);
+    } else {
+      emitXP(null);
     }
     const today = localDateString();
     const { data: existingCompletion, error: completionFetchError } = await supabase.from("daily_completions").select("*").eq("user_id", user.id).eq("market_id", marketId).eq("completion_date", today).maybeSingle();

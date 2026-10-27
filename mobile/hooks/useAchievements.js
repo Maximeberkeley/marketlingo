@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabase";
+import { emitXP } from "../lib/progressEvents";
 import { useAuth } from "./useAuth";
 import { ACHIEVEMENTS } from "../data/achievements";
 import { log } from "../lib/logger";
@@ -85,6 +86,7 @@ function useAchievements(progress) {
                 p_market_id: xpData.market_id,
                 p_amount: achievement.xpReward
               });
+              emitXP(null);
               await supabase.from("xp_transactions").insert({
                 user_id: user.id,
                 market_id: xpData.market_id,
