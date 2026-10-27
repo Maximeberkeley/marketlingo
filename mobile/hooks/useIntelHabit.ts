@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { emitXP } from '../lib/progressEvents';
 import { useAuth } from './useAuth';
 import { log } from '../lib/logger';
 

@@ -5,6 +5,7 @@ import { UserXP, DailyCompletion } from '../lib/types';
 import { log } from '../lib/logger';
 import { localDateString } from '../lib/dayMath';
 import { cancelRollingLeoNudges } from '../lib/leoNudges';
+import { emitXP, onXP } from '../lib/progressEvents';
 
 export const XP_REWARDS = {
   LESSON_COMPLETE: 50,
@@ -155,6 +156,15 @@ export function useUserXP(marketId?: string) {
     fetchXPData();
   }, [fetchXPData]);
 
+  // Live updates from XP earned on any other screen.
+  const refetchRef = useRef(fetchXPData);
+  refetchRef.current = fetchXPData;
+  useEffect(() => onXP((row) => {
+    if (!user || !marketId) return;
+    if (row && row.user_id === user.id && row.market_id === marketId) setXpData(row);
+    else if (!row) void refetchRef.current();
+  }), [user, marketId]);
+
   const addXP = async (
     amount: number,
     sourceType: string,
@@ -196,6 +206,9 @@ export function useUserXP(marketId?: string) {
 
     if (!error && updatedXP) {
       setXpData(updatedXP);
+      emitXP(updatedXP);
+    } else {
+      emitXP(null);
     }
 
     const today = localDateString();

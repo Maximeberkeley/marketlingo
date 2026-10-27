@@ -4,6 +4,7 @@ import { useAuth } from './useAuth';
 import { UserProgress } from '../lib/types';
 import { log } from '../lib/logger';
 import { calculateAvailableDay, localDateString } from '../lib/dayMath';
+import { emitProgress, onProgress } from '../lib/progressEvents';
 
 
 export function useUserProgress(marketId?: string) {
@@ -70,6 +71,12 @@ export function useUserProgress(marketId?: string) {
     fetchProgress();
   }, [fetchProgress]);
 
+  // Live streak/progress updates saved from any other screen.
+  useEffect(() => onProgress((row) => {
+    if (!user || !marketId) return;
+    if (row && row.user_id === user.id && row.market_id === marketId) setProgress(row as UserProgress);
+  }), [user, marketId]);
+
   /**
    * Recompute the streak from the learner's LOCAL calendar days.
    * The server counts consecutive `daily_completions` rows (whose dates are
@@ -86,7 +93,7 @@ export function useUserProgress(marketId?: string) {
       log.warn('[UserProgress] Streak sync failed:', error.message);
       return null;
     }
-    if (data) setProgress(data as UserProgress);
+    if (data) { setProgress(data as UserProgress); emitProgress(data); }
     return data;
   }, [user, marketId]);
 
@@ -117,6 +124,7 @@ export function useUserProgress(marketId?: string) {
 
     if (error || !data) throw error || new Error('Could not save the completed lesson.');
     setProgress(data as UserProgress);
+    emitProgress(data);
     return data;
   };
 
