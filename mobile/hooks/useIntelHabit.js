@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { emitXP } from "../lib/progressEvents";
 import { useAuth } from "./useAuth";
 import { log } from "../lib/logger";
 const INTEL_DAILY_TARGET = 3;
@@ -77,6 +78,7 @@ function useIntelHabit(marketId) {
         p_market_id: marketId,
         p_amount: INTEL_HABIT_XP
       });
+      emitXP(null);
       await supabase.from("xp_transactions").insert({
         user_id: user.id,
         market_id: marketId,

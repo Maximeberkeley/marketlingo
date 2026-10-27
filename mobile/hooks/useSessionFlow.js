@@ -112,6 +112,8 @@ function useSessionFlow({
       extraPractice: isExtraPractice
     });
     setSessionXPEarned(earnedXP);
+    if (synced) void Promise.resolve(onDataRefresh()).catch(() => {
+    });
     setShowSessionComplete(true);
     setShowReader(false);
     return synced;

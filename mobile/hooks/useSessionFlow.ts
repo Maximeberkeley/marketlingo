@@ -157,6 +157,8 @@ export function useSessionFlow({
       extraPractice: isExtraPractice,
     });
     setSessionXPEarned(earnedXP);
+    // Refresh Home behind the celebration so XP, streak and circles are live.
+    if (synced) void Promise.resolve(onDataRefresh()).catch(() => {});
     setShowSessionComplete(true);
     setShowReader(false);
     return synced;
