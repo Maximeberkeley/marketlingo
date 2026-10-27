@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, StyleSheet, Animated, PanResponder } from "react-native";
 import { tokens } from "../theme/tokens";
 import { Prompt, shuffle, tick, useShake } from "./shared";
@@ -101,60 +101,42 @@ function SortSignal({ exercise, phase, onChange }) {
       onPanResponderTerminationRequest: () => false
     })
   ).current;
-  return <View style={styles.wrap}>
-      <Prompt eyebrow="Sort the signal" text={exercise.prompt} />
-
-      <View style={styles.stage}>
-        {!done && item ? (
+  return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(Prompt, { eyebrow: "Sort the signal", text: exercise.prompt }), /* @__PURE__ */ React.createElement(View, { style: styles.stage }, !done && item ? (
     // Shake runs on the native driver and drag on JS: keep them on separate views,
     // because mixing both drivers in one transform crashes release builds.
-    <Animated.View style={{ transform: [{ translateX }] }}>
-          <Animated.View
-      {...responder.panHandlers}
-      ref={(node) => {
-        cardRef.current = node;
-      }}
-      onLayout={() => measure(cardRef.current, (r) => cardRect.current = r)}
-      style={[
-        styles.card,
-        { transform: [{ translateX: pan.x }, { translateY: pan.y }] }
-      ]}
-    >
-            <ColorText text={item.text} style={styles.cardText} maxSentences={1} maxLength={90} />
-            <Text style={styles.hint}>Drag me</Text>
-          </Animated.View>
-          </Animated.View>
-  ) : <View style={styles.cardDone}>
-            <Text style={styles.cardDoneText}>
-              {wrongs === 0 ? "Clean sweep \u2014 every call was right." : "All sorted."}
-            </Text>
-          </View>}
-      </View>
-
-      {!!why && <Text style={styles.why}>{why}</Text>}
-
-      <View style={styles.buckets}>
-        {exercise.buckets.map((b, i) => {
+    /* @__PURE__ */ React.createElement(Animated.View, { style: { transform: [{ translateX }] } }, /* @__PURE__ */ React.createElement(
+      Animated.View,
+      {
+        ...responder.panHandlers,
+        ref: (node) => {
+          cardRef.current = node;
+        },
+        onLayout: () => measure(cardRef.current, (r) => cardRect.current = r),
+        style: [
+          styles.card,
+          { transform: [{ translateX: pan.x }, { translateY: pan.y }] }
+        ]
+      },
+      /* @__PURE__ */ React.createElement(ColorText, { text: item.text, style: styles.cardText, maxSentences: 1, maxLength: 90 }),
+      /* @__PURE__ */ React.createElement(Text, { style: styles.hint }, "Drag me")
+    ))
+  ) : /* @__PURE__ */ React.createElement(View, { style: styles.cardDone }, /* @__PURE__ */ React.createElement(Text, { style: styles.cardDoneText }, wrongs === 0 ? "Clean sweep \u2014 every call was right." : "All sorted."))), !!why && /* @__PURE__ */ React.createElement(Text, { style: styles.why }, why), /* @__PURE__ */ React.createElement(View, { style: styles.buckets }, exercise.buckets.map((b, i) => {
     const count = placed.filter((p) => p === i).length;
     const active = hover === i;
-    return <View
-      key={b}
-      ref={(node) => {
-        bucketRefs.current[i] = node;
-      }}
-      onLayout={() => measure(bucketRefs.current[i], (r) => bucketRects.current[i] = r)}
-      style={[styles.bucket, active && styles.bucketActive]}
-    >
-              <Text style={[styles.bucketLabel, active && styles.bucketLabelActive]}>{shortLabel(b)}</Text>
-              <Text style={styles.bucketCount}>{count > 0 ? `${count}` : ""}</Text>
-            </View>;
-  })}
-      </View>
-
-      <Text style={styles.progress}>
-        {Math.min(cursor, order.length)} / {order.length} sorted
-      </Text>
-    </View>;
+    return /* @__PURE__ */ React.createElement(
+      View,
+      {
+        key: b,
+        ref: (node) => {
+          bucketRefs.current[i] = node;
+        },
+        onLayout: () => measure(bucketRefs.current[i], (r) => bucketRects.current[i] = r),
+        style: [styles.bucket, active && styles.bucketActive]
+      },
+      /* @__PURE__ */ React.createElement(Text, { style: [styles.bucketLabel, active && styles.bucketLabelActive] }, shortLabel(b)),
+      /* @__PURE__ */ React.createElement(Text, { style: styles.bucketCount }, count > 0 ? `${count}` : "")
+    );
+  })), /* @__PURE__ */ React.createElement(Text, { style: styles.progress }, Math.min(cursor, order.length), " / ", order.length, " sorted"));
 }
 const styles = StyleSheet.create({
   wrap: { flex: 1 },
