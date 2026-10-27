@@ -388,6 +388,7 @@ export function LessonScreen({
         onLayout={event => setCardSpace(Math.max(0, event.nativeEvent.layout.height - 48))}
         contentContainerStyle={[styles.content, exercise.kind === 'coldOpen' && styles.coverContent]}
         keyboardShouldPersistTaps="handled"
+        scrollEnabled={exercise.kind !== 'sortSignal'}
       >
         {exercise.kind !== 'coldOpen' && <View style={styles.upperSpace} />}
         <Animated.View

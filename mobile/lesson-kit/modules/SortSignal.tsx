@@ -72,7 +72,16 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
         onStartShouldSetPanResponder: () => phaseRef.current === 'answering' && !doneRef.current,
         onMoveShouldSetPanResponder: (_event, gesture) =>
           phaseRef.current === 'answering' && !doneRef.current && (Math.abs(gesture.dx) > 3 || Math.abs(gesture.dy) > 3),
-        onPanResponderGrant: () => pan.stopAnimation(),
+        onPanResponderGrant: () => {
+          pan.stopAnimation();
+          // Re-measure: the page may have moved since layout.
+          measure(cardRef.current, r => (cardRect.current = r));
+          bucketRefs.current.forEach((node, i) => measure(node, r => (bucketRects.current[i] = r)));
+        },
+        onPanResponderTerminate: () => {
+          setHover(null);
+          Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false }).start();
+        },
         onPanResponderMove: (e, g) => {
           pan.setValue({ x: g.dx, y: g.dy });
           const base = cardRect.current;
@@ -116,6 +125,9 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
 
       <View style={styles.stage}>
         {!done && item ? (
+          // Shake runs on the native driver and drag on JS: keep them on separate views,
+          // because mixing both drivers in one transform crashes release builds.
+          <Animated.View style={{ transform: [{ translateX }] }}>
           <Animated.View
             {...responder.panHandlers}
             ref={node => {
@@ -124,11 +136,12 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
             onLayout={() => measure(cardRef.current, r => (cardRect.current = r))}
             style={[
               styles.card,
-              { transform: [{ translateX: Animated.add(pan.x, translateX) }, { translateY: pan.y }] },
+              { transform: [{ translateX: pan.x }, { translateY: pan.y }] },
             ]}
           >
             <ColorText text={item.text} style={styles.cardText} maxSentences={1} maxLength={90} />
             <Text style={styles.hint}>Drag me</Text>
+          </Animated.View>
           </Animated.View>
         ) : (
           <View style={styles.cardDone}>

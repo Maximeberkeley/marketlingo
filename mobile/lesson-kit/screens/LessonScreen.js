@@ -334,7 +334,8 @@ function LessonScreen({
       style: styles.scroll,
       onLayout: (event) => setCardSpace(Math.max(0, event.nativeEvent.layout.height - 48)),
       contentContainerStyle: [styles.content, exercise.kind === "coldOpen" && styles.coverContent],
-      keyboardShouldPersistTaps: "handled"
+      keyboardShouldPersistTaps: "handled",
+      scrollEnabled: exercise.kind !== "sortSignal"
     },
     exercise.kind !== "coldOpen" && /* @__PURE__ */ React.createElement(View, { style: styles.upperSpace }),
     /* @__PURE__ */ React.createElement(
