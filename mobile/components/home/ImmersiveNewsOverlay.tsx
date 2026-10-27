@@ -21,6 +21,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { Audio } from 'expo-av';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, TYPE } from '../../lib/constants';
@@ -60,6 +61,7 @@ const SOPHIA_VOICE_ID = 'pFZP5JQG7iQjIQuC4Bku'; // Lily (Sophia’s previous voi
 const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_KEY || '';
 
+const SOPHIA_MUTED_KEY = 'news_sophia_muted';
 const sophiaAvatar = require('../../assets/mentors/mentor-sophia.png');
 
 const GOAL_LABELS: Record<string, string> = {
@@ -165,6 +167,28 @@ export function ImmersiveNewsOverlay({
   const [subtitlesExpanded, setSubtitlesExpanded] = useState(false);
 
   const soundRef = useRef<Audio.Sound | null>(null);
+  // Mute is remembered on-device until the learner taps it again.
+  const [muted, setMuted] = useState(false);
+  const mutedRef = useRef(false);
+  const [muteLoaded, setMuteLoaded] = useState(false);
+  useEffect(() => {
+    AsyncStorage.getItem(SOPHIA_MUTED_KEY)
+      .then((v) => { mutedRef.current = v === '1'; setMuted(v === '1'); })
+      .catch(() => {})
+      .finally(() => setMuteLoaded(true));
+  }, []);
+  const toggleMute = useCallback(async () => {
+    const next = !mutedRef.current;
+    mutedRef.current = next;
+    setMuted(next);
+    AsyncStorage.setItem(SOPHIA_MUTED_KEY, next ? '1' : '0').catch(() => {});
+    if (next && soundRef.current) {
+      try { await soundRef.current.stopAsync(); await soundRef.current.unloadAsync(); } catch {}
+      soundRef.current = null;
+      setIsSpeaking(false);
+      setIsDoneSpeaking(true);
+    }
+  }, []);
   const recordingRef = useRef<Audio.Recording | null>(null);
   const currentIndexRef = useRef(currentIndex);
   const translateX = useRef(new Animated.Value(0)).current;
@@ -204,7 +228,7 @@ export function ImmersiveNewsOverlay({
 
   // Generate narration when article changes
   useEffect(() => {
-    if (!visible || !article) return;
+    if (!visible || !article || !muteLoaded) return;
     let cancelled = false;
 
     const run = async () => {
@@ -224,6 +248,7 @@ export function ImmersiveNewsOverlay({
         setNarrationText(text);
         setIsGenerating(false);
 
+        if (mutedRef.current) { setIsDoneSpeaking(true); return; }
         // Auto-speak — only set isSpeaking AFTER audio loads
         const sound = await speakText(text, SOPHIA_VOICE_ID);
         if (cancelled) { sound?.unloadAsync(); return; }
@@ -254,7 +279,7 @@ export function ImmersiveNewsOverlay({
 
     run();
     return () => { cancelled = true; };
-  }, [visible, currentIndex, article?.id]);
+  }, [visible, currentIndex, article?.id, muteLoaded]);
 
   // Pulse animation for speaking state
   useEffect(() => {
@@ -513,6 +538,15 @@ User's goal: ${learningGoal}`;
                 <Text style={st.quizButtonText}>Quiz</Text>
               </TouchableOpacity>
             ) : null}
+            {/* Mute Sophia (remembered) */}
+            <TouchableOpacity
+              style={st.topBtn}
+              onPress={toggleMute}
+              accessibilityRole="button"
+              accessibilityLabel={muted ? 'Unmute Sophia' : 'Mute Sophia'}
+            >
+              <Feather name={muted ? 'volume-x' : 'volume-2'} size={20} color="#fff" />
+            </TouchableOpacity>
             {/* Discuss with AI */}
             <TouchableOpacity
               style={st.topBtn}
