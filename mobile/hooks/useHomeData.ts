@@ -177,7 +177,7 @@ export function useHomeData(
       // 2. Try goal + day (without level)
       // 3. Try day only
       // 4. Closest available day
-      // Days 1-5: a hand-written lesson (goal match first) wins over legacy stacks.
+      // Days 1-30: a hand-written lesson (goal match first) wins over legacy stacks.
       let handwritten: any = null;
       if (lessonDay <= HANDWRITTEN_MAX_DAY) {
         const { data: hw } = await supabase.from("stacks").select("id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)").eq("market_id", market).contains("tags", ["MICRO_LESSON", dayTag, HANDWRITTEN_TAG]).not("published_at", "is", null).order("created_at", { ascending: false }).limit(10);
