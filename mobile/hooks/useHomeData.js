@@ -94,7 +94,7 @@ function useHomeData(userId, progress, xpData, lessonCompletedToday) {
       }
       const lessonDay = Array.from({ length: calcDay }, (_, i) => i + 1).find((day) => !completedDays.has(day)) || calcDay;
       const dayTag = `day-${lessonDay}`;
-      // Days 1-5: a hand-written lesson (goal match first) wins over legacy stacks.
+      // Days 1-30: a hand-written lesson (goal match first) wins over legacy stacks.
       let handwritten = null;
       if (lessonDay <= HANDWRITTEN_MAX_DAY) {
         const { data: hw } = await supabase.from("stacks").select("id, title, stack_type, tags, duration_minutes, metadata, authored_lesson, slides (id, slide_number, title, body, sources)").eq("market_id", market).contains("tags", ["MICRO_LESSON", dayTag, HANDWRITTEN_TAG]).not("published_at", "is", null).order("created_at", { ascending: false }).limit(10);

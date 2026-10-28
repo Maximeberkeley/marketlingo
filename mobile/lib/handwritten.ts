@@ -1,6 +1,6 @@
-/** Hand-written lessons (tag `handwritten-v1`) win Days 1–5 over legacy generated stacks. */
+/** Hand-written lessons (tag `handwritten-v1`) win Days 1–30 over legacy generated stacks. */
 export const HANDWRITTEN_TAG = 'handwritten-v1';
-export const HANDWRITTEN_MAX_DAY = 5;
+export const HANDWRITTEN_MAX_DAY = 30;
 
 /** Higher wins: hand-written beats goal match, goal match beats anything else. */
 export function lessonPriority(tags: string[] | null | undefined, goalTag: string, day: number): number {
