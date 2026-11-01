@@ -118,7 +118,7 @@ describe('Animated Leo rules', () => {
     const h = homeHarness(); h.render();
     h.props.done = true; h.props.celebrate = true; h.props.focused = false; h.render();
     await Promise.resolve(); expect(h.saved.size).toBe(0);
-    h.props.focused = true; h.render(); await Promise.resolve(); await Promise.resolve();
+    h.props.focused = true; h.render(); await vi.advanceTimersByTimeAsync(0);
     expect(h.render().clip).toBe('leo-done');
     expect(h.saved.get(h.props.doneKey)).toBe('seen');
     h.render().onEnd(); expect(h.render().clip).toBe('leo-reading-loop');

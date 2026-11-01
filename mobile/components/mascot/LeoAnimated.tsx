@@ -50,13 +50,14 @@ function ClipPlayer({ clip, size, fallback, onEnd }: LeoAnimatedProps) {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const latest = useRef(0);
+  const displayed = useRef<{ clip: LeoClip; id: number } | null>(null);
   useEffect(() => {
     if (layers[layers.length - 1]?.clip === clip) return;
     const id = ++sequence.current;
     latest.current = id;
     setFailed(false);
     // Retain the displayed layer while the replacement decodes.
-    setLayers(previous => [...previous.slice(-1), { clip, id }]);
+    setLayers([...(displayed.current ? [displayed.current] : []), { clip, id }]);
   }, [clip, layers]);
   const canvas = size * 4 / 3;
   return <View pointerEvents="none" style={{ width: size, height: size, overflow: 'visible' }}>
@@ -65,6 +66,7 @@ function ClipPlayer({ clip, size, fallback, onEnd }: LeoAnimatedProps) {
       {layers.map(layer => <ClipLayer key={layer.id} clip={layer.clip}
         onLoad={() => {
           if (layer.id !== latest.current) return;
+          displayed.current = layer;
           setLoaded(true);
           setLayers([layer]);
         }}
