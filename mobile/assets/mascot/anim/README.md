@@ -16,12 +16,13 @@ Transparent animated WebP clips of Leo, made with Runway and keyed with `scripts
 | leo-call-think.webp | loop | 6917 ms (rests 1.5 s) | Leo call | `isGenerating` |
 | leo-teach-loop.webp | loop | 4600 ms (rests 0.6 s) | Leo call | `isSpeaking` |
 | leo-idle-loop.webp | loop | 8867 ms (rests 3 s) | Onboarding | Default state |
+| leo-play.webp | once | 5333 ms | Lesson complete; onboarding | Rare treat only (see "Treat") |
 | leo-greet.webp | once | 2000 ms | First onboarding screen | Screen opens, then leo-idle-loop |
 | leo-ready.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | First question of a run |
 | leo-encourage.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | Answer graded wrong |
 | leo-success.webp | once | 2000 ms | Lesson complete (both screens); Arena, Deep Case (LeoCoach) | Lesson finished; answer graded right |
 
-Not used any more: leo-wake and leo-doze (replaced by leo-eyes-open and leo-eyes-close), leo-call-talk (replaced by leo-teach-loop), leo-play.
+Not used any more: leo-wake and leo-doze (replaced by leo-eyes-open and leo-eyes-close), leo-call-talk (replaced by leo-teach-loop).
 
 `clips.json` has the same lengths. A loop clip repeats forever. A once clip plays one time and holds its last frame.
 
@@ -58,7 +59,7 @@ Every clip starts and ends exactly on Leo's existing poses, so clips chain witho
    - Pick the clip from the existing AI state: `isGenerating` → leo-call-think, `isSpeaking` → leo-call-talk, otherwise leo-call-listen.
    - Fallback: `LEO_STUDY_SCENE`.
 
-6. **Onboarding.** In `app/onboarding/goal.tsx` and `familiarity.tsx` (and their `.js` twins), replace `<LeoCharacter size="lg" animation="idle" />` with `LeoAnimated` (size 160, fallback `'idle'`). Loop leo-idle-loop, and every 10 to 15 seconds play leo-play once, then go back to leo-idle-loop.
+6. **Onboarding.** In `app/onboarding/goal.tsx` and `familiarity.tsx` (and their `.js` twins), replace `<LeoCharacter size="lg" animation="idle" />` with `LeoAnimated` (size 160, fallback `'idle'`). Loop leo-idle-loop. (leo-play is no longer on a timer here; it is a rare treat, see "Treat".)
 
 7. **Leave everything else alone:**
    - lesson logic, progress and XP;
@@ -129,6 +130,18 @@ leo-success starts on the sitting pose. Leo fist-pumps, sparkles pop, and he end
    - **Onboarding:** the first screen greets with a wave.
    - **Lesson complete:** finishing a lesson shows the fist pump on both completion screens.
    - **Practice:** every graded answer gets a reaction.
+
+## Treat (leo-play)
+Leo chasing his tail is a rare surprise, never routine. It starts and ends on the normal sitting pose, so it chains into leo-success and leo-idle-loop with no jump.
+
+1. Add `shouldPlayLeoTreat` to `components/mascot/leoAnimationRules.ts` and `.js`. It returns true when either of these holds:
+   - the streak just reached a milestone (3, 7, 14, 30, 50, 100, 200 or 365 days), at most once that day;
+   - otherwise, a 1 in 10 chance, and only if no treat has played in the last 7 days.
+
+   Store the last treat date per learner in AsyncStorage: `@marketlingo/leo-treat/${user?.id ?? 'guest'}`.
+2. **Lesson complete** (`components/home/SessionCompleteCard.tsx` and `.js` using `streak`; `lesson-kit/screens/LessonComplete.tsx` and `.js` using `streakDays`): when `shouldPlayLeoTreat` is true, play leo-play, then leo-success. Otherwise play leo-success alone. Only one of the two screens may use the treat for a given lesson.
+3. **Onboarding** (`app/onboarding/goal.tsx`, `familiarity.tsx` and `index.tsx`, with their `.js` twins): if the learner stays on the same screen for 30 seconds, play leo-play once, then go back to leo-idle-loop. At most once per onboarding.
+4. With Reduce Motion on, skip the treat entirely.
 
 ## Adding or replacing a clip
 See `scripts/leo-animation/README.md`. It has the Runway settings and prompts and the start/end frames, and explains how to convert a Runway MP4 into a clip here.
