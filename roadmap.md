@@ -1,8 +1,8 @@
 # MarketLingo roadmap
 
 ## Nov 1 — Lesson moment animations
-- [ ] Wire greeting, ready and encouragement from the synced README first, then success at lesson completion and graded-right practice answers; keep lesson content and rewards unchanged.
-- [ ] Run focused motion and practice regression tests and synchronize phone entries.
+- [x] Wire greeting, ready and encouragement from the synced README first, then success at lesson completion and graded-right practice answers; keep lesson content and rewards unchanged. Version 1.2.3 / build 137.
+- [x] Synchronize seven phone source pairs; 35 focused motion/practice/lesson tests passed, including right/wrong answers and unsubmitted-correct-answer timeout; preview build OK.
 - [ ] Verify new reactions in light/dark mode on iPhone (blocked: no iOS device/simulator; requires a new installed build).
 
 ## Nov 1 — Contextual Leo motion
