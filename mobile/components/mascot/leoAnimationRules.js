@@ -7,8 +7,15 @@ function leoDoneKey(userId, marketId, localDay) {
 function leoCallClip(isGenerating, isSpeaking) {
   return isGenerating ? "leo-call-think" : isSpeaking ? "leo-call-talk" : "leo-call-listen";
 }
+function leoCoachClip(mood, intro) {
+  if (mood === "correct" || mood === "celebrate") return "leo-success";
+  if (mood === "incorrect") return "leo-encourage";
+  if (mood === "idle" && intro) return "leo-ready";
+  return null;
+}
 export {
   leoAnimationDelay,
   leoCallClip,
+  leoCoachClip,
   leoDoneKey
 };
