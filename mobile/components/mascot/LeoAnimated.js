@@ -48,12 +48,13 @@ function ClipPlayer({ clip, size, fallback, onEnd }) {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const latest = useRef(0);
+  const displayed = useRef(null);
   useEffect(() => {
     if (layers[layers.length - 1]?.clip === clip) return;
     const id = ++sequence.current;
     latest.current = id;
     setFailed(false);
-    setLayers((previous) => [...previous.slice(-1), { clip, id }]);
+    setLayers([...displayed.current ? [displayed.current] : [], { clip, id }]);
   }, [clip, layers]);
   const canvas = size * 4 / 3;
   return /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: { width: size, height: size, overflow: "visible" } }, (!loaded || failed) && /* @__PURE__ */ React.createElement(StaticLeo, { size, fallback }), !failed && /* @__PURE__ */ React.createElement(View, { style: { position: "absolute", width: canvas, height: canvas, left: -size / 6, top: -size / 6 } }, layers.map((layer) => /* @__PURE__ */ React.createElement(
@@ -63,6 +64,7 @@ function ClipPlayer({ clip, size, fallback, onEnd }) {
       clip: layer.clip,
       onLoad: () => {
         if (layer.id !== latest.current) return;
+        displayed.current = layer;
         setLoaded(true);
         setLayers([layer]);
       },

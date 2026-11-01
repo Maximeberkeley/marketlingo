@@ -1,6 +1,7 @@
 # MarketLingo roadmap
 
 ## Nov 1 — Animated Leo
+- [ ] Add one matching Leo animation to the website on phone and computer layouts; respect reduced motion and verify both sizes.
 - [ ] Wire the 11 bundled clips into active Home, Leo call and the two onboarding screens according to the supplied guide; synchronize JavaScript and bump the phone release.
 - [ ] Test clip timing, transitions, daily celebration, pause/fallback rules and existing affected tests.
 - [ ] Verify light/dark appearance and playback on iPhone (blocked: no iOS device/simulator; requires a new installed build).
