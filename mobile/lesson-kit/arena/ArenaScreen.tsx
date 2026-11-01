@@ -396,7 +396,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
             {!!exercise.leo?.line && <LeoCoach
               key={`${waveIndex}/${beatIndex}`}
               line={exercise.leo.line}
-              mood={phase === 'feedback' && !coachCorrect ? 'incorrect' : exercise.leo.mood}
+              mood={phase === 'feedback' ? (coachCorrect ? 'correct' : 'incorrect') : exercise.leo.mood}
               intro={beatIndex === 0}
             />}
             {renderExerciseByKind(exercise, phase, setState)}

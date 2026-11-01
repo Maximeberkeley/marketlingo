@@ -275,7 +275,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
           <LeoCoach
             key={stageIndex}
             line={stage.exercise.leo.line}
-            mood={phase === 'feedback' && !state.isCorrect ? 'incorrect' : stage.exercise.leo.mood}
+            mood={phase === 'feedback' ? (state.isCorrect ? 'correct' : 'incorrect') : stage.exercise.leo.mood}
             intro={stageIndex === 0}
           />
         )}

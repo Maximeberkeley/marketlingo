@@ -13,6 +13,7 @@ export const leoClips = {
   'leo-greet': { source: require('../../assets/mascot/anim/leo-greet.webp'), ms: 2000, loop: false },
   'leo-ready': { source: require('../../assets/mascot/anim/leo-ready.webp'), ms: 2000, loop: false },
   'leo-encourage': { source: require('../../assets/mascot/anim/leo-encourage.webp'), ms: 2000, loop: false },
+  'leo-success': { source: require('../../assets/mascot/anim/leo-success.webp'), ms: 2000, loop: false },
 } as const;
 
 export type LeoClip = keyof typeof leoClips;
