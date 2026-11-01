@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { DemoLesson } from "@/components/demo/DemoLesson";
 import { LandingLeo } from "@/components/mascot/LandingLeo";
 import leoMascot from "@/assets/mascot/leo-reference.png";
-import leoCelebrating from "@/assets/mascot/leo-celebrating.png";
 import leoSticker from "@/assets/leo-sticker.png";
 import appIconAsset from "@/assets/marketlingo-app-icon.png.asset.json";
 import maximePortrait from "@/assets/maxime-lucas-founder.jpg.asset.json";
@@ -311,13 +310,13 @@ export default function Landing() {
             viewport={{ once: true, margin: "-50px" }}
             className="flex flex-col md:flex-row items-center gap-10"
           >
-            <motion.img
+            <motion.div
               variants={fadeUp}
               custom={0}
-              src={leoCelebrating}
-              alt="Leo celebrating"
-              className="landing-jumping-leo w-40 md:w-52 h-auto object-contain drop-shadow-2xl flex-shrink-0"
-            />
+              className="flex-shrink-0"
+            >
+              <LandingLeo clip="jump" className="landing-leo-companion" />
+            </motion.div>
             <div>
               <motion.h2 variants={fadeUp} custom={1} className="text-3xl sm:text-4xl font-bold mb-4">
                 Meet Leo, your AI companion
