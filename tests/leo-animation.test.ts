@@ -166,8 +166,8 @@ describe('Animated Leo rules', () => {
     h.unmount();
   });
   it('keeps peeks between 12–20 seconds', () => {
-    expect(leoAnimationDelay('peek', 0)).toBe(12000);
-    expect(leoAnimationDelay('peek', 0.9999)).toBe(19999);
+    expect(leoAnimationDelay('peek', 0)).toBe(25000);
+    expect(leoAnimationDelay('peek', 0.9999)).toBe(39998);
   });
   it('keeps onboarding play between 10–15 seconds', () => {
     expect(leoAnimationDelay('play', 0)).toBe(10000);
@@ -179,19 +179,19 @@ describe('Animated Leo rules', () => {
   });
   it('uses existing generating/speaking state in priority order', () => {
     expect(leoCallClip(true, true)).toBe('leo-call-think');
-    expect(leoCallClip(false, true)).toBe('leo-call-talk');
+    expect(leoCallClip(false, true)).toBe('leo-teach-loop');
     expect(leoCallClip(false, false)).toBe('leo-call-listen');
   });
-  it('wakes on tap, opens the call at 600 ms, and dozes when it closes', async () => {
+  it('opens eyes on tap, opens the call when that clip ends, and closes eyes after', async () => {
     const h = homeHarness();
     h.render().onTap();
     expect(h.haptic).toHaveBeenCalledWith('light');
-    expect(h.render().clip).toBe('leo-wake');
-    await vi.advanceTimersByTimeAsync(599); expect(h.onLeo).not.toHaveBeenCalled();
-    await vi.advanceTimersByTimeAsync(1); expect(h.onLeo).toHaveBeenCalledTimes(1);
+    expect(h.render().clip).toBe('leo-eyes-open');
+    await vi.advanceTimersByTimeAsync(800); expect(h.onLeo).not.toHaveBeenCalled();
+    h.render().onEnd(); expect(h.onLeo).toHaveBeenCalledTimes(1);
     h.props.callOpen = true; h.motion(false); h.render();
     h.props.callOpen = false; h.motion(true); h.render();
-    expect(h.render().clip).toBe('leo-doze');
+    expect(h.render().clip).toBe('leo-eyes-close');
     h.render().onEnd(); expect(h.render().clip).toBe('leo-sleep-loop');
     h.unmount();
   });
@@ -295,5 +295,15 @@ describe('Animated Leo rules', () => {
     layers()[0].props.onError(); expect(layers()).toHaveLength(0);
     expect(props.onEnd).toHaveBeenCalledTimes(1);
     h.unmount();
+  });
+});
+import { leoFeedbackLine } from '../mobile/components/mascot/leoAnimationRules';
+describe('practice feedback lines', () => {
+  it('uses short lines of about eight words for right and wrong answers', () => {
+    for (let i = 0; i < 4; i++) for (const c of [true, false]) {
+      const words = leoFeedbackLine(c, i).split(/\s+/).length;
+      expect(words).toBeGreaterThanOrEqual(6); expect(words).toBeLessThanOrEqual(10);
+    }
+    expect(leoFeedbackLine(true, 0)).not.toBe(leoFeedbackLine(false, 0));
   });
 });
