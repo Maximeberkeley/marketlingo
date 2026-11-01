@@ -16,7 +16,7 @@
     "loop": false
   },
   "leo-doze": {
-    "ms": 2667,
+    "ms": 3400,
     "loop": false
   },
   "leo-encourage": {
@@ -68,7 +68,7 @@
     "loop": true
   },
   "leo-wake": {
-    "ms": 2000,
+    "ms": 3200,
     "loop": false
   }
 }

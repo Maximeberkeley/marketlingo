@@ -18,10 +18,10 @@ conv() {  # name, flags...
 # Home (CourseJourney centre)
 conv leo-sleep-loop   --loop --speed 0.8 --hold 2500
 conv leo-peek         --speed 1.5
-conv leo-wake         --speed 2
+conv leo-wake         --speed 1.25
 conv leo-eyes-open    
 conv leo-eyes-close   
-conv leo-doze         --speed 1.5
+conv leo-doze         --speed 1.2
 conv leo-reading-loop --loop --speed 0.8 --hold 3000
 conv leo-reading-wave --speed 1.5
 conv leo-done         --speed 1.2
