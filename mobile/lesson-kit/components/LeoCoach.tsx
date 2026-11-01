@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Animated, Easing, Image, ImageSourcePropType } from 'react-native';
 import { tokens } from '../theme/tokens';
 import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { LeoAnimated } from '../../components/mascot/LeoAnimated';
+import { leoCoachClip } from '../../components/mascot/leoAnimationRules';
 import { ColorText } from './ColorText';
 import { SpeechBubble } from '../../components/ui/SpeechBubble';
 
@@ -12,7 +14,7 @@ const ANIM: Record<LeoMood, 'idle' | 'thinking' | 'success' | 'failure' | 'celeb
   thinking: 'thinking',
   celebrate: 'celebrating',
   correct: 'success',
-  incorrect: 'failure',
+  incorrect: 'idle',
 };
 
 /**
@@ -31,6 +33,7 @@ const SCENES: Partial<Record<LeoMood, ImageSourcePropType>> = {
 interface Props {
   line: string;
   mood?: LeoMood;
+  intro?: boolean;
   /** World/accent color so the scene matches the current market. */
   accent?: string;
 }
@@ -42,7 +45,7 @@ const BUBBLE_DELAY_MS = 900;
  * Leo's in-lesson stage: he stays quietly present on the left.
  * Just under a second into each card his comic bubble pops in with one short line.
  */
-export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: Props) {
+export function LeoCoach({ line, mood = 'idle', intro = false, accent = tokens.color.accent }: Props) {
   const enter = useRef(new Animated.Value(0)).current;
   const [speaking, setSpeaking] = useState(false);
 
@@ -72,6 +75,7 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
         : accent;
 
   const scene = SCENES[mood];
+  const clip = leoCoachClip(mood, intro);
 
   return (
     <View style={styles.wrap}>
@@ -81,9 +85,11 @@ export function LeoCoach({ line, mood = 'idle', accent = tokens.color.accent }: 
           <Image source={scene} style={StyleSheet.absoluteFill} resizeMode="cover" />
         ) : null}
 
-        {/* Leo — anchored, completely still, never overlapping his bubble */}
+        {/* Leo stays anchored; motion never changes the bubble timing. */}
         <View style={styles.leo} pointerEvents="none">
-          <LeoCharacter animation={ANIM[mood]} size="sm" still />
+          {clip ? (
+            <LeoAnimated key={JSON.stringify([line, mood, intro])} clip={clip} size={80} fallback={ANIM[mood]} />
+          ) : <LeoCharacter animation={ANIM[mood]} size="sm" still />}
         </View>
 
         {/* Clean illustrated speech balloon — one shape and one integrated tail. */}
@@ -124,7 +130,7 @@ const styles = StyleSheet.create({
     height: SCENE_H,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    overflow: 'hidden',
+    overflow: 'visible',
     zIndex: 1,
   },
   bubbleSlot: {

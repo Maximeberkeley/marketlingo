@@ -272,7 +272,12 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
 
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         {!!stage.exercise.leo?.line && (
-          <LeoCoach line={stage.exercise.leo.line} mood={stage.exercise.leo.mood} />
+          <LeoCoach
+            key={stageIndex}
+            line={stage.exercise.leo.line}
+            mood={phase === 'feedback' ? (state.isCorrect ? 'correct' : 'incorrect') : stage.exercise.leo.mood}
+            intro={stageIndex === 0}
+          />
         )}
         {renderExerciseByKind(stage.exercise, phase, setState)}
         {isCall && confidence && phase === 'answering' && (

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { execFileSync } from 'node:child_process';
-import { leoAnimationDelay, leoCallClip, leoDoneKey } from '../mobile/components/mascot/leoAnimationRules';
+import { leoAnimationDelay, leoCallClip, leoDoneKey, leoCoachClip } from '../mobile/components/mascot/leoAnimationRules';
 
 const read = (path: string) => readFileSync(path, 'utf8');
 const transformSync = (source: string, options: any) => ({ code: execFileSync(process.execPath,
@@ -19,6 +19,7 @@ function harness(path: string, imports: Record<string, any>, extra = '') {
       return [slots[i], (value: any) => { slots[i] = typeof value === 'function' ? value(slots[i]) : value; }];
     },
     useCallback: (fn: any) => { cursor++; return fn; },
+    useMemo: (fn: any) => { cursor++; return fn(); },
     useEffect: (fn: any, deps: any[]) => {
       const i = cursor++; const previous = slots[i];
       if (!previous || deps.some((v, index) => !Object.is(v, previous.deps[index]))) {
@@ -30,7 +31,7 @@ function harness(path: string, imports: Record<string, any>, extra = '') {
   const module = { exports: {} as any };
   const code = transformSync(read(path) + extra, { loader: path.endsWith('tsx') ? 'tsx' : 'ts', jsx: 'transform', format: 'cjs' }).code;
   runInNewContext(code, { module, exports: module.exports, require: (name: string) => name === 'react' ? react : imports[name],
-    setTimeout, clearTimeout, Math, Set, console });
+    setTimeout, clearTimeout, setInterval, clearInterval, Math, Set, console });
   return {
     render: (name: string, props: any) => { cursor = 0; const result = module.exports[name](props); const effects = pending; pending = []; effects.forEach(fn => fn()); return result; },
     unmount: () => { slots.forEach(slot => slot?.cleanup?.()); },
@@ -54,17 +55,115 @@ function homeHarness() {
 }
 afterEach(() => vi.useRealTimers());
 
+function practiceHarness(screen: 'Arena' | 'Case') {
+  const motion = { start: () => {}, stop: () => {} };
+  const animated = { Value: class { setValue() {} interpolate() { return 0; } },
+    timing: () => motion, spring: () => motion, sequence: () => motion, View: 'view', Text: 'text' };
+  const exercise = { kind: 'multipleChoice', options: ['A', 'B'], correctIndex: 0,
+    leo: { line: 'Read the evidence before you choose a side.', mood: 'idle' } };
+  const h = harness(`mobile/lesson-kit/${screen === 'Arena' ? 'arena/ArenaScreen' : 'case/CaseScreen'}.tsx`, {
+    'react-native': { View: 'view', Text: 'text', ScrollView: 'scroll', TouchableOpacity: 'touch', Modal: 'modal',
+      StyleSheet: { create: (s: any) => s }, Animated: animated, Easing: { linear: 0, quad: 0, out: () => 0 } },
+    'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
+    '@expo/vector-icons': { Feather: 'icon' }, 'expo-linear-gradient': { LinearGradient: 'gradient' },
+    'expo-haptics': { notificationAsync: async () => {}, impactAsync: async () => {},
+      NotificationFeedbackType: {}, ImpactFeedbackStyle: {} },
+    '../theme/tokens': { tokens: { color: {}, space: {}, font: {}, radius: {} } },
+    '../components/PrimaryButton': { PrimaryButton: 'button' }, '../components/FeedbackFooter': { FeedbackFooter: 'feedback' },
+    '../components/LeoCoach': { LeoCoach: 'coach' },
+    '../components/ExerciseRenderer': { isPassiveKind: () => false,
+      renderExerciseByKind: (_ex: any, _phase: any, setState: any) => ({ type: 'answer', props: { setState } }) },
+    './buildArena': {}, './buildCase': {}, '../../lib/sounds': { playSound: async () => {} },
+    '../../lib/analytics': { trackEvent: () => {} },
+    '../../data/marketWorlds': { getMarketWorld: () => ({ colors: [] }) }, '../components/BriefingReader': {},
+  });
+  const props = screen === 'Arena' ? { waves: [{ key: 'core', seconds: 20, multiplier: 1, exercises: [exercise] }], bestScore: 0 }
+    : { deepCase: { id: 'case', stages: [{ key: 'evidence', exercise }] } };
+  const nodes = (node: any): any[] => !node || typeof node !== 'object' ? [] : Array.isArray(node)
+    ? node.flatMap(nodes) : [node, ...nodes(node.props?.children)];
+  const render = () => nodes(h.render(`${screen}Screen`, props));
+  const find = (type: string) => render().find(n => n.type === type);
+  return { render, find, unmount: h.unmount };
+}
+
+describe('Graded practice reactions', () => {
+  for (const screen of ['Arena', 'Case'] as const) {
+    for (const isCorrect of [true, false]) {
+      it(`${screen} reacts to a ${isCorrect ? 'right' : 'wrong'} answer without changing the verdict`, () => {
+        vi.useFakeTimers(); const h = practiceHarness(screen);
+        if (screen === 'Arena') h.render().find(n => n.type === 'touch' && n.props.activeOpacity === 0.9).props.onPress();
+        expect(h.find('coach').props.intro).toBe(true);
+        expect(h.find('coach').props.mood).toBe('idle');
+        h.find('answer').props.setState({ canCheck: true, isCorrect });
+        h.find('button').props.onPress();
+        expect(h.find('coach').props.mood).toBe(isCorrect ? 'correct' : 'incorrect');
+        expect(h.find('feedback').props.isCorrect).toBe(isCorrect);
+        h.unmount();
+      });
+    }
+  }
+  it('Arena timeout encourages even with a correct selection not submitted', async () => {
+    vi.useFakeTimers(); const h = practiceHarness('Arena');
+    h.render().find(n => n.type === 'touch' && n.props.activeOpacity === 0.9).props.onPress();
+    h.find('answer').props.setState({ canCheck: true, isCorrect: true });
+    await vi.advanceTimersByTimeAsync(20000);
+    expect(h.find('coach').props.mood).toBe('incorrect');
+    h.unmount();
+  });
+});
+
 describe('Animated Leo rules', () => {
-  it('uses the eleven supplied clip lengths and native assets', () => {
+  it('uses all fifteen supplied clip lengths and native assets', () => {
     const metadata = JSON.parse(read('mobile/assets/mascot/anim/clips.json'));
     const module = { exports: {} as any };
     runInNewContext(transformSync(read('mobile/components/mascot/leoClips.ts'), { loader: 'ts', format: 'cjs' }).code,
       { module, exports: module.exports, require: (path: string) => path });
-    expect(Object.keys(module.exports.leoClips)).toHaveLength(11);
+    expect(Object.keys(module.exports.leoClips)).toHaveLength(15);
     for (const [clip, spec] of Object.entries(metadata)) {
       expect(module.exports.leoClips[clip]).toMatchObject(spec);
       expect(existsSync(`mobile/assets/mascot/anim/${clip}.webp`)).toBe(true);
     }
+  });
+  it('uses ready only for idle intros, encouragement for mistakes and success for right answers', () => {
+    expect(leoCoachClip('idle', true)).toBe('leo-ready');
+    expect(leoCoachClip('idle', false)).toBe(null);
+    expect(leoCoachClip('thinking', true)).toBe(null);
+    expect(leoCoachClip('incorrect', true)).toBe('leo-encourage');
+    expect(leoCoachClip('correct', true)).toBe('leo-success');
+    expect(leoCoachClip('celebrate', false)).toBe('leo-success');
+  });
+  it('greets on welcome then settles into idle without recurring play', () => {
+    const h = harness('mobile/app/onboarding/welcome.tsx', {
+      'react-native': { StyleSheet: { create: (v: any) => v } },
+      'expo-router': {}, 'react-native-safe-area-context': {},
+      '../../lib/constants': { COLORS: {}, SHADOWS: {} }, '../../hooks/useAuth': {},
+      '../../lib/displayName': {}, '../../lib/storage': {}, '../../lib/supabase': {},
+      '@react-navigation/native': { useIsFocused: () => true },
+      '../../components/mascot/LeoAnimated': { LeoAnimated: 'animated-leo' },
+      '../../lib/haptics': {}, '../../lib/sounds': {},
+    }, '\nexport { WelcomeLeo };');
+    expect(h.render('WelcomeLeo', {}).props.clip).toBe('leo-greet');
+    h.render('WelcomeLeo', {}).props.onEnd();
+    expect(h.render('WelcomeLeo', {}).props.clip).toBe('leo-idle-loop');
+    h.unmount();
+  });
+  it('holds success after 2000 ms instead of swapping back to a still image', async () => {
+    vi.useFakeTimers(); const stop = vi.fn(async () => {}); const end = vi.fn();
+    const h = harness('mobile/components/mascot/LeoAnimated.tsx', {
+      'react-native': { StyleSheet: { absoluteFill: {} }, View: 'view', Image: 'static' },
+      'expo-image': { Image: 'image' }, './LeoCharacter': { LeoCharacter: 'leo' },
+      './leoClips': { leoClips: { 'leo-success': { source: 1, ms: 2000, loop: false } } },
+      './useLeoMotion': { useLeoMotion: () => true },
+    }, '\nexport { ClipLayer };');
+    const props = { clip: 'leo-success', onEnd: end, onLoad: vi.fn(), onError: vi.fn() };
+    const layer = h.render('ClipLayer', props);
+    layer.props.ref.current = { stopAnimating: stop };
+    layer.props.onLoad();
+    await vi.advanceTimersByTimeAsync(1999); expect(stop).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1); expect(stop).toHaveBeenCalledTimes(1);
+    expect(h.render('ClipLayer', props).props.source).toBe(1);
+    await vi.advanceTimersByTimeAsync(6000); expect(end).toHaveBeenCalledTimes(1);
+    h.unmount();
   });
   it('keeps peeks between 12–20 seconds', () => {
     expect(leoAnimationDelay('peek', 0)).toBe(12000);

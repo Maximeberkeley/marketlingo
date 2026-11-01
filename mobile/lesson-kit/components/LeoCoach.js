@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Animated, Image } from "react-native";
 import { tokens } from "../theme/tokens";
 import { LeoCharacter } from "../../components/mascot/LeoCharacter";
+import { LeoAnimated } from "../../components/mascot/LeoAnimated";
+import { leoCoachClip } from "../../components/mascot/leoAnimationRules";
 import { ColorText } from "./ColorText";
 import { SpeechBubble } from "../../components/ui/SpeechBubble";
 const ANIM = {
@@ -9,7 +11,7 @@ const ANIM = {
   thinking: "thinking",
   celebrate: "celebrating",
   correct: "success",
-  incorrect: "failure"
+  incorrect: "idle"
 };
 const SCENES = {
   // idle: require('../../../assets/scenes/leo-scene-idle.png'),
@@ -19,7 +21,7 @@ const SCENES = {
   // incorrect: require('../../../assets/scenes/leo-scene-incorrect.png'),
 };
 const BUBBLE_DELAY_MS = 900;
-function LeoCoach({ line, mood = "idle", accent = tokens.color.accent }) {
+function LeoCoach({ line, mood = "idle", intro = false, accent = tokens.color.accent }) {
   const enter = useRef(new Animated.Value(0)).current;
   const [speaking, setSpeaking] = useState(false);
   useEffect(() => {
@@ -40,7 +42,8 @@ function LeoCoach({ line, mood = "idle", accent = tokens.color.accent }) {
   const rise = enter.interpolate({ inputRange: [0, 1], outputRange: [6, 0] });
   const moodTint = mood === "correct" || mood === "celebrate" ? tokens.color.correct : mood === "incorrect" ? tokens.color.incorrect : accent;
   const scene = SCENES[mood];
-  return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(View, { style: styles.scene }, scene ? /* @__PURE__ */ React.createElement(Image, { source: scene, style: StyleSheet.absoluteFill, resizeMode: "cover" }) : null, /* @__PURE__ */ React.createElement(View, { style: styles.leo, pointerEvents: "none" }, /* @__PURE__ */ React.createElement(LeoCharacter, { animation: ANIM[mood], size: "sm", still: true })), /* @__PURE__ */ React.createElement(View, { style: styles.bubbleSlot }, /* @__PURE__ */ React.createElement(
+  const clip = leoCoachClip(mood, intro);
+  return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(View, { style: styles.scene }, scene ? /* @__PURE__ */ React.createElement(Image, { source: scene, style: StyleSheet.absoluteFill, resizeMode: "cover" }) : null, /* @__PURE__ */ React.createElement(View, { style: styles.leo, pointerEvents: "none" }, clip ? /* @__PURE__ */ React.createElement(LeoAnimated, { key: JSON.stringify([line, mood, intro]), clip, size: 80, fallback: ANIM[mood] }) : /* @__PURE__ */ React.createElement(LeoCharacter, { animation: ANIM[mood], size: "sm", still: true })), /* @__PURE__ */ React.createElement(View, { style: styles.bubbleSlot }, /* @__PURE__ */ React.createElement(
     Animated.View,
     {
       pointerEvents: speaking ? "auto" : "none",
@@ -70,7 +73,7 @@ const styles = StyleSheet.create({
     height: SCENE_H,
     justifyContent: "flex-end",
     alignItems: "center",
-    overflow: "hidden",
+    overflow: "visible",
     zIndex: 1
   },
   bubbleSlot: {

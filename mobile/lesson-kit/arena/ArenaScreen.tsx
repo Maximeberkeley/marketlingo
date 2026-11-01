@@ -62,6 +62,8 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
   const [showWaveIntro, setShowWaveIntro] = useState(true);
   const [phase, setPhase] = useState<'answering' | 'feedback'>('answering');
   const [state, setState] = useState<ExerciseState>({ canCheck: false, isCorrect: false });
+  // Presentation uses the actual grade, not a selected answer left behind at timeout.
+  const [coachCorrect, setCoachCorrect] = useState(false);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
   const [bestCombo, setBestCombo] = useState(0);
@@ -125,6 +127,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
   const grade = useCallback(
     (isCorrect: boolean, secondsRemaining: number) => {
       clearTick();
+      setCoachCorrect(isCorrect);
       setGraded(g => g + 1);
       if (isCorrect) {
         const speedBonus = Math.round((secondsRemaining / Math.max(1, beatSecondsFor(wave, exercise))) * 40);
@@ -390,7 +393,12 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
         {/* The question stays behind the round-intro card until Start is tapped */}
         {!showWaveIntro ? (
           <>
-            {!!exercise.leo?.line && <LeoCoach line={exercise.leo.line} mood={exercise.leo.mood} />}
+            {!!exercise.leo?.line && <LeoCoach
+              key={`${waveIndex}/${beatIndex}`}
+              line={exercise.leo.line}
+              mood={phase === 'feedback' ? (coachCorrect ? 'correct' : 'incorrect') : exercise.leo.mood}
+              intro={beatIndex === 0}
+            />}
             {renderExerciseByKind(exercise, phase, setState)}
           </>
         ) : null}

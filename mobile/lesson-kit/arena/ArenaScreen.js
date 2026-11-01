@@ -34,6 +34,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
   const [showWaveIntro, setShowWaveIntro] = useState(true);
   const [phase, setPhase] = useState("answering");
   const [state, setState] = useState({ canCheck: false, isCorrect: false });
+  const [coachCorrect, setCoachCorrect] = useState(false);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
   const [bestCombo, setBestCombo] = useState(0);
@@ -91,6 +92,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
   const grade = useCallback(
     (isCorrect, secondsRemaining) => {
       clearTick();
+      setCoachCorrect(isCorrect);
       setGraded((g) => g + 1);
       if (isCorrect) {
         const speedBonus = Math.round(secondsRemaining / Math.max(1, beatSecondsFor(wave, exercise)) * 40);
@@ -272,7 +274,15 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       showsVerticalScrollIndicator: false,
       keyboardShouldPersistTaps: "handled"
     },
-    !showWaveIntro ? /* @__PURE__ */ React.createElement(React.Fragment, null, !!exercise.leo?.line && /* @__PURE__ */ React.createElement(LeoCoach, { line: exercise.leo.line, mood: exercise.leo.mood }), renderExerciseByKind(exercise, phase, setState)) : null
+    !showWaveIntro ? /* @__PURE__ */ React.createElement(React.Fragment, null, !!exercise.leo?.line && /* @__PURE__ */ React.createElement(
+      LeoCoach,
+      {
+        key: `${waveIndex}/${beatIndex}`,
+        line: exercise.leo.line,
+        mood: phase === "feedback" ? coachCorrect ? "correct" : "incorrect" : exercise.leo.mood,
+        intro: beatIndex === 0
+      }
+    ), renderExerciseByKind(exercise, phase, setState)) : null
   ), /* @__PURE__ */ React.createElement(View, { style: [styles.footer, { paddingBottom: insets.bottom + 12 }] }, phase === "feedback" && !passive && /* @__PURE__ */ React.createElement(
     FeedbackFooter,
     {

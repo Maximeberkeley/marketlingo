@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { LeoAnimated } from "../../components/mascot/LeoAnimated";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { PrimaryButton } from "../components/PrimaryButton";
@@ -86,7 +87,7 @@ function LessonComplete({
       contentContainerStyle: styles.wrap,
       showsVerticalScrollIndicator: false
     },
-    /* @__PURE__ */ React.createElement(Image, { source: require("../../assets/mascot/leo-celebrating.png"), style: styles.leoHero, resizeMode: "contain" }),
+    /* @__PURE__ */ React.createElement(View, { style: styles.leoHero }, /* @__PURE__ */ React.createElement(LeoAnimated, { clip: "leo-success", size: 132, fallback: "celebrating" })),
     /* @__PURE__ */ React.createElement(Text, { style: styles.title }, praise),
     typeof streakDays === "number" && streakDays > 0 ? /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "\u{1F525} ", streakDays, "-day streak \u2014 come back tomorrow to keep it.") : /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "You just started a streak. Come back tomorrow to keep it."),
     /* @__PURE__ */ React.createElement(Text, { style: styles.xpBig }, "+", totalXp, " XP"),

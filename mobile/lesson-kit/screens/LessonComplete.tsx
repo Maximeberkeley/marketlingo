@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { LeoAnimated } from '../../components/mascot/LeoAnimated';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -106,7 +107,9 @@ export function LessonComplete({
       contentContainerStyle={styles.wrap}
       showsVerticalScrollIndicator={false}
     >
-      <Image source={require('../../assets/mascot/leo-celebrating.png')} style={styles.leoHero} resizeMode="contain" />
+      <View style={styles.leoHero}>
+        <LeoAnimated clip="leo-success" size={132} fallback="celebrating" />
+      </View>
       <Text style={styles.title}>{praise}</Text>
       {typeof streakDays === 'number' && streakDays > 0 ? (
         <Text style={styles.subtitle}>🔥 {streakDays}-day streak — come back tomorrow to keep it.</Text>

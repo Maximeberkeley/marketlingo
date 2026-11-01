@@ -1,5 +1,10 @@
 # MarketLingo roadmap
 
+## Nov 1 — Lesson moment animations
+- [x] Wire greeting, ready and encouragement from the synced README first, then success at lesson completion and graded-right practice answers; keep lesson content and rewards unchanged. Version 1.2.3 / build 137.
+- [x] Synchronize seven phone source pairs; 35 focused motion/practice/lesson tests passed, including right/wrong answers and unsubmitted-correct-answer timeout; preview build OK.
+- [ ] Verify new reactions in light/dark mode on iPhone (blocked: no iOS device/simulator; requires a new installed build).
+
 ## Nov 1 — Contextual Leo motion
 - [x] Use the supplied jumping clip in the website companion section; hosted bytes match the original, playback and reduced-motion fallback verified with local CDN routing substituted.
 - [x] Keep goal and level choices calm without recurring tail-chasing; synchronized phone sources and passed 15 animation tests. iPhone playback awaits an installed build.

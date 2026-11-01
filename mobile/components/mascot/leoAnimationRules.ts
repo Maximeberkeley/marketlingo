@@ -9,3 +9,10 @@ export function leoDoneKey(userId: string | undefined, marketId: string, localDa
 export function leoCallClip(isGenerating: boolean, isSpeaking: boolean) {
   return isGenerating ? 'leo-call-think' : isSpeaking ? 'leo-call-talk' : 'leo-call-listen';
 }
+
+export function leoCoachClip(mood: string, intro: boolean) {
+  if (mood === 'correct' || mood === 'celebrate') return 'leo-success' as const;
+  if (mood === 'incorrect') return 'leo-encourage' as const;
+  if (mood === 'idle' && intro) return 'leo-ready' as const;
+  return null;
+}
