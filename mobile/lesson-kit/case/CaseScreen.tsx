@@ -9,6 +9,7 @@ import { tokens } from '../theme/tokens';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { FeedbackFooter } from '../components/FeedbackFooter';
 import { LeoCoach } from '../components/LeoCoach';
+import { leoFeedbackLine } from '../../components/mascot/leoAnimationRules';
 import { renderExerciseByKind, isPassiveKind } from '../components/ExerciseRenderer';
 import { ExerciseState } from '../exercises/types';
 import { DeepCase, CaseGrade, gradeCase } from './buildCase';
@@ -271,11 +272,11 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
       {stage.hint ? <Text style={styles.stageHint}>{stage.hint}</Text> : null}
 
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
-        {!!stage.exercise.leo?.line && (
+        {(!!stage.exercise.leo?.line || (phase === 'feedback' && !passive)) && (
           <LeoCoach
             key={stageIndex}
-            line={stage.exercise.leo.line}
-            mood={phase === 'feedback' ? (state.isCorrect ? 'correct' : 'incorrect') : stage.exercise.leo.mood}
+            line={stage.exercise.leo?.line || leoFeedbackLine(state.isCorrect, stageIndex)}
+            mood={phase === 'feedback' && !passive ? (state.isCorrect ? 'correct' : 'incorrect') : (stage.exercise.leo?.mood ?? 'idle')}
             intro={stageIndex === 0}
           />
         )}
