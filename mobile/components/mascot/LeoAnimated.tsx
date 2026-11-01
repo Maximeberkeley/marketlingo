@@ -61,7 +61,7 @@ function ClipPlayer({ clip, size, fallback, onEnd }: LeoAnimatedProps) {
     setLayers([...(displayed.current ? [displayed.current] : []), next]);
   }, [clip, layers]);
   useEffect(() => {
-    if (__DEV__) console.log('[LeoAnimated] clip', clip);
+    if (typeof __DEV__ !== 'undefined' && __DEV__) console.log('[LeoAnimated] clip', clip);
     // If the newest layer is slow to decode, show it anyway; never two clips at once.
     const timer = setTimeout(() => {
       setLayers(current => {

@@ -113,12 +113,12 @@ describe('Graded practice reactions', () => {
 });
 
 describe('Animated Leo rules', () => {
-  it('uses all fifteen supplied clip lengths and native assets', () => {
+  it('uses all eighteen supplied clip lengths and native assets', () => {
     const metadata = JSON.parse(read('mobile/assets/mascot/anim/clips.json'));
     const module = { exports: {} as any };
     runInNewContext(transformSync(read('mobile/components/mascot/leoClips.ts'), { loader: 'ts', format: 'cjs' }).code,
       { module, exports: module.exports, require: (path: string) => path });
-    expect(Object.keys(module.exports.leoClips)).toHaveLength(15);
+    expect(Object.keys(module.exports.leoClips)).toHaveLength(18);
     for (const [clip, spec] of Object.entries(metadata)) {
       expect(module.exports.leoClips[clip]).toMatchObject(spec);
       expect(existsSync(`mobile/assets/mascot/anim/${clip}.webp`)).toBe(true);
@@ -208,7 +208,7 @@ describe('Animated Leo rules', () => {
   });
   it('peeks while sleeping and returns to the sleeping loop', async () => {
     const h = homeHarness(); h.render();
-    await vi.advanceTimersByTimeAsync(20000);
+    await vi.advanceTimersByTimeAsync(40000);
     expect(h.render().clip).toBe('leo-peek');
     h.render().onEnd(); expect(h.render().clip).toBe('leo-sleep-loop');
     h.unmount();

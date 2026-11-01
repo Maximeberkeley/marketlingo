@@ -59,7 +59,7 @@ function ClipPlayer({ clip, size, fallback, onEnd }) {
     setLayers([...displayed.current ? [displayed.current] : [], next]);
   }, [clip, layers]);
   useEffect(() => {
-    if (__DEV__) console.log("[LeoAnimated] clip", clip);
+    if (typeof __DEV__ !== "undefined" && __DEV__) console.log("[LeoAnimated] clip", clip);
     const timer = setTimeout(() => {
       setLayers((current) => {
         const newest = current[current.length - 1];
