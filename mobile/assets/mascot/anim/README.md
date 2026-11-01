@@ -52,14 +52,14 @@ Every clip starts and ends exactly on Leo's existing poses, so clips chain witho
    How Leo behaves:
    - **Not done:** loop leo-sleep-loop. While Home is focused, every 12 to 20 seconds (random), play leo-peek once, then go back to the loop.
    - **Done:** loop leo-reading-loop.
-   - **Tap:** keep the TouchableOpacity and its accessibility label, and fire a light haptic immediately. If not done, play leo-wake and call `onLeo()` 600 ms after the tap. If done, call `onLeo()` right away.
-   - **Leo call:** pass `leoCallOpen={showLeoChat}` from `app/(tabs)/home.tsx` and `home.js` through `CourseJourney` to `SectionCluster`. Pause while the call is open. When it closes after Leo was woken, play leo-doze once, then leo-sleep-loop.
+   - **Tap:** keep the TouchableOpacity and its accessibility label, and fire a light haptic immediately. If not done, play leo-eyes-open and call `onLeo()` when it ends (see "Fixes (Nov 1)"). If done, call `onLeo()` right away.
+   - **Leo call:** pass `leoCallOpen={showLeoChat}` from `app/(tabs)/home.tsx` and `home.js` through `CourseJourney` to `SectionCluster`. Pause while the call is open. When it closes after Leo was woken, play leo-eyes-close once, then leo-sleep-loop. (leo-doze is only used by the morning wake-up.)
    - **Lesson just finished:** when done turns from false to true, wait until Home is focused, then play leo-done once, then leo-reading-loop. Play it at most once per day, using the AsyncStorage key `@marketlingo/leo-done-anim/${user?.id ?? 'guest'}/${marketId}/${localDay}` (the same pattern as the existing `revealKey`).
    - **Pause** whenever `!isFocused`.
 
 5. **Leo call.** In `components/ai/LeoVoiceChatOverlay.tsx` and `.js`, replace the `LEO_STUDY_SCENE` image (style `sceneImage`) with `LeoAnimated` in the same place.
    - Measure the `sceneImage` box with `onLayout`. The drawn square is min(width, height): pass that as size, and keep the clip centred on the same point.
-   - Pick the clip from the existing AI state: `isGenerating` → leo-call-think, `isSpeaking` → leo-call-talk, otherwise leo-call-listen.
+   - Pick the clip from the existing AI state: `isGenerating` → leo-call-think; `isSpeaking` → leo-call-talk for the opening greeting and leo-teach-loop for answers; otherwise leo-call-listen.
    - Fallback: `LEO_STUDY_SCENE`.
 
 6. **Onboarding.** In `app/onboarding/goal.tsx` and `familiarity.tsx` (and their `.js` twins), replace `<LeoCharacter size="lg" animation="idle" />` with `LeoAnimated` (size 160, fallback `'idle'`). Loop leo-idle-loop. (leo-play is no longer on a timer here; it is a rare treat, see "Treat".)
