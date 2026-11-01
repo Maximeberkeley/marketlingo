@@ -1,5 +1,9 @@
 # MarketLingo roadmap
 
+## Nov 1 — Contextual Leo motion
+- [x] Use the supplied jumping clip in the website companion section; hosted bytes match the original, playback and reduced-motion fallback verified with local CDN routing substituted.
+- [x] Keep goal and level choices calm without recurring tail-chasing; synchronized phone sources and passed 15 animation tests. iPhone playback awaits an installed build.
+
 ## Nov 1 — Animated Leo
 - [x] Add matching idle Leo to website phone and computer openings; verified moving frames, light/dark placement, reduced-motion fallback and demo opening at 320/390/1280px. The local server lacks CDN routing, so browser verification served the exact downloaded hosted clip; the hosted asset independently returned valid WebP.
 - [x] Wire all 11 bundled clips into active Home, Leo call and goal/level onboarding; preserve visual completion intent while Course unmounts, synchronize source pairs, install expo-image and bump to 1.2.2 / build 136.

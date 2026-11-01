@@ -2,20 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { triggerHaptic } from "../../lib/haptics";
 import { leoAnimationDelay } from "./leoAnimationRules";
-import { useLeoMotion, useLeoMotionState } from "./useLeoMotion";
-function useOnboardingLeo(paused) {
-  const [clip, setClip] = useState("leo-idle-loop");
-  const motion = useLeoMotion(paused);
-  useEffect(() => {
-    if (!motion) {
-      setClip("leo-idle-loop");
-      return;
-    }
-    if (clip !== "leo-idle-loop") return;
-    const timer = setTimeout(() => setClip("leo-play"), leoAnimationDelay("play"));
-    return () => clearTimeout(timer);
-  }, [motion, clip]);
-  return { clip, onEnd: useCallback(() => setClip("leo-idle-loop"), []) };
+import { useLeoMotionState } from "./useLeoMotion";
+function useOnboardingLeo(_paused) {
+  return { clip: "leo-idle-loop", onEnd: useCallback(() => {
+  }, []) };
 }
 function useHomeLeo({ done, active, focused, callOpen, doneKey, celebrate, onCelebrated, onLeo }) {
   const [clip, setClip] = useState(done ? "leo-reading-loop" : "leo-sleep-loop");
