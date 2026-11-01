@@ -149,4 +149,49 @@ describe('Animated Leo rules', () => {
     await vi.advanceTimersByTimeAsync(1); expect(end).toHaveBeenCalledTimes(1); expect(stop).toHaveBeenCalledTimes(1);
     h.unmount();
   });
+  it('cancels one-off completion timers on unmount', async () => {
+    vi.useFakeTimers(); const end = vi.fn();
+    const h = harness('mobile/components/mascot/LeoAnimated.tsx', {
+      'react-native': { StyleSheet: { absoluteFill: {} }, View: 'view', Image: 'static' },
+      'expo-image': { Image: 'image' }, './LeoCharacter': { LeoCharacter: 'leo' },
+      './leoClips': { leoClips: { 'leo-wake': { source: 1, ms: 2000, loop: false } } },
+      './useLeoMotion': { useLeoMotion: () => true },
+    }, '\nexport { ClipLayer };');
+    const layer = h.render('ClipLayer', { clip: 'leo-wake', onEnd: end, onLoad: vi.fn(), onError: vi.fn() });
+    layer.props.onLoad(); h.unmount();
+    await vi.advanceTimersByTimeAsync(3000); expect(end).not.toHaveBeenCalled();
+  });
+  it('disables motion for reduced motion, pause or background and restores on return', async () => {
+    let reduce = false; const listeners: Record<string, any> = {};
+    const h = harness('mobile/components/mascot/useLeoMotion.ts', {
+      'react-native': {
+        AccessibilityInfo: { isReduceMotionEnabled: async () => reduce, addEventListener: (name: string, fn: any) => { listeners[name] = fn; return { remove: vi.fn() }; } },
+        AppState: { currentState: 'active', addEventListener: (name: string, fn: any) => { listeners[name] = fn; return { remove: vi.fn() }; } },
+      },
+    });
+    expect(h.render('useLeoMotion', false)).toBe(false);
+    await Promise.resolve(); await Promise.resolve(); expect(h.render('useLeoMotion', false)).toBe(true);
+    expect(h.render('useLeoMotion', true)).toBe(false);
+    listeners.change('background'); expect(h.render('useLeoMotion', false)).toBe(false);
+    listeners.change('active'); expect(h.render('useLeoMotion', false)).toBe(true);
+    listeners.reduceMotionChanged(true); expect(h.render('useLeoMotion', false)).toBe(false);
+    h.unmount();
+  });
+  it('keeps the displayed clip until its replacement loads and falls back after errors', () => {
+    const h = harness('mobile/components/mascot/LeoAnimated.tsx', {
+      'react-native': { StyleSheet: { absoluteFill: {} }, View: 'view', Image: 'static' },
+      'expo-image': { Image: 'image' }, './LeoCharacter': { LeoCharacter: 'leo' },
+      './leoClips': { leoClips: {} }, './useLeoMotion': { useLeoMotion: () => true },
+    }, '\nexport { ClipPlayer };');
+    const props = { clip: 'leo-sleep-loop', size: 144, fallback: 'sleeping', onEnd: vi.fn() };
+    const flatten = (node: any): any[] => !node || typeof node !== 'object' ? [] : Array.isArray(node) ? node.flatMap(flatten) : [node, ...flatten(node.props?.children)];
+    const layers = () => flatten(h.render('ClipPlayer', props)).filter(node => node.props?.clip);
+    layers()[0].props.onLoad();
+    props.clip = 'leo-peek'; h.render('ClipPlayer', props);
+    expect(layers().map(layer => layer.props.clip)).toEqual(['leo-sleep-loop', 'leo-peek']);
+    layers()[1].props.onLoad(); expect(layers().map(layer => layer.props.clip)).toEqual(['leo-peek']);
+    layers()[0].props.onError(); expect(layers()).toHaveLength(0);
+    expect(props.onEnd).toHaveBeenCalledTimes(1);
+    h.unmount();
+  });
 });
