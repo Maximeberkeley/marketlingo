@@ -113,13 +113,14 @@ describe('Graded practice reactions', () => {
 });
 
 describe('Animated Leo rules', () => {
-  it('uses all eighteen supplied clip lengths and native assets', () => {
+  it('uses all fifteen bundled clip lengths and native assets', () => {
     const metadata = JSON.parse(read('mobile/assets/mascot/anim/clips.json'));
     const module = { exports: {} as any };
     runInNewContext(transformSync(read('mobile/components/mascot/leoClips.ts'), { loader: 'ts', format: 'cjs' }).code,
       { module, exports: module.exports, require: (path: string) => path });
-    expect(Object.keys(module.exports.leoClips)).toHaveLength(18);
+    expect(Object.keys(module.exports.leoClips)).toHaveLength(15);
     for (const [clip, spec] of Object.entries(metadata)) {
+      if (['leo-wake', 'leo-doze', 'leo-call-talk'].includes(clip)) { expect(module.exports.leoClips[clip]).toBeUndefined(); continue; }
       expect(module.exports.leoClips[clip]).toMatchObject(spec);
       expect(existsSync(`mobile/assets/mascot/anim/${clip}.webp`)).toBe(true);
     }
@@ -226,13 +227,12 @@ describe('Animated Leo rules', () => {
     await Promise.resolve(); expect(h.render().clip).toBe('leo-reading-loop');
     h.unmount();
   });
-  it('keeps goal and level choices idle without recurring tail-chasing', async () => {
-    const h = homeHarness(); h.onboarding(); await vi.advanceTimersByTimeAsync(60000);
-    expect(h.onboarding().clip).toBe('leo-idle-loop');
-    expect(vi.getTimerCount()).toBe(0);
-    h.motion(false); h.onboarding(); expect(h.onboarding().clip).toBe('leo-idle-loop');
-    h.motion(true); h.onboarding(); await vi.advanceTimersByTimeAsync(60000);
-    expect(h.onboarding().clip).toBe('leo-idle-loop');
+  it('plays the tail-chase once after 30 s on an onboarding screen, then never again', async () => {
+    const h = homeHarness(); h.onboarding();
+    await vi.advanceTimersByTimeAsync(29999); expect(h.onboarding().clip).toBe('leo-idle-loop');
+    await vi.advanceTimersByTimeAsync(1); expect(h.onboarding().clip).toBe('leo-play');
+    h.onboarding().onEnd(); expect(h.onboarding().clip).toBe('leo-idle-loop');
+    await vi.advanceTimersByTimeAsync(60000); expect(h.onboarding().clip).toBe('leo-idle-loop');
     h.unmount();
   });
   it('starts one-off end timing only after load and stops playback at the duration', async () => {
@@ -305,5 +305,19 @@ describe('practice feedback lines', () => {
       expect(words).toBeGreaterThanOrEqual(6); expect(words).toBeLessThanOrEqual(10);
     }
     expect(leoFeedbackLine(true, 0)).not.toBe(leoFeedbackLine(false, 0));
+  });
+});
+
+import { shouldPlayLeoTreat } from '../mobile/components/mascot/leoAnimationRules';
+describe('leo-play treat', () => {
+  it('plays on a streak milestone, once that day', () => {
+    expect(shouldPlayLeoTreat(7, '2026-10-30', '2026-11-01', 0.99)).toBe(true);
+    expect(shouldPlayLeoTreat(7, '2026-11-01', '2026-11-01', 0)).toBe(false);
+  });
+  it('otherwise plays 1 in 10 with at most one per 7 days', () => {
+    expect(shouldPlayLeoTreat(5, null, '2026-11-01', 0.05)).toBe(true);
+    expect(shouldPlayLeoTreat(5, null, '2026-11-01', 0.1)).toBe(false);
+    expect(shouldPlayLeoTreat(5, '2026-10-27', '2026-11-01', 0)).toBe(false);
+    expect(shouldPlayLeoTreat(5, '2026-10-25', '2026-11-01', 0)).toBe(true);
   });
 });

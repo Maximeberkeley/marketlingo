@@ -2,12 +2,47 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { triggerHaptic } from '../../lib/haptics';
 import { LeoClip } from './leoClips';
-import { leoAnimationDelay } from './leoAnimationRules';
+import { leoAnimationDelay, leoTreatKey, shouldPlayLeoTreat } from './leoAnimationRules';
+import { localDateString } from '../../lib/dayMath';
 import { useLeoMotionState } from './useLeoMotion';
 
-export function useOnboardingLeo(_paused: boolean) {
-  // Choices stay calm; the renderer still handles focus and reduced motion.
-  return { clip: 'leo-idle-loop' as LeoClip, onEnd: useCallback(() => {}, []) };
+let onboardingTreatPlayed = false;
+
+/** Onboarding Leo idles; lingering 30 s on one screen plays the tail-chase once per onboarding. */
+export function useOnboardingLeo(paused: boolean, start: LeoClip = 'leo-idle-loop') {
+  const [clip, setClip] = useState<LeoClip>(start);
+  const { allowed: motion } = useLeoMotionState(paused);
+  useEffect(() => {
+    if (!motion || onboardingTreatPlayed || clip !== 'leo-idle-loop') return;
+    const timer = setTimeout(() => { onboardingTreatPlayed = true; setClip('leo-play'); }, 30000);
+    return () => clearTimeout(timer);
+  }, [motion, clip]);
+  const onEnd = useCallback(() => setClip('leo-idle-loop'), []);
+  return { clip, onEnd };
+}
+
+/** Lesson complete: an occasional leo-play treat before leo-success; storage claim keeps it to one screen. */
+export function useLessonCompleteLeo(userId: string | undefined, streak: number | undefined) {
+  const [clip, setClip] = useState<LeoClip | null>(null);
+  const { allowed: motion, ready } = useLeoMotionState(false);
+  const decided = useRef(false);
+  useEffect(() => {
+    if (!ready || decided.current) return;
+    decided.current = true;
+    if (!motion) { setClip('leo-success'); return; }
+    let cancelled = false;
+    void (async () => {
+      const key = leoTreatKey(userId);
+      const today = localDateString();
+      const last = await AsyncStorage.getItem(key).catch(() => null);
+      const treat = shouldPlayLeoTreat(streak, last, today);
+      if (treat) await AsyncStorage.setItem(key, today).catch(() => {});
+      if (!cancelled) setClip(treat ? 'leo-play' : 'leo-success');
+    })();
+    return () => { cancelled = true; };
+  }, [ready, motion, userId, streak]);
+  const onEnd = useCallback(() => { setClip(c => (c === 'leo-play' ? 'leo-success' : c)); }, []);
+  return { clip, onEnd };
 }
 
 export function useHomeLeo({ done, active, focused, callOpen, doneKey, celebrate, onCelebrated, onLeo }: {

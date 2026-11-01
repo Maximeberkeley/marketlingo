@@ -1,11 +1,53 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { triggerHaptic } from "../../lib/haptics";
-import { leoAnimationDelay } from "./leoAnimationRules";
+import { leoAnimationDelay, leoTreatKey, shouldPlayLeoTreat } from "./leoAnimationRules";
+import { localDateString } from "../../lib/dayMath";
 import { useLeoMotionState } from "./useLeoMotion";
-function useOnboardingLeo(_paused) {
-  return { clip: "leo-idle-loop", onEnd: useCallback(() => {
-  }, []) };
+let onboardingTreatPlayed = false;
+function useOnboardingLeo(paused, start = "leo-idle-loop") {
+  const [clip, setClip] = useState(start);
+  const { allowed: motion } = useLeoMotionState(paused);
+  useEffect(() => {
+    if (!motion || onboardingTreatPlayed || clip !== "leo-idle-loop") return;
+    const timer = setTimeout(() => {
+      onboardingTreatPlayed = true;
+      setClip("leo-play");
+    }, 3e4);
+    return () => clearTimeout(timer);
+  }, [motion, clip]);
+  const onEnd = useCallback(() => setClip("leo-idle-loop"), []);
+  return { clip, onEnd };
+}
+function useLessonCompleteLeo(userId, streak) {
+  const [clip, setClip] = useState(null);
+  const { allowed: motion, ready } = useLeoMotionState(false);
+  const decided = useRef(false);
+  useEffect(() => {
+    if (!ready || decided.current) return;
+    decided.current = true;
+    if (!motion) {
+      setClip("leo-success");
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      const key = leoTreatKey(userId);
+      const today = localDateString();
+      const last = await AsyncStorage.getItem(key).catch(() => null);
+      const treat = shouldPlayLeoTreat(streak, last, today);
+      if (treat) await AsyncStorage.setItem(key, today).catch(() => {
+      });
+      if (!cancelled) setClip(treat ? "leo-play" : "leo-success");
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [ready, motion, userId, streak]);
+  const onEnd = useCallback(() => {
+    setClip((c) => c === "leo-play" ? "leo-success" : c);
+  }, []);
+  return { clip, onEnd };
 }
 function useHomeLeo({ done, active, focused, callOpen, doneKey, celebrate, onCelebrated, onLeo }) {
   const [clip, setClip] = useState(done ? "leo-reading-loop" : "leo-sleep-loop");
@@ -103,5 +145,6 @@ function useHomeLeo({ done, active, focused, callOpen, doneKey, celebrate, onCel
 }
 export {
   useHomeLeo,
+  useLessonCompleteLeo,
   useOnboardingLeo
 };

@@ -29,10 +29,28 @@ function leoFeedbackLine(correct, seed) {
   const set = correct ? RIGHT_LINES : WRONG_LINES;
   return set[Math.abs(Math.floor(seed)) % set.length];
 }
+const LEO_TREAT_MILESTONES = [3, 7, 14, 30, 50, 100, 200, 365];
+const WEEK_MS = 7 * 24 * 60 * 60 * 1e3;
+function leoTreatKey(userId) {
+  return `@marketlingo/leo-treat/${userId ?? "guest"}`;
+}
+function shouldPlayLeoTreat(streak, lastTreat, today, random = Math.random()) {
+  if (lastTreat === today) return false;
+  if (streak && LEO_TREAT_MILESTONES.includes(streak)) return true;
+  if (lastTreat) {
+    const last = Date.parse(`${lastTreat}T00:00:00`);
+    const now = Date.parse(`${today}T00:00:00`);
+    if (!Number.isNaN(last) && now - last < WEEK_MS) return false;
+  }
+  return random < 0.1;
+}
 export {
+  LEO_TREAT_MILESTONES,
   leoAnimationDelay,
   leoCallClip,
   leoCoachClip,
   leoDoneKey,
-  leoFeedbackLine
+  leoFeedbackLine,
+  leoTreatKey,
+  shouldPlayLeoTreat
 };
