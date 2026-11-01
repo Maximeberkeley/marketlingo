@@ -43,7 +43,7 @@ const milestoneConfig: Record<MilestoneType, {
     getSubtitle: () => 'Keep it going tomorrow.',
   },
   level_up: {
-    emoji: '⚡',
+    emoji: '🧪',
     color: '#EAB308',
     bgColor: 'rgba(234, 179, 8, 0.15)',
     getTitle: (v) => `Level ${v} Reached!`,

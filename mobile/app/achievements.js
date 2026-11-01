@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -16,7 +16,7 @@ import { isDark } from "../lib/theme";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../hooks/useAuth";
 import { ACHIEVEMENTS } from "../data/achievements";
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { getMarketName } from "../lib/markets";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_GAP = 10;
@@ -51,37 +51,14 @@ function AchievementCard({ item, index }) {
       useNativeDriver: true
     }).start();
   }, []);
-  return <Animated.View style={[styles.gridCard, {
+  return /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.gridCard, {
     transform: [{ scale: scaleAnim }],
     opacity: scaleAnim,
     backgroundColor: item.unlocked ? tc.bg : COLORS.bg1,
     borderColor: item.unlocked ? tc.border : COLORS.border
-  }]}>
-      <View style={styles.cardTop}>
-        <View style={[styles.iconCircle, {
+  }] }, /* @__PURE__ */ React.createElement(View, { style: styles.cardTop }, /* @__PURE__ */ React.createElement(View, { style: [styles.iconCircle, {
     backgroundColor: item.unlocked ? tc.bg : COLORS.surfaceLight
-  }]}>
-          {item.unlocked ? <Feather name={featherIcon} size={18} color={tc.color} /> : <Feather name="lock" size={14} color={COLORS.textMuted} />}
-        </View>
-        {item.unlocked && <View style={[styles.checkDot, { backgroundColor: COLORS.success }]}>
-            <Text style={styles.checkMark}>✓</Text>
-          </View>}
-      </View>
-
-      <Text style={[styles.cardName, !item.unlocked && { color: COLORS.textMuted }]} numberOfLines={1}>
-        {item.name}
-      </Text>
-      <Text style={styles.cardDesc} numberOfLines={2}>
-        {item.description}
-      </Text>
-
-      <View style={styles.cardFooter}>
-        <Feather name="zap" size={10} color={item.unlocked ? tc.color : COLORS.textMuted} />
-        <Text style={[styles.xpText, item.unlocked && { color: tc.color }]}>
-          +{item.xpReward} XP
-        </Text>
-      </View>
-    </Animated.View>;
+  }] }, item.unlocked ? /* @__PURE__ */ React.createElement(Feather, { name: featherIcon, size: 18, color: tc.color }) : /* @__PURE__ */ React.createElement(Feather, { name: "lock", size: 14, color: COLORS.textMuted })), item.unlocked && /* @__PURE__ */ React.createElement(View, { style: [styles.checkDot, { backgroundColor: COLORS.success }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.checkMark }, "\u2713"))), /* @__PURE__ */ React.createElement(Text, { style: [styles.cardName, !item.unlocked && { color: COLORS.textMuted }], numberOfLines: 1 }, item.name), /* @__PURE__ */ React.createElement(Text, { style: styles.cardDesc, numberOfLines: 2 }, item.description), /* @__PURE__ */ React.createElement(View, { style: styles.cardFooter }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "flask", size: 10, color: item.unlocked ? tc.color : COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: [styles.xpText, item.unlocked && { color: tc.color }] }, "+", item.xpReward, " XP")));
 }
 function AchievementsScreen() {
   const insets = useSafeAreaInsets();
@@ -124,71 +101,23 @@ function AchievementsScreen() {
   const visibleMilestones = showAllMarkets ? marketMilestones : industryMilestones;
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
   if (loading) {
-    return <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color={COLORS.accent} />
-      </View>;
+    return /* @__PURE__ */ React.createElement(View, { style: [styles.container, styles.centered] }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }));
   }
   const tierOrder = ["platinum", "gold", "silver", "bronze"];
-  return <View style={styles.container}>
-      {
-    /* Sticky Header */
-  }
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Feather name="arrow-left" size={22} color={COLORS.textSecondary} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle}>Achievements</Text>
-          <Text style={styles.headerSub}>{unlockedCount} / {achievements.length} unlocked</Text>
-        </View>
-        <View style={styles.countBadge}>
-          <Feather name="award" size={13} color={COLORS.accent} />
-          <Text style={styles.countText}>{unlockedCount}</Text>
-        </View>
-      </View>
-
-      <ScrollView
-    contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
-    showsVerticalScrollIndicator={false}
-  >
-        {marketMilestones.length > 0 && <View style={styles.milestoneSection}>
-            <View style={styles.milestoneHeading}>
-              <Text style={styles.tierLabel}>
-                {selectedMarket && !showAllMarkets ? `${getMarketName(selectedMarket).toUpperCase()} JOURNEY` : "MARKET JOURNEY"}
-              </Text>
-              {otherMilestones.length > 0 ? <TouchableOpacity onPress={() => setShowAllMarkets((v) => !v)} style={styles.otherChip} activeOpacity={0.85}>
-                  <Feather name={showAllMarkets ? "chevron-up" : "plus"} size={11} color={COLORS.accent} />
-                  <Text style={styles.otherChipText}>
-                    {showAllMarkets ? "Show only my industry" : `${otherMilestones.length} in other industries`}
-                  </Text>
-                </TouchableOpacity> : <Text style={styles.milestoneCount}>{visibleMilestones.length} reached</Text>}
-            </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.milestoneRow}>
-              {visibleMilestones.map((milestone) => <View key={milestone.id} style={styles.milestoneCard}>
-                  <View style={styles.milestoneIcon}><Feather name="flag" size={18} color={COLORS.accent} /></View>
-                  <Text style={styles.milestoneMarket}>{milestone.market_id.toUpperCase()}</Text>
-                  <Text style={styles.milestoneTitle} numberOfLines={2}>{milestone.title}</Text>
-                  <Text style={styles.milestoneDay}>{milestone.milestone_day ? `DAY ${milestone.milestone_day}` : "MASTERED"}</Text>
-                </View>)}
-            </ScrollView>
-          </View>}
-
-        {
-    /* Tier Sections with 2-col Grid */
-  }
-        {tierOrder.map((tier) => {
-    const tierAchievements = achievements.filter((a) => a.tier === tier);
-    if (tierAchievements.length === 0) return null;
-    const tc = TIER_CONFIG[tier];
-    return <View key={tier} style={styles.tierSection}>
-              <Text style={styles.tierLabel}>{tc.label} TIER</Text>
-              <View style={styles.grid}>
-                {tierAchievements.map((a, i) => <AchievementCard key={a.id} item={a} index={i} />)}
-              </View>
-            </View>;
-  })}
-      </ScrollView>
-    </View>;
+  return /* @__PURE__ */ React.createElement(View, { style: styles.container }, /* @__PURE__ */ React.createElement(View, { style: [styles.header, { paddingTop: insets.top + 8 }] }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.back(), style: styles.backBtn }, /* @__PURE__ */ React.createElement(Feather, { name: "arrow-left", size: 22, color: COLORS.textSecondary })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.headerTitle }, "Achievements"), /* @__PURE__ */ React.createElement(Text, { style: styles.headerSub }, unlockedCount, " / ", achievements.length, " unlocked")), /* @__PURE__ */ React.createElement(View, { style: styles.countBadge }, /* @__PURE__ */ React.createElement(Feather, { name: "award", size: 13, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.countText }, unlockedCount))), /* @__PURE__ */ React.createElement(
+    ScrollView,
+    {
+      contentContainerStyle: [styles.scrollContent, { paddingBottom: insets.bottom + 40 }],
+      showsVerticalScrollIndicator: false
+    },
+    marketMilestones.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.milestoneSection }, /* @__PURE__ */ React.createElement(View, { style: styles.milestoneHeading }, /* @__PURE__ */ React.createElement(Text, { style: styles.tierLabel }, selectedMarket && !showAllMarkets ? `${getMarketName(selectedMarket).toUpperCase()} JOURNEY` : "MARKET JOURNEY"), otherMilestones.length > 0 ? /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => setShowAllMarkets((v) => !v), style: styles.otherChip, activeOpacity: 0.85 }, /* @__PURE__ */ React.createElement(Feather, { name: showAllMarkets ? "chevron-up" : "plus", size: 11, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.otherChipText }, showAllMarkets ? "Show only my industry" : `${otherMilestones.length} in other industries`)) : /* @__PURE__ */ React.createElement(Text, { style: styles.milestoneCount }, visibleMilestones.length, " reached")), /* @__PURE__ */ React.createElement(ScrollView, { horizontal: true, showsHorizontalScrollIndicator: false, contentContainerStyle: styles.milestoneRow }, visibleMilestones.map((milestone) => /* @__PURE__ */ React.createElement(View, { key: milestone.id, style: styles.milestoneCard }, /* @__PURE__ */ React.createElement(View, { style: styles.milestoneIcon }, /* @__PURE__ */ React.createElement(Feather, { name: "flag", size: 18, color: COLORS.accent })), /* @__PURE__ */ React.createElement(Text, { style: styles.milestoneMarket }, milestone.market_id.toUpperCase()), /* @__PURE__ */ React.createElement(Text, { style: styles.milestoneTitle, numberOfLines: 2 }, milestone.title), /* @__PURE__ */ React.createElement(Text, { style: styles.milestoneDay }, milestone.milestone_day ? `DAY ${milestone.milestone_day}` : "MASTERED"))))),
+    tierOrder.map((tier) => {
+      const tierAchievements = achievements.filter((a) => a.tier === tier);
+      if (tierAchievements.length === 0) return null;
+      const tc = TIER_CONFIG[tier];
+      return /* @__PURE__ */ React.createElement(View, { key: tier, style: styles.tierSection }, /* @__PURE__ */ React.createElement(Text, { style: styles.tierLabel }, tc.label, " TIER"), /* @__PURE__ */ React.createElement(View, { style: styles.grid }, tierAchievements.map((a, i) => /* @__PURE__ */ React.createElement(AchievementCard, { key: a.id, item: a, index: i }))));
+    })
+  ));
 }
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
