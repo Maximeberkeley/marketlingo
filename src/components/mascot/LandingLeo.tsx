@@ -8,6 +8,7 @@ export function LandingLeo({ className }: { className: string }) {
   const [canAnimate, setCanAnimate] = useState(false);
   const [inView, setInView] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
     const update = () => setCanAnimate(!preference.matches && document.visibilityState === 'visible');
@@ -20,7 +21,7 @@ export function LandingLeo({ className }: { className: string }) {
   }, []);
   const animated = canAnimate && inView && !failed;
   return <div ref={container} className={`landing-leo ${className}`}>
-    <img src={leoFallback} alt="Leo, your learning companion" className="landing-leo-static" />
-    {animated && <img src={leoAnimation.url} alt="" aria-hidden="true" className="landing-leo-animation" onError={() => setFailed(true)} />}
+    <img src={leoFallback} alt="Leo, your learning companion" className={`landing-leo-static${animated && loaded ? ' invisible' : ''}`} />
+    {animated && <img src={leoAnimation.url} alt="" aria-hidden="true" className="landing-leo-animation" onLoad={() => setLoaded(true)} onError={() => setFailed(true)} />}
   </div>;
 }

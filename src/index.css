@@ -204,7 +204,7 @@
 .landing-jumping-leo { aspect-ratio: 2 / 3; }
 .landing-leo { position: relative; width: 96px; height: 96px; pointer-events: none; }
 .landing-leo-static { width: 100%; height: 100%; object-fit: contain; }
-.landing-leo-animation { position: absolute; width: 133.333%; max-width: none; height: 133.333%; left: -16.667%; top: -16.667%; object-fit: contain; background: hsl(var(--landing-paper)); }
+.landing-leo-animation { position: absolute; width: 133.333%; max-width: none; height: 133.333%; left: -16.667%; top: -16.667%; object-fit: contain; }
 .landing-leo-desktop { margin: 0 auto 24px; }
 .landing-leo-mobile { position: absolute; width: 110px; height: 110px; left: 24px; bottom: 44px; }
 

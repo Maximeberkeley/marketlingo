@@ -27,7 +27,7 @@ function ClipLayer({ clip, onLoad, onEnd, onError }: {
     void image.current?.stopAnimating().catch(() => {});
   }, []);
   return <Image ref={image} source={metadata.source} style={StyleSheet.absoluteFill}
-    contentFit="contain" autoplay transition={0}
+    contentFit="contain" autoplay transition={0} useAppleWebpCodec={false}
     onLoad={() => {
       if (loaded.current) return;
       loaded.current = true;
