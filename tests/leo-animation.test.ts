@@ -1,11 +1,12 @@
-// @vitest-environment node
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
-import { transformSync } from 'esbuild';
+import { execFileSync } from 'node:child_process';
 import { leoAnimationDelay, leoCallClip, leoDoneKey } from '../mobile/components/mascot/leoAnimationRules';
 
 const read = (path: string) => readFileSync(path, 'utf8');
+const transformSync = (source: string, options: any) => ({ code: execFileSync(process.execPath,
+  ['--input-type=module', '-e', `import {transformSync} from 'esbuild'; process.stdout.write(transformSync(${JSON.stringify(source)}, ${JSON.stringify(options)}).code);`], { encoding: 'utf8' }) });
 function harness(path: string, imports: Record<string, any>, extra = '') {
   const slots: any[] = []; let cursor = 0;
   let pending: Array<() => void> = [];
