@@ -5,7 +5,7 @@
  */
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { ComboState } from '../../lib/combo';
 
@@ -75,7 +75,7 @@ export function ComboBar({ combo, correctCount, totalAnswered }: ComboBarProps) 
       {/* Multiplier badge */}
       {combo.multiplier > 1 && (
         <View style={[styles.multiplierBadge, { backgroundColor: multiplierColor + '18', borderColor: multiplierColor + '40' }]}>
-          <Feather name="zap" size={12} color={multiplierColor} />
+          <MaterialCommunityIcons name="flask" size={12} color={multiplierColor} />
           <Text style={[styles.multiplierText, { color: multiplierColor }]}>
             {combo.multiplier}x XP
           </Text>

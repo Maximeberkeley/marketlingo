@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { ComboState, getComboMessage } from '../../lib/combo';
 
@@ -77,7 +78,7 @@ export function ComboCounter({ combo, show }: ComboCounterProps) {
     <View style={styles.container}>
       <Animated.View style={[styles.comboChip, { transform: [{ scale: scaleAnim }] }]}>
         <Animated.View style={combo.isOnFire ? { transform: [{ scale: fireScale }] } : undefined}>
-          <Text style={styles.fireEmoji}>{combo.isOnFire ? '' : '⚡'}</Text>
+          {combo.isOnFire ? null : <MaterialCommunityIcons name="flask" size={16} color={COLORS.xpBadgeIcon} />}
         </Animated.View>
         <Text style={[styles.comboCount, { color: multiplierColor }]}>{combo.streak}</Text>
         <View style={[styles.multiplierBadge, { backgroundColor: multiplierColor + '20' }]}>

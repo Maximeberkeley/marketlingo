@@ -13,7 +13,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, SHADOWS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
@@ -216,7 +216,7 @@ export default function StreakRescueScreen() {
         <View style={[styles.fullInner, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 24 }]}>
           <Text style={styles.fullEyebrow}>{saved ? 'STREAK RESCUED' : 'STREAK LOST'}</Text>
           <Animated.View style={[styles.bigNumberWrap, { transform: [{ scale: heart }] }]}>
-            <Feather name="zap" size={44} color="#FFFFFF" />
+            <MaterialCommunityIcons name="fire" size={44} color="#FFFFFF" />
             <Text style={styles.bigNumber}>{saved ? streak : 0}</Text>
           </Animated.View>
           <Text style={styles.fullTitle}>
@@ -245,7 +245,7 @@ export default function StreakRescueScreen() {
         <View style={[styles.fullInner, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 24 }]}>
           <Text style={styles.fullEyebrow}>YOUR STREAK IS ON THE LINE</Text>
           <View style={styles.bigNumberWrap}>
-            <Feather name="zap" size={44} color="#FFFFFF" />
+            <MaterialCommunityIcons name="fire" size={44} color="#FFFFFF" />
             <Text style={styles.bigNumber}>{streak}</Text>
           </View>
           <Text style={styles.fullTitle}>Rescue your {streak}-day streak</Text>
@@ -284,7 +284,7 @@ export default function StreakRescueScreen() {
           <View style={[styles.progressFill, { width: `${((index + (answered ? 1 : 0)) / questions.length) * 100}%` }]} />
         </View>
         <View style={styles.streakChip}>
-          <Feather name="zap" size={12} color={COLORS.streak} />
+          <MaterialCommunityIcons name="fire" size={12} color={COLORS.streak} />
           <Text style={styles.streakChipText}>{streak}</Text>
         </View>
       </View>
