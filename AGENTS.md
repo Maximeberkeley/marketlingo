@@ -22,4 +22,6 @@
 - Goal-filter authored/generated copy and preserve written questions; slide-only daily lessons stay reading-only rather than inventing fallback quizzes, because missing assessment content must not be masked by filler.
 - Keep syllabus reviews additive in server prompts and phone promises; reviews must not replace angles or change day-to-topic mapping.
 - Subdirectories have their own AGENTS.md (e.g. mobile/); read it before changing files there.
+- Keep animated Leo playback and lifecycle in shared phone mascot modules, with local static fallbacks and fresh keyed layers; retain celebration intent above the unmounted Course view, because motion must not change lesson/progress logic or disappear during lesson completion.
+- Share website landing Leo playback across its compact and desktop placements, loading animation only in view with static reduced-motion/error fallbacks; keep phone clips bundled and website media CDN-backed because each platform has different offline and delivery needs.
 - Days 1–30 pick stacks tagged handwritten-v1 first (goal match next) via mobile/lib/handwritten, in both Home and Course, because verified hand-written lessons must never lose to legacy generated stacks.

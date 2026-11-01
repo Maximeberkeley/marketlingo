@@ -9,13 +9,14 @@ import {
   Animated,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { storage } from '../../lib/storage';
-import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { LeoAnimated } from '../../components/mascot/LeoAnimated';
+import { useOnboardingLeo } from '../../components/mascot/useLeoAnimations';
 import { SpeechBubble } from '../../components/ui/SpeechBubble';
 import { getMarketName } from '../../lib/markets';
 import { StickyBottomCTA } from '../../components/StickyBottomCTA';
@@ -100,6 +101,9 @@ export default function GoalScreen() {
   const [selectedGoal, setSelectedGoal] = useState<LearningGoal | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
+  const [focused, setFocused] = useState(false);
+  useFocusEffect(React.useCallback(() => { setFocused(true); return () => setFocused(false); }, []));
+  const leo = useOnboardingLeo(!focused);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -182,7 +186,7 @@ export default function GoalScreen() {
 
         {/* Header with Leo — his reply sits directly under him, corner pointing up */}
         <View style={styles.header}>
-          <LeoCharacter size="lg" animation="idle" />
+          <LeoAnimated size={160} clip={leo.clip} fallback="idle" paused={!focused} onEnd={leo.onEnd} />
           {selectedGoal && (
             <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}>
               <SpeechBubble text={LEO_REACTIONS[selectedGoal]} tail="top-center" style={styles.reactionBalloon} />

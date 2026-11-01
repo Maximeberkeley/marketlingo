@@ -29,6 +29,9 @@ import { playSound } from '../../lib/sounds';
 import { StreakBadge } from '../ui/StreakBadge';
 import { XPBadge } from '../ui/XPBadge';
 import { LeoCharacter } from '../mascot/LeoCharacter';
+import { LeoAnimated } from '../mascot/LeoAnimated';
+import { useHomeLeo } from '../mascot/useLeoAnimations';
+import { leoDoneKey } from '../mascot/leoAnimationRules';
 import { HomeSkeleton } from '../home/HomeSkeleton';
 import { lessonDayLabel, realLessonTitle } from '../../lib/lessonIdentity';
 import { lessonPriority } from '../../lib/handwritten';
@@ -122,6 +125,9 @@ interface CourseJourneyProps {
   level: number;
   lessonCompletedToday: boolean;
   isFocused: boolean;
+  leoCallOpen?: boolean;
+  leoCelebrationPending?: boolean;
+  onLeoCelebrated?: () => void;
   completedTodayStackId?: string | null;
   arenaCompletedToday?: boolean;
   caseCompletedToday?: boolean;
@@ -247,6 +253,10 @@ function SectionCluster({
   activityReveal,
   reduceMotion,
   calendarDay,
+  leoCallOpen,
+  doneKey,
+  leoCelebrationPending,
+  onLeoCelebrated,
 }: {
   section: SectionAccess;
   lesson?: CourseLesson;
@@ -266,7 +276,15 @@ function SectionCluster({
   activityReveal: Animated.Value[];
   reduceMotion: boolean;
   calendarDay: number;
+  leoCallOpen: boolean;
+  doneKey: string;
+  leoCelebrationPending: boolean;
+  onLeoCelebrated: () => void;
 }) {
+  const leoDone = (activeSection ? lessonCompletedToday : Boolean(lesson?.completed));
+  const leo = useHomeLeo({ done: leoDone, active: activeSection && section.unlocked,
+    focused: isFocused, callOpen: leoCallOpen, doneKey, celebrate: leoCelebrationPending,
+    onCelebrated: onLeoCelebrated, onLeo });
   if (!section.unlocked) {
     return <View style={styles.sectionBlock}><SectionHeader section={section} title={title} onPress={onHeader} /></View>;
   }
@@ -346,13 +364,15 @@ function SectionCluster({
         })}
         <TouchableOpacity
           style={styles.leoCenter}
-          onPress={onLeo}
+          onPress={leo.onTap}
           activeOpacity={0.82}
           accessibilityRole="button"
           accessibilityLabel={`Ask Leo about ${title}`}
         >
           <View style={styles.leoVisual} pointerEvents="none">
-            <LeoCharacter size="course" animation={(activeSection ? lessonCompletedToday : Boolean(lesson?.completed)) ? 'reading' : 'sleeping'} still />
+            {activeSection ? <LeoAnimated size={144} clip={leo.clip} fallback={leoDone ? 'reading' : 'sleeping'}
+              paused={!isFocused || leoCallOpen} onEnd={leo.onEnd} /> :
+              <LeoCharacter size="course" animation={(activeSection ? lessonCompletedToday : Boolean(lesson?.completed)) ? 'reading' : 'sleeping'} still />}
           </View>
         </TouchableOpacity>
       </View>
@@ -449,6 +469,9 @@ export function CourseJourney({
   lessonCompletedToday,
   completedTodayStackId,
   isFocused,
+  leoCallOpen = false,
+  leoCelebrationPending = false,
+  onLeoCelebrated = () => {},
   arenaCompletedToday = false,
   caseCompletedToday = false,
   notesCompletedToday = false,
@@ -469,6 +492,14 @@ export function CourseJourney({
   const now = new Date();
   const localDay = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
   const revealKey = `@marketlingo/home-reveal/${user?.id ?? 'guest'}/${marketId}/${localDay}`;
+  const doneKey = leoDoneKey(user?.id, marketId, localDay);
+  const previousDone = useRef(lessonCompletedToday);
+  const [localCelebration, setLocalCelebration] = useState(false);
+  useEffect(() => {
+    if (!previousDone.current && lessonCompletedToday) setLocalCelebration(true);
+    if (!lessonCompletedToday) setLocalCelebration(false);
+    previousDone.current = lessonCompletedToday;
+  }, [lessonCompletedToday]);
   useEffect(() => {
     let active = true;
     AccessibilityInfo.isReduceMotionEnabled().then(value => { if (active) setReduceMotion(value); }).catch(() => {});
@@ -714,6 +745,10 @@ export function CourseJourney({
               activeSection={activeSection}
                lessonCompletedToday={lessonCompletedToday}
                isFocused={isFocused}
+               leoCallOpen={leoCallOpen}
+               doneKey={doneKey}
+               leoCelebrationPending={leoCelebrationPending || localCelebration}
+               onLeoCelebrated={() => { setLocalCelebration(false); onLeoCelebrated(); }}
                activityReveal={activityReveal}
                reduceMotion={reduceMotion}
                calendarDay={currentDay}
@@ -914,7 +949,7 @@ const styles = StyleSheet.create({
   coinLabel: { ...TYPE.caption, color: COLORS.textPrimary, marginTop: 7, textAlign: 'center' },
   lockedText: { color: COLORS.textMuted },
   leoCenter: { position: 'absolute', width: 166, height: 166, left: '50%', marginLeft: -83, top: 107, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
-  leoVisual: { width: 144, height: 144, backfaceVisibility: 'hidden' },
+  leoVisual: { width: 144, height: 144, backfaceVisibility: 'hidden', overflow: 'visible' },
   previewScreen: { flex: 1, backgroundColor: COLORS.bg0 },
   previewHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border },
   previewHeadingCopy: { flex: 1, minWidth: 0 },

@@ -8,7 +8,7 @@ import {
   Alert,
   Animated,
 } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { localDateString } from '../../lib/dayMath';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { storage, FamiliarityLevel } from '../../lib/storage';
@@ -19,7 +19,8 @@ import { supabase } from '../../lib/supabase';
 import { NotificationOnboarding } from '../../components/onboarding/NotificationOnboarding';
 import { applyDemoXP } from '../../lib/demoXPBridge';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress';
-import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { LeoAnimated } from '../../components/mascot/LeoAnimated';
+import { useOnboardingLeo } from '../../components/mascot/useLeoAnimations';
 import { SpeechBubble } from '../../components/ui/SpeechBubble';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
@@ -43,6 +44,10 @@ export default function FamiliarityScreen() {
   const [showFeatureTour, setShowFeatureTour] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [learningGoal, setLearningGoal] = useState<LearningGoal>('curiosity');
+  const [focused, setFocused] = useState(false);
+  useFocusEffect(React.useCallback(() => { setFocused(true); return () => setFocused(false); }, []));
+  const leoPaused = !focused || showNotifOnboarding || showFeatureTour;
+  const leo = useOnboardingLeo(leoPaused);
 
   // Animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -237,7 +242,7 @@ export default function FamiliarityScreen() {
 
         {/* Header */}
         <View style={styles.header}>
-          <LeoCharacter size="lg" animation="idle" />
+          <LeoAnimated size={160} clip={leo.clip} fallback="idle" paused={leoPaused} onEnd={leo.onEnd} />
           {selectedLevel && (
             <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}>
               <SpeechBubble text={LEO_LEVEL_REACTIONS[selectedLevel]} tail="top-center" style={styles.reactionBalloon} />

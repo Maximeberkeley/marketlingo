@@ -18,6 +18,7 @@ function render(notes: boolean, otherDone = false) {
     COLORS: {}, styles: {}, View: 'View', Svg: 'Svg', Circle: 'Circle', Text: 'Text',
     TouchableOpacity: 'TouchableOpacity', Coin: 'Coin', SectionHeader: 'Header',
     MovingLessonTitle: 'Title', LeoCharacter: 'Leo', lessonDayLabel: () => 'Day 1',
+    LeoAnimated: 'AnimatedLeo', useHomeLeo: () => ({ clip: 'leo-sleep-loop', onTap: () => {}, onEnd: () => {} }),
   };
   runInNewContext(transformed, context);
   return context.SectionCluster({ section: { unlocked: true }, activeSection: true,

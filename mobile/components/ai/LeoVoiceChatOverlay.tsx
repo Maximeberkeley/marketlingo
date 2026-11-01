@@ -29,6 +29,8 @@ import { speakWithElevenLabs, stopAllTTS } from '../../lib/tts';
 import { isLeoMutedSync, loadLeoMuted, setLeoMuted } from '../../lib/voicePrefs';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
+import { LeoAnimated } from '../mascot/LeoAnimated';
+import { leoCallClip } from '../mascot/leoAnimationRules';
 
 
 const { width: SCREEN_W } = Dimensions.get('window');
@@ -95,6 +97,7 @@ export function LeoVoiceChatOverlay({
   const [textInput, setTextInput] = useState('');
   const [showTextInput, setShowTextInput] = useState(false);
   const [isMuted, setIsMuted] = useState(isLeoMutedSync());
+  const [sceneSize, setSceneSize] = useState(0);
 
   const soundRef = useRef<Audio.Sound | null>(null);
   const recordingRef = useRef<Audio.Recording | null>(null);
@@ -349,7 +352,11 @@ export function LeoVoiceChatOverlay({
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <Animated.View style={[st.container, { opacity: fadeAnim }]}>
-          <Image source={LEO_STUDY_SCENE} style={st.sceneImage} resizeMode="contain" fadeDuration={0} />
+          <View pointerEvents="none" style={[st.sceneImage, st.sceneLeo]} onLayout={({ nativeEvent }) => {
+            setSceneSize(Math.min(nativeEvent.layout.width, nativeEvent.layout.height));
+          }}>
+            {sceneSize > 0 && <LeoAnimated size={sceneSize} clip={leoCallClip(isGenerating, isSpeaking)} fallback={LEO_STUDY_SCENE} paused={!visible} />}
+          </View>
           <View style={st.sceneShade} />
           <View style={st.bottomShade} />
 
@@ -536,6 +543,7 @@ const st = StyleSheet.create({
     width: '80%',
     height: '46%',
   },
+  sceneLeo: { alignItems: 'center', justifyContent: 'center', overflow: 'visible' },
   sceneShade: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(3,5,18,0.12)',

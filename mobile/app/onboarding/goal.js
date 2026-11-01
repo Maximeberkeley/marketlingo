@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -7,13 +7,14 @@ import {
   Animated
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS, TYPE } from "../../lib/constants";
 import { useAuth } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabase";
 import { storage } from "../../lib/storage";
-import { LeoCharacter } from "../../components/mascot/LeoCharacter";
+import { LeoAnimated } from "../../components/mascot/LeoAnimated";
+import { useOnboardingLeo } from "../../components/mascot/useLeoAnimations";
 import { SpeechBubble } from "../../components/ui/SpeechBubble";
 import { StickyBottomCTA } from "../../components/StickyBottomCTA";
 import { OnboardingProgress } from "../../components/onboarding/OnboardingProgress";
@@ -76,6 +77,12 @@ function GoalScreen() {
   const [selectedGoal, setSelectedGoal] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState(null);
+  const [focused, setFocused] = useState(false);
+  useFocusEffect(React.useCallback(() => {
+    setFocused(true);
+    return () => setFocused(false);
+  }, []));
+  const leo = useOnboardingLeo(!focused);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   const reactionOpacity = useRef(new Animated.Value(0)).current;
@@ -132,39 +139,52 @@ function GoalScreen() {
       setIsSubmitting(false);
     }
   };
-  return <View style={[styles.container, { paddingTop: insets.top }]}><OnboardingProgress currentStep={1} totalSteps={3} labels={STEP_LABELS} /><Animated.ScrollView
-    contentContainerStyle={styles.scrollContent}
-    showsVerticalScrollIndicator={false}
-    style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
-  ><TouchableOpacity style={styles.backButton} onPress={() => router.back()}><Feather name="arrow-left" size={20} color={COLORS.accent} /><Text style={styles.backButtonText}>Back</Text></TouchableOpacity>{
-    /* Header with Leo — his reply sits directly under him, corner pointing up */
-  }<View style={styles.header}><LeoCharacter size="lg" animation="idle" />{selectedGoal && <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}><SpeechBubble text={LEO_REACTIONS[selectedGoal]} tail="top-center" style={styles.reactionBalloon} /></Animated.View>}<Text style={styles.title}>Why are you learning?</Text><Text style={styles.subtitle}>I'll prioritize content that matches your goal</Text></View>{
-    /* Goal Cards — full-width linear rows */
-  }<View style={styles.cardsContainer}>{goalOptions.map((goal, index) => {
-    const isSelected = selectedGoal === goal.id;
-    return <Animated.View
-      key={goal.id}
-      style={{
-        opacity: fadeAnim,
-        transform: [{
-          translateY: fadeAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [20 + index * 8, 0]
-          })
-        }]
-      }}
-    ><TouchableOpacity
-      style={[styles.card, isSelected && styles.cardSelected]}
-      onPress={() => handleSelect(goal.id)}
-      activeOpacity={0.7}
-    ><View style={styles.cardRow}><View style={[styles.iconBox, { backgroundColor: goal.color + "14" }, isSelected && { backgroundColor: goal.color }]}><Feather name={goal.icon} size={22} color={isSelected ? "#fff" : goal.color} /></View><View style={styles.cardContent}><View style={styles.cardTitleRow}><View style={{ flex: 1 }}><Text style={styles.cardTitle}>{goal.title}</Text><Text style={[styles.cardSubtitle, { color: goal.color }]}>{goal.subtitle}</Text></View>{isSelected && <View style={styles.checkmark}><Feather name="check" size={14} color="#fff" /></View>}</View><Text style={styles.cardDescription}>{goal.description}</Text><View style={styles.chipRow}>{goal.emphasis.map((item) => <View key={item} style={styles.chip}><Text style={styles.chipText}>{item}</Text></View>)}</View></View></View></TouchableOpacity></Animated.View>;
-  })}</View>{selectedGoal && <View style={styles.destinationBox}><Text style={styles.destinationLabel}>WHERE THIS TAKES YOU</Text><Text style={styles.destinationText}>{DESTINATIONS[selectedGoal]}</Text></View>}<View style={styles.infoBox}><Feather name="info" size={14} color={COLORS.textMuted} /><Text style={styles.infoText}>
-            You can change this anytime in Settings. Your goal shapes content priority, not access.
-          </Text></View></Animated.ScrollView><StickyBottomCTA
-    title={isSubmitting ? "Saving..." : "Continue"}
-    onPress={handleContinue}
-    disabled={!selectedGoal || isSubmitting}
-  /></View>;
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.container, { paddingTop: insets.top }] }, /* @__PURE__ */ React.createElement(OnboardingProgress, { currentStep: 1, totalSteps: 3, labels: STEP_LABELS }), /* @__PURE__ */ React.createElement(
+    Animated.ScrollView,
+    {
+      contentContainerStyle: styles.scrollContent,
+      showsVerticalScrollIndicator: false,
+      style: { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
+    },
+    /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.backButton, onPress: () => router.back() }, /* @__PURE__ */ React.createElement(Feather, { name: "arrow-left", size: 20, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.backButtonText }, "Back")),
+    /* @__PURE__ */ React.createElement(View, { style: styles.header }, /* @__PURE__ */ React.createElement(LeoAnimated, { size: 160, clip: leo.clip, fallback: "idle", paused: !focused, onEnd: leo.onEnd }), selectedGoal && /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.reactionBubble, { opacity: reactionOpacity }] }, /* @__PURE__ */ React.createElement(SpeechBubble, { text: LEO_REACTIONS[selectedGoal], tail: "top-center", style: styles.reactionBalloon })), /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Why are you learning?"), /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "I'll prioritize content that matches your goal")),
+    /* @__PURE__ */ React.createElement(View, { style: styles.cardsContainer }, goalOptions.map((goal, index) => {
+      const isSelected = selectedGoal === goal.id;
+      return /* @__PURE__ */ React.createElement(
+        Animated.View,
+        {
+          key: goal.id,
+          style: {
+            opacity: fadeAnim,
+            transform: [{
+              translateY: fadeAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [20 + index * 8, 0]
+              })
+            }]
+          }
+        },
+        /* @__PURE__ */ React.createElement(
+          TouchableOpacity,
+          {
+            style: [styles.card, isSelected && styles.cardSelected],
+            onPress: () => handleSelect(goal.id),
+            activeOpacity: 0.7
+          },
+          /* @__PURE__ */ React.createElement(View, { style: styles.cardRow }, /* @__PURE__ */ React.createElement(View, { style: [styles.iconBox, { backgroundColor: goal.color + "14" }, isSelected && { backgroundColor: goal.color }] }, /* @__PURE__ */ React.createElement(Feather, { name: goal.icon, size: 22, color: isSelected ? "#fff" : goal.color })), /* @__PURE__ */ React.createElement(View, { style: styles.cardContent }, /* @__PURE__ */ React.createElement(View, { style: styles.cardTitleRow }, /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.cardTitle }, goal.title), /* @__PURE__ */ React.createElement(Text, { style: [styles.cardSubtitle, { color: goal.color }] }, goal.subtitle)), isSelected && /* @__PURE__ */ React.createElement(View, { style: styles.checkmark }, /* @__PURE__ */ React.createElement(Feather, { name: "check", size: 14, color: "#fff" }))), /* @__PURE__ */ React.createElement(Text, { style: styles.cardDescription }, goal.description), /* @__PURE__ */ React.createElement(View, { style: styles.chipRow }, goal.emphasis.map((item) => /* @__PURE__ */ React.createElement(View, { key: item, style: styles.chip }, /* @__PURE__ */ React.createElement(Text, { style: styles.chipText }, item))))))
+        )
+      );
+    })),
+    selectedGoal && /* @__PURE__ */ React.createElement(View, { style: styles.destinationBox }, /* @__PURE__ */ React.createElement(Text, { style: styles.destinationLabel }, "WHERE THIS TAKES YOU"), /* @__PURE__ */ React.createElement(Text, { style: styles.destinationText }, DESTINATIONS[selectedGoal])),
+    /* @__PURE__ */ React.createElement(View, { style: styles.infoBox }, /* @__PURE__ */ React.createElement(Feather, { name: "info", size: 14, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.infoText }, "You can change this anytime in Settings. Your goal shapes content priority, not access."))
+  ), /* @__PURE__ */ React.createElement(
+    StickyBottomCTA,
+    {
+      title: isSubmitting ? "Saving..." : "Continue",
+      onPress: handleContinue,
+      disabled: !selectedGoal || isSubmitting
+    }
+  ));
 }
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
