@@ -55,8 +55,22 @@ function ClipPlayer({ clip, size, fallback, onEnd }) {
     const id = ++sequence.current;
     latest.current = id;
     setFailed(false);
-    setLayers([...displayed.current ? [displayed.current] : [], { clip, id }]);
+    const next = { clip, id };
+    setLayers([...displayed.current ? [displayed.current] : [], next]);
   }, [clip, layers]);
+  useEffect(() => {
+    if (__DEV__) console.log("[LeoAnimated] clip", clip);
+    const timer = setTimeout(() => {
+      setLayers((current) => {
+        const newest = current[current.length - 1];
+        if (!newest || current.length === 1) return current;
+        displayed.current = newest;
+        return [newest];
+      });
+      setLoaded(true);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [clip]);
   const canvas = size * 4 / 3;
   return /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: { width: size, height: size, overflow: "visible" } }, (!loaded || failed) && /* @__PURE__ */ React.createElement(StaticLeo, { size, fallback }), !failed && /* @__PURE__ */ React.createElement(View, { style: { position: "absolute", width: canvas, height: canvas, left: -size / 6, top: -size / 6 } }, layers.map((layer) => /* @__PURE__ */ React.createElement(
     ClipLayer,
