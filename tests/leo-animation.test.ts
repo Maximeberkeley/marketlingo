@@ -127,10 +127,13 @@ describe('Animated Leo rules', () => {
     await Promise.resolve(); expect(h.render().clip).toBe('leo-reading-loop');
     h.unmount();
   });
-  it('uses static behavior without leaving one-off onboarding play stuck', async () => {
-    const h = homeHarness(); h.onboarding(); await vi.advanceTimersByTimeAsync(15000);
-    expect(h.onboarding().clip).toBe('leo-play');
+  it('keeps goal and level choices idle without recurring tail-chasing', async () => {
+    const h = homeHarness(); h.onboarding(); await vi.advanceTimersByTimeAsync(60000);
+    expect(h.onboarding().clip).toBe('leo-idle-loop');
+    expect(vi.getTimerCount()).toBe(0);
     h.motion(false); h.onboarding(); expect(h.onboarding().clip).toBe('leo-idle-loop');
+    h.motion(true); h.onboarding(); await vi.advanceTimersByTimeAsync(60000);
+    expect(h.onboarding().clip).toBe('leo-idle-loop');
     h.unmount();
   });
   it('starts one-off end timing only after load and stops playback at the duration', async () => {
