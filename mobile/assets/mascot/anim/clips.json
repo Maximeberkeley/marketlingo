@@ -19,6 +19,14 @@
     "ms": 2667,
     "loop": false
   },
+  "leo-encourage": {
+    "ms": 2000,
+    "loop": false
+  },
+  "leo-greet": {
+    "ms": 2000,
+    "loop": false
+  },
   "leo-idle-loop": {
     "ms": 4733,
     "loop": true
@@ -34,6 +42,10 @@
   "leo-reading-loop": {
     "ms": 5067,
     "loop": true
+  },
+  "leo-ready": {
+    "ms": 2000,
+    "loop": false
   },
   "leo-sleep-loop": {
     "ms": 4067,

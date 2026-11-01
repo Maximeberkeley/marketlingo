@@ -1,6 +1,6 @@
 # Animated Leo
 
-11 transparent animated WebP clips of Leo, made with Runway and keyed with `scripts/leo-animation/`. They are not wired into the app yet. The instructions below say how to do that.
+Transparent animated WebP clips of Leo, made with Runway and keyed with `scripts/leo-animation/`. They are not wired into the app yet. The instructions below say how to do that.
 
 ## The clips
 
@@ -17,6 +17,9 @@
 | leo-call-talk.webp | loop | 4067 ms | Leo call | `isSpeaking` |
 | leo-idle-loop.webp | loop | 4733 ms | Onboarding | Default state |
 | leo-play.webp | once | 5333 ms | Onboarding | Every 10–15 s |
+| leo-greet.webp | once | 2000 ms | Onboarding welcome | Screen opens, then leo-idle-loop |
+| leo-ready.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | First question of a run |
+| leo-encourage.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | Answer graded wrong |
 
 `clips.json` has the same lengths. A loop clip repeats forever. A once clip plays one time and holds its last frame.
 
@@ -68,6 +71,28 @@ Every clip starts and ends exactly on Leo's existing poses, so clips chain witho
    - **Leo call:** he listens, thinks while the AI generates, and gestures while it speaks.
    - **Onboarding:** he sits idle and sometimes chases his tail.
    - **Reduce Motion on:** every Leo is the static image exactly as today.
+
+## Lesson moments (leo-greet, leo-ready, leo-encourage)
+These three start and end on Leo's normal sitting pose. leo-encourage starts on the thinking pose and ends sitting upright, so Leo never looks defeated.
+
+1. Add all three to `leoClips.ts` and `leoClips.js` (2000 ms, `loop: false`).
+2. **LeoCoach** (`lesson-kit/components/LeoCoach.tsx` and `.js`): replace `<LeoCharacter animation={ANIM[mood]} size="sm" still />` with `LeoAnimated` (size 80) and add an optional `intro` prop.
+   - Mood `'incorrect'`: play leo-encourage once, then rest on the sitting pose. Change `ANIM.incorrect` from `'failure'` to `'idle'`.
+   - `intro` true and mood `'idle'`: play leo-ready once.
+   - Anything else: static, exactly as today.
+   - Replay when the line or mood changes, and keep the bubble timing.
+3. **Arena** (`lesson-kit/arena/ArenaScreen.tsx` and `.js`) and **Deep Case** (`lesson-kit/case/CaseScreen.tsx` and `.js`): where LeoCoach renders for the current question:
+   - Pass mood `'incorrect'` while `phase` is `'feedback'` and the answer was graded wrong (timeouts included). Otherwise keep the exercise's own mood.
+   - Pass `intro={beatIndex === 0}` in Arena (the first question after the round intro) and `intro={stageIndex === 0}` in Deep Case.
+4. **Onboarding welcome** (`app/onboarding/welcome.tsx` and `.js`): replace `<LeoCharacter size="xl" animation="waving" />` with `LeoAnimated` (size 200, fallback `'waving'`). Play leo-greet once when the screen opens, then loop leo-idle-loop.
+5. Keep `.tsx` and `.js` twins identical. Don't change grading, XP or lesson content.
+6. Check on a device:
+   - The welcome screen: Leo looks at you, waves, then idles.
+   - The first question in Arena or a Deep Case: he nods and points.
+   - A wrong answer: he gives a reassuring nod and ends sitting upright.
+   - With Reduce Motion on: static images.
+
+leo-success (lesson complete: fist pump, then a proud pose) is still being made.
 
 ## Adding or replacing a clip
 See `scripts/leo-animation/README.md`. It has the Runway settings and prompts and the start/end frames, and explains how to convert a Runway MP4 into a clip here.

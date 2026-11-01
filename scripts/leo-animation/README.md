@@ -188,3 +188,49 @@ Leo greets the viewer with a big friendly wave.
 3-4s: he lowers his paw and settles exactly into the first-frame pose.
 Consistency: the same flat 2D cartoon fox in every frame (orange fur with subtle paper grain, cream face and inner ears, black-tipped tail, thick dark-orange outline, black graduation cap with a gold tassel that stays on). Same size and proportions. Locked-off static camera. The background stays a perfectly flat pure green (#00FF00) from edge to edge, with Leo the only thing in frame. Smooth hand-drawn 2D animation. No subtitles.
 ```
+
+## Lesson moments (about 2 s each in the app)
+
+### leo-ready (in the app)
+First `leo-idle.png`, last `leo-idle.png`, 4 s, 480p (converted at 2x)
+```
+Leo shows the viewer he's ready to start the lesson with a confident nod and a point.
+0-1s: he looks straight at the viewer, alert, ears up.
+1-2s: he gives one confident nod.
+2-3s: he points one paw forward at the viewer with a confident, encouraging look, as if saying "let's go".
+3-4s: he lowers his paw and settles exactly into the first-frame pose, eyes on the viewer.
+Consistency: the same flat 2D cartoon fox in every frame (orange fur with subtle paper grain, cream face and inner ears, black-tipped tail, thick dark-orange outline, black graduation cap with a gold tassel that stays on). Same size, proportions and eye line. Locked-off static camera. The background stays a perfectly flat pure green (#00FF00) from edge to edge, with Leo the only thing in frame. Smooth hand-drawn 2D animation. No subtitles.
+```
+
+### leo-success (not made yet)
+First `leo-idle.png`, last `leo-success.png`, 4 s, 480p (converted at 2x)
+```
+Leo celebrates the viewer finishing the lesson with a delighted fist pump, then rests in a proud pose.
+0-1s: his eyes light up and his ears shoot up.
+1-2s: he pumps one paw in the air in a delighted fist pump, eyes closed in a big happy smile.
+2-3s: a few small yellow sparkles twinkle around him as he settles down.
+3-4s: he settles exactly into the proud pose of the last frame: eyes closed in a happy smile, one paw raised, small sparkles around him.
+Consistency: the same flat 2D cartoon fox in every frame (orange fur with subtle paper grain, cream face and inner ears, black-tipped tail, thick dark-orange outline, black graduation cap with a gold tassel that stays on). Same size, proportions and eye line. Locked-off static camera. The background stays a perfectly flat pure green (#00FF00) from edge to edge, with Leo and the small sparkles the only things in frame. Smooth hand-drawn 2D animation. No subtitles.
+```
+
+### leo-encourage (in the app)
+First `leo-thinking.png`, last `leo-idle.png`, 4 s, 480p (converted at 2x)
+```
+Leo considers the viewer's answer thoughtfully, then gives a warm, reassuring nod. His ears stay up and his posture stays upright and confident the whole time.
+0-1s: he holds his paw to his chin with a thoughtful look, as in the first frame.
+1-2s: he lowers his paw and looks straight at the viewer with a warm, kind expression.
+2-3s: he gives one slow, reassuring nod, as if saying "you've got this".
+3-4s: he settles exactly into the sitting pose of the last frame, eyes on the viewer.
+Consistency: the same flat 2D cartoon fox in every frame (orange fur with subtle paper grain, cream face and inner ears, black-tipped tail, thick dark-orange outline, black graduation cap with a gold tassel that stays on). Same size, proportions and eye line. Locked-off static camera. The background stays a perfectly flat pure green (#00FF00) from edge to edge, with Leo the only thing in frame. Smooth hand-drawn 2D animation. No subtitles.
+```
+
+### leo-greet (in the app)
+First `leo-idle.png`, last `leo-idle.png`, reference image `leo-waving.png`, 4 s, 480p (converted at 2x)
+```
+@Image 1: Leo waving (pose reference for the wave).
+Leo greets the viewer with direct eye contact and a small, friendly wave.
+0-1s: he looks straight at the viewer and his ears perk up.
+1-3s: he raises one paw and gives a small, friendly wave as in @Image 1, with a warm smile in his eyes.
+3-4s: he lowers his paw and settles exactly into the first-frame pose, eyes on the viewer.
+Consistency: the same flat 2D cartoon fox in every frame (orange fur with subtle paper grain, cream face and inner ears, black-tipped tail, thick dark-orange outline, black graduation cap with a gold tassel that stays on). Same size, proportions and eye line. Locked-off static camera. The background stays a perfectly flat pure green (#00FF00) from edge to edge, with Leo the only thing in frame. Smooth hand-drawn 2D animation. No subtitles.
+```
