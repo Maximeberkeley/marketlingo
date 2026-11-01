@@ -7,9 +7,17 @@ import { useAuth } from '../../hooks/useAuth';
 import { normalizeDisplayName } from '../../lib/displayName';
 import { storage } from '../../lib/storage';
 import { supabase } from '../../lib/supabase';
-import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { useIsFocused } from '@react-navigation/native';
+import { LeoAnimated } from '../../components/mascot/LeoAnimated';
 import { triggerCelebration, triggerHaptic } from '../../lib/haptics';
 import { playSound } from '../../lib/sounds';
+
+function WelcomeLeo() {
+  const focused = useIsFocused();
+  const [greeted, setGreeted] = useState(false);
+  return <LeoAnimated size={200} fallback="waving" paused={!focused}
+    clip={greeted ? 'leo-idle-loop' : 'leo-greet'} onEnd={() => setGreeted(true)} />;
+}
 
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
@@ -71,7 +79,7 @@ export default function WelcomeScreen() {
   return (
     <View style={[styles.screen, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 }]}>
       <View style={styles.content}>
-        <LeoCharacter size="xl" animation="waving" />
+        <WelcomeLeo />
         <Text style={styles.kicker}>YOUR JOURNEY STARTS HERE</Text>
         <Text style={styles.title}>Welcome to MarketLingo, {displayName}!</Text>
         <Text style={styles.body}>Ready to master the language of modern markets?</Text>
