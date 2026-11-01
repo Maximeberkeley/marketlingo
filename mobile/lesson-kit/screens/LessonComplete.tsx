@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { LeoAnimated } from '../../components/mascot/LeoAnimated';
+import { useLessonCompleteLeo } from '../../components/mascot/useLeoAnimations';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -56,6 +57,7 @@ export function LessonComplete({
   takeaway,
 }: Props) {
   const { user } = useAuth();
+  const leo = useLessonCompleteLeo(user?.id, streakDays);
   const [calledToday, setCalledToday] = useState(false);
   useEffect(() => {
     let live = true;
@@ -108,7 +110,7 @@ export function LessonComplete({
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.leoHero}>
-        <LeoAnimated clip="leo-success" size={132} fallback="celebrating" />
+        {leo.clip ? <LeoAnimated clip={leo.clip} size={132} fallback="celebrating" onEnd={leo.onEnd} /> : <View style={{ width: 132, height: 132 }} />}
       </View>
       <Text style={styles.title}>{praise}</Text>
       {typeof streakDays === 'number' && streakDays > 0 ? (
