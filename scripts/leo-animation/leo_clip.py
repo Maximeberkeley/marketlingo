@@ -12,6 +12,7 @@ Usage:
 --size      output width and height in px. 480 suits Home (Leo's 192 pt animation box);
             use 720 for the Leo call scene, which is shown much larger.
 --fps       15 keeps files small; hand-drawn 2D cartoons are often animated at 12 fps.
+--hold      ms to rest on the last frame before a loop repeats (a still pause, costs no file size).
 --preview   writes a strip of frames over the app's light and dark backgrounds, to check edges.
 
 Every run also records the clip in clips.json next to OUT.webp: {"leo-wake": {"ms": 2000, "loop": false}}.
@@ -38,6 +39,7 @@ p.add_argument('--size', type=int, default=480)
 p.add_argument('--loop', action='store_true')
 p.add_argument('--quality', type=int, default=70)
 p.add_argument('--preview')
+p.add_argument('--hold', type=int, default=0, help='ms to rest on the last frame before the loop repeats')
 a = p.parse_args()
 
 info = json.loads(subprocess.run(
@@ -97,16 +99,19 @@ if a.loop:
     seam_note = f', loop seam diff {seam:.1f} (under ~6 looks smooth)'
 
 out_frames = [key_frame(frames[i]) for i in idx]
-out_frames[0].save(a.out, save_all=True, append_images=out_frames[1:], duration=int(round(1000 / a.fps)),
+frame_ms = int(round(1000 / a.fps))
+durations = [frame_ms] * len(out_frames)
+durations[-1] += a.hold  # rest pose before the next repeat
+out_frames[0].save(a.out, save_all=True, append_images=out_frames[1:], duration=durations,
                    loop=0 if a.loop else 1, quality=a.quality, alpha_quality=60, method=4, lossless=False)
 
 import os
 kb = os.path.getsize(a.out) / 1024
 man_path = os.path.join(os.path.dirname(os.path.abspath(a.out)), 'clips.json')
 man = json.load(open(man_path)) if os.path.exists(man_path) else {}
-man[os.path.splitext(os.path.basename(a.out))[0]] = {'ms': int(round(len(out_frames) * 1000 / a.fps)), 'loop': a.loop}
+man[os.path.splitext(os.path.basename(a.out))[0]] = {'ms': int(round(len(out_frames) * 1000 / a.fps)) + a.hold, 'loop': a.loop}
 json.dump(dict(sorted(man.items())), open(man_path, 'w'), indent=2)
-print(f'{os.path.basename(a.out)}: {len(out_frames)} frames, {len(out_frames) / a.fps:.2f} s at {a.fps:g} fps, '
+print(f'{os.path.basename(a.out)}: {len(out_frames)} frames, {len(out_frames) / a.fps + a.hold / 1000:.2f} s at {a.fps:g} fps (rest {a.hold} ms), '
       f'{a.size}px, {kb:.0f} KB, key RGB {key.round().astype(int).tolist()}{seam_note}')
 
 if a.preview:
