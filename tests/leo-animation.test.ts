@@ -113,12 +113,12 @@ describe('Graded practice reactions', () => {
 });
 
 describe('Animated Leo rules', () => {
-  it('uses all eighteen supplied clip lengths and native assets', () => {
+  it('uses all fifteen bundled clip lengths and native assets', () => {
     const metadata = JSON.parse(read('mobile/assets/mascot/anim/clips.json'));
     const module = { exports: {} as any };
     runInNewContext(transformSync(read('mobile/components/mascot/leoClips.ts'), { loader: 'ts', format: 'cjs' }).code,
       { module, exports: module.exports, require: (path: string) => path });
-    expect(Object.keys(module.exports.leoClips)).toHaveLength(18);
+    expect(Object.keys(module.exports.leoClips)).toHaveLength(15);
     for (const [clip, spec] of Object.entries(metadata)) {
       expect(module.exports.leoClips[clip]).toMatchObject(spec);
       expect(existsSync(`mobile/assets/mascot/anim/${clip}.webp`)).toBe(true);
@@ -305,5 +305,19 @@ describe('practice feedback lines', () => {
       expect(words).toBeGreaterThanOrEqual(6); expect(words).toBeLessThanOrEqual(10);
     }
     expect(leoFeedbackLine(true, 0)).not.toBe(leoFeedbackLine(false, 0));
+  });
+});
+
+import { shouldPlayLeoTreat } from '../mobile/components/mascot/leoAnimationRules';
+describe('leo-play treat', () => {
+  it('plays on a streak milestone, once that day', () => {
+    expect(shouldPlayLeoTreat(7, '2026-10-30', '2026-11-01', 0.99)).toBe(true);
+    expect(shouldPlayLeoTreat(7, '2026-11-01', '2026-11-01', 0)).toBe(false);
+  });
+  it('otherwise plays 1 in 10 with at most one per 7 days', () => {
+    expect(shouldPlayLeoTreat(5, null, '2026-11-01', 0.05)).toBe(true);
+    expect(shouldPlayLeoTreat(5, null, '2026-11-01', 0.1)).toBe(false);
+    expect(shouldPlayLeoTreat(5, '2026-10-27', '2026-11-01', 0)).toBe(false);
+    expect(shouldPlayLeoTreat(5, '2026-10-25', '2026-11-01', 0)).toBe(true);
   });
 });
