@@ -20,6 +20,7 @@ Transparent animated WebP clips of Leo, made with Runway and keyed with `scripts
 | leo-greet.webp | once | 2000 ms | Onboarding welcome | Screen opens, then leo-idle-loop |
 | leo-ready.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | First question of a run |
 | leo-encourage.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | Answer graded wrong |
+| leo-success.webp | once | 2000 ms | Lesson complete; Arena, Deep Case (LeoCoach) | Lesson finished; answer graded right |
 
 `clips.json` has the same lengths. A loop clip repeats forever. A once clip plays one time and holds its last frame.
 
@@ -92,7 +93,18 @@ These three start and end on Leo's normal sitting pose. leo-encourage starts on 
    - A wrong answer: he gives a reassuring nod and ends sitting upright.
    - With Reduce Motion on: static images.
 
-leo-success (lesson complete: fist pump, then a proud pose) is still being made.
+## Lesson complete and right answers (leo-success)
+leo-success starts on the sitting pose. Leo fist-pumps, sparkles pop, and he ends in the proud pose (`leo-success.png`, the same image the app already shows for a correct answer). Hold its last frame; don't swap to the still image afterwards.
+
+1. Add leo-success to `leoClips.ts` and `leoClips.js` (2000 ms, `loop: false`).
+2. **Lesson complete** (`lesson-kit/screens/LessonComplete.tsx` and `.js`): replace `<Image source={require('../../assets/mascot/leo-celebrating.png')} style={styles.leoHero} resizeMode="contain" />` with `LeoAnimated` (size 132, fallback `'celebrating'`). Keep it in a view with the same centring and bottom margin as `styles.leoHero`. Play leo-success once when the screen appears.
+3. **LeoCoach**: mood `'correct'` or `'celebrate'` plays leo-success once, then holds. This builds on the Lesson moments step above.
+4. **Arena and Deep Case**: while `phase` is `'feedback'` and the answer was graded right, pass mood `'correct'` to LeoCoach. Wrong answers still pass `'incorrect'`.
+5. Keep `.tsx` and `.js` twins identical. Don't change grading, XP, saving or lesson content.
+6. Check on a device:
+   - Finish a lesson: Leo fist-pumps and lands in the proud pose.
+   - A right answer in Arena or a Deep Case: the same reaction.
+   - With Reduce Motion on: the same still images as today.
 
 ## Adding or replacing a clip
 See `scripts/leo-animation/README.md`. It has the Runway settings and prompts and the start/end frames, and explains how to convert a Runway MP4 into a clip here.

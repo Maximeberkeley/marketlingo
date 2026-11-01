@@ -51,6 +51,10 @@
     "ms": 4067,
     "loop": true
   },
+  "leo-success": {
+    "ms": 2000,
+    "loop": false
+  },
   "leo-wake": {
     "ms": 2000,
     "loop": false
