@@ -25,6 +25,7 @@ function ClipLayer({ clip, onLoad, onEnd, onError }) {
       contentFit: "contain",
       autoplay: true,
       transition: 0,
+      useAppleWebpCodec: false,
       onLoad: () => {
         if (loaded.current) return;
         loaded.current = true;
