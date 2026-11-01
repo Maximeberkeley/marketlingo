@@ -1,9 +1,9 @@
 # MarketLingo roadmap
 
 ## Nov 1 — Animated Leo
-- [ ] Add one matching Leo animation to the website on phone and computer layouts; respect reduced motion and verify both sizes.
-- [ ] Wire the 11 bundled clips into active Home, Leo call and the two onboarding screens according to the supplied guide; synchronize JavaScript and bump the phone release.
-- [ ] Test clip timing, transitions, daily celebration, pause/fallback rules and existing affected tests.
+- [x] Add matching idle Leo to website phone and computer openings; verified moving frames, light/dark placement, reduced-motion fallback and demo opening at 320/390/1280px. The local server lacks CDN routing, so browser verification served the exact downloaded hosted clip; the hosted asset independently returned valid WebP.
+- [x] Wire all 11 bundled clips into active Home, Leo call and goal/level onboarding; preserve visual completion intent while Course unmounts, synchronize source pairs, install expo-image and bump to 1.2.2 / build 136.
+- [x] Run 31 focused/regression tests: timing, layered transitions, daily celebration, wake/call/doze, background/reduced-motion fallback, cleanup, orbit credit and source parity; website build OK.
 - [ ] Verify light/dark appearance and playback on iPhone (blocked: no iOS device/simulator; requires a new installed build).
 
 ## Oct 13 — Focused lessons and offline artwork
