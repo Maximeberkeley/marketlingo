@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   Modal,
-  Image,
   TouchableOpacity,
   Animated,
   Dimensions,
@@ -25,6 +24,8 @@ import { speakWithElevenLabs, stopAllTTS } from "../../lib/tts";
 import { isLeoMutedSync, loadLeoMuted, setLeoMuted } from "../../lib/voicePrefs";
 import { triggerHaptic } from "../../lib/haptics";
 import { log } from "../../lib/logger";
+import { LeoAnimated } from "../mascot/LeoAnimated";
+import { leoCallClip } from "../mascot/leoAnimationRules";
 const { width: SCREEN_W } = Dimensions.get("window");
 const LEO_STUDY_SCENE = require("../../assets/mascot/leo-voice-study.png");
 const LEO_VOICE_ID = "miHBUIuwiPKbRiTC0oIz";
@@ -69,6 +70,7 @@ function LeoVoiceChatOverlay({
   const [textInput, setTextInput] = useState("");
   const [showTextInput, setShowTextInput] = useState(false);
   const [isMuted, setIsMuted] = useState(isLeoMutedSync());
+  const [sceneSize, setSceneSize] = useState(0);
   const soundRef = useRef(null);
   const recordingRef = useRef(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -296,7 +298,9 @@ function LeoVoiceChatOverlay({
       style: { flex: 1 },
       behavior: Platform.OS === "ios" ? "padding" : void 0
     },
-    /* @__PURE__ */ React.createElement(Animated.View, { style: [st.container, { opacity: fadeAnim }] }, /* @__PURE__ */ React.createElement(Image, { source: LEO_STUDY_SCENE, style: st.sceneImage, resizeMode: "contain", fadeDuration: 0 }), /* @__PURE__ */ React.createElement(View, { style: st.sceneShade }), /* @__PURE__ */ React.createElement(View, { style: st.bottomShade }), /* @__PURE__ */ React.createElement(View, { style: [st.topBar, { paddingTop: insets.top + 12 }] }, /* @__PURE__ */ React.createElement(View, { style: st.statusBadge }, /* @__PURE__ */ React.createElement(
+    /* @__PURE__ */ React.createElement(Animated.View, { style: [st.container, { opacity: fadeAnim }] }, /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: [st.sceneImage, st.sceneLeo], onLayout: ({ nativeEvent }) => {
+      setSceneSize(Math.min(nativeEvent.layout.width, nativeEvent.layout.height));
+    } }, sceneSize > 0 && /* @__PURE__ */ React.createElement(LeoAnimated, { size: sceneSize, clip: leoCallClip(isGenerating, isSpeaking), fallback: LEO_STUDY_SCENE, paused: !visible })), /* @__PURE__ */ React.createElement(View, { style: st.sceneShade }), /* @__PURE__ */ React.createElement(View, { style: st.bottomShade }), /* @__PURE__ */ React.createElement(View, { style: [st.topBar, { paddingTop: insets.top + 12 }] }, /* @__PURE__ */ React.createElement(View, { style: st.statusBadge }, /* @__PURE__ */ React.createElement(
       Animated.View,
       {
         style: [
@@ -411,6 +415,7 @@ const st = StyleSheet.create({
     width: "80%",
     height: "46%"
   },
+  sceneLeo: { alignItems: "center", justifyContent: "center", overflow: "visible" },
   sceneShade: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(3,5,18,0.12)"

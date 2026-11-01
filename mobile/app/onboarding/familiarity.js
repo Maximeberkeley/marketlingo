@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   Alert,
   Animated
 } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { localDateString } from "../../lib/dayMath";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { storage } from "../../lib/storage";
@@ -18,7 +18,8 @@ import { supabase } from "../../lib/supabase";
 import { NotificationOnboarding } from "../../components/onboarding/NotificationOnboarding";
 import { applyDemoXP } from "../../lib/demoXPBridge";
 import { OnboardingProgress } from "../../components/onboarding/OnboardingProgress";
-import { LeoCharacter } from "../../components/mascot/LeoCharacter";
+import { LeoAnimated } from "../../components/mascot/LeoAnimated";
+import { useOnboardingLeo } from "../../components/mascot/useLeoAnimations";
 import { SpeechBubble } from "../../components/ui/SpeechBubble";
 import { triggerHaptic } from "../../lib/haptics";
 import { log } from "../../lib/logger";
@@ -38,6 +39,13 @@ function FamiliarityScreen() {
   const [showFeatureTour, setShowFeatureTour] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState(null);
   const [learningGoal, setLearningGoal] = useState("curiosity");
+  const [focused, setFocused] = useState(false);
+  useFocusEffect(React.useCallback(() => {
+    setFocused(true);
+    return () => setFocused(false);
+  }, []));
+  const leoPaused = !focused || showNotifOnboarding || showFeatureTour;
+  const leo = useOnboardingLeo(leoPaused);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   const reactionOpacity = useRef(new Animated.Value(0)).current;
@@ -172,59 +180,67 @@ function FamiliarityScreen() {
   const handleBack = () => {
     router.back();
   };
-  return <View style={[styles.container, { paddingTop: insets.top }]}>{
-    /* Progress */
-  }<OnboardingProgress currentStep={2} totalSteps={3} labels={STEP_LABELS} /><Animated.ScrollView
-    contentContainerStyle={styles.scrollContent}
-    showsVerticalScrollIndicator={false}
-    style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
-  >{
-    /* Back Button */
-  }<TouchableOpacity style={styles.backButton} onPress={handleBack}><Text style={styles.backButtonText}>← Back</Text></TouchableOpacity>{
-    /* Header */
-  }<View style={styles.header}><LeoCharacter size="lg" animation="idle" />{selectedLevel && <Animated.View style={[styles.reactionBubble, { opacity: reactionOpacity }]}><SpeechBubble text={LEO_LEVEL_REACTIONS[selectedLevel]} tail="top-center" style={styles.reactionBalloon} /></Animated.View>}<Text style={styles.title}>Your Experience Level</Text><Text style={styles.subtitle}>
-            I'll adapt the content depth to match your knowledge
-          </Text></View>{
-    /* Level Cards */
-  }<View style={styles.cardsContainer}>{FAMILIARITY_LEVELS.map((level, index) => <Animated.View
-    key={level.id}
-    style={{
-      opacity: fadeAnim,
-      transform: [{
-        translateY: fadeAnim.interpolate({
-          inputRange: [0, 1],
-          outputRange: [20 + index * 8, 0]
-        })
-      }]
-    }}
-  ><TouchableOpacity
-    style={[
-      styles.card,
-      selectedLevel === level.id && styles.cardSelected
-    ]}
-    onPress={() => handleSelect(level.id)}
-    activeOpacity={0.7}
-  ><View style={styles.cardContent}><View style={styles.cardIndex}><Text style={styles.cardIndexText}>{index + 1}</Text></View><View style={styles.cardText}><Text style={styles.cardTitle}>{level.name}</Text><Text style={styles.cardDescription}>{level.description}</Text></View></View>{selectedLevel === level.id && <View style={styles.checkmark}><Text style={styles.checkmarkText}>✓</Text></View>}</TouchableOpacity></Animated.View>)}</View>{
-    /* Almost done indicator */
-  }<View style={styles.almostDone}><Text style={styles.almostDoneEmoji}>·</Text><Text style={styles.almostDoneText}>
-            Almost done! One more tap and you're in.
-          </Text></View>{
-    /* Info Box */
-  }<View style={styles.infoBox}><Text style={styles.infoText}>
-            You can change this anytime in Settings
-          </Text></View></Animated.ScrollView><StickyBottomCTA
-    title="Start Learning"
-    onPress={handleContinue}
-    disabled={!selectedLevel}
-  /><NotificationOnboarding
-    visible={showNotifOnboarding}
-    onComplete={handleNotifComplete}
-  /><FeatureTour
-    visible={showFeatureTour}
-    marketId={selectedMarket}
-    goal={learningGoal}
-    onComplete={handleTourComplete}
-  /></View>;
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.container, { paddingTop: insets.top }] }, /* @__PURE__ */ React.createElement(OnboardingProgress, { currentStep: 2, totalSteps: 3, labels: STEP_LABELS }), /* @__PURE__ */ React.createElement(
+    Animated.ScrollView,
+    {
+      contentContainerStyle: styles.scrollContent,
+      showsVerticalScrollIndicator: false,
+      style: { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
+    },
+    /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.backButton, onPress: handleBack }, /* @__PURE__ */ React.createElement(Text, { style: styles.backButtonText }, "\u2190 Back")),
+    /* @__PURE__ */ React.createElement(View, { style: styles.header }, /* @__PURE__ */ React.createElement(LeoAnimated, { size: 160, clip: leo.clip, fallback: "idle", paused: leoPaused, onEnd: leo.onEnd }), selectedLevel && /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.reactionBubble, { opacity: reactionOpacity }] }, /* @__PURE__ */ React.createElement(SpeechBubble, { text: LEO_LEVEL_REACTIONS[selectedLevel], tail: "top-center", style: styles.reactionBalloon })), /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Your Experience Level"), /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "I'll adapt the content depth to match your knowledge")),
+    /* @__PURE__ */ React.createElement(View, { style: styles.cardsContainer }, FAMILIARITY_LEVELS.map((level, index) => /* @__PURE__ */ React.createElement(
+      Animated.View,
+      {
+        key: level.id,
+        style: {
+          opacity: fadeAnim,
+          transform: [{
+            translateY: fadeAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [20 + index * 8, 0]
+            })
+          }]
+        }
+      },
+      /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
+        {
+          style: [
+            styles.card,
+            selectedLevel === level.id && styles.cardSelected
+          ],
+          onPress: () => handleSelect(level.id),
+          activeOpacity: 0.7
+        },
+        /* @__PURE__ */ React.createElement(View, { style: styles.cardContent }, /* @__PURE__ */ React.createElement(View, { style: styles.cardIndex }, /* @__PURE__ */ React.createElement(Text, { style: styles.cardIndexText }, index + 1)), /* @__PURE__ */ React.createElement(View, { style: styles.cardText }, /* @__PURE__ */ React.createElement(Text, { style: styles.cardTitle }, level.name), /* @__PURE__ */ React.createElement(Text, { style: styles.cardDescription }, level.description))),
+        selectedLevel === level.id && /* @__PURE__ */ React.createElement(View, { style: styles.checkmark }, /* @__PURE__ */ React.createElement(Text, { style: styles.checkmarkText }, "\u2713"))
+      )
+    ))),
+    /* @__PURE__ */ React.createElement(View, { style: styles.almostDone }, /* @__PURE__ */ React.createElement(Text, { style: styles.almostDoneEmoji }, "\xB7"), /* @__PURE__ */ React.createElement(Text, { style: styles.almostDoneText }, "Almost done! One more tap and you're in.")),
+    /* @__PURE__ */ React.createElement(View, { style: styles.infoBox }, /* @__PURE__ */ React.createElement(Text, { style: styles.infoText }, "You can change this anytime in Settings"))
+  ), /* @__PURE__ */ React.createElement(
+    StickyBottomCTA,
+    {
+      title: "Start Learning",
+      onPress: handleContinue,
+      disabled: !selectedLevel
+    }
+  ), /* @__PURE__ */ React.createElement(
+    NotificationOnboarding,
+    {
+      visible: showNotifOnboarding,
+      onComplete: handleNotifComplete
+    }
+  ), /* @__PURE__ */ React.createElement(
+    FeatureTour,
+    {
+      visible: showFeatureTour,
+      marketId: selectedMarket,
+      goal: learningGoal,
+      onComplete: handleTourComplete
+    }
+  ));
 }
 const styles = StyleSheet.create({
   container: {

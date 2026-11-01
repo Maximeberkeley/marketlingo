@@ -29,6 +29,9 @@ import { playSound } from "../../lib/sounds";
 import { StreakBadge } from "../ui/StreakBadge";
 import { XPBadge } from "../ui/XPBadge";
 import { LeoCharacter } from "../mascot/LeoCharacter";
+import { LeoAnimated } from "../mascot/LeoAnimated";
+import { useHomeLeo } from "../mascot/useLeoAnimations";
+import { leoDoneKey } from "../mascot/leoAnimationRules";
 import { HomeSkeleton } from "../home/HomeSkeleton";
 import { lessonDayLabel, realLessonTitle } from "../../lib/lessonIdentity";
 import { lessonPriority } from "../../lib/handwritten";
@@ -157,8 +160,23 @@ function SectionCluster({
   onHeader,
   activityReveal,
   reduceMotion,
-  calendarDay
+  calendarDay,
+  leoCallOpen,
+  doneKey,
+  leoCelebrationPending,
+  onLeoCelebrated
 }) {
+  const leoDone = activeSection ? lessonCompletedToday : Boolean(lesson?.completed);
+  const leo = useHomeLeo({
+    done: leoDone,
+    active: activeSection && section.unlocked,
+    focused: isFocused,
+    callOpen: leoCallOpen,
+    doneKey,
+    celebrate: leoCelebrationPending,
+    onCelebrated: onLeoCelebrated,
+    onLeo
+  });
   if (!section.unlocked) {
     return /* @__PURE__ */ React.createElement(View, { style: styles.sectionBlock }, /* @__PURE__ */ React.createElement(SectionHeader, { section, title, onPress: onHeader }));
   }
@@ -214,12 +232,21 @@ function SectionCluster({
     TouchableOpacity,
     {
       style: styles.leoCenter,
-      onPress: onLeo,
+      onPress: leo.onTap,
       activeOpacity: 0.82,
       accessibilityRole: "button",
       accessibilityLabel: `Ask Leo about ${title}`
     },
-    /* @__PURE__ */ React.createElement(View, { style: styles.leoVisual, pointerEvents: "none" }, /* @__PURE__ */ React.createElement(LeoCharacter, { size: "course", animation: (activeSection ? lessonCompletedToday : Boolean(lesson?.completed)) ? "reading" : "sleeping", still: true }))
+    /* @__PURE__ */ React.createElement(View, { style: styles.leoVisual, pointerEvents: "none" }, activeSection ? /* @__PURE__ */ React.createElement(
+      LeoAnimated,
+      {
+        size: 144,
+        clip: leo.clip,
+        fallback: leoDone ? "reading" : "sleeping",
+        paused: !isFocused || leoCallOpen,
+        onEnd: leo.onEnd
+      }
+    ) : /* @__PURE__ */ React.createElement(LeoCharacter, { size: "course", animation: (activeSection ? lessonCompletedToday : Boolean(lesson?.completed)) ? "reading" : "sleeping", still: true }))
   )));
 }
 function CurriculumPreview({
@@ -273,6 +300,10 @@ function CourseJourney({
   lessonCompletedToday,
   completedTodayStackId,
   isFocused,
+  leoCallOpen = false,
+  leoCelebrationPending = false,
+  onLeoCelebrated = () => {
+  },
   arenaCompletedToday = false,
   caseCompletedToday = false,
   notesCompletedToday = false,
@@ -293,6 +324,14 @@ function CourseJourney({
   const now = /* @__PURE__ */ new Date();
   const localDay = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
   const revealKey = `@marketlingo/home-reveal/${user?.id ?? "guest"}/${marketId}/${localDay}`;
+  const doneKey = leoDoneKey(user?.id, marketId, localDay);
+  const previousDone = useRef(lessonCompletedToday);
+  const [localCelebration, setLocalCelebration] = useState(false);
+  useEffect(() => {
+    if (!previousDone.current && lessonCompletedToday) setLocalCelebration(true);
+    if (!lessonCompletedToday) setLocalCelebration(false);
+    previousDone.current = lessonCompletedToday;
+  }, [lessonCompletedToday]);
   useEffect(() => {
     let active = true;
     AccessibilityInfo.isReduceMotionEnabled().then((value) => {
@@ -378,7 +417,7 @@ function CourseJourney({
         if (!(stack.slides?.[0]?.count > 0) && !stack.authored_lesson) return;
         const rank = lessonPriority(tags, goalTag, day);
         const existing = byDay.get(day);
-        if (!existing || stack.id === completedTodayStackId || (existing.id !== completedTodayStackId && rank > existing.rank)) byDay.set(day, { id: stack.id, title: realLessonTitle(stack), rank });
+        if (!existing || stack.id === completedTodayStackId || existing.id !== completedTodayStackId && rank > existing.rank) byDay.set(day, { id: stack.id, title: realLessonTitle(stack), rank });
       });
       setLessons(Array.from({ length: TOTAL_DAYS }, (_, index) => {
         const day = index + 1;
@@ -507,6 +546,13 @@ function CourseJourney({
             activeSection,
             lessonCompletedToday,
             isFocused,
+            leoCallOpen,
+            doneKey,
+            leoCelebrationPending: leoCelebrationPending || localCelebration,
+            onLeoCelebrated: () => {
+              setLocalCelebration(false);
+              onLeoCelebrated();
+            },
             activityReveal,
             reduceMotion,
             calendarDay: currentDay,
@@ -716,7 +762,7 @@ const styles = StyleSheet.create({
   coinLabel: { ...TYPE.caption, color: COLORS.textPrimary, marginTop: 7, textAlign: "center" },
   lockedText: { color: COLORS.textMuted },
   leoCenter: { position: "absolute", width: 166, height: 166, left: "50%", marginLeft: -83, top: 107, alignItems: "center", justifyContent: "center", zIndex: 2 },
-  leoVisual: { width: 144, height: 144, backfaceVisibility: "hidden" },
+  leoVisual: { width: 144, height: 144, backfaceVisibility: "hidden", overflow: "visible" },
   previewScreen: { flex: 1, backgroundColor: COLORS.bg0 },
   previewHeader: { flexDirection: "row", alignItems: "center", paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border },
   previewHeadingCopy: { flex: 1, minWidth: 0 },
