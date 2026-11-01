@@ -1,5 +1,4 @@
-"use strict";
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -14,7 +13,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { COLORS, SHADOWS } from "../lib/constants";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../hooks/useAuth";
@@ -29,7 +28,7 @@ import { getMarketName } from "../lib/markets";
 import { lessonStatements } from "../lesson-kit/practice/lessonQuestions";
 import { localDateString, nextLocalMidnightISOString, streakCountdownLabel } from "../lib/dayMath";
 const NEEDED_CORRECT = 2;
-export default function StreakRescueScreen() {
+function StreakRescueScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { marketId } = useSelectedMarket();
@@ -146,152 +145,62 @@ export default function StreakRescueScreen() {
     if (!wasRight2) triggerHaptic("light");
   };
   if (loading || lessonDoneToday === null) {
-    return <View style={[styles.screen, styles.center]}>
-        <ActivityIndicator color={COLORS.streak} />
-      </View>;
+    return /* @__PURE__ */ React.createElement(View, { style: [styles.screen, styles.center] }, /* @__PURE__ */ React.createElement(ActivityIndicator, { color: COLORS.streak }));
   }
   if (!rescueWindowOpen && !outcome) {
-    return <View style={[styles.screen, styles.center, { padding: 24 }]}>
-        <Feather name="check-circle" size={32} color={COLORS.success} />
-        <Text style={styles.title}>{lessonDoneToday ? "Today's lesson is done" : "No rescue needed now"}</Text>
-        <Text style={styles.body}>{lessonDoneToday ? "Your streak is safe for today." : "Study a lesson to keep your streak going."}</Text>
-        <TouchableOpacity style={styles.primary} onPress={() => router.back()}>
-          <Text style={styles.primaryText}>Back to Course</Text>
-        </TouchableOpacity>
-      </View>;
+    return /* @__PURE__ */ React.createElement(View, { style: [styles.screen, styles.center, { padding: 24 }] }, /* @__PURE__ */ React.createElement(Feather, { name: "check-circle", size: 32, color: COLORS.success }), /* @__PURE__ */ React.createElement(Text, { style: styles.title }, lessonDoneToday ? "Today's lesson is done" : "No rescue needed now"), /* @__PURE__ */ React.createElement(Text, { style: styles.body }, lessonDoneToday ? "Your streak is safe for today." : "Study a lesson to keep your streak going."), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.primary, onPress: () => router.back() }, /* @__PURE__ */ React.createElement(Text, { style: styles.primaryText }, "Back to Course")));
   }
   if (!questions.length) {
-    return <View style={[styles.screen, styles.center, { padding: 24 }]}>
-        <Text style={styles.title}>No rescue round available yet</Text>
-        <Text style={styles.body}>Do today's lesson instead — that always keeps the streak alive.</Text>
-        <TouchableOpacity style={styles.primary} onPress={() => router.back()}>
-          <Text style={styles.primaryText}>Back</Text>
-        </TouchableOpacity>
-      </View>;
+    return /* @__PURE__ */ React.createElement(View, { style: [styles.screen, styles.center, { padding: 24 }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "No rescue round available yet"), /* @__PURE__ */ React.createElement(Text, { style: styles.body }, "Do today's lesson instead \u2014 that always keeps the streak alive."), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.primary, onPress: () => router.back() }, /* @__PURE__ */ React.createElement(Text, { style: styles.primaryText }, "Back")));
   }
   if (outcome) {
     const saved = outcome === "saved";
-    return <LinearGradient
-      colors={saved ? ["#F59E0B", "#EA580C", "#C2410C"] : ["#475569", "#334155", "#1E293B"]}
-      style={styles.full}
-    >
-        <View style={[styles.fullInner, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 24 }]}>
-          <Text style={styles.fullEyebrow}>{saved ? "STREAK RESCUED" : "STREAK LOST"}</Text>
-          <Animated.View style={[styles.bigNumberWrap, { transform: [{ scale: heart }] }]}>
-            <Feather name="zap" size={44} color="#FFFFFF" />
-            <Text style={styles.bigNumber}>{saved ? streak : 0}</Text>
-          </Animated.View>
-          <Text style={styles.fullTitle}>
-            {saved ? `${streak} days of ${marketName}, still yours` : "Day one starts today"}
-          </Text>
-          <Text style={styles.fullBody}>
-            {saved ? `${correct} of ${questions.length} right. You kept it \u2014 now bank today's lesson so it never comes to this again.` : `Only ${correct} of ${questions.length} right this time. Nothing you learned is gone, just the count. Day one is the easiest day to win.`}
-          </Text>
-          <Image source={saved ? require('../assets/mascot/leo-trophy.png') : require('../assets/mascot/leo-rain.png')} style={styles.fullLeo} resizeMode="contain" />
-          <View style={{ flex: 1 }} />
-          <TouchableOpacity style={styles.whiteCta} onPress={() => router.replace("/(tabs)/home")} activeOpacity={0.9}>
-            <Text style={[styles.whiteCtaText, { color: saved ? "#C2410C" : "#1E293B" }]}>
-              {saved ? "GO DO TODAY'S LESSON" : "START AGAIN TODAY"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </LinearGradient>;
+    return /* @__PURE__ */ React.createElement(
+      LinearGradient,
+      {
+        colors: saved ? ["#F59E0B", "#EA580C", "#C2410C"] : ["#475569", "#334155", "#1E293B"],
+        style: styles.full
+      },
+      /* @__PURE__ */ React.createElement(View, { style: [styles.fullInner, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 24 }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.fullEyebrow }, saved ? "STREAK RESCUED" : "STREAK LOST"), /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.bigNumberWrap, { transform: [{ scale: heart }] }] }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "fire", size: 44, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.bigNumber }, saved ? streak : 0)), /* @__PURE__ */ React.createElement(Text, { style: styles.fullTitle }, saved ? `${streak} days of ${marketName}, still yours` : "Day one starts today"), /* @__PURE__ */ React.createElement(Text, { style: styles.fullBody }, saved ? `${correct} of ${questions.length} right. You kept it \u2014 now bank today's lesson so it never comes to this again.` : `Only ${correct} of ${questions.length} right this time. Nothing you learned is gone, just the count. Day one is the easiest day to win.`), /* @__PURE__ */ React.createElement(Image, { source: saved ? require("../assets/mascot/leo-trophy.png") : require("../assets/mascot/leo-rain.png"), style: styles.fullLeo, resizeMode: "contain" }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.whiteCta, onPress: () => router.replace("/(tabs)/home"), activeOpacity: 0.9 }, /* @__PURE__ */ React.createElement(Text, { style: [styles.whiteCtaText, { color: saved ? "#C2410C" : "#1E293B" }] }, saved ? "GO DO TODAY'S LESSON" : "START AGAIN TODAY")))
+    );
   }
   if (!started) {
-    return <LinearGradient colors={["#F59E0B", "#EA580C", "#C2410C"]} style={styles.full}>
-        <View style={[styles.fullInner, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 24 }]}>
-          <Text style={styles.fullEyebrow}>YOUR STREAK IS ON THE LINE</Text>
-          <View style={styles.bigNumberWrap}>
-            <Feather name="zap" size={44} color="#FFFFFF" />
-            <Text style={styles.bigNumber}>{streak}</Text>
-          </View>
-          <Text style={styles.fullTitle}>Rescue your {streak}-day streak</Text>
-          <Text style={styles.fullBody}>
-            Three fast true-or-false calls from {marketName}. Get {NEEDED_CORRECT} right and the streak stays yours.
-          </Text>
-          <Image source={require('../assets/mascot/leo-rain.png')} style={styles.fullLeo} resizeMode="contain" />
-          <View style={{ flex: 1 }} />
-          <TouchableOpacity
-      style={styles.whiteCta}
-      onPress={() => {
-        triggerHaptic("medium");
-        setStarted(true);
-      }}
-      activeOpacity={0.9}
-    >
-            <Text style={[styles.whiteCtaText, { color: "#C2410C" }]}>RESCUE MY STREAK</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.ghostCta} onPress={() => router.back()} activeOpacity={0.8}>
-            <Text style={styles.ghostCtaText}>NOT NOW</Text>
-          </TouchableOpacity>
-        </View>
-      </LinearGradient>;
+    return /* @__PURE__ */ React.createElement(LinearGradient, { colors: ["#F59E0B", "#EA580C", "#C2410C"], style: styles.full }, /* @__PURE__ */ React.createElement(View, { style: [styles.fullInner, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 24 }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.fullEyebrow }, "YOUR STREAK IS ON THE LINE"), /* @__PURE__ */ React.createElement(View, { style: styles.bigNumberWrap }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "fire", size: 44, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.bigNumber }, streak)), /* @__PURE__ */ React.createElement(Text, { style: styles.fullTitle }, "Rescue your ", streak, "-day streak"), /* @__PURE__ */ React.createElement(Text, { style: styles.fullBody }, "Three fast true-or-false calls from ", marketName, ". Get ", NEEDED_CORRECT, " right and the streak stays yours."), /* @__PURE__ */ React.createElement(Image, { source: require("../assets/mascot/leo-rain.png"), style: styles.fullLeo, resizeMode: "contain" }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }), /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        style: styles.whiteCta,
+        onPress: () => {
+          triggerHaptic("medium");
+          setStarted(true);
+        },
+        activeOpacity: 0.9
+      },
+      /* @__PURE__ */ React.createElement(Text, { style: [styles.whiteCtaText, { color: "#C2410C" }] }, "RESCUE MY STREAK")
+    ), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.ghostCta, onPress: () => router.back(), activeOpacity: 0.8 }, /* @__PURE__ */ React.createElement(Text, { style: styles.ghostCtaText }, "NOT NOW"))));
   }
   const q = questions[index];
   const answered = answer !== null;
   const wasRight = answered && answer === q.isTrue;
-  return <View style={[styles.screen, { paddingTop: insets.top + 8 }]}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-          <Feather name="x" size={22} color={COLORS.textMuted} />
-        </TouchableOpacity>
-        <View style={styles.progressTrack}>
-          <View style={[styles.progressFill, { width: `${(index + (answered ? 1 : 0)) / questions.length * 100}%` }]} />
-        </View>
-        <View style={styles.streakChip}>
-          <Feather name="zap" size={12} color={COLORS.streak} />
-          <Text style={styles.streakChipText}>{streak}</Text>
-        </View>
-      </View>
-
-      <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 140 }}>
-        <Text style={styles.eyebrow}>RESCUE ROUND · {NEEDED_CORRECT} OF {questions.length} TO SAVE IT</Text>
-        <Text style={styles.title}>True or false?</Text>
-        <View style={styles.statementCard}>
-          <Text style={styles.statement}>{q.statement}</Text>
-        </View>
-
-        <View style={styles.answerRow}>
-          {[true, false].map((value) => {
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.screen, { paddingTop: insets.top + 8 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.header }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.back(), hitSlop: { top: 12, bottom: 12, left: 12, right: 12 } }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 22, color: COLORS.textMuted })), /* @__PURE__ */ React.createElement(View, { style: styles.progressTrack }, /* @__PURE__ */ React.createElement(View, { style: [styles.progressFill, { width: `${(index + (answered ? 1 : 0)) / questions.length * 100}%` }] })), /* @__PURE__ */ React.createElement(View, { style: styles.streakChip }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "fire", size: 12, color: COLORS.streak }), /* @__PURE__ */ React.createElement(Text, { style: styles.streakChipText }, streak))), /* @__PURE__ */ React.createElement(ScrollView, { contentContainerStyle: { padding: 20, paddingBottom: 140 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.eyebrow }, "RESCUE ROUND \xB7 ", NEEDED_CORRECT, " OF ", questions.length, " TO SAVE IT"), /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "True or false?"), /* @__PURE__ */ React.createElement(View, { style: styles.statementCard }, /* @__PURE__ */ React.createElement(Text, { style: styles.statement }, q.statement)), /* @__PURE__ */ React.createElement(View, { style: styles.answerRow }, [true, false].map((value) => {
     const selected = answer === value;
     const isCorrectChoice = answered && value === q.isTrue;
-    return <TouchableOpacity
-      key={String(value)}
-      style={[
-        styles.answerBtn,
-        selected && { borderColor: wasRight ? COLORS.success : COLORS.error },
-        isCorrectChoice && { backgroundColor: COLORS.successSoft, borderColor: COLORS.success }
-      ]}
-      onPress={() => onAnswer(value)}
-      activeOpacity={0.85}
-      disabled={answered}
-    >
-                <Feather name={value ? "check" : "x"} size={18} color={value ? COLORS.success : COLORS.error} />
-                <Text style={styles.answerText}>{value ? "True" : "False"}</Text>
-              </TouchableOpacity>;
-  })}
-        </View>
-
-        {answered && <View style={[styles.feedback, { backgroundColor: wasRight ? COLORS.successSoft : COLORS.errorSoft }]}>
-            <Text style={[styles.feedbackTitle, { color: wasRight ? COLORS.success : COLORS.error }]}>
-              {wasRight ? "Correct" : "Not quite"}
-            </Text>
-            <Text style={styles.feedbackBody}>{q.explanation}</Text>
-          </View>}
-
-        <Text style={styles.footnote}>
-          Freezes used this week: {freezesUsedThisWeek}/{maxFreezes}
-        </Text>
-      </ScrollView>
-
-      {answered && <View style={[styles.footer, { paddingBottom: insets.bottom + 16 }]}>
-          <TouchableOpacity style={styles.primary} onPress={onNext} disabled={saving} activeOpacity={0.9}>
-            <Text style={styles.primaryText}>
-              {saving ? "Saving\u2026" : index + 1 >= questions.length ? "See the result" : "Next"}
-            </Text>
-          </TouchableOpacity>
-        </View>}
-    </View>;
+    return /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        key: String(value),
+        style: [
+          styles.answerBtn,
+          selected && { borderColor: wasRight ? COLORS.success : COLORS.error },
+          isCorrectChoice && { backgroundColor: COLORS.successSoft, borderColor: COLORS.success }
+        ],
+        onPress: () => onAnswer(value),
+        activeOpacity: 0.85,
+        disabled: answered
+      },
+      /* @__PURE__ */ React.createElement(Feather, { name: value ? "check" : "x", size: 18, color: value ? COLORS.success : COLORS.error }),
+      /* @__PURE__ */ React.createElement(Text, { style: styles.answerText }, value ? "True" : "False")
+    );
+  })), answered && /* @__PURE__ */ React.createElement(View, { style: [styles.feedback, { backgroundColor: wasRight ? COLORS.successSoft : COLORS.errorSoft }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.feedbackTitle, { color: wasRight ? COLORS.success : COLORS.error }] }, wasRight ? "Correct" : "Not quite"), /* @__PURE__ */ React.createElement(Text, { style: styles.feedbackBody }, q.explanation)), /* @__PURE__ */ React.createElement(Text, { style: styles.footnote }, "Freezes used this week: ", freezesUsedThisWeek, "/", maxFreezes)), answered && /* @__PURE__ */ React.createElement(View, { style: [styles.footer, { paddingBottom: insets.bottom + 16 }] }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.primary, onPress: onNext, disabled: saving, activeOpacity: 0.9 }, /* @__PURE__ */ React.createElement(Text, { style: styles.primaryText }, saving ? "Saving\u2026" : index + 1 >= questions.length ? "See the result" : "Next"))));
 }
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: COLORS.bg0 },
@@ -336,3 +245,6 @@ const styles = StyleSheet.create({
   ghostCta: { alignSelf: "stretch", paddingVertical: 15, alignItems: "center", marginTop: 4 },
   ghostCtaText: { fontSize: 14, fontWeight: "900", letterSpacing: 0.6, color: "rgba(255,255,255,0.85)" }
 });
+export {
+  StreakRescueScreen as default
+};

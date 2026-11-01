@@ -1,3 +1,4 @@
+import React from "react";
 import {
   View,
   Text,
@@ -17,7 +18,7 @@ const milestoneConfig = {
     getSubtitle: () => "Keep it going tomorrow."
   },
   level_up: {
-    emoji: "\u26A1",
+    emoji: "\u{1F9EA}",
     color: "#EAB308",
     bgColor: "rgba(234, 179, 8, 0.15)",
     getTitle: (v) => `Level ${v} Reached!`,
@@ -50,7 +51,7 @@ function MilestoneShareCard({ visible, type, data, onDismiss }) {
 Consistency > intensity. Studying markets daily with MarketLingo `;
         break;
       case "level_up":
-        shareText = `\u26A1 Just hit Level ${data.value} in ${marketInfo}!
+        shareText = `Just hit Level ${data.value} in ${marketInfo}!
 
 Knowledge compounds. Learning with MarketLingo `;
         break;
@@ -74,57 +75,7 @@ Leveling up my market knowledge with MarketLingo `;
     }
   };
   if (!visible) return null;
-  return <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.overlay}>
-        <View style={styles.card}>
-          <ScrollView showsVerticalScrollIndicator={false} bounces={false} contentContainerStyle={styles.cardContent}>
-          {
-    /* Badge circle */
-  }
-          <View style={[styles.badgeCircle, { backgroundColor: config.bgColor, borderColor: config.color + "40" }]}>
-            <Text style={styles.badgeEmoji}>{config.emoji}</Text>
-          </View>
-
-          {
-    /* Title */
-  }
-          <Text style={[styles.title, { color: config.color }]}>
-            {config.getTitle(data.value)}
-          </Text>
-          <Text style={styles.subtitle}>{config.getSubtitle(data)}</Text>
-
-          {
-    /* Market badge */
-  }
-          {data.marketEmoji && data.marketName && <View style={styles.marketPill}>
-              <Text style={{ fontSize: 14 }}>{data.marketEmoji}</Text>
-              <Text style={styles.marketPillText}>{data.marketName}</Text>
-            </View>}
-
-          {
-    /* Value display */
-  }
-          <View style={[styles.valueBox, { backgroundColor: config.bgColor }]}>
-            <Text style={[styles.valueText, { color: config.color }]}>
-              {data.label}
-            </Text>
-          </View>
-
-          {
-    /* Actions */
-  }
-          <View style={styles.actions}>
-            <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.7}>
-              <Text style={styles.shareBtnText}> Share on LinkedIn / Instagram</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.dismissBtn} onPress={onDismiss} activeOpacity={0.7}>
-              <Text style={styles.dismissBtnText}>Continue</Text>
-            </TouchableOpacity>
-          </View>
-          </ScrollView>
-        </View>
-      </View>
-    </Modal>;
+  return /* @__PURE__ */ React.createElement(Modal, { visible, transparent: true, animationType: "fade" }, /* @__PURE__ */ React.createElement(View, { style: styles.overlay }, /* @__PURE__ */ React.createElement(View, { style: styles.card }, /* @__PURE__ */ React.createElement(ScrollView, { showsVerticalScrollIndicator: false, bounces: false, contentContainerStyle: styles.cardContent }, /* @__PURE__ */ React.createElement(View, { style: [styles.badgeCircle, { backgroundColor: config.bgColor, borderColor: config.color + "40" }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.badgeEmoji }, config.emoji)), /* @__PURE__ */ React.createElement(Text, { style: [styles.title, { color: config.color }] }, config.getTitle(data.value)), /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, config.getSubtitle(data)), data.marketEmoji && data.marketName && /* @__PURE__ */ React.createElement(View, { style: styles.marketPill }, /* @__PURE__ */ React.createElement(Text, { style: { fontSize: 14 } }, data.marketEmoji), /* @__PURE__ */ React.createElement(Text, { style: styles.marketPillText }, data.marketName)), /* @__PURE__ */ React.createElement(View, { style: [styles.valueBox, { backgroundColor: config.bgColor }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.valueText, { color: config.color }] }, data.label)), /* @__PURE__ */ React.createElement(View, { style: styles.actions }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.shareBtn, onPress: handleShare, activeOpacity: 0.7 }, /* @__PURE__ */ React.createElement(Text, { style: styles.shareBtnText }, " Share on LinkedIn / Instagram")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.dismissBtn, onPress: onDismiss, activeOpacity: 0.7 }, /* @__PURE__ */ React.createElement(Text, { style: styles.dismissBtnText }, "Continue")))))));
 }
 const styles = StyleSheet.create({
   overlay: {

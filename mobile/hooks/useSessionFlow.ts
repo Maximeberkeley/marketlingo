@@ -180,7 +180,7 @@ export function useSessionFlow({
     setCompletedBites((prev) => (prev.includes(biteIndex) ? prev : [...prev, biteIndex]));
     try {
       await addXP(10, 'bite', undefined, `Quick Bite ${biteIndex + 1}`);
-      Alert.alert('Bite Complete! ⚡', '+10 XP earned');
+      Alert.alert('Bite Complete!', '+10 XP earned');
     } catch (err) {
       log.error('Bite XP error:', err);
       Alert.alert('Bite Complete!', 'XP could not be saved right now.');

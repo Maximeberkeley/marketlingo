@@ -43,7 +43,7 @@ const milestoneConfig: Record<MilestoneType, {
     getSubtitle: () => 'Keep it going tomorrow.',
   },
   level_up: {
-    emoji: '⚡',
+    emoji: '🧪',
     color: '#EAB308',
     bgColor: 'rgba(234, 179, 8, 0.15)',
     getTitle: (v) => `Level ${v} Reached!`,
@@ -79,7 +79,7 @@ export function MilestoneShareCard({ visible, type, data, onDismiss }: Milestone
         shareText = ` ${data.value}-day learning streak in ${marketInfo}!\n\nConsistency > intensity. Studying markets daily with MarketLingo `;
         break;
       case 'level_up':
-        shareText = `⚡ Just hit Level ${data.value} in ${marketInfo}!\n\nKnowledge compounds. Learning with MarketLingo `;
+        shareText = `Just hit Level ${data.value} in ${marketInfo}!\n\nKnowledge compounds. Learning with MarketLingo `;
         break;
       case 'passport_stamp':
         shareText = ` Earned my "${data.monthName}" passport stamp in ${marketInfo}! Grade: ${data.grade || 'A'}\n\nBuilding industry expertise with MarketLingo `;

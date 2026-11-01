@@ -5,7 +5,7 @@
  */
 import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -87,7 +87,7 @@ export function FeedbackBanner({
         {/* XP earned row */}
         {isCorrect && xpEarned && xpEarned > 0 && (
           <View style={styles.xpRow}>
-            <Feather name="zap" size={14} color={colors.text} />
+            <MaterialCommunityIcons name="flask" size={14} color={colors.text} />
             <Text style={[styles.xpText, { color: colors.text }]}>
               +{xpEarned} XP
               {comboMultiplier && comboMultiplier > 1 ? ` (${comboMultiplier}x combo!)` : ''}

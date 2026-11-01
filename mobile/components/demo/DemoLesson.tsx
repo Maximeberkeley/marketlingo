@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SHADOWS } from '../../lib/constants';
 import { saveDemoMarket, saveDemoXP } from '../../lib/demoXPBridge';
@@ -248,7 +248,7 @@ export function DemoLesson({ onComplete, onSkip }: DemoLessonProps) {
               <Text style={styles.victoryKicker}>FIRST WIN BANKED</Text>
               <Text style={styles.victoryTitle}>You just learned how modern AI thinks.</Text>
               <View style={styles.rewards}>
-                <View style={styles.reward}><Feather name="zap" size={24} color={COLORS.gold} /><Text style={styles.rewardValue}>+20 XP</Text><Text style={styles.rewardLabel}>Starting reward</Text></View>
+                <View style={styles.reward}><MaterialCommunityIcons name="flask" size={24} color={COLORS.xpBadgeIcon} /><Text style={styles.rewardValue}>+20 XP</Text><Text style={styles.rewardLabel}>Starting reward</Text></View>
                 <View style={styles.reward}><Feather name="activity" size={24} color={COLORS.streak} /><Text style={styles.rewardValue}>1 Day</Text><Text style={styles.rewardLabel}>Streak unlocked</Text></View>
               </View>
               <Primary label="Save My Progress & Choose Industry" onPress={onComplete} />

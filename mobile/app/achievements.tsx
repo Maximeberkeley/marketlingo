@@ -16,7 +16,7 @@ import { isDark } from '../lib/theme';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { ACHIEVEMENTS, tierColors } from '../data/achievements';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { getMarketName } from '../lib/markets';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -109,7 +109,7 @@ function AchievementCard({ item, index }: { item: AchievementDisplay; index: num
       </Text>
 
       <View style={styles.cardFooter}>
-        <Feather name="zap" size={10} color={item.unlocked ? tc.color : COLORS.textMuted} />
+        <MaterialCommunityIcons name="flask" size={10} color={item.unlocked ? tc.color : COLORS.textMuted} />
         <Text style={[styles.xpText, item.unlocked && { color: tc.color }]}>
           +{item.xpReward} XP
         </Text>
