@@ -1,0 +1,46 @@
+{
+  "leo-call-listen": {
+    "ms": 4067,
+    "loop": true
+  },
+  "leo-call-talk": {
+    "ms": 4067,
+    "loop": true
+  },
+  "leo-call-think": {
+    "ms": 4067,
+    "loop": true
+  },
+  "leo-done": {
+    "ms": 5067,
+    "loop": false
+  },
+  "leo-doze": {
+    "ms": 2667,
+    "loop": false
+  },
+  "leo-idle-loop": {
+    "ms": 4733,
+    "loop": true
+  },
+  "leo-peek": {
+    "ms": 2667,
+    "loop": false
+  },
+  "leo-play": {
+    "ms": 5333,
+    "loop": false
+  },
+  "leo-reading-loop": {
+    "ms": 5067,
+    "loop": true
+  },
+  "leo-sleep-loop": {
+    "ms": 4067,
+    "loop": true
+  },
+  "leo-wake": {
+    "ms": 2000,
+    "loop": false
+  }
+}
