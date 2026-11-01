@@ -31,13 +31,20 @@ export function useHomeLeo({ done, active, focused, callOpen, doneKey, celebrate
   const claimed = useRef(new Set<string>());
 
   useEffect(() => {
-    if (!active || !focused) {
+    if (!active || !focused || !foreground) {
       if (wakeTimer.current) clearTimeout(wakeTimer.current);
       wakeTimer.current = null;
       woken.current = false;
     }
     return () => { if (wakeTimer.current) clearTimeout(wakeTimer.current); };
-  }, [active, focused]);
+  }, [active, focused, foreground]);
+
+  useEffect(() => {
+    setClip(done ? 'leo-reading-loop' : 'leo-sleep-loop');
+  }, [done, doneKey]);
+  useEffect(() => {
+    if (!motion) setClip(done ? 'leo-reading-loop' : 'leo-sleep-loop');
+  }, [motion, done]);
 
   useEffect(() => {
     const closed = previousCall.current && !callOpen;
@@ -49,7 +56,7 @@ export function useHomeLeo({ done, active, focused, callOpen, doneKey, celebrate
   }, [callOpen, done, motion]);
 
   useEffect(() => {
-    if (!done) { setClip('leo-sleep-loop'); return; }
+    if (!done) return;
     if (!active || !focused || callOpen || !ready || !foreground) return;
     if (!celebrate) { setClip('leo-reading-loop'); return; }
     let cancelled = false;
