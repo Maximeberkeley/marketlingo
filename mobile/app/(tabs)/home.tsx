@@ -375,6 +375,18 @@ export default function HomeScreen() {
     return () => { active = false; };
   }, [courseFocused, user?.id, selectedMarketLocal, clockDay]);
   const completedOnClockDay = Boolean(dailyCompletion?.lesson_completed && dailyCompletion.completion_date === clockDay);
+  // CourseJourney unmounts during lessons: preserve this visual-only edge here.
+  const leoDayScope = `${user?.id ?? 'guest'}/${selectedMarketLocal}/${clockDay}`;
+  const leoCompletionEdge = useRef({ scope: leoDayScope, ready: false, done: false });
+  const [leoCelebrationScope, setLeoCelebrationScope] = useState<string | null>(null);
+  useEffect(() => {
+    const ready = completionReady && Boolean(user && selectedMarketLocal && xpData?.user_id === user.id && xpData?.market_id === selectedMarketLocal);
+    const previous = leoCompletionEdge.current;
+    if (ready && previous.scope === leoDayScope && previous.ready && !previous.done && completedOnClockDay) {
+      setLeoCelebrationScope(leoDayScope);
+    }
+    leoCompletionEdge.current = { scope: leoDayScope, ready, done: completedOnClockDay };
+  }, [completionReady, user?.id, selectedMarketLocal, xpData?.user_id, xpData?.market_id, leoDayScope, completedOnClockDay]);
   useEffect(() => {
     if (clockDay !== localDateString()) return;
     void refreshStreakData.current.refetchXP();
@@ -612,6 +624,9 @@ export default function HomeScreen() {
           lessonCompletedToday={completedOnClockDay}
           completedTodayStackId={completedOnClockDay ? dailyCompletion?.completed_stack_id : null}
           isFocused={courseFocused}
+          leoCallOpen={showLeoChat}
+          leoCelebrationPending={leoCelebrationScope === leoDayScope}
+          onLeoCelebrated={() => setLeoCelebrationScope(null)}
           arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
           caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
           notesCompletedToday={notesCompletedToday}

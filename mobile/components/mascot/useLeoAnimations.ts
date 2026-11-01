@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { triggerHaptic } from '../../lib/haptics';
 import { LeoClip } from './leoClips';
 import { leoAnimationDelay } from './leoAnimationRules';
-import { useLeoMotion } from './useLeoMotion';
+import { useLeoMotion, useLeoMotionState } from './useLeoMotion';
 
 export function useOnboardingLeo(paused: boolean) {
   const [clip, setClip] = useState<LeoClip>('leo-idle-loop');
@@ -22,7 +22,7 @@ export function useHomeLeo({ done, active, focused, callOpen, doneKey, celebrate
   celebrate: boolean; onCelebrated: () => void; onLeo: () => void;
 }) {
   const [clip, setClip] = useState<LeoClip>(done ? 'leo-reading-loop' : 'leo-sleep-loop');
-  const motion = useLeoMotion(!active || !focused || callOpen);
+  const { allowed: motion, ready, foreground } = useLeoMotionState(!active || !focused || callOpen);
   const woken = useRef(false);
   const previousCall = useRef(callOpen);
   const wakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -50,7 +50,7 @@ export function useHomeLeo({ done, active, focused, callOpen, doneKey, celebrate
 
   useEffect(() => {
     if (!done) { setClip('leo-sleep-loop'); return; }
-    if (!active || !focused || callOpen) return;
+    if (!active || !focused || callOpen || !ready || !foreground) return;
     if (!celebrate) { setClip('leo-reading-loop'); return; }
     let cancelled = false;
     void (async () => {
@@ -66,7 +66,7 @@ export function useHomeLeo({ done, active, focused, callOpen, doneKey, celebrate
       if (!cancelled) setClip('leo-done');
     })();
     return () => { cancelled = true; };
-  }, [done, active, focused, callOpen, celebrate, doneKey, motion]);
+  }, [done, active, focused, callOpen, celebrate, doneKey, motion, ready, foreground]);
 
   useEffect(() => {
     if (!motion || done || clip !== 'leo-sleep-loop') return;
