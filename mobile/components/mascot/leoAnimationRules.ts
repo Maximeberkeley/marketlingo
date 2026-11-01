@@ -1,5 +1,5 @@
 export function leoAnimationDelay(kind: 'peek' | 'play', random = Math.random()): number {
-  return kind === 'peek' ? 12000 + Math.floor(random * 8000) : 10000 + Math.floor(random * 5000);
+  return kind === 'peek' ? 25000 + Math.floor(random * 15000) : 10000 + Math.floor(random * 5000);
 }
 
 export function leoDoneKey(userId: string | undefined, marketId: string, localDay: string): string {
@@ -7,7 +7,7 @@ export function leoDoneKey(userId: string | undefined, marketId: string, localDa
 }
 
 export function leoCallClip(isGenerating: boolean, isSpeaking: boolean) {
-  return isGenerating ? 'leo-call-think' : isSpeaking ? 'leo-call-talk' : 'leo-call-listen';
+  return isGenerating ? 'leo-call-think' : isSpeaking ? 'leo-teach-loop' : 'leo-call-listen';
 }
 
 export function leoCoachClip(mood: string, intro: boolean) {
