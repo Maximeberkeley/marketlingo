@@ -9,7 +9,7 @@ import {
   Share,
 } from 'react-native';
 import { COLORS } from '../../lib/constants';
-import { LeoCharacter } from '../mascot/LeoCharacter';
+import { LeoAnimated } from '../mascot/LeoAnimated';
 import { ConfettiBurst } from '../ui/ConfettiBurst';
 import { triggerCelebration } from '../../lib/haptics';
 import { playSound } from '../../lib/sounds';
@@ -58,7 +58,7 @@ export function SessionCompleteCard({
       <ConfettiBurst show count={24} />
       <Animated.View style={[styles.card, { transform: [{ scale: scaleAnim }] }]}>
         <View style={styles.leoCircle}>
-          <LeoCharacter size="lg" animation="celebrating" />
+          <LeoAnimated clip="leo-success" size={160} fallback="celebrating" />
         </View>
 
         <Text style={styles.title}>Day {dayNumber} Complete!</Text>
