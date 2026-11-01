@@ -1,30 +1,31 @@
 # Animated Leo
 
-Transparent animated WebP clips of Leo, made with Runway and keyed with `scripts/leo-animation/`. They are not wired into the app yet. The instructions below say how to do that.
+Transparent animated WebP clips of Leo, made with Runway and keyed with `scripts/leo-animation/`. Most are wired into the app. The sections below say where each clip goes; the latest changes are under "Fixes (Nov 1)".
 
 ## The clips
 
 | File | Plays | Length | Where | When |
 |---|---|---|---|---|
-| leo-sleep-loop.webp | loop | 4067 ms | Home | Today's lesson not done |
-| leo-peek.webp | once | 2667 ms | Home | Every 12–20 s while sleeping |
-| leo-wake.webp | once | 2000 ms | Home | Tap Leo while he sleeps |
-| leo-doze.webp | once | 2667 ms | Home | Leo call closes after he was woken |
+| leo-sleep-loop.webp | loop | 7567 ms (rests 2.5 s) | Home | Today's lesson not done |
+| leo-peek.webp | once | 2667 ms | Home | Every 25–40 s while sleeping |
+| leo-eyes-open.webp | once | 800 ms | Home | Tap Leo while he sleeps; open the call when it ends |
+| leo-eyes-close.webp | once | 800 ms | Home | Leo call closes after he was woken |
 | leo-done.webp | once | 5067 ms | Home | Today's lesson just finished (once a day) |
-| leo-reading-loop.webp | loop | 5067 ms | Home | Today's lesson done |
-| leo-call-listen.webp | loop | 4067 ms | Leo call | Default state |
-| leo-call-think.webp | loop | 4067 ms | Leo call | `isGenerating` |
-| leo-call-talk.webp | loop | 4067 ms | Leo call | `isSpeaking` |
-| leo-idle-loop.webp | loop | 4733 ms | Onboarding | Default state |
-| leo-play.webp | once | 5333 ms | Onboarding | Every 10–15 s |
-| leo-greet.webp | once | 2000 ms | Onboarding welcome | Screen opens, then leo-idle-loop |
+| leo-reading-loop.webp | loop | 9333 ms (rests 3 s) | Home | Today's lesson done |
+| leo-call-listen.webp | loop | 7917 ms (rests 2.5 s) | Leo call | Default state |
+| leo-call-think.webp | loop | 6917 ms (rests 1.5 s) | Leo call | `isGenerating` |
+| leo-teach-loop.webp | loop | 4600 ms (rests 0.6 s) | Leo call | `isSpeaking` |
+| leo-idle-loop.webp | loop | 8867 ms (rests 3 s) | Onboarding | Default state |
+| leo-greet.webp | once | 2000 ms | First onboarding screen | Screen opens, then leo-idle-loop |
 | leo-ready.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | First question of a run |
 | leo-encourage.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | Answer graded wrong |
-| leo-success.webp | once | 2000 ms | Lesson complete; Arena, Deep Case (LeoCoach) | Lesson finished; answer graded right |
+| leo-success.webp | once | 2000 ms | Lesson complete (both screens); Arena, Deep Case (LeoCoach) | Lesson finished; answer graded right |
+
+Not used any more: leo-wake and leo-doze (replaced by leo-eyes-open and leo-eyes-close), leo-call-talk (replaced by leo-teach-loop), leo-play.
 
 `clips.json` has the same lengths. A loop clip repeats forever. A once clip plays one time and holds its last frame.
 
-Every clip starts and ends exactly on Leo's existing poses, so clips chain without a jump: sleep → wake → (call) → doze → sleep, and sleep → done → reading.
+Every clip starts and ends exactly on Leo's existing poses, so clips chain without a jump: sleep → eyes-open → (call) → eyes-close → sleep, and sleep → done → reading. Loop clips now play slower and rest on a still pose before repeating; the rest is built into the file.
 
 ## Wiring it into the app
 
@@ -105,6 +106,29 @@ leo-success starts on the sitting pose. Leo fist-pumps, sparkles pop, and he end
    - Finish a lesson: Leo fist-pumps and lands in the proud pose.
    - A right answer in Arena or a Deep Case: the same reaction.
    - With Reduce Motion on: the same still images as today.
+
+## Fixes (Nov 1)
+1. **Clip table:** add leo-eyes-open (800 ms, once), leo-eyes-close (800 ms, once) and leo-teach-loop (4600 ms, loop) to `leoClips.ts` and `leoClips.js`. Update every other length from `clips.json`; the loop files were replaced with slower versions that rest before repeating.
+2. **Home tap while sleeping** (`useHomeLeo` in `components/mascot/useLeoAnimations.ts` and `.js`):
+   - Play leo-eyes-open instead of leo-wake, so Leo only opens his eyes and doesn't start getting up.
+   - Open the call from that clip's `onEnd`, not from the fixed 600 ms timer. If motion is off, open the call immediately.
+   - When the call closes after Leo was woken, play leo-eyes-close, then leo-sleep-loop. Don't play leo-doze: it starts from the sitting pose and would jump.
+3. **Peek less often:** every 25 to 40 seconds instead of 12 to 20 (`leoAnimationDelay('peek')`).
+4. **Leo call speaking:**
+   - In `leoCallClip` (`components/mascot/leoAnimationRules.ts` and `.js`), return leo-teach-loop while `isSpeaking`. This is Leo with his notebook, explaining.
+   - On a device, Leo currently doesn't visibly change when he speaks, although the flags in `LeoVoiceChatOverlay` look right. Log the clip `LeoAnimated` receives in the call to confirm it switches.
+   - In `ClipPlayer` (`components/mascot/LeoAnimated.tsx` and `.js`): if the newest layer hasn't fired `onLoad` within 400 ms, show it anyway and remove the older layers. Two clips must never be visible at once.
+5. **Greeting:** `app/onboarding/welcome.tsx` is never opened by any route, so leo-greet never plays. Put it on the first onboarding screen. In `app/onboarding/index.tsx` and `.js`, replace `<LeoCharacter size="lg" animation="waving" />` with `LeoAnimated` (size 160, fallback `'waving'`). Play leo-greet once, then loop leo-idle-loop, paused when the screen isn't focused.
+6. **Lesson complete on Home:** the daily lesson finishes on `components/home/SessionCompleteCard.tsx` (and `.js`), which still shows `<LeoCharacter size="lg" animation="celebrating" />`. Replace it with `LeoAnimated` (size 160, fallback `'celebrating'`) and play leo-success once.
+7. **Practice reactions:** in Arena and Deep Case, LeoCoach only appears on questions with an authored Leo line (`exercise.leo.line`), so most answers get no reaction. In the feedback phase of every graded question, show LeoCoach (right → leo-success, wrong → leo-encourage). When the question has no line of its own, give him one short line of about eight words, chosen from a small set for right answers and another for wrong ones. Wrong-answer lines must be encouraging and must not give away the answer.
+8. Keep each `.tsx` and `.js` twin identical. Don't change grading, XP, saving or lesson content.
+9. **Check on a device:**
+   - **Home:** Tap the sleeping Leo. He only opens his eyes, then the call opens. Close the call: he closes his eyes and sleeps.
+   - **Loops:** they're calmer, with still pauses between repeats.
+   - **Leo call:** Leo switches to the notebook clip whenever he speaks.
+   - **Onboarding:** the first screen greets with a wave.
+   - **Lesson complete:** finishing a lesson shows the fist pump on both completion screens.
+   - **Practice:** every graded answer gets a reaction.
 
 ## Adding or replacing a clip
 See `scripts/leo-animation/README.md`. It has the Runway settings and prompts and the start/end frames, and explains how to convert a Runway MP4 into a clip here.

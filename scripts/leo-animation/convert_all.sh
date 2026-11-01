@@ -16,24 +16,27 @@ conv() {  # name, flags...
   fi
 }
 # Home (CourseJourney centre)
-conv leo-sleep-loop   --loop
+conv leo-sleep-loop   --loop --speed 0.8 --hold 2500
 conv leo-peek         --speed 1.5
 conv leo-wake         --speed 2
+conv leo-eyes-open    
+conv leo-eyes-close   
 conv leo-doze         --speed 1.5
-conv leo-reading-loop --loop
+conv leo-reading-loop --loop --speed 0.8 --hold 3000
 conv leo-reading-wave --speed 1.5
 conv leo-done         --speed 1.2
 # Leo call (LeoVoiceChatOverlay), shown larger
-conv leo-call-listen  --loop --size 720
-conv leo-call-think   --loop --size 720
-conv leo-call-talk    --loop --size 720
+conv leo-call-listen  --loop --size 720 --fps 12 --speed 0.75 --hold 2500
+conv leo-call-think   --loop --size 720 --fps 12 --speed 0.75 --hold 1500
+conv leo-call-talk    --loop --size 720 --fps 12 --speed 0.8 --hold 800
+conv leo-teach-loop   --loop --size 720 --speed 0.85 --hold 600
 # Lessons (LeoCoach reactions)
 conv leo-correct       --speed 2
 conv leo-wrong         --speed 1.5
 conv leo-thinking-loop --loop
 conv leo-hello         --speed 1.5
 # Extras
-conv leo-idle-loop     --loop
+conv leo-idle-loop     --loop --speed 0.8 --hold 3000
 conv leo-play          --speed 1.5
 # Lesson moments (about 2 s each)
 conv leo-ready         --speed 2

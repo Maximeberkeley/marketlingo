@@ -1,14 +1,14 @@
 {
   "leo-call-listen": {
-    "ms": 4067,
+    "ms": 7917,
     "loop": true
   },
   "leo-call-talk": {
-    "ms": 4067,
+    "ms": 5883,
     "loop": true
   },
   "leo-call-think": {
-    "ms": 4067,
+    "ms": 6917,
     "loop": true
   },
   "leo-done": {
@@ -23,12 +23,20 @@
     "ms": 2000,
     "loop": false
   },
+  "leo-eyes-close": {
+    "ms": 800,
+    "loop": false
+  },
+  "leo-eyes-open": {
+    "ms": 800,
+    "loop": false
+  },
   "leo-greet": {
     "ms": 2000,
     "loop": false
   },
   "leo-idle-loop": {
-    "ms": 4733,
+    "ms": 8867,
     "loop": true
   },
   "leo-peek": {
@@ -40,7 +48,7 @@
     "loop": false
   },
   "leo-reading-loop": {
-    "ms": 5067,
+    "ms": 9333,
     "loop": true
   },
   "leo-ready": {
@@ -48,12 +56,16 @@
     "loop": false
   },
   "leo-sleep-loop": {
-    "ms": 4067,
+    "ms": 7567,
     "loop": true
   },
   "leo-success": {
     "ms": 2000,
     "loop": false
+  },
+  "leo-teach-loop": {
+    "ms": 4600,
+    "loop": true
   },
   "leo-wake": {
     "ms": 2000,
