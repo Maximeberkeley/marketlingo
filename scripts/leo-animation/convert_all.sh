@@ -35,3 +35,8 @@ conv leo-hello         --speed 1.5
 # Extras
 conv leo-idle-loop     --loop
 conv leo-play          --speed 1.5
+# Lesson moments (about 2 s each)
+conv leo-ready         --speed 2
+conv leo-success       --speed 2
+conv leo-encourage     --speed 2
+conv leo-greet         --speed 2

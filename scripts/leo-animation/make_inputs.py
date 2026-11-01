@@ -23,6 +23,7 @@ POSES = {
     'leo-failure': 'leo-failure.png',
     'leo-waving': 'leo-waving.png',
     'leo-call': 'leo-voice-study.png',  # headset + desk, the Leo call screen
+    'leo-success': 'leo-success.png',  # proud resting pose (eyes closed, paw up, sparkles)
 }
 
 src_dir, out_dir = sys.argv[1], sys.argv[2]
