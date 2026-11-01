@@ -10,11 +10,14 @@ Transparent animated WebP clips of Leo, made with Runway and keyed with `scripts
 | leo-peek.webp | once | 2667 ms | Home | Every 25–40 s while sleeping |
 | leo-eyes-open.webp | once | 800 ms | Home | Tap Leo while he sleeps; open the call when it ends |
 | leo-eyes-close.webp | once | 800 ms | Home | Leo call closes after he was woken |
+| leo-wake.webp | once | 3200 ms | Home | Morning wake-up: first Home visit of the day, lesson not done |
+| leo-doze.webp | once | 3400 ms | Home | End of the morning wake-up (or call closes while he was awake) |
 | leo-done.webp | once | 5067 ms | Home | Today's lesson just finished (once a day) |
 | leo-reading-loop.webp | loop | 9333 ms (rests 3 s) | Home | Today's lesson done |
 | leo-call-listen.webp | loop | 7917 ms (rests 2.5 s) | Leo call | Default state |
 | leo-call-think.webp | loop | 6917 ms (rests 1.5 s) | Leo call | `isGenerating` |
-| leo-teach-loop.webp | loop | 4600 ms (rests 0.6 s) | Leo call | `isSpeaking` |
+| leo-call-talk.webp | loop | 5883 ms (rests 0.8 s) | Leo call | Speaking the opening greeting |
+| leo-teach-loop.webp | loop | 4600 ms (rests 0.6 s) | Leo call | Speaking an answer |
 | leo-idle-loop.webp | loop | 8867 ms (rests 3 s) | Onboarding | Default state |
 | leo-play.webp | once | 5333 ms | Lesson complete; onboarding | Rare treat only (see "Treat") |
 | leo-greet.webp | once | 2000 ms | First onboarding screen | Screen opens, then leo-idle-loop |
@@ -22,7 +25,7 @@ Transparent animated WebP clips of Leo, made with Runway and keyed with `scripts
 | leo-encourage.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | Answer graded wrong |
 | leo-success.webp | once | 2000 ms | Lesson complete (both screens); Arena, Deep Case (LeoCoach) | Lesson finished; answer graded right |
 
-Not used any more: leo-wake and leo-doze (replaced by leo-eyes-open and leo-eyes-close), leo-call-talk (replaced by leo-teach-loop).
+Every clip is used. leo-wake and leo-doze are the once-a-day morning wake-up; leo-call-talk is Leo's opening greeting in the call.
 
 `clips.json` has the same lengths. A loop clip repeats forever. A once clip plays one time and holds its last frame.
 
@@ -130,6 +133,17 @@ leo-success starts on the sitting pose. Leo fist-pumps, sparkles pop, and he end
    - **Onboarding:** the first screen greets with a wave.
    - **Lesson complete:** finishing a lesson shows the fist pump on both completion screens.
    - **Practice:** every graded answer gets a reaction.
+
+## Morning wake-up and call greeting (leo-wake, leo-doze, leo-call-talk)
+Keep leo-wake, leo-doze and leo-call-talk in `leoClips.ts` and `leoClips.js` (add them back if they were removed), with lengths from `clips.json`: leo-wake 3200 ms, leo-doze 3400 ms (both once), leo-call-talk 5883 ms (loop).
+
+1. **Morning wake-up on Home** (`useHomeLeo` in `components/mascot/useLeoAnimations.ts` and `.js`), once per learner, market and local day. Use the AsyncStorage key `@marketlingo/leo-morning/${user?.id ?? 'guest'}/${marketId}/${localDay}`.
+   - It plays the first time Home is focused that day, but only while today's lesson isn't done and only after `ready` is true.
+   - Sequence: leo-wake (stretches and sits up), then leo-idle-loop for about 4 seconds while he looks at you, then leo-doze, then leo-sleep-loop.
+   - If the learner taps Leo while he's awake in this sequence, open the call right away (no eyes-open). When the call closes, play leo-doze, then leo-sleep-loop.
+   - If the lesson gets done, or Home loses focus mid-sequence, stop it and show the normal state for the day.
+   - Skip it with Reduce Motion on.
+2. **Call greeting** (`components/ai/LeoVoiceChatOverlay.tsx` and `.js`): while Leo speaks the opening greeting ("Hey! Ask me anything…"), show leo-call-talk (Leo at his desk, gesturing). While he speaks an answer, show leo-teach-loop. Add a `greeting` flag to `leoCallClip` in `leoAnimationRules.ts` and `.js` for this.
 
 ## Treat (leo-play)
 Leo chasing his tail is a rare surprise, never routine. It starts and ends on the normal sitting pose, so it chains into leo-success and leo-idle-loop with no jump.
