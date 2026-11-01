@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DemoLesson } from "@/components/demo/DemoLesson";
+import { LandingLeo } from "@/components/mascot/LandingLeo";
 import leoMascot from "@/assets/mascot/leo-reference.png";
 import leoCelebrating from "@/assets/mascot/leo-celebrating.png";
 import leoSticker from "@/assets/leo-sticker.png";
@@ -153,6 +154,7 @@ export default function Landing() {
           </div>
         </div>
         <div className="landing-mobile-art" aria-label="Preview of the MarketLingo app">
+          <LandingLeo className="landing-leo-mobile" />
           <div className="landing-phone"><img src="/appstore/screenshot-4-news.png" alt="MarketLingo industry news screen" /></div>
           <span className="landing-art-caption">01 / INDUSTRY INTEL</span>
         </div>
@@ -164,14 +166,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto relative">
           <div className="text-center max-w-3xl mx-auto">
             {/* Leo mascot */}
-            <motion.img
-              src={leoMascot}
-              alt="Leo — your AI learning companion"
-              initial={{ opacity: 0, scale: 0.8, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.6, type: "spring", damping: 15 }}
-              className="w-24 h-24 mx-auto mb-6 drop-shadow-xl"
-            />
+            <LandingLeo className="landing-leo-desktop" />
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
