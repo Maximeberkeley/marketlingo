@@ -202,7 +202,7 @@ Leo shows the viewer he's ready to start the lesson with a confident nod and a p
 Consistency: the same flat 2D cartoon fox in every frame (orange fur with subtle paper grain, cream face and inner ears, black-tipped tail, thick dark-orange outline, black graduation cap with a gold tassel that stays on). Same size, proportions and eye line. Locked-off static camera. The background stays a perfectly flat pure green (#00FF00) from edge to edge, with Leo the only thing in frame. Smooth hand-drawn 2D animation. No subtitles.
 ```
 
-### leo-success (not made yet)
+### leo-success (in the app)
 First `leo-idle.png`, last `leo-success.png`, 4 s, 480p (converted at 2x)
 ```
 Leo celebrates the viewer finishing the lesson with a delighted fist pump, then rests in a proud pose.
