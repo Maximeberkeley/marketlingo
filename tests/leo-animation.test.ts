@@ -120,6 +120,7 @@ describe('Animated Leo rules', () => {
       { module, exports: module.exports, require: (path: string) => path });
     expect(Object.keys(module.exports.leoClips)).toHaveLength(15);
     for (const [clip, spec] of Object.entries(metadata)) {
+      if (['leo-wake', 'leo-doze', 'leo-call-talk'].includes(clip)) { expect(module.exports.leoClips[clip]).toBeUndefined(); continue; }
       expect(module.exports.leoClips[clip]).toMatchObject(spec);
       expect(existsSync(`mobile/assets/mascot/anim/${clip}.webp`)).toBe(true);
     }

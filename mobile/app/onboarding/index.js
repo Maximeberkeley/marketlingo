@@ -19,6 +19,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { localDateString } from "../../lib/dayMath";
 import { supabase } from "../../lib/supabase";
 import { LeoAnimated } from "../../components/mascot/LeoAnimated";
+import { useOnboardingLeo } from "../../components/mascot/useLeoAnimations";
 import { getDemoXP } from "../../lib/demoXPBridge";
 import { OnboardingProgress } from "../../components/onboarding/OnboardingProgress";
 import { triggerHaptic } from "../../lib/haptics";
@@ -51,12 +52,12 @@ function OnboardingScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [demoMarket, setDemoMarket] = useState(null);
   const [demoXP, setDemoXP] = useState(0);
-  const [leoClip, setLeoClip] = useState("leo-greet");
   const [focused, setFocused] = useState(true);
   useFocusEffect(React.useCallback(() => {
     setFocused(true);
     return () => setFocused(false);
   }, []));
+  const leo = useOnboardingLeo(!focused, "leo-greet");
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   useEffect(() => {
@@ -118,16 +119,7 @@ function OnboardingScreen() {
       showsVerticalScrollIndicator: false,
       style: { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
     },
-    /* @__PURE__ */ React.createElement(View, { style: styles.header }, /* @__PURE__ */ React.createElement(
-      LeoAnimated,
-      {
-        clip: leoClip,
-        size: 160,
-        fallback: "waving",
-        paused: !focused,
-        onEnd: () => setLeoClip("leo-idle-loop")
-      }
-    ), /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Choose your industry"), /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "Pick your industry"), !user && /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.push("/auth"), activeOpacity: 0.7, style: { marginTop: 10 } }, /* @__PURE__ */ React.createElement(Text, { style: { color: COLORS.accent, fontWeight: "700", fontSize: 15 } }, "I already have an account"))),
+    /* @__PURE__ */ React.createElement(View, { style: styles.header }, /* @__PURE__ */ React.createElement(LeoAnimated, { clip: leo.clip, size: 160, fallback: "waving", paused: !focused, onEnd: leo.onEnd }), /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Choose your industry"), /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "Pick your industry"), !user && /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.push("/auth"), activeOpacity: 0.7, style: { marginTop: 10 } }, /* @__PURE__ */ React.createElement(Text, { style: { color: COLORS.accent, fontWeight: "700", fontSize: 15 } }, "I already have an account"))),
     demoMarket && demoXP > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.demoBanner }, /* @__PURE__ */ React.createElement(Feather, { name: "activity", size: 24, color: COLORS.accent }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.demoBannerTitle }, "Continue where you left off"), /* @__PURE__ */ React.createElement(Text, { style: styles.demoBannerSub }, "Your ", demoXP, " XP from the demo lesson is waiting!"))),
     /* @__PURE__ */ React.createElement(View, { style: styles.searchContainer }, /* @__PURE__ */ React.createElement(Feather, { name: "search", size: 18, color: COLORS.textMuted, style: { marginRight: 10 } }), /* @__PURE__ */ React.createElement(
       TextInput,
