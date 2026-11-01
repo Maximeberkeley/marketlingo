@@ -17,6 +17,7 @@ import { tokens } from "../theme/tokens";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { FeedbackFooter } from "../components/FeedbackFooter";
 import { LeoCoach } from "../components/LeoCoach";
+import { leoFeedbackLine } from "../../components/mascot/leoAnimationRules";
 import { renderExerciseByKind, isPassiveKind } from "../components/ExerciseRenderer";
 import { rankForScore } from "./buildArena";
 import { playSound } from "../../lib/sounds";
@@ -274,12 +275,12 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       showsVerticalScrollIndicator: false,
       keyboardShouldPersistTaps: "handled"
     },
-    !showWaveIntro ? /* @__PURE__ */ React.createElement(React.Fragment, null, !!exercise.leo?.line && /* @__PURE__ */ React.createElement(
+    !showWaveIntro ? /* @__PURE__ */ React.createElement(React.Fragment, null, (!!exercise.leo?.line || phase === "feedback" && !isPassiveKind(exercise.kind)) && /* @__PURE__ */ React.createElement(
       LeoCoach,
       {
         key: `${waveIndex}/${beatIndex}`,
-        line: exercise.leo.line,
-        mood: phase === "feedback" ? coachCorrect ? "correct" : "incorrect" : exercise.leo.mood,
+        line: exercise.leo?.line || leoFeedbackLine(coachCorrect, waveIndex * 31 + beatIndex),
+        mood: phase === "feedback" && !isPassiveKind(exercise.kind) ? coachCorrect ? "correct" : "incorrect" : exercise.leo?.mood ?? "idle",
         intro: beatIndex === 0
       }
     ), renderExerciseByKind(exercise, phase, setState)) : null

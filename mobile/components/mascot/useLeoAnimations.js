@@ -37,7 +37,7 @@ function useHomeLeo({ done, active, focused, callOpen, doneKey, celebrate, onCel
     previousCall.current = callOpen;
     if (closed && woken.current) {
       woken.current = false;
-      setClip(!done && motion ? "leo-doze" : done ? "leo-reading-loop" : "leo-sleep-loop");
+      setClip(!done && motion ? "leo-eyes-close" : done ? "leo-reading-loop" : "leo-sleep-loop");
     }
   }, [callOpen, done, motion]);
   useEffect(() => {
@@ -71,6 +71,12 @@ function useHomeLeo({ done, active, focused, callOpen, doneKey, celebrate, onCel
     return () => clearTimeout(timer);
   }, [motion, done, clip]);
   const onEnd = useCallback(() => {
+    if (clip === "leo-eyes-open") {
+      if (wakeTimer.current) clearTimeout(wakeTimer.current);
+      wakeTimer.current = null;
+      callbacks.current.onLeo();
+      return;
+    }
     setClip(done ? "leo-reading-loop" : "leo-sleep-loop");
     if (clip === "leo-done") callbacks.current.onCelebrated();
   }, [done, clip]);
@@ -81,14 +87,18 @@ function useHomeLeo({ done, active, focused, callOpen, doneKey, celebrate, onCel
       callbacks.current.onLeo();
       return;
     }
-    if (wakeTimer.current || callOpen) return;
+    if (wakeTimer.current || callOpen || clip === "leo-eyes-open") return;
     woken.current = true;
-    setClip("leo-wake");
+    if (!motion) {
+      callbacks.current.onLeo();
+      return;
+    }
+    setClip("leo-eyes-open");
     wakeTimer.current = setTimeout(() => {
       wakeTimer.current = null;
       callbacks.current.onLeo();
-    }, 600);
-  }, [active, done, callOpen]);
+    }, 2500);
+  }, [active, done, callOpen, clip, motion]);
   return { clip, onEnd, onTap };
 }
 export {

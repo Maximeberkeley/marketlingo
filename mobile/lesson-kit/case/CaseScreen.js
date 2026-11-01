@@ -8,6 +8,7 @@ import { tokens } from "../theme/tokens";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { FeedbackFooter } from "../components/FeedbackFooter";
 import { LeoCoach } from "../components/LeoCoach";
+import { leoFeedbackLine } from "../../components/mascot/leoAnimationRules";
 import { renderExerciseByKind, isPassiveKind } from "../components/ExerciseRenderer";
 import { gradeCase } from "./buildCase";
 import { playSound } from "../../lib/sounds";
@@ -171,12 +172,12 @@ function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal }) 
       },
       done ? /* @__PURE__ */ React.createElement(Feather, { name: "check", size: 11, color: "#FFFFFF" }) : /* @__PURE__ */ React.createElement(Text, { style: [styles.railNum, active && { color: tokens.color.accent }] }, i + 1)
     ), /* @__PURE__ */ React.createElement(Text, { style: [styles.railLabel, active && { color: tokens.color.text, fontWeight: "800" }] }, s.label));
-  }))), stage.hint ? /* @__PURE__ */ React.createElement(Text, { style: styles.stageHint }, stage.hint) : null, /* @__PURE__ */ React.createElement(ScrollView, { contentContainerStyle: styles.body, showsVerticalScrollIndicator: false }, !!stage.exercise.leo?.line && /* @__PURE__ */ React.createElement(
+  }))), stage.hint ? /* @__PURE__ */ React.createElement(Text, { style: styles.stageHint }, stage.hint) : null, /* @__PURE__ */ React.createElement(ScrollView, { contentContainerStyle: styles.body, showsVerticalScrollIndicator: false }, (!!stage.exercise.leo?.line || phase === "feedback" && !passive) && /* @__PURE__ */ React.createElement(
     LeoCoach,
     {
       key: stageIndex,
-      line: stage.exercise.leo.line,
-      mood: phase === "feedback" ? state.isCorrect ? "correct" : "incorrect" : stage.exercise.leo.mood,
+      line: stage.exercise.leo?.line || leoFeedbackLine(state.isCorrect, stageIndex),
+      mood: phase === "feedback" && !passive ? state.isCorrect ? "correct" : "incorrect" : stage.exercise.leo?.mood ?? "idle",
       intro: stageIndex === 0
     }
   ), renderExerciseByKind(stage.exercise, phase, setState), isCall && confidence && phase === "answering" && /* @__PURE__ */ React.createElement(View, { style: styles.convictionChip }, /* @__PURE__ */ React.createElement(Feather, { name: "activity", size: 12, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.convictionChipText }, "How sure: ", CONVICTION.find((c) => c.key === confidence)?.label))), /* @__PURE__ */ React.createElement(View, { style: [styles.footer, { paddingBottom: insets.bottom + 12 }] }, phase === "feedback" && !passive && /* @__PURE__ */ React.createElement(

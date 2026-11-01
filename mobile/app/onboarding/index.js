@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   Dimensions,
   Image
 } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { storage } from "../../lib/storage";
 import { COLORS } from "../../lib/constants";
@@ -18,7 +18,7 @@ import { markets } from "../../lib/markets";
 import { useAuth } from "../../hooks/useAuth";
 import { localDateString } from "../../lib/dayMath";
 import { supabase } from "../../lib/supabase";
-import { LeoCharacter } from "../../components/mascot/LeoCharacter";
+import { LeoAnimated } from "../../components/mascot/LeoAnimated";
 import { getDemoXP } from "../../lib/demoXPBridge";
 import { OnboardingProgress } from "../../components/onboarding/OnboardingProgress";
 import { triggerHaptic } from "../../lib/haptics";
@@ -51,6 +51,12 @@ function OnboardingScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [demoMarket, setDemoMarket] = useState(null);
   const [demoXP, setDemoXP] = useState(0);
+  const [leoClip, setLeoClip] = useState("leo-greet");
+  const [focused, setFocused] = useState(true);
+  useFocusEffect(React.useCallback(() => {
+    setFocused(true);
+    return () => setFocused(false);
+  }, []));
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   useEffect(() => {
@@ -105,137 +111,92 @@ function OnboardingScreen() {
       setIsSubmitting(false);
     }
   };
-  return <View style={[styles.container, { paddingTop: insets.top }]}>
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.container, { paddingTop: insets.top }] }, /* @__PURE__ */ React.createElement(OnboardingProgress, { currentStep: 0, totalSteps: 3, labels: STEP_LABELS }), /* @__PURE__ */ React.createElement(
+    Animated.ScrollView,
+    {
+      contentContainerStyle: styles.scrollContent,
+      showsVerticalScrollIndicator: false,
+      style: { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
+    },
+    /* @__PURE__ */ React.createElement(View, { style: styles.header }, /* @__PURE__ */ React.createElement(
+      LeoAnimated,
       {
-    /* Progress */
-  }
-      <OnboardingProgress currentStep={0} totalSteps={3} labels={STEP_LABELS} />
-
-      <Animated.ScrollView
-    contentContainerStyle={styles.scrollContent}
-    showsVerticalScrollIndicator={false}
-    style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
-  >
-        {
-    /* Header — clean, no speech bubble */
-  }
-        <View style={styles.header}>
-          <LeoCharacter size="lg" animation="waving" />
-          <Text style={styles.title}>Choose your industry</Text>
-          <Text style={styles.subtitle}>
-            Pick your industry
-          </Text>
-          {!user && <TouchableOpacity onPress={() => router.push("/auth")} activeOpacity={0.7} style={{ marginTop: 10 }}>
-              <Text style={{ color: COLORS.accent, fontWeight: "700", fontSize: 15 }}>I already have an account</Text>
-            </TouchableOpacity>}
-        </View>
-
-        {
-    /* Demo bridge banner */
-  }
-        {demoMarket && demoXP > 0 && <View style={styles.demoBanner}>
-            <Feather name="activity" size={24} color={COLORS.accent} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.demoBannerTitle}>Continue where you left off</Text>
-              <Text style={styles.demoBannerSub}>
-                Your {demoXP} XP from the demo lesson is waiting!
-              </Text>
-            </View>
-          </View>}
-
-        {
-    /* Search Bar */
-  }
-        <View style={styles.searchContainer}>
-          <Feather name="search" size={18} color={COLORS.textMuted} style={{ marginRight: 10 }} />
-          <TextInput
-    style={styles.searchInput}
-    placeholder="Search industries..."
-    placeholderTextColor={COLORS.textMuted}
-    value={searchQuery}
-    onChangeText={setSearchQuery}
-  />
-        </View>
-
-        <Text style={styles.countText}>
-          {filteredMarkets.length} industries available
-        </Text>
-
-        {
-    /* 2-Column Market Grid — with illustrations instead of emojis */
-  }
-        <View style={styles.gridContainer}>
-          {filteredMarkets.map((market, index) => {
-    const illustration = MARKET_ILLUSTRATIONS[market.id];
-    return <Animated.View
-      key={market.id}
-      style={{
-        width: (SCREEN_WIDTH - 42) / 2,
-        opacity: fadeAnim,
-        transform: [{
-          translateY: fadeAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [20 + index * 5, 0]
-          })
-        }]
-      }}
-    >
-                <TouchableOpacity
-      style={[
-        styles.gridCard,
-        selectedIndustry === market.id && styles.gridCardSelected,
-        selectedIndustry === market.id && { borderColor: market.color }
-      ]}
-      onPress={() => handleSelect(market.id)}
-      activeOpacity={0.7}
-    >
-                  {illustration ? <Image source={illustration} style={styles.gridIllustration} resizeMode="contain" /> : <View style={[styles.gridIconFallback, { backgroundColor: market.color + "20" }]}>
-                      <Text style={{ fontSize: 20, fontWeight: "800", color: market.color }}>
-                        {market.name.charAt(0).toUpperCase()}
-                      </Text>
-                    </View>}
-                  <Text style={styles.gridName}>{market.name}</Text>
-                  {selectedIndustry === market.id && <View style={[styles.gridCheck, { backgroundColor: market.color }]}>
-                      <Text style={styles.gridCheckText}>✓</Text>
-                    </View>}
-                </TouchableOpacity>
-              </Animated.View>;
-  })}
-        </View>
-      </Animated.ScrollView>
-
+        clip: leoClip,
+        size: 160,
+        fallback: "waving",
+        paused: !focused,
+        onEnd: () => setLeoClip("leo-idle-loop")
+      }
+    ), /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Choose your industry"), /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "Pick your industry"), !user && /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.push("/auth"), activeOpacity: 0.7, style: { marginTop: 10 } }, /* @__PURE__ */ React.createElement(Text, { style: { color: COLORS.accent, fontWeight: "700", fontSize: 15 } }, "I already have an account"))),
+    demoMarket && demoXP > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.demoBanner }, /* @__PURE__ */ React.createElement(Feather, { name: "activity", size: 24, color: COLORS.accent }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.demoBannerTitle }, "Continue where you left off"), /* @__PURE__ */ React.createElement(Text, { style: styles.demoBannerSub }, "Your ", demoXP, " XP from the demo lesson is waiting!"))),
+    /* @__PURE__ */ React.createElement(View, { style: styles.searchContainer }, /* @__PURE__ */ React.createElement(Feather, { name: "search", size: 18, color: COLORS.textMuted, style: { marginRight: 10 } }), /* @__PURE__ */ React.createElement(
+      TextInput,
       {
-    /* Footer CTA */
-  }
-      <Animated.View
-    style={[
-      styles.footer,
-      { paddingBottom: insets.bottom + 20, opacity: fadeAnim }
-    ]}
-  >
-        {selectedMarketData && <View style={styles.selectedPreview}>
-            <View style={styles.selectedPreviewRow}>
-              {MARKET_ILLUSTRATIONS[selectedMarketData.id] && <Image source={MARKET_ILLUSTRATIONS[selectedMarketData.id]} style={{ width: 24, height: 24, resizeMode: "contain" }} />}
-              <Text style={styles.selectedPreviewName}>{selectedMarketData.name}</Text>
-            </View>
-            <Text style={styles.selectedPreviewDesc}>{selectedMarketData.description}</Text>
-          </View>}
-
-        <TouchableOpacity
-    style={[
-      styles.ctaButton,
-      (!selectedIndustry || isSubmitting) && styles.ctaButtonDisabled
-    ]}
-    onPress={handleContinue}
-    disabled={!selectedIndustry || isSubmitting}
-    activeOpacity={0.85}
-  >
-          {isSubmitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.ctaButtonText}>
-              {selectedIndustry ? "Continue" : "Select an industry"}
-            </Text>}
-        </TouchableOpacity>
-      </Animated.View>
-    </View>;
+        style: styles.searchInput,
+        placeholder: "Search industries...",
+        placeholderTextColor: COLORS.textMuted,
+        value: searchQuery,
+        onChangeText: setSearchQuery
+      }
+    )),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.countText }, filteredMarkets.length, " industries available"),
+    /* @__PURE__ */ React.createElement(View, { style: styles.gridContainer }, filteredMarkets.map((market, index) => {
+      const illustration = MARKET_ILLUSTRATIONS[market.id];
+      return /* @__PURE__ */ React.createElement(
+        Animated.View,
+        {
+          key: market.id,
+          style: {
+            width: (SCREEN_WIDTH - 42) / 2,
+            opacity: fadeAnim,
+            transform: [{
+              translateY: fadeAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [20 + index * 5, 0]
+              })
+            }]
+          }
+        },
+        /* @__PURE__ */ React.createElement(
+          TouchableOpacity,
+          {
+            style: [
+              styles.gridCard,
+              selectedIndustry === market.id && styles.gridCardSelected,
+              selectedIndustry === market.id && { borderColor: market.color }
+            ],
+            onPress: () => handleSelect(market.id),
+            activeOpacity: 0.7
+          },
+          illustration ? /* @__PURE__ */ React.createElement(Image, { source: illustration, style: styles.gridIllustration, resizeMode: "contain" }) : /* @__PURE__ */ React.createElement(View, { style: [styles.gridIconFallback, { backgroundColor: market.color + "20" }] }, /* @__PURE__ */ React.createElement(Text, { style: { fontSize: 20, fontWeight: "800", color: market.color } }, market.name.charAt(0).toUpperCase())),
+          /* @__PURE__ */ React.createElement(Text, { style: styles.gridName }, market.name),
+          selectedIndustry === market.id && /* @__PURE__ */ React.createElement(View, { style: [styles.gridCheck, { backgroundColor: market.color }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.gridCheckText }, "\u2713"))
+        )
+      );
+    }))
+  ), /* @__PURE__ */ React.createElement(
+    Animated.View,
+    {
+      style: [
+        styles.footer,
+        { paddingBottom: insets.bottom + 20, opacity: fadeAnim }
+      ]
+    },
+    selectedMarketData && /* @__PURE__ */ React.createElement(View, { style: styles.selectedPreview }, /* @__PURE__ */ React.createElement(View, { style: styles.selectedPreviewRow }, MARKET_ILLUSTRATIONS[selectedMarketData.id] && /* @__PURE__ */ React.createElement(Image, { source: MARKET_ILLUSTRATIONS[selectedMarketData.id], style: { width: 24, height: 24, resizeMode: "contain" } }), /* @__PURE__ */ React.createElement(Text, { style: styles.selectedPreviewName }, selectedMarketData.name)), /* @__PURE__ */ React.createElement(Text, { style: styles.selectedPreviewDesc }, selectedMarketData.description)),
+    /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        style: [
+          styles.ctaButton,
+          (!selectedIndustry || isSubmitting) && styles.ctaButtonDisabled
+        ],
+        onPress: handleContinue,
+        disabled: !selectedIndustry || isSubmitting,
+        activeOpacity: 0.85
+      },
+      isSubmitting ? /* @__PURE__ */ React.createElement(ActivityIndicator, { color: "#fff" }) : /* @__PURE__ */ React.createElement(Text, { style: styles.ctaButtonText }, selectedIndustry ? "Continue" : "Select an industry")
+    )
+  ));
 }
 const styles = StyleSheet.create({
   container: {

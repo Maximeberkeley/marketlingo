@@ -11,7 +11,7 @@ import {
   Dimensions,
   Image,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { storage } from '../../lib/storage';
 import { COLORS } from '../../lib/constants';
@@ -19,7 +19,8 @@ import { markets } from '../../lib/markets';
 import { useAuth } from '../../hooks/useAuth';
 import { localDateString } from '../../lib/dayMath';
 import { supabase } from '../../lib/supabase';
-import { LeoCharacter } from '../../components/mascot/LeoCharacter';
+import { LeoAnimated } from '../../components/mascot/LeoAnimated';
+import { LeoClip } from '../../components/mascot/leoClips';
 import { getDemoXP } from '../../lib/demoXPBridge';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress';
 import { triggerHaptic } from '../../lib/haptics';
@@ -56,6 +57,9 @@ export default function OnboardingScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [demoMarket, setDemoMarket] = useState<string | null>(null);
   const [demoXP, setDemoXP] = useState(0);
+  const [leoClip, setLeoClip] = useState<LeoClip>('leo-greet');
+  const [focused, setFocused] = useState(true);
+  useFocusEffect(React.useCallback(() => { setFocused(true); return () => setFocused(false); }, []));
 
   // Animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -140,7 +144,8 @@ export default function OnboardingScreen() {
       >
         {/* Header — clean, no speech bubble */}
         <View style={styles.header}>
-          <LeoCharacter size="lg" animation="waving" />
+          <LeoAnimated clip={leoClip} size={160} fallback="waving" paused={!focused}
+            onEnd={() => setLeoClip('leo-idle-loop')} />
           <Text style={styles.title}>Choose your industry</Text>
           <Text style={styles.subtitle}>
             Pick your industry

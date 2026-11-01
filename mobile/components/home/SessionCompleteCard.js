@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   Share
 } from "react-native";
 import { COLORS } from "../../lib/constants";
-import { LeoCharacter } from "../mascot/LeoCharacter";
+import { LeoAnimated } from "../mascot/LeoAnimated";
 import { ConfettiBurst } from "../ui/ConfettiBurst";
 import { triggerCelebration } from "../../lib/haptics";
 import { playSound } from "../../lib/sounds";
@@ -52,49 +52,7 @@ Learning markets daily with MarketLingo `,
     } catch (_) {
     }
   };
-  return <Animated.View style={[styles.overlay, { opacity: opacityAnim }]}>
-      <ConfettiBurst show count={24} />
-      <Animated.View style={[styles.card, { transform: [{ scale: scaleAnim }] }]}>
-        <View style={styles.leoCircle}>
-          <LeoCharacter size="lg" animation="celebrating" />
-        </View>
-
-        <Text style={styles.title}>Day {dayNumber} Complete!</Text>
-        <Text style={styles.subtitle}>{marketEmoji} {marketName}</Text>
-        <Text style={styles.lessonName} numberOfLines={2}>"{lessonTitle}"</Text>
-
-        <View style={styles.statsGrid}>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>⚡ {xpEarned}</Text>
-            <Text style={styles.statLabel}>XP Earned</Text>
-          </View>
-          <View style={[styles.statBox, styles.statBoxMiddle]}>
-            <Text style={styles.statValue}> {streak}</Text>
-            <Text style={styles.statLabel}>Day Streak</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>{totalXP}</Text>
-            <Text style={styles.statLabel}>Total XP</Text>
-          </View>
-        </View>
-
-        <View style={styles.stageBadge}>
-          <Text style={styles.stageText}>{stageName}</Text>
-        </View>
-
-        <View style={styles.actions}>
-          <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.7}>
-            <Text style={styles.shareBtnText}>Share Achievement</Text>
-          </TouchableOpacity>
-          {onAskMentor && <TouchableOpacity style={styles.mentorBtn} onPress={onAskMentor} activeOpacity={0.7}>
-              <Text style={styles.mentorBtnText}>Discuss with {mentorName || "Mentor"}</Text>
-            </TouchableOpacity>}
-          <TouchableOpacity style={styles.continueBtn} onPress={onContinue} activeOpacity={0.8}>
-            <Text style={styles.continueBtnText}>Continue</Text>
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
-    </Animated.View>;
+  return /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.overlay, { opacity: opacityAnim }] }, /* @__PURE__ */ React.createElement(ConfettiBurst, { show: true, count: 24 }), /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.card, { transform: [{ scale: scaleAnim }] }] }, /* @__PURE__ */ React.createElement(View, { style: styles.leoCircle }, /* @__PURE__ */ React.createElement(LeoAnimated, { clip: "leo-success", size: 160, fallback: "celebrating" })), /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Day ", dayNumber, " Complete!"), /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, marketEmoji, " ", marketName), /* @__PURE__ */ React.createElement(Text, { style: styles.lessonName, numberOfLines: 2 }, '"', lessonTitle, '"'), /* @__PURE__ */ React.createElement(View, { style: styles.statsGrid }, /* @__PURE__ */ React.createElement(View, { style: styles.statBox }, /* @__PURE__ */ React.createElement(Text, { style: styles.statValue }, "\u26A1 ", xpEarned), /* @__PURE__ */ React.createElement(Text, { style: styles.statLabel }, "XP Earned")), /* @__PURE__ */ React.createElement(View, { style: [styles.statBox, styles.statBoxMiddle] }, /* @__PURE__ */ React.createElement(Text, { style: styles.statValue }, " ", streak), /* @__PURE__ */ React.createElement(Text, { style: styles.statLabel }, "Day Streak")), /* @__PURE__ */ React.createElement(View, { style: styles.statBox }, /* @__PURE__ */ React.createElement(Text, { style: styles.statValue }, totalXP), /* @__PURE__ */ React.createElement(Text, { style: styles.statLabel }, "Total XP"))), /* @__PURE__ */ React.createElement(View, { style: styles.stageBadge }, /* @__PURE__ */ React.createElement(Text, { style: styles.stageText }, stageName)), /* @__PURE__ */ React.createElement(View, { style: styles.actions }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.shareBtn, onPress: handleShare, activeOpacity: 0.7 }, /* @__PURE__ */ React.createElement(Text, { style: styles.shareBtnText }, "Share Achievement")), onAskMentor && /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.mentorBtn, onPress: onAskMentor, activeOpacity: 0.7 }, /* @__PURE__ */ React.createElement(Text, { style: styles.mentorBtnText }, "Discuss with ", mentorName || "Mentor")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.continueBtn, onPress: onContinue, activeOpacity: 0.8 }, /* @__PURE__ */ React.createElement(Text, { style: styles.continueBtnText }, "Continue")))));
 }
 const styles = StyleSheet.create({
   overlay: {

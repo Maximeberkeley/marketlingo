@@ -57,8 +57,23 @@ function ClipPlayer({ clip, size, fallback, onEnd }: LeoAnimatedProps) {
     latest.current = id;
     setFailed(false);
     // Retain the displayed layer while the replacement decodes.
-    setLayers([...(displayed.current ? [displayed.current] : []), { clip, id }]);
+    const next = { clip, id };
+    setLayers([...(displayed.current ? [displayed.current] : []), next]);
   }, [clip, layers]);
+  useEffect(() => {
+    if (typeof __DEV__ !== 'undefined' && __DEV__) console.log('[LeoAnimated] clip', clip);
+    // If the newest layer is slow to decode, show it anyway; never two clips at once.
+    const timer = setTimeout(() => {
+      setLayers(current => {
+        const newest = current[current.length - 1];
+        if (!newest || current.length === 1) return current;
+        displayed.current = newest;
+        return [newest];
+      });
+      setLoaded(true);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [clip]);
   const canvas = size * 4 / 3;
   return <View pointerEvents="none" style={{ width: size, height: size, overflow: 'visible' }}>
     {(!loaded || failed) && <StaticLeo size={size} fallback={fallback} />}
