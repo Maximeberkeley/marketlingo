@@ -11,6 +11,7 @@ import {
   Linking,
   Image,
 } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { mentors } from '../../data/mentors';
 import { getPrimaryMentorForMarket } from '../../data/marketConfig';
@@ -322,7 +323,7 @@ function CompletionModal({
             <Text style={cStyles.title}>You're on fire!</Text>
             <Text style={cStyles.sub}>Lesson complete! Your streak is building.</Text>
             <View style={cStyles.xpBadge}>
-              <Text style={cStyles.xpText}>⚡ +50 XP earned</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}><MaterialCommunityIcons name="flask" size={14} color={COLORS.xpBadgeIcon} /><Text style={cStyles.xpText}>+50 XP earned</Text></View>
             </View>
           </>
         )}

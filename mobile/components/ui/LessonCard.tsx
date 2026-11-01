@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ImageSourcePropType } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 
 interface LessonCardProps {
@@ -43,8 +44,8 @@ export function LessonCard({ title, subtitle, headline, xp, duration, colorSchem
             <View style={styles.durationBadge}>
               <Text style={styles.badgeText}>⏱ {duration}m</Text>
             </View>
-            <View style={[styles.xpBadge, { backgroundColor: colors.accent }]}>
-              <Text style={[styles.badgeText, { color: '#FFFFFF' }]}>⚡ +{xp}</Text>
+            <View style={[styles.xpBadge, { backgroundColor: colors.accent, flexDirection: 'row', alignItems: 'center' }]}>
+              <MaterialCommunityIcons name="flask" size={12} color="#FFFFFF" /><Text style={[styles.badgeText, { color: '#FFFFFF' }]}> +{xp}</Text>
             </View>
           </View>
           {/* Completed check */}
@@ -65,7 +66,7 @@ export function LessonCard({ title, subtitle, headline, xp, duration, colorSchem
               <Text style={[styles.tagText, { color: colors.accent }]}>{subtitle}</Text>
             </View>
             <View style={styles.meta}>
-              <Text style={styles.metaText}>⚡ {xp} XP</Text>
+              <MaterialCommunityIcons name="flask" size={12} color={COLORS.xpBadgeIcon} /><Text style={styles.metaText}> {xp} XP</Text>
               <Text style={styles.metaText}>⏱ {duration}m</Text>
             </View>
           </View>
