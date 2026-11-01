@@ -1,5 +1,10 @@
 # MarketLingo roadmap
 
+## Nov 1 — Animated Leo
+- [ ] Wire the 11 bundled clips into active Home, Leo call and the two onboarding screens according to the supplied guide; synchronize JavaScript and bump the phone release.
+- [ ] Test clip timing, transitions, daily celebration, pause/fallback rules and existing affected tests.
+- [ ] Verify light/dark appearance and playback on iPhone (blocked: no iOS device/simulator; requires a new installed build).
+
 ## Oct 13 — Focused lessons and offline artwork
 - [x] Limit definitions to first occurrences, three per card across copy blocks, never headlines; deterministic selection also covers full briefings.
 - [x] Skip invented daily lesson quizzes for slide-only lessons; preserve written authored exercises, takeaway, reflection and reading-only completion.
