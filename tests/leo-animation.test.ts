@@ -55,6 +55,63 @@ function homeHarness() {
 }
 afterEach(() => vi.useRealTimers());
 
+function practiceHarness(screen: 'Arena' | 'Case') {
+  const motion = { start: () => {}, stop: () => {} };
+  const animated = { Value: class { setValue() {} interpolate() { return 0; } },
+    timing: () => motion, spring: () => motion, sequence: () => motion, View: 'view', Text: 'text' };
+  const exercise = { kind: 'multipleChoice', options: ['A', 'B'], correctIndex: 0,
+    leo: { line: 'Read the evidence before you choose a side.', mood: 'idle' } };
+  const h = harness(`mobile/lesson-kit/${screen === 'Arena' ? 'arena/ArenaScreen' : 'case/CaseScreen'}.tsx`, {
+    'react-native': { View: 'view', Text: 'text', ScrollView: 'scroll', TouchableOpacity: 'touch', Modal: 'modal',
+      StyleSheet: { create: (s: any) => s }, Animated: animated, Easing: { linear: 0, quad: 0, out: () => 0 } },
+    'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 0, bottom: 0 }) },
+    '@expo/vector-icons': { Feather: 'icon' }, 'expo-linear-gradient': { LinearGradient: 'gradient' },
+    'expo-haptics': { notificationAsync: async () => {}, impactAsync: async () => {},
+      NotificationFeedbackType: {}, ImpactFeedbackStyle: {} },
+    '../theme/tokens': { tokens: { color: {}, space: {}, font: {}, radius: {} } },
+    '../components/PrimaryButton': { PrimaryButton: 'button' }, '../components/FeedbackFooter': { FeedbackFooter: 'feedback' },
+    '../components/LeoCoach': { LeoCoach: 'coach' },
+    '../components/ExerciseRenderer': { isPassiveKind: () => false,
+      renderExerciseByKind: (_ex: any, _phase: any, setState: any) => ({ type: 'answer', props: { setState } }) },
+    './buildArena': {}, './buildCase': {}, '../../lib/sounds': { playSound: async () => {} },
+    '../../lib/analytics': { trackEvent: () => {} },
+    '../../data/marketWorlds': { getMarketWorld: () => ({ colors: [] }) }, '../components/BriefingReader': {},
+  });
+  const props = screen === 'Arena' ? { waves: [{ key: 'core', seconds: 20, multiplier: 1, exercises: [exercise] }], bestScore: 0 }
+    : { deepCase: { id: 'case', stages: [{ key: 'evidence', exercise }] } };
+  const nodes = (node: any): any[] => !node || typeof node !== 'object' ? [] : Array.isArray(node)
+    ? node.flatMap(nodes) : [node, ...nodes(node.props?.children)];
+  const render = () => nodes(h.render(`${screen}Screen`, props));
+  const find = (type: string) => render().find(n => n.type === type);
+  return { render, find, unmount: h.unmount };
+}
+
+describe('Graded practice reactions', () => {
+  for (const screen of ['Arena', 'Case'] as const) {
+    for (const isCorrect of [true, false]) {
+      it(`${screen} reacts to a ${isCorrect ? 'right' : 'wrong'} answer without changing the verdict`, () => {
+        vi.useFakeTimers(); const h = practiceHarness(screen);
+        if (screen === 'Arena') h.render().find(n => n.type === 'touch' && n.props.activeOpacity === 0.9).props.onPress();
+        expect(h.find('coach').props.intro).toBe(true);
+        expect(h.find('coach').props.mood).toBe('idle');
+        h.find('answer').props.setState({ canCheck: true, isCorrect });
+        h.find('button').props.onPress();
+        expect(h.find('coach').props.mood).toBe(isCorrect ? 'correct' : 'incorrect');
+        expect(h.find('feedback').props.isCorrect).toBe(isCorrect);
+        h.unmount();
+      });
+    }
+  }
+  it('Arena timeout encourages even with a correct selection not submitted', async () => {
+    vi.useFakeTimers(); const h = practiceHarness('Arena');
+    h.render().find(n => n.type === 'touch' && n.props.activeOpacity === 0.9).props.onPress();
+    h.find('answer').props.setState({ canCheck: true, isCorrect: true });
+    await vi.advanceTimersByTimeAsync(20000);
+    expect(h.find('coach').props.mood).toBe('incorrect');
+    h.unmount();
+  });
+});
+
 describe('Animated Leo rules', () => {
   it('uses all fifteen supplied clip lengths and native assets', () => {
     const metadata = JSON.parse(read('mobile/assets/mascot/anim/clips.json'));
