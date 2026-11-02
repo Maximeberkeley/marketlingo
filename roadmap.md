@@ -1,5 +1,10 @@
 # MarketLingo roadmap
 
+## Nov 2 — Leo-led onboarding tour
+- [ ] Centre a persistent 200pt animated Leo with the page icon badge; greet on open, ready on the final page, idle between, and pause while hidden.
+- [ ] Centre the complete visual/copy group above fixed dots and actions; preserve all copy and navigation and synchronize TSX/JS.
+- [ ] Check animation transitions, actions, reduced-motion fallback and small/large phone layout; native iPhone playback requires a rebuilt app.
+
 ## Nov 2 — Lesson-first Arena and Deep Case
 - [x] Load authored studied questions and deduplicated terms; select lesson-first rounds with bounded fallback, provenance and seven-day history.
 - [x] Correct Deep Case priority; synchronize phone source pairs. 26 focused/regression checks passed; real Neuroscience Day 1 gives at least 10 lesson questions across 100 full runs with trainer fallback and 500 runs without filler. Preview build OK; XP, scoring, timers and lesson content unchanged.
