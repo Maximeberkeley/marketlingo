@@ -139,6 +139,7 @@ function buildArena(input) {
         const lessonTerms = terms(lesson);
         const titleWords = lesson.title.toLowerCase().split(/\W+/).filter((word) => word.length > 4);
         if (lessonTerms.length && !lessonTerms.some((t) => truth.includes(norm(t.term))) && !titleWords.some((word) => truth.includes(word))) continue;
+        if (factKeys(lesson, exercise).some((key) => key.includes("/term/"))) continue;
       }
       if (faceOff && exercise?.kind === "multipleChoice") {
         const truth = exercise.options[exercise.correctIndex];
