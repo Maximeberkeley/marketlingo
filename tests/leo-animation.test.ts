@@ -177,12 +177,12 @@ describe('Animated Leo rules', () => {
       expect(h.props.onComplete).toHaveBeenCalledTimes(2); h.unmount();
     });
   }
-  it('uses all eighteen supplied clip lengths and native assets', () => {
+  it('uses all nineteen supplied clip lengths and native assets', () => {
     const metadata = JSON.parse(read('mobile/assets/mascot/anim/clips.json'));
     const module = { exports: {} as any };
     runInNewContext(transformSync(read('mobile/components/mascot/leoClips.ts'), { loader: 'ts', format: 'cjs' }).code,
       { module, exports: module.exports, require: (path: string) => path });
-    expect(Object.keys(module.exports.leoClips)).toHaveLength(18);
+    expect(Object.keys(module.exports.leoClips)).toHaveLength(19);
     for (const [clip, spec] of Object.entries(metadata)) {
       expect(module.exports.leoClips[clip]).toMatchObject(spec);
       expect(existsSync(`mobile/assets/mascot/anim/${clip}.webp`)).toBe(true);
@@ -243,10 +243,12 @@ describe('Animated Leo rules', () => {
   });
   it('uses existing generating/speaking state in priority order', () => {
     expect(leoCallClip(true, true)).toBe('leo-call-think');
-    expect(leoCallClip(false, true)).toBe('leo-call-talk');
+    expect(leoCallClip(false, true)).toBe('leo-teach-loop');
+    expect(leoCallClip(false, true, true)).toBe('leo-call-talk');
+    expect(leoCallClip(true, true, true)).toBe('leo-call-think');
     expect(leoCallClip(false, false)).toBe('leo-call-listen');
   });
-  it('opens eyes on tap, opens the call when that clip ends, sits up behind the call and dozes after', async () => {
+  it('opens eyes on tap, opens the call when that clip ends, and closes eyes after', async () => {
     const h = homeHarness();
     h.render().onTap();
     expect(h.haptic).toHaveBeenCalledWith('light');
@@ -254,9 +256,8 @@ describe('Animated Leo rules', () => {
     await vi.advanceTimersByTimeAsync(800); expect(h.onLeo).not.toHaveBeenCalled();
     h.render().onEnd(); expect(h.onLeo).toHaveBeenCalledTimes(1);
     h.props.callOpen = true; h.motion(false); h.render();
-    await vi.advanceTimersByTimeAsync(450); expect(h.render().clip).toBe('leo-doze');
     h.props.callOpen = false; h.motion(true); h.render();
-    expect(h.render().clip).toBe('leo-doze');
+    expect(h.render().clip).toBe('leo-eyes-close');
     h.render().onEnd(); expect(h.render().clip).toBe('leo-sleep-loop');
     h.unmount();
   });

@@ -372,7 +372,7 @@ function SectionCluster({
           accessibilityLabel={`Ask Leo about ${title}`}
         >
           <View style={styles.leoVisual} pointerEvents="none">
-            {activeSection ? <LeoAnimated size={144} clip={leo.clip} fallback={leo.clip === 'leo-doze' ? 'idle' : leoDone ? 'reading' : 'sleeping'}
+            {activeSection ? <LeoAnimated size={144} clip={leo.clip} fallback={leoDone ? 'reading' : 'sleeping'}
               paused={!isFocused || leoCallOpen} onEnd={leo.onEnd} /> :
               <LeoCharacter size="course" animation={(activeSection ? lessonCompletedToday : Boolean(lesson?.completed)) ? 'reading' : 'sleeping'} still />}
           </View>

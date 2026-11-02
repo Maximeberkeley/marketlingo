@@ -40,7 +40,6 @@ p.add_argument('--loop', action='store_true')
 p.add_argument('--quality', type=int, default=70)
 p.add_argument('--preview')
 p.add_argument('--hold', type=int, default=0, help='ms to rest on the last frame before the loop repeats')
-p.add_argument('--drop-last', type=int, default=0, help='drop N trailing frames that repeat the first frame of a loop')
 a = p.parse_args()
 
 info = json.loads(subprocess.run(
@@ -96,8 +95,6 @@ if a.loop:
     # Drop trailing output frames that repeat the first frame (the shared first/last keyframe).
     while len(idx) > 2 and diff(idx[-1], idx[0]) < 2.0:
         idx.pop()
-    for _ in range(a.drop_last):
-        if len(idx) > 2: idx.pop()
     seam = diff(idx[-1], idx[0])
     seam_note = f', loop seam diff {seam:.1f} (under ~6 looks smooth)'
 

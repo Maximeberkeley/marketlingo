@@ -49,14 +49,12 @@ function useLessonCompleteLeo(userId, streak) {
   }, []);
   return { clip, onEnd };
 }
-const LEO_SIT_BEHIND_CALL_MS = 450;
 function useHomeLeo({ done, active, focused, callOpen, doneKey, morningKey, celebrate, onCelebrated, onLeo }) {
   const [clip, setClip] = useState(done ? "leo-reading-loop" : "leo-sleep-loop");
   const { allowed: motion, ready, foreground } = useLeoMotionState(!active || !focused || callOpen);
   const woken = useRef(false);
   const previousCall = useRef(callOpen);
   const wakeTimer = useRef(null);
-  const sitTimer = useRef(null);
   const callbacks = useRef({ onLeo, onCelebrated });
   callbacks.current = { onLeo, onCelebrated };
   const claimed = useRef(/* @__PURE__ */ new Set());
@@ -85,21 +83,8 @@ function useHomeLeo({ done, active, focused, callOpen, doneKey, morningKey, cele
     setClip(done ? "leo-reading-loop" : "leo-sleep-loop");
   }, [done, doneKey]);
   useEffect(() => {
-    if (sitTimer.current) clearTimeout(sitTimer.current);
-    sitTimer.current = null;
-    if (motion) return;
-    if (callOpen && woken.current && !done) {
-      sitTimer.current = setTimeout(() => {
-        sitTimer.current = null;
-        setClip("leo-doze");
-      }, LEO_SIT_BEHIND_CALL_MS);
-      return;
-    }
-    setClip(done ? "leo-reading-loop" : "leo-sleep-loop");
-  }, [motion, done, callOpen]);
-  useEffect(() => () => {
-    if (sitTimer.current) clearTimeout(sitTimer.current);
-  }, []);
+    if (!motion) setClip(done ? "leo-reading-loop" : "leo-sleep-loop");
+  }, [motion, done]);
   useEffect(() => {
     if (morning.current && (done || !focused || !active || !foreground || !motion && !callOpen)) {
       stopMorning();
@@ -136,7 +121,7 @@ function useHomeLeo({ done, active, focused, callOpen, doneKey, morningKey, cele
       setClip(!done && motion ? "leo-doze" : done ? "leo-reading-loop" : "leo-sleep-loop");
     } else if (closed && woken.current) {
       woken.current = false;
-      setClip(!done && motion ? "leo-doze" : done ? "leo-reading-loop" : "leo-sleep-loop");
+      setClip(!done && motion ? "leo-eyes-close" : done ? "leo-reading-loop" : "leo-sleep-loop");
     }
   }, [callOpen, done, motion]);
   useEffect(() => {
