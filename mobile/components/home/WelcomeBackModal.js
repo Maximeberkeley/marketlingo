@@ -97,9 +97,9 @@ function WelcomeBackModal({
         onEnd: () => setLeoClip("leo-idle-loop")
       }
     )),
-    /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.heroKicker }, "WELCOME BACK"),
-    /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.heroTitle }, "Level ", level),
-    /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.heroSub }, marketName, " insider")
+    /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.heroKicker }, "WELCOME BACK TO"),
+    /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.heroTitle }, marketName),
+    /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.heroSub }, "Level ", level, " insider")
   ), /* @__PURE__ */ import_react.default.createElement(import_react_native.ScrollView, { style: styles.bodyScroll, contentContainerStyle: styles.body, showsVerticalScrollIndicator: false, bounces: false }, /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.barTrack }, /* @__PURE__ */ import_react.default.createElement(
     import_react_native.Animated.View,
     {
