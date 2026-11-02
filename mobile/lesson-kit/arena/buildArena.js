@@ -92,7 +92,12 @@ function buildArena(input) {
     if (exercise.kind === "multipleChoice" && exercise.prompt.startsWith("Fill the gap:")) {
       return lineKeys(exercise.explanation ?? "");
     }
-    if (exercise.kind === "buildChain") return exercise.steps.flatMap((step) => lineKeys(step, false));
+    if (exercise.kind === "buildChain") {
+      return exercise.steps.flatMap((step) => {
+        const text = norm(step.replace(/^Straight from what you just read:\s*/i, ""));
+        return text ? [prefix(`line/${text}`)] : [];
+      });
+    }
     if (exercise.kind === "sortSignal") return exercise.items.map((item) => prefix(`job/${norm(item.text)}`));
     const explanation = "explanation" in exercise ? exercise.explanation ?? "" : "";
     return lineKeys(explanation);
