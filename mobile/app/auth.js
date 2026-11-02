@@ -22,8 +22,8 @@ import { LeoCharacter } from "../components/mascot/LeoCharacter";
 import { LeoAnimated } from "../components/mascot/LeoAnimated";
 import { normalizeDisplayName } from "../lib/displayName";
 function AuthLeo() {
-  const [greeted, setGreeted] = useState(false);
-  return <LeoAnimated size={160} clip={greeted ? "leo-idle-loop" : "leo-greet"} fallback="idle" onEnd={() => setGreeted(true)} />;
+  // Launch-safe: the first screens after opening show a still Leo until the launch crash is pinned down.
+  return <Image source={require("../assets/mascot/leo-reference.png")} style={{ width: 160, height: 160 }} resizeMode="contain" />;
 }
 function AuthScreen() {
   const insets = useSafeAreaInsets();

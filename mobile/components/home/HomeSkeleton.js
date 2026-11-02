@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { View, StyleSheet, Animated, Text } from "react-native";
+import { View, StyleSheet, Animated, Text, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS } from "../../lib/constants";
 import { LeoAnimated } from "../mascot/LeoAnimated";
@@ -7,7 +7,7 @@ import { createLoadingLeoController, LOADING_LEO_TIMING } from "./loadingLeoCont
 const LOADING_STILL = require("../../assets/mascot/anim/leo-loading-still.png");
 const LoadingLeoContext = createContext(null);
 function LoadingLeo() {
-  return /* @__PURE__ */ React.createElement(View, { style: styles.centre }, /* @__PURE__ */ React.createElement(LeoAnimated, { clip: "leo-loading-loop", size: 200, fallback: LOADING_STILL }), /* @__PURE__ */ React.createElement(Text, { style: styles.line }, "Untangling today's lesson\u2026"));
+  return /* @__PURE__ */ React.createElement(View, { style: styles.centre }, /* @__PURE__ */ React.createElement(Image, { source: LOADING_STILL, style: { width: 200, height: 200 }, resizeMode: "contain" }), /* @__PURE__ */ React.createElement(Text, { style: styles.line }, "Untangling today's lesson\u2026"));
 }
 function LoadingLeoHost({ children }) {
   const insets = useSafeAreaInsets();

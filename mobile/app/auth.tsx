@@ -24,8 +24,8 @@ import { normalizeDisplayName } from '../lib/displayName';
 
 /** Leo waves hello once, then idles. This screen is replaced after sign-in. */
 function AuthLeo() {
-  const [greeted, setGreeted] = useState(false);
-  return <LeoAnimated size={160} clip={greeted ? 'leo-idle-loop' : 'leo-greet'} fallback="idle" onEnd={() => setGreeted(true)} />;
+  // Launch-safe: the first screens after opening show a still Leo until the launch crash is pinned down.
+  return <Image source={require('../assets/mascot/leo-reference.png')} style={{ width: 160, height: 160 }} resizeMode="contain" />;
 }
 
 export default function AuthScreen() {
