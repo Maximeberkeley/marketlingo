@@ -61,13 +61,18 @@ function buildArena(input) {
     if (exercise.kind === "multipleChoice") {
       const answer = exercise.options[exercise.correctIndex];
       const term = lessonTerms.find((t) => norm(answer).replace(/^the /, "") === norm(t.term));
-      if (term) return [prefix(`term/${norm(term.term)}`)];
+      if (term) {
+        const defWords = norm(term.definition).split(/[^a-z0-9]+/).filter((word) => word.length > 4);
+        const prompt = norm(exercise.prompt);
+        if (defWords.filter((word) => prompt.includes(word)).length >= 2) return [prefix(`term/${norm(term.term)}`)];
+      }
     }
-    const lineKeys = (line) => {
+    const lineKeys = (line, withTerms = true) => {
       const text = norm(line.replace(/^Straight from what you just read:\s*/i, ""));
+      if (!text) return [];
       const keys = [prefix(`line/${text}`)];
       const quantities = [...line.matchAll(/(\d+(?:[.,]\d+)?)\s*(%|percent|billion|million|thousand)/gi)];
-      if (!quantities.length) {
+      if (withTerms && !quantities.length) {
         for (const term of termsIn(text)) {
           const defWords = norm(term.definition).split(/[^a-z0-9]+/).filter((word) => word.length > 4);
           if (defWords.some((word) => text.includes(word))) keys.push(prefix(`term/${norm(term.term)}`));
@@ -87,7 +92,7 @@ function buildArena(input) {
     if (exercise.kind === "multipleChoice" && exercise.prompt.startsWith("Fill the gap:")) {
       return lineKeys(exercise.explanation ?? "");
     }
-    if (exercise.kind === "buildChain") return exercise.steps.flatMap(lineKeys);
+    if (exercise.kind === "buildChain") return exercise.steps.flatMap((step) => lineKeys(step, false));
     if (exercise.kind === "sortSignal") return exercise.items.map((item) => prefix(`job/${norm(item.text)}`));
     const explanation = "explanation" in exercise ? exercise.explanation ?? "" : "";
     return lineKeys(explanation);
