@@ -87,7 +87,8 @@ export function buildCase(input: CaseInput): DeepCase | null {
   // The call tests the lesson first: a claim from what the learner actually read.
   // A real market scenario only stands in when no studied lesson can carry it.
   const lessonCall = firstLesson(lesson => lesson.questions?.find(q => q.kind === 'multipleChoice') || checkClaim(lesson.slides, 'case-call-claim'));
-  const scenarioCall = !lessonCall && scenario ? { ...trainerCall(scenario, 'case-call'), source: { type: 'industry' as const } } : null;
+  const trainerExercise = !lessonCall && scenario ? trainerCall(scenario, 'case-call') : null;
+  const scenarioCall = trainerExercise ? { ...trainerExercise, source: { type: 'industry' as const } } : null;
   const call = lessonCall || scenarioCall;
   if (!call) return null;
   // Keep the brief tied to the lesson/scenario behind the final call.
