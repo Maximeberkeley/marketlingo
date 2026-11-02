@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   appName: {
+    marginTop: 12,
     fontSize: 28,
     fontWeight: '700',
     color: COLORS.textPrimary,
