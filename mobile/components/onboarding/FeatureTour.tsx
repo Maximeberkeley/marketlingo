@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from 'react';
-import { View, Text, Modal, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Text, Modal, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { getMarketName } from '../../lib/markets';
+import { LeoAnimated } from '../mascot/LeoAnimated';
+import type { LeoClip } from '../mascot/leoClips';
 import type { LearningGoal } from '../../app/onboarding/goal';
 
 interface Props {
@@ -30,7 +32,10 @@ const TOUR = [
 
 export function FeatureTour({ visible, marketId, goal = 'curiosity', onComplete }: Props) {
   const insets = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
+  const compact = height < 740;
   const [index, setIndex] = useState(0);
+  const [clip, setClip] = useState<LeoClip>('leo-greet');
   const promise = PROMISES[goal || 'curiosity'];
   const pages = useMemo(() => [
     { icon: 'target' as const, title: promise.title, body: `${promise.body} Your track is built around ${getMarketName(marketId || 'aerospace')}.` },
@@ -38,6 +43,16 @@ export function FeatureTour({ visible, marketId, goal = 'curiosity', onComplete 
   ], [marketId, promise]);
   const page = pages[index];
   const last = index === pages.length - 1;
+
+  useEffect(() => {
+    if (visible) setClip('leo-greet');
+  }, [visible]);
+  useEffect(() => {
+    if (visible && last) setClip('leo-ready');
+  }, [visible, last]);
+  const settleLeo = useCallback(() => {
+    if (visible) setClip('leo-idle-loop');
+  }, [visible]);
 
   const finish = () => {
     setIndex(0);
@@ -52,15 +67,17 @@ export function FeatureTour({ visible, marketId, goal = 'curiosity', onComplete 
           <TouchableOpacity onPress={finish} style={styles.skip}><Text style={styles.skipText}>Skip</Text></TouchableOpacity>
         </View>
 
-        <ScrollView style={styles.middleScroll} contentContainerStyle={styles.middleContent} showsVerticalScrollIndicator={false} bounces={false}>
-          <View style={styles.visual}>
-            <View style={styles.iconWrap}><Feather name={page.icon} size={42} color={COLORS.accent} /></View>
-            <Image source={require('../../assets/mascot/leo-reference.png')} style={styles.leo} />
+        <View style={styles.middleContent}>
+          <View style={[styles.visual, compact && styles.visualCompact]}>
+            <View style={styles.leoStage}>
+              <LeoAnimated clip={clip} size={200} fallback="idle" paused={!visible} onEnd={settleLeo} />
+              <View style={styles.iconBadge}><Feather name={page.icon} size={24} color={COLORS.accent} /></View>
+            </View>
           </View>
           <Text style={styles.eyebrow}>{index === 0 ? 'YOUR LEARNING PROMISE' : 'MARKETLINGO IN 3 MINUTES'}</Text>
-          <Text style={styles.title}>{page.title}</Text>
-          <Text style={styles.body}>{page.body}</Text>
-        </ScrollView>
+          <Text style={[styles.title, compact && styles.titleCompact]}>{page.title}</Text>
+          <Text style={[styles.body, compact && styles.bodyCompact]}>{page.body}</Text>
+        </View>
 
         <View style={styles.dots}>
           {pages.map((_, dot) => <View key={dot} style={[styles.dot, dot === index && styles.dotActive]} />)}
@@ -76,19 +93,21 @@ export function FeatureTour({ visible, marketId, goal = 'curiosity', onComplete 
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg0, paddingHorizontal: 24 },
-  middleScroll: { flexGrow: 0, flexShrink: 1 },
-  middleContent: { alignItems: 'stretch' },
+  middleContent: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   counter: { color: COLORS.textMuted, fontWeight: '800', fontSize: 12 },
   skip: { paddingHorizontal: 8, paddingVertical: 8 },
   skipText: { color: COLORS.textSecondary, fontSize: 14, fontWeight: '700' },
-  visual: { height: 270, alignItems: 'center', justifyContent: 'center' },
-  iconWrap: { width: 106, height: 106, borderRadius: 28, backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center' },
-  leo: { position: 'absolute', width: 88, height: 88, resizeMode: 'contain', right: 20, bottom: 28 },
+  visual: { height: 300, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
+  visualCompact: { height: 268 },
+  leoStage: { width: 200, height: 200 },
+  iconBadge: { position: 'absolute', width: 52, height: 52, borderRadius: 26, right: -12, top: 0, backgroundColor: COLORS.accentSoft, alignItems: 'center', justifyContent: 'center' },
   eyebrow: { color: COLORS.accent, fontSize: 11, letterSpacing: 1.1, fontWeight: '900', textAlign: 'center' },
-  title: { color: COLORS.textPrimary, fontSize: 29, lineHeight: 34, fontWeight: '900', textAlign: 'center', marginTop: 10 },
-  body: { color: COLORS.textSecondary, fontSize: 16, lineHeight: 23, textAlign: 'center', marginTop: 12 },
-  dots: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', gap: 6, paddingBottom: 22 },
+  title: { width: '100%', maxWidth: 400, color: COLORS.textPrimary, fontSize: 29, lineHeight: 34, fontWeight: '900', textAlign: 'center', marginTop: 10 },
+  titleCompact: { fontSize: 26, lineHeight: 31, marginTop: 8 },
+  body: { width: '100%', maxWidth: 400, color: COLORS.textSecondary, fontSize: 16, lineHeight: 23, textAlign: 'center', marginTop: 12 },
+  bodyCompact: { lineHeight: 22, marginTop: 10 },
+  dots: { flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', gap: 6, paddingBottom: 22 },
   dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: COLORS.border },
   dotActive: { width: 22, backgroundColor: COLORS.accent },
   button: { height: 56, borderRadius: 16, backgroundColor: COLORS.accent, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 9 },

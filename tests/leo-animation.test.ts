@@ -71,6 +71,7 @@ function practiceHarness(screen: 'Arena' | 'Case') {
     '../theme/tokens': { tokens: { color: {}, space: {}, font: {}, radius: {} } },
     '../components/PrimaryButton': { PrimaryButton: 'button' }, '../components/FeedbackFooter': { FeedbackFooter: 'feedback' },
     '../components/LeoCoach': { LeoCoach: 'coach' },
+    '../practice/studiedMaterial': { practiceSourceLabel: () => '' },
     '../components/ExerciseRenderer': { isPassiveKind: () => false,
       renderExerciseByKind: (_ex: any, _phase: any, setState: any) => ({ type: 'answer', props: { setState } }) },
     './buildArena': {}, './buildCase': {}, '../../lib/sounds': { playSound: async () => {} },
@@ -113,6 +114,55 @@ describe('Graded practice reactions', () => {
 });
 
 describe('Animated Leo rules', () => {
+  for (const extension of ['tsx', 'js']) {
+    function tourHarness() {
+      const h = harness(`mobile/components/onboarding/FeatureTour.${extension}`, {
+        'react-native': { View: 'view', Text: 'text', Modal: 'modal', TouchableOpacity: 'touch',
+          StyleSheet: { create: (value: any) => value }, useWindowDimensions: () => ({ height: 667 }) },
+        'react-native-safe-area-context': { useSafeAreaInsets: () => ({ top: 20, bottom: 0 }) },
+        '@expo/vector-icons': { Feather: 'icon' }, '../../lib/constants': { COLORS: {} },
+        '../../lib/markets': { getMarketName: () => 'Aerospace' },
+        '../mascot/LeoAnimated': { LeoAnimated: 'animated-leo' },
+      });
+      const props = { visible: true, onComplete: vi.fn() };
+      const flatten = (node: any): any[] => !node || typeof node !== 'object' ? [] : Array.isArray(node)
+        ? node.flatMap(flatten) : [node, ...flatten(node.props?.children)];
+      const render = () => flatten(h.render('FeatureTour', props));
+      const leo = () => render().find(node => node.type === 'animated-leo').props;
+      const next = () => render().filter(node => node.type === 'touch')[1].props.onPress();
+      return { props, render, leo, next, unmount: h.unmount };
+    }
+    it(`tour ${extension} greets once and keeps idle across intermediate pages`, () => {
+      const h = tourHarness();
+      expect(h.leo().clip).toBe('leo-greet');
+      h.leo().onEnd();
+      expect(h.leo().clip).toBe('leo-idle-loop');
+      for (let i = 0; i < 4; i++) { h.next(); expect(h.leo().clip).toBe('leo-idle-loop'); }
+      expect(h.props.onComplete).not.toHaveBeenCalled(); h.unmount();
+    });
+    it(`tour ${extension} plays ready once on page six and completes only on Start learning`, () => {
+      const h = tourHarness(); h.leo().onEnd();
+      for (let i = 0; i < 5; i++) h.next();
+      h.render(); expect(h.leo().clip).toBe('leo-ready');
+      h.leo().onEnd(); expect(h.leo().clip).toBe('leo-idle-loop');
+      expect(h.props.onComplete).not.toHaveBeenCalled();
+      h.next(); expect(h.props.onComplete).toHaveBeenCalledTimes(1); h.unmount();
+    });
+    it(`tour ${extension} pauses hidden playback and greets again on reopen`, () => {
+      const h = tourHarness(); h.leo().onEnd();
+      h.props.visible = false; expect(h.leo().paused).toBe(true);
+      h.leo().onEnd(); expect(h.leo().clip).toBe('leo-idle-loop');
+      h.props.visible = true; h.render();
+      expect(h.leo().paused).toBe(false); expect(h.leo().clip).toBe('leo-greet'); h.unmount();
+    });
+    it(`tour ${extension} preserves Skip and modal-close completion`, () => {
+      const h = tourHarness();
+      h.render().find(node => node.type === 'touch').props.onPress();
+      expect(h.props.onComplete).toHaveBeenCalledTimes(1);
+      h.render().find(node => node.type === 'modal').props.onRequestClose();
+      expect(h.props.onComplete).toHaveBeenCalledTimes(2); h.unmount();
+    });
+  }
   it('uses all eighteen supplied clip lengths and native assets', () => {
     const metadata = JSON.parse(read('mobile/assets/mascot/anim/clips.json'));
     const module = { exports: {} as any };
