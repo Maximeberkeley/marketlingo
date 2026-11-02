@@ -120,7 +120,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
       if (term) {
         const defWords = norm(term.definition).split(/[^a-z0-9]+/).filter(word => word.length > 4);
         const prompt = norm(exercise.prompt);
-        if (defWords.filter(word => prompt.includes(word)).length >= 2) return [prefix(`term/${norm(term.term)}`)];
+        if (defWords.filter(word => prompt.includes(word)).length >= 3) return [prefix(`term/${norm(term.term)}`)];
       }
     }
     const lineKeys = (line: string, withTerms = true): string[] => {
@@ -134,7 +134,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
       if (withTerms && !quantities.length) {
         for (const term of termsIn(text)) {
           const defWords = norm(term.definition).split(/[^a-z0-9]+/).filter(word => word.length > 4);
-          if (defWords.some(word => text.includes(word))) keys.push(prefix(`term/${norm(term.term)}`));
+          if (defWords.filter(word => text.includes(word)).length >= 3) keys.push(prefix(`term/${norm(term.term)}`));
         }
       }
       for (const quantity of quantities) {
