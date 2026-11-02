@@ -95,7 +95,7 @@ function buildArena(input) {
     if (exercise.kind === "buildChain") {
       return exercise.steps.flatMap((step) => {
         const text = norm(step.replace(/^Straight from what you just read:\s*/i, ""));
-        return text ? [prefix(`line/${text}`)] : [];
+        return text ? [prefix(`chain/${text}`)] : [];
       });
     }
     if (exercise.kind === "sortSignal") return exercise.items.map((item) => prefix(`job/${norm(item.text)}`));
