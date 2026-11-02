@@ -1,8 +1,8 @@
 # MarketLingo roadmap
 
 ## Nov 2 — Lesson-first Arena and Deep Case
-- [ ] Load authored studied questions and deduplicated terms; select lesson-first rounds with bounded fallback, provenance and seven-day history.
-- [ ] Correct Deep Case priority; synchronize phone source pairs and verify real Neuroscience Day 1 reaches at least 10 of 11 lesson questions.
+- [x] Load authored studied questions and deduplicated terms; select lesson-first rounds with bounded fallback, provenance and seven-day history.
+- [x] Correct Deep Case priority; synchronize phone source pairs. 26 focused/regression checks passed; real Neuroscience Day 1 gives at least 10 lesson questions across 100 full runs with trainer fallback and 500 runs without filler. Preview build OK; XP, scoring, timers and lesson content unchanged.
 - [ ] Verify on iPhone (blocked: no iOS device/simulator; requires a rebuilt app).
 
 ## Nov 1 — Lesson moment animations
