@@ -8,7 +8,7 @@ import { supabase } from '../lib/supabase';
 import { localDateString } from '../lib/dayMath';
 import { getMarketName } from '../lib/markets';
 import { COLORS, SHADOWS } from '../lib/constants';
-import { LeoAnim } from '../components/mascot/LeoCharacter';
+import { LeoAnim, LeoCharacter } from '../components/mascot/LeoCharacter';
 import { LeoAnimated } from '../components/mascot/LeoAnimated';
 import type { LeoClip } from '../components/mascot/leoClips';
 import { SpeechBubble } from '../components/ui/SpeechBubble';
@@ -70,10 +70,9 @@ function presentation(data: Reminder) {
  * This screen is replaced when the learner continues, so it needs no focus handling.
  */
 function WelcomeBackLeo() {
-  const [greeted, setGreeted] = useState(false);
+  // Launch-safe: the first screens after opening show a still Leo until the launch crash is pinned down.
   const night = new Date().getHours() >= 21;
-  const clip: LeoClip = night ? 'leo-reading-loop' : greeted ? 'leo-idle-loop' : 'leo-greet';
-  return <LeoAnimated size={200} clip={clip} fallback={night ? 'reading' : 'idle'} onEnd={() => setGreeted(true)} />;
+  return <LeoCharacter size="xl" animation={night ? 'reading' : 'idle'} still />;
 }
 
 export default function DailyLeoScreen() {

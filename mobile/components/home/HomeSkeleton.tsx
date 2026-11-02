@@ -9,7 +9,7 @@
  */
 
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, Animated, Text } from 'react-native';
+import { View, StyleSheet, Animated, Text, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
 import { LeoAnimated } from '../mascot/LeoAnimated';
@@ -23,7 +23,8 @@ const LoadingLeoContext = createContext<{ add: () => void; remove: () => void } 
 function LoadingLeo() {
   return (
     <View style={styles.centre}>
-      <LeoAnimated clip="leo-loading-loop" size={200} fallback={LOADING_STILL} />
+      {/* Launch-safe: a still Leo while Home loads, until the launch crash is pinned down. */}
+      <Image source={LOADING_STILL} style={{ width: 200, height: 200 }} resizeMode="contain" />
       <Text style={styles.line}>Untangling today's lesson…</Text>
     </View>
   );

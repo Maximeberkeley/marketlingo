@@ -9,6 +9,7 @@ import { localDateString } from "../lib/dayMath";
 import { getMarketName } from "../lib/markets";
 import { COLORS, SHADOWS } from "../lib/constants";
 import { LeoAnimated } from "../components/mascot/LeoAnimated";
+import { LeoCharacter } from "../components/mascot/LeoCharacter";
 import { SpeechBubble } from "../components/ui/SpeechBubble";
 import { triggerHaptic } from "../lib/haptics";
 import { log } from "../lib/logger";
@@ -52,10 +53,9 @@ function presentation(data) {
   };
 }
 function WelcomeBackLeo() {
-  const [greeted, setGreeted] = useState(false);
+  // Launch-safe: the first screens after opening show a still Leo until the launch crash is pinned down.
   const night = (/* @__PURE__ */ new Date()).getHours() >= 21;
-  const clip = night ? "leo-reading-loop" : greeted ? "leo-idle-loop" : "leo-greet";
-  return /* @__PURE__ */ React.createElement(LeoAnimated, { size: 200, clip, fallback: night ? "reading" : "idle", onEnd: () => setGreeted(true) });
+  return /* @__PURE__ */ React.createElement(LeoCharacter, { size: "xl", animation: night ? "reading" : "idle", still: true });
 }
 function DailyLeoScreen() {
   const insets = useSafeAreaInsets();
