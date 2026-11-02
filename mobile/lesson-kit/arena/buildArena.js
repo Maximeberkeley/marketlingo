@@ -81,7 +81,7 @@ function buildArena(input) {
     return lineKeys(explanation);
   };
   const tag = (lesson, exercise) => exercise ? [{ exercise: { ...exercise, source: lessonSource(lesson) }, facts: factKeys(lesson, exercise) }] : [];
-  const own = (kind) => review.flatMap((lesson, index) => (lesson.questions ?? []).filter((q) => q.kind === kind).slice(0, index === 0 ? 1 : 0).flatMap((q) => tag(lesson, shuffleAuthored(q))));
+  const own = (kind) => review.flatMap((lesson) => (lesson.questions ?? []).filter((q) => q.kind === kind).flatMap((q) => tag(lesson, shuffleAuthored(q))));
   const definitions = () => lessons.flatMap((lesson) => {
     const pool = terms(lesson);
     return pool.flatMap((target) => {
@@ -161,14 +161,16 @@ function buildArena(input) {
     return priority(text(a)) - priority(text(b));
   });
   const defs = definitions();
-  const wave1 = fill([...own("multipleChoice"), ...defs.slice(0, 1), ...claims, ...defs.slice(1)], [
+  const authoredMC = own("multipleChoice");
+  const wave1 = fill([...authoredMC.slice(0, 1), ...defs.slice(0, 1), ...claims, ...defs.slice(1), ...authoredMC.slice(1)], [
     pack ? packFaceOff(pack, nextId()) : null,
     statFaceOff(input.stats, nextId()),
     drillTrueFalse(input.drills, nextId()),
     statTrend(input.stats, nextId())
   ], 4);
   const figures = generated(checkFigure);
-  const wave2 = fill([...own("numberSense"), ...figures.slice(0, 1), ...generated(checkMechanism), ...own("sortSignal"), ...figures], [
+  const authoredNumbers = own("numberSense");
+  const wave2 = fill([...authoredNumbers.slice(0, 1), ...figures.slice(0, 1), ...generated(checkMechanism), ...own("sortSignal"), ...figures, ...authoredNumbers.slice(1)], [
     pack ? packChain(pack, nextId()) : null,
     statNumberSense(input.stats, nextId()),
     drillSpotFake(input.drills, nextId()),

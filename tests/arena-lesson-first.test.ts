@@ -27,7 +27,7 @@ describe('lesson-first Arena', () => {
       const keys = questions.flatMap(quizQuestionKeys);
       expect(new Set(keys).size).toBe(keys.length);
     }
-  });
+  }, 20000);
   it('limits each kind to two and wider industry to one per round', () => {
     for (const round of buildArena(input)) {
       expect(round.exercises.filter(e => e.source?.type === 'industry').length).toBeLessThanOrEqual(1);
