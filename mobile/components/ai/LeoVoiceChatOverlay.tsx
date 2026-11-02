@@ -355,7 +355,7 @@ export function LeoVoiceChatOverlay({
           <View pointerEvents="none" style={[st.sceneImage, st.sceneLeo]} onLayout={({ nativeEvent }) => {
             setSceneSize(Math.min(nativeEvent.layout.width, nativeEvent.layout.height));
           }}>
-            {sceneSize > 0 && <LeoAnimated size={sceneSize} clip={leoCallClip(isGenerating, isSpeaking, messages.length === 0)} fallback={LEO_STUDY_SCENE} paused={!visible} />}
+            {sceneSize > 0 && <LeoAnimated size={sceneSize} clip={leoCallClip(isGenerating, isSpeaking)} fallback={LEO_STUDY_SCENE} paused={!visible} />}
           </View>
           <View style={st.sceneShade} />
           <View style={st.bottomShade} />

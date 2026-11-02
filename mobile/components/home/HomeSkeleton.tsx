@@ -9,6 +9,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
 import { LeoAnimated } from '../mascot/LeoAnimated';
 
+// The loop's own first frame, so Leo already holds his yarn before the animation starts.
+const LOADING_STILL = require('../../assets/mascot/anim/leo-loading-still.png');
+
 const SHOW_DELAY_MS = 250;
 const FADE_MS = 200;
 
@@ -29,7 +32,7 @@ export function HomeSkeleton() {
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       {visible && (
         <Animated.View style={[styles.centre, { opacity }]}>
-          <LeoAnimated clip="leo-loading-loop" size={200} fallback="idle" />
+          <LeoAnimated clip="leo-loading-loop" size={200} fallback={LOADING_STILL} />
           <Text style={styles.line}>Untangling today's lesson…</Text>
         </Animated.View>
       )}
