@@ -45,8 +45,6 @@ export function useLessonCompleteLeo(userId: string | undefined, streak: number 
   return { clip, onEnd };
 }
 
-const LEO_SIT_BEHIND_CALL_MS = 450;
-
 export function useHomeLeo({ done, active, focused, callOpen, doneKey, morningKey, celebrate, onCelebrated, onLeo }: {
   done: boolean; active: boolean; focused: boolean; callOpen: boolean; doneKey: string; morningKey?: string;
   celebrate: boolean; onCelebrated: () => void; onLeo: () => void;
@@ -56,8 +54,6 @@ export function useHomeLeo({ done, active, focused, callOpen, doneKey, morningKe
   const woken = useRef(false);
   const previousCall = useRef(callOpen);
   const wakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // After a tap wakes Leo, he sits up behind the call so he can lie back down when it closes.
-  const sitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const callbacks = useRef({ onLeo, onCelebrated });
   callbacks.current = { onLeo, onCelebrated };
   const claimed = useRef(new Set<string>());
@@ -85,17 +81,8 @@ export function useHomeLeo({ done, active, focused, callOpen, doneKey, morningKe
     setClip(done ? 'leo-reading-loop' : 'leo-sleep-loop');
   }, [done, doneKey]);
   useEffect(() => {
-    if (sitTimer.current) clearTimeout(sitTimer.current);
-    sitTimer.current = null;
-    if (motion) return;
-    if (callOpen && woken.current && !done) {
-      // Wait until the call has faded in over Leo, then switch him to sitting up.
-      sitTimer.current = setTimeout(() => { sitTimer.current = null; setClip('leo-doze'); }, LEO_SIT_BEHIND_CALL_MS);
-      return;
-    }
-    setClip(done ? 'leo-reading-loop' : 'leo-sleep-loop');
-  }, [motion, done, callOpen]);
-  useEffect(() => () => { if (sitTimer.current) clearTimeout(sitTimer.current); }, []);
+    if (!motion) setClip(done ? 'leo-reading-loop' : 'leo-sleep-loop');
+  }, [motion, done]);
 
   useEffect(() => {
     if (morning.current && (done || !focused || !active || !foreground || (!motion && !callOpen))) {
@@ -129,8 +116,7 @@ export function useHomeLeo({ done, active, focused, callOpen, doneKey, morningKe
       setClip(!done && motion ? 'leo-doze' : done ? 'leo-reading-loop' : 'leo-sleep-loop');
     } else if (closed && woken.current) {
       woken.current = false;
-      // He is sitting up again (switched behind the call), then lies down and closes his eyes.
-      setClip(!done && motion ? 'leo-doze' : done ? 'leo-reading-loop' : 'leo-sleep-loop');
+      setClip(!done && motion ? 'leo-eyes-close' : done ? 'leo-reading-loop' : 'leo-sleep-loop');
     }
   }, [callOpen, done, motion]);
 

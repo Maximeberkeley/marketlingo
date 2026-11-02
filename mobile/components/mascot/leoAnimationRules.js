@@ -4,9 +4,9 @@ function leoAnimationDelay(kind, random = Math.random()) {
 function leoDoneKey(userId, marketId, localDay) {
   return `@marketlingo/leo-done-anim/${userId ?? "guest"}/${marketId}/${localDay}`;
 }
-function leoCallClip(isGenerating, isSpeaking) {
+function leoCallClip(isGenerating, isSpeaking, greeting = false) {
   if (isGenerating) return "leo-call-think";
-  if (isSpeaking) return "leo-call-talk";
+  if (isSpeaking) return greeting ? "leo-call-talk" : "leo-teach-loop";
   return "leo-call-listen";
 }
 function leoMorningKey(userId, marketId, localDay) {

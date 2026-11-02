@@ -244,7 +244,7 @@ function SectionCluster({
       {
         size: 144,
         clip: leo.clip,
-        fallback: leo.clip === "leo-doze" ? "idle" : leoDone ? "reading" : "sleeping",
+        fallback: leoDone ? "reading" : "sleeping",
         paused: !isFocused || leoCallOpen,
         onEnd: leo.onEnd
       }

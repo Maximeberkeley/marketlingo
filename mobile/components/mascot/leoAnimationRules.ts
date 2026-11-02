@@ -6,10 +6,9 @@ export function leoDoneKey(userId: string | undefined, marketId: string, localDa
   return `@marketlingo/leo-done-anim/${userId ?? 'guest'}/${marketId}/${localDay}`;
 }
 
-export function leoCallClip(isGenerating: boolean, isSpeaking: boolean) {
-  // The call uses Leo's three desk clips only.
+export function leoCallClip(isGenerating: boolean, isSpeaking: boolean, greeting = false) {
   if (isGenerating) return 'leo-call-think';
-  if (isSpeaking) return 'leo-call-talk';
+  if (isSpeaking) return greeting ? 'leo-call-talk' : 'leo-teach-loop';
   return 'leo-call-listen';
 }
 

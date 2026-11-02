@@ -8,10 +8,7 @@ import { supabase } from '../lib/supabase';
 import { localDateString } from '../lib/dayMath';
 import { getMarketName } from '../lib/markets';
 import { COLORS, SHADOWS } from '../lib/constants';
-import { useIsFocused } from '@react-navigation/native';
-import { LeoAnim } from '../components/mascot/LeoCharacter';
-import { LeoAnimated } from '../components/mascot/LeoAnimated';
-import type { LeoClip } from '../components/mascot/leoClips';
+import { LeoAnim, LeoCharacter } from '../components/mascot/LeoCharacter';
 import { SpeechBubble } from '../components/ui/SpeechBubble';
 import { triggerHaptic } from '../lib/haptics';
 import { log } from '../lib/logger';
@@ -65,15 +62,6 @@ function presentation(data: Reminder) {
   };
 }
 
-
-/** Leo waves hello, then idles; late at night he is reading instead. */
-function WelcomeBackLeo() {
-  const focused = useIsFocused();
-  const [greeted, setGreeted] = useState(false);
-  const night = new Date().getHours() >= 21;
-  const clip: LeoClip = night ? 'leo-reading-loop' : greeted ? 'leo-idle-loop' : 'leo-greet';
-  return <LeoAnimated size={200} clip={clip} fallback={night ? 'reading' : 'idle'} paused={!focused} onEnd={() => setGreeted(true)} />;
-}
 
 export default function DailyLeoScreen() {
   const insets = useSafeAreaInsets();
@@ -139,7 +127,7 @@ export default function DailyLeoScreen() {
 
       <View style={styles.scene}>
         <SpeechBubble text={content.line} tail="bottom-center" showLabel style={styles.bubble} />
-        <View style={styles.leoWrap}><WelcomeBackLeo /></View>
+        <View style={styles.leoWrap}><LeoCharacter size="xl" animation={content.mood} still /></View>
       </View>
 
 

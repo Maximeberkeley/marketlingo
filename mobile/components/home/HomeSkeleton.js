@@ -3,7 +3,6 @@ import { View, StyleSheet, Animated, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS } from "../../lib/constants";
 import { LeoAnimated } from "../mascot/LeoAnimated";
-const LOADING_STILL = require("../../assets/mascot/anim/leo-loading-still.png");
 const SHOW_DELAY_MS = 250;
 const FADE_MS = 200;
 function HomeSkeleton() {
@@ -17,7 +16,7 @@ function HomeSkeleton() {
     }, SHOW_DELAY_MS);
     return () => clearTimeout(timer);
   }, [opacity]);
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }] }, visible && /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.centre, { opacity }] }, /* @__PURE__ */ React.createElement(LeoAnimated, { clip: "leo-loading-loop", size: 200, fallback: LOADING_STILL }), /* @__PURE__ */ React.createElement(Text, { style: styles.line }, "Untangling today's lesson\u2026")));
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }] }, visible && /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.centre, { opacity }] }, /* @__PURE__ */ React.createElement(LeoAnimated, { clip: "leo-loading-loop", size: 200, fallback: "idle" }), /* @__PURE__ */ React.createElement(Text, { style: styles.line }, "Untangling today's lesson\u2026")));
 }
 const styles = StyleSheet.create({
   container: {

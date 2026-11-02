@@ -8,8 +8,7 @@ import { supabase } from "../lib/supabase";
 import { localDateString } from "../lib/dayMath";
 import { getMarketName } from "../lib/markets";
 import { COLORS, SHADOWS } from "../lib/constants";
-import { useIsFocused } from "@react-navigation/native";
-import { LeoAnimated } from "../components/mascot/LeoAnimated";
+import { LeoCharacter } from "../components/mascot/LeoCharacter";
 import { SpeechBubble } from "../components/ui/SpeechBubble";
 import { triggerHaptic } from "../lib/haptics";
 import { log } from "../lib/logger";
@@ -51,13 +50,6 @@ function presentation(data) {
     eyebrow: "GOOD MORNING",
     line: `Today's ${market} idea is ready.`
   };
-}
-function WelcomeBackLeo() {
-  const focused = useIsFocused();
-  const [greeted, setGreeted] = useState(false);
-  const night = (/* @__PURE__ */ new Date()).getHours() >= 21;
-  const clip = night ? "leo-reading-loop" : greeted ? "leo-idle-loop" : "leo-greet";
-  return /* @__PURE__ */ React.createElement(LeoAnimated, { size: 200, clip, fallback: night ? "reading" : "idle", paused: !focused, onEnd: () => setGreeted(true) });
 }
 function DailyLeoScreen() {
   const insets = useSafeAreaInsets();
@@ -108,7 +100,7 @@ function DailyLeoScreen() {
   if (loading || !data || !content) {
     return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(ActivityIndicator, { color: COLORS.accent }));
   }
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 22 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.heading }, /* @__PURE__ */ React.createElement(Text, { style: styles.eyebrow }, content.eyebrow), /* @__PURE__ */ React.createElement(Text, { style: styles.title }, data.streak > 0 ? `Welcome back \u2014 ${data.streak} ${data.streak === 1 ? "day" : "days"} in a row` : "Welcome back to your market")), /* @__PURE__ */ React.createElement(View, { style: styles.scene }, /* @__PURE__ */ React.createElement(SpeechBubble, { text: content.line, tail: "bottom-center", showLabel: true, style: styles.bubble }), /* @__PURE__ */ React.createElement(View, { style: styles.leoWrap }, /* @__PURE__ */ React.createElement(WelcomeBackLeo, null))), /* @__PURE__ */ React.createElement(View, { style: styles.footer }, /* @__PURE__ */ React.createElement(Text, { style: styles.caption }, "One lesson. About five minutes."), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 22 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.heading }, /* @__PURE__ */ React.createElement(Text, { style: styles.eyebrow }, content.eyebrow), /* @__PURE__ */ React.createElement(Text, { style: styles.title }, data.streak > 0 ? `Welcome back \u2014 ${data.streak} ${data.streak === 1 ? "day" : "days"} in a row` : "Welcome back to your market")), /* @__PURE__ */ React.createElement(View, { style: styles.scene }, /* @__PURE__ */ React.createElement(SpeechBubble, { text: content.line, tail: "bottom-center", showLabel: true, style: styles.bubble }), /* @__PURE__ */ React.createElement(View, { style: styles.leoWrap }, /* @__PURE__ */ React.createElement(LeoCharacter, { size: "xl", animation: content.mood, still: true }))), /* @__PURE__ */ React.createElement(View, { style: styles.footer }, /* @__PURE__ */ React.createElement(Text, { style: styles.caption }, "One lesson. About five minutes."), /* @__PURE__ */ React.createElement(
     TouchableOpacity,
     {
       style: styles.continueButton,
