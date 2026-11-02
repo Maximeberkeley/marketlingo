@@ -23,10 +23,6 @@
     "ms": 2000,
     "loop": false
   },
-  "leo-eyes-close": {
-    "ms": 800,
-    "loop": false
-  },
   "leo-eyes-open": {
     "ms": 800,
     "loop": false
@@ -40,7 +36,11 @@
     "loop": true
   },
   "leo-loading-loop": {
-    "ms": 6867,
+    "ms": 6048,
+    "loop": true
+  },
+  "leo-notes-loop": {
+    "ms": 4600,
     "loop": true
   },
   "leo-peek": {
@@ -66,10 +66,6 @@
   "leo-success": {
     "ms": 2000,
     "loop": false
-  },
-  "leo-teach-loop": {
-    "ms": 4600,
-    "loop": true
   },
   "leo-wake": {
     "ms": 3200,

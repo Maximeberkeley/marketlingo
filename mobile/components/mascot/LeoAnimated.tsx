@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { LeoCharacter, LeoAnim } from './LeoCharacter';
 import { leoClips, LeoClip } from './leoClips';
 import { useLeoMotion } from './useLeoMotion';
+import { log } from '../../lib/logger';
 
 interface LeoAnimatedProps {
   clip: LeoClip;
@@ -101,9 +102,30 @@ function StaticLeo({ size, fallback }: Pick<LeoAnimatedProps, 'size' | 'fallback
   </View>;
 }
 
+/** If anything in the animated player fails, show the still Leo instead of taking the screen down. */
+class LeoErrorBoundary extends React.Component<{ fallback: React.ReactNode; children: React.ReactNode }, { failed: boolean }> {
+  constructor(props: { fallback: React.ReactNode; children: React.ReactNode }) {
+    super(props);
+    this.state = { failed: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    log.warn('[LeoAnimated] Showing the still Leo after an error:', error);
+  }
+
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
+}
+
 export function LeoAnimated(props: LeoAnimatedProps) {
   const motion = useLeoMotion(props.paused);
+  const still = <StaticLeo size={props.size} fallback={props.fallback} />;
   return <View pointerEvents="none" style={{ width: props.size, height: props.size, overflow: 'visible' }}>
-    {motion ? <ClipPlayer {...props} /> : <StaticLeo size={props.size} fallback={props.fallback} />}
+    {motion ? <LeoErrorBoundary fallback={still}><ClipPlayer {...props} /></LeoErrorBoundary> : still}
   </View>;
 }

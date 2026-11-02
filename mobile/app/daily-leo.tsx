@@ -8,7 +8,9 @@ import { supabase } from '../lib/supabase';
 import { localDateString } from '../lib/dayMath';
 import { getMarketName } from '../lib/markets';
 import { COLORS, SHADOWS } from '../lib/constants';
-import { LeoAnim, LeoCharacter } from '../components/mascot/LeoCharacter';
+import { LeoAnim } from '../components/mascot/LeoCharacter';
+import { LeoAnimated } from '../components/mascot/LeoAnimated';
+import type { LeoClip } from '../components/mascot/leoClips';
 import { SpeechBubble } from '../components/ui/SpeechBubble';
 import { triggerHaptic } from '../lib/haptics';
 import { log } from '../lib/logger';
@@ -62,6 +64,17 @@ function presentation(data: Reminder) {
   };
 }
 
+
+/**
+ * Leo waves hello, then idles; after 9 pm he is reading instead.
+ * This screen is replaced when the learner continues, so it needs no focus handling.
+ */
+function WelcomeBackLeo() {
+  const [greeted, setGreeted] = useState(false);
+  const night = new Date().getHours() >= 21;
+  const clip: LeoClip = night ? 'leo-reading-loop' : greeted ? 'leo-idle-loop' : 'leo-greet';
+  return <LeoAnimated size={200} clip={clip} fallback={night ? 'reading' : 'idle'} onEnd={() => setGreeted(true)} />;
+}
 
 export default function DailyLeoScreen() {
   const insets = useSafeAreaInsets();
@@ -127,7 +140,7 @@ export default function DailyLeoScreen() {
 
       <View style={styles.scene}>
         <SpeechBubble text={content.line} tail="bottom-center" showLabel style={styles.bubble} />
-        <View style={styles.leoWrap}><LeoCharacter size="xl" animation={content.mood} still /></View>
+        <View style={styles.leoWrap}><WelcomeBackLeo /></View>
       </View>
 
 
