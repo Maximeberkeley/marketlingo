@@ -192,7 +192,10 @@ function buildArena(input) {
   };
   const tampers = generated(checkTamper);
   reserved = tampers.find((c) => "explanation" in c.exercise && !/\d/.test(c.exercise.explanation ?? ""));
-  const claims = generated(checkClaim, true);
+  const claims = generated(checkClaim, true).sort((a, b) => {
+    const text = (c) => "explanation" in c.exercise ? c.exercise.explanation ?? "" : "";
+    return (/\d/.test(text(a)) ? 1 : 0) - (/\d/.test(text(b)) ? 1 : 0);
+  });
   const defs = definitions();
   const authoredMC = own("multipleChoice");
   const wave1 = fill([...authoredMC.slice(0, 1), ...defs.slice(0, 1), ...claims, ...defs.slice(1), ...authoredMC.slice(1)], [
