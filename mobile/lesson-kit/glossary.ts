@@ -81,6 +81,15 @@ const PHRASES: Record<string, Record<string, string>> = {
 
 const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+/** Every plain-language entry for a market, for decoy pools outside lesson copy. */
+export function glossaryEntriesFor(marketId?: string): GlossaryEntry[] {
+  const phrases = PHRASES[marketId || ''] || {};
+  return [
+    ...Object.entries(phrases).map(([term, definition]) => ({ term, definition })),
+    ...getAcronymsForMarket(marketId).filter(e => e.term !== 'LEO'),
+  ];
+}
+
 /** One regex per market; "Tier 1s" and "Tier 2/3s" resolve to their base term. */
 export function glossaryFor(marketId?: string, lessonTerms: readonly GlossaryEntry[] = []): { pattern: RegExp; lookup: (match: string) => GlossaryEntry | undefined } | null {
   const phrases = PHRASES[marketId || ''] || {};

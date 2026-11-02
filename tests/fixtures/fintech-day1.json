@@ -1,0 +1,181 @@
+{
+ "stackId": "d697d912-f1cf-49b5-a127-7d38aeffce99",
+ "title": "What happens when you pay someone",
+ "day": 1,
+ "slides": [
+  {
+   "slideNumber": 1,
+   "title": "Day 1 \u00b7 The map",
+   "body": "Venmo shows your payment instantly. Moving that money to your bank can take one to three business days. Inside Venmo, a payment updates both balances right away, because it is an entry in Venmo's own records. Getting that money into a bank account is a different trip. Venmo's free standard transfer typically arrives within 1 to 3 business days, and its paid instant transfer typically arrives within 30 minutes.\n\nThe gap exists because money between banks moves in stages. Someone sends an instruction, the system works out who owes what, and only then do banks move real money between them. This lesson maps those stages and the institutions behind them."
+  },
+  {
+   "slideNumber": 2,
+   "title": "Layer 1 \u00b7 The Fed",
+   "body": "The Federal Reserve is the bank for banks. Banks keep accounts at one of 12 Reserve Banks. Money credited to those accounts is final. The Federal Reserve System is a Board of Governors in Washington plus 12 regional Reserve Banks. The Reserve Banks lend to banks to keep the system liquid, distribute currency, clear checks and run electronic payment systems such as Fedwire and FedACH.\n\nBanks hold master accounts at their Reserve Bank. Fedwire's own description stresses the finality of payments credited to those master accounts. That finality is what turns a payment instruction into settled money."
+  },
+  {
+   "slideNumber": 3,
+   "title": "Layer 2 \u00b7 The banks",
+   "body": "About 4,300 FDIC-insured banks hold the public's deposits and make loans. There were 4,336 at the end of 2025, down from 4,487 a year before."
+  },
+  {
+   "slideNumber": 4,
+   "title": "Clearing comes first, then settlement",
+   "body": "Clearing matches payment instructions and works out who owes whom. Settlement is the final transfer of money between banks. ACH processes payments in low-cost batches. Fedwire handles mission-critical payments the same day. Every bank payment goes through the same stages. A payer sends an instruction. Clearing works out the commitments: which bank owes which, and how much. Settlement is the final true-up, when banks exchange funds through a central bank network such as Fedwire.\n\nThe Fed runs both kinds of rails. FedACH offers efficient, low-cost batched payments, with a same-day option. The Fedwire Funds Service is used by banks, businesses and government agencies for mission-critical, same-day transactions."
+  },
+  {
+   "slideNumber": 5,
+   "title": "Say cleared and settled, not went through",
+   "body": "People in payments notice precise words. Say a payment cleared through ACH and settled at the Fed. Banking and payments interviews reward vocabulary that shows you know the plumbing. Clearing is the matching of instructions; settlement is the final movement of money between banks. Knowing that Fedwire handles same-day, high-value payments and ACH handles batches is enough to hold your own in a first conversation."
+  },
+  {
+   "slideNumber": 6,
+   "title": "The rule",
+   "body": "A payment is only a message until it settles."
+  }
+ ],
+ "authored_lesson": {
+  "id": "fintech-d1-career",
+  "title": "What happens when you pay someone",
+  "exercises": [
+   {
+    "id": "open",
+    "kind": "coldOpen",
+    "kicker": "Two different systems are at work.",
+    "eyebrow": "Day 1 \u00b7 The map",
+    "sources": [
+     {
+      "url": "https://help.venmo.com/hc/en-us/articles/235399967-Standard-Bank-Transfers-FAQ",
+      "label": "Venmo, standard bank transfers"
+     }
+    ],
+    "fullText": "Inside Venmo, a payment updates both balances right away, because it is an entry in Venmo's own records. Getting that money into a bank account is a different trip. Venmo's free standard transfer typically arrives within 1 to 3 business days, and its paid instant transfer typically arrives within 30 minutes.\n\nThe gap exists because money between banks moves in stages. Someone sends an instruction, the system works out who owes what, and only then do banks move real money between them. This lesson maps those stages and the institutions behind them.",
+    "headline": "Venmo shows your payment instantly. Moving that money to your bank can take one to three business days."
+   },
+   {
+    "id": "fed",
+    "kind": "microInsight",
+    "text": "The Federal Reserve is the bank for banks. Banks keep accounts at one of 12 Reserve Banks.",
+    "eyebrow": "Layer 1 \u00b7 The Fed",
+    "sources": [
+     {
+      "url": "https://www.federalreserve.gov/aboutthefed/structure-federal-reserve-system.htm",
+      "label": "Federal Reserve, structure"
+     },
+     {
+      "url": "https://www.frbservices.org/financial-services/wires",
+      "label": "Fedwire Funds Service"
+     },
+     {
+      "url": "https://perkinscoie.com/insights/update/federal-reserve-issues-final-guidelines-master-account-access",
+      "label": "Perkins Coie, Fed master account guidelines"
+     }
+    ],
+    "fullText": "The Federal Reserve System is a Board of Governors in Washington plus 12 regional Reserve Banks. The Reserve Banks lend to banks to keep the system liquid, distribute currency, clear checks and run electronic payment systems such as Fedwire and FedACH.\n\nBanks hold master accounts at their Reserve Bank. Fedwire's own description stresses the finality of payments credited to those master accounts. That finality is what turns a payment instruction into settled money.",
+    "keyTerms": [
+     {
+      "term": "Reserve Banks",
+      "definition": "The 12 regional banks of the Federal Reserve. They hold banks' accounts and run payment systems."
+     }
+    ],
+    "highlight": "Money credited to those accounts is final."
+   },
+   {
+    "id": "banks",
+    "kind": "microInsight",
+    "text": "About 4,300 FDIC-insured banks hold the public's deposits and make loans.",
+    "eyebrow": "Layer 2 \u00b7 The banks",
+    "sources": [
+     {
+      "url": "https://www.fdic.gov/quarterly-banking-profile/statistics-glance-industry-trends-fourth-quarter-2025.pdf",
+      "label": "FDIC, industry at a glance Q4 2025"
+     }
+    ],
+    "highlight": "There were 4,336 at the end of 2025, down from 4,487 a year before."
+   },
+   {
+    "id": "rails",
+    "body": "Clearing matches payment instructions and works out who owes whom. Settlement is the final transfer of money between banks.",
+    "kind": "info",
+    "title": "Clearing comes first, then settlement",
+    "bullets": [
+     "ACH processes payments in low-cost batches.",
+     "Fedwire handles mission-critical payments the same day."
+    ],
+    "eyebrow": "Layer 3 \u00b7 The rails",
+    "sources": [
+     {
+      "url": "https://www.moderntreasury.com/journal/difference-between-settlement-and-clearing",
+      "label": "Modern Treasury, clearing vs settlement"
+     },
+     {
+      "url": "https://www.frbservices.org/financial-services/ach",
+      "label": "FedACH Services"
+     },
+     {
+      "url": "https://www.frbservices.org/financial-services/wires",
+      "label": "Fedwire Funds Service"
+     }
+    ],
+    "fullText": "Every bank payment goes through the same stages. A payer sends an instruction. Clearing works out the commitments: which bank owes which, and how much. Settlement is the final true-up, when banks exchange funds through a central bank network such as Fedwire.\n\nThe Fed runs both kinds of rails. FedACH offers efficient, low-cost batched payments, with a same-day option. The Fedwire Funds Service is used by banks, businesses and government agencies for mission-critical, same-day transactions.",
+    "keyTerms": [
+     {
+      "term": "Settlement",
+      "definition": "The final transfer of money between banks that completes a payment."
+     }
+    ]
+   },
+   {
+    "id": "chain",
+    "kind": "buildChain",
+    "steps": [
+     "You send a payment instruction",
+     "Clearing works out who owes what",
+     "Banks settle at the Fed",
+     "The money is final at the other bank"
+    ],
+    "prompt": "Put a bank payment in order.",
+    "explanation": "The message comes first. The money only becomes final at settlement."
+   },
+   {
+    "id": "mc-venmo",
+    "kind": "multipleChoice",
+    "prompt": "Your Venmo balance updated instantly. What has not happened yet?",
+    "options": [
+     "Settlement between the banks",
+     "The payment instruction",
+     "The update to Venmo's own records"
+    ],
+    "explanation": "The app's records changed. Real money between banks moves later, at settlement.",
+    "correctIndex": 0
+   },
+   {
+    "id": "lens-career",
+    "body": "People in payments notice precise words. Say a payment cleared through ACH and settled at the Fed.",
+    "kind": "info",
+    "title": "Say cleared and settled, not went through",
+    "eyebrow": "For your interview",
+    "fullText": "Banking and payments interviews reward vocabulary that shows you know the plumbing. Clearing is the matching of instructions; settlement is the final movement of money between banks. Knowing that Fedwire handles same-day, high-value payments and ACH handles batches is enough to hold your own in a first conversation.",
+    "detailTitle": "Say cleared and settled, not went through"
+   },
+   {
+    "id": "rule",
+    "kind": "microInsight",
+    "text": "A payment is only a message until it settles.",
+    "eyebrow": "The rule",
+    "sources": [
+     {
+      "url": "https://www.moderntreasury.com/journal/difference-between-settlement-and-clearing",
+      "label": "Modern Treasury, clearing vs settlement"
+     }
+    ]
+   },
+   {
+    "id": "say-it",
+    "kind": "sayIt",
+    "takeaway": "A payment is a message until it settles. Banks clear the messages, then settle by moving money between their accounts at the Fed.",
+    "sectionKey": "players"
+   }
+  ]
+ }
+}

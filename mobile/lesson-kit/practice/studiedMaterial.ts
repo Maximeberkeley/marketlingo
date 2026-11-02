@@ -1,6 +1,6 @@
 import type { Exercise, KeyTerm } from '../types';
 
-export type AuthoredQuestion = Extract<Exercise, { kind: 'multipleChoice' | 'numberSense' | 'sortSignal' }>;
+export type AuthoredQuestion = Extract<Exercise, { kind: 'multipleChoice' | 'numberSense' | 'sortSignal' | 'buildChain' }>;
 
 /** Read the verified lesson, without rewriting its copy or answers. */
 export function studiedMaterial(value: unknown): { questions: AuthoredQuestion[]; keyTerms: KeyTerm[] } {
@@ -29,6 +29,10 @@ export function studiedMaterial(value: unknown): { questions: AuthoredQuestion[]
       Array.isArray(exercise.buckets) && exercise.buckets.every((s: unknown) => typeof s === 'string') &&
       Array.isArray(exercise.items) && exercise.items.length && exercise.items.every((item: any) =>
         typeof item.text === 'string' && Number.isInteger(item.bucket) && item.bucket >= 0 && item.bucket < exercise.buckets.length)) {
+      questions.push(exercise as AuthoredQuestion);
+    } else if (exercise.kind === 'buildChain' && typeof exercise.prompt === 'string' &&
+      Array.isArray(exercise.steps) && exercise.steps.length >= 2 &&
+      exercise.steps.every((s: unknown) => typeof s === 'string' && s.trim().length > 0)) {
       questions.push(exercise as AuthoredQuestion);
     }
   }

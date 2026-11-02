@@ -1,0 +1,181 @@
+{
+ "stackId": "74468e84-cbb3-42be-b7b8-7c8df766259f",
+ "title": "How the grid actually works",
+ "day": 1,
+ "slides": [
+  {
+   "slideNumber": 1,
+   "title": "Day 1 \u00b7 The map",
+   "body": "Two-thirds of US electricity is used in regions where an independent operator runs the grid and its market. FERC counts seven regional operators: CAISO in California, MISO in the Midcontinent, ISO New England, NYISO in New York, PJM in the Mid-Atlantic and Midwest, SPP in the Southwest, and ERCOT in Texas. Two-thirds of the nation's electricity load is served in their regions.\n\nThey run the high-voltage grid independently of the companies that sell power, and they operate bid-based markets that decide which power plants run."
+  },
+  {
+   "slideNumber": 2,
+   "title": "Generate, transmit, distribute",
+   "body": "Power plants generate electricity. High-voltage lines carry it long distances, then distribution lines bring it to customers."
+  },
+  {
+   "slideNumber": 3,
+   "title": "The constant job",
+   "body": "On the grid, supply must constantly match demand. Balancing authorities manage that, region by region."
+  },
+  {
+   "slideNumber": 4,
+   "title": "The operators",
+   "body": "ISOs and RTOs run the high-voltage grid and its markets, and choose which plants run. There are seven in the US, including PJM, MISO and ERCOT."
+  },
+  {
+   "slideNumber": 5,
+   "title": "Three grids",
+   "body": "The US has three big grids: Eastern, Western and Texas. ERCOT runs the grid covering most of Texas."
+  },
+  {
+   "slideNumber": 6,
+   "title": "Name the operator",
+   "body": "Know which ISO or RTO runs the region a company works in. Each has its own market rules and its own challenges."
+  },
+  {
+   "slideNumber": 7,
+   "title": "The rule",
+   "body": "Electricity is made the instant it is used, so someone must run the grid every second."
+  }
+ ],
+ "authored_lesson": {
+  "id": "cleanenergy-d1-career",
+  "title": "How the grid actually works",
+  "exercises": [
+   {
+    "id": "open",
+    "kind": "coldOpen",
+    "kicker": "Names like PJM, MISO and ERCOT run the show.",
+    "eyebrow": "Day 1 \u00b7 The map",
+    "sources": [
+     {
+      "url": "https://www.ferc.gov/industries-data/market-assessments/electric-power-markets",
+      "label": "FERC, electric power markets"
+     }
+    ],
+    "fullText": "FERC counts seven regional operators: CAISO in California, MISO in the Midcontinent, ISO New England, NYISO in New York, PJM in the Mid-Atlantic and Midwest, SPP in the Southwest, and ERCOT in Texas. Two-thirds of the nation's electricity load is served in their regions.\n\nThey run the high-voltage grid independently of the companies that sell power, and they operate bid-based markets that decide which power plants run.",
+    "headline": "Two-thirds of US electricity is used in regions where an independent operator runs the grid and its market."
+   },
+   {
+    "id": "layers",
+    "body": "Power plants generate electricity. High-voltage lines carry it long distances, then distribution lines bring it to customers.",
+    "kind": "info",
+    "title": "Generate, transmit, distribute",
+    "eyebrow": "Three layers",
+    "sources": [
+     {
+      "url": "https://www.eia.gov/energyexplained/electricity/delivery-to-consumers.php",
+      "label": "EIA, delivery to consumers"
+     }
+    ],
+    "keyTerms": [
+     {
+      "term": "distribution",
+      "definition": "Lower-voltage lines that carry power the last miles to customers."
+     }
+    ]
+   },
+   {
+    "id": "balance",
+    "kind": "microInsight",
+    "text": "On the grid, supply must constantly match demand.",
+    "eyebrow": "The constant job",
+    "sources": [
+     {
+      "url": "https://www.eia.gov/energyexplained/electricity/delivery-to-consumers.php",
+      "label": "EIA, delivery to consumers"
+     }
+    ],
+    "highlight": "Balancing authorities manage that, region by region."
+   },
+   {
+    "id": "iso",
+    "kind": "microInsight",
+    "text": "ISOs and RTOs run the high-voltage grid and its markets, and choose which plants run.",
+    "eyebrow": "The operators",
+    "sources": [
+     {
+      "url": "https://www.ferc.gov/industries-data/market-assessments/electric-power-markets",
+      "label": "FERC, electric power markets"
+     }
+    ],
+    "keyTerms": [
+     {
+      "term": "RTOs",
+      "definition": "Regional transmission organizations: independent operators of a region's grid and power market."
+     }
+    ],
+    "highlight": "There are seven in the US, including PJM, MISO and ERCOT."
+   },
+   {
+    "id": "grids",
+    "kind": "microInsight",
+    "text": "The US has three big grids: Eastern, Western and Texas.",
+    "eyebrow": "Three grids",
+    "sources": [
+     {
+      "url": "https://www.eia.gov/energyexplained/electricity/delivery-to-consumers.php",
+      "label": "EIA, delivery to consumers"
+     }
+    ],
+    "highlight": "ERCOT runs the grid covering most of Texas."
+   },
+   {
+    "id": "chain",
+    "kind": "buildChain",
+    "steps": [
+     "A power plant generates electricity",
+     "High-voltage lines carry it far",
+     "Distribution lines carry it locally",
+     "It reaches homes and businesses"
+    ],
+    "prompt": "Follow electricity from the plant to the plug.",
+    "explanation": "Generation, transmission, distribution: every electron takes the same three steps."
+   },
+   {
+    "id": "mc",
+    "kind": "multipleChoice",
+    "prompt": "In PJM's region, who decides which power plants run?",
+    "options": [
+     "PJM, the grid operator",
+     "Each household",
+     "The plant closest to you"
+    ],
+    "explanation": "ISOs and RTOs pick which plants run, using bids in their markets.",
+    "correctIndex": 0
+   },
+   {
+    "id": "lens-career",
+    "body": "Know which ISO or RTO runs the region a company works in. Each has its own market rules and its own challenges.",
+    "kind": "info",
+    "title": "Name the operator",
+    "eyebrow": "For your interview",
+    "sources": [
+     {
+      "url": "https://www.ferc.gov/industries-data/market-assessments/electric-power-markets",
+      "label": "FERC, electric power markets"
+     }
+    ]
+   },
+   {
+    "id": "rule",
+    "kind": "microInsight",
+    "text": "Electricity is made the instant it is used, so someone must run the grid every second.",
+    "eyebrow": "The rule",
+    "sources": [
+     {
+      "url": "https://www.eia.gov/energyexplained/electricity/delivery-to-consumers.php",
+      "label": "EIA, delivery to consumers"
+     }
+    ]
+   },
+   {
+    "id": "say-it",
+    "kind": "sayIt",
+    "takeaway": "Plants generate power, transmission carries it far, and distribution delivers it. Grid operators keep supply matched to demand at every moment.",
+    "sectionKey": "players"
+   }
+  ]
+ }
+}

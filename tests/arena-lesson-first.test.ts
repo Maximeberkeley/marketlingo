@@ -8,7 +8,17 @@ import { studiedMaterial } from '../mobile/lesson-kit/practice/studiedMaterial';
 import { quizQuestionKeys, recordQuizQuestion, recentQuizHistory, QUIZ_WINDOW_MS } from '../mobile/lib/quizHistory';
 import fixture from './fixtures/neuroscience-day1.json';
 const lesson = { ...fixture, ...studiedMaterial(fixture.authored_lesson) };
-const input = { marketId: 'neuroscience', marketName: 'Neuroscience', trainer: [{ id: 'trainer', scenario: 'An unrelated research decision.', question: 'Which approach?', options: [{label:'A',isCorrect:true},{label:'B'}], correct_option_index:0 }], drills: [], stats: [], studied: [lesson] };
+const trainers = [1, 2, 3].map(n => ({ id: `trainer-${n}`, scenario: `An unrelated research decision ${n}.`, question: `Which approach fits case ${n}?`, options: [{label:'A',isCorrect:true},{label:'B'}], correct_option_index: 0 }));
+const drills = [
+  { id: 'd1', statement: 'A verified true market fact.', is_true: true, explanation: 'Checked.' },
+  { id: 'd2', statement: 'Another verified true market fact.', is_true: true, explanation: 'Checked.' },
+  { id: 'd3', statement: 'A verified false market claim.', is_true: false, explanation: 'Checked.' },
+];
+const stats = [
+  { id: 's1', label: 'Market size', value: 120, min_value: 0, max_value: 500, unit: 'billion dollars', trend: 'up', trend_note: 'Growing.', source_name: 'Test source', period_label: '2025', is_approximate: true, insight: null },
+  { id: 's2', label: 'New projects', value: 40, min_value: 0, max_value: 100, unit: 'projects', trend: 'down', trend_note: null, source_name: 'Test source', period_label: '2025', is_approximate: false, insight: null },
+];
+const input = { marketId: 'neuroscience', marketName: 'Neuroscience', trainer: trainers, drills, stats, studied: [lesson] };
 const all = (waves: ReturnType<typeof buildArena>) => waves.flatMap(w => w.exercises);
 
 describe('lesson-first Arena', () => {
@@ -28,10 +38,12 @@ describe('lesson-first Arena', () => {
       expect(new Set(keys).size).toBe(keys.length);
     }
   }, 20000);
-  it('limits each kind to two and wider industry to one per round', () => {
+  it('limits each kind to two per round and keeps lesson questions ahead of industry ones', () => {
     for (const round of buildArena(input)) {
-      expect(round.exercises.filter(e => e.source?.type === 'industry').length).toBeLessThanOrEqual(1);
       for (const kind of new Set(round.exercises.map(e => e.kind))) expect(round.exercises.filter(e => e.kind === kind).length).toBeLessThanOrEqual(2);
+      const lastLesson = round.exercises.map(e => e.source?.type).lastIndexOf('lesson');
+      const firstIndustry = round.exercises.map(e => e.source?.type).indexOf('industry');
+      expect(firstIndustry === -1 || lastLesson < firstIndustry).toBe(true);
     }
   });
   it('preserves authored answers while shuffling options', () => {
@@ -63,9 +75,12 @@ describe('lesson-first Arena', () => {
     expect(result.questions.map(q => q.kind)).toEqual(['sortSignal', 'multipleChoice', 'numberSense']);
     expect(result.keyTerms.map(t => t.term)).toEqual(['cerebral cortex', 'hippocampus', 'brainstem']);
   });
-  it('does not fill exhausted lesson slots with multiple industry questions', () => {
+  it('keeps the run at full length from the wider industry when lesson material runs out', () => {
     const waves = buildArena({ ...input, studied: [{ title: 'Empty', day: 1, slides: [] }] });
-    for (const w of waves) expect(w.exercises.length).toBeLessThanOrEqual(1);
+    expect(all(waves).length).toBeGreaterThanOrEqual(8);
+    expect(all(waves).every(q => q.source?.type === 'industry')).toBe(true);
+    const keys = all(waves).flatMap(quizQuestionKeys);
+    expect(new Set(keys).size).toBe(keys.length);
   });
   it('keeps Deep Case on the authored lesson even when unrelated trainer scenarios exist', () => {
     const c = buildCase({ ...input, trainer: [{ id: 'unrelated', scenario: 'An unrelated industry decision', question: 'Which strategy?', options: ['A','B'], correct_answer: 0 }] as any });
@@ -75,7 +90,7 @@ describe('lesson-first Arena', () => {
     expect(buildCase({ ...input, studied: [], trainer: [{ id: 'invalid', scenario: 'Empty options', question: 'No answer', options: [], correct_option_index: 0 }] as any })).toBeNull();
   });
   it('keeps every changed phone source pair identical after transpilation', () => {
-    for (const [path, loader] of [['hooks/useStudiedLessons','ts'],['lib/quizHistory','ts'],['lesson-kit/practice/studiedMaterial','ts'],['lesson-kit/arena/buildArena','ts'],['lesson-kit/case/buildCase','ts'],['lesson-kit/arena/ArenaScreen','tsx'],['lesson-kit/case/CaseScreen','tsx']] as const) {
+    for (const [path, loader] of [['hooks/useStudiedLessons','ts'],['lib/quizHistory','ts'],['lesson-kit/practice/studiedMaterial','ts'],['lesson-kit/arena/buildArena','ts'],['lesson-kit/case/buildCase','ts'],['lesson-kit/glossary','ts'],['lesson-kit/arena/ArenaScreen','tsx'],['lesson-kit/case/CaseScreen','tsx']] as const) {
       const src = readFileSync(`mobile/${path}.${loader}`, 'utf8');
       expect(readFileSync(`mobile/${path}.js`, 'utf8')).toBe(transformSync(src, { loader, jsx: 'transform', format: 'esm', target: 'es2020' }).code);
     }
