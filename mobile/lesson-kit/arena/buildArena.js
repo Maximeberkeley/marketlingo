@@ -1,3 +1,5 @@
+import { lessonSource } from "../practice/studiedMaterial";
+import { sentences, norm } from "../sequencer/extract";
 import { quizQuestionKeys } from "../../lib/quizHistory";
 import { getIndustryPack } from "../industry/packs";
 import {
@@ -29,61 +31,127 @@ function shuffle(arr) {
   }
   return a;
 }
-const clean = (list, limit) => shuffle(list.filter((e) => !!e)).slice(0, limit);
-function fromStudied(studied, build, prefix) {
-  if (!studied?.length) return [];
-  return studied.map((lesson, i) => build(lesson.slides, `${prefix}-${i}`));
+function shuffleAuthored(question) {
+  if (question.kind !== "multipleChoice") return { ...question };
+  const indices = shuffle(question.options.map((_, index) => index));
+  return { ...question, options: indices.map((index) => question.options[index]), correctIndex: indices.indexOf(question.correctIndex) };
 }
 function buildArena(input) {
   const pack = getIndustryPack(input.marketId);
-  const { trainer, drills, stats, studied } = input;
-  const trainerPool = shuffle(trainer);
-  const used = new Set(input.seenQuestionKeys || []);
-  const fresh = (make, limit) => {
+  const lessons = [...input.studied ?? []].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
+  const review = lessons.length > 1 ? [...lessons.slice(1), lessons[0]] : lessons;
+  const used = new Set(input.seenQuestionKeys ?? []);
+  const facts = /* @__PURE__ */ new Set();
+  let serial = 0;
+  const nextId = () => `arena-${serial++}`;
+  const terms = (lesson) => lesson.keyTerms?.length ? lesson.keyTerms : termsFromSlides(lesson.slides);
+  const factKeys = (lesson, exercise) => {
+    const scope = lesson.stackId ?? lesson.title;
+    const prefix = (key) => `${scope}/${key}`;
+    if (exercise.kind === "multipleChoice" && exercise.prompt.startsWith("This lesson defined")) {
+      return [prefix(`term/${norm(exercise.options[exercise.correctIndex])}`)];
+    }
+    if (exercise.kind === "multipleChoice") {
+      const answer = exercise.options[exercise.correctIndex];
+      const term = terms(lesson).find((t) => norm(answer).replace(/^the /, "") === norm(t.term));
+      if (term) return [prefix(`term/${norm(term.term)}`)];
+    }
+    if (exercise.kind === "numberSense" || exercise.kind === "multipleChoice" && exercise.prompt.startsWith("Fill the gap:")) {
+      const answer = exercise.kind === "numberSense" ? `${exercise.value}` : exercise.options[exercise.correctIndex];
+      const number = answer.match(/\d+(?:[.,]\d+)?/)?.[0];
+      const context = exercise.prompt + " " + (exercise.explanation ?? "");
+      const topic = norm(context).split(" ").filter((word) => word.length > 5 && !["lesson", "straight", "percent", "billion", "million", "roughly"].includes(word));
+      const taught = lesson.slides.flatMap((s) => sentences(s.body ?? "", 15, 500)).filter((line) => number && new RegExp(`\\b${number}\\b`).test(line)).sort((a, b) => topic.filter((w) => norm(b).includes(w)).length - topic.filter((w) => norm(a).includes(w)).length)[0];
+      return [prefix(`quantity/${number}/${norm(taught ?? context)}`)];
+    }
+    if (exercise.kind === "buildChain") return exercise.steps.map((step) => prefix(`line/${norm(step)}`));
+    if (exercise.kind === "sortSignal") return exercise.items.map((item) => prefix(`job/${norm(item.text)}`));
+    const explanation = "explanation" in exercise ? exercise.explanation ?? "" : "";
+    return [prefix(`line/${norm(explanation.replace(/^Straight from what you just read:\s*/i, ""))}`)];
+  };
+  const tag = (lesson, exercise) => exercise ? [{ exercise: { ...exercise, source: lessonSource(lesson) }, facts: factKeys(lesson, exercise) }] : [];
+  const own = (kind) => review.flatMap((lesson) => (lesson.questions ?? []).filter((q) => q.kind === kind).flatMap((q) => tag(lesson, shuffleAuthored(q))));
+  const definitions = () => lessons.flatMap((lesson) => {
+    const pool = terms(lesson);
+    return pool.flatMap((target) => {
+      const check = checkDefinition(pool, nextId());
+      if (!check) return [];
+      const options = shuffle([target.term, ...pool.filter((t) => norm(t.term) !== norm(target.term)).slice(0, 2).map((t) => t.term)]);
+      return tag(lesson, {
+        ...check,
+        prompt: `This lesson defined it as: "${target.definition}". Which term is that?`,
+        options,
+        correctIndex: options.indexOf(target.term),
+        explanation: `${target.term}: ${target.definition}`
+      });
+    });
+  });
+  const generated = (build, faceOff = false) => lessons.flatMap((lesson) => {
+    const candidates = [];
+    for (let attempt = 0; attempt < 24; attempt += 1) {
+      const slides = build === checkFigure ? lesson.slides.flatMap((s) => sentences(s.body ?? "", 15, 500).map((body) => ({ ...s, body }))) : lesson.slides;
+      let exercise = build(slides, nextId());
+      if (faceOff && exercise?.kind === "multipleChoice") {
+        const truth = exercise.options[exercise.correctIndex];
+        const lie = exercise.options.find((_, index) => index !== exercise.correctIndex);
+        if (lie) {
+          const choices = shuffle([truth, lie]);
+          exercise = {
+            kind: "faceOff",
+            id: exercise.id,
+            prompt: exercise.prompt,
+            left: { name: choices[0] },
+            right: { name: choices[1] },
+            correctIndex: choices.indexOf(truth),
+            explanation: exercise.explanation
+          };
+        }
+      }
+      candidates.push(...tag(lesson, exercise));
+    }
+    return candidates;
+  });
+  const fill = (pool, fallback, limit) => {
     const selected = [];
-    for (let attempt = 0; attempt < 12 && selected.length < limit; attempt += 1) {
-      for (const exercise of clean(make(), 1e3)) {
-        const keys = quizQuestionKeys(exercise);
-        if (keys.some((key) => used.has(key))) continue;
-        keys.forEach((key) => used.add(key));
-        selected.push({ ...exercise, id: `${exercise.id}-${attempt}-${selected.length}` });
-        if (selected.length === limit) break;
+    const kinds = /* @__PURE__ */ new Map();
+    const accept = ({ exercise, facts: keys }) => {
+      const questionKeys = quizQuestionKeys(exercise);
+      if ((kinds.get(exercise.kind) ?? 0) >= 2 || questionKeys.some((key) => used.has(key)) || keys.some((key) => facts.has(key))) return false;
+      questionKeys.forEach((key) => used.add(key));
+      keys.forEach((key) => facts.add(key));
+      kinds.set(exercise.kind, (kinds.get(exercise.kind) ?? 0) + 1);
+      selected.push({ ...exercise, id: nextId() });
+      return true;
+    };
+    for (const candidate of pool) {
+      if (selected.length === limit) break;
+      accept(candidate);
+    }
+    if (selected.length < limit) {
+      for (const exercise of fallback) {
+        if (exercise && accept({ exercise: { ...exercise, source: { type: "industry" } }, facts: [] })) break;
       }
     }
     return selected;
   };
-  const wave1 = fresh(
-    () => [
-      ...fromStudied(studied, (slides, id) => checkDefinition(termsFromSlides(slides), id), "a1-def"),
-      ...fromStudied(studied, checkClaim, "a1-claim"),
-      pack ? packFaceOff(pack, "a1-faceoff") : null,
-      statFaceOff(stats, "a1-statface"),
-      drillTrueFalse(drills, "a1-tf1"),
-      statTrend(stats, "a1-trend")
-    ],
-    4
-  );
-  const wave2 = fresh(
-    () => [
-      ...fromStudied(studied, checkMechanism, "a2-mech"),
-      ...fromStudied(studied, checkFigure, "a2-fig"),
-      pack ? packChain(pack, "a2-chain") : null,
-      statNumberSense(stats, "a2-number"),
-      drillSpotFake(drills, "a2-fake", "One of these is not true. Find it."),
-      pack ? packMap(pack, "a2-map") : null,
-      pack ? packNumber(pack, "a2-packnumber") : null
-    ],
-    4
-  );
-  const wave3 = fresh(
-    () => [
-      ...fromStudied(studied, checkTamper, "a3-tamper"),
-      ...trainerPool.map((scenario, index) => trainerCall(scenario, `a3-call-${index}`)),
-      drillSpotFake(drills, "a3-fake", "One of these is false. Which one?"),
-      pack ? packSpeedRound(pack, "a3-speed") : null
-    ],
-    3
-  );
+  const wave1 = fill([...own("multipleChoice"), ...definitions(), ...generated(checkClaim, true)], [
+    pack ? packFaceOff(pack, nextId()) : null,
+    statFaceOff(input.stats, nextId()),
+    drillTrueFalse(input.drills, nextId()),
+    statTrend(input.stats, nextId())
+  ], 4);
+  const wave2 = fill([...own("numberSense"), ...generated(checkFigure), ...generated(checkMechanism), ...own("sortSignal")], [
+    pack ? packChain(pack, nextId()) : null,
+    statNumberSense(input.stats, nextId()),
+    drillSpotFake(input.drills, nextId()),
+    pack ? packMap(pack, nextId()) : null,
+    pack ? packNumber(pack, nextId()) : null
+  ], 4);
+  const wave3 = fill([...generated(checkTamper), ...definitions()], [
+    ...shuffle(input.trainer).map((scenario) => trainerCall(scenario, nextId())),
+    drillSpotFake(input.drills, nextId()),
+    pack ? packSpeedRound(pack, nextId()) : null
+  ], 3);
   const waves = [
     {
       key: "warmup",
@@ -124,5 +192,6 @@ function rankForScore(score) {
 export {
   ARENA_RANKS,
   buildArena,
-  rankForScore
+  rankForScore,
+  shuffleAuthored
 };

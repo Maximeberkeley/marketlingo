@@ -15,6 +15,7 @@ import { playSound } from "../../lib/sounds";
 import { getMarketWorld } from "../../data/marketWorlds";
 import { BriefingReader } from "../components/BriefingReader";
 import { trackEvent } from "../../lib/analytics";
+import { practiceSourceLabel } from "../practice/studiedMaterial";
 const CONFIDENCE = [
   { key: "low", label: "Not sure", note: "Small position, check again next week" },
   { key: "medium", label: "Fairly sure", note: "Normal position" },
@@ -180,7 +181,7 @@ function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal }) 
       mood: phase === "feedback" && !passive ? state.isCorrect ? "correct" : "incorrect" : stage.exercise.leo?.mood ?? "idle",
       intro: stageIndex === 0
     }
-  ), renderExerciseByKind(stage.exercise, phase, setState), isCall && confidence && phase === "answering" && /* @__PURE__ */ React.createElement(View, { style: styles.convictionChip }, /* @__PURE__ */ React.createElement(Feather, { name: "activity", size: 12, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.convictionChipText }, "How sure: ", CONVICTION.find((c) => c.key === confidence)?.label))), /* @__PURE__ */ React.createElement(View, { style: [styles.footer, { paddingBottom: insets.bottom + 12 }] }, phase === "feedback" && !passive && /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement(Text, { style: { color: tokens.color.textSecondary, fontSize: 12, marginBottom: 12 } }, practiceSourceLabel(stage.exercise)), renderExerciseByKind(stage.exercise, phase, setState), isCall && confidence && phase === "answering" && /* @__PURE__ */ React.createElement(View, { style: styles.convictionChip }, /* @__PURE__ */ React.createElement(Feather, { name: "activity", size: 12, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.convictionChipText }, "How sure: ", CONVICTION.find((c) => c.key === confidence)?.label))), /* @__PURE__ */ React.createElement(View, { style: [styles.footer, { paddingBottom: insets.bottom + 12 }] }, phase === "feedback" && !passive && /* @__PURE__ */ React.createElement(
     FeedbackFooter,
     {
       isCorrect: state.isCorrect,

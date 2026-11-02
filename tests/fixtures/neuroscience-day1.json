@@ -1,0 +1,20 @@
+{
+  "stackId":"06746eb7-aea1-46a4-b97a-f1ff4a8be566", "title":"The brain in four regions", "day":1,
+  "slides":[
+    {"slideNumber":1,"title":"Day 1 · The map","body":"Your cerebellum sits below and behind the rest of your brain, yet it holds about 80% of your neurons. Counting cells in four adult male brains, Azevedo and colleagues found about 86 billion neurons in total. About 69 billion, or 80%, were in the cerebellum, a wrinkled ball of tissue below and behind the rest of the brain. The cerebral cortex, the brain's large outer layer, held about 16 billion, or 19%. Size and neuron count tell very different stories."},
+    {"slideNumber":2,"title":"Region 1 · Cerebrum and cortex","body":"The cerebrum is the largest part of the brain. Its gray outer layer is the cerebral cortex. Its frontal lobes help control thinking, planning and problem-solving."},
+    {"slideNumber":3,"title":"Region 2 · Limbic system","body":"Deep, paired structures known as the limbic system govern emotions and memories. The hippocampus sends memories to the cerebrum for storage, then retrieves them."},
+    {"slideNumber":4,"title":"Region 3 · Brainstem","body":"The brainstem links the brain to the spinal cord. It controls heart rate, blood pressure and breathing."},
+    {"slideNumber":5,"title":"Region 4 · Cerebellum","body":"The cerebellum coordinates movement using input from the eyes, ears and muscles. It holds about 69 billion of the brain's 86 billion neurons."},
+    {"slideNumber":6,"title":"Ask which region it targets","body":"Every brain drug or device acts somewhere. Ask which region it targets and which job it hopes to change."},
+    {"slideNumber":7,"title":"The rule","body":"In neuroscience, start with the map: each region runs different jobs."}
+  ],
+  "authored_lesson":{"exercises":[
+    {"kind":"microInsight","id":"cortex","keyTerms":[{"term":"cerebral cortex","definition":"The gray outer layer of the cerebrum, the largest part of the brain."}]},
+    {"kind":"microInsight","id":"limbic","keyTerms":[{"term":"hippocampus","definition":"A limbic structure that sends memories off to be stored and later retrieves them."}]},
+    {"kind":"microInsight","id":"stem","keyTerms":[{"term":"brainstem","definition":"The part of the brain that links it to the spinal cord and runs vital functions."}]},
+    {"kind":"sortSignal","id":"sort","prompt":"Which region does this job?","buckets":["Cerebrum","Brainstem","Cerebellum"],"items":[{"text":"Planning and problem-solving","bucket":0},{"text":"Thinking","bucket":0},{"text":"Heart rate and breathing","bucket":1},{"text":"Blood pressure","bucket":1},{"text":"Coordinating movement","bucket":2},{"text":"Merging input from eyes and ears","bucket":2}],"explanation":"The cerebrum thinks and plans, the brainstem keeps you alive, and the cerebellum coordinates movement."},
+    {"kind":"multipleChoice","id":"mc","prompt":"Which deep structure sends memories off to be stored and later retrieves them?","options":["The hippocampus","The brainstem","The cerebellum"],"correctIndex":0,"explanation":"The hippocampus, part of the limbic system, sends memories to the cerebrum and retrieves them later."},
+    {"kind":"numberSense","id":"ns","prompt":"What share of the brain's neurons sit in the cerebellum?","min":0,"max":100,"value":80,"unit":"%","explanation":"About 80%: roughly 69 billion of 86 billion. The cortex holds about 19%."}
+  ]}
+}

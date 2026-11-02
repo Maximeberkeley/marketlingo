@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import { supabase } from "../lib/supabase";
 import { log } from "../lib/logger";
+import { studiedMaterial } from "../lesson-kit/practice/studiedMaterial";
 const dayFromTags = (tags) => {
   const hit = (tags || []).find((t) => /^day-\d+$/.test(t));
   return hit ? Number(hit.slice(4)) : null;
@@ -39,7 +40,7 @@ function useStudiedLessons(marketId, focusKeywords = [], preferredDay) {
           setLessons([]);
           return;
         }
-        const { data, error } = await supabase.from("stacks").select("id, title, tags, created_at, slides (slide_number, title, body)").eq("market_id", marketId).in("id", creditedIds).order("created_at", { ascending: false });
+        const { data, error } = await supabase.from("stacks").select("id, title, tags, created_at, authored_lesson, slides (slide_number, title, body)").eq("market_id", marketId).in("id", creditedIds).order("created_at", { ascending: false });
         if (error) {
           log.warn("[useStudiedLessons] Could not load studied lessons:", error.message);
           setLessons([]);
@@ -51,13 +52,14 @@ function useStudiedLessons(marketId, focusKeywords = [], preferredDay) {
           if (day === null) continue;
           if (byDay.has(day)) continue;
           const slides = [...row.slides ?? []].sort((a, b) => a.slide_number - b.slide_number).map((s) => ({ slideNumber: s.slide_number, title: s.title, body: s.body }));
-          if (!slides.length) continue;
-          byDay.set(day, { stackId: row.id, title: row.title, day, slides });
+          const material = studiedMaterial(row.authored_lesson);
+          if (!slides.length && !material.questions.length) continue;
+          byDay.set(day, { stackId: row.id, title: row.title, day, slides, ...material });
         }
         const byRecency = [...byDay.values()].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
         if (preferredDay) {
           const selected = byRecency.filter((lesson) => lesson.day === preferredDay);
-          setLessons(selected.length ? selected : byRecency);
+          setLessons(selected.length ? [...selected, ...byRecency.filter((lesson) => lesson.day !== preferredDay)] : byRecency);
           return;
         }
         const keywords = focusSignature ? focusSignature.split("|").filter(Boolean) : [];
