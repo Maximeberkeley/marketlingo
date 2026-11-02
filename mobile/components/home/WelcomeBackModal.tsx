@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing, ScrollView } from 'react-native';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
-import { FoxMascot } from '../mascot/FoxMascot';
+import { LeoAnimated } from '../mascot/LeoAnimated';
+import { LeoClip } from '../mascot/leoClips';
 import { triggerHaptic } from '../../lib/haptics';
 
 interface WelcomeBackModalProps {
@@ -39,6 +40,8 @@ export function WelcomeBackModal({
   const scale = useRef(new Animated.Value(0.9)).current;
   const fade = useRef(new Animated.Value(0)).current;
   const barFill = useRef(new Animated.Value(0)).current;
+  // Leo greets once when the modal opens, then settles into his idle loop.
+  const [leoClip, setLeoClip] = useState<LeoClip>('leo-greet');
 
   // Level L spans (L-1)²·50 → L²·50 total XP (same rule as the server).
   const levelStart = (level - 1) * (level - 1) * 50;
