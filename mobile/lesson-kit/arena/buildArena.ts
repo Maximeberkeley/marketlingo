@@ -19,12 +19,13 @@ import type { DrillRow, IndustryStatRow, TrainerScenarioRow } from '../../hooks/
 import type { SlideLike } from '../sequencer/extract';
 import {
   checkClaim,
-  checkDefinition,
   checkFigure,
   checkMechanism,
   checkTamper,
+  isRealTerm,
   termsFromSlides,
 } from '../sequencer/lessonChecks';
+import { glossaryEntriesFor } from '../glossary';
 import {
   drillSpotFake,
   drillTrueFalse,
@@ -97,33 +98,48 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   let serial = 0;
   const nextId = () => `arena-${serial++}`;
   const terms = (lesson: StudiedLessonInput) => lesson.keyTerms?.length ? lesson.keyTerms : termsFromSlides(lesson.slides);
+  /** Words that tie a question to this lesson: its key terms and title words. */
+  const lessonKeyParts = (lesson: StudiedLessonInput): string[] => {
+    const termParts = terms(lesson).flatMap(t => [norm(t.term), ...norm(t.term).split(/[^a-z0-9]+/)]);
+    const titleWords = norm(lesson.title).split(/[^a-z0-9]+/);
+    return [...new Set([...termParts, ...titleWords])].filter(part => part.length > 3);
+  };
   const factKeys = (lesson: StudiedLessonInput, exercise: Exercise): string[] => {
     const scope = lesson.stackId ?? lesson.title;
     const prefix = (key: string) => `${scope}/${key}`;
+    const lessonTerms = terms(lesson);
+    const termsIn = (text: string) => lessonTerms.filter(t => text.includes(norm(t.term)));
     if (exercise.kind === 'multipleChoice' && exercise.prompt.startsWith('This lesson defined')) {
       return [prefix(`term/${norm(exercise.options[exercise.correctIndex])}`)];
     }
     if (exercise.kind === 'multipleChoice') {
       const answer = exercise.options[exercise.correctIndex];
-      const term = terms(lesson).find(t => norm(answer).replace(/^the /, '') === norm(t.term));
+      const term = lessonTerms.find(t => norm(answer).replace(/^the /, '') === norm(t.term));
       if (term) return [prefix(`term/${norm(term.term)}`)];
     }
     const lineKeys = (line: string): string[] => {
       const text = norm(line.replace(/^Straight from what you just read:\s*/i, ''));
       const keys = [prefix(`line/${text}`)];
-      if (/cortex/.test(text) && /gray|outer layer/.test(text) && !/billion/.test(text)) keys.push(prefix('term/cerebral cortex'));
-      if (/hippocampus/.test(text) && /memor|stor|retriev/.test(text)) keys.push(prefix('term/hippocampus'));
-      const quantity = line.match(/(\d+(?:[.,]\d+)?)\s*(%|percent|billion|million|thousand)/i);
-      if (quantity) {
-        const region = /cortex/.test(text) ? 'cortex' : /cerebell/.test(text) || /it holds/.test(text) ? 'cerebellum' : 'brain';
-        keys.push(prefix(`quantity/${region}/${quantity[1]}/${quantity[2].toLowerCase()}`));
+      const quantities = [...line.matchAll(/(\d+(?:[.,]\d+)?)\s*(%|percent|billion|million|thousand)/gi)];
+      // A line that defines a lesson term shares that term's fact, so the
+      // definition question and a claim about the same line never both ask it.
+      // Lines carrying a quantity are figure facts, not definitions.
+      if (!quantities.length) {
+        for (const term of termsIn(text)) {
+          const defWords = norm(term.definition).split(/[^a-z0-9]+/).filter(word => word.length > 4);
+          if (defWords.some(word => text.includes(word))) keys.push(prefix(`term/${norm(term.term)}`));
+        }
+      }
+      for (const quantity of quantities) {
+        const owner = termsIn(text)[0];
+        keys.push(prefix(`quantity/${owner ? norm(owner.term) : 'lesson'}/${quantity[1]}/${quantity[2].toLowerCase()}`));
       }
       return keys;
     };
     if (exercise.kind === 'numberSense') {
       const context = norm(exercise.prompt);
-      const region = /cortex/.test(context) ? 'cortex' : /cerebell/.test(context) ? 'cerebellum' : 'brain';
-      return [prefix(`quantity/${region}/${exercise.value}/${exercise.unit === '%' ? '%' : exercise.unit ?? ''}`)];
+      const owner = lessonTerms.find(t => context.includes(norm(t.term)));
+      return [prefix(`quantity/${owner ? norm(owner.term) : 'lesson'}/${exercise.value}/${exercise.unit === '%' ? '%' : exercise.unit ?? ''}`)];
     }
     if (exercise.kind === 'multipleChoice' && exercise.prompt.startsWith('Fill the gap:')) {
       return lineKeys(exercise.explanation ?? '');
