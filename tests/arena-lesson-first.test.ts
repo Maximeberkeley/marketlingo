@@ -1,7 +1,7 @@
-// @vitest-environment node
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { transformSync } from 'esbuild';
+import { execFileSync } from "node:child_process";
+const transformSync = (source: string, options: any) => ({code: execFileSync(process.execPath, ["--input-type=module", "-e", `import {transformSync} from "esbuild"; process.stdout.write(transformSync(${JSON.stringify(source)}, ${JSON.stringify(options)}).code);`], {encoding: "utf8"})});
 import { buildArena, shuffleAuthored } from '../mobile/lesson-kit/arena/buildArena';
 import { buildCase } from '../mobile/lesson-kit/case/buildCase';
 import { studiedMaterial } from '../mobile/lesson-kit/practice/studiedMaterial';
