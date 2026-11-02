@@ -149,7 +149,7 @@ describe('Animated Leo rules', () => {
       h.next(); h.next(); h.next(); h.render();
       expect(h.leo().clip).toBe('leo-play');
       h.leo().onEnd(); expect(h.leo().clip).toBe('leo-idle-loop');
-      h.next(); h.next();
+      h.next(); h.next(); h.render();
       expect(h.leo().clip).toBe('leo-ready');
       h.leo().onEnd(); expect(h.leo().clip).toBe('leo-idle-loop');
       expect(h.props.onComplete).not.toHaveBeenCalled(); h.unmount();
