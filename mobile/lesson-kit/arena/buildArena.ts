@@ -230,6 +230,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     const kinds = new Map<string, number>();
     const accept = ({ exercise, facts: keys }: Candidate) => {
       const questionKeys = quizQuestionKeys(exercise);
+      if ((globalThis as any).__ARENA_DEBUG && (kinds.get(exercise.kind) ?? 0) < 2 && !questionKeys.some(key => used.has(key)) && keys.some(key => facts.has(key))) console.log('REJECT', exercise.kind, (exercise as any).prompt?.slice(0, 50), keys.filter(key => facts.has(key)));
       if ((kinds.get(exercise.kind) ?? 0) >= 2 || questionKeys.some(key => used.has(key)) || keys.some(key => facts.has(key))) return false;
       questionKeys.forEach(key => used.add(key));
       keys.forEach(key => facts.add(key));
