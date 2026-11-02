@@ -8,7 +8,17 @@ import { studiedMaterial } from '../mobile/lesson-kit/practice/studiedMaterial';
 import { quizQuestionKeys, recordQuizQuestion, recentQuizHistory, QUIZ_WINDOW_MS } from '../mobile/lib/quizHistory';
 import fixture from './fixtures/neuroscience-day1.json';
 const lesson = { ...fixture, ...studiedMaterial(fixture.authored_lesson) };
-const input = { marketId: 'neuroscience', marketName: 'Neuroscience', trainer: [{ id: 'trainer', scenario: 'An unrelated research decision.', question: 'Which approach?', options: [{label:'A',isCorrect:true},{label:'B'}], correct_option_index:0 }], drills: [], stats: [], studied: [lesson] };
+const trainers = [1, 2, 3].map(n => ({ id: `trainer-${n}`, scenario: `An unrelated research decision ${n}.`, question: 'Which approach?', options: [{label:'A',isCorrect:true},{label:'B'}], correct_option_index: 0 }));
+const drills = [
+  { id: 'd1', statement: 'A verified true market fact.', is_true: true, explanation: 'Checked.' },
+  { id: 'd2', statement: 'Another verified true market fact.', is_true: true, explanation: 'Checked.' },
+  { id: 'd3', statement: 'A verified false market claim.', is_true: false, explanation: 'Checked.' },
+];
+const stats = [
+  { id: 's1', label: 'Market size', value: 120, min_value: 0, max_value: 500, unit: 'billion dollars', trend: 'up', trend_note: 'Growing.', source_name: 'Test source', period_label: '2025', is_approximate: true, insight: null },
+  { id: 's2', label: 'New projects', value: 40, min_value: 0, max_value: 100, unit: 'projects', trend: 'down', trend_note: null, source_name: 'Test source', period_label: '2025', is_approximate: false, insight: null },
+];
+const input = { marketId: 'neuroscience', marketName: 'Neuroscience', trainer: trainers, drills, stats, studied: [lesson] };
 const all = (waves: ReturnType<typeof buildArena>) => waves.flatMap(w => w.exercises);
 
 describe('lesson-first Arena', () => {
