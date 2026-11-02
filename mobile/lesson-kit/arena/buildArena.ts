@@ -254,11 +254,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   };
   const tampers = generated(checkTamper);
   reserved = tampers.find(c => 'explanation' in c.exercise && !/\d/.test(c.exercise.explanation ?? ''));
-  const claims = generated(checkClaim, true).sort((a, b) => {
-    const text = (c: Candidate) => 'explanation' in c.exercise ? c.exercise.explanation ?? '' : '';
-    const priority = (text: string) => /cerebrum.*largest|brainstem.*links|limbic.*emotion/.test(text.toLowerCase()) ? 0 : /\d/.test(text) ? 2 : 1;
-    return priority(text(a)) - priority(text(b));
-  });
+  const claims = generated(checkClaim, true);
   const defs = definitions();
   const authoredMC = own('multipleChoice');
   const wave1 = fill([...authoredMC.slice(0, 1), ...defs.slice(0, 1), ...claims, ...defs.slice(1), ...authoredMC.slice(1)], [
@@ -267,7 +263,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   ], 4);
   const figures = generated(checkFigure);
   const authoredNumbers = own('numberSense');
-  const wave2 = fill([...authoredNumbers.slice(0, 1), ...figures.slice(0, 1), ...generated(checkMechanism), ...own('sortSignal'), ...figures, ...authoredNumbers.slice(1)], [
+  const wave2 = fill([...authoredNumbers.slice(0, 1), ...figures.slice(0, 1), ...generated(checkMechanism), ...own('sortSignal'), ...own('buildChain'), ...figures, ...authoredNumbers.slice(1)], [
     pack ? packChain(pack, nextId()) : null, statNumberSense(input.stats, nextId()),
     drillSpotFake(input.drills, nextId()), pack ? packMap(pack, nextId()) : null, pack ? packNumber(pack, nextId()) : null,
   ], 4);
