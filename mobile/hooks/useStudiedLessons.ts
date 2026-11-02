@@ -15,12 +15,16 @@ import { useFocusEffect } from 'expo-router';
 import { supabase } from '../lib/supabase';
 import { log } from '../lib/logger';
 import type { SlideLike } from '../lesson-kit/sequencer/extract';
+import { studiedMaterial, AuthoredQuestion } from '../lesson-kit/practice/studiedMaterial';
+import type { KeyTerm } from '../lesson-kit/types';
 
 export interface StudiedLesson {
   stackId: string;
   title: string;
   day: number | null;
   slides: SlideLike[];
+  questions: AuthoredQuestion[];
+  keyTerms: KeyTerm[];
 }
 
 interface SlideRow {
@@ -34,6 +38,7 @@ interface StackRow {
   title: string;
   tags: string[] | null;
   created_at: string;
+  authored_lesson: unknown;
   slides: SlideRow[] | null;
 }
 
@@ -100,7 +105,7 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
 
         const { data, error } = await supabase
           .from('stacks')
-          .select('id, title, tags, created_at, slides (slide_number, title, body)')
+          .select('id, title, tags, created_at, authored_lesson, slides (slide_number, title, body)')
           .eq('market_id', marketId)
           .in('id', creditedIds)
           .order('created_at', { ascending: false });
@@ -121,8 +126,9 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
           const slides = [...(row.slides ?? [])]
             .sort((a, b) => a.slide_number - b.slide_number)
             .map(s => ({ slideNumber: s.slide_number, title: s.title, body: s.body }));
-          if (!slides.length) continue;
-          byDay.set(day, { stackId: row.id, title: row.title, day, slides });
+          const material = studiedMaterial(row.authored_lesson);
+          if (!slides.length && !material.questions.length) continue;
+          byDay.set(day, { stackId: row.id, title: row.title, day, slides, ...material });
         }
 
         const byRecency = [...byDay.values()].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
@@ -131,7 +137,8 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
         // falsely showing the first-lesson prerequisite.
         if (preferredDay) {
           const selected = byRecency.filter(lesson => lesson.day === preferredDay);
-          setLessons(selected.length ? selected : byRecency);
+          // Keep earlier lessons available for spaced authored-question review.
+          setLessons(selected.length ? [...selected, ...byRecency.filter(lesson => lesson.day !== preferredDay)] : byRecency);
           return;
         }
         const keywords = focusSignature ? focusSignature.split('|').filter(Boolean) : [];

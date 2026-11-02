@@ -228,7 +228,10 @@ type AnyExercise =
   | SayItExercise;
 
 /** Every beat can carry a Leo line, whatever its kind. */
-export type Exercise = AnyExercise & { leo?: LeoBeat };
+export type Exercise = AnyExercise & {
+  leo?: LeoBeat;
+  source?: { type: 'lesson'; stackId?: string; day?: number | null; title: string } | { type: 'industry' };
+};
 
 export interface Lesson {
   id: string;
