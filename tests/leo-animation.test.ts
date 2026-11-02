@@ -138,14 +138,14 @@ describe('Animated Leo rules', () => {
       h.leo().onEnd();
       expect(h.leo().clip).toBe('leo-idle-loop');
       h.next(); expect(h.leo().clip).toBe('leo-idle-loop');
-      h.next(); expect(h.leo().clip).toBe('leo-play');
+      h.next(); h.render(); expect(h.leo().clip).toBe('leo-play');
       h.leo().onEnd(); expect(h.leo().clip).toBe('leo-idle-loop');
       for (let i = 0; i < 2; i++) { h.next(); expect(h.leo().clip).toBe('leo-idle-loop'); }
       expect(h.props.onComplete).not.toHaveBeenCalled(); h.unmount();
     });
     it(`tour ${extension} plays the tail-chase treat once on the Practice page only`, () => {
       const h = tourHarness(); h.leo().onEnd();
-      h.next(); h.next();
+      h.next(); h.next(); h.render();
       expect(h.leo().clip).toBe('leo-play');
       h.leo().onEnd(); expect(h.leo().clip).toBe('leo-idle-loop');
       h.next(); h.next(); h.next();
