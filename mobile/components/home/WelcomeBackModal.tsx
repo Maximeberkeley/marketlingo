@@ -55,6 +55,7 @@ export function WelcomeBackModal({
       scale.setValue(0.9);
       fade.setValue(0);
       barFill.setValue(0);
+      setLeoClip('leo-greet');
       return;
     }
     triggerHaptic('light');
@@ -82,7 +83,8 @@ export function WelcomeBackModal({
             style={styles.hero}
           >
             <View style={styles.mascotWrap}>
-              <FoxMascot industry={marketId || 'aerospace'} size={120} />
+              <LeoAnimated clip={leoClip} size={120} fallback="idle" paused={!visible}
+                onEnd={() => setLeoClip('leo-idle-loop')} />
             </View>
             <Text style={styles.heroKicker}>WELCOME BACK</Text>
             <Text style={styles.heroTitle}>Level {level}</Text>
