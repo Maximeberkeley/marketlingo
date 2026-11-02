@@ -46,11 +46,20 @@ export function FeatureTour({ visible, marketId, goal = 'curiosity', onComplete 
   const last = index === pages.length - 1;
 
   useEffect(() => {
-    if (visible) setClip('leo-greet');
+    if (visible) {
+      playTreatShown.current = false;
+      setClip('leo-greet');
+    }
   }, [visible]);
   useEffect(() => {
     if (visible && last) setClip('leo-ready');
   }, [visible, last]);
+  useEffect(() => {
+    if (visible && page.icon === 'zap' && !playTreatShown.current) {
+      playTreatShown.current = true;
+      setClip('leo-play');
+    }
+  }, [visible, page.icon]);
   const settleLeo = useCallback(() => {
     if (visible) setClip('leo-idle-loop');
   }, [visible]);
