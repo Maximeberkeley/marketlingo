@@ -70,7 +70,7 @@ function caseLead(text: string, fallback: string): string {
 }
 
 /** Slides from the lessons the learner has studied, newest lesson first. */
-const studiedSlides = (studied?: StudiedLessonInput[]) => (studied ?? []).flatMap(l => l.slides);
+
 
 export function buildCase(input: CaseInput): DeepCase | null {
   const pack = getIndustryPack(input.marketId);
@@ -91,8 +91,9 @@ export function buildCase(input: CaseInput): DeepCase | null {
   const call = lessonCall || scenarioCall;
   if (!call) return null;
   // Keep the brief tied to the lesson/scenario behind the final call.
-  const lead = lessonCall?.source?.type === 'lesson'
-    ? studied.find(lesson => lesson.stackId === lessonCall.source?.stackId) ?? studied[0] : undefined;
+  const callSource = lessonCall?.source;
+  const lead = callSource?.type === 'lesson'
+    ? studied.find(lesson => lesson.stackId === callSource.stackId) ?? studied[0] : undefined;
 
   const stages: CaseStage[] = [];
 

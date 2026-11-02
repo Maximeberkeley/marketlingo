@@ -23,7 +23,6 @@ function caseLead(text, fallback) {
   const clause = first?.slice(0, 190).split(/[,;:]/)[0]?.trim();
   return clause && clause.length >= 55 ? `${clause}.` : fallback;
 }
-const studiedSlides = (studied) => (studied ?? []).flatMap((l) => l.slides);
 function buildCase(input) {
   const pack = getIndustryPack(input.marketId);
   const scenario = shuffle(input.trainer)[0];
@@ -39,7 +38,8 @@ function buildCase(input) {
   const scenarioCall = !lessonCall && scenario ? { ...trainerCall(scenario, "case-call"), source: { type: "industry" } } : null;
   const call = lessonCall || scenarioCall;
   if (!call) return null;
-  const lead = lessonCall?.source?.type === "lesson" ? studied.find((lesson) => lesson.stackId === lessonCall.source?.stackId) ?? studied[0] : void 0;
+  const callSource = lessonCall?.source;
+  const lead = callSource?.type === "lesson" ? studied.find((lesson) => lesson.stackId === callSource.stackId) ?? studied[0] : void 0;
   const stages = [];
   const briefHeadline = lead ? caseLead(
     lead.slides?.[0]?.body || lead.title,

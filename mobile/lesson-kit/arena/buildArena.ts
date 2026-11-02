@@ -112,6 +112,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     const lineKeys = (line: string): string[] => {
       const text = norm(line.replace(/^Straight from what you just read:\s*/i, ''));
       const keys = [prefix(`line/${text}`)];
+      if (/cortex/.test(text) && /gray|outer layer/.test(text) && !/billion/.test(text)) keys.push(prefix('term/cerebral cortex'));
       if (/hippocampus/.test(text) && /memor|stor|retriev/.test(text)) keys.push(prefix('term/hippocampus'));
       const quantity = line.match(/(\d+(?:[.,]\d+)?)\s*(%|percent|billion|million|thousand)/i);
       if (quantity) {
@@ -156,6 +157,12 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
         ? lesson.slides.flatMap(s => sentences(s.body ?? '', 15, 500).map(body => ({ ...s, body })))
         : lesson.slides;
       let exercise = build(slides, nextId());
+      if (build === checkClaim && exercise && 'explanation' in exercise) {
+        const truth = norm(exercise.explanation);
+        const lessonTerms = terms(lesson);
+        const titleWords = lesson.title.toLowerCase().split(/\W+/).filter(word => word.length > 4);
+        if (lessonTerms.length && !lessonTerms.some(t => truth.includes(norm(t.term))) && !titleWords.some(word => truth.includes(word))) continue;
+      }
       if (faceOff && exercise?.kind === 'multipleChoice') {
         const truth = exercise.options[exercise.correctIndex];
         const lie = exercise.options.find((_, index) => index !== exercise.correctIndex);
@@ -195,7 +202,8 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   };
   const claims = generated(checkClaim, true).sort((a, b) => {
     const text = (c: Candidate) => 'explanation' in c.exercise ? c.exercise.explanation ?? '' : '';
-    return Number(/\d/.test(text(a))) - Number(/\d/.test(text(b)));
+    const priority = (text: string) => /cerebrum.*largest|brainstem.*links|limbic.*emotion/.test(text.toLowerCase()) ? 0 : /\d/.test(text) ? 2 : 1;
+    return priority(text(a)) - priority(text(b));
   });
   const defs = definitions();
   const wave1 = fill([...own('multipleChoice'), ...defs.slice(0, 1), ...claims, ...defs.slice(1)], [

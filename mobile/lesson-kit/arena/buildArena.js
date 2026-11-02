@@ -56,18 +56,30 @@ function buildArena(input) {
       const term = terms(lesson).find((t) => norm(answer).replace(/^the /, "") === norm(t.term));
       if (term) return [prefix(`term/${norm(term.term)}`)];
     }
-    if (exercise.kind === "numberSense" || exercise.kind === "multipleChoice" && exercise.prompt.startsWith("Fill the gap:")) {
-      const answer = exercise.kind === "numberSense" ? `${exercise.value}` : exercise.options[exercise.correctIndex];
-      const number = answer.match(/\d+(?:[.,]\d+)?/)?.[0];
-      const context = exercise.prompt + " " + (exercise.explanation ?? "");
-      const topic = norm(context).split(" ").filter((word) => word.length > 5 && !["lesson", "straight", "percent", "billion", "million", "roughly"].includes(word));
-      const taught = lesson.slides.flatMap((s) => sentences(s.body ?? "", 15, 500)).filter((line) => number && new RegExp(`\\b${number}\\b`).test(line)).sort((a, b) => topic.filter((w) => norm(b).includes(w)).length - topic.filter((w) => norm(a).includes(w)).length)[0];
-      return [prefix(`quantity/${number}/${norm(taught ?? context)}`)];
+    const lineKeys = (line) => {
+      const text = norm(line.replace(/^Straight from what you just read:\s*/i, ""));
+      const keys = [prefix(`line/${text}`)];
+      if (/cortex/.test(text) && /gray|outer layer/.test(text) && !/billion/.test(text)) keys.push(prefix("term/cerebral cortex"));
+      if (/hippocampus/.test(text) && /memor|stor|retriev/.test(text)) keys.push(prefix("term/hippocampus"));
+      const quantity = line.match(/(\d+(?:[.,]\d+)?)\s*(%|percent|billion|million|thousand)/i);
+      if (quantity) {
+        const region = /cortex/.test(text) ? "cortex" : /cerebell/.test(text) || /it holds/.test(text) ? "cerebellum" : "brain";
+        keys.push(prefix(`quantity/${region}/${quantity[1]}/${quantity[2].toLowerCase()}`));
+      }
+      return keys;
+    };
+    if (exercise.kind === "numberSense") {
+      const context = norm(exercise.prompt);
+      const region = /cortex/.test(context) ? "cortex" : /cerebell/.test(context) ? "cerebellum" : "brain";
+      return [prefix(`quantity/${region}/${exercise.value}/${exercise.unit === "%" ? "%" : exercise.unit ?? ""}`)];
     }
-    if (exercise.kind === "buildChain") return exercise.steps.map((step) => prefix(`line/${norm(step)}`));
+    if (exercise.kind === "multipleChoice" && exercise.prompt.startsWith("Fill the gap:")) {
+      return lineKeys(exercise.explanation ?? "");
+    }
+    if (exercise.kind === "buildChain") return exercise.steps.flatMap(lineKeys);
     if (exercise.kind === "sortSignal") return exercise.items.map((item) => prefix(`job/${norm(item.text)}`));
     const explanation = "explanation" in exercise ? exercise.explanation ?? "" : "";
-    return [prefix(`line/${norm(explanation.replace(/^Straight from what you just read:\s*/i, ""))}`)];
+    return lineKeys(explanation);
   };
   const tag = (lesson, exercise) => exercise ? [{ exercise: { ...exercise, source: lessonSource(lesson) }, facts: factKeys(lesson, exercise) }] : [];
   const own = (kind) => review.flatMap((lesson) => (lesson.questions ?? []).filter((q) => q.kind === kind).flatMap((q) => tag(lesson, shuffleAuthored(q))));
@@ -91,6 +103,12 @@ function buildArena(input) {
     for (let attempt = 0; attempt < 24; attempt += 1) {
       const slides = build === checkFigure ? lesson.slides.flatMap((s) => sentences(s.body ?? "", 15, 500).map((body) => ({ ...s, body }))) : lesson.slides;
       let exercise = build(slides, nextId());
+      if (build === checkClaim && exercise && "explanation" in exercise) {
+        const truth = norm(exercise.explanation);
+        const lessonTerms = terms(lesson);
+        const titleWords = lesson.title.toLowerCase().split(/\W+/).filter((word) => word.length > 4);
+        if (lessonTerms.length && !lessonTerms.some((t) => truth.includes(norm(t.term))) && !titleWords.some((word) => truth.includes(word))) continue;
+      }
       if (faceOff && exercise?.kind === "multipleChoice") {
         const truth = exercise.options[exercise.correctIndex];
         const lie = exercise.options.find((_, index) => index !== exercise.correctIndex);
@@ -134,20 +152,28 @@ function buildArena(input) {
     }
     return selected;
   };
-  const wave1 = fill([...own("multipleChoice"), ...definitions(), ...generated(checkClaim, true)], [
+  const claims = generated(checkClaim, true).sort((a, b) => {
+    const text = (c) => "explanation" in c.exercise ? c.exercise.explanation ?? "" : "";
+    const priority = (text2) => /cerebrum.*largest|brainstem.*links|limbic.*emotion/.test(text2.toLowerCase()) ? 0 : /\d/.test(text2) ? 2 : 1;
+    return priority(text(a)) - priority(text(b));
+  });
+  const defs = definitions();
+  const wave1 = fill([...own("multipleChoice"), ...defs.slice(0, 1), ...claims, ...defs.slice(1)], [
     pack ? packFaceOff(pack, nextId()) : null,
     statFaceOff(input.stats, nextId()),
     drillTrueFalse(input.drills, nextId()),
     statTrend(input.stats, nextId())
   ], 4);
-  const wave2 = fill([...own("numberSense"), ...generated(checkFigure), ...generated(checkMechanism), ...own("sortSignal")], [
+  const figures = generated(checkFigure);
+  const wave2 = fill([...own("numberSense"), ...figures.slice(0, 1), ...generated(checkMechanism), ...own("sortSignal"), ...figures], [
     pack ? packChain(pack, nextId()) : null,
     statNumberSense(input.stats, nextId()),
     drillSpotFake(input.drills, nextId()),
     pack ? packMap(pack, nextId()) : null,
     pack ? packNumber(pack, nextId()) : null
   ], 4);
-  const wave3 = fill([...generated(checkTamper), ...definitions()], [
+  const tampers = generated(checkTamper);
+  const wave3 = fill([...tampers.slice(0, 1), ...definitions(), ...tampers.slice(1)], [
     ...shuffle(input.trainer).map((scenario) => trainerCall(scenario, nextId())),
     drillSpotFake(input.drills, nextId()),
     pack ? packSpeedRound(pack, nextId()) : null
