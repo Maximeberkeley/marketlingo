@@ -1,9 +1,10 @@
 # MarketLingo roadmap
 
 ## Nov 2 — Leo-led onboarding tour
-- [ ] Centre a persistent 200pt animated Leo with the page icon badge; greet on open, ready on the final page, idle between, and pause while hidden.
-- [ ] Centre the complete visual/copy group above fixed dots and actions; preserve all copy and navigation and synchronize TSX/JS.
-- [ ] Check animation transitions, actions, reduced-motion fallback and small/large phone layout; native iPhone playback requires a rebuilt app.
+- [x] Centre a persistent 200pt animated Leo with the page icon badge; greet on open, ready on the final page, idle between, and pause while hidden.
+- [x] Centre the complete visual/copy group above fixed dots and actions; preserve all copy and navigation and synchronize TSX/JS exactly.
+- [x] 44 animation/practice regression checks passed. Supplementary browser rendering of the actual tour through native-layout adapters fits all six pages at 375×667 and 430×932, including static motion mode; inspected screenshots, no scrolling or footer overlap. Preview build OK.
+- [ ] Verify native rendering/playback on SE and large iPhone (blocked: no iOS device/simulator; requires a rebuilt app). Browser checks use layout/mascot adapters, not native iOS rendering.
 
 ## Nov 2 — Lesson-first Arena and Deep Case
 - [x] Load authored studied questions and deduplicated terms; select lesson-first rounds with bounded fallback, provenance and seven-day history.
