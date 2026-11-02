@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, Modal, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
@@ -36,6 +36,7 @@ export function FeatureTour({ visible, marketId, goal = 'curiosity', onComplete 
   const compact = height < 740;
   const [index, setIndex] = useState(0);
   const [clip, setClip] = useState<LeoClip>('leo-greet');
+  const playTreatShown = useRef(false);
   const promise = PROMISES[goal || 'curiosity'];
   const pages = useMemo(() => [
     { icon: 'target' as const, title: promise.title, body: `${promise.body} Your track is built around ${getMarketName(marketId || 'aerospace')}.` },
@@ -45,11 +46,20 @@ export function FeatureTour({ visible, marketId, goal = 'curiosity', onComplete 
   const last = index === pages.length - 1;
 
   useEffect(() => {
-    if (visible) setClip('leo-greet');
+    if (visible) {
+      playTreatShown.current = false;
+      setClip('leo-greet');
+    }
   }, [visible]);
   useEffect(() => {
     if (visible && last) setClip('leo-ready');
   }, [visible, last]);
+  useEffect(() => {
+    if (visible && page.icon === 'zap' && !playTreatShown.current) {
+      playTreatShown.current = true;
+      setClip('leo-play');
+    }
+  }, [visible, page.icon]);
   const settleLeo = useCallback(() => {
     if (visible) setClip('leo-idle-loop');
   }, [visible]);
