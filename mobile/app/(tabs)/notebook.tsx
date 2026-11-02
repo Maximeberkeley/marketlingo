@@ -12,7 +12,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
-  Image,
   Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,6 +21,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { Feather } from '@expo/vector-icons';
 import { triggerHaptic } from '../../lib/haptics';
+import { LeoAnimated } from '../../components/mascot/LeoAnimated';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -485,11 +485,7 @@ export default function NotebookScreen() {
           </View>
         ) : (
           <View style={styles.emptyState}>
-            <Image
-              source={require('../../assets/cards/notebook-hero.png')}
-              style={styles.emptyImage}
-              resizeMode="contain"
-            />
+            <LeoAnimated clip="leo-idle-loop" size={160} fallback="idle" />
             <Text style={styles.emptyTitle}>
               {searchQuery ? 'No notes found' : 'Start your notebook'}
             </Text>
@@ -783,7 +779,6 @@ const styles = StyleSheet.create({
 
   // Empty state
   emptyState: { alignItems: 'center', paddingVertical: 40 },
-  emptyImage: { width: 160, height: 160, marginBottom: 20, borderRadius: 20 },
   emptyTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 8 },
   emptySubtitle: {
     fontSize: 14, color: COLORS.textMuted, textAlign: 'center', lineHeight: 21,
