@@ -4,9 +4,15 @@ function leoAnimationDelay(kind, random = Math.random()) {
 function leoDoneKey(userId, marketId, localDay) {
   return `@marketlingo/leo-done-anim/${userId ?? "guest"}/${marketId}/${localDay}`;
 }
-function leoCallClip(isGenerating, isSpeaking) {
-  return isGenerating ? "leo-call-think" : isSpeaking ? "leo-teach-loop" : "leo-call-listen";
+function leoCallClip(isGenerating, isSpeaking, greeting = false) {
+  if (isGenerating) return "leo-call-think";
+  if (isSpeaking) return greeting ? "leo-call-talk" : "leo-teach-loop";
+  return "leo-call-listen";
 }
+function leoMorningKey(userId, marketId, localDay) {
+  return `@marketlingo/leo-morning/${userId ?? "guest"}/${marketId}/${localDay}`;
+}
+const LEO_MORNING_LOOK_MS = 4e3;
 function leoCoachClip(mood, intro) {
   if (mood === "correct" || mood === "celebrate") return "leo-success";
   if (mood === "incorrect") return "leo-encourage";
@@ -29,10 +35,30 @@ function leoFeedbackLine(correct, seed) {
   const set = correct ? RIGHT_LINES : WRONG_LINES;
   return set[Math.abs(Math.floor(seed)) % set.length];
 }
+const LEO_TREAT_MILESTONES = [3, 7, 14, 30, 50, 100, 200, 365];
+const WEEK_MS = 7 * 24 * 60 * 60 * 1e3;
+function leoTreatKey(userId) {
+  return `@marketlingo/leo-treat/${userId ?? "guest"}`;
+}
+function shouldPlayLeoTreat(streak, lastTreat, today, random = Math.random()) {
+  if (lastTreat === today) return false;
+  if (streak && LEO_TREAT_MILESTONES.includes(streak)) return true;
+  if (lastTreat) {
+    const last = Date.parse(`${lastTreat}T00:00:00`);
+    const now = Date.parse(`${today}T00:00:00`);
+    if (!Number.isNaN(last) && now - last < WEEK_MS) return false;
+  }
+  return random < 0.1;
+}
 export {
+  LEO_MORNING_LOOK_MS,
+  LEO_TREAT_MILESTONES,
   leoAnimationDelay,
   leoCallClip,
   leoCoachClip,
   leoDoneKey,
-  leoFeedbackLine
+  leoFeedbackLine,
+  leoMorningKey,
+  leoTreatKey,
+  shouldPlayLeoTreat
 };
