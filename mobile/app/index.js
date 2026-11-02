@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { router } from "expo-router";
 import { View, StyleSheet, Text } from "react-native";
 import { LeoAnimated } from "../components/mascot/LeoAnimated";
