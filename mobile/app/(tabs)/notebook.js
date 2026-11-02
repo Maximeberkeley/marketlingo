@@ -1,47 +1,29 @@
 "use strict";
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var notebook_exports = {};
-__export(notebook_exports, {
-  default: () => NotebookScreen
-});
-module.exports = __toCommonJS(notebook_exports);
-var import_react = __toESM(require("react"));
-var import_react_native = require("react-native");
-var import_react_native_safe_area_context = require("react-native-safe-area-context");
-var import_expo_router = require("expo-router");
-var import_constants = require("../../lib/constants");
-var import_supabase = require("../../lib/supabase");
-var import_useAuth = require("../../hooks/useAuth");
-var import_vector_icons = require("@expo/vector-icons");
-var import_haptics = require("../../lib/haptics");
-var import_LeoAnimated = require("../../components/mascot/LeoAnimated");
-const { width: SCREEN_WIDTH } = import_react_native.Dimensions.get("window");
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
+  Modal,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Animated,
+  Dimensions
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { COLORS, SHADOWS } from "../../lib/constants";
+import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../hooks/useAuth";
+import { Feather } from "@expo/vector-icons";
+import { triggerHaptic } from "../../lib/haptics";
+import { LeoAnimated } from "../../components/mascot/LeoAnimated";
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 function getLinkedType(label) {
   if (!label) return "lesson";
   const lower = label.toLowerCase();
@@ -73,7 +55,7 @@ function groupNotesByDate(notes) {
   return groups;
 }
 const CATEGORIES = [
-  { id: "all", label: "All", icon: "layers", color: import_constants.COLORS.accent },
+  { id: "all", label: "All", icon: "layers", color: COLORS.accent },
   { id: "lesson", label: "Lessons", icon: "book-open", color: "#8B5CF6" },
   { id: "trainer", label: "Trainer", icon: "target", color: "#F59E0B" },
   { id: "news", label: "News", icon: "file-text", color: "#3B82F6" },
@@ -119,15 +101,15 @@ function computeNoteStreak(notes) {
 function NoteCard({ note, onDelete, onOpen }) {
   const linkedType = getLinkedType(note.linked_label);
   const config = TYPE_CONFIG[linkedType] || TYPE_CONFIG.lesson;
-  const scaleAnim = (0, import_react.useRef)(new import_react_native.Animated.Value(1)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
   const onPressIn = () => {
-    import_react_native.Animated.spring(scaleAnim, { toValue: 0.97, useNativeDriver: true, tension: 300, friction: 20 }).start();
+    Animated.spring(scaleAnim, { toValue: 0.97, useNativeDriver: true, tension: 300, friction: 20 }).start();
   };
   const onPressOut = () => {
-    import_react_native.Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true, tension: 300, friction: 20 }).start();
+    Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true, tension: 300, friction: 20 }).start();
   };
-  return /* @__PURE__ */ import_react.default.createElement(import_react_native.Animated.View, { style: { transform: [{ scale: scaleAnim }] } }, /* @__PURE__ */ import_react.default.createElement(
-    import_react_native.TouchableOpacity,
+  return /* @__PURE__ */ React.createElement(Animated.View, { style: { transform: [{ scale: scaleAnim }] } }, /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
     {
       style: styles.noteCard,
       activeOpacity: 0.9,
@@ -135,22 +117,22 @@ function NoteCard({ note, onDelete, onOpen }) {
       onPressOut,
       onPress: () => onOpen(note),
       onLongPress: () => {
-        (0, import_haptics.triggerHaptic)("warning");
+        triggerHaptic("warning");
         onDelete(note.id);
       }
     },
-    /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: [styles.noteAccentLine, { backgroundColor: config.color }] }),
-    /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.noteBody }, /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.noteHeader }, /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: [styles.noteIconCircle, { backgroundColor: config.bg }] }, /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: config.icon, size: 12, color: config.color })), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: [styles.noteTypeLabel, { color: config.color }] }, note.linked_label || config.label), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.noteTime }, formatTime(note.created_at))), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.noteContent, numberOfLines: 4 }, note.content), /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.noteTapHint }, /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "maximize-2", size: 10, color: import_constants.COLORS.textMuted }), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.noteTapHintText }, "Tap to expand")))
+    /* @__PURE__ */ React.createElement(View, { style: [styles.noteAccentLine, { backgroundColor: config.color }] }),
+    /* @__PURE__ */ React.createElement(View, { style: styles.noteBody }, /* @__PURE__ */ React.createElement(View, { style: styles.noteHeader }, /* @__PURE__ */ React.createElement(View, { style: [styles.noteIconCircle, { backgroundColor: config.bg }] }, /* @__PURE__ */ React.createElement(Feather, { name: config.icon, size: 12, color: config.color })), /* @__PURE__ */ React.createElement(Text, { style: [styles.noteTypeLabel, { color: config.color }] }, note.linked_label || config.label), /* @__PURE__ */ React.createElement(Text, { style: styles.noteTime }, formatTime(note.created_at))), /* @__PURE__ */ React.createElement(Text, { style: styles.noteContent, numberOfLines: 4 }, note.content), /* @__PURE__ */ React.createElement(View, { style: styles.noteTapHint }, /* @__PURE__ */ React.createElement(Feather, { name: "maximize-2", size: 10, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.noteTapHintText }, "Tap to expand")))
   ));
 }
 function StreakWeekView({ streak, thisWeek, totalNotes }) {
   const dayLabels = ["S", "M", "T", "W", "T", "F", "S"];
   const today = (/* @__PURE__ */ new Date()).getDay();
-  return /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.streakCard }, /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.streakTop }, /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.streakFlameWrap }, /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "edit-3", size: 20, color: import_constants.COLORS.accent })), /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: { flex: 1 } }, /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.streakCount }, streak), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.streakLabel }, "day note streak")), /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.streakStatPill }, /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.streakStatNum }, totalNotes), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.streakStatLabel }, "total"))), /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.weekRow }, dayLabels.map((label, i) => {
+  return /* @__PURE__ */ React.createElement(View, { style: styles.streakCard }, /* @__PURE__ */ React.createElement(View, { style: styles.streakTop }, /* @__PURE__ */ React.createElement(View, { style: styles.streakFlameWrap }, /* @__PURE__ */ React.createElement(Feather, { name: "edit-3", size: 20, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.streakCount }, streak), /* @__PURE__ */ React.createElement(Text, { style: styles.streakLabel }, "day note streak")), /* @__PURE__ */ React.createElement(View, { style: styles.streakStatPill }, /* @__PURE__ */ React.createElement(Text, { style: styles.streakStatNum }, totalNotes), /* @__PURE__ */ React.createElement(Text, { style: styles.streakStatLabel }, "total"))), /* @__PURE__ */ React.createElement(View, { style: styles.weekRow }, dayLabels.map((label, i) => {
     const isActive = thisWeek.includes(i);
     const isToday = i === today;
-    return /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { key: i, style: styles.weekDay }, /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: [styles.weekDayLabel, isToday && styles.weekDayLabelToday] }, label), /* @__PURE__ */ import_react.default.createElement(
-      import_react_native.View,
+    return /* @__PURE__ */ React.createElement(View, { key: i, style: styles.weekDay }, /* @__PURE__ */ React.createElement(Text, { style: [styles.weekDayLabel, isToday && styles.weekDayLabelToday] }, label), /* @__PURE__ */ React.createElement(
+      View,
       {
         style: [
           styles.weekDot,
@@ -158,52 +140,52 @@ function StreakWeekView({ streak, thisWeek, totalNotes }) {
           isToday && !isActive && styles.weekDotToday
         ]
       },
-      isActive && /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "check", size: 10, color: "#fff" })
+      isActive && /* @__PURE__ */ React.createElement(Feather, { name: "check", size: 10, color: "#fff" })
     ));
-  })), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.streakMotivation }, streak === 0 ? "Add a note today to start your streak!" : streak < 3 ? "Great start! Keep capturing insights daily." : streak < 7 ? "You're building a habit! Keep it up." : "Amazing streak! You're a knowledge machine."));
+  })), /* @__PURE__ */ React.createElement(Text, { style: styles.streakMotivation }, streak === 0 ? "Add a note today to start your streak!" : streak < 3 ? "Great start! Keep capturing insights daily." : streak < 7 ? "You're building a habit! Keep it up." : "Amazing streak! You're a knowledge machine."));
 }
-function NotebookScreen() {
-  const insets = (0, import_react_native_safe_area_context.useSafeAreaInsets)();
-  const { user } = (0, import_useAuth.useAuth)();
-  const [notes, setNotes] = (0, import_react.useState)([]);
-  const [loading, setLoading] = (0, import_react.useState)(true);
-  const [searchQuery, setSearchQuery] = (0, import_react.useState)("");
-  const [selectedCategory, setSelectedCategory] = (0, import_react.useState)("all");
-  const [showAddNote, setShowAddNote] = (0, import_react.useState)(false);
-  const [newNoteContent, setNewNoteContent] = (0, import_react.useState)("");
-  const [selectedMarket, setSelectedMarket] = (0, import_react.useState)(null);
-  const [showSearch, setShowSearch] = (0, import_react.useState)(false);
-  const [openNote, setOpenNote] = (0, import_react.useState)(null);
-  const [editingContent, setEditingContent] = (0, import_react.useState)("");
-  const headerAnim = (0, import_react.useRef)(new import_react_native.Animated.Value(0)).current;
-  (0, import_react.useEffect)(() => {
+export default function NotebookScreen() {
+  const insets = useSafeAreaInsets();
+  const { user } = useAuth();
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [showAddNote, setShowAddNote] = useState(false);
+  const [newNoteContent, setNewNoteContent] = useState("");
+  const [selectedMarket, setSelectedMarket] = useState(null);
+  const [showSearch, setShowSearch] = useState(false);
+  const [openNote, setOpenNote] = useState(null);
+  const [editingContent, setEditingContent] = useState("");
+  const headerAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
-      const { data: profile } = await import_supabase.supabase.from("profiles").select("selected_market").eq("id", user.id).single();
+      const { data: profile } = await supabase.from("profiles").select("selected_market").eq("id", user.id).single();
       if (profile?.selected_market) setSelectedMarket(profile.selected_market);
     };
     fetchData();
   }, [user]);
-  (0, import_react.useEffect)(() => {
+  useEffect(() => {
     const fetchNotes = async () => {
       if (!user || !selectedMarket) return;
-      const { data, error } = await import_supabase.supabase.from("notes").select("*").eq("user_id", user.id).eq("market_id", selectedMarket).order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("notes").select("*").eq("user_id", user.id).eq("market_id", selectedMarket).order("created_at", { ascending: false });
       if (!error) setNotes(data || []);
       setLoading(false);
-      import_react_native.Animated.spring(headerAnim, { toValue: 1, tension: 60, friction: 12, useNativeDriver: true }).start();
+      Animated.spring(headerAnim, { toValue: 1, tension: 60, friction: 12, useNativeDriver: true }).start();
     };
     if (selectedMarket) fetchNotes();
   }, [user, selectedMarket]);
-  const handleDeleteNote = (0, import_react.useCallback)((noteId) => {
+  const handleDeleteNote = useCallback((noteId) => {
     if (!user) return;
-    import_react_native.Alert.alert("Delete Note", "This cannot be undone.", [
+    Alert.alert("Delete Note", "This cannot be undone.", [
       { text: "Cancel", style: "cancel" },
       {
         text: "Delete",
         style: "destructive",
         onPress: async () => {
-          (0, import_haptics.triggerHaptic)("warning");
-          await import_supabase.supabase.from("notes").delete().eq("id", noteId).eq("user_id", user.id);
+          triggerHaptic("warning");
+          await supabase.from("notes").delete().eq("id", noteId).eq("user_id", user.id);
           setNotes((prev) => prev.filter((n) => n.id !== noteId));
         }
       }
@@ -211,8 +193,8 @@ function NotebookScreen() {
   }, [user]);
   const handleAddNote = async () => {
     if (!user || !newNoteContent.trim() || !selectedMarket) return;
-    (0, import_haptics.triggerHaptic)("success");
-    const { data, error } = await import_supabase.supabase.from("notes").insert({
+    triggerHaptic("success");
+    const { data, error } = await supabase.from("notes").insert({
       user_id: user.id,
       content: newNoteContent.trim(),
       linked_label: "Personal Note",
@@ -243,10 +225,10 @@ function NotebookScreen() {
     categoryCounts[t] = (categoryCounts[t] || 0) + 1;
   });
   if (loading) {
-    return /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: [styles.container, styles.centered] }, /* @__PURE__ */ import_react.default.createElement(import_react_native.ActivityIndicator, { size: "large", color: import_constants.COLORS.accent }));
+    return /* @__PURE__ */ React.createElement(View, { style: [styles.container, styles.centered] }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }));
   }
-  return /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.container }, /* @__PURE__ */ import_react.default.createElement(
-    import_react_native.ScrollView,
+  return /* @__PURE__ */ React.createElement(View, { style: styles.container }, /* @__PURE__ */ React.createElement(
+    ScrollView,
     {
       contentContainerStyle: [
         styles.scrollContent,
@@ -255,9 +237,9 @@ function NotebookScreen() {
       showsVerticalScrollIndicator: false,
       keyboardShouldPersistTaps: "handled"
     },
-    /* @__PURE__ */ import_react.default.createElement(import_react_native.TouchableOpacity, { style: styles.backButton, onPress: () => import_expo_router.router.replace("/(tabs)/home"), activeOpacity: 0.75 }, /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "arrow-left", size: 20, color: import_constants.COLORS.textPrimary }), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.backText }, "Course")),
-    /* @__PURE__ */ import_react.default.createElement(
-      import_react_native.Animated.View,
+    /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.backButton, onPress: () => router.replace("/(tabs)/home"), activeOpacity: 0.75 }, /* @__PURE__ */ React.createElement(Feather, { name: "arrow-left", size: 20, color: COLORS.textPrimary }), /* @__PURE__ */ React.createElement(Text, { style: styles.backText }, "Course")),
+    /* @__PURE__ */ React.createElement(
+      Animated.View,
       {
         style: [
           styles.header,
@@ -267,29 +249,29 @@ function NotebookScreen() {
           }
         ]
       },
-      /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: { flex: 1 } }, /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.title }, "Your notes"), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.subtitle }, notes.length === 0 ? "Keep the ideas worth owning" : `${notes.length} idea${notes.length !== 1 ? "s" : ""} worth keeping`)),
-      /* @__PURE__ */ import_react.default.createElement(
-        import_react_native.TouchableOpacity,
+      /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Your notes"), /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, notes.length === 0 ? "Keep the ideas worth owning" : `${notes.length} idea${notes.length !== 1 ? "s" : ""} worth keeping`)),
+      /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
         {
           style: styles.searchToggle,
           onPress: () => setShowSearch((s) => !s)
         },
-        /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "search", size: 18, color: import_constants.COLORS.textSecondary })
+        /* @__PURE__ */ React.createElement(Feather, { name: "search", size: 18, color: COLORS.textSecondary })
       )
     ),
-    showSearch && /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.searchContainer }, /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "search", size: 16, color: import_constants.COLORS.textMuted }), /* @__PURE__ */ import_react.default.createElement(
-      import_react_native.TextInput,
+    showSearch && /* @__PURE__ */ React.createElement(View, { style: styles.searchContainer }, /* @__PURE__ */ React.createElement(Feather, { name: "search", size: 16, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(
+      TextInput,
       {
         style: styles.searchInput,
         placeholder: "Search your notes",
-        placeholderTextColor: import_constants.COLORS.textMuted,
+        placeholderTextColor: COLORS.textMuted,
         value: searchQuery,
         onChangeText: setSearchQuery,
         autoFocus: true
       }
-    ), searchQuery.length > 0 && /* @__PURE__ */ import_react.default.createElement(import_react_native.TouchableOpacity, { onPress: () => setSearchQuery("") }, /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "x", size: 16, color: import_constants.COLORS.textMuted }))),
-    /* @__PURE__ */ import_react.default.createElement(
-      import_react_native.ScrollView,
+    ), searchQuery.length > 0 && /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => setSearchQuery("") }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 16, color: COLORS.textMuted }))),
+    /* @__PURE__ */ React.createElement(
+      ScrollView,
       {
         horizontal: true,
         showsHorizontalScrollIndicator: false,
@@ -299,80 +281,80 @@ function NotebookScreen() {
       CATEGORIES.map((cat) => {
         const isActive = selectedCategory === cat.id;
         const count = categoryCounts[cat.id] || 0;
-        return /* @__PURE__ */ import_react.default.createElement(
-          import_react_native.TouchableOpacity,
+        return /* @__PURE__ */ React.createElement(
+          TouchableOpacity,
           {
             key: cat.id,
             style: [styles.categoryChip, isActive && { backgroundColor: cat.color + "18", borderColor: cat.color + "40" }],
             onPress: () => {
-              (0, import_haptics.triggerHaptic)("light");
+              triggerHaptic("light");
               setSelectedCategory(cat.id);
             }
           },
-          /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: cat.icon, size: 13, color: isActive ? cat.color : import_constants.COLORS.textMuted }),
-          /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: [styles.categoryLabel, isActive && { color: cat.color, fontWeight: "600" }] }, cat.label),
-          count > 0 && /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: [styles.categoryCount, isActive && { backgroundColor: cat.color + "20" }] }, /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: [styles.categoryCountText, isActive && { color: cat.color }] }, count))
+          /* @__PURE__ */ React.createElement(Feather, { name: cat.icon, size: 13, color: isActive ? cat.color : COLORS.textMuted }),
+          /* @__PURE__ */ React.createElement(Text, { style: [styles.categoryLabel, isActive && { color: cat.color, fontWeight: "600" }] }, cat.label),
+          count > 0 && /* @__PURE__ */ React.createElement(View, { style: [styles.categoryCount, isActive && { backgroundColor: cat.color + "20" }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.categoryCountText, isActive && { color: cat.color }] }, count))
         );
       })
     ),
-    searchTerms.length > 1 && /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 12 } }, searchTerms.map((term, i) => {
+    searchTerms.length > 1 && /* @__PURE__ */ React.createElement(View, { style: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 12 } }, searchTerms.map((term, i) => {
       const chipColors = ["#EAB308", "#06B6D4", "#EC4899", "#22C55E", "#F97316"];
       const c = chipColors[i % chipColors.length];
-      return /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { key: i, style: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: c + "20", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, borderWidth: 1, borderColor: c + "40" } }, /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: { width: 6, height: 6, borderRadius: 3, backgroundColor: c } }), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: { fontSize: 11, fontWeight: "600", color: c } }, term), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: { fontSize: 10, color: c, opacity: 0.7 } }, "(", termMatchCounts[i], ")"));
+      return /* @__PURE__ */ React.createElement(View, { key: i, style: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: c + "20", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, borderWidth: 1, borderColor: c + "40" } }, /* @__PURE__ */ React.createElement(View, { style: { width: 6, height: 6, borderRadius: 3, backgroundColor: c } }), /* @__PURE__ */ React.createElement(Text, { style: { fontSize: 11, fontWeight: "600", color: c } }, term), /* @__PURE__ */ React.createElement(Text, { style: { fontSize: 10, color: c, opacity: 0.7 } }, "(", termMatchCounts[i], ")"));
     })),
-    Object.keys(groupedNotes).length > 0 ? /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: { gap: 20 } }, Object.entries(groupedNotes).map(([date, dateNotes]) => /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { key: date }, /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.dateHeader }, /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.dateDot }), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.dateText }, date), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.dateCount }, dateNotes.length, " note", dateNotes.length !== 1 ? "s" : "")), /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: { gap: 10 } }, dateNotes.map((note) => /* @__PURE__ */ import_react.default.createElement(NoteCard, { key: note.id, note, onDelete: handleDeleteNote, onOpen: (n) => {
+    Object.keys(groupedNotes).length > 0 ? /* @__PURE__ */ React.createElement(View, { style: { gap: 20 } }, Object.entries(groupedNotes).map(([date, dateNotes]) => /* @__PURE__ */ React.createElement(View, { key: date }, /* @__PURE__ */ React.createElement(View, { style: styles.dateHeader }, /* @__PURE__ */ React.createElement(View, { style: styles.dateDot }), /* @__PURE__ */ React.createElement(Text, { style: styles.dateText }, date), /* @__PURE__ */ React.createElement(Text, { style: styles.dateCount }, dateNotes.length, " note", dateNotes.length !== 1 ? "s" : "")), /* @__PURE__ */ React.createElement(View, { style: { gap: 10 } }, dateNotes.map((note) => /* @__PURE__ */ React.createElement(NoteCard, { key: note.id, note, onDelete: handleDeleteNote, onOpen: (n) => {
       setOpenNote(n);
       setEditingContent(n.content);
-    } })))))) : /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.emptyState }, /* @__PURE__ */ import_react.default.createElement(import_LeoAnimated.LeoAnimated, { clip: "leo-idle-loop", size: 160, fallback: "idle" }), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.emptyTitle }, searchQuery ? "No notes found" : "Start your notebook"), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.emptySubtitle }, searchQuery ? "Try a different search or category" : "Write one clear line in your own words. It will stay connected to your course."), !searchQuery && /* @__PURE__ */ import_react.default.createElement(
-      import_react_native.TouchableOpacity,
+    } })))))) : /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(LeoAnimated, { clip: "leo-idle-loop", size: 160, fallback: "idle" }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, searchQuery ? "No notes found" : "Start your notebook"), /* @__PURE__ */ React.createElement(Text, { style: styles.emptySubtitle }, searchQuery ? "Try a different search or category" : "Write one clear line in your own words. It will stay connected to your course."), !searchQuery && /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
       {
         style: styles.emptyCta,
         onPress: () => {
-          (0, import_haptics.triggerHaptic)("medium");
+          triggerHaptic("medium");
           setShowAddNote(true);
         }
       },
-      /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "edit-3", size: 16, color: "#fff" }),
-      /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.emptyCtaText }, "Write your first note")
+      /* @__PURE__ */ React.createElement(Feather, { name: "edit-3", size: 16, color: "#fff" }),
+      /* @__PURE__ */ React.createElement(Text, { style: styles.emptyCtaText }, "Write your first note")
     ))
-  ), notes.length > 0 && /* @__PURE__ */ import_react.default.createElement(
-    import_react_native.TouchableOpacity,
+  ), notes.length > 0 && /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
     {
       style: [styles.fab, { bottom: insets.bottom + 80 }],
       onPress: () => {
-        (0, import_haptics.triggerHaptic)("medium");
+        triggerHaptic("medium");
         setShowAddNote(true);
       },
       activeOpacity: 0.85
     },
-    /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "plus", size: 24, color: "#fff" })
-  ), /* @__PURE__ */ import_react.default.createElement(import_react_native.Modal, { visible: !!openNote, transparent: true, animationType: "slide" }, /* @__PURE__ */ import_react.default.createElement(
-    import_react_native.KeyboardAvoidingView,
+    /* @__PURE__ */ React.createElement(Feather, { name: "plus", size: 24, color: "#fff" })
+  ), /* @__PURE__ */ React.createElement(Modal, { visible: !!openNote, transparent: true, animationType: "slide" }, /* @__PURE__ */ React.createElement(
+    KeyboardAvoidingView,
     {
-      behavior: import_react_native.Platform.OS === "ios" ? "padding" : "height",
+      behavior: Platform.OS === "ios" ? "padding" : "height",
       style: { flex: 1 }
     },
-    /* @__PURE__ */ import_react.default.createElement(
-      import_react_native.TouchableOpacity,
+    /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
       {
         style: styles.modalOverlay,
         activeOpacity: 1,
         onPress: () => setOpenNote(null)
       },
-      /* @__PURE__ */ import_react.default.createElement(import_react_native.TouchableOpacity, { activeOpacity: 1, style: styles.detailCard }, /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.modalHandle }), /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.modalHeader }, /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.modalIconCircle }, /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "file-text", size: 18, color: import_constants.COLORS.accent })), /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: { flex: 1 } }, /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.modalTitle }, openNote?.linked_label || "Note"), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.modalSubtitle }, openNote ? formatDate(openNote.created_at) + " \u2022 " + formatTime(openNote.created_at) : "")), /* @__PURE__ */ import_react.default.createElement(
-        import_react_native.TouchableOpacity,
+      /* @__PURE__ */ React.createElement(TouchableOpacity, { activeOpacity: 1, style: styles.detailCard }, /* @__PURE__ */ React.createElement(View, { style: styles.modalHandle }), /* @__PURE__ */ React.createElement(View, { style: styles.modalHeader }, /* @__PURE__ */ React.createElement(View, { style: styles.modalIconCircle }, /* @__PURE__ */ React.createElement(Feather, { name: "file-text", size: 18, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.modalTitle }, openNote?.linked_label || "Note"), /* @__PURE__ */ React.createElement(Text, { style: styles.modalSubtitle }, openNote ? formatDate(openNote.created_at) + " \u2022 " + formatTime(openNote.created_at) : "")), /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
         {
           onPress: () => {
             if (!openNote) return;
-            (0, import_haptics.triggerHaptic)("warning");
+            triggerHaptic("warning");
             handleDeleteNote(openNote.id);
             setOpenNote(null);
           },
           style: styles.detailDeleteBtn
         },
-        /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "trash-2", size: 16, color: "#EF4444" })
-      )), /* @__PURE__ */ import_react.default.createElement(import_react_native.ScrollView, { style: styles.detailScroll, nestedScrollEnabled: true }, /* @__PURE__ */ import_react.default.createElement(
-        import_react_native.TextInput,
+        /* @__PURE__ */ React.createElement(Feather, { name: "trash-2", size: 16, color: "#EF4444" })
+      )), /* @__PURE__ */ React.createElement(ScrollView, { style: styles.detailScroll, nestedScrollEnabled: true }, /* @__PURE__ */ React.createElement(
+        TextInput,
         {
           style: styles.detailInput,
           value: editingContent,
@@ -380,44 +362,44 @@ function NotebookScreen() {
           multiline: true,
           textAlignVertical: "top",
           placeholder: "Your note...",
-          placeholderTextColor: import_constants.COLORS.textMuted
+          placeholderTextColor: COLORS.textMuted
         }
-      )), /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.modalActions }, /* @__PURE__ */ import_react.default.createElement(
-        import_react_native.TouchableOpacity,
+      )), /* @__PURE__ */ React.createElement(View, { style: styles.modalActions }, /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
         {
           style: styles.modalCancel,
           onPress: () => setOpenNote(null)
         },
-        /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.modalCancelText }, "Close")
-      ), /* @__PURE__ */ import_react.default.createElement(
-        import_react_native.TouchableOpacity,
+        /* @__PURE__ */ React.createElement(Text, { style: styles.modalCancelText }, "Close")
+      ), /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
         {
           style: [styles.modalSave, editingContent === openNote?.content && { opacity: 0.4 }],
           disabled: editingContent === openNote?.content,
           onPress: async () => {
             if (!openNote || !user) return;
-            const { error } = await import_supabase.supabase.from("notes").update({ content: editingContent.trim() }).eq("id", openNote.id).eq("user_id", user.id);
+            const { error } = await supabase.from("notes").update({ content: editingContent.trim() }).eq("id", openNote.id).eq("user_id", user.id);
             if (!error) {
               setNotes(
                 (prev) => prev.map((n) => n.id === openNote.id ? { ...n, content: editingContent.trim() } : n)
               );
-              (0, import_haptics.triggerHaptic)("success");
+              triggerHaptic("success");
             }
             setOpenNote(null);
           }
         },
-        /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "check", size: 16, color: "#fff" }),
-        /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.modalSaveText }, "Save Changes")
+        /* @__PURE__ */ React.createElement(Feather, { name: "check", size: 16, color: "#fff" }),
+        /* @__PURE__ */ React.createElement(Text, { style: styles.modalSaveText }, "Save Changes")
       )))
     )
-  )), /* @__PURE__ */ import_react.default.createElement(import_react_native.Modal, { visible: showAddNote, transparent: true, animationType: "slide" }, /* @__PURE__ */ import_react.default.createElement(
-    import_react_native.KeyboardAvoidingView,
+  )), /* @__PURE__ */ React.createElement(Modal, { visible: showAddNote, transparent: true, animationType: "slide" }, /* @__PURE__ */ React.createElement(
+    KeyboardAvoidingView,
     {
-      behavior: import_react_native.Platform.OS === "ios" ? "padding" : "height",
+      behavior: Platform.OS === "ios" ? "padding" : "height",
       style: { flex: 1 }
     },
-    /* @__PURE__ */ import_react.default.createElement(
-      import_react_native.TouchableOpacity,
+    /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
       {
         style: styles.modalOverlay,
         activeOpacity: 1,
@@ -426,20 +408,20 @@ function NotebookScreen() {
           setNewNoteContent("");
         }
       },
-      /* @__PURE__ */ import_react.default.createElement(import_react_native.TouchableOpacity, { activeOpacity: 1, style: styles.modalCard }, /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.modalHandle }), /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.modalHeader }, /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.modalIconCircle }, /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "edit-3", size: 18, color: import_constants.COLORS.accent })), /* @__PURE__ */ import_react.default.createElement(import_react_native.View, null, /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.modalTitle }, "New Insight"), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.modalSubtitle }, "What did you learn?"))), /* @__PURE__ */ import_react.default.createElement(
-        import_react_native.TextInput,
+      /* @__PURE__ */ React.createElement(TouchableOpacity, { activeOpacity: 1, style: styles.modalCard }, /* @__PURE__ */ React.createElement(View, { style: styles.modalHandle }), /* @__PURE__ */ React.createElement(View, { style: styles.modalHeader }, /* @__PURE__ */ React.createElement(View, { style: styles.modalIconCircle }, /* @__PURE__ */ React.createElement(Feather, { name: "edit-3", size: 18, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, null, /* @__PURE__ */ React.createElement(Text, { style: styles.modalTitle }, "New Insight"), /* @__PURE__ */ React.createElement(Text, { style: styles.modalSubtitle }, "What did you learn?"))), /* @__PURE__ */ React.createElement(
+        TextInput,
         {
           style: styles.modalInput,
           placeholder: "Write your insight, takeaway, or idea...",
-          placeholderTextColor: import_constants.COLORS.textMuted,
+          placeholderTextColor: COLORS.textMuted,
           value: newNoteContent,
           onChangeText: setNewNoteContent,
           multiline: true,
           autoFocus: true,
           textAlignVertical: "top"
         }
-      ), /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.modalTip }, /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "info", size: 12, color: import_constants.COLORS.textMuted }), /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.modalTipText }, `Great notes are specific. Try: "Key insight from today's lesson..."`)), /* @__PURE__ */ import_react.default.createElement(import_react_native.View, { style: styles.modalActions }, /* @__PURE__ */ import_react.default.createElement(
-        import_react_native.TouchableOpacity,
+      ), /* @__PURE__ */ React.createElement(View, { style: styles.modalTip }, /* @__PURE__ */ React.createElement(Feather, { name: "info", size: 12, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.modalTipText }, `Great notes are specific. Try: "Key insight from today's lesson..."`)), /* @__PURE__ */ React.createElement(View, { style: styles.modalActions }, /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
         {
           style: styles.modalCancel,
           onPress: () => {
@@ -447,37 +429,37 @@ function NotebookScreen() {
             setNewNoteContent("");
           }
         },
-        /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.modalCancelText }, "Cancel")
-      ), /* @__PURE__ */ import_react.default.createElement(
-        import_react_native.TouchableOpacity,
+        /* @__PURE__ */ React.createElement(Text, { style: styles.modalCancelText }, "Cancel")
+      ), /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
         {
           style: [styles.modalSave, !newNoteContent.trim() && { opacity: 0.4 }],
           onPress: handleAddNote,
           disabled: !newNoteContent.trim()
         },
-        /* @__PURE__ */ import_react.default.createElement(import_vector_icons.Feather, { name: "check", size: 16, color: "#fff" }),
-        /* @__PURE__ */ import_react.default.createElement(import_react_native.Text, { style: styles.modalSaveText }, "Save")
+        /* @__PURE__ */ React.createElement(Feather, { name: "check", size: 16, color: "#fff" }),
+        /* @__PURE__ */ React.createElement(Text, { style: styles.modalSaveText }, "Save")
       )))
     )
   )));
 }
-const styles = import_react_native.StyleSheet.create({
-  container: { flex: 1, backgroundColor: import_constants.COLORS.bg0 },
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: "center", justifyContent: "center" },
   scrollContent: { paddingHorizontal: 16 },
   backButton: { flexDirection: "row", alignItems: "center", gap: 7, alignSelf: "flex-start", paddingVertical: 8, marginBottom: 8 },
-  backText: { fontSize: 13, fontWeight: "700", color: import_constants.COLORS.textPrimary },
+  backText: { fontSize: 13, fontWeight: "700", color: COLORS.textPrimary },
   // Header
   header: { flexDirection: "row", alignItems: "center", marginBottom: 16 },
-  title: { fontSize: 28, fontWeight: "800", color: import_constants.COLORS.textPrimary, letterSpacing: -0.5 },
-  subtitle: { fontSize: 13, color: import_constants.COLORS.textMuted, marginTop: 2 },
+  title: { fontSize: 28, fontWeight: "800", color: COLORS.textPrimary, letterSpacing: -0.5 },
+  subtitle: { fontSize: 13, color: COLORS.textMuted, marginTop: 2 },
   searchToggle: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: import_constants.COLORS.bg2,
+    backgroundColor: COLORS.bg2,
     borderWidth: 1,
-    borderColor: import_constants.COLORS.border,
+    borderColor: COLORS.border,
     alignItems: "center",
     justifyContent: "center"
   },
@@ -486,23 +468,23 @@ const styles = import_react_native.StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    backgroundColor: import_constants.COLORS.bg2,
+    backgroundColor: COLORS.bg2,
     borderRadius: 12,
     paddingHorizontal: 14,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: import_constants.COLORS.border
+    borderColor: COLORS.border
   },
-  searchInput: { flex: 1, height: 44, fontSize: 15, color: import_constants.COLORS.textPrimary },
+  searchInput: { flex: 1, height: 44, fontSize: 15, color: COLORS.textPrimary },
   // Streak card
   streakCard: {
-    backgroundColor: import_constants.COLORS.bg2,
+    backgroundColor: COLORS.bg2,
     borderRadius: 20,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: import_constants.COLORS.border,
-    ...import_constants.SHADOWS.md
+    borderColor: COLORS.border,
+    ...SHADOWS.md
   },
   streakTop: { flexDirection: "row", alignItems: "center", gap: 14, marginBottom: 18 },
   streakFlameWrap: {
@@ -513,36 +495,36 @@ const styles = import_react_native.StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  streakCount: { fontSize: 28, fontWeight: "800", color: import_constants.COLORS.accent, lineHeight: 32 },
-  streakLabel: { fontSize: 12, color: import_constants.COLORS.textMuted, fontWeight: "500" },
+  streakCount: { fontSize: 28, fontWeight: "800", color: COLORS.accent, lineHeight: 32 },
+  streakLabel: { fontSize: 12, color: COLORS.textMuted, fontWeight: "500" },
   streakStatPill: {
     alignItems: "center",
     paddingHorizontal: 14,
     paddingVertical: 8,
-    backgroundColor: import_constants.COLORS.bg1,
+    backgroundColor: COLORS.bg1,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: import_constants.COLORS.border
+    borderColor: COLORS.border
   },
-  streakStatNum: { fontSize: 18, fontWeight: "700", color: import_constants.COLORS.textPrimary },
-  streakStatLabel: { fontSize: 10, color: import_constants.COLORS.textMuted, marginTop: 1 },
+  streakStatNum: { fontSize: 18, fontWeight: "700", color: COLORS.textPrimary },
+  streakStatLabel: { fontSize: 10, color: COLORS.textMuted, marginTop: 1 },
   weekRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 14 },
   weekDay: { alignItems: "center", gap: 6, flex: 1 },
-  weekDayLabel: { fontSize: 11, fontWeight: "500", color: import_constants.COLORS.textMuted },
-  weekDayLabelToday: { color: import_constants.COLORS.accent, fontWeight: "700" },
+  weekDayLabel: { fontSize: 11, fontWeight: "500", color: COLORS.textMuted },
+  weekDayLabelToday: { color: COLORS.accent, fontWeight: "700" },
   weekDot: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: import_constants.COLORS.bg1,
+    backgroundColor: COLORS.bg1,
     borderWidth: 1.5,
-    borderColor: import_constants.COLORS.border,
+    borderColor: COLORS.border,
     alignItems: "center",
     justifyContent: "center"
   },
-  weekDotActive: { backgroundColor: import_constants.COLORS.accent, borderColor: import_constants.COLORS.accent },
-  weekDotToday: { borderColor: import_constants.COLORS.accent, borderWidth: 2 },
-  streakMotivation: { fontSize: 12, color: import_constants.COLORS.textMuted, textAlign: "center", lineHeight: 17 },
+  weekDotActive: { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
+  weekDotToday: { borderColor: COLORS.accent, borderWidth: 2 },
+  streakMotivation: { fontSize: 12, color: COLORS.textMuted, textAlign: "center", lineHeight: 17 },
   // Category tabs
   categoryRow: { marginBottom: 18, flexGrow: 0 },
   categoryChip: {
@@ -552,35 +534,35 @@ const styles = import_react_native.StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 9,
     borderRadius: 12,
-    backgroundColor: import_constants.COLORS.bg2,
+    backgroundColor: COLORS.bg2,
     borderWidth: 1,
-    borderColor: import_constants.COLORS.border
+    borderColor: COLORS.border
   },
-  categoryLabel: { fontSize: 13, color: import_constants.COLORS.textMuted },
+  categoryLabel: { fontSize: 13, color: COLORS.textMuted },
   categoryCount: {
     minWidth: 20,
     height: 18,
     borderRadius: 9,
-    backgroundColor: import_constants.COLORS.bg1,
+    backgroundColor: COLORS.bg1,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 5
   },
-  categoryCountText: { fontSize: 10, fontWeight: "700", color: import_constants.COLORS.textMuted },
+  categoryCountText: { fontSize: 10, fontWeight: "700", color: COLORS.textMuted },
   // Date headers
   dateHeader: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 10 },
-  dateDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: import_constants.COLORS.accent },
-  dateText: { fontSize: 13, fontWeight: "600", color: import_constants.COLORS.textPrimary },
-  dateCount: { fontSize: 11, color: import_constants.COLORS.textMuted, marginLeft: "auto" },
+  dateDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.accent },
+  dateText: { fontSize: 13, fontWeight: "600", color: COLORS.textPrimary },
+  dateCount: { fontSize: 11, color: COLORS.textMuted, marginLeft: "auto" },
   // Note cards
   noteCard: {
     flexDirection: "row",
-    backgroundColor: import_constants.COLORS.bg2,
+    backgroundColor: COLORS.bg2,
     borderRadius: 16,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: import_constants.COLORS.border,
-    ...import_constants.SHADOWS.sm
+    borderColor: COLORS.border,
+    ...SHADOWS.sm
   },
   noteAccentLine: { width: 4, borderTopLeftRadius: 16, borderBottomLeftRadius: 16 },
   noteBody: { flex: 1, padding: 14 },
@@ -593,8 +575,8 @@ const styles = import_react_native.StyleSheet.create({
     justifyContent: "center"
   },
   noteTypeLabel: { fontSize: 11, fontWeight: "600", flex: 1 },
-  noteTime: { fontSize: 10, color: import_constants.COLORS.textMuted },
-  noteContent: { fontSize: 14, color: import_constants.COLORS.textPrimary, lineHeight: 21 },
+  noteTime: { fontSize: 10, color: COLORS.textMuted },
+  noteContent: { fontSize: 14, color: COLORS.textPrimary, lineHeight: 21 },
   noteTapHint: {
     flexDirection: "row",
     alignItems: "center",
@@ -602,13 +584,13 @@ const styles = import_react_native.StyleSheet.create({
     marginTop: 8,
     opacity: 0.5
   },
-  noteTapHintText: { fontSize: 10, color: import_constants.COLORS.textMuted },
+  noteTapHintText: { fontSize: 10, color: COLORS.textMuted },
   // Empty state
   emptyState: { alignItems: "center", paddingVertical: 40 },
-  emptyTitle: { fontSize: 20, fontWeight: "700", color: import_constants.COLORS.textPrimary, marginBottom: 8 },
+  emptyTitle: { fontSize: 20, fontWeight: "700", color: COLORS.textPrimary, marginBottom: 8 },
   emptySubtitle: {
     fontSize: 14,
-    color: import_constants.COLORS.textMuted,
+    color: COLORS.textMuted,
     textAlign: "center",
     lineHeight: 21,
     marginBottom: 20,
@@ -621,7 +603,7 @@ const styles = import_react_native.StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 14,
-    backgroundColor: import_constants.COLORS.accent
+    backgroundColor: COLORS.accent
   },
   emptyCtaText: { color: "#fff", fontWeight: "700", fontSize: 15 },
   // FAB
@@ -631,15 +613,15 @@ const styles = import_react_native.StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 16,
-    backgroundColor: import_constants.COLORS.accent,
+    backgroundColor: COLORS.accent,
     alignItems: "center",
     justifyContent: "center",
-    ...import_constants.SHADOWS.accent
+    ...SHADOWS.accent
   },
   // Modal
   modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" },
   modalCard: {
-    backgroundColor: import_constants.COLORS.bg1,
+    backgroundColor: COLORS.bg1,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     padding: 24,
@@ -662,17 +644,17 @@ const styles = import_react_native.StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  modalTitle: { fontSize: 20, fontWeight: "700", color: import_constants.COLORS.textPrimary },
-  modalSubtitle: { fontSize: 13, color: import_constants.COLORS.textMuted, marginTop: 2 },
+  modalTitle: { fontSize: 20, fontWeight: "700", color: COLORS.textPrimary },
+  modalSubtitle: { fontSize: 13, color: COLORS.textMuted, marginTop: 2 },
   modalInput: {
     minHeight: 120,
     padding: 16,
-    backgroundColor: import_constants.COLORS.bg2,
+    backgroundColor: COLORS.bg2,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: import_constants.COLORS.border,
+    borderColor: COLORS.border,
     fontSize: 15,
-    color: import_constants.COLORS.textPrimary,
+    color: COLORS.textPrimary,
     lineHeight: 23
   },
   modalTip: {
@@ -682,23 +664,23 @@ const styles = import_react_native.StyleSheet.create({
     marginTop: 12,
     paddingHorizontal: 4
   },
-  modalTipText: { fontSize: 11, color: import_constants.COLORS.textMuted, flex: 1 },
+  modalTipText: { fontSize: 11, color: COLORS.textMuted, flex: 1 },
   modalActions: { flexDirection: "row", gap: 12, marginTop: 20 },
   modalCancel: {
     flex: 1,
     paddingVertical: 16,
     borderRadius: 14,
-    backgroundColor: import_constants.COLORS.bg2,
+    backgroundColor: COLORS.bg2,
     borderWidth: 1,
-    borderColor: import_constants.COLORS.border,
+    borderColor: COLORS.border,
     alignItems: "center"
   },
-  modalCancelText: { color: import_constants.COLORS.textSecondary, fontSize: 15, fontWeight: "500" },
+  modalCancelText: { color: COLORS.textSecondary, fontSize: 15, fontWeight: "500" },
   modalSave: {
     flex: 1,
     paddingVertical: 16,
     borderRadius: 14,
-    backgroundColor: import_constants.COLORS.accent,
+    backgroundColor: COLORS.accent,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
@@ -707,7 +689,7 @@ const styles = import_react_native.StyleSheet.create({
   modalSaveText: { color: "#FFFFFF", fontWeight: "700", fontSize: 15 },
   // Detail modal
   detailCard: {
-    backgroundColor: import_constants.COLORS.bg1,
+    backgroundColor: COLORS.bg1,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     padding: 24,
@@ -726,12 +708,12 @@ const styles = import_react_native.StyleSheet.create({
   detailInput: {
     minHeight: 200,
     padding: 16,
-    backgroundColor: import_constants.COLORS.bg2,
+    backgroundColor: COLORS.bg2,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: import_constants.COLORS.border,
+    borderColor: COLORS.border,
     fontSize: 15,
-    color: import_constants.COLORS.textPrimary,
+    color: COLORS.textPrimary,
     lineHeight: 23
   }
 });
