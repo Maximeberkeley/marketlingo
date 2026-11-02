@@ -292,9 +292,9 @@ describe('Animated Leo rules', () => {
     await Promise.resolve(); expect(h.render().clip).toBe('leo-reading-loop');
     h.unmount();
   });
-  it('plays the tail-chase once after 30 s on an onboarding screen, then never again', async () => {
+  it('plays the tail-chase once after 10 s on an onboarding screen, then never again', async () => {
     const h = homeHarness(); h.onboarding();
-    await vi.advanceTimersByTimeAsync(29999); expect(h.onboarding().clip).toBe('leo-idle-loop');
+    await vi.advanceTimersByTimeAsync(9999); expect(h.onboarding().clip).toBe('leo-idle-loop');
     await vi.advanceTimersByTimeAsync(1); expect(h.onboarding().clip).toBe('leo-play');
     h.onboarding().onEnd(); expect(h.onboarding().clip).toBe('leo-idle-loop');
     await vi.advanceTimersByTimeAsync(60000); expect(h.onboarding().clip).toBe('leo-idle-loop');
