@@ -153,17 +153,38 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     ? [{ exercise: { ...exercise, source: lessonSource(lesson) }, facts: factKeys(lesson, exercise) }] : [];
   const own = (kind: AuthoredQuestion['kind']) => review.flatMap(lesson =>
     (lesson.questions ?? []).filter(q => q.kind === kind).flatMap(q => tag(lesson, shuffleAuthored(q))));
-  const definitions = () => lessons.flatMap(lesson => {
-    const pool = terms(lesson);
-    return pool.flatMap(target => {
-      // Keep authored decoys, but choose each target deterministically.
-      const check = checkDefinition(pool, nextId());
-      if (!check) return [];
-      const options = shuffle([target.term, ...pool.filter(t => norm(t.term) !== norm(target.term)).slice(0, 2).map(t => t.term)]);
-      return tag(lesson, { ...check, prompt: `This lesson defined it as: "${target.definition}". Which term is that?`,
-        options, correctIndex: options.indexOf(target.term), explanation: `${target.term}: ${target.definition}` });
+  // One definition question per key term of each studied lesson. Decoys come
+  // from the learner's OTHER studied lessons first, then the market glossary,
+  // then the same lesson — and a decoy never matches the right definition.
+  const definitions = () => {
+    const glossaryPool = glossaryEntriesFor(input.marketId);
+    return lessons.flatMap(lesson => {
+      const pool = terms(lesson).filter(t => isRealTerm(t.term) && (t.definition || '').trim().length > 14);
+      const others = lessons.filter(l => l !== lesson).flatMap(l => terms(l));
+      return pool.flatMap(target => {
+        const targetTerm = norm(target.term);
+        const targetDef = norm(target.definition);
+        const usable = (entry: KeyTerm) => {
+          const term = norm(entry.term);
+          return Boolean(term) && term !== targetTerm && norm(entry.definition) !== targetDef;
+        };
+        const decoys = [
+          ...shuffle(others.filter(usable)),
+          ...shuffle(glossaryPool.filter(usable)),
+          ...shuffle(pool.filter(t => norm(t.term) !== targetTerm && usable(t))),
+        ].filter((entry, index, list) => list.findIndex(o => norm(o.term) === norm(entry.term)) === index)
+          .slice(0, 2);
+        if (decoys.length < 2) return [];
+        const options = shuffle([target.term, ...decoys.map(d => d.term)]);
+        return tag(lesson, {
+          kind: 'multipleChoice', id: nextId(),
+          prompt: `This lesson defined it as: "${target.definition}". Which term is that?`,
+          options, correctIndex: options.indexOf(target.term),
+          explanation: `${target.term}: ${target.definition}`,
+        });
+      });
     });
-  });
+  };
   const generated = (build: (slides: SlideLike[], id: string) => Exercise | null, faceOff = false) => lessons.flatMap(lesson => {
     const candidates: Candidate[] = [];
     for (let attempt = 0; attempt < 80; attempt += 1) {
@@ -209,10 +230,24 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
       if (reserved && candidate !== reserved && candidate.facts.some(key => reserved?.facts.includes(key))) continue;
       accept(candidate);
     }
-    // Never expand market filler to compensate for exhausted lesson history.
+    // Fill any gap from the wider industry so a run never shrinks: prefer
+    // questions that touch the lessons' own terms and title words, and never
+    // repeat a fact a lesson question already asked.
     if (selected.length < limit) {
-      for (const exercise of fallback) {
-        if (exercise && accept({ exercise: { ...exercise, source: { type: 'industry' } }, facts: [] })) break;
+      const parts = [...new Set(lessons.flatMap(lessonKeyParts))];
+      const relevance = (exercise: Exercise) => {
+        const text = norm(JSON.stringify(exercise));
+        return parts.filter(part => text.includes(part)).length;
+      };
+      const candidates = shuffle(fallback.filter((e): e is Exercise => Boolean(e)))
+        .sort((a, b) => relevance(b) - relevance(a))
+        .map(exercise => ({
+          exercise: { ...exercise, source: { type: 'industry' as const } },
+          facts: lessons.flatMap(lesson => factKeys(lesson, exercise)),
+        }));
+      for (const candidate of candidates) {
+        if (selected.length === limit) break;
+        accept(candidate);
       }
     }
     return selected;
