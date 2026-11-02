@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { router } from "expo-router";
-import { View, ActivityIndicator, StyleSheet, Image, Text } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
+import { LeoAnimated } from "../components/mascot/LeoAnimated";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import { trackEvent, identifyUser } from "../lib/analytics";
@@ -71,16 +72,7 @@ function Index() {
       isActive = false;
     };
   }, [user, loading]);
-  return <View style={styles.container}>
-      <Image
-    source={require("../assets/mascot/leo-reference.png")}
-    style={styles.logo}
-    resizeMode="contain"
-  />
-      <Text style={styles.appName}>MarketLingo</Text>
-      <Text style={styles.tagline}>Master any industry in 6 months</Text>
-      <ActivityIndicator size="large" color={COLORS.accent} style={{ marginTop: 40 }} />
-    </View>;
+  return /* @__PURE__ */ React.createElement(View, { style: styles.container }, /* @__PURE__ */ React.createElement(LeoAnimated, { clip: "leo-loading-loop", size: 160, fallback: "idle" }), /* @__PURE__ */ React.createElement(Text, { style: styles.appName }, "MarketLingo"), /* @__PURE__ */ React.createElement(Text, { style: styles.tagline }, "Master any industry in 6 months"));
 }
 const styles = StyleSheet.create({
   container: {
@@ -89,12 +81,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  logo: {
-    width: 140,
-    height: 140,
-    marginBottom: 12
-  },
   appName: {
+    marginTop: 12,
     fontSize: 28,
     fontWeight: "700",
     color: COLORS.textPrimary,
