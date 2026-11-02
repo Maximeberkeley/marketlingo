@@ -12,7 +12,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
-  Image,
   Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -780,7 +779,7 @@ const styles = StyleSheet.create({
 
   // Empty state
   emptyState: { alignItems: 'center', paddingVertical: 40 },
-  emptyImage: { width: 160, height: 160, marginBottom: 20, borderRadius: 20 },
+  emptyImage: { width: 160, height: 160, marginBottom: 20 },
   emptyTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 8 },
   emptySubtitle: {
     fontSize: 14, color: COLORS.textMuted, textAlign: 'center', lineHeight: 21,
