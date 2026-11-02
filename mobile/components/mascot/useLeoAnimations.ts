@@ -8,13 +8,13 @@ import { useLeoMotionState } from './useLeoMotion';
 
 let onboardingTreatPlayed = false;
 
-/** Onboarding Leo idles; lingering 30 s on one screen plays the tail-chase once per onboarding. */
+/** Onboarding Leo idles; lingering 10 s on one screen plays the tail-chase once per onboarding. */
 export function useOnboardingLeo(paused: boolean, start: LeoClip = 'leo-idle-loop') {
   const [clip, setClip] = useState<LeoClip>(start);
   const { allowed: motion } = useLeoMotionState(paused);
   useEffect(() => {
     if (!motion || onboardingTreatPlayed || clip !== 'leo-idle-loop') return;
-    const timer = setTimeout(() => { onboardingTreatPlayed = true; setClip('leo-play'); }, 30000);
+    const timer = setTimeout(() => { onboardingTreatPlayed = true; setClip('leo-play'); }, 10000);
     return () => clearTimeout(timer);
   }, [motion, clip]);
   const onEnd = useCallback(() => setClip('leo-idle-loop'), []);
