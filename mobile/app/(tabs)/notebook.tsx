@@ -22,6 +22,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { Feather } from '@expo/vector-icons';
 import { triggerHaptic } from '../../lib/haptics';
+import { LeoAnimated } from '../../components/mascot/LeoAnimated';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -485,11 +486,7 @@ export default function NotebookScreen() {
           </View>
         ) : (
           <View style={styles.emptyState}>
-            <Image
-              source={require('../../assets/cards/notebook-hero.png')}
-              style={styles.emptyImage}
-              resizeMode="contain"
-            />
+            <LeoAnimated clip="leo-idle-loop" size={160} fallback="idle" />
             <Text style={styles.emptyTitle}>
               {searchQuery ? 'No notes found' : 'Start your notebook'}
             </Text>
