@@ -31,7 +31,6 @@ export function WelcomeBackModal({
   xp,
   xpToNextLevel,
   streak,
-  marketId,
   marketName,
   onClose,
   onStart,
