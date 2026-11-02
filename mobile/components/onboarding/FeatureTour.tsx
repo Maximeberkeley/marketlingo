@@ -36,6 +36,7 @@ export function FeatureTour({ visible, marketId, goal = 'curiosity', onComplete 
   const compact = height < 740;
   const [index, setIndex] = useState(0);
   const [clip, setClip] = useState<LeoClip>('leo-greet');
+  const playTreatShown = useRef(false);
   const promise = PROMISES[goal || 'curiosity'];
   const pages = useMemo(() => [
     { icon: 'target' as const, title: promise.title, body: `${promise.body} Your track is built around ${getMarketName(marketId || 'aerospace')}.` },
