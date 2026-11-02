@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { router } from 'expo-router';
-import { View, ActivityIndicator, StyleSheet, Image, Text } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
+import { LeoAnimated } from '../components/mascot/LeoAnimated';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { trackEvent, identifyUser } from '../lib/analytics';
