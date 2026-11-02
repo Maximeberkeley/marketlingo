@@ -72,7 +72,7 @@ function Index() {
       isActive = false;
     };
   }, [user, loading]);
-  return /* @__PURE__ */ React.createElement(View, { style: styles.container }, /* @__PURE__ */ React.createElement(Image, { source: require("../assets/leo-reference.png"), style: { width: 160, height: 160 }, resizeMode: "contain" }), /* @__PURE__ */ React.createElement(ActivityIndicator, { color: COLORS.accent, style: { marginTop: 12 } }), /* @__PURE__ */ React.createElement(Text, { style: styles.appName }, "MarketLingo"), /* @__PURE__ */ React.createElement(Text, { style: styles.tagline }, "Master any industry in 6 months"));
+  return /* @__PURE__ */ React.createElement(View, { style: styles.container }, /* @__PURE__ */ React.createElement(Image, { source: require("../assets/leo-mascot.png"), style: { width: 160, height: 160 }, resizeMode: "contain" }), /* @__PURE__ */ React.createElement(ActivityIndicator, { color: COLORS.accent, style: { marginTop: 12 } }), /* @__PURE__ */ React.createElement(Text, { style: styles.appName }, "MarketLingo"), /* @__PURE__ */ React.createElement(Text, { style: styles.tagline }, "Master any industry in 6 months"));
 }
 const styles = StyleSheet.create({
   container: {

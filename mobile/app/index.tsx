@@ -96,7 +96,7 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/leo-reference.png')} style={{ width: 160, height: 160 }} resizeMode="contain" />
+      <Image source={require('../assets/leo-mascot.png')} style={{ width: 160, height: 160 }} resizeMode="contain" />
       <ActivityIndicator color={COLORS.accent} style={{ marginTop: 12 }} />
       <Text style={styles.appName}>MarketLingo</Text>
       <Text style={styles.tagline}>Master any industry in 6 months</Text>
