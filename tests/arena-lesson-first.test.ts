@@ -72,6 +72,7 @@ describe('lesson-first Arena', () => {
     expect(c?.stages.map(s => s.exercise.source?.type)).toEqual(['lesson','lesson','lesson','lesson']);
     expect(c?.stages.at(-1)?.exercise).toMatchObject({ kind: 'multipleChoice', prompt: 'Which deep structure sends memories off to be stored and later retrieves them?' });
     expect(c?.proReasoning).toBeNull();
+    expect(buildCase({ ...input, studied: [], trainer: [{ id: 'invalid', scenario: 'Empty options', question: 'No answer', options: [], correct_option_index: 0 }] as any })).toBeNull();
   });
   it('keeps every changed phone source pair identical after transpilation', () => {
     for (const [path, loader] of [['hooks/useStudiedLessons','ts'],['lib/quizHistory','ts'],['lesson-kit/practice/studiedMaterial','ts'],['lesson-kit/arena/buildArena','ts'],['lesson-kit/case/buildCase','ts'],['lesson-kit/arena/ArenaScreen','tsx'],['lesson-kit/case/CaseScreen','tsx']] as const) {
