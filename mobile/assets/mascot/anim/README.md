@@ -9,28 +9,27 @@ Transparent animated WebP clips of Leo, made with Runway and keyed with `scripts
 | leo-sleep-loop.webp | loop | 7567 ms (rests 2.5 s) | Home | Today's lesson not done |
 | leo-peek.webp | once | 2667 ms | Home | Every 25–40 s while sleeping |
 | leo-eyes-open.webp | once | 800 ms | Home | Tap Leo while he sleeps; open the call when it ends |
-| leo-eyes-close.webp | once | 800 ms | Home | Leo call closes after he was woken |
 | leo-wake.webp | once | 3200 ms | Home | Morning wake-up: first Home visit of the day, lesson not done |
-| leo-doze.webp | once | 3400 ms | Home | End of the morning wake-up (or call closes while he was awake) |
+| leo-doze.webp | once | 3400 ms | Home | After the call closes when a tap woke him; end of the morning wake-up |
 | leo-done.webp | once | 5067 ms | Home | Today's lesson just finished (once a day) |
 | leo-reading-loop.webp | loop | 9333 ms (rests 3 s) | Home | Today's lesson done |
 | leo-call-listen.webp | loop | 7917 ms (rests 2.5 s) | Leo call | Default state |
 | leo-call-think.webp | loop | 6917 ms (rests 1.5 s) | Leo call | `isGenerating` |
-| leo-call-talk.webp | loop | 5883 ms (rests 0.8 s) | Leo call | Speaking the opening greeting |
-| leo-teach-loop.webp | loop | 4600 ms (rests 0.6 s) | Leo call | Speaking an answer |
+| leo-call-talk.webp | loop | 5883 ms (rests 0.8 s) | Leo call | `isSpeaking`: every time Leo speaks |
+| leo-notes-loop.webp | loop | 4600 ms (rests 0.6 s) | Notebook | Empty notebook ("Start your notebook") |
 | leo-idle-loop.webp | loop | 8867 ms (rests 3 s) | Onboarding | Default state |
 | leo-play.webp | once | 5333 ms | Lesson complete; onboarding | Rare treat only (see "Treat") |
-| leo-loading-loop.webp | loop | 6867 ms (rests 0.8 s) | Loading screens | While Home (or the app) is loading |
+| leo-loading-loop.webp | loop | 6048 ms (continuous, 24 fps) | Home loading screen | While Home is loading; still frame leo-loading-still.png |
 | leo-greet.webp | once | 2000 ms | First onboarding screen | Screen opens, then leo-idle-loop |
 | leo-ready.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | First question of a run |
 | leo-encourage.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | Answer graded wrong |
 | leo-success.webp | once | 2000 ms | Lesson complete (both screens); Arena, Deep Case (LeoCoach) | Lesson finished; answer graded right |
 
-Every clip is used. leo-wake and leo-doze are the once-a-day morning wake-up; leo-call-talk is Leo's opening greeting in the call.
+Every clip is used. leo-wake and leo-doze are the once-a-day morning wake-up; leo-call-talk is Leo speaking in the call; leo-notes-loop (Leo writing in his notebook) is the empty Notebook. leo-greet also plays on the welcome-back screen (`app/daily-leo.tsx`) and the sign-in screen.
 
 `clips.json` has the same lengths. A loop clip repeats forever. A once clip plays one time and holds its last frame.
 
-Every clip starts and ends exactly on Leo's existing poses, so clips chain without a jump: sleep → eyes-open → (call) → eyes-close → sleep, and sleep → done → reading. Loop clips now play slower and rest on a still pose before repeating; the rest is built into the file.
+Every clip starts and ends exactly on Leo's existing poses, so clips chain without a jump: sleep → eyes-open → (call; Leo sits up behind it) → doze → sleep, and sleep → done → reading. Loop clips now play slower and rest on a still pose before repeating; the rest is built into the file.
 
 ## Wiring it into the app
 
@@ -54,13 +53,13 @@ Every clip starts and ends exactly on Leo's existing poses, so clips chain witho
    - **Not done:** loop leo-sleep-loop. While Home is focused, every 12 to 20 seconds (random), play leo-peek once, then go back to the loop.
    - **Done:** loop leo-reading-loop.
    - **Tap:** keep the TouchableOpacity and its accessibility label, and fire a light haptic immediately. If not done, play leo-eyes-open and call `onLeo()` when it ends (see "Fixes (Nov 1)"). If done, call `onLeo()` right away.
-   - **Leo call:** pass `leoCallOpen={showLeoChat}` from `app/(tabs)/home.tsx` and `home.js` through `CourseJourney` to `SectionCluster`. Pause while the call is open. When it closes after Leo was woken, play leo-eyes-close once, then leo-sleep-loop. (leo-doze is only used by the morning wake-up.)
+   - **Leo call:** pass `leoCallOpen={showLeoChat}` from `app/(tabs)/home.tsx` and `home.js` through `CourseJourney` to `SectionCluster`. Pause while the call is open. When it closes after Leo was woken, play leo-doze (he is sitting up, lies down and closes his eyes), then leo-sleep-loop.
    - **Lesson just finished:** when done turns from false to true, wait until Home is focused, then play leo-done once, then leo-reading-loop. Play it at most once per day, using the AsyncStorage key `@marketlingo/leo-done-anim/${user?.id ?? 'guest'}/${marketId}/${localDay}` (the same pattern as the existing `revealKey`).
    - **Pause** whenever `!isFocused`.
 
 5. **Leo call.** In `components/ai/LeoVoiceChatOverlay.tsx` and `.js`, replace the `LEO_STUDY_SCENE` image (style `sceneImage`) with `LeoAnimated` in the same place.
    - Measure the `sceneImage` box with `onLayout`. The drawn square is min(width, height): pass that as size, and keep the clip centred on the same point.
-   - Pick the clip from the existing AI state: `isGenerating` → leo-call-think; `isSpeaking` → leo-call-talk for the opening greeting and leo-teach-loop for answers; otherwise leo-call-listen.
+   - Pick the clip from the existing AI state: `isGenerating` → leo-call-think; `isSpeaking` → leo-call-talk; otherwise leo-call-listen. The call uses only these three desk clips.
    - Fallback: `LEO_STUDY_SCENE`.
 
 6. **Onboarding.** In `app/onboarding/goal.tsx` and `familiarity.tsx` (and their `.js` twins), replace `<LeoCharacter size="lg" animation="idle" />` with `LeoAnimated` (size 160, fallback `'idle'`). Loop leo-idle-loop. (leo-play is no longer on a timer here; it is a rare treat, see "Treat".)
@@ -113,14 +112,14 @@ leo-success starts on the sitting pose. Leo fist-pumps, sparkles pop, and he end
    - With Reduce Motion on: the same still images as today.
 
 ## Fixes (Nov 1)
-1. **Clip table:** add leo-eyes-open (800 ms, once), leo-eyes-close (800 ms, once) and leo-teach-loop (4600 ms, loop) to `leoClips.ts` and `leoClips.js`. Update every other length from `clips.json`; the loop files were replaced with slower versions that rest before repeating.
+1. **Clip table:** add leo-eyes-open (800 ms, once) and leo-notes-loop (4600 ms, loop, see "Notebook") to `leoClips.ts` and `leoClips.js`. Update every other length from `clips.json`; the loop files were replaced with slower versions that rest before repeating.
 2. **Home tap while sleeping** (`useHomeLeo` in `components/mascot/useLeoAnimations.ts` and `.js`):
    - Play leo-eyes-open instead of leo-wake, so Leo only opens his eyes and doesn't start getting up.
    - Open the call from that clip's `onEnd`, not from the fixed 600 ms timer. If motion is off, open the call immediately.
-   - When the call closes after Leo was woken, play leo-eyes-close, then leo-sleep-loop. Don't play leo-doze: it starts from the sitting pose and would jump.
+   - While the call is open (450 ms after it opens, once it covers Leo), switch him to leo-doze's sitting pose. When the call closes, play leo-doze, then leo-sleep-loop. The pose change happens behind the call, so there is no jump. (Done in code, Nov 2.)
 3. **Peek less often:** every 25 to 40 seconds instead of 12 to 20 (`leoAnimationDelay('peek')`).
 4. **Leo call speaking:**
-   - In `leoCallClip` (`components/mascot/leoAnimationRules.ts` and `.js`), return leo-teach-loop while `isSpeaking`. This is Leo with his notebook, explaining.
+   - `leoCallClip` keeps the three desk clips: `isGenerating` → leo-call-think, `isSpeaking` → leo-call-talk, otherwise leo-call-listen.
    - On a device, Leo currently doesn't visibly change when he speaks, although the flags in `LeoVoiceChatOverlay` look right. Log the clip `LeoAnimated` receives in the call to confirm it switches.
    - In `ClipPlayer` (`components/mascot/LeoAnimated.tsx` and `.js`): if the newest layer hasn't fired `onLoad` within 400 ms, show it anyway and remove the older layers. Two clips must never be visible at once.
 5. **Greeting:** `app/onboarding/welcome.tsx` is never opened by any route, so leo-greet never plays. Put it on the first onboarding screen. In `app/onboarding/index.tsx` and `.js`, replace `<LeoCharacter size="lg" animation="waving" />` with `LeoAnimated` (size 160, fallback `'waving'`). Play leo-greet once, then loop leo-idle-loop, paused when the screen isn't focused.
@@ -144,7 +143,7 @@ Keep leo-wake, leo-doze and leo-call-talk in `leoClips.ts` and `leoClips.js` (ad
    - If the learner taps Leo while he's awake in this sequence, open the call right away (no eyes-open). When the call closes, play leo-doze, then leo-sleep-loop.
    - If the lesson gets done, or Home loses focus mid-sequence, stop it and show the normal state for the day.
    - Skip it with Reduce Motion on.
-2. **Call greeting** (`components/ai/LeoVoiceChatOverlay.tsx` and `.js`): while Leo speaks the opening greeting ("Hey! Ask me anything…"), show leo-call-talk (Leo at his desk, gesturing). While he speaks an answer, show leo-teach-loop. Add a `greeting` flag to `leoCallClip` in `leoAnimationRules.ts` and `.js` for this.
+2. **Call** (`components/ai/LeoVoiceChatOverlay.tsx` and `.js`): Leo uses his three desk clips only. While he speaks (the greeting and every answer), show leo-call-talk. No `greeting` flag is needed.
 
 ## Loading screen (leo-loading-loop)
 Leo untangling a ball of purple yarn. It loops seamlessly and rests 0.8 s before each repeat. The file is 640 px, so it stays sharp at 200 pt.
@@ -157,6 +156,22 @@ Leo untangling a ball of purple yarn. It loops seamlessly and rests 0.8 s before
    - Respect the safe area. Keep the tab bar exactly as today.
 3. App launch screen (`app/index.tsx` and `.js`): replace the leo-reference image and the `ActivityIndicator` with the same centred `LeoAnimated` leo-loading-loop (size 160) above the existing "MarketLingo" name and tagline.
 4. With Reduce Motion on, show the static idle Leo with the same line. Keep `.tsx` and `.js` twins identical, and don't change when loading starts or ends.
+
+## Notebook (leo-notes-loop)
+Done in code (Nov 2): the steps below are already in the app.
+
+Leo writing in his notebook. This was named leo-teach-loop and briefly used in the call by mistake.
+
+1. In `leoClips.ts` and `leoClips.js`, replace the leo-teach-loop entry with leo-notes-loop (`../../assets/mascot/anim/leo-notes-loop.webp`, 4600 ms, loop).
+2. In `leoCallClip` (`components/mascot/leoAnimationRules.ts` and `.js`), remove the `greeting` parameter and return `isGenerating` → 'leo-call-think', `isSpeaking` → 'leo-call-talk', otherwise 'leo-call-listen'. Update the call site in `components/ai/LeoVoiceChatOverlay.tsx` and `.js` to `leoCallClip(isGenerating, isSpeaking)`.
+3. **Empty Notebook** (`app/(tabs)/notebook.tsx` and `.js`): in the empty state, "Start your notebook" (no notes, no search) plays leo-notes-loop instead of leo-idle-loop, at size 160 with fallback `'idle'`. "No notes found" (a search with no results) keeps leo-idle-loop.
+4. Keep `.tsx` and `.js` twins identical. Any regenerated `.js` twin that uses `React.createElement` must `import React`.
+
+## Welcome back and loading (done in code, Nov 2)
+- `app/daily-leo.tsx` and `.js` (the welcome-back screen when the app opens): Leo waves (leo-greet), then loops leo-idle-loop. After 9 pm he loops leo-reading-loop instead.
+- `app/auth.tsx` and `.js` (sign-in): Leo waves once, then loops leo-idle-loop. The name step during sign-up keeps the still thinking Leo.
+- `components/home/HomeSkeleton.tsx` and `.js`: leo-loading-loop now plays continuously at 24 fps with no rest. Its still frame (`leo-loading-still.png`, the loop's own first frame) is the fallback, so Leo holds his yarn from the very first moment.
+- The launch screen (`app/index.tsx`) stays a still image with a spinner.
 
 ## Treat (leo-play)
 Leo chasing his tail is a rare surprise, never routine. It starts and ends on the normal sitting pose, so it chains into leo-success and leo-idle-loop with no jump.

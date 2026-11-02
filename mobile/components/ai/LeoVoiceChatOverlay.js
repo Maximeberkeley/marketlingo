@@ -300,7 +300,7 @@ function LeoVoiceChatOverlay({
     },
     /* @__PURE__ */ React.createElement(Animated.View, { style: [st.container, { opacity: fadeAnim }] }, /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: [st.sceneImage, st.sceneLeo], onLayout: ({ nativeEvent }) => {
       setSceneSize(Math.min(nativeEvent.layout.width, nativeEvent.layout.height));
-    } }, sceneSize > 0 && /* @__PURE__ */ React.createElement(LeoAnimated, { size: sceneSize, clip: leoCallClip(isGenerating, isSpeaking, messages.length === 0), fallback: LEO_STUDY_SCENE, paused: !visible })), /* @__PURE__ */ React.createElement(View, { style: st.sceneShade }), /* @__PURE__ */ React.createElement(View, { style: st.bottomShade }), /* @__PURE__ */ React.createElement(View, { style: [st.topBar, { paddingTop: insets.top + 12 }] }, /* @__PURE__ */ React.createElement(View, { style: st.statusBadge }, /* @__PURE__ */ React.createElement(
+    } }, sceneSize > 0 && /* @__PURE__ */ React.createElement(LeoAnimated, { size: sceneSize, clip: leoCallClip(isGenerating, isSpeaking), fallback: LEO_STUDY_SCENE, paused: !visible })), /* @__PURE__ */ React.createElement(View, { style: st.sceneShade }), /* @__PURE__ */ React.createElement(View, { style: st.bottomShade }), /* @__PURE__ */ React.createElement(View, { style: [st.topBar, { paddingTop: insets.top + 12 }] }, /* @__PURE__ */ React.createElement(View, { style: st.statusBadge }, /* @__PURE__ */ React.createElement(
       Animated.View,
       {
         style: [

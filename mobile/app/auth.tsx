@@ -19,7 +19,14 @@ import { COLORS } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
 import { storage } from '../lib/storage';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
+import { LeoAnimated } from '../components/mascot/LeoAnimated';
 import { normalizeDisplayName } from '../lib/displayName';
+
+/** Leo waves hello once, then idles. */
+function AuthLeo() {
+  const [greeted, setGreeted] = useState(false);
+  return <LeoAnimated size={160} clip={greeted ? 'leo-idle-loop' : 'leo-greet'} fallback="idle" onEnd={() => setGreeted(true)} />;
+}
 
 export default function AuthScreen() {
   const insets = useSafeAreaInsets();
@@ -91,7 +98,7 @@ export default function AuthScreen() {
         <View style={styles.leoSection}>
           {mode === 'signup' && signupStep === 'name'
             ? <LeoCharacter size="lg" animation="thinking" still />
-            : <Image source={require('../assets/mascot/leo-reference.png')} style={styles.leoImage} resizeMode="contain" />}
+            : <AuthLeo />}
           <Text style={styles.appName}>MarketLingo</Text>
           <Text style={styles.tagline}>Master any industry in 6 months</Text>
         </View>
