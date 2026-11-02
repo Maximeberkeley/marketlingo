@@ -9,18 +9,17 @@ Transparent animated WebP clips of Leo, made with Runway and keyed with `scripts
 | leo-sleep-loop.webp | loop | 7567 ms (rests 2.5 s) | Home | Today's lesson not done |
 | leo-peek.webp | once | 2667 ms | Home | Every 25–40 s while sleeping |
 | leo-eyes-open.webp | once | 800 ms | Home | Tap Leo while he sleeps; open the call when it ends |
-| leo-eyes-close.webp | once | 800 ms | Home | Leo call closes after he was woken |
 | leo-wake.webp | once | 3200 ms | Home | Morning wake-up: first Home visit of the day, lesson not done |
-| leo-doze.webp | once | 3400 ms | Home | End of the morning wake-up (or call closes while he was awake) |
+| leo-doze.webp | once | 3400 ms | Home | After the call closes when a tap woke him; end of the morning wake-up |
 | leo-done.webp | once | 5067 ms | Home | Today's lesson just finished (once a day) |
 | leo-reading-loop.webp | loop | 9333 ms (rests 3 s) | Home | Today's lesson done |
 | leo-call-listen.webp | loop | 7917 ms (rests 2.5 s) | Leo call | Default state |
 | leo-call-think.webp | loop | 6917 ms (rests 1.5 s) | Leo call | `isGenerating` |
-| leo-call-talk.webp | loop | 5883 ms (rests 0.8 s) | Leo call | Speaking the opening greeting |
-| leo-teach-loop.webp | loop | 4600 ms (rests 0.6 s) | Leo call | Speaking an answer |
+| leo-call-talk.webp | loop | 5883 ms (rests 0.8 s) | Leo call | `isSpeaking`: every time Leo speaks |
+| leo-notes-loop.webp | loop | 4600 ms (rests 0.6 s) | Notebook | Empty notebook ("Start your notebook") |
 | leo-idle-loop.webp | loop | 8867 ms (rests 3 s) | Onboarding | Default state |
 | leo-play.webp | once | 5333 ms | Lesson complete; onboarding | Rare treat only (see "Treat") |
-| leo-loading-loop.webp | loop | 6867 ms (rests 0.8 s) | Loading screens | While Home (or the app) is loading |
+| leo-loading-loop.webp | loop | 6048 ms (continuous, 24 fps) | Home loading | While Home is loading; still frame leo-loading-still.png |
 | leo-greet.webp | once | 2000 ms | First onboarding screen | Screen opens, then leo-idle-loop |
 | leo-ready.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | First question of a run |
 | leo-encourage.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | Answer graded wrong |
@@ -157,6 +156,15 @@ Leo untangling a ball of purple yarn. It loops seamlessly and rests 0.8 s before
    - Respect the safe area. Keep the tab bar exactly as today.
 3. App launch screen (`app/index.tsx` and `.js`): replace the leo-reference image and the `ActivityIndicator` with the same centred `LeoAnimated` leo-loading-loop (size 160) above the existing "MarketLingo" name and tagline.
 4. With Reduce Motion on, show the static idle Leo with the same line. Keep `.tsx` and `.js` twins identical, and don't change when loading starts or ends.
+
+## Current wiring (Nov 2, done in code)
+- **Leo call** uses only his three desk clips: `isGenerating` → leo-call-think, `isSpeaking` → leo-call-talk, otherwise leo-call-listen (`leoCallClip` in `leoAnimationRules.ts`).
+- **Notebook**: the empty state ("Start your notebook") plays leo-notes-loop; a search with no results keeps leo-idle-loop.
+- **Tap on the sleeping Leo**: leo-eyes-open, then the call opens. 450 ms later, once the call covers him, Leo switches to sitting up (leo-doze's first pose). When the call closes he plays leo-doze (lies down, closes his eyes), then leo-sleep-loop. leo-eyes-close was removed.
+- **Welcome back** (`app/daily-leo.tsx`) and **sign-in** (`app/auth.tsx`): Leo waves (leo-greet), then loops leo-idle-loop; after 9 pm the welcome-back screen loops leo-reading-loop. Both screens are replaced when the learner moves on, so neither uses focus tracking.
+- **Home loading**: Home is wrapped in `LoadingLeoHost` (`components/home/HomeSkeleton.tsx`). Every HomeSkeleton inside it only paints the background and asks the host to show Leo, so one Leo stays on screen through all of Home's loading steps: no blank gap, no second fade, no restart. Loads under 250 ms show nothing; when loading ends Leo waits 150 ms (for a hand-off) and fades out over 180 ms. The logic is in `loadingLeoController.ts`, tested in `tests/leo-loading.test.ts`.
+- **Safety net**: `LeoAnimated` wraps its player in an error boundary, so any failure shows the still Leo instead of breaking the screen.
+- `.js` twins of these files are esbuild output of the `.tsx`/`.ts` (`esbuild FILE --jsx=transform --format=esm`); `app/auth.js` is hand-written JSX.
 
 ## Treat (leo-play)
 Leo chasing his tail is a rare surprise, never routine. It starts and ends on the normal sitting pose, so it chains into leo-success and leo-idle-loop with no jump.

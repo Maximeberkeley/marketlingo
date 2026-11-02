@@ -485,7 +485,7 @@ export default function NotebookScreen() {
           </View>
         ) : (
           <View style={styles.emptyState}>
-            <LeoAnimated clip="leo-idle-loop" size={160} fallback="idle" />
+            <LeoAnimated clip={searchQuery ? 'leo-idle-loop' : 'leo-notes-loop'} size={160} fallback="idle" />
             <Text style={styles.emptyTitle}>
               {searchQuery ? 'No notes found' : 'Start your notebook'}
             </Text>

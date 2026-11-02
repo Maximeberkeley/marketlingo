@@ -12,7 +12,7 @@ import {
   Alert,
 } from 'react-native';
 import { AchievementPopup } from '../../components/achievements/AchievementPopup';
-import { HomeSkeleton } from '../../components/home/HomeSkeleton';
+import { HomeSkeleton, LoadingLeoHost } from '../../components/home/HomeSkeleton';
 import { AnimatedSection } from '../../components/home/AnimatedSection';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -140,7 +140,7 @@ function getRandomGreeting(key: keyof typeof LEO_GREETINGS): string {
   return msgs[Math.floor(Math.random() * msgs.length)];
 }
 
-export default function HomeScreen() {
+function HomeScreenContent() {
   const insets = useSafeAreaInsets();
   const { user, loading: authLoading } = useAuth();
   const { openStackId } = useLocalSearchParams<{ openStackId?: string }>();
@@ -817,3 +817,12 @@ const styles = StyleSheet.create({
   tomorrowLabel: { ...TYPE.caption, color: COLORS.textMuted },
   tomorrowTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary, marginTop: 2 },
 });
+
+/** One loading Leo serves every loading step on Home, so he never flashes or restarts (see HomeSkeleton). */
+export default function HomeScreen() {
+  return (
+    <LoadingLeoHost>
+      <HomeScreenContent />
+    </LoadingLeoHost>
+  );
+}

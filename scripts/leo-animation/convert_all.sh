@@ -29,7 +29,7 @@ conv leo-done         --speed 1.2
 conv leo-call-listen  --loop --size 720 --fps 12 --speed 0.75 --hold 2500
 conv leo-call-think   --loop --size 720 --fps 12 --speed 0.75 --hold 1500
 conv leo-call-talk    --loop --size 720 --fps 12 --speed 0.8 --hold 800
-conv leo-teach-loop   --loop --size 720 --speed 0.85 --hold 600
+conv leo-notes-loop   --loop --size 720 --speed 0.85 --hold 600
 # Lessons (LeoCoach reactions)
 conv leo-correct       --speed 2
 conv leo-wrong         --speed 1.5
@@ -44,4 +44,4 @@ conv leo-success       --speed 2
 conv leo-encourage     --speed 2
 conv leo-greet         --speed 2
 # Loading screen
-conv leo-loading-loop  --loop --size 640 --hold 800
+conv leo-loading-loop  --loop --fps 24 --size 512 --drop-last 1   # the shipped file also blends its last 6 frames into the first

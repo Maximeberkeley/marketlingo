@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import { LeoCharacter } from "./LeoCharacter";
 import { leoClips } from "./leoClips";
 import { useLeoMotion } from "./useLeoMotion";
+import { log } from "../../lib/logger";
 function ClipLayer({ clip, onLoad, onEnd, onError }) {
   const image = useRef(null);
   const timer = useRef(null);
@@ -99,9 +100,25 @@ function StaticLeo({ size, fallback }) {
   if (typeof fallback !== "string") return /* @__PURE__ */ React.createElement(StaticImage, { source: fallback, resizeMode: "contain", style: { width: size, height: size } });
   return /* @__PURE__ */ React.createElement(View, { style: { width: size, height: size, alignItems: "center", justifyContent: "center" } }, /* @__PURE__ */ React.createElement(View, { style: { width: 160, height: 160, transform: [{ scale: size / 160 }] } }, /* @__PURE__ */ React.createElement(LeoCharacter, { size: "lg", animation: fallback, still: true })));
 }
+class LeoErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { failed: false };
+  }
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(error) {
+    log.warn("[LeoAnimated] Showing the still Leo after an error:", error);
+  }
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
+}
 function LeoAnimated(props) {
   const motion = useLeoMotion(props.paused);
-  return /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: { width: props.size, height: props.size, overflow: "visible" } }, motion ? /* @__PURE__ */ React.createElement(ClipPlayer, { ...props }) : /* @__PURE__ */ React.createElement(StaticLeo, { size: props.size, fallback: props.fallback }));
+  const still = /* @__PURE__ */ React.createElement(StaticLeo, { size: props.size, fallback: props.fallback });
+  return /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: { width: props.size, height: props.size, overflow: "visible" } }, motion ? /* @__PURE__ */ React.createElement(LeoErrorBoundary, { fallback: still }, /* @__PURE__ */ React.createElement(ClipPlayer, { ...props })) : still);
 }
 export {
   LeoAnimated
