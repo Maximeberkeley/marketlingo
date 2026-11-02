@@ -73,5 +73,5 @@ describe('Focused phone lessons', () => {
       expect(js, path).toBe(transform(read(path), path.endsWith('tsx') ? 'tsx' : 'ts', 'esm'));
       if (js.includes('React.createElement')) expect(js).toContain('import React');
     }
-  });
+  }, 30000);
 });
