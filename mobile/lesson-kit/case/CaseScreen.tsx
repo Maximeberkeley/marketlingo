@@ -17,6 +17,7 @@ import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { BriefingReader } from '../components/BriefingReader';
 import { trackEvent } from '../../lib/analytics';
+import { practiceSourceLabel } from '../practice/studiedMaterial';
 
 type Confidence = 'low' | 'medium' | 'high';
 
@@ -280,6 +281,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
             intro={stageIndex === 0}
           />
         )}
+        <Text style={{ color: tokens.color.textSecondary, fontSize: 12, marginBottom: 12 }}>{practiceSourceLabel(stage.exercise)}</Text>
         {renderExerciseByKind(stage.exercise, phase, setState)}
         {isCall && confidence && phase === 'answering' && (
           <View style={styles.convictionChip}>

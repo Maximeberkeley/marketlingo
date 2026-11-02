@@ -10,7 +10,7 @@ function quizQuestionKeys(exercise) {
   if (exercise.kind === "faceOff") return [normalize(`${exercise.prompt} ${[exercise.left.name, exercise.right.name].sort().join(" ")}`)];
   if (exercise.kind === "mapMarket") return [normalize(`${exercise.prompt} ${exercise.nodes[exercise.correctIndex]?.label || ""}`)];
   const e = exercise;
-  return [normalize(JSON.stringify(Object.fromEntries(Object.entries(e).filter(([key]) => !["id", "leo", "explanation"].includes(key)).sort(([a], [b]) => a.localeCompare(b)))))];
+  return [normalize(JSON.stringify(Object.fromEntries(Object.entries(e).filter(([key]) => !["id", "leo", "explanation", "source"].includes(key)).sort(([a], [b]) => a.localeCompare(b)))))];
 }
 function recentQuizHistory(value, now = Date.now()) {
   if (!Array.isArray(value)) return [];
