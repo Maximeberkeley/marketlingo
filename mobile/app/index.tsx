@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { router } from 'expo-router';
-import { View, StyleSheet, Text } from 'react-native';
-import { LeoAnimated } from '../components/mascot/LeoAnimated';
+import { View, StyleSheet, Text, Image, ActivityIndicator } from 'react-native';
+
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { trackEvent, identifyUser } from '../lib/analytics';
@@ -96,7 +96,8 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <LeoAnimated clip="leo-loading-loop" size={160} fallback="idle" />
+      <Image source={require('../assets/leo-reference.png')} style={{ width: 160, height: 160 }} resizeMode="contain" />
+      <ActivityIndicator color={COLORS.accent} style={{ marginTop: 12 }} />
       <Text style={styles.appName}>MarketLingo</Text>
       <Text style={styles.tagline}>Master any industry in 6 months</Text>
     </View>
