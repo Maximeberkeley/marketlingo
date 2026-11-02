@@ -85,9 +85,9 @@ export function WelcomeBackModal({
               <LeoAnimated clip={leoClip} size={120} fallback="idle" paused={!visible}
                 onEnd={() => setLeoClip('leo-idle-loop')} />
             </View>
-            <Text style={styles.heroKicker}>WELCOME BACK</Text>
-            <Text style={styles.heroTitle}>Level {level}</Text>
-            <Text style={styles.heroSub}>{marketName} insider</Text>
+            <Text style={styles.heroKicker}>WELCOME BACK TO</Text>
+            <Text style={styles.heroTitle}>{marketName}</Text>
+            <Text style={styles.heroSub}>Level {level} insider</Text>
           </LinearGradient>
 
           <ScrollView style={styles.bodyScroll} contentContainerStyle={styles.body} showsVerticalScrollIndicator={false} bounces={false}>
