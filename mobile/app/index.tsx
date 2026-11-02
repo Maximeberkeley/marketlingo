@@ -96,14 +96,9 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../assets/mascot/leo-reference.png')}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+      <LeoAnimated clip="leo-loading-loop" size={160} fallback="idle" />
       <Text style={styles.appName}>MarketLingo</Text>
       <Text style={styles.tagline}>Master any industry in 6 months</Text>
-      <ActivityIndicator size="large" color={COLORS.accent} style={{ marginTop: 40 }} />
     </View>
   );
 }
