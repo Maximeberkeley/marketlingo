@@ -143,7 +143,7 @@ function StreakWeekView({ streak, thisWeek, totalNotes }) {
     ));
   })), /* @__PURE__ */ React.createElement(Text, { style: styles.streakMotivation }, streak === 0 ? "Add a note today to start your streak!" : streak < 3 ? "Great start! Keep capturing insights daily." : streak < 7 ? "You're building a habit! Keep it up." : "Amazing streak! You're a knowledge machine."));
 }
-export default function NotebookScreen() {
+function NotebookScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [notes, setNotes] = useState([]);
@@ -716,3 +716,6 @@ const styles = StyleSheet.create({
     lineHeight: 23
   }
 });
+export {
+  NotebookScreen as default
+};

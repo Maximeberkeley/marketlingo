@@ -5,7 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { COLORS, SHADOWS, TYPE } from "../../lib/constants";
 import { LeoAnimated } from "../mascot/LeoAnimated";
 import { triggerHaptic } from "../../lib/haptics";
-export function WelcomeBackModal({
+function WelcomeBackModal({
   visible,
   level,
   xp,
@@ -133,3 +133,6 @@ const styles = StyleSheet.create({
   },
   ctaText: { fontSize: 16, fontWeight: "700", color: "#FFFFFF" }
 });
+export {
+  WelcomeBackModal
+};

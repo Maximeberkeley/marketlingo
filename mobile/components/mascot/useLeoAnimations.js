@@ -5,7 +5,7 @@ import { leoAnimationDelay, leoTreatKey, shouldPlayLeoTreat, LEO_MORNING_LOOK_MS
 import { localDateString } from "../../lib/dayMath";
 import { useLeoMotionState } from "./useLeoMotion";
 let onboardingTreatPlayed = false;
-export function useOnboardingLeo(paused, start = "leo-idle-loop") {
+function useOnboardingLeo(paused, start = "leo-idle-loop") {
   const [clip, setClip] = useState(start);
   const { allowed: motion } = useLeoMotionState(paused);
   useEffect(() => {
@@ -19,7 +19,7 @@ export function useOnboardingLeo(paused, start = "leo-idle-loop") {
   const onEnd = useCallback(() => setClip("leo-idle-loop"), []);
   return { clip, onEnd };
 }
-export function useLessonCompleteLeo(userId, streak) {
+function useLessonCompleteLeo(userId, streak) {
   const [clip, setClip] = useState(null);
   const { allowed: motion, ready } = useLeoMotionState(false);
   const decided = useRef(false);
@@ -49,7 +49,7 @@ export function useLessonCompleteLeo(userId, streak) {
   }, []);
   return { clip, onEnd };
 }
-export function useHomeLeo({ done, active, focused, callOpen, doneKey, morningKey, celebrate, onCelebrated, onLeo }) {
+function useHomeLeo({ done, active, focused, callOpen, doneKey, morningKey, celebrate, onCelebrated, onLeo }) {
   const [clip, setClip] = useState(done ? "leo-reading-loop" : "leo-sleep-loop");
   const { allowed: motion, ready, foreground } = useLeoMotionState(!active || !focused || callOpen);
   const woken = useRef(false);
@@ -204,3 +204,8 @@ export function useHomeLeo({ done, active, focused, callOpen, doneKey, morningKe
   }, [active, done, callOpen, clip, motion]);
   return { clip, onEnd, onTap };
 }
+export {
+  useHomeLeo,
+  useLessonCompleteLeo,
+  useOnboardingLeo
+};
