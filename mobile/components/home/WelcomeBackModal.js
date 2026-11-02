@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing, ScrollView } from "react-native";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS, SHADOWS, TYPE } from "../../lib/constants";
-import { FoxMascot } from "../mascot/FoxMascot";
+import { LeoAnimated } from "../mascot/LeoAnimated";
 import { triggerHaptic } from "../../lib/haptics";
 function WelcomeBackModal({
   visible,
@@ -11,7 +11,6 @@ function WelcomeBackModal({
   xp,
   xpToNextLevel,
   streak,
-  marketId,
   marketName,
   onClose,
   onStart,
@@ -20,6 +19,7 @@ function WelcomeBackModal({
   const scale = useRef(new Animated.Value(0.9)).current;
   const fade = useRef(new Animated.Value(0)).current;
   const barFill = useRef(new Animated.Value(0)).current;
+  const [leoClip, setLeoClip] = useState("leo-greet");
   const levelStart = (level - 1) * (level - 1) * 50;
   const levelEnd = level * level * 50;
   const xpLeft = Math.max(0, typeof xpToNextLevel === "number" && xpToNextLevel > 0 ? xpToNextLevel : levelEnd - xp);
@@ -30,6 +30,7 @@ function WelcomeBackModal({
       scale.setValue(0.9);
       fade.setValue(0);
       barFill.setValue(0);
+      setLeoClip("leo-greet");
       return;
     }
     triggerHaptic("light");
@@ -53,10 +54,19 @@ function WelcomeBackModal({
       end: { x: 1, y: 1 },
       style: styles.hero
     },
-    /* @__PURE__ */ React.createElement(View, { style: styles.mascotWrap }, /* @__PURE__ */ React.createElement(FoxMascot, { industry: marketId || "aerospace", size: 120 })),
-    /* @__PURE__ */ React.createElement(Text, { style: styles.heroKicker }, "WELCOME BACK"),
-    /* @__PURE__ */ React.createElement(Text, { style: styles.heroTitle }, "Level ", level),
-    /* @__PURE__ */ React.createElement(Text, { style: styles.heroSub }, marketName, " insider")
+    /* @__PURE__ */ React.createElement(View, { style: styles.mascotWrap }, /* @__PURE__ */ React.createElement(
+      LeoAnimated,
+      {
+        clip: leoClip,
+        size: 120,
+        fallback: "idle",
+        paused: !visible,
+        onEnd: () => setLeoClip("leo-idle-loop")
+      }
+    )),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.heroKicker }, "WELCOME BACK TO"),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.heroTitle }, marketName),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.heroSub }, "Level ", level, " insider")
   ), /* @__PURE__ */ React.createElement(ScrollView, { style: styles.bodyScroll, contentContainerStyle: styles.body, showsVerticalScrollIndicator: false, bounces: false }, /* @__PURE__ */ React.createElement(View, { style: styles.barTrack }, /* @__PURE__ */ React.createElement(
     Animated.View,
     {

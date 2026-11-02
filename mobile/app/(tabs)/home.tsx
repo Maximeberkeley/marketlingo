@@ -521,8 +521,8 @@ export default function HomeScreen() {
         xp={xpData?.total_xp || 0}
         xpToNextLevel={(xpData as any)?.xp_to_next_level}
         streak={streak}
-        marketId={selectedMarket || 'aerospace'}
-        marketName={getMarketName(selectedMarket || 'aerospace')}
+        marketId={selectedMarketLocal || selectedMarket || 'aerospace'}
+        marketName={getMarketName(selectedMarketLocal || selectedMarket || 'aerospace')}
         onClose={returnVisit.dismiss}
         onStart={() => {
           returnVisit.dismiss();

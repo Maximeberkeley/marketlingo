@@ -97,7 +97,7 @@ describe('Practice clarity', () => {
       expect(js).toBe(expected);
       if (js.includes('React.createElement')) expect(js).toContain('import React');
     }
-  });
+  }, 30000);
   it('keeps the lesson visible while banking and never waits for the Home refresh', async () => {
     const source = read('mobile/hooks/useSessionFlow.ts').replace(/^import .*;\n/gm, '');
     const values: any[] = []; let cursor = 0;

@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing, ScrollView } from 'react-native';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
-import { FoxMascot } from '../mascot/FoxMascot';
+import { LeoAnimated } from '../mascot/LeoAnimated';
+import { LeoClip } from '../mascot/leoClips';
 import { triggerHaptic } from '../../lib/haptics';
 
 interface WelcomeBackModalProps {
@@ -30,7 +31,6 @@ export function WelcomeBackModal({
   xp,
   xpToNextLevel,
   streak,
-  marketId,
   marketName,
   onClose,
   onStart,
@@ -39,6 +39,8 @@ export function WelcomeBackModal({
   const scale = useRef(new Animated.Value(0.9)).current;
   const fade = useRef(new Animated.Value(0)).current;
   const barFill = useRef(new Animated.Value(0)).current;
+  // Leo greets once when the modal opens, then settles into his idle loop.
+  const [leoClip, setLeoClip] = useState<LeoClip>('leo-greet');
 
   // Level L spans (L-1)²·50 → L²·50 total XP (same rule as the server).
   const levelStart = (level - 1) * (level - 1) * 50;
@@ -52,6 +54,7 @@ export function WelcomeBackModal({
       scale.setValue(0.9);
       fade.setValue(0);
       barFill.setValue(0);
+      setLeoClip('leo-greet');
       return;
     }
     triggerHaptic('light');
@@ -79,11 +82,12 @@ export function WelcomeBackModal({
             style={styles.hero}
           >
             <View style={styles.mascotWrap}>
-              <FoxMascot industry={marketId || 'aerospace'} size={120} />
+              <LeoAnimated clip={leoClip} size={120} fallback="idle" paused={!visible}
+                onEnd={() => setLeoClip('leo-idle-loop')} />
             </View>
-            <Text style={styles.heroKicker}>WELCOME BACK</Text>
-            <Text style={styles.heroTitle}>Level {level}</Text>
-            <Text style={styles.heroSub}>{marketName} insider</Text>
+            <Text style={styles.heroKicker}>WELCOME BACK TO</Text>
+            <Text style={styles.heroTitle}>{marketName}</Text>
+            <Text style={styles.heroSub}>Level {level} insider</Text>
           </LinearGradient>
 
           <ScrollView style={styles.bodyScroll} contentContainerStyle={styles.body} showsVerticalScrollIndicator={false} bounces={false}>
