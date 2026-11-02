@@ -26,6 +26,7 @@ import { ArenaWave, rankForScore } from './buildArena';
 import { playSound } from '../../lib/sounds';
 import { trackEvent } from '../../lib/analytics';
 import { getMarketWorld } from '../../data/marketWorlds';
+import { practiceSourceLabel } from '../practice/studiedMaterial';
 
 const START_SHIELDS = 2;
 
@@ -400,6 +401,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
               mood={phase === 'feedback' && !isPassiveKind(exercise.kind) ? (coachCorrect ? 'correct' : 'incorrect') : (exercise.leo?.mood ?? 'idle')}
               intro={beatIndex === 0}
             />}
+            <Text style={{ color: tokens.color.textSecondary, fontSize: 12, marginBottom: 12 }}>{practiceSourceLabel(exercise)}</Text>
             {renderExerciseByKind(exercise, phase, setState)}
           </>
         ) : null}

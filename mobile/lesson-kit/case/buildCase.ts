@@ -16,6 +16,7 @@ import { getIndustryPack } from '../industry/packs';
 import type { DrillRow, IndustryStatRow, TrainerScenarioRow } from '../../hooks/useIndustryContent';
 import type { StudiedLessonInput } from '../arena/buildArena';
 import { checkClaim, checkFigure, checkMechanism } from '../sequencer/lessonChecks';
+import { lessonSource } from '../practice/studiedMaterial';
 import {
   drillSpotFake,
   packChain,
@@ -74,14 +75,24 @@ const studiedSlides = (studied?: StudiedLessonInput[]) => (studied ?? []).flatMa
 export function buildCase(input: CaseInput): DeepCase | null {
   const pack = getIndustryPack(input.marketId);
   const scenario = shuffle(input.trainer)[0];
-  const lessonSlides = studiedSlides(input.studied);
-  const lead = input.studied?.[0];
+  const studied = [...(input.studied ?? [])].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
+  const firstLesson = (make: (lesson: StudiedLessonInput) => Exercise | null) => {
+    for (const lesson of studied) {
+      const exercise = make(lesson);
+      if (exercise) return { ...exercise, source: lessonSource(lesson) };
+    }
+    return null;
+  };
 
   // The call tests the lesson first: a claim from what the learner actually read.
   // A real market scenario only stands in when no studied lesson can carry it.
-  const scenarioCall = scenario ? trainerCall(scenario, 'case-call') : null;
-  const call = scenarioCall || checkClaim(lessonSlides, 'case-call-claim');
+  const lessonCall = firstLesson(lesson => lesson.questions?.find(q => q.kind === 'multipleChoice') || checkClaim(lesson.slides, 'case-call-claim'));
+  const scenarioCall = !lessonCall && scenario ? { ...trainerCall(scenario, 'case-call'), source: { type: 'industry' as const } } : null;
+  const call = lessonCall || scenarioCall;
   if (!call) return null;
+  // Keep the brief tied to the lesson/scenario behind the final call.
+  const lead = lessonCall?.source?.type === 'lesson'
+    ? studied.find(lesson => lesson.stackId === lessonCall.source?.stackId) ?? studied[0] : undefined;
 
   const stages: CaseStage[] = [];
 
@@ -112,13 +123,14 @@ export function buildCase(input: CaseInput): DeepCase | null {
         : 'A real situation. What would you do?',
       fullText: lead?.slides?.[1]?.body || lead?.slides?.[0]?.body || scenario?.scenario,
       detailTitle: briefDetail,
+      source: lead ? lessonSource(lead) : { type: 'industry' },
       leo: { line: 'Read the first sentence carefully.', mood: 'thinking' },
     } as Exercise,
   });
 
   // Evidence and Numbers come from the learner's own lessons first.
   const evidence =
-    checkMechanism(lessonSlides, 'case-evidence-lesson') ||
+    firstLesson(lesson => lesson.questions?.find(q => q.kind === 'sortSignal') || checkMechanism(lesson.slides, 'case-evidence-lesson')) ||
     drillSpotFake(input.drills, 'case-evidence', 'One of these claims does not hold. Which one?') ||
     (pack ? packMap(pack, 'case-evidence-map') : null) ||
     (pack ? packChain(pack, 'case-evidence-chain') : null);
@@ -128,12 +140,12 @@ export function buildCase(input: CaseInput): DeepCase | null {
       key: 'evidence',
       label: 'Evidence',
       hint: '',
-      exercise: { ...evidence, leo: { line: 'Check the facts first.', mood: 'idle' } },
+      exercise: { ...evidence, source: evidence.source ?? { type: 'industry' }, leo: { line: 'Check the facts first.', mood: 'idle' } },
     });
   }
 
   const numbers =
-    checkFigure(lessonSlides, 'case-numbers-lesson') ||
+    firstLesson(lesson => lesson.questions?.find(q => q.kind === 'numberSense') || checkFigure(lesson.slides, 'case-numbers-lesson')) ||
     statNumberSense(input.stats, 'case-numbers') ||
     (pack ? packNumber(pack, 'case-numbers-pack') : null);
 
@@ -142,7 +154,7 @@ export function buildCase(input: CaseInput): DeepCase | null {
       key: 'numbers',
       label: 'Numbers',
       hint: '',
-      exercise: { ...numbers, leo: { line: 'Get roughly the right size.', mood: 'idle' } },
+      exercise: { ...numbers, source: numbers.source ?? { type: 'industry' }, leo: { line: 'Get roughly the right size.', mood: 'idle' } },
     });
   }
 
