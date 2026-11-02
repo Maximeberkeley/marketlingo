@@ -31,7 +31,7 @@ import { XPBadge } from '../ui/XPBadge';
 import { LeoCharacter } from '../mascot/LeoCharacter';
 import { LeoAnimated } from '../mascot/LeoAnimated';
 import { useHomeLeo } from '../mascot/useLeoAnimations';
-import { leoDoneKey } from '../mascot/leoAnimationRules';
+import { leoDoneKey, leoMorningKey } from '../mascot/leoAnimationRules';
 import { HomeSkeleton } from '../home/HomeSkeleton';
 import { lessonDayLabel, realLessonTitle } from '../../lib/lessonIdentity';
 import { lessonPriority } from '../../lib/handwritten';
@@ -255,6 +255,7 @@ function SectionCluster({
   calendarDay,
   leoCallOpen,
   doneKey,
+  morningKey,
   leoCelebrationPending,
   onLeoCelebrated,
 }: {
@@ -278,12 +279,13 @@ function SectionCluster({
   calendarDay: number;
   leoCallOpen: boolean;
   doneKey: string;
+  morningKey: string;
   leoCelebrationPending: boolean;
   onLeoCelebrated: () => void;
 }) {
   const leoDone = (activeSection ? lessonCompletedToday : Boolean(lesson?.completed));
   const leo = useHomeLeo({ done: leoDone, active: activeSection && section.unlocked,
-    focused: isFocused, callOpen: leoCallOpen, doneKey, celebrate: leoCelebrationPending,
+    focused: isFocused, callOpen: leoCallOpen, doneKey, morningKey, celebrate: leoCelebrationPending,
     onCelebrated: onLeoCelebrated, onLeo });
   if (!section.unlocked) {
     return <View style={styles.sectionBlock}><SectionHeader section={section} title={title} onPress={onHeader} /></View>;
@@ -493,6 +495,7 @@ export function CourseJourney({
   const localDay = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
   const revealKey = `@marketlingo/home-reveal/${user?.id ?? 'guest'}/${marketId}/${localDay}`;
   const doneKey = leoDoneKey(user?.id, marketId, localDay);
+  const morningKey = leoMorningKey(user?.id, marketId, localDay);
   const previousDone = useRef(lessonCompletedToday);
   const [localCelebration, setLocalCelebration] = useState(false);
   useEffect(() => {
@@ -747,6 +750,7 @@ export function CourseJourney({
                isFocused={isFocused}
                leoCallOpen={leoCallOpen}
                doneKey={doneKey}
+               morningKey={morningKey}
                leoCelebrationPending={leoCelebrationPending || localCelebration}
                onLeoCelebrated={() => { setLocalCelebration(false); onLeoCelebrated(); }}
                activityReveal={activityReveal}
