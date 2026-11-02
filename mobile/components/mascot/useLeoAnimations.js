@@ -1,4 +1,3 @@
-"use strict";
 import { useCallback, useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { triggerHaptic } from "../../lib/haptics";

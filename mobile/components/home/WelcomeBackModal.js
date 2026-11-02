@@ -1,4 +1,3 @@
-"use strict";
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Modal, StyleSheet, TouchableOpacity, Animated, Easing, ScrollView } from "react-native";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";

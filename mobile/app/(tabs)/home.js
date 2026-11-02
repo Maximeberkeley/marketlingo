@@ -1,4 +1,3 @@
-"use strict";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import {
