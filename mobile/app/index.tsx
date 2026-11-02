@@ -110,11 +110,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logo: {
-    width: 140,
-    height: 140,
-    marginBottom: 12,
-  },
   appName: {
     fontSize: 28,
     fontWeight: '700',
