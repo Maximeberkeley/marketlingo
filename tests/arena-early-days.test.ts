@@ -81,13 +81,13 @@ describe('early-days Arena across industries', () => {
     const a = lessonOf(fintech);
     const b = { ...lessonOf(web3), stackId: 'web3-day1', day: 2 };
     const waves = buildArena({ marketId: 'fintech', marketName: 'Fintech', trainer: trainers, drills, stats, studied: [b, a] });
-    const web3Terms = new Set(b.keyTerms.map(t => t.term));
-    const fintechDefs = all(waves).filter(q => isDefinition(q) && q.source?.type === 'lesson' && q.source.title === a.title);
-    expect(fintechDefs.length).toBeGreaterThanOrEqual(2);
-    for (const q of fintechDefs) {
-      if (q.kind !== 'multipleChoice') continue;
+    const otherTerms = (title: string) => new Set((title === a.title ? b : a).keyTerms.map(t => t.term));
+    const defs = all(waves).filter(q => isDefinition(q) && q.source?.type === 'lesson');
+    expect(defs.length).toBeGreaterThanOrEqual(2);
+    for (const q of defs) {
+      if (q.kind !== 'multipleChoice' || q.source?.type !== 'lesson') continue;
       const decoys = q.options.filter(o => o !== q.options[q.correctIndex]);
-      expect(decoys.every(d => web3Terms.has(d))).toBe(true);
+      expect(decoys.every(d => otherTerms(q.source!.type === 'lesson' ? q.source!.title : '').has(d))).toBe(true);
     }
   });
 });
