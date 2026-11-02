@@ -115,16 +115,23 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     if (exercise.kind === 'multipleChoice') {
       const answer = exercise.options[exercise.correctIndex];
       const term = lessonTerms.find(t => norm(answer).replace(/^the /, '') === norm(t.term));
-      if (term) return [prefix(`term/${norm(term.term)}`)];
+      // The answer being a key term only duplicates the definition question
+      // when the prompt itself tests the term's meaning.
+      if (term) {
+        const defWords = norm(term.definition).split(/[^a-z0-9]+/).filter(word => word.length > 4);
+        const prompt = norm(exercise.prompt);
+        if (defWords.filter(word => prompt.includes(word)).length >= 2) return [prefix(`term/${norm(term.term)}`)];
+      }
     }
-    const lineKeys = (line: string): string[] => {
+    const lineKeys = (line: string, withTerms = true): string[] => {
       const text = norm(line.replace(/^Straight from what you just read:\s*/i, ''));
+      if (!text) return [];
       const keys = [prefix(`line/${text}`)];
       const quantities = [...line.matchAll(/(\d+(?:[.,]\d+)?)\s*(%|percent|billion|million|thousand)/gi)];
       // A line that defines a lesson term shares that term's fact, so the
       // definition question and a claim about the same line never both ask it.
       // Lines carrying a quantity are figure facts, not definitions.
-      if (!quantities.length) {
+      if (withTerms && !quantities.length) {
         for (const term of termsIn(text)) {
           const defWords = norm(term.definition).split(/[^a-z0-9]+/).filter(word => word.length > 4);
           if (defWords.some(word => text.includes(word))) keys.push(prefix(`term/${norm(term.term)}`));
@@ -144,7 +151,9 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     if (exercise.kind === 'multipleChoice' && exercise.prompt.startsWith('Fill the gap:')) {
       return lineKeys(exercise.explanation ?? '');
     }
-    if (exercise.kind === 'buildChain') return exercise.steps.flatMap(lineKeys);
+    // Chain steps are short process labels, not definitions: dedupe them by
+    // their own words only, so an authored chain never loses to a definition.
+    if (exercise.kind === 'buildChain') return exercise.steps.flatMap(step => lineKeys(step, false));
     if (exercise.kind === 'sortSignal') return exercise.items.map(item => prefix(`job/${norm(item.text)}`));
     const explanation = 'explanation' in exercise ? exercise.explanation ?? '' : '';
     return lineKeys(explanation);
