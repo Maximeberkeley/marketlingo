@@ -151,9 +151,15 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     if (exercise.kind === 'multipleChoice' && exercise.prompt.startsWith('Fill the gap:')) {
       return lineKeys(exercise.explanation ?? '');
     }
-    // Chain steps are short process labels, not definitions: dedupe them by
-    // their own words only, so an authored chain never loses to a definition.
-    if (exercise.kind === 'buildChain') return exercise.steps.flatMap(step => lineKeys(step, false));
+    // Chain steps are short process labels, not definitions or figures: dedupe
+    // them by their own words only, so a chain never loses to a definition or
+    // a number question drawn from the same slide.
+    if (exercise.kind === 'buildChain') {
+      return exercise.steps.flatMap(step => {
+        const text = norm(step.replace(/^Straight from what you just read:\s*/i, ''));
+        return text ? [prefix(`line/${text}`)] : [];
+      });
+    }
     if (exercise.kind === 'sortSignal') return exercise.items.map(item => prefix(`job/${norm(item.text)}`));
     const explanation = 'explanation' in exercise ? exercise.explanation ?? '' : '';
     return lineKeys(explanation);
@@ -230,7 +236,6 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     const kinds = new Map<string, number>();
     const accept = ({ exercise, facts: keys }: Candidate) => {
       const questionKeys = quizQuestionKeys(exercise);
-      if ((globalThis as any).__ARENA_DEBUG && (kinds.get(exercise.kind) ?? 0) < 2 && !questionKeys.some(key => used.has(key)) && keys.some(key => facts.has(key))) console.log('REJECT', exercise.kind, (exercise as any).prompt?.slice(0, 50), keys.filter(key => facts.has(key)));
       if ((kinds.get(exercise.kind) ?? 0) >= 2 || questionKeys.some(key => used.has(key)) || keys.some(key => facts.has(key))) return false;
       questionKeys.forEach(key => used.add(key));
       keys.forEach(key => facts.add(key));
