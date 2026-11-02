@@ -18,6 +18,8 @@ function studiedMaterial(value) {
       questions.push(exercise);
     } else if (exercise.kind === "sortSignal" && typeof exercise.prompt === "string" && Array.isArray(exercise.buckets) && exercise.buckets.every((s) => typeof s === "string") && Array.isArray(exercise.items) && exercise.items.length && exercise.items.every((item) => typeof item.text === "string" && Number.isInteger(item.bucket) && item.bucket >= 0 && item.bucket < exercise.buckets.length)) {
       questions.push(exercise);
+    } else if (exercise.kind === "buildChain" && typeof exercise.prompt === "string" && Array.isArray(exercise.steps) && exercise.steps.length >= 2 && exercise.steps.every((s) => typeof s === "string" && s.trim().length > 0)) {
+      questions.push(exercise);
     }
   }
   return { questions, keyTerms: [...terms.values()] };

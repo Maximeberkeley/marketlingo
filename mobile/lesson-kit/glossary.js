@@ -75,6 +75,13 @@ const PHRASES = {
   }
 };
 const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function glossaryEntriesFor(marketId) {
+  const phrases = PHRASES[marketId || ""] || {};
+  return [
+    ...Object.entries(phrases).map(([term, definition]) => ({ term, definition })),
+    ...getAcronymsForMarket(marketId).filter((e) => e.term !== "LEO")
+  ];
+}
 function glossaryFor(marketId, lessonTerms = []) {
   const phrases = PHRASES[marketId || ""] || {};
   const entries = [
@@ -130,6 +137,7 @@ function interviewQA(text) {
 }
 export {
   cardGlossaryMatches,
+  glossaryEntriesFor,
   glossaryFor,
   interviewQA
 };

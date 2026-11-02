@@ -4,12 +4,13 @@ import { quizQuestionKeys } from "../../lib/quizHistory";
 import { getIndustryPack } from "../industry/packs";
 import {
   checkClaim,
-  checkDefinition,
   checkFigure,
   checkMechanism,
   checkTamper,
+  isRealTerm,
   termsFromSlides
 } from "../sequencer/lessonChecks";
+import { glossaryEntriesFor } from "../glossary";
 import {
   drillSpotFake,
   drillTrueFalse,
@@ -44,33 +45,44 @@ function buildArena(input) {
   let serial = 0;
   const nextId = () => `arena-${serial++}`;
   const terms = (lesson) => lesson.keyTerms?.length ? lesson.keyTerms : termsFromSlides(lesson.slides);
+  const lessonKeyParts = (lesson) => {
+    const termParts = terms(lesson).flatMap((t) => [norm(t.term), ...norm(t.term).split(/[^a-z0-9]+/)]);
+    const titleWords = norm(lesson.title).split(/[^a-z0-9]+/);
+    return [.../* @__PURE__ */ new Set([...termParts, ...titleWords])].filter((part) => part.length > 3);
+  };
   const factKeys = (lesson, exercise) => {
     const scope = lesson.stackId ?? lesson.title;
     const prefix = (key) => `${scope}/${key}`;
+    const lessonTerms = terms(lesson);
+    const termsIn = (text) => lessonTerms.filter((t) => text.includes(norm(t.term)));
     if (exercise.kind === "multipleChoice" && exercise.prompt.startsWith("This lesson defined")) {
       return [prefix(`term/${norm(exercise.options[exercise.correctIndex])}`)];
     }
     if (exercise.kind === "multipleChoice") {
       const answer = exercise.options[exercise.correctIndex];
-      const term = terms(lesson).find((t) => norm(answer).replace(/^the /, "") === norm(t.term));
+      const term = lessonTerms.find((t) => norm(answer).replace(/^the /, "") === norm(t.term));
       if (term) return [prefix(`term/${norm(term.term)}`)];
     }
     const lineKeys = (line) => {
       const text = norm(line.replace(/^Straight from what you just read:\s*/i, ""));
       const keys = [prefix(`line/${text}`)];
-      if (/cortex/.test(text) && /gray|outer layer/.test(text) && !/billion/.test(text)) keys.push(prefix("term/cerebral cortex"));
-      if (/hippocampus/.test(text) && /memor|stor|retriev/.test(text)) keys.push(prefix("term/hippocampus"));
-      const quantity = line.match(/(\d+(?:[.,]\d+)?)\s*(%|percent|billion|million|thousand)/i);
-      if (quantity) {
-        const region = /cortex/.test(text) ? "cortex" : /cerebell/.test(text) || /it holds/.test(text) ? "cerebellum" : "brain";
-        keys.push(prefix(`quantity/${region}/${quantity[1]}/${quantity[2].toLowerCase()}`));
+      const quantities = [...line.matchAll(/(\d+(?:[.,]\d+)?)\s*(%|percent|billion|million|thousand)/gi)];
+      if (!quantities.length) {
+        for (const term of termsIn(text)) {
+          const defWords = norm(term.definition).split(/[^a-z0-9]+/).filter((word) => word.length > 4);
+          if (defWords.some((word) => text.includes(word))) keys.push(prefix(`term/${norm(term.term)}`));
+        }
+      }
+      for (const quantity of quantities) {
+        const owner = termsIn(text)[0];
+        keys.push(prefix(`quantity/${owner ? norm(owner.term) : "lesson"}/${quantity[1]}/${quantity[2].toLowerCase()}`));
       }
       return keys;
     };
     if (exercise.kind === "numberSense") {
       const context = norm(exercise.prompt);
-      const region = /cortex/.test(context) ? "cortex" : /cerebell/.test(context) ? "cerebellum" : "brain";
-      return [prefix(`quantity/${region}/${exercise.value}/${exercise.unit === "%" ? "%" : exercise.unit ?? ""}`)];
+      const owner = lessonTerms.find((t) => context.includes(norm(t.term)));
+      return [prefix(`quantity/${owner ? norm(owner.term) : "lesson"}/${exercise.value}/${exercise.unit === "%" ? "%" : exercise.unit ?? ""}`)];
     }
     if (exercise.kind === "multipleChoice" && exercise.prompt.startsWith("Fill the gap:")) {
       return lineKeys(exercise.explanation ?? "");
@@ -82,21 +94,36 @@ function buildArena(input) {
   };
   const tag = (lesson, exercise) => exercise ? [{ exercise: { ...exercise, source: lessonSource(lesson) }, facts: factKeys(lesson, exercise) }] : [];
   const own = (kind) => review.flatMap((lesson) => (lesson.questions ?? []).filter((q) => q.kind === kind).flatMap((q) => tag(lesson, shuffleAuthored(q))));
-  const definitions = () => lessons.flatMap((lesson) => {
-    const pool = terms(lesson);
-    return pool.flatMap((target) => {
-      const check = checkDefinition(pool, nextId());
-      if (!check) return [];
-      const options = shuffle([target.term, ...pool.filter((t) => norm(t.term) !== norm(target.term)).slice(0, 2).map((t) => t.term)]);
-      return tag(lesson, {
-        ...check,
-        prompt: `This lesson defined it as: "${target.definition}". Which term is that?`,
-        options,
-        correctIndex: options.indexOf(target.term),
-        explanation: `${target.term}: ${target.definition}`
+  const definitions = () => {
+    const glossaryPool = glossaryEntriesFor(input.marketId);
+    return lessons.flatMap((lesson) => {
+      const pool = terms(lesson).filter((t) => isRealTerm(t.term) && (t.definition || "").trim().length > 14);
+      const others = lessons.filter((l) => l !== lesson).flatMap((l) => terms(l));
+      return pool.flatMap((target) => {
+        const targetTerm = norm(target.term);
+        const targetDef = norm(target.definition);
+        const usable = (entry) => {
+          const term = norm(entry.term);
+          return Boolean(term) && term !== targetTerm && norm(entry.definition) !== targetDef;
+        };
+        const decoys = [
+          ...shuffle(others.filter(usable)),
+          ...shuffle(glossaryPool.filter(usable)),
+          ...shuffle(pool.filter((t) => norm(t.term) !== targetTerm && usable(t)))
+        ].filter((entry, index, list) => list.findIndex((o) => norm(o.term) === norm(entry.term)) === index).slice(0, 2);
+        if (decoys.length < 2) return [];
+        const options = shuffle([target.term, ...decoys.map((d) => d.term)]);
+        return tag(lesson, {
+          kind: "multipleChoice",
+          id: nextId(),
+          prompt: `This lesson defined it as: "${target.definition}". Which term is that?`,
+          options,
+          correctIndex: options.indexOf(target.term),
+          explanation: `${target.term}: ${target.definition}`
+        });
       });
     });
-  });
+  };
   const generated = (build, faceOff = false) => lessons.flatMap((lesson) => {
     const candidates = [];
     for (let attempt = 0; attempt < 80; attempt += 1) {
@@ -147,19 +174,25 @@ function buildArena(input) {
       accept(candidate);
     }
     if (selected.length < limit) {
-      for (const exercise of fallback) {
-        if (exercise && accept({ exercise: { ...exercise, source: { type: "industry" } }, facts: [] })) break;
+      const parts = [...new Set(lessons.flatMap(lessonKeyParts))];
+      const relevance = (exercise) => {
+        const text = norm(JSON.stringify(exercise));
+        return parts.filter((part) => text.includes(part)).length;
+      };
+      const candidates = shuffle(fallback.filter((e) => Boolean(e))).sort((a, b) => relevance(b) - relevance(a)).map((exercise) => ({
+        exercise: { ...exercise, source: { type: "industry" } },
+        facts: lessons.flatMap((lesson) => factKeys(lesson, exercise))
+      }));
+      for (const candidate of candidates) {
+        if (selected.length === limit) break;
+        accept(candidate);
       }
     }
     return selected;
   };
   const tampers = generated(checkTamper);
   reserved = tampers.find((c) => "explanation" in c.exercise && !/\d/.test(c.exercise.explanation ?? ""));
-  const claims = generated(checkClaim, true).sort((a, b) => {
-    const text = (c) => "explanation" in c.exercise ? c.exercise.explanation ?? "" : "";
-    const priority = (text2) => /cerebrum.*largest|brainstem.*links|limbic.*emotion/.test(text2.toLowerCase()) ? 0 : /\d/.test(text2) ? 2 : 1;
-    return priority(text(a)) - priority(text(b));
-  });
+  const claims = generated(checkClaim, true);
   const defs = definitions();
   const authoredMC = own("multipleChoice");
   const wave1 = fill([...authoredMC.slice(0, 1), ...defs.slice(0, 1), ...claims, ...defs.slice(1), ...authoredMC.slice(1)], [
@@ -170,7 +203,7 @@ function buildArena(input) {
   ], 4);
   const figures = generated(checkFigure);
   const authoredNumbers = own("numberSense");
-  const wave2 = fill([...authoredNumbers.slice(0, 1), ...figures.slice(0, 1), ...generated(checkMechanism), ...own("sortSignal"), ...figures, ...authoredNumbers.slice(1)], [
+  const wave2 = fill([...authoredNumbers.slice(0, 1), ...figures.slice(0, 1), ...generated(checkMechanism), ...own("sortSignal"), ...own("buildChain"), ...figures, ...authoredNumbers.slice(1)], [
     pack ? packChain(pack, nextId()) : null,
     statNumberSense(input.stats, nextId()),
     drillSpotFake(input.drills, nextId()),
