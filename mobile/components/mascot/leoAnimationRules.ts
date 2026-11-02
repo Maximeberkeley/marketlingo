@@ -6,9 +6,18 @@ export function leoDoneKey(userId: string | undefined, marketId: string, localDa
   return `@marketlingo/leo-done-anim/${userId ?? 'guest'}/${marketId}/${localDay}`;
 }
 
-export function leoCallClip(isGenerating: boolean, isSpeaking: boolean) {
-  return isGenerating ? 'leo-call-think' : isSpeaking ? 'leo-teach-loop' : 'leo-call-listen';
+export function leoCallClip(isGenerating: boolean, isSpeaking: boolean, greeting = false) {
+  if (isGenerating) return 'leo-call-think';
+  if (isSpeaking) return greeting ? 'leo-call-talk' : 'leo-teach-loop';
+  return 'leo-call-listen';
 }
+
+export function leoMorningKey(userId: string | undefined, marketId: string, localDay: string): string {
+  return `@marketlingo/leo-morning/${userId ?? 'guest'}/${marketId}/${localDay}`;
+}
+
+/** How long Leo looks at the learner during the morning wake-up before dozing again. */
+export const LEO_MORNING_LOOK_MS = 4000;
 
 export function leoCoachClip(mood: string, intro: boolean) {
   if (mood === 'correct' || mood === 'celebrate') return 'leo-success' as const;
@@ -33,4 +42,23 @@ const WRONG_LINES = [
 export function leoFeedbackLine(correct: boolean, seed: number): string {
   const set = correct ? RIGHT_LINES : WRONG_LINES;
   return set[Math.abs(Math.floor(seed)) % set.length];
+}
+
+export const LEO_TREAT_MILESTONES = [3, 7, 14, 30, 50, 100, 200, 365];
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+export function leoTreatKey(userId: string | undefined): string {
+  return `@marketlingo/leo-treat/${userId ?? 'guest'}`;
+}
+
+/** Rare tail-chase treat: streak milestones (once that day), else 1 in 10 with a 7-day cooldown. */
+export function shouldPlayLeoTreat(streak: number | undefined, lastTreat: string | null, today: string, random = Math.random()): boolean {
+  if (lastTreat === today) return false;
+  if (streak && LEO_TREAT_MILESTONES.includes(streak)) return true;
+  if (lastTreat) {
+    const last = Date.parse(`${lastTreat}T00:00:00`);
+    const now = Date.parse(`${today}T00:00:00`);
+    if (!Number.isNaN(last) && now - last < WEEK_MS) return false;
+  }
+  return random < 0.1;
 }

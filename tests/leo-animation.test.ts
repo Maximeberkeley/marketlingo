@@ -180,6 +180,8 @@ describe('Animated Leo rules', () => {
   it('uses existing generating/speaking state in priority order', () => {
     expect(leoCallClip(true, true)).toBe('leo-call-think');
     expect(leoCallClip(false, true)).toBe('leo-teach-loop');
+    expect(leoCallClip(false, true, true)).toBe('leo-call-talk');
+    expect(leoCallClip(true, true, true)).toBe('leo-call-think');
     expect(leoCallClip(false, false)).toBe('leo-call-listen');
   });
   it('opens eyes on tap, opens the call when that clip ends, and closes eyes after', async () => {
@@ -226,13 +228,12 @@ describe('Animated Leo rules', () => {
     await Promise.resolve(); expect(h.render().clip).toBe('leo-reading-loop');
     h.unmount();
   });
-  it('keeps goal and level choices idle without recurring tail-chasing', async () => {
-    const h = homeHarness(); h.onboarding(); await vi.advanceTimersByTimeAsync(60000);
-    expect(h.onboarding().clip).toBe('leo-idle-loop');
-    expect(vi.getTimerCount()).toBe(0);
-    h.motion(false); h.onboarding(); expect(h.onboarding().clip).toBe('leo-idle-loop');
-    h.motion(true); h.onboarding(); await vi.advanceTimersByTimeAsync(60000);
-    expect(h.onboarding().clip).toBe('leo-idle-loop');
+  it('plays the tail-chase once after 30 s on an onboarding screen, then never again', async () => {
+    const h = homeHarness(); h.onboarding();
+    await vi.advanceTimersByTimeAsync(29999); expect(h.onboarding().clip).toBe('leo-idle-loop');
+    await vi.advanceTimersByTimeAsync(1); expect(h.onboarding().clip).toBe('leo-play');
+    h.onboarding().onEnd(); expect(h.onboarding().clip).toBe('leo-idle-loop');
+    await vi.advanceTimersByTimeAsync(60000); expect(h.onboarding().clip).toBe('leo-idle-loop');
     h.unmount();
   });
   it('starts one-off end timing only after load and stops playback at the duration', async () => {
@@ -305,5 +306,23 @@ describe('practice feedback lines', () => {
       expect(words).toBeGreaterThanOrEqual(6); expect(words).toBeLessThanOrEqual(10);
     }
     expect(leoFeedbackLine(true, 0)).not.toBe(leoFeedbackLine(false, 0));
+  });
+});
+
+import { shouldPlayLeoTreat, leoMorningKey } from '../mobile/components/mascot/leoAnimationRules';
+describe('leo-play treat', () => {
+  it('plays on a streak milestone, once that day', () => {
+    expect(shouldPlayLeoTreat(7, '2026-10-30', '2026-11-01', 0.99)).toBe(true);
+    expect(shouldPlayLeoTreat(7, '2026-11-01', '2026-11-01', 0)).toBe(false);
+  });
+  it('otherwise plays 1 in 10 with at most one per 7 days', () => {
+    expect(shouldPlayLeoTreat(5, null, '2026-11-01', 0.05)).toBe(true);
+    expect(shouldPlayLeoTreat(5, null, '2026-11-01', 0.1)).toBe(false);
+    expect(shouldPlayLeoTreat(5, '2026-10-27', '2026-11-01', 0)).toBe(false);
+    expect(shouldPlayLeoTreat(5, '2026-10-25', '2026-11-01', 0)).toBe(true);
+  });
+  it('scopes the morning wake-up to learner, market and local day', () => {
+    expect(leoMorningKey('u1', 'aerospace', '2026-11-1')).toBe('@marketlingo/leo-morning/u1/aerospace/2026-11-1');
+    expect(leoMorningKey(undefined, 'ai', 'd')).toBe('@marketlingo/leo-morning/guest/ai/d');
   });
 });

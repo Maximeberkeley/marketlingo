@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { LeoAnimated } from "../../components/mascot/LeoAnimated";
+import { useLessonCompleteLeo } from "../../components/mascot/useLeoAnimations";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { PrimaryButton } from "../components/PrimaryButton";
@@ -33,6 +34,7 @@ function LessonComplete({
   takeaway
 }) {
   const { user } = useAuth();
+  const leo = useLessonCompleteLeo(user?.id, streakDays);
   const [calledToday, setCalledToday] = useState(false);
   useEffect(() => {
     let live = true;
@@ -87,7 +89,7 @@ function LessonComplete({
       contentContainerStyle: styles.wrap,
       showsVerticalScrollIndicator: false
     },
-    /* @__PURE__ */ React.createElement(View, { style: styles.leoHero }, /* @__PURE__ */ React.createElement(LeoAnimated, { clip: "leo-success", size: 132, fallback: "celebrating" })),
+    /* @__PURE__ */ React.createElement(View, { style: styles.leoHero }, leo.clip ? /* @__PURE__ */ React.createElement(LeoAnimated, { clip: leo.clip, size: 132, fallback: "celebrating", onEnd: leo.onEnd }) : /* @__PURE__ */ React.createElement(View, { style: { width: 132, height: 132 } })),
     /* @__PURE__ */ React.createElement(Text, { style: styles.title }, praise),
     typeof streakDays === "number" && streakDays > 0 ? /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "\u{1F525} ", streakDays, "-day streak \u2014 come back tomorrow to keep it.") : /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "You just started a streak. Come back tomorrow to keep it."),
     /* @__PURE__ */ React.createElement(Text, { style: styles.xpBig }, "+", totalXp, " XP"),

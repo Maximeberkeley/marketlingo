@@ -31,7 +31,7 @@ import { XPBadge } from "../ui/XPBadge";
 import { LeoCharacter } from "../mascot/LeoCharacter";
 import { LeoAnimated } from "../mascot/LeoAnimated";
 import { useHomeLeo } from "../mascot/useLeoAnimations";
-import { leoDoneKey } from "../mascot/leoAnimationRules";
+import { leoDoneKey, leoMorningKey } from "../mascot/leoAnimationRules";
 import { HomeSkeleton } from "../home/HomeSkeleton";
 import { lessonDayLabel, realLessonTitle } from "../../lib/lessonIdentity";
 import { lessonPriority } from "../../lib/handwritten";
@@ -163,6 +163,7 @@ function SectionCluster({
   calendarDay,
   leoCallOpen,
   doneKey,
+  morningKey,
   leoCelebrationPending,
   onLeoCelebrated
 }) {
@@ -173,6 +174,7 @@ function SectionCluster({
     focused: isFocused,
     callOpen: leoCallOpen,
     doneKey,
+    morningKey,
     celebrate: leoCelebrationPending,
     onCelebrated: onLeoCelebrated,
     onLeo
@@ -325,6 +327,7 @@ function CourseJourney({
   const localDay = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
   const revealKey = `@marketlingo/home-reveal/${user?.id ?? "guest"}/${marketId}/${localDay}`;
   const doneKey = leoDoneKey(user?.id, marketId, localDay);
+  const morningKey = leoMorningKey(user?.id, marketId, localDay);
   const previousDone = useRef(lessonCompletedToday);
   const [localCelebration, setLocalCelebration] = useState(false);
   useEffect(() => {
@@ -548,6 +551,7 @@ function CourseJourney({
             isFocused,
             leoCallOpen,
             doneKey,
+            morningKey,
             leoCelebrationPending: leoCelebrationPending || localCelebration,
             onLeoCelebrated: () => {
               setLocalCelebration(false);

@@ -11,6 +11,8 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { LeoAnimated } from '../mascot/LeoAnimated';
+import { useLessonCompleteLeo } from '../mascot/useLeoAnimations';
+import { useAuth } from '../../hooks/useAuth';
 import { ConfettiBurst } from '../ui/ConfettiBurst';
 import { triggerCelebration } from '../../lib/haptics';
 import { playSound } from '../../lib/sounds';
@@ -33,6 +35,8 @@ export function SessionCompleteCard({
   dayNumber, marketName, marketEmoji, xpEarned, streak,
   lessonTitle, totalXP, stageName, onContinue, onDismiss, onAskMentor, mentorName,
 }: SessionCompleteCardProps) {
+  const { user } = useAuth();
+  const leo = useLessonCompleteLeo(user?.id, streak);
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
@@ -59,7 +63,7 @@ export function SessionCompleteCard({
       <ConfettiBurst show count={24} />
       <Animated.View style={[styles.card, { transform: [{ scale: scaleAnim }] }]}>
         <View style={styles.leoCircle}>
-          <LeoAnimated clip="leo-success" size={160} fallback="celebrating" />
+          {leo.clip ? <LeoAnimated clip={leo.clip} size={160} fallback="celebrating" onEnd={leo.onEnd} /> : <View style={{ width: 160, height: 160 }} />}
         </View>
 
         <Text style={styles.title}>Day {dayNumber} Complete!</Text>
