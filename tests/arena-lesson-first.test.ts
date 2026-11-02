@@ -8,7 +8,7 @@ import { studiedMaterial } from '../mobile/lesson-kit/practice/studiedMaterial';
 import { quizQuestionKeys, recordQuizQuestion, recentQuizHistory, QUIZ_WINDOW_MS } from '../mobile/lib/quizHistory';
 import fixture from './fixtures/neuroscience-day1.json';
 const lesson = { ...fixture, ...studiedMaterial(fixture.authored_lesson) };
-const input = { marketId: 'neuroscience', marketName: 'Neuroscience', trainer: [], drills: [], stats: [], studied: [lesson] };
+const input = { marketId: 'neuroscience', marketName: 'Neuroscience', trainer: [{ id: 'trainer', scenario: 'An unrelated research decision.', question: 'Which approach?', options: [{label:'A',isCorrect:true},{label:'B'}], correct_option_index:0 }], drills: [], stats: [], studied: [lesson] };
 const all = (waves: ReturnType<typeof buildArena>) => waves.flatMap(w => w.exercises);
 
 describe('lesson-first Arena', () => {

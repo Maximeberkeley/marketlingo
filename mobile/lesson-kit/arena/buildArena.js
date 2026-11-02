@@ -17,7 +17,6 @@ import {
   packFaceOff,
   packMap,
   packNumber,
-  packSpeedRound,
   statFaceOff,
   statNumberSense,
   statTrend,
@@ -82,7 +81,7 @@ function buildArena(input) {
     return lineKeys(explanation);
   };
   const tag = (lesson, exercise) => exercise ? [{ exercise: { ...exercise, source: lessonSource(lesson) }, facts: factKeys(lesson, exercise) }] : [];
-  const own = (kind) => review.flatMap((lesson) => (lesson.questions ?? []).filter((q) => q.kind === kind).flatMap((q) => tag(lesson, shuffleAuthored(q))));
+  const own = (kind) => review.flatMap((lesson, index) => (lesson.questions ?? []).filter((q) => q.kind === kind).slice(0, index === 0 ? 1 : 0).flatMap((q) => tag(lesson, shuffleAuthored(q))));
   const definitions = () => lessons.flatMap((lesson) => {
     const pool = terms(lesson);
     return pool.flatMap((target) => {
@@ -100,7 +99,7 @@ function buildArena(input) {
   });
   const generated = (build, faceOff = false) => lessons.flatMap((lesson) => {
     const candidates = [];
-    for (let attempt = 0; attempt < 24; attempt += 1) {
+    for (let attempt = 0; attempt < 80; attempt += 1) {
       const slides = build === checkFigure ? lesson.slides.flatMap((s) => sentences(s.body ?? "", 15, 500).map((body) => ({ ...s, body }))) : lesson.slides;
       let exercise = build(slides, nextId());
       if (build === checkClaim && exercise && "explanation" in exercise) {
@@ -129,6 +128,7 @@ function buildArena(input) {
     }
     return candidates;
   });
+  let reserved;
   const fill = (pool, fallback, limit) => {
     const selected = [];
     const kinds = /* @__PURE__ */ new Map();
@@ -143,6 +143,7 @@ function buildArena(input) {
     };
     for (const candidate of pool) {
       if (selected.length === limit) break;
+      if (reserved && candidate !== reserved && candidate.facts.some((key) => reserved?.facts.includes(key))) continue;
       accept(candidate);
     }
     if (selected.length < limit) {
@@ -152,6 +153,8 @@ function buildArena(input) {
     }
     return selected;
   };
+  const tampers = generated(checkTamper);
+  reserved = tampers.find((c) => "explanation" in c.exercise && !/\d/.test(c.exercise.explanation ?? ""));
   const claims = generated(checkClaim, true).sort((a, b) => {
     const text = (c) => "explanation" in c.exercise ? c.exercise.explanation ?? "" : "";
     const priority = (text2) => /cerebrum.*largest|brainstem.*links|limbic.*emotion/.test(text2.toLowerCase()) ? 0 : /\d/.test(text2) ? 2 : 1;
@@ -172,11 +175,10 @@ function buildArena(input) {
     pack ? packMap(pack, nextId()) : null,
     pack ? packNumber(pack, nextId()) : null
   ], 4);
-  const tampers = generated(checkTamper);
-  const wave3 = fill([...tampers.slice(0, 1), ...definitions(), ...tampers.slice(1)], [
-    ...shuffle(input.trainer).map((scenario) => trainerCall(scenario, nextId())),
-    drillSpotFake(input.drills, nextId()),
-    pack ? packSpeedRound(pack, nextId()) : null
+  const finalPool = [...reserved ? [reserved] : [], ...definitions(), ...tampers];
+  reserved = void 0;
+  const wave3 = fill(finalPool, [
+    ...shuffle(input.trainer).map((scenario) => trainerCall(scenario, nextId()))
   ], 3);
   const waves = [
     {

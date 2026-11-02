@@ -136,8 +136,8 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   };
   const tag = (lesson: StudiedLessonInput, exercise: Exercise | null): Candidate[] => exercise
     ? [{ exercise: { ...exercise, source: lessonSource(lesson) }, facts: factKeys(lesson, exercise) }] : [];
-  const own = (kind: AuthoredQuestion['kind']) => review.flatMap(lesson =>
-    (lesson.questions ?? []).filter(q => q.kind === kind).flatMap(q => tag(lesson, shuffleAuthored(q))));
+  const own = (kind: AuthoredQuestion['kind']) => review.flatMap((lesson, index) =>
+    (lesson.questions ?? []).filter(q => q.kind === kind).slice(0, index === 0 ? 1 : 0).flatMap(q => tag(lesson, shuffleAuthored(q))));
   const definitions = () => lessons.flatMap(lesson => {
     const pool = terms(lesson);
     return pool.flatMap(target => {
@@ -151,7 +151,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   });
   const generated = (build: (slides: SlideLike[], id: string) => Exercise | null, faceOff = false) => lessons.flatMap(lesson => {
     const candidates: Candidate[] = [];
-    for (let attempt = 0; attempt < 24; attempt += 1) {
+    for (let attempt = 0; attempt < 80; attempt += 1) {
       // Include sentence-sized figure candidates, not just the first number in a long card.
       const slides = build === checkFigure
         ? lesson.slides.flatMap(s => sentences(s.body ?? '', 15, 500).map(body => ({ ...s, body })))
@@ -176,6 +176,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     }
     return candidates;
   });
+  let reserved: Candidate | undefined;
   const fill = (pool: Candidate[], fallback: (Exercise | null)[], limit: number) => {
     const selected: Exercise[] = [];
     const kinds = new Map<string, number>();
@@ -190,6 +191,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     };
     for (const candidate of pool) {
       if (selected.length === limit) break;
+      if (reserved && candidate !== reserved && candidate.facts.some(key => reserved?.facts.includes(key))) continue;
       accept(candidate);
     }
     // Never expand market filler to compensate for exhausted lesson history.
@@ -200,6 +202,8 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     }
     return selected;
   };
+  const tampers = generated(checkTamper);
+  reserved = tampers.find(c => 'explanation' in c.exercise && !/\d/.test(c.exercise.explanation ?? ''));
   const claims = generated(checkClaim, true).sort((a, b) => {
     const text = (c: Candidate) => 'explanation' in c.exercise ? c.exercise.explanation ?? '' : '';
     const priority = (text: string) => /cerebrum.*largest|brainstem.*links|limbic.*emotion/.test(text.toLowerCase()) ? 0 : /\d/.test(text) ? 2 : 1;
@@ -215,10 +219,10 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     pack ? packChain(pack, nextId()) : null, statNumberSense(input.stats, nextId()),
     drillSpotFake(input.drills, nextId()), pack ? packMap(pack, nextId()) : null, pack ? packNumber(pack, nextId()) : null,
   ], 4);
-  const tampers = generated(checkTamper);
-  const wave3 = fill([...tampers.slice(0, 1), ...definitions(), ...tampers.slice(1)], [
+  const finalPool = [...(reserved ? [reserved] : []), ...definitions(), ...tampers];
+  reserved = undefined;
+  const wave3 = fill(finalPool, [
     ...shuffle(input.trainer).map(scenario => trainerCall(scenario, nextId())),
-    drillSpotFake(input.drills, nextId()), pack ? packSpeedRound(pack, nextId()) : null,
   ], 3);
 
   const waves: ArenaWave[] = [
