@@ -43,3 +43,5 @@ conv leo-ready         --speed 2
 conv leo-success       --speed 2
 conv leo-encourage     --speed 2
 conv leo-greet         --speed 2
+# Loading screen
+conv leo-loading-loop  --loop --size 640 --hold 800

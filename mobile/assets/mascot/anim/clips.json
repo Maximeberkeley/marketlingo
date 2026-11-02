@@ -39,6 +39,10 @@
     "ms": 8867,
     "loop": true
   },
+  "leo-loading-loop": {
+    "ms": 6867,
+    "loop": true
+  },
   "leo-peek": {
     "ms": 2667,
     "loop": false

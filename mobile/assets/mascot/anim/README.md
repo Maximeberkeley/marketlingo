@@ -20,6 +20,7 @@ Transparent animated WebP clips of Leo, made with Runway and keyed with `scripts
 | leo-teach-loop.webp | loop | 4600 ms (rests 0.6 s) | Leo call | Speaking an answer |
 | leo-idle-loop.webp | loop | 8867 ms (rests 3 s) | Onboarding | Default state |
 | leo-play.webp | once | 5333 ms | Lesson complete; onboarding | Rare treat only (see "Treat") |
+| leo-loading-loop.webp | loop | 6867 ms (rests 0.8 s) | Loading screens | While Home (or the app) is loading |
 | leo-greet.webp | once | 2000 ms | First onboarding screen | Screen opens, then leo-idle-loop |
 | leo-ready.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | First question of a run |
 | leo-encourage.webp | once | 2000 ms | Arena, Deep Case (LeoCoach) | Answer graded wrong |
@@ -144,6 +145,18 @@ Keep leo-wake, leo-doze and leo-call-talk in `leoClips.ts` and `leoClips.js` (ad
    - If the lesson gets done, or Home loses focus mid-sequence, stop it and show the normal state for the day.
    - Skip it with Reduce Motion on.
 2. **Call greeting** (`components/ai/LeoVoiceChatOverlay.tsx` and `.js`): while Leo speaks the opening greeting ("Hey! Ask me anything…"), show leo-call-talk (Leo at his desk, gesturing). While he speaks an answer, show leo-teach-loop. Add a `greeting` flag to `leoCallClip` in `leoAnimationRules.ts` and `.js` for this.
+
+## Loading screen (leo-loading-loop)
+Leo untangling a ball of purple yarn. It loops seamlessly and rests 0.8 s before each repeat. The file is 640 px, so it stays sharp at 200 pt.
+
+1. Add leo-loading-loop to `leoClips.ts` and `leoClips.js` (6867 ms, loop).
+2. Replace the grey placeholder grid in `components/home/HomeSkeleton.tsx` and `.js` (used by `app/(tabs)/home.tsx` and `components/course/CourseJourney.tsx`). Keep the component name and export, so every caller stays the same.
+   - The screen is the app background (`COLORS.bg0`) with `LeoAnimated` centred (size 200, fallback `'idle'`) looping leo-loading-loop.
+   - Under Leo, one line in `COLORS.textSecondary`, 15 pt: "Untangling today's lesson…".
+   - No flash on fast loads: render only the background for the first 250 ms, then fade Leo and the line in over 200 ms. If loading ends before 250 ms, nothing shows.
+   - Respect the safe area. Keep the tab bar exactly as today.
+3. App launch screen (`app/index.tsx` and `.js`): replace the leo-reference image and the `ActivityIndicator` with the same centred `LeoAnimated` leo-loading-loop (size 160) above the existing "MarketLingo" name and tagline.
+4. With Reduce Motion on, show the static idle Leo with the same line. Keep `.tsx` and `.js` twins identical, and don't change when loading starts or ends.
 
 ## Treat (leo-play)
 Leo chasing his tail is a rare surprise, never routine. It starts and ends on the normal sitting pose, so it chains into leo-success and leo-idle-loop with no jump.
