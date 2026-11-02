@@ -1,0 +1,182 @@
+{
+ "stackId": "57579745-a728-47f0-ab4a-c3ab0f0a374d",
+ "title": "Who is attacking, and why",
+ "day": 1,
+ "slides": [
+  {
+   "slideNumber": 1,
+   "title": "Day 1 \u00b7 The map",
+   "body": "In February 2024, one ransomware attack on Change Healthcare exposed data on 192.7 million people. Change Healthcare, part of UnitedHealth Group, was hit by the BlackCat ransomware group in February 2024. UnitedHealth later confirmed that 192.7 million people were affected, nearly double its earlier estimate, making it the largest health data breach on record in the US. Former CEO Andrew Witty testified that the company paid a $22 million ransom and that the outdated systems involved lacked multifactor authentication."
+  },
+  {
+   "slideNumber": 2,
+   "title": "Actor 1 \u00b7 Criminal gangs",
+   "body": "Ransomware gangs lock or steal data, then demand payment. Their motive is money. BlackCat, the group behind Change Healthcare, is one of them."
+  },
+  {
+   "slideNumber": 3,
+   "title": "Actor 2 \u00b7 Nation-states",
+   "body": "Nation-state hackers seek access and leverage. Some quietly settle into critical infrastructure. US agencies said China-backed Volt Typhoon did this to prepare disruptive attacks. In February 2024, CISA and partner agencies warned that Volt Typhoon, a group sponsored by the People's Republic of China, was seeking to pre-position itself on IT networks for disruptive or destructive cyber activity against US critical infrastructure. It relied on living off the land: using tools already present on victims' systems to avoid detection."
+  },
+  {
+   "slideNumber": 4,
+   "title": "Actor 3 \u00b7 Hacktivists",
+   "body": "Hacktivists attack to make a political point. Pro-Russia hacktivists have tampered with control systems at US and European water sites. A May 2024 fact sheet from CISA and partners described pro-Russia hacktivists targeting industrial control systems in North American and European water and wastewater systems, dams, energy, and food and agriculture. Their techniques were mostly unsophisticated and caused nuisance effects, but investigators warned they could pose physical threats to insecure systems."
+  },
+  {
+   "slideNumber": 5,
+   "title": "Speak in threat actors",
+   "body": "Security teams plan around who would attack them and why. Naming a company's likely attackers shows real understanding."
+  },
+  {
+   "slideNumber": 6,
+   "title": "The rule",
+   "body": "Know the attacker's motive, and you can predict the attack."
+  }
+ ],
+ "authored_lesson": {
+  "id": "cybersecurity-d1-career",
+  "title": "Who is attacking, and why",
+  "exercises": [
+   {
+    "id": "open",
+    "kind": "coldOpen",
+    "kicker": "UnitedHealth paid the hackers a $22 million ransom.",
+    "eyebrow": "Day 1 \u00b7 The map",
+    "sources": [
+     {
+      "url": "https://www.digitalhealthnews.com/uhg-confirms-final-count-in-change-healthcare-breach-192-7-mn-affected",
+      "label": "Digital Health News, Change Healthcare final count"
+     },
+     {
+      "url": "https://healthexec.com/topics/health-it/cybersecurity/feds-make-it-official-change-data-breach-was-largest-healthcare-history-impacting-100m",
+      "label": "HealthExec, largest health data breach"
+     }
+    ],
+    "fullText": "Change Healthcare, part of UnitedHealth Group, was hit by the BlackCat ransomware group in February 2024. UnitedHealth later confirmed that 192.7 million people were affected, nearly double its earlier estimate, making it the largest health data breach on record in the US. Former CEO Andrew Witty testified that the company paid a $22 million ransom and that the outdated systems involved lacked multifactor authentication.",
+    "headline": "In February 2024, one ransomware attack on Change Healthcare exposed data on 192.7 million people."
+   },
+   {
+    "id": "crime",
+    "kind": "microInsight",
+    "text": "Ransomware gangs lock or steal data, then demand payment. Their motive is money.",
+    "eyebrow": "Actor 1 \u00b7 Criminal gangs",
+    "sources": [
+     {
+      "url": "https://www.digitalhealthnews.com/uhg-confirms-final-count-in-change-healthcare-breach-192-7-mn-affected",
+      "label": "Digital Health News, Change Healthcare final count"
+     }
+    ],
+    "keyTerms": [
+     {
+      "term": "Ransomware",
+      "definition": "Malicious software that locks or steals data so attackers can demand payment."
+     }
+    ],
+    "highlight": "BlackCat, the group behind Change Healthcare, is one of them."
+   },
+   {
+    "id": "nation",
+    "kind": "microInsight",
+    "text": "Nation-state hackers seek access and leverage. Some quietly settle into critical infrastructure.",
+    "eyebrow": "Actor 2 \u00b7 Nation-states",
+    "sources": [
+     {
+      "url": "https://cisa.gov/news-events/alerts/2024/02/07/cisa-and-partners-release-advisory-prc-sponsored-volt-typhoon-activity-and-supplemental-living-land",
+      "label": "CISA, Volt Typhoon advisory"
+     }
+    ],
+    "fullText": "In February 2024, CISA and partner agencies warned that Volt Typhoon, a group sponsored by the People's Republic of China, was seeking to pre-position itself on IT networks for disruptive or destructive cyber activity against US critical infrastructure. It relied on living off the land: using tools already present on victims' systems to avoid detection.",
+    "highlight": "US agencies said China-backed Volt Typhoon did this to prepare disruptive attacks."
+   },
+   {
+    "id": "hacktivists",
+    "kind": "microInsight",
+    "text": "Hacktivists attack to make a political point.",
+    "eyebrow": "Actor 3 \u00b7 Hacktivists",
+    "sources": [
+     {
+      "url": "https://cisa.gov/news-events/alerts/2024/05/01/cisa-and-partners-release-fact-sheet-defending-ot-operations-against-ongoing-pro-russia-hacktivist",
+      "label": "CISA, pro-Russia hacktivists and OT"
+     }
+    ],
+    "fullText": "A May 2024 fact sheet from CISA and partners described pro-Russia hacktivists targeting industrial control systems in North American and European water and wastewater systems, dams, energy, and food and agriculture. Their techniques were mostly unsophisticated and caused nuisance effects, but investigators warned they could pose physical threats to insecure systems.",
+    "highlight": "Pro-Russia hacktivists have tampered with control systems at US and European water sites."
+   },
+   {
+    "id": "sort",
+    "kind": "sortSignal",
+    "items": [
+     {
+      "text": "Ransomware gangs",
+      "bucket": 0
+     },
+     {
+      "text": "BlackCat",
+      "bucket": 0
+     },
+     {
+      "text": "Volt Typhoon",
+      "bucket": 1
+     },
+     {
+      "text": "Nation-state hackers",
+      "bucket": 1
+     },
+     {
+      "text": "Hacktivists",
+      "bucket": 2
+     }
+    ],
+    "prompt": "Match each attacker to its main motive.",
+    "buckets": [
+     "Money",
+     "Access and leverage",
+     "A political point"
+    ],
+    "explanation": "Motive predicts behavior: gangs want payment, states want quiet access, hacktivists want impact."
+   },
+   {
+    "id": "mc",
+    "kind": "multipleChoice",
+    "prompt": "Attackers lock a hospital's systems and demand payment. Who is most likely behind it?",
+    "options": [
+     "A ransomware gang",
+     "A hacktivist group",
+     "A nation-state preparing for conflict"
+    ],
+    "explanation": "Locking systems for payment is the ransomware business model.",
+    "correctIndex": 0
+   },
+   {
+    "id": "lens-career",
+    "body": "Security teams plan around who would attack them and why. Naming a company's likely attackers shows real understanding.",
+    "kind": "info",
+    "title": "Speak in threat actors",
+    "eyebrow": "For your interview"
+   },
+   {
+    "id": "rule",
+    "kind": "microInsight",
+    "text": "Know the attacker's motive, and you can predict the attack.",
+    "eyebrow": "The rule",
+    "sources": [
+     {
+      "url": "https://cisa.gov/news-events/alerts/2024/02/07/cisa-and-partners-release-advisory-prc-sponsored-volt-typhoon-activity-and-supplemental-living-land",
+      "label": "CISA, Volt Typhoon advisory"
+     },
+     {
+      "url": "https://cisa.gov/news-events/alerts/2024/05/01/cisa-and-partners-release-fact-sheet-defending-ot-operations-against-ongoing-pro-russia-hacktivist",
+      "label": "CISA, pro-Russia hacktivists and OT"
+     }
+    ]
+   },
+   {
+    "id": "say-it",
+    "kind": "sayIt",
+    "takeaway": "Criminal gangs want money, nation-states want access and leverage, and hacktivists want to make a point. Each attacks differently.",
+    "sectionKey": "players"
+   }
+  ]
+ }
+}

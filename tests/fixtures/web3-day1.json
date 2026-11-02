@@ -1,0 +1,199 @@
+{
+ "stackId": "4dec2610-dcf7-4c1b-9123-0c1471df84a9",
+ "title": "How a blockchain works",
+ "day": 1,
+ "slides": [
+  {
+   "slideNumber": 1,
+   "title": "Day 1 \u00b7 The basics",
+   "body": "About every 10 minutes, Bitcoin adds a new block of transactions to its ledger. A block is a batch of validated transactions. Its header includes the previous block's hash, which links it to the chain. Bitcoin adjusts its mining difficulty to keep blocks about 10 minutes apart, and the miner who adds a block receives a subsidy of new bitcoin, 3.125 BTC since the 2024 halving."
+  },
+  {
+   "slideNumber": 2,
+   "title": "The chain",
+   "body": "Each block stores the previous block's hash, a unique fingerprint of its data. Change an old block, and every later link breaks."
+  },
+  {
+   "slideNumber": 3,
+   "title": "Agreement",
+   "body": "Consensus is how a network of computers agrees on the next block without a central boss. Bitcoin uses proof of work; Ethereum uses proof of stake."
+  },
+  {
+   "slideNumber": 4,
+   "title": "Two ways to earn the right to add a block",
+   "body": "In proof of work, miners spend computing power. In proof of stake, validators lock up coins as collateral. Ethereum switched to proof of stake in September 2022. That cut its energy use by about 99.95%."
+  },
+  {
+   "slideNumber": 5,
+   "title": "Explain it without hype",
+   "body": "Say a blockchain is a shared ledger whose blocks are linked by hashes. Plain, precise explanations stand out."
+  },
+  {
+   "slideNumber": 6,
+   "title": "The rule",
+   "body": "A blockchain is trusted because changing the past means redoing everything after it."
+  }
+ ],
+ "authored_lesson": {
+  "id": "web3-d1-career",
+  "title": "How a blockchain works",
+  "exercises": [
+   {
+    "id": "open",
+    "kind": "coldOpen",
+    "kicker": "Each block carries the fingerprint of the one before it.",
+    "eyebrow": "Day 1 \u00b7 The basics",
+    "sources": [
+     {
+      "url": "https://glossary.blockstream.com/block",
+      "label": "Blockstream glossary, block"
+     }
+    ],
+    "fullText": "A block is a batch of validated transactions. Its header includes the previous block's hash, which links it to the chain. Bitcoin adjusts its mining difficulty to keep blocks about 10 minutes apart, and the miner who adds a block receives a subsidy of new bitcoin, 3.125 BTC since the 2024 halving.",
+    "headline": "About every 10 minutes, Bitcoin adds a new block of transactions to its ledger."
+   },
+   {
+    "id": "hash",
+    "kind": "microInsight",
+    "text": "Each block stores the previous block's hash, a unique fingerprint of its data.",
+    "eyebrow": "The chain",
+    "sources": [
+     {
+      "url": "https://glossary.blockstream.com/block",
+      "label": "Blockstream glossary, block"
+     }
+    ],
+    "keyTerms": [
+     {
+      "term": "hash",
+      "definition": "A short fingerprint computed from data. Any change to the data changes the hash."
+     }
+    ],
+    "highlight": "Change an old block, and every later link breaks."
+   },
+   {
+    "id": "consensus",
+    "kind": "microInsight",
+    "text": "Consensus is how a network of computers agrees on the next block without a central boss.",
+    "eyebrow": "Agreement",
+    "sources": [
+     {
+      "url": "https://ethereum.org/roadmap/merge",
+      "label": "ethereum.org, The Merge"
+     },
+     {
+      "url": "https://glossary.blockstream.com/block",
+      "label": "Blockstream glossary, block"
+     }
+    ],
+    "keyTerms": [
+     {
+      "term": "Consensus",
+      "definition": "The rules a network uses to agree on which block is added next."
+     }
+    ],
+    "highlight": "Bitcoin uses proof of work; Ethereum uses proof of stake."
+   },
+   {
+    "id": "powpos",
+    "body": "In proof of work, miners spend computing power. In proof of stake, validators lock up coins as collateral.",
+    "kind": "info",
+    "title": "Two ways to earn the right to add a block",
+    "bullets": [
+     "Ethereum switched to proof of stake in September 2022.",
+     "That cut its energy use by about 99.95%."
+    ],
+    "eyebrow": "Two models",
+    "sources": [
+     {
+      "url": "https://ethereum.org/roadmap/merge",
+      "label": "ethereum.org, The Merge"
+     },
+     {
+      "url": "https://ethereum.org/staking/",
+      "label": "ethereum.org, staking"
+     }
+    ]
+   },
+   {
+    "id": "sort",
+    "kind": "sortSignal",
+    "items": [
+     {
+      "text": "Bitcoin",
+      "bucket": 0
+     },
+     {
+      "text": "Miners",
+      "bucket": 0
+     },
+     {
+      "text": "Computing power",
+      "bucket": 0
+     },
+     {
+      "text": "Ethereum since 2022",
+      "bucket": 1
+     },
+     {
+      "text": "Validators",
+      "bucket": 1
+     },
+     {
+      "text": "Coins locked as collateral",
+      "bucket": 1
+     }
+    ],
+    "prompt": "Proof of work or proof of stake?",
+    "buckets": [
+     "Proof of work",
+     "Proof of stake"
+    ],
+    "explanation": "Proof of work spends computing power; proof of stake puts coins at risk."
+   },
+   {
+    "id": "mc",
+    "kind": "multipleChoice",
+    "prompt": "What links each block to the one before it?",
+    "options": [
+     "The previous block's hash",
+     "A bank's approval",
+     "The miner's name"
+    ],
+    "explanation": "Each block stores the hash of the one before, so the blocks form a chain.",
+    "correctIndex": 0
+   },
+   {
+    "id": "lens-career",
+    "body": "Say a blockchain is a shared ledger whose blocks are linked by hashes. Plain, precise explanations stand out.",
+    "kind": "info",
+    "title": "Explain it without hype",
+    "eyebrow": "For your interview",
+    "sources": [
+     {
+      "url": "https://glossary.blockstream.com/block",
+      "label": "Blockstream glossary, block"
+     }
+    ]
+   },
+   {
+    "id": "rule",
+    "kind": "microInsight",
+    "text": "A blockchain is trusted because changing the past means redoing everything after it.",
+    "eyebrow": "The rule",
+    "sources": [
+     {
+      "url": "https://glossary.blockstream.com/block",
+      "label": "Blockstream glossary, block"
+     }
+    ]
+   },
+   {
+    "id": "say-it",
+    "kind": "sayIt",
+    "takeaway": "A blockchain is a shared ledger of linked blocks. Consensus, by proof of work or proof of stake, decides which block comes next.",
+    "sectionKey": "players"
+   }
+  ]
+ }
+}
