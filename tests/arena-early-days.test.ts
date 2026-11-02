@@ -11,7 +11,7 @@ import web3 from './fixtures/web3-day1.json';
 
 const fixtures = { cleanenergy, cybersecurity, fintech, web3 } as const;
 
-const trainers = [1, 2, 3].map(n => ({ id: `trainer-${n}`, scenario: `An unrelated industry decision ${n}.`, question: 'Which approach?', options: [{ label: 'A', isCorrect: true }, { label: 'B' }], correct_option_index: 0 }));
+const trainers = [1, 2, 3].map(n => ({ id: `trainer-${n}`, scenario: `An unrelated industry decision ${n}.`, question: `Which approach fits case ${n}?`, options: [{ label: 'A', isCorrect: true }, { label: 'B' }], correct_option_index: 0 }));
 const drills = [
   { id: 'd1', statement: 'A verified true market fact.', is_true: true, explanation: 'Checked.' },
   { id: 'd2', statement: 'Another verified true market fact.', is_true: true, explanation: 'Checked.' },
