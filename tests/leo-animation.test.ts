@@ -71,6 +71,7 @@ function practiceHarness(screen: 'Arena' | 'Case') {
     '../theme/tokens': { tokens: { color: {}, space: {}, font: {}, radius: {} } },
     '../components/PrimaryButton': { PrimaryButton: 'button' }, '../components/FeedbackFooter': { FeedbackFooter: 'feedback' },
     '../components/LeoCoach': { LeoCoach: 'coach' },
+    '../practice/studiedMaterial': { practiceSourceLabel: () => '' },
     '../components/ExerciseRenderer': { isPassiveKind: () => false,
       renderExerciseByKind: (_ex: any, _phase: any, setState: any) => ({ type: 'answer', props: { setState } }) },
     './buildArena': {}, './buildCase': {}, '../../lib/sounds': { playSound: async () => {} },
