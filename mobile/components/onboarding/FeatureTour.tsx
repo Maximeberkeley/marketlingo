@@ -27,7 +27,7 @@ const TOUR = [
   { icon: 'map' as const, title: 'Courses build the map', body: 'Follow 180 days in order, or revisit any unlocked topic when you need it.' },
   { icon: 'zap' as const, title: 'Practice builds instinct', body: 'Arena tests speed. Deep cases, Interview Lab, and Investment Lab test judgment.' },
   { icon: 'edit-3' as const, title: 'Notes keep your edge', body: 'Save any insight mid-lesson and turn scattered facts into your own playbook.' },
-  { icon: 'user' as const, title: 'You shows the receipts', body: 'Track XP, streaks, achievements, and every industry card you collect.' },
+  { icon: 'user' as const, title: 'Your profile shows your progress', body: 'Track XP, streaks, achievements, and every industry card you collect.' },
 ];
 
 export function FeatureTour({ visible, marketId, goal = 'curiosity', onComplete }: Props) {
