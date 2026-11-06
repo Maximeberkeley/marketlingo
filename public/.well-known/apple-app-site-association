@@ -1,0 +1,8 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      { "appID": "PM32G4952G.app.marketlingo.aerospace", "paths": ["/invite/*"] }
+    ]
+  }
+}

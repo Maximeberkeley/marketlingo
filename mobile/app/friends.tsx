@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { inviteMessage, inviteUrl, acceptInvite, normalizeInviteCode, inviteToast } from '../lib/invites';
+import { inviteMessage, acceptInvite, normalizeInviteCode, inviteToast } from '../lib/invites';
 import { COLORS, TYPE, SHADOWS } from '../lib/constants';
 import { getMarketName } from '../lib/markets';
 import { useFriends, Friend, FriendSearchResult } from '../hooks/useFriends';
