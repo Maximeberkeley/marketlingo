@@ -10,6 +10,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { AdminGuard } from "@/components/admin/AdminGuard";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import Auth from "./pages/Auth";
+import InviteLanding from "./pages/InviteLanding";
 import SelectMarket from "./pages/SelectMarket";
 import Home from "./pages/Home";
 import SelectFamiliarity from "./pages/SelectFamiliarity";
@@ -50,6 +51,7 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Landing />} />
+        <Route path="/invite/:code" element={<InviteLanding />} />
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/select-market" element={<PageTransition><SelectMarket /></PageTransition>} />
         <Route path="/select-goal" element={<PageTransition><SelectGoal /></PageTransition>} />

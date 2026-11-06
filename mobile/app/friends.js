@@ -13,7 +13,8 @@ import {
   Image
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router, useFocusEffect } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { inviteMessage, acceptInvite, normalizeInviteCode, inviteToast } from "../lib/invites";
 import { COLORS, TYPE } from "../lib/constants";
 import { getMarketName } from "../lib/markets";
 import { useFriends } from "../hooks/useFriends";
@@ -61,6 +62,9 @@ function FriendsScreen() {
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState(false);
   const [busyId, setBusyId] = useState(null);
+  const [inviteCodeInput, setInviteCodeInput] = useState("");
+  const [redeeming, setRedeeming] = useState(false);
+  const params = useLocalSearchParams();
   const [activeTab, setActiveTab] = useState("friends");
   const [globalEntries, setGlobalEntries] = useState([]);
   const [globalLoading, setGlobalLoading] = useState(false);
@@ -185,6 +189,26 @@ function FriendsScreen() {
   useEffect(() => () => {
     if (toastTimer.current) clearTimeout(toastTimer.current);
   }, []);
+  useEffect(() => {
+    if (typeof params.toast === "string" && params.toast) showToast(params.toast);
+  }, [params.toast, showToast]);
+  const handleRedeemCode = async () => {
+    const code = normalizeInviteCode(inviteCodeInput);
+    if (!code) {
+      showToast("That invite code isn't valid");
+      return;
+    }
+    if (redeeming) return;
+    triggerHaptic("light");
+    setRedeeming(true);
+    const result = await acceptInvite(code);
+    setRedeeming(false);
+    showToast(inviteToast(result) || "");
+    if (result.status === "connected" || result.status === "already") {
+      setInviteCodeInput("");
+      void refetch();
+    }
+  };
   const searchSeq = useRef(0);
   useEffect(() => {
     const q = query.trim();
@@ -259,7 +283,7 @@ function FriendsScreen() {
     if (!myFriendCode) return;
     triggerHaptic("light");
     try {
-      await Share.share({ message: `Add me on MarketLingo. My friend code is ${myFriendCode}` });
+      await Share.share({ message: inviteMessage(marketName, myFriendCode) });
     } catch (e) {
     }
   };
@@ -303,9 +327,8 @@ function FriendsScreen() {
   const handleShareInvite = async () => {
     triggerHaptic("light");
     try {
-      await Share.share({ message: `Join me on MarketLingo! Learn about industries in 5 mins/day
-
-https://marketlingo.app/invite` });
+      const message = myFriendCode ? inviteMessage(marketName, myFriendCode) : `I'm learning ${marketName || "industries"} on MarketLingo, 5 minutes a day. Join me: https://market-verse.com`;
+      await Share.share({ message });
     } catch (e) {
     }
   };
@@ -461,6 +484,28 @@ https://marketlingo.app/invite` });
     clearButtonMode="while-editing"
   />
                 {searching && <ActivityIndicator size="small" color={COLORS.accent} />}
+              </View>
+
+              {
+    /* Fallback for people who installed without the link */
+  }
+              <View style={styles.addRow}>
+                <Feather name="gift" size={16} color={COLORS.textMuted} />
+                <TextInput
+    style={styles.addInput}
+    placeholder="Got an invite code?"
+    placeholderTextColor={COLORS.textMuted}
+    value={inviteCodeInput}
+    onChangeText={(t) => setInviteCodeInput(t.toUpperCase())}
+    autoCapitalize="characters"
+    autoCorrect={false}
+    maxLength={12}
+    returnKeyType="done"
+    onSubmitEditing={handleRedeemCode}
+  />
+                {redeeming ? <ActivityIndicator size="small" color={COLORS.accent} /> : inviteCodeInput.trim().length >= 4 ? <TouchableOpacity style={styles.pill} onPress={handleRedeemCode} accessibilityLabel="Use invite code">
+                    <Text style={styles.pillText}>Join</Text>
+                  </TouchableOpacity> : null}
               </View>
 
               {query.trim().length >= 2 && !searching && <View style={styles.section}>
