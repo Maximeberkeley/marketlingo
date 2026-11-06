@@ -110,7 +110,7 @@ function sequenceSteps(body) {
     const steps2 = line.split("\u2192").map(clean);
     if (steps2.length >= 2 && steps2.length <= 4 && steps2.every(Boolean) && new Set(steps2.map(norm)).size === steps2.length) return steps2;
   }
-  const markers = [...body.matchAll(/\b(first|then|finally)\b[,:]?\s*/gi)];
+  const markers = [...body.matchAll(/(?:^|[.!?;]\s*|\n\s*|,\s*|\s+and\s+)(first|then|finally)(?:[,:]\s*|\s+)/gi)];
   if (markers.length < 2 || markers.length > 4 || markers[0][1].toLowerCase() !== "first" || !["then", "finally"].includes(markers[markers.length - 1][1].toLowerCase()) || !markers.some((marker) => marker[1].toLowerCase() === "then") || !markers.slice(1, -1).every((marker) => marker[1].toLowerCase() === "then")) return null;
   const steps = markers.map((marker, i) => clean(body.slice(
     (marker.index ?? 0) + marker[0].length,
