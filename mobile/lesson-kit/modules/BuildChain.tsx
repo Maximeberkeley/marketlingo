@@ -66,7 +66,7 @@ export function BuildChain({ exercise, phase, onChange }: ExerciseProps<BuildCha
               <View style={[styles.slot, filled && styles.slotFilled]}>
                 <Text style={[styles.slotNum, filled && styles.slotNumFilled]}>{slot + 1}</Text>
                 <ColorText
-                  text={filled ? exercise.steps[used[slot]] : 'Tap the next step'}
+                  text={filled ? exercise.steps[used[slot]] : slot === 0 ? 'Starts here' : slot === exercise.steps.length - 1 ? 'Ends here' : 'Next'}
                   style={[styles.slotText, filled && styles.slotTextFilled]}
                   maxSentences={10000}
                   maxLength={1000000}

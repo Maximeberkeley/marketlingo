@@ -1,0 +1,265 @@
+{
+  "day": 1,
+  "title": "Who really builds an airliner",
+  "slides": [
+    {
+      "body": "Each Boeing 737 fuselage is built in Kansas, then rides a train for about four days to Boeing near Seattle. In 2005 Boeing sold its Wichita division, which became Spirit AeroSystems, an outside supplier. Spirit went on to build 737 fuselages and major structures for the 767, 777 and 787. In December 2025 Boeing completed its purchase of Spirit's Boeing work, bringing the fuselage line back under its own roof.\n\nThe trip itself has not changed. Fuselages leave Wichita by rail and arrive in Renton, Washington, where the 737 is assembled. That one journey shows the whole map of this industry: the company whose name the plane carries, and the suppliers that build large parts of it.",
+      "title": "Day 1 \u00b7 The map"
+    },
+    {
+      "body": "The OEM is the company whose name the plane carries: Airbus, Boeing, Embraer, COMAC. It designs the aircraft, assembles it and gets the design approved. OEM stands for original equipment manufacturer. A handful of OEMs build passenger jets: Airbus and Boeing for the largest, Embraer for regional jets, and COMAC in China.\n\nThe OEM owns the design, runs final assembly and holds the regulator's type certificate, which the FAA describes as approval of the design of the aircraft and all its component parts. That makes the OEM answerable for the whole aircraft, including every part it bought from someone else.",
+      "title": "Layer 1 \u00b7 The OEM"
+    },
+    {
+      "body": "Engines, landing gear, avionics. A Tier 1 builds a complete system and sells it straight to the OEM. CFM International, owned by GE and Safran, builds LEAP engines. Collins Aerospace builds avionics, and Safran builds landing gear. Tier 1 suppliers make major components or systems: engines, control systems, landing gear, brakes, flight decks and avionics. They work directly with the OEM, often from the first design sketches of a new aircraft.\n\nCFM International is a 50/50 joint company between GE Aerospace and Safran Aircraft Engines. Collins Aerospace, part of RTX, makes flight deck and avionics systems. Safran Landing Systems calls itself the world's largest maker of aircraft landing gear and builds the main and nose gear for the Boeing 787.",
+      "title": "Tier 1 suppliers deliver whole systems"
+    },
+    {
+      "body": "Tier 2 makes the parts inside those systems. Tier 3 makes smaller pieces for Tier 2. Turbine blades and tires are Tier 2 work, fasteners are Tier 3. Below Tier 1 the chain gets wider. Tier 2 companies make parts or subassemblies for Tier 1: airfoils such as turbine blades, tires, structures and flight control parts. Tier 3 companies make components such as hydraulic fittings, tubing and high-strength fasteners, usually shipped to Tier 2. Each tier sells to the tier above it, not to the airline. Raw materials like aluminum, titanium and composites feed every level.\n\nAn airline almost never deals with these companies. Yet a late batch of parts deep in the chain can still hold up a finished aircraft.",
+      "title": "Layer 3 \u00b7 Tiers 2 and 3"
+    },
+    {
+      "body": "Maintenance, repair and overhaul. Airlines, engine makers and independent shops all do this work. Lufthansa Technik calls itself the world's leading independent MRO. Aviation Week has ranked AAR among the top 10 airframe MROs. Once a plane is delivered, it needs regular checks, repairs and full overhauls for the rest of its working life. Some airlines do this in-house, engine makers service their own engines, and independent MRO companies sell the work to anyone.\n\nLufthansa Technik describes itself as the world's leading manufacturer-independent provider of maintenance, repair and overhaul services, with more than 800 customers. AAR, based near Chicago, has been named to Aviation Week's Top 10 Airframe MROs.",
+      "title": "MRO keeps the plane flying after delivery"
+    },
+    {
+      "body": "Call Collins a Tier 1 avionics supplier, not just an aerospace company. It tells the interviewer you know where their work fits. Each layer works differently. OEM roles touch the whole aircraft and its certification. Tier 1 roles go deep on one system and answer to OEM customers. MRO roles run on turnaround time and safety records.\n\nBefore an interview, place the company on the map and ask who its customer is. Then say it in one line: who they are, what they sell, and to whom.",
+      "title": "Say which layer a company sits in"
+    },
+    {
+      "body": "The OEM signs for the whole aircraft. The tiers below it build much of what flies.",
+      "title": "The rule"
+    }
+  ],
+  "stackId": "eab925e7-07c2-47a5-8a7b-3a8eaaea0c2a",
+  "authored_lesson": {
+    "id": "aerospace-d1-career",
+    "title": "Who really builds an airliner",
+    "exercises": [
+      {
+        "id": "open",
+        "kind": "coldOpen",
+        "kicker": "For 20 years, the company building them was not Boeing.",
+        "eyebrow": "Day 1 \u00b7 The map",
+        "sources": [
+          {
+            "url": "https://www.railwayage.com/?p=27569",
+            "label": "Railway Age"
+          },
+          {
+            "url": "https://www.spiritaero.com/company/overview/history/",
+            "label": "Spirit AeroSystems history"
+          },
+          {
+            "url": "https://boeing.mediaroom.com/2025-12-08-Boeing-Completes-Acquisition-of-Spirit-Aerosystems",
+            "label": "Boeing, Dec 2025"
+          }
+        ],
+        "fullText": "In 2005 Boeing sold its Wichita division, which became Spirit AeroSystems, an outside supplier. Spirit went on to build 737 fuselages and major structures for the 767, 777 and 787. In December 2025 Boeing completed its purchase of Spirit's Boeing work, bringing the fuselage line back under its own roof.\n\nThe trip itself has not changed. Fuselages leave Wichita by rail and arrive in Renton, Washington, where the 737 is assembled. That one journey shows the whole map of this industry: the company whose name the plane carries, and the suppliers that build large parts of it.",
+        "headline": "Each Boeing 737 fuselage is built in Kansas, then rides a train for about four days to Boeing near Seattle.",
+        "keyTerms": [
+          {
+            "term": "fuselage",
+            "definition": "The main body of an aircraft, where passengers and cargo ride."
+          }
+        ]
+      },
+      {
+        "id": "oem",
+        "kind": "microInsight",
+        "text": "The OEM is the company whose name the plane carries: Airbus, Boeing, Embraer, COMAC.",
+        "eyebrow": "Layer 1 \u00b7 The OEM",
+        "sources": [
+          {
+            "url": "https://www.faa.gov/newsroom/how-it-works-aircraft-certification",
+            "label": "FAA, How aircraft certification works"
+          }
+        ],
+        "fullText": "OEM stands for original equipment manufacturer. A handful of OEMs build passenger jets: Airbus and Boeing for the largest, Embraer for regional jets, and COMAC in China.\n\nThe OEM owns the design, runs final assembly and holds the regulator's type certificate, which the FAA describes as approval of the design of the aircraft and all its component parts. That makes the OEM answerable for the whole aircraft, including every part it bought from someone else.",
+        "keyTerms": [
+          {
+            "term": "OEM",
+            "definition": "Original equipment manufacturer. In aerospace, the company that designs, builds and certifies the whole aircraft."
+          }
+        ],
+        "highlight": "It designs the aircraft, assembles it and gets the design approved."
+      },
+      {
+        "id": "tier1",
+        "body": "Engines, landing gear, avionics. A Tier 1 builds a complete system and sells it straight to the OEM.",
+        "kind": "info",
+        "title": "Tier 1 suppliers deliver whole systems",
+        "bullets": [
+          "CFM International, owned by GE and Safran, builds LEAP engines.",
+          "Collins Aerospace builds avionics, and Safran builds landing gear."
+        ],
+        "eyebrow": "Layer 2 \u00b7 Tier 1",
+        "sources": [
+          {
+            "url": "https://blog.brennaninc.com/what-are-the-three-tiers-in-the-aerospace-supply-chain",
+            "label": "Brennan, aerospace supply chain tiers"
+          },
+          {
+            "url": "https://www.cfmaeroengines.com/about",
+            "label": "CFM International"
+          },
+          {
+            "url": "https://www.rtx.com/collinsaerospace",
+            "label": "Collins Aerospace (RTX)"
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/Safran_Landing_Systems",
+            "label": "Safran Landing Systems"
+          }
+        ],
+        "fullText": "Tier 1 suppliers make major components or systems: engines, control systems, landing gear, brakes, flight decks and avionics. They work directly with the OEM, often from the first design sketches of a new aircraft.\n\nCFM International is a 50/50 joint company between GE Aerospace and Safran Aircraft Engines. Collins Aerospace, part of RTX, makes flight deck and avionics systems. Safran Landing Systems calls itself the world's largest maker of aircraft landing gear and builds the main and nose gear for the Boeing 787.",
+        "keyTerms": [
+          {
+            "term": "avionics",
+            "definition": "The electronics on board: flight displays, navigation and radios."
+          }
+        ]
+      },
+      {
+        "id": "tier23",
+        "kind": "microInsight",
+        "text": "Tier 2 makes the parts inside those systems. Tier 3 makes smaller pieces for Tier 2.",
+        "eyebrow": "Layer 3 \u00b7 Tiers 2 and 3",
+        "sources": [
+          {
+            "url": "https://blog.brennaninc.com/what-are-the-three-tiers-in-the-aerospace-supply-chain",
+            "label": "Brennan, aerospace supply chain tiers"
+          }
+        ],
+        "fullText": "Below Tier 1 the chain gets wider. Tier 2 companies make parts or subassemblies for Tier 1: airfoils such as turbine blades, tires, structures and flight control parts. Tier 3 companies make components such as hydraulic fittings, tubing and high-strength fasteners, usually shipped to Tier 2. Each tier sells to the tier above it, not to the airline. Raw materials like aluminum, titanium and composites feed every level.\n\nAn airline almost never deals with these companies. Yet a late batch of parts deep in the chain can still hold up a finished aircraft.",
+        "highlight": "Turbine blades and tires are Tier 2 work, fasteners are Tier 3."
+      },
+      {
+        "id": "mro",
+        "body": "Maintenance, repair and overhaul. Airlines, engine makers and independent shops all do this work.",
+        "kind": "info",
+        "title": "MRO keeps the plane flying after delivery",
+        "bullets": [
+          "Lufthansa Technik calls itself the world's leading independent MRO.",
+          "Aviation Week has ranked AAR among the top 10 airframe MROs."
+        ],
+        "eyebrow": "Layer 4 \u00b7 MRO",
+        "sources": [
+          {
+            "url": "https://report.lufthansagroup.com/2025/annual-report/en/combined-management-report/business-segments/mro-business-segment/",
+            "label": "Lufthansa Group annual report 2025"
+          },
+          {
+            "url": "https://www.aarcorp.com/aar-named-to-top-10-airframe-mros-in-the-world-by-aviation-week/?pg=4",
+            "label": "AAR"
+          }
+        ],
+        "fullText": "Once a plane is delivered, it needs regular checks, repairs and full overhauls for the rest of its working life. Some airlines do this in-house, engine makers service their own engines, and independent MRO companies sell the work to anyone.\n\nLufthansa Technik describes itself as the world's leading manufacturer-independent provider of maintenance, repair and overhaul services, with more than 800 customers. AAR, based near Chicago, has been named to Aviation Week's Top 10 Airframe MROs.",
+        "keyTerms": [
+          {
+            "term": "MRO",
+            "definition": "Maintenance, repair and overhaul: the work that keeps an aircraft fit to fly."
+          }
+        ]
+      },
+      {
+        "id": "sort-map",
+        "leo": {
+          "line": "Six companies, three layers. You've got this.",
+          "mood": "thinking"
+        },
+        "kind": "sortSignal",
+        "items": [
+          {
+            "text": "Airbus",
+            "bucket": 0
+          },
+          {
+            "text": "Embraer",
+            "bucket": 0
+          },
+          {
+            "text": "CFM International",
+            "bucket": 1
+          },
+          {
+            "text": "Collins Aerospace",
+            "bucket": 1
+          },
+          {
+            "text": "Lufthansa Technik",
+            "bucket": 2
+          },
+          {
+            "text": "AAR",
+            "bucket": 2
+          }
+        ],
+        "prompt": "Put each company on the map.",
+        "buckets": [
+          "OEM",
+          "Tier 1",
+          "MRO"
+        ],
+        "explanation": "OEMs sign for the whole plane. Tier 1 sells them systems, and MRO shops keep the fleet flying."
+      },
+      {
+        "id": "mc-tier",
+        "kind": "multipleChoice",
+        "prompt": "A company builds complete landing gear and sells it to Airbus. Which layer is it?",
+        "options": [
+          "Tier 1",
+          "Tier 3",
+          "MRO",
+          "OEM"
+        ],
+        "explanation": "It delivers a whole system straight to the OEM. That is the Tier 1 job.",
+        "correctIndex": 0
+      },
+      {
+        "id": "mc-collins-tier",
+        "kind": "multipleChoice",
+        "prompt": "Collins Aerospace sells avionics directly to Boeing and Airbus. Which supplier tier does that make Collins?",
+        "options": [
+          "Tier 1",
+          "OEM",
+          "Tier 2",
+          "Tier 3"
+        ],
+        "explanation": "Selling straight to the aircraft maker is what makes a supplier Tier 1. The OEM is the company whose name is on the plane.",
+        "correctIndex": 0
+      },
+      {
+        "id": "lens-career",
+        "body": "Call Collins a Tier 1 avionics supplier, not just an aerospace company. It tells the interviewer you know where their work fits.",
+        "kind": "info",
+        "title": "Say which layer a company sits in",
+        "eyebrow": "For your interview",
+        "fullText": "Each layer works differently. OEM roles touch the whole aircraft and its certification. Tier 1 roles go deep on one system and answer to OEM customers. MRO roles run on turnaround time and safety records.\n\nBefore an interview, place the company on the map and ask who its customer is. Then say it in one line: who they are, what they sell, and to whom.",
+        "detailTitle": "Say which layer a company sits in"
+      },
+      {
+        "id": "rule",
+        "leo": {
+          "line": "That's the map. Tomorrow we follow the money.",
+          "mood": "celebrate"
+        },
+        "kind": "microInsight",
+        "text": "The OEM signs for the whole aircraft. The tiers below it build much of what flies.",
+        "eyebrow": "The rule",
+        "sources": [
+          {
+            "url": "https://blog.brennaninc.com/what-are-the-three-tiers-in-the-aerospace-supply-chain",
+            "label": "Brennan, aerospace supply chain tiers"
+          }
+        ]
+      },
+      {
+        "id": "say-it",
+        "kind": "sayIt",
+        "takeaway": "The OEM designs, assembles and certifies the plane. Suppliers in tiers build its systems and parts, and MRO shops keep it flying.",
+        "sectionKey": "players"
+      }
+    ]
+  }
+}

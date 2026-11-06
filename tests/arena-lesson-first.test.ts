@@ -22,13 +22,16 @@ const input = { marketId: 'neuroscience', marketName: 'Neuroscience', trainer: t
 const all = (waves: ReturnType<typeof buildArena>) => waves.flatMap(w => w.exercises);
 
 describe('lesson-first Arena', () => {
-  it('uses at least 10 of 11 questions about the real Day 1 brain lesson across random runs', () => {
+  it('uses at least 9 of 11 honest lesson questions without inventing a prose chain', () => {
     for (let i = 0; i < 100; i++) {
       const waves = buildArena(input);
       expect(waves.map(w => w.exercises.length)).toEqual([4, 4, 3]);
       const questions = all(waves);
       const grounded = questions.filter(q => q.source?.type === 'lesson');
-      expect(grounded.length).toBeGreaterThanOrEqual(10);
+      // This fixture has no authored chain or explicit sequence; the old tenth
+      // lesson question depended on ordering unrelated sentences.
+      expect(grounded.length).toBeGreaterThanOrEqual(9);
+      expect(grounded.some(q => q.kind === 'buildChain')).toBe(false);
       for (const q of grounded) {
         const text = JSON.stringify(q).toLowerCase();
         expect(text).toMatch(/cortex|limbic|hippocampus|brainstem|cerebellum|cerebrum|neurons/);
