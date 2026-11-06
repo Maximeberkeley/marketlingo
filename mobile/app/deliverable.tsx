@@ -240,7 +240,7 @@ export default function DeliverableScreen() {
       disabled={savingKey !== null} onPress={cancel}>
       <Text style={styles.link}>Cancel</Text>
     </TouchableOpacity>
-    <Text style={styles.accessoryTitle} numberOfLines={1}>{activeSection?.title ?? ''}</Text>
+    <Text style={styles.accessoryTitle} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.8}>{activeSection?.title ?? ''}</Text>
     <TouchableOpacity accessibilityRole="button" accessibilityLabel="Save dossier line" style={[styles.accessorySave, saveDisabled && styles.saveBtnOff]}
       disabled={saveDisabled} onPress={() => { if (composing) void save(composing); }}>
       <Text style={styles.saveText}>{savingKey ? 'Saving…' : 'Save'}</Text>

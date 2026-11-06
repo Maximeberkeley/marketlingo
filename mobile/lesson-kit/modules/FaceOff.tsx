@@ -5,6 +5,8 @@ import { FaceOffExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { Prompt, tap, useEnter } from './shared';
 import { ColorText } from '../components/ColorText';
+import { AnswerMark, AnswerTag } from '../components/AnswerMark';
+import { answerTag, choiceStateFor } from '../components/answerState';
 import { shortLabel } from '../text';
 
 /** Company Face-Off — two players enter, you pick one. */
@@ -32,9 +34,8 @@ export function FaceOff({ exercise, phase, onChange }: ExerciseProps<FaceOffExer
 
       <View style={styles.ring}>
         {sides.map((side, i) => {
-          const isPicked = picked === i;
           const reveal = phase === 'feedback';
-          const isRight = i === exercise.correctIndex;
+          const state = choiceStateFor(i, picked, exercise.correctIndex, reveal);
           const translateY = enter.interpolate({
             inputRange: [0, 1],
             outputRange: [i === 0 ? -26 : 26, 0],
@@ -44,16 +45,24 @@ export function FaceOff({ exercise, phase, onChange }: ExerciseProps<FaceOffExer
               <TouchableOpacity
                 activeOpacity={0.9}
                 onPress={() => choose(i)}
+                disabled={reveal}
+                accessibilityRole="button"
+                accessibilityState={{ selected: state === 'selected' }}
                 style={[
                   styles.side,
-                  isPicked && styles.sidePicked,
-                  reveal && isRight && styles.sideRight,
-                  reveal && isPicked && !isRight && styles.sideWrong,
+                  state === 'selected' && styles.sidePicked,
+                  state === 'correct' && styles.sideRight,
+                  state === 'incorrect' && styles.sideWrong,
+                  reveal && state === 'idle' && styles.sideStepBack,
                 ]}
               >
-                <Text style={styles.badge}>{i === 0 ? 'A' : 'B'}</Text>
+                <View style={styles.sideHead}>
+                  <Text style={styles.badge}>{i === 0 ? 'A' : 'B'}</Text>
+                  <AnswerMark state={state} revealed={reveal} />
+                </View>
                 <ColorText text={shortLabel(side.name)} style={styles.name} maxSentences={1} maxLength={60} />
                 {!!side.note && <ColorText text={side.note} style={styles.note} maxSentences={1} maxLength={72} />}
+                <AnswerTag text={answerTag(i, picked, exercise.correctIndex, reveal)} state={state} />
               </TouchableOpacity>
             </Animated.View>
           );
@@ -83,6 +92,8 @@ const styles = StyleSheet.create({
   sidePicked: { borderColor: tokens.color.accent, backgroundColor: tokens.color.accentSoft },
   sideRight: { borderColor: tokens.color.correct, backgroundColor: tokens.color.correctSoft },
   sideWrong: { borderColor: tokens.color.incorrect, backgroundColor: tokens.color.incorrectSoft },
+  sideStepBack: { opacity: 0.55 },
+  sideHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   badge: {
     fontSize: 11,
     fontWeight: '900',

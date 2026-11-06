@@ -8,12 +8,12 @@ import {
   TouchableOpacity,
   Animated,
   PanResponder,
-  Dimensions,
   ActivityIndicator,
   Linking,
-  Platform,
-  StatusBar
+  StatusBar,
+  useWindowDimensions
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Audio } from "expo-av";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather } from "@expo/vector-icons";
@@ -21,8 +21,8 @@ import { COLORS } from "../../lib/constants";
 import { supabase } from "../../lib/supabase";
 import { speakWithElevenLabs } from "../../lib/tts";
 import { log } from "../../lib/logger";
-const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get("window");
 const SWIPE_THRESHOLD = 80;
+const STORY_COLUMN_MAX = 720;
 const SOPHIA_VOICE_ID = "pFZP5JQG7iQjIQuC4Bku";
 const EDGE_URL = process.env.EXPO_PUBLIC_EDGE_FUNCTIONS_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_KEY || "";
@@ -107,6 +107,10 @@ function ImmersiveNewsOverlay({
   learningGoal = "curiosity"
 }) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const { width: windowW, height: windowH } = useWindowDimensions();
+  const windowSize = useRef({ w: windowW, h: windowH });
+  windowSize.current = { w: windowW, h: windowH };
+  const insets = useSafeAreaInsets();
   const [narrationText, setNarrationText] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -259,11 +263,11 @@ function ImmersiveNewsOverlay({
     if (index < 0 || index >= articles.length) return;
     const cur = currentIndexRef.current;
     const dir = index > cur ? -1 : 1;
-    Animated.timing(translateX, { toValue: dir * SCREEN_W, duration: 200, useNativeDriver: true }).start(() => {
+    Animated.timing(translateX, { toValue: dir * windowSize.current.w, duration: 200, useNativeDriver: true }).start(() => {
       setCurrentIndex(index);
       currentIndexRef.current = index;
       setSubtitlesExpanded(false);
-      translateX.setValue(-dir * SCREEN_W);
+      translateX.setValue(-dir * windowSize.current.w);
       Animated.spring(translateX, { toValue: 0, friction: 8, tension: 60, useNativeDriver: true }).start();
     });
   }, [articles.length]);
@@ -288,7 +292,7 @@ function ImmersiveNewsOverlay({
       onPanResponderRelease: (_, g) => {
         const idx = currentIndexRef.current;
         if (g.dy < -SWIPE_THRESHOLD && Math.abs(g.dy) > Math.abs(g.dx)) {
-          Animated.timing(translateY, { toValue: -SCREEN_H, duration: 300, useNativeDriver: true }).start(() => {
+          Animated.timing(translateY, { toValue: -windowSize.current.h, duration: 300, useNativeDriver: true }).start(() => {
             translateY.setValue(0);
             onClose();
           });
@@ -298,11 +302,11 @@ function ImmersiveNewsOverlay({
         if (g.dx < -SWIPE_THRESHOLD && Math.abs(g.dx) > Math.abs(g.dy)) {
           const next = idx + 1;
           if (next < articles.length) {
-            Animated.timing(translateX, { toValue: -SCREEN_W, duration: 200, useNativeDriver: true }).start(() => {
+            Animated.timing(translateX, { toValue: -windowSize.current.w, duration: 200, useNativeDriver: true }).start(() => {
               currentIndexRef.current = next;
               setCurrentIndex(next);
               setSubtitlesExpanded(false);
-              translateX.setValue(SCREEN_W);
+              translateX.setValue(windowSize.current.w);
               Animated.spring(translateX, { toValue: 0, friction: 8, tension: 60, useNativeDriver: true }).start();
             });
           } else {
@@ -313,11 +317,11 @@ function ImmersiveNewsOverlay({
         if (g.dx > SWIPE_THRESHOLD && Math.abs(g.dx) > Math.abs(g.dy)) {
           const prev = idx - 1;
           if (prev >= 0) {
-            Animated.timing(translateX, { toValue: SCREEN_W, duration: 200, useNativeDriver: true }).start(() => {
+            Animated.timing(translateX, { toValue: windowSize.current.w, duration: 200, useNativeDriver: true }).start(() => {
               currentIndexRef.current = prev;
               setCurrentIndex(prev);
               setSubtitlesExpanded(false);
-              translateX.setValue(-SCREEN_W);
+              translateX.setValue(-windowSize.current.w);
               Animated.spring(translateX, { toValue: 0, friction: 8, tension: 60, useNativeDriver: true }).start();
             });
           } else {
@@ -432,7 +436,7 @@ User's goal: ${learningGoal}`;
       ...panResponder.panHandlers
     },
     /* @__PURE__ */ React.createElement(Animated.View, { style: [st.bgContainer, { transform: [{ translateX }] }] }, article.imageUrl ? /* @__PURE__ */ React.createElement(Image, { source: { uri: article.imageUrl }, style: st.bgImage, blurRadius: 1 }) : /* @__PURE__ */ React.createElement(View, { style: [st.bgImage, { backgroundColor: "#1A1035" }] }), /* @__PURE__ */ React.createElement(View, { style: st.bgOverlay })),
-    /* @__PURE__ */ React.createElement(View, { style: st.topBar }, /* @__PURE__ */ React.createElement(View, { style: st.counterBadge }, /* @__PURE__ */ React.createElement(Text, { style: st.counterText }, currentIndex + 1, "/", articles.length)), /* @__PURE__ */ React.createElement(View, { style: st.topBarRight }, onQuiz ? /* @__PURE__ */ React.createElement(
+    /* @__PURE__ */ React.createElement(View, { style: [st.topBar, { paddingTop: Math.max(insets.top, 20) + 12 }] }, /* @__PURE__ */ React.createElement(View, { style: st.counterBadge }, /* @__PURE__ */ React.createElement(Text, { style: st.counterText }, currentIndex + 1, "/", articles.length)), /* @__PURE__ */ React.createElement(View, { style: st.topBarRight }, onQuiz ? /* @__PURE__ */ React.createElement(
       TouchableOpacity,
       {
         style: st.quizButton,
@@ -475,8 +479,8 @@ User's goal: ${learningGoal}`;
       /* @__PURE__ */ React.createElement(Text, { style: st.subtitleText, numberOfLines: subtitlesExpanded ? void 0 : 2 }, narrationText),
       !subtitlesExpanded && narrationText.length > 80 && /* @__PURE__ */ React.createElement(Text, { style: st.expandHint }, "Tap to read more")
     )),
-    /* @__PURE__ */ React.createElement(View, { style: st.titleContainer }, /* @__PURE__ */ React.createElement(Text, { style: st.articleTitle, numberOfLines: 2 }, article.title), /* @__PURE__ */ React.createElement(Text, { style: st.articleMeta }, article.sourceName, " \xB7 ", article.publishedAt)),
-    /* @__PURE__ */ React.createElement(View, { style: st.bottomBar }, /* @__PURE__ */ React.createElement(
+    /* @__PURE__ */ React.createElement(View, { style: [st.column, st.titleContainer] }, /* @__PURE__ */ React.createElement(Text, { style: st.articleTitle, numberOfLines: 3 }, article.title), /* @__PURE__ */ React.createElement(Text, { style: st.articleMeta }, article.sourceName, " \xB7 ", article.publishedAt)),
+    /* @__PURE__ */ React.createElement(View, { style: [st.column, st.bottomBar] }, /* @__PURE__ */ React.createElement(
       TouchableOpacity,
       {
         style: st.sourceBtn,
@@ -486,7 +490,7 @@ User's goal: ${learningGoal}`;
       /* @__PURE__ */ React.createElement(Feather, { name: "external-link", size: 16, color: "#fff" }),
       /* @__PURE__ */ React.createElement(Text, { style: st.sourceBtnText }, "Read Full Article")
     ), isDoneSpeaking && hasNext && /* @__PURE__ */ React.createElement(Text, { style: st.swipeHint }, "Swipe left for next article \u2192")),
-    /* @__PURE__ */ React.createElement(View, { style: st.dotsRow }, articles.map((_, i) => /* @__PURE__ */ React.createElement(
+    /* @__PURE__ */ React.createElement(View, { style: [st.dotsRow, { paddingBottom: Math.max(insets.bottom, 16) + 8 }] }, articles.map((_, i) => /* @__PURE__ */ React.createElement(
       View,
       {
         key: i,
@@ -495,8 +499,6 @@ User's goal: ${learningGoal}`;
     )))
   ));
 }
-const BOTTOM_PADDING = Platform.OS === "ios" ? 40 : 24;
-const TOP_PADDING = Platform.OS === "ios" ? 56 : 40;
 const st = StyleSheet.create({
   container: {
     flex: 1,
@@ -506,8 +508,9 @@ const st = StyleSheet.create({
     ...StyleSheet.absoluteFillObject
   },
   bgImage: {
-    width: SCREEN_W,
-    height: SCREEN_H,
+    ...StyleSheet.absoluteFillObject,
+    width: "100%",
+    height: "100%",
     resizeMode: "cover"
   },
   bgOverlay: {
@@ -519,7 +522,6 @@ const st = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: TOP_PADDING,
     paddingHorizontal: 20,
     zIndex: 10
   },
@@ -620,7 +622,7 @@ const st = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 16,
     backgroundColor: "rgba(0,0,0,0.5)",
-    maxWidth: SCREEN_W - 60
+    maxWidth: 620
   },
   subtitleText: {
     fontSize: 14,
@@ -636,6 +638,7 @@ const st = StyleSheet.create({
     marginTop: 4,
     fontWeight: "600"
   },
+  column: { width: "100%", maxWidth: STORY_COLUMN_MAX, alignSelf: "center" },
   // Title
   titleContainer: {
     paddingHorizontal: 24,
@@ -686,8 +689,7 @@ const st = StyleSheet.create({
   dotsRow: {
     flexDirection: "row",
     justifyContent: "center",
-    gap: 4,
-    paddingBottom: BOTTOM_PADDING
+    gap: 4
   },
   dot: {
     width: 6,
@@ -702,5 +704,6 @@ const st = StyleSheet.create({
   }
 });
 export {
-  ImmersiveNewsOverlay
+  ImmersiveNewsOverlay,
+  STORY_COLUMN_MAX
 };

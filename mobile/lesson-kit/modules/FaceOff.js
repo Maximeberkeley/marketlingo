@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native
 import { tokens } from "../theme/tokens";
 import { Prompt, tap, useEnter } from "./shared";
 import { ColorText } from "../components/ColorText";
+import { AnswerMark, AnswerTag } from "../components/AnswerMark";
+import { answerTag, choiceStateFor } from "../components/answerState";
 import { shortLabel } from "../text";
 function FaceOff({ exercise, phase, onChange }) {
   const [picked, setPicked] = useState(null);
@@ -19,9 +21,8 @@ function FaceOff({ exercise, phase, onChange }) {
   };
   const sides = [exercise.left, exercise.right];
   return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(Prompt, { eyebrow: "Face-off", text: exercise.prompt }), /* @__PURE__ */ React.createElement(View, { style: styles.ring }, sides.map((side, i) => {
-    const isPicked = picked === i;
     const reveal = phase === "feedback";
-    const isRight = i === exercise.correctIndex;
+    const state = choiceStateFor(i, picked, exercise.correctIndex, reveal);
     const translateY = enter.interpolate({
       inputRange: [0, 1],
       outputRange: [i === 0 ? -26 : 26, 0]
@@ -31,16 +32,21 @@ function FaceOff({ exercise, phase, onChange }) {
       {
         activeOpacity: 0.9,
         onPress: () => choose(i),
+        disabled: reveal,
+        accessibilityRole: "button",
+        accessibilityState: { selected: state === "selected" },
         style: [
           styles.side,
-          isPicked && styles.sidePicked,
-          reveal && isRight && styles.sideRight,
-          reveal && isPicked && !isRight && styles.sideWrong
+          state === "selected" && styles.sidePicked,
+          state === "correct" && styles.sideRight,
+          state === "incorrect" && styles.sideWrong,
+          reveal && state === "idle" && styles.sideStepBack
         ]
       },
-      /* @__PURE__ */ React.createElement(Text, { style: styles.badge }, i === 0 ? "A" : "B"),
+      /* @__PURE__ */ React.createElement(View, { style: styles.sideHead }, /* @__PURE__ */ React.createElement(Text, { style: styles.badge }, i === 0 ? "A" : "B"), /* @__PURE__ */ React.createElement(AnswerMark, { state, revealed: reveal })),
       /* @__PURE__ */ React.createElement(ColorText, { text: shortLabel(side.name), style: styles.name, maxSentences: 1, maxLength: 60 }),
-      !!side.note && /* @__PURE__ */ React.createElement(ColorText, { text: side.note, style: styles.note, maxSentences: 1, maxLength: 72 })
+      !!side.note && /* @__PURE__ */ React.createElement(ColorText, { text: side.note, style: styles.note, maxSentences: 1, maxLength: 72 }),
+      /* @__PURE__ */ React.createElement(AnswerTag, { text: answerTag(i, picked, exercise.correctIndex, reveal), state })
     ));
   }), /* @__PURE__ */ React.createElement(View, { style: styles.vsWrap }, /* @__PURE__ */ React.createElement(Text, { style: styles.vs }, "VS"))));
 }
@@ -61,6 +67,8 @@ const styles = StyleSheet.create({
   sidePicked: { borderColor: tokens.color.accent, backgroundColor: tokens.color.accentSoft },
   sideRight: { borderColor: tokens.color.correct, backgroundColor: tokens.color.correctSoft },
   sideWrong: { borderColor: tokens.color.incorrect, backgroundColor: tokens.color.incorrectSoft },
+  sideStepBack: { opacity: 0.55 },
+  sideHead: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   badge: {
     fontSize: 11,
     fontWeight: "900",

@@ -6,6 +6,8 @@ import { TheCallExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { tap, useEnter } from './shared';
 import { ColorText } from '../components/ColorText';
+import { AnswerMark, AnswerTag } from '../components/AnswerMark';
+import { answerTag, choiceStateFor } from '../components/answerState';
 import { shortLabel } from '../text';
 
 /**
@@ -56,20 +58,28 @@ export function TheCall({ exercise, phase, onChange }: ExerciseProps<TheCallExer
       <View style={styles.options}>
         {exercise.options.map((o, i) => {
           const reveal = phase === 'feedback';
-          const right = i === exercise.correctIndex;
+          const state = choiceStateFor(i, picked, exercise.correctIndex, reveal);
           return (
             <TouchableOpacity
               key={i}
               activeOpacity={0.9}
               onPress={() => choose(i)}
+              disabled={reveal}
+              accessibilityRole="button"
+              accessibilityState={{ selected: state === 'selected' }}
               style={[
                 styles.option,
-                picked === i && styles.optionPicked,
-                reveal && right && styles.optionRight,
-                reveal && picked === i && !right && styles.optionWrong,
+                state === 'selected' && styles.optionPicked,
+                state === 'correct' && styles.optionRight,
+                state === 'incorrect' && styles.optionWrong,
+                reveal && state === 'idle' && styles.optionStepBack,
               ]}
             >
-              <ColorText text={shortLabel(o)} style={styles.optionText} maxSentences={1} maxLength={72} />
+              <View style={styles.optionCopy}>
+                <ColorText text={shortLabel(o)} style={styles.optionText} maxSentences={1} maxLength={72} />
+                <AnswerTag text={answerTag(i, picked, exercise.correctIndex, reveal)} state={state} />
+              </View>
+              <AnswerMark state={state} revealed={reveal} />
             </TouchableOpacity>
           );
         })}
@@ -115,8 +125,10 @@ const styles = StyleSheet.create({
   },
   options: { gap: tokens.space.sm, marginTop: tokens.space.md },
   option: {
+    width: '100%',
     minHeight: 56,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: tokens.radius.md,
     borderWidth: 2,
     borderColor: tokens.color.borderStrong,
@@ -128,6 +140,8 @@ const styles = StyleSheet.create({
   optionPicked: { borderColor: tokens.color.accent, backgroundColor: tokens.color.accentSoft },
   optionRight: { borderColor: tokens.color.correct, backgroundColor: tokens.color.correctSoft },
   optionWrong: { borderColor: tokens.color.incorrect, backgroundColor: tokens.color.incorrectSoft },
+  optionStepBack: { opacity: 0.55 },
+  optionCopy: { flex: 1, minWidth: 0 },
   optionText: { fontSize: tokens.font.body, fontWeight: '700', color: tokens.color.text, lineHeight: 22 },
   wire: { marginTop: tokens.space.xl, gap: tokens.space.md },
   wireRow: { flexDirection: 'row', gap: tokens.space.md, alignItems: 'flex-start' },
