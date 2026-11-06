@@ -14,6 +14,14 @@ const BODIES = [
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+function localDate(tz?: string | null): string {
+  try {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: tz || 'UTC', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  } catch {
+    return new Date().toISOString().slice(0, 10);
+  }
+}
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -57,19 +65,20 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (!friendship) return json({ error: 'Not friends' }, 403);
 
+    const [{ data: sender }, { data: receiver }] = await Promise.all([
+      admin.from('profiles').select('display_name').eq('id', senderId).maybeSingle(),
+      admin.from('profiles').select('push_token, notification_preferences, timezone').eq('id', friendId).maybeSingle(),
+    ]);
+
+    // One nudge per sender→receiver per receiver-local day.
     const { error: insertError } = await admin
       .from('friend_nudges')
-      .insert({ sender_id: senderId, receiver_id: friendId });
+      .insert({ sender_id: senderId, receiver_id: friendId, created_on: localDate(receiver?.timezone) });
     if (insertError) {
       if (insertError.code === '23505') return json({ status: 'already' });
       console.error('Nudge insert failed', insertError);
       return json({ error: 'Could not save nudge' }, 500);
     }
-
-    const [{ data: sender }, { data: receiver }] = await Promise.all([
-      admin.from('profiles').select('display_name').eq('id', senderId).maybeSingle(),
-      admin.from('profiles').select('push_token, notification_preferences').eq('id', friendId).maybeSingle(),
-    ]);
 
     const prefs = (receiver?.notification_preferences ?? {}) as Record<string, unknown>;
     if (!receiver?.push_token || prefs.friends === false) return json({ status: 'saved' });

@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
     const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const { data: row } = await admin
       .from('friendships')
-      .select('user_id, friend_id, status')
+      .select('user_id, friend_id, status, created_at')
       .eq('id', friendshipId)
       .maybeSingle();
     if (!row) return json({ error: 'Not found' }, 404);
@@ -66,10 +66,23 @@ Deno.serve(async (req) => {
       if (row.status !== 'accepted' || (row.user_id !== callerId && row.friend_id !== callerId)) {
         return json({ error: 'Forbidden' }, 403);
       }
+      if (Date.now() - new Date(row.created_at).getTime() > 10 * 60 * 1000) {
+        return json({ error: 'Invite window expired' }, 403);
+      }
       receiverId = row.user_id === callerId ? row.friend_id : row.user_id;
     } else {
       if (row.friend_id !== callerId || row.status !== 'accepted') return json({ error: 'Forbidden' }, 403);
       receiverId = row.user_id;
+    }
+
+    // Each push goes out at most once per friendship and kind.
+    const { error: recordError } = await admin
+      .from('friendship_notifications')
+      .insert({ friendship_id: friendshipId, kind, sent_by: callerId });
+    if (recordError) {
+      if (recordError.code === '23505') return json({ status: 'already' });
+      console.error('Notification record failed', recordError);
+      return json({ error: 'Could not record notification' }, 500);
     }
 
     const [{ data: caller }, { data: receiver }] = await Promise.all([
