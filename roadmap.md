@@ -1,10 +1,11 @@
 # MarketLingo roadmap
 
 ## Nov 6 — Build the Chain integrity
-- [ ] Reject generated chains without explicit sequence markers and clarify slot labels/order explanations.
-- [ ] Prefer authored chains/sorts then claims in Cases; remove generated chains from Arena and keep standalone practice authored-first.
-- [ ] Add the authored Collins Aerospace Tier 1 question to the Day 1 supplier-tier variants.
-- [ ] Synchronize JavaScript twins and run focused regression checks with real Aerospace content.
+- [x] Reject generated chains without explicit sequence markers and clarify slot labels/order explanations.
+- [x] Prefer authored chains/sorts then claims in Cases; remove generated chains from Arena and keep standalone practice authored-first.
+- [x] Add the authored Collins Aerospace Tier 1 question to all four Day 1 supplier-tier variants; read back exactly one correct question per variant, with other cards retaining their order.
+- [x] Synchronize five JavaScript twins, retaining React; all 130 regression checks passed across the full run and focused rerun. Real Aerospace Day 1 rejects prose chains and uses authored sorting in Cases Evidence; preview build OK.
+- [ ] Verify native Cases/Arena display on iPhone (blocked: no iOS device/simulator; requires a rebuilt app).
 
 ## Nov 2 — Leo-led onboarding tour
 - [x] Centre a persistent 200pt animated Leo with the page icon badge; greet on open, ready on the final page, idle between, and pause while hidden.
