@@ -5,7 +5,6 @@ import { getIndustryPack } from "../industry/packs";
 import {
   checkClaim,
   checkFigure,
-  checkMechanism,
   checkTamper,
   isRealTerm,
   termsFromSlides
@@ -217,7 +216,7 @@ function buildArena(input) {
   ], 4);
   const figures = generated(checkFigure);
   const authoredNumbers = own("numberSense");
-  const wave2 = fill([...authoredNumbers.slice(0, 1), ...figures.slice(0, 1), ...generated(checkMechanism), ...own("sortSignal"), ...own("buildChain"), ...figures, ...authoredNumbers.slice(1)], [
+  const wave2 = fill([...authoredNumbers.slice(0, 1), ...figures.slice(0, 1), ...own("buildChain"), ...own("sortSignal"), ...generated(checkClaim), ...figures, ...authoredNumbers.slice(1)], [
     pack ? packChain(pack, nextId()) : null,
     statNumberSense(input.stats, nextId()),
     drillSpotFake(input.drills, nextId()),

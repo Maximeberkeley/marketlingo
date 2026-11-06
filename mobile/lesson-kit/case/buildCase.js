@@ -1,9 +1,8 @@
 import { getIndustryPack } from "../industry/packs";
-import { checkClaim, checkFigure, checkMechanism } from "../sequencer/lessonChecks";
+import { checkClaim, checkFigure } from "../sequencer/lessonChecks";
 import { lessonSource } from "../practice/studiedMaterial";
 import {
   drillSpotFake,
-  packChain,
   packMap,
   packNumber,
   statNumberSense,
@@ -63,7 +62,7 @@ function buildCase(input) {
       leo: { line: "Read the first sentence carefully.", mood: "thinking" }
     }
   });
-  const evidence = firstLesson((lesson) => lesson.questions?.find((q) => q.kind === "sortSignal") || checkMechanism(lesson.slides, "case-evidence-lesson")) || drillSpotFake(input.drills, "case-evidence", "One of these claims does not hold. Which one?") || (pack ? packMap(pack, "case-evidence-map") : null) || (pack ? packChain(pack, "case-evidence-chain") : null);
+  const evidence = firstLesson((lesson) => lesson.questions?.find((q) => q.kind === "buildChain") || lesson.questions?.find((q) => q.kind === "sortSignal") || checkClaim(lesson.slides, "case-evidence-lesson")) || drillSpotFake(input.drills, "case-evidence", "One of these claims does not hold. Which one?") || (pack ? packMap(pack, "case-evidence-map") : null);
   if (evidence) {
     stages.push({
       key: "evidence",
