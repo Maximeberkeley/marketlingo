@@ -148,6 +148,13 @@
       "when": 1791750986969,
       "tag": "0020_fix_monthly_league_season_close",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1793930078223,
+      "tag": "0021_friends_privacy_layer",
+      "breakpoints": true
     }
   ]
 }
