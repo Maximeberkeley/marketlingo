@@ -2970,6 +2970,7 @@ export type Database = {
       }
     }
     Functions: {
+      accept_invite: { Args: { p_code: string }; Returns: Json }
       assign_day_tags_to_market: {
         Args: { p_market_id: string }
         Returns: number
@@ -3040,6 +3041,13 @@ export type Database = {
           month_xp: number
           nudged_today: boolean
           selected_market: string
+        }[]
+      }
+      get_invite_preview: {
+        Args: { p_code: string }
+        Returns: {
+          avatar_url: string
+          first_name: string
         }[]
       }
       get_monthly_standings: {

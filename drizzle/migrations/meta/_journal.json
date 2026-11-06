@@ -162,6 +162,13 @@
       "when": 1793930799673,
       "tag": "0022_public_profiles_market",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1793931375852,
+      "tag": "0023_friend_invites",
+      "breakpoints": true
     }
   ]
 }
