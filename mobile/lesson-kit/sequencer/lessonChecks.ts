@@ -153,7 +153,7 @@ export function checkFigure(slides: SlideLike[], id: string): MultipleChoiceExer
 /** Only explicit source order can support a generated chain. Never rank prose. */
 function sequenceSteps(body: string): string[] | null {
   const numbered = [...body.matchAll(/^\s*(\d+)\.\s+(.+)$/gm)];
-  if (numbered.length >= 3 && numbered.every((line, i) => Number(line[1]) === i + 1)) {
+  if (numbered.length >= 2 && numbered.every((line, i) => Number(line[1]) === i + 1)) {
     const steps = numbered.map(line => clean(line[2]));
     return steps.length <= 4 && new Set(steps.map(norm)).size === steps.length ? steps : null;
   }
@@ -161,15 +161,16 @@ function sequenceSteps(body: string): string[] | null {
   for (const line of body.split('\n')) {
     if (!line.includes('→')) continue;
     const steps = line.split('→').map(clean);
-    if (steps.length >= 3 && steps.length <= 4 && steps.every(Boolean) && new Set(steps.map(norm)).size === steps.length) return steps;
+    if (steps.length >= 2 && steps.length <= 4 && steps.every(Boolean) && new Set(steps.map(norm)).size === steps.length) return steps;
   }
-  const markers = [...body.matchAll(/(?:^|[.!?;]\s*|\n\s*|,\s*)(first|then|finally)\b[,:]?\s*/gi)];
-  if (markers.length < 3 || markers.length > 4 || markers[0][1].toLowerCase() !== 'first' ||
-      markers[markers.length - 1][1].toLowerCase() !== 'finally' ||
+  const markers = [...body.matchAll(/\b(first|then|finally)\b[,:]?\s*/gi)];
+  if (markers.length < 2 || markers.length > 4 || markers[0][1].toLowerCase() !== 'first' ||
+      !['then', 'finally'].includes(markers[markers.length - 1][1].toLowerCase()) ||
+      !markers.some(marker => marker[1].toLowerCase() === 'then') ||
       !markers.slice(1, -1).every(marker => marker[1].toLowerCase() === 'then')) return null;
   const steps = markers.map((marker, i) => clean(body.slice(
     (marker.index ?? 0) + marker[0].length, markers[i + 1]?.index ?? body.length,
-  )));
+  )).replace(/[,;]\s*$/, ''));
   return steps.every(Boolean) && new Set(steps.map(norm)).size === steps.length ? steps : null;
 }
 
