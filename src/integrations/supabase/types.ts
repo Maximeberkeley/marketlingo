@@ -790,6 +790,38 @@ export type Database = {
           },
         ]
       }
+      friendship_notifications: {
+        Row: {
+          created_at: string
+          friendship_id: string
+          id: string
+          kind: string
+          sent_by: string
+        }
+        Insert: {
+          created_at?: string
+          friendship_id: string
+          id?: string
+          kind: string
+          sent_by: string
+        }
+        Update: {
+          created_at?: string
+          friendship_id?: string
+          id?: string
+          kind?: string
+          sent_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendship_notifications_friendship_id_fkey"
+            columns: ["friendship_id"]
+            isOneToOne: false
+            referencedRelation: "friendships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friendships: {
         Row: {
           created_at: string
@@ -3137,6 +3169,7 @@ export type Database = {
         }
       }
       run_league_rollover: { Args: never; Returns: number }
+      safe_tz: { Args: { p_tz: string }; Returns: string }
       search_public_profiles: {
         Args: { p_query: string }
         Returns: {

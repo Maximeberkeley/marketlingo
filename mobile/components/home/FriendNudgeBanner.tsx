@@ -3,11 +3,12 @@
  * Floats over the course so it never shifts the lesson, rings or loading gate.
  * Nudges are marked read as soon as the banner shows, so it appears once.
  */
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
+import { useFocusEffect } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import { log } from '../../lib/logger';
 
@@ -22,10 +23,11 @@ export function FriendNudgeBanner({ top }: { top: number }) {
   const { user } = useAuth();
   const [text, setText] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!user) return;
-    let cancelled = false;
-    (async () => {
+  const checking = useRef(false);
+  const check = useCallback(async () => {
+    if (!user || checking.current) return;
+    checking.current = true;
+    {
       try {
         const { data: nudges, error } = await supabase
           .from('friend_nudges')
@@ -34,13 +36,12 @@ export function FriendNudgeBanner({ top }: { top: number }) {
           .is('read_at', null)
           .order('created_at', { ascending: false })
           .limit(20);
-        if (error || !nudges?.length || cancelled) return;
+        if (error || !nudges?.length) return;
         const senderIds = Array.from(new Set(nudges.map((n) => n.sender_id)));
         const { data: profiles } = await supabase
           .from('public_profiles')
           .select('id, display_name')
           .in('id', senderIds);
-        if (cancelled) return;
         const names = senderIds.map(
           (id) => profiles?.find((p) => p.id === id)?.display_name?.trim() || 'A friend',
         );
@@ -51,10 +52,20 @@ export function FriendNudgeBanner({ top }: { top: number }) {
           .in('id', nudges.map((n) => n.id));
       } catch (err) {
         log.warn('Friend nudges failed to load', err);
+      } finally {
+        checking.current = false;
       }
-    })();
-    return () => { cancelled = true; };
+    }
   }, [user]);
+
+  // On mount and whenever Home regains focus, and when the app returns to the foreground.
+  useFocusEffect(useCallback(() => { void check(); }, [check]));
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void check();
+    });
+    return () => sub.remove();
+  }, [check]);
 
   if (!text) return null;
   return (

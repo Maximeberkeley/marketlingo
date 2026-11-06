@@ -11,6 +11,11 @@ function PushTokenSync() {
     }
     const run = async () => {
       try {
+        const { syncTimezone } = await import("../lib/timezoneSync");
+        await syncTimezone(user.id);
+      } catch {
+      }
+      try {
         const [{ syncPushToken }, { scheduleDailyFallbackReminders }] = await Promise.all([
           import("../lib/pushToken"),
           import("../lib/leoNudges")
