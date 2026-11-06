@@ -4,6 +4,8 @@ import { Feather } from "@expo/vector-icons";
 import { tokens } from "../theme/tokens";
 import { tap, useEnter } from "./shared";
 import { ColorText } from "../components/ColorText";
+import { AnswerMark, AnswerTag } from "../components/AnswerMark";
+import { answerTag, choiceStateFor } from "../components/answerState";
 import { shortLabel } from "../text";
 function TheCall({ exercise, phase, onChange }) {
   const [picked, setPicked] = useState(null);
@@ -31,21 +33,26 @@ function TheCall({ exercise, phase, onChange }) {
   const translateY = enter.interpolate({ inputRange: [0, 1], outputRange: [18, 0] });
   return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.brief, { opacity: enter, transform: [{ translateY }] }] }, /* @__PURE__ */ React.createElement(View, { style: styles.briefHead }, /* @__PURE__ */ React.createElement(Feather, { name: "radio", size: 13, color: tokens.color.textOnAccent }), /* @__PURE__ */ React.createElement(Text, { style: styles.briefHeadText }, "THE CALL")), /* @__PURE__ */ React.createElement(ColorText, { text: exercise.situation, style: styles.situation, maxSentences: 2, maxLength: 150 })), /* @__PURE__ */ React.createElement(ColorText, { text: exercise.prompt, style: styles.prompt, maxSentences: 2, maxLength: 110 }), /* @__PURE__ */ React.createElement(View, { style: styles.options }, exercise.options.map((o, i) => {
     const reveal = phase === "feedback";
-    const right = i === exercise.correctIndex;
+    const state = choiceStateFor(i, picked, exercise.correctIndex, reveal);
     return /* @__PURE__ */ React.createElement(
       TouchableOpacity,
       {
         key: i,
         activeOpacity: 0.9,
         onPress: () => choose(i),
+        disabled: reveal,
+        accessibilityRole: "button",
+        accessibilityState: { selected: state === "selected" },
         style: [
           styles.option,
-          picked === i && styles.optionPicked,
-          reveal && right && styles.optionRight,
-          reveal && picked === i && !right && styles.optionWrong
+          state === "selected" && styles.optionPicked,
+          state === "correct" && styles.optionRight,
+          state === "incorrect" && styles.optionWrong,
+          reveal && state === "idle" && styles.optionStepBack
         ]
       },
-      /* @__PURE__ */ React.createElement(ColorText, { text: shortLabel(o), style: styles.optionText, maxSentences: 1, maxLength: 72 })
+      /* @__PURE__ */ React.createElement(View, { style: styles.optionCopy }, /* @__PURE__ */ React.createElement(ColorText, { text: shortLabel(o), style: styles.optionText, maxSentences: 1, maxLength: 72 }), /* @__PURE__ */ React.createElement(AnswerTag, { text: answerTag(i, picked, exercise.correctIndex, reveal), state })),
+      /* @__PURE__ */ React.createElement(AnswerMark, { state, revealed: reveal })
     );
   })), phase === "feedback" && !!exercise.consequences?.length && /* @__PURE__ */ React.createElement(View, { style: styles.wire }, exercise.consequences.slice(0, beats).map((c, i) => /* @__PURE__ */ React.createElement(View, { key: i, style: styles.wireRow }, /* @__PURE__ */ React.createElement(View, { style: styles.wireDot }), /* @__PURE__ */ React.createElement(ColorText, { text: c, style: styles.wireText, maxSentences: 1, maxLength: 90 })))));
 }
@@ -75,8 +82,10 @@ const styles = StyleSheet.create({
   },
   options: { gap: tokens.space.sm, marginTop: tokens.space.md },
   option: {
+    width: "100%",
     minHeight: 56,
-    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
     borderRadius: tokens.radius.md,
     borderWidth: 2,
     borderColor: tokens.color.borderStrong,
@@ -88,6 +97,8 @@ const styles = StyleSheet.create({
   optionPicked: { borderColor: tokens.color.accent, backgroundColor: tokens.color.accentSoft },
   optionRight: { borderColor: tokens.color.correct, backgroundColor: tokens.color.correctSoft },
   optionWrong: { borderColor: tokens.color.incorrect, backgroundColor: tokens.color.incorrectSoft },
+  optionStepBack: { opacity: 0.55 },
+  optionCopy: { flex: 1, minWidth: 0 },
   optionText: { fontSize: tokens.font.body, fontWeight: "700", color: tokens.color.text, lineHeight: 22 },
   wire: { marginTop: tokens.space.xl, gap: tokens.space.md },
   wireRow: { flexDirection: "row", gap: tokens.space.md, alignItems: "flex-start" },

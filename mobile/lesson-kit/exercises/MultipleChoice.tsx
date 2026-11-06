@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { ChoiceCard, ChoiceState } from '../components/ChoiceCard';
+import { ChoiceCard } from '../components/ChoiceCard';
+import { answerTag, choiceStateFor } from '../components/answerState';
 import { tokens } from '../theme/tokens';
 import { MultipleChoiceExercise } from '../types';
 import { ExerciseProps } from './types';
@@ -20,14 +21,7 @@ export function MultipleChoice({ exercise, phase, onChange }: ExerciseProps<Mult
     onChange({ canCheck: true, isCorrect: index === exercise.correctIndex, selectedIndex: index });
   };
 
-  const stateFor = (index: number): ChoiceState => {
-    if (phase === 'feedback') {
-      if (index === exercise.correctIndex) return 'correct';
-      if (index === selected) return 'incorrect';
-      return 'idle';
-    }
-    return index === selected ? 'selected' : 'idle';
-  };
+  const revealed = phase === 'feedback';
 
   return (
     <View style={styles.wrap}>
@@ -37,9 +31,11 @@ export function MultipleChoice({ exercise, phase, onChange }: ExerciseProps<Mult
           <ChoiceCard
             key={`${exercise.id}-${i}`}
             label={option}
-            state={stateFor(i)}
+            state={choiceStateFor(i, selected, exercise.correctIndex, revealed)}
+            tag={answerTag(i, selected, exercise.correctIndex, revealed)}
+            revealed={revealed}
             onPress={() => pick(i)}
-            disabled={phase === 'feedback'}
+            disabled={revealed}
           />
         ))}
       </View>

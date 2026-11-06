@@ -256,7 +256,7 @@ function DeliverableScreen() {
       onPress: cancel
     },
     /* @__PURE__ */ React.createElement(Text, { style: styles.link }, "Cancel")
-  ), /* @__PURE__ */ React.createElement(Text, { style: styles.accessoryTitle, numberOfLines: 1 }, activeSection?.title ?? ""), /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement(Text, { style: styles.accessoryTitle, numberOfLines: 2, adjustsFontSizeToFit: true, minimumFontScale: 0.8 }, activeSection?.title ?? ""), /* @__PURE__ */ React.createElement(
     TouchableOpacity,
     {
       accessibilityRole: "button",

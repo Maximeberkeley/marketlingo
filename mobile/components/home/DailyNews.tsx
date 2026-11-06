@@ -15,6 +15,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { COLORS, TYPE, SHADOWS } from '../../lib/constants';
@@ -57,8 +58,12 @@ const GRADIENT_SETS = [
   ['#D97706', '#F59E0B'],
 ];
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const FEATURED_CARD_WIDTH = SCREEN_WIDTH - 32;
+/** Featured story width from the live window, capped so iPads show the next story peeking in. */
+export function featuredCardWidth(windowWidth: number): number {
+  return Math.max(240, Math.min(windowWidth - 32, 720));
+}
+/** Bottom sheets stay a readable width on iPad instead of spanning the screen. */
+const SHEET_MAX_WIDTH = 680;
 
 type NewsQuizQuestion = {
   question: string;
@@ -165,6 +170,8 @@ function getImpactFromContent(title: string, summary?: string): 'high' | 'medium
 // ── Featured Carousel ──
 function FeaturedCarousel({ items, onSelect }: { items: NewsItem[]; onSelect: (item: NewsItem) => void }) {
   const scrollX = useRef(new Animated.Value(0)).current;
+  // Live width: iPad rotation and Split View resize the window after launch.
+  const FEATURED_CARD_WIDTH = featuredCardWidth(useWindowDimensions().width);
 
   if (items.length === 0) return null;
 
@@ -1033,7 +1040,7 @@ const ds = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   sheet: {
     maxHeight: '92%', backgroundColor: COLORS.bg0, borderTopLeftRadius: 28, borderTopRightRadius: 28,
-    overflow: 'hidden', ...SHADOWS.lg,
+    overflow: 'hidden', ...SHADOWS.lg, width: '100%', maxWidth: SHEET_MAX_WIDTH, alignSelf: 'center',
   },
   handleRow: { alignItems: 'center', paddingVertical: 8 },
   handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: COLORS.border },
@@ -1094,7 +1101,10 @@ const ds = StyleSheet.create({
 const qz = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   sheet: {
-    maxHeight: SCREEN_HEIGHT * 0.85,
+    maxHeight: '85%',
+    width: '100%',
+    maxWidth: SHEET_MAX_WIDTH,
+    alignSelf: 'center',
     backgroundColor: COLORS.bg0,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
