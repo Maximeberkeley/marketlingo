@@ -29,16 +29,33 @@ const all = (waves: ReturnType<typeof buildArena>) => waves.flatMap(w => w.exerc
 const isDefinition = (q: any) => q.kind === 'multipleChoice' && q.prompt.startsWith('This lesson defined');
 
 describe('early-days Arena across industries', () => {
-  it.each(Object.keys(fixtures) as (keyof typeof fixtures)[])('%s day 1: at least 8 questions, lesson first, no fact twice', (marketId) => {
+  it.each(Object.keys(fixtures) as (keyof typeof fixtures)[])('%s day 1 starter round: only lesson questions, at least 4, no fact twice', (marketId) => {
     for (let run = 0; run < 25; run++) {
       const waves = arenaFor(marketId);
       const questions = all(waves);
-      expect(questions.length).toBeGreaterThanOrEqual(8);
+      expect(questions.length).toBeGreaterThanOrEqual(4);
+      expect(questions.every(q => q.source?.type === 'lesson')).toBe(true);
+      expect(waves.every(w => w.covers?.startsWith('Starter round · from '))).toBe(true);
       for (const wave of waves) {
         const types = wave.exercises.map(e => e.source?.type);
         const lastLesson = types.lastIndexOf('lesson');
         const firstIndustry = types.indexOf('industry');
         expect(firstIndustry === -1 || lastLesson < firstIndustry).toBe(true);
+      }
+      const keys = questions.flatMap(quizQuestionKeys);
+      expect(new Set(keys).size).toBe(keys.length);
+    }
+  }, 30000);
+  it.each(Object.keys(fixtures) as (keyof typeof fixtures)[])('%s from the 3rd lesson: at least 8 questions, lesson first, no fact twice', (marketId) => {
+    const earlier = [2, 3].map(day => ({ title: `Earlier ${day}`, day, slides: [] }));
+    for (let run = 0; run < 25; run++) {
+      const waves = buildArena({ marketId, marketName: marketId, trainer: trainers, drills, stats, studied: [lessonOf(fixtures[marketId]), ...earlier] });
+      const questions = all(waves);
+      expect(questions.length).toBeGreaterThanOrEqual(8);
+      expect(waves.every(w => w.covers?.startsWith("Today's round: "))).toBe(true);
+      for (const wave of waves) {
+        const types = wave.exercises.map(e => e.source?.type);
+        expect(types.indexOf('industry') === -1 || types.lastIndexOf('lesson') < types.indexOf('industry')).toBe(true);
       }
       const keys = questions.flatMap(quizQuestionKeys);
       expect(new Set(keys).size).toBe(keys.length);

@@ -77,7 +77,7 @@ function practiceHarness(screen: 'Arena' | 'Case') {
     '../practice/studiedMaterial': { practiceSourceLabel: () => '' },
     '../components/ExerciseRenderer': { isPassiveKind: () => false,
       renderExerciseByKind: (_ex: any, _phase: any, setState: any) => ({ type: 'answer', props: { setState } }) },
-    './buildArena': {}, './buildCase': {}, '../../lib/sounds': { playSound: async () => {} },
+    './buildArena': { beatSeconds: (wave: any) => wave?.seconds ?? 20 }, './buildCase': {}, '../../lib/sounds': { playSound: async () => {} },
     '../../lib/analytics': { trackEvent: () => {} },
     '../../data/marketWorlds': { getMarketWorld: () => ({ colors: [] }) }, '../components/BriefingReader': {},
   });

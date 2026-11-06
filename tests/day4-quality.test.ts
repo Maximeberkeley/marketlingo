@@ -52,7 +52,8 @@ describe('Day-4 lesson quality', () => {
     expect(recentQuizHistory(history, 1000000000 + QUIZ_WINDOW_MS - 1)).toHaveLength(1);
     expect(recentQuizHistory(history, 1000000000 + QUIZ_WINDOW_MS)).toHaveLength(0);
     const seen = new Set<string>();
-    const input = { marketId: 'aerospace', trainer: [], drills: [], stats: [], studied: [{ title: 'Buyer ≠ User', slides }] };
+    // Three lessons, so the run is not a starter run and may draw on the industry pool.
+    const input = { marketId: 'aerospace', trainer: [], drills: [], stats: [], studied: [{ title: 'Buyer ≠ User', slides }, { title: 'Earlier A', day: 1, slides: [] }, { title: 'Earlier B', day: 2, slides: [] }] };
     for (let run = 0; run < 30; run += 1) {
       for (const wave of buildArena({ ...input, seenQuestionKeys: seen })) {
         for (const exercise of wave.exercises) for (const key of quizQuestionKeys(exercise)) {

@@ -23,7 +23,7 @@ import { leoFeedbackLine } from '../../components/mascot/leoAnimationRules';
 import { renderExerciseByKind, isPassiveKind } from '../components/ExerciseRenderer';
 import { ExerciseState } from '../exercises/types';
 import { Exercise } from '../types';
-import { ArenaWave, rankForScore } from './buildArena';
+import { ArenaWave, beatSeconds, rankForScore } from './buildArena';
 import { playSound } from '../../lib/sounds';
 import { trackEvent } from '../../lib/analytics';
 import { getMarketWorld } from '../../data/marketWorlds';
@@ -423,10 +423,11 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
             style={styles.waveCard}
           >
             <Text style={styles.waveKicker}>Round {waveIndex + 1} of {waves.length}</Text>
+            {!!wave.covers && <Text style={styles.waveCovers}>{wave.covers}</Text>}
             <View style={styles.waveMetaRow}>
               <View style={styles.waveMeta}>
                 <Feather name="clock" size={12} color="#FFFFFF" />
-                <Text style={styles.waveMetaText}>{wave.seconds} seconds per question</Text>
+                <Text style={styles.waveMetaText}>{wave.seconds} seconds per question · more for long ones</Text>
               </View>
             </View>
             <TouchableOpacity
@@ -545,6 +546,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   waveMetaText: { fontSize: 11, fontWeight: '700', color: '#FFFFFF' },
+  waveCovers: { marginTop: 6, fontSize: 14, fontWeight: '700', color: '#FFFFFF', textAlign: 'center' },
   waveBtn: {
     marginTop: 18,
      backgroundColor: tokens.color.bg,
@@ -602,8 +604,7 @@ const styles = StyleSheet.create({
   statLabel: { fontSize: 10, fontWeight: '700', color: tokens.color.textMuted, letterSpacing: 0.4 },
 });
 
-/** Build the Chain always gets a 25-second clock, whatever the wave. */
-function beatSecondsFor(wave: { seconds: number } | undefined, exercise: { kind: string } | undefined | null): number {
-  if (!wave) return 20;
-  return exercise?.kind === 'buildChain' ? 25 : wave.seconds;
+/** The round's clock, stretched for long questions (shared with the Arena builder). */
+function beatSecondsFor(wave: { seconds: number } | undefined, exercise: Exercise | undefined | null): number {
+  return beatSeconds(wave, exercise);
 }
