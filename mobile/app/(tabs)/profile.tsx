@@ -15,6 +15,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, STARTUP_STAGES } from '../../hooks/useUserXP';
 import { ProgressBar } from '../../components/ui/ProgressBar';
+import { SwitchIndustryModal } from '../../components/ui/SwitchIndustryModal';
 import { Feather } from '@expo/vector-icons';
 import { triggerHaptic } from '../../lib/haptics';
 import { useCollectibles } from '../../hooks/useCollectibles';
@@ -134,17 +135,6 @@ export default function ProfileScreen() {
   const certProgress = availableDay;
   const certPercentage = Math.round((certProgress / 180) * 100);
   const isCertEligible = certProgress >= 180;
-
-  const handleChangeMarket = async () => {
-    if (!user || !selectedMarket) return;
-    await supabase
-      .from('user_progress')
-      .update({ current_streak: 0, current_day: 1, completed_stacks: [] })
-      .eq('user_id', user.id)
-      .eq('market_id', selectedMarket);
-    setShowChangeWarning(false);
-    router.replace('/onboarding' as any);
-  };
 
   const handleChangeGoal = async (goal: LearningGoal) => {
     if (!user || !selectedMarket) return;
@@ -366,26 +356,14 @@ export default function ProfileScreen() {
         </Animated.View>
       </ScrollView>
 
-      {/* Change Market Warning */}
-      <Modal visible={showChangeWarning} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-            <Feather name="alert-circle" size={28} color={COLORS.accent} style={{ alignSelf: 'center', marginBottom: 12 }} />
-            <Text style={styles.modalTitle}>Change Market?</Text>
-            <Text style={styles.modalSubtitle}>
-              Changing your market will reset your path and streak. This action cannot be undone.
-            </Text>
-            <View style={styles.modalActions}>
-              <TouchableOpacity style={styles.modalCancel} onPress={() => setShowChangeWarning(false)}>
-                <Text style={styles.modalCancelText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.modalDestructive} onPress={handleChangeMarket}>
-                <Text style={styles.modalDestructiveText}>Change Market</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      {/* Change industry warning (shared with Home) */}
+      <SwitchIndustryModal
+        visible={showChangeWarning}
+        userId={user?.id}
+        marketId={selectedMarket}
+        marketName={getMarketName(selectedMarket || 'aerospace')}
+        onClose={() => setShowChangeWarning(false)}
+      />
 
       {/* Goal Picker Modal */}
       <Modal visible={showGoalPicker} transparent animationType="fade">

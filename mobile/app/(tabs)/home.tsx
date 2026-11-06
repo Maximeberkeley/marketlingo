@@ -14,6 +14,7 @@ import {
 import { AchievementPopup } from '../../components/achievements/AchievementPopup';
 import { HomeSkeleton, LoadingLeoHost } from '../../components/home/HomeSkeleton';
 import { FriendNudgeBanner } from '../../components/home/FriendNudgeBanner';
+import { FriendStandingChip } from '../../components/home/FriendStandingChip';
 import { AnimatedSection } from '../../components/home/AnimatedSection';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -640,19 +641,24 @@ function HomeScreenContent() {
             safeTop={insets.top}
             onOpenLesson={(stackId, day) => { void openLessonById(stackId, day); }}
             onAskLeo={() => setShowLeoChat(true)}
-            belowToday={deliverable.loading ? null : (
-              <TouchableOpacity
-                style={styles.dossierChip}
-                activeOpacity={0.85}
-                accessibilityRole="button"
-                onPress={() => { triggerHaptic('light'); router.push('/deliverable'); }}
-              >
-                <Feather name="file-text" size={14} color={COLORS.accent} />
-                <Text style={styles.dossierChipText} numberOfLines={1}>
-                  {`${deliverable.template.title} · ${deliverable.filledSections} of ${deliverable.template.sections.length} sections`}
-                </Text>
-                <Feather name="chevron-right" size={14} color={COLORS.textMuted} />
-              </TouchableOpacity>
+            belowToday={(
+              <>
+                {deliverable.loading ? null : (
+                  <TouchableOpacity
+                    style={styles.dossierChip}
+                    activeOpacity={0.85}
+                    accessibilityRole="button"
+                    onPress={() => { triggerHaptic('light'); router.push('/deliverable'); }}
+                  >
+                    <Feather name="file-text" size={14} color={COLORS.accent} />
+                    <Text style={styles.dossierChipText} numberOfLines={1}>
+                      {`${deliverable.template.title} · ${deliverable.filledSections} of ${deliverable.template.sections.length} sections`}
+                    </Text>
+                    <Feather name="chevron-right" size={14} color={COLORS.textMuted} />
+                  </TouchableOpacity>
+                )}
+                <FriendStandingChip userId={user?.id} marketId={selectedMarket} focused={courseFocused} />
+              </>
             )}
           />
         <FriendNudgeBanner top={insets.top + 8} />

@@ -28,6 +28,7 @@ import { triggerHaptic } from "../../lib/haptics";
 import { playSound } from "../../lib/sounds";
 import { StreakBadge } from "../ui/StreakBadge";
 import { XPBadge } from "../ui/XPBadge";
+import { SwitchIndustryModal } from "../ui/SwitchIndustryModal";
 import { LeoCharacter } from "../mascot/LeoCharacter";
 import { LeoAnimated } from "../mascot/LeoAnimated";
 import { useHomeLeo } from "../mascot/useLeoAnimations";
@@ -386,6 +387,11 @@ function CourseJourney({
   const [loadKey, setLoadKey] = useState(0);
   const [previewSection, setPreviewSection] = useState(null);
   const [showIndustryDetails, setShowIndustryDetails] = useState(false);
+  const [showSwitchIndustry, setShowSwitchIndustry] = useState(false);
+  const switchTimer = useRef(null);
+  useEffect(() => () => {
+    if (switchTimer.current) clearTimeout(switchTimer.current);
+  }, []);
   const themes = useMemo(() => seasonThemes(marketId), [marketId]);
   const marketName = getMarketName(marketId);
   const marketDescription = getMarketById(marketId)?.description;
@@ -470,6 +476,7 @@ function CourseJourney({
     if (!isFocused) {
       setPreviewSection(null);
       setShowIndustryDetails(false);
+      setShowSwitchIndustry(false);
     }
   }, [isFocused]);
   const lockedMessage = (section) => {
@@ -636,7 +643,32 @@ function CourseJourney({
       /* @__PURE__ */ React.createElement(Feather, { name: "radio", size: 18, color: COLORS.accent }),
       /* @__PURE__ */ React.createElement(Text, { style: styles.industrySecondaryText }, "Read industry intel"),
       /* @__PURE__ */ React.createElement(Feather, { name: "arrow-up-right", size: 16, color: COLORS.textMuted })
+    ), /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        style: styles.industrySecondaryAction,
+        onPress: () => {
+          triggerHaptic("selection");
+          setShowIndustryDetails(false);
+          if (switchTimer.current) clearTimeout(switchTimer.current);
+          switchTimer.current = setTimeout(() => setShowSwitchIndustry(true), 350);
+        },
+        accessibilityRole: "button",
+        accessibilityLabel: `Switch industry from ${marketName}`
+      },
+      /* @__PURE__ */ React.createElement(Feather, { name: "repeat", size: 18, color: COLORS.accent }),
+      /* @__PURE__ */ React.createElement(Text, { style: styles.industrySecondaryText }, "Switch industry"),
+      /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 16, color: COLORS.textMuted })
     )))
+  ), /* @__PURE__ */ React.createElement(
+    SwitchIndustryModal,
+    {
+      visible: showSwitchIndustry,
+      userId: user?.id,
+      marketId,
+      marketName,
+      onClose: () => setShowSwitchIndustry(false)
+    }
   ));
 }
 const styles = StyleSheet.create({

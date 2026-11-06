@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { View, Text, StyleSheet } from 'react-native';
 import { tokens } from '../theme/tokens';
 import { ColdOpenExercise } from '../types';
 import { ExerciseProps } from '../exercises/types';
 import { ColorText } from '../components/ColorText';
 import { shortLabel } from '../text';
 import { BriefingReader } from '../components/BriefingReader';
+import { BriefingButton } from '../components/BriefingButton';
 import { cardTerms, hasExtraBriefing } from '../cardPresentation';
 
 /** Cold open — one arresting line, full bleed, then tap on. */
@@ -28,20 +28,9 @@ export function ColdOpen({ exercise, onChange }: ExerciseProps<ColdOpenExercise>
         <ColorText text={exercise.headline} style={styles.headline} maxSentences={4} maxLength={260} />
         {!!exercise.kicker && <ColorText text={exercise.kicker} style={styles.kicker} maxSentences={1} maxLength={80} glossary keyTerms={cardTerms(exercise)} excludedText={[exercise.headline]} />}
         {hasBriefing && (
-          <TouchableOpacity
-            accessibilityRole="button"
-            accessibilityLabel="Read full briefing"
-            activeOpacity={0.82}
-            style={styles.readButton}
-            onPress={() => setShowBriefing(true)}
-          >
-            <View style={styles.readIcon}><Feather name="file-text" size={15} color={tokens.color.accent} /></View>
-            <View style={styles.readCopy}>
-              <Text style={styles.readTitle}>Read briefing</Text>
-              <Text style={styles.readNote}>Full context · readable view</Text>
-            </View>
-            <Feather name="chevron-right" size={18} color={tokens.color.textMuted} />
-          </TouchableOpacity>
+          <View style={styles.readButton}>
+            <BriefingButton text={exercise.fullText} onPress={() => setShowBriefing(true)} />
+          </View>
         )}
         </View>
         <View style={styles.coverFoot} />
@@ -81,9 +70,5 @@ const styles = StyleSheet.create({
   },
   headline: { fontSize: 32, fontWeight: '800', color: tokens.color.coldOpenText, lineHeight: 38 },
   kicker: { fontSize: tokens.font.body, color: tokens.color.coldOpenText, opacity: 0.75, lineHeight: 23 },
-  readButton: { minHeight: 62, flexDirection: 'row', alignItems: 'center', gap: 11, marginTop: 4, paddingHorizontal: 13, borderRadius: tokens.radius.md, backgroundColor: tokens.color.surface, borderWidth: 1, borderColor: tokens.color.border },
-  readIcon: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.color.accentSoft },
-  readCopy: { flex: 1, minWidth: 0 },
-  readTitle: { fontSize: 15, fontWeight: '800', color: tokens.color.text },
-  readNote: { marginTop: 2, fontSize: 11, fontWeight: '600', color: tokens.color.textMuted },
+  readButton: { marginTop: 4 },
 });

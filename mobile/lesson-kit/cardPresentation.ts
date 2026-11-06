@@ -75,3 +75,13 @@ export function hasExtraBriefing(exercise: Exercise): boolean {
     .forEach(block => { remainder = remainder.split(` ${block} `).join(' '); });
   return Boolean(remainder.trim());
 }
+/** Reading time for a full briefing, rounded to whole minutes (about 200 words a minute). */
+export function briefingMinutes(text = ''): number {
+  const words = shortText(text, 10000, 1000000).split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
+/** The small line under "Read the full briefing". */
+export function briefingNote(text = ''): string {
+  return `Optional · about ${briefingMinutes(text)} min`;
+}

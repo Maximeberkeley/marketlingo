@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { View, Text, StyleSheet } from 'react-native';
 import { tokens } from '../theme/tokens';
 import { InfoExercise } from '../types';
 import { ExerciseProps } from './types';
 import { ColorText } from '../components/ColorText';
 import { shortLabel, shortText } from '../text';
 import { BriefingReader } from '../components/BriefingReader';
+import { BriefingButton } from '../components/BriefingButton';
 import { cardCopy, cardTerms, hasExtraBriefing, readingCardKind } from '../cardPresentation';
 import { ReadingCopy, readingTermCopy } from '../components/ReadingCopy';
 
@@ -52,11 +52,7 @@ export function InfoCard({ exercise, onChange }: ExerciseProps<InfoExercise>) {
         </Text>
       )}
       {hasBriefing && (
-        <TouchableOpacity accessibilityRole="button" style={styles.readButton} activeOpacity={0.82} onPress={() => setShowBriefing(true)}>
-          <Feather name="book-open" size={16} color={tokens.color.accent} />
-          <Text style={styles.readText}>Read briefing</Text>
-          <Feather name="chevron-right" size={17} color={tokens.color.textMuted} />
-        </TouchableOpacity>
+        <BriefingButton text={exercise.fullText} onPress={() => setShowBriefing(true)} />
       )}
       {hasBriefing && <BriefingReader visible={showBriefing} title={exercise.detailTitle || exercise.title || exercise.eyebrow || 'Lesson briefing'} text={exercise.fullText || ''} keyTerms={terms} sources={exercise.sources} onClose={() => setShowBriefing(false)} />}
     </View>
@@ -97,6 +93,4 @@ const styles = StyleSheet.create({
   term: { fontSize: tokens.font.body, fontWeight: '800', color: tokens.color.text },
   termDef: { fontSize: tokens.font.body - 1, lineHeight: 22, color: tokens.color.textSecondary },
   sources: { fontSize: tokens.font.caption, color: tokens.color.textMuted },
-  readButton: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 14, borderRadius: tokens.radius.md, backgroundColor: tokens.color.surface, borderWidth: 1, borderColor: tokens.color.border },
-  readText: { flex: 1, fontSize: 15, fontWeight: '800', color: tokens.color.text },
 });

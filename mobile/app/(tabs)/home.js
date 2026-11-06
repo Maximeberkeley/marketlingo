@@ -10,6 +10,7 @@ import {
 import { AchievementPopup } from "../../components/achievements/AchievementPopup";
 import { HomeSkeleton, LoadingLeoHost } from "../../components/home/HomeSkeleton";
 import { FriendNudgeBanner } from "../../components/home/FriendNudgeBanner";
+import { FriendStandingChip } from "../../components/home/FriendStandingChip";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { COLORS, TYPE } from "../../lib/constants";
@@ -555,7 +556,7 @@ function HomeScreenContent() {
         void openLessonById(stackId, day);
       },
       onAskLeo: () => setShowLeoChat(true),
-      belowToday: deliverable.loading ? null : /* @__PURE__ */ React.createElement(
+      belowToday: /* @__PURE__ */ React.createElement(React.Fragment, null, deliverable.loading ? null : /* @__PURE__ */ React.createElement(
         TouchableOpacity,
         {
           style: styles.dossierChip,
@@ -569,7 +570,7 @@ function HomeScreenContent() {
         /* @__PURE__ */ React.createElement(Feather, { name: "file-text", size: 14, color: COLORS.accent }),
         /* @__PURE__ */ React.createElement(Text, { style: styles.dossierChipText, numberOfLines: 1 }, `${deliverable.template.title} \xB7 ${deliverable.filledSections} of ${deliverable.template.sections.length} sections`),
         /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 14, color: COLORS.textMuted })
-      )
+      ), /* @__PURE__ */ React.createElement(FriendStandingChip, { userId: user?.id, marketId: selectedMarket, focused: courseFocused }))
     }
   ), /* @__PURE__ */ React.createElement(FriendNudgeBanner, { top: insets.top + 8 })) : /* @__PURE__ */ React.createElement(HomeSkeleton, null), /* @__PURE__ */ React.createElement(
     MilestoneShareCard,

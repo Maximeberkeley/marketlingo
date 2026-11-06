@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { View, Text, StyleSheet } from "react-native";
 import { tokens } from "../theme/tokens";
 import { ColorText } from "../components/ColorText";
 import { shortLabel, shortText } from "../text";
 import { BriefingReader } from "../components/BriefingReader";
+import { BriefingButton } from "../components/BriefingButton";
 import { cardCopy, cardTerms, hasExtraBriefing, readingCardKind } from "../cardPresentation";
 import { ReadingCopy, readingTermCopy } from "../components/ReadingCopy";
 function InfoCard({ exercise, onChange }) {
@@ -18,7 +18,7 @@ function InfoCard({ exercise, onChange }) {
   }, [exercise.id]);
   const bodyIsEcho = !!exercise.title && normalize(exercise.body) === normalize(exercise.title);
   const termCopy = readingTermCopy(title, bodyIsEcho ? "" : body, false, kind === "takeaway");
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.wrap, kind === "takeaway" && styles.takeaway] }, kind === "takeaway" ? /* @__PURE__ */ React.createElement(Text, { style: styles.eyebrow }, "The rule") : !!exercise.eyebrow && /* @__PURE__ */ React.createElement(Text, { style: styles.eyebrow }, shortLabel(exercise.eyebrow)), /* @__PURE__ */ React.createElement(View, { style: kind === "evidence" ? styles.evidence : void 0 }, /* @__PURE__ */ React.createElement(ReadingCopy, { text: title, body: bodyIsEcho ? "" : body, preserveCover: kind === "takeaway", keyTerms: terms })), exercise.bullets?.slice(0, 2).map((b, i) => /* @__PURE__ */ React.createElement(View, { key: i, style: styles.bulletRow }, /* @__PURE__ */ React.createElement(View, { style: styles.dot }), /* @__PURE__ */ React.createElement(ColorText, { text: shortText(b, 1, 90), style: styles.bullet, maxSentences: 1, maxLength: 90, glossary: true, keyTerms: terms, excludedText: termCopy.excludedText, precedingText: [...termCopy.precedingText, ...(exercise.bullets || []).slice(0, i).map((line) => shortText(line, 1, 90))] }))), terms.slice(0, 1).map((t, i) => /* @__PURE__ */ React.createElement(View, { key: `t${i}`, style: styles.termCard }, /* @__PURE__ */ React.createElement(Text, { style: styles.term }, shortLabel(t.term)), /* @__PURE__ */ React.createElement(ColorText, { text: t.definition, style: styles.termDef, maxSentences: 1, maxLength: 100 }))), !!exercise.sources?.length && /* @__PURE__ */ React.createElement(Text, { style: styles.sources }, "Sources: ", exercise.sources.map((s) => s.label).join(" \xB7 ")), hasBriefing && /* @__PURE__ */ React.createElement(TouchableOpacity, { accessibilityRole: "button", style: styles.readButton, activeOpacity: 0.82, onPress: () => setShowBriefing(true) }, /* @__PURE__ */ React.createElement(Feather, { name: "book-open", size: 16, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.readText }, "Read briefing"), /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 17, color: tokens.color.textMuted })), hasBriefing && /* @__PURE__ */ React.createElement(BriefingReader, { visible: showBriefing, title: exercise.detailTitle || exercise.title || exercise.eyebrow || "Lesson briefing", text: exercise.fullText || "", keyTerms: terms, sources: exercise.sources, onClose: () => setShowBriefing(false) }));
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.wrap, kind === "takeaway" && styles.takeaway] }, kind === "takeaway" ? /* @__PURE__ */ React.createElement(Text, { style: styles.eyebrow }, "The rule") : !!exercise.eyebrow && /* @__PURE__ */ React.createElement(Text, { style: styles.eyebrow }, shortLabel(exercise.eyebrow)), /* @__PURE__ */ React.createElement(View, { style: kind === "evidence" ? styles.evidence : void 0 }, /* @__PURE__ */ React.createElement(ReadingCopy, { text: title, body: bodyIsEcho ? "" : body, preserveCover: kind === "takeaway", keyTerms: terms })), exercise.bullets?.slice(0, 2).map((b, i) => /* @__PURE__ */ React.createElement(View, { key: i, style: styles.bulletRow }, /* @__PURE__ */ React.createElement(View, { style: styles.dot }), /* @__PURE__ */ React.createElement(ColorText, { text: shortText(b, 1, 90), style: styles.bullet, maxSentences: 1, maxLength: 90, glossary: true, keyTerms: terms, excludedText: termCopy.excludedText, precedingText: [...termCopy.precedingText, ...(exercise.bullets || []).slice(0, i).map((line) => shortText(line, 1, 90))] }))), terms.slice(0, 1).map((t, i) => /* @__PURE__ */ React.createElement(View, { key: `t${i}`, style: styles.termCard }, /* @__PURE__ */ React.createElement(Text, { style: styles.term }, shortLabel(t.term)), /* @__PURE__ */ React.createElement(ColorText, { text: t.definition, style: styles.termDef, maxSentences: 1, maxLength: 100 }))), !!exercise.sources?.length && /* @__PURE__ */ React.createElement(Text, { style: styles.sources }, "Sources: ", exercise.sources.map((s) => s.label).join(" \xB7 ")), hasBriefing && /* @__PURE__ */ React.createElement(BriefingButton, { text: exercise.fullText, onPress: () => setShowBriefing(true) }), hasBriefing && /* @__PURE__ */ React.createElement(BriefingReader, { visible: showBriefing, title: exercise.detailTitle || exercise.title || exercise.eyebrow || "Lesson briefing", text: exercise.fullText || "", keyTerms: terms, sources: exercise.sources, onClose: () => setShowBriefing(false) }));
 }
 function normalize(s) {
   return (s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -55,9 +55,7 @@ const styles = StyleSheet.create({
   },
   term: { fontSize: tokens.font.body, fontWeight: "800", color: tokens.color.text },
   termDef: { fontSize: tokens.font.body - 1, lineHeight: 22, color: tokens.color.textSecondary },
-  sources: { fontSize: tokens.font.caption, color: tokens.color.textMuted },
-  readButton: { minHeight: 48, flexDirection: "row", alignItems: "center", gap: 9, paddingHorizontal: 14, borderRadius: tokens.radius.md, backgroundColor: tokens.color.surface, borderWidth: 1, borderColor: tokens.color.border },
-  readText: { flex: 1, fontSize: 15, fontWeight: "800", color: tokens.color.text }
+  sources: { fontSize: tokens.font.caption, color: tokens.color.textMuted }
 });
 export {
   InfoCard

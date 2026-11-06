@@ -147,7 +147,7 @@ export default function OnboardingScreen() {
           <LeoAnimated clip={leo.clip} size={160} fallback="waving" paused={!focused} onEnd={leo.onEnd} />
           <Text style={styles.title}>Choose your industry</Text>
           <Text style={styles.subtitle}>
-            Pick your industry
+            Choose one to start. You can switch anytime.
           </Text>
           {!user && (
             <TouchableOpacity onPress={() => router.push('/auth' as any)} activeOpacity={0.7} style={{ marginTop: 10 }}>
