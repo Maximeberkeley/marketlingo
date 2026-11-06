@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
     const title = kind === 'request'
       ? `${name} wants to be friends on MarketLingo`
       : `${name} accepted. You're racing this month.`;
-    const ok = await sendNotification(receiver.push_token, title, '', {
+    const ok = await sendNotification(receiver.push_token, title, kind === 'request' ? 'Tap to accept or decline.' : 'See where you stand.', {
       type: kind === 'request' ? 'friend_request' : 'friend_accepted',
       route: '/friends',
     });
