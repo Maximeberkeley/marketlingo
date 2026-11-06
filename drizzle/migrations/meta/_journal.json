@@ -155,6 +155,13 @@
       "when": 1793930078223,
       "tag": "0021_friends_privacy_layer",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1793930799673,
+      "tag": "0022_public_profiles_market",
+      "breakpoints": true
     }
   ]
 }

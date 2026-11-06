@@ -2901,20 +2901,31 @@ export type Database = {
           display_name: string | null
           friend_code: string | null
           id: string | null
+          selected_market: string | null
         }
         Insert: {
           avatar_url?: string | null
           display_name?: string | null
           friend_code?: string | null
           id?: string | null
+          selected_market?: string | null
         }
         Update: {
           avatar_url?: string | null
           display_name?: string | null
           friend_code?: string | null
           id?: string | null
+          selected_market?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_selected_market_fkey"
+            columns: ["selected_market"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       trainer_scenarios_public: {
         Row: {
