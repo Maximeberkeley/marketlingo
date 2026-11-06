@@ -4,18 +4,23 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
-import { getMonthlyStandings, standingName } from '../lib/socialStandings';
 import { log } from '../lib/logger';
 
 export interface Friend {
   id: string;
   friendshipId: string;
+  /** Display name (never an email). */
   username: string;
+  friendCode: string | null;
   avatarUrl: string | null;
+  selectedMarket: string | null;
+  /** XP earned this month across all industries. */
   totalXP: number;
   currentStreak: number;
   currentLevel: number;
   lastActivityAt: string | null;
+  lessonDoneToday: boolean;
+  nudgedToday: boolean;
 }
 
 export interface FriendRequest {
@@ -37,7 +42,7 @@ export function useFriends(marketId?: string) {
    * can never leave the screen spinning — `finally` always clears loading.
    */
   const fetchFriends = useCallback(async () => {
-    if (!user || !marketId) {
+    if (!user) {
       setFriends([]);
       setPendingRequests([]);
       setLoading(false);
@@ -48,49 +53,27 @@ export function useFriends(marketId?: string) {
     setError(null);
 
     try {
-      // Get accepted friendships where I'm either user_id or friend_id
-      const { data: friendships, error: friendshipError } = await supabase
-        .from('friendships')
-        .select('id, user_id, friend_id, status')
-        .or(`user_id.eq.${user.id},friend_id.eq.${user.id}`)
-        .eq('status', 'accepted');
+      // One server call: accepted friends across every industry they study.
+      const { data: overview, error: overviewError } = await supabase.rpc('get_friends_overview');
 
-      if (friendshipError) {
-        log.warn('Friendships failed to load', friendshipError);
+      if (overviewError) {
+        log.warn('Friends overview failed to load', overviewError);
         setError('Friends could not load. Check your connection and try again.');
-      } else if (!friendships?.length) {
-        setFriends([]);
       } else {
-        const friendIds = friendships.map((f) =>
-          f.user_id === user.id ? f.friend_id : f.user_id
-        );
-
-        let standings: Awaited<ReturnType<typeof getMonthlyStandings>> = [];
-        try {
-          standings = await getMonthlyStandings(marketId);
-        } catch (standingsError) {
-          log.warn('Friend standings failed to load', standingsError);
-          setError('Friend scores could not load. Check your connection and try again.');
-        }
-
-        const friendList: Friend[] = friendIds.map((fId) => {
-          const friendship = friendships.find(
-            (f) => (f.user_id === fId || f.friend_id === fId)
-          );
-          const standing = standings.find((row) => row.user_id === fId);
-
-          return {
-            id: fId,
-            friendshipId: friendship?.id || '',
-            username: standing ? standingName(standing) : 'Friend',
-            avatarUrl: standing?.avatar_url || null,
-            totalXP: standing?.monthly_xp || 0,
-            currentStreak: standing?.current_streak || 0,
-            currentLevel: standing?.current_level || 1,
-            lastActivityAt: standing?.last_activity_at || null,
-          };
-        });
-
+        const friendList: Friend[] = ((overview ?? []) as any[]).map((row) => ({
+          id: row.friend_id,
+          friendshipId: row.friendship_id,
+          username: row.display_name?.trim() || 'Analyst',
+          friendCode: row.friend_code || null,
+          avatarUrl: row.avatar_url || null,
+          selectedMarket: row.selected_market || null,
+          totalXP: Number(row.month_xp) || 0,
+          currentStreak: Number(row.current_streak) || 0,
+          currentLevel: Number(row.current_level) || 1,
+          lastActivityAt: row.last_activity_at || null,
+          lessonDoneToday: !!row.lesson_done_today,
+          nudgedToday: !!row.nudged_today,
+        }));
         friendList.sort((a, b) => b.totalXP - a.totalXP);
         setFriends(friendList);
       }
@@ -112,7 +95,7 @@ export function useFriends(marketId?: string) {
           const fromIds = pending.map((p) => p.user_id);
           const { data: fromProfiles } = await supabase
             .from('public_profiles')
-            .select('id, username')
+            .select('id, display_name')
             .in('id', fromIds);
 
           setPendingRequests(
@@ -120,7 +103,7 @@ export function useFriends(marketId?: string) {
               id: p.id,
               fromUserId: p.user_id,
               fromUsername:
-                fromProfiles?.find((pr) => pr.id === p.user_id)?.username?.split('@')[0] || 'Someone',
+                fromProfiles?.find((pr) => pr.id === p.user_id)?.display_name?.trim() || 'Someone',
               createdAt: p.created_at,
             }))
           );
@@ -143,7 +126,7 @@ export function useFriends(marketId?: string) {
   const sendRequest = useCallback(async (friendIdentifier: string): Promise<{ success: boolean; error?: string }> => {
     if (!user) return { success: false, error: 'Not authenticated' };
 
-    // Search by username (which may contain email) — case-insensitive partial match
+    // Search by display name, exact friend code, or a full email typed exactly
     const { data: matches, error: searchError } = await supabase.rpc('search_public_profiles', {
       p_query: friendIdentifier.trim(),
     });

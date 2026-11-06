@@ -2,7 +2,6 @@ import { supabase } from './supabase';
 
 export interface MonthlyStanding {
   user_id: string;
-  username: string | null;
   display_name: string | null;
   avatar_url: string | null;
   monthly_xp: number;
@@ -31,6 +30,6 @@ export async function getMonthlyStandings(marketId: string): Promise<MonthlyStan
   }));
 }
 
-export function standingName(row: Pick<MonthlyStanding, 'display_name' | 'username'>): string {
-  return row.display_name?.trim() || row.username?.split('@')[0] || 'Analyst';
+export function standingName(row: Pick<MonthlyStanding, 'display_name'>): string {
+  return row.display_name?.trim() || 'Analyst';
 }
