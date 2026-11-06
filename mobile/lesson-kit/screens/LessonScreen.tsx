@@ -30,6 +30,8 @@ import { Exercise, Lesson } from '../types';
 import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { AskLeoOverlay, LeoMessage } from '../../components/ai/AskLeoOverlay';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LEO_HINT_KEY, LeoHintBubble, shouldShowLeoHint } from '../components/LeoHintBubble';
 import { readingCardKind } from '../cardPresentation';
 import { trackEvent } from '../../lib/analytics';
 
@@ -200,6 +202,22 @@ export function LessonScreen({
     setShowAskLeo(true);
   }, []);
 
+  // A one-time hint on the learner's first quiz: Leo's help is behind the top-right button.
+  const [leoHintSeen, setLeoHintSeen] = useState(true);
+  useEffect(() => {
+    let live = true;
+    AsyncStorage.getItem(LEO_HINT_KEY).then(value => { if (live) setLeoHintSeen(value === '1'); }).catch(() => {});
+    return () => { live = false; };
+  }, []);
+  const markLeoHintSeen = useCallback(() => {
+    setLeoHintSeen(true);
+    AsyncStorage.setItem(LEO_HINT_KEY, '1').catch(() => {});
+  }, []);
+  const showLeoHint = shouldShowLeoHint(leoHintSeen, isInfo || !exercise, phase, showAskLeo);
+  useEffect(() => {
+    if (!leoHintSeen && phase === 'feedback' && !isInfo) markLeoHintSeen();
+  }, [phase, leoHintSeen, isInfo, markLeoHintSeen]);
+
   const firePop = useCallback((label: string) => {
     setPop(label);
     popAnim.setValue(0);
@@ -347,10 +365,11 @@ export function LessonScreen({
       <LessonHeader
         progress={progress}
         onExit={handleExitPress}
-        onAskLeo={() => openLeo()}
+        onAskLeo={() => { markLeoHintSeen(); openLeo(); }}
         onMore={renderExtraActions ? () => setShowActions(value => !value) : undefined}
         menuOpen={showActions}
       />
+      {showLeoHint && <LeoHintBubble top={insets.top + 50} onPress={() => { markLeoHintSeen(); openLeo(); }} />}
 
       {!!pop && (
         <Animated.View

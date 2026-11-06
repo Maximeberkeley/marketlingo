@@ -17,6 +17,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
@@ -33,6 +34,9 @@ import { AIConsentModal } from './AIConsentModal';
 import { transcribeAudio } from '../../lib/interviewVoice';
 import { LeoCharacter } from '../mascot/LeoCharacter';
 import { log } from '../../lib/logger';
+
+/** Wide screens get a centred panel, not a sheet stretched across an iPad. */
+const PANEL_MAX_WIDTH = 680;
 
 const LEO_VOICE_ID = 'miHBUIuwiPKbRiTC0oIz'; // the workspace voice named "Leo"
 
@@ -412,6 +416,13 @@ export function AskLeoOverlay({
     [onSaveAnswer],
   );
 
+  // Shortcut cards wrap into a grid so all four stay visible on phones, iPads and Split View.
+  const { width: winW, height: winH } = useWindowDimensions();
+  const largeScreen = Math.min(winW, winH) >= 600;
+  const panelW = Math.min(winW, PANEL_MAX_WIDTH);
+  const modeColumns = panelW >= 560 ? 4 : 2;
+  const modeCardW = Math.floor((panelW - 32 - 10 * (modeColumns - 1)) / modeColumns);
+
   return (
     <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
       <KeyboardAvoidingView
@@ -423,6 +434,7 @@ export function AskLeoOverlay({
         <Animated.View
           style={[
             styles.container,
+            largeScreen && styles.containerLarge,
             {
               paddingBottom: insets.bottom + 10,
               transform: [
@@ -571,16 +583,11 @@ export function AskLeoOverlay({
           {/* Modes — big cards on entry, compact chips once a question is asked */}
           {modesExpanded ? (
             <Animated.View style={{ opacity: modesAnim }}>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.modeRowBig}
-                keyboardShouldPersistTaps="handled"
-              >
+              <View style={styles.modeGrid}>
                 {MODES.map(mode => (
                   <TouchableOpacity
                     key={mode.id}
-                    style={[styles.modeCard, { borderColor: mode.color + '66', backgroundColor: mode.color + '14' }]}
+                    style={[styles.modeCard, modeColumns === 2 && styles.modeCardCompact, { width: modeCardW, borderColor: mode.color + '66', backgroundColor: mode.color + '14' }]}
                     onPress={() => ask(mode.ask, mode.instruction)}
                     disabled={isLoading}
                     activeOpacity={0.85}
@@ -591,7 +598,7 @@ export function AskLeoOverlay({
                     <Text style={[styles.modeCardText, { color: mode.color }]}>{mode.label}</Text>
                   </TouchableOpacity>
                 ))}
-              </ScrollView>
+              </View>
             </Animated.View>
           ) : (
             <View style={styles.modeRowSmallWrap}>
@@ -670,6 +677,9 @@ const styles = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(15,17,26,0.55)', justifyContent: 'flex-end' },
   dismissArea: { flex: 1 },
   container: {
+    width: '100%',
+    maxWidth: PANEL_MAX_WIDTH,
+    alignSelf: 'center',
     backgroundColor: tokens.color.bg,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
@@ -795,6 +805,9 @@ const styles = StyleSheet.create({
   },
   modeText: { fontSize: 13, fontWeight: '800' },
   modeRowBig: { paddingHorizontal: 16, paddingBottom: 12, gap: 10 },
+  modeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingHorizontal: 16, paddingBottom: 12 },
+  modeCardCompact: { height: 84, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', gap: 10 },
+  containerLarge: { maxHeight: '92%' },
   modeCard: {
     width: 148,
     height: 132,

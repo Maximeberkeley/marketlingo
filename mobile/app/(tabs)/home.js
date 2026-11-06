@@ -458,7 +458,8 @@ function HomeScreenContent() {
       visible: showLeoChat,
       onClose: () => setShowLeoChat(false),
       marketId: selectedMarket || void 0,
-      lessonContext: `${getMarketName(selectedMarket || "aerospace")} industry learning \u2014 Day ${currentDay}`
+      lessonContext: `${getMarketName(selectedMarket || "aerospace")} industry learning \u2014 Day ${currentDay}`,
+      lessonTitle: lessonStack?.title
     }
   ), session.showGoals && session.activeStack ? /* @__PURE__ */ React.createElement(
     LessonGoalsScreen,

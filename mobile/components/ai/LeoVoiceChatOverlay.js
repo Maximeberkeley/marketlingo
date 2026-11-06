@@ -26,11 +26,15 @@ import { triggerHaptic } from "../../lib/haptics";
 import { log } from "../../lib/logger";
 import { LeoAnimated } from "../mascot/LeoAnimated";
 import { leoCallClip } from "../mascot/leoAnimationRules";
+import { useAuth } from "../../hooks/useAuth";
+import { loadInterviewTarget } from "../../lib/interviewPrep";
+import { leoCallStarters } from "../../lib/leoCallStarters";
 const { width: SCREEN_W } = Dimensions.get("window");
 const LEO_STUDY_SCENE = require("../../assets/mascot/leo-voice-study.png");
 const LEO_VOICE_ID = "miHBUIuwiPKbRiTC0oIz";
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "";
+const STARTER_ROW_HEIGHT = 48;
 async function transcribeVoice(uri) {
   try {
     const { data: { session } } = await supabase.auth.getSession();
@@ -57,9 +61,12 @@ function LeoVoiceChatOverlay({
   visible,
   onClose,
   marketId = "general",
-  lessonContext
+  lessonContext,
+  lessonTitle
 }) {
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
+  const [interviewCompany, setInterviewCompany] = useState(null);
   const [messages, setMessages] = useState([]);
   const [narrationText, setNarrationText] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -76,6 +83,17 @@ function LeoVoiceChatOverlay({
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
   const livePulse = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    if (!visible) return;
+    let live = true;
+    loadInterviewTarget(user?.id, marketId).then((target) => {
+      if (live) setInterviewCompany(target?.company?.trim() || null);
+    }).catch(() => {
+    });
+    return () => {
+      live = false;
+    };
+  }, [visible, user?.id, marketId]);
   useEffect(() => {
     if (visible) {
       fadeAnim.setValue(0);
@@ -292,6 +310,8 @@ function LeoVoiceChatOverlay({
     onClose();
   }, [onClose]);
   if (!visible) return null;
+  const starters = leoCallStarters({ company: interviewCompany, lessonTitle });
+  const showStarters = messages.length === 0 && !isGenerating && !isRecording && !isTranscribing && !showTextInput;
   return /* @__PURE__ */ React.createElement(Modal, { visible, animationType: "none", transparent: true, statusBarTranslucent: true }, /* @__PURE__ */ React.createElement(StatusBar, { barStyle: "light-content" }), /* @__PURE__ */ React.createElement(
     KeyboardAvoidingView,
     {
@@ -320,7 +340,7 @@ function LeoVoiceChatOverlay({
         accessibilityLabel: "Toggle text mode"
       },
       /* @__PURE__ */ React.createElement(Feather, { name: "type", size: 18, color: "#fff" })
-    ), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: st.topBtn, onPress: handleClose, accessibilityRole: "button", accessibilityLabel: "Close Speak to Leo" }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 22, color: "#fff" })))), subtitlesExpanded && /* @__PURE__ */ React.createElement(TouchableOpacity, { style: StyleSheet.absoluteFill, activeOpacity: 1, onPress: () => setSubtitlesExpanded(false), accessibilityLabel: "Close chat" }), /* @__PURE__ */ React.createElement(View, { style: [st.dialogStage, { bottom: insets.bottom + 154 }] }, /* @__PURE__ */ React.createElement(View, { style: st.dialogTail }), /* @__PURE__ */ React.createElement(
+    ), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: st.topBtn, onPress: handleClose, accessibilityRole: "button", accessibilityLabel: "Close Speak to Leo" }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 22, color: "#fff" })))), subtitlesExpanded && /* @__PURE__ */ React.createElement(TouchableOpacity, { style: StyleSheet.absoluteFill, activeOpacity: 1, onPress: () => setSubtitlesExpanded(false), accessibilityLabel: "Close chat" }), /* @__PURE__ */ React.createElement(View, { style: [st.dialogStage, { bottom: insets.bottom + 154 + (showStarters ? STARTER_ROW_HEIGHT : 0) }] }, /* @__PURE__ */ React.createElement(View, { style: st.dialogTail }), /* @__PURE__ */ React.createElement(
       SubtitleBox,
       {
         disabled: subtitlesExpanded,
@@ -332,7 +352,10 @@ function LeoVoiceChatOverlay({
       },
       isGenerating || isTranscribing ? /* @__PURE__ */ React.createElement(View, { style: st.statusRow }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: "#FB7A22" }), /* @__PURE__ */ React.createElement(Text, { style: st.subtitleText }, isTranscribing ? "Transcribing\u2026" : "Leo is thinking\u2026")) : subtitlesExpanded && messages.length > 0 ? /* @__PURE__ */ React.createElement(ScrollView, { style: st.conversationScroll, contentContainerStyle: st.conversationContent, showsVerticalScrollIndicator: true }, messages.map((message, index) => /* @__PURE__ */ React.createElement(View, { key: `${message.role}-${index}`, style: [st.conversationBubble, message.role === "user" ? st.userConversationBubble : st.leoConversationBubble] }, /* @__PURE__ */ React.createElement(Text, { style: st.conversationRole }, message.role === "user" ? "YOU" : "LEO"), /* @__PURE__ */ React.createElement(Text, { style: st.conversationText }, message.content)))) : /* @__PURE__ */ React.createElement(Text, { style: st.subtitleText, numberOfLines: 4 }, narrationText || "Hey! \u{1F98A} Ask me anything about your industry!"),
       !subtitlesExpanded && narrationText.length > 150 && /* @__PURE__ */ React.createElement(Text, { style: st.expandHint }, "Tap to read more")
-    ), /* @__PURE__ */ React.createElement(View, { style: st.statusContainer }, isGenerating && /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "Preparing an answer"), isRecording && /* @__PURE__ */ React.createElement(View, { style: st.statusRow }, /* @__PURE__ */ React.createElement(Animated.View, { style: [st.recordDot, { opacity: glowAnim }] }), /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "Listening\u2026 tap again to send")), isSpeaking && !isGenerating && /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "Leo is speaking\u2026"))), /* @__PURE__ */ React.createElement(View, { style: [st.bottomBar, { paddingBottom: insets.bottom + 16 }] }, showTextInput ? /* @__PURE__ */ React.createElement(View, { style: st.keyboardComposer }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: st.keyboardDismiss, onPress: () => {
+    ), /* @__PURE__ */ React.createElement(View, { style: st.statusContainer }, isGenerating && /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "Preparing an answer"), isRecording && /* @__PURE__ */ React.createElement(View, { style: st.statusRow }, /* @__PURE__ */ React.createElement(Animated.View, { style: [st.recordDot, { opacity: glowAnim }] }), /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "Listening\u2026 tap again to send")), isSpeaking && !isGenerating && /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "Leo is speaking\u2026"))), /* @__PURE__ */ React.createElement(View, { style: [st.bottomBar, { paddingBottom: insets.bottom + 16 }] }, showStarters && /* @__PURE__ */ React.createElement(ScrollView, { horizontal: true, showsHorizontalScrollIndicator: false, contentContainerStyle: st.starterRow, style: st.starterScroll, keyboardShouldPersistTaps: "handled" }, starters.map((starter) => /* @__PURE__ */ React.createElement(TouchableOpacity, { key: starter, style: st.starterChip, onPress: () => {
+      triggerHaptic("light");
+      sendToLeo(starter);
+    }, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { style: st.starterText }, starter)))), showTextInput ? /* @__PURE__ */ React.createElement(View, { style: st.keyboardComposer }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: st.keyboardDismiss, onPress: () => {
       Keyboard.dismiss();
       setShowTextInput(false);
     }, accessibilityLabel: "Hide keyboard" }, /* @__PURE__ */ React.createElement(Feather, { name: "chevron-down", size: 18, color: "#fff" }), /* @__PURE__ */ React.createElement(Text, { style: st.keyboardDismissText }, "Hide keyboard")), /* @__PURE__ */ React.createElement(View, { style: st.textInputRow }, /* @__PURE__ */ React.createElement(
@@ -556,6 +579,18 @@ const st = StyleSheet.create({
     marginTop: 6,
     fontWeight: "600"
   },
+  starterScroll: { marginBottom: 8, flexGrow: 0 },
+  starterRow: { gap: 8, paddingRight: 8 },
+  starterChip: {
+    height: 40,
+    justifyContent: "center",
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.28)",
+    backgroundColor: "rgba(255,255,255,0.14)"
+  },
+  starterText: { fontSize: 14, fontWeight: "700", color: "#FFFFFF" },
   bottomBar: {
     position: "absolute",
     left: 0,
