@@ -60,6 +60,10 @@ export default function FriendsScreen() {
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [myStats, setMyStats] = useState<{ xp: number; level: number; streak: number; monthXP: number }>({ xp: 0, level: 1, streak: 0, monthXP: 0 });
   const [friendMonthXP, setFriendMonthXP] = useState<Record<string, number>>({});
+  const [nudgingId, setNudgingId] = useState<string | null>(null);
+  const [nudgedIds, setNudgedIds] = useState<Set<string>>(new Set());
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -187,29 +191,36 @@ export default function FriendsScreen() {
     }
   };
 
+  const showToast = useCallback((text: string) => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast(text);
+    toastTimer.current = setTimeout(() => setToast(null), 2600);
+  }, []);
+  useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
+
   const handleNudge = async (friend: Friend) => {
-    triggerHaptic('medium');
-    trackEvent('nudge_sent', { to: friend.id });
+    if (nudgingId || friend.nudgedToday || nudgedIds.has(friend.id)) return;
+    triggerHaptic("medium");
+    setNudgingId(friend.id);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.access_token) {
-        const { error } = await supabase.functions.invoke('send-push-notification', {
-          body: {
-            userId: friend.id,
-            title: 'Nudge!',
-            body: `${user?.email?.split('@')[0] || 'A friend'} is reminding you to keep learning!`,
-            data: { type: 'nudge', route: '/(tabs)/home' },
-          },
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
-        if (error) throw error;
+      const { data, error } = await supabase.functions.invoke("send-nudge", {
+        body: { friendId: friend.id }
+      });
+      if (error) throw error;
+      setNudgedIds((prev) => new Set(prev).add(friend.id));
+      if (data?.status === "already") {
+        showToast(`You already nudged ${friend.username} today`);
+      } else {
+        trackEvent("nudge_sent", { to: friend.id, status: data?.status });
+        showToast(`${friend.username} will see your nudge`);
       }
     } catch (error) {
-      log.warn('Friend nudge failed', error);
-      Alert.alert('Nudge not sent', 'Check your connection and try again.');
-      return;
+      log.warn("Friend nudge failed", error);
+      const offline = (error as { name?: string })?.name === "FunctionsFetchError";
+      showToast(offline ? "Nudge not sent. Check your connection." : "Nudge not sent. Please try again later.");
+    } finally {
+      setNudgingId(null);
     }
-    Alert.alert('Nudge sent', `${friend.username} just got a ping.`);
   };
 
   const handleRemove = (friend: Friend) => {
@@ -395,6 +406,7 @@ export default function FriendsScreen() {
                       isMe={row.isMe}
                       online={row.friend ? isActive(row.friend) : false}
                       onNudge={row.friend ? () => handleNudge(row.friend!) : undefined}
+                      nudgeState={!row.friend ? undefined : row.friend.lessonDoneToday ? 'done' : (row.friend.nudgedToday || nudgedIds.has(row.friend.id)) ? 'nudged' : nudgingId === row.friend.id ? 'sending' : 'idle'}
                       onMore={row.friend ? () => handleRemove(row.friend!) : undefined}
                     />
                   ))}
@@ -491,17 +503,23 @@ export default function FriendsScreen() {
 
         </Animated.View>
       </ScrollView>
+      {toast && (
+        <View pointerEvents="none" style={[styles.toast, { bottom: insets.bottom + 24 }]}>
+          <Text style={styles.toastText}>{toast}</Text>
+        </View>
+      )}
     </View>
   );
 }
 
 // ── Board Row ───────────────────────────────────────
 function BoardRow({
-  rank, name, initial, xp, meta, isMe, online, onNudge, onMore,
+  rank, name, initial, xp, meta, isMe, online, onNudge, onMore, nudgeState = 'idle',
 }: {
   rank: number; name: string; initial: string; xp: number; meta: string;
   isMe?: boolean; online?: boolean;
   onNudge?: () => void; onMore?: () => void;
+  nudgeState?: 'idle' | 'sending' | 'nudged' | 'done';
 }) {
   const medal = rank <= 3 ? MEDALS[rank - 1] : null;
   return (
@@ -524,11 +542,17 @@ function BoardRow({
         <Text style={[styles.xpValue, isMe && { color: COLORS.accent }]}>{xp.toLocaleString()}</Text>
         <Text style={styles.xpLabel}>XP</Text>
       </View>
-      {onNudge && (
-        <TouchableOpacity style={styles.nudgeBtn} onPress={onNudge}>
-          <Feather name="send" size={14} color={COLORS.accent} />
+      {onNudge && (nudgeState === "done" ? (
+        <Text style={styles.nudgeDone}>Done today ✓</Text>
+      ) : nudgeState === "nudged" ? (
+        <View style={[styles.nudgePill, styles.nudgePillOff]}>
+          <Text style={[styles.nudgePillText, styles.nudgePillTextOff]}>Nudged ✓</Text>
+        </View>
+      ) : (
+        <TouchableOpacity style={styles.nudgePill} onPress={onNudge} disabled={nudgeState === "sending"} accessibilityLabel={`Nudge ${name}`}>
+          {nudgeState === "sending" ? <ActivityIndicator size="small" color={COLORS.accent} /> : <Text style={styles.nudgePillText}>Nudge</Text>}
         </TouchableOpacity>
-      )}
+      ))}
       {onMore && (
         <TouchableOpacity style={styles.moreBtn} onPress={onMore} onLongPress={onMore}>
           <Feather name="more-horizontal" size={14} color={COLORS.textMuted} />
@@ -666,6 +690,19 @@ const styles = StyleSheet.create({
   xpValue: { fontSize: 15, fontWeight: '800', color: COLORS.textPrimary },
   xpLabel: { fontSize: 9, fontWeight: '700', color: COLORS.textMuted, textTransform: 'uppercase' },
 
+  nudgePill: {
+    minWidth: 68, height: 30, paddingHorizontal: 12, borderRadius: 15,
+    backgroundColor: COLORS.accentMedium, alignItems: "center", justifyContent: "center"
+  },
+  nudgePillOff: { backgroundColor: COLORS.bg1, opacity: 0.7 },
+  nudgePillText: { fontSize: 12, fontWeight: "700", color: COLORS.accent },
+  nudgePillTextOff: { color: COLORS.textMuted },
+  nudgeDone: { fontSize: 12, fontWeight: "700", color: COLORS.textMuted },
+  toast: {
+    position: "absolute", left: 20, right: 20, paddingVertical: 12, paddingHorizontal: 16,
+    borderRadius: 14, backgroundColor: COLORS.bg2, alignItems: "center"
+  },
+  toastText: { fontSize: 14, fontWeight: "600", color: COLORS.textPrimary, textAlign: "center" },
   nudgeBtn: {
     width: 32, height: 32, borderRadius: 16,
     backgroundColor: COLORS.accentMedium, alignItems: 'center', justifyContent: 'center',
