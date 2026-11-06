@@ -3,11 +3,12 @@
  * Floats over the course so it never shifts the lesson, rings or loading gate.
  * Nudges are marked read as soon as the banner shows, so it appears once.
  */
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
+import { useFocusEffect } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import { log } from '../../lib/logger';
 
@@ -22,10 +23,12 @@ export function FriendNudgeBanner({ top }: { top: number }) {
   const { user } = useAuth();
   const [text, setText] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!user) return;
-    let cancelled = false;
-    (async () => {
+  const checking = useRef(false);
+  const check = useCallback(async () => {
+    if (!user || checking.current) return;
+    checking.current = true;
+    const cancelled = false;
+    {
       try {
         const { data: nudges, error } = await supabase
           .from('friend_nudges')
@@ -52,9 +55,19 @@ export function FriendNudgeBanner({ top }: { top: number }) {
       } catch (err) {
         log.warn('Friend nudges failed to load', err);
       }
-    })();
-    return () => { cancelled = true; };
+    }
+    checking.current = false;
   }, [user]);
+
+  // On first mount, whenever Home regains focus, and when the app returns to the foreground.
+  useEffect(() => { void check(); }, [check]);
+  useFocusEffect(useCallback(() => { void check(); }, [check]));
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void check();
+    });
+    return () => sub.remove();
+  }, [check]);
 
   if (!text) return null;
   return (
