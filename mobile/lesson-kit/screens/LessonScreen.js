@@ -26,6 +26,8 @@ import { tokens } from "../theme/tokens";
 import { playSound } from "../../lib/sounds";
 import { getMarketWorld } from "../../data/marketWorlds";
 import { AskLeoOverlay } from "../../components/ai/AskLeoOverlay";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LEO_HINT_KEY, LeoHintBubble, shouldShowLeoHint } from "../components/LeoHintBubble";
 import { readingCardKind } from "../cardPresentation";
 import { trackEvent } from "../../lib/analytics";
 function lessonTakeaway(exercises) {
@@ -161,6 +163,26 @@ function LessonScreen({
     setShowActions(false);
     setShowAskLeo(true);
   }, []);
+  const [leoHintSeen, setLeoHintSeen] = useState(true);
+  useEffect(() => {
+    let live = true;
+    AsyncStorage.getItem(LEO_HINT_KEY).then((value) => {
+      if (live) setLeoHintSeen(value === "1");
+    }).catch(() => {
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
+  const markLeoHintSeen = useCallback(() => {
+    setLeoHintSeen(true);
+    AsyncStorage.setItem(LEO_HINT_KEY, "1").catch(() => {
+    });
+  }, []);
+  const showLeoHint = shouldShowLeoHint(leoHintSeen, isInfo || !exercise, phase, showAskLeo);
+  useEffect(() => {
+    if (!leoHintSeen && phase === "feedback" && !isInfo) markLeoHintSeen();
+  }, [phase, leoHintSeen, isInfo, markLeoHintSeen]);
   const firePop = useCallback((label) => {
     setPop(label);
     popAnim.setValue(0);
@@ -297,11 +319,17 @@ function LessonScreen({
     {
       progress,
       onExit: handleExitPress,
-      onAskLeo: () => openLeo(),
+      onAskLeo: () => {
+        markLeoHintSeen();
+        openLeo();
+      },
       onMore: renderExtraActions ? () => setShowActions((value) => !value) : void 0,
       menuOpen: showActions
     }
-  ), !!pop && /* @__PURE__ */ React.createElement(
+  ), showLeoHint && /* @__PURE__ */ React.createElement(LeoHintBubble, { top: insets.top + 50, onPress: () => {
+    markLeoHintSeen();
+    openLeo();
+  } }), !!pop && /* @__PURE__ */ React.createElement(
     Animated.View,
     {
       key: exercise.id,

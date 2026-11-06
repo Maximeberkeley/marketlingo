@@ -545,6 +545,7 @@ function HomeScreenContent() {
         onClose={() => setShowLeoChat(false)}
         marketId={selectedMarket || undefined}
         lessonContext={`${getMarketName(selectedMarket || 'aerospace')} industry learning — Day ${currentDay}`}
+        lessonTitle={lessonStack?.title}
       />
       {/* Collectible cards are hidden for now; only streak, Interview Brief and readiness stay visible. */}
 

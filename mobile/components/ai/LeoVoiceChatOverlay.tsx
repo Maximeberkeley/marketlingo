@@ -31,6 +31,9 @@ import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
 import { LeoAnimated } from '../mascot/LeoAnimated';
 import { leoCallClip } from '../mascot/leoAnimationRules';
+import { useAuth } from '../../hooks/useAuth';
+import { loadInterviewTarget } from '../../lib/interviewPrep';
+import { leoCallStarters } from '../../lib/leoCallStarters';
 
 
 const { width: SCREEN_W } = Dimensions.get('window');
@@ -38,6 +41,9 @@ const LEO_STUDY_SCENE = require('../../assets/mascot/leo-voice-study.png');
 const LEO_VOICE_ID = 'miHBUIuwiPKbRiTC0oIz'; // the workspace voice named "Leo"
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
+
+/** Height of the starter row, so Leo's subtitle box moves up above it. */
+const STARTER_ROW_HEIGHT = 48;
 
 interface Message {
   role: 'user' | 'assistant';
@@ -49,6 +55,8 @@ interface LeoVoiceChatOverlayProps {
   onClose: () => void;
   marketId?: string;
   lessonContext?: string;
+  /** Today's lesson title, for the "Quiz me on …" starter. */
+  lessonTitle?: string;
 }
 
 async function transcribeVoice(uri: string): Promise<string> {
@@ -85,8 +93,11 @@ export function LeoVoiceChatOverlay({
   onClose,
   marketId = 'general',
   lessonContext,
+  lessonTitle,
 }: LeoVoiceChatOverlayProps) {
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
+  const [interviewCompany, setInterviewCompany] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [narrationText, setNarrationText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -104,6 +115,16 @@ export function LeoVoiceChatOverlay({
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
   const livePulse = useRef(new Animated.Value(1)).current;
+
+  // The saved interview target shapes the first starter ("Help me practice for my SpaceX interview").
+  useEffect(() => {
+    if (!visible) return;
+    let live = true;
+    loadInterviewTarget(user?.id, marketId)
+      .then(target => { if (live) setInterviewCompany(target?.company?.trim() || null); })
+      .catch(() => {});
+    return () => { live = false; };
+  }, [visible, user?.id, marketId]);
 
   // Entrance animation
   useEffect(() => {
@@ -344,6 +365,10 @@ export function LeoVoiceChatOverlay({
 
   if (!visible) return null;
 
+  // One-tap first messages, until the learner has said anything.
+  const starters = leoCallStarters({ company: interviewCompany, lessonTitle });
+  const showStarters = messages.length === 0 && !isGenerating && !isRecording && !isTranscribing && !showTextInput;
+
   return (
     <Modal visible={visible} animationType="none" transparent statusBarTranslucent>
       <StatusBar barStyle="light-content" />
@@ -395,7 +420,7 @@ export function LeoVoiceChatOverlay({
           {subtitlesExpanded && (
             <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={() => setSubtitlesExpanded(false)} accessibilityLabel="Close chat" />
           )}
-          <View style={[st.dialogStage, { bottom: insets.bottom + 154 }]}>
+          <View style={[st.dialogStage, { bottom: insets.bottom + 154 + (showStarters ? STARTER_ROW_HEIGHT : 0) }]}>
             <View style={st.dialogTail} />
             <SubtitleBox
               disabled={subtitlesExpanded}
@@ -447,6 +472,15 @@ export function LeoVoiceChatOverlay({
           </View>
 
           <View style={[st.bottomBar, { paddingBottom: insets.bottom + 16 }]}>
+            {showStarters && (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={st.starterRow} style={st.starterScroll} keyboardShouldPersistTaps="handled">
+                {starters.map(starter => (
+                  <TouchableOpacity key={starter} style={st.starterChip} onPress={() => { triggerHaptic('light'); sendToLeo(starter); }} accessibilityRole="button">
+                    <Text style={st.starterText}>{starter}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
             {showTextInput ? (
               <View style={st.keyboardComposer}>
                 <TouchableOpacity style={st.keyboardDismiss} onPress={() => { Keyboard.dismiss(); setShowTextInput(false); }} accessibilityLabel="Hide keyboard">
@@ -686,6 +720,18 @@ const st = StyleSheet.create({
     fontWeight: '600',
   },
 
+  starterScroll: { marginBottom: 8, flexGrow: 0 },
+  starterRow: { gap: 8, paddingRight: 8 },
+  starterChip: {
+    height: 40,
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.28)',
+    backgroundColor: 'rgba(255,255,255,0.14)',
+  },
+  starterText: { fontSize: 14, fontWeight: '700', color: '#FFFFFF' },
   bottomBar: {
     position: 'absolute',
     left: 0,

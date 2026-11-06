@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,8 @@ import {
   Animated,
   ScrollView,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  useWindowDimensions
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -25,6 +26,7 @@ import { AIConsentModal } from "./AIConsentModal";
 import { transcribeAudio } from "../../lib/interviewVoice";
 import { LeoCharacter } from "../mascot/LeoCharacter";
 import { log } from "../../lib/logger";
+const PANEL_MAX_WIDTH = 680;
 const LEO_VOICE_ID = "miHBUIuwiPKbRiTC0oIz";
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
@@ -331,241 +333,208 @@ ${instruction}` }] : next;
     },
     [onSaveAnswer]
   );
-  return <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
-      <KeyboardAvoidingView
-    style={styles.overlay}
-    behavior={Platform.OS === "ios" ? "padding" : void 0}
-    keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 0}
-  >
-        <TouchableOpacity style={styles.dismissArea} activeOpacity={1} onPress={onClose} />
-        <Animated.View
-    style={[
-      styles.container,
+  const { width: winW, height: winH } = useWindowDimensions();
+  const largeScreen = Math.min(winW, winH) >= 600;
+  const panelW = Math.min(winW, PANEL_MAX_WIDTH);
+  const modeColumns = panelW >= 560 ? 4 : 2;
+  const modeCardW = Math.floor((panelW - 32 - 10 * (modeColumns - 1)) / modeColumns);
+  return /* @__PURE__ */ React.createElement(Modal, { visible, animationType: "fade", transparent: true, onRequestClose: onClose }, /* @__PURE__ */ React.createElement(
+    KeyboardAvoidingView,
+    {
+      style: styles.overlay,
+      behavior: Platform.OS === "ios" ? "padding" : void 0,
+      keyboardVerticalOffset: Platform.OS === "ios" ? 8 : 0
+    },
+    /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.dismissArea, activeOpacity: 1, onPress: onClose }),
+    /* @__PURE__ */ React.createElement(
+      Animated.View,
       {
-        paddingBottom: insets.bottom + 10,
-        transform: [
+        style: [
+          styles.container,
+          largeScreen && styles.containerLarge,
           {
-            translateY: slideAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [700, 0]
-            })
+            paddingBottom: insets.bottom + 10,
+            transform: [
+              {
+                translateY: slideAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [700, 0]
+                })
+              }
+            ]
           }
         ]
-      }
-    ]}
-  >
-          <View style={styles.grabber} />
-
+      },
+      /* @__PURE__ */ React.createElement(View, { style: styles.grabber }),
+      /* @__PURE__ */ React.createElement(View, { style: styles.header }, /* @__PURE__ */ React.createElement(View, { style: styles.headerLeo }, /* @__PURE__ */ React.createElement(LeoCharacter, { size: "sm", animation: leoMood })), /* @__PURE__ */ React.createElement(View, { style: styles.headerText }, /* @__PURE__ */ React.createElement(Text, { style: styles.headerTitle }, "Leo"), /* @__PURE__ */ React.createElement(Text, { style: styles.headerSub }, isLoading ? "Thinking it through\u2026" : isPlayingAudio ? "Talking" : "Your study partner for this card")), /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
+        {
+          onPress: toggleMute,
+          style: [styles.closeBtn, muted && styles.mutedBtn],
+          hitSlop: { top: 10, bottom: 10, left: 10, right: 10 },
+          accessibilityRole: "button",
+          accessibilityLabel: muted ? "Turn Leo's voice back on" : "Mute Leo's voice"
+        },
+        /* @__PURE__ */ React.createElement(
+          Feather,
           {
-    /* Header */
-  }
-          <View style={styles.header}>
-            <View style={styles.headerLeo}>
-              <LeoCharacter size="sm" animation={leoMood} />
-            </View>
-            <View style={styles.headerText}>
-              <Text style={styles.headerTitle}>Leo</Text>
-              <Text style={styles.headerSub}>
-                {isLoading ? "Thinking it through\u2026" : isPlayingAudio ? "Talking" : "Your study partner for this card"}
-              </Text>
-            </View>
-            <TouchableOpacity
-    onPress={toggleMute}
-    style={[styles.closeBtn, muted && styles.mutedBtn]}
-    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-    accessibilityRole="button"
-    accessibilityLabel={muted ? "Turn Leo's voice back on" : "Mute Leo's voice"}
-  >
-              <Feather
-    name={muted ? "volume-x" : "volume-2"}
-    size={18}
-    color={muted ? tokens.color.accent : tokens.color.textSecondary}
-  />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-              <Feather name="x" size={18} color={tokens.color.textSecondary} />
-            </TouchableOpacity>
-
-          </View>
-
+            name: muted ? "volume-x" : "volume-2",
+            size: 18,
+            color: muted ? tokens.color.accent : tokens.color.textSecondary
+          }
+        )
+      ), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: onClose, style: styles.closeBtn, hitSlop: { top: 10, bottom: 10, left: 10, right: 10 } }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 18, color: tokens.color.textSecondary }))),
+      !!contextLabel && /* @__PURE__ */ React.createElement(View, { style: [styles.contextStrip, { borderLeftColor: accent }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.contextLabel }, "You're asking about"), /* @__PURE__ */ React.createElement(Text, { style: styles.contextText, numberOfLines: 2 }, contextLabel)),
+      /* @__PURE__ */ React.createElement(
+        ScrollView,
+        {
+          ref: scrollRef,
+          style: styles.messagesScroll,
+          contentContainerStyle: styles.messagesContent,
+          showsVerticalScrollIndicator: false,
+          keyboardShouldPersistTaps: "handled"
+        },
+        messages.length === 0 && !isLoading && /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "Stuck on this one?"), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyText }, "Pick a shortcut below, type it, or hold the mic and just say it.")),
+        messages.map((msg, idx) => {
+          const isTyping = idx === lastIndex && msg.role === "assistant" && typed !== null;
+          const body = isTyping ? typed || "" : msg.content;
+          return /* @__PURE__ */ React.createElement(
+            View,
+            {
+              key: idx,
+              style: [styles.row, msg.role === "user" ? styles.rowUser : styles.rowLeo]
+            },
+            /* @__PURE__ */ React.createElement(
+              View,
+              {
+                style: [
+                  styles.bubble,
+                  msg.role === "user" ? [styles.userBubble, { backgroundColor: accent }] : styles.leoBubble
+                ]
+              },
+              /* @__PURE__ */ React.createElement(Text, { style: msg.role === "user" ? styles.userText : styles.leoText }, body, isTyping ? " \u258D" : "")
+            ),
+            msg.role === "assistant" && !isTyping && /* @__PURE__ */ React.createElement(View, { style: styles.answerActions }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.answerBtn, onPress: () => playTTS(msg.content) }, /* @__PURE__ */ React.createElement(
+              Feather,
+              {
+                name: isPlayingAudio ? "pause" : "volume-2",
+                size: 14,
+                color: tokens.color.textSecondary
+              }
+            ), /* @__PURE__ */ React.createElement(Text, { style: styles.answerBtnText }, isPlayingAudio ? "Stop" : "Listen")), !!onSaveAnswer && /* @__PURE__ */ React.createElement(
+              TouchableOpacity,
+              {
+                style: styles.answerBtn,
+                onPress: () => handleSave(idx, msg.content),
+                disabled: saved.includes(idx)
+              },
+              /* @__PURE__ */ React.createElement(
+                Feather,
+                {
+                  name: saved.includes(idx) ? "check" : "bookmark",
+                  size: 14,
+                  color: saved.includes(idx) ? tokens.color.correctDark : tokens.color.textSecondary
+                }
+              ),
+              /* @__PURE__ */ React.createElement(
+                Text,
+                {
+                  style: [
+                    styles.answerBtnText,
+                    saved.includes(idx) && { color: tokens.color.correctDark }
+                  ]
+                },
+                saved.includes(idx) ? "In Notes" : "Save to Notes"
+              )
+            ))
+          );
+        }),
+        isLoading && /* @__PURE__ */ React.createElement(View, { style: [styles.row, styles.rowLeo] }, /* @__PURE__ */ React.createElement(View, { style: [styles.bubble, styles.leoBubble, styles.thinkingBubble] }, /* @__PURE__ */ React.createElement(Text, { style: styles.thinkingText }, "Leo is thinking\u2026")))
+      ),
+      modesExpanded ? /* @__PURE__ */ React.createElement(Animated.View, { style: { opacity: modesAnim } }, /* @__PURE__ */ React.createElement(View, { style: styles.modeGrid }, MODES.map((mode) => /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
+        {
+          key: mode.id,
+          style: [styles.modeCard, modeColumns === 2 && styles.modeCardCompact, { width: modeCardW, borderColor: mode.color + "66", backgroundColor: mode.color + "14" }],
+          onPress: () => ask(mode.ask, mode.instruction),
+          disabled: isLoading,
+          activeOpacity: 0.85
+        },
+        /* @__PURE__ */ React.createElement(View, { style: [styles.modeCardIcon, { backgroundColor: mode.color + "22" }] }, /* @__PURE__ */ React.createElement(Feather, { name: mode.icon, size: 22, color: mode.color })),
+        /* @__PURE__ */ React.createElement(Text, { style: [styles.modeCardText, { color: mode.color }] }, mode.label)
+      )))) : /* @__PURE__ */ React.createElement(View, { style: styles.modeRowSmallWrap }, /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
+        {
+          style: styles.modeExpandBtn,
+          onPress: () => {
+            setModesExpanded(true);
+            Animated.timing(modesAnim, { toValue: 1, duration: 180, useNativeDriver: true }).start();
+          },
+          hitSlop: { top: 8, bottom: 8, left: 8, right: 8 }
+        },
+        /* @__PURE__ */ React.createElement(Feather, { name: "grid", size: 14, color: tokens.color.textMuted })
+      ), /* @__PURE__ */ React.createElement(
+        ScrollView,
+        {
+          horizontal: true,
+          showsHorizontalScrollIndicator: false,
+          contentContainerStyle: styles.modeRow,
+          keyboardShouldPersistTaps: "handled"
+        },
+        MODES.map((mode) => /* @__PURE__ */ React.createElement(
+          TouchableOpacity,
           {
-    /* Context strip — what he's answering about */
-  }
-          {!!contextLabel && <View style={[styles.contextStrip, { borderLeftColor: accent }]}>
-              <Text style={styles.contextLabel}>You're asking about</Text>
-              <Text style={styles.contextText} numberOfLines={2}>
-                {contextLabel}
-              </Text>
-            </View>}
-
-          {
-    /* Messages */
-  }
-          <ScrollView
-    ref={scrollRef}
-    style={styles.messagesScroll}
-    contentContainerStyle={styles.messagesContent}
-    showsVerticalScrollIndicator={false}
-    keyboardShouldPersistTaps="handled"
-  >
-            {messages.length === 0 && !isLoading && <View style={styles.emptyState}>
-                <Text style={styles.emptyTitle}>Stuck on this one?</Text>
-                <Text style={styles.emptyText}>
-                  Pick a shortcut below, type it, or hold the mic and just say it.
-                </Text>
-              </View>}
-
-            {messages.map((msg, idx) => {
-    const isTyping = idx === lastIndex && msg.role === "assistant" && typed !== null;
-    const body = isTyping ? typed || "" : msg.content;
-    return <View
-      key={idx}
-      style={[styles.row, msg.role === "user" ? styles.rowUser : styles.rowLeo]}
-    >
-                  <View
-      style={[
-        styles.bubble,
-        msg.role === "user" ? [styles.userBubble, { backgroundColor: accent }] : styles.leoBubble
-      ]}
-    >
-                    <Text style={msg.role === "user" ? styles.userText : styles.leoText}>
-                      {body}
-                      {isTyping ? " \u258D" : ""}
-                    </Text>
-                  </View>
-                  {msg.role === "assistant" && !isTyping && <View style={styles.answerActions}>
-                      <TouchableOpacity style={styles.answerBtn} onPress={() => playTTS(msg.content)}>
-                        <Feather
-      name={isPlayingAudio ? "pause" : "volume-2"}
-      size={14}
-      color={tokens.color.textSecondary}
-    />
-                        <Text style={styles.answerBtnText}>
-                          {isPlayingAudio ? "Stop" : "Listen"}
-                        </Text>
-                      </TouchableOpacity>
-                      {!!onSaveAnswer && <TouchableOpacity
-      style={styles.answerBtn}
-      onPress={() => handleSave(idx, msg.content)}
-      disabled={saved.includes(idx)}
-    >
-                          <Feather
-      name={saved.includes(idx) ? "check" : "bookmark"}
-      size={14}
-      color={saved.includes(idx) ? tokens.color.correctDark : tokens.color.textSecondary}
-    />
-                          <Text
-      style={[
-        styles.answerBtnText,
-        saved.includes(idx) && { color: tokens.color.correctDark }
-      ]}
-    >
-                            {saved.includes(idx) ? "In Notes" : "Save to Notes"}
-                          </Text>
-                        </TouchableOpacity>}
-                    </View>}
-                </View>;
-  })}
-
-            {isLoading && <View style={[styles.row, styles.rowLeo]}>
-                <View style={[styles.bubble, styles.leoBubble, styles.thinkingBubble]}>
-                  <Text style={styles.thinkingText}>Leo is thinking…</Text>
-                </View>
-              </View>}
-          </ScrollView>
-
-          {
-    /* Modes — big cards on entry, compact chips once a question is asked */
-  }
-          {modesExpanded ? <Animated.View style={{ opacity: modesAnim }}>
-              <ScrollView
-    horizontal
-    showsHorizontalScrollIndicator={false}
-    contentContainerStyle={styles.modeRowBig}
-    keyboardShouldPersistTaps="handled"
-  >
-                {MODES.map((mode) => <TouchableOpacity
-    key={mode.id}
-    style={[styles.modeCard, { borderColor: mode.color + "66", backgroundColor: mode.color + "14" }]}
-    onPress={() => ask(mode.ask, mode.instruction)}
-    disabled={isLoading}
-    activeOpacity={0.85}
-  >
-                    <View style={[styles.modeCardIcon, { backgroundColor: mode.color + "22" }]}>
-                      <Feather name={mode.icon} size={22} color={mode.color} />
-                    </View>
-                    <Text style={[styles.modeCardText, { color: mode.color }]}>{mode.label}</Text>
-                  </TouchableOpacity>)}
-              </ScrollView>
-            </Animated.View> : <View style={styles.modeRowSmallWrap}>
-              <TouchableOpacity
-    style={styles.modeExpandBtn}
-    onPress={() => {
-      setModesExpanded(true);
-      Animated.timing(modesAnim, { toValue: 1, duration: 180, useNativeDriver: true }).start();
-    }}
-    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-  >
-                <Feather name="grid" size={14} color={tokens.color.textMuted} />
-              </TouchableOpacity>
-              <ScrollView
-    horizontal
-    showsHorizontalScrollIndicator={false}
-    contentContainerStyle={styles.modeRow}
-    keyboardShouldPersistTaps="handled"
-  >
-                {MODES.map((mode) => <TouchableOpacity
-    key={mode.id}
-    style={[styles.modeChip, { borderColor: mode.color + "55", backgroundColor: mode.color + "12" }]}
-    onPress={() => ask(mode.ask, mode.instruction)}
-    disabled={isLoading}
-  >
-                    <Feather name={mode.icon} size={13} color={mode.color} />
-                    <Text style={[styles.modeText, { color: mode.color }]}>{mode.label}</Text>
-                  </TouchableOpacity>)}
-              </ScrollView>
-            </View>}
-
-          {
-    /* Input */
-  }
-          <View style={styles.inputRow}>
-            <TextInput
-    style={styles.textInput}
-    value={input}
-    onChangeText={setInput}
-    placeholder={isRecording ? "Listening\u2026" : "Ask Leo anything\u2026"}
-    placeholderTextColor={tokens.color.textMuted}
-    multiline
-    maxLength={500}
-    returnKeyType="send"
-    onSubmitEditing={() => ask(input)}
-  />
-            {input.trim().length === 0 ? <TouchableOpacity
-    style={[styles.micBtn, isRecording && { backgroundColor: tokens.color.incorrect }]}
-    onPressIn={startRecording}
-    onPressOut={stopRecording}
-    disabled={isLoading}
-  >
-                <Feather name="mic" size={20} color={isRecording ? "#fff" : accent} />
-              </TouchableOpacity> : <TouchableOpacity
-    style={[styles.sendBtn, { backgroundColor: accent }, isLoading && styles.disabled]}
-    onPress={() => ask(input)}
-    disabled={isLoading}
-  >
-                <Feather name="arrow-up" size={20} color="#fff" />
-              </TouchableOpacity>}
-          </View>
-          {isRecording && <Text style={styles.micHint}>Hold to talk, release to send</Text>}
-        </Animated.View>
-      </KeyboardAvoidingView>
-      <AIConsentModal {...modalProps} />
-    </Modal>;
+            key: mode.id,
+            style: [styles.modeChip, { borderColor: mode.color + "55", backgroundColor: mode.color + "12" }],
+            onPress: () => ask(mode.ask, mode.instruction),
+            disabled: isLoading
+          },
+          /* @__PURE__ */ React.createElement(Feather, { name: mode.icon, size: 13, color: mode.color }),
+          /* @__PURE__ */ React.createElement(Text, { style: [styles.modeText, { color: mode.color }] }, mode.label)
+        ))
+      )),
+      /* @__PURE__ */ React.createElement(View, { style: styles.inputRow }, /* @__PURE__ */ React.createElement(
+        TextInput,
+        {
+          style: styles.textInput,
+          value: input,
+          onChangeText: setInput,
+          placeholder: isRecording ? "Listening\u2026" : "Ask Leo anything\u2026",
+          placeholderTextColor: tokens.color.textMuted,
+          multiline: true,
+          maxLength: 500,
+          returnKeyType: "send",
+          onSubmitEditing: () => ask(input)
+        }
+      ), input.trim().length === 0 ? /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
+        {
+          style: [styles.micBtn, isRecording && { backgroundColor: tokens.color.incorrect }],
+          onPressIn: startRecording,
+          onPressOut: stopRecording,
+          disabled: isLoading
+        },
+        /* @__PURE__ */ React.createElement(Feather, { name: "mic", size: 20, color: isRecording ? "#fff" : accent })
+      ) : /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
+        {
+          style: [styles.sendBtn, { backgroundColor: accent }, isLoading && styles.disabled],
+          onPress: () => ask(input),
+          disabled: isLoading
+        },
+        /* @__PURE__ */ React.createElement(Feather, { name: "arrow-up", size: 20, color: "#fff" })
+      )),
+      isRecording && /* @__PURE__ */ React.createElement(Text, { style: styles.micHint }, "Hold to talk, release to send")
+    )
+  ), /* @__PURE__ */ React.createElement(AIConsentModal, { ...modalProps }));
 }
 const styles = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: "rgba(15,17,26,0.55)", justifyContent: "flex-end" },
   dismissArea: { flex: 1 },
   container: {
+    width: "100%",
+    maxWidth: PANEL_MAX_WIDTH,
+    alignSelf: "center",
     backgroundColor: tokens.color.bg,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
@@ -690,6 +659,9 @@ const styles = StyleSheet.create({
   },
   modeText: { fontSize: 13, fontWeight: "800" },
   modeRowBig: { paddingHorizontal: 16, paddingBottom: 12, gap: 10 },
+  modeGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10, paddingHorizontal: 16, paddingBottom: 12 },
+  modeCardCompact: { height: 84, flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 10 },
+  containerLarge: { maxHeight: "92%" },
   modeCard: {
     width: 148,
     height: 132,
