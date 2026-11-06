@@ -4,7 +4,7 @@
  *
  * Rule: a check may only test text the learner has ALREADY SEEN on a card
  * earlier in this lesson, and only the text visible on that card — never the
- * full briefing behind "Go deeper" / "Read briefing".
+ * full briefing behind "Read the full briefing".
  *
  * Generated games (speed rounds, word-swap fakes, term definitions, sentence
  * ordering, sort-by-title, fill-the-gap numbers, market packs) are no longer

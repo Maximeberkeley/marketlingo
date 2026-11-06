@@ -6,6 +6,7 @@ import { tokens } from "../theme/tokens";
 import { ColorText } from "../components/ColorText";
 import { shortLabel } from "../text";
 import { BriefingReader } from "../components/BriefingReader";
+import { BriefingButton } from "../components/BriefingButton";
 import { cardCopy, cardTerms, hasExtraBriefing, readingCardKind } from "../cardPresentation";
 import { ReadingCopy, readingTermCopy } from "../components/ReadingCopy";
 function MicroInsight({ exercise, onChange }) {
@@ -34,7 +35,7 @@ function MicroInsight({ exercise, onChange }) {
     },
     /* @__PURE__ */ React.createElement(View, { style: styles.termHead }, /* @__PURE__ */ React.createElement(Text, { style: styles.termWord }, shortLabel(keyTerm.term)), /* @__PURE__ */ React.createElement(Feather, { name: showTerm ? "minus" : "plus", size: 17, color: tokens.color.accent })),
     showTerm && /* @__PURE__ */ React.createElement(ColorText, { text: keyTerm.definition, style: styles.termDef, maxSentences: 100, maxLength: 1e4 })
-  ), hasBriefing && /* @__PURE__ */ React.createElement(TouchableOpacity, { accessibilityRole: "button", style: styles.goDeeper, activeOpacity: 0.82, onPress: () => setShowBriefing(true) }, /* @__PURE__ */ React.createElement(Feather, { name: "book-open", size: 16, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.goDeeperText }, "Go deeper"), /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 17, color: tokens.color.textMuted })), hasBriefing && /* @__PURE__ */ React.createElement(BriefingReader, { visible: showBriefing, title: exercise.detailTitle || exercise.eyebrow || "Lesson briefing", text: exercise.fullText || "", keyTerms: cardTerms(exercise), sources: exercise.sources, onClose: () => setShowBriefing(false) }));
+  ), hasBriefing && /* @__PURE__ */ React.createElement(BriefingButton, { text: exercise.fullText, onPress: () => setShowBriefing(true) }), hasBriefing && /* @__PURE__ */ React.createElement(BriefingReader, { visible: showBriefing, title: exercise.detailTitle || exercise.eyebrow || "Lesson briefing", text: exercise.fullText || "", keyTerms: cardTerms(exercise), sources: exercise.sources, onClose: () => setShowBriefing(false) }));
 }
 const styles = StyleSheet.create({
   wrap: { minWidth: 0, maxWidth: "100%", alignSelf: "stretch", gap: tokens.space.lg },
@@ -57,9 +58,7 @@ const styles = StyleSheet.create({
   },
   termWord: { flex: 1, flexShrink: 1, minWidth: 0, fontSize: tokens.font.caption + 1, fontWeight: "900", color: tokens.color.accentDark },
   termHead: { flexDirection: "row", alignItems: "center", gap: 8 },
-  termDef: { marginTop: 7, fontSize: tokens.font.body, color: tokens.color.textSecondary, lineHeight: 24 },
-  goDeeper: { minHeight: 48, flexDirection: "row", alignItems: "center", gap: 9, paddingHorizontal: 14, borderRadius: tokens.radius.md, backgroundColor: tokens.color.surface, borderWidth: 1, borderColor: tokens.color.border },
-  goDeeperText: { flex: 1, fontSize: 15, fontWeight: "800", color: tokens.color.text }
+  termDef: { marginTop: 7, fontSize: tokens.font.body, color: tokens.color.textSecondary, lineHeight: 24 }
 });
 export {
   MicroInsight

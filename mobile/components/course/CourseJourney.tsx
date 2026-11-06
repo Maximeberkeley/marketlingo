@@ -28,6 +28,7 @@ import { triggerHaptic } from '../../lib/haptics';
 import { playSound } from '../../lib/sounds';
 import { StreakBadge } from '../ui/StreakBadge';
 import { XPBadge } from '../ui/XPBadge';
+import { SwitchIndustryModal } from '../ui/SwitchIndustryModal';
 import { LeoCharacter } from '../mascot/LeoCharacter';
 import { LeoAnimated } from '../mascot/LeoAnimated';
 import { useHomeLeo } from '../mascot/useLeoAnimations';
@@ -547,6 +548,9 @@ export function CourseJourney({
   const [loadKey, setLoadKey] = useState(0);
   const [previewSection, setPreviewSection] = useState<SectionAccess | null>(null);
   const [showIndustryDetails, setShowIndustryDetails] = useState(false);
+  const [showSwitchIndustry, setShowSwitchIndustry] = useState(false);
+  const switchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (switchTimer.current) clearTimeout(switchTimer.current); }, []);
   const themes = useMemo(() => seasonThemes(marketId), [marketId]);
   const marketName = getMarketName(marketId);
   const marketDescription = getMarketById(marketId)?.description;
@@ -641,6 +645,7 @@ export function CourseJourney({
     if (!isFocused) {
       setPreviewSection(null);
       setShowIndustryDetails(false);
+      setShowSwitchIndustry(false);
     }
   }, [isFocused]);
 
@@ -852,9 +857,32 @@ export function CourseJourney({
               <Text style={styles.industrySecondaryText}>Read industry intel</Text>
               <Feather name="arrow-up-right" size={16} color={COLORS.textMuted} />
             </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.industrySecondaryAction}
+              onPress={() => {
+                triggerHaptic('selection');
+                setShowIndustryDetails(false);
+                // iOS cannot present a second modal while the sheet is still closing.
+                if (switchTimer.current) clearTimeout(switchTimer.current);
+                switchTimer.current = setTimeout(() => setShowSwitchIndustry(true), 350);
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={`Switch industry from ${marketName}`}
+            >
+              <Feather name="repeat" size={18} color={COLORS.accent} />
+              <Text style={styles.industrySecondaryText}>Switch industry</Text>
+              <Feather name="chevron-right" size={16} color={COLORS.textMuted} />
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
+      <SwitchIndustryModal
+        visible={showSwitchIndustry}
+        userId={user?.id}
+        marketId={marketId}
+        marketName={marketName}
+        onClose={() => setShowSwitchIndustry(false)}
+      />
     </View>
   );
 }

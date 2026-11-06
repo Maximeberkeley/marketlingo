@@ -8,6 +8,7 @@ import { ExerciseProps } from '../exercises/types';
 import { ColorText } from '../components/ColorText';
 import { shortLabel, shortText } from '../text';
 import { BriefingReader } from '../components/BriefingReader';
+import { BriefingButton } from '../components/BriefingButton';
 import { cardCopy, cardTerms, hasExtraBriefing, readingCardKind } from '../cardPresentation';
 import { ReadingCopy, readingTermCopy } from '../components/ReadingCopy';
 
@@ -56,11 +57,7 @@ export function MicroInsight({ exercise, onChange }: ExerciseProps<MicroInsightE
         </TouchableOpacity>
       )}
       {hasBriefing && (
-        <TouchableOpacity accessibilityRole="button" style={styles.goDeeper} activeOpacity={0.82} onPress={() => setShowBriefing(true)}>
-          <Feather name="book-open" size={16} color={tokens.color.accent} />
-          <Text style={styles.goDeeperText}>Go deeper</Text>
-          <Feather name="chevron-right" size={17} color={tokens.color.textMuted} />
-        </TouchableOpacity>
+        <BriefingButton text={exercise.fullText} onPress={() => setShowBriefing(true)} />
       )}
       {hasBriefing && <BriefingReader visible={showBriefing} title={exercise.detailTitle || exercise.eyebrow || 'Lesson briefing'} text={exercise.fullText || ''} keyTerms={cardTerms(exercise)} sources={exercise.sources} onClose={() => setShowBriefing(false)} />}
     </View>
@@ -89,6 +86,4 @@ const styles = StyleSheet.create({
   termWord: { flex: 1, flexShrink: 1, minWidth: 0, fontSize: tokens.font.caption + 1, fontWeight: '900', color: tokens.color.accentDark },
   termHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   termDef: { marginTop: 7, fontSize: tokens.font.body, color: tokens.color.textSecondary, lineHeight: 24 },
-  goDeeper: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 14, borderRadius: tokens.radius.md, backgroundColor: tokens.color.surface, borderWidth: 1, borderColor: tokens.color.border },
-  goDeeperText: { flex: 1, fontSize: 15, fontWeight: '800', color: tokens.color.text },
 });
