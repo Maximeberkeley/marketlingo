@@ -27,7 +27,6 @@ export function FriendNudgeBanner({ top }: { top: number }) {
   const check = useCallback(async () => {
     if (!user || checking.current) return;
     checking.current = true;
-    const cancelled = false;
     {
       try {
         const { data: nudges, error } = await supabase
@@ -37,13 +36,12 @@ export function FriendNudgeBanner({ top }: { top: number }) {
           .is('read_at', null)
           .order('created_at', { ascending: false })
           .limit(20);
-        if (error || !nudges?.length || cancelled) return;
+        if (error || !nudges?.length) return;
         const senderIds = Array.from(new Set(nudges.map((n) => n.sender_id)));
         const { data: profiles } = await supabase
           .from('public_profiles')
           .select('id, display_name')
           .in('id', senderIds);
-        if (cancelled) return;
         const names = senderIds.map(
           (id) => profiles?.find((p) => p.id === id)?.display_name?.trim() || 'A friend',
         );
@@ -54,13 +52,13 @@ export function FriendNudgeBanner({ top }: { top: number }) {
           .in('id', nudges.map((n) => n.id));
       } catch (err) {
         log.warn('Friend nudges failed to load', err);
+      } finally {
+        checking.current = false;
       }
     }
-    checking.current = false;
   }, [user]);
 
-  // On first mount, whenever Home regains focus, and when the app returns to the foreground.
-  useEffect(() => { void check(); }, [check]);
+  // On mount and whenever Home regains focus, and when the app returns to the foreground.
   useFocusEffect(useCallback(() => { void check(); }, [check]));
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
