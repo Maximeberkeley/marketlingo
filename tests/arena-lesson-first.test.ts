@@ -25,9 +25,11 @@ describe('lesson-first Arena', () => {
   it('uses at least 9 of 11 honest lesson questions without inventing a prose chain', () => {
     for (let i = 0; i < 100; i++) {
       const waves = buildArena(input);
-      expect(waves.map(w => w.exercises.length)).toEqual([4, 4, 3]);
+      // One studied lesson is a starter run: only lesson questions, so it may end a question early.
+      expect(waves.map(w => w.exercises.length).every((n, i) => n <= [4, 4, 3][i])).toBe(true);
       const questions = all(waves);
       const grounded = questions.filter(q => q.source?.type === 'lesson');
+      expect(grounded).toHaveLength(questions.length);
       // This fixture has no authored chain or explicit sequence; the old tenth
       // lesson question depended on ordering unrelated sentences.
       expect(grounded.length).toBeGreaterThanOrEqual(9);
@@ -78,8 +80,10 @@ describe('lesson-first Arena', () => {
     expect(result.questions.map(q => q.kind)).toEqual(['sortSignal', 'multipleChoice', 'numberSense']);
     expect(result.keyTerms.map(t => t.term)).toEqual(['cerebral cortex', 'hippocampus', 'brainstem']);
   });
-  it('keeps the run at full length from the wider industry when lesson material runs out', () => {
-    const waves = buildArena({ ...input, studied: [{ title: 'Empty', day: 1, slides: [] }] });
+  it('keeps the run at full length from the wider industry when lesson material runs out (from the 3rd lesson)', () => {
+    // A starter learner (1–2 lessons) never gets industry fill, so an empty lesson gives no run.
+    expect(buildArena({ ...input, studied: [{ title: 'Empty', day: 1, slides: [] }] })).toHaveLength(0);
+    const waves = buildArena({ ...input, studied: [1, 2, 3].map(day => ({ title: `Empty ${day}`, day, slides: [] })) });
     expect(all(waves).length).toBeGreaterThanOrEqual(8);
     expect(all(waves).every(q => q.source?.type === 'industry')).toBe(true);
     const keys = all(waves).flatMap(quizQuestionKeys);

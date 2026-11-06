@@ -23,6 +23,27 @@ import {
   statTrend,
   trainerCall
 } from "../industry/build";
+const STARTER_LESSON_LIMIT = 2;
+function readingWords(exercise) {
+  const e = exercise;
+  const parts = [];
+  const add = (value) => {
+    if (typeof value === "string") parts.push(value);
+    else if (Array.isArray(value)) value.forEach(add);
+    else if (value && typeof value === "object") {
+      const o = value;
+      add(o.text ?? o.name ?? o.label ?? o.question);
+    }
+  };
+  for (const key of ["prompt", "situation", "options", "statements", "steps", "items", "left", "right", "nodes", "buckets"]) add(e[key]);
+  return parts.join(" ").split(/\s+/).filter(Boolean).length;
+}
+function beatSeconds(wave, exercise) {
+  const base = wave?.seconds ?? 20;
+  if (!exercise) return base;
+  const reading = Math.min(45, Math.ceil(readingWords(exercise) / 3) + 5);
+  return Math.max(base, reading, exercise.kind === "buildChain" ? 25 : 0);
+}
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -49,6 +70,7 @@ function buildArena(input) {
   const pack = getIndustryPack(input.marketId);
   const lessons = [...input.studied ?? []].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
   const review = lessons.length > 1 ? [...lessons.slice(1), lessons[0]] : lessons;
+  const starter = lessons.length > 0 && lessons.length <= STARTER_LESSON_LIMIT;
   const used = new Set(input.seenQuestionKeys ?? []);
   const facts = /* @__PURE__ */ new Set();
   let serial = 0;
@@ -195,7 +217,7 @@ function buildArena(input) {
       if (reserved && candidate !== reserved && candidate.facts.some((key) => reserved?.facts.includes(key))) continue;
       accept(candidate);
     }
-    if (selected.length < limit) {
+    if (selected.length < limit && !starter) {
       const parts = [...new Set(lessons.flatMap(lessonKeyParts))];
       const relevance = (exercise) => {
         const text = norm(JSON.stringify(exercise));
@@ -266,7 +288,9 @@ function buildArena(input) {
       exercises: wave3
     }
   ];
-  return waves.filter((w) => w.exercises.length > 0);
+  const titles = [...new Set(lessons.map((lesson) => lesson.title).filter(Boolean))];
+  const covers = titles.length ? starter ? `Starter round \xB7 from ${titles.join(" and ")}` : `Today's round: ${titles.slice(0, 3).join(", ")}${titles.length > 3 ? " and more" : ""}` : void 0;
+  return waves.filter((w) => w.exercises.length > 0).map((w) => covers ? { ...w, covers } : w);
 }
 const ARENA_RANKS = [
   { key: "diamond", label: "Excellent", color: "#38BDF8", min: 900 },
@@ -279,7 +303,10 @@ function rankForScore(score) {
 }
 export {
   ARENA_RANKS,
+  STARTER_LESSON_LIMIT,
+  beatSeconds,
   buildArena,
   rankForScore,
+  readingWords,
   shuffleAuthored
 };

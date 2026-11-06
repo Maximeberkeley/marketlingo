@@ -20,7 +20,7 @@ import { feedbackCopy } from "../components/feedbackCopy";
 import { LeoCoach } from "../components/LeoCoach";
 import { leoFeedbackLine } from "../../components/mascot/leoAnimationRules";
 import { renderExerciseByKind, isPassiveKind } from "../components/ExerciseRenderer";
-import { rankForScore } from "./buildArena";
+import { beatSeconds, rankForScore } from "./buildArena";
 import { playSound } from "../../lib/sounds";
 import { trackEvent } from "../../lib/analytics";
 import { getMarketWorld } from "../../data/marketWorlds";
@@ -295,7 +295,8 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       style: styles.waveCard
     },
     /* @__PURE__ */ React.createElement(Text, { style: styles.waveKicker }, "Round ", waveIndex + 1, " of ", waves.length),
-    /* @__PURE__ */ React.createElement(View, { style: styles.waveMetaRow }, /* @__PURE__ */ React.createElement(View, { style: styles.waveMeta }, /* @__PURE__ */ React.createElement(Feather, { name: "clock", size: 12, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.waveMetaText }, wave.seconds, " seconds per question"))),
+    !!wave.covers && /* @__PURE__ */ React.createElement(Text, { style: styles.waveCovers }, wave.covers),
+    /* @__PURE__ */ React.createElement(View, { style: styles.waveMetaRow }, /* @__PURE__ */ React.createElement(View, { style: styles.waveMeta }, /* @__PURE__ */ React.createElement(Feather, { name: "clock", size: 12, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.waveMetaText }, wave.seconds, " seconds per question \xB7 more for long ones"))),
     /* @__PURE__ */ React.createElement(
       TouchableOpacity,
       {
@@ -380,6 +381,7 @@ const styles = StyleSheet.create({
     borderRadius: 20
   },
   waveMetaText: { fontSize: 11, fontWeight: "700", color: "#FFFFFF" },
+  waveCovers: { marginTop: 6, fontSize: 14, fontWeight: "700", color: "#FFFFFF", textAlign: "center" },
   waveBtn: {
     marginTop: 18,
     backgroundColor: tokens.color.bg,
@@ -435,8 +437,7 @@ const styles = StyleSheet.create({
   statLabel: { fontSize: 10, fontWeight: "700", color: tokens.color.textMuted, letterSpacing: 0.4 }
 });
 function beatSecondsFor(wave, exercise) {
-  if (!wave) return 20;
-  return exercise?.kind === "buildChain" ? 25 : wave.seconds;
+  return beatSeconds(wave, exercise);
 }
 export {
   ArenaScreen

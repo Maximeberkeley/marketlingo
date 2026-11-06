@@ -48,6 +48,38 @@ export interface ArenaWave {
   /** Points multiplier for the wave. */
   multiplier: number;
   exercises: Exercise[];
+  /** What the round draws on, shown before it starts ("Starter round · from …"). */
+  covers?: string;
+}
+
+/** Learners with this many lessons or fewer get a starter run: only what they studied, no industry fill. */
+export const STARTER_LESSON_LIMIT = 2;
+
+/** Words a learner has to read before answering. */
+export function readingWords(exercise: Exercise): number {
+  const e = exercise as unknown as Record<string, unknown>;
+  const parts: string[] = [];
+  const add = (value: unknown) => {
+    if (typeof value === 'string') parts.push(value);
+    else if (Array.isArray(value)) value.forEach(add);
+    else if (value && typeof value === 'object') {
+      const o = value as Record<string, unknown>;
+      add(o.text ?? o.name ?? o.label ?? o.question);
+    }
+  };
+  for (const key of ['prompt', 'situation', 'options', 'statements', 'steps', 'items', 'left', 'right', 'nodes', 'buckets']) add(e[key]);
+  return parts.join(' ').split(/\s+/).filter(Boolean).length;
+}
+
+/**
+ * Seconds for one question: the round's clock, stretched for long questions
+ * (about 3 words a second plus 5 to think), never past 45. Chains keep 25.
+ */
+export function beatSeconds(wave: { seconds: number } | undefined, exercise: Exercise | undefined | null): number {
+  const base = wave?.seconds ?? 20;
+  if (!exercise) return base;
+  const reading = Math.min(45, Math.ceil(readingWords(exercise) / 3) + 5);
+  return Math.max(base, reading, exercise.kind === 'buildChain' ? 25 : 0);
 }
 
 /** A lesson the learner has already read, used as practice material. */
@@ -104,6 +136,8 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   const pack = getIndustryPack(input.marketId);
   const lessons = [...(input.studied ?? [])].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
   const review = lessons.length > 1 ? [...lessons.slice(1), lessons[0]] : lessons;
+  // A brand-new learner only gets questions about what they studied.
+  const starter = lessons.length > 0 && lessons.length <= STARTER_LESSON_LIMIT;
   const used = new Set(input.seenQuestionKeys ?? []);
   const facts = new Set<string>();
   let serial = 0;
@@ -264,7 +298,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     // Fill any gap from the wider industry so a run never shrinks: prefer
     // questions that touch the lessons' own terms and title words, and never
     // repeat a fact a lesson question already asked.
-    if (selected.length < limit) {
+    if (selected.length < limit && !starter) {
       const parts = [...new Set(lessons.flatMap(lessonKeyParts))];
       const relevance = (exercise: Exercise) => {
         const text = norm(JSON.stringify(exercise));
@@ -336,7 +370,11 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     },
   ];
 
-  return waves.filter(w => w.exercises.length > 0);
+  const titles = [...new Set(lessons.map(lesson => lesson.title).filter(Boolean))];
+  const covers = titles.length
+    ? starter ? `Starter round · from ${titles.join(' and ')}` : `Today's round: ${titles.slice(0, 3).join(', ')}${titles.length > 3 ? ' and more' : ''}`
+    : undefined;
+  return waves.filter(w => w.exercises.length > 0).map(w => (covers ? { ...w, covers } : w));
 }
 
 export interface ArenaRank {
