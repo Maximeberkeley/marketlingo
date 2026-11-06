@@ -150,20 +150,42 @@ export function checkFigure(slides: SlideLike[], id: string): MultipleChoiceExer
   return null;
 }
 
-// ── 3. Mechanism check — the lesson's own cause-and-effect order ───
+/** Only explicit source order can support a generated chain. Never rank prose. */
+function sequenceSteps(body: string): string[] | null {
+  const numbered = [...body.matchAll(/^\s*(\d+)\.\s+(.+)$/gm)];
+  if (numbered.length >= 3 && numbered.every((line, i) => Number(line[1]) === i + 1)) {
+    const steps = numbered.map(line => clean(line[2]));
+    return steps.length <= 4 && new Set(steps.map(norm)).size === steps.length ? steps : null;
+  }
+  // An arrow sequence must occupy a single line, not join unrelated paragraphs.
+  for (const line of body.split('\n')) {
+    if (!line.includes('→')) continue;
+    const steps = line.split('→').map(clean);
+    if (steps.length >= 3 && steps.length <= 4 && steps.every(Boolean) && new Set(steps.map(norm)).size === steps.length) return steps;
+  }
+  const markers = [...body.matchAll(/(?:^|[.!?;]\s*|\n\s*|,\s*)(first|then|finally)\b[,:]?\s*/gi)];
+  if (markers.length < 3 || markers.length > 4 || markers[0][1].toLowerCase() !== 'first' ||
+      markers[markers.length - 1][1].toLowerCase() !== 'finally' ||
+      !markers.slice(1, -1).every(marker => marker[1].toLowerCase() === 'then')) return null;
+  const steps = markers.map((marker, i) => clean(body.slice(
+    (marker.index ?? 0) + marker[0].length, markers[i + 1]?.index ?? body.length,
+  )));
+  return steps.every(Boolean) && new Set(steps.map(norm)).size === steps.length ? steps : null;
+}
+
+// ── 3. Mechanism check — explicitly ordered steps from one slide ──
 export function checkMechanism(slides: SlideLike[], id: string): BuildChainExercise | null {
-  const ranked = slides
-    .map(slide => ({ slide, lines: sentences(slide.body || '', 20, 110) }))
-    .filter(entry => entry.lines.length >= 3)
-    .sort((a, b) => b.lines.length - a.lines.length);
-  const best = ranked[0];
+  const best = slides.map(slide => ({ slide, steps: sequenceSteps(slide.body || '') }))
+    .find(entry => entry.steps !== null);
   if (!best) return null;
+  const steps = best.steps;
+  if (!steps) return null;
   return {
     kind: 'buildChain',
     id,
-    prompt: `Rebuild the mechanism behind "${clean(best.slide.title || 'today’s concept')}"`,
-    steps: best.lines.slice(0, 4).map(clean),
-    explanation: 'That is the order this lesson laid it out — cause, then effect.',
+    prompt: `Put these steps in order: ${clean(best.slide.title || 'today’s concept')}`,
+    steps,
+    explanation: steps.map((step, i) => `${i + 1}. ${step}`).join('\n'),
   };
 }
 
