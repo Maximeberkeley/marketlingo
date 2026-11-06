@@ -6,6 +6,8 @@ import { buildCase } from '../mobile/lesson-kit/case/buildCase';
 import { buildArena } from '../mobile/lesson-kit/arena/buildArena';
 import { lessonQuestions } from '../mobile/lesson-kit/practice/lessonQuestions';
 import type { StudiedLessonInput } from '../mobile/lesson-kit/arena/buildArena';
+import { studiedMaterial } from '../mobile/lesson-kit/practice/studiedMaterial';
+import aerospace from './fixtures/aerospace-day1.json';
 
 const prose = 'Tier 1 suppliers deliver complete systems directly to the aircraft maker. The OEM owns the design and runs final assembly. Collins Aerospace sells avionics to Boeing and Airbus.';
 const lesson: StudiedLessonInput = { title: 'Supplier tiers', day: 1, slides: [{ title: 'Say which layer a company sits in', body: prose }], questions: [
@@ -16,6 +18,15 @@ const input = { marketName: 'Aerospace', trainer: [], drills: [], stats: [], stu
 const evidence = (l: StudiedLessonInput) => buildCase({ ...input, studied: [l] })?.stages.find(s => s.key === 'evidence')?.exercise;
 
 describe('explicit source sequences only', () => {
+  it('real Aerospace Day 1 shows authored sorting in Evidence and the Collins Tier 1 answer', () => {
+    const real = {...aerospace,...studiedMaterial(aerospace.authored_lesson)};
+    expect(checkMechanism(real.slides,'test')).toBeNull();
+    expect(evidence(real)?.kind).toBe('sortSignal');
+    const collins = real.questions.find(q=>q.id==='mc-collins-tier');
+    if (!collins || collins.kind !== 'multipleChoice') throw new Error('Missing Collins question');
+    expect(collins.options[collins.correctIndex]).toBe('Tier 1');
+    expect(buildArena({...input,studied:[real]}).flatMap(w=>w.exercises).filter(q=>q.source?.type==='lesson' && q.kind==='buildChain')).toHaveLength(0);
+  });
   it('rejects the tester’s principle, OEM duty and company example', () => {
     expect(checkMechanism(lesson.slides, 'test')).toBeNull();
   });

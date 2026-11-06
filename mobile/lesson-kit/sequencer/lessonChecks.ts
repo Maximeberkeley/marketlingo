@@ -169,7 +169,8 @@ function sequenceSteps(body: string): string[] | null {
       !markers.some(marker => marker[1].toLowerCase() === 'then') ||
       !markers.slice(1, -1).every(marker => marker[1].toLowerCase() === 'then')) return null;
   const steps = markers.map((marker, i) => clean(body.slice(
-    (marker.index ?? 0) + marker[0].length, markers[i + 1]?.index ?? body.length,
+    (marker.index ?? 0) + marker[0].length,
+    markers[i + 1] ? (markers[i + 1].index ?? 0) + markers[i + 1][0].toLowerCase().indexOf(markers[i + 1][1].toLowerCase()) : body.length,
   )).replace(/[,;]\s*$/, ''));
   return steps.every(Boolean) && new Set(steps.map(norm)).size === steps.length ? steps : null;
 }
