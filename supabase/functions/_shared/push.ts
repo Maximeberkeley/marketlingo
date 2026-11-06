@@ -1,0 +1,199 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import * as jose from 'https://deno.land/x/jose@v5.2.0/index.ts';
+import { isExpoPushToken, sendToExpo } from './expo-push.ts';
+
+// Remove a token Expo reports as uninstalled so we stop targeting a dead device.
+async function clearStalePushToken(token: string): Promise<void> {
+  try {
+    const admin = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    );
+    await admin.from('profiles').update({ push_token: null }).eq('push_token', token);
+  } catch (error) {
+    console.error('Could not clear stale push token:', error);
+  }
+}
+
+interface APNsPayload {
+  aps: {
+    alert: {
+      title: string;
+      body: string;
+    };
+    sound: string;
+    badge?: number;
+  };
+  route?: string;
+  data?: Record<string, unknown>;
+}
+
+// Generate JWT for APNs authentication
+async function generateAPNsJWT(): Promise<string> {
+  const keyId = Deno.env.get('APNS_KEY_ID');
+  const teamId = Deno.env.get('APNS_TEAM_ID');
+  const authKey = Deno.env.get('APNS_AUTH_KEY');
+
+  if (!keyId || !teamId || !authKey) {
+    throw new Error('APNs credentials not configured');
+  }
+
+  // Clean up the key - remove any extra whitespace/newlines
+  const cleanKey = authKey.trim();
+  
+  const privateKey = await jose.importPKCS8(cleanKey, 'ES256');
+
+  const jwt = await new jose.SignJWT({})
+    .setProtectedHeader({ alg: 'ES256', kid: keyId })
+    .setIssuer(teamId)
+    .setIssuedAt()
+    .sign(privateKey);
+
+  return jwt;
+}
+
+// Send notification via APNs
+async function sendToAPNs(
+  token: string, 
+  title: string, 
+  body: string, 
+  data?: Record<string, unknown>
+): Promise<boolean> {
+  try {
+    const jwt = await generateAPNsJWT();
+    const bundleId = 'app.marketlingo.aerospace'; // Your app bundle ID
+
+    const payload: APNsPayload = {
+      aps: {
+        alert: {
+          title,
+          body,
+        },
+        sound: 'default',
+      },
+      route: (data?.route as string) || '/home',
+      data: data || {},
+    };
+
+    // Use production APNs endpoint
+    const isProduction = true; // Set to false for sandbox/development
+    const apnsHost = isProduction 
+      ? 'api.push.apple.com' 
+      : 'api.sandbox.push.apple.com';
+
+    const response = await fetch(
+      `https://${apnsHost}/3/device/${token}`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `bearer ${jwt}`,
+          'apns-topic': bundleId,
+          'apns-push-type': 'alert',
+          'apns-priority': '10',
+          'apns-expiration': '0',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('APNs error:', response.status, errorText);
+      
+      // Handle specific APNs errors
+      if (response.status === 410) {
+        console.log('Device token is no longer active');
+        return false;
+      }
+      if (response.status === 400) {
+        console.error('Bad request to APNs:', errorText);
+        return false;
+      }
+      return false;
+    }
+
+    console.log('APNs notification sent successfully');
+    return true;
+  } catch (error) {
+    console.error('APNs request failed:', error);
+    return false;
+  }
+}
+
+// Fallback: Send via FCM (for Android support)
+async function sendToFCM(
+  token: string, 
+  title: string, 
+  body: string, 
+  data?: Record<string, unknown>
+): Promise<boolean> {
+  const fcmServerKey = Deno.env.get('FCM_SERVER_KEY');
+  
+  if (!fcmServerKey) {
+    console.log('FCM_SERVER_KEY not configured, skipping FCM');
+    return false;
+  }
+
+  const message = {
+    to: token,
+    notification: {
+      title,
+      body,
+      sound: 'default',
+    },
+    data: { ...data, route: data?.route || '/home' },
+  };
+
+  try {
+    const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `key=${fcmServerKey}`,
+      },
+      body: JSON.stringify(message),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('FCM error:', errorText);
+      return false;
+    }
+
+    const result = await response.json();
+    return result.success === 1;
+  } catch (error) {
+    console.error('FCM request failed:', error);
+    return false;
+  }
+}
+
+// Determine token type and send accordingly
+export async function sendNotification(
+  token: string,
+  title: string,
+  body: string,
+  data?: Record<string, unknown>
+): Promise<boolean> {
+  // The mobile app registers through Expo, so its tokens must go to Expo.
+  if (isExpoPushToken(token)) {
+    const result = await sendToExpo(token, title, body, data);
+    if (result.unregistered) {
+      console.log('Expo token no longer registered, clearing it:', token.slice(0, 24));
+      await clearStalePushToken(token);
+    }
+    return result.ok;
+  }
+
+  // APNs tokens are typically 64 hex characters
+  // FCM tokens are longer and contain different characters
+  const isAPNsToken = /^[a-f0-9]{64}$/i.test(token);
+  
+  if (isAPNsToken) {
+    return await sendToAPNs(token, title, body, data);
+  } else {
+    return await sendToFCM(token, title, body, data);
+  }
+}
+
