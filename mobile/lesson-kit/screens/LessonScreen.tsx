@@ -6,6 +6,7 @@ import * as Haptics from 'expo-haptics';
 import { LessonHeader } from '../components/LessonHeader';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { FeedbackFooter } from '../components/FeedbackFooter';
+import { RevealCorrectProvider, useRevealCorrect } from '../components/RevealCorrect';
 import { feedbackCopy, readingSlides, reviewCardFor } from '../components/feedbackCopy';
 import { InfoCard } from '../exercises/InfoCard';
 import { MultipleChoice } from '../exercises/MultipleChoice';
@@ -123,6 +124,7 @@ export function LessonScreen({
   const [reduceMotion, setReduceMotion] = useState(false);
   const enter = useRef(new Animated.Value(1)).current;
   const scrollRef = useRef<ScrollView>(null);
+  const revealCorrect = useRevealCorrect(scrollRef);
   const [finished, setFinished] = useState(false);
   const startedAt = useRef(Date.now());
   const world = getMarketWorld(marketId);
@@ -391,6 +393,8 @@ export function LessonScreen({
 
       <ScrollView
         ref={scrollRef}
+        onScroll={revealCorrect.onScroll}
+        scrollEventThrottle={16}
         style={styles.scroll}
         onLayout={event => setCardSpace(Math.max(0, event.nativeEvent.layout.height - 48))}
         contentContainerStyle={[styles.content, exercise.kind === 'coldOpen' && styles.coverContent]}
@@ -401,9 +405,11 @@ export function LessonScreen({
         <Animated.View
           onLayout={event => { if (combined) setMeasuredCard({ id: exercise.id, height: event.nativeEvent.layout.height }); }}
           style={[styles.beat, exercise.kind === 'coldOpen' && styles.fullBleed, { opacity: combined && !combinedFits ? 0 : enter, transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]} >
-          {exercise.kind === 'sayIt'
-            ? <SayIt key={exercise.id} exercise={exercise} marketId={marketId} stackId={stackId || lesson.id} onDone={continueLesson} />
-            : renderExercise(exercise, phase, handleChange)}
+          <RevealCorrectProvider value={revealCorrect.reveal}>
+            {exercise.kind === 'sayIt'
+              ? <SayIt key={exercise.id} exercise={exercise} marketId={marketId} stackId={stackId || lesson.id} onDone={continueLesson} />
+              : renderExercise(exercise, phase, handleChange)}
+          </RevealCorrectProvider>
         </Animated.View>
         {exercise.kind !== 'coldOpen' && <View style={styles.lowerSpace} />}
       </ScrollView>

@@ -27,8 +27,18 @@ function choiceA11yState(state) {
       return "";
   }
 }
+function revealDelta(target, visible, above = 60, below = 90) {
+  if (visible.height <= 0) return 0;
+  const top = target.top - above;
+  const bottom = target.top + target.height + below;
+  const visibleBottom = visible.top + visible.height;
+  if (bottom > visibleBottom) return Math.max(0, Math.min(bottom - visibleBottom, top - visible.top));
+  if (top < visible.top) return top - visible.top;
+  return 0;
+}
 export {
   answerTag,
   choiceA11yState,
-  choiceStateFor
+  choiceStateFor,
+  revealDelta
 };
