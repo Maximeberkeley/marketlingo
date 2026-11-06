@@ -8,6 +8,13 @@ import { Prompt, shuffle, tap, tick, useShake } from './shared';
 import { ColorText } from '../components/ColorText';
 
 
+/** Empty-slot labels say where the chain starts and ends, not just "next". */
+export function chainSlotHint(slot: number, total: number): string {
+  if (slot === 0) return 'Tap the first step';
+  if (slot === total - 1) return 'Tap the last step';
+  return 'Tap the next step';
+}
+
 /**
  * Build the Chain — tap the steps in the real order.
  * Each correct step snaps into the chain; the whole chain pulses when complete.
@@ -61,12 +68,13 @@ export function BuildChain({ exercise, phase, onChange }: ExerciseProps<BuildCha
       <Animated.View style={[styles.chain, { transform: [{ scale }] }]}>
         {exercise.steps.map((_, slot) => {
           const filled = slot < used.length;
+          const placeholder = chainSlotHint(slot, exercise.steps.length);
           return (
             <View key={slot} style={styles.slotRow}>
               <View style={[styles.slot, filled && styles.slotFilled]}>
                 <Text style={[styles.slotNum, filled && styles.slotNumFilled]}>{slot + 1}</Text>
                 <ColorText
-                  text={filled ? exercise.steps[used[slot]] : 'Tap the next step'}
+                  text={filled ? exercise.steps[used[slot]] : placeholder}
                   style={[styles.slotText, filled && styles.slotTextFilled]}
                   maxSentences={10000}
                   maxLength={1000000}

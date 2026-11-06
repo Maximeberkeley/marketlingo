@@ -15,7 +15,7 @@ import { Exercise } from '../types';
 import { getIndustryPack } from '../industry/packs';
 import type { DrillRow, IndustryStatRow, TrainerScenarioRow } from '../../hooks/useIndustryContent';
 import type { StudiedLessonInput } from '../arena/buildArena';
-import { checkClaim, checkFigure, checkMechanism } from '../sequencer/lessonChecks';
+import { checkClaim, checkFigure, checkMechanism, checkTamper } from '../sequencer/lessonChecks';
 import { lessonSource } from '../practice/studiedMaterial';
 import {
   drillSpotFake,
@@ -131,8 +131,14 @@ export function buildCase(input: CaseInput): DeepCase | null {
   });
 
   // Evidence and Numbers come from the learner's own lessons first.
+  // A written sort or chain first; a generated chain only when the lesson spelled out
+  // the steps; otherwise a spot-the-altered-claim check, never a made-up order.
   const evidence =
-    firstLesson(lesson => lesson.questions?.find(q => q.kind === 'sortSignal') || checkMechanism(lesson.slides, 'case-evidence-lesson')) ||
+    firstLesson(lesson =>
+      lesson.questions?.find(q => q.kind === 'sortSignal') ||
+      lesson.questions?.find(q => q.kind === 'buildChain') ||
+      checkMechanism(lesson.slides, 'case-evidence-lesson') ||
+      checkTamper(lesson.slides, 'case-evidence-claim')) ||
     drillSpotFake(input.drills, 'case-evidence', 'One of these claims does not hold. Which one?') ||
     (pack ? packMap(pack, 'case-evidence-map') : null) ||
     (pack ? packChain(pack, 'case-evidence-chain') : null);

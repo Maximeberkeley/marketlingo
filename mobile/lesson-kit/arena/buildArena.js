@@ -217,7 +217,17 @@ function buildArena(input) {
   ], 4);
   const figures = generated(checkFigure);
   const authoredNumbers = own("numberSense");
-  const wave2 = fill([...authoredNumbers.slice(0, 1), ...figures.slice(0, 1), ...generated(checkMechanism), ...own("sortSignal"), ...own("buildChain"), ...figures, ...authoredNumbers.slice(1)], [
+  const wave2 = fill([
+    ...authoredNumbers.slice(0, 1),
+    ...figures.slice(0, 1),
+    ...own("buildChain"),
+    ...own("sortSignal"),
+    ...generated(checkMechanism),
+    ...figures,
+    ...authoredNumbers.slice(1),
+    // Lesson claims fill the slot generated prose chains used to take, before any industry fallback.
+    ...tampers.filter((c) => c !== reserved)
+  ], [
     pack ? packChain(pack, nextId()) : null,
     statNumberSense(input.stats, nextId()),
     drillSpotFake(input.drills, nextId()),

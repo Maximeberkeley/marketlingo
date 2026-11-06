@@ -22,13 +22,16 @@ const input = { marketId: 'neuroscience', marketName: 'Neuroscience', trainer: t
 const all = (waves: ReturnType<typeof buildArena>) => waves.flatMap(w => w.exercises);
 
 describe('lesson-first Arena', () => {
-  it('uses at least 10 of 11 questions about the real Day 1 brain lesson across random runs', () => {
+  it('uses at least 9 of 11 questions (10 in nearly every run) about the real Day 1 brain lesson across random runs', () => {
+    // Generated chains now need steps the lesson spelled out, so a rare run gives one slot to the industry.
+    let tenOrMore = 0;
     for (let i = 0; i < 100; i++) {
       const waves = buildArena(input);
       expect(waves.map(w => w.exercises.length)).toEqual([4, 4, 3]);
       const questions = all(waves);
       const grounded = questions.filter(q => q.source?.type === 'lesson');
-      expect(grounded.length).toBeGreaterThanOrEqual(10);
+      expect(grounded.length).toBeGreaterThanOrEqual(9);
+      if (grounded.length >= 10) tenOrMore += 1;
       for (const q of grounded) {
         const text = JSON.stringify(q).toLowerCase();
         expect(text).toMatch(/cortex|limbic|hippocampus|brainstem|cerebellum|cerebrum|neurons/);
@@ -37,6 +40,7 @@ describe('lesson-first Arena', () => {
       const keys = questions.flatMap(quizQuestionKeys);
       expect(new Set(keys).size).toBe(keys.length);
     }
+    expect(tenOrMore).toBeGreaterThanOrEqual(90);
   }, 20000);
   it('limits each kind to two per round and keeps lesson questions ahead of industry ones', () => {
     for (const round of buildArena(input)) {

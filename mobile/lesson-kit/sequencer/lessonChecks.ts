@@ -150,21 +150,80 @@ export function checkFigure(slides: SlideLike[], id: string): MultipleChoiceExer
   return null;
 }
 
-// ── 3. Mechanism check — the lesson's own cause-and-effect order ───
+// ── 3. Mechanism check — only a sequence the lesson spelled out ────
+const STEP_MIN = 3;
+const STEP_MAX_LEN = 110;
+const ORDINAL_START = /^(first(ly)?|to start|to begin|then|next|after that|afterwards|second(ly)?|third(ly)?|finally|lastly|last)\b[,:]?\s*/i;
+const OPENS_SEQUENCE = /^(first(ly)?|to start|to begin)\b/i;
+const CLOSES_SEQUENCE = /^(finally|lastly|last)\b/i;
+
+const asStep = (raw: string) => {
+  const s = clean(raw).replace(/[.;,]+$/, '').trim();
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+};
+const usable = (steps: string[]) =>
+  steps.length >= STEP_MIN && steps.every(s => s.length >= 3 && s.length <= STEP_MAX_LEN) && new Set(steps.map(norm)).size === steps.length;
+
+/**
+ * The steps of a process the slide itself lays out in order: a numbered list
+ * (1. 2. 3.), an arrow chain (A → B → C) or "First … Then … Finally" sentences.
+ * Ordinary prose returns null: its sentence order is not a sequence to rebuild.
+ * Numbers and ordinal words are stripped so they never give the order away.
+ */
+export function explicitSteps(body: string): string[] | null {
+  const text = (body || '').trim();
+  if (!text) return null;
+
+  // Numbered list: items 1, 2, 3 … in order, on their own lines or inline.
+  const flat = text.replace(/\s+/g, ' ');
+  const itemRe = /(?:^|\s)(\d{1,2})[.)]\s+(.+?)(?=\s\d{1,2}[.)]\s|$)/g;
+  const numbered: Array<{ n: number; body: string }> = [];
+  for (let m = itemRe.exec(flat); m; m = itemRe.exec(flat)) numbered.push({ n: Number(m[1]), body: m[2] });
+  if (numbered.length >= STEP_MIN && numbered.every((m, i) => m.n === i + 1)) {
+    const steps = numbered.map(m => asStep(m.body));
+    if (usable(steps)) return steps.slice(0, 4);
+  }
+
+  // Arrow chain inside one sentence.
+  const arrowLine = text
+    .split('\n')
+    .flatMap(line => sentences(line, 1, 2000))
+    .find(line => (line.match(/→|->/g) || []).length >= STEP_MIN - 1);
+  if (arrowLine) {
+    const steps = arrowLine.split(/\s*(?:→|->)\s*/).map(asStep);
+    if (usable(steps)) return steps.slice(0, 4);
+  }
+
+  // "First … Then … Finally" — a run of consecutive sentences that opens and closes the sequence.
+  const lines = sentences(text, 12, 200);
+  const start = lines.findIndex(l => OPENS_SEQUENCE.test(l));
+  if (start >= 0) {
+    const run: string[] = [];
+    for (let i = start; i < lines.length && ORDINAL_START.test(lines[i]); i++) {
+      run.push(lines[i]);
+      if (CLOSES_SEQUENCE.test(lines[i])) break;
+    }
+    if (run.length >= STEP_MIN && CLOSES_SEQUENCE.test(run[run.length - 1])) {
+      const steps = run.map(l => asStep(l.replace(ORDINAL_START, '')));
+      if (usable(steps)) return steps.slice(0, 4);
+    }
+  }
+  return null;
+}
+
 export function checkMechanism(slides: SlideLike[], id: string): BuildChainExercise | null {
-  const ranked = slides
-    .map(slide => ({ slide, lines: sentences(slide.body || '', 20, 110) }))
-    .filter(entry => entry.lines.length >= 3)
-    .sort((a, b) => b.lines.length - a.lines.length);
-  const best = ranked[0];
-  if (!best) return null;
-  return {
-    kind: 'buildChain',
-    id,
-    prompt: `Rebuild the mechanism behind "${clean(best.slide.title || 'today’s concept')}"`,
-    steps: best.lines.slice(0, 4).map(clean),
-    explanation: 'That is the order this lesson laid it out — cause, then effect.',
-  };
+  for (const slide of slides) {
+    const steps = explicitSteps(slide.body || '');
+    if (!steps) continue;
+    return {
+      kind: 'buildChain',
+      id,
+      prompt: `Put these steps in order: ${clean(slide.title || 'today’s process')}`,
+      steps,
+      explanation: `In order: ${steps.map((s, i) => `${i + 1}. ${s}`).join('  ')}`,
+    };
+  }
+  return null;
 }
 
 // ── 4. Claim check — true line vs. tampered lines from this lesson ─
