@@ -11,6 +11,9 @@ import { DeepDiveProvider } from '../../lesson-kit/components/DeepDiveContext';
 import type { Exercise, Lesson } from '../../lesson-kit/types';
 import { useDeliverable } from '../../hooks/useDeliverable';
 import { sectionForLesson } from '../../lib/deliverables';
+import { sayItContext } from '../../lib/sayItStarter';
+import { getMarketName } from '../../lib/markets';
+import { readingSlides } from '../../lesson-kit/components/feedbackCopy';
 
 /** Authored fields win, but only when actually set. */
 function stripUndefined<T extends object>(value: T): Partial<T> {
@@ -157,6 +160,7 @@ export function LessonKitReader({
       dayNumber,
       learningGoal,
       sectionKey: defaultSectionKey,
+      context: sayItContext([...slides, ...readingSlides(baseLesson.exercises)], marketId ? getMarketName(marketId) : undefined),
     });
     if (isAuthoredLesson(authoredLesson)) {
       return {
@@ -174,7 +178,7 @@ export function LessonKitReader({
       lesson: { ...baseLesson, exercises: [...baseLesson.exercises, sayIt()] },
       slideNumbers: [...baseSlideNumbers, last],
     };
-  }, [baseLesson, baseSlideNumbers, authoredLesson, metadata, dayNumber, learningGoal, slides, defaultSectionKey]);
+  }, [baseLesson, baseSlideNumbers, authoredLesson, metadata, dayNumber, learningGoal, slides, defaultSectionKey, marketId]);
 
 
   const extraActions = useCallback(

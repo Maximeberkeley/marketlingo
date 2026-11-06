@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
 import { tokens } from '../theme/tokens';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { useDeliverable } from '../../hooks/useDeliverable';
 import type { SayItExercise } from '../types';
 import { trackEvent } from '../../lib/analytics';
+import { BLANK, firstBlank, ownWordCount, sayItPrompt } from '../../lib/sayItStarter';
 
 interface Props {
   exercise: SayItExercise;
@@ -27,6 +28,10 @@ export function SayIt({ exercise, marketId, onDone, stackId }: Props) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
+  /** The starter the learner chose, if any: their line must add their own words to it. */
+  const [starterUsed, setStarterUsed] = useState<string | null>(null);
+  const [selection, setSelection] = useState<{ start: number; end: number } | undefined>(undefined);
+  const inputRef = useRef<TextInput>(null);
 
   // Respect the reader's lesson match; changing sections remains a learner choice.
   useEffect(() => {
@@ -37,6 +42,14 @@ export function SayIt({ exercise, marketId, onDone, stackId }: Props) {
   }, [sectionKey, loading, firstOpenSection, template.sections, exercise.sectionKey]);
 
   const section = template.sections.find(s => s.key === sectionKey) ?? template.sections[0];
+  const prompt = useMemo(() => sayItPrompt(section.key, exercise.context ?? {}), [section.key, exercise.context]);
+  // A starter left untouched follows the section when the learner changes it.
+  useEffect(() => {
+    if (starterUsed && text === starterUsed && starterUsed !== prompt.starter) {
+      setText('');
+      setStarterUsed(null);
+    }
+  }, [prompt.starter]);
   const shownRef = React.useRef(false);
   useEffect(() => {
     if (shownRef.current || !sectionKey) return;
@@ -47,7 +60,16 @@ export function SayIt({ exercise, marketId, onDone, stackId }: Props) {
     trackEvent('say_it_skipped', { stackId: stackId ?? null, sectionKey: section?.key ?? null });
     onDone();
   };
-  const canAdd = text.trim().length >= 3 && !saving && !!marketId;
+  const blanksLeft = text.includes(BLANK);
+  const needsOwnWords = Boolean(starterUsed) && ownWordCount(text, starterUsed || '') < 3;
+  const canAdd = text.trim().length >= 3 && !blanksLeft && !needsOwnWords && !saving && !!marketId;
+  const applyStarter = () => {
+    setText(prompt.starter);
+    setStarterUsed(prompt.starter);
+    setSelection(firstBlank(prompt.starter) ?? undefined);
+    trackEvent('say_it_starter_used', { stackId: stackId ?? null, sectionKey: section.key });
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
 
   const add = async () => {
     if (!canAdd) return;
@@ -84,7 +106,7 @@ export function SayIt({ exercise, marketId, onDone, stackId }: Props) {
   return (
     <View style={styles.wrap}>
       <Text style={styles.title}>Say it in one sentence</Text>
-      <Text style={styles.prompt}>{section.prompt}</Text>
+      <Text style={styles.question}>{prompt.question}</Text>
 
       <TouchableOpacity onPress={() => setPicking(p => !p)} style={styles.sectionChip} accessibilityRole="button">
         <Text style={styles.sectionChipText} numberOfLines={1}>
@@ -112,16 +134,29 @@ export function SayIt({ exercise, marketId, onDone, stackId }: Props) {
         </View>
       )}
 
+      {!text.trim() && (
+        <TouchableOpacity onPress={applyStarter} style={styles.starterChip} accessibilityRole="button" accessibilityHint={prompt.starter}>
+          <Text style={styles.starterChipText}>Use a starter</Text>
+          <Text style={styles.starterPreview} numberOfLines={2}>{prompt.starter}</Text>
+        </TouchableOpacity>
+      )}
+
       <TextInput
+        ref={inputRef}
         style={styles.input}
         value={text}
         onChangeText={setText}
+        selection={selection}
+        onSelectionChange={() => { if (selection) setSelection(undefined); }}
         placeholder="Write it the way you would say it out loud…"
         placeholderTextColor={tokens.color.textMuted}
         multiline
         maxLength={280}
         blurOnSubmit
       />
+      {(blanksLeft || needsOwnWords) && !!text.trim() && (
+        <Text style={styles.hint}>Fill the blanks with your own words.</Text>
+      )}
       {failed && <Text style={styles.error}>Couldn't save that. Try again, or skip for now.</Text>}
 
       <PrimaryButton
@@ -140,6 +175,21 @@ const styles = StyleSheet.create({
   wrap: { gap: tokens.space.md },
   title: { fontSize: tokens.font.prompt, fontWeight: '800', color: tokens.color.text },
   prompt: { fontSize: tokens.font.body, color: tokens.color.textSecondary, lineHeight: 22 },
+  question: { fontSize: tokens.font.body + 1, fontWeight: '700', color: tokens.color.text, lineHeight: 23 },
+  starterChip: {
+    alignSelf: 'stretch',
+    borderRadius: tokens.radius.md,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderColor: tokens.color.accent,
+    backgroundColor: tokens.color.accentSoft,
+    paddingVertical: 10,
+    paddingHorizontal: tokens.space.md,
+    gap: 2,
+  },
+  starterChipText: { fontSize: 13, fontWeight: '800', color: tokens.color.accentDark },
+  starterPreview: { fontSize: 14, color: tokens.color.textSecondary },
+  hint: { fontSize: 13, color: tokens.color.textSecondary, marginTop: -4 },
   eyebrow: { fontSize: tokens.font.caption, fontWeight: '800', color: tokens.color.accent, letterSpacing: 0.6 },
   sectionChip: {
     flexDirection: 'row',
