@@ -36,7 +36,7 @@ export function TheCall({ exercise, phase, onChange }: ExerciseProps<TheCallExer
     if (phase === 'feedback') return;
     tap();
     setPicked(i);
-    onChange({ canCheck: true, isCorrect: i === exercise.correctIndex });
+    onChange({ canCheck: true, isCorrect: i === exercise.correctIndex, selectedIndex: i });
   };
 
   const translateY = enter.interpolate({ inputRange: [0, 1], outputRange: [18, 0] });

@@ -17,7 +17,7 @@ export function quizQuestionKeys(exercise: Exercise): string[] {
   if (exercise.kind === 'mapMarket') return [normalize(`${exercise.prompt} ${exercise.nodes[exercise.correctIndex]?.label || ''}`)];
   const e = exercise as unknown as Record<string, unknown>;
   return [normalize(JSON.stringify(Object.fromEntries(Object.entries(e)
-    .filter(([key]) => !['id', 'leo', 'explanation', 'source'].includes(key)).sort(([a], [b]) => a.localeCompare(b)))))];
+    .filter(([key]) => !['id', 'leo', 'explanation', 'source', 'review', 'whyWrong'].includes(key)).sort(([a], [b]) => a.localeCompare(b)))))];
 }
 
 export function recentQuizHistory(value: unknown, now = Date.now()): QuizSeen[] {

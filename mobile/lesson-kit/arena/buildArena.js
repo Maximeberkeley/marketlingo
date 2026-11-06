@@ -9,6 +9,7 @@ import {
   isRealTerm,
   termsFromSlides
 } from "../sequencer/lessonChecks";
+import { reviewCardFor } from "../components/feedbackCopy";
 import { glossaryEntriesFor } from "../glossary";
 import {
   drillSpotFake,
@@ -33,7 +34,16 @@ function shuffle(arr) {
 function shuffleAuthored(question) {
   if (question.kind !== "multipleChoice") return { ...question };
   const indices = shuffle(question.options.map((_, index) => index));
-  return { ...question, options: indices.map((index) => question.options[index]), correctIndex: indices.indexOf(question.correctIndex) };
+  return {
+    ...question,
+    options: indices.map((index) => question.options[index]),
+    correctIndex: indices.indexOf(question.correctIndex),
+    ...question.whyWrong ? { whyWrong: indices.map((index) => question.whyWrong?.[index] ?? null) } : {}
+  };
+}
+function withReview(exercise, slides) {
+  const review = reviewCardFor(slides, exercise);
+  return review ? { ...exercise, review } : exercise;
 }
 function buildArena(input) {
   const pack = getIndustryPack(input.marketId);
@@ -101,7 +111,7 @@ function buildArena(input) {
     const explanation = "explanation" in exercise ? exercise.explanation ?? "" : "";
     return lineKeys(explanation);
   };
-  const tag = (lesson, exercise) => exercise ? [{ exercise: { ...exercise, source: lessonSource(lesson) }, facts: factKeys(lesson, exercise) }] : [];
+  const tag = (lesson, exercise) => exercise ? [{ exercise: withReview({ ...exercise, source: lessonSource(lesson) }, lesson.slides), facts: factKeys(lesson, exercise) }] : [];
   const own = (kind) => review.flatMap((lesson) => (lesson.questions ?? []).filter((q) => q.kind === kind).flatMap((q) => tag(lesson, shuffleAuthored(q))));
   const definitions = () => {
     const glossaryPool = glossaryEntriesFor(input.marketId);
@@ -146,18 +156,20 @@ function buildArena(input) {
         if (factKeys(lesson, exercise).some((key) => key.includes("/term/"))) continue;
       }
       if (faceOff && exercise?.kind === "multipleChoice") {
-        const truth = exercise.options[exercise.correctIndex];
-        const lie = exercise.options.find((_, index) => index !== exercise.correctIndex);
+        const mc = exercise;
+        const truth = mc.options[mc.correctIndex];
+        const lie = mc.options.find((_, index) => index !== mc.correctIndex);
         if (lie) {
           const choices = shuffle([truth, lie]);
           exercise = {
             kind: "faceOff",
-            id: exercise.id,
-            prompt: exercise.prompt,
+            id: mc.id,
+            prompt: mc.prompt,
             left: { name: choices[0] },
             right: { name: choices[1] },
             correctIndex: choices.indexOf(truth),
-            explanation: exercise.explanation
+            explanation: mc.explanation,
+            ...mc.whyWrong ? { whyWrong: choices.map((choice) => mc.whyWrong?.[mc.options.indexOf(choice)] ?? null) } : {}
           };
         }
       }

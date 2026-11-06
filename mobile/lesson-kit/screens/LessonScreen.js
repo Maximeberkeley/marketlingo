@@ -5,6 +5,7 @@ import * as Haptics from "expo-haptics";
 import { LessonHeader } from "../components/LessonHeader";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { FeedbackFooter } from "../components/FeedbackFooter";
+import { feedbackCopy, readingSlides, reviewCardFor } from "../components/feedbackCopy";
 import { InfoCard } from "../exercises/InfoCard";
 import { MultipleChoice } from "../exercises/MultipleChoice";
 import { WordBank } from "../exercises/WordBank";
@@ -25,7 +26,7 @@ import { tokens } from "../theme/tokens";
 import { playSound } from "../../lib/sounds";
 import { getMarketWorld } from "../../data/marketWorlds";
 import { AskLeoOverlay } from "../../components/ai/AskLeoOverlay";
-import { normalizedCopy, readingCardKind } from "../cardPresentation";
+import { readingCardKind } from "../cardPresentation";
 import { trackEvent } from "../../lib/analytics";
 function lessonTakeaway(exercises) {
   const reading = exercises.filter((e) => e.kind === "info" || e.kind === "microInsight");
@@ -260,20 +261,9 @@ function LessonScreen({
     }
     setShowExitPrompt(true);
   }, [confirmExit, finished, exitLesson]);
-  const feedbackExplanation = exercise && "explanation" in exercise ? normalizedCopy(exercise.explanation || "") : "";
-  const answerCopy = exercise && exercise.kind === "multipleChoice" ? normalizedCopy(exercise.options[exercise.correctIndex] || "") : "";
-  const repeatsAnswer = Boolean(answerCopy && feedbackExplanation.includes(answerCopy));
-  const correctAnswerText = useMemo(() => {
-    if (!exercise) return void 0;
-    if (exercise.kind === "multipleChoice") return exercise.options[exercise.correctIndex];
-    if (exercise.kind === "wordBank") return exercise.answer.join(" ");
-    if (exercise.kind === "theCall") return exercise.options[exercise.correctIndex];
-    if (exercise.kind === "faceOff")
-      return exercise.correctIndex === 0 ? exercise.left.name : exercise.right.name;
-    if (exercise.kind === "spotFake") return exercise.statements[exercise.fakeIndex];
-    if (exercise.kind === "mapMarket") return exercise.nodes[exercise.correctIndex]?.label;
-    return void 0;
-  }, [exercise]);
+  const feedback = exercise ? feedbackCopy(exercise, state.isCorrect, state.selectedIndex) : null;
+  const lessonSlides = useMemo(() => readingSlides(lesson.exercises), [lesson.exercises]);
+  const review = exercise ? exercise.review ?? reviewCardFor(lessonSlides, exercise) : void 0;
   if (finished || !exercise) {
     const timeSpentSeconds = Math.round((Date.now() - startedAt.current) / 1e3);
     return /* @__PURE__ */ React.createElement(
@@ -354,8 +344,10 @@ function LessonScreen({
     {
       key: exercise.id,
       isCorrect: state.isCorrect,
-      explanation: "explanation" in exercise ? exercise.explanation : void 0,
-      correctAnswer: state.isCorrect || repeatsAnswer ? void 0 : correctAnswerText
+      explanation: feedback?.insight,
+      correctAnswer: feedback?.answer,
+      whyWrong: feedback?.whyWrong,
+      review
     }
   ), exercise.kind === "sayIt" ? /* @__PURE__ */ React.createElement(View, { style: { height: insets.bottom + tokens.space.lg } }) : /* @__PURE__ */ React.createElement(View, { style: [styles.footer, { paddingBottom: insets.bottom + tokens.space.lg }] }, /* @__PURE__ */ React.createElement(PrimaryButton, { label: buttonLabel, onPress: onAction, variant: buttonVariant })), /* @__PURE__ */ React.createElement(Modal, { visible: showActions, transparent: true, animationType: "fade", onRequestClose: () => setShowActions(false) }, /* @__PURE__ */ React.createElement(View, { style: styles.menuLayer }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: StyleSheet.absoluteFillObject, activeOpacity: 1, onPress: () => setShowActions(false), accessibilityRole: "button", accessibilityLabel: "Dismiss lesson actions" }), /* @__PURE__ */ React.createElement(View, { style: [styles.actionsMenu, { marginTop: insets.top + 64 }] }, renderExtraActions?.(actionIndex, () => setShowActions(false), exercise)))), /* @__PURE__ */ React.createElement(Modal, { visible: showExitPrompt, transparent: true, animationType: "fade", onRequestClose: () => setShowExitPrompt(false) }, /* @__PURE__ */ React.createElement(View, { style: styles.backdrop }, /* @__PURE__ */ React.createElement(View, { style: styles.sheet }, /* @__PURE__ */ React.createElement(Text, { style: styles.sheetTitle }, "Leave now?"), /* @__PURE__ */ React.createElement(Text, { style: styles.sheetBody }, "You'll lose your progress in this lesson", typeof streakDays === "number" && streakDays > 0 ? ` and put your ${streakDays}-day streak at risk` : "", "."), /* @__PURE__ */ React.createElement(PrimaryButton, { label: "Keep learning", onPress: () => setShowExitPrompt(false) }), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => {
     setShowExitPrompt(false);

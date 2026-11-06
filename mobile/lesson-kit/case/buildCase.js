@@ -1,6 +1,7 @@
 import { getIndustryPack } from "../industry/packs";
 import { checkClaim, checkFigure } from "../sequencer/lessonChecks";
 import { lessonSource } from "../practice/studiedMaterial";
+import { reviewCardFor } from "../components/feedbackCopy";
 import {
   drillSpotFake,
   packMap,
@@ -29,7 +30,10 @@ function buildCase(input) {
   const firstLesson = (make) => {
     for (const lesson of studied) {
       const exercise = make(lesson);
-      if (exercise) return { ...exercise, source: lessonSource(lesson) };
+      if (exercise) {
+        const review = reviewCardFor(lesson.slides, exercise);
+        return { ...exercise, source: lessonSource(lesson), ...review ? { review } : {} };
+      }
     }
     return null;
   };

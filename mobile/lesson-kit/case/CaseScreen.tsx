@@ -8,6 +8,7 @@ import * as Haptics from 'expo-haptics';
 import { tokens } from '../theme/tokens';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { FeedbackFooter } from '../components/FeedbackFooter';
+import { feedbackCopy } from '../components/feedbackCopy';
 import { LeoCoach } from '../components/LeoCoach';
 import { leoFeedbackLine } from '../../components/mascot/leoAnimationRules';
 import { renderExerciseByKind, isPassiveKind } from '../components/ExerciseRenderer';
@@ -129,16 +130,8 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
     advance();
   }, [advance, check, confidence, isCall, passive, phase, state.canCheck]);
 
-  const correctAnswerText = useMemo(() => {
-    const ex = stage?.exercise;
-    if (!ex) return undefined;
-    if (ex.kind === 'multipleChoice') return ex.options[ex.correctIndex];
-    if (ex.kind === 'theCall') return ex.options[ex.correctIndex];
-    if (ex.kind === 'spotFake') return ex.statements[ex.fakeIndex];
-    if (ex.kind === 'mapMarket') return ex.nodes[ex.correctIndex]?.label;
-    if (ex.kind === 'faceOff') return ex.correctIndex === 0 ? ex.left.name : ex.right.name;
-    return undefined;
-  }, [stage]);
+  /** One shared rule for what the footer says, so the right answer is never printed twice. */
+  const feedback = stage?.exercise ? feedbackCopy(stage?.exercise, state.isCorrect, state.selectedIndex) : null;
 
   // ── Debrief ───────────────────────────────────────────────────
   if (debrief) {
@@ -297,8 +290,10 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
         {phase === 'feedback' && !passive && (
           <FeedbackFooter
             isCorrect={state.isCorrect}
-            explanation={(stage.exercise as any).explanation}
-            correctAnswer={correctAnswerText}
+            explanation={feedback?.insight}
+            correctAnswer={feedback?.answer}
+            whyWrong={feedback?.whyWrong}
+            review={stage.exercise.review}
           />
         )}
         <PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant} />

@@ -26,7 +26,7 @@ function TheCall({ exercise, phase, onChange }) {
     if (phase === "feedback") return;
     tap();
     setPicked(i);
-    onChange({ canCheck: true, isCorrect: i === exercise.correctIndex });
+    onChange({ canCheck: true, isCorrect: i === exercise.correctIndex, selectedIndex: i });
   };
   const translateY = enter.interpolate({ inputRange: [0, 1], outputRange: [18, 0] });
   return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.brief, { opacity: enter, transform: [{ translateY }] }] }, /* @__PURE__ */ React.createElement(View, { style: styles.briefHead }, /* @__PURE__ */ React.createElement(Feather, { name: "radio", size: 13, color: tokens.color.textOnAccent }), /* @__PURE__ */ React.createElement(Text, { style: styles.briefHeadText }, "THE CALL")), /* @__PURE__ */ React.createElement(ColorText, { text: exercise.situation, style: styles.situation, maxSentences: 2, maxLength: 150 })), /* @__PURE__ */ React.createElement(ColorText, { text: exercise.prompt, style: styles.prompt, maxSentences: 2, maxLength: 110 }), /* @__PURE__ */ React.createElement(View, { style: styles.options }, exercise.options.map((o, i) => {

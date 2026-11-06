@@ -17,7 +17,7 @@ export function MultipleChoice({ exercise, phase, onChange }: ExerciseProps<Mult
   const pick = (index: number) => {
     if (phase === 'feedback') return;
     setSelected(index);
-    onChange({ canCheck: true, isCorrect: index === exercise.correctIndex });
+    onChange({ canCheck: true, isCorrect: index === exercise.correctIndex, selectedIndex: index });
   };
 
   const stateFor = (index: number): ChoiceState => {
