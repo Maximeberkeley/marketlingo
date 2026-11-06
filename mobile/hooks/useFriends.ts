@@ -123,21 +123,15 @@ export function useFriends(marketId?: string) {
         } else {
           const rows = pending ?? [];
           const otherIds = rows.map((p) => (p.user_id === user.id ? p.friend_id : p.user_id));
-          const { data: others } = otherIds.length
-            ? await supabase.rpc('get_public_profiles_by_ids', { p_ids: otherIds }).then(
-                (r) => r,
-                () => ({ data: null })
-              )
-            : { data: [] as any[] };
-          let profiles = (others as any[] | null) ?? null;
-          if (!profiles && otherIds.length) {
+          let profiles: any[] = [];
+          if (otherIds.length) {
             const { data } = await supabase
               .from('public_profiles')
-              .select('id, display_name')
+              .select('id, display_name, selected_market')
               .in('id', otherIds);
             profiles = data ?? [];
           }
-          const find = (id: string) => profiles?.find((pr: any) => pr.id === id);
+          const find = (id: string) => profiles.find((pr: any) => pr.id === id);
           setPendingRequests(
             rows
               .filter((p) => p.friend_id === user.id)
