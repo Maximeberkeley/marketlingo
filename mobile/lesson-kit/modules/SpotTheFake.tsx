@@ -21,7 +21,7 @@ export function SpotTheFake({ exercise, phase, onChange }: ExerciseProps<SpotFak
     if (phase === 'feedback') return;
     tap();
     setPicked(i);
-    onChange({ canCheck: true, isCorrect: i === exercise.fakeIndex });
+    onChange({ canCheck: true, isCorrect: i === exercise.fakeIndex, selectedIndex: i });
   };
 
   return (

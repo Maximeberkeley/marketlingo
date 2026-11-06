@@ -6,6 +6,7 @@ import * as Haptics from 'expo-haptics';
 import { LessonHeader } from '../components/LessonHeader';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { FeedbackFooter } from '../components/FeedbackFooter';
+import { feedbackCopy, readingSlides, reviewCardFor } from '../components/feedbackCopy';
 import { InfoCard } from '../exercises/InfoCard';
 import { MultipleChoice } from '../exercises/MultipleChoice';
 import { WordBank } from '../exercises/WordBank';
@@ -29,7 +30,7 @@ import { Exercise, Lesson } from '../types';
 import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { AskLeoOverlay, LeoMessage } from '../../components/ai/AskLeoOverlay';
-import { normalizedCopy, readingCardKind } from '../cardPresentation';
+import { readingCardKind } from '../cardPresentation';
 import { trackEvent } from '../../lib/analytics';
 
 /** Flatten the current beat's visible text into a context string for Leo. */
@@ -304,23 +305,10 @@ export function LessonScreen({
     setShowExitPrompt(true);
   }, [confirmExit, finished, exitLesson]);
 
-  /** The feedback explanation already quotes the correct sentence; don't print it twice. */
-  const feedbackExplanation = exercise && 'explanation' in exercise ? normalizedCopy(exercise.explanation || '') : '';
-  const answerCopy = exercise && exercise.kind === 'multipleChoice' ? normalizedCopy(exercise.options[exercise.correctIndex] || '') : '';
-  const repeatsAnswer = Boolean(answerCopy && feedbackExplanation.includes(answerCopy));
-
-  const correctAnswerText = useMemo(() => {
-
-    if (!exercise) return undefined;
-    if (exercise.kind === 'multipleChoice') return exercise.options[exercise.correctIndex];
-    if (exercise.kind === 'wordBank') return exercise.answer.join(' ');
-    if (exercise.kind === 'theCall') return exercise.options[exercise.correctIndex];
-    if (exercise.kind === 'faceOff')
-      return exercise.correctIndex === 0 ? exercise.left.name : exercise.right.name;
-    if (exercise.kind === 'spotFake') return exercise.statements[exercise.fakeIndex];
-    if (exercise.kind === 'mapMarket') return exercise.nodes[exercise.correctIndex]?.label;
-    return undefined;
-  }, [exercise]);
+  /** One shared rule for what the footer says, so the right answer is never printed twice. */
+  const feedback = exercise ? feedbackCopy(exercise, state.isCorrect, state.selectedIndex) : null;
+  const lessonSlides = useMemo(() => readingSlides(lesson.exercises), [lesson.exercises]);
+  const review = exercise ? exercise.review ?? reviewCardFor(lessonSlides, exercise) : undefined;
 
   if (finished || !exercise) {
     const timeSpentSeconds = Math.round((Date.now() - startedAt.current) / 1000);
@@ -406,8 +394,10 @@ export function LessonScreen({
         <FeedbackFooter
           key={exercise.id}
           isCorrect={state.isCorrect}
-          explanation={'explanation' in exercise ? exercise.explanation : undefined}
-          correctAnswer={state.isCorrect || repeatsAnswer ? undefined : correctAnswerText}
+          explanation={feedback?.insight}
+          correctAnswer={feedback?.answer}
+          whyWrong={feedback?.whyWrong}
+          review={review}
         />
       )}
 

@@ -94,7 +94,8 @@ function checkFigure(slides, id) {
       prompt: `Fill the gap: ${sentence.replace(match[0].trim(), "_____")}`,
       options,
       correctIndex: options.indexOf(label(raw)),
-      explanation: cite(sentence)
+      explanation: cite(sentence),
+      whyWrong: options.map((option) => option === label(raw) ? null : `The lesson\u2019s number is ${label(raw)}, not ${option}.`)
     };
   }
   return null;
@@ -132,7 +133,11 @@ function checkMechanism(slides, id) {
   };
 }
 const isYear = (value) => Number.isInteger(value) && value >= 1900 && value <= 2099;
-function falsify(sentence) {
+function phraseAt(text, at, length) {
+  const after = text.slice(at + length).match(/^\S*(?:\s+\S+){0,2}/)?.[0] ?? "";
+  return (text.slice(at, at + length) + after).replace(/[.,;:!?)"'”’]+$/, "").trim();
+}
+function alter(sentence) {
   for (const match of sentence.matchAll(/\d{1,4}(?:[.,]\d{1,2})?/g)) {
     const token = match[0];
     const at = match.index ?? 0;
@@ -141,23 +146,32 @@ function falsify(sentence) {
     if (!isFinite(raw) || raw <= 0 || isYear(raw)) continue;
     const next = raw > 10 ? Math.max(1, Math.round(raw * 0.2)) : Math.round(raw * 7);
     if (next === raw || isYear(next)) continue;
-    return sentence.slice(0, at) + String(next) + sentence.slice(at + token.length);
+    const text = sentence.slice(0, at) + String(next) + sentence.slice(at + token.length);
+    return { text, said: phraseAt(sentence, at, token.length), changed: phraseAt(text, at, String(next).length) };
   }
   for (const [a, b] of OPPOSITES) {
     for (const [from, to] of [[a, b], [b, a]]) {
       const re = new RegExp(`\\b${from.replace(/ /g, "\\s+")}\\b`, "i");
-      if (re.test(sentence)) return sentence.replace(re, to);
+      const found = re.exec(sentence);
+      if (!found) continue;
+      const at = found.index;
+      const text = sentence.slice(0, at) + to + sentence.slice(at + found[0].length);
+      return { text, said: phraseAt(sentence, at, found[0].length), changed: phraseAt(text, at, to.length) };
     }
   }
   return null;
 }
+function falsify(sentence) {
+  return alter(sentence)?.text ?? null;
+}
+const saysNot = (change) => `The lesson says \u201C${change.said}\u201D, not \u201C${change.changed}\u201D.`;
 function checkClaim(slides, id) {
   const pool = shuffle(slides.flatMap((s) => sentences(s.body || "", 40, 170)));
   for (const truth of pool) {
     const others = pool.filter((s) => norm(s) !== norm(truth));
-    const lies = others.map(falsify).filter((s) => Boolean(s) && norm(s) !== norm(truth)).slice(0, 2);
+    const lies = others.map(alter).filter((change) => Boolean(change) && norm(change.text) !== norm(truth)).slice(0, 2);
     if (lies.length < 2) continue;
-    const options = shuffle([clean(truth), ...lies.map(clean)]);
+    const options = shuffle([clean(truth), ...lies.map((change) => clean(change.text))]);
     if (new Set(options.map(norm)).size !== options.length) continue;
     return {
       kind: "multipleChoice",
@@ -165,7 +179,11 @@ function checkClaim(slides, id) {
       prompt: "Only one of these matches what this lesson actually said. Which?",
       options,
       correctIndex: options.indexOf(clean(truth)),
-      explanation: cite(truth)
+      explanation: cite(truth),
+      whyWrong: options.map((option) => {
+        const change = lies.find((l) => clean(l.text) === option);
+        return change ? saysNot(change) : null;
+      })
     };
   }
   return null;
@@ -174,18 +192,20 @@ function checkTamper(slides, id) {
   const pool = shuffle(slides.flatMap((s) => sentences(s.body || "", 45, 160)));
   if (pool.length < 3) return null;
   for (const candidate of pool) {
-    const fake = falsify(candidate);
-    if (!fake || norm(fake) === norm(candidate)) continue;
+    const change = alter(candidate);
+    if (!change || norm(change.text) === norm(candidate)) continue;
+    const fake = clean(change.text);
     const truths = pool.filter((s) => norm(s) !== norm(candidate)).slice(0, 2).map(clean);
     if (truths.length < 2) continue;
-    const statements = shuffle([clean(fake), ...truths]);
+    const statements = shuffle([fake, ...truths]);
     return {
       kind: "spotFake",
       id,
       prompt: "One of these has been altered. Which one contradicts the lesson?",
       statements,
-      fakeIndex: statements.indexOf(clean(fake)),
-      explanation: cite(candidate)
+      fakeIndex: statements.indexOf(fake),
+      explanation: cite(candidate),
+      whyWrong: statements.map((statement) => statement === fake ? null : `That line matches the lesson. The altered one says \u201C${change.changed}\u201D, where the lesson says \u201C${change.said}\u201D.`)
     };
   }
   return null;
@@ -259,6 +279,7 @@ function lessonCheckFactories(slides, terms, nextId) {
   ];
 }
 export {
+  alter,
   checkClaim,
   checkDefinition,
   checkFigure,

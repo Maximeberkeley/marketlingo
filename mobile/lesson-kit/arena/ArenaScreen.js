@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import * as Haptics from "expo-haptics";
 import { tokens } from "../theme/tokens";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { FeedbackFooter } from "../components/FeedbackFooter";
+import { feedbackCopy } from "../components/feedbackCopy";
 import { LeoCoach } from "../components/LeoCoach";
 import { leoFeedbackLine } from "../../components/mascot/leoAnimationRules";
 import { renderExerciseByKind, isPassiveKind } from "../components/ExerciseRenderer";
@@ -186,16 +187,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
     }
     advance();
   }, [advance, grade, passive, phase, state, timeLeft]);
-  const correctAnswerText = useMemo(() => {
-    if (!exercise) return void 0;
-    if (exercise.kind === "multipleChoice") return exercise.options[exercise.correctIndex];
-    if (exercise.kind === "theCall") return exercise.options[exercise.correctIndex];
-    if (exercise.kind === "faceOff")
-      return exercise.correctIndex === 0 ? exercise.left.name : exercise.right.name;
-    if (exercise.kind === "spotFake") return exercise.statements[exercise.fakeIndex];
-    if (exercise.kind === "mapMarket") return exercise.nodes[exercise.correctIndex]?.label;
-    return void 0;
-  }, [exercise]);
+  const feedback = exercise ? feedbackCopy(exercise, state.isCorrect, state.selectedIndex) : null;
   if (ended) {
     const rank = rankForScore(score);
     const xp = Math.max(10, Math.round(score / 8) + correct * 4);
@@ -289,8 +281,10 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
     FeedbackFooter,
     {
       isCorrect: state.isCorrect,
-      explanation: exercise.explanation,
-      correctAnswer: correctAnswerText
+      explanation: feedback?.insight,
+      correctAnswer: feedback?.answer,
+      whyWrong: feedback?.whyWrong,
+      review: exercise.review
     }
   ), /* @__PURE__ */ React.createElement(PrimaryButton, { label: buttonLabel, onPress: onAction, variant: buttonVariant })), /* @__PURE__ */ React.createElement(Modal, { visible: showWaveIntro, transparent: true, animationType: "fade" }, /* @__PURE__ */ React.createElement(View, { style: styles.waveBackdrop }, /* @__PURE__ */ React.createElement(
     LinearGradient,

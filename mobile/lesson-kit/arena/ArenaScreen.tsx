@@ -17,6 +17,7 @@ import * as Haptics from 'expo-haptics';
 import { tokens } from '../theme/tokens';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { FeedbackFooter } from '../components/FeedbackFooter';
+import { feedbackCopy } from '../components/feedbackCopy';
 import { LeoCoach } from '../components/LeoCoach';
 import { leoFeedbackLine } from '../../components/mascot/leoAnimationRules';
 import { renderExerciseByKind, isPassiveKind } from '../components/ExerciseRenderer';
@@ -228,16 +229,8 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
     advance();
   }, [advance, grade, passive, phase, state, timeLeft]);
 
-  const correctAnswerText = useMemo(() => {
-    if (!exercise) return undefined;
-    if (exercise.kind === 'multipleChoice') return exercise.options[exercise.correctIndex];
-    if (exercise.kind === 'theCall') return exercise.options[exercise.correctIndex];
-    if (exercise.kind === 'faceOff')
-      return exercise.correctIndex === 0 ? exercise.left.name : exercise.right.name;
-    if (exercise.kind === 'spotFake') return exercise.statements[exercise.fakeIndex];
-    if (exercise.kind === 'mapMarket') return exercise.nodes[exercise.correctIndex]?.label;
-    return undefined;
-  }, [exercise]);
+  /** One shared rule for what the footer says, so the right answer is never printed twice. */
+  const feedback = exercise ? feedbackCopy(exercise, state.isCorrect, state.selectedIndex) : null;
 
   // ── Run summary ───────────────────────────────────────────────
   if (ended) {
@@ -411,8 +404,10 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
         {phase === 'feedback' && !passive && (
           <FeedbackFooter
             isCorrect={state.isCorrect}
-            explanation={(exercise as any).explanation}
-            correctAnswer={correctAnswerText}
+            explanation={feedback?.insight}
+            correctAnswer={feedback?.answer}
+            whyWrong={feedback?.whyWrong}
+            review={exercise.review}
           />
         )}
         <PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant} />

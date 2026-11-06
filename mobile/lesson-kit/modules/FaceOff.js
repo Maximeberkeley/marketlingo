@@ -15,7 +15,7 @@ function FaceOff({ exercise, phase, onChange }) {
     if (phase === "feedback") return;
     tap();
     setPicked(i);
-    onChange({ canCheck: true, isCorrect: i === exercise.correctIndex });
+    onChange({ canCheck: true, isCorrect: i === exercise.correctIndex, selectedIndex: i });
   };
   const sides = [exercise.left, exercise.right];
   return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(Prompt, { eyebrow: "Face-off", text: exercise.prompt }), /* @__PURE__ */ React.createElement(View, { style: styles.ring }, sides.map((side, i) => {

@@ -4,6 +4,8 @@ export interface ExerciseState {
   canCheck: boolean;
   /** True when the current input is the correct answer. */
   isCorrect: boolean;
+  /** The option the learner picked, for single-pick questions (drives "why that's wrong"). */
+  selectedIndex?: number;
 }
 
 export interface ExerciseProps<T> {

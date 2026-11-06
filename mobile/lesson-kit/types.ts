@@ -69,6 +69,8 @@ export interface MultipleChoiceExercise {
   options: string[];
   correctIndex: number;
   explanation?: string;
+  /** Per option: what a learner who picked it got wrong (null for the right one). */
+  whyWrong?: (string | null)[];
 }
 
 /** Assemble a sentence from shuffled word tiles. */
@@ -113,6 +115,8 @@ export interface FaceOffExercise {
   /** 0 = left, 1 = right */
   correctIndex: number;
   explanation?: string;
+  /** Per option: what a learner who picked it got wrong (null for the right one). */
+  whyWrong?: (string | null)[];
 }
 
 /** Timed rapid-fire round of tiny questions. */
@@ -147,6 +151,8 @@ export interface SpotFakeExercise {
   /** Index of the false statement. */
   fakeIndex: number;
   explanation?: string;
+  /** Per option: what a learner who picked it got wrong (null for the right one). */
+  whyWrong?: (string | null)[];
 }
 
 /** Tap the right node on a stylised market map. */
@@ -231,7 +237,14 @@ type AnyExercise =
 export type Exercise = AnyExercise & {
   leo?: LeoBeat;
   source?: { type: 'lesson'; stackId?: string; day?: number | null; title: string } | { type: 'industry' };
+  /** The lesson card a learner can reopen after a wrong answer ("Review this in the lesson"). */
+  review?: ReviewCard;
 };
+
+export interface ReviewCard {
+  title: string;
+  body: string;
+}
 
 export interface Lesson {
   id: string;

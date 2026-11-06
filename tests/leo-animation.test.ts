@@ -72,6 +72,7 @@ function practiceHarness(screen: 'Arena' | 'Case') {
       NotificationFeedbackType: {}, ImpactFeedbackStyle: {} },
     '../theme/tokens': { tokens: { color: {}, space: {}, font: {}, radius: {} } },
     '../components/PrimaryButton': { PrimaryButton: 'button' }, '../components/FeedbackFooter': { FeedbackFooter: 'feedback' },
+    '../components/feedbackCopy': { feedbackCopy: () => ({}) },
     '../components/LeoCoach': { LeoCoach: 'coach' },
     '../practice/studiedMaterial': { practiceSourceLabel: () => '' },
     '../components/ExerciseRenderer': { isPassiveKind: () => false,

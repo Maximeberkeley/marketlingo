@@ -21,7 +21,7 @@ export function MapMarket({ exercise, phase, onChange }: ExerciseProps<MapMarket
     if (phase === 'feedback') return;
     tap();
     setPicked(i);
-    onChange({ canCheck: true, isCorrect: i === exercise.correctIndex });
+    onChange({ canCheck: true, isCorrect: i === exercise.correctIndex, selectedIndex: i });
   };
 
   return (

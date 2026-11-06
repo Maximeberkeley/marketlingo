@@ -17,6 +17,7 @@ import type { DrillRow, IndustryStatRow, TrainerScenarioRow } from '../../hooks/
 import type { StudiedLessonInput } from '../arena/buildArena';
 import { checkClaim, checkFigure } from '../sequencer/lessonChecks';
 import { lessonSource } from '../practice/studiedMaterial';
+import { reviewCardFor } from '../components/feedbackCopy';
 import {
   drillSpotFake,
   packMap,
@@ -75,10 +76,13 @@ export function buildCase(input: CaseInput): DeepCase | null {
   const pack = getIndustryPack(input.marketId);
   const scenario = shuffle(input.trainer)[0];
   const studied = [...(input.studied ?? [])].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
-  const firstLesson = (make: (lesson: StudiedLessonInput) => Exercise | null) => {
+  const firstLesson = (make: (lesson: StudiedLessonInput) => Exercise | null): Exercise | null => {
     for (const lesson of studied) {
       const exercise = make(lesson);
-      if (exercise) return { ...exercise, source: lessonSource(lesson) };
+      if (exercise) {
+        const review = reviewCardFor(lesson.slides, exercise);
+        return { ...exercise, source: lessonSource(lesson), ...(review ? { review } : {}) };
+      }
     }
     return null;
   };
@@ -130,7 +134,7 @@ export function buildCase(input: CaseInput): DeepCase | null {
   });
 
   // Evidence and Numbers come from the learner's own lessons first.
-  const evidence =
+  const evidence: Exercise | null =
     firstLesson(lesson => lesson.questions?.find(q => q.kind === 'buildChain') ||
       lesson.questions?.find(q => q.kind === 'sortSignal') || checkClaim(lesson.slides, 'case-evidence-lesson')) ||
     drillSpotFake(input.drills, 'case-evidence', 'One of these claims does not hold. Which one?') ||
@@ -145,7 +149,7 @@ export function buildCase(input: CaseInput): DeepCase | null {
     });
   }
 
-  const numbers =
+  const numbers: Exercise | null =
     firstLesson(lesson => lesson.questions?.find(q => q.kind === 'numberSense') || checkFigure(lesson.slides, 'case-numbers-lesson')) ||
     statNumberSense(input.stats, 'case-numbers') ||
     (pack ? packNumber(pack, 'case-numbers-pack') : null);

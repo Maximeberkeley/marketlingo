@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -7,6 +7,7 @@ import * as Haptics from "expo-haptics";
 import { tokens } from "../theme/tokens";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { FeedbackFooter } from "../components/FeedbackFooter";
+import { feedbackCopy } from "../components/feedbackCopy";
 import { LeoCoach } from "../components/LeoCoach";
 import { leoFeedbackLine } from "../../components/mascot/leoAnimationRules";
 import { renderExerciseByKind, isPassiveKind } from "../components/ExerciseRenderer";
@@ -97,16 +98,7 @@ function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal }) 
     }
     advance();
   }, [advance, check, confidence, isCall, passive, phase, state.canCheck]);
-  const correctAnswerText = useMemo(() => {
-    const ex = stage?.exercise;
-    if (!ex) return void 0;
-    if (ex.kind === "multipleChoice") return ex.options[ex.correctIndex];
-    if (ex.kind === "theCall") return ex.options[ex.correctIndex];
-    if (ex.kind === "spotFake") return ex.statements[ex.fakeIndex];
-    if (ex.kind === "mapMarket") return ex.nodes[ex.correctIndex]?.label;
-    if (ex.kind === "faceOff") return ex.correctIndex === 0 ? ex.left.name : ex.right.name;
-    return void 0;
-  }, [stage]);
+  const feedback = stage?.exercise ? feedbackCopy(stage?.exercise, state.isCorrect, state.selectedIndex) : null;
   if (debrief) {
     const result = gradeCase(correct, graded, callCorrect, confidence || "medium");
     const xp = { A: 90, B: 70, C: 45, D: 25 }[result.grade];
@@ -185,8 +177,10 @@ function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal }) 
     FeedbackFooter,
     {
       isCorrect: state.isCorrect,
-      explanation: stage.exercise.explanation,
-      correctAnswer: correctAnswerText
+      explanation: feedback?.insight,
+      correctAnswer: feedback?.answer,
+      whyWrong: feedback?.whyWrong,
+      review: stage.exercise.review
     }
   ), /* @__PURE__ */ React.createElement(PrimaryButton, { label: buttonLabel, onPress: onAction, variant: buttonVariant })), /* @__PURE__ */ React.createElement(Modal, { visible: askConfidence, transparent: true, animationType: "slide" }, /* @__PURE__ */ React.createElement(View, { style: styles.sheetBackdrop }, /* @__PURE__ */ React.createElement(View, { style: styles.sheet }, /* @__PURE__ */ React.createElement(Text, { style: styles.sheetTitle }, "How sure are you?"), /* @__PURE__ */ React.createElement(Text, { style: styles.sheetBody }, "Calibration counts. Being loudly wrong costs more than being quietly right."), CONVICTION.map((opt) => /* @__PURE__ */ React.createElement(
     TouchableOpacity,

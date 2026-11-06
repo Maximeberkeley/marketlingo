@@ -21,7 +21,7 @@ export function FaceOff({ exercise, phase, onChange }: ExerciseProps<FaceOffExer
     if (phase === 'feedback') return;
     tap();
     setPicked(i);
-    onChange({ canCheck: true, isCorrect: i === exercise.correctIndex });
+    onChange({ canCheck: true, isCorrect: i === exercise.correctIndex, selectedIndex: i });
   };
 
   const sides = [exercise.left, exercise.right];
