@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
     if (typeof friendshipId !== 'string' || !UUID.test(friendshipId)) {
       return json({ error: 'friendshipId must be a valid id' }, 400);
     }
-    if (kind !== 'request' && kind !== 'accepted') return json({ error: 'Invalid kind' }, 400);
+    if (kind !== 'request' && kind !== 'accepted' && kind !== 'invite') return json({ error: 'Invalid kind' }, 400);
 
     const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const { data: row } = await admin
@@ -61,6 +61,12 @@ Deno.serve(async (req) => {
     if (kind === 'request') {
       if (row.user_id !== callerId || row.status !== 'pending') return json({ error: 'Forbidden' }, 403);
       receiverId = row.friend_id;
+    } else if (kind === 'invite') {
+      // Caller joined from an invite: notify the other person in the friendship.
+      if (row.status !== 'accepted' || (row.user_id !== callerId && row.friend_id !== callerId)) {
+        return json({ error: 'Forbidden' }, 403);
+      }
+      receiverId = row.user_id === callerId ? row.friend_id : row.user_id;
     } else {
       if (row.friend_id !== callerId || row.status !== 'accepted') return json({ error: 'Forbidden' }, 403);
       receiverId = row.user_id;
@@ -77,9 +83,12 @@ Deno.serve(async (req) => {
     const name = caller?.display_name?.trim() || 'Someone';
     const title = kind === 'request'
       ? `${name} wants to be friends on MarketLingo`
-      : `${name} accepted. You're racing this month.`;
-    const ok = await sendNotification(receiver.push_token, title, kind === 'request' ? 'Tap to accept or decline.' : 'See where you stand.', {
-      type: kind === 'request' ? 'friend_request' : 'friend_accepted',
+      : kind === 'invite'
+        ? `${name} joined MarketLingo from your invite 🎉`
+        : `${name} accepted. You're racing this month.`;
+    const body = kind === 'request' ? 'Tap to accept or decline.' : 'See where you stand.';
+    const ok = await sendNotification(receiver.push_token, title, body, {
+      type: kind === 'request' ? 'friend_request' : kind === 'invite' ? 'friend_invite' : 'friend_accepted',
       route: '/friends',
     });
     return json({ status: ok ? 'sent' : 'saved' });

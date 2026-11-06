@@ -21,6 +21,7 @@ import { storage } from '../lib/storage';
 import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { LeoAnimated } from '../components/mascot/LeoAnimated';
 import { normalizeDisplayName } from '../lib/displayName';
+import { applyPendingInvite } from '../lib/invites';
 
 /** Leo waves hello once, then idles. This screen is replaced after sign-in. */
 function AuthLeo() {
@@ -68,9 +69,12 @@ export default function AuthScreen() {
         Alert.alert('Check your email', result.message);
       } else if (mode === 'signup') {
         await storage.setDisplayName(normalizeDisplayName(displayName));
+        // Connect to whoever invited them; never blocks onboarding.
+        void applyPendingInvite().catch(() => {});
         // Industry, goal and level were picked before sign-up; attach them and continue to the walkthrough.
         router.replace({ pathname: '/onboarding/familiarity', params: { resume: '1' } } as any);
       } else {
+        void applyPendingInvite().catch(() => {});
         // Existing users go to index which handles routing
         router.replace('/');
       }

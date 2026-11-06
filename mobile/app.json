@@ -16,17 +16,21 @@
       "supportsTablet": false,
       "appleTeamId": "PM32G4952G",
       "bundleIdentifier": "app.marketlingo.aerospace",
-      "buildNumber": "139",
+      "buildNumber": "140",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "MarketLingo needs microphone access to record your interview responses in the Mock Lab for AI feedback.",
         "NSSpeechRecognitionUsageDescription": "MarketLingo uses speech recognition to transcribe your interview practice responses."
-      }
+      },
+      "associatedDomains": [
+        "applinks:market-verse.com",
+        "applinks:www.market-verse.com"
+      ]
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-"backgroundColor": "#3A1729"
+        "backgroundColor": "#3A1729"
       },
       "package": "app.marketlingo.aerospace"
     },

@@ -9,8 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
-  Image
+  Alert
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -21,6 +20,7 @@ import { storage } from "../lib/storage";
 import { LeoCharacter } from "../components/mascot/LeoCharacter";
 import { LeoAnimated } from "../components/mascot/LeoAnimated";
 import { normalizeDisplayName } from "../lib/displayName";
+import { applyPendingInvite } from "../lib/invites";
 function AuthLeo() {
   const [greeted, setGreeted] = useState(false);
   return <LeoAnimated size={160} clip={greeted ? "leo-idle-loop" : "leo-greet"} fallback="idle" onEnd={() => setGreeted(true)} />;
@@ -58,8 +58,12 @@ function AuthScreen() {
         Alert.alert("Check your email", result.message);
       } else if (mode === "signup") {
         await storage.setDisplayName(normalizeDisplayName(displayName));
+        void applyPendingInvite().catch(() => {
+        });
         router.replace({ pathname: "/onboarding/familiarity", params: { resume: "1" } });
       } else {
+        void applyPendingInvite().catch(() => {
+        });
         router.replace("/");
       }
     } catch (err) {
