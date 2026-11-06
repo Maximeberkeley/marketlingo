@@ -169,6 +169,13 @@
       "when": 1793931375852,
       "tag": "0023_friend_invites",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1793932685609,
+      "tag": "0024_friends_local_day_and_push_once",
+      "breakpoints": true
     }
   ]
 }
