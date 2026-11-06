@@ -62,15 +62,17 @@ export function lessonQuestions(studied: StudiedLessonInput[], limit = 5): Lesso
   studied.forEach((lesson, lessonIdx) => {
     if (out.length >= limit) return;
     const slides = lesson.slides || [];
-    if (!slides.length) return;
     const terms = termsFromSlides(slides);
     const label = lessonLabel(lesson);
 
+    // These screens render single-answer questions, not chains or sorting.
+    // Keep authored MCQs first; never convert prose into an ordered question.
     const built = [
+      ...(lesson.questions ?? []).filter(q => q.kind === 'multipleChoice'),
       checkFigure(slides, `lq-fig-${lessonIdx}`),
       checkDefinition(terms, `lq-def-${lessonIdx}`),
       checkClaim(slides, `lq-claim-${lessonIdx}`),
-    ].filter(Boolean) as ReturnType<typeof checkClaim>[];
+    ].filter((item): item is NonNullable<ReturnType<typeof checkClaim>> => Boolean(item));
 
     built.forEach(item => {
       if (!item || out.length >= limit) return;
