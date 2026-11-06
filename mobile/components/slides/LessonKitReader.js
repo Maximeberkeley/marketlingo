@@ -9,6 +9,9 @@ import { parseSlideIntoCards } from "./ConceptCard";
 import { DeepDiveProvider } from "../../lesson-kit/components/DeepDiveContext";
 import { useDeliverable } from "../../hooks/useDeliverable";
 import { sectionForLesson } from "../../lib/deliverables";
+import { sayItContext } from "../../lib/sayItStarter";
+import { getMarketName } from "../../lib/markets";
+import { readingSlides } from "../../lesson-kit/components/feedbackCopy";
 function stripUndefined(value) {
   return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== void 0 && v !== null && v !== ""));
 }
@@ -83,7 +86,8 @@ function LessonKitReader({
       takeaway: filterForGoal(metadata?.key_takeaway?.trim() || "", learningGoal) || void 0,
       dayNumber,
       learningGoal,
-      sectionKey: defaultSectionKey
+      sectionKey: defaultSectionKey,
+      context: sayItContext([...slides, ...readingSlides(baseLesson.exercises)], marketId ? getMarketName(marketId) : void 0)
     });
     if (isAuthoredLesson(authoredLesson)) {
       return {
@@ -99,7 +103,7 @@ function LessonKitReader({
       lesson: { ...baseLesson, exercises: [...baseLesson.exercises, sayIt()] },
       slideNumbers: [...baseSlideNumbers, last]
     };
-  }, [baseLesson, baseSlideNumbers, authoredLesson, metadata, dayNumber, learningGoal, slides, defaultSectionKey]);
+  }, [baseLesson, baseSlideNumbers, authoredLesson, metadata, dayNumber, learningGoal, slides, defaultSectionKey, marketId]);
   const extraActions = useCallback(
     (exerciseIndex, dismiss, exercise) => {
       const slideNumber = (exercise?.kind === "microInsight" ? exercise.sourceSlideNumber : void 0) ?? slideNumbers[exerciseIndex] ?? 1;

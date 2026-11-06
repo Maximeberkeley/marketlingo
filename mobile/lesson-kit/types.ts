@@ -206,6 +206,8 @@ export interface SayItExercise {
   learningGoal?: string | null;
   /** Lesson-matched dossier section; the learner may change it. */
   sectionKey?: string;
+  /** What today's lesson named (a company, a figure, the industry), for a concrete question. */
+  context?: { company?: string; number?: string; industry?: string };
 }
 
 /** A short in-character line from Leo, shown above the beat. */
