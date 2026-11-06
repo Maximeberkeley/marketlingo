@@ -19,6 +19,12 @@ export function PushTokenSync() {
 
     const run = async () => {
       try {
+        const { syncTimezone } = await import('../lib/timezoneSync');
+        await syncTimezone(user.id);
+      } catch {
+        // Timezone sync is best-effort.
+      }
+      try {
         // Keep native notification modules outside the startup import graph.
         const [{ syncPushToken }, { scheduleDailyFallbackReminders }] = await Promise.all([
           import('../lib/pushToken'),
