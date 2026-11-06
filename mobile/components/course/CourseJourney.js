@@ -97,6 +97,8 @@ const MARKET_ILLUSTRATIONS = {
   climatetech: require("../../assets/illustrations/climatetech.png"),
   neuroscience: require("../../assets/illustrations/neuroscience.png")
 };
+const HOME_COLUMN_MAX = 680;
+const ACTIVITY_CLUSTER_MAX = 394;
 const MODULES = [
   { kind: "lesson", label: "Daily Lesson", icon: "book-open", position: { top: 6, left: "50%", marginLeft: -42 } },
   { kind: "arena", label: "Daily Arena", icon: "target", position: { top: 92, right: 8 } },
@@ -545,7 +547,7 @@ function CourseJourney({
         const displayedLesson = lesson;
         const sectionLead = lessons.find((entry) => entry.day === section.startDay);
         const weekTitle = section.unlocked ? displayedLesson?.stackId ? displayedLesson.title : "Lesson not available yet" : themes[section.index] || sectionLead?.title || dayPromise(marketId, section.startDay);
-        return /* @__PURE__ */ React.createElement(View, null, /* @__PURE__ */ React.createElement(
+        return /* @__PURE__ */ React.createElement(View, { style: styles.column }, /* @__PURE__ */ React.createElement(
           SectionCluster,
           {
             section: creditedLesson ? { ...section, displayDay: creditedLesson.day } : section,
@@ -682,7 +684,7 @@ const styles = StyleSheet.create({
   emptyTitle: { ...TYPE.h2, color: COLORS.textPrimary },
   retryButton: { minHeight: 48, minWidth: 140, borderRadius: 14, alignItems: "center", justifyContent: "center", backgroundColor: COLORS.courseHeader },
   retryText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
-  topHeader: { paddingHorizontal: 20, paddingBottom: 18, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  topHeader: { paddingHorizontal: 20, paddingBottom: 18, flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", maxWidth: HOME_COLUMN_MAX, alignSelf: "center" },
   industryBadge: {
     width: 58,
     height: 58,
@@ -697,7 +699,7 @@ const styles = StyleSheet.create({
   industryImage: { width: 48, height: 48 },
   industryModal: { flex: 1, justifyContent: "flex-end" },
   industryBackdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: COLORS.imageScrim },
-  industrySheet: { backgroundColor: COLORS.bg2, borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderColor: COLORS.border, paddingHorizontal: 24, paddingTop: 12, paddingBottom: 36, ...SHADOWS.md },
+  industrySheet: { width: "100%", maxWidth: HOME_COLUMN_MAX, alignSelf: "center", backgroundColor: COLORS.bg2, borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderColor: COLORS.border, paddingHorizontal: 24, paddingTop: 12, paddingBottom: 36, ...SHADOWS.md },
   industryHandle: { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.border, alignSelf: "center", marginBottom: 22 },
   industrySheetHeading: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18 },
   industryArtwork: { width: 78, height: 78, borderRadius: 18, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, alignItems: "center", justifyContent: "center" },
@@ -736,7 +738,8 @@ const styles = StyleSheet.create({
   lessonMeta: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 5 },
   lockPill: { flexDirection: "row", alignItems: "center", gap: 5, borderRadius: 12, paddingHorizontal: 9, paddingVertical: 7, backgroundColor: COLORS.lockedSurface },
   lockPillText: { ...TYPE.caption, color: COLORS.textMuted, maxWidth: 110 },
-  cluster: { height: 374, position: "relative", marginTop: 6 },
+  cluster: { height: 374, position: "relative", marginTop: 6, width: "100%", maxWidth: ACTIVITY_CLUSTER_MAX, alignSelf: "center" },
+  column: { width: "100%", maxWidth: HOME_COLUMN_MAX, alignSelf: "center" },
   clusterLocked: { opacity: 0.66 },
   orbitSvg: { position: "absolute", width: 268, height: 268, left: "50%", marginLeft: -134, top: 42 },
   orbitMarker: { position: "absolute", width: 9, height: 9, borderRadius: 5, backgroundColor: COLORS.bg2, borderWidth: 2, borderColor: COLORS.accent, zIndex: 1 },
@@ -819,5 +822,7 @@ const styles = StyleSheet.create({
   lessonDescription: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 3 }
 });
 export {
-  CourseJourney
+  ACTIVITY_CLUSTER_MAX,
+  CourseJourney,
+  HOME_COLUMN_MAX
 };

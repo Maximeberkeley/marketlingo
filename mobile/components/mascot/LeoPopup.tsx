@@ -164,7 +164,10 @@ const styles = StyleSheet.create({
   touchable: {
     flexDirection: 'column',
     alignItems: 'center',
-    alignSelf: 'stretch',
+    // A readable card on iPad rather than a banner across the whole screen.
+    width: '100%',
+    maxWidth: 560,
+    alignSelf: 'center',
     backgroundColor: 'transparent',
     borderWidth: 0,
     elevation: 0,

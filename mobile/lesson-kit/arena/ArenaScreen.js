@@ -16,6 +16,7 @@ import * as Haptics from "expo-haptics";
 import { tokens } from "../theme/tokens";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { FeedbackFooter } from "../components/FeedbackFooter";
+import { RevealCorrectProvider, useRevealCorrect } from "../components/RevealCorrect";
 import { feedbackCopy } from "../components/feedbackCopy";
 import { LeoCoach } from "../components/LeoCoach";
 import { leoFeedbackLine } from "../../components/mascot/leoAnimationRules";
@@ -59,6 +60,8 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
   const gainAnim = useRef(new Animated.Value(0)).current;
   const scoreScale = useRef(new Animated.Value(1)).current;
   const tickRef = useRef(null);
+  const scrollRef = useRef(null);
+  const revealCorrect = useRevealCorrect(scrollRef);
   const clearTick = useCallback(() => {
     if (tickRef.current) {
       clearInterval(tickRef.current);
@@ -264,11 +267,14 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
   ), /* @__PURE__ */ React.createElement(
     ScrollView,
     {
+      ref: scrollRef,
+      onScroll: revealCorrect.onScroll,
+      scrollEventThrottle: 16,
       contentContainerStyle: styles.body,
       showsVerticalScrollIndicator: false,
       keyboardShouldPersistTaps: "handled"
     },
-    !showWaveIntro ? /* @__PURE__ */ React.createElement(React.Fragment, null, (!!exercise.leo?.line || phase === "feedback" && !isPassiveKind(exercise.kind)) && /* @__PURE__ */ React.createElement(
+    !showWaveIntro ? /* @__PURE__ */ React.createElement(RevealCorrectProvider, { value: revealCorrect.reveal }, (!!exercise.leo?.line || phase === "feedback" && !isPassiveKind(exercise.kind)) && /* @__PURE__ */ React.createElement(
       LeoCoach,
       {
         key: `${waveIndex}/${beatIndex}`,

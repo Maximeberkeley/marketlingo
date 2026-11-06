@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, Animated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
@@ -8,6 +8,7 @@ import * as Haptics from 'expo-haptics';
 import { tokens } from '../theme/tokens';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { FeedbackFooter } from '../components/FeedbackFooter';
+import { RevealCorrectProvider, useRevealCorrect } from '../components/RevealCorrect';
 import { feedbackCopy } from '../components/feedbackCopy';
 import { LeoCoach } from '../components/LeoCoach';
 import { leoFeedbackLine } from '../../components/mascot/leoAnimationRules';
@@ -72,6 +73,8 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
   const world = getMarketWorld(marketId);
 
   const [stageIndex, setStageIndex] = useState(0);
+  const scrollRef = useRef<ScrollView>(null);
+  const revealCorrect = useRevealCorrect(scrollRef);
   const [phase, setPhase] = useState<'answering' | 'feedback'>('answering');
   const [state, setState] = useState<ExerciseState>({ canCheck: false, isCorrect: false });
   const [correct, setCorrect] = useState(0);
@@ -265,7 +268,8 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
 
       {stage.hint ? <Text style={styles.stageHint}>{stage.hint}</Text> : null}
 
-      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+      <ScrollView ref={scrollRef} onScroll={revealCorrect.onScroll} scrollEventThrottle={16} contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+        <RevealCorrectProvider value={revealCorrect.reveal}>
         {(!!stage.exercise.leo?.line || (phase === 'feedback' && !passive)) && (
           <LeoCoach
             key={stageIndex}
@@ -284,6 +288,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
             </Text>
           </View>
         )}
+        </RevealCorrectProvider>
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>

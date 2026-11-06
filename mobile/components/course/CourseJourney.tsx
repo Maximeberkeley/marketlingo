@@ -147,6 +147,11 @@ interface CourseJourneyProps {
 
 type ModuleKind = 'lesson' | 'arena' | 'case' | 'intel' | 'notes';
 
+/** On iPad the course reads as one centred column instead of stretching edge to edge. */
+export const HOME_COLUMN_MAX = 680;
+/** The ring and its five activities keep their largest-phone layout (430 pt minus margins), so the activities stay on the ring. */
+export const ACTIVITY_CLUSTER_MAX = 394;
+
 const MODULES: Array<{
   kind: ModuleKind;
   label: string;
@@ -743,7 +748,7 @@ export function CourseJourney({
             ? (displayedLesson?.stackId ? displayedLesson.title : 'Lesson not available yet')
             : themes[section.index] || sectionLead?.title || dayPromise(marketId, section.startDay);
           return (
-            <View>
+            <View style={styles.column}>
             <SectionCluster
               section={creditedLesson ? { ...section, displayDay: creditedLesson.day } : section}
               lesson={lesson}
@@ -898,7 +903,7 @@ const styles = StyleSheet.create({
   emptyTitle: { ...TYPE.h2, color: COLORS.textPrimary },
   retryButton: { minHeight: 48, minWidth: 140, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.courseHeader },
   retryText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
-  topHeader: { paddingHorizontal: 20, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  topHeader: { paddingHorizontal: 20, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', maxWidth: HOME_COLUMN_MAX, alignSelf: 'center' },
   industryBadge: {
     width: 58, height: 58, borderRadius: 17, alignItems: 'center', justifyContent: 'center',
     backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.borderLight, ...SHADOWS.sm,
@@ -906,7 +911,7 @@ const styles = StyleSheet.create({
   industryImage: { width: 48, height: 48 },
   industryModal: { flex: 1, justifyContent: 'flex-end' },
   industryBackdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: COLORS.imageScrim },
-  industrySheet: { backgroundColor: COLORS.bg2, borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderColor: COLORS.border, paddingHorizontal: 24, paddingTop: 12, paddingBottom: 36, ...SHADOWS.md },
+  industrySheet: { width: '100%', maxWidth: HOME_COLUMN_MAX, alignSelf: 'center', backgroundColor: COLORS.bg2, borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderColor: COLORS.border, paddingHorizontal: 24, paddingTop: 12, paddingBottom: 36, ...SHADOWS.md },
   industryHandle: { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.border, alignSelf: 'center', marginBottom: 22 },
   industrySheetHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 },
   industryArtwork: { width: 78, height: 78, borderRadius: 18, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
@@ -945,7 +950,8 @@ const styles = StyleSheet.create({
   lessonMeta: { ...TYPE.caption, color: COLORS.textMuted, marginTop: 5 },
   lockPill: { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 12, paddingHorizontal: 9, paddingVertical: 7, backgroundColor: COLORS.lockedSurface },
   lockPillText: { ...TYPE.caption, color: COLORS.textMuted, maxWidth: 110 },
-  cluster: { height: 374, position: 'relative', marginTop: 6 },
+  cluster: { height: 374, position: 'relative', marginTop: 6, width: '100%', maxWidth: ACTIVITY_CLUSTER_MAX, alignSelf: 'center' },
+  column: { width: '100%', maxWidth: HOME_COLUMN_MAX, alignSelf: 'center' },
   clusterLocked: { opacity: 0.66 },
   orbitSvg: { position: 'absolute', width: 268, height: 268, left: '50%', marginLeft: -134, top: 42 },
   orbitMarker: { position: 'absolute', width: 9, height: 9, borderRadius: 5, backgroundColor: COLORS.bg2, borderWidth: 2, borderColor: COLORS.accent, zIndex: 1 },

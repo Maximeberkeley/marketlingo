@@ -17,6 +17,7 @@ import * as Haptics from 'expo-haptics';
 import { tokens } from '../theme/tokens';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { FeedbackFooter } from '../components/FeedbackFooter';
+import { RevealCorrectProvider, useRevealCorrect } from '../components/RevealCorrect';
 import { feedbackCopy } from '../components/feedbackCopy';
 import { LeoCoach } from '../components/LeoCoach';
 import { leoFeedbackLine } from '../../components/mascot/leoAnimationRules';
@@ -90,6 +91,8 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
   const gainAnim = useRef(new Animated.Value(0)).current;
   const scoreScale = useRef(new Animated.Value(1)).current;
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const scrollRef = useRef<ScrollView>(null);
+  const revealCorrect = useRevealCorrect(scrollRef);
 
   const clearTick = useCallback(() => {
     if (tickRef.current) {
@@ -381,13 +384,16 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
       )}
 
       <ScrollView
+        ref={scrollRef}
+        onScroll={revealCorrect.onScroll}
+        scrollEventThrottle={16}
         contentContainerStyle={styles.body}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
         {/* The question stays behind the round-intro card until Start is tapped */}
         {!showWaveIntro ? (
-          <>
+          <RevealCorrectProvider value={revealCorrect.reveal}>
             {(!!exercise.leo?.line || (phase === 'feedback' && !isPassiveKind(exercise.kind))) && <LeoCoach
               key={`${waveIndex}/${beatIndex}`}
               line={exercise.leo?.line || leoFeedbackLine(coachCorrect, waveIndex * 31 + beatIndex)}
@@ -396,7 +402,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
             />}
             <Text style={{ color: tokens.color.textSecondary, fontSize: 12, marginBottom: 12 }}>{practiceSourceLabel(exercise)}</Text>
             {renderExerciseByKind(exercise, phase, setState)}
-          </>
+          </RevealCorrectProvider>
         ) : null}
       </ScrollView>
 

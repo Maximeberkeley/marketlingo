@@ -40,3 +40,23 @@ export function choiceA11yState(state: ChoiceState): string {
     default: return '';
   }
 }
+
+/**
+ * How far to scroll so a graded right answer (with room for its row) sits
+ * inside the visible part of the question, above the feedback panel. Never
+ * pushes the top of the row out of view to show its bottom. 0 when it already shows.
+ */
+export function revealDelta(
+  target: { top: number; height: number },
+  visible: { top: number; height: number },
+  above = 60,
+  below = 90,
+): number {
+  if (visible.height <= 0) return 0;
+  const top = target.top - above;
+  const bottom = target.top + target.height + below;
+  const visibleBottom = visible.top + visible.height;
+  if (bottom > visibleBottom) return Math.max(0, Math.min(bottom - visibleBottom, top - visible.top));
+  if (top < visible.top) return top - visible.top;
+  return 0;
+}

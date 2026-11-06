@@ -5,6 +5,7 @@ import * as Haptics from "expo-haptics";
 import { LessonHeader } from "../components/LessonHeader";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { FeedbackFooter } from "../components/FeedbackFooter";
+import { RevealCorrectProvider, useRevealCorrect } from "../components/RevealCorrect";
 import { feedbackCopy, readingSlides, reviewCardFor } from "../components/feedbackCopy";
 import { InfoCard } from "../exercises/InfoCard";
 import { MultipleChoice } from "../exercises/MultipleChoice";
@@ -89,6 +90,7 @@ function LessonScreen({
   const [reduceMotion, setReduceMotion] = useState(false);
   const enter = useRef(new Animated.Value(1)).current;
   const scrollRef = useRef(null);
+  const revealCorrect = useRevealCorrect(scrollRef);
   const [finished, setFinished] = useState(false);
   const startedAt = useRef(Date.now());
   const world = getMarketWorld(marketId);
@@ -349,6 +351,8 @@ function LessonScreen({
     ScrollView,
     {
       ref: scrollRef,
+      onScroll: revealCorrect.onScroll,
+      scrollEventThrottle: 16,
       style: styles.scroll,
       onLayout: (event) => setCardSpace(Math.max(0, event.nativeEvent.layout.height - 48)),
       contentContainerStyle: [styles.content, exercise.kind === "coldOpen" && styles.coverContent],
@@ -364,7 +368,7 @@ function LessonScreen({
         },
         style: [styles.beat, exercise.kind === "coldOpen" && styles.fullBleed, { opacity: combined && !combinedFits ? 0 : enter, transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]
       },
-      exercise.kind === "sayIt" ? /* @__PURE__ */ React.createElement(SayIt, { key: exercise.id, exercise, marketId, stackId: stackId || lesson.id, onDone: continueLesson }) : renderExercise(exercise, phase, handleChange)
+      /* @__PURE__ */ React.createElement(RevealCorrectProvider, { value: revealCorrect.reveal }, exercise.kind === "sayIt" ? /* @__PURE__ */ React.createElement(SayIt, { key: exercise.id, exercise, marketId, stackId: stackId || lesson.id, onDone: continueLesson }) : renderExercise(exercise, phase, handleChange))
     ),
     exercise.kind !== "coldOpen" && /* @__PURE__ */ React.createElement(View, { style: styles.lowerSpace })
   ), phase === "feedback" && !isInfo && /* @__PURE__ */ React.createElement(
