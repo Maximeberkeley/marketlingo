@@ -701,6 +701,33 @@ export type Database = {
         }
         Relationships: []
       }
+      friend_nudges: {
+        Row: {
+          created_at: string
+          created_on: string
+          id: string
+          read_at: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_on?: string
+          id?: string
+          read_at?: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          created_at?: string
+          created_on?: string
+          id?: string
+          read_at?: string | null
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
       friend_quests: {
         Row: {
           completed_at: string | null
@@ -1654,6 +1681,7 @@ export type Database = {
           display_name: string | null
           familiarity_level: string | null
           featured_collectible_id: string | null
+          friend_code: string | null
           id: string
           is_pro_user: boolean
           notification_preferences: Json | null
@@ -1678,6 +1706,7 @@ export type Database = {
           display_name?: string | null
           familiarity_level?: string | null
           featured_collectible_id?: string | null
+          friend_code?: string | null
           id: string
           is_pro_user?: boolean
           notification_preferences?: Json | null
@@ -1702,6 +1731,7 @@ export type Database = {
           display_name?: string | null
           familiarity_level?: string | null
           featured_collectible_id?: string | null
+          friend_code?: string | null
           id?: string
           is_pro_user?: boolean
           notification_preferences?: Json | null
@@ -2868,18 +2898,21 @@ export type Database = {
       public_profiles: {
         Row: {
           avatar_url: string | null
+          display_name: string | null
+          friend_code: string | null
           id: string | null
-          username: string | null
         }
         Insert: {
           avatar_url?: string | null
+          display_name?: string | null
+          friend_code?: string | null
           id?: string | null
-          username?: string | null
         }
         Update: {
           avatar_url?: string | null
+          display_name?: string | null
+          friend_code?: string | null
           id?: string | null
-          username?: string | null
         }
         Relationships: []
       }
@@ -2979,7 +3012,25 @@ export type Database = {
         }
         Returns: number
       }
+      generate_friend_code: { Args: never; Returns: string }
       get_available_day: { Args: { p_start_date: string }; Returns: number }
+      get_friends_overview: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          current_level: number
+          current_streak: number
+          display_name: string
+          friend_code: string
+          friend_id: string
+          friendship_id: string
+          last_activity_at: string
+          lesson_done_today: boolean
+          month_xp: number
+          nudged_today: boolean
+          selected_market: string
+        }[]
+      }
       get_monthly_standings: {
         Args: { p_market_id: string; p_season_start: string }
         Returns: {
@@ -2991,7 +3042,6 @@ export type Database = {
           monthly_xp: number
           tier: string
           user_id: string
-          username: string
         }[]
       }
       has_role: {
@@ -3073,8 +3123,9 @@ export type Database = {
         Returns: {
           avatar_url: string
           display_name: string
+          friend_code: string
           id: string
-          username: string
+          selected_market: string
         }[]
       }
       set_featured_collectible: {

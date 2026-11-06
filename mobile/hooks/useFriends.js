@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "./useAuth";
-import { getMonthlyStandings, standingName } from "../lib/socialStandings";
 import { log } from "../lib/logger";
 function useFriends(marketId) {
   const { user } = useAuth();
@@ -10,7 +9,7 @@ function useFriends(marketId) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const fetchFriends = useCallback(async () => {
-    if (!user || !marketId) {
+    if (!user) {
       setFriends([]);
       setPendingRequests([]);
       setLoading(false);
@@ -19,39 +18,25 @@ function useFriends(marketId) {
     setLoading(true);
     setError(null);
     try {
-      const { data: friendships, error: friendshipError } = await supabase.from("friendships").select("id, user_id, friend_id, status").or(`user_id.eq.${user.id},friend_id.eq.${user.id}`).eq("status", "accepted");
-      if (friendshipError) {
-        log.warn("Friendships failed to load", friendshipError);
+      const { data: overview, error: overviewError } = await supabase.rpc("get_friends_overview");
+      if (overviewError) {
+        log.warn("Friends overview failed to load", overviewError);
         setError("Friends could not load. Check your connection and try again.");
-      } else if (!friendships?.length) {
-        setFriends([]);
       } else {
-        const friendIds = friendships.map(
-          (f) => f.user_id === user.id ? f.friend_id : f.user_id
-        );
-        let standings = [];
-        try {
-          standings = await getMonthlyStandings(marketId);
-        } catch (standingsError) {
-          log.warn("Friend standings failed to load", standingsError);
-          setError("Friend scores could not load. Check your connection and try again.");
-        }
-        const friendList = friendIds.map((fId) => {
-          const friendship = friendships.find(
-            (f) => f.user_id === fId || f.friend_id === fId
-          );
-          const standing = standings.find((row) => row.user_id === fId);
-          return {
-            id: fId,
-            friendshipId: friendship?.id || "",
-            username: standing ? standingName(standing) : "Friend",
-            avatarUrl: standing?.avatar_url || null,
-            totalXP: standing?.monthly_xp || 0,
-            currentStreak: standing?.current_streak || 0,
-            currentLevel: standing?.current_level || 1,
-            lastActivityAt: standing?.last_activity_at || null
-          };
-        });
+        const friendList = (overview ?? []).map((row) => ({
+          id: row.friend_id,
+          friendshipId: row.friendship_id,
+          username: row.display_name?.trim() || "Analyst",
+          friendCode: row.friend_code || null,
+          avatarUrl: row.avatar_url || null,
+          selectedMarket: row.selected_market || null,
+          totalXP: Number(row.month_xp) || 0,
+          currentStreak: Number(row.current_streak) || 0,
+          currentLevel: Number(row.current_level) || 1,
+          lastActivityAt: row.last_activity_at || null,
+          lessonDoneToday: !!row.lesson_done_today,
+          nudgedToday: !!row.nudged_today
+        }));
         friendList.sort((a, b) => b.totalXP - a.totalXP);
         setFriends(friendList);
       }
@@ -63,12 +48,12 @@ function useFriends(marketId) {
           setPendingRequests([]);
         } else {
           const fromIds = pending.map((p) => p.user_id);
-          const { data: fromProfiles } = await supabase.from("public_profiles").select("id, username").in("id", fromIds);
+          const { data: fromProfiles } = await supabase.from("public_profiles").select("id, display_name").in("id", fromIds);
           setPendingRequests(
             pending.map((p) => ({
               id: p.id,
               fromUserId: p.user_id,
-              fromUsername: fromProfiles?.find((pr) => pr.id === p.user_id)?.username?.split("@")[0] || "Someone",
+              fromUsername: fromProfiles?.find((pr) => pr.id === p.user_id)?.display_name?.trim() || "Someone",
               createdAt: p.created_at
             }))
           );

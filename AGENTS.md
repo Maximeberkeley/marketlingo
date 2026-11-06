@@ -28,3 +28,4 @@
 - Select coach reactions through shared mascot rules and pass the actual graded result (including Arena timeouts); key plays by question and line/mood, because animations must reflect the verdict and replay without altering grading or rewards.
 - Share website landing Leo playback across its compact and desktop placements, loading animation only in view with static reduced-motion/error fallbacks; keep phone clips bundled and website media CDN-backed because each platform has different offline and delivery needs.
 - Days 1–30 pick stacks tagged handwritten-v1 first (goal match next) via mobile/lib/handwritten, in both Home and Course, because verified hand-written lessons must never lose to legacy generated stacks.
+- Show other learners only by display_name and friend_code (never username, which holds the email); friend lists come from get_friends_overview, because usernames leaked emails through search and standings.

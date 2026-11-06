@@ -79,7 +79,7 @@ async function attachProfilesAndLikes(messages, currentUserId) {
     const userIds = [...new Set(messages.map((m) => m.user_id))];
     const messageIds = messages.map((m) => m.id);
     const [profilesRes, myLikesRes] = await Promise.all([
-        supabase.from('public_profiles').select('id, username, avatar_url').in('id', userIds),
+        supabase.from('public_profiles').select('id, display_name, avatar_url').in('id', userIds),
         currentUserId
             ? supabase.from('seminar_message_likes').select('message_id').eq('user_id', currentUserId).in('message_id', messageIds)
             : Promise.resolve({ data: [] }),
@@ -91,7 +91,7 @@ async function attachProfilesAndLikes(messages, currentUserId) {
         parent_id: m.parent_id || null,
         like_count: m.like_count || 0,
         reply_count: m.reply_count || 0,
-        username: profileMap.get(m.user_id)?.username || 'Anonymous',
+        username: profileMap.get(m.user_id)?.display_name?.trim() || 'Analyst',
         avatar_url: profileMap.get(m.user_id)?.avatar_url,
         liked_by_me: likedSet.has(m.id),
     }));

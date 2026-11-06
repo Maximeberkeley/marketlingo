@@ -18,5 +18,5 @@ export async function getMonthlyStandings(marketId) {
     }));
 }
 export function standingName(row) {
-    return row.display_name?.trim() || row.username?.split('@')[0] || 'Analyst';
+    return row.display_name?.trim() || 'Analyst';
 }
