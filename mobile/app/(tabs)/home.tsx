@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { AchievementPopup } from '../../components/achievements/AchievementPopup';
 import { HomeSkeleton, LoadingLeoHost } from '../../components/home/HomeSkeleton';
+import { FriendNudgeBanner } from '../../components/home/FriendNudgeBanner';
 import { AnimatedSection } from '../../components/home/AnimatedSection';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -613,45 +614,48 @@ function HomeScreenContent() {
           }}
         />
       ) : selectedMarket ? (
-        <CourseJourney
-          marketId={selectedMarket}
-          currentDay={currentDay}
-          learningGoal={learningGoal}
-          completedStackIds={(progress?.completed_stacks as string[]) || []}
-          streak={streak}
-          totalXp={xpData?.total_xp || 0}
-          level={xpData?.current_level || 1}
-          lessonCompletedToday={completedOnClockDay}
-          completedTodayStackId={completedOnClockDay ? dailyCompletion?.completed_stack_id : null}
-          isFocused={courseFocused}
-          leoCallOpen={showLeoChat}
-          leoCelebrationPending={leoCelebrationScope === leoDayScope}
-          onLeoCelebrated={() => setLeoCelebrationScope(null)}
-          arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
-          caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
-          notesCompletedToday={notesCompletedToday}
-          intelReadToday={intelHabit.done ? intelHabit.target : intelHabit.readToday}
-          intelTarget={intelHabit.target}
-          rescueAvailable={Boolean(streakCountdown)}
-          streakCountdown={streakCountdown}
-          safeTop={insets.top}
-          onOpenLesson={(stackId, day) => { void openLessonById(stackId, day); }}
-          onAskLeo={() => setShowLeoChat(true)}
-          belowToday={deliverable.loading ? null : (
-            <TouchableOpacity
-              style={styles.dossierChip}
-              activeOpacity={0.85}
-              accessibilityRole="button"
-              onPress={() => { triggerHaptic('light'); router.push('/deliverable'); }}
-            >
-              <Feather name="file-text" size={14} color={COLORS.accent} />
-              <Text style={styles.dossierChipText} numberOfLines={1}>
-                {`${deliverable.template.title} · ${deliverable.filledSections} of ${deliverable.template.sections.length} sections`}
-              </Text>
-              <Feather name="chevron-right" size={14} color={COLORS.textMuted} />
-            </TouchableOpacity>
-          )}
-        />
+      <>
+          <CourseJourney
+            marketId={selectedMarket}
+            currentDay={currentDay}
+            learningGoal={learningGoal}
+            completedStackIds={(progress?.completed_stacks as string[]) || []}
+            streak={streak}
+            totalXp={xpData?.total_xp || 0}
+            level={xpData?.current_level || 1}
+            lessonCompletedToday={completedOnClockDay}
+            completedTodayStackId={completedOnClockDay ? dailyCompletion?.completed_stack_id : null}
+            isFocused={courseFocused}
+            leoCallOpen={showLeoChat}
+            leoCelebrationPending={leoCelebrationScope === leoDayScope}
+            onLeoCelebrated={() => setLeoCelebrationScope(null)}
+            arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
+            caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
+            notesCompletedToday={notesCompletedToday}
+            intelReadToday={intelHabit.done ? intelHabit.target : intelHabit.readToday}
+            intelTarget={intelHabit.target}
+            rescueAvailable={Boolean(streakCountdown)}
+            streakCountdown={streakCountdown}
+            safeTop={insets.top}
+            onOpenLesson={(stackId, day) => { void openLessonById(stackId, day); }}
+            onAskLeo={() => setShowLeoChat(true)}
+            belowToday={deliverable.loading ? null : (
+              <TouchableOpacity
+                style={styles.dossierChip}
+                activeOpacity={0.85}
+                accessibilityRole="button"
+                onPress={() => { triggerHaptic('light'); router.push('/deliverable'); }}
+              >
+                <Feather name="file-text" size={14} color={COLORS.accent} />
+                <Text style={styles.dossierChipText} numberOfLines={1}>
+                  {`${deliverable.template.title} · ${deliverable.filledSections} of ${deliverable.template.sections.length} sections`}
+                </Text>
+                <Feather name="chevron-right" size={14} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            )}
+          />
+        <FriendNudgeBanner top={insets.top + 8} />
+      </>
       ) : (
         <HomeSkeleton />
       )}
