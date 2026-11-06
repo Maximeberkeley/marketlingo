@@ -6,7 +6,7 @@ import {
   ActivityIndicator, Modal, Animated, Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { storage } from '../../lib/storage';
 import { COLORS, FAMILIARITY_LEVELS } from '../../lib/constants';
 import { getMarketName } from '../../lib/markets';
@@ -72,6 +72,20 @@ export default function ProfileScreen() {
   const [showGoalPicker, setShowGoalPicker] = useState(false);
   const [showLevelPicker, setShowLevelPicker] = useState(false);
   const [savingPreference, setSavingPreference] = useState(false);
+  const [friendRequestCount, setFriendRequestCount] = useState(0);
+
+  // Pending friend requests to me, refreshed whenever Profile regains focus.
+  useFocusEffect(React.useCallback(() => {
+    if (!user) { setFriendRequestCount(0); return; }
+    let live = true;
+    supabase
+      .from('friendships')
+      .select('id', { count: 'exact', head: true })
+      .eq('friend_id', user.id)
+      .eq('status', 'pending')
+      .then(({ count }) => { if (live) setFriendRequestCount(count ?? 0); }, () => {});
+    return () => { live = false; };
+  }, [user]));
 
   const { progress, availableDay } = useUserProgress(selectedMarket || undefined);
   const { xpData, getCurrentStage, getProgressToNextStage } = useUserXP(selectedMarket || undefined);
@@ -299,6 +313,11 @@ export default function ProfileScreen() {
               <Text style={styles.menuTitle}>Friends</Text>
               <Text style={styles.menuSubtitle}>Add friends and compare streaks</Text>
             </View>
+            {friendRequestCount > 0 && (
+              <View style={styles.requestCount} accessibilityLabel={`${friendRequestCount} friend requests`}>
+                <Text style={styles.requestCountText}>{friendRequestCount}</Text>
+              </View>
+            )}
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 
@@ -455,6 +474,11 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+  requestCount: {
+    minWidth: 20, height: 20, borderRadius: 10, paddingHorizontal: 6, marginRight: 8,
+    backgroundColor: COLORS.error, alignItems: 'center', justifyContent: 'center',
+  },
+  requestCountText: { fontSize: 11, fontWeight: '800', color: '#FFF' },
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: 'center', justifyContent: 'center' },
   scrollContent: { paddingHorizontal: 16 },

@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { COLORS, TYPE, SHADOWS } from '../lib/constants';
 import { getMarketName } from '../lib/markets';
-import { useFriends, Friend } from '../hooks/useFriends';
+import { useFriends, Friend, FriendSearchResult } from '../hooks/useFriends';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { triggerHaptic } from '../lib/haptics';
@@ -48,11 +48,16 @@ export default function FriendsScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [marketId, setMarketId] = useState<string | null>(null);
-  const { friends, pendingRequests, loading, error: friendsError, sendRequest, acceptRequest, declineRequest, removeFriend, refetch } = useFriends(marketId || undefined);
-  const [addUsername, setAddUsername] = useState('');
-  const [adding, setAdding] = useState(false);
+  const {
+    friends, pendingRequests, sentRequests, myFriendCode, loading, error: friendsError,
+    searchPeople, sendRequest, cancelRequest, acceptRequest, declineRequest, removeFriend, refetch,
+  } = useFriends(marketId || undefined);
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<FriendSearchResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'friends' | 'global'>('friends');
-  const [showAddInput, setShowAddInput] = useState(false);
 
   // Global leaderboard
   const [globalEntries, setGlobalEntries] = useState<LeaderboardEntry[]>([]);
@@ -175,28 +180,92 @@ export default function FriendsScreen() {
 
   const myFriendRank = friendsBoard.findIndex((r) => r.isMe) + 1;
 
-  const handleAddFriend = async () => {
-    if (!addUsername.trim()) return;
-    setAdding(true);
-    triggerHaptic('light');
-    const result = await sendRequest(addUsername.trim());
-    setAdding(false);
-    if (result.success) {
-      trackEvent('friend_request_sent', { to: addUsername.trim() });
-      Alert.alert('Request sent', `Friend request sent to "${addUsername}"`);
-      setAddUsername('');
-      setShowAddInput(false);
-    } else {
-      Alert.alert('Oops', result.error || 'Something went wrong');
-    }
-  };
-
   const showToast = useCallback((text: string) => {
     if (toastTimer.current) clearTimeout(toastTimer.current);
     setToast(text);
     toastTimer.current = setTimeout(() => setToast(null), 2600);
   }, []);
   useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
+
+  // Debounced live search (2+ characters, 300 ms). Stale replies are dropped.
+  const searchSeq = useRef(0);
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < 2) { setResults([]); setSearching(false); setSearchError(false); return; }
+    const seq = ++searchSeq.current;
+    setSearching(true);
+    const t = setTimeout(async () => {
+      try {
+        const found = await searchPeople(q);
+        if (seq !== searchSeq.current) return;
+        setResults(found);
+        setSearchError(false);
+      } catch (err) {
+        if (seq !== searchSeq.current) return;
+        log.warn('Friend search failed', err);
+        setResults([]);
+        setSearchError(true);
+      } finally {
+        if (seq === searchSeq.current) setSearching(false);
+      }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [query, searchPeople]);
+
+  const friendIds = useMemo(() => new Set(friends.map((f) => f.id)), [friends]);
+
+  const handleAdd = async (person: FriendSearchResult) => {
+    if (busyId) return;
+    const sent = sentRequests.find((r) => r.toUserId === person.id);
+    triggerHaptic('light');
+    setBusyId(person.id);
+    if (sent) {
+      const result = await cancelRequest(sent.id);
+      if (!result.success) showToast(result.error || 'Could not cancel. Please try again.');
+    } else {
+      const incoming = pendingRequests.find((r) => r.fromUserId === person.id);
+      const result = incoming ? await acceptRequest(incoming.id) : await sendRequest(person);
+      if (result.success) trackEvent(incoming ? 'friend_request_accepted' : 'friend_request_sent', {});
+      else showToast(result.error || 'Something went wrong. Please try again.');
+    }
+    setBusyId(null);
+  };
+
+  const handleAccept = async (id: string) => {
+    if (busyId) return;
+    triggerHaptic('success');
+    setBusyId(id);
+    const result = await acceptRequest(id);
+    setBusyId(null);
+    if (result.success) trackEvent('friend_request_accepted', {});
+    else showToast(result.error || 'Could not accept. Please try again.');
+  };
+
+  const handleDecline = async (id: string) => {
+    if (busyId) return;
+    triggerHaptic('light');
+    setBusyId(id);
+    const result = await declineRequest(id);
+    setBusyId(null);
+    if (!result.success) showToast('Could not decline. Please try again.');
+  };
+
+  const handleCancelSent = async (id: string) => {
+    if (busyId) return;
+    triggerHaptic('light');
+    setBusyId(id);
+    const result = await cancelRequest(id);
+    setBusyId(null);
+    if (!result.success) showToast(result.error || 'Could not cancel. Please try again.');
+  };
+
+  const handleShareCode = async () => {
+    if (!myFriendCode) return;
+    triggerHaptic('light');
+    try {
+      await Share.share({ message: `Add me on MarketLingo. My friend code is ${myFriendCode}` });
+    } catch (e) { /* cancelled */ }
+  };
 
   const handleNudge = async (friend: Friend) => {
     if (nudgingId || friend.nudgedToday || nudgedIds.has(friend.id)) return;
@@ -229,7 +298,7 @@ export default function FriendsScreen() {
       {
         text: 'Remove', style: 'destructive', onPress: async () => {
           const result = await removeFriend(friend.friendshipId);
-          if (!result.success) Alert.alert('Could not remove friend', result.error || 'Please try again.');
+          if (!result.success) showToast('Could not remove friend. Please try again.');
         },
       },
     ]);
@@ -261,29 +330,8 @@ export default function FriendsScreen() {
         {pendingRequests.length > 0 && (
           <TouchableOpacity
             style={styles.requestsBadge}
-            onPress={() => {
-              pendingRequests.forEach(r => {
-                Alert.alert(
-                  `${r.fromUsername} wants to be friends`,
-                  'Accept request?',
-                  [
-                    {
-                      text: 'Decline', style: 'cancel', onPress: async () => {
-                        const result = await declineRequest(r.id);
-                        if (!result.success) Alert.alert('Could not decline request', result.error || 'Please try again.');
-                      },
-                    },
-                    {
-                      text: 'Accept', onPress: async () => {
-                        triggerHaptic('success');
-                        const result = await acceptRequest(r.id);
-                        if (!result.success) Alert.alert('Could not accept request', result.error || 'Please try again.');
-                      },
-                    },
-                  ]
-                );
-              });
-            }}
+            accessibilityLabel={`${pendingRequests.length} friend requests`}
+            onPress={() => { triggerHaptic('light'); setActiveTab('friends'); }}
           >
             <Feather name="bell" size={16} color={COLORS.accent} />
             <View style={styles.badgeDot}><Text style={styles.badgeDotText}>{pendingRequests.length}</Text></View>
@@ -339,35 +387,126 @@ export default function FriendsScreen() {
                 </View>
               </View>
 
-              {/* Add Friend Toggle */}
-              <TouchableOpacity
-                style={styles.addFriendToggle}
-                onPress={() => { triggerHaptic('light'); setShowAddInput(!showAddInput); }}
-              >
-                <Feather name="user-plus" size={16} color={COLORS.accent} />
-                <Text style={styles.addFriendToggleText}>Add friend</Text>
-              </TouchableOpacity>
+              {/* Incoming requests — inline, no pop-ups */}
+              {pendingRequests.length > 0 && (
+                <View style={styles.section}>
+                  <Text style={styles.sectionTitle}>Friend requests ({pendingRequests.length})</Text>
+                  {pendingRequests.map((r) => (
+                    <View key={r.id} style={styles.personRow}>
+                      <View style={styles.avatar}><Text style={styles.avatarText}>{r.fromUsername.charAt(0).toUpperCase()}</Text></View>
+                      <View style={styles.rowInfo}>
+                        <Text style={styles.rowName} numberOfLines={1}>{r.fromUsername}</Text>
+                        {!!r.fromMarket && <Text style={styles.rowMeta} numberOfLines={1}>{getMarketName(r.fromMarket)}</Text>}
+                      </View>
+                      {busyId === r.id ? <ActivityIndicator size="small" color={COLORS.accent} /> : (
+                        <>
+                          <TouchableOpacity style={[styles.pill, styles.pillGhost]} onPress={() => handleDecline(r.id)} accessibilityLabel={`Decline ${r.fromUsername}`}>
+                            <Text style={styles.pillGhostText}>Decline</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity style={styles.pill} onPress={() => handleAccept(r.id)} accessibilityLabel={`Accept ${r.fromUsername}`}>
+                            <Text style={styles.pillText}>Accept</Text>
+                          </TouchableOpacity>
+                        </>
+                      )}
+                    </View>
+                  ))}
+                </View>
+              )}
 
-              {showAddInput && (
-                <View style={styles.addRow}>
-                  <TextInput
-                    style={styles.addInput}
-                    placeholder="Username or email..."
-                    placeholderTextColor={COLORS.textMuted}
-                    value={addUsername}
-                    onChangeText={setAddUsername}
-                    autoCapitalize="none"
-                    autoFocus
-                    returnKeyType="send"
-                    onSubmitEditing={handleAddFriend}
-                  />
-                  <TouchableOpacity
-                    style={[styles.sendBtn, !addUsername.trim() && { opacity: 0.4 }]}
-                    onPress={handleAddFriend}
-                    disabled={!addUsername.trim() || adding}
-                  >
-                    {adding ? <ActivityIndicator color="#FFF" size="small" /> : <Feather name="send" size={16} color="#FFF" />}
+              {/* My outgoing requests */}
+              {sentRequests.length > 0 && (
+                <View style={styles.section}>
+                  <Text style={styles.sectionTitle}>Sent</Text>
+                  {sentRequests.map((r) => (
+                    <View key={r.id} style={styles.personRow}>
+                      <View style={styles.avatar}><Text style={styles.avatarText}>{r.toUsername.charAt(0).toUpperCase()}</Text></View>
+                      <View style={styles.rowInfo}>
+                        <Text style={styles.rowName} numberOfLines={1}>{r.toUsername}</Text>
+                        <Text style={styles.rowMeta} numberOfLines={1}>{r.toMarket ? `${getMarketName(r.toMarket)} · ` : ''}Waiting</Text>
+                      </View>
+                      {busyId === r.id ? <ActivityIndicator size="small" color={COLORS.accent} /> : (
+                        <TouchableOpacity style={[styles.pill, styles.pillGhost]} onPress={() => handleCancelSent(r.id)} accessibilityLabel={`Cancel request to ${r.toUsername}`}>
+                          <Text style={styles.pillGhostText}>Cancel</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  ))}
+                </View>
+              )}
+
+              {/* Your friend code */}
+              {!!myFriendCode && (
+                <View style={styles.codeCard}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.codeKicker}>YOUR FRIEND CODE</Text>
+                    <Text style={styles.codeValue} selectable>{myFriendCode}</Text>
+                    <Text style={styles.rowMeta}>Hold the code to copy it.</Text>
+                  </View>
+                  <TouchableOpacity style={styles.pill} onPress={handleShareCode} accessibilityLabel="Share your friend code">
+                    <Feather name="share" size={13} color={COLORS.accent} />
+                    <Text style={styles.pillText}>Share</Text>
                   </TouchableOpacity>
+                </View>
+              )}
+
+              {/* Live search */}
+              <View style={styles.addRow}>
+                <Feather name="search" size={16} color={COLORS.textMuted} />
+                <TextInput
+                  style={styles.addInput}
+                  placeholder="Add friends by name or code"
+                  placeholderTextColor={COLORS.textMuted}
+                  value={query}
+                  onChangeText={setQuery}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  returnKeyType="search"
+                  clearButtonMode="while-editing"
+                />
+                {searching && <ActivityIndicator size="small" color={COLORS.accent} />}
+              </View>
+
+              {query.trim().length >= 2 && !searching && (
+                <View style={styles.section}>
+                  {searchError ? (
+                    <Text style={styles.emptySub}>Search is unavailable right now. Please try again.</Text>
+                  ) : results.length === 0 ? (
+                    <View style={styles.noResults}>
+                      <Text style={styles.emptySub}>No one found. Send them your invite link</Text>
+                      <TouchableOpacity style={styles.pill} onPress={handleShareInvite}>
+                        <Feather name="share-2" size={13} color={COLORS.accent} />
+                        <Text style={styles.pillText}>Share</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : results.map((p) => {
+                    const isFriend = friendIds.has(p.id);
+                    const sent = sentRequests.some((r) => r.toUserId === p.id);
+                    const incoming = pendingRequests.some((r) => r.fromUserId === p.id);
+                    return (
+                      <View key={p.id} style={styles.personRow}>
+                        <View style={styles.avatar}><Text style={styles.avatarText}>{p.displayName.charAt(0).toUpperCase()}</Text></View>
+                        <View style={styles.rowInfo}>
+                          <Text style={styles.rowName} numberOfLines={1}>{p.displayName}</Text>
+                          <Text style={styles.rowMeta} numberOfLines={1}>
+                            {[p.friendCode, p.selectedMarket ? getMarketName(p.selectedMarket) : null].filter(Boolean).join(' · ')}
+                          </Text>
+                        </View>
+                        {isFriend ? (
+                          <Text style={styles.nudgeDone}>Friends ✓</Text>
+                        ) : busyId === p.id ? (
+                          <ActivityIndicator size="small" color={COLORS.accent} />
+                        ) : (
+                          <TouchableOpacity
+                            style={[styles.pill, sent && styles.pillGhost]}
+                            onPress={() => handleAdd(p)}
+                            accessibilityLabel={sent ? `Cancel request to ${p.displayName}` : `Add ${p.displayName}`}
+                          >
+                            <Text style={sent ? styles.pillGhostText : styles.pillText}>{sent ? 'Requested' : incoming ? 'Accept' : 'Add'}</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    );
+                  })}
                 </View>
               )}
 
@@ -639,11 +778,12 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed', marginBottom: 12,
   },
   addFriendToggleText: { fontSize: 13, fontWeight: '700', color: COLORS.accent },
-  addRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
-  addInput: {
-    flex: 1, height: 46, backgroundColor: COLORS.bg1, borderRadius: 14, paddingHorizontal: 14,
-    fontSize: 14, color: COLORS.textPrimary, borderWidth: 1, borderColor: COLORS.border,
+  addRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12, height: 46,
+    backgroundColor: COLORS.bg1, borderRadius: 14, paddingHorizontal: 14,
+    borderWidth: 1, borderColor: COLORS.border,
   },
+  addInput: { flex: 1, height: 46, fontSize: 14, color: COLORS.textPrimary },
   sendBtn: {
     width: 46, height: 46, borderRadius: 14, backgroundColor: COLORS.accent,
     alignItems: 'center', justifyContent: 'center',
@@ -698,6 +838,26 @@ const styles = StyleSheet.create({
   nudgePillText: { fontSize: 12, fontWeight: "700", color: COLORS.accent },
   nudgePillTextOff: { color: COLORS.textMuted },
   nudgeDone: { fontSize: 12, fontWeight: "700", color: COLORS.textMuted },
+  section: { marginBottom: 14, gap: 8 },
+  sectionTitle: { fontSize: 12, fontWeight: '800', color: COLORS.textMuted, letterSpacing: 0.4, textTransform: 'uppercase' },
+  personRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    padding: 12, borderRadius: 16, backgroundColor: COLORS.bg2,
+  },
+  pill: {
+    flexDirection: 'row', gap: 5, minWidth: 64, height: 32, paddingHorizontal: 12, borderRadius: 16,
+    backgroundColor: COLORS.accentMedium, alignItems: 'center', justifyContent: 'center',
+  },
+  pillText: { fontSize: 12, fontWeight: '700', color: COLORS.accent },
+  pillGhost: { backgroundColor: COLORS.bg1 },
+  pillGhostText: { fontSize: 12, fontWeight: '700', color: COLORS.textMuted },
+  codeCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12,
+    padding: 14, borderRadius: 16, backgroundColor: COLORS.accentSoft,
+  },
+  codeKicker: { fontSize: 10, fontWeight: '800', color: COLORS.accent, letterSpacing: 0.6 },
+  codeValue: { fontSize: 24, fontWeight: '800', color: COLORS.textPrimary, letterSpacing: 3, marginVertical: 2 },
+  noResults: { alignItems: 'center', gap: 10, paddingVertical: 8 },
   toast: {
     position: "absolute", left: 20, right: 20, paddingVertical: 12, paddingHorizontal: 16,
     borderRadius: 14, backgroundColor: COLORS.bg2, alignItems: "center"

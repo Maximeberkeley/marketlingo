@@ -14,7 +14,7 @@ import {
   Animated
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { storage } from "../../lib/storage";
 import { COLORS, FAMILIARITY_LEVELS } from "../../lib/constants";
 import { getMarketName } from "../../lib/markets";
@@ -68,6 +68,21 @@ function ProfileScreen() {
   const [showGoalPicker, setShowGoalPicker] = useState(false);
   const [showLevelPicker, setShowLevelPicker] = useState(false);
   const [savingPreference, setSavingPreference] = useState(false);
+  const [friendRequestCount, setFriendRequestCount] = useState(0);
+  useFocusEffect(React.useCallback(() => {
+    if (!user) {
+      setFriendRequestCount(0);
+      return;
+    }
+    let live = true;
+    supabase.from("friendships").select("id", { count: "exact", head: true }).eq("friend_id", user.id).eq("status", "pending").then(({ count }) => {
+      if (live) setFriendRequestCount(count ?? 0);
+    }, () => {
+    });
+    return () => {
+      live = false;
+    };
+  }, [user]));
   const { progress, availableDay } = useUserProgress(selectedMarket || void 0);
   const { xpData, getCurrentStage, getProgressToNextStage } = useUserXP(selectedMarket || void 0);
   const { cards, featuredId } = useCollectibles(selectedMarket || void 0);
@@ -189,93 +204,255 @@ function ProfileScreen() {
     transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }]
   });
   if (loading || authLoading) {
-    return /* @__PURE__ */ React.createElement(View, { style: [styles.container, styles.centered] }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }));
+    return <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color={COLORS.accent} />
+      </View>;
   }
-  return /* @__PURE__ */ React.createElement(View, { style: styles.container }, /* @__PURE__ */ React.createElement(
-    ScrollView,
-    {
-      contentContainerStyle: [styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 }],
-      showsVerticalScrollIndicator: false
-    },
-    /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.header, animStyle(headerAnim)] }, /* @__PURE__ */ React.createElement(View, null, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Profile"), user && /* @__PURE__ */ React.createElement(Text, { style: styles.email }, user.email)), /* @__PURE__ */ React.createElement(View, { style: styles.headerRight })),
-    /* @__PURE__ */ React.createElement(Animated.View, { style: animStyle(bodyAnim) }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.stageCard, activeOpacity: 0.85, onPress: () => setShowChangeWarning(true) }, /* @__PURE__ */ React.createElement(Text, { style: styles.stageTitle }, goalSentence(currentGoal, getMarketName(selectedMarket || "aerospace"))), /* @__PURE__ */ React.createElement(Text, { style: styles.stageDesc }, "Change industry \u203A")), /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "INTERVIEW"), /* @__PURE__ */ React.createElement(InterviewTargetForm, { target: interviewPrep.target, onSave: interviewPrep.saveTarget })), /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(
-      TouchableOpacity,
+  return <View style={styles.container}>
+      <ScrollView
+    contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 }]}
+    showsVerticalScrollIndicator={false}
+  >
+        {
+    /* Header — clean, no mascot */
+  }
+        <Animated.View style={[styles.header, animStyle(headerAnim)]}>
+          <View>
+            <Text style={styles.title}>Profile</Text>
+            {user && <Text style={styles.email}>{user.email}</Text>}
+          </View>
+          <View style={styles.headerRight} />
+        </Animated.View>
+
+        <Animated.View style={animStyle(bodyAnim)}>
+        <TouchableOpacity style={styles.stageCard} activeOpacity={0.85} onPress={() => setShowChangeWarning(true)}>
+          <Text style={styles.stageTitle}>{goalSentence(currentGoal, getMarketName(selectedMarket || "aerospace"))}</Text>
+          <Text style={styles.stageDesc}>Change industry ›</Text>
+        </TouchableOpacity>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>INTERVIEW</Text>
+          <InterviewTargetForm target={interviewPrep.target} onSave={interviewPrep.saveTarget} />
+        </View>
+
+        <View style={styles.section}>
+          <TouchableOpacity
+    style={styles.menuItem}
+    activeOpacity={0.88}
+    onPress={() => {
+      triggerHaptic("light");
+      router.push("/deliverable");
+    }}
+  >
+            <View style={[styles.menuIcon, { backgroundColor: COLORS.accentSoft }]}>
+              <Feather name="file-text" size={18} color={COLORS.accent} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Interview Brief</Text>
+              <Text style={styles.menuSubtitle}>{`${Math.round(dossier.completion)}% written`}</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+    style={styles.menuItem}
+    activeOpacity={0.88}
+    onPress={() => {
+      triggerHaptic("light");
+      router.push("/leaderboard");
+    }}
+  >
+            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
+              <Feather name="award" size={18} color={COLORS.accent} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>League</Text>
+              <Text style={styles.menuSubtitle}>Your rank this month</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+    style={styles.menuItem}
+    activeOpacity={0.88}
+    onPress={() => {
+      triggerHaptic("light");
+      router.push("/friends");
+    }}
+  >
+            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
+              <Feather name="users" size={18} color={COLORS.accent} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Friends</Text>
+              <Text style={styles.menuSubtitle}>Add friends and compare streaks</Text>
+            </View>
+            {friendRequestCount > 0 && <View style={styles.requestCount} accessibilityLabel={`${friendRequestCount} friend requests`}>
+                <Text style={styles.requestCountText}>{friendRequestCount}</Text>
+              </View>}
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem} onPress={() => setShowGoalPicker(true)}>
+            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
+              <Feather name={GOAL_OPTIONS.find((g) => g.id === currentGoal)?.icon || "target"} size={18} color={COLORS.accent} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Goal</Text>
+              <Text style={styles.menuSubtitle}>{GOAL_OPTIONS.find((g) => g.id === currentGoal)?.title || "Not set"}</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem} onPress={() => setShowLevelPicker(true)}>
+            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
+              <Feather name="sliders" size={18} color={COLORS.accent} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Level</Text>
+              <Text style={styles.menuSubtitle}>{FAMILIARITY_LEVELS.find((l) => l.id === currentLevel)?.name || "Not set"}</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push("/settings")}>
+            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
+              <Feather name="settings" size={18} color={COLORS.accent} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuTitle}>Settings</Text>
+              <Text style={styles.menuSubtitle}>Notifications and account</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.logoutLink} onPress={handleSignOut} accessibilityRole="button">
+            <Text style={styles.logoutText}>Log out</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity onPress={() => router.push("/achievements")} hitSlop={10}>
+          <Text style={[styles.versionText, { color: COLORS.accent, marginBottom: 6 }]}>Achievements</Text>
+        </TouchableOpacity>
+        <Text style={styles.versionText}>MarketLingo v1.1.1</Text>
+        </Animated.View>
+      </ScrollView>
+
       {
-        style: styles.menuItem,
-        activeOpacity: 0.88,
-        onPress: () => {
-          triggerHaptic("light");
-          router.push("/deliverable");
-        }
-      },
-      /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: COLORS.accentSoft }] }, /* @__PURE__ */ React.createElement(Feather, { name: "file-text", size: 18, color: COLORS.accent })),
-      /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, "Interview Brief"), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, `${Math.round(dossier.completion)}% written`)),
-      /* @__PURE__ */ React.createElement(Text, { style: styles.chevron }, "\u203A")
-    ), /* @__PURE__ */ React.createElement(
-      TouchableOpacity,
+    /* Change Market Warning */
+  }
+      <Modal visible={showChangeWarning} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Feather name="alert-circle" size={28} color={COLORS.accent} style={{ alignSelf: "center", marginBottom: 12 }} />
+            <Text style={styles.modalTitle}>Change Market?</Text>
+            <Text style={styles.modalSubtitle}>
+              Changing your market will reset your path and streak. This action cannot be undone.
+            </Text>
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.modalCancel} onPress={() => setShowChangeWarning(false)}>
+                <Text style={styles.modalCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalDestructive} onPress={handleChangeMarket}>
+                <Text style={styles.modalDestructiveText}>Change Market</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       {
-        style: styles.menuItem,
-        activeOpacity: 0.88,
-        onPress: () => {
-          triggerHaptic("light");
-          router.push("/leaderboard");
-        }
-      },
-      /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: COLORS.bg1 }] }, /* @__PURE__ */ React.createElement(Feather, { name: "award", size: 18, color: COLORS.accent })),
-      /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, "League"), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, "Your rank this month")),
-      /* @__PURE__ */ React.createElement(Text, { style: styles.chevron }, "\u203A")
-    ), /* @__PURE__ */ React.createElement(
-      TouchableOpacity,
+    /* Goal Picker Modal */
+  }
+      <Modal visible={showGoalPicker} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Change Learning Goal</Text>
+            <Text style={styles.modalSubtitle}>
+              Your lessons and practice content will adapt to match your new objective.
+            </Text>
+            <View style={{ gap: 8, marginBottom: 16 }}>
+              {GOAL_OPTIONS.map((goal) => <TouchableOpacity
+    key={goal.id}
+    style={[
+      styles.pickerOption,
+      currentGoal === goal.id && { borderColor: goal.color, backgroundColor: goal.color + "08" }
+    ]}
+    onPress={() => handleChangeGoal(goal.id)}
+    disabled={savingPreference}
+  >
+                  <View style={[styles.pickerIcon, { backgroundColor: goal.color + "18" }]}>
+                    <Feather name={goal.icon} size={18} color={goal.color} />
+                  </View>
+                  <Text style={[styles.pickerText, currentGoal === goal.id && { color: goal.color, fontWeight: "700" }]}>
+                    {goal.title}
+                  </Text>
+                  {currentGoal === goal.id && <Feather name="check" size={18} color={goal.color} />}
+                </TouchableOpacity>)}
+            </View>
+            <TouchableOpacity style={styles.modalCancel} onPress={() => setShowGoalPicker(false)}>
+              <Text style={styles.modalCancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {
-        style: styles.menuItem,
-        activeOpacity: 0.88,
-        onPress: () => {
-          triggerHaptic("light");
-          router.push("/friends");
-        }
-      },
-      /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: COLORS.bg1 }] }, /* @__PURE__ */ React.createElement(Feather, { name: "users", size: 18, color: COLORS.accent })),
-      /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, "Friends"), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, "Add friends and compare streaks")),
-      /* @__PURE__ */ React.createElement(Text, { style: styles.chevron }, "\u203A")
-    ), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.menuItem, onPress: () => setShowGoalPicker(true) }, /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: COLORS.bg1 }] }, /* @__PURE__ */ React.createElement(Feather, { name: GOAL_OPTIONS.find((g) => g.id === currentGoal)?.icon || "target", size: 18, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, "Goal"), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, GOAL_OPTIONS.find((g) => g.id === currentGoal)?.title || "Not set")), /* @__PURE__ */ React.createElement(Text, { style: styles.chevron }, "\u203A")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.menuItem, onPress: () => setShowLevelPicker(true) }, /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: COLORS.bg1 }] }, /* @__PURE__ */ React.createElement(Feather, { name: "sliders", size: 18, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, "Level"), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, FAMILIARITY_LEVELS.find((l) => l.id === currentLevel)?.name || "Not set")), /* @__PURE__ */ React.createElement(Text, { style: styles.chevron }, "\u203A")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.menuItem, onPress: () => router.push("/settings") }, /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: COLORS.bg1 }] }, /* @__PURE__ */ React.createElement(Feather, { name: "settings", size: 18, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, "Settings"), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, "Notifications and account")), /* @__PURE__ */ React.createElement(Text, { style: styles.chevron }, "\u203A")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.logoutLink, onPress: handleSignOut, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { style: styles.logoutText }, "Log out"))), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.push("/achievements"), hitSlop: 10 }, /* @__PURE__ */ React.createElement(Text, { style: [styles.versionText, { color: COLORS.accent, marginBottom: 6 }] }, "Achievements")), /* @__PURE__ */ React.createElement(Text, { style: styles.versionText }, "MarketLingo v1.1.1"))
-  ), /* @__PURE__ */ React.createElement(Modal, { visible: showChangeWarning, transparent: true, animationType: "fade" }, /* @__PURE__ */ React.createElement(View, { style: styles.modalOverlay }, /* @__PURE__ */ React.createElement(View, { style: styles.modalCard }, /* @__PURE__ */ React.createElement(Feather, { name: "alert-circle", size: 28, color: COLORS.accent, style: { alignSelf: "center", marginBottom: 12 } }), /* @__PURE__ */ React.createElement(Text, { style: styles.modalTitle }, "Change Market?"), /* @__PURE__ */ React.createElement(Text, { style: styles.modalSubtitle }, "Changing your market will reset your path and streak. This action cannot be undone."), /* @__PURE__ */ React.createElement(View, { style: styles.modalActions }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.modalCancel, onPress: () => setShowChangeWarning(false) }, /* @__PURE__ */ React.createElement(Text, { style: styles.modalCancelText }, "Cancel")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.modalDestructive, onPress: handleChangeMarket }, /* @__PURE__ */ React.createElement(Text, { style: styles.modalDestructiveText }, "Change Market")))))), /* @__PURE__ */ React.createElement(Modal, { visible: showGoalPicker, transparent: true, animationType: "fade" }, /* @__PURE__ */ React.createElement(View, { style: styles.modalOverlay }, /* @__PURE__ */ React.createElement(View, { style: styles.modalCard }, /* @__PURE__ */ React.createElement(Text, { style: styles.modalTitle }, "Change Learning Goal"), /* @__PURE__ */ React.createElement(Text, { style: styles.modalSubtitle }, "Your lessons and practice content will adapt to match your new objective."), /* @__PURE__ */ React.createElement(View, { style: { gap: 8, marginBottom: 16 } }, GOAL_OPTIONS.map((goal) => /* @__PURE__ */ React.createElement(
-    TouchableOpacity,
-    {
-      key: goal.id,
-      style: [
-        styles.pickerOption,
-        currentGoal === goal.id && { borderColor: goal.color, backgroundColor: goal.color + "08" }
-      ],
-      onPress: () => handleChangeGoal(goal.id),
-      disabled: savingPreference
-    },
-    /* @__PURE__ */ React.createElement(View, { style: [styles.pickerIcon, { backgroundColor: goal.color + "18" }] }, /* @__PURE__ */ React.createElement(Feather, { name: goal.icon, size: 18, color: goal.color })),
-    /* @__PURE__ */ React.createElement(Text, { style: [styles.pickerText, currentGoal === goal.id && { color: goal.color, fontWeight: "700" }] }, goal.title),
-    currentGoal === goal.id && /* @__PURE__ */ React.createElement(Feather, { name: "check", size: 18, color: goal.color })
-  ))), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.modalCancel, onPress: () => setShowGoalPicker(false) }, /* @__PURE__ */ React.createElement(Text, { style: styles.modalCancelText }, "Cancel"))))), /* @__PURE__ */ React.createElement(Modal, { visible: showLevelPicker, transparent: true, animationType: "fade" }, /* @__PURE__ */ React.createElement(View, { style: styles.modalOverlay }, /* @__PURE__ */ React.createElement(View, { style: styles.modalCard }, /* @__PURE__ */ React.createElement(Text, { style: styles.modalTitle }, "Change Experience Level"), /* @__PURE__ */ React.createElement(Text, { style: styles.modalSubtitle }, "This adjusts the depth and complexity of your daily lessons."), /* @__PURE__ */ React.createElement(View, { style: { gap: 8, marginBottom: 16 } }, FAMILIARITY_LEVELS.map((level) => /* @__PURE__ */ React.createElement(
-    TouchableOpacity,
-    {
-      key: level.id,
-      style: [
-        styles.pickerOption,
-        currentLevel === level.id && { borderColor: "#10B981", backgroundColor: "rgba(16, 185, 129, 0.06)" }
-      ],
-      onPress: () => handleChangeLevel(level.id),
-      disabled: savingPreference
-    },
-    /* @__PURE__ */ React.createElement(View, { style: [styles.pickerIcon, { backgroundColor: "rgba(16, 185, 129, 0.15)" }] }, /* @__PURE__ */ React.createElement(
-      Feather,
-      {
-        name: level.id === "beginner" ? "sunrise" : level.id === "intermediate" ? "sun" : "zap",
-        size: 18,
-        color: "#10B981"
-      }
-    )),
-    /* @__PURE__ */ React.createElement(View, { style: { flex: 1, gap: 3 } }, /* @__PURE__ */ React.createElement(Text, { style: [styles.pickerText, { flex: 0 }, currentLevel === level.id && { color: "#10B981", fontWeight: "700" }] }, level.name), /* @__PURE__ */ React.createElement(Text, { style: { fontSize: 11, color: COLORS.textMuted, lineHeight: 15 } }, level.description)),
-    currentLevel === level.id && /* @__PURE__ */ React.createElement(Feather, { name: "check", size: 18, color: "#10B981" })
-  ))), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.modalCancel, onPress: () => setShowLevelPicker(false) }, /* @__PURE__ */ React.createElement(Text, { style: styles.modalCancelText }, "Cancel"))))));
+    /* Level Picker Modal */
+  }
+      <Modal visible={showLevelPicker} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Change Experience Level</Text>
+            <Text style={styles.modalSubtitle}>
+              This adjusts the depth and complexity of your daily lessons.
+            </Text>
+            <View style={{ gap: 8, marginBottom: 16 }}>
+              {FAMILIARITY_LEVELS.map((level) => <TouchableOpacity
+    key={level.id}
+    style={[
+      styles.pickerOption,
+      currentLevel === level.id && { borderColor: "#10B981", backgroundColor: "rgba(16, 185, 129, 0.06)" }
+    ]}
+    onPress={() => handleChangeLevel(level.id)}
+    disabled={savingPreference}
+  >
+                  <View style={[styles.pickerIcon, { backgroundColor: "rgba(16, 185, 129, 0.15)" }]}>
+                    <Feather
+    name={level.id === "beginner" ? "sunrise" : level.id === "intermediate" ? "sun" : "zap"}
+    size={18}
+    color="#10B981"
+  />
+                  </View>
+                  <View style={{ flex: 1, gap: 3 }}>
+                    <Text style={[styles.pickerText, { flex: 0 }, currentLevel === level.id && { color: "#10B981", fontWeight: "700" }]}>
+                      {level.name}
+                    </Text>
+                    <Text style={{ fontSize: 11, color: COLORS.textMuted, lineHeight: 15 }}>{level.description}</Text>
+                  </View>
+                  {currentLevel === level.id && <Feather name="check" size={18} color="#10B981" />}
+                </TouchableOpacity>)}
+            </View>
+            <TouchableOpacity style={styles.modalCancel} onPress={() => setShowLevelPicker(false)}>
+              <Text style={styles.modalCancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>;
 }
 const styles = StyleSheet.create({
+  requestCount: {
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    marginRight: 8,
+    backgroundColor: COLORS.error,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  requestCountText: { fontSize: 11, fontWeight: "800", color: "#FFF" },
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: "center", justifyContent: "center" },
   scrollContent: { paddingHorizontal: 16 },
