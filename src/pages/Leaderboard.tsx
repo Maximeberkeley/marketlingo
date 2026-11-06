@@ -102,7 +102,7 @@ export default function LeaderboardPage() {
     const userIds = xpData.map(x => x.user_id);
     
     const [{ data: profiles }, { data: progressData }] = await Promise.all([
-      supabase.from("profiles").select("id, username").in("id", userIds),
+      supabase.from("public_profiles").select("id, display_name").in("id", userIds),
       supabase.from("user_progress").select("user_id, current_streak").eq("market_id", market).in("user_id", userIds),
     ]);
 
@@ -113,7 +113,7 @@ export default function LeaderboardPage() {
       return {
         rank: index + 1,
         user_id: xp.user_id,
-        username: profileData?.username?.split("@")[0] || `User ${index + 1}`,
+        username: profileData?.display_name?.trim() || "Analyst",
         total_xp: xp.total_xp,
         current_level: xp.current_level,
         current_streak: streakData?.current_streak || 0,
