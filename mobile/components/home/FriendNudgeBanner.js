@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AppState, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../../lib/constants";
 import { supabase } from "../../lib/supabase";
+import { useFocusEffect } from "expo-router";
 import { useAuth } from "../../hooks/useAuth";
 import { log } from "../../lib/logger";
 function nudgeBannerText(names) {
@@ -14,16 +15,16 @@ function nudgeBannerText(names) {
 function FriendNudgeBanner({ top }) {
   const { user } = useAuth();
   const [text, setText] = useState(null);
-  useEffect(() => {
-    if (!user) return;
-    let cancelled = false;
-    (async () => {
+  const checking = useRef(false);
+  const check = useCallback(async () => {
+    if (!user || checking.current) return;
+    checking.current = true;
+    {
       try {
         const { data: nudges, error } = await supabase.from("friend_nudges").select("id, sender_id, created_at").eq("receiver_id", user.id).is("read_at", null).order("created_at", { ascending: false }).limit(20);
-        if (error || !nudges?.length || cancelled) return;
+        if (error || !nudges?.length) return;
         const senderIds = Array.from(new Set(nudges.map((n) => n.sender_id)));
         const { data: profiles } = await supabase.from("public_profiles").select("id, display_name").in("id", senderIds);
-        if (cancelled) return;
         const names = senderIds.map(
           (id) => profiles?.find((p) => p.id === id)?.display_name?.trim() || "A friend"
         );
@@ -31,22 +32,31 @@ function FriendNudgeBanner({ top }) {
         await supabase.from("friend_nudges").update({ read_at: (/* @__PURE__ */ new Date()).toISOString() }).in("id", nudges.map((n) => n.id));
       } catch (err) {
         log.warn("Friend nudges failed to load", err);
+      } finally {
+        checking.current = false;
       }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    }
   }, [user]);
+  useFocusEffect(useCallback(() => {
+    void check();
+  }, [check]));
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") void check();
+    });
+    return () => sub.remove();
+  }, [check]);
   if (!text) return null;
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.banner, { top }], accessibilityRole: "alert" }, /* @__PURE__ */ React.createElement(Text, { style: styles.text, numberOfLines: 2 }, text), /* @__PURE__ */ React.createElement(
-    TouchableOpacity,
-    {
-      onPress: () => setText(null),
-      hitSlop: { top: 10, bottom: 10, left: 10, right: 10 },
-      accessibilityLabel: "Dismiss"
-    },
-    /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 16, color: COLORS.textMuted })
-  ));
+  return <View style={[styles.banner, { top }]} accessibilityRole="alert">
+      <Text style={styles.text} numberOfLines={2}>{text}</Text>
+      <TouchableOpacity
+    onPress={() => setText(null)}
+    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    accessibilityLabel="Dismiss"
+  >
+        <Feather name="x" size={16} color={COLORS.textMuted} />
+      </TouchableOpacity>
+    </View>;
 }
 const styles = StyleSheet.create({
   banner: {

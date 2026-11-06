@@ -83,10 +83,28 @@ function FriendsScreen() {
   }, [loading]);
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("selected_market").eq("id", user.id).single().then(({ data }) => {
+    supabase.from("profiles").select("selected_market, display_name").eq("id", user.id).single().then(({ data }) => {
       setMarketId(data?.selected_market || "aerospace");
+      setNeedsName(!data?.display_name?.trim());
     });
   }, [user]);
+  const [needsName, setNeedsName] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
+  const [savingName, setSavingName] = useState(false);
+  const nameValid = nameDraft.trim().length >= 1;
+  const saveName = useCallback(async () => {
+    if (!user || !nameValid || savingName) return;
+    setSavingName(true);
+    const clean = nameDraft.trim().replace(/\s+/g, " ").slice(0, 40);
+    const { error } = await supabase.from("profiles").update({ display_name: clean }).eq("id", user.id);
+    setSavingName(false);
+    if (error) {
+      log.warn("Could not save display name", error.message);
+      return;
+    }
+    triggerHaptic("success");
+    setNeedsName(false);
+  }, [user, nameDraft, nameValid, savingName]);
   useEffect(() => {
     if (!marketId || !user) return;
     (async () => {
@@ -393,6 +411,32 @@ function FriendsScreen() {
   >
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }] }}>
 
+          {needsName && <View style={styles.nameCard}>
+              <Text style={styles.nameCardTitle}>Add your name so friends can find you</Text>
+              <View style={styles.nameRow}>
+                <TextInput
+    style={styles.nameInput}
+    placeholder="Your name"
+    placeholderTextColor={COLORS.textMuted}
+    value={nameDraft}
+    onChangeText={(v) => setNameDraft(v.slice(0, 40))}
+    maxLength={40}
+    autoCapitalize="words"
+    autoCorrect={false}
+    returnKeyType="done"
+    onSubmitEditing={saveName}
+  />
+                <TouchableOpacity
+    style={[styles.nameSave, (!nameValid || savingName) && { opacity: 0.5 }]}
+    onPress={saveName}
+    disabled={!nameValid || savingName}
+    accessibilityLabel="Save name"
+  >
+                  {savingName ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={styles.nameSaveText}>Save</Text>}
+                </TouchableOpacity>
+              </View>
+            </View>}
+
           {
     /* ── FRIENDS TAB ─────────────────────── */
   }
@@ -692,6 +736,35 @@ function BoardRow({
 }
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
+  nameCard: {
+    backgroundColor: COLORS.bg2,
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: COLORS.accent + "30"
+  },
+  nameCardTitle: { fontSize: 15, fontWeight: "700", color: COLORS.textPrimary, marginBottom: 10 },
+  nameRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+  nameInput: {
+    flex: 1,
+    height: 44,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    backgroundColor: COLORS.bg1,
+    color: COLORS.textPrimary,
+    fontSize: 16
+  },
+  nameSave: {
+    height: 44,
+    minWidth: 72,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    backgroundColor: COLORS.accent,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  nameSaveText: { color: "#FFF", fontWeight: "700", fontSize: 15 },
   header: {
     flexDirection: "row",
     alignItems: "center",
