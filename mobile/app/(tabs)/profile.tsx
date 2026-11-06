@@ -299,6 +299,11 @@ export default function ProfileScreen() {
               <Text style={styles.menuTitle}>Friends</Text>
               <Text style={styles.menuSubtitle}>Add friends and compare streaks</Text>
             </View>
+            {friendRequestCount > 0 && (
+              <View style={styles.requestCount} accessibilityLabel={`${friendRequestCount} friend requests`}>
+                <Text style={styles.requestCountText}>{friendRequestCount}</Text>
+              </View>
+            )}
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
 

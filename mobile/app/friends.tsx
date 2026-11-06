@@ -58,7 +58,6 @@ export default function FriendsScreen() {
   const [searchError, setSearchError] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'friends' | 'global'>('friends');
-  const [showAddInput, setShowAddInput] = useState(false);
 
   // Global leaderboard
   const [globalEntries, setGlobalEntries] = useState<LeaderboardEntry[]>([]);
@@ -779,11 +778,12 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed', marginBottom: 12,
   },
   addFriendToggleText: { fontSize: 13, fontWeight: '700', color: COLORS.accent },
-  addRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
-  addInput: {
-    flex: 1, height: 46, backgroundColor: COLORS.bg1, borderRadius: 14, paddingHorizontal: 14,
-    fontSize: 14, color: COLORS.textPrimary, borderWidth: 1, borderColor: COLORS.border,
+  addRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12, height: 46,
+    backgroundColor: COLORS.bg1, borderRadius: 14, paddingHorizontal: 14,
+    borderWidth: 1, borderColor: COLORS.border,
   },
+  addInput: { flex: 1, height: 46, fontSize: 14, color: COLORS.textPrimary },
   sendBtn: {
     width: 46, height: 46, borderRadius: 14, backgroundColor: COLORS.accent,
     alignItems: 'center', justifyContent: 'center',
