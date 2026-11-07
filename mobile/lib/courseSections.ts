@@ -59,3 +59,20 @@ export function latestAccessibleSection(sections: SectionAccess[]): number {
   });
   return latest;
 }
+/**
+ * Whether today's finished lesson still counts on the course, and which one it
+ * is. Switching industry restarts the course clock; a lesson finished earlier
+ * the same day that sits past the new clock no longer marks today as done on
+ * the course, so Home shows the day the learner can actually open.
+ */
+export function todaysCredit<T extends { day: number; stackId?: string }>(
+  lessons: T[],
+  doneToday: boolean,
+  stackId: string | null | undefined,
+  currentDay: number,
+): { done: boolean; lesson?: T } {
+  if (!doneToday) return { done: false };
+  const lesson = stackId ? lessons.find(entry => entry.stackId === stackId) : undefined;
+  if (lesson && lesson.day > Math.max(1, Math.round(currentDay) || 1)) return { done: false };
+  return { done: true, lesson };
+}

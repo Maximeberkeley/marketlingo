@@ -23,7 +23,7 @@ import { supabase } from '../../lib/supabase';
 import { goalContentTag } from '../../lib/goals';
 import { getMarketById, getMarketName } from '../../lib/markets';
 import { dayPromise, seasonThemes, syllabusDay, TOTAL_DAYS } from '../../lib/syllabus';
-import { latestAccessibleSection, resolveCourseSections, SectionAccess } from '../../lib/courseSections';
+import { latestAccessibleSection, resolveCourseSections, SectionAccess, todaysCredit } from '../../lib/courseSections';
 import { triggerHaptic } from '../../lib/haptics';
 import { playSound } from '../../lib/sounds';
 import { StreakBadge } from '../ui/StreakBadge';
@@ -474,7 +474,7 @@ export function CourseJourney({
   streak,
   totalXp,
   level,
-  lessonCompletedToday,
+  lessonCompletedToday: lessonCreditedToday,
   completedTodayStackId,
   isFocused,
   leoCallOpen = false,
@@ -493,6 +493,11 @@ export function CourseJourney({
   belowToday,
 }: CourseJourneyProps) {
   const { user } = useAuth();
+  const [lessons, setLessons] = useState<CourseLesson[]>([]);
+  // Today's lesson only counts on the course while it sits on the current clock:
+  // switching industry restarts the clock, and a lesson finished earlier that day
+  // must not keep Home pointing at a day the learner cannot open.
+  const { done: lessonCompletedToday } = todaysCredit(lessons, lessonCreditedToday, completedTodayStackId, currentDay);
   const [loading, setLoading] = useState(true);
   const [reduceMotion, setReduceMotion] = useState(false);
   const activityReveal = useRef(Array.from({ length: 4 }, () => new Animated.Value(lessonCompletedToday ? 1 : 0))).current;
@@ -547,7 +552,6 @@ export function CourseJourney({
   }, [lessonCompletedToday, isFocused, loading, revealKey, reduceMotion, activityReveal, seenReveals]);
   const listRef = useRef<FlatList<SectionAccess>>(null);
   const initialPositioned = useRef(false);
-  const [lessons, setLessons] = useState<CourseLesson[]>([]);
   const loadedMarket = useRef<string | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [loadKey, setLoadKey] = useState(0);
@@ -673,7 +677,8 @@ export function CourseJourney({
     triggerHaptic('light');
     playSound('tap').catch(() => {});
     if (kind === 'lesson') {
-      if (lesson?.stackId && lesson.day <= currentDay) onOpenLesson(lesson.stackId, lesson.day);
+      // A finished lesson can always be reopened, even after the course clock restarted.
+      if (lesson?.stackId && (lesson.day <= currentDay || lesson.completed)) onOpenLesson(lesson.stackId, lesson.day);
       else Alert.alert('Lesson unavailable', 'This lesson is not ready yet. Your progress is safe.');
     } else if (kind === 'arena') {
       router.push({ pathname: '/arena', params: { day: String(section.displayDay) } });

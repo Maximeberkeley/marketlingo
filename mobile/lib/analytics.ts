@@ -44,6 +44,7 @@ export type AnalyticsEvent =
   | 'say_it_saved'
   | 'say_it_skipped'
   | 'say_it_starter_used'
+  | 'leo_clip_failed'
   | 'dossier_opened'
   | 'dossier_line_saved'
   | 'dossier_exported'
