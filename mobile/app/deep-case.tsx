@@ -44,7 +44,7 @@ export default function DeepCaseRoute() {
     [marketId, marketName, content.trainer, content.drills, content.stats, studied.lessons],
   );
 
-  if (marketLoading || content.isLoading || rewardsLoading || studied.isLoading) {
+  if (marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color={COLORS.accent} />

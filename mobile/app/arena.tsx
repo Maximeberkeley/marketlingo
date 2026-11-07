@@ -151,7 +151,8 @@ export default function ArenaRoute() {
     [marketId, content.trainer, content.drills, content.stats, studied.lessons, runKey, seenKeys],
   );
 
-  const busy = marketLoading || content.isLoading || rewardsLoading || studied.isLoading || !historyKey || loadedHistoryKey !== historyKey;
+  // The focus topic only reorders studied lessons; wait for it so the waves are built once.
+  const busy = marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading || !historyKey || loadedHistoryKey !== historyKey;
 
   if (historyError) return <View style={styles.loading}>
     <Text style={styles.loadingText}>Your quiz history could not be saved or loaded. Please reopen the quiz.</Text>
