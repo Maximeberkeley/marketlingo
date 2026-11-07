@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, Alert, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
 import { StreakFlame } from '../ui/StreakFlame';
@@ -20,10 +20,12 @@ interface Props {
   onNudge: () => void;
   onEnd: () => void;
   onStudy: () => void;
+  /** Your display name, for your own avatar's initial. */
+  meName?: string;
 }
 
 /** One friend streak up close: both faces in the flame, today's status, milestones and the next move. */
-export function StreakSheet({ streak, busy, nudgeState, onClose, onAccept, onClaim, onNudge, onEnd, onStudy }: Props) {
+export function StreakSheet({ streak, busy, nudgeState, onClose, onAccept, onClaim, onNudge, onEnd, onStudy, meName }: Props) {
   const insets = useSafeAreaInsets();
   if (!streak) return null;
   const name = firstName(streak);
@@ -47,7 +49,7 @@ export function StreakSheet({ streak, busy, nudgeState, onClose, onAccept, onCla
         <TouchableOpacity style={styles.close} onPress={onClose} accessibilityLabel="Close"><Feather name="x" size={18} color={COLORS.textMuted} /></TouchableOpacity>
 
         <View style={styles.duo}>
-          <SocialAvatar name="You" size={58} ring={streak.me_done_today ? COLORS.streak : COLORS.border} ringWidth={3} />
+          <SocialAvatar name={meName?.trim() || 'You'} size={58} ring={streak.me_done_today ? COLORS.streak : COLORS.border} ringWidth={3} />
           <View style={[styles.flameCore, lit ? styles.flameCoreLit : styles.flameCoreIdle]}>
             <StreakFlame size={44} color={lit ? '#FFFFFF' : COLORS.streak} />
           </View>
@@ -125,7 +127,10 @@ export function StreakSheet({ streak, busy, nudgeState, onClose, onAccept, onCla
                   ? <View style={[styles.secondary, styles.secondaryOff]}><Text style={styles.secondaryTextOff}>Nudged {name} ✓</Text></View>
                   : (
                     <TouchableOpacity style={styles.secondary} onPress={onNudge} disabled={nudgeState === 'sending'} accessibilityRole="button">
-                      {nudgeState === 'sending' ? <ActivityIndicator color={COLORS.accent} /> : <Text style={styles.secondaryText}>Nudge {name}</Text>}
+                      {nudgeState === 'sending' ? <ActivityIndicator color={COLORS.accent} /> : <>
+                        <MaterialCommunityIcons name="hand-wave" size={18} color={COLORS.accent} />
+                        <Text style={styles.secondaryText}>Nudge {name}</Text>
+                      </>}
                     </TouchableOpacity>
                   )
               )}
@@ -211,7 +216,7 @@ const styles = StyleSheet.create({
   actions: { marginTop: 16, gap: 10 },
   big: { height: 54, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
   bigText: { fontSize: 16, fontWeight: '800', color: '#FFFFFF' },
-  secondary: { height: 50, borderRadius: 16, borderWidth: 2, borderColor: COLORS.accent + '55', alignItems: 'center', justifyContent: 'center' },
+  secondary: { height: 50, borderRadius: 16, borderWidth: 2, borderColor: COLORS.accent + '55', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 7 },
   secondaryText: { fontSize: 15, fontWeight: '800', color: COLORS.accent },
   secondaryOff: { borderColor: COLORS.border, backgroundColor: COLORS.bg1 },
   secondaryTextOff: { fontSize: 15, fontWeight: '700', color: COLORS.textMuted },

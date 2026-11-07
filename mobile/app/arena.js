@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../hooks/useAuth";
 import { recentQuizHistory, recordQuizQuestion } from "../lib/quizHistory";
-import { View, Text, StyleSheet, ActivityIndicator, Animated, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Animated, Image, TouchableOpacity } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { ArenaScreen } from "../lesson-kit/arena/ArenaScreen";
 import { buildArena } from "../lesson-kit/arena/buildArena";
@@ -19,6 +19,7 @@ import { COLORS, TYPE } from "../lib/constants";
 import { log } from "../lib/logger";
 import { triggerHaptic } from "../lib/haptics";
 import { playSound } from "../lib/sounds";
+import { LeoAnimated } from "../components/mascot/LeoAnimated";
 const THINKING_LEO = require("../assets/mascot/leo-thinking.png");
 const SCHOLAR_LEO = require("../assets/mascot/leo-graduation.png");
 function ArenaPrerequisite() {
@@ -77,6 +78,12 @@ function ArenaPrerequisite() {
     /* @__PURE__ */ React.createElement(Text, { style: styles.courseButtonText }, "Go to Course"),
     /* @__PURE__ */ React.createElement(Text, { style: styles.courseButtonArrow }, "\u2192")
   ));
+}
+const ARENA_SETUP_CLIPS = ["leo-arena-setup-a", "leo-arena-setup-b"];
+const LEO_ARENA_SETUP = require("../assets/mascot/leo-arena-setup.png");
+function ArenaSetup() {
+  const [take, setTake] = useState(0);
+  return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(LeoAnimated, { clip: ARENA_SETUP_CLIPS[take % 2], size: 240, fallback: LEO_ARENA_SETUP, onEnd: () => setTake((t) => t + 1) }), /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "Setting up the arena floor\u2026"));
 }
 function ArenaRoute() {
   const { user } = useAuth();
@@ -137,9 +144,7 @@ function ArenaRoute() {
   );
   const busy = marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading || !historyKey || loadedHistoryKey !== historyKey;
   if (historyError) return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "Your quiz history could not be saved or loaded. Please reopen the quiz."), /* @__PURE__ */ React.createElement(Text, { style: styles.backLink, onPress: () => router.back() }, "Go back"));
-  if (busy) {
-    return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "Setting up the arena floor\u2026"));
-  }
+  if (busy) return /* @__PURE__ */ React.createElement(ArenaSetup, null);
   if (studied.lessons.length === 0) {
     return /* @__PURE__ */ React.createElement(ArenaPrerequisite, null);
   }

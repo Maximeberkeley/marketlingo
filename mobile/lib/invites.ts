@@ -7,24 +7,8 @@ import { supabase } from './supabase';
 import { log } from './logger';
 
 export const PENDING_INVITE_KEY = '@marketlingo/pending_invite';
-export const INVITE_ORIGIN = 'https://market-verse.com';
-
-const CODE_RE = /^[A-Z0-9]{4,12}$/;
-
-export function normalizeInviteCode(raw: unknown): string | null {
-  if (typeof raw !== 'string') return null;
-  const code = raw.trim().toUpperCase();
-  return CODE_RE.test(code) ? code : null;
-}
-
-export function inviteUrl(code: string): string {
-  return `${INVITE_ORIGIN}/invite/${code}`;
-}
-
-export function inviteMessage(industry: string | null | undefined, code: string): string {
-  const what = industry?.trim() ? industry.trim() : 'industries';
-  return `I'm learning ${what} on MarketLingo, 5 minutes a day. Join me: ${inviteUrl(code)}`;
-}
+export { INVITE_ORIGIN, normalizeInviteCode, inviteUrl, inviteMessage, inviteShareContent } from './inviteLinks';
+import { normalizeInviteCode } from './inviteLinks';
 
 export async function savePendingInvite(code: string): Promise<void> {
   try {

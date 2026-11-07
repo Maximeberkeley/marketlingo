@@ -4,6 +4,16 @@ import { log } from '../lib/logger';
 import { trackEvent } from '../lib/analytics';
 import { FriendSocial, isMissingFunction, parseFriendSocial } from '../lib/friendSocial';
 
+export type SocialPushKind = 'streak_invite' | 'streak_accepted' | 'race_challenge' | 'race_accepted';
+
+/** Fire-and-forget push to the friend; never blocks the screen. The server checks the caller's role and sends each push once. */
+export function notifyFriendSocial(kind: SocialPushKind, id: string | null | undefined) {
+  if (typeof id !== 'string' || !id) return;
+  supabase.functions
+    .invoke('friend-social-notify', { body: { kind, id } })
+    .catch((err) => log.warn('[FriendSocial] Push failed:', err));
+}
+
 export interface SocialReward {
   kind: 'race' | 'streak';
   xp: number;
@@ -56,13 +66,27 @@ export function useFriendSocial(userId: string | null | undefined, focused = tru
     return { data: data as T, error: null };
   }, [refresh]);
 
-  const startStreak = (friendId: string) => act<string>(`streak:${friendId}`, 'start_friend_streak', { p_friend: friendId }, 'friend_streak_invited');
-  const respondStreak = (streakId: string, accept: boolean) =>
-    act<string>(`streak:${streakId}`, 'respond_friend_streak', { p_streak: streakId, p_accept: accept }, accept ? 'friend_streak_accepted' : undefined);
+  const startStreak = async (friendId: string) => {
+    const result = await act<string>(`streak:${friendId}`, 'start_friend_streak', { p_friend: friendId }, 'friend_streak_invited');
+    if (!result.error) notifyFriendSocial('streak_invite', result.data);
+    return result;
+  };
+  const respondStreak = async (streakId: string, accept: boolean) => {
+    const result = await act<string>(`streak:${streakId}`, 'respond_friend_streak', { p_streak: streakId, p_accept: accept }, accept ? 'friend_streak_accepted' : undefined);
+    if (!result.error && accept) notifyFriendSocial('streak_accepted', streakId);
+    return result;
+  };
   const endStreak = (streakId: string) => act<null>(`streak:${streakId}`, 'end_friend_streak', { p_streak: streakId });
-  const challengeRace = (friendId: string) => act<string>(`race:${friendId}`, 'challenge_friend_race', { p_friend: friendId }, 'friend_race_challenged');
-  const respondRace = (raceId: string, accept: boolean) =>
-    act<string>(`race:${raceId}`, 'respond_friend_race', { p_race: raceId, p_accept: accept }, accept ? 'friend_race_accepted' : undefined);
+  const challengeRace = async (friendId: string) => {
+    const result = await act<string>(`race:${friendId}`, 'challenge_friend_race', { p_friend: friendId }, 'friend_race_challenged');
+    if (!result.error) notifyFriendSocial('race_challenge', result.data);
+    return result;
+  };
+  const respondRace = async (raceId: string, accept: boolean) => {
+    const result = await act<string>(`race:${raceId}`, 'respond_friend_race', { p_race: raceId, p_accept: accept }, accept ? 'friend_race_accepted' : undefined);
+    if (!result.error && accept) notifyFriendSocial('race_accepted', raceId);
+    return result;
+  };
   const cancelRace = (raceId: string) => act<null>(`race:${raceId}`, 'cancel_friend_race', { p_race: raceId });
 
   const claimStreak = async (streakId: string, friendName: string): Promise<SocialReward | null> => {
