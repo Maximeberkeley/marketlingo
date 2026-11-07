@@ -126,6 +126,15 @@ describe('server rules', () => {
     expect(sql).toContain('PRIMARY KEY (race_id, user_id)');
     expect(read('drizzle/migrations/meta/_journal.json')).toContain('"tag": "0025_friend_streaks_and_races"');
   });
+
+  it('can run again safely: creates only what is missing and refuses clashing names or shapes', () => {
+    expect(sql).not.toMatch(/CREATE TABLE public\./);
+    expect(sql).not.toMatch(/CREATE (UNIQUE )?INDEX (?!IF NOT EXISTS)/);
+    expect(sql.match(/CREATE TABLE IF NOT EXISTS public\./g)?.length).toBe(4);
+    expect(sql).toContain("RAISE EXCEPTION 'Names this migration needs are already taken (%). Nothing was changed.', clash;");
+    expect(sql).toContain("RAISE EXCEPTION 'Friend tables already exist with a different shape (missing columns: %). Nothing was changed.', missing;");
+    expect(sql.trimEnd().endsWith("NOTIFY pgrst, 'reload schema';")).toBe(true);
+  });
 });
 
 describe('the official streak logo', () => {
