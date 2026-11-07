@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { View, Text, StyleSheet, Animated } from "react-native";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { COLORS } from "../../lib/constants";
+import { StreakFlame } from "../ui/StreakFlame";
 function ComboBar({ combo, correctCount, totalAnswered }) {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const fireOpacity = useRef(new Animated.Value(0)).current;
@@ -30,7 +31,7 @@ function ComboBar({ combo, correctCount, totalAnswered }) {
   }, [combo.isOnFire]);
   if (totalAnswered === 0) return null;
   const multiplierColor = combo.multiplier >= 3 ? "#F97316" : combo.multiplier >= 2 ? "#EAB308" : combo.multiplier > 1 ? "#22C55E" : COLORS.textMuted;
-  return /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.container, { transform: [{ translateY: slideIn }] }] }, /* @__PURE__ */ React.createElement(View, { style: styles.comboSection }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.fireWrap, { opacity: fireOpacity }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.fireEmoji }, "\u{1F525}")), /* @__PURE__ */ React.createElement(Animated.Text, { style: [
+  return /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.container, { transform: [{ translateY: slideIn }] }] }, /* @__PURE__ */ React.createElement(View, { style: styles.comboSection }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.fireWrap, { opacity: fireOpacity }] }, /* @__PURE__ */ React.createElement(StreakFlame, { size: 20 })), /* @__PURE__ */ React.createElement(Animated.Text, { style: [
     styles.comboCount,
     { transform: [{ scale: pulseAnim }], color: combo.isOnFire ? "#F97316" : COLORS.textPrimary }
   ] }, combo.streak), /* @__PURE__ */ React.createElement(Text, { style: styles.comboLabel }, "combo")), combo.multiplier > 1 && /* @__PURE__ */ React.createElement(View, { style: [styles.multiplierBadge, { backgroundColor: multiplierColor + "18", borderColor: multiplierColor + "40" }] }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "flask", size: 12, color: multiplierColor }), /* @__PURE__ */ React.createElement(Text, { style: [styles.multiplierText, { color: multiplierColor }] }, combo.multiplier, "x XP")), /* @__PURE__ */ React.createElement(View, { style: styles.scoreSection }, /* @__PURE__ */ React.createElement(Text, { style: styles.scoreText }, correctCount, "/", totalAnswered), /* @__PURE__ */ React.createElement(Feather, { name: "check-circle", size: 14, color: COLORS.success })));

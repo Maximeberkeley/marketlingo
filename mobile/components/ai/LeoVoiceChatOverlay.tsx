@@ -26,7 +26,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 import { speakWithElevenLabs, stopAllTTS } from '../../lib/tts';
-import { isLeoMutedSync, loadLeoMuted, setLeoMuted } from '../../lib/voicePrefs';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
 import { LeoAnimated } from '../mascot/LeoAnimated';
@@ -107,7 +106,10 @@ export function LeoVoiceChatOverlay({
   const [subtitlesExpanded, setSubtitlesExpanded] = useState(false);
   const [textInput, setTextInput] = useState('');
   const [showTextInput, setShowTextInput] = useState(false);
-  const [isMuted, setIsMuted] = useState(isLeoMutedSync());
+  // A call always starts with Leo speaking. Muting here lasts for this call
+  // only and never touches the mute set in the Leo chat.
+  const [isMuted, setIsMuted] = useState(false);
+  const mutedRef = useRef(false);
   const [sceneSize, setSceneSize] = useState(0);
 
   const soundRef = useRef<Audio.Sound | null>(null);
@@ -136,21 +138,15 @@ export function LeoVoiceChatOverlay({
 
       Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
 
-      // Auto-greet, unless Leo is muted — that choice is remembered.
-      let cancelled = false;
-      loadLeoMuted().then(muted => {
-        setIsMuted(muted);
-        if (cancelled) return;
-        setTimeout(() => {
-          if (cancelled) return;
-          const greeting = "Hey! 🦊 Ask me anything about your industry!";
-          setNarrationText(greeting);
-          if (!muted) speakResponse(greeting);
-        }, 600);
-      });
-      return () => {
-        cancelled = true;
-      };
+      // Every call opens with Leo's voice on and a spoken greeting.
+      mutedRef.current = false;
+      setIsMuted(false);
+      const timer = setTimeout(() => {
+        const greeting = "Hey! 🦊 Ask me anything about your industry!";
+        setNarrationText(greeting);
+        speakResponse(greeting);
+      }, 600);
+      return () => clearTimeout(timer);
     }
   }, [visible]);
 
@@ -211,10 +207,10 @@ export function LeoVoiceChatOverlay({
   }, []);
 
   const speakResponse = useCallback(async (text: string) => {
-    if (isLeoMutedSync()) return;
+    if (mutedRef.current) return;
     try {
       setIsSpeaking(true);
-      const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_home');
+      const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_home', { ignoreMute: true });
       soundRef.current = sound;
       if (sound) {
         sound.setOnPlaybackStatusUpdate((status: any) => {
@@ -336,17 +332,17 @@ export function LeoVoiceChatOverlay({
   }, [textInput, isGenerating, sendToLeo]);
 
   const handleMute = useCallback(async () => {
-    const nextMuted = !isMuted;
+    const nextMuted = !mutedRef.current;
+    mutedRef.current = nextMuted;
     setIsMuted(nextMuted);
     triggerHaptic('light');
-    // The choice is remembered until it is tapped again.
-    await setLeoMuted(nextMuted);
+    // For this call only; the next call starts with Leo speaking again.
     if (nextMuted) {
       await stopAllTTS();
       soundRef.current = null;
       setIsSpeaking(false);
     }
-  }, [isMuted]);
+  }, []);
 
   const handleClose = useCallback(() => {
     stopAllTTS().catch(() => {});

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-nati
 import { LeoAnimated } from "../../components/mascot/LeoAnimated";
 import { useLessonCompleteLeo } from "../../components/mascot/useLeoAnimations";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { StreakFlame } from "../../components/ui/StreakFlame";
 import { router } from "expo-router";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { tokens } from "../theme/tokens";
@@ -91,7 +92,7 @@ function LessonComplete({
     },
     /* @__PURE__ */ React.createElement(View, { style: styles.leoHero }, leo.clip ? /* @__PURE__ */ React.createElement(LeoAnimated, { clip: leo.clip, size: 132, fallback: "celebrating", onEnd: leo.onEnd }) : /* @__PURE__ */ React.createElement(View, { style: { width: 132, height: 132 } })),
     /* @__PURE__ */ React.createElement(Text, { style: styles.title }, praise),
-    typeof streakDays === "number" && streakDays > 0 ? /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "\u{1F525} ", streakDays, "-day streak \u2014 come back tomorrow to keep it.") : /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "You just started a streak. Come back tomorrow to keep it."),
+    typeof streakDays === "number" && streakDays > 0 ? /* @__PURE__ */ React.createElement(View, { style: styles.streakLine }, /* @__PURE__ */ React.createElement(StreakFlame, { size: 20 }), /* @__PURE__ */ React.createElement(Text, { style: [styles.subtitle, styles.streakLineText] }, streakDays, "-day streak \u2014 come back tomorrow to keep it.")) : /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "You just started a streak. Come back tomorrow to keep it."),
     /* @__PURE__ */ React.createElement(Text, { style: styles.xpBig }, "+", totalXp, " XP"),
     total > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.bonusList }, bonuses.map((b, i) => /* @__PURE__ */ React.createElement(View, { key: i, style: styles.bonusRow }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "flask", size: 14, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.bonusLabel }, b.label), /* @__PURE__ */ React.createElement(Text, { style: styles.bonusXp }, "+", b.xp)))),
     leoQuestions > 0 && /* @__PURE__ */ React.createElement(Text, { style: styles.leoLine }, "You asked Leo ", leoQuestions, " ", leoQuestions === 1 ? "thing" : "things", ". That's how it sticks."),
@@ -185,7 +186,9 @@ const styles = StyleSheet.create({
     marginBottom: tokens.space.sm
   },
   title: { maxWidth: "100%", textAlign: "center", fontSize: tokens.font.title, fontWeight: "800", color: tokens.color.text },
-  subtitle: { maxWidth: "100%", textAlign: "center", fontSize: tokens.font.body, color: tokens.color.textSecondary, textAlign: "center" },
+  subtitle: { maxWidth: "100%", textAlign: "center", fontSize: tokens.font.body, color: tokens.color.textSecondary },
+  streakLine: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, maxWidth: "100%" },
+  streakLineText: { flexShrink: 1 },
   xpBig: {
     fontSize: 40,
     fontWeight: "900",

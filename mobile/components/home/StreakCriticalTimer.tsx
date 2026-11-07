@@ -8,6 +8,7 @@ import {
   View, Text, TouchableOpacity, StyleSheet, Animated, Easing, Alert,
 } from 'react-native';
 import { COLORS } from '../../lib/constants';
+import { StreakFlame } from '../ui/StreakFlame';
 import { triggerHaptic } from '../../lib/haptics';
 import { useDisplayName } from '../../hooks/useDisplayName';
 
@@ -93,7 +94,7 @@ export function StreakCriticalTimer({
         <Text style={styles.expiredTitle}>{displayName}, start your comeback</Text>
         <Text style={styles.expiredSub}>Your {streak}-day streak has ended. Start a new one today!</Text>
         <TouchableOpacity style={styles.restartBtn} onPress={onStartLesson} activeOpacity={0.8}>
-          <Text style={styles.restartBtnText}>Start Fresh 🔥</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }}><Text style={styles.restartBtnText}>Start Fresh</Text><StreakFlame size={17} color="#FFFFFF" /></View>
         </TouchableOpacity>
       </View>
     );
@@ -103,9 +104,9 @@ export function StreakCriticalTimer({
     <Animated.View style={[styles.container, { opacity: glowAnim.interpolate({ inputRange: [0.3, 1], outputRange: [0.92, 1] }) }]}>
       {/* Timer display */}
       <View style={styles.timerRow}>
-        <Animated.Text style={[styles.fireEmoji, { transform: [{ scale: pulseAnim }] }]}>
-          {isUltraCritical ? '🔥' : '🔥'}
-        </Animated.Text>
+        <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+          <StreakFlame size={38} />
+        </Animated.View>
         <View style={styles.timerContent}>
           <Text style={[styles.timerLabel, isUltraCritical && { color: COLORS.error }]}>
             {isUltraCritical ? '⚠️ STREAK DYING' : 'STREAK EXPIRES IN'}
@@ -114,8 +115,9 @@ export function StreakCriticalTimer({
             {timeStr}
           </Text>
         </View>
-        <View style={styles.streakPill}>
-          <Text style={styles.streakPillText}>{streak}🔥</Text>
+        <View style={[styles.streakPill, { flexDirection: 'row', alignItems: 'center', gap: 3 }]}>
+          <Text style={styles.streakPillText}>{streak}</Text>
+          <StreakFlame size={15} />
         </View>
       </View>
 
@@ -132,9 +134,10 @@ export function StreakCriticalTimer({
         onPress={() => { triggerHaptic('medium'); onStartLesson(); }}
         activeOpacity={0.8}
       >
-        <Text style={styles.ctaBtnText}>
-          {isUltraCritical ? '🚨 Save My Streak!' : '🔥 Start Lesson Now'}
-        </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+          {!isUltraCritical && <StreakFlame size={18} color="#FFFFFF" />}
+          <Text style={styles.ctaBtnText}>{isUltraCritical ? '🚨 Save My Streak!' : 'Start Lesson Now'}</Text>
+        </View>
       </TouchableOpacity>
 
       {/* Pro: Leo Logs */}

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { LeoAnimated } from '../../components/mascot/LeoAnimated';
 import { useLessonCompleteLeo } from '../../components/mascot/useLeoAnimations';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { StreakFlame } from '../../components/ui/StreakFlame';
 import { router } from 'expo-router';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { tokens } from '../theme/tokens';
@@ -114,7 +115,10 @@ export function LessonComplete({
       </View>
       <Text style={styles.title}>{praise}</Text>
       {typeof streakDays === 'number' && streakDays > 0 ? (
-        <Text style={styles.subtitle}>🔥 {streakDays}-day streak — come back tomorrow to keep it.</Text>
+        <View style={styles.streakLine}>
+          <StreakFlame size={20} />
+          <Text style={[styles.subtitle, styles.streakLineText]}>{streakDays}-day streak — come back tomorrow to keep it.</Text>
+        </View>
       ) : (
         <Text style={styles.subtitle}>You just started a streak. Come back tomorrow to keep it.</Text>
       )}
@@ -244,7 +248,9 @@ const styles = StyleSheet.create({
     marginBottom: tokens.space.sm,
   },
   title: { maxWidth: '100%', textAlign: 'center', fontSize: tokens.font.title, fontWeight: '800', color: tokens.color.text },
-  subtitle: { maxWidth: '100%', textAlign: 'center', fontSize: tokens.font.body, color: tokens.color.textSecondary, textAlign: 'center' },
+  subtitle: { maxWidth: '100%', textAlign: 'center', fontSize: tokens.font.body, color: tokens.color.textSecondary },
+  streakLine: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, maxWidth: '100%' },
+  streakLineText: { flexShrink: 1 },
   xpBig: {
     fontSize: 40,
     fontWeight: '900',

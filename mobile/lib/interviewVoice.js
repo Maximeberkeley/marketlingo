@@ -17,7 +17,7 @@ async function speakAsLeo(text) {
   if (!text || text.trim().length === 0) return null;
   try {
     log.debug("[Leo coach] Speaking:", text.substring(0, 60) + "...");
-    return await speakWithElevenLabs(text, LEO_VOICE_ID, "leo_interview");
+    return await speakWithElevenLabs(text, LEO_VOICE_ID, "leo_interview", { ignoreMute: true });
   } catch (err) {
     log.warn("Leo coach TTS error:", err);
     return null;
