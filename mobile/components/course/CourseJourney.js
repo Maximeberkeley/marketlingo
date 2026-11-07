@@ -3,6 +3,7 @@ import {
   Alert,
   Animated,
   AccessibilityInfo,
+  Easing,
   FlatList,
   Image,
   Modal,
@@ -126,13 +127,29 @@ function SectionHeader({
   );
 }
 const COIN_LIP = 5;
-function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, recommended = false, reveal, muted = false }) {
+const RING_BREATH_MS = 1600;
+function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, recommended = false, ringMotion = false, reveal, muted = false }) {
+  const breath = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    breath.setValue(0);
+    if (!recommended || !ringMotion) return;
+    const ease = Easing.inOut(Easing.sin);
+    const loop = Animated.loop(Animated.sequence([
+      Animated.timing(breath, { toValue: 1, duration: RING_BREATH_MS, easing: ease, useNativeDriver: true }),
+      Animated.timing(breath, { toValue: 0, duration: RING_BREATH_MS, easing: ease, useNativeDriver: true })
+    ]));
+    loop.start();
+    return () => loop.stop();
+  }, [recommended, ringMotion, breath]);
   const fill = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedFill, COLORS.accent] }) : muted || locked ? COLORS.courseMutedFill : COLORS.accent;
   const lip = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedLip, COLORS.courseCoinLip] }) : muted || locked ? COLORS.courseMutedLip : COLORS.courseCoinLip;
   const iconName = locked ? "lock" : completed ? "check" : icon;
   const iconColor = reveal ? COLORS.courseMutedText : muted || locked ? COLORS.courseMutedText : COLORS.textOnAccent;
   const labelColor = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedText, COLORS.accent] }) : muted || locked ? COLORS.courseMutedText : COLORS.accent;
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.coinPosition, position] }, /* @__PURE__ */ React.createElement(View, { style: styles.coinSlot }, recommended && /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: styles.recommendRing }), /* @__PURE__ */ React.createElement(Pressable, { onPress, accessibilityRole: "button", accessibilityLabel: `${label}${locked ? ", locked" : completed ? ", complete" : ""}`, style: styles.coinTouch }, ({ pressed }) => /* @__PURE__ */ React.createElement(View, { style: [styles.coinBody, emphasis && styles.coinBodyEmphasis] }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.coinLip, { backgroundColor: lip }] }), /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.coinFace, { backgroundColor: fill }, pressed && styles.coinFacePressed] }, /* @__PURE__ */ React.createElement(Feather, { name: iconName, size: 29, color: iconColor }), reveal && /* @__PURE__ */ React.createElement(Animated.View, { pointerEvents: "none", style: [styles.coinIconOverlay, { opacity: reveal }] }, /* @__PURE__ */ React.createElement(Feather, { name: iconName, size: 29, color: COLORS.textOnAccent })))))), /* @__PURE__ */ React.createElement(Animated.Text, { style: [styles.coinLabel, { color: labelColor }], numberOfLines: 1 }, label));
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.coinPosition, position] }, /* @__PURE__ */ React.createElement(View, { style: styles.coinSlot }, recommended && /* @__PURE__ */ React.createElement(Animated.View, { pointerEvents: "none", style: [styles.recommendRing, {
+    opacity: breath.interpolate({ inputRange: [0, 1], outputRange: [1, 0.45] }),
+    transform: [{ scale: breath.interpolate({ inputRange: [0, 1], outputRange: [1, 1.07] }) }]
+  }] }), /* @__PURE__ */ React.createElement(Pressable, { onPress, accessibilityRole: "button", accessibilityLabel: `${label}${locked ? ", locked" : completed ? ", complete" : ""}`, style: styles.coinTouch }, ({ pressed }) => /* @__PURE__ */ React.createElement(View, { style: [styles.coinBody, emphasis && styles.coinBodyEmphasis] }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.coinLip, { backgroundColor: lip }] }), /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.coinFace, { backgroundColor: fill }, pressed && styles.coinFacePressed] }, /* @__PURE__ */ React.createElement(Feather, { name: iconName, size: 29, color: iconColor }), reveal && /* @__PURE__ */ React.createElement(Animated.View, { pointerEvents: "none", style: [styles.coinIconOverlay, { opacity: reveal }] }, /* @__PURE__ */ React.createElement(Feather, { name: iconName, size: 29, color: COLORS.textOnAccent })))))), /* @__PURE__ */ React.createElement(Animated.Text, { style: [styles.coinLabel, { color: labelColor }], numberOfLines: 1 }, label));
 }
 function SectionCluster({
   section,
@@ -217,6 +234,7 @@ function SectionCluster({
         completed: module.kind === "lesson" ? lessonDone : moduleComplete(module.kind),
         emphasis: activeSection && module.kind === "lesson" && !lessonDone,
         recommended: activeSection && module.kind === "lesson" && !lessonDone,
+        ringMotion: isFocused && !reduceMotion,
         muted: activeSection && module.kind !== "lesson" && !lessonDone && !moduleComplete(module.kind),
         reveal: activeSection && module.kind !== "lesson" && !moduleComplete(module.kind) && !(lessonDone && !lessonCompletedToday) ? activityReveal[["notes", "arena", "intel", "case"].indexOf(module.kind)] : void 0,
         onPress: () => onModule(module.kind)
@@ -822,5 +840,6 @@ export {
   ACTIVITY_CLUSTER_MAX,
   COIN_LIP,
   CourseJourney,
-  HOME_COLUMN_MAX
+  HOME_COLUMN_MAX,
+  RING_BREATH_MS
 };

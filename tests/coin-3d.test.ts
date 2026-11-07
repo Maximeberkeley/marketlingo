@@ -18,9 +18,9 @@ describe('Home coins have a slight 3D edge and the next one has a soft ring', ()
     expect(src).toContain('muted || locked ? COLORS.courseMutedLip : COLORS.courseCoinLip');
   });
 
-  it('rings the coin to tap next with a still, see-through ring instead of the old pulse', () => {
+  it('rings the coin to tap next with a see-through ring instead of the old pulse', () => {
     expect(src).toContain("recommended={activeSection && module.kind === 'lesson' && !lessonDone}");
-    expect(src).toContain('{recommended && <View pointerEvents="none" style={styles.recommendRing} />}');
+    expect(src).toContain('{recommended && <Animated.View pointerEvents="none" style={[styles.recommendRing, {');
     expect(src).not.toMatch(/lessonPulse|pulseValue/);
   });
 
