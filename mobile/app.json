@@ -67,7 +67,8 @@
       ],
       "expo-web-browser",
       "expo-font",
-      "./plugins/withIosReleaseVersion"
+      "./plugins/withIosReleaseVersion",
+      "./plugins/withFmtXcodeFix"
     ],
     "owner": "maxime020707"
   }
