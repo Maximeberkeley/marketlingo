@@ -8,11 +8,16 @@
     "userInterfaceStyle": "automatic",
     "scheme": "marketlingo",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splash-wordmark.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0B1020"
+      "backgroundColor": "#8B5CF6"
     },
     "ios": {
+      "splash": {
+        "image": "./assets/splash-purple.png",
+        "resizeMode": "cover",
+        "backgroundColor": "#8B5CF6"
+      },
       "supportsTablet": false,
       "appleTeamId": "PM32G4952G",
       "bundleIdentifier": "app.marketlingo.aerospace",
