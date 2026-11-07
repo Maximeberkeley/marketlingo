@@ -790,6 +790,139 @@ export type Database = {
           },
         ]
       }
+      friend_race_rewards: {
+        Row: {
+          created_at: string
+          outcome: string
+          race_id: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          created_at?: string
+          outcome: string
+          race_id: string
+          user_id: string
+          xp: number
+        }
+        Update: {
+          created_at?: string
+          outcome?: string
+          race_id?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friend_race_rewards_race_id_fkey"
+            columns: ["race_id"]
+            isOneToOne: false
+            referencedRelation: "friend_races"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      friend_races: {
+        Row: {
+          challenger: string
+          created_at: string
+          ends_at: string | null
+          id: string
+          opponent: string
+          starts_at: string | null
+          status: string
+        }
+        Insert: {
+          challenger: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          opponent: string
+          starts_at?: string | null
+          status?: string
+        }
+        Update: {
+          challenger?: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          opponent?: string
+          starts_at?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      friend_streak_rewards: {
+        Row: {
+          created_at: string
+          milestone: number
+          streak_id: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          created_at?: string
+          milestone: number
+          streak_id: string
+          user_id: string
+          xp: number
+        }
+        Update: {
+          created_at?: string
+          milestone?: number
+          streak_id?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friend_streak_rewards_streak_id_fkey"
+            columns: ["streak_id"]
+            isOneToOne: false
+            referencedRelation: "friend_streaks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      friend_streaks: {
+        Row: {
+          best_length: number
+          created_at: string
+          ended_at: string | null
+          id: string
+          invited_by: string
+          responded_at: string | null
+          started_on: string | null
+          status: string
+          user_a: string
+          user_b: string
+        }
+        Insert: {
+          best_length?: number
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          invited_by: string
+          responded_at?: string | null
+          started_on?: string | null
+          status?: string
+          user_a: string
+          user_b: string
+        }
+        Update: {
+          best_length?: number
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          invited_by?: string
+          responded_at?: string | null
+          started_on?: string | null
+          status?: string
+          user_a?: string
+          user_b?: string
+        }
+        Relationships: []
+      }
       friendship_notifications: {
         Row: {
           created_at: string
@@ -3002,6 +3135,34 @@ export type Database = {
       }
     }
     Functions: {
+      _are_friends: { Args: { p_a: string; p_b: string }; Returns: boolean }
+      _award_social_xp: {
+        Args: {
+          p_amount: number
+          p_description: string
+          p_source: string
+          p_source_id: string
+          p_user: string
+        }
+        Returns: undefined
+      }
+      _did_lesson: { Args: { p_day: string; p_user: string }; Returns: boolean }
+      _friend_streak_length: {
+        Args: { p_a: string; p_b: string; p_started: string }
+        Returns: number
+      }
+      _friend_streak_milestones: {
+        Args: never
+        Returns: {
+          milestone: number
+          xp: number
+        }[]
+      }
+      _local_today: { Args: { p_user: string }; Returns: string }
+      _race_xp: {
+        Args: { p_from: string; p_to: string; p_user: string }
+        Returns: number
+      }
       accept_invite: { Args: { p_code: string }; Returns: Json }
       assign_day_tags_to_market: {
         Args: { p_market_id: string }
@@ -3009,6 +3170,8 @@ export type Database = {
       }
       calculate_level: { Args: { xp: number }; Returns: number }
       calculate_startup_stage: { Args: { xp: number }; Returns: number }
+      cancel_friend_race: { Args: { p_race: string }; Returns: undefined }
+      challenge_friend_race: { Args: { p_friend: string }; Returns: string }
       claim_curriculum_rewrite_batch: {
         Args: { p_lease_seconds?: number; p_limit?: number }
         Returns: {
@@ -3035,9 +3198,12 @@ export type Database = {
         Args: { p_market_id: string; p_today: string }
         Returns: number
       }
+      claim_friend_race_reward: { Args: { p_race: string }; Returns: Json }
+      claim_friend_streak_rewards: { Args: { p_streak: string }; Returns: Json }
       current_league_season_start: { Args: never; Returns: string }
       current_week_start: { Args: never; Returns: string }
       decay_concept_mastery: { Args: never; Returns: number }
+      end_friend_streak: { Args: { p_streak: string }; Returns: undefined }
       evaluate_market_rewards: {
         Args: {
           p_accuracy?: number
@@ -3058,6 +3224,7 @@ export type Database = {
       }
       generate_friend_code: { Args: never; Returns: string }
       get_available_day: { Args: { p_start_date: string }; Returns: number }
+      get_friend_social: { Args: never; Returns: Json }
       get_friends_overview: {
         Args: never
         Returns: {
@@ -3168,6 +3335,14 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      respond_friend_race: {
+        Args: { p_accept: boolean; p_race: string }
+        Returns: string
+      }
+      respond_friend_streak: {
+        Args: { p_accept: boolean; p_streak: string }
+        Returns: string
+      }
       run_league_rollover: { Args: never; Returns: number }
       safe_tz: { Args: { p_tz: string }; Returns: string }
       search_public_profiles: {
@@ -3184,6 +3359,7 @@ export type Database = {
         Args: { p_collectible_id: string }
         Returns: undefined
       }
+      start_friend_streak: { Args: { p_friend: string }; Returns: string }
       stop_curriculum_rewrite_schedule: { Args: never; Returns: boolean }
       submit_decision_answer: {
         Args: {

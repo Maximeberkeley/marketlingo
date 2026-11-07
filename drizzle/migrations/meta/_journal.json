@@ -183,6 +183,13 @@
       "when": 1794081585170,
       "tag": "0025_friend_streaks_and_races",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1794085075868,
+      "tag": "0026_apply_friend_streaks_and_races",
+      "breakpoints": true
     }
   ]
 }
