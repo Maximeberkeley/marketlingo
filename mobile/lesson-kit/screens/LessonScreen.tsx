@@ -248,6 +248,13 @@ export function LessonScreen({
     }
   }, [queue, results]);
 
+  /** The previous card, as it was: answered questions stay answered and score once. */
+  const goBack = useCallback(() => {
+    if (index <= 0) return;
+    Haptics.selectionAsync().catch(() => {});
+    goToBeat(index - 1);
+  }, [index, goToBeat]);
+
   const goNext = useCallback(() => {
     if (index >= total - 1) {
       playSound('lessonComplete').catch(() => {});
@@ -429,8 +436,19 @@ export function LessonScreen({
       {exercise.kind === 'sayIt' ? (
         <View style={{ height: insets.bottom + tokens.space.lg }} />
       ) : (
-        <View style={[styles.footer, { paddingBottom: insets.bottom + tokens.space.lg }]}>
+        <View style={[styles.footer, { paddingBottom: insets.bottom + (index > 0 ? tokens.space.xs : tokens.space.lg) }]}>
           <PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant} />
+          {index > 0 && (
+            <TouchableOpacity
+              onPress={goBack}
+              style={styles.backLink}
+              hitSlop={{ top: 6, bottom: 6, left: 24, right: 24 }}
+              accessibilityRole="button"
+              accessibilityLabel="Back to the previous card"
+            >
+              <Text style={styles.backLinkText}>Back</Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
 
@@ -570,6 +588,9 @@ const styles = StyleSheet.create({
     gap: tokens.space.md,
     backgroundColor: tokens.color.bg,
   },
+  // Small, plain and quiet under the main button: going back is there, never in the way.
+  backLink: { alignSelf: 'center', marginTop: -tokens.space.xs, paddingVertical: 6, paddingHorizontal: 12 },
+  backLinkText: { fontSize: 13, fontWeight: '500', color: tokens.color.text, textDecorationLine: 'underline' },
   backdrop: {
     flex: 1,
     backgroundColor: tokens.color.scrim,

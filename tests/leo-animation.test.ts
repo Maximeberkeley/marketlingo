@@ -348,11 +348,26 @@ describe('Animated Leo rules', () => {
     listeners.reduceMotionChanged(true); expect(h.render('useLeoMotion', false)).toBe(false);
     h.unmount();
   });
+  it('animates when iOS reports the launching app as inactive or unknown', async () => {
+    for (const launchState of ['inactive', 'unknown', null]) {
+      const h = harness('mobile/components/mascot/useLeoMotion.ts', {
+        'react-native': {
+          AccessibilityInfo: { isReduceMotionEnabled: async () => false, addEventListener: () => ({ remove: vi.fn() }) },
+          AppState: { currentState: launchState, addEventListener: () => ({ remove: vi.fn() }) },
+        },
+      });
+      h.render('useLeoMotion', false);
+      await Promise.resolve(); await Promise.resolve();
+      expect(h.render('useLeoMotion', false)).toBe(true);
+      h.unmount();
+    }
+  });
   it('keeps the displayed clip until its replacement loads and falls back after errors', () => {
     const h = harness('mobile/components/mascot/LeoAnimated.tsx', {
       'react-native': { StyleSheet: { absoluteFill: {} }, View: 'view', Image: 'static' },
       'expo-image': { Image: 'image' }, './LeoCharacter': { LeoCharacter: 'leo' },
       './leoClips': { leoClips: {} }, './useLeoMotion': { useLeoMotion: () => true },
+      '../../lib/analytics': { trackEvent: vi.fn() }, '../../lib/logger': { log: { warn: vi.fn() } },
     }, '\nexport { ClipPlayer };');
     const props = { clip: 'leo-sleep-loop', size: 144, fallback: 'sleeping', onEnd: vi.fn() };
     const flatten = (node: any): any[] => !node || typeof node !== 'object' ? [] : Array.isArray(node) ? node.flatMap(flatten) : [node, ...flatten(node.props?.children)];
@@ -361,6 +376,9 @@ describe('Animated Leo rules', () => {
     props.clip = 'leo-peek'; h.render('ClipPlayer', props);
     expect(layers().map(layer => layer.props.clip)).toEqual(['leo-sleep-loop', 'leo-peek']);
     layers()[1].props.onLoad(); expect(layers().map(layer => layer.props.clip)).toEqual(['leo-peek']);
+    // A decode error first retries with iOS's own decoder, then falls back to the still.
+    layers()[0].props.onError(); expect(layers().map(layer => [layer.props.clip, layer.props.appleCodec])).toEqual([['leo-peek', true]]);
+    expect(props.onEnd).not.toHaveBeenCalled();
     layers()[0].props.onError(); expect(layers()).toHaveLength(0);
     expect(props.onEnd).toHaveBeenCalledTimes(1);
     h.unmount();

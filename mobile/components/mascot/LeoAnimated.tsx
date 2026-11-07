@@ -5,6 +5,7 @@ import { LeoCharacter, LeoAnim } from './LeoCharacter';
 import { leoClips, LeoClip } from './leoClips';
 import { useLeoMotion } from './useLeoMotion';
 import { log } from '../../lib/logger';
+import { trackEvent } from '../../lib/analytics';
 
 interface LeoAnimatedProps {
   clip: LeoClip;
@@ -14,8 +15,8 @@ interface LeoAnimatedProps {
   onEnd?: () => void;
 }
 
-function ClipLayer({ clip, onLoad, onEnd, onError }: {
-  clip: LeoClip; onLoad: () => void; onEnd: () => void; onError: () => void;
+function ClipLayer({ clip, appleCodec, onLoad, onEnd, onError }: {
+  clip: LeoClip; appleCodec: boolean; onLoad: () => void; onEnd: () => void; onError: () => void;
 }) {
   const image = useRef<Image>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -28,7 +29,7 @@ function ClipLayer({ clip, onLoad, onEnd, onError }: {
     void image.current?.stopAnimating().catch(() => {});
   }, []);
   return <Image ref={image} source={metadata.source} style={StyleSheet.absoluteFill}
-    contentFit="contain" autoplay transition={0} useAppleWebpCodec={false}
+    contentFit="contain" autoplay transition={0} useAppleWebpCodec={appleCodec}
     onLoad={() => {
       if (loaded.current) return;
       loaded.current = true;
@@ -50,6 +51,8 @@ function ClipPlayer({ clip, size, fallback, onEnd }: LeoAnimatedProps) {
   const [layers, setLayers] = useState([{ clip, id: 0 }]);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
+  // libwebp first (it honours the clip's frame timing); iOS's own decoder as a second try.
+  const [appleCodec, setAppleCodec] = useState(false);
   const latest = useRef(0);
   const displayed = useRef<{ clip: LeoClip; id: number } | null>(null);
   useEffect(() => {
@@ -79,7 +82,7 @@ function ClipPlayer({ clip, size, fallback, onEnd }: LeoAnimatedProps) {
   return <View pointerEvents="none" style={{ width: size, height: size, overflow: 'visible' }}>
     {(!loaded || failed) && <StaticLeo size={size} fallback={fallback} />}
     {!failed && <View style={{ position: 'absolute', width: canvas, height: canvas, left: -size / 6, top: -size / 6 }}>
-      {layers.map(layer => <ClipLayer key={layer.id} clip={layer.clip}
+      {layers.map(layer => <ClipLayer key={`${layer.id}-${appleCodec ? 'apple' : 'webp'}`} clip={layer.clip} appleCodec={appleCodec}
         onLoad={() => {
           if (layer.id !== latest.current) return;
           displayed.current = layer;
@@ -87,7 +90,14 @@ function ClipPlayer({ clip, size, fallback, onEnd }: LeoAnimatedProps) {
           setLayers([layer]);
         }}
         onEnd={() => { if (layer.id === latest.current) onEnd?.(); }}
-        onError={() => { if (layer.id === latest.current) { setFailed(true); onEnd?.(); } }} />)}
+        onError={() => {
+          if (layer.id !== latest.current) return;
+          trackEvent('leo_clip_failed', { clip: layer.clip, codec: appleCodec ? 'apple' : 'webp' });
+          log.warn('[LeoAnimated] Clip failed to decode:', layer.clip, appleCodec ? 'apple' : 'webp');
+          if (!appleCodec) { setAppleCodec(true); return; }
+          setFailed(true);
+          onEnd?.();
+        }} />)}
     </View>}
   </View>;
 }

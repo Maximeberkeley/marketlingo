@@ -208,6 +208,12 @@ function LessonScreen({
       setState({ canCheck: false, isCorrect: false });
     }
   }, [queue, results]);
+  const goBack = useCallback(() => {
+    if (index <= 0) return;
+    Haptics.selectionAsync().catch(() => {
+    });
+    goToBeat(index - 1);
+  }, [index, goToBeat]);
   const goNext = useCallback(() => {
     if (index >= total - 1) {
       playSound("lessonComplete").catch(() => {
@@ -381,7 +387,17 @@ function LessonScreen({
       whyWrong: feedback?.whyWrong,
       review
     }
-  ), exercise.kind === "sayIt" ? /* @__PURE__ */ React.createElement(View, { style: { height: insets.bottom + tokens.space.lg } }) : /* @__PURE__ */ React.createElement(View, { style: [styles.footer, { paddingBottom: insets.bottom + tokens.space.lg }] }, /* @__PURE__ */ React.createElement(PrimaryButton, { label: buttonLabel, onPress: onAction, variant: buttonVariant })), /* @__PURE__ */ React.createElement(Modal, { visible: showActions, transparent: true, animationType: "fade", onRequestClose: () => setShowActions(false) }, /* @__PURE__ */ React.createElement(View, { style: styles.menuLayer }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: StyleSheet.absoluteFillObject, activeOpacity: 1, onPress: () => setShowActions(false), accessibilityRole: "button", accessibilityLabel: "Dismiss lesson actions" }), /* @__PURE__ */ React.createElement(View, { style: [styles.actionsMenu, { marginTop: insets.top + 64 }] }, renderExtraActions?.(actionIndex, () => setShowActions(false), exercise)))), /* @__PURE__ */ React.createElement(Modal, { visible: showExitPrompt, transparent: true, animationType: "fade", onRequestClose: () => setShowExitPrompt(false) }, /* @__PURE__ */ React.createElement(View, { style: styles.backdrop }, /* @__PURE__ */ React.createElement(View, { style: styles.sheet }, /* @__PURE__ */ React.createElement(Text, { style: styles.sheetTitle }, "Leave now?"), /* @__PURE__ */ React.createElement(Text, { style: styles.sheetBody }, "You'll lose your progress in this lesson", typeof streakDays === "number" && streakDays > 0 ? ` and put your ${streakDays}-day streak at risk` : "", "."), /* @__PURE__ */ React.createElement(PrimaryButton, { label: "Keep learning", onPress: () => setShowExitPrompt(false) }), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => {
+  ), exercise.kind === "sayIt" ? /* @__PURE__ */ React.createElement(View, { style: { height: insets.bottom + tokens.space.lg } }) : /* @__PURE__ */ React.createElement(View, { style: [styles.footer, { paddingBottom: insets.bottom + (index > 0 ? tokens.space.xs : tokens.space.lg) }] }, /* @__PURE__ */ React.createElement(PrimaryButton, { label: buttonLabel, onPress: onAction, variant: buttonVariant }), index > 0 && /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      onPress: goBack,
+      style: styles.backLink,
+      hitSlop: { top: 6, bottom: 6, left: 24, right: 24 },
+      accessibilityRole: "button",
+      accessibilityLabel: "Back to the previous card"
+    },
+    /* @__PURE__ */ React.createElement(Text, { style: styles.backLinkText }, "Back")
+  )), /* @__PURE__ */ React.createElement(Modal, { visible: showActions, transparent: true, animationType: "fade", onRequestClose: () => setShowActions(false) }, /* @__PURE__ */ React.createElement(View, { style: styles.menuLayer }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: StyleSheet.absoluteFillObject, activeOpacity: 1, onPress: () => setShowActions(false), accessibilityRole: "button", accessibilityLabel: "Dismiss lesson actions" }), /* @__PURE__ */ React.createElement(View, { style: [styles.actionsMenu, { marginTop: insets.top + 64 }] }, renderExtraActions?.(actionIndex, () => setShowActions(false), exercise)))), /* @__PURE__ */ React.createElement(Modal, { visible: showExitPrompt, transparent: true, animationType: "fade", onRequestClose: () => setShowExitPrompt(false) }, /* @__PURE__ */ React.createElement(View, { style: styles.backdrop }, /* @__PURE__ */ React.createElement(View, { style: styles.sheet }, /* @__PURE__ */ React.createElement(Text, { style: styles.sheetTitle }, "Leave now?"), /* @__PURE__ */ React.createElement(Text, { style: styles.sheetBody }, "You'll lose your progress in this lesson", typeof streakDays === "number" && streakDays > 0 ? ` and put your ${streakDays}-day streak at risk` : "", "."), /* @__PURE__ */ React.createElement(PrimaryButton, { label: "Keep learning", onPress: () => setShowExitPrompt(false) }), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => {
     setShowExitPrompt(false);
     exitLesson();
   }, style: styles.ghost }, /* @__PURE__ */ React.createElement(Text, { style: styles.ghostText }, "Leave anyway"))))), /* @__PURE__ */ React.createElement(Modal, { visible: livesEnabled && showHeartsPrompt, transparent: true, animationType: "fade", onRequestClose: () => setShowHeartsPrompt(false) }, /* @__PURE__ */ React.createElement(View, { style: styles.backdrop }, /* @__PURE__ */ React.createElement(View, { style: styles.sheet }, /* @__PURE__ */ React.createElement(Text, { style: styles.sheetTitle }, "Out of hearts"), /* @__PURE__ */ React.createElement(Text, { style: styles.sheetBody }, "No problem \u2014 nothing is locked. Redo the questions you missed to lock the ideas in."), /* @__PURE__ */ React.createElement(PrimaryButton, { label: "Retry what I missed", onPress: retryMissed }), /* @__PURE__ */ React.createElement(
@@ -484,6 +500,9 @@ const styles = StyleSheet.create({
     gap: tokens.space.md,
     backgroundColor: tokens.color.bg
   },
+  // Small, plain and quiet under the main button: going back is there, never in the way.
+  backLink: { alignSelf: "center", marginTop: -tokens.space.xs, paddingVertical: 6, paddingHorizontal: 12 },
+  backLinkText: { fontSize: 13, fontWeight: "500", color: tokens.color.text, textDecorationLine: "underline" },
   backdrop: {
     flex: 1,
     backgroundColor: tokens.color.scrim,

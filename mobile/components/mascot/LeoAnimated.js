@@ -5,7 +5,8 @@ import { LeoCharacter } from "./LeoCharacter";
 import { leoClips } from "./leoClips";
 import { useLeoMotion } from "./useLeoMotion";
 import { log } from "../../lib/logger";
-function ClipLayer({ clip, onLoad, onEnd, onError }) {
+import { trackEvent } from "../../lib/analytics";
+function ClipLayer({ clip, appleCodec, onLoad, onEnd, onError }) {
   const image = useRef(null);
   const timer = useRef(null);
   const loaded = useRef(false);
@@ -26,7 +27,7 @@ function ClipLayer({ clip, onLoad, onEnd, onError }) {
       contentFit: "contain",
       autoplay: true,
       transition: 0,
-      useAppleWebpCodec: false,
+      useAppleWebpCodec: appleCodec,
       onLoad: () => {
         if (loaded.current) return;
         loaded.current = true;
@@ -49,6 +50,7 @@ function ClipPlayer({ clip, size, fallback, onEnd }) {
   const [layers, setLayers] = useState([{ clip, id: 0 }]);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [appleCodec, setAppleCodec] = useState(false);
   const latest = useRef(0);
   const displayed = useRef(null);
   useEffect(() => {
@@ -76,8 +78,9 @@ function ClipPlayer({ clip, size, fallback, onEnd }) {
   return /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: { width: size, height: size, overflow: "visible" } }, (!loaded || failed) && /* @__PURE__ */ React.createElement(StaticLeo, { size, fallback }), !failed && /* @__PURE__ */ React.createElement(View, { style: { position: "absolute", width: canvas, height: canvas, left: -size / 6, top: -size / 6 } }, layers.map((layer) => /* @__PURE__ */ React.createElement(
     ClipLayer,
     {
-      key: layer.id,
+      key: `${layer.id}-${appleCodec ? "apple" : "webp"}`,
       clip: layer.clip,
+      appleCodec,
       onLoad: () => {
         if (layer.id !== latest.current) return;
         displayed.current = layer;
@@ -88,10 +91,15 @@ function ClipPlayer({ clip, size, fallback, onEnd }) {
         if (layer.id === latest.current) onEnd?.();
       },
       onError: () => {
-        if (layer.id === latest.current) {
-          setFailed(true);
-          onEnd?.();
+        if (layer.id !== latest.current) return;
+        trackEvent("leo_clip_failed", { clip: layer.clip, codec: appleCodec ? "apple" : "webp" });
+        log.warn("[LeoAnimated] Clip failed to decode:", layer.clip, appleCodec ? "apple" : "webp");
+        if (!appleCodec) {
+          setAppleCodec(true);
+          return;
         }
+        setFailed(true);
+        onEnd?.();
       }
     }
   ))));
