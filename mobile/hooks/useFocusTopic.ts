@@ -30,8 +30,10 @@ export function useFocusTopic(marketId?: string, availableDay = 1) {
     }
     setLoading(true);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      if (!auth?.user) {
+      // Read the session on the device; getUser() would add a server round trip.
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      if (!userId) {
         setFocusKey(null);
         setLabel(null);
         return;
@@ -39,7 +41,7 @@ export function useFocusTopic(marketId?: string, availableDay = 1) {
       const { data, error } = await supabase
         .from('learner_focus')
         .select('focus_key, focus_label')
-        .eq('user_id', auth.user.id)
+        .eq('user_id', userId)
         .eq('market_id', marketId)
         .maybeSingle();
       if (error) {

@@ -1,5 +1,4 @@
-import { jsx, jsxs } from "react/jsx-runtime";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../hooks/useAuth";
 import { recentQuizHistory, recordQuizQuestion } from "../lib/quizHistory";
@@ -58,36 +57,26 @@ function ArenaPrerequisite() {
       Animated.spring(bounce, { toValue: 1, friction: 5, tension: 180, useNativeDriver: true })
     ]).start();
   };
-  return /* @__PURE__ */ jsxs(View, { style: styles.prerequisite, children: [
-    /* @__PURE__ */ jsx(
-      TouchableOpacity,
-      {
-        activeOpacity: 0.92,
-        onPress: togglePose,
-        accessibilityRole: "button",
-        accessibilityLabel: `Leo is ${isScholar ? "ready to study" : "thinking"}. Tap to change his pose.`,
-        children: /* @__PURE__ */ jsxs(Animated.View, { style: [styles.leoStage, { transform: [{ scale: bounce }] }], children: [
-          /* @__PURE__ */ jsx(Animated.View, { style: [styles.leoLayer, { opacity: fade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }], children: /* @__PURE__ */ jsx(Image, { source: THINKING_LEO, style: styles.leoImage, resizeMode: "contain" }) }),
-          /* @__PURE__ */ jsx(Animated.View, { style: [styles.leoLayer, { opacity: fade }], children: /* @__PURE__ */ jsx(Image, { source: SCHOLAR_LEO, style: styles.leoImage, resizeMode: "contain" }) })
-        ] })
-      }
-    ),
-    /* @__PURE__ */ jsx(Text, { style: styles.emptyTitle, children: "Your Arena needs a lesson" }),
-    /* @__PURE__ */ jsx(Text, { style: styles.loadingText, children: "Complete a course lesson first. Every round will then test concepts you actually studied." }),
-    /* @__PURE__ */ jsxs(
-      TouchableOpacity,
-      {
-        style: styles.courseButton,
-        activeOpacity: 0.88,
-        onPress: () => router.replace("/(tabs)/home"),
-        accessibilityRole: "button",
-        children: [
-          /* @__PURE__ */ jsx(Text, { style: styles.courseButtonText, children: "Go to Course" }),
-          /* @__PURE__ */ jsx(Text, { style: styles.courseButtonArrow, children: "\u2192" })
-        ]
-      }
-    )
-  ] });
+  return /* @__PURE__ */ React.createElement(View, { style: styles.prerequisite }, /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      activeOpacity: 0.92,
+      onPress: togglePose,
+      accessibilityRole: "button",
+      accessibilityLabel: `Leo is ${isScholar ? "ready to study" : "thinking"}. Tap to change his pose.`
+    },
+    /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.leoStage, { transform: [{ scale: bounce }] }] }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.leoLayer, { opacity: fade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }] }, /* @__PURE__ */ React.createElement(Image, { source: THINKING_LEO, style: styles.leoImage, resizeMode: "contain" })), /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.leoLayer, { opacity: fade }] }, /* @__PURE__ */ React.createElement(Image, { source: SCHOLAR_LEO, style: styles.leoImage, resizeMode: "contain" })))
+  ), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "Your Arena needs a lesson"), /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "Complete a course lesson first. Every round will then test concepts you actually studied."), /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      style: styles.courseButton,
+      activeOpacity: 0.88,
+      onPress: () => router.replace("/(tabs)/home"),
+      accessibilityRole: "button"
+    },
+    /* @__PURE__ */ React.createElement(Text, { style: styles.courseButtonText }, "Go to Course"),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.courseButtonArrow }, "\u2192")
+  ));
 }
 function ArenaRoute() {
   const { user } = useAuth();
@@ -146,25 +135,16 @@ function ArenaRoute() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [marketId, content.trainer, content.drills, content.stats, studied.lessons, runKey, seenKeys]
   );
-  const busy = marketLoading || content.isLoading || rewardsLoading || studied.isLoading || !historyKey || loadedHistoryKey !== historyKey;
-  if (historyError) return /* @__PURE__ */ jsxs(View, { style: styles.loading, children: [
-    /* @__PURE__ */ jsx(Text, { style: styles.loadingText, children: "Your quiz history could not be saved or loaded. Please reopen the quiz." }),
-    /* @__PURE__ */ jsx(Text, { style: styles.backLink, onPress: () => router.back(), children: "Go back" })
-  ] });
+  const busy = marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading || !historyKey || loadedHistoryKey !== historyKey;
+  if (historyError) return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "Your quiz history could not be saved or loaded. Please reopen the quiz."), /* @__PURE__ */ React.createElement(Text, { style: styles.backLink, onPress: () => router.back() }, "Go back"));
   if (busy) {
-    return /* @__PURE__ */ jsxs(View, { style: styles.loading, children: [
-      /* @__PURE__ */ jsx(ActivityIndicator, { size: "large", color: COLORS.accent }),
-      /* @__PURE__ */ jsx(Text, { style: styles.loadingText, children: "Setting up the arena floor\u2026" })
-    ] });
+    return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "Setting up the arena floor\u2026"));
   }
   if (studied.lessons.length === 0) {
-    return /* @__PURE__ */ jsx(ArenaPrerequisite, {});
+    return /* @__PURE__ */ React.createElement(ArenaPrerequisite, null);
   }
   if (!waves || waves.length === 0) {
-    return /* @__PURE__ */ jsxs(View, { style: styles.loading, children: [
-      /* @__PURE__ */ jsx(Text, { style: styles.loadingText, children: "You've seen all available questions this week. Study another lesson for fresh questions." }),
-      /* @__PURE__ */ jsx(Text, { style: styles.backLink, onPress: () => router.back(), children: "Go back" })
-    ] });
+    return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "You've seen all available questions this week. Study another lesson for fresh questions."), /* @__PURE__ */ React.createElement(Text, { style: styles.backLink, onPress: () => router.back() }, "Go back"));
   }
   const handleFinish = async (result) => {
     try {
@@ -177,9 +157,10 @@ function ArenaRoute() {
     }
     router.back();
   };
-  return /* @__PURE__ */ jsx(
+  return /* @__PURE__ */ React.createElement(
     ArenaScreen,
     {
+      key: runKey,
       waves,
       marketId,
       marketName: getMarketName(marketId),
@@ -187,8 +168,7 @@ function ArenaRoute() {
       onExit: () => router.back(),
       onFinish: handleFinish,
       onQuestionSeen
-    },
-    runKey
+    }
   );
 }
 const styles = StyleSheet.create({

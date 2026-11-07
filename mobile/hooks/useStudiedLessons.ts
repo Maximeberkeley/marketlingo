@@ -9,7 +9,7 @@
  * Frame of reference is always the LOCAL calendar day (lib/dayMath), never the
  * timestamp of the moment a lesson happened to be completed.
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 
 import { supabase } from '../lib/supabase';
@@ -55,7 +55,10 @@ const matchesFocus = (lesson: StudiedLesson, keywords: string[]) => {
 };
 
 export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [], preferredDay?: number) {
-  const [lessons, setLessons] = useState<StudiedLesson[]>([]);
+  // Studied lessons for the market, newest day first. Ordering by the preferred
+  // day or a focus topic happens below without another fetch, so a focus topic
+  // that loads after the lessons never sends the learner through a second load.
+  const [studied, setStudied] = useState<StudiedLesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   // The market the loaded lessons belong to. Consumers must see loading while
   // it differs from the requested market, or a market switch briefly exposes
@@ -65,103 +68,108 @@ export function useStudiedLessons(marketId?: string, focusKeywords: string[] = [
 
   const load = useCallback(async () => {
     if (!marketId) {
-      setLessons([]);
+      setStudied([]);
       setIsLoading(false);
       setLoadedMarketId(marketId);
       return;
     }
     setIsLoading(true);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      if (auth?.user) {
-        const { data: progress } = await supabase
+      // The session is read on the device; getUser() would add a server round trip.
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      if (!userId) {
+        setStudied([]);
+        return;
+      }
+      // A daily lesson can be credited even if the legacy completed_stacks
+      // update failed. Both records are evidence of a finished lesson; read them together.
+      const [{ data: progress }, { data: daily, error: dailyError }] = await Promise.all([
+        supabase
           .from('user_progress')
           .select('completed_stacks')
-          .eq('user_id', auth.user.id)
+          .eq('user_id', userId)
           .eq('market_id', marketId)
-          .maybeSingle();
-        const completedIds = Array.isArray(progress?.completed_stacks)
-          ? progress.completed_stacks.filter((id): id is string => typeof id === 'string')
-          : [];
-        // A daily lesson can be credited even if the legacy completed_stacks
-        // update failed. Both records are evidence of a finished lesson.
-        const { data: daily, error: dailyError } = await supabase
+          .maybeSingle(),
+        supabase
           .from('daily_completions')
           .select('completed_stack_id')
-          .eq('user_id', auth.user.id)
+          .eq('user_id', userId)
           .eq('market_id', marketId)
           .eq('lesson_completed', true)
           .order('completion_date', { ascending: false })
-          .limit(40);
-        if (dailyError) log.warn('[useStudiedLessons] Daily credits unavailable:', dailyError.message);
-        const creditedIds = [...new Set([
-          ...completedIds.slice(-40),
-          ...(daily ?? []).map(row => row.completed_stack_id).filter((id): id is string => typeof id === 'string'),
-        ])];
-        if (creditedIds.length === 0) {
-          setLessons([]);
-          return;
-        }
-
-        const { data, error } = await supabase
-          .from('stacks')
-          .select('id, title, tags, created_at, authored_lesson, slides (slide_number, title, body)')
-          .eq('market_id', marketId)
-          .in('id', creditedIds)
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          log.warn('[useStudiedLessons] Could not load studied lessons:', error.message);
-          setLessons([]);
-          return;
-        }
-
-        const byDay = new Map<number, StudiedLesson>();
-        for (const row of (data ?? []) as unknown as StackRow[]) {
-          const day = dayFromTags(row.tags);
-          // A completed stack is explicit study evidence, even if the course
-          // calendar was reset or the learner caught up on a different day.
-          if (day === null) continue;
-          if (byDay.has(day)) continue;
-          const slides = [...(row.slides ?? [])]
-            .sort((a, b) => a.slide_number - b.slide_number)
-            .map(s => ({ slideNumber: s.slide_number, title: s.title, body: s.body }));
-          const material = studiedMaterial(row.authored_lesson);
-          if (!slides.length && !material.questions.length) continue;
-          byDay.set(day, { stackId: row.id, title: row.title, day, slides, ...material });
-        }
-
-        const byRecency = [...byDay.values()].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
-        // Prefer the displayed day if studied. Catch-up learners may have
-        // finished a different day: use their latest actual lesson instead of
-        // falsely showing the first-lesson prerequisite.
-        if (preferredDay) {
-          const selected = byRecency.filter(lesson => lesson.day === preferredDay);
-          // Keep earlier lessons available for spaced authored-question review.
-          setLessons(selected.length ? [...selected, ...byRecency.filter(lesson => lesson.day !== preferredDay)] : byRecency);
-          return;
-        }
-        const keywords = focusSignature ? focusSignature.split('|').filter(Boolean) : [];
-        if (keywords.length) {
-          const preferred = byRecency.filter(l => matchesFocus(l, keywords));
-          const rest = byRecency.filter(l => !preferred.includes(l));
-          setLessons([...preferred, ...rest]);
-        } else {
-          setLessons(byRecency);
-        }
+          .limit(40),
+      ]);
+      const completedIds = Array.isArray(progress?.completed_stacks)
+        ? progress.completed_stacks.filter((id): id is string => typeof id === 'string')
+        : [];
+      if (dailyError) log.warn('[useStudiedLessons] Daily credits unavailable:', dailyError.message);
+      const creditedIds = [...new Set([
+        ...completedIds.slice(-40),
+        ...(daily ?? []).map(row => row.completed_stack_id).filter((id): id is string => typeof id === 'string'),
+      ])];
+      if (creditedIds.length === 0) {
+        setStudied([]);
         return;
       }
-      setLessons([]);
+
+      const { data, error } = await supabase
+        .from('stacks')
+        .select('id, title, tags, created_at, authored_lesson, slides (slide_number, title, body)')
+        .eq('market_id', marketId)
+        .in('id', creditedIds)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        log.warn('[useStudiedLessons] Could not load studied lessons:', error.message);
+        setStudied([]);
+        return;
+      }
+
+      const byDay = new Map<number, StudiedLesson>();
+      for (const row of (data ?? []) as unknown as StackRow[]) {
+        const day = dayFromTags(row.tags);
+        // A completed stack is explicit study evidence, even if the course
+        // calendar was reset or the learner caught up on a different day.
+        if (day === null) continue;
+        if (byDay.has(day)) continue;
+        const slides = [...(row.slides ?? [])]
+          .sort((a, b) => a.slide_number - b.slide_number)
+          .map(s => ({ slideNumber: s.slide_number, title: s.title, body: s.body }));
+        const material = studiedMaterial(row.authored_lesson);
+        if (!slides.length && !material.questions.length) continue;
+        byDay.set(day, { stackId: row.id, title: row.title, day, slides, ...material });
+      }
+      setStudied([...byDay.values()].sort((a, b) => (b.day ?? 0) - (a.day ?? 0)));
     } catch (err) {
       log.warn('[useStudiedLessons] Lookup failed:', err);
-      setLessons([]);
+      setStudied([]);
     } finally {
       setIsLoading(false);
       setLoadedMarketId(marketId);
     }
-  }, [marketId, focusSignature, preferredDay]);
+  }, [marketId]);
+
+  const lessons = useMemo(() => orderStudiedLessons(studied, preferredDay, focusSignature), [studied, preferredDay, focusSignature]);
 
   useFocusEffect(useCallback(() => { void load(); }, [load]));
 
   return { lessons, isLoading: isLoading || loadedMarketId !== marketId, reload: load };
+}
+
+/**
+ * Prefer the displayed day if studied; catch-up learners may have finished a
+ * different day, so fall back to their latest actual lesson rather than the
+ * first-lesson prerequisite. Earlier lessons stay for spaced authored review.
+ * Without a preferred day, lessons matching the focus topic come first.
+ */
+export function orderStudiedLessons(byRecency: StudiedLesson[], preferredDay: number | undefined, focusSignature: string): StudiedLesson[] {
+  if (preferredDay) {
+    const selected = byRecency.filter(lesson => lesson.day === preferredDay);
+    return selected.length ? [...selected, ...byRecency.filter(lesson => lesson.day !== preferredDay)] : byRecency;
+  }
+  const keywords = focusSignature ? focusSignature.split('|').filter(Boolean) : [];
+  if (!keywords.length) return byRecency;
+  const preferred = byRecency.filter(l => matchesFocus(l, keywords));
+  return [...preferred, ...byRecency.filter(l => !preferred.includes(l))];
 }

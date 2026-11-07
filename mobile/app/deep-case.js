@@ -38,7 +38,7 @@ function DeepCaseRoute() {
     }),
     [marketId, marketName, content.trainer, content.drills, content.stats, studied.lessons]
   );
-  if (marketLoading || content.isLoading || rewardsLoading || studied.isLoading) {
+  if (marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading) {
     return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "Pulling a live ", marketName, " case\u2026"));
   }
   if (studied.lessons.length === 0) {
