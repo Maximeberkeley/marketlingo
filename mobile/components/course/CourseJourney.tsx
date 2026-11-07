@@ -9,6 +9,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  Pressable,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -197,23 +198,16 @@ function SectionHeader({
   );
 }
 
-function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, pulse = false, reveal, muted = false }: {
+/** How far a coin sits above its darker underside: a slight 3D edge, pressed flat on tap. */
+export const COIN_LIP = 5;
+
+function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, recommended = false, reveal, muted = false }: {
   label: string; icon: keyof typeof Feather.glyphMap; position: object;
   locked: boolean; completed: boolean; onPress: () => void;
-  emphasis?: boolean; pulse?: boolean; reveal?: Animated.Value; muted?: boolean;
+  emphasis?: boolean; recommended?: boolean; reveal?: Animated.Value; muted?: boolean;
 }) {
-  const pulseValue = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    pulseValue.setValue(0);
-    if (!pulse) return;
-    const animation = Animated.loop(Animated.sequence([
-      Animated.timing(pulseValue, { toValue: 1, duration: 1000, useNativeDriver: true }),
-      Animated.timing(pulseValue, { toValue: 0, duration: 1000, useNativeDriver: true }),
-    ]));
-    animation.start();
-    return () => animation.stop();
-  }, [pulse, pulseValue]);
   const fill = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedFill, COLORS.accent] }) : muted || locked ? COLORS.courseMutedFill : COLORS.accent;
+  const lip = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedLip, COLORS.courseCoinLip] }) : muted || locked ? COLORS.courseMutedLip : COLORS.courseCoinLip;
   // Icons are not animatable views: crossfade two static icons instead of
   // animating the icon colour (that path crashes release builds).
   const iconName = locked ? 'lock' : completed ? 'check' : icon;
@@ -222,18 +216,20 @@ function Coin({ label, icon, position, locked, completed, onPress, emphasis = fa
   return (
     <View style={[styles.coinPosition, position]}>
       <View style={styles.coinSlot}>
-        {pulse && <Animated.View pointerEvents="none" style={[styles.lessonPulse, {
-          opacity: pulseValue.interpolate({ inputRange: [0, 1], outputRange: [0.08, 0.18] }),
-          transform: [{ scale: pulseValue.interpolate({ inputRange: [0, 1], outputRange: [1, 1.14] }) }],
-        }]} />}
-        <TouchableOpacity onPress={onPress} activeOpacity={0.82} accessibilityRole="button" accessibilityLabel={`${label}${locked ? ', locked' : completed ? ', complete' : ''}`} style={styles.coinTouch}>
-          <Animated.View style={[styles.coinFace, { backgroundColor: fill, transform: [{ scale: emphasis ? 1.12 : 1 }] }]}>
-            <Feather name={iconName} size={29} color={iconColor} />
-            {reveal && <Animated.View pointerEvents="none" style={[styles.coinIconOverlay, { opacity: reveal }]}>
-              <Feather name={iconName} size={29} color={COLORS.textOnAccent} />
-            </Animated.View>}
-          </Animated.View>
-        </TouchableOpacity>
+        {recommended && <View pointerEvents="none" style={styles.recommendRing} />}
+        <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`${label}${locked ? ', locked' : completed ? ', complete' : ''}`} style={styles.coinTouch}>
+          {({ pressed }) => (
+            <View style={[styles.coinBody, emphasis && styles.coinBodyEmphasis]}>
+              <Animated.View style={[styles.coinLip, { backgroundColor: lip }]} />
+              <Animated.View style={[styles.coinFace, { backgroundColor: fill }, pressed && styles.coinFacePressed]}>
+                <Feather name={iconName} size={29} color={iconColor} />
+                {reveal && <Animated.View pointerEvents="none" style={[styles.coinIconOverlay, { opacity: reveal }]}>
+                  <Feather name={iconName} size={29} color={COLORS.textOnAccent} />
+                </Animated.View>}
+              </Animated.View>
+            </View>
+          )}
+        </Pressable>
       </View>
       <Animated.Text style={[styles.coinLabel, { color: labelColor }]} numberOfLines={1}>{label}</Animated.Text>
     </View>
@@ -363,7 +359,7 @@ function SectionCluster({
               locked={locked}
               completed={module.kind === 'lesson' ? lessonDone : moduleComplete(module.kind)}
               emphasis={activeSection && module.kind === 'lesson' && !lessonDone}
-              pulse={isFocused && activeSection && module.kind === 'lesson' && !lessonDone && !reduceMotion}
+              recommended={activeSection && module.kind === 'lesson' && !lessonDone}
               muted={activeSection && module.kind !== 'lesson' && !lessonDone && !moduleComplete(module.kind)}
               reveal={activeSection && module.kind !== 'lesson' && !moduleComplete(module.kind) && !(lessonDone && !lessonCompletedToday) ? activityReveal[['notes', 'arena', 'intel', 'case'].indexOf(module.kind)] : undefined}
               onPress={() => onModule(module.kind)}
@@ -984,9 +980,16 @@ const styles = StyleSheet.create({
   },
   coinSlot: { width: 94, height: 94, alignItems: 'center', justifyContent: 'center' },
   coinTouch: { width: 94, height: 94, alignItems: 'center', justifyContent: 'center' },
-  lessonPulse: { position: 'absolute', width: 100, height: 100, borderRadius: 50, borderWidth: 3, borderColor: COLORS.accent },
+  // Slight 3D, Duolingo-style: a darker underside COIN_LIP below the face; pressing sets the face down on it.
+  coinBody: { width: 84, height: 84 + COIN_LIP },
+  coinBodyEmphasis: { transform: [{ scale: 1.12 }] },
+  coinLip: { position: 'absolute', top: COIN_LIP, left: 0, width: 84, height: 84, borderRadius: 42 },
   coinIconOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
-  coinFace: { width: 84, height: 84, borderRadius: 42, alignItems: 'center', justifyContent: 'center' },
+  // A thin lighter rim along the top edge reads as light catching the coin.
+  coinFace: { width: 84, height: 84, borderRadius: 42, alignItems: 'center', justifyContent: 'center', borderTopWidth: 2, borderTopColor: 'rgba(255, 255, 255, 0.22)' },
+  coinFacePressed: { transform: [{ translateY: COIN_LIP - 1 }] },
+  // A soft, still ring around the coin to tap next (the lesson until it is done).
+  recommendRing: { position: 'absolute', top: -8, width: 112, height: 112, borderRadius: 56, borderWidth: 4, borderColor: COLORS.courseCoinRing },
   coinLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border, shadowColor: COLORS.cardShadow, shadowOpacity: 0.1, elevation: 3 },
   coinFaceLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border },
   coinLabel: { ...TYPE.caption, color: COLORS.textPrimary, marginTop: 7, textAlign: 'center' },

@@ -9,6 +9,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  Pressable,
   TouchableOpacity,
   View
 } from "react-native";
@@ -124,26 +125,14 @@ function SectionHeader({
     /* @__PURE__ */ React.createElement(View, { style: styles.headerArrow }, /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 26, color: section.unlocked ? COLORS.textOnAccent : COLORS.courseMutedText }))
   );
 }
-function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, pulse = false, reveal, muted = false }) {
-  const pulseValue = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    pulseValue.setValue(0);
-    if (!pulse) return;
-    const animation = Animated.loop(Animated.sequence([
-      Animated.timing(pulseValue, { toValue: 1, duration: 1e3, useNativeDriver: true }),
-      Animated.timing(pulseValue, { toValue: 0, duration: 1e3, useNativeDriver: true })
-    ]));
-    animation.start();
-    return () => animation.stop();
-  }, [pulse, pulseValue]);
+const COIN_LIP = 5;
+function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, recommended = false, reveal, muted = false }) {
   const fill = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedFill, COLORS.accent] }) : muted || locked ? COLORS.courseMutedFill : COLORS.accent;
+  const lip = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedLip, COLORS.courseCoinLip] }) : muted || locked ? COLORS.courseMutedLip : COLORS.courseCoinLip;
   const iconName = locked ? "lock" : completed ? "check" : icon;
   const iconColor = reveal ? COLORS.courseMutedText : muted || locked ? COLORS.courseMutedText : COLORS.textOnAccent;
   const labelColor = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedText, COLORS.accent] }) : muted || locked ? COLORS.courseMutedText : COLORS.accent;
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.coinPosition, position] }, /* @__PURE__ */ React.createElement(View, { style: styles.coinSlot }, pulse && /* @__PURE__ */ React.createElement(Animated.View, { pointerEvents: "none", style: [styles.lessonPulse, {
-    opacity: pulseValue.interpolate({ inputRange: [0, 1], outputRange: [0.08, 0.18] }),
-    transform: [{ scale: pulseValue.interpolate({ inputRange: [0, 1], outputRange: [1, 1.14] }) }]
-  }] }), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress, activeOpacity: 0.82, accessibilityRole: "button", accessibilityLabel: `${label}${locked ? ", locked" : completed ? ", complete" : ""}`, style: styles.coinTouch }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.coinFace, { backgroundColor: fill, transform: [{ scale: emphasis ? 1.12 : 1 }] }] }, /* @__PURE__ */ React.createElement(Feather, { name: iconName, size: 29, color: iconColor }), reveal && /* @__PURE__ */ React.createElement(Animated.View, { pointerEvents: "none", style: [styles.coinIconOverlay, { opacity: reveal }] }, /* @__PURE__ */ React.createElement(Feather, { name: iconName, size: 29, color: COLORS.textOnAccent }))))), /* @__PURE__ */ React.createElement(Animated.Text, { style: [styles.coinLabel, { color: labelColor }], numberOfLines: 1 }, label));
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.coinPosition, position] }, /* @__PURE__ */ React.createElement(View, { style: styles.coinSlot }, recommended && /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: styles.recommendRing }), /* @__PURE__ */ React.createElement(Pressable, { onPress, accessibilityRole: "button", accessibilityLabel: `${label}${locked ? ", locked" : completed ? ", complete" : ""}`, style: styles.coinTouch }, ({ pressed }) => /* @__PURE__ */ React.createElement(View, { style: [styles.coinBody, emphasis && styles.coinBodyEmphasis] }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.coinLip, { backgroundColor: lip }] }), /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.coinFace, { backgroundColor: fill }, pressed && styles.coinFacePressed] }, /* @__PURE__ */ React.createElement(Feather, { name: iconName, size: 29, color: iconColor }), reveal && /* @__PURE__ */ React.createElement(Animated.View, { pointerEvents: "none", style: [styles.coinIconOverlay, { opacity: reveal }] }, /* @__PURE__ */ React.createElement(Feather, { name: iconName, size: 29, color: COLORS.textOnAccent })))))), /* @__PURE__ */ React.createElement(Animated.Text, { style: [styles.coinLabel, { color: labelColor }], numberOfLines: 1 }, label));
 }
 function SectionCluster({
   section,
@@ -227,7 +216,7 @@ function SectionCluster({
         locked,
         completed: module.kind === "lesson" ? lessonDone : moduleComplete(module.kind),
         emphasis: activeSection && module.kind === "lesson" && !lessonDone,
-        pulse: isFocused && activeSection && module.kind === "lesson" && !lessonDone && !reduceMotion,
+        recommended: activeSection && module.kind === "lesson" && !lessonDone,
         muted: activeSection && module.kind !== "lesson" && !lessonDone && !moduleComplete(module.kind),
         reveal: activeSection && module.kind !== "lesson" && !moduleComplete(module.kind) && !(lessonDone && !lessonCompletedToday) ? activityReveal[["notes", "arena", "intel", "case"].indexOf(module.kind)] : void 0,
         onPress: () => onModule(module.kind)
@@ -794,9 +783,16 @@ const styles = StyleSheet.create({
   },
   coinSlot: { width: 94, height: 94, alignItems: "center", justifyContent: "center" },
   coinTouch: { width: 94, height: 94, alignItems: "center", justifyContent: "center" },
-  lessonPulse: { position: "absolute", width: 100, height: 100, borderRadius: 50, borderWidth: 3, borderColor: COLORS.accent },
+  // Slight 3D, Duolingo-style: a darker underside COIN_LIP below the face; pressing sets the face down on it.
+  coinBody: { width: 84, height: 84 + COIN_LIP },
+  coinBodyEmphasis: { transform: [{ scale: 1.12 }] },
+  coinLip: { position: "absolute", top: COIN_LIP, left: 0, width: 84, height: 84, borderRadius: 42 },
   coinIconOverlay: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center" },
-  coinFace: { width: 84, height: 84, borderRadius: 42, alignItems: "center", justifyContent: "center" },
+  // A thin lighter rim along the top edge reads as light catching the coin.
+  coinFace: { width: 84, height: 84, borderRadius: 42, alignItems: "center", justifyContent: "center", borderTopWidth: 2, borderTopColor: "rgba(255, 255, 255, 0.22)" },
+  coinFacePressed: { transform: [{ translateY: COIN_LIP - 1 }] },
+  // A soft, still ring around the coin to tap next (the lesson until it is done).
+  recommendRing: { position: "absolute", top: -8, width: 112, height: 112, borderRadius: 56, borderWidth: 4, borderColor: COLORS.courseCoinRing },
   coinLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border, shadowColor: COLORS.cardShadow, shadowOpacity: 0.1, elevation: 3 },
   coinFaceLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border },
   coinLabel: { ...TYPE.caption, color: COLORS.textPrimary, marginTop: 7, textAlign: "center" },
@@ -824,6 +820,7 @@ const styles = StyleSheet.create({
 });
 export {
   ACTIVITY_CLUSTER_MAX,
+  COIN_LIP,
   CourseJourney,
   HOME_COLUMN_MAX
 };

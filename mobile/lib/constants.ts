@@ -85,6 +85,9 @@ const LIGHT_COLORS = {
   courseCoin: '#665CF6',
   courseCoinDeep: '#4338CA',
   courseCoinHighlight: 'rgba(255, 255, 255, 0.34)',
+  courseCoinLip: '#7447E4',      // darker underside of a coin: the slight 3D edge
+  courseMutedLip: '#DADDE5',
+  courseCoinRing: 'rgba(139, 92, 246, 0.2)', // soft ring around the coin to tap next
   lockedSurface: '#EEF0F5',
   courseMutedFill: '#EEF0F4',
   courseMutedText: '#6B7280',
@@ -147,6 +150,9 @@ const DARK_COLORS: typeof LIGHT_COLORS = {
   courseCoin: '#766EF8',
   courseCoinDeep: '#5148CF',
   courseCoinHighlight: 'rgba(255, 255, 255, 0.28)',
+  courseCoinLip: '#8667EE',
+  courseMutedLip: '#202429',
+  courseCoinRing: 'rgba(167, 139, 250, 0.24)',
   lockedSurface: '#2A2F36',
   courseMutedFill: '#2A2F36',
   courseMutedText: '#AAB1BC',
