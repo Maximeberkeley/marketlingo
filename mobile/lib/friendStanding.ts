@@ -1,7 +1,7 @@
 /**
  * Where the learner sits among friends this month, for the Home chip. Ranked
- * exactly like the Friends board (this industry's calendar-month XP; on a tie
- * the learner stays ahead), so the chip and the board always agree.
+ * exactly like the Friends board (XP earned this month in every industry; on a
+ * tie the learner stays ahead), so the chip and the board always agree.
  */
 export interface FriendStanding {
   rank: number;
@@ -23,4 +23,9 @@ export function friendStanding(
 
 export function friendStandingLabel(standing: FriendStanding | null): string {
   return standing ? `#${standing.rank} of ${standing.of} among friends this month` : 'Race a friend this month';
+}
+
+/** The friend race month starts at 00:00 UTC on the 1st, exactly like get_friends_overview's month_xp. */
+export function friendRaceMonthStart(now = new Date()): string {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
 }

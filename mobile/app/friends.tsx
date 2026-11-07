@@ -14,7 +14,7 @@ import { supabase } from '../lib/supabase';
 import { triggerHaptic } from '../lib/haptics';
 import { trackEvent } from '../lib/analytics';
 import { Feather } from '@expo/vector-icons';
-import { getMonthlyStandings, standingName } from '../lib/socialStandings';
+import { getMonthlyStandings, myFriendRaceXP, standingName } from '../lib/socialStandings';
 import { log } from '../lib/logger';
 
 const SOCIAL_HERO = require('../assets/illustrations/friends-rivals-hero.png');
@@ -68,7 +68,6 @@ export default function FriendsScreen() {
   const [globalLoading, setGlobalLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [myStats, setMyStats] = useState<{ xp: number; level: number; streak: number; monthXP: number }>({ xp: 0, level: 1, streak: 0, monthXP: 0 });
-  const [friendMonthXP, setFriendMonthXP] = useState<Record<string, number>>({});
   const [nudgingId, setNudgingId] = useState<string | null>(null);
   const [nudgedIds, setNudgedIds] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<string | null>(null);
@@ -110,31 +109,22 @@ export default function FriendsScreen() {
     setNeedsName(false);
   }, [user, nameDraft, nameValid, savingName]);
 
-  // All social stats come from the same privacy-safe calendar-month board.
+  // The friend race counts XP earned this month in every industry, for you and for
+  // friends alike (get_friends_overview's month_xp), because friends often study
+  // different industries. Level and streak still come from this industry's board.
   useEffect(() => {
     if (!marketId || !user) return;
     (async () => {
-      const standings = await getMonthlyStandings(marketId);
+      const [standings, raceXP] = await Promise.all([getMonthlyStandings(marketId), myFriendRaceXP(user.id)]);
       const mine = standings.find(row => row.user_id === user.id);
       setMyStats({
-        xp: mine?.monthly_xp || 0,
+        xp: raceXP,
         level: mine?.current_level || 1,
         streak: mine?.current_streak || 0,
-        monthXP: mine?.monthly_xp || 0,
+        monthXP: raceXP,
       });
     })().catch(error => log.warn('Could not load my monthly social stats', error));
   }, [marketId, user]);
-
-  // Real monthly XP for friends in the current calendar season.
-  useEffect(() => {
-    if (!marketId || !friends.length) { setFriendMonthXP({}); return; }
-    (async () => {
-      const standings = await getMonthlyStandings(marketId);
-      const friendIds = new Set(friends.map(friend => friend.id));
-      const map = Object.fromEntries(standings.filter(row => friendIds.has(row.user_id)).map(row => [row.user_id, row.monthly_xp]));
-      setFriendMonthXP(map);
-    })().catch(error => log.warn('Could not load friend monthly XP', error));
-  }, [marketId, friends]);
 
   // Fetch global leaderboard
   useEffect(() => {
@@ -194,12 +184,12 @@ export default function FriendsScreen() {
       },
       ...friends.map((f) => ({
         id: f.id, isMe: false, name: f.username, initial: f.username.charAt(0).toUpperCase(),
-        xp: friendMonthXP[f.id] || 0, monthXP: friendMonthXP[f.id] || 0, level: f.currentLevel, streak: f.currentStreak,
+        xp: f.totalXP, monthXP: f.totalXP, level: f.currentLevel, streak: f.currentStreak,
         friend: f,
       })),
     ];
     return rows.sort((a, b) => b.xp - a.xp);
-  }, [friends, friendMonthXP, myStats, initial]);
+  }, [friends, myStats, initial]);
 
   const myFriendRank = friendsBoard.findIndex((r) => r.isMe) + 1;
 
@@ -449,7 +439,7 @@ export default function FriendsScreen() {
               <View style={styles.heroCard}>
                   <Image source={SOCIAL_HERO} style={styles.heroLeo} resizeMode="cover" />
                 <View style={{ flex: 1 }}>
-                    <Text style={styles.heroKicker}>CURRENT SEASON</Text>
+                    <Text style={styles.heroKicker}>THIS MONTH · ALL INDUSTRIES</Text>
                   <Text style={styles.heroValue}>
                       {myStats.monthXP.toLocaleString()}<Text style={styles.heroUnit}> XP</Text>
                   </Text>

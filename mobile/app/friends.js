@@ -23,7 +23,7 @@ import { supabase } from "../lib/supabase";
 import { triggerHaptic } from "../lib/haptics";
 import { trackEvent } from "../lib/analytics";
 import { Feather } from "@expo/vector-icons";
-import { getMonthlyStandings, standingName } from "../lib/socialStandings";
+import { getMonthlyStandings, myFriendRaceXP, standingName } from "../lib/socialStandings";
 import { log } from "../lib/logger";
 const SOCIAL_HERO = require("../assets/illustrations/friends-rivals-hero.png");
 const LEO_SASSY = require("../assets/mascot/leo-sassy.png");
@@ -70,7 +70,6 @@ function FriendsScreen() {
   const [globalLoading, setGlobalLoading] = useState(false);
   const [globalError, setGlobalError] = useState(null);
   const [myStats, setMyStats] = useState({ xp: 0, level: 1, streak: 0, monthXP: 0 });
-  const [friendMonthXP, setFriendMonthXP] = useState({});
   const [nudgingId, setNudgingId] = useState(null);
   const [nudgedIds, setNudgedIds] = useState(/* @__PURE__ */ new Set());
   const [toast, setToast] = useState(null);
@@ -108,28 +107,16 @@ function FriendsScreen() {
   useEffect(() => {
     if (!marketId || !user) return;
     (async () => {
-      const standings = await getMonthlyStandings(marketId);
+      const [standings, raceXP] = await Promise.all([getMonthlyStandings(marketId), myFriendRaceXP(user.id)]);
       const mine = standings.find((row) => row.user_id === user.id);
       setMyStats({
-        xp: mine?.monthly_xp || 0,
+        xp: raceXP,
         level: mine?.current_level || 1,
         streak: mine?.current_streak || 0,
-        monthXP: mine?.monthly_xp || 0
+        monthXP: raceXP
       });
     })().catch((error) => log.warn("Could not load my monthly social stats", error));
   }, [marketId, user]);
-  useEffect(() => {
-    if (!marketId || !friends.length) {
-      setFriendMonthXP({});
-      return;
-    }
-    (async () => {
-      const standings = await getMonthlyStandings(marketId);
-      const friendIds2 = new Set(friends.map((friend) => friend.id));
-      const map = Object.fromEntries(standings.filter((row) => friendIds2.has(row.user_id)).map((row) => [row.user_id, row.monthly_xp]));
-      setFriendMonthXP(map);
-    })().catch((error) => log.warn("Could not load friend monthly XP", error));
-  }, [marketId, friends]);
   useEffect(() => {
     if (!marketId || !user) return;
     if (activeTab !== "global") return;
@@ -189,15 +176,15 @@ function FriendsScreen() {
         isMe: false,
         name: f.username,
         initial: f.username.charAt(0).toUpperCase(),
-        xp: friendMonthXP[f.id] || 0,
-        monthXP: friendMonthXP[f.id] || 0,
+        xp: f.totalXP,
+        monthXP: f.totalXP,
         level: f.currentLevel,
         streak: f.currentStreak,
         friend: f
       }))
     ];
     return rows.sort((a, b) => b.xp - a.xp);
-  }, [friends, friendMonthXP, myStats, initial]);
+  }, [friends, myStats, initial]);
   const myFriendRank = friendsBoard.findIndex((r) => r.isMe) + 1;
   const showToast = useCallback((text) => {
     if (toastTimer.current) clearTimeout(toastTimer.current);
@@ -354,343 +341,139 @@ function FriendsScreen() {
     if (!friend.lastActivityAt) return false;
     return (Date.now() - new Date(friend.lastActivityAt).getTime()) / (1e3 * 60 * 60) < 24;
   };
-  return <View style={[styles.container, { paddingTop: insets.top }]}>
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.container, { paddingTop: insets.top }] }, /* @__PURE__ */ React.createElement(View, { style: styles.header }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.backBtn, onPress: () => router.back() }, /* @__PURE__ */ React.createElement(Feather, { name: "arrow-left", size: 18, color: COLORS.textPrimary })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.headerTitle }, "Standings"), !!marketName && /* @__PURE__ */ React.createElement(Text, { style: styles.headerSub }, marketName)), pendingRequests.length > 0 && /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      style: styles.requestsBadge,
+      accessibilityLabel: `${pendingRequests.length} friend requests`,
+      onPress: () => {
+        triggerHaptic("light");
+        setActiveTab("friends");
+      }
+    },
+    /* @__PURE__ */ React.createElement(Feather, { name: "bell", size: 16, color: COLORS.accent }),
+    /* @__PURE__ */ React.createElement(View, { style: styles.badgeDot }, /* @__PURE__ */ React.createElement(Text, { style: styles.badgeDotText }, pendingRequests.length))
+  ), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.shareBtn, onPress: handleShareInvite }, /* @__PURE__ */ React.createElement(Feather, { name: "share-2", size: 16, color: COLORS.accent }))), /* @__PURE__ */ React.createElement(View, { style: styles.tabRow }, ["friends", "global"].map((tab) => /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      key: tab,
+      style: [styles.tab, activeTab === tab && styles.tabActive],
+      onPress: () => {
+        triggerHaptic("light");
+        setActiveTab(tab);
+      }
+    },
+    /* @__PURE__ */ React.createElement(
+      Feather,
       {
-    /* Header */
-  }
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <Feather name="arrow-left" size={18} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle}>Standings</Text>
-          {!!marketName && <Text style={styles.headerSub}>{marketName}</Text>}
-        </View>
-        {pendingRequests.length > 0 && <TouchableOpacity
-    style={styles.requestsBadge}
-    accessibilityLabel={`${pendingRequests.length} friend requests`}
-    onPress={() => {
-      triggerHaptic("light");
-      setActiveTab("friends");
-    }}
-  >
-            <Feather name="bell" size={16} color={COLORS.accent} />
-            <View style={styles.badgeDot}><Text style={styles.badgeDotText}>{pendingRequests.length}</Text></View>
-          </TouchableOpacity>}
-        <TouchableOpacity style={styles.shareBtn} onPress={handleShareInvite}>
-          <Feather name="share-2" size={16} color={COLORS.accent} />
-        </TouchableOpacity>
-      </View>
-
+        name: tab === "friends" ? "users" : "globe",
+        size: 14,
+        color: activeTab === tab ? "#FFF" : COLORS.textMuted
+      }
+    ),
+    /* @__PURE__ */ React.createElement(Text, { style: [styles.tabText, activeTab === tab && styles.tabTextActive] }, tab === "friends" ? `Friends (${friends.length})` : "Global")
+  ))), /* @__PURE__ */ React.createElement(
+    ScrollView,
+    {
+      contentContainerStyle: [styles.scrollContent, { paddingBottom: insets.bottom + 40 }],
+      showsVerticalScrollIndicator: false
+    },
+    /* @__PURE__ */ React.createElement(Animated.View, { style: { opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }] } }, needsName && /* @__PURE__ */ React.createElement(View, { style: styles.nameCard }, /* @__PURE__ */ React.createElement(Text, { style: styles.nameCardTitle }, "Add your name so friends can find you"), /* @__PURE__ */ React.createElement(View, { style: styles.nameRow }, /* @__PURE__ */ React.createElement(
+      TextInput,
       {
-    /* Tab Switcher */
-  }
-      <View style={styles.tabRow}>
-        {["friends", "global"].map((tab) => <TouchableOpacity
-    key={tab}
-    style={[styles.tab, activeTab === tab && styles.tabActive]}
-    onPress={() => {
-      triggerHaptic("light");
-      setActiveTab(tab);
-    }}
-  >
-            <Feather
-    name={tab === "friends" ? "users" : "globe"}
-    size={14}
-    color={activeTab === tab ? "#FFF" : COLORS.textMuted}
-  />
-            <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
-              {tab === "friends" ? `Friends (${friends.length})` : "Global"}
-            </Text>
-          </TouchableOpacity>)}
-      </View>
-
-      <ScrollView
-    contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
-    showsVerticalScrollIndicator={false}
-  >
-        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }] }}>
-
-          {needsName && <View style={styles.nameCard}>
-              <Text style={styles.nameCardTitle}>Add your name so friends can find you</Text>
-              <View style={styles.nameRow}>
-                <TextInput
-    style={styles.nameInput}
-    placeholder="Your name"
-    placeholderTextColor={COLORS.textMuted}
-    value={nameDraft}
-    onChangeText={(v) => setNameDraft(v.slice(0, 40))}
-    maxLength={40}
-    autoCapitalize="words"
-    autoCorrect={false}
-    returnKeyType="done"
-    onSubmitEditing={saveName}
-  />
-                <TouchableOpacity
-    style={[styles.nameSave, (!nameValid || savingName) && { opacity: 0.5 }]}
-    onPress={saveName}
-    disabled={!nameValid || savingName}
-    accessibilityLabel="Save name"
-  >
-                  {savingName ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={styles.nameSaveText}>Save</Text>}
-                </TouchableOpacity>
-              </View>
-            </View>}
-
-          {
-    /* ── FRIENDS TAB ─────────────────────── */
-  }
-          {activeTab === "friends" && <>
-              {
-    /* Current monthly season card */
-  }
-              <View style={styles.heroCard}>
-                  <Image source={SOCIAL_HERO} style={styles.heroLeo} resizeMode="cover" />
-                <View style={{ flex: 1 }}>
-                    <Text style={styles.heroKicker}>CURRENT SEASON</Text>
-                  <Text style={styles.heroValue}>
-                      {myStats.monthXP.toLocaleString()}<Text style={styles.heroUnit}> XP</Text>
-                  </Text>
-                  <Text style={styles.heroLine}>
-                    {friends.length === 0 ? "Add a friend and this becomes a race." : <>You sit <Text style={styles.heroAccent}>#{myFriendRank}</Text> of {friendsBoard.length}.</>}
-                  </Text>
-                </View>
-              </View>
-
-              {
-    /* Incoming requests — inline, no pop-ups */
-  }
-              {pendingRequests.length > 0 && <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Friend requests ({pendingRequests.length})</Text>
-                  {pendingRequests.map((r) => <View key={r.id} style={styles.personRow}>
-                      <View style={styles.avatar}><Text style={styles.avatarText}>{r.fromUsername.charAt(0).toUpperCase()}</Text></View>
-                      <View style={styles.rowInfo}>
-                        <Text style={styles.rowName} numberOfLines={1}>{r.fromUsername}</Text>
-                        {!!r.fromMarket && <Text style={styles.rowMeta} numberOfLines={1}>{getMarketName(r.fromMarket)}</Text>}
-                      </View>
-                      {busyId === r.id ? <ActivityIndicator size="small" color={COLORS.accent} /> : <>
-                          <TouchableOpacity style={[styles.pill, styles.pillGhost]} onPress={() => handleDecline(r.id)} accessibilityLabel={`Decline ${r.fromUsername}`}>
-                            <Text style={styles.pillGhostText}>Decline</Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity style={styles.pill} onPress={() => handleAccept(r.id)} accessibilityLabel={`Accept ${r.fromUsername}`}>
-                            <Text style={styles.pillText}>Accept</Text>
-                          </TouchableOpacity>
-                        </>}
-                    </View>)}
-                </View>}
-
-              {
-    /* My outgoing requests */
-  }
-              {sentRequests.length > 0 && <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Sent</Text>
-                  {sentRequests.map((r) => <View key={r.id} style={styles.personRow}>
-                      <View style={styles.avatar}><Text style={styles.avatarText}>{r.toUsername.charAt(0).toUpperCase()}</Text></View>
-                      <View style={styles.rowInfo}>
-                        <Text style={styles.rowName} numberOfLines={1}>{r.toUsername}</Text>
-                        <Text style={styles.rowMeta} numberOfLines={1}>{r.toMarket ? `${getMarketName(r.toMarket)} \xB7 ` : ""}Waiting</Text>
-                      </View>
-                      {busyId === r.id ? <ActivityIndicator size="small" color={COLORS.accent} /> : <TouchableOpacity style={[styles.pill, styles.pillGhost]} onPress={() => handleCancelSent(r.id)} accessibilityLabel={`Cancel request to ${r.toUsername}`}>
-                          <Text style={styles.pillGhostText}>Cancel</Text>
-                        </TouchableOpacity>}
-                    </View>)}
-                </View>}
-
-              {
-    /* Your friend code */
-  }
-              {!!myFriendCode && <View style={styles.codeCard}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.codeKicker}>YOUR FRIEND CODE</Text>
-                    <Text style={styles.codeValue} selectable>{myFriendCode}</Text>
-                    <Text style={styles.rowMeta}>Hold the code to copy it.</Text>
-                  </View>
-                  <TouchableOpacity style={styles.pill} onPress={handleShareCode} accessibilityLabel="Share your friend code">
-                    <Feather name="share" size={13} color={COLORS.accent} />
-                    <Text style={styles.pillText}>Share</Text>
-                  </TouchableOpacity>
-                </View>}
-
-              {
-    /* Live search */
-  }
-              <View style={styles.addRow}>
-                <Feather name="search" size={16} color={COLORS.textMuted} />
-                <TextInput
-    style={styles.addInput}
-    placeholder="Add friends by name or code"
-    placeholderTextColor={COLORS.textMuted}
-    value={query}
-    onChangeText={setQuery}
-    autoCapitalize="none"
-    autoCorrect={false}
-    returnKeyType="search"
-    clearButtonMode="while-editing"
-  />
-                {searching && <ActivityIndicator size="small" color={COLORS.accent} />}
-              </View>
-
-              {
-    /* Fallback for people who installed without the link */
-  }
-              <View style={styles.addRow}>
-                <Feather name="gift" size={16} color={COLORS.textMuted} />
-                <TextInput
-    style={styles.addInput}
-    placeholder="Got an invite code?"
-    placeholderTextColor={COLORS.textMuted}
-    value={inviteCodeInput}
-    onChangeText={(t) => setInviteCodeInput(t.toUpperCase())}
-    autoCapitalize="characters"
-    autoCorrect={false}
-    maxLength={12}
-    returnKeyType="done"
-    onSubmitEditing={handleRedeemCode}
-  />
-                {redeeming ? <ActivityIndicator size="small" color={COLORS.accent} /> : inviteCodeInput.trim().length >= 4 ? <TouchableOpacity style={styles.pill} onPress={handleRedeemCode} accessibilityLabel="Use invite code">
-                    <Text style={styles.pillText}>Join</Text>
-                  </TouchableOpacity> : null}
-              </View>
-
-              {query.trim().length >= 2 && !searching && <View style={styles.section}>
-                  {searchError ? <Text style={styles.emptySub}>Search is unavailable right now. Please try again.</Text> : results.length === 0 ? <View style={styles.noResults}>
-                      <Text style={styles.emptySub}>No one found. Send them your invite link</Text>
-                      <TouchableOpacity style={styles.pill} onPress={handleShareInvite}>
-                        <Feather name="share-2" size={13} color={COLORS.accent} />
-                        <Text style={styles.pillText}>Share</Text>
-                      </TouchableOpacity>
-                    </View> : results.map((p) => {
-    const isFriend = friendIds.has(p.id);
-    const sent = sentRequests.some((r) => r.toUserId === p.id);
-    const incoming = pendingRequests.some((r) => r.fromUserId === p.id);
-    return <View key={p.id} style={styles.personRow}>
-                        <View style={styles.avatar}><Text style={styles.avatarText}>{p.displayName.charAt(0).toUpperCase()}</Text></View>
-                        <View style={styles.rowInfo}>
-                          <Text style={styles.rowName} numberOfLines={1}>{p.displayName}</Text>
-                          <Text style={styles.rowMeta} numberOfLines={1}>
-                            {[p.friendCode, p.selectedMarket ? getMarketName(p.selectedMarket) : null].filter(Boolean).join(" \xB7 ")}
-                          </Text>
-                        </View>
-                        {isFriend ? <Text style={styles.nudgeDone}>Friends ✓</Text> : busyId === p.id ? <ActivityIndicator size="small" color={COLORS.accent} /> : <TouchableOpacity
-      style={[styles.pill, sent && styles.pillGhost]}
-      onPress={() => handleAdd(p)}
-      accessibilityLabel={sent ? `Cancel request to ${p.displayName}` : `Add ${p.displayName}`}
-    >
-                            <Text style={sent ? styles.pillGhostText : styles.pillText}>{sent ? "Requested" : incoming ? "Accept" : "Add"}</Text>
-                          </TouchableOpacity>}
-                      </View>;
-  })}
-                </View>}
-
-              {loading ? <ActivityIndicator color={COLORS.accent} size="large" style={{ marginTop: 60 }} /> : friendsError ? <View style={styles.emptyState}>
-                  <Feather name="wifi-off" size={32} color={COLORS.textMuted} />
-                  <Text style={styles.emptyTitle}>Friends unavailable</Text>
-                  <Text style={styles.emptySub}>{friendsError}</Text>
-                  <TouchableOpacity style={styles.inviteBtn} onPress={refetch}>
-                    <Feather name="refresh-cw" size={14} color="#FFF" />
-                    <Text style={styles.inviteBtnText}>Try again</Text>
-                  </TouchableOpacity>
-                </View> : friends.length === 0 ? <View style={styles.emptyState}>
-                  <Image source={LEO_SASSY} style={styles.emptyLeo} resizeMode="contain" />
-                  <Text style={styles.emptyTitle}>Racing alone is easy.</Text>
-                  <Text style={styles.emptySub}>Invite one friend and make this month a race.</Text>
-                  <TouchableOpacity style={styles.inviteBtn} onPress={handleShareInvite}>
-                    <Feather name="share-2" size={14} color="#FFF" />
-                    <Text style={styles.inviteBtnText}>Invite friends</Text>
-                  </TouchableOpacity>
-                </View> : <View style={styles.list}>
-                  {friendsBoard.map((row, idx) => <BoardRow
-    key={row.id}
-    rank={idx + 1}
-    name={row.name}
-    initial={row.initial}
-    xp={row.xp}
-    meta={`Lv.${row.level}${row.streak > 0 ? ` \xB7 ${row.streak}d streak` : ""}${row.monthXP > 0 ? ` \xB7 ${row.monthXP} this month` : ""}`}
-    isMe={row.isMe}
-    online={row.friend ? isActive(row.friend) : false}
-    onNudge={row.friend ? () => handleNudge(row.friend) : void 0}
-    nudgeState={!row.friend ? void 0 : row.friend.lessonDoneToday ? "done" : row.friend.nudgedToday || nudgedIds.has(row.friend.id) ? "nudged" : nudgingId === row.friend.id ? "sending" : "idle"}
-    onMore={row.friend ? () => handleRemove(row.friend) : void 0}
-  />)}
-                </View>}
-            </>}
-
-          {
-    /* ── GLOBAL TAB ──────────────────────── */
-  }
-          {activeTab === "global" && <>
-              {
-    /* Rank hero with real numbers */
-  }
-              {!globalLoading && globalEntries.length > 0 && <View style={styles.heroCard}>
-                  <Image source={SOCIAL_HERO} style={styles.heroLeo} resizeMode="cover" />
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.heroKicker}>{marketName.toUpperCase()}</Text>
-                    <Text style={styles.heroValue}>
-                      {currentUserRank ? <>#{currentUserRank}<Text style={styles.heroUnit}> of {globalEntries.length}</Text></> : "Unranked"}
-                    </Text>
-                    <Text style={styles.heroLine}>
-                      {currentUserRank === 1 ? <>Top of the market. <Text style={styles.heroAccent}>Hold it.</Text></> : currentUserRank ? <>Next spot costs <Text style={styles.heroAccent}>
-                              {Math.max(1, (globalEntries[currentUserRank - 2]?.total_xp || 0) - (globalEntries[currentUserRank - 1]?.total_xp || 0) + 1)} XP
-                            </Text>.</> : "One lesson puts you on the board."}
-                    </Text>
-                  </View>
-                </View>}
-
-              {
-    /* Podium */
-  }
-              {!globalLoading && globalEntries.length >= 3 && <View style={styles.podium}>
-                  {[1, 0, 2].map((i) => {
-    const e = globalEntries[i];
-    const m = MEDALS[i];
-    const h = i === 0 ? 76 : i === 1 ? 60 : 50;
-    return <View key={e.user_id} style={styles.podiumCol}>
-                        <View style={[styles.podiumAvatar, { borderColor: m.ring }]}>
-                          <Text style={styles.podiumInitial}>{e.username.charAt(0).toUpperCase()}</Text>
-                        </View>
-                        <Text style={styles.podiumName} numberOfLines={1}>{e.isCurrentUser ? "You" : e.username}</Text>
-                        <View style={[styles.podiumBlock, { height: h, backgroundColor: m.bg, borderColor: m.ring + "55" }]}>
-                          <Text style={[styles.podiumRank, { color: m.text }]}>{i + 1}</Text>
-                          <Text style={[styles.podiumXP, { color: m.text }]}>{e.total_xp.toLocaleString()}</Text>
-                        </View>
-                      </View>;
-  })}
-                </View>}
-
-              {globalLoading ? <ActivityIndicator color={COLORS.accent} size="large" style={{ marginTop: 60 }} /> : globalError ? <View style={styles.emptyState}>
-                  <Feather name="wifi-off" size={32} color={COLORS.textMuted} />
-                  <Text style={styles.emptyTitle}>Standings unavailable</Text>
-                  <Text style={styles.emptySub}>{globalError}</Text>
-                  <TouchableOpacity style={styles.inviteBtn} onPress={fetchGlobalLeaderboard}>
-                    <Feather name="refresh-cw" size={14} color={COLORS.textOnAccent} />
-                    <Text style={styles.inviteBtnText}>Try again</Text>
-                  </TouchableOpacity>
-                </View> : globalEntries.length === 0 ? <View style={styles.emptyState}>
-                  <Image source={LEO_SASSY} style={styles.emptyLeo} resizeMode="contain" />
-                  <Text style={styles.emptyTitle}>
-                    No one has scored this month yet.
-                  </Text>
-                  <Text style={styles.emptySub}>Finish one lesson and you take first place.</Text>
-                </View> : <View style={styles.list}>
-                  {globalEntries.map((entry) => <BoardRow
-    key={entry.user_id}
-    rank={entry.rank}
-    name={entry.isCurrentUser ? "You" : entry.username}
-    initial={entry.username.charAt(0).toUpperCase()}
-    xp={entry.total_xp}
-    meta={`Lv.${entry.current_level}${entry.current_streak > 0 ? ` \xB7 ${entry.current_streak}d streak` : ""}`}
-    isMe={entry.isCurrentUser}
-  />)}
-                </View>}
-            </>}
-
-        </Animated.View>
-      </ScrollView>
-      {toast && <View pointerEvents="none" style={[styles.toast, { bottom: insets.bottom + 24 }]}>
-          <Text style={styles.toastText}>{toast}</Text>
-        </View>}
-    </View>;
+        style: styles.nameInput,
+        placeholder: "Your name",
+        placeholderTextColor: COLORS.textMuted,
+        value: nameDraft,
+        onChangeText: (v) => setNameDraft(v.slice(0, 40)),
+        maxLength: 40,
+        autoCapitalize: "words",
+        autoCorrect: false,
+        returnKeyType: "done",
+        onSubmitEditing: saveName
+      }
+    ), /* @__PURE__ */ React.createElement(
+      TouchableOpacity,
+      {
+        style: [styles.nameSave, (!nameValid || savingName) && { opacity: 0.5 }],
+        onPress: saveName,
+        disabled: !nameValid || savingName,
+        accessibilityLabel: "Save name"
+      },
+      savingName ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: "#FFF" }) : /* @__PURE__ */ React.createElement(Text, { style: styles.nameSaveText }, "Save")
+    ))), activeTab === "friends" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: styles.heroCard }, /* @__PURE__ */ React.createElement(Image, { source: SOCIAL_HERO, style: styles.heroLeo, resizeMode: "cover" }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.heroKicker }, "THIS MONTH \xB7 ALL INDUSTRIES"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroValue }, myStats.monthXP.toLocaleString(), /* @__PURE__ */ React.createElement(Text, { style: styles.heroUnit }, " XP")), /* @__PURE__ */ React.createElement(Text, { style: styles.heroLine }, friends.length === 0 ? "Add a friend and this becomes a race." : /* @__PURE__ */ React.createElement(React.Fragment, null, "You sit ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, "#", myFriendRank), " of ", friendsBoard.length, ".")))), pendingRequests.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "Friend requests (", pendingRequests.length, ")"), pendingRequests.map((r) => /* @__PURE__ */ React.createElement(View, { key: r.id, style: styles.personRow }, /* @__PURE__ */ React.createElement(View, { style: styles.avatar }, /* @__PURE__ */ React.createElement(Text, { style: styles.avatarText }, r.fromUsername.charAt(0).toUpperCase())), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: styles.rowName, numberOfLines: 1 }, r.fromUsername), !!r.fromMarket && /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta, numberOfLines: 1 }, getMarketName(r.fromMarket))), busyId === r.id ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: [styles.pill, styles.pillGhost], onPress: () => handleDecline(r.id), accessibilityLabel: `Decline ${r.fromUsername}` }, /* @__PURE__ */ React.createElement(Text, { style: styles.pillGhostText }, "Decline")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.pill, onPress: () => handleAccept(r.id), accessibilityLabel: `Accept ${r.fromUsername}` }, /* @__PURE__ */ React.createElement(Text, { style: styles.pillText }, "Accept")))))), sentRequests.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "Sent"), sentRequests.map((r) => /* @__PURE__ */ React.createElement(View, { key: r.id, style: styles.personRow }, /* @__PURE__ */ React.createElement(View, { style: styles.avatar }, /* @__PURE__ */ React.createElement(Text, { style: styles.avatarText }, r.toUsername.charAt(0).toUpperCase())), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: styles.rowName, numberOfLines: 1 }, r.toUsername), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta, numberOfLines: 1 }, r.toMarket ? `${getMarketName(r.toMarket)} \xB7 ` : "", "Waiting")), busyId === r.id ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }) : /* @__PURE__ */ React.createElement(TouchableOpacity, { style: [styles.pill, styles.pillGhost], onPress: () => handleCancelSent(r.id), accessibilityLabel: `Cancel request to ${r.toUsername}` }, /* @__PURE__ */ React.createElement(Text, { style: styles.pillGhostText }, "Cancel"))))), !!myFriendCode && /* @__PURE__ */ React.createElement(View, { style: styles.codeCard }, /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.codeKicker }, "YOUR FRIEND CODE"), /* @__PURE__ */ React.createElement(Text, { style: styles.codeValue, selectable: true }, myFriendCode), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta }, "Hold the code to copy it.")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.pill, onPress: handleShareCode, accessibilityLabel: "Share your friend code" }, /* @__PURE__ */ React.createElement(Feather, { name: "share", size: 13, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.pillText }, "Share"))), /* @__PURE__ */ React.createElement(View, { style: styles.addRow }, /* @__PURE__ */ React.createElement(Feather, { name: "search", size: 16, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(
+      TextInput,
+      {
+        style: styles.addInput,
+        placeholder: "Add friends by name or code",
+        placeholderTextColor: COLORS.textMuted,
+        value: query,
+        onChangeText: setQuery,
+        autoCapitalize: "none",
+        autoCorrect: false,
+        returnKeyType: "search",
+        clearButtonMode: "while-editing"
+      }
+    ), searching && /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: styles.addRow }, /* @__PURE__ */ React.createElement(Feather, { name: "gift", size: 16, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(
+      TextInput,
+      {
+        style: styles.addInput,
+        placeholder: "Got an invite code?",
+        placeholderTextColor: COLORS.textMuted,
+        value: inviteCodeInput,
+        onChangeText: (t) => setInviteCodeInput(t.toUpperCase()),
+        autoCapitalize: "characters",
+        autoCorrect: false,
+        maxLength: 12,
+        returnKeyType: "done",
+        onSubmitEditing: handleRedeemCode
+      }
+    ), redeeming ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }) : inviteCodeInput.trim().length >= 4 ? /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.pill, onPress: handleRedeemCode, accessibilityLabel: "Use invite code" }, /* @__PURE__ */ React.createElement(Text, { style: styles.pillText }, "Join")) : null), query.trim().length >= 2 && !searching && /* @__PURE__ */ React.createElement(View, { style: styles.section }, searchError ? /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, "Search is unavailable right now. Please try again.") : results.length === 0 ? /* @__PURE__ */ React.createElement(View, { style: styles.noResults }, /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, "No one found. Send them your invite link"), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.pill, onPress: handleShareInvite }, /* @__PURE__ */ React.createElement(Feather, { name: "share-2", size: 13, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.pillText }, "Share"))) : results.map((p) => {
+      const isFriend = friendIds.has(p.id);
+      const sent = sentRequests.some((r) => r.toUserId === p.id);
+      const incoming = pendingRequests.some((r) => r.fromUserId === p.id);
+      return /* @__PURE__ */ React.createElement(View, { key: p.id, style: styles.personRow }, /* @__PURE__ */ React.createElement(View, { style: styles.avatar }, /* @__PURE__ */ React.createElement(Text, { style: styles.avatarText }, p.displayName.charAt(0).toUpperCase())), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: styles.rowName, numberOfLines: 1 }, p.displayName), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta, numberOfLines: 1 }, [p.friendCode, p.selectedMarket ? getMarketName(p.selectedMarket) : null].filter(Boolean).join(" \xB7 "))), isFriend ? /* @__PURE__ */ React.createElement(Text, { style: styles.nudgeDone }, "Friends \u2713") : busyId === p.id ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }) : /* @__PURE__ */ React.createElement(
+        TouchableOpacity,
+        {
+          style: [styles.pill, sent && styles.pillGhost],
+          onPress: () => handleAdd(p),
+          accessibilityLabel: sent ? `Cancel request to ${p.displayName}` : `Add ${p.displayName}`
+        },
+        /* @__PURE__ */ React.createElement(Text, { style: sent ? styles.pillGhostText : styles.pillText }, sent ? "Requested" : incoming ? "Accept" : "Add")
+      ));
+    })), loading ? /* @__PURE__ */ React.createElement(ActivityIndicator, { color: COLORS.accent, size: "large", style: { marginTop: 60 } }) : friendsError ? /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(Feather, { name: "wifi-off", size: 32, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "Friends unavailable"), /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, friendsError), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.inviteBtn, onPress: refetch }, /* @__PURE__ */ React.createElement(Feather, { name: "refresh-cw", size: 14, color: "#FFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.inviteBtnText }, "Try again"))) : friends.length === 0 ? /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(Image, { source: LEO_SASSY, style: styles.emptyLeo, resizeMode: "contain" }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "Racing alone is easy."), /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, "Invite one friend and make this month a race."), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.inviteBtn, onPress: handleShareInvite }, /* @__PURE__ */ React.createElement(Feather, { name: "share-2", size: 14, color: "#FFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.inviteBtnText }, "Invite friends"))) : /* @__PURE__ */ React.createElement(View, { style: styles.list }, friendsBoard.map((row, idx) => /* @__PURE__ */ React.createElement(
+      BoardRow,
+      {
+        key: row.id,
+        rank: idx + 1,
+        name: row.name,
+        initial: row.initial,
+        xp: row.xp,
+        meta: `Lv.${row.level}${row.streak > 0 ? ` \xB7 ${row.streak}d streak` : ""}${row.monthXP > 0 ? ` \xB7 ${row.monthXP} this month` : ""}`,
+        isMe: row.isMe,
+        online: row.friend ? isActive(row.friend) : false,
+        onNudge: row.friend ? () => handleNudge(row.friend) : void 0,
+        nudgeState: !row.friend ? void 0 : row.friend.lessonDoneToday ? "done" : row.friend.nudgedToday || nudgedIds.has(row.friend.id) ? "nudged" : nudgingId === row.friend.id ? "sending" : "idle",
+        onMore: row.friend ? () => handleRemove(row.friend) : void 0
+      }
+    )))), activeTab === "global" && /* @__PURE__ */ React.createElement(React.Fragment, null, !globalLoading && globalEntries.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.heroCard }, /* @__PURE__ */ React.createElement(Image, { source: SOCIAL_HERO, style: styles.heroLeo, resizeMode: "cover" }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.heroKicker }, marketName.toUpperCase()), /* @__PURE__ */ React.createElement(Text, { style: styles.heroValue }, currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "#", currentUserRank, /* @__PURE__ */ React.createElement(Text, { style: styles.heroUnit }, " of ", globalEntries.length)) : "Unranked"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroLine }, currentUserRank === 1 ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Top of the market. ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, "Hold it.")) : currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Next spot costs ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, Math.max(1, (globalEntries[currentUserRank - 2]?.total_xp || 0) - (globalEntries[currentUserRank - 1]?.total_xp || 0) + 1), " XP"), ".") : "One lesson puts you on the board."))), !globalLoading && globalEntries.length >= 3 && /* @__PURE__ */ React.createElement(View, { style: styles.podium }, [1, 0, 2].map((i) => {
+      const e = globalEntries[i];
+      const m = MEDALS[i];
+      const h = i === 0 ? 76 : i === 1 ? 60 : 50;
+      return /* @__PURE__ */ React.createElement(View, { key: e.user_id, style: styles.podiumCol }, /* @__PURE__ */ React.createElement(View, { style: [styles.podiumAvatar, { borderColor: m.ring }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.podiumInitial }, e.username.charAt(0).toUpperCase())), /* @__PURE__ */ React.createElement(Text, { style: styles.podiumName, numberOfLines: 1 }, e.isCurrentUser ? "You" : e.username), /* @__PURE__ */ React.createElement(View, { style: [styles.podiumBlock, { height: h, backgroundColor: m.bg, borderColor: m.ring + "55" }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.podiumRank, { color: m.text }] }, i + 1), /* @__PURE__ */ React.createElement(Text, { style: [styles.podiumXP, { color: m.text }] }, e.total_xp.toLocaleString())));
+    })), globalLoading ? /* @__PURE__ */ React.createElement(ActivityIndicator, { color: COLORS.accent, size: "large", style: { marginTop: 60 } }) : globalError ? /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(Feather, { name: "wifi-off", size: 32, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "Standings unavailable"), /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, globalError), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.inviteBtn, onPress: fetchGlobalLeaderboard }, /* @__PURE__ */ React.createElement(Feather, { name: "refresh-cw", size: 14, color: COLORS.textOnAccent }), /* @__PURE__ */ React.createElement(Text, { style: styles.inviteBtnText }, "Try again"))) : globalEntries.length === 0 ? /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(Image, { source: LEO_SASSY, style: styles.emptyLeo, resizeMode: "contain" }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "No one has scored this month yet."), /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, "Finish one lesson and you take first place.")) : /* @__PURE__ */ React.createElement(View, { style: styles.list }, globalEntries.map((entry) => /* @__PURE__ */ React.createElement(
+      BoardRow,
+      {
+        key: entry.user_id,
+        rank: entry.rank,
+        name: entry.isCurrentUser ? "You" : entry.username,
+        initial: entry.username.charAt(0).toUpperCase(),
+        xp: entry.total_xp,
+        meta: `Lv.${entry.current_level}${entry.current_streak > 0 ? ` \xB7 ${entry.current_streak}d streak` : ""}`,
+        isMe: entry.isCurrentUser
+      }
+    )))))
+  ), toast && /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: [styles.toast, { bottom: insets.bottom + 24 }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.toastText }, toast)));
 }
 function BoardRow({
   rank,
@@ -705,34 +488,7 @@ function BoardRow({
   nudgeState = "idle"
 }) {
   const medal = rank <= 3 ? MEDALS[rank - 1] : null;
-  return <View style={[styles.row, isMe && styles.rowSelf, medal && { borderColor: medal.ring + "45" }]}>
-      <View style={[styles.rankBadge, { backgroundColor: medal ? medal.bg : COLORS.bg1 }]}>
-        <Text style={[styles.rankNum, { color: medal ? medal.text : COLORS.textMuted }]}>{rank}</Text>
-      </View>
-
-      <View style={[styles.avatar, isMe && { borderColor: COLORS.accent }]}>
-        <Text style={styles.avatarText}>{initial}</Text>
-        {online && <View style={styles.onlineDot} />}
-      </View>
-
-      <View style={styles.rowInfo}>
-        <Text style={[styles.rowName, isMe && { color: COLORS.accent }]} numberOfLines={1}>{name}</Text>
-        <Text style={styles.rowMeta} numberOfLines={1}>{meta}</Text>
-      </View>
-
-      <View style={styles.xpBadge}>
-        <Text style={[styles.xpValue, isMe && { color: COLORS.accent }]}>{xp.toLocaleString()}</Text>
-        <Text style={styles.xpLabel}>XP</Text>
-      </View>
-      {onNudge && (nudgeState === "done" ? <Text style={styles.nudgeDone}>Done today ✓</Text> : nudgeState === "nudged" ? <View style={[styles.nudgePill, styles.nudgePillOff]}>
-          <Text style={[styles.nudgePillText, styles.nudgePillTextOff]}>Nudged ✓</Text>
-        </View> : <TouchableOpacity style={styles.nudgePill} onPress={onNudge} disabled={nudgeState === "sending"} accessibilityLabel={`Nudge ${name}`}>
-          {nudgeState === "sending" ? <ActivityIndicator size="small" color={COLORS.accent} /> : <Text style={styles.nudgePillText}>Nudge</Text>}
-        </TouchableOpacity>)}
-      {onMore && <TouchableOpacity style={styles.moreBtn} onPress={onMore} onLongPress={onMore}>
-          <Feather name="more-horizontal" size={14} color={COLORS.textMuted} />
-        </TouchableOpacity>}
-    </View>;
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.row, isMe && styles.rowSelf, medal && { borderColor: medal.ring + "45" }] }, /* @__PURE__ */ React.createElement(View, { style: [styles.rankBadge, { backgroundColor: medal ? medal.bg : COLORS.bg1 }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.rankNum, { color: medal ? medal.text : COLORS.textMuted }] }, rank)), /* @__PURE__ */ React.createElement(View, { style: [styles.avatar, isMe && { borderColor: COLORS.accent }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.avatarText }, initial), online && /* @__PURE__ */ React.createElement(View, { style: styles.onlineDot })), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: [styles.rowName, isMe && { color: COLORS.accent }], numberOfLines: 1 }, name), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta, numberOfLines: 1 }, meta)), /* @__PURE__ */ React.createElement(View, { style: styles.xpBadge }, /* @__PURE__ */ React.createElement(Text, { style: [styles.xpValue, isMe && { color: COLORS.accent }] }, xp.toLocaleString()), /* @__PURE__ */ React.createElement(Text, { style: styles.xpLabel }, "XP")), onNudge && (nudgeState === "done" ? /* @__PURE__ */ React.createElement(Text, { style: styles.nudgeDone }, "Done today \u2713") : nudgeState === "nudged" ? /* @__PURE__ */ React.createElement(View, { style: [styles.nudgePill, styles.nudgePillOff] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.nudgePillText, styles.nudgePillTextOff] }, "Nudged \u2713")) : /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.nudgePill, onPress: onNudge, disabled: nudgeState === "sending", accessibilityLabel: `Nudge ${name}` }, nudgeState === "sending" ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }) : /* @__PURE__ */ React.createElement(Text, { style: styles.nudgePillText }, "Nudge"))), onMore && /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.moreBtn, onPress: onMore, onLongPress: onMore }, /* @__PURE__ */ React.createElement(Feather, { name: "more-horizontal", size: 14, color: COLORS.textMuted })));
 }
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },

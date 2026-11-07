@@ -3,6 +3,7 @@ import {
   Alert,
   Animated,
   AccessibilityInfo,
+  Easing,
   FlatList,
   Image,
   Modal,
@@ -200,12 +201,28 @@ function SectionHeader({
 
 /** How far a coin sits above its darker underside: a slight 3D edge, pressed flat on tap. */
 export const COIN_LIP = 5;
+/** One slow breath of the ring around the coin to tap next: out, then back, at a steady pace. */
+export const RING_BREATH_MS = 1600;
 
-function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, recommended = false, reveal, muted = false }: {
+function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, recommended = false, ringMotion = false, reveal, muted = false }: {
   label: string; icon: keyof typeof Feather.glyphMap; position: object;
   locked: boolean; completed: boolean; onPress: () => void;
-  emphasis?: boolean; recommended?: boolean; reveal?: Animated.Value; muted?: boolean;
+  emphasis?: boolean; recommended?: boolean; ringMotion?: boolean; reveal?: Animated.Value; muted?: boolean;
 }) {
+  // The ring swells a touch and fades a little, then settles back, on a loop.
+  // Opacity and scale on a plain view only (never an icon), on the native driver.
+  const breath = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    breath.setValue(0);
+    if (!recommended || !ringMotion) return;
+    const ease = Easing.inOut(Easing.sin);
+    const loop = Animated.loop(Animated.sequence([
+      Animated.timing(breath, { toValue: 1, duration: RING_BREATH_MS, easing: ease, useNativeDriver: true }),
+      Animated.timing(breath, { toValue: 0, duration: RING_BREATH_MS, easing: ease, useNativeDriver: true }),
+    ]));
+    loop.start();
+    return () => loop.stop();
+  }, [recommended, ringMotion, breath]);
   const fill = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedFill, COLORS.accent] }) : muted || locked ? COLORS.courseMutedFill : COLORS.accent;
   const lip = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedLip, COLORS.courseCoinLip] }) : muted || locked ? COLORS.courseMutedLip : COLORS.courseCoinLip;
   // Icons are not animatable views: crossfade two static icons instead of
@@ -216,7 +233,10 @@ function Coin({ label, icon, position, locked, completed, onPress, emphasis = fa
   return (
     <View style={[styles.coinPosition, position]}>
       <View style={styles.coinSlot}>
-        {recommended && <View pointerEvents="none" style={styles.recommendRing} />}
+        {recommended && <Animated.View pointerEvents="none" style={[styles.recommendRing, {
+          opacity: breath.interpolate({ inputRange: [0, 1], outputRange: [1, 0.45] }),
+          transform: [{ scale: breath.interpolate({ inputRange: [0, 1], outputRange: [1, 1.07] }) }],
+        }]} />}
         <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`${label}${locked ? ', locked' : completed ? ', complete' : ''}`} style={styles.coinTouch}>
           {({ pressed }) => (
             <View style={[styles.coinBody, emphasis && styles.coinBodyEmphasis]}>
@@ -360,6 +380,7 @@ function SectionCluster({
               completed={module.kind === 'lesson' ? lessonDone : moduleComplete(module.kind)}
               emphasis={activeSection && module.kind === 'lesson' && !lessonDone}
               recommended={activeSection && module.kind === 'lesson' && !lessonDone}
+              ringMotion={isFocused && !reduceMotion}
               muted={activeSection && module.kind !== 'lesson' && !lessonDone && !moduleComplete(module.kind)}
               reveal={activeSection && module.kind !== 'lesson' && !moduleComplete(module.kind) && !(lessonDone && !lessonCompletedToday) ? activityReveal[['notes', 'arena', 'intel', 'case'].indexOf(module.kind)] : undefined}
               onPress={() => onModule(module.kind)}

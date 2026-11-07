@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, TYPE } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
-import { getMonthlyStandings } from '../../lib/socialStandings';
+import { myFriendRaceXP } from '../../lib/socialStandings';
 import { FriendStanding, friendStanding, friendStandingLabel } from '../../lib/friendStanding';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
@@ -31,10 +31,12 @@ export function FriendStandingChip({ userId, marketId, focused }: FriendStanding
     (async () => {
       const { data, error } = await supabase.rpc('get_friends_overview');
       if (error) throw error;
-      const friendIds = ((data ?? []) as any[]).map(row => row?.friend_id).filter(Boolean);
-      if (!friendIds.length) { if (active) setStanding(null); return; }
-      const standings = await getMonthlyStandings(marketId);
-      if (active) setStanding(friendStanding(userId, friendIds, standings));
+      const friends = ((data ?? []) as any[]).filter(row => row?.friend_id);
+      if (!friends.length) { if (active) setStanding(null); return; }
+      // Same all-industry month XP as the Friends board, so the chip and the board agree.
+      const mine = await myFriendRaceXP(userId);
+      const board = [{ user_id: userId, monthly_xp: mine }, ...friends.map(row => ({ user_id: row.friend_id, monthly_xp: Number(row.month_xp) || 0 }))];
+      if (active) setStanding(friendStanding(userId, friends.map(row => row.friend_id), board));
     })().catch(error => log.warn('[Home] Friend standing could not load:', error));
     return () => { active = false; };
   }, [focused, userId, marketId]);

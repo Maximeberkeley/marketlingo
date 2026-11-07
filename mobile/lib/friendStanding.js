@@ -9,7 +9,11 @@ function friendStanding(myId, friendIds, standings) {
 function friendStandingLabel(standing) {
   return standing ? `#${standing.rank} of ${standing.of} among friends this month` : "Race a friend this month";
 }
+function friendRaceMonthStart(now = /* @__PURE__ */ new Date()) {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+}
 export {
+  friendRaceMonthStart,
   friendStanding,
   friendStandingLabel
 };
