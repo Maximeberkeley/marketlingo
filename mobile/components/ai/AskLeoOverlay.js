@@ -336,8 +336,8 @@ ${instruction}` }] : next;
   const { width: winW, height: winH } = useWindowDimensions();
   const largeScreen = Math.min(winW, winH) >= 600;
   const panelW = Math.min(winW, PANEL_MAX_WIDTH);
-  const modeColumns = panelW >= 560 ? 4 : 2;
-  const modeCardW = Math.floor((panelW - 32 - 10 * (modeColumns - 1)) / modeColumns);
+  const modesInRow = panelW >= 560;
+  const modeCardW = Math.floor((panelW - 32 - 10 * 3) / 4);
   return /* @__PURE__ */ React.createElement(Modal, { visible, animationType: "fade", transparent: true, onRequestClose: onClose }, /* @__PURE__ */ React.createElement(
     KeyboardAvoidingView,
     {
@@ -451,18 +451,30 @@ ${instruction}` }] : next;
         }),
         isLoading && /* @__PURE__ */ React.createElement(View, { style: [styles.row, styles.rowLeo] }, /* @__PURE__ */ React.createElement(View, { style: [styles.bubble, styles.leoBubble, styles.thinkingBubble] }, /* @__PURE__ */ React.createElement(Text, { style: styles.thinkingText }, "Leo is thinking\u2026")))
       ),
-      modesExpanded ? /* @__PURE__ */ React.createElement(Animated.View, { style: { opacity: modesAnim } }, /* @__PURE__ */ React.createElement(View, { style: styles.modeGrid }, MODES.map((mode) => /* @__PURE__ */ React.createElement(
-        TouchableOpacity,
-        {
-          key: mode.id,
-          style: [styles.modeCard, modeColumns === 2 && styles.modeCardCompact, { width: modeCardW, borderColor: mode.color + "66", backgroundColor: mode.color + "14" }],
-          onPress: () => ask(mode.ask, mode.instruction),
-          disabled: isLoading,
-          activeOpacity: 0.85
-        },
-        /* @__PURE__ */ React.createElement(View, { style: [styles.modeCardIcon, { backgroundColor: mode.color + "22" }] }, /* @__PURE__ */ React.createElement(Feather, { name: mode.icon, size: 22, color: mode.color })),
-        /* @__PURE__ */ React.createElement(Text, { style: [styles.modeCardText, { color: mode.color }] }, mode.label)
-      )))) : /* @__PURE__ */ React.createElement(View, { style: styles.modeRowSmallWrap }, /* @__PURE__ */ React.createElement(
+      modesExpanded ? /* @__PURE__ */ React.createElement(Animated.View, { style: { opacity: modesAnim } }, (() => {
+        const cards = MODES.map((mode) => /* @__PURE__ */ React.createElement(
+          TouchableOpacity,
+          {
+            key: mode.id,
+            style: [styles.modeCard, modesInRow && { width: modeCardW }, { borderColor: mode.color + "66", backgroundColor: mode.color + "14" }],
+            onPress: () => ask(mode.ask, mode.instruction),
+            disabled: isLoading,
+            activeOpacity: 0.85
+          },
+          /* @__PURE__ */ React.createElement(View, { style: [styles.modeCardIcon, { backgroundColor: mode.color + "22" }] }, /* @__PURE__ */ React.createElement(Feather, { name: mode.icon, size: 22, color: mode.color })),
+          /* @__PURE__ */ React.createElement(Text, { style: [styles.modeCardText, { color: mode.color }] }, mode.label)
+        ));
+        return modesInRow ? /* @__PURE__ */ React.createElement(View, { style: styles.modeGrid }, cards) : /* @__PURE__ */ React.createElement(
+          ScrollView,
+          {
+            horizontal: true,
+            showsHorizontalScrollIndicator: false,
+            contentContainerStyle: styles.modeRowBig,
+            keyboardShouldPersistTaps: "handled"
+          },
+          cards
+        );
+      })()) : /* @__PURE__ */ React.createElement(View, { style: styles.modeRowSmallWrap }, /* @__PURE__ */ React.createElement(
         TouchableOpacity,
         {
           style: styles.modeExpandBtn,
@@ -660,7 +672,6 @@ const styles = StyleSheet.create({
   modeText: { fontSize: 13, fontWeight: "800" },
   modeRowBig: { paddingHorizontal: 16, paddingBottom: 12, gap: 10 },
   modeGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10, paddingHorizontal: 16, paddingBottom: 12 },
-  modeCardCompact: { height: 84, flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 10 },
   containerLarge: { maxHeight: "92%" },
   modeCard: {
     width: 148,

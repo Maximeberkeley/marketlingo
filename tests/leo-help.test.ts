@@ -47,10 +47,12 @@ describe('one-time hint pointing at Leo in quizzes', () => {
 });
 
 describe('Leo’s help panel fits iPads and Split View', () => {
-  it('wraps the shortcut cards into a grid and centres a capped-width panel', () => {
+  it('scrolls the shortcut cards on phones, rows them on iPad, and centres a capped-width panel', () => {
     const panel = read('mobile/components/ai/AskLeoOverlay.tsx');
-    expect(panel).toContain('const modeColumns = panelW >= 560 ? 4 : 2;');
-    expect(panel).toContain('<View style={styles.modeGrid}>');
+    // Phones scroll the cards sideways; only wide panels lay all four out in a row.
+    expect(panel).toContain('const modesInRow = panelW >= 560;');
+    expect(panel).toContain('? <View style={styles.modeGrid}>{cards}</View>');
+    expect(panel).toMatch(/<ScrollView\s+horizontal\s+showsHorizontalScrollIndicator=\{false\}\s+contentContainerStyle=\{styles\.modeRowBig\}/);
     expect(panel).toContain('const PANEL_MAX_WIDTH = 680;');
     expect(panel).toContain("containerLarge: { maxHeight: '92%' }");
   });

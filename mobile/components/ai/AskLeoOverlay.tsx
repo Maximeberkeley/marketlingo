@@ -420,8 +420,10 @@ export function AskLeoOverlay({
   const { width: winW, height: winH } = useWindowDimensions();
   const largeScreen = Math.min(winW, winH) >= 600;
   const panelW = Math.min(winW, PANEL_MAX_WIDTH);
-  const modeColumns = panelW >= 560 ? 4 : 2;
-  const modeCardW = Math.floor((panelW - 32 - 10 * (modeColumns - 1)) / modeColumns);
+  // Phones scroll the shortcut cards sideways (roomy, nothing cut off); wide
+  // panels (iPad, Split View) have room to show all four in one row.
+  const modesInRow = panelW >= 560;
+  const modeCardW = Math.floor((panelW - 32 - 10 * 3) / 4);
 
   return (
     <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
@@ -583,11 +585,11 @@ export function AskLeoOverlay({
           {/* Modes — big cards on entry, compact chips once a question is asked */}
           {modesExpanded ? (
             <Animated.View style={{ opacity: modesAnim }}>
-              <View style={styles.modeGrid}>
-                {MODES.map(mode => (
+              {(() => {
+                const cards = MODES.map(mode => (
                   <TouchableOpacity
                     key={mode.id}
-                    style={[styles.modeCard, modeColumns === 2 && styles.modeCardCompact, { width: modeCardW, borderColor: mode.color + '66', backgroundColor: mode.color + '14' }]}
+                    style={[styles.modeCard, modesInRow && { width: modeCardW }, { borderColor: mode.color + '66', backgroundColor: mode.color + '14' }]}
                     onPress={() => ask(mode.ask, mode.instruction)}
                     disabled={isLoading}
                     activeOpacity={0.85}
@@ -597,8 +599,20 @@ export function AskLeoOverlay({
                     </View>
                     <Text style={[styles.modeCardText, { color: mode.color }]}>{mode.label}</Text>
                   </TouchableOpacity>
-                ))}
-              </View>
+                ));
+                return modesInRow
+                  ? <View style={styles.modeGrid}>{cards}</View>
+                  : (
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={styles.modeRowBig}
+                      keyboardShouldPersistTaps="handled"
+                    >
+                      {cards}
+                    </ScrollView>
+                  );
+              })()}
             </Animated.View>
           ) : (
             <View style={styles.modeRowSmallWrap}>
@@ -806,7 +820,6 @@ const styles = StyleSheet.create({
   modeText: { fontSize: 13, fontWeight: '800' },
   modeRowBig: { paddingHorizontal: 16, paddingBottom: 12, gap: 10 },
   modeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingHorizontal: 16, paddingBottom: 12 },
-  modeCardCompact: { height: 84, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', gap: 10 },
   containerLarge: { maxHeight: '92%' },
   modeCard: {
     width: 148,
