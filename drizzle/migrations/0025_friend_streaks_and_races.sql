@@ -10,8 +10,34 @@
 -- Tables are only reachable through the SECURITY DEFINER functions below, so
 -- every rule (friends only, caps, one open item per pair, one reward per
 -- person) is enforced on the server and rewards can never be claimed twice.
+--
+-- Safe to run again: it creates only what is missing, refuses to touch friend
+-- tables that do not match this design, and refreshes the API schema at the end.
 
-CREATE TABLE public.friend_streaks (
+-- Stop if another kind of object (index, view, type...) already holds one of
+-- the table names, and say which, rather than failing with "already exists".
+DO $$
+DECLARE clash text;
+BEGIN
+  SELECT string_agg(x.what, ', ') INTO clash FROM (
+    SELECT format('public.%I is %s', c.relname, CASE c.relkind WHEN 'i' THEN 'an index' WHEN 'I' THEN 'an index' WHEN 'S' THEN 'a sequence'
+      WHEN 'v' THEN 'a view' WHEN 'm' THEN 'a materialized view' WHEN 'c' THEN 'a composite type' WHEN 'f' THEN 'a foreign table'
+      ELSE 'another object (' || c.relkind::text || ')' END) AS what
+    FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public' AND c.relkind NOT IN ('r', 'p')
+      AND c.relname IN ('friend_streaks', 'friend_streak_rewards', 'friend_races', 'friend_race_rewards')
+    UNION ALL
+    SELECT format('public.%I is a type', t.typname)
+    FROM pg_type t JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE n.nspname = 'public' AND t.typrelid = 0
+      AND t.typname IN ('friend_streaks', 'friend_streak_rewards', 'friend_races', 'friend_race_rewards')
+  ) x;
+  IF clash IS NOT NULL THEN
+    RAISE EXCEPTION 'Names this migration needs are already taken (%). Nothing was changed.', clash;
+  END IF;
+END $$;
+
+CREATE TABLE IF NOT EXISTS public.friend_streaks (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_a uuid NOT NULL,
   user_b uuid NOT NULL,
@@ -25,11 +51,8 @@ CREATE TABLE public.friend_streaks (
   CHECK (user_a < user_b),
   CHECK (invited_by IN (user_a, user_b))
 );
-CREATE UNIQUE INDEX friend_streaks_open_pair ON public.friend_streaks (user_a, user_b) WHERE status IN ('pending', 'active');
-CREATE INDEX friend_streaks_user_a ON public.friend_streaks (user_a) WHERE status IN ('pending', 'active');
-CREATE INDEX friend_streaks_user_b ON public.friend_streaks (user_b) WHERE status IN ('pending', 'active');
 
-CREATE TABLE public.friend_streak_rewards (
+CREATE TABLE IF NOT EXISTS public.friend_streak_rewards (
   streak_id uuid NOT NULL REFERENCES public.friend_streaks(id) ON DELETE CASCADE,
   user_id uuid NOT NULL,
   milestone integer NOT NULL,
@@ -38,7 +61,7 @@ CREATE TABLE public.friend_streak_rewards (
   PRIMARY KEY (streak_id, user_id, milestone)
 );
 
-CREATE TABLE public.friend_races (
+CREATE TABLE IF NOT EXISTS public.friend_races (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   challenger uuid NOT NULL,
   opponent uuid NOT NULL,
@@ -48,12 +71,8 @@ CREATE TABLE public.friend_races (
   ends_at timestamptz,
   CHECK (challenger <> opponent)
 );
-CREATE UNIQUE INDEX friend_races_open_pair ON public.friend_races (least(challenger, opponent), greatest(challenger, opponent))
-  WHERE status IN ('pending', 'active');
-CREATE INDEX friend_races_challenger ON public.friend_races (challenger);
-CREATE INDEX friend_races_opponent ON public.friend_races (opponent);
 
-CREATE TABLE public.friend_race_rewards (
+CREATE TABLE IF NOT EXISTS public.friend_race_rewards (
   race_id uuid NOT NULL REFERENCES public.friend_races(id) ON DELETE CASCADE,
   user_id uuid NOT NULL,
   outcome text NOT NULL CHECK (outcome IN ('won', 'tied', 'lost')),
@@ -61,6 +80,40 @@ CREATE TABLE public.friend_race_rewards (
   created_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (race_id, user_id)
 );
+
+-- If friend tables already exist from an earlier attempt, they must match this
+-- design; otherwise stop here and change nothing.
+DO $$
+DECLARE missing text;
+BEGIN
+  SELECT string_agg(t.tbl || '.' || t.col, ', ') INTO missing
+  FROM (VALUES
+    ('friend_streaks', 'id'), ('friend_streaks', 'user_a'), ('friend_streaks', 'user_b'), ('friend_streaks', 'invited_by'),
+    ('friend_streaks', 'status'), ('friend_streaks', 'started_on'), ('friend_streaks', 'best_length'), ('friend_streaks', 'created_at'),
+    ('friend_streaks', 'responded_at'), ('friend_streaks', 'ended_at'),
+    ('friend_streak_rewards', 'streak_id'), ('friend_streak_rewards', 'user_id'), ('friend_streak_rewards', 'milestone'),
+    ('friend_streak_rewards', 'xp'), ('friend_streak_rewards', 'created_at'),
+    ('friend_races', 'id'), ('friend_races', 'challenger'), ('friend_races', 'opponent'), ('friend_races', 'status'),
+    ('friend_races', 'created_at'), ('friend_races', 'starts_at'), ('friend_races', 'ends_at'),
+    ('friend_race_rewards', 'race_id'), ('friend_race_rewards', 'user_id'), ('friend_race_rewards', 'outcome'),
+    ('friend_race_rewards', 'xp'), ('friend_race_rewards', 'created_at')
+  ) AS t(tbl, col)
+  WHERE NOT EXISTS (
+    SELECT 1 FROM information_schema.columns c
+    WHERE c.table_schema = 'public' AND c.table_name = t.tbl AND c.column_name = t.col
+  );
+  IF missing IS NOT NULL THEN
+    RAISE EXCEPTION 'Friend tables already exist with a different shape (missing columns: %). Nothing was changed.', missing;
+  END IF;
+END $$;
+
+CREATE UNIQUE INDEX IF NOT EXISTS friend_streaks_open_pair ON public.friend_streaks (user_a, user_b) WHERE status IN ('pending', 'active');
+CREATE INDEX IF NOT EXISTS friend_streaks_user_a ON public.friend_streaks (user_a) WHERE status IN ('pending', 'active');
+CREATE INDEX IF NOT EXISTS friend_streaks_user_b ON public.friend_streaks (user_b) WHERE status IN ('pending', 'active');
+CREATE UNIQUE INDEX IF NOT EXISTS friend_races_open_pair ON public.friend_races (least(challenger, opponent), greatest(challenger, opponent))
+  WHERE status IN ('pending', 'active');
+CREATE INDEX IF NOT EXISTS friend_races_challenger ON public.friend_races (challenger);
+CREATE INDEX IF NOT EXISTS friend_races_opponent ON public.friend_races (opponent);
 
 ALTER TABLE public.friend_streaks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.friend_streak_rewards ENABLE ROW LEVEL SECURITY;
@@ -411,3 +464,6 @@ REVOKE ALL ON FUNCTION public.get_friend_social(), public.start_friend_streak(uu
 GRANT EXECUTE ON FUNCTION public.get_friend_social(), public.start_friend_streak(uuid), public.respond_friend_streak(uuid, boolean),
   public.end_friend_streak(uuid), public.claim_friend_streak_rewards(uuid), public.challenge_friend_race(uuid),
   public.respond_friend_race(uuid, boolean), public.cancel_friend_race(uuid), public.claim_friend_race_reward(uuid) TO authenticated;
+
+-- Let the API see the new functions right away.
+NOTIFY pgrst, 'reload schema';
