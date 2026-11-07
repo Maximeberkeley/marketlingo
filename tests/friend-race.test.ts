@@ -25,7 +25,7 @@ describe('the friend race counts XP from every industry', () => {
     expect(src).toContain('xp: f.totalXP, monthXP: f.totalXP');
     expect(src).toContain('myFriendRaceXP(user.id)');
     expect(src).not.toContain('friendMonthXP');
-    expect(src).toContain('THIS MONTH · ALL INDUSTRIES');
+    expect(src).toContain('XP from all industries · resets in {daysLeftInMonth()} days');
     const log = read('mobile/lib/socialStandings.ts');
     expect(log).toContain(".from('xp_transactions')");
     expect(log).toContain(".gte('created_at', since)");

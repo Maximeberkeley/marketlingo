@@ -12,6 +12,21 @@ const BODIES = [
   "Quick one? Today's lesson is ready.",
 ];
 
+// Messages the sender can pick in the app (mobile/lib/nudges.ts keeps the same
+// ids and text). Only these ids are accepted, so nobody can push arbitrary text.
+const MESSAGES: Record<string, string> = {
+  leo_pacing: 'Leo is pacing by the door. Five minutes and he calms down.',
+  friendly_warning: "This is a friendly reminder. Leo's next one won't be.",
+  coffee: 'One lesson takes less time than your coffee order. Go.',
+  market_moved: 'The market moved today. Did you?',
+  future_you: 'Future you, mid-interview, says thanks in advance.',
+  streak_shivering: 'Our flame is shivering. Do your lesson before it goes out.',
+  streak_my_part: 'I did my part of our streak. Your turn, partner.',
+  race_ahead: "I'm ahead in our race. Just thought you should know.",
+  race_behind: "You're ahead in our race. Enjoy it while it lasts.",
+  race_tied: 'Our race is tied. One lesson breaks it.',
+};
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function localDate(tz?: string | null): string {
@@ -46,10 +61,16 @@ Deno.serve(async (req) => {
     const senderId = claims.claims.sub as string;
 
     let friendId: unknown;
+    let messageId: unknown;
     try {
-      friendId = (await req.json())?.friendId;
+      const payload = await req.json();
+      friendId = payload?.friendId;
+      messageId = payload?.message;
     } catch {
       return json({ error: 'Invalid body' }, 400);
+    }
+    if (messageId != null && (typeof messageId !== 'string' || !Object.prototype.hasOwnProperty.call(MESSAGES, messageId))) {
+      return json({ error: 'Unknown message' }, 400);
     }
     if (typeof friendId !== 'string' || !UUID.test(friendId) || friendId === senderId) {
       return json({ error: 'friendId must be a valid friend id' }, 400);
@@ -85,7 +106,7 @@ Deno.serve(async (req) => {
 
     // Display name only — never an email or username.
     const name = sender?.display_name?.trim() || 'A friend';
-    const body = BODIES[Math.floor(Math.random() * BODIES.length)];
+    const body = typeof messageId === 'string' ? MESSAGES[messageId] : BODIES[Math.floor(Math.random() * BODIES.length)];
     const ok = await sendNotification(receiver.push_token, `${name} nudged you`, body, {
       type: 'nudge',
       route: '/(tabs)/home',

@@ -2,20 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "./supabase";
 import { log } from "./logger";
 const PENDING_INVITE_KEY = "@marketlingo/pending_invite";
-const INVITE_ORIGIN = "https://market-verse.com";
-const CODE_RE = /^[A-Z0-9]{4,12}$/;
-function normalizeInviteCode(raw) {
-  if (typeof raw !== "string") return null;
-  const code = raw.trim().toUpperCase();
-  return CODE_RE.test(code) ? code : null;
-}
-function inviteUrl(code) {
-  return `${INVITE_ORIGIN}/invite/${code}`;
-}
-function inviteMessage(industry, code) {
-  const what = industry?.trim() ? industry.trim() : "industries";
-  return `I'm learning ${what} on MarketLingo, 5 minutes a day. Join me: ${inviteUrl(code)}`;
-}
+import { INVITE_ORIGIN, normalizeInviteCode, inviteUrl, inviteMessage, inviteShareContent } from "./inviteLinks";
+import { normalizeInviteCode as normalizeInviteCode2 } from "./inviteLinks";
 async function savePendingInvite(code) {
   try {
     await AsyncStorage.setItem(PENDING_INVITE_KEY, code);
@@ -41,7 +29,7 @@ async function acceptInvite(code) {
 async function applyPendingInvite() {
   let code = null;
   try {
-    code = normalizeInviteCode(await AsyncStorage.getItem(PENDING_INVITE_KEY));
+    code = normalizeInviteCode2(await AsyncStorage.getItem(PENDING_INVITE_KEY));
   } catch {
     return null;
   }
@@ -74,6 +62,7 @@ export {
   acceptInvite,
   applyPendingInvite,
   inviteMessage,
+  inviteShareContent,
   inviteToast,
   inviteUrl,
   normalizeInviteCode,

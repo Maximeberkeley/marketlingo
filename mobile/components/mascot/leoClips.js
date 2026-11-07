@@ -16,7 +16,9 @@ const leoClips = {
   "leo-ready": { source: require("../../assets/mascot/anim/leo-ready.webp"), ms: 2e3, loop: false },
   "leo-encourage": { source: require("../../assets/mascot/anim/leo-encourage.webp"), ms: 2e3, loop: false },
   "leo-success": { source: require("../../assets/mascot/anim/leo-success.webp"), ms: 2e3, loop: false },
-  "leo-loading-loop": { source: require("../../assets/mascot/anim/leo-loading-loop.webp"), ms: 6048, loop: true }
+  "leo-loading-loop": { source: require("../../assets/mascot/anim/leo-loading-loop.webp"), ms: 6048, loop: true },
+  "leo-arena-setup-a": { source: require("../../assets/mascot/anim/leo-arena-setup-a.webp"), ms: 5208, loop: false },
+  "leo-arena-setup-b": { source: require("../../assets/mascot/anim/leo-arena-setup-b.webp"), ms: 5208, loop: false }
 };
 export {
   leoClips

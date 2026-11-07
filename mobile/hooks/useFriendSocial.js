@@ -3,6 +3,10 @@ import { supabase } from "../lib/supabase";
 import { log } from "../lib/logger";
 import { trackEvent } from "../lib/analytics";
 import { isMissingFunction, parseFriendSocial } from "../lib/friendSocial";
+function notifyFriendSocial(kind, id) {
+  if (typeof id !== "string" || !id) return;
+  supabase.functions.invoke("friend-social-notify", { body: { kind, id } }).catch((err) => log.warn("[FriendSocial] Push failed:", err));
+}
 function useFriendSocial(userId, focused = true) {
   const [social, setSocial] = useState(null);
   const [available, setAvailable] = useState(false);
@@ -38,11 +42,27 @@ function useFriendSocial(userId, focused = true) {
     await refresh();
     return { data, error: null };
   }, [refresh]);
-  const startStreak = (friendId) => act(`streak:${friendId}`, "start_friend_streak", { p_friend: friendId }, "friend_streak_invited");
-  const respondStreak = (streakId, accept) => act(`streak:${streakId}`, "respond_friend_streak", { p_streak: streakId, p_accept: accept }, accept ? "friend_streak_accepted" : void 0);
+  const startStreak = async (friendId) => {
+    const result = await act(`streak:${friendId}`, "start_friend_streak", { p_friend: friendId }, "friend_streak_invited");
+    if (!result.error) notifyFriendSocial("streak_invite", result.data);
+    return result;
+  };
+  const respondStreak = async (streakId, accept) => {
+    const result = await act(`streak:${streakId}`, "respond_friend_streak", { p_streak: streakId, p_accept: accept }, accept ? "friend_streak_accepted" : void 0);
+    if (!result.error && accept) notifyFriendSocial("streak_accepted", streakId);
+    return result;
+  };
   const endStreak = (streakId) => act(`streak:${streakId}`, "end_friend_streak", { p_streak: streakId });
-  const challengeRace = (friendId) => act(`race:${friendId}`, "challenge_friend_race", { p_friend: friendId }, "friend_race_challenged");
-  const respondRace = (raceId, accept) => act(`race:${raceId}`, "respond_friend_race", { p_race: raceId, p_accept: accept }, accept ? "friend_race_accepted" : void 0);
+  const challengeRace = async (friendId) => {
+    const result = await act(`race:${friendId}`, "challenge_friend_race", { p_friend: friendId }, "friend_race_challenged");
+    if (!result.error) notifyFriendSocial("race_challenge", result.data);
+    return result;
+  };
+  const respondRace = async (raceId, accept) => {
+    const result = await act(`race:${raceId}`, "respond_friend_race", { p_race: raceId, p_accept: accept }, accept ? "friend_race_accepted" : void 0);
+    if (!result.error && accept) notifyFriendSocial("race_accepted", raceId);
+    return result;
+  };
   const cancelRace = (raceId) => act(`race:${raceId}`, "cancel_friend_race", { p_race: raceId });
   const claimStreak = async (streakId, friendName) => {
     const { data } = await act(`claim:${streakId}`, "claim_friend_streak_rewards", { p_streak: streakId }, "friend_reward_claimed");
@@ -62,5 +82,6 @@ function useFriendSocial(userId, focused = true) {
   return { social, available, busy, refresh, startStreak, respondStreak, endStreak, claimStreak, challengeRace, respondRace, cancelRace, claimRace };
 }
 export {
+  notifyFriendSocial,
   useFriendSocial
 };

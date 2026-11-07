@@ -1,0 +1,49 @@
+import React from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { COLORS } from '../../lib/constants';
+import { ChunkyButton } from './ChunkyButton';
+
+const LEO_WAVING = require('../../assets/mascot/leo-waving.png');
+
+/** One place to add friends: share your link, search by name, or show your code. */
+export function AddFriendsCard({ hasFriends, onShare, onSearch, onMyCode }: {
+  hasFriends: boolean;
+  onShare: () => void;
+  onSearch: () => void;
+  onMyCode: () => void;
+}) {
+  return (
+    <View style={styles.card}>
+      <View style={styles.top}>
+        <Image source={LEO_WAVING} style={styles.leo} resizeMode="contain" />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.title}>{hasFriends ? 'Add more friends' : 'Learning is better with friends'}</Text>
+          <Text style={styles.sub}>{hasFriends ? 'More friends, more races, more flames.' : 'Race each other, share a streak, keep each other honest.'}</Text>
+        </View>
+      </View>
+      <ChunkyButton label="Share invite link" icon={<Feather name="share" size={18} color="#FFFFFF" />} onPress={onShare} />
+      <View style={styles.row}>
+        <TouchableOpacity style={styles.small} onPress={onSearch} activeOpacity={0.85} accessibilityRole="button">
+          <Feather name="search" size={17} color={COLORS.accent} />
+          <Text style={styles.smallText}>Search</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.small} onPress={onMyCode} activeOpacity={0.85} accessibilityRole="button">
+          <MaterialCommunityIcons name="qrcode" size={18} color={COLORS.accent} />
+          <Text style={styles.smallText}>My code</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: { borderRadius: 22, padding: 16, gap: 12, marginBottom: 16, backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 5, borderColor: COLORS.border },
+  top: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  leo: { width: 72, height: 72 },
+  title: { fontSize: 18, fontWeight: '900', color: COLORS.textPrimary },
+  sub: { fontSize: 13, color: COLORS.textSecondary, marginTop: 3, lineHeight: 18 },
+  row: { flexDirection: 'row', gap: 10 },
+  small: { flex: 1, height: 46, borderRadius: 14, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, backgroundColor: COLORS.bg2 },
+  smallText: { fontSize: 15, fontWeight: '800', color: COLORS.accent },
+});

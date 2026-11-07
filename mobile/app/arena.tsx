@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../hooks/useAuth';
 import type { Exercise } from '../lesson-kit/types';
 import { QuizSeen, recentQuizHistory, recordQuizQuestion } from '../lib/quizHistory';
-import { View, Text, StyleSheet, ActivityIndicator, Animated, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Animated, Image, TouchableOpacity } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { ArenaScreen, ArenaResult } from '../lesson-kit/arena/ArenaScreen';
@@ -21,6 +21,7 @@ import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
+import { LeoAnimated } from '../components/mascot/LeoAnimated';
 
 const THINKING_LEO = require('../assets/mascot/leo-thinking.png');
 const SCHOLAR_LEO = require('../assets/mascot/leo-graduation.png');
@@ -96,6 +97,20 @@ function ArenaPrerequisite() {
   );
 }
 
+const ARENA_SETUP_CLIPS = ['leo-arena-setup-a', 'leo-arena-setup-b'] as const;
+const LEO_ARENA_SETUP = require('../assets/mascot/leo-arena-setup.png');
+
+/** Leo lays out the arena floor while the questions load, alternating his two takes. */
+function ArenaSetup() {
+  const [take, setTake] = useState(0);
+  return (
+    <View style={styles.loading}>
+      <LeoAnimated clip={ARENA_SETUP_CLIPS[take % 2]} size={240} fallback={LEO_ARENA_SETUP} onEnd={() => setTake(t => t + 1)} />
+      <Text style={styles.loadingText}>Setting up the arena floor…</Text>
+    </View>
+  );
+}
+
 export default function ArenaRoute() {
   const { user } = useAuth();
   const { day } = useLocalSearchParams<{ day?: string }>();
@@ -159,14 +174,7 @@ export default function ArenaRoute() {
     <Text style={styles.backLink} onPress={() => router.back()}>Go back</Text>
   </View>;
 
-  if (busy) {
-    return (
-      <View style={styles.loading}>
-        <ActivityIndicator size="large" color={COLORS.accent} />
-        <Text style={styles.loadingText}>Setting up the arena floor…</Text>
-      </View>
-    );
-  }
+  if (busy) return <ArenaSetup />;
 
   if (studied.lessons.length === 0) {
     return <ArenaPrerequisite />;

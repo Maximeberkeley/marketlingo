@@ -1,4 +1,12 @@
 {
+  "leo-arena-setup-a": {
+    "ms": 5208,
+    "loop": false
+  },
+  "leo-arena-setup-b": {
+    "ms": 5208,
+    "loop": false
+  },
   "leo-call-listen": {
     "ms": 7917,
     "loop": true

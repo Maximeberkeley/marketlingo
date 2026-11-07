@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { SocialAvatar } from './SocialAvatar';
 import { XPFlask } from '../ui/XPFlask';
@@ -17,10 +17,12 @@ interface Props {
   onClaim: () => void;
   onNudge: () => void;
   onRematch: () => void;
+  /** Your display name, for your own avatar's initial. */
+  meName?: string;
 }
 
 /** A head-to-head week: both faces, a tug-of-war bar, who leads, the clock and the prize. */
-export function RaceCard({ race, busy, nudgeState, onAccept, onCancel, onClaim, onNudge, onRematch }: Props) {
+export function RaceCard({ race, busy, nudgeState, onAccept, onCancel, onClaim, onNudge, onRematch, meName }: Props) {
   const name = firstName(race);
   const over = raceIsOver(race);
   const share = raceShare(race.my_xp, race.friend_xp);
@@ -72,7 +74,7 @@ export function RaceCard({ race, busy, nudgeState, onAccept, onCancel, onClaim, 
 
       <View style={styles.versus}>
         <View style={styles.side}>
-          <SocialAvatar name="You" size={44} ring={COLORS.accent} ringWidth={3} />
+          <SocialAvatar name={meName?.trim() || 'You'} size={44} ring={COLORS.accent} ringWidth={3} />
           <View>
             <Text style={styles.sideName}>You</Text>
             <Text style={[styles.sideXP, { color: COLORS.accent }]}>{race.my_xp.toLocaleString()} XP</Text>
@@ -116,7 +118,10 @@ export function RaceCard({ race, busy, nudgeState, onAccept, onCancel, onClaim, 
         <View style={[styles.btn, styles.btnOff]}><Text style={styles.btnOffText}>Nudged {name} ✓</Text></View>
       ) : (
         <TouchableOpacity style={[styles.btn, styles.btnGhost]} onPress={onNudge} disabled={nudgeState === 'sending'} accessibilityRole="button">
-          {nudgeState === 'sending' ? <ActivityIndicator color={COLORS.accent} /> : <Text style={styles.btnGhostText}>{leading ? `Nudge ${name}` : `Nudge ${name} · then pull ahead`}</Text>}
+          {nudgeState === 'sending' ? <ActivityIndicator color={COLORS.accent} /> : <>
+            <MaterialCommunityIcons name="hand-wave" size={18} color={COLORS.accent} />
+            <Text style={styles.btnGhostText}>{leading ? `Nudge ${name}` : `Nudge ${name} · then pull ahead`}</Text>
+          </>}
         </TouchableOpacity>
       )}
     </View>

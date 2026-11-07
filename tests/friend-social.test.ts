@@ -104,8 +104,8 @@ describe('before the database update is applied', () => {
 
   it('keeps the Friends tab as it is today until the functions exist', () => {
     const friends = read('mobile/app/friends.tsx');
-    expect(friends).toContain('social.available');
-    expect(friends).toMatch(/\{social\.available && \(/);
+    expect(friends).toContain('const showSocial = social.available && (friends.length > 0 || streaks.length > 0 || races.length > 0);');
+    expect(friends).toMatch(/\{showSocial && \(/);
   });
 });
 
