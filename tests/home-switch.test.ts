@@ -64,7 +64,8 @@ describe('friend standing on Home', () => {
   it('loads on its own under today and never names other learners', () => {
     const chip = read('mobile/components/home/FriendStandingChip.tsx');
     expect(chip).toContain("supabase.rpc('get_friends_overview')");
-    expect(chip).toContain('if (standing === undefined) return null;');
+    // Hidden until it knows: either the monthly rank or a friend streak/race line.
+    expect(chip).toContain('if (standing === undefined && !socialLine) return null;');
     expect(chip).not.toMatch(/display_name|username/);
     expect(chip).toContain("router.push('/friends' as any)");
     const home = read('mobile/app/(tabs)/home.tsx');

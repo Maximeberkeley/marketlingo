@@ -7,6 +7,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
+import { StreakFlame } from '../ui/StreakFlame';
 import { ComboState } from '../../lib/combo';
 
 interface ComboBarProps {
@@ -61,7 +62,7 @@ export function ComboBar({ combo, correctCount, totalAnswered }: ComboBarProps) 
       {/* Combo streak */}
       <View style={styles.comboSection}>
         <Animated.View style={[styles.fireWrap, { opacity: fireOpacity }]}>
-          <Text style={styles.fireEmoji}>🔥</Text>
+          <StreakFlame size={20} />
         </Animated.View>
         <Animated.Text style={[
           styles.comboCount,

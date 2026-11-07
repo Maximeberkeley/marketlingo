@@ -145,19 +145,24 @@ function fetchAudioAsBase64(text: string, voiceId: string, token: string): Promi
 /**
  * Speaks text using ElevenLabs TTS via the edge function.
  * Returns an Audio.Sound instance (caller manages cleanup) or null on failure.
+ *
+ * `ignoreMute` is for calls with Leo: a call is spoken by nature, so the mute
+ * set in the Leo chat does not silence it. A call keeps its own mute.
  */
 export async function speakWithElevenLabs(
   text: string,
   voiceId: string,
   tag = 'tts',
+  options: { ignoreMute?: boolean } = {},
 ): Promise<Audio.Sound | null> {
+  const chatMuted = () => !options.ignoreMute && isLeoMutedSync();
   if (!text || text.trim().length < 5) {
     log.debug('[TTS] Text too short, skipping');
     return null;
   }
 
   // A muted learner never triggers a voice request at all.
-  if (isLeoMutedSync()) {
+  if (chatMuted()) {
     log.debug(`[TTS:${tag}] Muted — skipping speech`);
     return null;
   }
@@ -173,7 +178,7 @@ export async function speakWithElevenLabs(
     const base64 = await fetchAudioAsBase64(text, voiceId, token);
 
     // The learner may have walked away while the audio downloaded.
-    if (generation !== speechGeneration || isLeoMutedSync()) {
+    if (generation !== speechGeneration || chatMuted()) {
       log.debug(`[TTS:${tag}] Cancelled before playback`);
       return null;
     }
@@ -201,7 +206,7 @@ export async function speakWithElevenLabs(
     });
 
     // One last check: do not start talking if the learner has left.
-    if (generation !== speechGeneration || isLeoMutedSync()) {
+    if (generation !== speechGeneration || chatMuted()) {
       log.debug(`[TTS:${tag}] Cancelled just before playback`);
       FileSystem.deleteAsync(tempPath, { idempotent: true }).catch(() => {});
       return null;

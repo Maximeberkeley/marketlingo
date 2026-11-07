@@ -16,6 +16,13 @@ import { trackEvent } from '../lib/analytics';
 import { Feather } from '@expo/vector-icons';
 import { getMonthlyStandings, myFriendRaceXP, standingName } from '../lib/socialStandings';
 import { log } from '../lib/logger';
+import { useFriendSocial, SocialReward } from '../hooks/useFriendSocial';
+import { FriendStreaksCard } from '../components/social/FriendStreaksCard';
+import { StreakSheet } from '../components/social/StreakSheet';
+import { RaceCard } from '../components/social/RaceCard';
+import { FriendPicker, PickerFriend } from '../components/social/FriendPicker';
+import { RewardCelebration } from '../components/social/RewardCelebration';
+import { firstName, raceIsOver } from '../lib/friendSocial';
 
 const SOCIAL_HERO = require('../assets/illustrations/friends-rivals-hero.png');
 const LEO_SASSY = require('../assets/mascot/leo-sassy.png');
@@ -70,6 +77,12 @@ export default function FriendsScreen() {
   const [myStats, setMyStats] = useState<{ xp: number; level: number; streak: number; monthXP: number }>({ xp: 0, level: 1, streak: 0, monthXP: 0 });
   const [nudgingId, setNudgingId] = useState<string | null>(null);
   const [nudgedIds, setNudgedIds] = useState<Set<string>>(new Set());
+  // Friend streaks and races (shown once the server functions exist).
+  const social = useFriendSocial(user?.id);
+  const [openStreakId, setOpenStreakId] = useState<string | null>(null);
+  const [pickerMode, setPickerMode] = useState<'streak' | 'race' | null>(null);
+  const [pickerError, setPickerError] = useState<string | null>(null);
+  const [reward, setReward] = useState<SocialReward | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -166,8 +179,9 @@ export default function FriendsScreen() {
   useFocusEffect(useCallback(() => {
     if (!marketId || !user) return;
     void refetch();
+    void social.refresh();
     if (activeTab === 'global') void fetchGlobalLeaderboard();
-  }, [activeTab, fetchGlobalLeaderboard, marketId, refetch, user]));
+  }, [activeTab, fetchGlobalLeaderboard, marketId, refetch, user, social.refresh]));
 
   const currentUserRank = globalEntries.find((e) => e.isCurrentUser)?.rank ?? null;
   const marketName = marketId ? getMarketName(marketId) : '';
@@ -325,6 +339,49 @@ export default function FriendsScreen() {
     }
   };
 
+  // ── Friend streaks and races ──
+  const streaks = social.social?.streaks ?? [];
+  const races = social.social?.races ?? [];
+  const openStreak = streaks.find(s => s.id === openStreakId) ?? null;
+  const nudgeStateFor = (friendId: string, nudgedToday: boolean): 'idle' | 'sending' | 'nudged' =>
+    nudgingId === friendId ? 'sending' : nudgedToday || nudgedIds.has(friendId) ? 'nudged' : 'idle';
+  const nudgeById = (friendId: string) => {
+    const friend = friends.find(f => f.id === friendId);
+    if (friend) void handleNudge(friend);
+  };
+  const pickerFriends: PickerFriend[] = friends.map(f => {
+    const streak = streaks.find(s => s.friend_id === f.id);
+    const race = races.find(r => r.friend_id === f.id && (r.status === 'pending' || (r.status === 'active' && !raceIsOver(r))));
+    return {
+      id: f.id,
+      name: f.username,
+      meta: [f.currentStreak > 0 ? `${f.currentStreak}-day streak` : null, f.selectedMarket ? getMarketName(f.selectedMarket) : null].filter(Boolean).join(' · ') || `Lv.${f.currentLevel}`,
+      taken: pickerMode === 'streak'
+        ? (streak ? (streak.status === 'pending' ? (streak.invited_by_me ? 'Invited' : 'Invited you') : 'Streak on') : undefined)
+        : (race ? (race.status === 'pending' ? (race.challenged_by_me ? 'Challenged' : 'Challenged you') : 'Racing') : undefined),
+    };
+  });
+  const openPicker = (mode: 'streak' | 'race') => { triggerHaptic('light'); setPickerError(null); setPickerMode(mode); };
+  const pickFriend = async (friendId: string) => {
+    const mode = pickerMode;
+    const name = friends.find(f => f.id === friendId)?.username ?? 'your friend';
+    const result = mode === 'streak' ? await social.startStreak(friendId) : await social.challengeRace(friendId);
+    if (result.error) { setPickerError(result.error); return; }
+    triggerHaptic('success');
+    setPickerMode(null);
+    showToast(mode === 'streak' ? `Streak invite sent to ${name}` : `Challenge sent to ${name}`);
+  };
+  const claimStreakReward = async () => {
+    if (!openStreak) return;
+    const won = await social.claimStreak(openStreak.id, firstName(openStreak));
+    if (won) { setOpenStreakId(null); setReward(won); }
+  };
+  const claimRaceReward = async (raceId: string, name: string) => {
+    const won = await social.claimRace(raceId, name);
+    if (won && won.xp > 0) setReward(won);
+    else if (won) showToast(`${name} took this one. Rematch?`);
+  };
+
   const handleRemove = (friend: Friend) => {
     Alert.alert('Remove friend?', `Remove ${friend.username}?`, [
       { text: 'Cancel', style: 'cancel' },
@@ -450,6 +507,45 @@ export default function FriendsScreen() {
                   </Text>
                 </View>
               </View>
+
+              {social.available && (
+                <>
+                  <FriendStreaksCard streaks={streaks} onOpen={s => { triggerHaptic('light'); setOpenStreakId(s.id); }} onInvite={() => openPicker('streak')} />
+                  <View style={styles.section}>
+                    <View style={styles.racesHead}>
+                      <Text style={styles.sectionTitle}>Races</Text>
+                      {races.length > 0 && (
+                        <TouchableOpacity onPress={() => openPicker('race')} style={styles.racesNew} accessibilityRole="button">
+                          <Feather name="flag" size={13} color={COLORS.accent} />
+                          <Text style={styles.racesNewText}>Challenge</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                    {races.length === 0 ? (
+                      <TouchableOpacity style={styles.raceEmpty} onPress={() => openPicker('race')} activeOpacity={0.88} accessibilityRole="button">
+                        <View style={styles.raceEmptyDisc}><Feather name="flag" size={20} color="#FFFFFF" /></View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.raceEmptyTitle}>Race a friend this week</Text>
+                          <Text style={styles.raceEmptySub}>7 days of XP from any industry. Winner takes +100 XP.</Text>
+                        </View>
+                        <Feather name="chevron-right" size={18} color={COLORS.accent} />
+                      </TouchableOpacity>
+                    ) : races.map(race => (
+                      <RaceCard
+                        key={race.id}
+                        race={race}
+                        busy={social.busy === `race:${race.id}` || social.busy === `claim:${race.id}` || social.busy === `race:${race.friend_id}`}
+                        nudgeState={nudgeStateFor(race.friend_id, race.nudged_today)}
+                        onAccept={accept => { void social.respondRace(race.id, accept).then(r => { if (!r.error && accept) showToast(`Race on! 7 days. Go.`); }); }}
+                        onCancel={() => { void social.cancelRace(race.id); }}
+                        onClaim={() => { void claimRaceReward(race.id, firstName(race)); }}
+                        onNudge={() => nudgeById(race.friend_id)}
+                        onRematch={() => { void social.challengeRace(race.friend_id).then(r => showToast(r.error || `Rematch sent to ${firstName(race)}`)); }}
+                      />
+                    ))}
+                  </View>
+                </>
+              )}
 
               {/* Incoming requests — inline, no pop-ups */}
               {pendingRequests.length > 0 && (
@@ -728,6 +824,35 @@ export default function FriendsScreen() {
 
         </Animated.View>
       </ScrollView>
+      <StreakSheet
+        streak={openStreak}
+        busy={!!openStreak && (social.busy === `streak:${openStreak.id}` || social.busy === `claim:${openStreak.id}`)}
+        nudgeState={openStreak ? nudgeStateFor(openStreak.friend_id, openStreak.nudged_today) : 'idle'}
+        onClose={() => setOpenStreakId(null)}
+        onAccept={accept => {
+          if (!openStreak) return;
+          const name = firstName(openStreak);
+          void social.respondStreak(openStreak.id, accept).then(r => {
+            if (r.error) showToast(r.error);
+            else if (accept) { triggerHaptic('success'); showToast(`Streak on with ${name}. Study today to light it.`); }
+            else setOpenStreakId(null);
+          });
+        }}
+        onClaim={() => { void claimStreakReward(); }}
+        onNudge={() => openStreak && nudgeById(openStreak.friend_id)}
+        onEnd={() => { if (openStreak) { void social.endStreak(openStreak.id); setOpenStreakId(null); } }}
+        onStudy={() => { setOpenStreakId(null); router.push('/(tabs)/home' as any); }}
+      />
+      <FriendPicker
+        mode={pickerMode}
+        friends={pickerFriends}
+        busyId={social.busy?.replace(/^(streak|race):/, '') ?? null}
+        error={pickerError}
+        onPick={id => { void pickFriend(id); }}
+        onClose={() => setPickerMode(null)}
+        onAddFriends={() => { setPickerMode(null); }}
+      />
+      <RewardCelebration reward={reward} onClose={() => setReward(null)} />
       {toast && (
         <View pointerEvents="none" style={[styles.toast, { bottom: insets.bottom + 24 }]}>
           <Text style={styles.toastText}>{toast}</Text>
@@ -940,6 +1065,16 @@ const styles = StyleSheet.create({
   nudgePillTextOff: { color: COLORS.textMuted },
   nudgeDone: { fontSize: 12, fontWeight: "700", color: COLORS.textMuted },
   section: { marginBottom: 14, gap: 8 },
+  racesHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  racesNew: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, height: 28, borderRadius: 14, backgroundColor: COLORS.accentSoft },
+  racesNewText: { fontSize: 12, fontWeight: '800', color: COLORS.accent },
+  raceEmpty: {
+    flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 20,
+    backgroundColor: COLORS.accentSoft, borderWidth: 1.5, borderColor: COLORS.accentMedium,
+  },
+  raceEmptyDisc: { width: 42, height: 42, borderRadius: 21, backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center' },
+  raceEmptyTitle: { fontSize: 15, fontWeight: '800', color: COLORS.textPrimary },
+  raceEmptySub: { fontSize: 12, color: COLORS.textSecondary, marginTop: 2, lineHeight: 16 },
   sectionTitle: { fontSize: 12, fontWeight: '800', color: COLORS.textMuted, letterSpacing: 0.4, textTransform: 'uppercase' },
   personRow: {
     flexDirection: 'row', alignItems: 'center', gap: 10,

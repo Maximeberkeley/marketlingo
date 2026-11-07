@@ -104,12 +104,13 @@ function fetchAudioAsBase64(text, voiceId, token) {
     xhr.send(body);
   });
 }
-async function speakWithElevenLabs(text, voiceId, tag = "tts") {
+async function speakWithElevenLabs(text, voiceId, tag = "tts", options = {}) {
+  const chatMuted = () => !options.ignoreMute && isLeoMutedSync();
   if (!text || text.trim().length < 5) {
     log.debug("[TTS] Text too short, skipping");
     return null;
   }
-  if (isLeoMutedSync()) {
+  if (chatMuted()) {
     log.debug(`[TTS:${tag}] Muted \u2014 skipping speech`);
     return null;
   }
@@ -119,7 +120,7 @@ async function speakWithElevenLabs(text, voiceId, tag = "tts") {
     const token = await getAuthToken();
     log.debug(`[TTS:${tag}] Auth token obtained:`, token ? `${token.substring(0, 10)}...` : "\u26A0\uFE0F EMPTY");
     const base64 = await fetchAudioAsBase64(text, voiceId, token);
-    if (generation !== speechGeneration || isLeoMutedSync()) {
+    if (generation !== speechGeneration || chatMuted()) {
       log.debug(`[TTS:${tag}] Cancelled before playback`);
       return null;
     }
@@ -138,7 +139,7 @@ async function speakWithElevenLabs(text, voiceId, tag = "tts") {
       playsInSilentModeIOS: true,
       staysActiveInBackground: false
     });
-    if (generation !== speechGeneration || isLeoMutedSync()) {
+    if (generation !== speechGeneration || chatMuted()) {
       log.debug(`[TTS:${tag}] Cancelled just before playback`);
       FileSystem.deleteAsync(tempPath, { idempotent: true }).catch(() => {
       });

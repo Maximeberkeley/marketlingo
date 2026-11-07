@@ -29,13 +29,14 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 /**
  * Play TTS audio in Leo's voice.
  * Uses static import of speakWithElevenLabs for reliable native bundling.
+ * Only runs when the learner taps to hear Leo, so the chat mute does not apply.
  */
 export async function speakAsLeo(text: string): Promise<Audio.Sound | null> {
   if (!text || text.trim().length === 0) return null;
 
   try {
     log.debug('[Leo coach] Speaking:', text.substring(0, 60) + '...');
-    return await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_interview');
+    return await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_interview', { ignoreMute: true });
   } catch (err) {
     log.warn('Leo coach TTS error:', err);
     return null;

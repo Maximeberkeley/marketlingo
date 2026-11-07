@@ -14,7 +14,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../lib/constants';
 import { supabase } from '../lib/supabase';
 import { speakWithElevenLabs, stopAllTTS } from '../lib/tts';
-import { isLeoMutedSync, loadLeoMuted } from '../lib/voicePrefs';
 import { triggerHaptic } from '../lib/haptics';
 import { log } from '../lib/logger';
 import { useAuth } from '../hooks/useAuth';
@@ -108,7 +107,6 @@ export default function LeoCallScreen() {
   const markedRef = useRef(false);
   const fade = useRef(new Animated.Value(1)).current;
   const pulse = useRef(new Animated.Value(0)).current;
-  const muted = useRef(false);
 
   const context: LeoCallContext = useMemo(() => ({
     callType,
@@ -146,15 +144,13 @@ export default function LeoCallScreen() {
     if (!user || !marketId || progressLoading || dossier.loading || (!params.lessonTitle && studied.isLoading)) return;
     let cancelled = false;
     (async () => {
-      const [called, rotated, savedTarget, isMuted] = await Promise.all([
+      // A call always starts with Leo's voice on, even if the Leo chat is muted.
+      const [called, rotated, savedTarget] = await Promise.all([
         hasCalledToday(user.id),
         nextCallType(user.id),
         loadInterviewTarget(user.id, marketId),
-        loadLeoMuted(),
       ]);
       if (cancelled || startedRef.current) return;
-      muted.current = isMuted;
-      if (isMuted) setCaptions(true);
       setTarget(savedTarget);
       if (called) { setPhase('limit'); return; }
       const chosenType = params.mode === 'interview' ? 'interview' : rotated;
@@ -220,14 +216,9 @@ export default function LeoCallScreen() {
 
   const speak = useCallback(async (text: string, thenEnd: boolean) => {
     showPose('talking');
-    if (muted.current || isLeoMutedSync()) {
-      setSpeaking(false); showPose('listening');
-      if (thenEnd) setTimeout(() => finishCall(), 2200);
-      return;
-    }
     setSpeaking(true);
     try {
-      const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_call');
+      const sound = await speakWithElevenLabs(text, LEO_VOICE_ID, 'leo_call', { ignoreMute: true });
       if (!sound) { setSpeaking(false); showPose('listening'); if (thenEnd) finishCall(); return; }
       sound.setOnPlaybackStatusUpdate((s: any) => {
         if (s.didJustFinish) {

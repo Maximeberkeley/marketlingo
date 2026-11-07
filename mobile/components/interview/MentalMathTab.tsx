@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
+import { StreakFlame } from '../ui/StreakFlame';
 import { triggerHaptic } from '../../lib/haptics';
 
 // ─── Types ───
@@ -238,8 +239,9 @@ export function MentalMathTab({ marketName, marketId }: MentalMathTabProps) {
           <Text style={st.sectionSubtitle}>{marketName} • Quick calculations</Text>
         </View>
         {streak >= 3 && (
-          <Animated.View style={[st.streakBadge, { transform: [{ scale: pulseAnim }] }]}>
-            <Text style={st.streakText}>🔥 {streak}</Text>
+          <Animated.View style={[st.streakBadge, { flexDirection: 'row', alignItems: 'center', gap: 4, transform: [{ scale: pulseAnim }] }]}>
+            <StreakFlame size={16} />
+            <Text style={st.streakText}>{streak}</Text>
           </Animated.View>
         )}
       </View>

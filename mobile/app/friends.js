@@ -25,6 +25,13 @@ import { trackEvent } from "../lib/analytics";
 import { Feather } from "@expo/vector-icons";
 import { getMonthlyStandings, myFriendRaceXP, standingName } from "../lib/socialStandings";
 import { log } from "../lib/logger";
+import { useFriendSocial } from "../hooks/useFriendSocial";
+import { FriendStreaksCard } from "../components/social/FriendStreaksCard";
+import { StreakSheet } from "../components/social/StreakSheet";
+import { RaceCard } from "../components/social/RaceCard";
+import { FriendPicker } from "../components/social/FriendPicker";
+import { RewardCelebration } from "../components/social/RewardCelebration";
+import { firstName, raceIsOver } from "../lib/friendSocial";
 const SOCIAL_HERO = require("../assets/illustrations/friends-rivals-hero.png");
 const LEO_SASSY = require("../assets/mascot/leo-sassy.png");
 const MEDALS = [
@@ -72,6 +79,11 @@ function FriendsScreen() {
   const [myStats, setMyStats] = useState({ xp: 0, level: 1, streak: 0, monthXP: 0 });
   const [nudgingId, setNudgingId] = useState(null);
   const [nudgedIds, setNudgedIds] = useState(/* @__PURE__ */ new Set());
+  const social = useFriendSocial(user?.id);
+  const [openStreakId, setOpenStreakId] = useState(null);
+  const [pickerMode, setPickerMode] = useState(null);
+  const [pickerError, setPickerError] = useState(null);
+  const [reward, setReward] = useState(null);
   const [toast, setToast] = useState(null);
   const toastTimer = useRef(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -153,8 +165,9 @@ function FriendsScreen() {
   useFocusEffect(useCallback(() => {
     if (!marketId || !user) return;
     void refetch();
+    void social.refresh();
     if (activeTab === "global") void fetchGlobalLeaderboard();
-  }, [activeTab, fetchGlobalLeaderboard, marketId, refetch, user]));
+  }, [activeTab, fetchGlobalLeaderboard, marketId, refetch, user, social.refresh]));
   const currentUserRank = globalEntries.find((e) => e.isCurrentUser)?.rank ?? null;
   const marketName = marketId ? getMarketName(marketId) : "";
   const initial = (user?.email || "Y").charAt(0).toUpperCase();
@@ -316,6 +329,54 @@ function FriendsScreen() {
       setNudgingId(null);
     }
   };
+  const streaks = social.social?.streaks ?? [];
+  const races = social.social?.races ?? [];
+  const openStreak = streaks.find((s) => s.id === openStreakId) ?? null;
+  const nudgeStateFor = (friendId, nudgedToday) => nudgingId === friendId ? "sending" : nudgedToday || nudgedIds.has(friendId) ? "nudged" : "idle";
+  const nudgeById = (friendId) => {
+    const friend = friends.find((f) => f.id === friendId);
+    if (friend) void handleNudge(friend);
+  };
+  const pickerFriends = friends.map((f) => {
+    const streak = streaks.find((s) => s.friend_id === f.id);
+    const race = races.find((r) => r.friend_id === f.id && (r.status === "pending" || r.status === "active" && !raceIsOver(r)));
+    return {
+      id: f.id,
+      name: f.username,
+      meta: [f.currentStreak > 0 ? `${f.currentStreak}-day streak` : null, f.selectedMarket ? getMarketName(f.selectedMarket) : null].filter(Boolean).join(" \xB7 ") || `Lv.${f.currentLevel}`,
+      taken: pickerMode === "streak" ? streak ? streak.status === "pending" ? streak.invited_by_me ? "Invited" : "Invited you" : "Streak on" : void 0 : race ? race.status === "pending" ? race.challenged_by_me ? "Challenged" : "Challenged you" : "Racing" : void 0
+    };
+  });
+  const openPicker = (mode) => {
+    triggerHaptic("light");
+    setPickerError(null);
+    setPickerMode(mode);
+  };
+  const pickFriend = async (friendId) => {
+    const mode = pickerMode;
+    const name = friends.find((f) => f.id === friendId)?.username ?? "your friend";
+    const result = mode === "streak" ? await social.startStreak(friendId) : await social.challengeRace(friendId);
+    if (result.error) {
+      setPickerError(result.error);
+      return;
+    }
+    triggerHaptic("success");
+    setPickerMode(null);
+    showToast(mode === "streak" ? `Streak invite sent to ${name}` : `Challenge sent to ${name}`);
+  };
+  const claimStreakReward = async () => {
+    if (!openStreak) return;
+    const won = await social.claimStreak(openStreak.id, firstName(openStreak));
+    if (won) {
+      setOpenStreakId(null);
+      setReward(won);
+    }
+  };
+  const claimRaceReward = async (raceId, name) => {
+    const won = await social.claimRace(raceId, name);
+    if (won && won.xp > 0) setReward(won);
+    else if (won) showToast(`${name} took this one. Rematch?`);
+  };
   const handleRemove = (friend) => {
     Alert.alert("Remove friend?", `Remove ${friend.username}?`, [
       { text: "Cancel", style: "cancel" },
@@ -401,7 +462,33 @@ function FriendsScreen() {
         accessibilityLabel: "Save name"
       },
       savingName ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: "#FFF" }) : /* @__PURE__ */ React.createElement(Text, { style: styles.nameSaveText }, "Save")
-    ))), activeTab === "friends" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: styles.heroCard }, /* @__PURE__ */ React.createElement(Image, { source: SOCIAL_HERO, style: styles.heroLeo, resizeMode: "cover" }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.heroKicker }, "THIS MONTH \xB7 ALL INDUSTRIES"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroValue }, myStats.monthXP.toLocaleString(), /* @__PURE__ */ React.createElement(Text, { style: styles.heroUnit }, " XP")), /* @__PURE__ */ React.createElement(Text, { style: styles.heroLine }, friends.length === 0 ? "Add a friend and this becomes a race." : /* @__PURE__ */ React.createElement(React.Fragment, null, "You sit ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, "#", myFriendRank), " of ", friendsBoard.length, ".")))), pendingRequests.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "Friend requests (", pendingRequests.length, ")"), pendingRequests.map((r) => /* @__PURE__ */ React.createElement(View, { key: r.id, style: styles.personRow }, /* @__PURE__ */ React.createElement(View, { style: styles.avatar }, /* @__PURE__ */ React.createElement(Text, { style: styles.avatarText }, r.fromUsername.charAt(0).toUpperCase())), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: styles.rowName, numberOfLines: 1 }, r.fromUsername), !!r.fromMarket && /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta, numberOfLines: 1 }, getMarketName(r.fromMarket))), busyId === r.id ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: [styles.pill, styles.pillGhost], onPress: () => handleDecline(r.id), accessibilityLabel: `Decline ${r.fromUsername}` }, /* @__PURE__ */ React.createElement(Text, { style: styles.pillGhostText }, "Decline")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.pill, onPress: () => handleAccept(r.id), accessibilityLabel: `Accept ${r.fromUsername}` }, /* @__PURE__ */ React.createElement(Text, { style: styles.pillText }, "Accept")))))), sentRequests.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "Sent"), sentRequests.map((r) => /* @__PURE__ */ React.createElement(View, { key: r.id, style: styles.personRow }, /* @__PURE__ */ React.createElement(View, { style: styles.avatar }, /* @__PURE__ */ React.createElement(Text, { style: styles.avatarText }, r.toUsername.charAt(0).toUpperCase())), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: styles.rowName, numberOfLines: 1 }, r.toUsername), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta, numberOfLines: 1 }, r.toMarket ? `${getMarketName(r.toMarket)} \xB7 ` : "", "Waiting")), busyId === r.id ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }) : /* @__PURE__ */ React.createElement(TouchableOpacity, { style: [styles.pill, styles.pillGhost], onPress: () => handleCancelSent(r.id), accessibilityLabel: `Cancel request to ${r.toUsername}` }, /* @__PURE__ */ React.createElement(Text, { style: styles.pillGhostText }, "Cancel"))))), !!myFriendCode && /* @__PURE__ */ React.createElement(View, { style: styles.codeCard }, /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.codeKicker }, "YOUR FRIEND CODE"), /* @__PURE__ */ React.createElement(Text, { style: styles.codeValue, selectable: true }, myFriendCode), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta }, "Hold the code to copy it.")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.pill, onPress: handleShareCode, accessibilityLabel: "Share your friend code" }, /* @__PURE__ */ React.createElement(Feather, { name: "share", size: 13, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.pillText }, "Share"))), /* @__PURE__ */ React.createElement(View, { style: styles.addRow }, /* @__PURE__ */ React.createElement(Feather, { name: "search", size: 16, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(
+    ))), activeTab === "friends" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: styles.heroCard }, /* @__PURE__ */ React.createElement(Image, { source: SOCIAL_HERO, style: styles.heroLeo, resizeMode: "cover" }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.heroKicker }, "THIS MONTH \xB7 ALL INDUSTRIES"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroValue }, myStats.monthXP.toLocaleString(), /* @__PURE__ */ React.createElement(Text, { style: styles.heroUnit }, " XP")), /* @__PURE__ */ React.createElement(Text, { style: styles.heroLine }, friends.length === 0 ? "Add a friend and this becomes a race." : /* @__PURE__ */ React.createElement(React.Fragment, null, "You sit ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, "#", myFriendRank), " of ", friendsBoard.length, ".")))), social.available && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(FriendStreaksCard, { streaks, onOpen: (s) => {
+      triggerHaptic("light");
+      setOpenStreakId(s.id);
+    }, onInvite: () => openPicker("streak") }), /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(View, { style: styles.racesHead }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "Races"), races.length > 0 && /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => openPicker("race"), style: styles.racesNew, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Feather, { name: "flag", size: 13, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.racesNewText }, "Challenge"))), races.length === 0 ? /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.raceEmpty, onPress: () => openPicker("race"), activeOpacity: 0.88, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(View, { style: styles.raceEmptyDisc }, /* @__PURE__ */ React.createElement(Feather, { name: "flag", size: 20, color: "#FFFFFF" })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.raceEmptyTitle }, "Race a friend this week"), /* @__PURE__ */ React.createElement(Text, { style: styles.raceEmptySub }, "7 days of XP from any industry. Winner takes +100 XP.")), /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 18, color: COLORS.accent })) : races.map((race) => /* @__PURE__ */ React.createElement(
+      RaceCard,
+      {
+        key: race.id,
+        race,
+        busy: social.busy === `race:${race.id}` || social.busy === `claim:${race.id}` || social.busy === `race:${race.friend_id}`,
+        nudgeState: nudgeStateFor(race.friend_id, race.nudged_today),
+        onAccept: (accept) => {
+          void social.respondRace(race.id, accept).then((r) => {
+            if (!r.error && accept) showToast(`Race on! 7 days. Go.`);
+          });
+        },
+        onCancel: () => {
+          void social.cancelRace(race.id);
+        },
+        onClaim: () => {
+          void claimRaceReward(race.id, firstName(race));
+        },
+        onNudge: () => nudgeById(race.friend_id),
+        onRematch: () => {
+          void social.challengeRace(race.friend_id).then((r) => showToast(r.error || `Rematch sent to ${firstName(race)}`));
+        }
+      }
+    )))), pendingRequests.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "Friend requests (", pendingRequests.length, ")"), pendingRequests.map((r) => /* @__PURE__ */ React.createElement(View, { key: r.id, style: styles.personRow }, /* @__PURE__ */ React.createElement(View, { style: styles.avatar }, /* @__PURE__ */ React.createElement(Text, { style: styles.avatarText }, r.fromUsername.charAt(0).toUpperCase())), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: styles.rowName, numberOfLines: 1 }, r.fromUsername), !!r.fromMarket && /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta, numberOfLines: 1 }, getMarketName(r.fromMarket))), busyId === r.id ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: [styles.pill, styles.pillGhost], onPress: () => handleDecline(r.id), accessibilityLabel: `Decline ${r.fromUsername}` }, /* @__PURE__ */ React.createElement(Text, { style: styles.pillGhostText }, "Decline")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.pill, onPress: () => handleAccept(r.id), accessibilityLabel: `Accept ${r.fromUsername}` }, /* @__PURE__ */ React.createElement(Text, { style: styles.pillText }, "Accept")))))), sentRequests.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "Sent"), sentRequests.map((r) => /* @__PURE__ */ React.createElement(View, { key: r.id, style: styles.personRow }, /* @__PURE__ */ React.createElement(View, { style: styles.avatar }, /* @__PURE__ */ React.createElement(Text, { style: styles.avatarText }, r.toUsername.charAt(0).toUpperCase())), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: styles.rowName, numberOfLines: 1 }, r.toUsername), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta, numberOfLines: 1 }, r.toMarket ? `${getMarketName(r.toMarket)} \xB7 ` : "", "Waiting")), busyId === r.id ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }) : /* @__PURE__ */ React.createElement(TouchableOpacity, { style: [styles.pill, styles.pillGhost], onPress: () => handleCancelSent(r.id), accessibilityLabel: `Cancel request to ${r.toUsername}` }, /* @__PURE__ */ React.createElement(Text, { style: styles.pillGhostText }, "Cancel"))))), !!myFriendCode && /* @__PURE__ */ React.createElement(View, { style: styles.codeCard }, /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.codeKicker }, "YOUR FRIEND CODE"), /* @__PURE__ */ React.createElement(Text, { style: styles.codeValue, selectable: true }, myFriendCode), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta }, "Hold the code to copy it.")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.pill, onPress: handleShareCode, accessibilityLabel: "Share your friend code" }, /* @__PURE__ */ React.createElement(Feather, { name: "share", size: 13, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.pillText }, "Share"))), /* @__PURE__ */ React.createElement(View, { style: styles.addRow }, /* @__PURE__ */ React.createElement(Feather, { name: "search", size: 16, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(
       TextInput,
       {
         style: styles.addInput,
@@ -473,7 +560,55 @@ function FriendsScreen() {
         isMe: entry.isCurrentUser
       }
     )))))
-  ), toast && /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: [styles.toast, { bottom: insets.bottom + 24 }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.toastText }, toast)));
+  ), /* @__PURE__ */ React.createElement(
+    StreakSheet,
+    {
+      streak: openStreak,
+      busy: !!openStreak && (social.busy === `streak:${openStreak.id}` || social.busy === `claim:${openStreak.id}`),
+      nudgeState: openStreak ? nudgeStateFor(openStreak.friend_id, openStreak.nudged_today) : "idle",
+      onClose: () => setOpenStreakId(null),
+      onAccept: (accept) => {
+        if (!openStreak) return;
+        const name = firstName(openStreak);
+        void social.respondStreak(openStreak.id, accept).then((r) => {
+          if (r.error) showToast(r.error);
+          else if (accept) {
+            triggerHaptic("success");
+            showToast(`Streak on with ${name}. Study today to light it.`);
+          } else setOpenStreakId(null);
+        });
+      },
+      onClaim: () => {
+        void claimStreakReward();
+      },
+      onNudge: () => openStreak && nudgeById(openStreak.friend_id),
+      onEnd: () => {
+        if (openStreak) {
+          void social.endStreak(openStreak.id);
+          setOpenStreakId(null);
+        }
+      },
+      onStudy: () => {
+        setOpenStreakId(null);
+        router.push("/(tabs)/home");
+      }
+    }
+  ), /* @__PURE__ */ React.createElement(
+    FriendPicker,
+    {
+      mode: pickerMode,
+      friends: pickerFriends,
+      busyId: social.busy?.replace(/^(streak|race):/, "") ?? null,
+      error: pickerError,
+      onPick: (id) => {
+        void pickFriend(id);
+      },
+      onClose: () => setPickerMode(null),
+      onAddFriends: () => {
+        setPickerMode(null);
+      }
+    }
+  ), /* @__PURE__ */ React.createElement(RewardCelebration, { reward, onClose: () => setReward(null) }), toast && /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: [styles.toast, { bottom: insets.bottom + 24 }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.toastText }, toast)));
 }
 function BoardRow({
   rank,
@@ -734,6 +869,22 @@ const styles = StyleSheet.create({
   nudgePillTextOff: { color: COLORS.textMuted },
   nudgeDone: { fontSize: 12, fontWeight: "700", color: COLORS.textMuted },
   section: { marginBottom: 14, gap: 8 },
+  racesHead: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  racesNew: { flexDirection: "row", alignItems: "center", gap: 5, paddingHorizontal: 10, height: 28, borderRadius: 14, backgroundColor: COLORS.accentSoft },
+  racesNewText: { fontSize: 12, fontWeight: "800", color: COLORS.accent },
+  raceEmpty: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 14,
+    borderRadius: 20,
+    backgroundColor: COLORS.accentSoft,
+    borderWidth: 1.5,
+    borderColor: COLORS.accentMedium
+  },
+  raceEmptyDisc: { width: 42, height: 42, borderRadius: 21, backgroundColor: COLORS.accent, alignItems: "center", justifyContent: "center" },
+  raceEmptyTitle: { fontSize: 15, fontWeight: "800", color: COLORS.textPrimary },
+  raceEmptySub: { fontSize: 12, color: COLORS.textSecondary, marginTop: 2, lineHeight: 16 },
   sectionTitle: { fontSize: 12, fontWeight: "800", color: COLORS.textMuted, letterSpacing: 0.4, textTransform: "uppercase" },
   personRow: {
     flexDirection: "row",

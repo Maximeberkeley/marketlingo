@@ -8,6 +8,8 @@ import { myFriendRaceXP } from '../../lib/socialStandings';
 import { FriendStanding, friendStanding, friendStandingLabel } from '../../lib/friendStanding';
 import { triggerHaptic } from '../../lib/haptics';
 import { log } from '../../lib/logger';
+import { StreakFlame } from '../ui/StreakFlame';
+import { homeSocialLine, parseFriendSocial } from '../../lib/friendSocial';
 
 interface FriendStandingChipProps {
   userId?: string | null;
@@ -22,12 +24,17 @@ interface FriendStandingChipProps {
  */
 export function FriendStandingChip({ userId, marketId, focused }: FriendStandingChipProps) {
   const [standing, setStanding] = useState<FriendStanding | null | undefined>(undefined);
+  // A friend streak or race that needs the learner beats the monthly rank.
+  const [socialLine, setSocialLine] = useState<ReturnType<typeof homeSocialLine>>(null);
 
-  useEffect(() => { setStanding(undefined); }, [userId, marketId]);
+  useEffect(() => { setStanding(undefined); setSocialLine(null); }, [userId, marketId]);
 
   useEffect(() => {
     if (!focused || !userId || !marketId) return;
     let active = true;
+    supabase.rpc('get_friend_social').then(({ data, error }) => {
+      if (active) setSocialLine(error ? null : homeSocialLine(parseFriendSocial(data)));
+    }, () => {});
     (async () => {
       const { data, error } = await supabase.rpc('get_friends_overview');
       if (error) throw error;
@@ -41,8 +48,11 @@ export function FriendStandingChip({ userId, marketId, focused }: FriendStanding
     return () => { active = false; };
   }, [focused, userId, marketId]);
 
-  if (standing === undefined) return null;
-  const label = friendStandingLabel(standing);
+  if (standing === undefined && !socialLine) return null;
+  const label = socialLine?.text ?? friendStandingLabel(standing ?? null);
+  const icon = socialLine?.icon === 'flame'
+    ? <StreakFlame size={15} />
+    : <Feather name={socialLine?.icon === 'race' ? 'flag' : socialLine?.icon === 'gift' ? 'gift' : standing ? 'users' : 'user-plus'} size={14} color={COLORS.accent} />;
 
   return (
     <TouchableOpacity
@@ -52,7 +62,7 @@ export function FriendStandingChip({ userId, marketId, focused }: FriendStanding
       accessibilityLabel={`${label}. Open friends`}
       onPress={() => { triggerHaptic('light'); router.push('/friends' as any); }}
     >
-      <Feather name={standing ? 'users' : 'user-plus'} size={14} color={COLORS.accent} />
+      {icon}
       <Text style={styles.text} numberOfLines={1}>{label}</Text>
       <Feather name="chevron-right" size={14} color={COLORS.textMuted} />
     </TouchableOpacity>
