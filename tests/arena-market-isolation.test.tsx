@@ -1,5 +1,6 @@
-import { act, renderHook, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import React, { act } from 'react';
+import { createRoot } from 'react-dom/client';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildArena } from '../mobile/lesson-kit/arena/buildArena';
 import { useIndustryContent } from '../mobile/hooks/useIndustryContent';
 
@@ -34,7 +35,25 @@ function finish(market: string, mixed = false) {
   for (const q of requests) q.resolve({ data: q.table === 'drill_questions'
     ? [drill(market), ...(mixed ? [drill('aerospace')] : [])] : [], error: null });
 }
-beforeEach(() => { db.pending = []; });
+const cleanups: (() => void)[] = [];
+function renderHook<P, T>(hook: (props: P) => T, options: { initialProps: P }) {
+  const host = document.createElement('div');
+  const root = createRoot(host);
+  const result = {} as { current: T };
+  function Probe({ props }: { props: P }) { result.current = hook(props); return null; }
+  const rerender = (props: P) => act(() => root.render(<Probe props={props} />));
+  rerender(options.initialProps);
+  cleanups.push(() => act(() => root.unmount()));
+  return { result, rerender };
+}
+async function waitFor(assert: () => void) {
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    await act(async () => { await new Promise(resolve => setTimeout(resolve, 0)); });
+    try { assert(); return; } catch (error) { if (attempt === 19) throw error; }
+  }
+}
+beforeEach(() => { db.pending = []; (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true; });
+afterEach(() => { cleanups.splice(0).forEach(cleanup => cleanup()); });
 
 describe('Arena industry isolation', () => {
   it('hides Aerospace immediately when Neuroscience is selected', async () => {
