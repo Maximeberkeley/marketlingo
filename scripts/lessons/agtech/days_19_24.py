@@ -1,0 +1,188 @@
+# Agtech, days 19-24. Month 1, topic 4: agricultural commodity markets.
+SRC = {
+    'msu_futures': {'url': 'https://extension.msstate.edu/publications/introduction-futures-markets', 'label': 'Mississippi State University Extension, introduction to futures markets'},
+    'tps_bunge': {'url': 'https://www.thepoultrysite.com/news/2025/07/bunge-seals-34b-viterra-deal-to-rival-adm-cargill', 'label': 'The Poultry Site, Bunge seals Viterra deal'},
+    'nm_cocoa': {'url': 'https://nairametrics.com/2026/03/01/bitter-before-sweet-the-extraordinary-journey-of-cocoa-prices', 'label': 'Nairametrics, the journey of cocoa prices'},
+    'mb_eudr': {'url': 'https://news.mongabay.com/short-article/2026/01/eudr-antideforestation-law-officially-delayed-for-second-year-in-a-row/', 'label': 'Mongabay, EUDR delayed for a second year'},
+    'fc_eudr': {'url': 'https://blog.foodsconnected.com/7-key-takeaways-from-the-april-2026-eudr-review', 'label': 'Foods Connected, takeaways from the 2026 EUDR review'},
+    'cnbc_bsgi': {'url': 'https://www.cnbc.com/2023/07/17/russia-ukraine-grain-deal-what-does-it-mean-for-global-food-prices.html', 'label': 'CNBC, wheat prices surge after Russia ends grain deal'},
+}
+
+LESSONS = [
+    {
+        'day': 19, 'facet': 'definition', 'title': 'Selling corn before it grows',
+        'open': {
+            'eyebrow': 'Day 19 · Commodity markets', 'kicker': 'A farmer can lock in a price months before harvest.',
+            'headline': 'A futures contract is a binding deal to deliver or receive a commodity on a future date at a price agreed today.',
+            'fullText': 'Contracts are standardized, so only the price changes. CME Group corn and soybean futures are each set at 5,000 bushels. Farmers, buyers and processors use them to plan revenue and costs despite volatile prices.',
+            'sources': ['msu_futures'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'hedge', 'eyebrow': 'Hedging', 'text': 'A farmer can sell futures in spring to protect the price of a crop sold at harvest.', 'highlight': 'If prices fall, the futures gain offsets the lower cash price.', 'keyTerms': [{'term': 'Hedge', 'definition': 'A trade that offsets the risk of a price move in something you own or will own.'}], 'sources': ['msu_futures']},
+            {'kind': 'microInsight', 'id': 'cost', 'eyebrow': 'The trade-off', 'text': 'If prices rise instead, the futures lose, but the crop sells for more.', 'highlight': 'A hedge trades upside for certainty.', 'sources': ['msu_futures']},
+            {'kind': 'info', 'id': 'standard', 'eyebrow': 'Why standard', 'title': 'Same contract, easy trading', 'body': 'Every corn contract is 5,000 bushels with set terms, so buyers and sellers only agree on price.', 'keyTerms': [{'term': 'Futures contract', 'definition': 'A standardized agreement to buy or sell a set amount of a commodity at a future date.'}], 'sources': ['msu_futures']},
+        ],
+        'checks': [
+            {'kind': 'buildChain', 'id': 'chain', 'prompt': "Put a farmer's hedge in order.", 'steps': ['In spring, sell futures for the harvest month', 'Grow and harvest the crop', 'Sell the crop in the local cash market', 'Buy back the futures contracts'], 'explanation': 'Sell futures early, sell the crop at harvest, then close the futures position.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'How many bushels are in one CME corn futures contract?',
+             'options': ['1,000 bushels', '5,000 bushels', '50,000 bushels'], 'correctIndex': 1,
+             'explanation': 'CME corn and soybean contracts are each 5,000 bushels.'},
+        ],
+        'lenses': {
+            'career': ('Learn to hedge', 'Grain merchandisers, lenders and food buyers all use futures. Knowing hedges is a core skill.', ['msu_futures']),
+            'invest': ('Futures price the crop', 'Futures prices show what markets expect a crop to be worth. Watch them for farm income.', ['msu_futures']),
+            'build_startup': ('Make hedging simpler', 'Many farmers find futures complex. Tools that make price protection easy fill a gap.', ['msu_futures']),
+            'curiosity': ('Selling the future', 'Farmers can sell corn that has not even been planted yet.', ['msu_futures']),
+        },
+        'rule': ('In commodity markets, a hedge gives up some upside to buy certainty.', ['msu_futures']),
+        'takeaway': 'A futures contract locks in a price today for a future delivery. CME corn contracts are 5,000 bushels, and farmers use them to hedge.',
+    },
+    {
+        'day': 20, 'facet': 'money', 'title': 'Basis: the local price gap',
+        'open': {
+            'eyebrow': 'Day 20 · The money', 'kicker': 'The price on the screen is not the price at the elevator.',
+            'headline': 'The difference between a local cash price and the futures price is called basis.',
+            'fullText': 'A farmer selling to a nearby grain elevator gets the cash price, not the futures price. If the historical basis is minus 20 cents against December corn, the local price usually runs 20 cents below futures. A hedge protects against futures moves, but basis can still change.',
+            'sources': ['msu_futures'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'formula', 'eyebrow': 'The formula', 'text': 'Basis equals the local cash price minus the futures price.', 'highlight': 'A basis of minus 20 cents means local grain sells 20 cents under futures.', 'keyTerms': [{'term': 'Basis', 'definition': 'The local cash price of a commodity minus its futures price.'}], 'sources': ['msu_futures']},
+            {'kind': 'microInsight', 'id': 'net', 'eyebrow': 'What the farmer gets', 'text': 'A hedged farmer nets the cash price plus or minus the futures gain or loss.', 'highlight': 'Basis decides the final number.', 'sources': ['msu_futures']},
+            {'kind': 'info', 'id': 'local', 'eyebrow': 'Why it matters', 'title': 'Local markets differ', 'body': 'Each area has its own basis, so two farmers with the same hedge can earn different prices.', 'sources': ['msu_futures']},
+        ],
+        'checks': [
+            {'kind': 'theCall', 'id': 'call', 'situation': 'Corn futures are $4.50. Your local basis is usually minus 20 cents.', 'prompt': 'What local price should you expect?',
+             'options': ['About $4.30 a bushel', 'About $4.70 a bushel', 'Exactly $4.50 a bushel'],
+             'consequences': ['Cash price equals futures plus a negative basis.', 'That adds the basis instead of subtracting it.', 'Local prices rarely match futures exactly.'],
+             'correctIndex': 0, 'explanation': 'Futures of $4.50 plus a basis of minus 20 cents gives about $4.30.'},
+            {'kind': 'sortSignal', 'id': 'sort', 'prompt': 'Does a hedge protect against this risk?', 'buckets': ['Protected', 'Not protected'],
+             'items': [{'text': 'Futures prices falling', 'bucket': 0}, {'text': 'A national price slump', 'bucket': 0}, {'text': 'The local basis weakening', 'bucket': 1}, {'text': 'A smaller harvest than planned', 'bucket': 1}],
+             'explanation': 'A futures hedge covers price moves in futures, not basis changes or lost bushels.'},
+        ],
+        'lenses': {
+            'career': ('Merchandisers trade basis', 'Grain elevator merchandisers earn much of their margin on basis. Know how it works.', ['msu_futures']),
+            'invest': ('Basis shows local demand', 'Basis reflects local supply and demand. Grain handlers profit from managing it.', ['msu_futures']),
+            'build_startup': ('Price transparency helps', 'Farmers compare local bids to futures. Tools that show the best basis nearby add value.', ['msu_futures']),
+            'curiosity': ('Two prices for corn', 'Corn has a futures price and a local price, and they are rarely the same.', ['msu_futures']),
+        },
+        'rule': ('In grain marketing, the local basis decides what the farmer actually earns.', ['msu_futures']),
+        'takeaway': 'Basis is the local cash price minus futures. A hedge covers futures moves, but basis still changes what the farmer earns.',
+    },
+    {
+        'day': 21, 'facet': 'power', 'title': 'The giants that move grain',
+        'open': {
+            'eyebrow': 'Day 21 · The power', 'kicker': 'A few traders stand between farms and the world.',
+            'headline': 'In July 2025, Bunge completed its merger with grain trader Viterra, a deal valued at $34 billion when announced in 2023.',
+            'fullText': 'China gave conditional approval a month earlier, the final hurdle. The combined company is a global crop trading and processing giant set to rival ADM and Cargill. It expands Bunge\'s grain storage and export capacity in Canada and Australia.',
+            'sources': ['tps_bunge'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'role', 'eyebrow': 'What traders do', 'text': 'Grain traders buy crops from farmers, store and ship them, and sell worldwide.', 'highlight': 'They own the elevators, ports and processing plants.', 'keyTerms': [{'term': 'Grain trader', 'definition': 'A company that buys, stores, ships and sells crops between farms and buyers.'}], 'sources': ['tps_bunge']},
+            {'kind': 'microInsight', 'id': 'scale', 'eyebrow': 'Why merge', 'text': 'Scale in storage, ports and processing helps traders earn on thin margins.', 'highlight': 'The deal strengthened Bunge against ADM and Cargill.', 'sources': ['tps_bunge']},
+            {'kind': 'info', 'id': 'approval', 'eyebrow': 'Who decides', 'title': 'Regulators worldwide signed off', 'body': 'Big grain deals need approval in many countries. China\'s sign-off came last.', 'sources': ['tps_bunge']},
+        ],
+        'checks': [
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'Which rivals did the Bunge and Viterra deal aim to match?',
+             'left': {'name': 'ADM and Cargill', 'note': 'Giant grain traders'}, 'right': {'name': 'Deere and CNH', 'note': 'Farm equipment makers'}, 'correctIndex': 0,
+             'explanation': 'The combined company was set to rival ADM and Cargill.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': "Whose approval was the last hurdle for the deal?",
+             'options': ["The US Congress", "Brazil's farm ministry", "China's market regulator"], 'correctIndex': 2,
+             'explanation': "China's market regulator gave conditional approval in June 2025."},
+        ],
+        'lenses': {
+            'career': ('Big employers, global roles', 'ADM, Bunge and Cargill hire traders, logistics and risk staff worldwide.', ['tps_bunge']),
+            'invest': ('Scale on thin margins', 'Grain traders earn small margins on huge volumes. Mergers aim to grow that volume.', ['tps_bunge']),
+            'build_startup': ('Sell to the giants', 'A few traders handle much of the world\'s grain. Tools that improve their logistics have big buyers.', ['tps_bunge']),
+            'curiosity': ('Behind your bread', 'A handful of companies move much of the grain the world eats.', ['tps_bunge']),
+        },
+        'rule': ('In grain, whoever owns the storage, ports and plants holds the power between farm and buyer.', ['tps_bunge']),
+        'takeaway': 'Bunge closed its $34 billion merger with Viterra in July 2025, building a grain giant to rival ADM and Cargill.',
+    },
+    {
+        'day': 22, 'facet': 'numbers', 'title': 'The cocoa price shock',
+        'open': {
+            'eyebrow': 'Day 22 · The numbers', 'kicker': 'A crop that traded near $3,000 a ton went past $12,000.',
+            'headline': 'Cocoa prices rose from about $2,000 a ton in 2022 to more than $12,000 by December 2024.',
+            'fullText': 'From 2010 to 2023, cocoa had traded between roughly $2,000 and $3,500 a ton. Bad weather and a tree virus hit West Africa, which grows over 70% of the world\'s cocoa. Global output fell about 14% in 2023-24, then futures dropped 40 to 45% during 2025.',
+            'sources': ['nm_cocoa'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'concentration', 'eyebrow': 'The risk', 'text': 'Côte d\'Ivoire and Ghana grow nearly 60% of the world\'s cocoa.', 'highlight': 'Trouble in two countries moves the global price.', 'sources': ['nm_cocoa']},
+            {'kind': 'microInsight', 'id': 'supply', 'eyebrow': 'The supply drop', 'text': 'Output fell from 4.9 million tons to 4.2 million in 2023-24.', 'highlight': 'Small supply cuts can cause big price jumps.', 'keyTerms': [{'term': 'Inelastic demand', 'definition': 'Demand that changes little when price changes, so supply shocks move prices a lot.'}], 'sources': ['nm_cocoa']},
+            {'kind': 'info', 'id': 'speculation', 'eyebrow': 'The amplifier', 'title': 'Investors added fuel', 'body': 'Non-commercial investors held over 60% of cocoa futures positions in early 2024, amplifying swings.', 'sources': ['nm_cocoa']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-share', 'prompt': 'What share of the world\'s cocoa do Côte d\'Ivoire and Ghana grow?', 'min': 0, 'max': 100, 'value': 60, 'unit': '%', 'tolerance': 0.07, 'explanation': 'Nearly 60%, which is why West African weather moves the price.'},
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['Cocoa topped $12,000 a ton in December 2024.', 'Cocoa futures doubled again during 2025.', 'Global cocoa output fell about 14% in 2023-24.'], 'fakeIndex': 1,
+             'explanation': 'Cocoa futures fell 40 to 45% during 2025.'},
+        ],
+        'lenses': {
+            'career': ('Buyers need risk skills', 'Food companies hire commodity buyers to manage swings like cocoa\'s. It is a specialist role.', ['nm_cocoa']),
+            'invest': ('Concentration means volatility', 'When two countries grow most of a crop, local weather drives global prices.', ['nm_cocoa']),
+            'build_startup': ('Supply resilience has value', 'Disease and weather hit cocoa hard. Tools for tree health and new growing regions fill a need.', ['nm_cocoa']),
+            'curiosity': ('Chocolate got expensive', 'Cocoa cost about six times more in late 2024 than in 2022.', ['nm_cocoa']),
+        },
+        'rule': ('In commodities, when supply is concentrated, a local shock becomes a global price spike.', ['nm_cocoa']),
+        'takeaway': 'Cocoa rose from about $2,000 a ton in 2022 to over $12,000 by December 2024 as West African output fell, then dropped 40 to 45% in 2025.',
+    },
+    {
+        'day': 23, 'facet': 'rules', 'title': 'Proving no forest was cut',
+        'open': {
+            'eyebrow': 'Day 23 · The rule', 'kicker': 'Europe wants proof of where your coffee was grown.',
+            'headline': "The EU's deforestation law requires that cocoa, coffee, soy, beef, timber, palm oil and rubber sold in Europe not come from land deforested after December 2020.",
+            'fullText': 'Producers must provide geolocation data for where their goods were grown. The law was first due to apply in 2024, then was delayed twice. Large companies must now comply from the end of 2026 and smaller ones from mid-2027.',
+            'sources': ['mb_eudr', 'fc_eudr'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'proof', 'eyebrow': 'The proof', 'text': 'Companies must trace products to the plot of land where they were grown.', 'highlight': 'That land must be free of deforestation since 2020.', 'keyTerms': [{'term': 'Due diligence statement', 'definition': 'A filing in which a company confirms its products meet the EU deforestation rules.'}], 'sources': ['mb_eudr', 'fc_eudr']},
+            {'kind': 'microInsight', 'id': 'review', 'eyebrow': 'The 2026 review', 'text': 'A May 2026 review added instant coffee and palm oil derivatives to the law.', 'highlight': 'Leather and hides were proposed for removal.', 'sources': ['fc_eudr']},
+            {'kind': 'info', 'id': 'who', 'eyebrow': 'Who files', 'title': 'The first seller carries it', 'body': 'The duty to file falls on whoever first places the product on the EU market; others pass along its reference.', 'sources': ['fc_eudr']},
+        ],
+        'checks': [
+            {'kind': 'sortSignal', 'id': 'sort', 'prompt': 'Covered by the EU deforestation law?', 'buckets': ['Covered', 'Not covered'],
+             'items': [{'text': 'Cocoa', 'bucket': 0}, {'text': 'Coffee', 'bucket': 0}, {'text': 'Wheat', 'bucket': 1}, {'text': 'Corn', 'bucket': 1}],
+             'explanation': 'The law covers cocoa, coffee, soy, beef, timber, palm oil and rubber, not wheat or corn.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What must producers provide under the EU law?',
+             'options': ['Geolocation of where goods grew', 'A fixed tax on every ton sold', 'Proof of organic farming'], 'correctIndex': 0,
+             'explanation': 'They must show, with location data, that land was not deforested after 2020.'},
+        ],
+        'lenses': {
+            'career': ('Traceability is a job', 'Food companies need people who can trace supply chains to the farm. Demand is growing.', ['fc_eudr']),
+            'invest': ('Compliance costs vary', 'Traders with traceable supply chains gain an edge selling into Europe.', ['mb_eudr']),
+            'build_startup': ('Map every plot', 'Geolocation and traceability tools for smallholder farms serve a law covering seven commodities.', ['mb_eudr']),
+            'curiosity': ('Coffee with coordinates', 'Coffee sold in Europe will need data showing exactly where it was grown.', ['mb_eudr']),
+        },
+        'rule': ('In global food trade, buyers increasingly demand proof of where and how a crop was grown.', ['mb_eudr']),
+        'takeaway': "The EU's deforestation law requires seven commodities, including cocoa and coffee, to come from land not deforested after 2020. Large firms comply from end-2026.",
+    },
+    {
+        'day': 24, 'facet': 'frontier', 'title': 'When war blocks the grain',
+        'open': {
+            'eyebrow': 'Day 24 · Where it breaks', 'kicker': 'A shipping lane can matter as much as a harvest.',
+            'headline': 'In July 2023, Russia pulled out of the Black Sea Grain Initiative, which had let Ukraine export over 32 million tons of food during the war.',
+            'fullText': 'The deal, signed in July 2022, shipped grain from three Ukrainian ports to 45 countries. Wheat futures rose 3% on the news. Ukraine had to send more grain overland and through Danube ports, which raised costs.',
+            'sources': ['cnbc_bsgi'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'route', 'eyebrow': 'The route', 'text': 'Grain moved from Odesa, Chornomorsk and Pivdennyi across the Black Sea.', 'highlight': 'Losing that route forced costlier paths.', 'keyTerms': [{'term': 'Chokepoint', 'definition': 'A narrow route that a large share of trade must pass through.'}], 'sources': ['cnbc_bsgi']},
+            {'kind': 'microInsight', 'id': 'russia', 'eyebrow': 'The other exporter', 'text': 'Russia supplies over 20% of world wheat exports.', 'highlight': 'Buyers in Africa and the Middle East may rely on it more.', 'sources': ['cnbc_bsgi']},
+            {'kind': 'info', 'id': 'price', 'eyebrow': 'The price signal', 'title': 'Markets reacted, briefly', 'body': 'Wheat rose 3% but stayed far below its May 2022 peak, as other routes and suppliers filled gaps.', 'sources': ['cnbc_bsgi']},
+        ],
+        'checks': [
+            {'kind': 'buildChain', 'id': 'chain', 'prompt': 'Put the Black Sea grain story in order.', 'steps': ['Russia invades Ukraine', 'The grain deal is signed', 'Over 32 million tons are shipped', 'Russia pulls out of the deal'], 'explanation': 'Invasion in February 2022, deal in July 2022, exit in July 2023.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You buy wheat for a flour mill. A key export route closes.', 'prompt': 'What do you do?',
+             'options': ['Line up other suppliers and hedge', 'Wait and buy at whatever price', 'Stop buying until it reopens'],
+             'consequences': ['You keep the mill running and limit price risk.', 'You are exposed to a price spike.', 'Your mill runs out of wheat.'],
+             'correctIndex': 0, 'explanation': 'Diversifying suppliers and hedging protects against trade route shocks.'},
+        ],
+        'lenses': {
+            'career': ('Geopolitics moves grain', 'Grain traders and food buyers must track wars and shipping lanes, not just weather.', ['cnbc_bsgi']),
+            'invest': ('Routes are a risk factor', 'When a route closes, prices jump and alternative routes gain. Watch logistics, not just crops.', ['cnbc_bsgi']),
+            'build_startup': ('Visibility on routes', 'Tools that track shipments and reroute grain fast serve buyers in a crisis.', ['cnbc_bsgi']),
+            'curiosity': ('Food through a war zone', 'Ukraine shipped over 32 million tons of food during a war under a special deal.', ['cnbc_bsgi']),
+        },
+        'rule': ('In commodity markets, control of a trade route can move prices as much as a harvest.', ['cnbc_bsgi']),
+        'takeaway': 'Russia left the Black Sea Grain Initiative in July 2023 after over 32 million tons shipped. Wheat rose 3% and Ukraine rerouted grain.',
+    },
+]

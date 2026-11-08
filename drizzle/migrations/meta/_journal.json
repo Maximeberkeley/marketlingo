@@ -218,6 +218,13 @@
       "when": 1794085315868,
       "tag": "0030_ev_handwritten_days_6_30",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1794085375868,
+      "tag": "0031_agtech_handwritten_days_6_30",
+      "breakpoints": true
     }
   ]
 }
