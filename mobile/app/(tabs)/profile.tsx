@@ -3,7 +3,7 @@ import { useInterviewReadiness } from '../../hooks/useInterviewReadiness';
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Share,
-  ActivityIndicator, Modal, Animated, Image,
+  ActivityIndicator, Modal, Animated, Image, Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
@@ -22,6 +22,18 @@ import { useCollectibles } from '../../hooks/useCollectibles';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { useDeliverable } from '../../hooks/useDeliverable';
 import { dossierRank } from '../../lib/deliverables';
+import { useFriends } from '../../hooks/useFriends';
+import { useFriendSocial } from '../../hooks/useFriendSocial';
+import { myFriendRaceXP } from '../../lib/socialStandings';
+import { crownStatus } from '../../lib/crown';
+import { homeSocialLine, raceIsOver, streakToday } from '../../lib/friendSocial';
+import { inviteShareContent } from '../../lib/inviteLinks';
+import { ProfileFriendsCard } from '../../components/profile/ProfileFriendsCard';
+import { MyCodeSheet } from '../../components/social/MyCodeSheet';
+import { SocialAvatar } from '../../components/social/SocialAvatar';
+import { StreakFlame } from '../../components/ui/StreakFlame';
+import { XPFlask } from '../../components/ui/XPFlask';
+import { CrownBadge } from '../../components/social/CrownBadge';
 
 
 // Market illustrations for profile
@@ -73,19 +85,25 @@ export default function ProfileScreen() {
   const [showGoalPicker, setShowGoalPicker] = useState(false);
   const [showLevelPicker, setShowLevelPicker] = useState(false);
   const [savingPreference, setSavingPreference] = useState(false);
-  const [friendRequestCount, setFriendRequestCount] = useState(0);
+  const [displayName, setDisplayName] = useState('');
+  const [monthXP, setMonthXP] = useState(0);
+  const [codeOpen, setCodeOpen] = useState(false);
+  const [focused, setFocused] = useState(true);
 
-  // Pending friend requests to me, refreshed whenever Profile regains focus.
+  // Friends, friend streaks and races, and this month's XP: refreshed whenever Profile regains focus.
+  const friendsData = useFriends(selectedMarket || undefined);
+  const social = useFriendSocial(user?.id, focused);
+  const firstFocus = useRef(true);
   useFocusEffect(React.useCallback(() => {
-    if (!user) { setFriendRequestCount(0); return; }
-    let live = true;
-    supabase
-      .from('friendships')
-      .select('id', { count: 'exact', head: true })
-      .eq('friend_id', user.id)
-      .eq('status', 'pending')
-      .then(({ count }) => { if (live) setFriendRequestCount(count ?? 0); }, () => {});
-    return () => { live = false; };
+    setFocused(true);
+    if (user) {
+      // useFriends loads on mount; refresh on later visits only.
+      if (!firstFocus.current) void friendsData.refetch();
+      firstFocus.current = false;
+      myFriendRaceXP(user.id).then(setMonthXP, () => {});
+    }
+    return () => setFocused(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]));
 
   const { progress, availableDay } = useUserProgress(selectedMarket || undefined);
@@ -103,12 +121,13 @@ export default function ProfileScreen() {
       if (!user) return;
       const { data: profile } = await supabase
         .from('profiles')
-        .select('selected_market, familiarity_level')
+        .select('selected_market, familiarity_level, display_name')
         .eq('id', user.id)
         .single();
       if (profile) {
         setSelectedMarket(profile.selected_market);
         setCurrentLevel(profile.familiarity_level || null);
+        setDisplayName(profile.display_name?.trim() || '');
       }
 
       // Fetch learning goal from user_progress
@@ -179,6 +198,37 @@ export default function ProfileScreen() {
     }
   };
 
+  // The Friends page in miniature: crown, friends, streaks, races and what needs you.
+  const board = [
+    { name: 'You', xp: monthXP, isMe: true },
+    ...friendsData.friends.map(f => ({ name: f.username, xp: f.totalXP, isMe: false })),
+  ].sort((a, b) => b.xp - a.xp);
+  const myFriendRank = board.findIndex(r => r.isMe) + 1;
+  const activeStreaks = social.social?.streaks.filter(s => s.status === 'active') ?? [];
+  const friendsInfo = {
+    friendNames: board.filter(r => !r.isMe).map(r => r.name),
+    crown: friendsData.friends.length > 0 ? crownStatus(board) : null,
+    myRank: myFriendRank,
+    boardSize: board.length,
+    streaks: social.available ? { lit: activeStreaks.filter(s => streakToday(s) === 'both_done').length, active: activeStreaks.length } : null,
+    races: social.available ? (social.social?.races.filter(r => r.status === 'active' && !raceIsOver(r)).length ?? 0) : null,
+    urgent: social.available ? homeSocialLine(social.social) : null,
+    pending: friendsData.pendingRequests.length,
+  };
+  const myStreak = progress?.current_streak ?? 0;
+  const totalXP = xpData?.total_xp ?? 0;
+  const iWearCrown = friendsInfo.crown?.kind === 'mine';
+
+  const shareInvite = async () => {
+    triggerHaptic('light');
+    const code = friendsData.myFriendCode;
+    try {
+      await Share.share(code
+        ? inviteShareContent(getMarketName(selectedMarket || 'aerospace'), code, Platform.OS)
+        : { message: `I'm learning ${getMarketName(selectedMarket || 'aerospace')} on MarketLingo, 5 minutes a day. Join me: https://market-verse.com` });
+    } catch { /* cancelled */ }
+  };
+
   const handleExportNotebook = async () => {
     if (!user) return;
     const { data: notes } = await supabase
@@ -240,106 +290,87 @@ export default function ProfileScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header — clean, no mascot */}
+        {/* Header: who you are, your code, your path */}
         <Animated.View style={[styles.header, animStyle(headerAnim)]}>
-          <View>
+          <View style={styles.headerTop}>
             <Text style={styles.title}>Profile</Text>
-            {user && <Text style={styles.email}>{user.email}</Text>}
+            <TouchableOpacity style={styles.gear} onPress={() => { triggerHaptic('light'); router.push('/settings' as any); }} accessibilityLabel="Settings">
+              <Feather name="settings" size={19} color={COLORS.textSecondary} />
+            </TouchableOpacity>
           </View>
-          <View style={styles.headerRight} />
+          <View style={styles.identity}>
+            <View>
+              <SocialAvatar name={displayName || user?.email || 'You'} size={78} ring={COLORS.accent} ringWidth={3} />
+              {iWearCrown && <View style={styles.avatarCrown} pointerEvents="none"><CrownBadge size={34} /></View>}
+            </View>
+            <View style={{ flex: 1, minWidth: 0 }}>
+              {displayName ? (
+                <Text style={styles.name} numberOfLines={1}>{displayName}</Text>
+              ) : (
+                <TouchableOpacity onPress={() => router.push('/friends' as any)} accessibilityRole="button">
+                  <Text style={[styles.name, { color: COLORS.accent }]} numberOfLines={1}>Add your name</Text>
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity onPress={() => setShowChangeWarning(true)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Change industry">
+                <Text style={styles.path} numberOfLines={2}>{goalSentence(currentGoal, getMarketName(selectedMarket || 'aerospace'))} <Text style={styles.pathChange}>· Change</Text></Text>
+              </TouchableOpacity>
+              {!!friendsData.myFriendCode && (
+                <TouchableOpacity style={styles.codeChip} onPress={() => { triggerHaptic('light'); setCodeOpen(true); }} accessibilityRole="button" accessibilityLabel={`Your friend code ${friendsData.myFriendCode}. Show QR code`}>
+                  <Feather name="hash" size={12} color={COLORS.accent} />
+                  <Text style={styles.codeChipText}>{friendsData.myFriendCode}</Text>
+                  <Feather name="maximize" size={11} color={COLORS.accent} />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        </Animated.View>
+
+        {/* Stats */}
+        <Animated.View style={[styles.stats, animStyle(statsAnim)]}>
+          <StatTile icon={<StreakFlame size={22} dim={myStreak === 0} />} value={String(myStreak)} label="Day streak" />
+          <StatTile icon={<XPFlask size={22} />} value={totalXP.toLocaleString()} label="Total XP" />
+          <StatTile icon={<XPFlask size={22} color={COLORS.accent} />} value={monthXP.toLocaleString()} label="XP this month" />
+          <StatTile
+            icon={iWearCrown ? <CrownBadge size={24} /> : <Feather name="users" size={20} color={COLORS.accent} />}
+            value={friendsData.friends.length > 0 ? `#${myFriendRank}` : '0'}
+            label={friendsData.friends.length > 0 ? 'Among friends' : 'Friends'}
+          />
         </Animated.View>
 
         <Animated.View style={animStyle(bodyAnim)}>
-        <TouchableOpacity style={styles.stageCard} activeOpacity={0.85} onPress={() => setShowChangeWarning(true)}>
-          <Text style={styles.stageTitle}>{goalSentence(currentGoal, getMarketName(selectedMarket || 'aerospace'))}</Text>
-          <Text style={styles.stageDesc}>Change industry ›</Text>
-        </TouchableOpacity>
+        <ProfileFriendsCard
+          info={friendsInfo}
+          onOpen={() => { triggerHaptic('light'); router.push('/friends' as any); }}
+          onAdd={() => { void shareInvite(); }}
+        />
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>INTERVIEW</Text>
           <InterviewTargetForm target={interviewPrep.target} onSave={interviewPrep.saveTarget} />
+          <View style={[styles.group, { marginTop: 10 }]}>
+            <MenuRow icon="file-text" title="Interview Brief" subtitle={`${Math.round(dossier.completion)}% written`} onPress={() => { triggerHaptic('light'); router.push('/deliverable' as any); }} highlight />
+          </View>
         </View>
 
         <View style={styles.section}>
-          <TouchableOpacity
-            style={styles.menuItem}
-            activeOpacity={0.88}
-            onPress={() => { triggerHaptic('light'); router.push('/deliverable' as any); }}
-          >
-            <View style={[styles.menuIcon, { backgroundColor: COLORS.accentSoft }]}>
-              <Feather name="file-text" size={18} color={COLORS.accent} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>Interview Brief</Text>
-              <Text style={styles.menuSubtitle}>{`${Math.round(dossier.completion)}% written`}</Text>
-            </View>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.menuItem}
-            activeOpacity={0.88}
-            onPress={() => { triggerHaptic('light'); router.push('/friends' as any); }}
-          >
-            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
-              <Feather name="users" size={18} color={COLORS.accent} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>Friends</Text>
-              <Text style={styles.menuSubtitle}>Add friends and compare streaks</Text>
-            </View>
-            {friendRequestCount > 0 && (
-              <View style={styles.requestCount} accessibilityLabel={`${friendRequestCount} friend requests`}>
-                <Text style={styles.requestCountText}>{friendRequestCount}</Text>
-              </View>
-            )}
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem} onPress={() => setShowGoalPicker(true)}>
-            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
-              <Feather name={GOAL_OPTIONS.find(g => g.id === currentGoal)?.icon || 'target'} size={18} color={COLORS.accent} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>Goal</Text>
-              <Text style={styles.menuSubtitle}>{GOAL_OPTIONS.find(g => g.id === currentGoal)?.title || 'Not set'}</Text>
-            </View>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem} onPress={() => setShowLevelPicker(true)}>
-            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
-              <Feather name="sliders" size={18} color={COLORS.accent} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>Level</Text>
-              <Text style={styles.menuSubtitle}>{FAMILIARITY_LEVELS.find(l => l.id === currentLevel)?.name || 'Not set'}</Text>
-            </View>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/settings' as any)}>
-            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
-              <Feather name="settings" size={18} color={COLORS.accent} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>Settings</Text>
-              <Text style={styles.menuSubtitle}>Notifications and account</Text>
-            </View>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-
+          <Text style={styles.sectionTitle}>YOUR LEARNING</Text>
+          <View style={styles.group}>
+            <MenuRow icon={GOAL_OPTIONS.find(g => g.id === currentGoal)?.icon || 'target'} title="Goal" subtitle={GOAL_OPTIONS.find(g => g.id === currentGoal)?.title || 'Not set'} onPress={() => setShowGoalPicker(true)} />
+            <MenuRow icon="sliders" title="Level" subtitle={FAMILIARITY_LEVELS.find(l => l.id === currentLevel)?.name || 'Not set'} onPress={() => setShowLevelPicker(true)} />
+            <MenuRow icon="globe" title="Industry" subtitle={getMarketName(selectedMarket || 'aerospace')} onPress={() => setShowChangeWarning(true)} />
+            <MenuRow icon="award" title="Achievements" subtitle="Badges you've earned" onPress={() => router.push('/achievements' as any)} />
+            <MenuRow icon="settings" title="Settings" subtitle="Notifications and account" onPress={() => router.push('/settings' as any)} last />
+          </View>
           <TouchableOpacity style={styles.logoutLink} onPress={handleSignOut} accessibilityRole="button">
             <Text style={styles.logoutText}>Log out</Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => router.push('/achievements' as any)} hitSlop={10}>
-          <Text style={[styles.versionText, { color: COLORS.accent, marginBottom: 6 }]}>Achievements</Text>
-        </TouchableOpacity>
         <Text style={styles.versionText}>MarketLingo v1.1.1</Text>
         </Animated.View>
       </ScrollView>
+
+      <MyCodeSheet code={friendsData.myFriendCode} visible={codeOpen} onShare={() => { void shareInvite(); }} onClose={() => setCodeOpen(false)} />
 
       {/* Change industry warning (shared with Home) */}
       <SwitchIndustryModal
@@ -436,7 +467,55 @@ export default function ProfileScreen() {
   );
 }
 
+function StatTile({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
+  return (
+    <View style={styles.statTile}>
+      {icon}
+      <View style={{ flex: 1, minWidth: 0 }}>
+        <Text style={styles.statTileValue} numberOfLines={1}>{value}</Text>
+        <Text style={styles.statTileLabel} numberOfLines={1}>{label}</Text>
+      </View>
+    </View>
+  );
+}
+
+function MenuRow({ icon, title, subtitle, onPress, last, highlight }: {
+  icon: keyof typeof Feather.glyphMap; title: string; subtitle: string; onPress: () => void; last?: boolean; highlight?: boolean;
+}) {
+  return (
+    <TouchableOpacity style={[styles.row, !last && styles.rowDivider]} onPress={onPress} activeOpacity={0.75} accessibilityRole="button">
+      <View style={[styles.menuIcon, { backgroundColor: highlight ? COLORS.accentSoft : COLORS.bg1 }]}>
+        <Feather name={icon} size={18} color={COLORS.accent} />
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.menuTitle}>{title}</Text>
+        <Text style={styles.menuSubtitle}>{subtitle}</Text>
+      </View>
+      <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
+    </TouchableOpacity>
+  );
+}
+
 const styles = StyleSheet.create({
+  headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
+  gear: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
+  identity: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  avatarCrown: { position: 'absolute', top: -20, left: 22 },
+  name: { fontSize: 24, fontWeight: '900', color: COLORS.textPrimary },
+  path: { fontSize: 13, color: COLORS.textSecondary, marginTop: 3, lineHeight: 18 },
+  pathChange: { color: COLORS.accent, fontWeight: '700' },
+  codeChip: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', marginTop: 8, paddingHorizontal: 10, height: 28, borderRadius: 14, backgroundColor: COLORS.accentSoft, borderWidth: 1.5, borderColor: COLORS.accentMedium },
+  codeChipText: { fontSize: 13, fontWeight: '900', letterSpacing: 1.5, color: COLORS.accent },
+  stats: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
+  statTile: {
+    flexBasis: '47%', flexGrow: 1, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, height: 64,
+    borderRadius: 18, backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border,
+  },
+  statTileValue: { fontSize: 19, fontWeight: '900', color: COLORS.textPrimary },
+  statTileLabel: { fontSize: 11, fontWeight: '600', color: COLORS.textMuted, marginTop: 1 },
+  group: { borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, overflow: 'hidden' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 12, minHeight: 64 },
+  rowDivider: { borderBottomWidth: 1, borderBottomColor: COLORS.borderLight },
   requestCount: {
     minWidth: 20, height: 20, borderRadius: 10, paddingHorizontal: 6, marginRight: 8,
     backgroundColor: COLORS.error, alignItems: 'center', justifyContent: 'center',
@@ -445,7 +524,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: 'center', justifyContent: 'center' },
   scrollContent: { paddingHorizontal: 16 },
-  header: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 },
+  header: { marginBottom: 20 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   title: { fontSize: 28, fontWeight: '700', color: COLORS.textPrimary },
   email: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2 },
