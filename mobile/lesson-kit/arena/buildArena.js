@@ -68,6 +68,10 @@ function withReview(exercise, slides) {
 }
 function buildArena(input) {
   const pack = getIndustryPack(input.marketId);
+  const inMarket = (rows) => rows.filter((row) => !row.market_id || row.market_id === input.marketId);
+  const stats = inMarket(input.stats);
+  const drills = inMarket(input.drills);
+  const trainer = inMarket(input.trainer);
   const lessons = [...input.studied ?? []].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
   const review = lessons.length > 1 ? [...lessons.slice(1), lessons[0]] : lessons;
   const starter = lessons.length > 0 && lessons.length <= STARTER_LESSON_LIMIT;
@@ -244,23 +248,23 @@ function buildArena(input) {
   const authoredMC = own("multipleChoice");
   const wave1 = fill([...authoredMC.slice(0, 1), ...defs.slice(0, 1), ...claims, ...defs.slice(1), ...authoredMC.slice(1)], [
     pack ? packFaceOff(pack, nextId()) : null,
-    statFaceOff(input.stats, nextId()),
-    drillTrueFalse(input.drills, nextId()),
-    statTrend(input.stats, nextId())
+    statFaceOff(stats, nextId()),
+    drillTrueFalse(drills, nextId()),
+    statTrend(stats, nextId())
   ], 4);
   const figures = generated(checkFigure);
   const authoredNumbers = own("numberSense");
   const wave2 = fill([...authoredNumbers.slice(0, 1), ...figures.slice(0, 1), ...own("buildChain"), ...own("sortSignal"), ...generated(checkClaim), ...figures, ...authoredNumbers.slice(1)], [
     pack ? packChain(pack, nextId()) : null,
-    statNumberSense(input.stats, nextId()),
-    drillSpotFake(input.drills, nextId()),
+    statNumberSense(stats, nextId()),
+    drillSpotFake(drills, nextId()),
     pack ? packMap(pack, nextId()) : null,
     pack ? packNumber(pack, nextId()) : null
   ], 4);
   const finalPool = [...reserved ? [reserved] : [], ...definitions(), ...tampers];
   reserved = void 0;
   const wave3 = fill(finalPool, [
-    ...shuffle(input.trainer).map((scenario) => trainerCall(scenario, nextId()))
+    ...shuffle(trainer).map((scenario) => trainerCall(scenario, nextId()))
   ], 3);
   const waves = [
     {
