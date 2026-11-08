@@ -31,8 +31,6 @@ import { inviteShareContent } from '../../lib/inviteLinks';
 import { ProfileFriendsCard } from '../../components/profile/ProfileFriendsCard';
 import { MyCodeSheet } from '../../components/social/MyCodeSheet';
 import { SocialAvatar } from '../../components/social/SocialAvatar';
-import { StreakFlame } from '../../components/ui/StreakFlame';
-import { XPFlask } from '../../components/ui/XPFlask';
 import { CrownBadge } from '../../components/social/CrownBadge';
 
 
@@ -215,8 +213,6 @@ export default function ProfileScreen() {
     urgent: social.available ? homeSocialLine(social.social) : null,
     pending: friendsData.pendingRequests.length,
   };
-  const myStreak = progress?.current_streak ?? 0;
-  const totalXP = xpData?.total_xp ?? 0;
   const iWearCrown = friendsInfo.crown?.kind === 'mine';
 
   const shareInvite = async () => {
@@ -325,24 +321,15 @@ export default function ProfileScreen() {
           </View>
         </Animated.View>
 
-        {/* Stats */}
-        <Animated.View style={[styles.stats, animStyle(statsAnim)]}>
-          <StatTile icon={<StreakFlame size={22} dim={myStreak === 0} />} value={String(myStreak)} label="Day streak" />
-          <StatTile icon={<XPFlask size={22} />} value={totalXP.toLocaleString()} label="Total XP" />
-          <StatTile icon={<XPFlask size={22} color={COLORS.accent} />} value={monthXP.toLocaleString()} label="XP this month" />
-          <StatTile
-            icon={iWearCrown ? <CrownBadge size={24} /> : <Feather name="users" size={20} color={COLORS.accent} />}
-            value={friendsData.friends.length > 0 ? `#${myFriendRank}` : '0'}
-            label={friendsData.friends.length > 0 ? 'Among friends' : 'Friends'}
-          />
-        </Animated.View>
-
-        <Animated.View style={animStyle(bodyAnim)}>
+        <Animated.View style={animStyle(statsAnim)}>
         <ProfileFriendsCard
           info={friendsInfo}
           onOpen={() => { triggerHaptic('light'); router.push('/friends' as any); }}
           onAdd={() => { void shareInvite(); }}
         />
+        </Animated.View>
+
+        <Animated.View style={animStyle(bodyAnim)}>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>INTERVIEW</Text>
@@ -467,18 +454,6 @@ export default function ProfileScreen() {
   );
 }
 
-function StatTile({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
-  return (
-    <View style={styles.statTile}>
-      {icon}
-      <View style={{ flex: 1, minWidth: 0 }}>
-        <Text style={styles.statTileValue} numberOfLines={1}>{value}</Text>
-        <Text style={styles.statTileLabel} numberOfLines={1}>{label}</Text>
-      </View>
-    </View>
-  );
-}
-
 function MenuRow({ icon, title, subtitle, onPress, last, highlight }: {
   icon: keyof typeof Feather.glyphMap; title: string; subtitle: string; onPress: () => void; last?: boolean; highlight?: boolean;
 }) {
@@ -506,13 +481,6 @@ const styles = StyleSheet.create({
   pathChange: { color: COLORS.accent, fontWeight: '700' },
   codeChip: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', marginTop: 8, paddingHorizontal: 10, height: 28, borderRadius: 14, backgroundColor: COLORS.accentSoft, borderWidth: 1.5, borderColor: COLORS.accentMedium },
   codeChipText: { fontSize: 13, fontWeight: '900', letterSpacing: 1.5, color: COLORS.accent },
-  stats: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
-  statTile: {
-    flexBasis: '47%', flexGrow: 1, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, height: 64,
-    borderRadius: 18, backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border,
-  },
-  statTileValue: { fontSize: 19, fontWeight: '900', color: COLORS.textPrimary },
-  statTileLabel: { fontSize: 11, fontWeight: '600', color: COLORS.textMuted, marginTop: 1 },
   group: { borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, overflow: 'hidden' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 12, minHeight: 64 },
   rowDivider: { borderBottomWidth: 1, borderBottomColor: COLORS.borderLight },

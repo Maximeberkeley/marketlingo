@@ -17,8 +17,11 @@ describe('Profile redesign', () => {
     expect(profile).not.toContain('{user && <Text style={styles.email}>{user.email}</Text>}');
   });
 
-  it('shows four stats: streak, total XP, XP this month and rank among friends', () => {
-    for (const label of ['label="Day streak"', 'label="Total XP"', 'label="XP this month"', "'Among friends'"]) expect(profile, label).toContain(label);
+  it('goes straight from you to Friends to the interview, with no stat tiles', () => {
+    for (const gone of ['StatTile', 'Day streak', 'Total XP', 'XP this month', 'Among friends']) expect(profile, gone).not.toContain(gone);
+    const order = ['<SocialAvatar name={displayName', '<ProfileFriendsCard', '<InterviewTargetForm', 'title="Goal"'].map(t => profile.indexOf(t));
+    expect(order.every(i => i > 0)).toBe(true);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
   });
 
   it('showcases Friends with King Leo, the crown, friends, streaks, races and what needs you', () => {
