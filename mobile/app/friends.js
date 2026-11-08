@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import { inviteShareContent, acceptInvite, normalizeInviteCode, inviteToast } from "../lib/invites";
+import { inviteShareContent, redeemFriendCode } from "../lib/invites";
 import { COLORS, TYPE, SHADOWS } from "../lib/constants";
 import { getMarketName } from "../lib/markets";
 import { useFriends } from "../hooks/useFriends";
@@ -84,6 +84,7 @@ function FriendsScreen() {
   const [nudgeTarget, setNudgeTarget] = useState(null);
   const [findOpen, setFindOpen] = useState(false);
   const [codeOpen, setCodeOpen] = useState(false);
+  const [codeTab, setCodeTab] = useState("code");
   const social = useFriendSocial(user?.id);
   const [openStreakId, setOpenStreakId] = useState(null);
   const [pickerMode, setPickerMode] = useState(null);
@@ -219,17 +220,13 @@ function FriendsScreen() {
     if (typeof params.toast === "string" && params.toast) showToast(params.toast);
   }, [params.toast, showToast]);
   const redeemCode = async (raw) => {
-    const code = normalizeInviteCode(raw);
-    if (!code) return { ok: false, message: "That code isn't valid. Codes are 4 to 12 letters and numbers." };
     triggerHaptic("light");
-    const result = await acceptInvite(code);
-    const message = inviteToast(result) || "Something went wrong. Please try again.";
-    const ok = result.status === "connected" || result.status === "already";
-    if (ok) {
+    const result = await redeemFriendCode(raw);
+    if (result.ok) {
       triggerHaptic("success");
       void refetch();
     }
-    return { ok, message };
+    return result;
   };
   const friendIds = useMemo(() => new Set(friends.map((f) => f.id)), [friends]);
   const handleAdd = async (person) => {
@@ -422,6 +419,11 @@ function FriendsScreen() {
     close();
     setTimeout(next, SHEET_HANDOFF_MS);
   };
+  const openCodeSheet = (tab) => {
+    triggerHaptic("light");
+    setCodeTab(tab);
+    setCodeOpen(true);
+  };
   return /* @__PURE__ */ React.createElement(View, { style: [styles.container, { paddingTop: insets.top }] }, /* @__PURE__ */ React.createElement(View, { style: styles.header }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.headerBtn, onPress: () => router.back(), accessibilityLabel: "Back" }, /* @__PURE__ */ React.createElement(Feather, { name: "arrow-left", size: 18, color: COLORS.textPrimary })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.headerTitle }, "Standings"), !!marketName && /* @__PURE__ */ React.createElement(Text, { style: styles.headerSub }, marketName)), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.headerBtn, onPress: () => {
     triggerHaptic("light");
     setFindOpen(true);
@@ -473,7 +475,7 @@ function FriendsScreen() {
     }, height: 40, style: { minWidth: 92 }, accessibilityLabel: `Accept ${r.fromUsername}` }))))), crown && /* @__PURE__ */ React.createElement(CrownCard, { crown, onAction: () => {
       triggerHaptic("light");
       router.push("/(tabs)/home");
-    } }), !loading && !friendsError && friends.length === 0 && /* @__PURE__ */ React.createElement(AddFriendsCard, { hasFriends: false, onShare: handleShareInvite, onSearch: () => setFindOpen(true), onMyCode: () => setCodeOpen(true) }), showSocial && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(FriendStreaksCard, { streaks, onOpen: (s) => {
+    } }), !loading && !friendsError && friends.length === 0 && /* @__PURE__ */ React.createElement(AddFriendsCard, { hasFriends: false, onShare: handleShareInvite, onSearch: () => setFindOpen(true), onMyCode: () => openCodeSheet("code"), onScan: () => openCodeSheet("scan") }), showSocial && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(FriendStreaksCard, { streaks, onOpen: (s) => {
       triggerHaptic("light");
       setOpenStreakId(s.id);
     }, onInvite: () => openPicker("streak") }), /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(View, { style: styles.sectionHead }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "Races"), races.length > 0 && /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => openPicker("race"), style: styles.sectionAction, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Feather, { name: "flag", size: 13, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.sectionActionText }, "Challenge"))), races.length === 0 ? /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.raceEmpty, onPress: () => openPicker("race"), activeOpacity: 0.88, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(View, { style: styles.raceEmptyDisc }, /* @__PURE__ */ React.createElement(Feather, { name: "flag", size: 20, color: "#FFFFFF" })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.raceEmptyTitle }, "Race a friend this week"), /* @__PURE__ */ React.createElement(Text, { style: styles.raceEmptySub }, "Most XP in 7 days wins +100 XP.")), /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 18, color: COLORS.accent })) : races.map((race) => /* @__PURE__ */ React.createElement(
@@ -521,7 +523,7 @@ function FriendsScreen() {
         nudge: !row.friend ? void 0 : row.friend.lessonDoneToday ? "done" : isNudged(row.friend.id) ? "nudged" : "idle",
         onNudge: row.friend ? () => openNudge(row.friend.id) : void 0
       }
-    ))), /* @__PURE__ */ React.createElement(AddFriendsCard, { hasFriends: true, onShare: handleShareInvite, onSearch: () => setFindOpen(true), onMyCode: () => setCodeOpen(true) }))), activeTab === "global" && /* @__PURE__ */ React.createElement(React.Fragment, null, !globalLoading && globalEntries.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.heroCard }, /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.heroKicker }, marketName.toUpperCase(), " \xB7 THIS MONTH"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroValue }, currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "#", currentUserRank, /* @__PURE__ */ React.createElement(Text, { style: styles.heroUnit }, " of ", globalEntries.length)) : "Unranked"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroLine }, currentUserRank === 1 ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Top of the market. ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, "Hold it.")) : currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Next spot costs ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, Math.max(1, (globalEntries[currentUserRank - 2]?.total_xp || 0) - (globalEntries[currentUserRank - 1]?.total_xp || 0) + 1), " XP"), ".") : "One lesson puts you on the board."))), !globalLoading && globalEntries.length >= 3 && /* @__PURE__ */ React.createElement(View, { style: styles.podium }, [1, 0, 2].map((i) => {
+    ))), /* @__PURE__ */ React.createElement(AddFriendsCard, { hasFriends: true, onShare: handleShareInvite, onSearch: () => setFindOpen(true), onMyCode: () => openCodeSheet("code"), onScan: () => openCodeSheet("scan") }))), activeTab === "global" && /* @__PURE__ */ React.createElement(React.Fragment, null, !globalLoading && globalEntries.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.heroCard }, /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.heroKicker }, marketName.toUpperCase(), " \xB7 THIS MONTH"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroValue }, currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "#", currentUserRank, /* @__PURE__ */ React.createElement(Text, { style: styles.heroUnit }, " of ", globalEntries.length)) : "Unranked"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroLine }, currentUserRank === 1 ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Top of the market. ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, "Hold it.")) : currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Next spot costs ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, Math.max(1, (globalEntries[currentUserRank - 2]?.total_xp || 0) - (globalEntries[currentUserRank - 1]?.total_xp || 0) + 1), " XP"), ".") : "One lesson puts you on the board."))), !globalLoading && globalEntries.length >= 3 && /* @__PURE__ */ React.createElement(View, { style: styles.podium }, [1, 0, 2].map((i) => {
       const e = globalEntries[i];
       const m = MEDALS[i];
       const h = i === 0 ? 76 : i === 1 ? 60 : 50;
@@ -619,10 +621,11 @@ function FriendsScreen() {
         void handleCancelSent(id);
       },
       onRedeem: redeemCode,
+      onScan: () => closeThen(() => setFindOpen(false), () => openCodeSheet("scan")),
       onShare: handleShareInvite,
       onClose: () => setFindOpen(false)
     }
-  ), /* @__PURE__ */ React.createElement(MyCodeSheet, { code: myFriendCode, visible: codeOpen, onShare: handleShareInvite, onClose: () => setCodeOpen(false) }), /* @__PURE__ */ React.createElement(RewardCelebration, { reward, onClose: () => setReward(null) }), toast && /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: [styles.toast, { bottom: insets.bottom + 24 }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.toastText }, toast)));
+  ), /* @__PURE__ */ React.createElement(MyCodeSheet, { code: myFriendCode, visible: codeOpen, initialTab: codeTab, onShare: handleShareInvite, onRedeem: redeemCode, onClose: () => setCodeOpen(false) }), /* @__PURE__ */ React.createElement(RewardCelebration, { reward, onClose: () => setReward(null) }), toast && /* @__PURE__ */ React.createElement(View, { pointerEvents: "none", style: [styles.toast, { bottom: insets.bottom + 24 }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.toastText }, toast)));
 }
 function BoardRow({
   rank,

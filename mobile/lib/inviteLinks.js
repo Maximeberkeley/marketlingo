@@ -8,6 +8,17 @@ function normalizeInviteCode(raw) {
 function inviteUrl(code) {
   return `${INVITE_ORIGIN}/invite/${code}`;
 }
+function inviteAppUrl(code) {
+  return `marketlingo://invite/${code}`;
+}
+const SCANNED_LINK_RE = /^(?:marketlingo:\/\/|https?:\/\/(?:www\.)?market-verse\.com\/)invite\/([A-Za-z0-9]{4,12})\/?(?:[?#].*)?$/i;
+function codeFromScan(data) {
+  if (typeof data !== "string") return null;
+  const text = data.trim();
+  const link = SCANNED_LINK_RE.exec(text);
+  if (link) return normalizeInviteCode(link[1]);
+  return text.includes("/") || text.includes(":") ? null : normalizeInviteCode(text);
+}
 function inviteMessage(industry, code) {
   const what = industry?.trim() ? industry.trim() : "industries";
   return `Add me on MarketLingo! I'm learning ${what}, 5 minutes a day. Tap to add me: ${inviteUrl(code)} (or enter my friend code ${code})`;
@@ -21,6 +32,8 @@ function inviteShareContent(industry, code, platform) {
 }
 export {
   INVITE_ORIGIN,
+  codeFromScan,
+  inviteAppUrl,
   inviteMessage,
   inviteShareContent,
   inviteUrl,

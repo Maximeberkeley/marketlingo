@@ -28,6 +28,7 @@ import { myFriendRaceXP } from '../../lib/socialStandings';
 import { crownStatus } from '../../lib/crown';
 import { homeSocialLine, raceIsOver, streakToday } from '../../lib/friendSocial';
 import { inviteShareContent } from '../../lib/inviteLinks';
+import { redeemFriendCode } from '../../lib/invites';
 import { ProfileFriendsCard } from '../../components/profile/ProfileFriendsCard';
 import { MyCodeSheet } from '../../components/social/MyCodeSheet';
 import { SocialAvatar } from '../../components/social/SocialAvatar';
@@ -225,6 +226,13 @@ export default function ProfileScreen() {
     } catch { /* cancelled */ }
   };
 
+  // A friend's code scanned from the code sheet: add them and refresh the Friends card.
+  const redeemScanned = async (raw: string) => {
+    const result = await redeemFriendCode(raw);
+    if (result.ok) void friendsData.refetch();
+    return result;
+  };
+
   const handleExportNotebook = async () => {
     if (!user) return;
     const { data: notes } = await supabase
@@ -357,7 +365,7 @@ export default function ProfileScreen() {
         </Animated.View>
       </ScrollView>
 
-      <MyCodeSheet code={friendsData.myFriendCode} visible={codeOpen} onShare={() => { void shareInvite(); }} onClose={() => setCodeOpen(false)} />
+      <MyCodeSheet code={friendsData.myFriendCode} visible={codeOpen} onShare={() => { void shareInvite(); }} onRedeem={redeemScanned} onClose={() => setCodeOpen(false)} />
 
       {/* Change industry warning (shared with Home) */}
       <SwitchIndustryModal

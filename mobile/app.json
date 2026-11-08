@@ -21,7 +21,7 @@
       "supportsTablet": false,
       "appleTeamId": "PM32G4952G",
       "bundleIdentifier": "app.marketlingo.aerospace",
-      "buildNumber": "162",
+      "buildNumber": "163",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "MarketLingo needs microphone access to record your interview responses in the Mock Lab for AI feedback.",
@@ -63,6 +63,13 @@
             "buildReactNativeFromSource": true
           },
           "android": {}
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "MarketLingo uses your camera to scan a friend's code so you can add them.",
+          "recordAudioAndroid": false
         }
       ],
       "expo-web-browser",

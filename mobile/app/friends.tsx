@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { inviteShareContent, acceptInvite, normalizeInviteCode, inviteToast } from '../lib/invites';
+import { inviteShareContent, redeemFriendCode } from '../lib/invites';
 import { COLORS, TYPE, SHADOWS } from '../lib/constants';
 import { getMarketName } from '../lib/markets';
 import { useFriends, Friend, FriendSearchResult } from '../hooks/useFriends';
@@ -26,7 +26,7 @@ import { firstName, raceIsOver } from '../lib/friendSocial';
 import { FriendSheet, FriendSheetInfo } from '../components/social/FriendSheet';
 import { NudgeSheet, NudgeTarget } from '../components/social/NudgeSheet';
 import { FindFriendsSheet } from '../components/social/FindFriendsSheet';
-import { MyCodeSheet } from '../components/social/MyCodeSheet';
+import { MyCodeSheet, CodeSheetTab } from '../components/social/MyCodeSheet';
 import { AddFriendsCard } from '../components/social/AddFriendsCard';
 import { ChunkyButton } from '../components/social/ChunkyButton';
 import { SocialAvatar } from '../components/social/SocialAvatar';
@@ -85,6 +85,7 @@ export default function FriendsScreen() {
   const [nudgeTarget, setNudgeTarget] = useState<NudgeTarget | null>(null);
   const [findOpen, setFindOpen] = useState(false);
   const [codeOpen, setCodeOpen] = useState(false);
+  const [codeTab, setCodeTab] = useState<CodeSheetTab>('code');
   // Friend streaks and races (shown once the server functions exist).
   const social = useFriendSocial(user?.id);
   const [openStreakId, setOpenStreakId] = useState<string | null>(null);
@@ -232,14 +233,10 @@ export default function FriendsScreen() {
   }, [params.toast, showToast]);
 
   const redeemCode = async (raw: string): Promise<{ ok: boolean; message: string }> => {
-    const code = normalizeInviteCode(raw);
-    if (!code) return { ok: false, message: "That code isn't valid. Codes are 4 to 12 letters and numbers." };
     triggerHaptic('light');
-    const result = await acceptInvite(code);
-    const message = inviteToast(result) || 'Something went wrong. Please try again.';
-    const ok = result.status === 'connected' || result.status === 'already';
-    if (ok) { triggerHaptic('success'); void refetch(); }
-    return { ok, message };
+    const result = await redeemFriendCode(raw);
+    if (result.ok) { triggerHaptic('success'); void refetch(); }
+    return result;
   };
 
   const friendIds = useMemo(() => new Set(friends.map((f) => f.id)), [friends]);
@@ -440,6 +437,7 @@ export default function FriendsScreen() {
   const showSocial = social.available && (friends.length > 0 || streaks.length > 0 || races.length > 0);
   const crown = !loading && !friendsError && friends.length > 0 ? crownStatus(friendsBoard) : null;
   const closeThen = (close: () => void, next: () => void) => { close(); setTimeout(next, SHEET_HANDOFF_MS); };
+  const openCodeSheet = (tab: CodeSheetTab) => { triggerHaptic('light'); setCodeTab(tab); setCodeOpen(true); };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -540,7 +538,7 @@ export default function FriendsScreen() {
               {crown && <CrownCard crown={crown} onAction={() => { triggerHaptic('light'); router.push('/(tabs)/home' as any); }} />}
 
               {!loading && !friendsError && friends.length === 0 && (
-                <AddFriendsCard hasFriends={false} onShare={handleShareInvite} onSearch={() => setFindOpen(true)} onMyCode={() => setCodeOpen(true)} />
+                <AddFriendsCard hasFriends={false} onShare={handleShareInvite} onSearch={() => setFindOpen(true)} onMyCode={() => openCodeSheet('code')} onScan={() => openCodeSheet('scan')} />
               )}
 
               {showSocial && (
@@ -624,7 +622,7 @@ export default function FriendsScreen() {
                       />
                     ))}
                   </View>
-                  <AddFriendsCard hasFriends onShare={handleShareInvite} onSearch={() => setFindOpen(true)} onMyCode={() => setCodeOpen(true)} />
+                  <AddFriendsCard hasFriends onShare={handleShareInvite} onSearch={() => setFindOpen(true)} onMyCode={() => openCodeSheet('code')} onScan={() => openCodeSheet('scan')} />
                 </>
               )}
             </>
@@ -760,10 +758,11 @@ export default function FriendsScreen() {
         onAdd={p => { void handleAdd(p); }}
         onCancelSent={id => { void handleCancelSent(id); }}
         onRedeem={redeemCode}
+        onScan={() => closeThen(() => setFindOpen(false), () => openCodeSheet('scan'))}
         onShare={handleShareInvite}
         onClose={() => setFindOpen(false)}
       />
-      <MyCodeSheet code={myFriendCode} visible={codeOpen} onShare={handleShareInvite} onClose={() => setCodeOpen(false)} />
+      <MyCodeSheet code={myFriendCode} visible={codeOpen} initialTab={codeTab} onShare={handleShareInvite} onRedeem={redeemCode} onClose={() => setCodeOpen(false)} />
       <RewardCelebration reward={reward} onClose={() => setReward(null)} />
       {toast && (
         <View pointerEvents="none" style={[styles.toast, { bottom: insets.bottom + 24 }]}>

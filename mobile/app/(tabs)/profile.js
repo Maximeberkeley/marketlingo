@@ -35,6 +35,7 @@ import { myFriendRaceXP } from "../../lib/socialStandings";
 import { crownStatus } from "../../lib/crown";
 import { homeSocialLine, raceIsOver, streakToday } from "../../lib/friendSocial";
 import { inviteShareContent } from "../../lib/inviteLinks";
+import { redeemFriendCode } from "../../lib/invites";
 import { ProfileFriendsCard } from "../../components/profile/ProfileFriendsCard";
 import { MyCodeSheet } from "../../components/social/MyCodeSheet";
 import { SocialAvatar } from "../../components/social/SocialAvatar";
@@ -195,6 +196,11 @@ function ProfileScreen() {
     } catch {
     }
   };
+  const redeemScanned = async (raw) => {
+    const result = await redeemFriendCode(raw);
+    if (result.ok) void friendsData.refetch();
+    return result;
+  };
   const handleExportNotebook = async () => {
     if (!user) return;
     const { data: notes } = await supabase.from("notes").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
@@ -272,7 +278,7 @@ function ProfileScreen() {
     }, highlight: true }))), /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "YOUR LEARNING"), /* @__PURE__ */ React.createElement(View, { style: styles.group }, /* @__PURE__ */ React.createElement(MenuRow, { icon: GOAL_OPTIONS.find((g) => g.id === currentGoal)?.icon || "target", title: "Goal", subtitle: GOAL_OPTIONS.find((g) => g.id === currentGoal)?.title || "Not set", onPress: () => setShowGoalPicker(true) }), /* @__PURE__ */ React.createElement(MenuRow, { icon: "sliders", title: "Level", subtitle: FAMILIARITY_LEVELS.find((l) => l.id === currentLevel)?.name || "Not set", onPress: () => setShowLevelPicker(true) }), /* @__PURE__ */ React.createElement(MenuRow, { icon: "globe", title: "Industry", subtitle: getMarketName(selectedMarket || "aerospace"), onPress: () => setShowChangeWarning(true) }), /* @__PURE__ */ React.createElement(MenuRow, { icon: "award", title: "Achievements", subtitle: "Badges you've earned", onPress: () => router.push("/achievements") }), /* @__PURE__ */ React.createElement(MenuRow, { icon: "settings", title: "Settings", subtitle: "Notifications and account", onPress: () => router.push("/settings"), last: true })), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.logoutLink, onPress: handleSignOut, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { style: styles.logoutText }, "Log out"))), /* @__PURE__ */ React.createElement(Text, { style: styles.versionText }, "MarketLingo v1.1.1"))
   ), /* @__PURE__ */ React.createElement(MyCodeSheet, { code: friendsData.myFriendCode, visible: codeOpen, onShare: () => {
     void shareInvite();
-  }, onClose: () => setCodeOpen(false) }), /* @__PURE__ */ React.createElement(
+  }, onRedeem: redeemScanned, onClose: () => setCodeOpen(false) }), /* @__PURE__ */ React.createElement(
     SwitchIndustryModal,
     {
       visible: showChangeWarning,
