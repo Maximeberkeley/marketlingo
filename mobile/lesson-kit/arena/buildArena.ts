@@ -134,6 +134,13 @@ function withReview(exercise: Exercise, slides: SlideLike[]): Exercise {
 
 export function buildArena(input: ArenaInput): ArenaWave[] {
   const pack = getIndustryPack(input.marketId);
+  // Retain row provenance and reject other industries even if a caller hands
+  // us a stale or mixed fallback pool. Unscoped legacy inputs remain supported.
+  const inMarket = <T extends { market_id?: string }>(rows: T[]) =>
+    rows.filter(row => !row.market_id || row.market_id === input.marketId);
+  const stats = inMarket(input.stats);
+  const drills = inMarket(input.drills);
+  const trainer = inMarket(input.trainer);
   const lessons = [...(input.studied ?? [])].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
   const review = lessons.length > 1 ? [...lessons.slice(1), lessons[0]] : lessons;
   // A brand-new learner only gets questions about what they studied.
@@ -328,19 +335,19 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   const defs = definitions();
   const authoredMC = own('multipleChoice');
   const wave1 = fill([...authoredMC.slice(0, 1), ...defs.slice(0, 1), ...claims, ...defs.slice(1), ...authoredMC.slice(1)], [
-    pack ? packFaceOff(pack, nextId()) : null, statFaceOff(input.stats, nextId()),
-    drillTrueFalse(input.drills, nextId()), statTrend(input.stats, nextId()),
+    pack ? packFaceOff(pack, nextId()) : null, statFaceOff(stats, nextId()),
+    drillTrueFalse(drills, nextId()), statTrend(stats, nextId()),
   ], 4);
   const figures = generated(checkFigure);
   const authoredNumbers = own('numberSense');
   const wave2 = fill([...authoredNumbers.slice(0, 1), ...figures.slice(0, 1), ...own('buildChain'), ...own('sortSignal'), ...generated(checkClaim), ...figures, ...authoredNumbers.slice(1)], [
-    pack ? packChain(pack, nextId()) : null, statNumberSense(input.stats, nextId()),
-    drillSpotFake(input.drills, nextId()), pack ? packMap(pack, nextId()) : null, pack ? packNumber(pack, nextId()) : null,
+    pack ? packChain(pack, nextId()) : null, statNumberSense(stats, nextId()),
+    drillSpotFake(drills, nextId()), pack ? packMap(pack, nextId()) : null, pack ? packNumber(pack, nextId()) : null,
   ], 4);
   const finalPool = [...(reserved ? [reserved] : []), ...definitions(), ...tampers];
   reserved = undefined;
   const wave3 = fill(finalPool, [
-    ...shuffle(input.trainer).map(scenario => trainerCall(scenario, nextId())),
+    ...shuffle(trainer).map(scenario => trainerCall(scenario, nextId())),
   ], 3);
 
   const waves: ArenaWave[] = [
