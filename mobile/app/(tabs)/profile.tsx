@@ -16,7 +16,7 @@ import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserXP, STARTUP_STAGES } from '../../hooks/useUserXP';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { SwitchIndustryModal } from '../../components/ui/SwitchIndustryModal';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { triggerHaptic } from '../../lib/haptics';
 import { useCollectibles } from '../../hooks/useCollectibles';
 import { getMarketWorld } from '../../data/marketWorlds';
@@ -53,14 +53,6 @@ const MARKET_ILLUSTRATIONS: Record<string, any> = {
   climatetech: require('../../assets/illustrations/climatetech.png'),
   neuroscience: require('../../assets/illustrations/neuroscience.png'),
 };
-
-function goalSentence(goal: string | null, market: string): string {
-  const m = market.toLowerCase();
-  if (goal === 'invest') return `Learning to invest in ${m}`;
-  if (goal === 'build_startup') return `Building a ${m} startup`;
-  if (goal === 'curiosity') return `Exploring ${m}`;
-  return `Getting ready for ${/^[aeiou]/.test(m) ? 'an' : 'a'} ${m} job`;
-}
 
 type LearningGoal = 'join_industry' | 'invest' | 'build_startup' | 'curiosity';
 
@@ -288,24 +280,27 @@ export default function ProfileScreen() {
     );
   }
 
+  const openCode = () => { triggerHaptic('light'); setCodeOpen(true); };
+  const openSettings = () => { triggerHaptic('light'); router.push('/settings' as any); };
+
   return (
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header: who you are, your code, your path */}
+        {/* Header: you in one card. Your friend code is behind the QR button. */}
         <Animated.View style={[styles.header, animStyle(headerAnim)]}>
           <View style={styles.headerTop}>
             <Text style={styles.title}>Profile</Text>
-            <TouchableOpacity style={styles.gear} onPress={() => { triggerHaptic('light'); router.push('/settings' as any); }} accessibilityLabel="Settings">
+            <TouchableOpacity style={styles.gear} onPress={openSettings} accessibilityLabel="Settings">
               <Feather name="settings" size={19} color={COLORS.textSecondary} />
             </TouchableOpacity>
           </View>
-          <View style={styles.identity}>
+          <View style={styles.idCard}>
             <View>
-              <SocialAvatar name={displayName || user?.email || 'You'} size={78} ring={COLORS.accent} ringWidth={3} />
-              {iWearCrown && <View style={styles.avatarCrown} pointerEvents="none"><CrownBadge size={34} /></View>}
+              <SocialAvatar name={displayName || user?.email || 'You'} size={60} ring={COLORS.accent} ringWidth={3} />
+              {iWearCrown && <View style={styles.avatarCrown} pointerEvents="none"><CrownBadge size={28} /></View>}
             </View>
             <View style={{ flex: 1, minWidth: 0 }}>
               {displayName ? (
@@ -315,17 +310,13 @@ export default function ProfileScreen() {
                   <Text style={[styles.name, { color: COLORS.accent }]} numberOfLines={1}>Add your name</Text>
                 </TouchableOpacity>
               )}
-              <TouchableOpacity onPress={() => setShowChangeWarning(true)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Change industry">
-                <Text style={styles.path} numberOfLines={2}>{goalSentence(currentGoal, getMarketName(selectedMarket || 'aerospace'))} <Text style={styles.pathChange}>· Change</Text></Text>
-              </TouchableOpacity>
-              {!!friendsData.myFriendCode && (
-                <TouchableOpacity style={styles.codeChip} onPress={() => { triggerHaptic('light'); setCodeOpen(true); }} accessibilityRole="button" accessibilityLabel={`Your friend code ${friendsData.myFriendCode}. Show QR code`}>
-                  <Feather name="hash" size={12} color={COLORS.accent} />
-                  <Text style={styles.codeChipText}>{friendsData.myFriendCode}</Text>
-                  <Feather name="maximize" size={11} color={COLORS.accent} />
-                </TouchableOpacity>
-              )}
+              <Text style={styles.industry} numberOfLines={1}>{getMarketName(selectedMarket || 'aerospace')}</Text>
             </View>
+            {!!friendsData.myFriendCode && (
+              <TouchableOpacity style={styles.qrBtn} onPress={openCode} accessibilityRole="button" accessibilityLabel={`Your friend code ${friendsData.myFriendCode}. Show QR code`}>
+                <MaterialCommunityIcons name="qrcode" size={24} color={COLORS.accent} />
+              </TouchableOpacity>
+            )}
           </View>
         </Animated.View>
 
@@ -482,13 +473,11 @@ function MenuRow({ icon, title, subtitle, onPress, last, highlight }: {
 const styles = StyleSheet.create({
   headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
   gear: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
-  identity: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  avatarCrown: { position: 'absolute', top: -20, left: 22 },
-  name: { fontSize: 24, fontWeight: '900', color: COLORS.textPrimary },
-  path: { fontSize: 13, color: COLORS.textSecondary, marginTop: 3, lineHeight: 18 },
-  pathChange: { color: COLORS.accent, fontWeight: '700' },
-  codeChip: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', marginTop: 8, paddingHorizontal: 10, height: 28, borderRadius: 14, backgroundColor: COLORS.accentSoft, borderWidth: 1.5, borderColor: COLORS.accentMedium },
-  codeChipText: { fontSize: 13, fontWeight: '900', letterSpacing: 1.5, color: COLORS.accent },
+  avatarCrown: { position: 'absolute', top: -15, left: 16 },
+  idCard: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 14, borderRadius: 22, backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border },
+  name: { fontSize: 22, fontWeight: '900', color: COLORS.textPrimary },
+  industry: { fontSize: 14, color: COLORS.textSecondary, marginTop: 2 },
+  qrBtn: { width: 48, height: 48, borderRadius: 14, backgroundColor: COLORS.accentSoft, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.accentMedium, alignItems: 'center', justifyContent: 'center' },
   group: { borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, overflow: 'hidden' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 12, minHeight: 64 },
   rowDivider: { borderBottomWidth: 1, borderBottomColor: COLORS.borderLight },

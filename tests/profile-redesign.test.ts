@@ -9,9 +9,13 @@ const profile = read('mobile/app/(tabs)/profile.tsx');
 const card = read('mobile/components/profile/ProfileFriendsCard.tsx');
 
 describe('Profile redesign', () => {
-  it('leads with who you are: avatar, name, path and your friend code (QR on tap)', () => {
-    expect(profile).toContain("<SocialAvatar name={displayName || user?.email || 'You'} size={78} ring={COLORS.accent} ringWidth={3} />");
-    expect(profile).toContain('{iWearCrown && <View style={styles.avatarCrown} pointerEvents="none"><CrownBadge size={34} /></View>}');
+  it('leads with one clean card: avatar, name, industry, and a QR button for your code', () => {
+    expect(profile).toContain("<SocialAvatar name={displayName || user?.email || 'You'} size={60} ring={COLORS.accent} ringWidth={3} />");
+    expect(profile).toContain('{iWearCrown && <View style={styles.avatarCrown} pointerEvents="none"><CrownBadge size={28} /></View>}');
+    expect(profile).toContain('<View style={styles.idCard}>');
+    expect(profile).toContain('<TouchableOpacity style={styles.qrBtn} onPress={openCode}');
+    // The old clutter: the goal sentence with "· Change" (Industry is under Your learning) and the # code chip.
+    for (const gone of ['· Change', 'goalSentence', 'codeChip', 'name="hash"']) expect(profile, gone).not.toContain(gone);
     expect(profile).toContain("select('selected_market, familiarity_level, display_name')");
     expect(profile).toContain('<MyCodeSheet code={friendsData.myFriendCode} visible={codeOpen}');
     expect(profile).not.toContain('{user && <Text style={styles.email}>{user.email}</Text>}');
