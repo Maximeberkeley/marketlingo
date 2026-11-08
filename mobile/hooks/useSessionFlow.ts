@@ -7,7 +7,6 @@ import { useState, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { StackWithSlides } from '../lib/types';
-import { getMarketName, getMarketEmoji } from '../lib/markets';
 import { triggerHaptic } from '../lib/haptics';
 import { trackEvent } from '../lib/analytics';
 import { log } from '../lib/logger';
@@ -24,8 +23,6 @@ interface UseSessionFlowParams {
   updateStreak: () => Promise<any>;
   completeLessonForToday: (stackId: string) => Promise<void>;
   addXP: (amount: number, type: string, sourceId?: string, description?: string) => Promise<void>;
-  checkStreakMilestone: (streak: number, name: string, emoji: string) => void;
-  checkLevelMilestone: (level: number, name: string, emoji: string) => void;
   xpRewardLessonComplete: number;
   xpRewardStreakBonus: number;
   onDataRefresh: () => Promise<void>;
@@ -44,8 +41,6 @@ export function useSessionFlow({
   updateStreak,
   completeLessonForToday,
   addXP,
-  checkStreakMilestone,
-  checkLevelMilestone,
   xpRewardLessonComplete,
   xpRewardStreakBonus,
   onDataRefresh,
@@ -121,21 +116,13 @@ export function useSessionFlow({
         } else {
           await completeStack(activeStack.id);
           await completeLessonForToday(activeStack.id);
-          const updatedProgress = await updateStreak();
+          await updateStreak();
           if ((progress.current_streak || 0) > 0) {
             const streakBonus = xpRewardStreakBonus * (progress.current_streak || 1);
             await addXP(streakBonus, 'streak_bonus');
             earnedXP += streakBonus;
           }
-
-          const mktName = getMarketName(selectedMarket || 'aerospace');
-          const mktEmoji = getMarketEmoji(selectedMarket || 'aerospace');
-          const newStreak = (updatedProgress as any)?.current_streak || progress.current_streak || 0;
-          checkStreakMilestone(newStreak, mktName, mktEmoji);
-
-          if (xpData) {
-            checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
-          }
+          // No streak or level pop-up here: the completion screen right after shows both.
           // The dossier is written by the learner only (see the lesson's "Say it" step).
           // All required writes are saved; a full Home/news refresh is not banking.
           synced = true;
@@ -162,7 +149,7 @@ export function useSessionFlow({
     setShowSessionComplete(true);
     setShowReader(false);
     return synced;
-  }, [activeStack, progress, xpData, selectedMarket, lessonCompletedToday, completeStack, updateStreak, completeLessonForToday, addXP, checkStreakMilestone, checkLevelMilestone, xpRewardLessonComplete, xpRewardStreakBonus, onDataRefresh]);
+  }, [activeStack, progress, xpData, selectedMarket, lessonCompletedToday, completeStack, updateStreak, completeLessonForToday, addXP, xpRewardLessonComplete, xpRewardStreakBonus, onDataRefresh]);
 
   const handleBiteComplete = useCallback(async (isReviewMode: boolean, _timeSpentSeconds: number) => {
     setShowReader(false);

@@ -115,7 +115,6 @@ describe('Practice clarity', () => {
       completeStack: async () => { calls.push('stack'); },
       completeLessonForToday: async () => { calls.push('credit'); await credit; },
       updateStreak: async () => { calls.push('streak'); return { current_streak: 1 }; },
-      checkStreakMilestone: () => {}, checkLevelMilestone: () => {},
       xpRewardLessonComplete: 50,
       onDataRefresh: async () => { throw new Error('Must not refresh before confirmation'); },
     };
