@@ -852,6 +852,27 @@ export type Database = {
         }
         Relationships: []
       }
+      friend_social_notifications: {
+        Row: {
+          created_at: string
+          kind: string
+          sent_by: string
+          subject_id: string
+        }
+        Insert: {
+          created_at?: string
+          kind: string
+          sent_by: string
+          subject_id: string
+        }
+        Update: {
+          created_at?: string
+          kind?: string
+          sent_by?: string
+          subject_id?: string
+        }
+        Relationships: []
+      }
       friend_streak_rewards: {
         Row: {
           created_at: string
