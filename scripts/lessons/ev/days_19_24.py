@@ -1,0 +1,188 @@
+# EV, days 19-24. Month 1, topic 4: manufacturing economics and production ramp challenges.
+SRC = {
+    'ag_model3': {'url': 'https://www.autoguide.com/auto-news/2018/07/tesla-finally-produced-5-000-model-3s-in-a-week.html', 'label': 'AutoGuide, Tesla finally produced 5,000 Model 3s in a week'},
+    'electrek_bosk': {'url': 'https://electrek.co/2025/12/11/ford-sk-on-kill-massive-us-battery-joint-venture-split-factories-between-them/', 'label': 'Electrek, Ford and SK On end their battery joint venture'},
+    'gma_ultium': {'url': 'https://gmauthority.com/blog/2023/10/gms-ultium-cells-battery-plants-to-be-included-in-national-uaw-labor-agreement', 'label': 'GM Authority, Ultium Cells joins the UAW national agreement'},
+    'electrek_rivian': {'url': 'https://electrek.co/2025/02/20/rivian-rivn-hit-gross-profit-goal-q4-now-what/', 'label': 'Electrek, Rivian hits its gross profit goal in Q4'},
+    'iev_45x': {'url': 'https://insideevs.com/news/672071/section-45x-inflation-reduction-act-ev-production/', 'label': 'InsideEVs, how Section 45X affects EV production'},
+    'bc_45x': {'url': 'https://beancount.io/blog/2026/05/12/section-45x-advanced-manufacturing-production-credit-obbba-battery-solar-critical-minerals-per-unit-2026-phase-out-guide', 'label': 'Section 45X after the 2025 tax law'},
+    'local_northvolt': {'url': 'https://www.thelocal.se/20250808/key-points-what-do-we-know-about-the-rescue-of-swedish-battery-company-northvolt', 'label': 'The Local, the rescue of Northvolt'},
+    'local_lyten': {'url': 'https://www.thelocal.se/20260108/whats-happening-with-the-american-takeover-of-swedens-northvolt', 'label': "The Local, the American takeover of Northvolt"},
+}
+
+LESSONS = [
+    {
+        'day': 19, 'facet': 'definition', 'title': 'Surviving production hell',
+        'open': {
+            'eyebrow': 'Day 19 · Manufacturing', 'kicker': 'Building thousands of cars a week is harder than designing one.',
+            'headline': 'In the last week of June 2018, Tesla built 5,031 Model 3s, finally passing its goal of 5,000 a week.',
+            'fullText': 'It came after many delays. Elon Musk called the ramp "production hell." To get there, Tesla added a new assembly line set up in a giant tent, which made about a fifth of that week\'s Model 3s.',
+            'sources': ['ag_model3'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'ramp', 'eyebrow': 'The ramp', 'text': 'A ramp is the climb from the first cars off the line to full-speed output.', 'highlight': 'Costs per car stay high until the line runs at full speed.', 'keyTerms': [{'term': 'Production ramp', 'definition': 'The period when a factory increases output from its first units to its target rate.'}], 'sources': ['ag_model3']},
+            {'kind': 'microInsight', 'id': 'tent', 'eyebrow': 'The fix', 'text': 'Tesla built an extra line inside a tent to add capacity fast.', 'highlight': 'It made about 20% of that week\'s Model 3s.', 'sources': ['ag_model3']},
+            {'kind': 'info', 'id': 'backlog', 'eyebrow': 'The pressure', 'title': 'Orders waited on the factory', 'body': 'Tesla had about 420,000 Model 3 reservations at the time. Demand was there; output was not.', 'sources': ['ag_model3']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-tent', 'prompt': 'What share of Tesla\'s Model 3s that week came from the tent line?', 'min': 0, 'max': 100, 'value': 20, 'unit': '%', 'tolerance': 0.08, 'explanation': 'About 20%, from a line set up in a tent.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'Why is the production ramp so costly?',
+             'options': ['Plants cost little until they are finished', 'Fixed costs are spread over few cars', 'Workers are paid less during the ramp'], 'correctIndex': 1,
+             'explanation': 'The factory\'s costs are mostly fixed, so each car is expensive until volume rises.'},
+        ],
+        'lenses': {
+            'career': ('Ramps need problem solvers', 'Manufacturing engineers who fix bottlenecks during a ramp are among the most valued people in a car company.', ['ag_model3']),
+            'invest': ('Watch the weekly rate', 'A ramp is judged by weekly output against target. Missed targets burn cash.', ['ag_model3']),
+            'build_startup': ('Plan for production hell', 'Prototypes are the easy part. Budget time and cash for the ramp, not just the design.', ['ag_model3']),
+            'curiosity': ('A car line in a tent', 'In 2018, Tesla built thousands of cars a week partly inside a giant tent.', ['ag_model3']),
+        },
+        'rule': ('In car making, the factory ramp decides whether a good design becomes a business.', ['ag_model3']),
+        'takeaway': 'Tesla passed 5,000 Model 3s a week in late June 2018 after "production hell." Costs per car stay high until a factory reaches full speed.',
+    },
+    {
+        'day': 20, 'facet': 'money', 'title': 'The $11.4 billion breakup',
+        'open': {
+            'eyebrow': 'Day 20 · The money', 'kicker': 'Ford\'s biggest factory bet got cut in half.',
+            'headline': 'In December 2025, Ford and SK On ended BlueOval SK, their $11.4 billion US battery venture announced in 2021.',
+            'fullText': 'It was the biggest manufacturing investment in Ford\'s history, planned as three battery plants: two in Kentucky and one in Tennessee. Ford takes the Kentucky plants and SK On takes Tennessee. SK On said it would now sell batteries to other customers, including energy storage.',
+            'sources': ['electrek_bosk'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'jv', 'eyebrow': 'Why joint ventures', 'text': 'Carmakers team up with cell makers to share the huge cost of battery plants.', 'highlight': 'Each partner gets supply or sales it could not secure alone.', 'keyTerms': [{'term': 'Joint venture', 'definition': 'A company owned by two or more partners who share its costs and output.'}], 'sources': ['electrek_bosk']},
+            {'kind': 'microInsight', 'id': 'why', 'eyebrow': 'What changed', 'text': 'Ford\'s EV volumes fell short and US federal incentives ended.', 'highlight': 'Plants sized for big targets needed new buyers.', 'sources': ['electrek_bosk']},
+            {'kind': 'info', 'id': 'pivot', 'eyebrow': 'The pivot', 'title': 'From cars to grid storage', 'body': 'SK On pointed its Tennessee plant at more customers, including energy storage systems for the power grid.', 'sources': ['electrek_bosk']},
+        ],
+        'checks': [
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You run a new battery plant built for one carmaker. Its EV sales fall short.', 'prompt': 'What do you do?',
+             'options': ['Find more buyers, including grid storage', 'Keep running at full speed for stock', 'Wait for the carmaker\'s sales to recover'],
+             'consequences': ['You fill the plant with new demand.', 'Unsold batteries pile up and tie up cash.', 'The plant sits idle while fixed costs mount.'],
+             'correctIndex': 0, 'explanation': 'SK On did exactly this, opening its Tennessee plant to other customers.'},
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'After the split, who owns the Tennessee plant?',
+             'left': {'name': 'Ford', 'note': 'Took the two Kentucky plants'}, 'right': {'name': 'SK On', 'note': 'Now free to sell to others'}, 'correctIndex': 1,
+             'explanation': 'Ford kept Kentucky; SK On took Tennessee.'},
+        ],
+        'lenses': {
+            'career': ('Know who owns the plant', 'Battery plant jobs depend on who owns them and who buys their cells. Ownership changed here.', ['electrek_bosk']),
+            'invest': ('Capacity follows demand', 'Plants sized for optimistic EV targets get split or repurposed when demand falls.', ['electrek_bosk']),
+            'build_startup': ('Spare capacity is an opening', 'When big plants lose their main buyer, cell supply opens up for new customers.', ['electrek_bosk']),
+            'curiosity': ('A record bet, undone', 'Ford\'s largest factory investment ever was split up less than four years later.', ['electrek_bosk']),
+        },
+        'rule': ('In battery making, a plant is only as safe as the demand behind it.', ['electrek_bosk']),
+        'takeaway': 'Ford and SK On ended their $11.4 billion BlueOval SK venture in December 2025, splitting the plants as EV demand fell short.',
+    },
+    {
+        'day': 21, 'facet': 'power', 'title': 'The union reaches battery plants',
+        'open': {
+            'eyebrow': 'Day 21 · The power', 'kicker': 'A strike decided who builds batteries, and for what pay.',
+            'headline': 'In October 2023, during the UAW strike, GM agreed to put its Ultium Cells battery plants under the union\'s national contract.',
+            'fullText': 'Ultium Cells is GM\'s battery venture with LG Energy Solution. Lawmakers said its Ohio workers earned about half as much as workers at the nearby former GM Lordstown car plant. The UAW said a threat to strike GM\'s Arlington, Texas SUV plant forced the deal.',
+            'sources': ['gma_ultium'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'stakes', 'eyebrow': 'The stakes', 'text': 'Battery plants are where many future auto jobs will be.', 'highlight': 'The union wanted them under the same contract as car plants.', 'sources': ['gma_ultium']},
+            {'kind': 'microInsight', 'id': 'gap', 'eyebrow': 'The gap', 'text': 'Ultium Ohio workers earned about half the pay of the old Lordstown plant.', 'highlight': 'The national contract was set to close that gap.', 'sources': ['gma_ultium']},
+            {'kind': 'info', 'id': 'leverage', 'eyebrow': 'The lever', 'title': 'Strike the profit center', 'body': 'Arlington builds GM\'s full-size SUVs, called the world\'s most profitable car plant. Threatening it moved GM.', 'sources': ['gma_ultium']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What gave the UAW its power over GM?',
+             'options': ['A threat to its Arlington SUV plant', 'A new law on battery plant wages', 'A court order against Ultium Cells'], 'correctIndex': 0,
+             'explanation': 'Arlington builds GM\'s most profitable vehicles, so a strike there would hurt most.'},
+            {'kind': 'sortSignal', 'id': 'sort', 'prompt': 'Does each change raise or lower battery plant labor costs?', 'buckets': ['Raises costs', 'Lowers costs'],
+             'items': [{'text': 'Joining the national union contract', 'bucket': 0}, {'text': 'Closing the pay gap with car plants', 'bucket': 0}, {'text': 'More automation on the line', 'bucket': 1}, {'text': 'Higher output from the same staff', 'bucket': 1}],
+             'explanation': 'Union pay raises labor costs; automation and productivity spread them thinner.'},
+        ],
+        'lenses': {
+            'career': ('Battery jobs now unionize', 'Pay and rules at US battery plants now track the union contract at GM. Know the terms.', ['gma_ultium']),
+            'invest': ('Labor costs reach batteries', 'Union contracts at battery plants raise costs per kWh. Factor labor into battery cost forecasts.', ['gma_ultium']),
+            'build_startup': ('Automate the hard parts', 'As battery labor costs rise, tools that raise output per worker become more valuable.', ['gma_ultium']),
+            'curiosity': ('Batteries joined the strike', 'The 2023 auto strike was partly about who builds EV batteries and for what pay.', ['gma_ultium']),
+        },
+        'rule': ('In the EV shift, power goes to whoever can stop the most profitable line.', ['gma_ultium']),
+        'takeaway': "In October 2023, GM agreed to bring its Ultium Cells battery plants under the UAW's national contract after a strike threat at its Arlington plant.",
+    },
+    {
+        'day': 22, 'facet': 'numbers', 'title': 'Rivian\'s first gross profit',
+        'open': {
+            'eyebrow': 'Day 22 · The numbers', 'kicker': 'For years, each car cost more to build than it sold for.',
+            'headline': 'In the fourth quarter of 2024, Rivian posted its first positive gross profit, about $170 million.',
+            'fullText': 'It was a swing of $776 million from a year earlier. Rivian said it removed $31,000 in cost of goods sold per vehicle delivered, helped by plant upgrades and its second-generation R1. It delivered 51,579 vehicles in 2024.',
+            'sources': ['electrek_rivian'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'gp', 'eyebrow': 'The metric', 'text': 'Gross profit is revenue minus the direct cost of building what you sold.', 'highlight': 'Negative gross profit means each sale loses money before overhead.', 'keyTerms': [{'term': 'Gross profit', 'definition': 'Revenue minus the cost of goods sold, before research, sales and other overhead.'}], 'sources': ['electrek_rivian']},
+            {'kind': 'microInsight', 'id': 'cost', 'eyebrow': 'The driver', 'text': 'Rivian cut about $31,000 of cost per vehicle in a year.', 'highlight': 'Plant upgrades and the redesigned R1 did most of the work.', 'sources': ['electrek_rivian']},
+            {'kind': 'info', 'id': 'next', 'eyebrow': 'Still not profit', 'title': 'Gross profit is a first step', 'body': 'Rivian still guided to a loss of $1.7 to $1.9 billion in adjusted EBITDA for 2025.', 'sources': ['electrek_rivian']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-cost', 'prompt': 'Rivian cut about how many thousand dollars of cost per vehicle delivered?', 'min': 0, 'max': 80, 'value': 31, 'unit': 'K', 'tolerance': 0.08, 'explanation': 'About $31,000 per vehicle, from Q4 2023 to Q4 2024.'},
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['Rivian\'s Q4 2024 gross profit was about $170 million.', 'The result made Rivian profitable overall in 2025.', 'Rivian delivered 51,579 vehicles in 2024.'], 'fakeIndex': 1,
+             'explanation': 'Gross profit excludes overhead. Rivian still expected a large loss in 2025.'},
+        ],
+        'lenses': {
+            'career': ('Cost engineers matter', 'Cutting $31,000 per vehicle took engineering and plant work. Cost reduction is a career path.', ['electrek_rivian']),
+            'invest': ('Track gross profit per car', 'Young carmakers first need positive gross profit. It shows whether scale can ever pay.', ['electrek_rivian']),
+            'build_startup': ('Margins come from redesign', 'Rivian\'s second-generation R1 cut costs. Plan a redesign for cost after the first version.', ['electrek_rivian']),
+            'curiosity': ('Losing money on every car', 'Until late 2024, Rivian spent more building each vehicle than it earned selling it.', ['electrek_rivian']),
+        },
+        'rule': ('In EV startups, positive gross profit comes before any talk of real profit.', ['electrek_rivian']),
+        'takeaway': "Rivian posted its first positive gross profit, about $170 million, in Q4 2024 after cutting about $31,000 of cost per vehicle.",
+    },
+    {
+        'day': 23, 'facet': 'rules', 'title': 'Paid per kilowatt-hour',
+        'open': {
+            'eyebrow': 'Day 23 · The rule', 'kicker': 'A US tax credit pays factories for every cell they make.',
+            'headline': 'Under Section 45X, US factories earn $35 for every kilowatt-hour of battery cells they produce, plus $10 per kWh for modules.',
+            'fullText': 'The credit came from the 2022 Inflation Reduction Act. It steps down from 2030 and ends after 2032. The 2025 tax law kept the battery rates but added rules from 2026 that limit inputs from prohibited foreign entities, such as Chinese-controlled suppliers.',
+            'sources': ['iev_45x', 'bc_45x'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'pack', 'eyebrow': 'Per pack', 'text': 'A 50 kWh pack earns about $1,750 in cell credits alone.', 'highlight': 'Multiply that by every pack a plant builds.', 'keyTerms': [{'term': 'Production tax credit', 'definition': 'A tax credit paid for each unit made, rather than for money invested.'}], 'sources': ['iev_45x']},
+            {'kind': 'microInsight', 'id': 'cash', 'eyebrow': 'Like cash', 'text': 'Makers can sell the credit to another company for cash.', 'highlight': 'That helps plants that do not yet pay much tax.', 'sources': ['iev_45x']},
+            {'kind': 'info', 'id': 'feoc', 'eyebrow': 'The new limit', 'title': 'Supply chains are tested', 'body': 'From 2026, at least 50% of material costs must come from non-prohibited sources, rising to 60% by 2029.', 'sources': ['bc_45x']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What did the 2025 tax law add to the battery credit?',
+             'options': ['A higher rate per kilowatt-hour', 'Limits on foreign inputs', 'An end to the credit in 2026'], 'correctIndex': 1,
+             'explanation': 'Rates stayed the same; new rules limit materials from prohibited foreign entities.'},
+            {'kind': 'numberSense', 'id': 'ns-rate', 'prompt': 'How many dollars per kWh does Section 45X pay for US-made battery cells?', 'min': 0, 'max': 100, 'value': 35, 'unit': '$', 'tolerance': 0.06, 'explanation': '$35 per kWh for cells, plus $10 per kWh for modules.'},
+        ],
+        'lenses': {
+            'career': ('Tax rules shape plant plans', 'Plant location and sourcing now follow tax credit rules. Policy knowledge is a career edge.', ['iev_45x', 'bc_45x']),
+            'invest': ('Credits boost US margins', 'At $35 per kWh, the credit can be a large share of a cell maker\'s profit. Check who qualifies.', ['iev_45x']),
+            'build_startup': ('Sourcing is now strategy', 'Credits depend on where materials come from. Non-Chinese supply chains gain value.', ['bc_45x']),
+            'curiosity': ('Paid per battery', 'US battery factories get a tax credit for every kilowatt-hour of cells they build.', ['iev_45x']),
+        },
+        'rule': ('In US battery making, where your materials come from now decides your subsidy.', ['bc_45x']),
+        'takeaway': 'Section 45X pays US factories $35 per kWh for cells and $10 for modules. From 2026, the credit limits inputs from prohibited foreign entities.',
+    },
+    {
+        'day': 24, 'facet': 'frontier', 'title': "Europe's battery champion fails",
+        'open': {
+            'eyebrow': 'Day 24 · Where it breaks', 'kicker': 'Money could not buy a working factory.',
+            'headline': 'Northvolt raised about $13 billion to become Europe\'s battery champion, then went bankrupt in March 2025.',
+            'fullText': 'The Swedish company struggled to get its Skellefteå production lines working. The failure was blamed on poor project management, trouble with Chinese machinery and overambitious expansion. US battery firm Lyten agreed to buy most of its assets and completed the Swedish purchase in February 2026.',
+            'sources': ['local_northvolt', 'local_lyten'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'yield', 'eyebrow': 'The hard part', 'text': 'Cell making needs high yields, meaning few cells thrown away.', 'highlight': 'Low yields turn a full plant into a money pit.', 'keyTerms': [{'term': 'Yield', 'definition': 'The share of products made that pass quality checks and can be sold.'}], 'sources': ['local_northvolt']},
+            {'kind': 'microInsight', 'id': 'scale', 'eyebrow': 'The scale', 'text': 'Northvolt had about 5,000 employees when it went bankrupt.', 'highlight': 'Late on, it made 30,000 cells a week with 800 staff.', 'sources': ['local_northvolt']},
+            {'kind': 'info', 'id': 'lesson', 'eyebrow': 'The lesson', 'title': 'Expansion before mastery', 'body': 'Northvolt grew plans across countries before its first plant ran well. Know-how, not money, ran out.', 'sources': ['local_northvolt']},
+        ],
+        'checks': [
+            {'kind': 'theCall', 'id': 'call', 'situation': 'Your first battery plant has low yields. Investors offer cash for a second plant.', 'prompt': 'What do you do?',
+             'options': ['Build the second plant right away', 'Fix yields in the first plant first', 'Sell the first plant and start over'],
+             'consequences': ['You double a process that still loses money.', 'You prove the process before you copy it.', 'You lose what you learned in the first plant.'],
+             'correctIndex': 1, 'explanation': 'Northvolt expanded before its first lines worked, and the costs sank it.'},
+            {'kind': 'buildChain', 'id': 'chain', 'prompt': "Put Northvolt's story in order.", 'steps': ['Northvolt is founded in Sweden', 'It raises about $13 billion', 'It is declared bankrupt', 'Lyten completes the Swedish purchase'], 'explanation': 'Founded in 2016, bankrupt in March 2025, bought by Lyten in February 2026.'},
+        ],
+        'lenses': {
+            'career': ('Process skills are scarce', 'Northvolt showed that people who can run cell lines well are rare. Those skills command a premium.', ['local_northvolt']),
+            'invest': ('Funding is not output', 'Northvolt raised billions but could not make cells reliably. Ask for yield, not just capacity.', ['local_northvolt']),
+            'build_startup': ('Master one line first', 'Prove yields in one plant before expanding. Northvolt scaled too soon.', ['local_northvolt']),
+            'curiosity': ("Sweden's biggest bankruptcy", 'Northvolt\'s collapse was the largest bankruptcy in modern Swedish history.', ['local_lyten']),
+        },
+        'rule': ('In battery making, know-how is the scarce input; money is not.', ['local_northvolt']),
+        'takeaway': 'Northvolt raised about $13 billion but went bankrupt in March 2025 after failing to get its lines working. Lyten bought its Swedish assets in 2026.',
+    },
+]

@@ -211,6 +211,13 @@
       "when": 1794085255868,
       "tag": "0029_cybersecurity_handwritten_days_6_30",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1794085315868,
+      "tag": "0030_ev_handwritten_days_6_30",
+      "breakpoints": true
     }
   ]
 }

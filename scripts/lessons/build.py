@@ -156,6 +156,8 @@ def check(src, lessons, market, existing_titles):
                         errs.append(f'd{d} numberSense: the untouched dial already counts as right ({at:.0%})')
                     if 0.47 <= at <= 0.53:
                         warns.append(f'd{d} numberSense: answer sits mid-range ({at:.0%}), easy to guess')
+                    if c['value'] >= 1000 and (c.get('unit') or '') not in ('K', 'M', 'B'):
+                        errs.append(f"d{d} numberSense: {c['value']} shows as {c['value']/1000:.1f}K on the dial; rescale the question")
                     if c['value'] != round(c['value']) and abs(c['value']) < 1000:
                         warns.append(f'd{d} numberSense: decimal answer shows rounded to 0.1')
             elif k == 'sortSignal':
