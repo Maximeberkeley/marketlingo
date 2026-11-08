@@ -20,7 +20,7 @@ function resolveRoute(data) {
     case "leo_rolling_nudge":
       return "/(tabs)/home";
     case "leaderboard":
-      return "/leaderboard";
+      return "/friends";
     case "news":
       return "/(tabs)/roadmap";
     case "achievement":

@@ -181,12 +181,12 @@ describe('Animated Leo rules', () => {
       expect(h.props.onComplete).toHaveBeenCalledTimes(2); h.unmount();
     });
   }
-  it('uses all twenty supplied clip lengths and native assets', () => {
+  it('uses all twenty-one supplied clip lengths and native assets', () => {
     const metadata = JSON.parse(read('mobile/assets/mascot/anim/clips.json'));
     const module = { exports: {} as any };
     runInNewContext(transformSync(read('mobile/components/mascot/leoClips.ts'), { loader: 'ts', format: 'cjs' }).code,
       { module, exports: module.exports, require: (path: string) => path });
-    expect(Object.keys(module.exports.leoClips)).toHaveLength(20);
+    expect(Object.keys(module.exports.leoClips)).toHaveLength(21);
     for (const [clip, spec] of Object.entries(metadata)) {
       expect(module.exports.leoClips[clip]).toMatchObject(spec);
       expect(existsSync(`mobile/assets/mascot/anim/${clip}.webp`)).toBe(true);

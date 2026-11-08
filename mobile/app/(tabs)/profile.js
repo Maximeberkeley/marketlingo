@@ -228,19 +228,6 @@ function ProfileScreen() {
         activeOpacity: 0.88,
         onPress: () => {
           triggerHaptic("light");
-          router.push("/leaderboard");
-        }
-      },
-      /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: COLORS.bg1 }] }, /* @__PURE__ */ React.createElement(Feather, { name: "award", size: 18, color: COLORS.accent })),
-      /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, "League"), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, "Your rank this month")),
-      /* @__PURE__ */ React.createElement(Text, { style: styles.chevron }, "\u203A")
-    ), /* @__PURE__ */ React.createElement(
-      TouchableOpacity,
-      {
-        style: styles.menuItem,
-        activeOpacity: 0.88,
-        onPress: () => {
-          triggerHaptic("light");
           router.push("/friends");
         }
       },

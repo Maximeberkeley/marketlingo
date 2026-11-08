@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput,
-  ActivityIndicator, Animated, Share, Image, Platform,
+  ActivityIndicator, Animated, Share, Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
@@ -32,9 +32,10 @@ import { ChunkyButton } from '../components/social/ChunkyButton';
 import { SocialAvatar } from '../components/social/SocialAvatar';
 import { StreakFlame } from '../components/ui/StreakFlame';
 import { NudgeId, NudgeResult, nudgeOptions } from '../lib/nudges';
+import { CrownCard } from '../components/social/CrownCard';
+import { CrownBadge } from '../components/social/CrownBadge';
+import { crownStatus } from '../lib/crown';
 
-const SOCIAL_HERO = require('../assets/illustrations/friends-rivals-hero.png');
-const LEO_SASSY = require('../assets/mascot/leo-sassy.png');
 // Sheets are native modals; let one finish closing before the next opens.
 const SHEET_HANDOFF_MS = 380;
 
@@ -437,6 +438,7 @@ export default function FriendsScreen() {
     else setFriendSheetId(null);
   };
   const showSocial = social.available && (friends.length > 0 || streaks.length > 0 || races.length > 0);
+  const crown = !loading && !friendsError && friends.length > 0 ? crownStatus(friendsBoard) : null;
   const closeThen = (close: () => void, next: () => void) => { close(); setTimeout(next, SHEET_HANDOFF_MS); };
 
   return (
@@ -535,6 +537,8 @@ export default function FriendsScreen() {
                 </View>
               )}
 
+              {crown && <CrownCard crown={crown} onAction={() => { triggerHaptic('light'); router.push('/(tabs)/home' as any); }} />}
+
               {!loading && !friendsError && friends.length === 0 && (
                 <AddFriendsCard hasFriends={false} onShare={handleShareInvite} onSearch={() => setFindOpen(true)} onMyCode={() => setCodeOpen(true)} />
               )}
@@ -613,6 +617,7 @@ export default function FriendsScreen() {
                         online={row.friend ? isActive(row.friend) : false}
                         doneToday={row.friend ? row.friend.lessonDoneToday : false}
                         last={idx === friendsBoard.length - 1}
+                        crowned={idx === 0 && row.xp > 0}
                         onPress={row.friend ? () => { triggerHaptic('light'); setFriendSheetId(row.friend!.id); } : undefined}
                         nudge={!row.friend ? undefined : row.friend.lessonDoneToday ? 'done' : isNudged(row.friend.id) ? 'nudged' : 'idle'}
                         onNudge={row.friend ? () => openNudge(row.friend!.id) : undefined}
@@ -631,7 +636,6 @@ export default function FriendsScreen() {
               {/* Rank hero with real numbers */}
               {!globalLoading && globalEntries.length > 0 && (
                 <View style={styles.heroCard}>
-                  <Image source={SOCIAL_HERO} style={styles.heroLeo} resizeMode="cover" />
                   <View style={{ flex: 1 }}>
                     <Text style={styles.heroKicker}>{marketName.toUpperCase()} · THIS MONTH</Text>
                     <Text style={styles.heroValue}>
@@ -682,7 +686,7 @@ export default function FriendsScreen() {
                 </View>
               ) : globalEntries.length === 0 ? (
                 <View style={styles.emptyState}>
-                  <Image source={LEO_SASSY} style={styles.emptyLeo} resizeMode="contain" />
+                  <Feather name="award" size={34} color={COLORS.textMuted} />
                   <Text style={styles.emptyTitle}>No one has scored this month yet.</Text>
                   <Text style={styles.emptySub}>Finish one lesson and you take first place.</Text>
                 </View>
@@ -772,10 +776,12 @@ export default function FriendsScreen() {
 
 // ── Board Row ───────────────────────────────────────
 function BoardRow({
-  rank, name, avatarName, xp, streak, isMe, online, doneToday, last, onPress, nudge, onNudge,
+  rank, name, avatarName, xp, streak, isMe, online, doneToday, last, crowned, onPress, nudge, onNudge,
 }: {
   rank: number; name: string; avatarName?: string; xp: number; streak: number;
   isMe?: boolean; online?: boolean; doneToday?: boolean; last?: boolean;
+  /** This month's leader among friends wears the crown. */
+  crowned?: boolean;
   onPress?: () => void;
   nudge?: 'idle' | 'nudged' | 'done';
   onNudge?: () => void;
@@ -789,6 +795,7 @@ function BoardRow({
       <View>
         <SocialAvatar name={avatarName || name} size={42} ring={isMe ? COLORS.accent : undefined} />
         {online && <View style={styles.onlineDot} />}
+        {crowned && <View style={styles.crown} pointerEvents="none"><CrownBadge size={26} /></View>}
       </View>
       <View style={styles.rowInfo}>
         <Text style={[styles.rowName, isMe && { color: COLORS.accent }]} numberOfLines={1}>{name}</Text>
@@ -892,6 +899,7 @@ const styles = StyleSheet.create({
   rowSelf: { backgroundColor: COLORS.accentSoft },
   rankBadge: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'transparent' },
   rankNum: { fontSize: 14, fontWeight: '900', color: COLORS.textMuted },
+  crown: { position: 'absolute', top: -14, left: 8 },
   onlineDot: { position: 'absolute', bottom: 0, right: 0, width: 12, height: 12, borderRadius: 6, backgroundColor: COLORS.success, borderWidth: 2, borderColor: COLORS.bg2 },
   rowInfo: { flex: 1, minWidth: 0 },
   rowName: { fontSize: 16, fontWeight: '800', color: COLORS.textPrimary },
@@ -913,7 +921,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accentSoft, borderRadius: 22, padding: 14,
     borderWidth: 1.5, borderColor: COLORS.accentMedium, marginBottom: 14,
   },
-  heroLeo: { width: 92, height: 72, borderRadius: 14 },
   heroKicker: { fontSize: 10, fontWeight: '800', letterSpacing: 1, color: COLORS.accent },
   heroValue: { fontSize: 28, fontWeight: '800', color: COLORS.textPrimary, marginTop: 2 },
   heroUnit: { fontSize: 14, fontWeight: '700', color: COLORS.textSecondary },
@@ -930,7 +937,6 @@ const styles = StyleSheet.create({
 
   // Empty state
   emptyState: { alignItems: 'center', paddingTop: 24, gap: 4 },
-  emptyLeo: { width: 130, height: 130, marginBottom: 8 },
   emptyTitle: { fontSize: 17, fontWeight: '800', color: COLORS.textPrimary },
   emptySub: { fontSize: 13, color: COLORS.textSecondary, textAlign: 'center', marginBottom: 14 },
 

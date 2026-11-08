@@ -57,8 +57,6 @@ import { useAchievements } from '../../hooks/useAchievements';
 import { LeoVoiceChatOverlay } from '../../components/ai/LeoVoiceChatOverlay';
 import { log } from '../../lib/logger';
 import { SundayRecapCard } from '../../components/home/SundayRecapCard';
-import { LeagueCeremonyModal } from '../../components/league/LeagueCeremonyModal';
-import { useLeague, TIER_META } from '../../hooks/useLeague';
 import { useWeeklyRecap } from '../../hooks/useWeeklyRecap';
 import { useCollectibles, CollectibleCard } from '../../hooks/useCollectibles';
 import { CardRevealModal } from '../../components/collectibles/CardRevealModal';
@@ -181,8 +179,7 @@ function HomeScreenContent() {
     selectedMarketLocal || undefined, isProUser
   );
 
-  // Weekly league + Sunday recap
-  const league = useLeague(selectedMarketLocal || undefined);
+  // Sunday recap
   const recap = useWeeklyRecap(selectedMarketLocal || undefined);
   const [recapDismissed, setRecapDismissed] = useState(false);
   const showRecap = recap.isRecapDay && !recap.loading && !recap.seen && !recapDismissed && recap.xpThisWeek >= 0;
@@ -680,16 +677,6 @@ function HomeScreenContent() {
         onDismiss={() => setAchievementPopup(null)}
       />
 
-      {false && league.lastWeek && (
-        <LeagueCeremonyModal
-          visible={league.ceremonyPending && !session.showReader}
-          tier={league.lastWeek.tier}
-          result={league.lastWeek.result}
-          finalRank={league.lastWeek.finalRank}
-          onClose={league.dismissCeremony}
-          onViewLeague={() => { league.dismissCeremony(); router.push('/league'); }}
-        />
-      )}
     </View>
   );
 }

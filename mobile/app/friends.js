@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
   Animated,
   Share,
-  Image,
   Platform
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -41,8 +40,9 @@ import { ChunkyButton } from "../components/social/ChunkyButton";
 import { SocialAvatar } from "../components/social/SocialAvatar";
 import { StreakFlame } from "../components/ui/StreakFlame";
 import { nudgeOptions } from "../lib/nudges";
-const SOCIAL_HERO = require("../assets/illustrations/friends-rivals-hero.png");
-const LEO_SASSY = require("../assets/mascot/leo-sassy.png");
+import { CrownCard } from "../components/social/CrownCard";
+import { CrownBadge } from "../components/social/CrownBadge";
+import { crownStatus } from "../lib/crown";
 const SHEET_HANDOFF_MS = 380;
 const MEDALS = [
   { bg: "#FEF3C7", ring: "#F59E0B", text: "#B45309" },
@@ -417,6 +417,7 @@ function FriendsScreen() {
     else setFriendSheetId(null);
   };
   const showSocial = social.available && (friends.length > 0 || streaks.length > 0 || races.length > 0);
+  const crown = !loading && !friendsError && friends.length > 0 ? crownStatus(friendsBoard) : null;
   const closeThen = (close, next) => {
     close();
     setTimeout(next, SHEET_HANDOFF_MS);
@@ -469,7 +470,10 @@ function FriendsScreen() {
       savingName ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: "#FFF" }) : /* @__PURE__ */ React.createElement(Text, { style: styles.nameSaveText }, "Save")
     ))), activeTab === "friends" && /* @__PURE__ */ React.createElement(React.Fragment, null, pendingRequests.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.card }, /* @__PURE__ */ React.createElement(Text, { style: styles.cardKicker }, pendingRequests.length === 1 ? "Friend request" : `${pendingRequests.length} friend requests`), pendingRequests.map((r) => /* @__PURE__ */ React.createElement(View, { key: r.id, style: styles.requestRow }, /* @__PURE__ */ React.createElement(SocialAvatar, { name: r.fromUsername, size: 44, ring: COLORS.accent }), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: styles.rowName, numberOfLines: 1 }, r.fromUsername), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta, numberOfLines: 1 }, r.fromMarket ? `${getMarketName(r.fromMarket)} \xB7 wants to be friends` : "Wants to be friends")), busyId === r.id ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.declineBtn, onPress: () => handleDecline(r.id), accessibilityLabel: `Decline ${r.fromUsername}` }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 18, color: COLORS.textMuted })), /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Accept", onPress: () => {
       void handleAccept(r.id);
-    }, height: 40, style: { minWidth: 92 }, accessibilityLabel: `Accept ${r.fromUsername}` }))))), !loading && !friendsError && friends.length === 0 && /* @__PURE__ */ React.createElement(AddFriendsCard, { hasFriends: false, onShare: handleShareInvite, onSearch: () => setFindOpen(true), onMyCode: () => setCodeOpen(true) }), showSocial && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(FriendStreaksCard, { streaks, onOpen: (s) => {
+    }, height: 40, style: { minWidth: 92 }, accessibilityLabel: `Accept ${r.fromUsername}` }))))), crown && /* @__PURE__ */ React.createElement(CrownCard, { crown, onAction: () => {
+      triggerHaptic("light");
+      router.push("/(tabs)/home");
+    } }), !loading && !friendsError && friends.length === 0 && /* @__PURE__ */ React.createElement(AddFriendsCard, { hasFriends: false, onShare: handleShareInvite, onSearch: () => setFindOpen(true), onMyCode: () => setCodeOpen(true) }), showSocial && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(FriendStreaksCard, { streaks, onOpen: (s) => {
       triggerHaptic("light");
       setOpenStreakId(s.id);
     }, onInvite: () => openPicker("streak") }), /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(View, { style: styles.sectionHead }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "Races"), races.length > 0 && /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => openPicker("race"), style: styles.sectionAction, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Feather, { name: "flag", size: 13, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.sectionActionText }, "Challenge"))), races.length === 0 ? /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.raceEmpty, onPress: () => openPicker("race"), activeOpacity: 0.88, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(View, { style: styles.raceEmptyDisc }, /* @__PURE__ */ React.createElement(Feather, { name: "flag", size: 20, color: "#FFFFFF" })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.raceEmptyTitle }, "Race a friend this week"), /* @__PURE__ */ React.createElement(Text, { style: styles.raceEmptySub }, "Most XP in 7 days wins +100 XP.")), /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 18, color: COLORS.accent })) : races.map((race) => /* @__PURE__ */ React.createElement(
@@ -509,6 +513,7 @@ function FriendsScreen() {
         online: row.friend ? isActive(row.friend) : false,
         doneToday: row.friend ? row.friend.lessonDoneToday : false,
         last: idx === friendsBoard.length - 1,
+        crowned: idx === 0 && row.xp > 0,
         onPress: row.friend ? () => {
           triggerHaptic("light");
           setFriendSheetId(row.friend.id);
@@ -516,12 +521,12 @@ function FriendsScreen() {
         nudge: !row.friend ? void 0 : row.friend.lessonDoneToday ? "done" : isNudged(row.friend.id) ? "nudged" : "idle",
         onNudge: row.friend ? () => openNudge(row.friend.id) : void 0
       }
-    ))), /* @__PURE__ */ React.createElement(AddFriendsCard, { hasFriends: true, onShare: handleShareInvite, onSearch: () => setFindOpen(true), onMyCode: () => setCodeOpen(true) }))), activeTab === "global" && /* @__PURE__ */ React.createElement(React.Fragment, null, !globalLoading && globalEntries.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.heroCard }, /* @__PURE__ */ React.createElement(Image, { source: SOCIAL_HERO, style: styles.heroLeo, resizeMode: "cover" }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.heroKicker }, marketName.toUpperCase(), " \xB7 THIS MONTH"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroValue }, currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "#", currentUserRank, /* @__PURE__ */ React.createElement(Text, { style: styles.heroUnit }, " of ", globalEntries.length)) : "Unranked"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroLine }, currentUserRank === 1 ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Top of the market. ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, "Hold it.")) : currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Next spot costs ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, Math.max(1, (globalEntries[currentUserRank - 2]?.total_xp || 0) - (globalEntries[currentUserRank - 1]?.total_xp || 0) + 1), " XP"), ".") : "One lesson puts you on the board."))), !globalLoading && globalEntries.length >= 3 && /* @__PURE__ */ React.createElement(View, { style: styles.podium }, [1, 0, 2].map((i) => {
+    ))), /* @__PURE__ */ React.createElement(AddFriendsCard, { hasFriends: true, onShare: handleShareInvite, onSearch: () => setFindOpen(true), onMyCode: () => setCodeOpen(true) }))), activeTab === "global" && /* @__PURE__ */ React.createElement(React.Fragment, null, !globalLoading && globalEntries.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.heroCard }, /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.heroKicker }, marketName.toUpperCase(), " \xB7 THIS MONTH"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroValue }, currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "#", currentUserRank, /* @__PURE__ */ React.createElement(Text, { style: styles.heroUnit }, " of ", globalEntries.length)) : "Unranked"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroLine }, currentUserRank === 1 ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Top of the market. ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, "Hold it.")) : currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Next spot costs ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, Math.max(1, (globalEntries[currentUserRank - 2]?.total_xp || 0) - (globalEntries[currentUserRank - 1]?.total_xp || 0) + 1), " XP"), ".") : "One lesson puts you on the board."))), !globalLoading && globalEntries.length >= 3 && /* @__PURE__ */ React.createElement(View, { style: styles.podium }, [1, 0, 2].map((i) => {
       const e = globalEntries[i];
       const m = MEDALS[i];
       const h = i === 0 ? 76 : i === 1 ? 60 : 50;
       return /* @__PURE__ */ React.createElement(View, { key: e.user_id, style: styles.podiumCol }, /* @__PURE__ */ React.createElement(SocialAvatar, { name: e.isCurrentUser ? myName || "You" : e.username, size: 44, ring: m.ring, ringWidth: 3 }), /* @__PURE__ */ React.createElement(Text, { style: styles.podiumName, numberOfLines: 1 }, e.isCurrentUser ? "You" : e.username), /* @__PURE__ */ React.createElement(View, { style: [styles.podiumBlock, { height: h, backgroundColor: m.bg, borderColor: m.ring + "55" }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.podiumRank, { color: m.text }] }, i + 1), /* @__PURE__ */ React.createElement(Text, { style: [styles.podiumXP, { color: m.text }] }, e.total_xp.toLocaleString())));
-    })), globalLoading ? /* @__PURE__ */ React.createElement(ActivityIndicator, { color: COLORS.accent, size: "large", style: { marginTop: 60 } }) : globalError ? /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(Feather, { name: "wifi-off", size: 32, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "Standings unavailable"), /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, globalError), /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Try again", icon: /* @__PURE__ */ React.createElement(Feather, { name: "refresh-cw", size: 16, color: "#FFFFFF" }), onPress: fetchGlobalLeaderboard, style: { alignSelf: "stretch" } })) : globalEntries.length === 0 ? /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(Image, { source: LEO_SASSY, style: styles.emptyLeo, resizeMode: "contain" }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "No one has scored this month yet."), /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, "Finish one lesson and you take first place.")) : /* @__PURE__ */ React.createElement(View, { style: styles.board }, globalEntries.map((entry, idx) => /* @__PURE__ */ React.createElement(
+    })), globalLoading ? /* @__PURE__ */ React.createElement(ActivityIndicator, { color: COLORS.accent, size: "large", style: { marginTop: 60 } }) : globalError ? /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(Feather, { name: "wifi-off", size: 32, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "Standings unavailable"), /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, globalError), /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Try again", icon: /* @__PURE__ */ React.createElement(Feather, { name: "refresh-cw", size: 16, color: "#FFFFFF" }), onPress: fetchGlobalLeaderboard, style: { alignSelf: "stretch" } })) : globalEntries.length === 0 ? /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(Feather, { name: "award", size: 34, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "No one has scored this month yet."), /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, "Finish one lesson and you take first place.")) : /* @__PURE__ */ React.createElement(View, { style: styles.board }, globalEntries.map((entry, idx) => /* @__PURE__ */ React.createElement(
       BoardRow,
       {
         key: entry.user_id,
@@ -629,12 +634,13 @@ function BoardRow({
   online,
   doneToday,
   last,
+  crowned,
   onPress,
   nudge,
   onNudge
 }) {
   const medal = rank <= 3 ? MEDALS[rank - 1] : null;
-  const body = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: [styles.rankBadge, medal && { backgroundColor: medal.bg, borderColor: medal.ring }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.rankNum, medal && { color: medal.text }] }, rank)), /* @__PURE__ */ React.createElement(View, null, /* @__PURE__ */ React.createElement(SocialAvatar, { name: avatarName || name, size: 42, ring: isMe ? COLORS.accent : void 0 }), online && /* @__PURE__ */ React.createElement(View, { style: styles.onlineDot })), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: [styles.rowName, isMe && { color: COLORS.accent }], numberOfLines: 1 }, name), (streak > 0 || doneToday) && /* @__PURE__ */ React.createElement(View, { style: styles.rowMetaLine }, streak > 0 && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(StreakFlame, { size: 13 }), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMetaStrong }, streak)), doneToday && /* @__PURE__ */ React.createElement(Text, { style: styles.rowMetaDone }, streak > 0 ? " \xB7 " : "", "done today"))), /* @__PURE__ */ React.createElement(Text, { style: [styles.xpValue, isMe && { color: COLORS.accent }] }, xp.toLocaleString(), " XP"), nudge && onNudge && /* @__PURE__ */ React.createElement(NudgeButton, { state: nudge, name, onPress: onNudge }));
+  const body = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: [styles.rankBadge, medal && { backgroundColor: medal.bg, borderColor: medal.ring }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.rankNum, medal && { color: medal.text }] }, rank)), /* @__PURE__ */ React.createElement(View, null, /* @__PURE__ */ React.createElement(SocialAvatar, { name: avatarName || name, size: 42, ring: isMe ? COLORS.accent : void 0 }), online && /* @__PURE__ */ React.createElement(View, { style: styles.onlineDot }), crowned && /* @__PURE__ */ React.createElement(View, { style: styles.crown, pointerEvents: "none" }, /* @__PURE__ */ React.createElement(CrownBadge, { size: 26 }))), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: [styles.rowName, isMe && { color: COLORS.accent }], numberOfLines: 1 }, name), (streak > 0 || doneToday) && /* @__PURE__ */ React.createElement(View, { style: styles.rowMetaLine }, streak > 0 && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(StreakFlame, { size: 13 }), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMetaStrong }, streak)), doneToday && /* @__PURE__ */ React.createElement(Text, { style: styles.rowMetaDone }, streak > 0 ? " \xB7 " : "", "done today"))), /* @__PURE__ */ React.createElement(Text, { style: [styles.xpValue, isMe && { color: COLORS.accent }] }, xp.toLocaleString(), " XP"), nudge && onNudge && /* @__PURE__ */ React.createElement(NudgeButton, { state: nudge, name, onPress: onNudge }));
   const style = [styles.row, isMe && styles.rowSelf, !last && styles.rowDivider];
   return onPress ? /* @__PURE__ */ React.createElement(TouchableOpacity, { style, onPress, activeOpacity: 0.75, accessibilityRole: "button", accessibilityLabel: `${name}, ${xp} XP. Open` }, body) : /* @__PURE__ */ React.createElement(View, { style }, body);
 }
@@ -739,6 +745,7 @@ const styles = StyleSheet.create({
   rowSelf: { backgroundColor: COLORS.accentSoft },
   rankBadge: { width: 28, height: 28, borderRadius: 14, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "transparent" },
   rankNum: { fontSize: 14, fontWeight: "900", color: COLORS.textMuted },
+  crown: { position: "absolute", top: -14, left: 8 },
   onlineDot: { position: "absolute", bottom: 0, right: 0, width: 12, height: 12, borderRadius: 6, backgroundColor: COLORS.success, borderWidth: 2, borderColor: COLORS.bg2 },
   rowInfo: { flex: 1, minWidth: 0 },
   rowName: { fontSize: 16, fontWeight: "800", color: COLORS.textPrimary },
@@ -772,7 +779,6 @@ const styles = StyleSheet.create({
     borderColor: COLORS.accentMedium,
     marginBottom: 14
   },
-  heroLeo: { width: 92, height: 72, borderRadius: 14 },
   heroKicker: { fontSize: 10, fontWeight: "800", letterSpacing: 1, color: COLORS.accent },
   heroValue: { fontSize: 28, fontWeight: "800", color: COLORS.textPrimary, marginTop: 2 },
   heroUnit: { fontSize: 14, fontWeight: "700", color: COLORS.textSecondary },
@@ -787,7 +793,6 @@ const styles = StyleSheet.create({
   podiumXP: { fontSize: 11, fontWeight: "700" },
   // Empty state
   emptyState: { alignItems: "center", paddingTop: 24, gap: 4 },
-  emptyLeo: { width: 130, height: 130, marginBottom: 8 },
   emptyTitle: { fontSize: 17, fontWeight: "800", color: COLORS.textPrimary },
   emptySub: { fontSize: 13, color: COLORS.textSecondary, textAlign: "center", marginBottom: 14 },
   toast: {
