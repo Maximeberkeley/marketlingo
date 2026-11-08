@@ -1,0 +1,188 @@
+# Agtech, days 25-30. Month 1, topic 5: farm policy and subsidies (Farm Bill).
+SRC = {
+    'crs_snap': {'url': 'https://www.everycrsreport.com/reports/IF12255.html', 'label': 'Congressional Research Service, Farm Bill primer: SNAP and nutrition programs'},
+    'afbf_obbba': {'url': 'https://www.fb.org/market-intel/one-big-beautiful-bill-act-final-agricultural-provisions', 'label': 'American Farm Bureau, One Big Beautiful Bill Act agricultural provisions'},
+    'msu_refprice': {'url': 'https://www.mississippi-crops.com/2025/07/08/farm-program-changes-in-one-big-beautiful-bill-act/', 'label': 'Mississippi Crop Situation, farm program changes in the 2025 law'},
+    'fsa_bridge': {'url': 'https://www.fsa.usda.gov/news-events/news/12-10-2025/trump-administration-announces-12-billion-farmer-bridge-payments', 'label': 'USDA FSA, $12 billion Farmer Bridge payments'},
+    'agweb_plc': {'url': 'https://www.agweb.com/news/policy/politics/one-big-beautiful-bill-will-boost-2025-plc-payments-heres-acre-breakdown', 'label': 'AgWeb, the 2025 law will boost PLC payments'},
+    'rfd_house': {'url': 'https://www.rfdtv.com/u-s-house-passes-farm-bill-now-heads-to-senate-for-debate?p=123', 'label': 'RFD-TV, House passes farm bill 224-200'},
+    'al_expired': {'url': 'https://www.agrolatam.com/usa/news/farm-bill-expired-us-farmers-usda-programs-2026/', 'label': 'AgroLatam, farm bill expires as programs pause'},
+}
+
+LESSONS = [
+    {
+        'day': 25, 'facet': 'definition', 'title': 'The farm bill is mostly food aid',
+        'open': {
+            'eyebrow': 'Day 25 · Farm policy', 'kicker': 'The biggest farm law is mostly about feeding people.',
+            'headline': "About 72% of the farm bill's mandatory spending goes to nutrition programs, mainly SNAP, according to a February 2026 CBO estimate.",
+            'fullText': 'The farm bill is a package of laws Congress usually renews about every five years. It covers crop subsidies, crop insurance, conservation and rural programs, but food assistance dominates the budget. SNAP served about 42.4 million people in an average month in fiscal 2025.',
+            'sources': ['crs_snap'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'what', 'eyebrow': 'What it is', 'text': 'The farm bill bundles farm subsidies, conservation, rural programs and food aid.', 'highlight': 'Nutrition and farm groups each need the other\'s votes.', 'keyTerms': [{'term': 'Farm bill', 'definition': 'A multi-year US law setting farm support, conservation and food assistance programs.'}], 'sources': ['crs_snap']},
+            {'kind': 'microInsight', 'id': 'snap', 'eyebrow': 'The biggest piece', 'text': 'SNAP helps low-income households buy groceries.', 'highlight': 'It served about 42.4 million people a month in 2025.', 'keyTerms': [{'term': 'SNAP', 'definition': 'The Supplemental Nutrition Assistance Program, formerly known as food stamps.'}], 'sources': ['crs_snap']},
+            {'kind': 'info', 'id': 'coalition', 'eyebrow': 'Why bundle', 'title': 'A city-farm coalition', 'body': 'Pairing food aid with farm support wins votes from both urban and rural members of Congress.', 'sources': ['crs_snap']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-share', 'prompt': "What share of the farm bill's mandatory spending goes to nutrition?", 'min': 0, 'max': 100, 'value': 72, 'unit': '%', 'tolerance': 0.07, 'explanation': 'About 72%, mainly SNAP, per CBO\'s February 2026 estimate.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'Which program is the largest part of the farm bill budget?',
+             'options': ['Crop insurance subsidies', 'SNAP food assistance', 'Conservation payments'], 'correctIndex': 1,
+             'explanation': 'Nutrition, mainly SNAP, is about 72% of mandatory spending.'},
+        ],
+        'lenses': {
+            'career': ('Policy roles span food and farms', 'Farm bill work touches nutrition, agriculture and rural policy. Know both sides.', ['crs_snap']),
+            'invest': ('SNAP moves grocery sales', 'Changes to SNAP affect food retailers and brands. The farm bill matters beyond farms.', ['crs_snap']),
+            'build_startup': ('Food access is a market', 'SNAP reaches about 42 million people. Tools that serve SNAP shoppers serve a huge base.', ['crs_snap']),
+            'curiosity': ('A farm law about groceries', 'Most farm bill money helps families buy food, not farmers grow it.', ['crs_snap']),
+        },
+        'rule': ('In US farm policy, food aid and farm support pass together because each needs the other\'s votes.', ['crs_snap']),
+        'takeaway': "About 72% of the farm bill's mandatory spending goes to nutrition, mainly SNAP, which served about 42.4 million people a month in 2025.",
+    },
+    {
+        'day': 26, 'facet': 'money', 'title': 'Raising the price floor',
+        'open': {
+            'eyebrow': 'Day 26 · The money', 'kicker': 'A 2025 tax law quietly rewrote farm support.',
+            'headline': 'The tax and spending law signed on July 4, 2025, raised the reference price for soybeans from $8.40 to $10.00 a bushel.',
+            'fullText': 'Corn rose from $3.70 to $4.10 and wheat from $4.95 to $6.35. When market prices fall below these levels, farmers in the PLC program receive payments based on the gap and their base acres. CBO estimated about $66 billion in added agriculture spending over ten years.',
+            'sources': ['msu_refprice', 'afbf_obbba'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'refprice', 'eyebrow': 'How it pays', 'text': 'A reference price works like a floor: payments cover the gap when prices fall below it.', 'highlight': 'Higher floors mean bigger payments in weak years.', 'keyTerms': [{'term': 'Reference price', 'definition': 'A price set in law below which farmers in some programs receive payments.'}], 'sources': ['afbf_obbba']},
+            {'kind': 'microInsight', 'id': 'base', 'eyebrow': 'New acres', 'text': 'The law also allows up to 30 million new base acres for farms that lacked them.', 'highlight': 'More base acres mean more acres eligible for payments.', 'keyTerms': [{'term': 'Base acres', 'definition': 'Acres tied to a farm\'s history that determine its commodity program payments.'}], 'sources': ['afbf_obbba']},
+            {'kind': 'info', 'id': 'escalator', 'eyebrow': 'Built to grow', 'title': 'Floors rise over time', 'body': 'From 2031, reference prices grow 0.5% a year, capped at 113% of the original level.', 'sources': ['afbf_obbba']},
+        ],
+        'checks': [
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'Whose reference price rose more, in percent?',
+             'left': {'name': 'Corn', 'note': '$3.70 to $4.10'}, 'right': {'name': 'Soybeans', 'note': '$8.40 to $10.00'}, 'correctIndex': 1,
+             'explanation': 'Soybeans rose about 19%; corn about 11%.'},
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['Wheat\'s reference price rose to $6.35.', 'The law cut reference prices to save money.', 'CBO estimated about $66 billion in added spending.'], 'fakeIndex': 1,
+             'explanation': 'Reference prices rose 10 to 21% for major crops.'},
+        ],
+        'lenses': {
+            'career': ('Know the payment programs', 'Ag lenders and advisors help farmers choose between programs. Reference prices drive the math.', ['afbf_obbba']),
+            'invest': ('A higher safety net', 'Higher floors support farm income in weak years, which steadies spending on land and equipment.', ['afbf_obbba']),
+            'build_startup': ('Help farmers claim payments', 'Program choices and base acres are complex. Tools that model payments help farmers decide.', ['afbf_obbba']),
+            'curiosity': ('Ten dollars a bushel', 'US law now guarantees soybean farmers in PLC support when prices fall below $10.', ['msu_refprice']),
+        },
+        'rule': ('In US farm support, the reference price sets how much taxpayers pay when crop prices fall.', ['afbf_obbba']),
+        'takeaway': 'The July 2025 law raised reference prices: soybeans to $10.00, corn to $4.10 and wheat to $6.35, adding about $66 billion over ten years.',
+    },
+    {
+        'day': 27, 'facet': 'power', 'title': '$12 billion without a new law',
+        'open': {
+            'eyebrow': 'Day 27 · The power', 'kicker': 'USDA has a checkbook Congress already signed.',
+            'headline': 'In December 2025, USDA announced $12 billion in one-time "bridge" payments to farmers hurt by trade disruptions and high costs.',
+            'fullText': 'Up to $11 billion went to row crops such as corn, soybeans, wheat and cotton, with $1 billion for other crops like specialty crops and sugar. USDA used existing authority under the Commodity Credit Corporation Charter Act. It called the aid a bridge until higher reference prices take effect on October 1, 2026.',
+            'sources': ['fsa_bridge'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'ccc', 'eyebrow': 'The tool', 'text': 'The Commodity Credit Corporation is a USDA-run entity that can make farm payments.', 'highlight': 'It gives the executive branch room to act fast.', 'keyTerms': [{'term': 'Commodity Credit Corporation', 'definition': 'A federal entity within USDA that funds farm support programs.'}], 'sources': ['fsa_bridge']},
+            {'kind': 'microInsight', 'id': 'formula', 'eyebrow': 'How it pays', 'text': 'Payments followed a formula based on modeled 2025 losses per planted acre.', 'highlight': 'Farmers were told to expect them by February 28, 2026.', 'sources': ['fsa_bridge']},
+            {'kind': 'info', 'id': 'why', 'eyebrow': 'The reason given', 'title': 'Trade losses and costs', 'body': 'USDA cited trade disruptions, higher production costs and unfair foreign trade practices.', 'sources': ['fsa_bridge']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What authority did USDA use for the bridge payments?',
+             'options': ['A new farm bill', 'The CCC Charter Act', 'An emergency tariff law'], 'correctIndex': 1,
+             'explanation': 'The payments were authorized under the Commodity Credit Corporation Charter Act.'},
+            {'kind': 'sortSignal', 'id': 'sort', 'prompt': 'In the $11 billion row crop program, or the $1 billion set-aside?', 'buckets': ['Row crop program', 'Separate $1 billion'],
+             'items': [{'text': 'Corn', 'bucket': 0}, {'text': 'Soybeans', 'bucket': 0}, {'text': 'Specialty crops', 'bucket': 1}, {'text': 'Sugar', 'bucket': 1}],
+             'explanation': 'Row crops shared up to $11 billion; specialty crops and sugar drew on the separate $1 billion.'},
+        ],
+        'lenses': {
+            'career': ('Follow USDA, not just Congress', 'Big farm payments can come from USDA action. Policy roles must track both.', ['fsa_bridge']),
+            'invest': ('Aid props up farm cash', 'A $12 billion payment supports farm income and spending in a weak year.', ['fsa_bridge']),
+            'build_startup': ('Payments create cash cycles', 'Farmers spend when aid arrives. Time sales and offers around payment dates.', ['fsa_bridge']),
+            'curiosity': ('A fast $12 billion', 'USDA announced $12 billion for farmers in December 2025 using an old law.', ['fsa_bridge']),
+        },
+        'rule': ('In farm policy, the executive branch can move billions fast through tools Congress built long ago.', ['fsa_bridge']),
+        'takeaway': 'USDA announced $12 billion in bridge payments in December 2025, up to $11 billion for row crops, using its Commodity Credit Corporation authority.',
+    },
+    {
+        'day': 28, 'facet': 'numbers', 'title': 'What a higher floor pays per acre',
+        'open': {
+            'eyebrow': 'Day 28 · The numbers', 'kicker': 'Policy shows up as dollars per acre.',
+            'headline': 'One farm accountant estimated the 2025 law would add about $42 an acre to PLC payments for soybeans and about $23 an acre for corn.',
+            'fullText': 'His estimates for the 2025 crop also showed about $33 an acre for wheat and $93 for cotton, based on average yields. He projected total PLC payments of about $2.6 billion. Payments for the 2025 crop were not due to start until October 2026.',
+            'sources': ['agweb_plc'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'per-acre', 'eyebrow': 'Per acre', 'text': 'Program payments are paid on base acres, so farmers think of them per acre.', 'highlight': 'Soybeans gained more because their floor rose most.', 'sources': ['agweb_plc', 'msu_refprice']},
+            {'kind': 'microInsight', 'id': 'higher-of', 'eyebrow': 'The 2025 twist', 'text': 'For the 2025 crop, farmers get the higher of the two main programs.', 'highlight': 'So these estimates are a minimum.', 'keyTerms': [{'term': 'PLC', 'definition': 'Price Loss Coverage, which pays when a crop\'s price falls below its reference price.'}], 'sources': ['agweb_plc']},
+            {'kind': 'info', 'id': 'timing', 'eyebrow': 'The wait', 'title': 'Paid a year later', 'body': 'Payments for the 2025 crop arrive from October 2026, after the marketing year ends.', 'sources': ['agweb_plc']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-total', 'prompt': 'About how many billion dollars in total PLC payments were projected for the 2025 crop?', 'min': 0, 'max': 10, 'value': 2.6, 'unit': 'B', 'tolerance': 0.08, 'explanation': 'About $2.6 billion, based on June price estimates.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'Why did soybeans gain more per acre than corn?',
+             'options': ['Soybean farms are larger', 'Their reference price rose more', 'Corn was left out of the law'], 'correctIndex': 1,
+             'explanation': 'Soybeans\' floor rose about 19%, versus about 11% for corn.'},
+        ],
+        'lenses': {
+            'career': ('Translate policy to acres', 'Advisors who turn policy into per-acre numbers are valued by farmers and lenders.', ['agweb_plc']),
+            'invest': ('Know when cash arrives', 'Program payments land a year after harvest. That timing shapes farm spending.', ['agweb_plc']),
+            'build_startup': ('Model the payments', 'Farmers want to know what programs pay per acre. Simple calculators fill that need.', ['agweb_plc']),
+            'curiosity': ('Paid for low prices', 'Cotton farmers could get about $93 an acre extra under the 2025 law.', ['agweb_plc']),
+        },
+        'rule': ('In farm policy, every change in law becomes a number per acre on a farmer\'s budget.', ['agweb_plc']),
+        'takeaway': 'Estimates put the 2025 law\'s extra PLC payments at about $42 an acre for soybeans and $23 for corn, about $2.6 billion in total.',
+    },
+    {
+        'day': 29, 'facet': 'rules', 'title': 'The cap on farm payments',
+        'open': {
+            'eyebrow': 'Day 29 · The rule', 'kicker': 'There is a limit on what one farmer can receive.',
+            'headline': 'The 2025 law raised the yearly cap on commodity program payments from $125,000 to $155,000 per person, adjusted for inflation from then on.',
+            'fullText': 'It also expanded who counts as a beginning farmer from 5 to 10 years of experience, with extra crop insurance help. The government\'s share of crop insurance premiums rose 3 to 5 percentage points. For area-based plans, the premium subsidy rose from 65% to 80%.',
+            'sources': ['afbf_obbba'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'limit', 'eyebrow': 'The cap', 'text': 'A payment limit caps how much one person can receive from commodity programs each year.', 'highlight': 'It rose to $155,000 and now tracks inflation.', 'keyTerms': [{'term': 'Payment limit', 'definition': 'The maximum amount one person can receive from certain farm programs in a year.'}], 'sources': ['afbf_obbba']},
+            {'kind': 'microInsight', 'id': 'beginning', 'eyebrow': 'New farmers', 'text': 'Farmers in their first 10 years now count as beginning farmers.', 'highlight': 'They get extra premium subsidies.', 'sources': ['afbf_obbba']},
+            {'kind': 'info', 'id': 'insurance', 'eyebrow': 'Cheaper insurance', 'title': 'Taxpayers pay more of premiums', 'body': 'The government\'s premium share rose 3 to 5 points at every coverage level.', 'sources': ['afbf_obbba']},
+        ],
+        'checks': [
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'What is the new yearly cap on commodity program payments?',
+             'left': {'name': '$125,000', 'note': 'The old limit'}, 'right': {'name': '$155,000', 'note': 'Indexed to inflation'}, 'correctIndex': 1,
+             'explanation': 'The cap rose from $125,000 to $155,000 and now adjusts with inflation.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You have farmed for seven years and are buying crop insurance.', 'prompt': 'What should you check?',
+             'options': ['Whether you qualify as a beginning farmer', 'Whether insurance is still offered', 'Whether premiums are now fully free'],
+             'consequences': ['Under the new 10-year rule, you may get extra subsidy.', 'Crop insurance remains available.', 'Premiums are subsidized, not free.'],
+             'correctIndex': 0, 'explanation': 'The 2025 law extended beginning farmer status to 10 years of experience.'},
+        ],
+        'lenses': {
+            'career': ('Eligibility is a specialty', 'Payment limits and eligibility rules are complex. Advisors who master them are in demand.', ['afbf_obbba']),
+            'invest': ('Higher caps help big farms', 'Raising the limit lets larger operations collect more support per person.', ['afbf_obbba']),
+            'build_startup': ('Serve beginning farmers', 'More farmers now qualify as beginners. Products tailored to them have a wider market.', ['afbf_obbba']),
+            'curiosity': ('A ceiling on subsidies', 'One person can receive up to $155,000 a year from US commodity programs.', ['afbf_obbba']),
+        },
+        'rule': ('In farm programs, caps and eligibility rules decide who actually benefits from a subsidy.', ['afbf_obbba']),
+        'takeaway': 'The 2025 law raised the commodity payment cap to $155,000, indexed to inflation, and widened beginning farmer status to 10 years.',
+    },
+    {
+        'day': 30, 'facet': 'frontier', 'title': 'The farm bill that keeps expiring',
+        'open': {
+            'eyebrow': 'Day 30 · Where it breaks', 'kicker': 'The 2018 farm bill was still running in 2026.',
+            'headline': 'On September 30, 2026, the extended 2018 farm bill expired again, with no new farm bill passed.',
+            'fullText': 'The House had passed its farm bill on April 30, 2026, by 224 to 200, and the Senate Agriculture Committee advanced its version on September 16. Without a law, USDA cannot sign new Conservation Reserve contracts. Some dairy and commodity rules lapse on December 31, which could revive permanent laws from 1938 and 1949.',
+            'sources': ['al_expired', 'rfd_house'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'cliff', 'eyebrow': 'The cliff', 'text': 'If farm laws lapse, old permanent laws from 1938 and 1949 can come back into force.', 'highlight': 'That threat usually forces Congress to act.', 'keyTerms': [{'term': 'Permanent law', 'definition': 'Older farm statutes that apply automatically if a farm bill lapses.'}], 'sources': ['al_expired']},
+            {'kind': 'microInsight', 'id': 'safe', 'eyebrow': 'What keeps running', 'text': 'Crop insurance is permanently authorized, so it continues.', 'highlight': 'Programs funded by the 2025 law also keep going.', 'sources': ['al_expired']},
+            {'kind': 'info', 'id': 'split', 'eyebrow': 'The sticking point', 'title': 'Food aid divides the chambers', 'body': 'The House and Senate bills differ most on agriculture and nutrition provisions, including SNAP.', 'sources': ['al_expired', 'rfd_house']},
+        ],
+        'checks': [
+            {'kind': 'buildChain', 'id': 'chain', 'prompt': 'Put the 2026 farm bill fight in order.', 'steps': ['The House passes its farm bill', 'The Senate committee advances its version', 'The 2018 farm bill extension expires', 'Some dairy and commodity rules lapse'], 'explanation': 'April 30, September 16, September 30 and December 31, 2026.'},
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['The House passed its bill 224 to 200.', 'Crop insurance stops when the farm bill lapses.', 'New Conservation Reserve contracts are paused.'], 'fakeIndex': 1,
+             'explanation': 'Crop insurance is permanently authorized and keeps running.'},
+        ],
+        'lenses': {
+            'career': ('Deadlines drive the work', 'Farm policy jobs revolve around deadlines like September 30 and December 31. Track them.', ['al_expired']),
+            'invest': ('Uncertainty delays decisions', 'Without a farm bill, conservation and some programs pause. Farmers may delay spending.', ['al_expired']),
+            'build_startup': ('Watch the paused programs', 'Conservation enrollment is on hold. Businesses tied to it should plan for delays.', ['al_expired']),
+            'curiosity': ('Laws from 1938', 'If Congress does nothing, farm rules from 1938 and 1949 can return.', ['al_expired']),
+        },
+        'rule': ('In farm policy, the deadline is often the only thing that forces a deal.', ['al_expired']),
+        'takeaway': 'The extended 2018 farm bill expired on September 30, 2026. The House passed a new bill in April, but no final law has passed.',
+    },
+]

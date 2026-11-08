@@ -9,6 +9,7 @@ const MARKETS = [
   { market: 'spacetech', migration: 'drizzle/migrations/0028_spacetech_handwritten_days_6_30.sql' },
   { market: 'cybersecurity', migration: 'drizzle/migrations/0029_cybersecurity_handwritten_days_6_30.sql' },
   { market: 'ev', migration: 'drizzle/migrations/0030_ev_handwritten_days_6_30.sql' },
+  { market: 'agtech', migration: 'drizzle/migrations/0031_agtech_handwritten_days_6_30.sql' },
 ];
 const GOALS = ['career', 'invest', 'build_startup', 'curiosity'];
 let python = true;

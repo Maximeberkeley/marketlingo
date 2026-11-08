@@ -1,0 +1,188 @@
+# Agtech, days 13-18. Month 1, topic 3: land ownership and farmland investing.
+SRC = {
+    'fpn_land26': {'url': 'https://farmpolicynews.illinois.edu/2026/08/us-cropland-tops-6000-per-acre-for-first-time-in-2026/', 'label': 'Farm Policy News, US cropland tops $6,000 per acre in 2026'},
+    'fd_total': {'url': 'https://www.farmanddairy.com/news/usda-survey-most-rented-farmland-is-owned-by-non-farmers/907464.html', 'label': 'Farm and Dairy, most rented farmland is owned by non-farmers'},
+    'isu_land25': {'url': 'https://farmland.card.iastate.edu/isu-land-value-survey-2025', 'label': 'Iowa State University, 2025 land value survey'},
+    'fdd_foreign': {'url': 'https://farmdocdaily.illinois.edu/2026/09/foreign-ownership-of-us-agricultural-land.html', 'label': 'farmdoc daily, foreign ownership of US agricultural land'},
+    'packer_nfsap': {'url': 'https://www.thepacker.com/news/education/usda-cracks-down-foreign-owned-farmland-elevate-american-agriculture-national-secu', 'label': 'The Packer, USDA cracks down on foreign-owned farmland'},
+    'agweb_solar': {'url': 'https://www.agweb.com/news/business/taxes-and-finance/farmers-are-now-being-offered-1-000-acre-or-more-lease-their-land-solar', 'label': 'AgWeb, farmers offered $1,000 an acre or more for solar leases'},
+}
+
+LESSONS = [
+    {
+        'day': 13, 'facet': 'definition', 'title': 'What an acre is worth',
+        'open': {
+            'eyebrow': 'Day 13 · Farmland', 'kicker': 'Land is the biggest asset on most farms.',
+            'headline': 'In 2026, the average acre of US cropland topped $6,000 for the first time, at $6,020.',
+            'fullText': 'USDA\'s July 2026 survey found cropland up 3.3% in a year and 21.8% since 2022. Iowa cropland averaged $10,700 an acre, Illinois $10,200 and Ohio $10,100. Gains were slower than the year before.',
+            'sources': ['fpn_land26'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'types', 'eyebrow': 'Two kinds of land', 'text': 'Cropland grows crops; pasture feeds livestock and is worth far less.', 'highlight': 'US pasture averaged $2,000 an acre in 2026.', 'keyTerms': [{'term': 'Farm real estate', 'definition': 'Farmland plus the buildings on it, averaging $4,500 an acre in the US in 2026.'}], 'sources': ['fpn_land26']},
+            {'kind': 'microInsight', 'id': 'states', 'eyebrow': 'Location matters', 'text': 'Iowa cropland is worth about three times as much as Kansas cropland.', 'highlight': 'Iowa $10,700 against Kansas $3,540.', 'sources': ['fpn_land26']},
+            {'kind': 'info', 'id': 'slowing', 'eyebrow': 'The trend', 'title': 'Still rising, but slower', 'body': 'Cropland rose 3.3% in 2026 after 4.7% in 2025. Values climb even when crop margins are thin.', 'sources': ['fpn_land26']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What milestone did US cropland values reach in 2026?',
+             'options': ['They fell for the first time', 'They topped $6,000 an acre', 'They doubled since 2022'], 'correctIndex': 1,
+             'explanation': 'Average cropland hit $6,020 an acre, up 21.8% since 2022.'},
+            {'kind': 'sortSignal', 'id': 'sort', 'prompt': 'Above or below $10,000 an acre for cropland in 2026?', 'buckets': ['Above $10,000', 'Below $10,000'],
+             'items': [{'text': 'Iowa', 'bucket': 0}, {'text': 'Illinois', 'bucket': 0}, {'text': 'Nebraska', 'bucket': 1}, {'text': 'Kansas', 'bucket': 1}],
+             'explanation': 'Iowa and Illinois topped $10,000; Nebraska was $6,960 and Kansas $3,540.'},
+        ],
+        'lenses': {
+            'career': ('Land drives farm balance sheets', 'Lenders and appraisers value farms mostly by their land. Know regional values.', ['fpn_land26']),
+            'invest': ('A slow, steady asset', 'Cropland rose 21.8% from 2022 to 2026. Gains slow when margins are thin.', ['fpn_land26']),
+            'build_startup': ('Land is the barrier', 'At over $10,000 an acre in Iowa, land is the biggest hurdle for new farmers. Tools that lower it matter.', ['fpn_land26']),
+            'curiosity': ('Ten thousand per acre', 'An acre of Iowa cropland averaged $10,700 in 2026.', ['fpn_land26']),
+        },
+        'rule': ('In farming, land is the asset that holds wealth even when crops lose money.', ['fpn_land26']),
+        'takeaway': 'US cropland averaged $6,020 an acre in 2026, a first above $6,000. Iowa led at $10,700.',
+    },
+    {
+        'day': 14, 'facet': 'money', 'title': 'The rent check',
+        'open': {
+            'eyebrow': 'Day 14 · The money', 'kicker': 'Landowners earn rent; farmers pay it.',
+            'headline': 'US cropland rented for an average of $160 an acre in 2026, down $1 from the year before.',
+            'fullText': 'California had the highest cropland rent at $331 an acre, followed by Hawaii, Iowa at $271 and Illinois at $261. Irrigated cropland rented for $244. With cropland worth $6,020 an acre, a $160 rent is a gross return of about 2.7% a year.',
+            'sources': ['fpn_land26'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'cashrent', 'eyebrow': 'Cash rent', 'text': 'In a cash rent deal, the farmer pays a fixed sum per acre, whatever the harvest.', 'highlight': 'The landowner\'s income is steady; the farmer takes the risk.', 'keyTerms': [{'term': 'Cash rent', 'definition': 'A fixed payment per acre that a farmer pays a landowner to farm the land.'}], 'sources': ['fpn_land26']},
+            {'kind': 'microInsight', 'id': 'yield', 'eyebrow': 'The return', 'text': 'Rent divided by land value gives the landowner\'s gross yield.', 'highlight': 'At $160 on $6,020, that is about 2.7%.', 'keyTerms': [{'term': 'Rental yield', 'definition': 'Yearly rent divided by the value of the land.'}], 'sources': ['fpn_land26']},
+            {'kind': 'info', 'id': 'why', 'eyebrow': 'Why low yields', 'title': 'Owners also bet on value', 'body': 'Landowners accept low rent yields because land values have tended to rise over time.', 'sources': ['fpn_land26']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-rent', 'prompt': 'What was the average US cropland cash rent per acre in 2026?', 'min': 0, 'max': 500, 'value': 160, 'unit': '$', 'tolerance': 0.06, 'explanation': '$160 an acre, down $1 from 2025.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You inherit Iowa farmland. A neighbor offers to rent it for cash each year.', 'prompt': 'What do you get with cash rent?',
+             'options': ['Steady income; the farmer bears risk', 'A share of each good and bad harvest', 'No income until the land is sold'],
+             'consequences': ['You earn the same rent whatever the yield.', 'That describes a crop share lease instead.', 'Renting pays you every year.'],
+             'correctIndex': 0, 'explanation': 'Cash rent gives the owner a fixed payment; the farmer bears yield and price risk.'},
+        ],
+        'lenses': {
+            'career': ('Farm managers set rents', 'Farm management firms negotiate rents for absent owners. It is a steady career path.', ['fpn_land26']),
+            'invest': ('Low yield, long hold', 'Farmland pays about 2.7% in rent before costs. Returns depend on values rising.', ['fpn_land26']),
+            'build_startup': ('Rent is a big cost', 'Rent is a fixed cost that does not fall when crop prices drop. Tools for flexible leases could help.', ['fpn_land26']),
+            'curiosity': ('California rents top the list', 'California cropland rented for $331 an acre in 2026, the highest in the US.', ['fpn_land26']),
+        },
+        'rule': ('In farmland, rent pays a little each year; rising values pay the rest.', ['fpn_land26']),
+        'takeaway': 'US cropland rented for $160 an acre in 2026, about 2.7% of its value. California led at $331.',
+    },
+    {
+        'day': 15, 'facet': 'power', 'title': 'The landlords who do not farm',
+        'open': {
+            'eyebrow': 'Day 15 · The power', 'kicker': 'Much of the land farmers work belongs to someone else.',
+            'headline': 'About 39% of US farmland is rented, and 79% of that rented land is owned by people who do not farm.',
+            'fullText': "USDA's 2024 land tenure survey, released in March 2026, counted 348 million rented acres held by more than 2 million landowners. Non-farming principal landlords averaged 69.2 years old, against 58.1 for farmers. They plan to sell only about 5% of their acres in the next five years.",
+            'sources': ['fd_total'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'who', 'eyebrow': 'Who owns it', 'text': 'Non-farming landlords own about 276 million rented acres.', 'highlight': 'Many inherited land they never farmed.', 'keyTerms': [{'term': 'Non-operator landlord', 'definition': 'Someone who owns farmland and rents it out but does not farm it.'}], 'sources': ['fd_total']},
+            {'kind': 'microInsight', 'id': 'age', 'eyebrow': 'The age gap', 'text': 'More than a third of non-farming landlords are 75 or older.', 'highlight': 'They rent out over 40% of rented acres.', 'sources': ['fd_total']},
+            {'kind': 'info', 'id': 'transfer', 'eyebrow': 'The slow handover', 'title': 'Little land comes up for sale', 'body': 'Landlords plan to sell about 5% of their acres in five years. Most land passes on through families.', 'sources': ['fd_total']},
+        ],
+        'checks': [
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'Who owns most rented US farmland?',
+             'left': {'name': 'Active farmers', 'note': 'Renting to neighbors'}, 'right': {'name': 'Non-farming landlords', 'note': 'Often older owners'}, 'correctIndex': 1,
+             'explanation': '79% of rented farmland is owned by people who do not farm.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'Why does little farmland come up for sale?',
+             'options': ['Owners plan to sell only about 5%', 'Federal law bans most land sales', 'Banks own most of the farmland'], 'correctIndex': 0,
+             'explanation': 'Non-farming landlords plan to sell only about 5% of their acres in five years.'},
+        ],
+        'lenses': {
+            'career': ('Serve the landlords', 'Farm managers, appraisers and advisors serve millions of non-farming owners. Demand will grow as they age.', ['fd_total']),
+            'invest': ('Tight supply props prices', 'With few acres for sale each year, scarce supply supports land values.', ['fd_total']),
+            'build_startup': ('Absentee owners need tools', 'Over 2 million landowners rent out land. Tools for leases, payments and records serve them.', ['fd_total']),
+            'curiosity': ('Farmed by renters', 'Nearly two in five US farm acres are rented, mostly from people who do not farm.', ['fd_total']),
+        },
+        'rule': ('In US farming, those who own the land and those who farm it are often different people.', ['fd_total']),
+        'takeaway': 'About 39% of US farmland is rented, and 79% of it is owned by non-farmers whose average age is 69.2.',
+    },
+    {
+        'day': 16, 'facet': 'numbers', 'title': 'Up on paper, down in real terms',
+        'open': {
+            'eyebrow': 'Day 16 · The numbers', 'kicker': 'A price can rise and still lose value.',
+            'headline': "Iowa State University's 2025 survey put the average Iowa farmland value at $11,549 an acre, up 0.7%.",
+            'fullText': 'Adjusted for inflation, in 2015 dollars, the value was $8,475, a 1.8% decline. The survey pointed to lower crop prices, higher input costs and the effects of high interest rates. It reported steady demand from both farmers and investors.',
+            'sources': ['isu_land25'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'real', 'eyebrow': 'Real versus nominal', 'text': 'Nominal values are in today\'s dollars; real values remove inflation.', 'highlight': 'Iowa land rose 0.7% nominally but fell 1.8% in real terms.', 'keyTerms': [{'term': 'Real value', 'definition': 'A value adjusted for inflation, so years can be compared fairly.'}], 'sources': ['isu_land25']},
+            {'kind': 'microInsight', 'id': 'drivers', 'eyebrow': 'The drivers', 'text': 'Lower crop prices and higher costs squeeze what land earns.', 'highlight': 'High interest rates make land costlier to finance.', 'sources': ['isu_land25']},
+            {'kind': 'info', 'id': 'demand', 'eyebrow': 'Still wanted', 'title': 'Buyers kept showing up', 'body': 'Farmers and investors kept bidding, which held prices near record levels.', 'sources': ['isu_land25']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-value', 'prompt': 'About how many thousand dollars per acre was average Iowa farmland worth in 2025?', 'min': 0, 'max': 20, 'value': 11.5, 'unit': 'K', 'tolerance': 0.08, 'explanation': '$11,549 an acre, up 0.7% from 2024.'},
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['Iowa land rose 0.7% in 2025.', 'Adjusted for inflation, it rose 5%.', 'High interest rates weighed on values.'], 'fakeIndex': 1,
+             'explanation': 'In real terms, Iowa land fell 1.8%.'},
+        ],
+        'lenses': {
+            'career': ('Always adjust for inflation', 'Analysts compare land values in real terms. A small nominal rise can be a real loss.', ['isu_land25']),
+            'invest': ('Real returns matter', 'Iowa land gained 0.7% but lost 1.8% after inflation. Rates and margins drive both.', ['isu_land25']),
+            'build_startup': ('Thin margins, cautious buyers', 'When land and crop returns stall, farmers spend carefully. Show fast payback.', ['isu_land25']),
+            'curiosity': ('Rising price, falling value', 'Iowa farmland cost more in 2025 but was worth less after inflation.', ['isu_land25']),
+        },
+        'rule': ('In land markets, a nominal gain can still be a real loss after inflation.', ['isu_land25']),
+        'takeaway': 'Iowa farmland averaged $11,549 an acre in 2025, up 0.7%, but fell 1.8% after inflation.',
+    },
+    {
+        'day': 17, 'facet': 'rules', 'title': 'Who may own American farmland',
+        'open': {
+            'eyebrow': 'Day 17 · The rule', 'kicker': 'Foreign ownership is small, but the rules keep tightening.',
+            'headline': 'Foreign owners held about 6 million acres of US agricultural land in 2024, roughly 0.67% of land in farms.',
+            'fullText': 'Most of it, 88.5%, was forest, and Canada was the largest holder at 38%. China and its affiliated entities held about 247,659 acres. In July 2025, USDA announced a National Farm Security Action Plan promising tougher penalties on foreign adversary ownership.',
+            'sources': ['fdd_foreign', 'packer_nfsap'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'afida', 'eyebrow': 'The disclosure law', 'text': 'A federal law requires foreign holders of US farmland to report it to USDA.', 'highlight': 'That data is how foreign ownership is measured.', 'keyTerms': [{'term': 'AFIDA', 'definition': 'The Agricultural Foreign Investment Disclosure Act, which requires foreign farmland owners to report holdings.'}], 'sources': ['fdd_foreign', 'packer_nfsap']},
+            {'kind': 'microInsight', 'id': 'states', 'eyebrow': 'The states act', 'text': 'In 2023, Arkansas ordered a Syngenta unit to sell a 160-acre research site.', 'highlight': 'Arkansas was the first state to enforce such a law.', 'sources': ['packer_nfsap']},
+            {'kind': 'info', 'id': 'forest', 'eyebrow': 'The detail', 'title': 'Mostly forest, mostly allies', 'body': 'Most foreign-held acres are timberland owned by companies from allied countries like Canada.', 'sources': ['fdd_foreign']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'Which country holds the most foreign-owned US agricultural land?',
+             'options': ['China', 'Saudi Arabia', 'Canada'], 'correctIndex': 2,
+             'explanation': 'Canada holds about 38%, mostly forest.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You advise a European company buying US cropland for a research farm.', 'prompt': 'What do you do first?',
+             'options': ['Check federal reporting and state laws', 'Buy fast before rules change', 'Use a shell company to avoid reports'],
+             'consequences': ['You avoid penalties and forced sales.', 'Skipping checks risks fines or divestment.', 'Hiding ownership breaks disclosure law.'],
+             'correctIndex': 0, 'explanation': 'Foreign buyers must report to USDA, and many states add their own limits.'},
+        ],
+        'lenses': {
+            'career': ('Land deals need compliance', 'Farmland deals now involve disclosure and state law checks. Compliance skills are valued.', ['packer_nfsap']),
+            'invest': ('Foreign buyers face limits', 'State and federal rules narrow who can buy farmland. That shapes who bids.', ['packer_nfsap']),
+            'build_startup': ('Ownership data is messy', 'Experts dispute how much land China owns. Better ownership data is a real gap.', ['packer_nfsap', 'fdd_foreign']),
+            'curiosity': ('Less than one percent', 'Foreign owners hold under 1% of US farm land, and most of it is forest.', ['fdd_foreign']),
+        },
+        'rule': ('In farmland, national security now shapes who is allowed to buy.', ['packer_nfsap']),
+        'takeaway': 'Foreign owners held about 6 million acres, roughly 0.67% of US farm land, mostly forest. USDA moved to tighten rules in July 2025.',
+    },
+    {
+        'day': 18, 'facet': 'frontier', 'title': 'Solar panels on the cornfield',
+        'open': {
+            'eyebrow': 'Day 18 · Where it breaks', 'kicker': 'A new tenant can pay several times the farm rent.',
+            'headline': 'In an April 2024 Purdue survey, 58% of farmers approached by solar developers said they were offered more than $1,000 an acre a year.',
+            'fullText': 'That is several times typical farm cash rents. About 19% of farmers said they had discussed solar leases, up from 12% a month earlier. Purdue economists expected solar to push up cash rents and land values near projects.',
+            'sources': ['agweb_solar'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'lease', 'eyebrow': 'The offer', 'text': 'Solar developers lease farmland for decades to build panel farms.', 'highlight': 'Many offers top $1,000 an acre a year.', 'keyTerms': [{'term': 'Solar lease', 'definition': 'A long-term agreement to rent land to a company that builds solar panels on it.'}], 'sources': ['agweb_solar']},
+            {'kind': 'microInsight', 'id': 'compare', 'eyebrow': 'The gap', 'text': 'US cropland rent averaged $160 an acre in 2026.', 'highlight': 'Solar can pay several times that.', 'sources': ['fpn_land26', 'agweb_solar']},
+            {'kind': 'info', 'id': 'tension', 'eyebrow': 'The tension', 'title': 'Neighbors pay more rent', 'body': 'Solar deals can lift rents for nearby farmers who still need land to grow crops.', 'sources': ['agweb_solar']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-share', 'prompt': 'What share of farmers with solar offers said they were offered over $1,000 an acre?', 'min': 0, 'max': 100, 'value': 58, 'unit': '%', 'tolerance': 0.07, 'explanation': '58% said offers topped $1,000 an acre a year.'},
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'Who might lose when solar leases spread in a county?',
+             'left': {'name': 'Landowners who sign', 'note': 'Earn high lease payments'}, 'right': {'name': 'Tenant farmers nearby', 'note': 'Need land to rent'}, 'correctIndex': 1,
+             'explanation': 'Solar can push up rents for farmers who still need cropland.'},
+        ],
+        'lenses': {
+            'career': ('Energy meets farmland', 'Land agents and developers now work at the edge of energy and farming. It is a growing field.', ['agweb_solar']),
+            'invest': ('A new land use', 'Solar leases can earn several times farm rent. Land near grid lines gains value.', ['agweb_solar']),
+            'build_startup': ('Combine crops and panels', 'Ways to farm under or between panels could ease the land-use conflict.', ['agweb_solar']),
+            'curiosity': ('Farming the sun', 'Some farmers can earn more renting land for solar panels than for crops.', ['agweb_solar']),
+        },
+        'rule': ('In farmland, the highest-paying use wins, and it is not always farming.', ['agweb_solar']),
+        'takeaway': 'In 2024, 58% of farmers approached for solar were offered over $1,000 an acre, several times typical farm rent.',
+    },
+]

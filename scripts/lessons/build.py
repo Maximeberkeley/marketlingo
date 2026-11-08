@@ -158,7 +158,7 @@ def check(src, lessons, market, existing_titles):
                         warns.append(f'd{d} numberSense: answer sits mid-range ({at:.0%}), easy to guess')
                     if c['value'] >= 1000 and (c.get('unit') or '') not in ('K', 'M', 'B'):
                         errs.append(f"d{d} numberSense: {c['value']} shows as {c['value']/1000:.1f}K on the dial; rescale the question")
-                    if c['value'] != round(c['value']) and abs(c['value']) < 1000:
+                    if round(c['value'], 1) != c['value'] and abs(c['value']) < 1000:
                         warns.append(f'd{d} numberSense: decimal answer shows rounded to 0.1')
             elif k == 'sortSignal':
                 texts += [i['text'] for i in c['items']] + c['buckets']
