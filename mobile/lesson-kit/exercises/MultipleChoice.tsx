@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { ChoiceCard } from '../components/ChoiceCard';
 import { answerTag, choiceStateFor } from '../components/answerState';
@@ -6,9 +6,12 @@ import { tokens } from '../theme/tokens';
 import { MultipleChoiceExercise } from '../types';
 import { ExerciseProps } from './types';
 import { ColorText } from '../components/ColorText';
+import { choiceOrder } from '../components/choiceOrder';
 
 export function MultipleChoice({ exercise, phase, onChange }: ExerciseProps<MultipleChoiceExercise>) {
   const [selected, setSelected] = useState<number | null>(null);
+  // Shown mixed; indexes stay the authored ones for grading.
+  const order = useMemo(() => choiceOrder(exercise.options.length, `${exercise.id}|${exercise.prompt}`), [exercise.id, exercise.prompt, exercise.options.length]);
 
   useEffect(() => {
     setSelected(null);
@@ -27,7 +30,7 @@ export function MultipleChoice({ exercise, phase, onChange }: ExerciseProps<Mult
     <View style={styles.wrap}>
       <ColorText text={exercise.prompt} style={styles.prompt} maxSentences={2} maxLength={120} />
       <View style={styles.options}>
-        {exercise.options.map((option, i) => (
+        {order.map(i => exercise.options[i]).map((option, pos) => { const i = order[pos]; return (
           <ChoiceCard
             key={`${exercise.id}-${i}`}
             label={option}
@@ -37,7 +40,7 @@ export function MultipleChoice({ exercise, phase, onChange }: ExerciseProps<Mult
             onPress={() => pick(i)}
             disabled={revealed}
           />
-        ))}
+        ); })}
       </View>
     </View>
   );
