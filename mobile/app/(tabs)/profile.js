@@ -38,8 +38,6 @@ import { inviteShareContent } from "../../lib/inviteLinks";
 import { ProfileFriendsCard } from "../../components/profile/ProfileFriendsCard";
 import { MyCodeSheet } from "../../components/social/MyCodeSheet";
 import { SocialAvatar } from "../../components/social/SocialAvatar";
-import { StreakFlame } from "../../components/ui/StreakFlame";
-import { XPFlask } from "../../components/ui/XPFlask";
 import { CrownBadge } from "../../components/social/CrownBadge";
 const MARKET_ILLUSTRATIONS = {
   aerospace: require("../../assets/illustrations/aerospace.png"),
@@ -188,8 +186,6 @@ function ProfileScreen() {
     urgent: social.available ? homeSocialLine(social.social) : null,
     pending: friendsData.pendingRequests.length
   };
-  const myStreak = progress?.current_streak ?? 0;
-  const totalXP = xpData?.total_xp ?? 0;
   const iWearCrown = friendsInfo.crown?.kind === "mine";
   const shareInvite = async () => {
     triggerHaptic("light");
@@ -257,15 +253,7 @@ function ProfileScreen() {
       triggerHaptic("light");
       setCodeOpen(true);
     }, accessibilityRole: "button", accessibilityLabel: `Your friend code ${friendsData.myFriendCode}. Show QR code` }, /* @__PURE__ */ React.createElement(Feather, { name: "hash", size: 12, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.codeChipText }, friendsData.myFriendCode), /* @__PURE__ */ React.createElement(Feather, { name: "maximize", size: 11, color: COLORS.accent }))))),
-    /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.stats, animStyle(statsAnim)] }, /* @__PURE__ */ React.createElement(StatTile, { icon: /* @__PURE__ */ React.createElement(StreakFlame, { size: 22, dim: myStreak === 0 }), value: String(myStreak), label: "Day streak" }), /* @__PURE__ */ React.createElement(StatTile, { icon: /* @__PURE__ */ React.createElement(XPFlask, { size: 22 }), value: totalXP.toLocaleString(), label: "Total XP" }), /* @__PURE__ */ React.createElement(StatTile, { icon: /* @__PURE__ */ React.createElement(XPFlask, { size: 22, color: COLORS.accent }), value: monthXP.toLocaleString(), label: "XP this month" }), /* @__PURE__ */ React.createElement(
-      StatTile,
-      {
-        icon: iWearCrown ? /* @__PURE__ */ React.createElement(CrownBadge, { size: 24 }) : /* @__PURE__ */ React.createElement(Feather, { name: "users", size: 20, color: COLORS.accent }),
-        value: friendsData.friends.length > 0 ? `#${myFriendRank}` : "0",
-        label: friendsData.friends.length > 0 ? "Among friends" : "Friends"
-      }
-    )),
-    /* @__PURE__ */ React.createElement(Animated.View, { style: animStyle(bodyAnim) }, /* @__PURE__ */ React.createElement(
+    /* @__PURE__ */ React.createElement(Animated.View, { style: animStyle(statsAnim) }, /* @__PURE__ */ React.createElement(
       ProfileFriendsCard,
       {
         info: friendsInfo,
@@ -277,7 +265,8 @@ function ProfileScreen() {
           void shareInvite();
         }
       }
-    ), /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "INTERVIEW"), /* @__PURE__ */ React.createElement(InterviewTargetForm, { target: interviewPrep.target, onSave: interviewPrep.saveTarget }), /* @__PURE__ */ React.createElement(View, { style: [styles.group, { marginTop: 10 }] }, /* @__PURE__ */ React.createElement(MenuRow, { icon: "file-text", title: "Interview Brief", subtitle: `${Math.round(dossier.completion)}% written`, onPress: () => {
+    )),
+    /* @__PURE__ */ React.createElement(Animated.View, { style: animStyle(bodyAnim) }, /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "INTERVIEW"), /* @__PURE__ */ React.createElement(InterviewTargetForm, { target: interviewPrep.target, onSave: interviewPrep.saveTarget }), /* @__PURE__ */ React.createElement(View, { style: [styles.group, { marginTop: 10 }] }, /* @__PURE__ */ React.createElement(MenuRow, { icon: "file-text", title: "Interview Brief", subtitle: `${Math.round(dossier.completion)}% written`, onPress: () => {
       triggerHaptic("light");
       router.push("/deliverable");
     }, highlight: true }))), /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "YOUR LEARNING"), /* @__PURE__ */ React.createElement(View, { style: styles.group }, /* @__PURE__ */ React.createElement(MenuRow, { icon: GOAL_OPTIONS.find((g) => g.id === currentGoal)?.icon || "target", title: "Goal", subtitle: GOAL_OPTIONS.find((g) => g.id === currentGoal)?.title || "Not set", onPress: () => setShowGoalPicker(true) }), /* @__PURE__ */ React.createElement(MenuRow, { icon: "sliders", title: "Level", subtitle: FAMILIARITY_LEVELS.find((l) => l.id === currentLevel)?.name || "Not set", onPress: () => setShowLevelPicker(true) }), /* @__PURE__ */ React.createElement(MenuRow, { icon: "globe", title: "Industry", subtitle: getMarketName(selectedMarket || "aerospace"), onPress: () => setShowChangeWarning(true) }), /* @__PURE__ */ React.createElement(MenuRow, { icon: "award", title: "Achievements", subtitle: "Badges you've earned", onPress: () => router.push("/achievements") }), /* @__PURE__ */ React.createElement(MenuRow, { icon: "settings", title: "Settings", subtitle: "Notifications and account", onPress: () => router.push("/settings"), last: true })), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.logoutLink, onPress: handleSignOut, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { style: styles.logoutText }, "Log out"))), /* @__PURE__ */ React.createElement(Text, { style: styles.versionText }, "MarketLingo v1.1.1"))
@@ -329,9 +318,6 @@ function ProfileScreen() {
     currentLevel === level.id && /* @__PURE__ */ React.createElement(Feather, { name: "check", size: 18, color: "#10B981" })
   ))), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.modalCancel, onPress: () => setShowLevelPicker(false) }, /* @__PURE__ */ React.createElement(Text, { style: styles.modalCancelText }, "Cancel"))))));
 }
-function StatTile({ icon, value, label }) {
-  return /* @__PURE__ */ React.createElement(View, { style: styles.statTile }, icon, /* @__PURE__ */ React.createElement(View, { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.statTileValue, numberOfLines: 1 }, value), /* @__PURE__ */ React.createElement(Text, { style: styles.statTileLabel, numberOfLines: 1 }, label)));
-}
 function MenuRow({ icon, title, subtitle, onPress, last, highlight }) {
   return /* @__PURE__ */ React.createElement(TouchableOpacity, { style: [styles.row, !last && styles.rowDivider], onPress, activeOpacity: 0.75, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: highlight ? COLORS.accentSoft : COLORS.bg1 }] }, /* @__PURE__ */ React.createElement(Feather, { name: icon, size: 18, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, title), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, subtitle)), /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 18, color: COLORS.textMuted }));
 }
@@ -345,23 +331,6 @@ const styles = StyleSheet.create({
   pathChange: { color: COLORS.accent, fontWeight: "700" },
   codeChip: { flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start", marginTop: 8, paddingHorizontal: 10, height: 28, borderRadius: 14, backgroundColor: COLORS.accentSoft, borderWidth: 1.5, borderColor: COLORS.accentMedium },
   codeChipText: { fontSize: 13, fontWeight: "900", letterSpacing: 1.5, color: COLORS.accent },
-  stats: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginBottom: 20 },
-  statTile: {
-    flexBasis: "47%",
-    flexGrow: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 14,
-    height: 64,
-    borderRadius: 18,
-    backgroundColor: COLORS.bg2,
-    borderWidth: 2,
-    borderBottomWidth: 4,
-    borderColor: COLORS.border
-  },
-  statTileValue: { fontSize: 19, fontWeight: "900", color: COLORS.textPrimary },
-  statTileLabel: { fontSize: 11, fontWeight: "600", color: COLORS.textMuted, marginTop: 1 },
   group: { borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, overflow: "hidden" },
   row: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 14, paddingVertical: 12, minHeight: 64 },
   rowDivider: { borderBottomWidth: 1, borderBottomColor: COLORS.borderLight },
