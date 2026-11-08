@@ -11,7 +11,8 @@ import {
   Share,
   ActivityIndicator,
   Modal,
-  Animated
+  Animated,
+  Platform
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useFocusEffect } from "expo-router";
@@ -28,6 +29,18 @@ import { triggerHaptic } from "../../lib/haptics";
 import { useCollectibles } from "../../hooks/useCollectibles";
 import { useDeliverable } from "../../hooks/useDeliverable";
 import { dossierRank } from "../../lib/deliverables";
+import { useFriends } from "../../hooks/useFriends";
+import { useFriendSocial } from "../../hooks/useFriendSocial";
+import { myFriendRaceXP } from "../../lib/socialStandings";
+import { crownStatus } from "../../lib/crown";
+import { homeSocialLine, raceIsOver, streakToday } from "../../lib/friendSocial";
+import { inviteShareContent } from "../../lib/inviteLinks";
+import { ProfileFriendsCard } from "../../components/profile/ProfileFriendsCard";
+import { MyCodeSheet } from "../../components/social/MyCodeSheet";
+import { SocialAvatar } from "../../components/social/SocialAvatar";
+import { StreakFlame } from "../../components/ui/StreakFlame";
+import { XPFlask } from "../../components/ui/XPFlask";
+import { CrownBadge } from "../../components/social/CrownBadge";
 const MARKET_ILLUSTRATIONS = {
   aerospace: require("../../assets/illustrations/aerospace.png"),
   ai: require("../../assets/illustrations/ai.png"),
@@ -69,20 +82,22 @@ function ProfileScreen() {
   const [showGoalPicker, setShowGoalPicker] = useState(false);
   const [showLevelPicker, setShowLevelPicker] = useState(false);
   const [savingPreference, setSavingPreference] = useState(false);
-  const [friendRequestCount, setFriendRequestCount] = useState(0);
+  const [displayName, setDisplayName] = useState("");
+  const [monthXP, setMonthXP] = useState(0);
+  const [codeOpen, setCodeOpen] = useState(false);
+  const [focused, setFocused] = useState(true);
+  const friendsData = useFriends(selectedMarket || void 0);
+  const social = useFriendSocial(user?.id, focused);
+  const firstFocus = useRef(true);
   useFocusEffect(React.useCallback(() => {
-    if (!user) {
-      setFriendRequestCount(0);
-      return;
+    setFocused(true);
+    if (user) {
+      if (!firstFocus.current) void friendsData.refetch();
+      firstFocus.current = false;
+      myFriendRaceXP(user.id).then(setMonthXP, () => {
+      });
     }
-    let live = true;
-    supabase.from("friendships").select("id", { count: "exact", head: true }).eq("friend_id", user.id).eq("status", "pending").then(({ count }) => {
-      if (live) setFriendRequestCount(count ?? 0);
-    }, () => {
-    });
-    return () => {
-      live = false;
-    };
+    return () => setFocused(false);
   }, [user]));
   const { progress, availableDay } = useUserProgress(selectedMarket || void 0);
   const { xpData, getCurrentStage, getProgressToNextStage } = useUserXP(selectedMarket || void 0);
@@ -94,10 +109,11 @@ function ProfileScreen() {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user) return;
-      const { data: profile } = await supabase.from("profiles").select("selected_market, familiarity_level").eq("id", user.id).single();
+      const { data: profile } = await supabase.from("profiles").select("selected_market, familiarity_level, display_name").eq("id", user.id).single();
       if (profile) {
         setSelectedMarket(profile.selected_market);
         setCurrentLevel(profile.familiarity_level || null);
+        setDisplayName(profile.display_name?.trim() || "");
       }
       if (profile?.selected_market) {
         const { data: prog } = await supabase.from("user_progress").select("learning_goal, familiarity_level").eq("user_id", user.id).eq("market_id", profile.selected_market).maybeSingle();
@@ -156,6 +172,33 @@ function ProfileScreen() {
       setSavingPreference(false);
     }
   };
+  const board = [
+    { name: "You", xp: monthXP, isMe: true },
+    ...friendsData.friends.map((f) => ({ name: f.username, xp: f.totalXP, isMe: false }))
+  ].sort((a, b) => b.xp - a.xp);
+  const myFriendRank = board.findIndex((r) => r.isMe) + 1;
+  const activeStreaks = social.social?.streaks.filter((s) => s.status === "active") ?? [];
+  const friendsInfo = {
+    friendNames: board.filter((r) => !r.isMe).map((r) => r.name),
+    crown: friendsData.friends.length > 0 ? crownStatus(board) : null,
+    myRank: myFriendRank,
+    boardSize: board.length,
+    streaks: social.available ? { lit: activeStreaks.filter((s) => streakToday(s) === "both_done").length, active: activeStreaks.length } : null,
+    races: social.available ? social.social?.races.filter((r) => r.status === "active" && !raceIsOver(r)).length ?? 0 : null,
+    urgent: social.available ? homeSocialLine(social.social) : null,
+    pending: friendsData.pendingRequests.length
+  };
+  const myStreak = progress?.current_streak ?? 0;
+  const totalXP = xpData?.total_xp ?? 0;
+  const iWearCrown = friendsInfo.crown?.kind === "mine";
+  const shareInvite = async () => {
+    triggerHaptic("light");
+    const code = friendsData.myFriendCode;
+    try {
+      await Share.share(code ? inviteShareContent(getMarketName(selectedMarket || "aerospace"), code, Platform.OS) : { message: `I'm learning ${getMarketName(selectedMarket || "aerospace")} on MarketLingo, 5 minutes a day. Join me: https://market-verse.com` });
+    } catch {
+    }
+  };
   const handleExportNotebook = async () => {
     if (!user) return;
     const { data: notes } = await supabase.from("notes").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
@@ -207,36 +250,40 @@ function ProfileScreen() {
       contentContainerStyle: [styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 }],
       showsVerticalScrollIndicator: false
     },
-    /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.header, animStyle(headerAnim)] }, /* @__PURE__ */ React.createElement(View, null, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Profile"), user && /* @__PURE__ */ React.createElement(Text, { style: styles.email }, user.email)), /* @__PURE__ */ React.createElement(View, { style: styles.headerRight })),
-    /* @__PURE__ */ React.createElement(Animated.View, { style: animStyle(bodyAnim) }, /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.stageCard, activeOpacity: 0.85, onPress: () => setShowChangeWarning(true) }, /* @__PURE__ */ React.createElement(Text, { style: styles.stageTitle }, goalSentence(currentGoal, getMarketName(selectedMarket || "aerospace"))), /* @__PURE__ */ React.createElement(Text, { style: styles.stageDesc }, "Change industry \u203A")), /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "INTERVIEW"), /* @__PURE__ */ React.createElement(InterviewTargetForm, { target: interviewPrep.target, onSave: interviewPrep.saveTarget })), /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(
-      TouchableOpacity,
+    /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.header, animStyle(headerAnim)] }, /* @__PURE__ */ React.createElement(View, { style: styles.headerTop }, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Profile"), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.gear, onPress: () => {
+      triggerHaptic("light");
+      router.push("/settings");
+    }, accessibilityLabel: "Settings" }, /* @__PURE__ */ React.createElement(Feather, { name: "settings", size: 19, color: COLORS.textSecondary }))), /* @__PURE__ */ React.createElement(View, { style: styles.identity }, /* @__PURE__ */ React.createElement(View, null, /* @__PURE__ */ React.createElement(SocialAvatar, { name: displayName || user?.email || "You", size: 78, ring: COLORS.accent, ringWidth: 3 }), iWearCrown && /* @__PURE__ */ React.createElement(View, { style: styles.avatarCrown, pointerEvents: "none" }, /* @__PURE__ */ React.createElement(CrownBadge, { size: 34 }))), /* @__PURE__ */ React.createElement(View, { style: { flex: 1, minWidth: 0 } }, displayName ? /* @__PURE__ */ React.createElement(Text, { style: styles.name, numberOfLines: 1 }, displayName) : /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.push("/friends"), accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { style: [styles.name, { color: COLORS.accent }], numberOfLines: 1 }, "Add your name")), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => setShowChangeWarning(true), activeOpacity: 0.8, accessibilityRole: "button", accessibilityLabel: "Change industry" }, /* @__PURE__ */ React.createElement(Text, { style: styles.path, numberOfLines: 2 }, goalSentence(currentGoal, getMarketName(selectedMarket || "aerospace")), " ", /* @__PURE__ */ React.createElement(Text, { style: styles.pathChange }, "\xB7 Change"))), !!friendsData.myFriendCode && /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.codeChip, onPress: () => {
+      triggerHaptic("light");
+      setCodeOpen(true);
+    }, accessibilityRole: "button", accessibilityLabel: `Your friend code ${friendsData.myFriendCode}. Show QR code` }, /* @__PURE__ */ React.createElement(Feather, { name: "hash", size: 12, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.codeChipText }, friendsData.myFriendCode), /* @__PURE__ */ React.createElement(Feather, { name: "maximize", size: 11, color: COLORS.accent }))))),
+    /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.stats, animStyle(statsAnim)] }, /* @__PURE__ */ React.createElement(StatTile, { icon: /* @__PURE__ */ React.createElement(StreakFlame, { size: 22, dim: myStreak === 0 }), value: String(myStreak), label: "Day streak" }), /* @__PURE__ */ React.createElement(StatTile, { icon: /* @__PURE__ */ React.createElement(XPFlask, { size: 22 }), value: totalXP.toLocaleString(), label: "Total XP" }), /* @__PURE__ */ React.createElement(StatTile, { icon: /* @__PURE__ */ React.createElement(XPFlask, { size: 22, color: COLORS.accent }), value: monthXP.toLocaleString(), label: "XP this month" }), /* @__PURE__ */ React.createElement(
+      StatTile,
       {
-        style: styles.menuItem,
-        activeOpacity: 0.88,
-        onPress: () => {
-          triggerHaptic("light");
-          router.push("/deliverable");
-        }
-      },
-      /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: COLORS.accentSoft }] }, /* @__PURE__ */ React.createElement(Feather, { name: "file-text", size: 18, color: COLORS.accent })),
-      /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, "Interview Brief"), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, `${Math.round(dossier.completion)}% written`)),
-      /* @__PURE__ */ React.createElement(Text, { style: styles.chevron }, "\u203A")
-    ), /* @__PURE__ */ React.createElement(
-      TouchableOpacity,
+        icon: iWearCrown ? /* @__PURE__ */ React.createElement(CrownBadge, { size: 24 }) : /* @__PURE__ */ React.createElement(Feather, { name: "users", size: 20, color: COLORS.accent }),
+        value: friendsData.friends.length > 0 ? `#${myFriendRank}` : "0",
+        label: friendsData.friends.length > 0 ? "Among friends" : "Friends"
+      }
+    )),
+    /* @__PURE__ */ React.createElement(Animated.View, { style: animStyle(bodyAnim) }, /* @__PURE__ */ React.createElement(
+      ProfileFriendsCard,
       {
-        style: styles.menuItem,
-        activeOpacity: 0.88,
-        onPress: () => {
+        info: friendsInfo,
+        onOpen: () => {
           triggerHaptic("light");
           router.push("/friends");
+        },
+        onAdd: () => {
+          void shareInvite();
         }
-      },
-      /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: COLORS.bg1 }] }, /* @__PURE__ */ React.createElement(Feather, { name: "users", size: 18, color: COLORS.accent })),
-      /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, "Friends"), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, "Add friends and compare streaks")),
-      friendRequestCount > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.requestCount, accessibilityLabel: `${friendRequestCount} friend requests` }, /* @__PURE__ */ React.createElement(Text, { style: styles.requestCountText }, friendRequestCount)),
-      /* @__PURE__ */ React.createElement(Text, { style: styles.chevron }, "\u203A")
-    ), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.menuItem, onPress: () => setShowGoalPicker(true) }, /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: COLORS.bg1 }] }, /* @__PURE__ */ React.createElement(Feather, { name: GOAL_OPTIONS.find((g) => g.id === currentGoal)?.icon || "target", size: 18, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, "Goal"), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, GOAL_OPTIONS.find((g) => g.id === currentGoal)?.title || "Not set")), /* @__PURE__ */ React.createElement(Text, { style: styles.chevron }, "\u203A")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.menuItem, onPress: () => setShowLevelPicker(true) }, /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: COLORS.bg1 }] }, /* @__PURE__ */ React.createElement(Feather, { name: "sliders", size: 18, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, "Level"), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, FAMILIARITY_LEVELS.find((l) => l.id === currentLevel)?.name || "Not set")), /* @__PURE__ */ React.createElement(Text, { style: styles.chevron }, "\u203A")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.menuItem, onPress: () => router.push("/settings") }, /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: COLORS.bg1 }] }, /* @__PURE__ */ React.createElement(Feather, { name: "settings", size: 18, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, "Settings"), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, "Notifications and account")), /* @__PURE__ */ React.createElement(Text, { style: styles.chevron }, "\u203A")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.logoutLink, onPress: handleSignOut, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { style: styles.logoutText }, "Log out"))), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.push("/achievements"), hitSlop: 10 }, /* @__PURE__ */ React.createElement(Text, { style: [styles.versionText, { color: COLORS.accent, marginBottom: 6 }] }, "Achievements")), /* @__PURE__ */ React.createElement(Text, { style: styles.versionText }, "MarketLingo v1.1.1"))
-  ), /* @__PURE__ */ React.createElement(
+      }
+    ), /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "INTERVIEW"), /* @__PURE__ */ React.createElement(InterviewTargetForm, { target: interviewPrep.target, onSave: interviewPrep.saveTarget }), /* @__PURE__ */ React.createElement(View, { style: [styles.group, { marginTop: 10 }] }, /* @__PURE__ */ React.createElement(MenuRow, { icon: "file-text", title: "Interview Brief", subtitle: `${Math.round(dossier.completion)}% written`, onPress: () => {
+      triggerHaptic("light");
+      router.push("/deliverable");
+    }, highlight: true }))), /* @__PURE__ */ React.createElement(View, { style: styles.section }, /* @__PURE__ */ React.createElement(Text, { style: styles.sectionTitle }, "YOUR LEARNING"), /* @__PURE__ */ React.createElement(View, { style: styles.group }, /* @__PURE__ */ React.createElement(MenuRow, { icon: GOAL_OPTIONS.find((g) => g.id === currentGoal)?.icon || "target", title: "Goal", subtitle: GOAL_OPTIONS.find((g) => g.id === currentGoal)?.title || "Not set", onPress: () => setShowGoalPicker(true) }), /* @__PURE__ */ React.createElement(MenuRow, { icon: "sliders", title: "Level", subtitle: FAMILIARITY_LEVELS.find((l) => l.id === currentLevel)?.name || "Not set", onPress: () => setShowLevelPicker(true) }), /* @__PURE__ */ React.createElement(MenuRow, { icon: "globe", title: "Industry", subtitle: getMarketName(selectedMarket || "aerospace"), onPress: () => setShowChangeWarning(true) }), /* @__PURE__ */ React.createElement(MenuRow, { icon: "award", title: "Achievements", subtitle: "Badges you've earned", onPress: () => router.push("/achievements") }), /* @__PURE__ */ React.createElement(MenuRow, { icon: "settings", title: "Settings", subtitle: "Notifications and account", onPress: () => router.push("/settings"), last: true })), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.logoutLink, onPress: handleSignOut, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { style: styles.logoutText }, "Log out"))), /* @__PURE__ */ React.createElement(Text, { style: styles.versionText }, "MarketLingo v1.1.1"))
+  ), /* @__PURE__ */ React.createElement(MyCodeSheet, { code: friendsData.myFriendCode, visible: codeOpen, onShare: () => {
+    void shareInvite();
+  }, onClose: () => setCodeOpen(false) }), /* @__PURE__ */ React.createElement(
     SwitchIndustryModal,
     {
       visible: showChangeWarning,
@@ -282,7 +329,42 @@ function ProfileScreen() {
     currentLevel === level.id && /* @__PURE__ */ React.createElement(Feather, { name: "check", size: 18, color: "#10B981" })
   ))), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.modalCancel, onPress: () => setShowLevelPicker(false) }, /* @__PURE__ */ React.createElement(Text, { style: styles.modalCancelText }, "Cancel"))))));
 }
+function StatTile({ icon, value, label }) {
+  return /* @__PURE__ */ React.createElement(View, { style: styles.statTile }, icon, /* @__PURE__ */ React.createElement(View, { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.statTileValue, numberOfLines: 1 }, value), /* @__PURE__ */ React.createElement(Text, { style: styles.statTileLabel, numberOfLines: 1 }, label)));
+}
+function MenuRow({ icon, title, subtitle, onPress, last, highlight }) {
+  return /* @__PURE__ */ React.createElement(TouchableOpacity, { style: [styles.row, !last && styles.rowDivider], onPress, activeOpacity: 0.75, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(View, { style: [styles.menuIcon, { backgroundColor: highlight ? COLORS.accentSoft : COLORS.bg1 }] }, /* @__PURE__ */ React.createElement(Feather, { name: icon, size: 18, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.menuTitle }, title), /* @__PURE__ */ React.createElement(Text, { style: styles.menuSubtitle }, subtitle)), /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 18, color: COLORS.textMuted }));
+}
 const styles = StyleSheet.create({
+  headerTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16 },
+  gear: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, alignItems: "center", justifyContent: "center" },
+  identity: { flexDirection: "row", alignItems: "center", gap: 16 },
+  avatarCrown: { position: "absolute", top: -20, left: 22 },
+  name: { fontSize: 24, fontWeight: "900", color: COLORS.textPrimary },
+  path: { fontSize: 13, color: COLORS.textSecondary, marginTop: 3, lineHeight: 18 },
+  pathChange: { color: COLORS.accent, fontWeight: "700" },
+  codeChip: { flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start", marginTop: 8, paddingHorizontal: 10, height: 28, borderRadius: 14, backgroundColor: COLORS.accentSoft, borderWidth: 1.5, borderColor: COLORS.accentMedium },
+  codeChipText: { fontSize: 13, fontWeight: "900", letterSpacing: 1.5, color: COLORS.accent },
+  stats: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginBottom: 20 },
+  statTile: {
+    flexBasis: "47%",
+    flexGrow: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 14,
+    height: 64,
+    borderRadius: 18,
+    backgroundColor: COLORS.bg2,
+    borderWidth: 2,
+    borderBottomWidth: 4,
+    borderColor: COLORS.border
+  },
+  statTileValue: { fontSize: 19, fontWeight: "900", color: COLORS.textPrimary },
+  statTileLabel: { fontSize: 11, fontWeight: "600", color: COLORS.textMuted, marginTop: 1 },
+  group: { borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, overflow: "hidden" },
+  row: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 14, paddingVertical: 12, minHeight: 64 },
+  rowDivider: { borderBottomWidth: 1, borderBottomColor: COLORS.borderLight },
   requestCount: {
     minWidth: 20,
     height: 20,
@@ -297,7 +379,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: "center", justifyContent: "center" },
   scrollContent: { paddingHorizontal: 16 },
-  header: { flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 },
+  header: { marginBottom: 20 },
   headerRight: { flexDirection: "row", alignItems: "center", gap: 8 },
   title: { fontSize: 28, fontWeight: "700", color: COLORS.textPrimary },
   email: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2 },
