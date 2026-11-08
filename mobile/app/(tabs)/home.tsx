@@ -36,11 +36,9 @@ import { StreakCriticalTimer } from '../../components/home/StreakCriticalTimer';
 import { SocialNudge } from '../../components/home/SocialNudge';
 import { Feather } from '@expo/vector-icons';
 import { SessionCompleteCard } from '../../components/home/SessionCompleteCard';
-import { MilestoneShareCard } from '../../components/sharing/MilestoneShareCard';
 import { DailyQuests } from '../../components/home/DailyQuests';
 import { useDailyQuests } from '../../hooks/useDailyQuests';
 import { useQuestRewards } from '../../hooks/useQuestRewards';
-import { useMilestoneSharing } from '../../hooks/useMilestoneSharing';
 import { useHomeData } from '../../hooks/useHomeData';
 import { useSessionFlow } from '../../hooks/useSessionFlow';
 import { triggerHaptic } from '../../lib/haptics';
@@ -208,7 +206,6 @@ function HomeScreenContent() {
     if (currentDay && selectedMarket) syncLessons(currentDay);
   }, [currentDay, selectedMarket]);
 
-  const { milestone, dismissMilestone, checkStreakMilestone, checkLevelMilestone } = useMilestoneSharing();
 
   const { checkAndUnlockAchievements, newUnlocks, clearNewUnlocks } = useAchievements();
 
@@ -242,7 +239,6 @@ function HomeScreenContent() {
     user, selectedMarket, lessonStack, progress, xpData,
     lessonCompletedToday: Boolean(dailyCompletion?.lesson_completed && dailyCompletion.completion_date === localDateString()), currentDay,
     completeStack, updateStreak, completeLessonForToday, addXP,
-    checkStreakMilestone, checkLevelMilestone,
     xpRewardLessonComplete: XP_REWARDS.LESSON_COMPLETE,
     xpRewardStreakBonus: XP_REWARDS.STREAK_BONUS,
     onDataRefresh: async () => {
@@ -663,13 +659,6 @@ function HomeScreenContent() {
       ) : (
         <HomeSkeleton />
       )}
-
-      <MilestoneShareCard
-        visible={milestone.visible}
-        type={milestone.type}
-        data={milestone.data}
-        onDismiss={dismissMilestone}
-      />
 
       <AchievementPopup
         visible={!!achievementPopup && !leoPopups.currentMessage}

@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 import { Alert } from "react-native";
 import { supabase } from "../lib/supabase";
-import { getMarketName, getMarketEmoji } from "../lib/markets";
 import { triggerHaptic } from "../lib/haptics";
 import { trackEvent } from "../lib/analytics";
 import { log } from "../lib/logger";
@@ -17,8 +16,6 @@ function useSessionFlow({
   updateStreak,
   completeLessonForToday,
   addXP,
-  checkStreakMilestone,
-  checkLevelMilestone,
   xpRewardLessonComplete,
   xpRewardStreakBonus,
   onDataRefresh
@@ -81,18 +78,11 @@ function useSessionFlow({
         } else {
           await completeStack(activeStack.id);
           await completeLessonForToday(activeStack.id);
-          const updatedProgress = await updateStreak();
+          await updateStreak();
           if ((progress.current_streak || 0) > 0) {
             const streakBonus = xpRewardStreakBonus * (progress.current_streak || 1);
             await addXP(streakBonus, "streak_bonus");
             earnedXP += streakBonus;
-          }
-          const mktName = getMarketName(selectedMarket || "aerospace");
-          const mktEmoji = getMarketEmoji(selectedMarket || "aerospace");
-          const newStreak = updatedProgress?.current_streak || progress.current_streak || 0;
-          checkStreakMilestone(newStreak, mktName, mktEmoji);
-          if (xpData) {
-            checkLevelMilestone(xpData.current_level, mktName, mktEmoji);
           }
           synced = true;
         }
@@ -117,7 +107,7 @@ function useSessionFlow({
     setShowSessionComplete(true);
     setShowReader(false);
     return synced;
-  }, [activeStack, progress, xpData, selectedMarket, lessonCompletedToday, completeStack, updateStreak, completeLessonForToday, addXP, checkStreakMilestone, checkLevelMilestone, xpRewardLessonComplete, xpRewardStreakBonus, onDataRefresh]);
+  }, [activeStack, progress, xpData, selectedMarket, lessonCompletedToday, completeStack, updateStreak, completeLessonForToday, addXP, xpRewardLessonComplete, xpRewardStreakBonus, onDataRefresh]);
   const handleBiteComplete = useCallback(async (isReviewMode, _timeSpentSeconds) => {
     setShowReader(false);
     if (isReviewMode || activeBiteIndex === null) return;

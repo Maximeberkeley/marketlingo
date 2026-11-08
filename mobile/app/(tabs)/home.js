@@ -25,10 +25,8 @@ import { useReturnVisit } from "../../hooks/useReturnVisit";
 import { LessonKitReader as SlideReader } from "../../components/slides/LessonKitReader";
 import { Feather } from "@expo/vector-icons";
 import { SessionCompleteCard } from "../../components/home/SessionCompleteCard";
-import { MilestoneShareCard } from "../../components/sharing/MilestoneShareCard";
 import { useDailyQuests } from "../../hooks/useDailyQuests";
 import { useQuestRewards } from "../../hooks/useQuestRewards";
-import { useMilestoneSharing } from "../../hooks/useMilestoneSharing";
 import { useHomeData } from "../../hooks/useHomeData";
 import { useSessionFlow } from "../../hooks/useSessionFlow";
 import { triggerHaptic } from "../../lib/haptics";
@@ -180,7 +178,6 @@ function HomeScreenContent() {
   useEffect(() => {
     if (currentDay && selectedMarket) syncLessons(currentDay);
   }, [currentDay, selectedMarket]);
-  const { milestone, dismissMilestone, checkStreakMilestone, checkLevelMilestone } = useMilestoneSharing();
   const { checkAndUnlockAchievements, newUnlocks, clearNewUnlocks } = useAchievements();
   useEffect(() => {
     if (!user || !xpData || !progress) return;
@@ -214,8 +211,6 @@ function HomeScreenContent() {
     updateStreak,
     completeLessonForToday,
     addXP,
-    checkStreakMilestone,
-    checkLevelMilestone,
     xpRewardLessonComplete: XP_REWARDS.LESSON_COMPLETE,
     xpRewardStreakBonus: XP_REWARDS.STREAK_BONUS,
     onDataRefresh: async () => {
@@ -570,14 +565,6 @@ function HomeScreenContent() {
       ), /* @__PURE__ */ React.createElement(FriendStandingChip, { userId: user?.id, marketId: selectedMarket, focused: courseFocused }))
     }
   ), /* @__PURE__ */ React.createElement(FriendNudgeBanner, { top: insets.top + 8 })) : /* @__PURE__ */ React.createElement(HomeSkeleton, null), /* @__PURE__ */ React.createElement(
-    MilestoneShareCard,
-    {
-      visible: milestone.visible,
-      type: milestone.type,
-      data: milestone.data,
-      onDismiss: dismissMilestone
-    }
-  ), /* @__PURE__ */ React.createElement(
     AchievementPopup,
     {
       visible: !!achievementPopup && !leoPopups.currentMessage,
