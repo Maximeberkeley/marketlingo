@@ -1,0 +1,188 @@
+# Cybersecurity, days 19-24. Month 1, topic 4: identity and access management fundamentals.
+SRC = {
+    'vz_dbir25': {'url': 'https://www.verizon.com/about/news/2025%2Ddata%2Dbreach%2Dinvestigations%2Dreport', 'label': 'Verizon, 2025 Data Breach Investigations Report'},
+    'icio_cyberark': {'url': 'https://www.intelligentcio.com/north-america/2025/07/30/palo-alto-networks-to-acquire-cyberark-in-25-billion-deal-to-expand-identity-security-and-ai-protection/', 'label': 'Intelligent CIO, Palo Alto Networks to acquire CyberArk'},
+    'as_mgm': {'url': 'https://www.adaptivesecurity.com/blog/mgm-ransomware-attack', 'label': 'Adaptive Security, the MGM attack, citing MGM filings'},
+    'arxiv_mfa': {'url': 'https://arxiv.org/abs/2305.00945', 'label': 'Microsoft researchers, how effective is MFA'},
+    'omb_m2209': {'url': 'https://www.whitehouse.gov/wp-content/uploads/2022/01/M-22-09.pdf', 'label': 'OMB memo M-22-09, federal zero trust strategy'},
+    'bu_passkeys': {'url': 'https://www.biometricupdate.com/202412/passkeys-build-momentum-enabling-access-to-15-billion-online-accounts', 'label': 'Biometric Update, passkeys build momentum'},
+}
+
+LESSONS = [
+    {
+        'day': 19, 'facet': 'definition', 'title': 'Who you are versus what you can do',
+        'open': {
+            'eyebrow': 'Day 19 · Identity', 'kicker': 'Attackers log in more than they break in.',
+            'headline': "Credential abuse was the top way into breaches in Verizon's 2025 report, at 22%.",
+            'fullText': 'Exploited software flaws were close behind at 20%. Identity and access management decides two things: authentication, proving who you are, and authorization, deciding what you may do once you are in. When attackers steal a login, both checks can wave them through.',
+            'sources': ['vz_dbir25'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'authn', 'eyebrow': 'Step 1', 'text': 'Authentication proves who you are: a password, a code, a fingerprint.', 'highlight': 'Multifactor authentication asks for two or more of these.', 'keyTerms': [{'term': 'MFA', 'definition': 'Multifactor authentication: proving identity with two or more different kinds of evidence.'}], 'sources': ['vz_dbir25']},
+            {'kind': 'microInsight', 'id': 'authz', 'eyebrow': 'Step 2', 'text': 'Authorization decides what you can reach once you are in.', 'highlight': 'Giving each account only what it needs limits the damage.', 'keyTerms': [{'term': 'Least privilege', 'definition': 'Giving each user or system only the access it needs.'}], 'sources': ['vz_dbir25']},
+            {'kind': 'info', 'id': 'why', 'eyebrow': 'Why it matters', 'title': 'Stolen logins look legitimate', 'body': 'An attacker with real credentials can look like a normal user. That is why identity is now a core security layer.', 'sources': ['vz_dbir25']},
+        ],
+        'checks': [
+            {'kind': 'sortSignal', 'id': 'sort', 'prompt': 'Authentication or authorization?', 'buckets': ['Authentication', 'Authorization'],
+             'items': [{'text': 'Entering a one-time code', 'bucket': 0}, {'text': 'Scanning a fingerprint', 'bucket': 0}, {'text': 'Only HR can open salary files', 'bucket': 1}, {'text': 'Interns cannot change settings', 'bucket': 1}],
+             'explanation': 'Authentication checks who you are. Authorization checks what you may do.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': "What was the top way into breaches in Verizon's 2025 report?",
+             'options': ['Exploiting software flaws', 'Abusing stolen credentials', 'Breaking into data centers'], 'correctIndex': 1,
+             'explanation': 'Credential abuse led at 22%, just ahead of exploited flaws at 20%.'},
+        ],
+        'lenses': {
+            'career': ('Separate the two checks', 'Explain authentication versus authorization clearly. It is a staple interview question in security.', ['vz_dbir25']),
+            'invest': ('Identity is the front line', 'Credential abuse led breaches in 2025. Spending follows to identity tools.', ['vz_dbir25']),
+            'build_startup': ('Stolen logins are the pain', 'When attackers log in with real credentials, spotting them is hard. That gap keeps identity startups busy.', ['vz_dbir25']),
+            'curiosity': ('Logging in, not breaking in', 'More breaches in 2025 started with a stolen login than with any other method.', ['vz_dbir25']),
+        },
+        'rule': ('In cyber, identity is the new perimeter: protect the login and you protect the door.', ['vz_dbir25']),
+        'takeaway': 'Authentication proves who you are; authorization decides what you can do. Credential abuse was the top way into breaches in 2025, at 22%.',
+    },
+    {
+        'day': 20, 'facet': 'money', 'title': 'A $25 billion bet on identity',
+        'open': {
+            'eyebrow': 'Day 20 · The money', 'kicker': 'Big security buyers want the keys.',
+            'headline': 'In July 2025, Palo Alto Networks agreed to buy CyberArk, an identity security company, for about $25 billion.',
+            'fullText': 'CyberArk protects privileged accounts, the logins with the most power inside a company. Palo Alto offered $45 in cash plus 2.2005 of its own shares for each CyberArk share, a 26% premium. Its CEO pointed to AI and an explosion of machine identities as reasons for the deal.',
+            'sources': ['icio_cyberark'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'privileged', 'eyebrow': 'What it protects', 'text': 'Privileged accounts can change systems, read everything or turn defenses off.', 'highlight': 'They are what attackers want most once inside.', 'keyTerms': [{'term': 'Privileged account', 'definition': 'An account with extra powers, such as an administrator login.'}], 'sources': ['icio_cyberark']},
+            {'kind': 'microInsight', 'id': 'machines', 'eyebrow': 'Why now', 'text': 'Not every identity is a person anymore.', 'highlight': 'Software, machines and AI agents all log in too.', 'sources': ['icio_cyberark']},
+            {'kind': 'info', 'id': 'platform', 'eyebrow': 'The strategy', 'title': 'Identity becomes a core pillar', 'body': 'Palo Alto said the deal makes identity security a core part of its platform, alongside network and cloud security.', 'sources': ['icio_cyberark']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-deal', 'prompt': 'About how many billions of dollars did Palo Alto Networks agree to pay for CyberArk?', 'min': 0, 'max': 60, 'value': 25, 'unit': 'B', 'explanation': 'About $25 billion, in cash and stock.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You lead security at a mid-size company. Hundreds of software bots now log in to your systems every day.', 'prompt': 'What do you do about them?',
+             'options': ['Treat bots as trusted by default', 'Manage bot logins like privileged users', 'Share one admin password among them'],
+             'consequences': ['Trusted bots become an easy way in.', 'Machine identities get the same control as powerful human ones.', 'One leaked password would open every bot.'],
+             'correctIndex': 1, 'explanation': 'Machine identities can be as powerful as admins, so they need the same controls.'},
+        ],
+        'lenses': {
+            'career': ('Identity is a growth area', 'A $25 billion deal signals where security spending is going. Identity skills travel well.', ['icio_cyberark']),
+            'invest': ('Consolidation is the trend', 'Big platforms buy specialists to offer everything in one place. Watch which identity players are next.', ['icio_cyberark']),
+            'build_startup': ('Machine identities need care', 'Bots and AI agents log in constantly. Tools that manage those identities are an opening.', ['icio_cyberark']),
+            'curiosity': ('Paying for the keys', 'One security company agreed to spend about $25 billion on a firm that guards the most powerful logins.', ['icio_cyberark']),
+        },
+        'rule': ('In cyber, the most valuable accounts attract the most money, from attackers and defenders alike.', ['icio_cyberark']),
+        'takeaway': 'Palo Alto Networks agreed in July 2025 to buy CyberArk for about $25 billion, betting on protecting privileged human, machine and AI identities.',
+    },
+    {
+        'day': 21, 'facet': 'power', 'title': 'The help desk holds the keys',
+        'open': {
+            'eyebrow': 'Day 21 · The power', 'kicker': 'A phone call, not malware.',
+            'headline': 'In September 2023, a cyberattack disrupted MGM Resorts for about 10 days and cost it about $100 million.',
+            'fullText': "MGM's filing put the hit to its adjusted property earnings at about $100 million, plus under $10 million in one-time costs. MGM never named the way in. The attackers, linked to the group known as Scattered Spider, claimed they found an employee online and called the IT help desk posing as them.",
+            'sources': ['as_mgm'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'reset', 'eyebrow': 'The weak point', 'text': 'Whoever can reset a password holds power over every account.', 'highlight': 'Help desks exist to say yes to stressed callers.', 'sources': ['as_mgm']},
+            {'kind': 'microInsight', 'id': 'claim', 'eyebrow': 'The claim', 'text': 'The attackers said the call took about 10 minutes.', 'highlight': 'That account has not been confirmed by investigators.', 'sources': ['as_mgm']},
+            {'kind': 'info', 'id': 'group', 'eyebrow': 'The attackers', 'title': 'English-speaking social engineers', 'body': 'Microsoft describes Scattered Spider as financially motivated and native English-speaking, which makes their calls convincing.', 'sources': ['as_mgm']},
+        ],
+        'checks': [
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'Who holds more power over an employee\'s account?',
+             'left': {'name': 'The help desk', 'note': 'Can reset passwords and MFA'}, 'right': {'name': 'The firewall', 'note': 'Filters network traffic'}, 'correctIndex': 0,
+             'explanation': 'A reset hands over the account. No firewall stops a legitimate login.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What cut the MGM attackers\' path short at other firms?',
+             'options': ['A longer password policy', 'Verifying callers before any reset', 'A faster internet connection'], 'correctIndex': 1,
+             'explanation': 'If the help desk verifies identity properly, a convincing voice is not enough.'},
+        ],
+        'lenses': {
+            'career': ('Process is security', 'The MGM case shows a help desk script can matter more than any tool. Mention caller verification.', ['as_mgm']),
+            'invest': ('Human attacks are costly', 'A reported phone call preceded a $100 million hit. Identity verification tools gain from cases like this.', ['as_mgm']),
+            'build_startup': ('Verify the caller', 'Help desks need fast, reliable ways to confirm who is calling. That is a product.', ['as_mgm']),
+            'curiosity': ('A call that cost millions', 'Attackers claimed a 10-minute call to a help desk opened the door to a $100 million hit.', ['as_mgm']),
+        },
+        'rule': ('In cyber, whoever can reset access holds the real power.', ['as_mgm']),
+        'takeaway': 'The 2023 MGM attack cost about $100 million. Attackers claimed a call to the IT help desk got them in, showing the power of whoever can reset access.',
+    },
+    {
+        'day': 22, 'facet': 'numbers', 'title': '99.22%',
+        'open': {
+            'eyebrow': 'Day 22 · The numbers', 'kicker': 'One setting, almost all the risk.',
+            'headline': 'Microsoft researchers found MFA reduces the risk of account compromise by 99.22%.',
+            'fullText': 'They studied a large set of Microsoft Azure Active Directory users who showed suspicious activity. Even for accounts whose passwords had already leaked, MFA cut the risk of compromise by 98.56%. Few security controls move a number that far.',
+            'sources': ['arxiv_mfa'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'leaked', 'eyebrow': 'Even after a leak', 'text': 'A leaked password alone was usually not enough with MFA on.', 'highlight': 'Risk fell by 98.56% for those accounts.', 'sources': ['arxiv_mfa']},
+            {'kind': 'microInsight', 'id': 'cost', 'eyebrow': 'The trade', 'text': 'MFA adds a few seconds per login.', 'highlight': 'In exchange it removes almost all account takeover risk.', 'sources': ['arxiv_mfa']},
+            {'kind': 'info', 'id': 'not-all', 'eyebrow': 'Read it right', 'title': 'Not all MFA is equal', 'body': 'Codes and push prompts can still be phished or approved by mistake. Stronger forms resist that.', 'sources': ['arxiv_mfa', 'omb_m2209']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-mfa', 'prompt': 'By about what percent did MFA cut the risk of account compromise overall?', 'min': 50, 'max': 100, 'value': 99, 'unit': '%', 'tolerance': 0.04, 'explanation': '99.22% overall, and 98.56% even for accounts with leaked passwords.'},
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['MFA cut compromise risk by 99.22% overall.', 'MFA stopped working once a password leaked.', 'The study used Azure Active Directory data.'], 'fakeIndex': 1,
+             'explanation': 'Even with leaked passwords, MFA cut risk by 98.56%.'},
+        ],
+        'lenses': {
+            'career': ('Quote the MFA number', '99.22% fewer compromises with MFA. It is the strongest single argument in account security.', ['arxiv_mfa']),
+            'invest': ('Simple controls, big effect', 'MFA removes most account takeover risk. Products that make it painless have a strong case.', ['arxiv_mfa']),
+            'build_startup': ('Make MFA effortless', 'MFA works but adds friction. Lower the friction and more people keep it on.', ['arxiv_mfa']),
+            'curiosity': ('A second step, 99% safer', 'Turning on a second login step blocked about 99 of every 100 account compromises in one study.', ['arxiv_mfa']),
+        },
+        'rule': ('In cyber, the cheapest controls are often the ones that matter most.', ['arxiv_mfa']),
+        'takeaway': 'Microsoft researchers found MFA cuts the risk of account compromise by 99.22%, and by 98.56% even when passwords have leaked.',
+    },
+    {
+        'day': 23, 'facet': 'rules', 'title': 'The memo that retired weak MFA',
+        'open': {
+            'eyebrow': 'Day 23 · The rule', 'kicker': 'Codes and push prompts were not enough.',
+            'headline': 'A January 2022 White House memo required phishing-resistant MFA for federal staff by the end of fiscal 2024.',
+            'fullText': 'Memo M-22-09 told agencies to stop supporting login methods that fail to resist phishing, including SMS or voice codes, one-time codes and push notifications, for routine access. It also ordered them to drop password rules requiring special characters and regular rotation.',
+            'sources': ['omb_m2209'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'phishable', 'eyebrow': 'The problem', 'text': 'A code can be typed into a fake site as easily as a real one.', 'highlight': 'Phishing-resistant methods check the site, not just the person.', 'keyTerms': [{'term': 'Phishing-resistant MFA', 'definition': 'Login methods, such as security keys, that a fake website cannot trick or replay.'}], 'sources': ['omb_m2209']},
+            {'kind': 'microInsight', 'id': 'passwords', 'eyebrow': 'The surprise', 'text': 'The memo dropped forced password changes and special-character rules.', 'highlight': 'Agencies had one year to remove them.', 'sources': ['omb_m2209']},
+            {'kind': 'info', 'id': 'who', 'eyebrow': 'Who it covers', 'title': 'Staff, contractors and partners', 'body': 'Phishing-resistant MFA is required for agency staff, contractors and partners using enterprise-managed identities.', 'sources': ['omb_m2209']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'Which login method did M-22-09 say agencies must stop supporting for routine access?',
+             'options': ['Hardware security keys', 'SMS text message codes', 'Smart cards with chips'], 'correctIndex': 1,
+             'explanation': 'SMS and voice codes, one-time codes and push prompts do not resist phishing.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'Your agency uses text-message codes for logins. M-22-09 just landed.', 'prompt': 'What is your plan?',
+             'options': ['Keep text codes; they are MFA', 'Move staff to phishing-resistant MFA', 'Force password changes every 30 days'],
+             'consequences': ['The memo says to stop supporting them for routine access.', 'That is what the memo requires by the end of fiscal 2024.', 'The memo removes forced rotation, not adds it.'],
+             'correctIndex': 1, 'explanation': 'The memo targets phishable methods and outdated password rules alike.'},
+        ],
+        'lenses': {
+            'career': ('Know phishing-resistant MFA', 'Being able to explain why SMS codes fall short shows you know modern identity security.', ['omb_m2209']),
+            'invest': ('Mandates move markets', 'Federal rules requiring phishing-resistant MFA push demand for security keys and passkeys.', ['omb_m2209']),
+            'build_startup': ('Build for the new bar', 'Government set phishing resistance as the standard. Products that meet it sell to agencies and beyond.', ['omb_m2209']),
+            'curiosity': ('Goodbye forced password changes', 'A US government memo told agencies to stop forcing regular password changes and special characters.', ['omb_m2209']),
+        },
+        'rule': ('In identity security, a login method is only as strong as the easiest way to trick it.', ['omb_m2209']),
+        'takeaway': 'OMB memo M-22-09 required phishing-resistant MFA for federal staff by the end of fiscal 2024 and dropped forced password rotation and special-character rules.',
+    },
+    {
+        'day': 24, 'facet': 'frontier', 'title': 'The end of the password?',
+        'open': {
+            'eyebrow': 'Day 24 · Where it breaks', 'kicker': 'Passwords are finally being replaced.',
+            'headline': 'By December 2024, Google said 800 million accounts used passkeys, and Amazon users had created 175 million.',
+            'fullText': 'A passkey lets you sign in with your device, often with a fingerprint or face scan, instead of a password, and it resists phishing. Microsoft said passkey sign-ins were three times faster than passwords and succeeded 98% of the time, against 32% for passwords. It aims to remove passwords completely.',
+            'sources': ['bu_passkeys'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'how', 'eyebrow': 'How it works', 'text': 'A passkey is tied to your device and to the real website.', 'highlight': 'A fake site cannot collect it the way it collects a password.', 'keyTerms': [{'term': 'Passkey', 'definition': 'A phishing-resistant login stored on your device that replaces a password.'}], 'sources': ['bu_passkeys']},
+            {'kind': 'microInsight', 'id': 'success', 'eyebrow': 'The numbers', 'text': 'Microsoft saw 98% of passkey sign-ins succeed, versus 32% for passwords.', 'highlight': 'Fewer failed logins also means fewer help desk calls.', 'sources': ['bu_passkeys']},
+            {'kind': 'info', 'id': 'gap', 'eyebrow': 'The gap', 'title': 'Adoption is still early', 'body': 'Big platforms support passkeys, but most companies still run on passwords. Moving everyone over is the open problem.', 'sources': ['bu_passkeys']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-success', 'prompt': 'What share of password sign-ins succeeded, by Microsoft\'s count, in percent?', 'min': 0, 'max': 100, 'value': 32, 'unit': '%', 'explanation': '32%, against 98% for passkeys.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What makes a passkey resist phishing?',
+             'options': ['It is tied to the real website', 'It is longer than most passwords', 'It expires every 30 days'], 'correctIndex': 0,
+             'explanation': 'A passkey only works with the genuine site, so a fake page cannot collect it.'},
+        ],
+        'lenses': {
+            'career': ('Know where identity is heading', 'Passkeys are replacing passwords at Google, Amazon and Microsoft. Knowing how they work puts you ahead.', ['bu_passkeys']),
+            'invest': ('The password economy shrinks', 'If passwords fade, resets and phishing losses shrink with them. Watch who sells the replacement.', ['bu_passkeys']),
+            'build_startup': ('Help everyone else switch', 'Big platforms have passkeys; most companies do not. Making the switch easy is the opening.', ['bu_passkeys']),
+            'curiosity': ('Logging in with your face', '800 million Google accounts used passkeys by late 2024, signing in with a device instead of a password.', ['bu_passkeys']),
+        },
+        'rule': ('In identity, the safest password may be no password at all.', ['bu_passkeys']),
+        'takeaway': 'Passkeys replace passwords with phishing-resistant device logins. Google counted 800 million accounts using them by December 2024, but most companies have not switched.',
+    },
+]
