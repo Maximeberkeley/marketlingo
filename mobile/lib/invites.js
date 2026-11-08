@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "./supabase";
 import { log } from "./logger";
 const PENDING_INVITE_KEY = "@marketlingo/pending_invite";
-import { INVITE_ORIGIN, normalizeInviteCode, inviteUrl, inviteMessage, inviteShareContent } from "./inviteLinks";
+import { INVITE_ORIGIN, normalizeInviteCode, inviteUrl, inviteAppUrl, codeFromScan, inviteMessage, inviteShareContent } from "./inviteLinks";
 import { normalizeInviteCode as normalizeInviteCode2 } from "./inviteLinks";
 async function savePendingInvite(code) {
   try {
@@ -41,6 +41,13 @@ async function applyPendingInvite() {
   }
   return result;
 }
+async function redeemFriendCode(raw) {
+  const code = normalizeInviteCode2(raw);
+  if (!code) return { ok: false, message: "That code isn't valid. Codes are 4 to 12 letters and numbers." };
+  const result = await acceptInvite(code);
+  const message = inviteToast(result) || "Something went wrong. Please try again.";
+  return { ok: result.status === "connected" || result.status === "already", message };
+}
 function inviteToast(result) {
   if (!result) return null;
   switch (result.status) {
@@ -61,10 +68,13 @@ export {
   PENDING_INVITE_KEY,
   acceptInvite,
   applyPendingInvite,
+  codeFromScan,
+  inviteAppUrl,
   inviteMessage,
   inviteShareContent,
   inviteToast,
   inviteUrl,
   normalizeInviteCode,
+  redeemFriendCode,
   savePendingInvite
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
 import { getMarketName } from '../../lib/markets';
@@ -11,7 +11,7 @@ import { SocialAvatar } from './SocialAvatar';
 export interface SentRequestRow { id: string; toUserId: string; toUsername: string; toMarket: string | null }
 
 /** Search by name or code, enter a friend's code, and see the requests you sent. */
-export function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequests, incomingFromIds, busyId, onAdd, onCancelSent, onRedeem, onShare, onClose }: {
+export function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequests, incomingFromIds, busyId, onAdd, onCancelSent, onRedeem, onScan, onShare, onClose }: {
   visible: boolean;
   searchPeople: (q: string) => Promise<FriendSearchResult[]>;
   friendIds: Set<string>;
@@ -21,6 +21,8 @@ export function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequest
   onAdd: (person: FriendSearchResult) => void;
   onCancelSent: (requestId: string) => void;
   onRedeem: (code: string) => Promise<{ ok: boolean; message: string }>;
+  /** Opens the camera to scan a friend's QR instead of typing. */
+  onScan: () => void;
   onShare: () => void;
   onClose: () => void;
 }) {
@@ -149,6 +151,9 @@ export function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequest
                   <TouchableOpacity style={[styles.add, code.trim().length < 4 && { opacity: 0.4 }]} onPress={redeem} disabled={code.trim().length < 4 || redeeming} accessibilityLabel="Add friend by code">
                     {redeeming ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Text style={styles.addText}>Add</Text>}
                   </TouchableOpacity>
+                  <TouchableOpacity style={styles.scan} onPress={onScan} accessibilityRole="button" accessibilityLabel="Scan a friend's code">
+                    <MaterialCommunityIcons name="qrcode-scan" size={20} color={COLORS.accent} />
+                  </TouchableOpacity>
                 </View>
                 {!!codeNote && <Text style={[styles.note, { color: codeNote.ok ? COLORS.success : COLORS.error }]}>{codeNote.message}</Text>}
 
@@ -191,7 +196,7 @@ const styles = StyleSheet.create({
   search: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 52, borderRadius: 16, paddingHorizontal: 14, borderWidth: 2, borderColor: COLORS.border, backgroundColor: COLORS.bg1 },
   searchInput: { flex: 1, minWidth: 0, fontSize: 16, color: COLORS.textPrimary, height: '100%' },
   label: { fontSize: 12, fontWeight: '800', letterSpacing: 0.8, color: COLORS.textMuted, textTransform: 'uppercase' },
-  codeRow: { flexDirection: 'row', gap: 10 },
+  codeRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   codeInput: { flex: 1, minWidth: 0, height: 50, borderRadius: 14, borderWidth: 2, borderColor: COLORS.border, paddingHorizontal: 14, fontSize: 18, fontWeight: '800', letterSpacing: 3, color: COLORS.textPrimary },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 },
   rowInfo: { flex: 1, minWidth: 0 },
@@ -199,6 +204,7 @@ const styles = StyleSheet.create({
   rowMeta: { fontSize: 12, color: COLORS.textSecondary, marginTop: 1 },
   add: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 40, paddingHorizontal: 14, borderRadius: 12, backgroundColor: COLORS.accent },
   addText: { fontSize: 14, fontWeight: '800', color: '#FFFFFF' },
+  scan: { width: 50, height: 50, borderRadius: 14, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
   addGhost: { backgroundColor: COLORS.bg2, borderWidth: 2, borderColor: COLORS.border },
   addGhostText: { fontSize: 13, fontWeight: '800', color: COLORS.textSecondary },
   friends: { fontSize: 13, fontWeight: '800', color: COLORS.success },

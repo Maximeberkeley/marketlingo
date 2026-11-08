@@ -7,11 +7,12 @@ import { ChunkyButton } from './ChunkyButton';
 const LEO_WAVING = require('../../assets/mascot/leo-waving.png');
 
 /** One place to add friends: share your link, search by name, or show your code. */
-export function AddFriendsCard({ hasFriends, onShare, onSearch, onMyCode }: {
+export function AddFriendsCard({ hasFriends, onShare, onSearch, onMyCode, onScan }: {
   hasFriends: boolean;
   onShare: () => void;
   onSearch: () => void;
   onMyCode: () => void;
+  onScan: () => void;
 }) {
   return (
     <View style={styles.card}>
@@ -31,6 +32,10 @@ export function AddFriendsCard({ hasFriends, onShare, onSearch, onMyCode }: {
         <TouchableOpacity style={styles.small} onPress={onMyCode} activeOpacity={0.85} accessibilityRole="button">
           <MaterialCommunityIcons name="qrcode" size={18} color={COLORS.accent} />
           <Text style={styles.smallText}>My code</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.small} onPress={onScan} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel="Scan a friend's code">
+          <MaterialCommunityIcons name="qrcode-scan" size={17} color={COLORS.accent} />
+          <Text style={styles.smallText}>Scan</Text>
         </TouchableOpacity>
       </View>
     </View>

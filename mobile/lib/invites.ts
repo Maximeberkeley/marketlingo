@@ -7,7 +7,7 @@ import { supabase } from './supabase';
 import { log } from './logger';
 
 export const PENDING_INVITE_KEY = '@marketlingo/pending_invite';
-export { INVITE_ORIGIN, normalizeInviteCode, inviteUrl, inviteMessage, inviteShareContent } from './inviteLinks';
+export { INVITE_ORIGIN, normalizeInviteCode, inviteUrl, inviteAppUrl, codeFromScan, inviteMessage, inviteShareContent } from './inviteLinks';
 import { normalizeInviteCode } from './inviteLinks';
 
 export async function savePendingInvite(code: string): Promise<void> {
@@ -55,6 +55,15 @@ export async function applyPendingInvite(): Promise<InviteResult | null> {
     await AsyncStorage.removeItem(PENDING_INVITE_KEY).catch(() => {});
   }
   return result;
+}
+
+/** Adds a friend from a typed or scanned code. ok means you're friends now (or already were). */
+export async function redeemFriendCode(raw: string): Promise<{ ok: boolean; message: string }> {
+  const code = normalizeInviteCode(raw);
+  if (!code) return { ok: false, message: "That code isn't valid. Codes are 4 to 12 letters and numbers." };
+  const result = await acceptInvite(code);
+  const message = inviteToast(result) || 'Something went wrong. Please try again.';
+  return { ok: result.status === 'connected' || result.status === 'already', message };
 }
 
 export function inviteToast(result: InviteResult | null): string | null {

@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS } from "../../lib/constants";
 import { getMarketName } from "../../lib/markets";
 import { log } from "../../lib/logger";
 import { SocialAvatar } from "./SocialAvatar";
-function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequests, incomingFromIds, busyId, onAdd, onCancelSent, onRedeem, onShare, onClose }) {
+function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequests, incomingFromIds, busyId, onAdd, onCancelSent, onRedeem, onScan, onShare, onClose }) {
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -97,7 +97,7 @@ function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequests, inco
       returnKeyType: "done",
       onSubmitEditing: redeem
     }
-  ), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: [styles.add, code.trim().length < 4 && { opacity: 0.4 }], onPress: redeem, disabled: code.trim().length < 4 || redeeming, accessibilityLabel: "Add friend by code" }, redeeming ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: "#FFFFFF" }) : /* @__PURE__ */ React.createElement(Text, { style: styles.addText }, "Add"))), !!codeNote && /* @__PURE__ */ React.createElement(Text, { style: [styles.note, { color: codeNote.ok ? COLORS.success : COLORS.error }] }, codeNote.message), sentRequests.length > 0 && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Text, { style: [styles.label, { marginTop: 10 }] }, "Waiting for them to accept"), sentRequests.map((r) => /* @__PURE__ */ React.createElement(View, { key: r.id, style: styles.row }, /* @__PURE__ */ React.createElement(SocialAvatar, { name: r.toUsername, size: 40, dashed: true }), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: styles.rowName, numberOfLines: 1 }, r.toUsername), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta, numberOfLines: 1 }, r.toMarket ? getMarketName(r.toMarket) : "Request sent")), busyId === r.id ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }) : /* @__PURE__ */ React.createElement(TouchableOpacity, { style: [styles.add, styles.addGhost], onPress: () => onCancelSent(r.id), accessibilityLabel: `Cancel request to ${r.toUsername}` }, /* @__PURE__ */ React.createElement(Text, { style: styles.addGhostText }, "Cancel"))))))))));
+  ), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: [styles.add, code.trim().length < 4 && { opacity: 0.4 }], onPress: redeem, disabled: code.trim().length < 4 || redeeming, accessibilityLabel: "Add friend by code" }, redeeming ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: "#FFFFFF" }) : /* @__PURE__ */ React.createElement(Text, { style: styles.addText }, "Add")), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.scan, onPress: onScan, accessibilityRole: "button", accessibilityLabel: "Scan a friend's code" }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "qrcode-scan", size: 20, color: COLORS.accent }))), !!codeNote && /* @__PURE__ */ React.createElement(Text, { style: [styles.note, { color: codeNote.ok ? COLORS.success : COLORS.error }] }, codeNote.message), sentRequests.length > 0 && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Text, { style: [styles.label, { marginTop: 10 }] }, "Waiting for them to accept"), sentRequests.map((r) => /* @__PURE__ */ React.createElement(View, { key: r.id, style: styles.row }, /* @__PURE__ */ React.createElement(SocialAvatar, { name: r.toUsername, size: 40, dashed: true }), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: styles.rowName, numberOfLines: 1 }, r.toUsername), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMeta, numberOfLines: 1 }, r.toMarket ? getMarketName(r.toMarket) : "Request sent")), busyId === r.id ? /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }) : /* @__PURE__ */ React.createElement(TouchableOpacity, { style: [styles.add, styles.addGhost], onPress: () => onCancelSent(r.id), accessibilityLabel: `Cancel request to ${r.toUsername}` }, /* @__PURE__ */ React.createElement(Text, { style: styles.addGhostText }, "Cancel"))))))))));
 }
 const styles = StyleSheet.create({
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(11, 16, 32, 0.55)" },
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   search: { flexDirection: "row", alignItems: "center", gap: 10, height: 52, borderRadius: 16, paddingHorizontal: 14, borderWidth: 2, borderColor: COLORS.border, backgroundColor: COLORS.bg1 },
   searchInput: { flex: 1, minWidth: 0, fontSize: 16, color: COLORS.textPrimary, height: "100%" },
   label: { fontSize: 12, fontWeight: "800", letterSpacing: 0.8, color: COLORS.textMuted, textTransform: "uppercase" },
-  codeRow: { flexDirection: "row", gap: 10 },
+  codeRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   codeInput: { flex: 1, minWidth: 0, height: 50, borderRadius: 14, borderWidth: 2, borderColor: COLORS.border, paddingHorizontal: 14, fontSize: 18, fontWeight: "800", letterSpacing: 3, color: COLORS.textPrimary },
   row: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 8 },
   rowInfo: { flex: 1, minWidth: 0 },
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
   rowMeta: { fontSize: 12, color: COLORS.textSecondary, marginTop: 1 },
   add: { flexDirection: "row", alignItems: "center", gap: 6, height: 40, paddingHorizontal: 14, borderRadius: 12, backgroundColor: COLORS.accent },
   addText: { fontSize: 14, fontWeight: "800", color: "#FFFFFF" },
+  scan: { width: 50, height: 50, borderRadius: 14, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, backgroundColor: COLORS.bg2, alignItems: "center", justifyContent: "center" },
   addGhost: { backgroundColor: COLORS.bg2, borderWidth: 2, borderColor: COLORS.border },
   addGhostText: { fontSize: 13, fontWeight: "800", color: COLORS.textSecondary },
   friends: { fontSize: 13, fontWeight: "800", color: COLORS.success },

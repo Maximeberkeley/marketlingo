@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { NUDGE_MESSAGES, nudgeOptions } from '../mobile/lib/nudges';
-import { inviteShareContent, inviteMessage } from '../mobile/lib/inviteLinks';
+import { inviteShareContent, inviteMessage, inviteUrl, inviteAppUrl, codeFromScan } from '../mobile/lib/inviteLinks';
 import { qrcodegen } from '../mobile/lib/vendor/qrcodegen';
 
 const transform = (source: string, loader: string) => execFileSync(process.execPath, ['--input-type=module', '-e',
@@ -71,11 +71,58 @@ describe('sharing your invite', () => {
     expect(inviteMessage(null, 'MAX4TQ')).toContain('https://market-verse.com/invite/MAX4TQ (or enter my friend code MAX4TQ)');
   });
 
-  it('draws a scannable QR of the invite link', () => {
-    const qr = qrcodegen.QrCode.encodeText('https://market-verse.com/invite/MAX4TQ', qrcodegen.QrCode.Ecc.MEDIUM);
+  it('draws a scannable QR of the app link, so the camera opens MarketLingo directly', () => {
+    expect(inviteAppUrl('MAX4TQ')).toBe('marketlingo://invite/MAX4TQ');
+    const qr = qrcodegen.QrCode.encodeText(inviteAppUrl('MAX4TQ'), qrcodegen.QrCode.Ecc.MEDIUM);
     expect(qr.size).toBe(29);
     for (const [x, y] of [[0, 0], [qr.size - 1, 0], [0, qr.size - 1]]) expect(qr.getModule(x, y)).toBe(true);
-    expect(read('mobile/components/social/MyCodeSheet.tsx')).toContain('<QRCode value={inviteUrl(code)} size={208} />');
+    expect(read('mobile/components/social/MyCodeSheet.tsx')).toContain('<QRCode value={inviteAppUrl(code)} size={QR_SIZE} />');
+    // Links sent in messages keep the https form, which works without the app.
+    expect(inviteMessage(null, 'MAX4TQ')).toContain(inviteUrl('MAX4TQ'));
+  });
+});
+
+describe('scanning a friend’s code in the app', () => {
+  const sheet = read('mobile/components/social/MyCodeSheet.tsx');
+  const scanner = read('mobile/components/social/QRScanner.tsx');
+  const profile = read('mobile/app/(tabs)/profile.tsx');
+
+  it('reads the app link, the website link from older QRs, and bare codes', () => {
+    expect(codeFromScan('marketlingo://invite/max4tq')).toBe('MAX4TQ');
+    expect(codeFromScan('https://market-verse.com/invite/MAX4TQ')).toBe('MAX4TQ');
+    expect(codeFromScan('https://www.market-verse.com/invite/MAX4TQ/?utm=qr')).toBe('MAX4TQ');
+    expect(codeFromScan('  dana12 ')).toBe('DANA12');
+  });
+
+  it('ignores anything that isn’t a MarketLingo code', () => {
+    for (const bad of ['https://evil.example/invite/MAX4TQ', 'https://market-verse.com/MAX4TQ', 'marketlingo://friends',
+      'WIFI:S:home;T:WPA;P:secret;;', 'hello world', 'AB', 'https://market-verse.com/invite/MAX4TQ/extra', null, 42]) {
+      expect(codeFromScan(bad), String(bad)).toBeNull();
+    }
+  });
+
+  it('adds the friend on the spot, and says when it’s your own code', () => {
+    expect(scanner).toContain("barcodeScannerSettings={{ barcodeTypes: ['qr'] }}");
+    expect(scanner).toContain('onBarcodeScanned={paused ? undefined : handleScan}');
+    expect(scanner).toContain('Linking.openSettings()');
+    expect(sheet).toContain('const result = await onRedeem(scanned);');
+    expect(sheet).toContain("if (scanned === code) {");
+    expect(sheet).toContain("setScan({ kind: 'added', message: result.message });");
+  });
+
+  it('can be opened from Friends (card, search sheet) and from Profile', () => {
+    expect(friends).toContain("onScan={() => openCodeSheet('scan')}");
+    expect(friends).toContain("onScan={() => closeThen(() => setFindOpen(false), () => openCodeSheet('scan'))}");
+    expect(friends).toContain('initialTab={codeTab} onShare={handleShareInvite} onRedeem={redeemCode}');
+    expect(profile).toContain('onRedeem={redeemScanned}');
+  });
+
+  it('ships the camera module with a permission message', () => {
+    const app = JSON.parse(read('mobile/app.json')).expo;
+    const plugin = app.plugins.find((p: unknown) => Array.isArray(p) && p[0] === 'expo-camera');
+    expect(plugin?.[1].cameraPermission).toMatch(/scan a friend's code/);
+    expect(JSON.parse(read('mobile/package.json')).dependencies['expo-camera']).toBe('~17.0.10');
+    expect(app.ios.buildNumber).toBe('163');
   });
 });
 
@@ -130,9 +177,9 @@ describe('JavaScript copies for the Friends redesign', () => {
     for (const [path, loader] of [
       ['lib/nudges', 'ts'], ['lib/invites', 'ts'], ['lib/inviteLinks', 'ts'], ['lib/vendor/qrcodegen', 'ts'], ['hooks/useFriendSocial', 'ts'],
       ['components/social/ChunkyButton', 'tsx'], ['components/social/NudgeSheet', 'tsx'], ['components/social/FriendSheet', 'tsx'],
-      ['components/social/QRCode', 'tsx'], ['components/social/MyCodeSheet', 'tsx'], ['components/social/AddFriendsCard', 'tsx'],
+      ['components/social/QRCode', 'tsx'], ['components/social/QRScanner', 'tsx'], ['components/social/MyCodeSheet', 'tsx'], ['components/social/AddFriendsCard', 'tsx'],
       ['components/social/FindFriendsSheet', 'tsx'], ['components/social/RaceCard', 'tsx'], ['components/social/StreakSheet', 'tsx'],
-      ['components/mascot/leoClips', 'ts'], ['app/friends', 'tsx'], ['app/arena', 'tsx'],
+      ['components/mascot/leoClips', 'ts'], ['app/friends', 'tsx'], ['app/arena', 'tsx'], ['app/(tabs)/profile', 'tsx'],
     ]) {
       const js = read(`mobile/${path}.js`);
       expect(js, path).toBe(transform(read(`mobile/${path}.${loader}`), loader));
