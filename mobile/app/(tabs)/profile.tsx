@@ -279,21 +279,6 @@ export default function ProfileScreen() {
           <TouchableOpacity
             style={styles.menuItem}
             activeOpacity={0.88}
-            onPress={() => { triggerHaptic('light'); router.push('/leaderboard' as any); }}
-          >
-            <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>
-              <Feather name="award" size={18} color={COLORS.accent} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.menuTitle}>League</Text>
-              <Text style={styles.menuSubtitle}>Your rank this month</Text>
-            </View>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.menuItem}
-            activeOpacity={0.88}
             onPress={() => { triggerHaptic('light'); router.push('/friends' as any); }}
           >
             <View style={[styles.menuIcon, { backgroundColor: COLORS.bg1 }]}>

@@ -42,8 +42,6 @@ import { useLeoPopups } from "../../hooks/useLeoPopups";
 import { useAchievements } from "../../hooks/useAchievements";
 import { LeoVoiceChatOverlay } from "../../components/ai/LeoVoiceChatOverlay";
 import { log } from "../../lib/logger";
-import "../../components/league/LeagueCeremonyModal";
-import { useLeague } from "../../hooks/useLeague";
 import { useWeeklyRecap } from "../../hooks/useWeeklyRecap";
 import { useCollectibles } from "../../hooks/useCollectibles";
 import { lessonDayLabel } from "../../lib/lessonIdentity";
@@ -165,7 +163,6 @@ function HomeScreenContent() {
     selectedMarketLocal || void 0,
     isProUser
   );
-  const league = useLeague(selectedMarketLocal || void 0);
   const recap = useWeeklyRecap(selectedMarketLocal || void 0);
   const [recapDismissed, setRecapDismissed] = useState(false);
   const showRecap = recap.isRecapDay && !recap.loading && !recap.seen && !recapDismissed && recap.xpThisWeek >= 0;
@@ -587,7 +584,7 @@ function HomeScreenContent() {
       achievement: achievementPopup,
       onDismiss: () => setAchievementPopup(null)
     }
-  ), false);
+  ));
 }
 const styles = StyleSheet.create({
   dossierChip: {

@@ -29,7 +29,7 @@ import { log } from '../lib/logger';
 const NOTIFICATION_ROUTES: Record<string, string> = {
   streak_warning: '/(tabs)/home',
   daily_reminder: '/(tabs)/home',
-  leaderboard: '/leaderboard',
+  leaderboard: '/friends',
   news: '/(tabs)/home',
   achievement: '/achievements',
   investment: '/investment-lab',
