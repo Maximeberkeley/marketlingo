@@ -1,5 +1,10 @@
 # MarketLingo roadmap
 
+## Nov 8 — Arena industry isolation
+- [ ] Diagnose Aerospace questions shown in Neuroscience and isolate all industry fallback sources.
+- [ ] Synchronize phone JavaScript twins and run market-switch and question-selection regression tests.
+- [ ] Verify installed iPhone Arena (blocked: no iOS device/simulator; requires a rebuilt app).
+
 ## Nov 6 — Build the Chain integrity
 - [x] Reject generated chains without explicit sequence markers and clarify slot labels/order explanations.
 - [x] Prefer authored chains/sorts then claims in Cases; remove generated chains from Arena and keep standalone practice authored-first.
