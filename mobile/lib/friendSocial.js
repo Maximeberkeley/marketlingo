@@ -83,6 +83,14 @@ function raceShare(myXP, friendXP) {
   if (total <= 0) return 0.5;
   return Math.max(0.06, Math.min(0.94, Math.max(0, myXP) / total));
 }
+function raceOmbre(share, blend = 0.4) {
+  const s = Math.max(0, Math.min(1, Number.isFinite(share) ? share : 0.5));
+  const center = 0.25 + s * 0.5;
+  const start = Math.max(0, center - blend / 2);
+  const end = Math.min(1, center + blend / 2);
+  return [0, round3(start), round3(end), 1];
+}
+const round3 = (n) => Math.round(n * 1e3) / 1e3;
 function raceLeadLine(r) {
   const name = firstName(r);
   const gap = Math.abs(r.my_xp - r.friend_xp);
@@ -153,6 +161,7 @@ export {
   parseFriendSocial,
   raceIsOver,
   raceLeadLine,
+  raceOmbre,
   raceOutcome,
   raceReward,
   raceShare,
