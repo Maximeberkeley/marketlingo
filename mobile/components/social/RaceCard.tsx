@@ -1,11 +1,12 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../../lib/constants';
 import { SocialAvatar } from './SocialAvatar';
 import { XPFlask } from '../ui/XPFlask';
 import {
-  FriendRace, RACE_DAYS, RACE_REWARD, firstName, raceIsOver, raceLeadLine, raceOutcome, raceReward, raceShare, timeLeft,
+  FriendRace, RACE_DAYS, RACE_REWARD, firstName, raceIsOver, raceLeadLine, raceOmbre, raceOutcome, raceReward, raceShare, timeLeft,
 } from '../../lib/friendSocial';
 
 interface Props {
@@ -58,8 +59,19 @@ export function RaceCard({ race, busy, nudgeState, onAccept, onCancel, onClaim, 
     );
   }
 
+  // The card itself leans purple (you) or orange (them) with the lead.
+  const tied = race.my_xp === race.friend_xp;
+  const leaderBorder = tied ? COLORS.border : leading ? COLORS.accent + '55' : COLORS.streak + '55';
   return (
-    <View style={[styles.card, over && !race.claimed && styles.cardDone]}>
+    <View style={[styles.card, styles.cardRace, { borderColor: leaderBorder }, over && !race.claimed && styles.cardDone]}>
+      <LinearGradient
+        pointerEvents="none"
+        colors={[COLORS.accent + '33', COLORS.accent + '33', COLORS.streak + '33', COLORS.streak + '33']}
+        locations={raceOmbre(share)}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        style={StyleSheet.absoluteFill}
+      />
       <View style={styles.topRow}>
         <Text style={styles.kicker}>{over ? 'RACE OVER' : 'RACE'}</Text>
         {!over && (
@@ -130,6 +142,7 @@ export function RaceCard({ race, busy, nudgeState, onAccept, onCancel, onClaim, 
 
 const styles = StyleSheet.create({
   card: { backgroundColor: COLORS.bg2, borderRadius: 20, padding: 14, gap: 12, borderWidth: 1.5, borderColor: COLORS.border },
+  cardRace: { overflow: 'hidden' },
   cardInvite: { borderColor: COLORS.accent + '55', backgroundColor: COLORS.accentSoft },
   cardDone: { borderColor: COLORS.success + '66' },
   inviteRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },

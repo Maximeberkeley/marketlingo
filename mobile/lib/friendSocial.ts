@@ -132,6 +132,22 @@ export function raceShare(myXP: number, friendXP: number): number {
   return Math.max(0.06, Math.min(0.94, Math.max(0, myXP) / total));
 }
 
+/**
+ * Gradient stops for the race card's background: your purple on the left fades
+ * into their orange on the right, and the fade sits further toward the side of
+ * whoever trails. Leading big leaves only a little orange ombre at the right
+ * edge; a tie splits the card down the middle. The trailing colour never
+ * disappears completely.
+ */
+export function raceOmbre(share: number, blend = 0.4): [number, number, number, number] {
+  const s = Math.max(0, Math.min(1, Number.isFinite(share) ? share : 0.5));
+  const center = 0.25 + s * 0.5;
+  const start = Math.max(0, center - blend / 2);
+  const end = Math.min(1, center + blend / 2);
+  return [0, round3(start), round3(end), 1];
+}
+const round3 = (n: number) => Math.round(n * 1000) / 1000;
+
 export function raceLeadLine(r: Pick<FriendRace, 'my_xp' | 'friend_xp' | 'display_name' | 'status'>): string {
   const name = firstName(r);
   const gap = Math.abs(r.my_xp - r.friend_xp);

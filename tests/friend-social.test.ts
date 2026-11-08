@@ -177,3 +177,24 @@ describe('JavaScript copies for friend streaks and races', () => {
     }
   }, 60000);
 });
+
+describe('race card ombre', () => {
+  it('leans purple when you lead and orange when they do, never losing the trailing colour', async () => {
+    const { raceOmbre, raceShare } = await import('../mobile/lib/friendSocial');
+    const close = (got: number[], want: number[]) => want.forEach((w, i) => expect(got[i]).toBeCloseTo(w, 2));
+    close(raceOmbre(0.5), [0, 0.3, 0.7, 1]);
+    close(raceOmbre(raceShare(420, 60)), [0, 0.4875, 0.8875, 1]);
+    close(raceOmbre(raceShare(60, 420)), [0, 0.1125, 0.5125, 1]);
+    close(raceOmbre(1), [0, 0.55, 0.95, 1]);
+    close(raceOmbre(0), [0, 0.05, 0.45, 1]);
+    close(raceOmbre(Number.NaN), [0, 0.3, 0.7, 1]);
+  });
+
+  it('paints the active and finished race cards with it', () => {
+    const card = read('mobile/components/social/RaceCard.tsx');
+    expect(card).toContain("import { LinearGradient } from 'expo-linear-gradient';");
+    expect(card).toContain('locations={raceOmbre(share)}');
+    expect(card).toContain("colors={[COLORS.accent + '33', COLORS.accent + '33', COLORS.streak + '33', COLORS.streak + '33']}");
+    expect(card).toContain("const leaderBorder = tied ? COLORS.border : leading ? COLORS.accent + '55' : COLORS.streak + '55';");
+  });
+});
