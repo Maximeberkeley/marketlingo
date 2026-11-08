@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { tokens } from "../theme/tokens";
@@ -7,6 +7,7 @@ import { ColorText } from "../components/ColorText";
 import { AnswerMark, AnswerTag } from "../components/AnswerMark";
 import { answerTag, choiceStateFor } from "../components/answerState";
 import { shortLabel } from "../text";
+import { choiceOrder } from "../components/choiceOrder";
 function TheCall({ exercise, phase, onChange }) {
   const [picked, setPicked] = useState(null);
   const [beats, setBeats] = useState(0);
@@ -24,6 +25,7 @@ function TheCall({ exercise, phase, onChange }) {
     timers.current = list.map((_, i) => setTimeout(() => setBeats((b) => Math.max(b, i + 1)), 350 * (i + 1)));
     return () => timers.current.forEach(clearTimeout);
   }, [phase, exercise.id]);
+  const order = useMemo(() => choiceOrder(exercise.options.length, `${exercise.id}|${exercise.prompt}`), [exercise.id, exercise.prompt, exercise.options.length]);
   const choose = (i) => {
     if (phase === "feedback") return;
     tap();
@@ -31,7 +33,8 @@ function TheCall({ exercise, phase, onChange }) {
     onChange({ canCheck: true, isCorrect: i === exercise.correctIndex, selectedIndex: i });
   };
   const translateY = enter.interpolate({ inputRange: [0, 1], outputRange: [18, 0] });
-  return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.brief, { opacity: enter, transform: [{ translateY }] }] }, /* @__PURE__ */ React.createElement(View, { style: styles.briefHead }, /* @__PURE__ */ React.createElement(Feather, { name: "radio", size: 13, color: tokens.color.textOnAccent }), /* @__PURE__ */ React.createElement(Text, { style: styles.briefHeadText }, "THE CALL")), /* @__PURE__ */ React.createElement(ColorText, { text: exercise.situation, style: styles.situation, maxSentences: 2, maxLength: 150 })), /* @__PURE__ */ React.createElement(ColorText, { text: exercise.prompt, style: styles.prompt, maxSentences: 2, maxLength: 110 }), /* @__PURE__ */ React.createElement(View, { style: styles.options }, exercise.options.map((o, i) => {
+  return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.brief, { opacity: enter, transform: [{ translateY }] }] }, /* @__PURE__ */ React.createElement(View, { style: styles.briefHead }, /* @__PURE__ */ React.createElement(Feather, { name: "radio", size: 13, color: tokens.color.textOnAccent }), /* @__PURE__ */ React.createElement(Text, { style: styles.briefHeadText }, "THE CALL")), /* @__PURE__ */ React.createElement(ColorText, { text: exercise.situation, style: styles.situation, maxSentences: 2, maxLength: 150 })), /* @__PURE__ */ React.createElement(ColorText, { text: exercise.prompt, style: styles.prompt, maxSentences: 2, maxLength: 110 }), /* @__PURE__ */ React.createElement(View, { style: styles.options }, order.map((i) => {
+    const o = exercise.options[i];
     const reveal = phase === "feedback";
     const state = choiceStateFor(i, picked, exercise.correctIndex, reveal);
     return /* @__PURE__ */ React.createElement(
@@ -54,7 +57,7 @@ function TheCall({ exercise, phase, onChange }) {
       /* @__PURE__ */ React.createElement(View, { style: styles.optionCopy }, /* @__PURE__ */ React.createElement(ColorText, { text: shortLabel(o), style: styles.optionText, maxSentences: 1, maxLength: 72 }), /* @__PURE__ */ React.createElement(AnswerTag, { text: answerTag(i, picked, exercise.correctIndex, reveal), state })),
       /* @__PURE__ */ React.createElement(AnswerMark, { state, revealed: reveal })
     );
-  })), phase === "feedback" && !!exercise.consequences?.length && /* @__PURE__ */ React.createElement(View, { style: styles.wire }, exercise.consequences.slice(0, beats).map((c, i) => /* @__PURE__ */ React.createElement(View, { key: i, style: styles.wireRow }, /* @__PURE__ */ React.createElement(View, { style: styles.wireDot }), /* @__PURE__ */ React.createElement(ColorText, { text: c, style: styles.wireText, maxSentences: 1, maxLength: 90 })))));
+  })), phase === "feedback" && !!exercise.consequences?.length && /* @__PURE__ */ React.createElement(View, { style: styles.wire }, order.map((i) => exercise.consequences?.[i]).filter((c) => !!c).slice(0, beats).map((c, i) => /* @__PURE__ */ React.createElement(View, { key: i, style: styles.wireRow }, /* @__PURE__ */ React.createElement(View, { style: styles.wireDot }), /* @__PURE__ */ React.createElement(ColorText, { text: c, style: styles.wireText, maxSentences: 1, maxLength: 90 })))));
 }
 const styles = StyleSheet.create({
   wrap: { flex: 1 },

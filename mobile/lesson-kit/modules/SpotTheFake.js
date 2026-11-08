@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { tokens } from "../theme/tokens";
@@ -6,6 +6,7 @@ import { Prompt, tap, useEnter } from "./shared";
 import { ColorText } from "../components/ColorText";
 import { AnswerMark, AnswerTag } from "../components/AnswerMark";
 import { answerTag, choiceStateFor } from "../components/answerState";
+import { choiceOrder } from "../components/choiceOrder";
 function SpotTheFake({ exercise, phase, onChange }) {
   const [picked, setPicked] = useState(null);
   const enter = useEnter(exercise.id);
@@ -19,11 +20,13 @@ function SpotTheFake({ exercise, phase, onChange }) {
     setPicked(i);
     onChange({ canCheck: true, isCorrect: i === exercise.fakeIndex, selectedIndex: i });
   };
-  return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(Prompt, { eyebrow: "Spot the fake", text: exercise.prompt }), exercise.statements.map((s, i) => {
+  const order = useMemo(() => choiceOrder(exercise.statements.length, `${exercise.id}|${exercise.prompt}|${exercise.statements[0] || ""}`), [exercise.id, exercise.prompt, exercise.statements]);
+  return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(Prompt, { eyebrow: "Spot the fake", text: exercise.prompt }), order.map((i, pos) => {
+    const s = exercise.statements[i];
     const reveal = phase === "feedback";
     const isFake = i === exercise.fakeIndex;
     const state = choiceStateFor(i, picked, exercise.fakeIndex, reveal);
-    const translateY = enter.interpolate({ inputRange: [0, 1], outputRange: [14 * (i + 1), 0] });
+    const translateY = enter.interpolate({ inputRange: [0, 1], outputRange: [14 * (pos + 1), 0] });
     return /* @__PURE__ */ React.createElement(Animated.View, { key: i, style: { opacity: enter, transform: [{ translateY }] } }, /* @__PURE__ */ React.createElement(
       TouchableOpacity,
       {
@@ -47,7 +50,7 @@ function SpotTheFake({ exercise, phase, onChange }) {
           size: 18,
           color: isFake ? tokens.color.correctDark : tokens.color.textMuted
         }
-      ) : /* @__PURE__ */ React.createElement(Text, { style: styles.rowNum }, i + 1)),
+      ) : /* @__PURE__ */ React.createElement(Text, { style: styles.rowNum }, pos + 1)),
       /* @__PURE__ */ React.createElement(View, { style: styles.rowCopy }, /* @__PURE__ */ React.createElement(ColorText, { text: s, style: styles.rowText, maxSentences: 1, maxLength: 90 }), /* @__PURE__ */ React.createElement(AnswerTag, { text: answerTag(i, picked, exercise.fakeIndex, reveal, "The fake"), state })),
       /* @__PURE__ */ React.createElement(AnswerMark, { state, revealed: reveal })
     ));

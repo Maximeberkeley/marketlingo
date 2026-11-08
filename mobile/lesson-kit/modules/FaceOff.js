@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
 import { tokens } from "../theme/tokens";
 import { Prompt, tap, useEnter } from "./shared";
@@ -6,6 +6,7 @@ import { ColorText } from "../components/ColorText";
 import { AnswerMark, AnswerTag } from "../components/AnswerMark";
 import { answerTag, choiceStateFor } from "../components/answerState";
 import { shortLabel } from "../text";
+import { choiceOrder } from "../components/choiceOrder";
 function FaceOff({ exercise, phase, onChange }) {
   const [picked, setPicked] = useState(null);
   const enter = useEnter(exercise.id);
@@ -20,12 +21,14 @@ function FaceOff({ exercise, phase, onChange }) {
     onChange({ canCheck: true, isCorrect: i === exercise.correctIndex, selectedIndex: i });
   };
   const sides = [exercise.left, exercise.right];
-  return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(Prompt, { eyebrow: "Face-off", text: exercise.prompt }), /* @__PURE__ */ React.createElement(View, { style: styles.ring }, sides.map((side, i) => {
+  const order = useMemo(() => choiceOrder(2, `${exercise.id}|${exercise.prompt}|${exercise.left.name}`), [exercise.id, exercise.prompt, exercise.left.name]);
+  return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(Prompt, { eyebrow: "Face-off", text: exercise.prompt }), /* @__PURE__ */ React.createElement(View, { style: styles.ring }, order.map((i, pos) => {
+    const side = sides[i];
     const reveal = phase === "feedback";
     const state = choiceStateFor(i, picked, exercise.correctIndex, reveal);
     const translateY = enter.interpolate({
       inputRange: [0, 1],
-      outputRange: [i === 0 ? -26 : 26, 0]
+      outputRange: [pos === 0 ? -26 : 26, 0]
     });
     return /* @__PURE__ */ React.createElement(Animated.View, { key: i, style: [styles.sideWrap, { opacity: enter, transform: [{ translateY }] }] }, /* @__PURE__ */ React.createElement(
       TouchableOpacity,
@@ -43,7 +46,7 @@ function FaceOff({ exercise, phase, onChange }) {
           reveal && state === "idle" && styles.sideStepBack
         ]
       },
-      /* @__PURE__ */ React.createElement(View, { style: styles.sideHead }, /* @__PURE__ */ React.createElement(Text, { style: styles.badge }, i === 0 ? "A" : "B"), /* @__PURE__ */ React.createElement(AnswerMark, { state, revealed: reveal })),
+      /* @__PURE__ */ React.createElement(View, { style: styles.sideHead }, /* @__PURE__ */ React.createElement(Text, { style: styles.badge }, pos === 0 ? "A" : "B"), /* @__PURE__ */ React.createElement(AnswerMark, { state, revealed: reveal })),
       /* @__PURE__ */ React.createElement(ColorText, { text: shortLabel(side.name), style: styles.name, maxSentences: 1, maxLength: 60 }),
       !!side.note && /* @__PURE__ */ React.createElement(ColorText, { text: side.note, style: styles.note, maxSentences: 1, maxLength: 72 }),
       /* @__PURE__ */ React.createElement(AnswerTag, { text: answerTag(i, picked, exercise.correctIndex, reveal), state })

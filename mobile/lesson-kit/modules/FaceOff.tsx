@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { tokens } from '../theme/tokens';
 import { FaceOffExercise } from '../types';
@@ -8,6 +8,7 @@ import { ColorText } from '../components/ColorText';
 import { AnswerMark, AnswerTag } from '../components/AnswerMark';
 import { answerTag, choiceStateFor } from '../components/answerState';
 import { shortLabel } from '../text';
+import { choiceOrder } from '../components/choiceOrder';
 
 /** Company Face-Off — two players enter, you pick one. */
 export function FaceOff({ exercise, phase, onChange }: ExerciseProps<FaceOffExercise>) {
@@ -27,18 +28,21 @@ export function FaceOff({ exercise, phase, onChange }: ExerciseProps<FaceOffExer
   };
 
   const sides = [exercise.left, exercise.right];
+  // Shown mixed; indexes stay the authored ones for grading.
+  const order = useMemo(() => choiceOrder(2, `${exercise.id}|${exercise.prompt}|${exercise.left.name}`), [exercise.id, exercise.prompt, exercise.left.name]);
 
   return (
     <View style={styles.wrap}>
       <Prompt eyebrow="Face-off" text={exercise.prompt} />
 
       <View style={styles.ring}>
-        {sides.map((side, i) => {
+        {order.map((i, pos) => {
+          const side = sides[i];
           const reveal = phase === 'feedback';
           const state = choiceStateFor(i, picked, exercise.correctIndex, reveal);
           const translateY = enter.interpolate({
             inputRange: [0, 1],
-            outputRange: [i === 0 ? -26 : 26, 0],
+            outputRange: [pos === 0 ? -26 : 26, 0],
           });
           return (
             <Animated.View key={i} style={[styles.sideWrap, { opacity: enter, transform: [{ translateY }] }]}>
@@ -57,7 +61,7 @@ export function FaceOff({ exercise, phase, onChange }: ExerciseProps<FaceOffExer
                 ]}
               >
                 <View style={styles.sideHead}>
-                  <Text style={styles.badge}>{i === 0 ? 'A' : 'B'}</Text>
+                  <Text style={styles.badge}>{pos === 0 ? 'A' : 'B'}</Text>
                   <AnswerMark state={state} revealed={reveal} />
                 </View>
                 <ColorText text={shortLabel(side.name)} style={styles.name} maxSentences={1} maxLength={60} />

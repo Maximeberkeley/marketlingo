@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { tokens } from '../theme/tokens';
@@ -8,6 +8,7 @@ import { Prompt, tap, useEnter } from './shared';
 import { ColorText } from '../components/ColorText';
 import { AnswerMark, AnswerTag } from '../components/AnswerMark';
 import { answerTag, choiceStateFor } from '../components/answerState';
+import { choiceOrder } from '../components/choiceOrder';
 
 /** Spot the Fake — three statements, one is a plant. Tap the lie. */
 export function SpotTheFake({ exercise, phase, onChange }: ExerciseProps<SpotFakeExercise>) {
@@ -26,16 +27,20 @@ export function SpotTheFake({ exercise, phase, onChange }: ExerciseProps<SpotFak
     onChange({ canCheck: true, isCorrect: i === exercise.fakeIndex, selectedIndex: i });
   };
 
+  // Shown mixed; indexes stay the authored ones for grading.
+  const order = useMemo(() => choiceOrder(exercise.statements.length, `${exercise.id}|${exercise.prompt}|${exercise.statements[0] || ''}`), [exercise.id, exercise.prompt, exercise.statements]);
+
   return (
     <View style={styles.wrap}>
       <Prompt eyebrow="Spot the fake" text={exercise.prompt} />
 
-      {exercise.statements.map((s, i) => {
+      {order.map((i, pos) => {
+        const s = exercise.statements[i];
         const reveal = phase === 'feedback';
         const isFake = i === exercise.fakeIndex;
         // The fake is the right answer here, so it takes the "right" look.
         const state = choiceStateFor(i, picked, exercise.fakeIndex, reveal);
-        const translateY = enter.interpolate({ inputRange: [0, 1], outputRange: [14 * (i + 1), 0] });
+        const translateY = enter.interpolate({ inputRange: [0, 1], outputRange: [14 * (pos + 1), 0] });
         return (
           <Animated.View key={i} style={{ opacity: enter, transform: [{ translateY }] }}>
             <TouchableOpacity
@@ -60,7 +65,7 @@ export function SpotTheFake({ exercise, phase, onChange }: ExerciseProps<SpotFak
                     color={isFake ? tokens.color.correctDark : tokens.color.textMuted}
                   />
                 ) : (
-                  <Text style={styles.rowNum}>{i + 1}</Text>
+                  <Text style={styles.rowNum}>{pos + 1}</Text>
                 )}
               </View>
               <View style={styles.rowCopy}>

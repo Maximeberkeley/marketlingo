@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { tokens } from '../theme/tokens';
@@ -9,6 +9,7 @@ import { ColorText } from '../components/ColorText';
 import { AnswerMark, AnswerTag } from '../components/AnswerMark';
 import { answerTag, choiceStateFor } from '../components/answerState';
 import { shortLabel } from '../text';
+import { choiceOrder } from '../components/choiceOrder';
 
 /**
  * The Call — the boss beat. Read the situation, commit, then watch the
@@ -34,6 +35,9 @@ export function TheCall({ exercise, phase, onChange }: ExerciseProps<TheCallExer
     return () => timers.current.forEach(clearTimeout);
   }, [phase, exercise.id]);
 
+  // Shown mixed; indexes stay the authored ones for grading and consequences.
+  const order = useMemo(() => choiceOrder(exercise.options.length, `${exercise.id}|${exercise.prompt}`), [exercise.id, exercise.prompt, exercise.options.length]);
+
   const choose = (i: number) => {
     if (phase === 'feedback') return;
     tap();
@@ -56,7 +60,8 @@ export function TheCall({ exercise, phase, onChange }: ExerciseProps<TheCallExer
       <ColorText text={exercise.prompt} style={styles.prompt} maxSentences={2} maxLength={110} />
 
       <View style={styles.options}>
-        {exercise.options.map((o, i) => {
+        {order.map(i => {
+          const o = exercise.options[i];
           const reveal = phase === 'feedback';
           const state = choiceStateFor(i, picked, exercise.correctIndex, reveal);
           return (
@@ -87,7 +92,7 @@ export function TheCall({ exercise, phase, onChange }: ExerciseProps<TheCallExer
 
       {phase === 'feedback' && !!exercise.consequences?.length && (
         <View style={styles.wire}>
-          {exercise.consequences.slice(0, beats).map((c, i) => (
+          {order.map(i => exercise.consequences?.[i]).filter((c): c is string => !!c).slice(0, beats).map((c, i) => (
             <View key={i} style={styles.wireRow}>
               <View style={styles.wireDot} />
               <ColorText text={c} style={styles.wireText} maxSentences={1} maxLength={90} />
