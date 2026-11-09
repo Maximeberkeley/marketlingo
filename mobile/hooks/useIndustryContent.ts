@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { log } from '../lib/logger';
 
 /** A real trainer scenario for the learner's market. */
 export interface TrainerScenarioRow {
   id: string;
+  market_id?: string;
   scenario: string;
   question: string;
   options: { label: string; isCorrect?: boolean }[];
@@ -17,6 +18,7 @@ export interface TrainerScenarioRow {
 /** A real, fact-checked drill statement for the learner's market. */
 export interface DrillRow {
   id: string;
+  market_id?: string;
   statement: string;
   is_true: boolean;
   explanation: string | null;
@@ -25,6 +27,7 @@ export interface DrillRow {
 /** A real, sourced industry number with its trend. */
 export interface IndustryStatRow {
   id: string;
+  market_id?: string;
   metric_key: string;
   label: string;
   value: number;
@@ -67,15 +70,20 @@ function parseOptions(raw: unknown): { label: string; isCorrect?: boolean }[] {
  */
 export function useIndustryContent(marketId?: string, dayNumber?: number): IndustryContent {
   const [content, setContent] = useState<IndustryContent>({ ...EMPTY, isLoading: !!marketId });
+  const [loadedScope, setLoadedScope] = useState<string | null>(null);
+  const request = useRef(0);
+  const scope = marketId ? `${marketId}/${dayNumber ?? ''}` : null;
 
   const load = useCallback(async (market: string, day?: number) => {
-    setContent(c => ({ ...c, isLoading: true }));
+    const requestId = ++request.current;
+    const requestScope = `${market}/${day ?? ''}`;
+    setContent({ ...EMPTY, isLoading: true });
     try {
       const dayTag = typeof day === 'number' && day > 0 ? `day-${day}` : null;
 
       const trainerQuery = supabase
         .from('trainer_scenarios')
-        .select('id, scenario, question, options, correct_option_index, feedback_pro_reasoning, feedback_common_mistake, feedback_mental_model')
+        .select('id, market_id, scenario, question, options, correct_option_index, feedback_pro_reasoning, feedback_common_mistake, feedback_mental_model')
         .eq('market_id', market)
         .limit(12);
 
@@ -83,13 +91,13 @@ export function useIndustryContent(marketId?: string, dayNumber?: number): Indus
         dayTag ? trainerQuery.contains('tags', [dayTag]) : trainerQuery,
         supabase
           .from('drill_questions')
-          .select('id, statement, is_true, explanation')
+          .select('id, market_id, statement, is_true, explanation')
           .eq('market_id', market)
           .limit(40),
         supabase
           .from('industry_stats')
           .select(
-            'id, metric_key, label, value, unit, min_value, max_value, period_label, trend, trend_note, insight, source_name, is_approximate',
+            'id, market_id, metric_key, label, value, unit, min_value, max_value, period_label, trend, trend_note, insight, source_name, is_approximate',
           )
           .eq('market_id', market)
           .eq('is_active', true)
@@ -101,15 +109,17 @@ export function useIndustryContent(marketId?: string, dayNumber?: number): Indus
       if (dayTag && trainerRows.length === 0) {
         const fallback = await supabase
           .from('trainer_scenarios')
-          .select('id, scenario, question, options, correct_option_index, feedback_pro_reasoning, feedback_common_mistake, feedback_mental_model')
+          .select('id, market_id, scenario, question, options, correct_option_index, feedback_pro_reasoning, feedback_common_mistake, feedback_mental_model')
           .eq('market_id', market)
           .limit(12);
         trainerRows = fallback.data ?? [];
       }
 
       const trainer: TrainerScenarioRow[] = trainerRows
+        .filter(r => r.market_id === market)
         .map(r => ({
           id: String(r.id),
+          market_id: r.market_id,
           scenario: String(r.scenario ?? ''),
           question: String(r.question ?? ''),
           options: parseOptions(r.options),
@@ -128,8 +138,10 @@ export function useIndustryContent(marketId?: string, dayNumber?: number): Indus
         );
 
       const drills: DrillRow[] = (drillRes.data ?? [])
+        .filter(r => r.market_id === market)
         .map(r => ({
           id: String(r.id),
+          market_id: r.market_id,
           statement: String(r.statement ?? ''),
           is_true: !!r.is_true,
           explanation: r.explanation ?? null,
@@ -137,8 +149,10 @@ export function useIndustryContent(marketId?: string, dayNumber?: number): Indus
         .filter(r => r.statement.length > 20);
 
       const stats: IndustryStatRow[] = (statRes.data ?? [])
+        .filter(r => r.market_id === market)
         .map(r => ({
           id: String(r.id),
+          market_id: r.market_id,
           metric_key: String(r.metric_key ?? ''),
           label: String(r.label ?? ''),
           value: Number(r.value),
@@ -163,26 +177,31 @@ export function useIndustryContent(marketId?: string, dayNumber?: number): Indus
             s.value <= s.max_value,
         );
 
+      if (requestId !== request.current) return;
       setContent({ trainer, drills, stats, isLoading: false });
+      setLoadedScope(requestScope);
     } catch (error) {
+      if (requestId !== request.current) return;
       log.error('useIndustryContent: failed to load market content', error);
       setContent({ ...EMPTY, isLoading: false });
+      setLoadedScope(requestScope);
     }
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
     if (!marketId) {
+      request.current += 1;
       setContent({ ...EMPTY, isLoading: false });
+      setLoadedScope(null);
       return;
     }
-    load(marketId, dayNumber).catch(() => {
-      if (!cancelled) setContent({ ...EMPTY, isLoading: false });
-    });
+    void load(marketId, dayNumber);
     return () => {
-      cancelled = true;
+      request.current += 1;
     };
   }, [marketId, dayNumber, load]);
 
-  return content;
+  // Hide the previous industry's rows immediately, before effects run. Late
+  // responses must not replace the current industry's content either.
+  return loadedScope === scope ? content : { ...EMPTY, isLoading: !!marketId };
 }
