@@ -253,6 +253,13 @@
       "when": 1794085615868,
       "tag": "0035_logistics_handwritten_days_6_30",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1794085675868,
+      "tag": "0036_robotics_handwritten_days_6_30",
+      "breakpoints": true
     }
   ]
 }
