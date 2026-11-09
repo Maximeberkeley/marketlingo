@@ -1,0 +1,187 @@
+# Healthtech, days 25-30. Month 1, topic 5: healthcare interoperability (HL7, FHIR).
+SRC = {
+    'onc_fhir': {'url': 'https://healthit.gov/sites/default/files/page/2021-04/What Is FHIR Fact Sheet.pdf', 'label': 'ONC, What is FHIR? fact sheet'},
+    'bhr_priorauth': {'url': 'https://www.beckershospitalreview.com/finance/cms-finalizes-prior-authorization-rule-expected-to-save-15b/', 'label': "Becker's, CMS finalizes prior authorization rule expected to save $15B"},
+    'onc_tefca': {'url': 'https://healthit.gov/resources/data-liquidity-affordability-and-access-the-history-growth-of-tefca/', 'label': 'ONC, the history and growth of TEFCA'},
+    'onc_interop': {'url': 'https://healthit.gov/news/70-hospitals-participate-healthcare-interoperability/', 'label': 'ONC, 70% of hospitals participate in interoperability'},
+    'dla_infoblock': {'url': 'https://www.dlapiper.com/en-us/insights/publications/2025/09/hhs-steps-up-enforcement-on-health-information-blocking', 'label': 'DLA Piper, HHS steps up enforcement on information blocking'},
+    'cms_ecosystem': {'url': 'https://www.cms.gov/newsroom/press-releases/white-house-tech-leaders-commit-create-patient-centric-healthcare-ecosystem', 'label': 'CMS, tech leaders commit to a patient-centric health ecosystem'},
+}
+
+LESSONS = [
+    {
+        'day': 25, 'facet': 'definition', 'title': 'The API standard for health data',
+        'open': {
+            'eyebrow': 'Day 25 · Interoperability', 'kicker': 'Health data finally got a web-style API.',
+            'headline': 'FHIR, short for Fast Healthcare Interoperability Resources, is a standard from HL7 for exchanging health data using the same web technologies as everyday apps.',
+            'fullText': 'It breaks data into standard pieces called resources, such as a Patient resource holding name and address. Its API uses REST, JSON and OAuth, the tools behind shopping and travel apps. That makes health data easier for developers to request and use.',
+            'sources': ['onc_fhir'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'resources', 'eyebrow': 'Resources', 'text': 'A FHIR resource is a standard chunk of data, like a patient or a lab result.', 'highlight': 'Apps can request just the pieces they need.', 'keyTerms': [{'term': 'FHIR', 'definition': 'Fast Healthcare Interoperability Resources: an HL7 standard for exchanging health data via APIs.'}], 'sources': ['onc_fhir']},
+            {'kind': 'microInsight', 'id': 'web', 'eyebrow': 'Web tools', 'text': 'FHIR uses REST, JSON, HTTP and OAuth.', 'highlight': 'Any web developer already knows these tools.', 'keyTerms': [{'term': 'API', 'definition': 'Application programming interface: a defined way for software systems to exchange data.'}], 'sources': ['onc_fhir']},
+            {'kind': 'info', 'id': 'hl7', 'eyebrow': 'Who makes it', 'title': 'HL7 sets the standard', 'body': 'HL7 is a standards body. A team led by Grahame Grieve created FHIR.', 'keyTerms': [{'term': 'HL7', 'definition': 'Health Level Seven, an organization that develops health data exchange standards.'}], 'sources': ['onc_fhir']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What is a FHIR "resource"?',
+             'options': ['A hospital\'s server room', 'A standard chunk of health data', 'A billing code for visits'], 'correctIndex': 1,
+             'explanation': 'Resources are standard data pieces, such as a Patient resource.'},
+            {'kind': 'sortSignal', 'id': 'sort', 'prompt': 'Is it part of how FHIR works?', 'buckets': ['Part of FHIR', 'Not part of FHIR'],
+             'items': [{'text': 'RESTful APIs', 'bucket': 0}, {'text': 'JSON data format', 'bucket': 0}, {'text': 'Faxing paper charts', 'bucket': 1}, {'text': 'One vendor\'s private format', 'bucket': 1}],
+             'explanation': 'FHIR uses open web standards like REST and JSON.'},
+        ],
+        'lenses': {
+            'career': ('FHIR is a core skill', 'Health tech developers who know FHIR are in demand across payers, providers and startups.', ['onc_fhir']),
+            'invest': ('Standards lower barriers', 'Common APIs make it cheaper to build health apps. That widens the market.', ['onc_fhir']),
+            'build_startup': ('Build on FHIR', 'FHIR lets apps read and write health data with familiar web tools. Start there.', ['onc_fhir']),
+            'curiosity': ('Health data like a travel app', 'Medical records can now be shared using the same tech behind flight booking apps.', ['onc_fhir']),
+        },
+        'rule': ('In health data, shared standards turn closed systems into platforms others can build on.', ['onc_fhir']),
+        'takeaway': 'FHIR is an HL7 standard that shares health data as resources over web APIs using REST, JSON and OAuth.',
+    },
+    {
+        'day': 26, 'facet': 'money', 'title': '$15 billion from faster approvals',
+        'open': {
+            'eyebrow': 'Day 26 · The money', 'kicker': 'Digital prior authorization is meant to save billions.',
+            'headline': 'In January 2024, CMS finalized a rule requiring many payers to speed up prior authorization and build data-sharing APIs, estimating $15 billion in savings over 10 years.',
+            'fullText': 'It covers Medicare Advantage, Medicaid, CHIP and federal exchange plans. From 2026, they must decide urgent requests within 72 hours and standard ones within 7 days, and explain denials. By January 2027, they must add prior authorization data to patient APIs and build a provider API.',
+            'sources': ['bhr_priorauth'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'timelines', 'eyebrow': 'The deadlines', 'text': 'Urgent requests: 72 hours. Standard requests: 7 days.', 'highlight': 'Payers must also give specific denial reasons.', 'sources': ['bhr_priorauth']},
+            {'kind': 'microInsight', 'id': 'apis', 'eyebrow': 'The APIs', 'text': 'Payers must build APIs that share prior authorization data with patients and providers.', 'highlight': 'The deadline is January 2027.', 'sources': ['bhr_priorauth']},
+            {'kind': 'info', 'id': 'who', 'eyebrow': 'Who is covered', 'title': 'Government-linked plans', 'body': 'Medicare Advantage, Medicaid, CHIP and federal exchange plans are covered by the rule.', 'sources': ['bhr_priorauth']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-urgent', 'prompt': 'Within how many hours must covered payers decide urgent prior authorization requests?', 'min': 0, 'max': 240, 'value': 72, 'unit': 'h', 'tolerance': 0.06, 'explanation': '72 hours for urgent requests and 7 days for standard ones.'},
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'What is the savings estimate CMS gave for the rule?',
+             'left': {'name': '$15 billion', 'note': 'Over 10 years'}, 'right': {'name': '$150 billion', 'note': 'Over 10 years'}, 'correctIndex': 0,
+             'explanation': 'CMS estimated $15 billion over 10 years.'},
+        ],
+        'lenses': {
+            'career': ('API builders needed', 'Payers must build new APIs by 2027. Integration engineers are in demand.', ['bhr_priorauth']),
+            'invest': ('Compliance spending', 'Deadlines in 2026 and 2027 drive payer spending on interoperability vendors.', ['bhr_priorauth']),
+            'build_startup': ('Prior auth automation', 'Faster required decisions need automation. Tools that speed prior auth have buyers.', ['bhr_priorauth']),
+            'curiosity': ('A 72-hour clock', 'Many US health plans must now answer urgent approval requests within 72 hours.', ['bhr_priorauth']),
+        },
+        'rule': ('In healthcare, mandated deadlines turn paperwork into a software market.', ['bhr_priorauth']),
+        'takeaway': 'CMS\'s 2024 rule requires faster prior authorization decisions from 2026 and new APIs by 2027, saving an estimated $15 billion over 10 years.',
+    },
+    {
+        'day': 27, 'facet': 'power', 'title': 'The national network of networks',
+        'open': {
+            'eyebrow': 'Day 27 · The power', 'kicker': 'Data exchange took off once the big networks joined.',
+            'headline': 'TEFCA, the US framework linking health information networks, went live in December 2023 and had exchanged 464 million documents by the end of 2025.',
+            'fullText': 'About 10 million documents had moved before 2025. Eleven networks are now designated as QHINs, including Epic Nexus, CommonWell, Surescripts and Oracle Health\'s network. The 2016 21st Century Cures Act called for this kind of nationwide trusted exchange.',
+            'sources': ['onc_tefca'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'qhin', 'eyebrow': 'The players', 'text': 'A QHIN is a network approved to exchange data under TEFCA.', 'highlight': 'Eleven had been designated.', 'keyTerms': [{'term': 'QHIN', 'definition': 'Qualified Health Information Network: a network approved to exchange data under TEFCA.'}], 'sources': ['onc_tefca']},
+            {'kind': 'microInsight', 'id': 'growth', 'eyebrow': 'The jump', 'text': 'Exchange grew from about 10 million documents to 464 million.', 'highlight': 'Most of it happened in 2025.', 'sources': ['onc_tefca']},
+            {'kind': 'info', 'id': 'cures', 'eyebrow': 'The origin', 'title': 'Required by law', 'body': 'The 21st Century Cures Act of 2016 called for a trusted national exchange framework.', 'keyTerms': [{'term': 'TEFCA', 'definition': 'Trusted Exchange Framework and Common Agreement: the US framework for nationwide health data exchange.'}], 'sources': ['onc_tefca']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'How many documents had TEFCA exchanged by the end of 2025?',
+             'options': ['About 10 million', 'About 46 million', 'About 464 million'], 'correctIndex': 2,
+             'explanation': '464 million by the end of 2025, up from about 10 million before 2025.'},
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['TEFCA went live in December 2023.', 'Epic Nexus is a designated QHIN.', 'TEFCA was created by a 2024 executive order.'], 'fakeIndex': 2,
+             'explanation': 'TEFCA comes from the 2016 21st Century Cures Act.'},
+        ],
+        'lenses': {
+            'career': ('Network roles grow', 'QHINs and their members need people to manage data exchange and compliance.', ['onc_tefca']),
+            'invest': ('Big vendors are the networks', 'Epic, Oracle and Surescripts run QHINs. Exchange volume flows through incumbents.', ['onc_tefca']),
+            'build_startup': ('Ride the network', 'Startups can access data through TEFCA participants. Build use cases on top.', ['onc_tefca']),
+            'curiosity': ('464 million documents', 'US health networks exchanged 464 million documents under TEFCA by the end of 2025.', ['onc_tefca']),
+        },
+        'rule': ('In health data exchange, the network grows once the biggest players connect.', ['onc_tefca']),
+        'takeaway': 'TEFCA went live in December 2023 and exchanged 464 million documents by the end of 2025 across 11 designated networks.',
+    },
+    {
+        'day': 28, 'facet': 'numbers', 'title': 'How connected hospitals really are',
+        'open': {
+            'eyebrow': 'Day 28 · The numbers', 'kicker': 'Most hospitals exchange data, but not always.',
+            'headline': 'In 2023, 70% of US hospitals said they at least sometimes engaged in all four areas of interoperability, up from 46% in 2018.',
+            'fullText': 'The four areas are finding, sending, receiving and integrating patient data. Routine engagement rose 54% over the same period. Gaps remain: 53% of large hospitals often or routinely exchanged data, compared with 38% of small hospitals.',
+            'sources': ['onc_interop'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'domains', 'eyebrow': 'The four areas', 'text': 'Find, send, receive and integrate: all four are needed for full interoperability.', 'highlight': 'Receiving data is not enough if it cannot be used.', 'keyTerms': [{'term': 'Interoperability', 'definition': 'The ability of different systems to exchange and use each other\'s data.'}], 'sources': ['onc_interop']},
+            {'kind': 'microInsight', 'id': 'gap', 'eyebrow': 'The divide', 'text': 'Large, urban, system-owned hospitals exchange more than small, rural, independent ones.', 'highlight': '53% versus 38% for routine exchange.', 'sources': ['onc_interop']},
+            {'kind': 'info', 'id': 'sometimes', 'eyebrow': 'The catch', 'title': '"Sometimes" is not enough', 'body': 'The 70% figure counts hospitals that at least sometimes exchange data, not always.', 'sources': ['onc_interop']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-share', 'prompt': 'What share of hospitals engaged in all four areas of interoperability in 2023?', 'min': 0, 'max': 100, 'value': 70, 'unit': '%', 'tolerance': 0.06, 'explanation': '70%, up from 46% in 2018.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You sell an interoperability product to hospitals.', 'prompt': 'Where is the biggest gap?',
+             'options': ['Small, rural hospitals', 'Large urban health systems', 'There is no gap left now'],
+             'consequences': ['They lag at 38% for routine exchange.', 'Large systems already lead at 53%.', 'Many hospitals still exchange only sometimes.'],
+             'correctIndex': 0, 'explanation': 'Small, rural and independent hospitals lag on routine data exchange.'},
+        ],
+        'lenses': {
+            'career': ('Close the gap', 'Helping smaller hospitals connect is a mission-driven area for health IT careers.', ['onc_interop']),
+            'invest': ('Room to grow', 'With exchange only "sometimes" at many hospitals, interoperability spending can still grow.', ['onc_interop']),
+            'build_startup': ('Serve small hospitals', 'Small and rural hospitals lag. Affordable integration tools fit them.', ['onc_interop']),
+            'curiosity': ('Seven in ten', 'About seven in ten US hospitals could find, send, receive and use outside data in 2023.', ['onc_interop']),
+        },
+        'rule': ('In interoperability, sending data is easy; integrating it into care is the real test.', ['onc_interop']),
+        'takeaway': '70% of US hospitals engaged in all four areas of interoperability in 2023, up from 46% in 2018, but small hospitals lag.',
+    },
+    {
+        'day': 29, 'facet': 'rules', 'title': 'The ban on blocking health data',
+        'open': {
+            'eyebrow': 'Day 29 · The rule', 'kicker': 'Holding data hostage can cost $1 million per violation.',
+            'headline': 'In September 2025, HHS announced a crackdown on information blocking, the practice of restricting access to or exchange of electronic health information.',
+            'fullText': 'Under the 21st Century Cures Act, certified health IT developers and health information networks face penalties of up to $1 million per violation. Providers in certain CMS programs face disincentives. HHS cited 1,336 possible claims reported through its portal since April 2021.',
+            'sources': ['dla_infoblock'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'blocking', 'eyebrow': 'The rule', 'text': 'Information blocking means unreasonably restricting access to electronic health information.', 'highlight': 'The Cures Act prohibits it.', 'keyTerms': [{'term': 'Information blocking', 'definition': 'Practices that unreasonably interfere with access, exchange or use of electronic health information.'}], 'sources': ['dla_infoblock']},
+            {'kind': 'microInsight', 'id': 'penalties', 'eyebrow': 'The penalties', 'text': 'Developers and networks can be fined up to $1 million per violation.', 'highlight': 'Developers can also lose certification.', 'sources': ['dla_infoblock']},
+            {'kind': 'info', 'id': 'report', 'eyebrow': 'How it is reported', 'title': 'A public portal', 'body': 'Patients, providers and others can report suspected blocking through ONC\'s portal.', 'sources': ['dla_infoblock']},
+        ],
+        'checks': [
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'Who faces fines of up to $1 million per violation?',
+             'left': {'name': 'Health IT developers and networks', 'note': 'Certified developers, HINs'}, 'right': {'name': 'Individual patients', 'note': 'Requesting records'}, 'correctIndex': 0,
+             'explanation': 'Developers and health information networks face the $1 million penalties.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'Which law prohibits information blocking?',
+             'options': ['The HITECH Act', 'The 21st Century Cures Act', 'The Affordable Care Act'], 'correctIndex': 1,
+             'explanation': 'The information blocking provisions come from the 21st Century Cures Act.'},
+        ],
+        'lenses': {
+            'career': ('Compliance for data access', 'Developers and providers need people who understand information blocking rules.', ['dla_infoblock']),
+            'invest': ('Penalties change behavior', 'Million-dollar fines push vendors to open data access. That helps app makers.', ['dla_infoblock']),
+            'build_startup': ('Use the rules', 'If access is unfairly blocked, startups can report it through the federal portal.', ['dla_infoblock']),
+            'curiosity': ('A fine for hiding data', 'US health IT companies can be fined up to $1 million for each act of blocking data.', ['dla_infoblock']),
+        },
+        'rule': ('In US health data, blocking access is not just bad practice; it can be illegal.', ['dla_infoblock']),
+        'takeaway': 'HHS announced an information blocking crackdown in September 2025; developers and networks face fines up to $1 million per violation.',
+    },
+    {
+        'day': 30, 'facet': 'frontier', 'title': 'Big Tech pledges to fix health data',
+        'open': {
+            'eyebrow': 'Day 30 · Where it breaks', 'kicker': 'Sixty companies promised results by early 2026.',
+            'headline': 'In July 2025, more than 60 companies, including Amazon, Apple, Google, OpenAI and Anthropic, pledged to work with CMS on a patient-centered health tech ecosystem.',
+            'fullText': 'Commitments included 21 networks aiming to meet CMS\'s voluntary interoperability criteria and seven EHR vendors pledging to help "kill the clipboard." Planned tools ranged from AI assistants for symptom checks to digital check-in. The companies targeted results in the first quarter of 2026.',
+            'sources': ['cms_ecosystem'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'voluntary', 'eyebrow': 'The approach', 'text': 'CMS set voluntary criteria rather than new mandates.', 'highlight': 'Participation is based on pledges.', 'keyTerms': [{'term': 'CMS Aligned Network', 'definition': 'A network that meets CMS\'s voluntary criteria for patient data exchange.'}], 'sources': ['cms_ecosystem']},
+            {'kind': 'microInsight', 'id': 'clipboard', 'eyebrow': 'The goal', 'text': 'Patients should not have to fill in the same paper forms at every visit.', 'highlight': 'Seven EHRs pledged to "kill the clipboard."', 'sources': ['cms_ecosystem']},
+            {'kind': 'info', 'id': 'risk', 'eyebrow': 'The open question', 'title': 'Pledges need follow-through', 'body': 'Voluntary pledges depend on companies delivering. Results were targeted for early 2026.', 'sources': ['cms_ecosystem']},
+        ],
+        'checks': [
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['More than 60 companies made pledges.', 'The pledges were binding federal mandates.', 'Results were targeted for early 2026.'], 'fakeIndex': 1,
+             'explanation': 'CMS set voluntary criteria; participation is based on pledges.'},
+            {'kind': 'buildChain', 'id': 'chain', 'prompt': 'Put these interoperability milestones in order.', 'steps': ['The 21st Century Cures Act passes', 'TEFCA goes live', 'Tech firms pledge to CMS\'s health ecosystem', 'Pledged results are due'], 'explanation': '2016, December 2023, July 2025, then the first quarter of 2026.'},
+        ],
+        'lenses': {
+            'career': ('Consumer health meets policy', 'Tech firms entering health need people who know both product and regulation.', ['cms_ecosystem']),
+            'invest': ('Big Tech in health', 'Amazon, Apple and Google pledging to CMS signals deeper moves into healthcare.', ['cms_ecosystem']),
+            'build_startup': ('Build for patients', 'Patient-facing apps get more data access as networks align. Design for patients first.', ['cms_ecosystem']),
+            'curiosity': ('Killing the clipboard', 'Tech companies pledged to end repetitive paper forms at the doctor\'s office.', ['cms_ecosystem']),
+        },
+        'rule': ('In health tech, voluntary pledges matter only if companies deliver on them.', ['cms_ecosystem']),
+        'takeaway': 'Over 60 companies, including Apple, Google and OpenAI, pledged in July 2025 to build a patient-centered health ecosystem with CMS.',
+    },
+]
