@@ -1,0 +1,188 @@
+# Climate tech, days 13-18. Month 1, topic 3: the Paris Agreement and national commitments.
+SRC = {
+    'unfccc_paris': {'url': 'https://www.unfccc.int/process-and-meetings/the-paris-agreement', 'label': 'UNFCCC, The Paris Agreement'},
+    'iisd_ncqg': {'url': 'https://iisd.org/articles/insight/baku-conference-sets-new-collective-climate-finance-goal', 'label': 'IISD, Baku conference sets new climate finance goal'},
+    'ee_paris': {'url': 'https://www.eenews.net/articles/so-long-paris-us-officially-leaves-landmark-climate-pact/', 'label': 'E&E News, US officially leaves the Paris pact'},
+    'unep_gap': {'url': 'https://unep.org/resources/emissions-gap-report-2025', 'label': 'UNEP, Emissions Gap Report 2025'},
+    'cb_china': {'url': 'https://www.carbonbrief.org/qa-what-does-chinas-new-paris-agreement-pledge-mean-for-climate-action/', 'label': "Carbon Brief, what China's new Paris pledge means"},
+    'ccn_cop30': {'url': 'https://www.climatechangenews.com/2025/11/22/cop30-brazil-deal-fossil-fuel-transition-fails-triples-finance-climate-adaptation-what-happened/', 'label': 'Climate Home News, what happened at COP30'},
+}
+
+LESSONS = [
+    {
+        'day': 13, 'facet': 'definition', 'title': 'The deal almost every country signed',
+        'open': {
+            'eyebrow': 'Day 13 · The Paris Agreement', 'kicker': 'One agreement sets the global climate goal.',
+            'headline': 'Adopted by 195 parties in December 2015, the Paris Agreement aims to hold warming well below 2°C and pursue efforts to limit it to 1.5°C.',
+            'fullText': 'It entered into force in November 2016. Each country sets its own climate plan, called a nationally determined contribution, on a five-year cycle meant to get more ambitious each time. To keep 1.5°C in reach, the UN says emissions must fall 43% by 2030.',
+            'sources': ['unfccc_paris'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'ndc', 'eyebrow': 'The plans', 'text': 'Each country writes its own target and plan, called an NDC.', 'highlight': 'Targets are national choices, not set by the UN.', 'keyTerms': [{'term': 'NDC', 'definition': 'Nationally determined contribution: a country\'s own climate target and plan under the Paris Agreement.'}], 'sources': ['unfccc_paris']},
+            {'kind': 'microInsight', 'id': 'ratchet', 'eyebrow': 'The ratchet', 'text': 'Countries submit new plans every five years.', 'highlight': 'Each one is meant to be stronger than the last.', 'sources': ['unfccc_paris']},
+            {'kind': 'info', 'id': 'transparency', 'eyebrow': 'Keeping score', 'title': 'Reporting started in 2024', 'body': 'Under a shared transparency framework, countries began reporting on their climate progress in 2024.', 'sources': ['unfccc_paris']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'How often do countries submit new climate plans under Paris?',
+             'options': ['Every year', 'Every ten years', 'Every five years'], 'correctIndex': 2,
+             'explanation': 'NDCs follow a five-year cycle, each meant to be more ambitious.'},
+            {'kind': 'sortSignal', 'id': 'sort', 'prompt': 'Is this part of the Paris Agreement or not?', 'buckets': ['Part of Paris', 'Not part of Paris'],
+             'items': [{'text': 'Holding warming well below 2°C', 'bucket': 0}, {'text': 'National plans every five years', 'bucket': 0}, {'text': 'UN-set targets for each country', 'bucket': 1}, {'text': 'Fines for missing targets', 'bucket': 1}],
+             'explanation': 'Countries set their own targets, and the agreement has no fines.'},
+        ],
+        'lenses': {
+            'career': ('Policy shapes demand', 'National climate plans drive spending on clean tech. Knowing NDCs helps in policy and strategy roles.', ['unfccc_paris']),
+            'invest': ('Targets signal markets', 'Countries\' NDCs hint at future rules and subsidies. Read them as policy roadmaps.', ['unfccc_paris']),
+            'build_startup': ('Follow national plans', 'Where NDCs set firm targets, demand for solutions tends to follow.', ['unfccc_paris']),
+            'curiosity': ('Everyone writes their own', 'Under Paris, each country decides its own climate target.', ['unfccc_paris']),
+        },
+        'rule': ('In global climate policy, the goal is shared but every country sets its own plan.', ['unfccc_paris']),
+        'takeaway': 'The 2015 Paris Agreement aims for well below 2°C and 1.5°C if possible. Countries set their own plans, renewed every five years.',
+    },
+    {
+        'day': 14, 'facet': 'money', 'title': 'The $300 billion promise',
+        'open': {
+            'eyebrow': 'Day 14 · The money', 'kicker': 'Rich and poor countries argued over who pays.',
+            'headline': 'At COP29 in Baku in November 2024, countries agreed a goal of at least $300 billion a year in climate finance for developing countries by 2035.',
+            'fullText': 'Developed countries are to take the lead, with developing countries encouraged to contribute voluntarily. The deal also called on all actors to scale finance from public and private sources to at least $1.3 trillion a year by 2035. It replaced the older $100 billion a year goal.',
+            'sources': ['iisd_ncqg'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'ncqg', 'eyebrow': 'The goal', 'text': 'The new collective quantified goal sets how much finance flows to developing countries.', 'highlight': 'At least $300 billion a year by 2035.', 'keyTerms': [{'term': 'Climate finance', 'definition': 'Money for cutting emissions and adapting to climate change, often from rich to poorer countries.'}], 'sources': ['iisd_ncqg']},
+            {'kind': 'microInsight', 'id': 'gap', 'eyebrow': 'The gap', 'text': 'Developing countries had called for a higher amount.', 'highlight': 'The $1.3 trillion figure is a call, not a firm pledge.', 'sources': ['iisd_ncqg']},
+            {'kind': 'info', 'id': 'contributors', 'eyebrow': 'The fight', 'title': 'Who should pay', 'body': 'Developed countries wanted more contributors, including other countries "in a position to contribute."', 'sources': ['iisd_ncqg']},
+        ],
+        'checks': [
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'Which figure is the core goal led by developed countries?',
+             'left': {'name': '$300 billion a year', 'note': 'By 2035'}, 'right': {'name': '$1.3 trillion a year', 'note': 'From all sources'}, 'correctIndex': 0,
+             'explanation': 'The $300 billion is the core goal; $1.3 trillion is a broader call on all actors.'},
+            {'kind': 'numberSense', 'id': 'ns-goal', 'prompt': 'How many billion dollars a year by 2035 is the COP29 climate finance goal?', 'min': 0, 'max': 1000, 'value': 300, 'unit': 'B', 'tolerance': 0.06, 'explanation': 'At least $300 billion a year by 2035.'},
+        ],
+        'lenses': {
+            'career': ('Climate finance is growing', 'Development banks and funds need people to structure and track climate finance.', ['iisd_ncqg']),
+            'invest': ('Blended finance deals', 'Reaching $1.3 trillion needs private money. Deals mixing public and private capital will grow.', ['iisd_ncqg']),
+            'build_startup': ('Emerging market demand', 'Finance flows to developing countries create markets for affordable climate solutions.', ['iisd_ncqg']),
+            'curiosity': ('Who pays for climate', 'Rich countries agreed to lead at least $300 billion a year for poorer ones by 2035.', ['iisd_ncqg']),
+        },
+        'rule': ('In climate deals, who pays is often harder to agree than what to do.', ['iisd_ncqg']),
+        'takeaway': 'COP29 set a goal of at least $300 billion a year in climate finance for developing countries by 2035, and called for $1.3 trillion from all sources.',
+    },
+    {
+        'day': 15, 'facet': 'power', 'title': 'The US leaves Paris, again',
+        'open': {
+            'eyebrow': 'Day 15 · The power', 'kicker': 'The second-largest emitter walked away.',
+            'headline': 'On January 27, 2026, the United States formally left the Paris Agreement, one year after President Trump announced the withdrawal.',
+            'fullText': 'He announced it on his first day in office, January 20, 2025, and notified the UN a week later. The US is the only country to quit the pact twice. It is now one of the few countries without a climate pollution reduction goal.',
+            'sources': ['ee_paris'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'timing', 'eyebrow': 'The rule on leaving', 'text': 'A withdrawal takes effect one year after the UN is notified.', 'highlight': 'Notice in January 2025 meant exit in January 2026.', 'sources': ['ee_paris']},
+            {'kind': 'microInsight', 'id': 'twice', 'eyebrow': 'A first', 'text': 'The US is the only country to have left the Paris Agreement twice.', 'highlight': 'It also left during Trump\'s first term.', 'sources': ['ee_paris']},
+            {'kind': 'info', 'id': 'parties', 'eyebrow': 'Who remains', 'title': '194 parties left in the pact', 'body': 'The agreement counted 194 parties as of January 27, 2026.', 'sources': ['unfccc_paris']},
+        ],
+        'checks': [
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['The US exit took effect on January 27, 2026.', 'The US has left the Paris Agreement only once.', 'Trump announced the exit on January 20, 2025.'], 'fakeIndex': 1,
+             'explanation': 'The US is the only country to have quit the pact twice.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You lead a US company with operations in Europe and Asia. The US has left Paris.', 'prompt': 'What do you do on climate?',
+             'options': ['Keep meeting rules where you operate', 'Drop all climate reporting worldwide', 'Wait for the US to rejoin first'],
+             'consequences': ['Other markets still have climate rules.', 'You break rules in countries still in Paris.', 'Your foreign operations face rules now.'],
+             'correctIndex': 0, 'explanation': 'Companies still face climate rules in the many countries that remain in the agreement.'},
+        ],
+        'lenses': {
+            'career': ('Global rules still apply', 'US firms working abroad still meet other countries\' climate rules. Cross-border expertise matters.', ['ee_paris']),
+            'invest': ('Policy diverges', 'The US now differs from most of the world on climate. Watch how that shifts trade and capital.', ['ee_paris']),
+            'build_startup': ('Look beyond the US', 'Climate demand continues in markets still committed to Paris.', ['ee_paris']),
+            'curiosity': ('Twice out the door', 'The US is the only country that has left the Paris Agreement twice.', ['ee_paris']),
+        },
+        'rule': ('In climate diplomacy, commitments last only as long as each government keeps them.', ['ee_paris']),
+        'takeaway': 'The US formally left the Paris Agreement on January 27, 2026, the only country to have quit it twice.',
+    },
+    {
+        'day': 16, 'facet': 'numbers', 'title': 'The warming we are on track for',
+        'open': {
+            'eyebrow': 'Day 16 · The numbers', 'kicker': 'Pledges and policies point well past 1.5°C.',
+            'headline': "UNEP's Emissions Gap Report 2025 projects about 2.8°C of warming this century under current policies.",
+            'fullText': 'If countries fully carried out their climate pledges, warming would be about 2.3 to 2.5°C. To get on a 1.5°C path, emissions would need to fall about 55% below 2019 levels by 2035. For 2°C, the cut is about 35%.',
+            'sources': ['unep_gap'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'gap', 'eyebrow': 'The gap', 'text': 'The emissions gap is the difference between where emissions are heading and where they need to be.', 'highlight': 'It is still very large.', 'keyTerms': [{'term': 'Emissions gap', 'definition': 'The difference between projected emissions and the levels needed to meet climate goals.'}], 'sources': ['unep_gap']},
+            {'kind': 'microInsight', 'id': 'pledges', 'eyebrow': 'Pledges versus policy', 'text': 'Pledges promise more than current policies deliver.', 'highlight': 'About 2.3 to 2.5°C with pledges; 2.8°C with policies.', 'sources': ['unep_gap']},
+            {'kind': 'info', 'id': 'cuts', 'eyebrow': 'What it takes', 'title': 'A 55% cut by 2035', 'body': 'Staying near 1.5°C needs emissions about 55% below 2019 levels within a decade.', 'sources': ['unep_gap']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-cut', 'prompt': 'By what percent below 2019 levels must emissions fall by 2035 for a 1.5°C path?', 'min': 0, 'max': 100, 'value': 55, 'unit': '%', 'tolerance': 0.06, 'explanation': 'About 55%, versus about 35% for 2°C.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What warming does UNEP project under current policies?',
+             'options': ['About 1.5°C', 'About 2.0°C', 'About 2.8°C'], 'correctIndex': 2,
+             'explanation': 'About 2.8°C this century under current policies.'},
+        ],
+        'lenses': {
+            'career': ('Adaptation is rising', 'With warming heading toward 2.8°C, adaptation work grows alongside emissions cuts.', ['unep_gap']),
+            'invest': ('Plan for more warming', 'Physical climate risk will grow if the gap stays. Price it into long-lived assets.', ['unep_gap']),
+            'build_startup': ('Both halves matter', 'The gap creates demand for both cutting emissions and coping with warming.', ['unep_gap']),
+            'curiosity': ('Heading for 2.8°C', 'Current policies put the world on track for about 2.8°C of warming.', ['unep_gap']),
+        },
+        'rule': ('In climate, compare pledges with policies; the gap between them is where risk hides.', ['unep_gap']),
+        'takeaway': 'UNEP projects about 2.8°C of warming under current policies and 2.3 to 2.5°C with full pledges. 1.5°C needs a 55% cut by 2035.',
+    },
+    {
+        'day': 17, 'facet': 'rules', 'title': "China's first absolute target",
+        'open': {
+            'eyebrow': 'Day 17 · The rule', 'kicker': 'The world\'s biggest emitter set its first hard cap.',
+            'headline': "In September 2025, China pledged to cut its economy-wide net greenhouse gas emissions 7 to 10% below peak levels by 2035.",
+            'fullText': "It was China's first Paris pledge with an absolute cut, covering all greenhouse gases. China also aims for non-fossil fuels to supply 30% of its energy and for over 3,600 GW of wind and solar by 2035. One analysis by CREA found the pledge more closely aligned with about 3°C of warming.",
+            'sources': ['cb_china'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'absolute', 'eyebrow': 'Absolute vs intensity', 'text': 'Earlier Chinese targets cut emissions per unit of GDP.', 'highlight': 'This one caps total emissions for the first time.', 'keyTerms': [{'term': 'Absolute target', 'definition': 'A goal to cut total emissions, rather than emissions per unit of output.'}], 'sources': ['cb_china']},
+            {'kind': 'microInsight', 'id': 'scope', 'eyebrow': 'The scope', 'text': 'It covers all greenhouse gases, including methane and nitrous oxide.', 'highlight': 'Not just CO2 from energy.', 'sources': ['cb_china']},
+            {'kind': 'info', 'id': 'critics', 'eyebrow': 'The debate', 'title': 'Is it enough?', 'body': 'Experts said a 1.5°C-consistent target would need cuts of at least 30% from peak or recent levels.', 'sources': ['cb_china']},
+        ],
+        'checks': [
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'What was new about China\'s 2035 target?',
+             'left': {'name': 'A cut per unit of GDP', 'note': 'Like earlier targets'}, 'right': {'name': 'A cut in total emissions', 'note': 'An absolute target'}, 'correctIndex': 1,
+             'explanation': 'It was China\'s first absolute emissions target under Paris.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You sell wind and solar equipment. China targets over 3,600 GW by 2035.', 'prompt': 'What should you note?',
+             'options': ['Growth may slow from recent record years', 'Installations will double every year', 'China plans to stop building solar'],
+             'consequences': ['The target needs about 200 GW a year, below 2024\'s 360 GW.', 'The target implies slower, not faster, growth.', 'China still plans large additions.'],
+             'correctIndex': 0, 'explanation': 'Reaching 3,600 GW needs about 200 GW a year, well below 2024\'s pace.'},
+        ],
+        'lenses': {
+            'career': ('China drives the market', 'China\'s targets shape global clean tech demand. Knowing its plans helps in any climate role.', ['cb_china']),
+            'invest': ('Read the fine print', 'China\'s wind and solar target implies slower additions than recent years. Adjust forecasts.', ['cb_china']),
+            'build_startup': ('All gases count', 'China\'s target covers methane and other gases. That widens demand for measurement tools.', ['cb_china']),
+            'curiosity': ('A first cap', 'In 2025, China set its first target to cut total emissions.', ['cb_china']),
+        },
+        'rule': ('In climate pledges, the type of target matters as much as the number.', ['cb_china']),
+        'takeaway': "China pledged in 2025 to cut net emissions 7 to 10% below peak by 2035, its first absolute target, though critics say it is not 1.5°C-aligned.",
+    },
+    {
+        'day': 18, 'facet': 'frontier', 'title': 'The COP that skipped fossil fuels',
+        'open': {
+            'eyebrow': 'Day 18 · Where it breaks', 'kicker': 'A climate summit ended without naming the main cause.',
+            'headline': 'COP30 in Belém, Brazil, ended on November 22, 2025, with a deal that made no explicit mention of fossil fuels.',
+            'fullText': 'More than 80 countries had called for a roadmap to move away from oil, coal and gas, but large producers led by Saudi Arabia, Russia and India opposed it. The deal called for tripling adaptation finance by 2035. Brazil said it would lead voluntary roadmaps outside the UN process.',
+            'sources': ['ccn_cop30'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'consensus', 'eyebrow': 'How COPs decide', 'text': 'UN climate deals need consensus, so a few countries can block language.', 'highlight': 'That is why fossil fuels were left out.', 'keyTerms': [{'term': 'COP', 'definition': 'Conference of the Parties: the annual UN climate summit.'}], 'sources': ['ccn_cop30']},
+            {'kind': 'microInsight', 'id': 'adaptation', 'eyebrow': 'What passed', 'text': 'Countries called for tripling adaptation finance by 2035.', 'highlight': 'No dollar figure was set.', 'keyTerms': [{'term': 'Adaptation', 'definition': 'Preparing for and coping with the effects of climate change.'}], 'sources': ['ccn_cop30']},
+            {'kind': 'info', 'id': 'outside', 'eyebrow': 'Plan B', 'title': 'Coalitions outside the UN', 'body': 'Brazil\'s presidency launched voluntary roadmaps on fossil fuels and deforestation, backed by countries such as Colombia.', 'sources': ['ccn_cop30']},
+        ],
+        'checks': [
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['COP30 ended on November 22, 2025.', 'The final deal set a fossil fuel phase-out date.', 'Over 80 countries wanted a fossil fuel roadmap.'], 'fakeIndex': 1,
+             'explanation': 'The final text made no explicit mention of fossil fuels.'},
+            {'kind': 'buildChain', 'id': 'chain', 'prompt': 'Put these climate milestones in order.', 'steps': ['The Paris Agreement is adopted', 'COP29 sets the $300 billion goal', 'COP30 ends without fossil fuel language', 'The US exit from Paris takes effect'], 'explanation': 'December 2015, November 2024, November 2025, then January 2026.'},
+        ],
+        'lenses': {
+            'career': ('Coalitions matter now', 'Progress may come from groups of willing countries. Diplomacy and coalition work are key skills.', ['ccn_cop30']),
+            'invest': ('Slow global consensus', 'UN deals move slowly. National policies and coalitions may matter more for markets.', ['ccn_cop30']),
+            'build_startup': ('Adaptation demand grows', 'A call to triple adaptation finance signals growing markets for climate resilience.', ['ccn_cop30']),
+            'curiosity': ('Not a word on fossil fuels', 'The 2025 UN climate deal did not explicitly mention fossil fuels.', ['ccn_cop30']),
+        },
+        'rule': ('In UN climate talks, consensus means the most reluctant country can set the limit.', ['ccn_cop30']),
+        'takeaway': 'COP30 ended in November 2025 without explicit fossil fuel language, despite 80+ countries backing a roadmap. It called for tripling adaptation finance.',
+    },
+]

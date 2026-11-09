@@ -11,6 +11,7 @@ const MARKETS = [
   { market: 'ev', migration: 'drizzle/migrations/0030_ev_handwritten_days_6_30.sql' },
   { market: 'agtech', migration: 'drizzle/migrations/0031_agtech_handwritten_days_6_30.sql' },
   { market: 'cleanenergy', migration: 'drizzle/migrations/0032_cleanenergy_handwritten_days_6_30.sql' },
+  { market: 'climatetech', migration: 'drizzle/migrations/0033_climatetech_handwritten_days_6_30.sql' },
 ];
 const GOALS = ['career', 'invest', 'build_startup', 'curiosity'];
 let python = true;
