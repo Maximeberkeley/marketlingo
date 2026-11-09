@@ -1,0 +1,188 @@
+# Clean energy, days 19-24. Month 1, topic 4: utility regulation and rate structures.
+SRC = {
+    'scors_roe': {'url': 'https://ors.sc.gov/sites/scors/files/Documents/Regulatory/electricNaturalGas/Electricity/Electric%20and%20Gas%20Utility%20ROE%20Q1%202025.pdf', 'label': 'South Carolina Office of Regulatory Staff, utility returns on equity, Q1 2025'},
+    'ee_rates': {'url': 'https://www.eenews.net/articles/utilities-sought-a-record-31b-in-rate-increases-last-year/', 'label': 'E&E News, utilities sought a record $31B in rate increases'},
+    'ap_vogtle': {'url': 'https://newschannel9.com/news/local/georgia-nuclear-rebirth-arrives-7-years-late-17b-over-cost-power-customers-footing-bill-vogtle-plant-waynesboro-georgia-power-company', 'label': 'AP via NewsChannel 9, Georgia nuclear rebirth arrives 7 years late'},
+    'ud_prices': {'url': 'https://www.utilitydive.com/news/gas-electricity-prices-rising-energy-information/811103/', 'label': 'Utility Dive, gas and electricity prices rising'},
+    'pvt_nem3': {'url': 'https://www.pv-tech.org/california-votes-to-slash-net-metering-payments', 'label': 'PV Tech, California votes to slash net metering payments'},
+    'pm_aep': {'url': 'https://www.powermag.com/regulator-approves-aep-ohios-landmark-data-center-tariff/', 'label': "POWER, regulator approves AEP Ohio's data center tariff"},
+}
+
+LESSONS = [
+    {
+        'day': 19, 'facet': 'definition', 'title': 'Allowed returns versus real returns',
+        'open': {
+            'eyebrow': 'Day 19 · Utility regulation', 'kicker': 'Regulators set what a utility may earn, not what it gets.',
+            'headline': 'In the 12 months to March 2025, Duke Energy Progress was allowed a 9.60% return on equity in South Carolina but earned 4.39%.',
+            'fullText': "Duke Energy Carolinas was allowed 9.94% and earned 7.81%, South Carolina's regulatory staff reported. State regulators set an allowed return on the money shareholders invest in the grid. Actual earnings depend on costs, sales and how fast rates are updated.",
+            'sources': ['scors_roe'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'model', 'eyebrow': 'The model', 'text': 'Most US utilities are monopolies, so regulators set their prices.', 'highlight': 'Rates aim to cover costs plus a fair return on investment.', 'keyTerms': [{'term': 'Rate base', 'definition': 'The value of a utility\'s investments, such as plants and wires, that it can earn a return on.'}], 'sources': ['scors_roe']},
+            {'kind': 'microInsight', 'id': 'roe', 'eyebrow': 'The return', 'text': 'The allowed return on equity is the profit rate regulators approve for shareholders.', 'highlight': 'In South Carolina, it was about 9.3% to 9.94%.', 'keyTerms': [{'term': 'Return on equity', 'definition': 'Profit as a share of the money shareholders have invested.'}], 'sources': ['scors_roe']},
+            {'kind': 'info', 'id': 'gap', 'eyebrow': 'The gap', 'title': 'Allowed is not guaranteed', 'body': 'Every utility listed earned less than allowed. Costs rising between rate cases eat into returns.', 'sources': ['scors_roe']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What did Duke Energy Progress actually earn against its 9.60% allowed return?',
+             'options': ['4.39%', '9.60%', '12.10%'], 'correctIndex': 0,
+             'explanation': 'It earned 4.39%, well below the 9.60% allowed.'},
+            {'kind': 'sortSignal', 'id': 'sort', 'prompt': 'Does it push earned returns below allowed returns?', 'buckets': ['Pushes below', 'Does not'],
+             'items': [{'text': 'Costs rise between rate cases', 'bucket': 0}, {'text': 'Lower electricity sales', 'bucket': 0}, {'text': 'A new rate increase approved', 'bucket': 1}, {'text': 'Costs fall below forecast', 'bucket': 1}],
+             'explanation': 'Rising costs and weak sales squeeze returns; new rates and lower costs help.'},
+        ],
+        'lenses': {
+            'career': ('Rate cases are a field', 'Utilities, regulators and consumer groups hire analysts for rate cases. It is steady work.', ['scors_roe']),
+            'invest': ('Watch the earned gap', 'Utility stocks depend on earning close to allowed returns. A big gap is a warning.', ['scors_roe']),
+            'build_startup': ('Regulated buyers move slowly', 'Utilities recover costs through rate cases. Sell products that fit that process.', ['scors_roe']),
+            'curiosity': ('A capped profit', 'Regulators decide how much profit many power companies are allowed to make.', ['scors_roe']),
+        },
+        'rule': ('In regulated utilities, the allowed return is a ceiling to aim for, not a promise.', ['scors_roe']),
+        'takeaway': 'Duke Energy Progress was allowed a 9.60% return in South Carolina but earned 4.39%. Regulators set allowed returns; costs decide the real ones.',
+    },
+    {
+        'day': 20, 'facet': 'money', 'title': 'A record wave of rate hikes',
+        'open': {
+            'eyebrow': 'Day 20 · The money', 'kicker': 'Utilities asked customers for more than ever.',
+            'headline': 'US electric and gas utilities requested nearly $31 billion in rate increases in 2025, more than double their 2024 requests.',
+            'fullText': 'It was the largest total on record by a wide margin, according to the nonprofit PowerLines. Growing demand and the data center boom drove the requests. Regulators will not approve all of them.',
+            'sources': ['ee_rates'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'ratecase', 'eyebrow': 'How it works', 'text': 'A utility files a rate case asking regulators to raise prices.', 'highlight': 'Regulators can approve, cut or reject it.', 'keyTerms': [{'term': 'Rate case', 'definition': 'A formal request by a utility to regulators to change the prices it charges.'}], 'sources': ['ee_rates']},
+            {'kind': 'microInsight', 'id': 'drivers', 'eyebrow': 'Why now', 'text': 'New demand from data centers needs new plants and wires.', 'highlight': 'Those investments flow into customer rates.', 'sources': ['ee_rates']},
+            {'kind': 'info', 'id': 'politics', 'eyebrow': 'The pressure', 'title': 'Bills became political', 'body': 'Rising bills drew public outcry, putting regulators under pressure to trim requests.', 'sources': ['ee_rates']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-requests', 'prompt': 'About how many billion dollars in rate increases did US utilities request in 2025?', 'min': 0, 'max': 80, 'value': 31, 'unit': 'B', 'tolerance': 0.07, 'explanation': 'Nearly $31 billion, more than double 2024.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You are a state regulator. A utility asks for a big increase to serve new data centers.', 'prompt': 'What do you weigh most?',
+             'options': ['Who should pay for the new costs', 'Approving it in full right away', 'Rejecting every increase'],
+             'consequences': ['You protect other customers from costs they did not cause.', 'Households may fund data center growth.', 'The grid may fall short of what is needed.'],
+             'correctIndex': 0, 'explanation': 'Regulators decide how costs are shared between new and existing customers.'},
+        ],
+        'lenses': {
+            'career': ('Affordability is the issue', 'Rate design and affordability analysis are in demand as bills climb.', ['ee_rates']),
+            'invest': ('Spending lifts rate base', 'Bigger rate requests mean more utility investment. Approval odds drive returns.', ['ee_rates']),
+            'build_startup': ('Lower the bill', 'Products that cut demand or peak use help customers facing rising rates.', ['ee_rates']),
+            'curiosity': ('A $31 billion ask', 'Utilities asked to raise rates by nearly $31 billion in 2025, a record.', ['ee_rates']),
+        },
+        'rule': ('In utility markets, new demand eventually shows up on everyone\'s bill unless regulators decide otherwise.', ['ee_rates']),
+        'takeaway': 'US utilities requested a record nearly $31 billion in rate increases in 2025, driven by demand growth and data centers.',
+    },
+    {
+        'day': 21, 'facet': 'power', 'title': 'Who pays for Vogtle',
+        'open': {
+            'eyebrow': 'Day 21 · The power', 'kicker': 'Regulators decide who absorbs a megaproject\'s overruns.',
+            'headline': "Georgia's Vogtle nuclear expansion came in seven years late and about $17 billion over budget, with a total cost nearing $35 billion.",
+            'fullText': 'The overruns pushed contractor Westinghouse into bankruptcy in 2017. Georgia\'s elected five-member Public Service Commission decides how much of the spending was prudent and can be charged to customers. Residential customers faced an extra $3.78 a month once the first new unit entered service.',
+            'sources': ['ap_vogtle'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'prudence', 'eyebrow': 'The test', 'text': 'Regulators review whether a utility\'s spending was prudent.', 'highlight': 'Imprudent costs can be kept off customer bills.', 'keyTerms': [{'term': 'Prudence review', 'definition': 'A regulator\'s check on whether a utility\'s spending was reasonable and can be charged to customers.'}], 'sources': ['ap_vogtle']},
+            {'kind': 'microInsight', 'id': 'stakes', 'eyebrow': 'The stakes', 'text': 'Staff estimated Georgia Power could earn $9.4 billion more profit over 60 years.', 'highlight': 'That assumed it recovered all its spending.', 'sources': ['ap_vogtle']},
+            {'kind': 'info', 'id': 'toshiba', 'eyebrow': 'The guarantee', 'title': 'Toshiba paid $3.7 billion', 'body': 'Westinghouse\'s parent paid the owners $3.7 billion to escape its fixed-price guarantee.', 'sources': ['ap_vogtle']},
+        ],
+        'checks': [
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'Who decides how much of Vogtle\'s cost customers pay?',
+             'left': {'name': 'Georgia Power', 'note': 'The utility that built it'}, 'right': {'name': 'Georgia Public Service Commission', 'note': 'Elected regulators'}, 'correctIndex': 1,
+             'explanation': 'The elected commission decides what spending was prudent.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What happened to contractor Westinghouse during the project?',
+             'options': ['It went bankrupt in 2017', 'It bought Georgia Power', 'It finished early and on budget'], 'correctIndex': 0,
+             'explanation': 'Cost overruns forced Westinghouse into bankruptcy in 2017.'},
+        ],
+        'lenses': {
+            'career': ('Regulators hold real power', 'Commissions decide billions in cost recovery. Regulatory roles shape outcomes.', ['ap_vogtle']),
+            'invest': ('Cost recovery decides returns', 'Whether overruns land on customers or shareholders drives a utility\'s value.', ['ap_vogtle']),
+            'build_startup': ('Megaprojects need control', 'Vogtle shows how delays compound. Tools for project control in big builds matter.', ['ap_vogtle']),
+            'curiosity': ('Seven years late', 'Georgia\'s new nuclear units arrived seven years late and billions over budget.', ['ap_vogtle']),
+        },
+        'rule': ('In regulated energy, the commission decides whether customers or shareholders pay for mistakes.', ['ap_vogtle']),
+        'takeaway': 'Vogtle came in seven years late and about $17 billion over budget, near $35 billion in total. Georgia regulators decide what customers pay.',
+    },
+    {
+        'day': 22, 'facet': 'numbers', 'title': 'Home power bills climb',
+        'open': {
+            'eyebrow': 'Day 22 · The numbers', 'kicker': 'The average household price kept rising.',
+            'headline': 'The average US residential electricity price reached 17.78 cents per kilowatt-hour in November 2025, up 5.5% from a year earlier, EIA data showed.',
+            'fullText': "Natural gas, the biggest US power fuel, played a part: the average gas spot price rose 56% in 2025 from a record low in 2024. Colder weather in many states added demand.",
+            'sources': ['ud_prices'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'residential', 'eyebrow': 'Who pays most', 'text': 'The residential rate is what households pay per kWh, covering power and delivery.', 'highlight': 'It rose 5.5% in a year.', 'keyTerms': [{'term': 'Residential rate', 'definition': 'The price per kilowatt-hour charged to households.'}], 'sources': ['ud_prices']},
+            {'kind': 'microInsight', 'id': 'gas', 'eyebrow': 'The fuel link', 'text': 'Gas spot prices rose 56% in 2025 after a record low in 2024.', 'highlight': 'Gas often sets the price of power.', 'sources': ['ud_prices']},
+            {'kind': 'info', 'id': 'pace', 'eyebrow': 'The pace', 'title': 'Faster than many expect', 'body': 'A 5.5% yearly rise adds up quickly for households already facing higher costs.', 'sources': ['ud_prices']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-rise', 'prompt': 'By what percent did the average US residential power price rise from November 2024 to November 2025?', 'min': 0, 'max': 20, 'value': 5.5, 'unit': '%', 'tolerance': 0.05, 'explanation': 'Up 5.5%, to 17.78 cents per kWh.'},
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['Residential power averaged 17.78 cents in November 2025.', 'Gas spot prices fell sharply in 2025.', 'Colder weather added to demand.'], 'fakeIndex': 1,
+             'explanation': 'Gas spot prices rose 56% in 2025.'},
+        ],
+        'lenses': {
+            'career': ('Affordability analysts', 'Rising household bills create demand for people who model rates and assistance programs.', ['ud_prices']),
+            'invest': ('Gas still drives power', 'Gas prices feed into electricity prices. Watch the gas market to read power bills.', ['ud_prices']),
+            'build_startup': ('Help households save', 'With prices up 5.5% in a year, tools that cut home energy use find buyers.', ['ud_prices']),
+            'curiosity': ('Eighteen cents a kWh', 'US households paid nearly 18 cents per kilowatt-hour on average in late 2025.', ['ud_prices']),
+        },
+        'rule': ('In electricity, fuel prices and grid spending both end up on the household bill.', ['ud_prices']),
+        'takeaway': 'US residential power averaged 17.78 cents per kWh in November 2025, up 5.5% in a year, as gas prices rose 56%.',
+    },
+    {
+        'day': 23, 'facet': 'rules', 'title': 'California cuts rooftop solar credits',
+        'open': {
+            'eyebrow': 'Day 23 · The rule', 'kicker': 'Selling solar power back got a lot less lucrative.',
+            'headline': 'In December 2022, California regulators replaced net metering with a new system that cut the credit for rooftop solar exports by about 75%.',
+            'fullText': 'The change took effect in April 2023. Export credits now vary by time of day, to encourage batteries that store midday solar for the evening peak. A commissioner said net metering was "profoundly expensive for non-solar customers."',
+            'sources': ['pvt_nem3'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'nem', 'eyebrow': 'The old deal', 'text': 'Net metering credited solar exports at close to the retail price.', 'highlight': 'Critics said non-solar customers paid the difference.', 'keyTerms': [{'term': 'Net metering', 'definition': 'A billing rule that credits solar owners for the power they send to the grid.'}], 'sources': ['pvt_nem3']},
+            {'kind': 'microInsight', 'id': 'storage', 'eyebrow': 'The nudge', 'text': 'Time-varying credits pay more for power in the evening peak.', 'highlight': 'Batteries become more valuable.', 'sources': ['pvt_nem3']},
+            {'kind': 'info', 'id': 'impact', 'eyebrow': 'The impact', 'title': 'A smaller market', 'body': 'Solar trade groups projected California\'s market would shrink 39% in 2024, the first full year.', 'sources': ['pvt_nem3']},
+        ],
+        'checks': [
+            {'kind': 'theCall', 'id': 'call', 'situation': 'A California homeowner is installing solar under the new rules.', 'prompt': 'What should they consider adding?',
+             'options': ['A battery to use solar in the evening', 'Extra panels to export more at noon', 'Nothing, since credits are unchanged'],
+             'consequences': ['Stored power is worth more at the evening peak.', 'Midday exports earn much less now.', 'Export credits fell by about 75%.'],
+             'correctIndex': 0, 'explanation': 'The new credits reward shifting solar to the evening with storage.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'By about how much did California cut export credits for rooftop solar?',
+             'options': ['About 10%', 'About 75%', 'About 100%'], 'correctIndex': 1,
+             'explanation': 'Export credits fell by roughly 75%.'},
+        ],
+        'lenses': {
+            'career': ('Rate design shapes markets', 'One rule change reshaped California\'s rooftop solar market. Rate design experts matter.', ['pvt_nem3']),
+            'invest': ('Storage over solar alone', 'California\'s change shifts value from panels to batteries. Watch storage attach rates.', ['pvt_nem3']),
+            'build_startup': ('Sell solar plus storage', 'Under time-varying credits, home batteries pay back better. Bundle them.', ['pvt_nem3']),
+            'curiosity': ('Selling sunshine for less', 'California homeowners now get much less for solar power they send to the grid.', ['pvt_nem3']),
+        },
+        'rule': ('In power markets, when power is delivered matters as much as how much.', ['pvt_nem3']),
+        'takeaway': 'California cut rooftop solar export credits by about 75% from April 2023, rewarding batteries that shift solar to the evening.',
+    },
+    {
+        'day': 24, 'facet': 'frontier', 'title': 'Making data centers pay their way',
+        'open': {
+            'eyebrow': 'Day 24 · Where it breaks', 'kicker': 'Ohio told data centers to commit before they plug in.',
+            'headline': "In July 2025, Ohio regulators approved AEP Ohio's tariff requiring large new data centers to pay for at least 85% of their contracted power for up to 12 years.",
+            'fullText': 'It applies to new loads over 25 MW, with exit fees for leaving early. AEP Ohio had requests from over 50 customers at over 90 sites totalling more than 30 GW. Regulators said the rule protects other customers from paying for unused grid investments.',
+            'sources': ['pm_aep'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'minbill', 'eyebrow': 'The rule', 'text': 'A minimum bill means paying for 85% of contracted capacity even if you use less.', 'highlight': 'It stops speculative requests from tying up the grid.', 'keyTerms': [{'term': 'Large-load tariff', 'definition': 'Special pricing rules for very large electricity users, such as data centers.'}], 'sources': ['pm_aep']},
+            {'kind': 'microInsight', 'id': 'growth', 'eyebrow': 'The growth', 'text': 'Central Ohio data center load was about 600 MW in 2024.', 'highlight': 'AEP projects about 5 GW by 2030.', 'sources': ['pm_aep']},
+            {'kind': 'info', 'id': 'pause', 'eyebrow': 'The backstory', 'title': 'A moratorium came first', 'body': 'AEP Ohio paused new data center agreements in March 2023 to study grid impacts.', 'sources': ['pm_aep']},
+        ],
+        'checks': [
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'Who does the Ohio data center tariff mainly protect?',
+             'left': {'name': 'Other utility customers', 'note': 'Homes and businesses'}, 'right': {'name': 'Data center developers', 'note': 'New large loads'}, 'correctIndex': 0,
+             'explanation': 'It keeps unused grid costs from shifting to other customers.'},
+            {'kind': 'numberSense', 'id': 'ns-min', 'prompt': 'What minimum share of contracted capacity must large new Ohio data centers pay for?', 'min': 0, 'max': 100, 'value': 85, 'unit': '%', 'tolerance': 0.06, 'explanation': 'At least 85%, for up to 12 years.'},
+        ],
+        'lenses': {
+            'career': ('Large loads need new rules', 'Utilities and regulators need people to design tariffs for data centers. It is a fast-growing area.', ['pm_aep']),
+            'invest': ('Commitments de-risk growth', 'Minimum bills make data center demand bankable for utilities building new grid.', ['pm_aep']),
+            'build_startup': ('Flexible load wins', 'Data centers that can flex demand may get better terms. Tools for flexibility have value.', ['pm_aep']),
+            'curiosity': ('Thirty gigawatts of requests', 'One Ohio utility got data center requests totalling over 30 GW.', ['pm_aep']),
+        },
+        'rule': ('In the data center boom, whoever causes grid costs is increasingly asked to pay them.', ['pm_aep']),
+        'takeaway': "Ohio approved AEP Ohio's tariff in July 2025: large new data centers must pay for at least 85% of contracted power for up to 12 years.",
+    },
+]
