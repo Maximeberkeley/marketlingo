@@ -246,6 +246,13 @@
       "when": 1794085555868,
       "tag": "0034_healthtech_handwritten_days_6_30",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1794085615868,
+      "tag": "0035_logistics_handwritten_days_6_30",
+      "breakpoints": true
     }
   ]
 }

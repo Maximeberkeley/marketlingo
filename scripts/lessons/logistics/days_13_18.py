@@ -1,0 +1,188 @@
+# Logistics, days 13-18. Month 1, topic 3: freight brokerage and carrier relationships.
+SRC = {
+    'fo_numbers': {'url': 'https://fleetowner.com/research/truck-by-numbers/media-gallery/55338098/trucking-by-the-numbers-2025-overview-carrier-composition-costs-and-impact', 'label': 'FleetOwner, Trucking by the Numbers 2025'},
+    'fw_chr': {'url': 'https://www.freightwaves.com/news/headcount-falls-at-c-h-robinson-as-automation-ai-reshape-brokerage', 'label': 'FreightWaves, headcount falls at C.H. Robinson as AI reshapes brokerage'},
+    'od_bond': {'url': 'https://www.overdriveonline.com/regulations/article/15814887/fmcsa-rule-cracking-down-on-brokers-takes-effect', 'label': "Overdrive, FMCSA's broker rule takes effect"},
+    'lm_dat': {'url': 'https://www.logisticsmgmt.com/article/december_spot_truckload_activity_sees_gains_to_end_2025', 'label': 'Logistics Management, December spot truckload activity'},
+    'fo_enforce': {'url': 'https://www.fleetowner.com/news/regulations/article/55353817/a-2026-federal-enforcement-outlook-for-trucking', 'label': "FleetOwner, FMCSA's enforcement outlook for 2026"},
+    'vk_theft': {'url': 'https://www.verisk.com/company/newsroom/cargo-theft-losses-surge-to-estimated-$725-million-in-2025-verisk-cargonet-analysis-reveals/', 'label': 'Verisk CargoNet, cargo theft losses surge in 2025'},
+}
+
+LESSONS = [
+    {
+        'day': 13, 'facet': 'definition', 'title': 'Why brokers exist',
+        'open': {
+            'eyebrow': 'Day 13 · Freight brokerage', 'kicker': 'Most trucking companies are tiny.',
+            'headline': 'About 91.5% of US motor carriers operate fewer than 10 trucks, and 52.9% run just one, according to the American Trucking Associations.',
+            'fullText': 'FMCSA counts about 1.1 million for-hire carriers. Shippers cannot vet and call thousands of tiny fleets for every load. Freight brokers fill that gap, matching loads with carriers and earning the difference between what shippers pay and what carriers receive.',
+            'sources': ['fo_numbers'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'broker', 'eyebrow': 'The role', 'text': 'A broker arranges transport for a shipper but does not haul the freight itself.', 'highlight': 'It earns the spread between two prices.', 'keyTerms': [{'term': 'Freight broker', 'definition': 'A company that arranges truck transport between shippers and carriers without hauling freight itself.'}], 'sources': ['fo_numbers']},
+            {'kind': 'microInsight', 'id': 'fragment', 'eyebrow': 'Fragmentation', 'text': 'Thousands of small carriers make the market hard to navigate.', 'highlight': 'Brokers aggregate that capacity.', 'keyTerms': [{'term': 'Owner-operator', 'definition': 'A driver who owns and runs their own truck, often as a one-truck company.'}], 'sources': ['fo_numbers']},
+            {'kind': 'info', 'id': 'scale', 'eyebrow': 'The scale', 'title': '1.1 million for-hire carriers', 'body': 'FMCSA counts about 1.1 million for-hire carriers, plus nearly 791,000 private fleets.', 'sources': ['fo_numbers']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'About what share of US motor carriers run just one truck?',
+             'options': ['About 10%', 'About 25%', 'About 53%'], 'correctIndex': 2,
+             'explanation': '52.9% of carriers run a single truck.'},
+            {'kind': 'sortSignal', 'id': 'sort', 'prompt': 'Does a broker do this, or a carrier?', 'buckets': ['Broker', 'Carrier'],
+             'items': [{'text': 'Finds a truck for a shipper\'s load', 'bucket': 0}, {'text': 'Earns the price spread', 'bucket': 0}, {'text': 'Drives the truck', 'bucket': 1}, {'text': 'Owns the trailer', 'bucket': 1}],
+             'explanation': 'Brokers match and price; carriers own equipment and haul.'},
+        ],
+        'lenses': {
+            'career': ('Brokers hire sales and ops', 'Brokerages employ carrier reps and account managers. It is a common entry into logistics.', ['fo_numbers']),
+            'invest': ('Fragmentation is the moat', 'With 91.5% of carriers under 10 trucks, brokers keep a role. Consolidation would weaken it.', ['fo_numbers']),
+            'build_startup': ('Tools for tiny fleets', 'Most carriers run one truck. Simple tools for owner-operators reach a huge base.', ['fo_numbers']),
+            'curiosity': ('A nation of one-truck firms', 'More than half of US trucking companies have exactly one truck.', ['fo_numbers']),
+        },
+        'rule': ('In trucking, fragmentation is why middlemen exist.', ['fo_numbers']),
+        'takeaway': 'About 91.5% of US carriers run fewer than 10 trucks and 52.9% run one, which is why freight brokers match loads with carriers.',
+    },
+    {
+        'day': 14, 'facet': 'money', 'title': 'Fewer people, better margins',
+        'open': {
+            'eyebrow': 'Day 14 · The money', 'kicker': 'A big broker grew margins in a weak market.',
+            'headline': "C.H. Robinson's headcount fell about 19% from early 2024 to late 2025 as automation and AI reshaped its brokerage.",
+            'fullText': 'It went from about 14,990 to about 12,085 employees. Its North American trucking unit\'s adjusted operating margin rose to 36.4% in late 2025, from 33.3% a year earlier. Freight demand stayed weak, with shipments down year over year for 13 straight quarters.',
+            'sources': ['fw_chr'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'margin', 'eyebrow': 'The metric', 'text': 'Operating margin shows how much of gross profit is left after running costs.', 'highlight': 'Fewer staff per load lifts it.', 'keyTerms': [{'term': 'Operating margin', 'definition': 'Profit from operations as a share of revenue or gross profit.'}], 'sources': ['fw_chr']},
+            {'kind': 'microInsight', 'id': 'ai', 'eyebrow': 'The driver', 'text': 'Tasks that once needed people are now automated or need less labor.', 'highlight': 'Executives cited double-digit productivity gains.', 'sources': ['fw_chr']},
+            {'kind': 'info', 'id': 'demand', 'eyebrow': 'The backdrop', 'title': 'Weak freight, better profit', 'body': 'Shipments fell for 13 straight quarters, yet margins rose through cost cuts and automation.', 'sources': ['fw_chr']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-margin', 'prompt': "What was C.H. Robinson's North American trucking adjusted operating margin in late 2025?", 'min': 0, 'max': 80, 'value': 36.4, 'unit': '%', 'tolerance': 0.06, 'explanation': '36.4%, up from 33.3% a year earlier, against a 40% target.'},
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'What mainly lifted C.H. Robinson\'s margins in a weak market?',
+             'left': {'name': 'Productivity and automation', 'note': 'Fewer people per load'}, 'right': {'name': 'Booming freight demand', 'note': 'More shipments'}, 'correctIndex': 0,
+             'explanation': 'Demand was weak; automation and productivity drove the gains.'},
+        ],
+        'lenses': {
+            'career': ('Brokerage jobs are changing', 'Routine broker tasks are being automated. Skills in exceptions and relationships matter more.', ['fw_chr']),
+            'invest': ('Productivity is the story', 'Brokers that automate can grow margins even when freight is weak.', ['fw_chr']),
+            'build_startup': ('Automate the busywork', 'Brokers want to cut manual tasks per load. Workflow automation finds buyers.', ['fw_chr']),
+            'curiosity': ('Fewer workers, more profit', 'A top freight broker cut about a fifth of its staff while its margins rose.', ['fw_chr']),
+        },
+        'rule': ('In freight brokerage, margin comes from doing more loads per person.', ['fw_chr']),
+        'takeaway': "C.H. Robinson cut headcount about 19% from 2024 to 2025 as automation lifted its trucking margin to 36.4%.",
+    },
+    {
+        'day': 15, 'facet': 'power', 'title': 'The bond that protects carriers',
+        'open': {
+            'eyebrow': 'Day 15 · The power', 'kicker': 'A rule gave the regulator power to shut brokers fast.',
+            'headline': 'From January 16, 2026, FMCSA can suspend a freight broker\'s authority if its financial security falls below $75,000.',
+            'fullText': 'Brokers must keep at least $75,000 available, typically as a bond or trust, to cover claims such as unpaid carrier bills. If it drops below that, the broker has seven calendar days after FMCSA\'s notice to restore it or be shut down. The rule aims to help carriers trust that a broker can pay.',
+            'sources': ['od_bond'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'bond', 'eyebrow': 'The bond', 'text': 'A broker bond guarantees money is available if the broker fails to pay.', 'highlight': 'The minimum is $75,000.', 'keyTerms': [{'term': 'Broker bond', 'definition': 'Financial security a broker must keep to cover claims, such as unpaid carrier invoices.'}], 'sources': ['od_bond']},
+            {'kind': 'microInsight', 'id': 'clock', 'eyebrow': 'The clock', 'text': 'Brokers have seven calendar days to refill a depleted bond.', 'highlight': 'Otherwise FMCSA suspends them.', 'sources': ['od_bond']},
+            {'kind': 'info', 'id': 'carriers', 'eyebrow': 'Who it helps', 'title': 'Carriers get paid', 'body': 'Truckers can check that a broker has legitimate finances before hauling a load.', 'sources': ['od_bond']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What minimum financial security must a broker keep?',
+             'options': ['$7,500', '$75,000', '$750,000'], 'correctIndex': 1,
+             'explanation': 'At least $75,000, or FMCSA can suspend the broker.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You own one truck. A new broker offers a high rate for a load.', 'prompt': 'What do you check first?',
+             'options': ['That its $75,000 bond is active', 'Only the rate per mile', 'Whether it has a nice website'],
+             'consequences': ['You know there is money if it fails to pay.', 'A high rate means nothing if unpaid.', 'Websites prove little about finances.'],
+             'correctIndex': 0, 'explanation': 'The bond is there to cover unpaid carrier claims.'},
+        ],
+        'lenses': {
+            'career': ('Compliance matters for brokers', 'Brokers need staff who track bonds and authority status under the new rule.', ['od_bond']),
+            'invest': ('Weak brokers exit', 'Faster suspensions push out undercapitalized brokers. Stronger ones gain share.', ['od_bond']),
+            'build_startup': ('Broker vetting tools', 'Carriers want to check broker finances quickly. Vetting tools have users.', ['od_bond']),
+            'curiosity': ('Seven days to pay up', 'A US freight broker can be shut down a week after its bond runs low.', ['od_bond']),
+        },
+        'rule': ('In brokerage, the power to suspend a broker protects the carriers who haul for it.', ['od_bond']),
+        'takeaway': 'From January 16, 2026, FMCSA can suspend brokers whose financial security falls below $75,000 if not restored within seven days.',
+    },
+    {
+        'day': 16, 'facet': 'numbers', 'title': 'The spot-contract squeeze',
+        'open': {
+            'eyebrow': 'Day 16 · The numbers', 'kicker': 'When spot rates rise, brokers feel the pinch.',
+            'headline': 'In December 2025, the US dry van spot rate averaged $2.29 a mile and the contract rate $2.46, according to DAT.',
+            'fullText': 'The gap between spot and contract rates narrowed to its smallest since March 2022. Brokers had locked in contract prices with shippers, but the rates they paid carriers jumped. That compressed broker margins to 9.9%.',
+            'sources': ['lm_dat'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'spot', 'eyebrow': 'Two prices', 'text': 'Spot rates are for one-off loads; contract rates are agreed for months.', 'highlight': 'Brokers often sell contract and buy spot.', 'keyTerms': [{'term': 'Spot rate', 'definition': 'The price for moving a single load right now, set by current supply and demand.'}], 'sources': ['lm_dat']},
+            {'kind': 'microInsight', 'id': 'squeeze', 'eyebrow': 'The squeeze', 'text': 'When spot rates rise toward contract rates, broker margins shrink.', 'highlight': 'They fell to 9.9% in December 2025.', 'keyTerms': [{'term': 'Contract rate', 'definition': 'A price agreed in advance for a shipper\'s recurring loads.'}], 'sources': ['lm_dat']},
+            {'kind': 'info', 'id': 'why', 'eyebrow': 'Why rates rose', 'title': 'Peak season and weather', 'body': 'Holiday demand, severe weather and tight capacity pushed December spot rates up.', 'sources': ['lm_dat']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-margin', 'prompt': 'What were broker margins compressed to in December 2025?', 'min': 0, 'max': 30, 'value': 9.9, 'unit': '%', 'tolerance': 0.06, 'explanation': '9.9%, as spot rates rose toward contract rates.'},
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['Dry van spot averaged $2.29 a mile.', 'Spot rates were far above contract rates.', 'The gap was the smallest since March 2022.'], 'fakeIndex': 1,
+             'explanation': 'Spot sat below contract, at $2.29 versus $2.46.'},
+        ],
+        'lenses': {
+            'career': ('Pricing is the craft', 'Broker pricing teams balance spot and contract rates. It is a key skill.', ['lm_dat']),
+            'invest': ('Spreads drive broker profit', 'When the spot-contract gap narrows, broker margins shrink. Watch DAT data.', ['lm_dat']),
+            'build_startup': ('Better rate forecasts', 'Brokers lose when spot rates surprise them. Forecasting tools help.', ['lm_dat']),
+            'curiosity': ('$2.29 a mile', 'In December 2025, moving a dry van load on the spot market cost about $2.29 a mile.', ['lm_dat']),
+        },
+        'rule': ('In brokerage, profit lives in the gap between what shippers pay and what carriers charge.', ['lm_dat']),
+        'takeaway': 'In December 2025, dry van spot rates hit $2.29 a mile against $2.46 contract, squeezing broker margins to 9.9%.',
+    },
+    {
+        'day': 17, 'facet': 'rules', 'title': 'English tests and driver licenses',
+        'open': {
+            'eyebrow': 'Day 17 · The rule', 'kicker': 'Enforcement changes can pull drivers off the road.',
+            'headline': 'In 2025, US inspectors recorded 12,308 out-of-service violations for truck drivers lacking English proficiency, up from 14 in 2023 and 2024 combined.',
+            'fullText': 'Stricter enforcement began in late June 2025. A separate September 2025 rule on non-domiciled commercial licenses was projected to remove about 194,000 drivers over two years, but a federal appeals court paused it. FTR estimated the English crackdown alone could remove about 25,000 drivers a year.',
+            'sources': ['fo_enforce'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'oos', 'eyebrow': 'Out of service', 'text': 'An out-of-service order stops a driver from driving until the problem is fixed.', 'highlight': 'It takes the truck off the road immediately.', 'keyTerms': [{'term': 'Out-of-service order', 'definition': 'An order that bars a driver or vehicle from operating until a violation is fixed.'}], 'sources': ['fo_enforce']},
+            {'kind': 'microInsight', 'id': 'cdl', 'eyebrow': 'The license rule', 'text': 'Non-domiciled licenses go to drivers who are not permanent residents of the issuing state.', 'highlight': 'About 5% of CDL holders had them.', 'keyTerms': [{'term': 'CDL', 'definition': 'Commercial driver\'s license, required to drive heavy trucks in the US.'}], 'sources': ['fo_enforce']},
+            {'kind': 'info', 'id': 'court', 'eyebrow': 'In court', 'title': 'The license rule is paused', 'body': 'A federal appeals court paused the non-domiciled CDL rule while a challenge proceeds.', 'sources': ['fo_enforce']},
+        ],
+        'checks': [
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'Which rule did a federal appeals court pause?',
+             'left': {'name': 'English proficiency checks', 'note': 'Enforced since June 2025'}, 'right': {'name': 'Non-domiciled CDL rule', 'note': 'September 2025'}, 'correctIndex': 1,
+             'explanation': 'The court paused the non-domiciled CDL rule while the challenge continues.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You run a trucking fleet. New enforcement may remove some of your drivers.', 'prompt': 'What do you do?',
+             'options': ['Audit licenses and English now', 'Wait until drivers are stopped', 'Ignore it as only temporary'],
+             'consequences': ['You avoid sudden out-of-service orders.', 'Stops strand trucks and loads mid-route.', 'Enforcement numbers rose sharply.'],
+             'correctIndex': 0, 'explanation': 'Proactive checks avoid trucks being stopped mid-route.'},
+        ],
+        'lenses': {
+            'career': ('Compliance roles grow', 'Fleets need compliance staff to manage changing driver rules.', ['fo_enforce']),
+            'invest': ('Rules tighten capacity', 'Removing drivers can tighten truck capacity and lift rates.', ['fo_enforce']),
+            'build_startup': ('Driver compliance tools', 'Fleets must verify licenses and qualifications. Compliance software has demand.', ['fo_enforce']),
+            'curiosity': ('From 14 to 12,308', 'English-proficiency violations for US truckers jumped from 14 in two years to over 12,000 in one.', ['fo_enforce']),
+        },
+        'rule': ('In trucking, enforcement changes can shrink capacity as much as any market shift.', ['fo_enforce']),
+        'takeaway': 'US inspectors recorded 12,308 English-proficiency out-of-service violations in 2025; a rule on non-domiciled CDLs was paused in court.',
+    },
+    {
+        'day': 18, 'facet': 'frontier', 'title': 'Cargo theft goes upmarket',
+        'open': {
+            'eyebrow': 'Day 18 · Where it breaks', 'kicker': 'Thieves are stealing less often but taking more.',
+            'headline': 'Estimated cargo theft losses in the US and Canada rose 60% in 2025 to nearly $725 million, according to Verisk CargoNet.',
+            'fullText': 'Total supply chain crime events stayed roughly flat at 3,594, but the average theft rose 36% to $273,990. Organized groups are targeting higher-value loads and misdirecting shipments tendered to legitimate carriers. CargoNet warned criminals may buy existing carriers with clean histories.',
+            'sources': ['vk_theft'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'deception', 'eyebrow': 'The method', 'text': 'Theft by deception uses fake identities or redirection instead of break-ins.', 'highlight': 'The load is handed over willingly.', 'keyTerms': [{'term': 'Strategic theft', 'definition': 'Cargo theft using fraud or deception rather than physical break-ins.'}], 'sources': ['vk_theft']},
+            {'kind': 'microInsight', 'id': 'targets', 'eyebrow': 'The targets', 'text': 'Food and beverage thefts rose 47% and metals 77%.', 'highlight': 'Computing hardware is a top target.', 'sources': ['vk_theft']},
+            {'kind': 'info', 'id': 'california', 'eyebrow': 'Where', 'title': 'California leads', 'body': 'California had 1,218 incidents, with activity shifting inland to Kern and San Joaquin counties.', 'sources': ['vk_theft']},
+        ],
+        'checks': [
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['Losses rose about 60% in 2025.', 'Theft incidents tripled in 2025.', 'The average theft rose to about $274,000.'], 'fakeIndex': 1,
+             'explanation': 'Total events were roughly flat; losses rose because thieves targeted higher-value loads.'},
+            {'kind': 'buildChain', 'id': 'chain', 'prompt': 'Put a theft-by-deception scheme in order.', 'steps': ['A shipper tenders a load to a legitimate carrier', 'Criminals impersonate or redirect the pickup', 'The load is handed over willingly', 'The goods vanish into resale'], 'explanation': 'Deception schemes exploit trust at handoff rather than breaking in.'},
+        ],
+        'lenses': {
+            'career': ('Freight security grows', 'Brokers and shippers hire fraud and security specialists as theft shifts to deception.', ['vk_theft']),
+            'invest': ('Losses hit insurers and brokers', 'Higher-value thefts raise claims and insurance costs across freight.', ['vk_theft']),
+            'build_startup': ('Verify identity at handoff', 'Deception exploits weak identity checks. Verification tools for pickups fill a gap.', ['vk_theft']),
+            'curiosity': ('Stolen by paperwork', 'Many big cargo thefts now happen through fraud, not break-ins.', ['vk_theft']),
+        },
+        'rule': ('In freight, the weakest link is often the handoff, not the lock.', ['vk_theft']),
+        'takeaway': 'Cargo theft losses rose 60% to nearly $725 million in 2025 as organized groups targeted high-value loads through deception.',
+    },
+]
