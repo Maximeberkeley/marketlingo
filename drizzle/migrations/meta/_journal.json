@@ -232,6 +232,13 @@
       "when": 1794085435868,
       "tag": "0032_cleanenergy_handwritten_days_6_30",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1794085495868,
+      "tag": "0033_climatetech_handwritten_days_6_30",
+      "breakpoints": true
     }
   ]
 }

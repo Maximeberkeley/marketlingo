@@ -1,0 +1,188 @@
+# Climate tech, days 19-24. Month 1, topic 4: carbon pricing (ETS, carbon tax) globally.
+SRC = {
+    'wb_pricing': {'url': 'https://www.worldbank.org/en/news/press-release/2025/06/10/global-carbon-pricing-mobilizes-over-100-billion-for-public-budgets', 'label': 'World Bank, global carbon pricing mobilizes over $100 billion'},
+    'argus_ets': {'url': 'https://www.argusmedia.com/en/news-and-insights/latest-market-news/2641480-eu-ets-auction-revenue-decreases-in-2024', 'label': 'Argus, EU ETS auction revenue decreases in 2024'},
+    'icap_china': {'url': 'https://icapcarbonaction.com/en/news/china-officially-expands-national-ets-cement-steel-and-aluminum-sectors', 'label': 'ICAP, China expands its national ETS to cement, steel and aluminum'},
+    'icap_cbam': {'url': 'https://icapcarbonaction.com/en/news/eu-adopts-simplifications-cbam-rules-ahead-compliance-phase-starting-2026', 'label': 'ICAP, EU adopts simplified CBAM rules'},
+    'gn_canada': {'url': 'https://globalnews.ca/news/11082822/mark-carney-consumer-carbon-price-terminated-immediately', 'label': 'Global News, Carney ends the consumer carbon price'},
+    'rec_vcm': {'url': 'https://www.reccessary.com/en/news/voluntary-carbon-market-hits-6-year-low', 'label': 'Reccessary, voluntary carbon market hits a six-year low'},
+}
+
+LESSONS = [
+    {
+        'day': 19, 'facet': 'definition', 'title': 'Putting a price on carbon',
+        'open': {
+            'eyebrow': 'Day 19 · Carbon pricing', 'kicker': 'Eighty systems now charge for emissions.',
+            'headline': 'In 2025, 80 carbon pricing instruments were operating worldwide, covering about 28% of global greenhouse gas emissions, the World Bank reported.',
+            'fullText': 'They raised more than $100 billion for public budgets in 2024, and just over half went to environment, infrastructure and development projects. Most new and planned instruments are emissions trading systems. The rest are mainly carbon taxes.',
+            'sources': ['wb_pricing'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'tax', 'eyebrow': 'Option one', 'text': 'A carbon tax sets a fixed price per tonne; emissions adjust.', 'highlight': 'The price is certain; the amount cut is not.', 'keyTerms': [{'term': 'Carbon tax', 'definition': 'A fixed charge per tonne of greenhouse gas emitted.'}], 'sources': ['wb_pricing']},
+            {'kind': 'microInsight', 'id': 'ets', 'eyebrow': 'Option two', 'text': 'An emissions trading system caps total emissions; the market sets the price.', 'highlight': 'The amount is certain; the price is not.', 'keyTerms': [{'term': 'ETS', 'definition': 'Emissions trading system: a cap on emissions with tradable allowances.'}], 'sources': ['wb_pricing']},
+            {'kind': 'info', 'id': 'revenue', 'eyebrow': 'The money', 'title': 'Over $100 billion raised', 'body': 'Carbon pricing raised over $100 billion in 2024. Just over half funded environment and development projects.', 'sources': ['wb_pricing']},
+        ],
+        'checks': [
+            {'kind': 'sortSignal', 'id': 'sort', 'prompt': 'Does it describe a carbon tax or an ETS?', 'buckets': ['Carbon tax', 'ETS'],
+             'items': [{'text': 'The price per tonne is fixed', 'bucket': 0}, {'text': 'Total emissions can vary', 'bucket': 0}, {'text': 'A cap limits total emissions', 'bucket': 1}, {'text': 'Allowances are traded', 'bucket': 1}],
+             'explanation': 'A tax fixes the price; an ETS fixes the quantity and lets the price move.'},
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What share of global emissions did carbon prices cover in 2025?',
+             'options': ['About 5%', 'About 28%', 'About 75%'], 'correctIndex': 1,
+             'explanation': 'About 28% of global greenhouse gas emissions.'},
+        ],
+        'lenses': {
+            'career': ('Carbon markets need people', 'Traders, analysts and compliance staff work in carbon markets. They are growing.', ['wb_pricing']),
+            'invest': ('Prices change economics', 'Where carbon has a price, clean options gain. Watch which sectors are covered.', ['wb_pricing']),
+            'build_startup': ('Sell where carbon costs money', 'Solutions that cut emissions earn more in places with a carbon price.', ['wb_pricing']),
+            'curiosity': ('Paying to pollute', 'About 28% of the world\'s emissions now carry a price.', ['wb_pricing']),
+        },
+        'rule': ('With carbon pricing, you choose to fix either the price or the amount, never both.', ['wb_pricing']),
+        'takeaway': '80 carbon pricing instruments covered about 28% of global emissions in 2025 and raised over $100 billion in 2024.',
+    },
+    {
+        'day': 20, 'facet': 'money', 'title': "Europe's carbon revenue",
+        'open': {
+            'eyebrow': 'Day 20 · The money', 'kicker': 'More permits sold, less money raised.',
+            'headline': "The EU's carbon market raised about €39 billion from auctions in 2024, down from €44 billion in 2023.",
+            'fullText': 'More permits were sold, about 599 million, but the average price fell from €83.60 to €64.76 a tonne. Weak industry and lower power demand cut demand for allowances. Member states must spend their share on climate and energy projects.',
+            'sources': ['argus_ets'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'auction', 'eyebrow': 'How it earns', 'text': 'Governments auction emission allowances to companies.', 'highlight': 'Revenue depends on price times volume.', 'keyTerms': [{'term': 'Allowance auction', 'definition': 'A sale of emission permits by governments to companies.'}], 'sources': ['argus_ets']},
+            {'kind': 'microInsight', 'id': 'funds', 'eyebrow': 'Where it goes', 'text': 'The Modernisation Fund got €6.27 billion to help poorer member states.', 'highlight': 'The Innovation Fund got €2.29 billion.', 'sources': ['argus_ets']},
+            {'kind': 'info', 'id': 'price', 'eyebrow': 'Why it fell', 'title': 'Demand dropped', 'body': 'Manufacturing slowed and renewables cut power emissions, so companies needed fewer allowances.', 'sources': ['argus_ets']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-rev', 'prompt': 'About how many billion euros did EU carbon auctions raise in 2024?', 'min': 0, 'max': 100, 'value': 39, 'unit': 'B', 'tolerance': 0.06, 'explanation': 'About €39 billion, down from €44 billion in 2023.'},
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'Why did EU carbon revenue fall in 2024?',
+             'left': {'name': 'Fewer permits sold', 'note': 'Lower volume'}, 'right': {'name': 'Lower average price', 'note': 'Weaker demand'}, 'correctIndex': 1,
+             'explanation': 'More permits were sold, but the average price fell from €83.60 to €64.76.'},
+        ],
+        'lenses': {
+            'career': ('Public climate funds', 'Carbon revenue funds programs across Europe. Grant and program roles follow the money.', ['argus_ets']),
+            'invest': ('Carbon price tracks the economy', 'Weak industry lowered EU carbon prices in 2024. Watch demand, not just policy.', ['argus_ets']),
+            'build_startup': ('Tap the funds', 'The Innovation Fund got €2.29 billion in 2024. Clean tech startups can apply for support.', ['argus_ets']),
+            'curiosity': ('A €39 billion market', 'Europe raised about €39 billion selling permits to emit carbon in 2024.', ['argus_ets']),
+        },
+        'rule': ('In carbon markets, revenue is price times volume, and the price follows the economy.', ['argus_ets']),
+        'takeaway': "EU carbon auctions raised about €39 billion in 2024, down from €44 billion, as the average price fell to €64.76 a tonne.",
+    },
+    {
+        'day': 21, 'facet': 'power', 'title': "China's carbon market grows",
+        'open': {
+            'eyebrow': 'Day 21 · The power', 'kicker': 'The biggest carbon market by emissions got bigger.',
+            'headline': "In March 2025, China expanded its national carbon market to steel, cement and aluminum, adding about 1,500 companies.",
+            'fullText': 'That added about 3 billion tonnes of CO2-equivalent, bringing coverage to about 8 billion tonnes and 3,700 entities. That is roughly 15% of global emissions. Unlike Europe\'s system, allowances are based on output and emission intensity, not an absolute cap.',
+            'sources': ['icap_china'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'intensity', 'eyebrow': 'How it works', 'text': 'Companies get allowances based on how much they produce and how efficiently.', 'highlight': 'Total emissions can still rise with output.', 'keyTerms': [{'term': 'Intensity-based allocation', 'definition': 'Giving allowances based on emissions per unit of output, not a fixed total.'}], 'sources': ['icap_china']},
+            {'kind': 'microInsight', 'id': 'scale', 'eyebrow': 'The scale', 'text': 'About 8 billion tonnes are now covered.', 'highlight': 'Roughly 15% of global emissions.', 'sources': ['icap_china']},
+            {'kind': 'info', 'id': 'phase2', 'eyebrow': 'What comes next', 'title': 'Tighter from 2027', 'body': 'From 2027, allocation will be benchmarked against advanced intensity levels in each sector.', 'sources': ['icap_china']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'Which sectors did China add to its carbon market in 2025?',
+             'options': ['Aviation, shipping and rail', 'Steel, cement and aluminum', 'Farming and forestry'], 'correctIndex': 1,
+             'explanation': 'Steel, cement and aluminum, about 1,500 companies.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You export aluminum from China to Europe. China now prices your emissions.', 'prompt': 'What do you track?',
+             'options': ['Your emissions per tonne of output', 'Only your total sales volume', 'Nothing, since prices are low'],
+             'consequences': ['Intensity drives your allowances and future costs.', 'Volume alone misses how allowances are set.', 'Rules tighten from 2027.'],
+             'correctIndex': 0, 'explanation': 'China allocates on intensity, so emissions per tonne matter most.'},
+        ],
+        'lenses': {
+            'career': ('China\'s market is huge', 'With about 8 billion tonnes covered, China\'s carbon market creates demand for data and compliance roles.', ['icap_china']),
+            'invest': ('Intensity, not caps', 'China\'s system targets efficiency, not totals. That shapes which firms gain.', ['icap_china']),
+            'build_startup': ('Efficiency pays in China', 'Under intensity rules, cutting emissions per tonne earns value. Efficiency tools find buyers.', ['icap_china']),
+            'curiosity': ('Fifteen percent of the world', 'China\'s carbon market now covers about 15% of global emissions.', ['icap_china']),
+        },
+        'rule': ('In carbon markets, how allowances are given out matters as much as the price.', ['icap_china']),
+        'takeaway': "China expanded its carbon market to steel, cement and aluminum in 2025, covering about 8 billion tonnes, roughly 15% of global emissions.",
+    },
+    {
+        'day': 22, 'facet': 'numbers', 'title': 'The carbon border tax, trimmed',
+        'open': {
+            'eyebrow': 'Day 22 · The numbers', 'kicker': 'Most importers exempted, nearly all emissions kept.',
+            'headline': "In October 2025, the EU simplified its carbon border mechanism so importers bringing in 50 tonnes or less of covered goods a year are exempt.",
+            'fullText': 'The Commission said this exempts about 90% of importers while still covering about 99% of embedded emissions. Sales of the certificates importers must buy were pushed to February 2027, covering 2026 imports. The mechanism charges imports such as steel and aluminum for their carbon content.',
+            'sources': ['icap_cbam'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'cbam', 'eyebrow': 'What it is', 'text': 'CBAM charges importers for the carbon emitted making certain goods.', 'highlight': 'Covered goods include iron, steel and aluminum.', 'keyTerms': [{'term': 'CBAM', 'definition': 'Carbon Border Adjustment Mechanism: an EU charge on the carbon content of some imports.'}], 'sources': ['icap_cbam']},
+            {'kind': 'microInsight', 'id': 'pareto', 'eyebrow': 'The 90/99 split', 'text': 'A few large importers bring in almost all the carbon.', 'highlight': 'Exempting small ones barely dents coverage.', 'sources': ['icap_cbam']},
+            {'kind': 'info', 'id': 'dates', 'eyebrow': 'The timeline', 'title': 'Pay from 2027', 'body': 'Certificates for 2026 imports go on sale in February 2027, with declarations due by September 30.', 'sources': ['icap_cbam']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-exempt', 'prompt': 'About what share of importers does the 50-tonne threshold exempt?', 'min': 0, 'max': 100, 'value': 90, 'unit': '%', 'tolerance': 0.05, 'explanation': 'About 90% of importers, while 99% of embedded emissions stay covered.'},
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['Small importers under 50 tonnes are exempt.', 'The change dropped most covered emissions.', 'Certificate sales start in February 2027.'], 'fakeIndex': 1,
+             'explanation': 'About 99% of embedded emissions remain covered.'},
+        ],
+        'lenses': {
+            'career': ('Trade meets carbon', 'CBAM needs customs, trade and carbon experts. Large importers must build compliance teams.', ['icap_cbam']),
+            'invest': ('Exporters face costs', 'Steel and aluminum exporters to Europe will pay for carbon content. Low-carbon producers gain.', ['icap_cbam']),
+            'build_startup': ('Embedded emissions data', 'Importers must report the carbon in goods. Tools that calculate it have clear demand.', ['icap_cbam']),
+            'curiosity': ('A tax at the border', 'Europe will charge some imports for the carbon released making them.', ['icap_cbam']),
+        },
+        'rule': ('In carbon rules, a few large players often hold almost all the emissions.', ['icap_cbam']),
+        'takeaway': "The EU's 2025 CBAM simplification exempts about 90% of importers while keeping about 99% of embedded emissions covered.",
+    },
+    {
+        'day': 23, 'facet': 'rules', 'title': "Canada drops its consumer carbon price",
+        'open': {
+            'eyebrow': 'Day 23 · The rule', 'kicker': 'A visible carbon price proved hard to keep.',
+            'headline': "In March 2025, Canada's new prime minister, Mark Carney, ended the country's consumer carbon price, then $80 a tonne.",
+            'fullText': 'It had been scheduled to rise to $95 a tonne on April 1. Carney cited affordability and said he would strengthen the price paid by large industrial emitters instead. Canadians who received rebates got one final payment.',
+            'sources': ['gn_canada'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'two', 'eyebrow': 'Two prices', 'text': 'Canada priced carbon for consumers through fuel and for industry separately.', 'highlight': 'Only the consumer price was dropped.', 'keyTerms': [{'term': 'Industrial carbon pricing', 'definition': 'A carbon price applied to large emitters, often based on output benchmarks.'}], 'sources': ['gn_canada']},
+            {'kind': 'microInsight', 'id': 'visible', 'eyebrow': 'Why it fell', 'text': 'A price people see at the pump became politically divisive.', 'highlight': 'Affordability won the argument.', 'sources': ['gn_canada']},
+            {'kind': 'info', 'id': 'shift', 'eyebrow': 'The shift', 'title': 'Industry carries the load', 'body': 'Carney said he would bolster the industrial price paid by big polluters instead.', 'sources': ['gn_canada']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'What happened to Canada\'s industrial carbon pricing in 2025?',
+             'options': ['It was cancelled as well', 'It stayed and may get tougher', 'A fuel tax replaced it'], 'correctIndex': 1,
+             'explanation': 'Only the consumer price ended; industrial pricing remained.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You design a carbon price for a country. Voters worry about fuel costs.', 'prompt': 'What approach is most durable?',
+             'options': ['Focus pricing on large industrial emitters', 'Raise the pump price sharply each year', 'Hide the price from voters'],
+             'consequences': ['Canada kept this part when the consumer price fell.', 'Visible price hikes drove Canada\'s reversal.', 'Hidden costs erode trust when found.'],
+             'correctIndex': 0, 'explanation': 'Canada kept industrial pricing while dropping the visible consumer charge.'},
+        ],
+        'lenses': {
+            'career': ('Policy design matters', 'How a carbon price is designed decides whether it survives. Policy designers are in demand.', ['gn_canada']),
+            'invest': ('Industrial pricing stays', 'Canada\'s big emitters still pay for carbon. Factor that into industrial company costs.', ['gn_canada']),
+            'build_startup': ('Sell to big emitters', 'With pricing focused on industry, solutions for large emitters keep their value.', ['gn_canada']),
+            'curiosity': ('Gone in a day', 'Canada\'s consumer carbon price was ended at a new prime minister\'s first cabinet meeting.', ['gn_canada']),
+        },
+        'rule': ('In carbon pricing, the more visible the price, the more fragile its politics.', ['gn_canada']),
+        'takeaway': "Canada ended its consumer carbon price, then $80 a tonne, in March 2025, while keeping and planning to strengthen industrial pricing.",
+    },
+    {
+        'day': 24, 'facet': 'frontier', 'title': 'The shrinking offset market',
+        'open': {
+            'eyebrow': 'Day 24 · Where it breaks', 'kicker': 'Voluntary carbon credits lost value again.',
+            'headline': 'The voluntary carbon market shrank to $535 million in 2024, down 29% from a year earlier, according to Ecosystem Marketplace.',
+            'fullText': 'Transaction volume fell 25% and average prices fell 5.5%. Yet credits retired under the top ten standards reached 182 million tonnes, near their highest since 2021. Companies kept using credits but paid less for them.',
+            'sources': ['rec_vcm'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'vcm', 'eyebrow': 'What it is', 'text': 'Companies buy carbon credits voluntarily to offset their own emissions.', 'highlight': 'No law requires these purchases.', 'keyTerms': [{'term': 'Carbon credit', 'definition': 'A certificate representing one tonne of CO2 reduced or removed.'}], 'sources': ['rec_vcm']},
+            {'kind': 'microInsight', 'id': 'retire', 'eyebrow': 'The twist', 'text': 'Retirements stayed high even as market value fell.', 'highlight': 'Buyers kept using credits but paid less.', 'keyTerms': [{'term': 'Retirement', 'definition': 'Using a carbon credit so it cannot be sold again.'}], 'sources': ['rec_vcm']},
+            {'kind': 'info', 'id': 'quality', 'eyebrow': 'The challenge', 'title': 'Use held, value fell', 'body': 'Value fell 29% while retirements stayed high, so buyers paid less per credit overall.', 'sources': ['rec_vcm']},
+        ],
+        'checks': [
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['Market value fell 29% in 2024.', 'Average credit prices rose sharply in 2024.', 'Retirements reached about 182 million tonnes.'], 'fakeIndex': 1,
+             'explanation': 'Average prices fell 5.5% in 2024.'},
+            {'kind': 'buildChain', 'id': 'chain', 'prompt': 'Put a carbon credit\'s life in order.', 'steps': ['A project cuts or removes emissions', 'A standard verifies and issues credits', 'A company buys the credits', 'The company retires them against its emissions'], 'explanation': 'Credits are created, verified, sold and finally retired so they cannot be reused.'},
+        ],
+        'lenses': {
+            'career': ('Quality is the job', 'Rating and verifying credits is a growing field as buyers demand integrity.', ['rec_vcm']),
+            'invest': ('Cheap credits, shaky trust', 'Falling prices with steady use signal a market searching for quality.', ['rec_vcm']),
+            'build_startup': ('Prove the tonne', 'Buyers want credits they can trust. Better measurement and ratings fill a clear gap.', ['rec_vcm']),
+            'curiosity': ('A half-billion-dollar market', 'Companies spent about $535 million on voluntary carbon credits in 2024.', ['rec_vcm']),
+        },
+        'rule': ('In carbon offsets, trust is the product; without it, the price falls.', ['rec_vcm']),
+        'takeaway': 'The voluntary carbon market fell 29% to $535 million in 2024, even as retirements stayed near 182 million tonnes.',
+    },
+]
