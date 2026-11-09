@@ -1,0 +1,188 @@
+# Logistics, days 25-30. Month 1, topic 5: customs and international trade compliance.
+SRC = {
+    'wco_hs': {'url': 'https://www.wcoomd.org/en/topics/nomenclature/overview/what-is-the-harmonized-system.aspx', 'label': 'World Customs Organization, what is the Harmonized System?'},
+    'crfb_tariffs': {'url': 'https://www.crfb.org/blogs/tariff-revenue-soars-fy-2025-amid-legal-uncertainty', 'label': 'CRFB, tariff revenue soars in FY 2025'},
+    'rg_scotus': {'url': 'https://ropesgray.com/en/insights/alerts/2026/02/supreme-court-strikes-down-ieepa-tariffs-key-takeaways-and-implications-for-importers', 'label': 'Ropes & Gray, Supreme Court strikes down IEEPA tariffs'},
+    'wh_deminimis': {'url': 'https://www.whitehouse.gov/fact-sheets/2025/07/fact-sheet-president-donald-j-trump-is-protecting-the-united-states-national-security-and-economy-by-suspending-the-de-minimis-exemption-for-commercial-shipments-globally/?query-11-page=33', 'label': 'White House, fact sheet on suspending de minimis globally'},
+    'wc_usmca': {'url': 'https://www.whitecase.com/insight-alert/usmca-2026-joint-review-united-states-declines-extend-agreement-triggering-annual', 'label': 'White & Case, USMCA 2026 joint review'},
+    'cg_301': {'url': 'https://www.clearygottlieb.com/news-and-insights/publication-listing/trump-administration-imposes-new-section-301-tariffs-on-60-trading-partners', 'label': 'Cleary Gottlieb, new Section 301 tariffs on 60 trading partners'},
+}
+
+LESSONS = [
+    {
+        'day': 25, 'facet': 'definition', 'title': 'The code on every import',
+        'open': {
+            'eyebrow': 'Day 25 · Customs', 'kicker': 'Every product crossing a border gets a number.',
+            'headline': 'Over 98% of goods in international trade are classified using the Harmonized System, a coding scheme run by the World Customs Organization.',
+            'fullText': 'It has more than 5,000 commodity groups, each with a six-digit code. Over 200 countries and economies use it for customs tariffs and trade statistics. It is updated every five to six years.',
+            'sources': ['wco_hs'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'hs', 'eyebrow': 'The system', 'text': 'The HS code identifies what a product is for customs purposes.', 'highlight': 'The code decides the duty rate.', 'keyTerms': [{'term': 'HS code', 'definition': 'A six-digit Harmonized System code that classifies traded goods for customs.'}], 'sources': ['wco_hs']},
+            {'kind': 'microInsight', 'id': 'national', 'eyebrow': 'Going deeper', 'text': 'Countries add extra digits for their own tariff lines.', 'highlight': 'The first six digits are shared worldwide.', 'keyTerms': [{'term': 'Classification', 'definition': 'Assigning the correct tariff code to a product.'}], 'sources': ['wco_hs']},
+            {'kind': 'info', 'id': 'stakes', 'eyebrow': 'Why it matters', 'title': 'Wrong code, wrong duty', 'body': 'Misclassifying a product can mean paying the wrong duty or facing penalties.', 'sources': ['wco_hs']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'How many digits does the shared international HS code have?',
+             'options': ['Four', 'Six', 'Twelve'], 'correctIndex': 1,
+             'explanation': 'Each HS commodity group has a six-digit code.'},
+            {'kind': 'sortSignal', 'id': 'sort', 'prompt': 'True of the Harmonized System or not?', 'buckets': ['True', 'Not true'],
+             'items': [{'text': 'Used by over 200 economies', 'bucket': 0}, {'text': 'Covers over 98% of traded goods', 'bucket': 0}, {'text': 'Sets one global duty rate', 'bucket': 1}, {'text': 'Never changes', 'bucket': 1}],
+             'explanation': 'Countries set their own rates on HS codes, and the system is updated every five to six years.'},
+        ],
+        'lenses': {
+            'career': ('Classification is a career', 'Customs brokers and trade compliance teams specialize in getting codes right.', ['wco_hs']),
+            'invest': ('Codes drive costs', 'Tariff rates attach to HS codes. A code change can shift an importer\'s costs.', ['wco_hs']),
+            'build_startup': ('Automate classification', 'Classifying thousands of products is hard. AI classification tools have demand.', ['wco_hs']),
+            'curiosity': ('A number for everything', 'Nearly every product traded across borders has a six-digit code.', ['wco_hs']),
+        },
+        'rule': ('In customs, the code you choose decides the duty you pay.', ['wco_hs']),
+        'takeaway': 'The Harmonized System classifies over 98% of traded goods with six-digit codes used by over 200 economies.',
+    },
+    {
+        'day': 26, 'facet': 'money', 'title': 'A record year for tariffs',
+        'open': {
+            'eyebrow': 'Day 26 · The money', 'kicker': 'Customs duties more than doubled in a year.',
+            'headline': 'The US collected $195 billion in customs duties in fiscal year 2025, more than 250% of the prior year.',
+            'fullText': 'That implies roughly $77 billion in fiscal 2024. Most of the new tariffs were imposed under the International Emergency Economic Powers Act. CBP data suggested about $90 billion of the total might have to be refunded if courts struck those tariffs down.',
+            'sources': ['crfb_tariffs'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'duty', 'eyebrow': 'Who pays', 'text': 'Customs duties are paid by the importer of record when goods enter.', 'highlight': 'Costs often pass on to buyers.', 'keyTerms': [{'term': 'Importer of record', 'definition': 'The party legally responsible for an import, including paying duties.'}], 'sources': ['crfb_tariffs']},
+            {'kind': 'microInsight', 'id': 'jump', 'eyebrow': 'The jump', 'text': 'Duties rose about $118 billion in a year.', 'highlight': 'Section 232 tariffs drove over a quarter of the rise.', 'keyTerms': [{'term': 'Section 232', 'definition': 'A US law allowing tariffs on imports judged to threaten national security.'}], 'sources': ['crfb_tariffs']},
+            {'kind': 'info', 'id': 'risk', 'eyebrow': 'The risk', 'title': 'Refunds on the table', 'body': 'Courts had ruled most emergency tariffs illegal, putting about $90 billion at risk of refund.', 'sources': ['crfb_tariffs']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-duties', 'prompt': 'How many billion dollars in customs duties did the US collect in fiscal 2025?', 'min': 0, 'max': 300, 'value': 195, 'unit': 'B', 'tolerance': 0.06, 'explanation': '$195 billion, more than 250% of the prior year.'},
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'Who legally pays US customs duties at the border?',
+             'left': {'name': 'The importer of record', 'note': 'US-side party'}, 'right': {'name': 'The foreign exporter', 'note': 'Overseas seller'}, 'correctIndex': 0,
+             'explanation': 'The importer of record pays duties when goods enter.'},
+        ],
+        'lenses': {
+            'career': ('Trade compliance booms', 'Higher tariffs make customs expertise more valuable. Importers hire for it.', ['crfb_tariffs']),
+            'invest': ('Tariffs hit importer margins', 'Duties paid at the border can squeeze margins or raise prices. Watch who absorbs them.', ['crfb_tariffs']),
+            'build_startup': ('Duty management tools', 'Importers need to track duties, refunds and exclusions. Software helps.', ['crfb_tariffs']),
+            'curiosity': ('$195 billion at the border', 'The US collected $195 billion in customs duties in fiscal 2025.', ['crfb_tariffs']),
+        },
+        'rule': ('In trade, the importer pays the tariff first, then decides who it passes on to.', ['crfb_tariffs']),
+        'takeaway': 'The US collected a record $195 billion in customs duties in fiscal 2025, more than 250% of the prior year.',
+    },
+    {
+        'day': 27, 'facet': 'power', 'title': 'The Supreme Court limits tariffs',
+        'open': {
+            'eyebrow': 'Day 27 · The power', 'kicker': 'The Court decided who can impose tariffs.',
+            'headline': 'On February 20, 2026, the Supreme Court ruled 6-3 that the International Emergency Economic Powers Act does not authorize the president to impose tariffs.',
+            'fullText': 'It struck down the reciprocal and fentanyl-related tariffs and sent refund questions back to the Court of International Trade. Section 232 and Section 301 tariffs remained in place. The administration quickly imposed a 10% global tariff under Section 122, limited to 150 days without Congress.',
+            'sources': ['rg_scotus'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'ieepa', 'eyebrow': 'The law', 'text': 'IEEPA lets presidents respond to emergencies, for example with sanctions.', 'highlight': 'The Court said it does not cover tariffs.', 'keyTerms': [{'term': 'IEEPA', 'definition': 'The International Emergency Economic Powers Act, a US emergency sanctions law.'}], 'sources': ['rg_scotus']},
+            {'kind': 'microInsight', 'id': 'refunds', 'eyebrow': 'Refunds', 'text': 'The Court did not set a refund process.', 'highlight': 'Importers turned to the trade court and CBP.', 'sources': ['rg_scotus']},
+            {'kind': 'info', 'id': 's122', 'eyebrow': 'The replacement', 'title': 'Section 122 stopgap', 'body': 'Section 122 allows tariffs up to 15% for 150 days unless Congress extends them.', 'keyTerms': [{'term': 'Section 122', 'definition': 'A US law allowing temporary tariffs of up to 15% for 150 days.'}], 'sources': ['rg_scotus']},
+        ],
+        'checks': [
+            {'kind': 'multipleChoice', 'id': 'mc', 'prompt': 'Which tariffs remained after the February 2026 ruling?',
+             'options': ['Section 232 and 301', 'All the IEEPA tariffs', 'No tariffs of any kind'], 'correctIndex': 0,
+             'explanation': 'Section 232 and 301 tariffs stayed; IEEPA tariffs were struck down.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You import goods that paid IEEPA tariffs in 2025. The Court strikes them down.', 'prompt': 'What do you do?',
+             'options': ['Document entries and pursue refunds', 'Assume refunds arrive automatically', 'Ignore it; the money is gone'],
+             'consequences': ['You protect your claim as the process unfolds.', 'The Court set no automatic process.', 'Refunds may be available.'],
+             'correctIndex': 0, 'explanation': 'The refund process went back to the trade court, so importers needed records and claims.'},
+        ],
+        'lenses': {
+            'career': ('Trade law in the spotlight', 'Tariff litigation and refunds created big demand for trade lawyers and brokers.', ['rg_scotus']),
+            'invest': ('Refunds help importers', 'Importers may recover tariffs paid, boosting cash. Track refund rulings.', ['rg_scotus']),
+            'build_startup': ('Refund tracking tools', 'Importers need to find and document eligible entries. Tools help claim refunds.', ['rg_scotus']),
+            'curiosity': ('A 6-3 tariff ruling', 'In 2026, the Supreme Court said an emergency law could not be used to impose tariffs.', ['rg_scotus']),
+        },
+        'rule': ('In trade policy, the power to tax imports belongs to whoever the law clearly names.', ['rg_scotus']),
+        'takeaway': 'The Supreme Court ruled 6-3 on February 20, 2026, that IEEPA does not authorize tariffs; Section 232 and 301 tariffs remained.',
+    },
+    {
+        'day': 28, 'facet': 'numbers', 'title': 'The end of duty-free parcels',
+        'open': {
+            'eyebrow': 'Day 28 · The numbers', 'kicker': 'A flood of small parcels lost its tax break.',
+            'headline': 'De minimis shipments into the US rose from 134 million in 2015 to over 1.36 billion in 2024, before duty-free treatment was suspended globally on August 29, 2025.',
+            'fullText': 'The exemption had let packages worth $800 or less enter without duties. CBP was processing more than 4 million such shipments a day. The administration said they accounted for 90% of cargo seizures in fiscal 2024.',
+            'sources': ['wh_deminimis'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'deminimis', 'eyebrow': 'The exemption', 'text': 'De minimis let low-value parcels skip duties and much paperwork.', 'highlight': 'The threshold was $800.', 'keyTerms': [{'term': 'De minimis', 'definition': 'A rule letting low-value imports enter duty-free with simplified processing.'}], 'sources': ['wh_deminimis']},
+            {'kind': 'microInsight', 'id': 'growth', 'eyebrow': 'The growth', 'text': 'Volume grew about tenfold from 2015 to 2024.', 'highlight': 'E-commerce sellers shipped directly to US buyers.', 'sources': ['wh_deminimis']},
+            {'kind': 'info', 'id': 'postal', 'eyebrow': 'Postal parcels', 'title': 'New duties by post', 'body': 'Postal shipments now pay either a percentage duty or a flat $80 to $200 per item for six months.', 'sources': ['wh_deminimis']},
+        ],
+        'checks': [
+            {'kind': 'numberSense', 'id': 'ns-daily', 'prompt': 'About how many million de minimis shipments was CBP processing per day?', 'min': 0, 'max': 15, 'value': 4, 'unit': 'M', 'tolerance': 0.06, 'explanation': 'More than 4 million a day, over 1.36 billion in 2024.'},
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['The de minimis threshold was $800.', 'De minimis volume fell between 2015 and 2024.', 'Duty-free treatment was suspended on August 29, 2025.'], 'fakeIndex': 1,
+             'explanation': 'It grew from 134 million to over 1.36 billion shipments.'},
+        ],
+        'lenses': {
+            'career': ('Cross-border e-commerce shifts', 'Ending de minimis changed how online sellers ship. Customs roles adapted.', ['wh_deminimis']),
+            'invest': ('E-commerce costs rise', 'Sellers shipping low-value parcels now pay duties. Margins and prices shift.', ['wh_deminimis']),
+            'build_startup': ('Parcel-level compliance', 'Millions of small parcels now need duties calculated. Automation is essential.', ['wh_deminimis']),
+            'curiosity': ('Four million parcels a day', 'Before 2025, the US handled over 4 million duty-free small parcels every day.', ['wh_deminimis']),
+        },
+        'rule': ('In customs, a small exemption at huge volume becomes a big policy issue.', ['wh_deminimis']),
+        'takeaway': 'De minimis shipments grew to over 1.36 billion in 2024 before the US suspended duty-free treatment globally on August 29, 2025.',
+    },
+    {
+        'day': 29, 'facet': 'rules', 'title': 'North American trade on a yearly clock',
+        'open': {
+            'eyebrow': 'Day 29 · The rule', 'kicker': 'The trade deal survived but did not get renewed.',
+            'headline': 'At the USMCA\'s first joint review on July 1, 2026, the United States declined to extend the agreement for another 16 years.',
+            'fullText': 'The deal remains fully in force through July 1, 2036, with its tariffs, rules of origin and dispute settlement. But it now requires annual joint reviews until the parties agree to extend it. Mexico and Canada both supported a 16-year extension.',
+            'sources': ['wc_usmca'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'origin', 'eyebrow': 'Rules of origin', 'text': 'Rules of origin decide whether a product counts as North American for tariff-free trade.', 'highlight': 'They remain in effect.', 'keyTerms': [{'term': 'Rules of origin', 'definition': 'Criteria that decide where a product was made for tariff purposes.'}], 'sources': ['wc_usmca']},
+            {'kind': 'microInsight', 'id': 'annual', 'eyebrow': 'Annual reviews', 'text': 'Without an extension, the parties must review the deal every year.', 'highlight': 'That creates recurring uncertainty.', 'keyTerms': [{'term': 'USMCA', 'definition': 'The trade agreement between the United States, Mexico and Canada.'}], 'sources': ['wc_usmca']},
+            {'kind': 'info', 'id': 'canada', 'eyebrow': 'Canada\'s priority', 'title': 'Sector tariffs first', 'body': 'Canada wants US tariffs on steel, aluminum, autos and lumber resolved before deeper talks.', 'sources': ['wc_usmca']},
+        ],
+        'checks': [
+            {'kind': 'faceOff', 'id': 'face', 'prompt': 'What happened to the USMCA after the July 2026 review?',
+             'left': {'name': 'It stays in force with yearly reviews', 'note': 'Through 2036'}, 'right': {'name': 'It ended immediately', 'note': 'Tariffs returned'}, 'correctIndex': 0,
+             'explanation': 'It remains in force through 2036, with annual reviews until extended.'},
+            {'kind': 'theCall', 'id': 'call', 'situation': 'You plan a new factory in Mexico to serve the US. The USMCA now has yearly reviews.', 'prompt': 'How do you plan?',
+             'options': ['Plan for rule changes in each review', 'Assume nothing will change for 16 years', 'Cancel all Mexico plans'],
+             'consequences': ['You build flexibility into the plan.', 'The deal was not extended.', 'The agreement still runs through 2036.'],
+             'correctIndex': 0, 'explanation': 'Annual reviews mean rules of origin and terms could shift.'},
+        ],
+        'lenses': {
+            'career': ('North America trade expertise', 'Companies with cross-border supply chains need people who track USMCA reviews.', ['wc_usmca']),
+            'invest': ('Uncertainty for nearshoring', 'Yearly reviews add risk to factories built in Mexico for the US market.', ['wc_usmca']),
+            'build_startup': ('Origin compliance tools', 'Proving rules of origin is complex. Tools that track it stay valuable.', ['wc_usmca']),
+            'curiosity': ('A deal on a yearly check-up', 'North America\'s trade deal now gets reviewed every year until renewed.', ['wc_usmca']),
+        },
+        'rule': ('In trade agreements, uncertainty about renewal can matter as much as the rules themselves.', ['wc_usmca']),
+        'takeaway': 'The US declined to extend the USMCA at its July 2026 review; the deal stays in force through 2036 with annual reviews.',
+    },
+    {
+        'day': 30, 'facet': 'frontier', 'title': 'Tariffs rebuilt under a new law',
+        'open': {
+            'eyebrow': 'Day 30 · Where it breaks', 'kicker': 'When one tariff law fell, another took its place.',
+            'headline': 'On July 24, 2026, new Section 301 tariffs of 10% to 12.5% took effect on 60 economies, including the EU and China, replacing the expiring Section 122 tariff.',
+            'fullText': 'The administration said those economies failed to enforce or adopt forced labor import bans. It said the tariffs cover 99% of US imports, with exemptions including goods under Section 232 tariffs. The temporary 10% Section 122 tariff had expired after its 150-day limit.',
+            'sources': ['cg_301'],
+        },
+        'cards': [
+            {'kind': 'microInsight', 'id': 'substitution', 'eyebrow': 'The pattern', 'text': 'After the court struck down one tariff authority, the administration used others.', 'highlight': 'Section 122, then Section 301.', 'sources': ['cg_301', 'rg_scotus']},
+            {'kind': 'microInsight', 'id': 'basis', 'eyebrow': 'The basis', 'text': 'The new tariffs cite failures to enforce forced labor import bans.', 'highlight': 'They cover 99% of US imports.', 'keyTerms': [{'term': 'Forced labor import ban', 'definition': 'A rule barring imports made wholly or partly with forced labor.'}], 'sources': ['cg_301']},
+            {'kind': 'info', 'id': 'planning', 'eyebrow': 'For importers', 'title': 'Rates keep shifting', 'body': 'Importers went through IEEPA, Section 122 and Section 301 rates within a year.', 'sources': ['cg_301', 'rg_scotus']},
+        ],
+        'checks': [
+            {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
+             'statements': ['The new Section 301 tariffs range from 10% to 12.5%.', 'They apply only to China.', 'They replaced the expiring Section 122 tariff.'], 'fakeIndex': 1,
+             'explanation': 'They apply to 60 economies, including the EU and China.'},
+            {'kind': 'buildChain', 'id': 'chain', 'prompt': 'Put the 2026 tariff changes in order.', 'steps': ['The Supreme Court strikes down IEEPA tariffs', 'A 10% Section 122 tariff takes effect', 'The Section 122 tariff expires after 150 days', 'Section 301 tariffs on 60 economies begin'], 'explanation': 'February 20, February 24, then July 24 for both the expiry and the new tariffs.'},
+        ],
+        'lenses': {
+            'career': ('Constant change is the job', 'Trade compliance roles now track several legal authorities at once.', ['cg_301']),
+            'invest': ('Policy persists', 'Court losses did not end tariffs; they changed the legal basis. Plan for continued duties.', ['cg_301']),
+            'build_startup': ('Tariff change alerts', 'Importers struggle to keep up with shifting rates. Real-time tariff tools help.', ['cg_301']),
+            'curiosity': ('Same tariffs, new law', 'After a court loss, US tariffs came back under a different law within months.', ['cg_301']),
+        },
+        'rule': ('In trade policy, striking down one tariff law rarely ends tariffs; it changes the route.', ['cg_301']),
+        'takeaway': 'New Section 301 tariffs of 10% to 12.5% on 60 economies took effect July 24, 2026, replacing the expiring Section 122 tariff.',
+    },
+]
