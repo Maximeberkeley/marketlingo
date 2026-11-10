@@ -12,7 +12,7 @@ import { feedbackCopy } from "../components/feedbackCopy";
 import { LeoCoach } from "../components/LeoCoach";
 import { leoFeedbackLine } from "../../components/mascot/leoAnimationRules";
 import { renderExerciseByKind, isPassiveKind } from "../components/ExerciseRenderer";
-import { gradeCase } from "./buildCase";
+import { caseDebriefLine, gradeCase } from "./buildCase";
 import { playSound } from "../../lib/sounds";
 import { getMarketWorld } from "../../data/marketWorlds";
 import { BriefingReader } from "../components/BriefingReader";
@@ -34,7 +34,7 @@ const GRADE_COLOR = {
   C: "#F59E0B",
   D: "#EF4444"
 };
-function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal }) {
+function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal, daily }) {
   React.useEffect(() => {
     trackEvent("case_started", { caseId: deepCase.id });
   }, [deepCase.id]);
@@ -126,7 +126,7 @@ function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal }) 
     )), !!deepCase.proReasoning && /* @__PURE__ */ React.createElement(DebriefBlock, { icon: "award", title: "How a pro reads it", body: deepCase.proReasoning, tint: tokens.color.accent }), !!deepCase.commonMistake && /* @__PURE__ */ React.createElement(DebriefBlock, { icon: "alert-triangle", title: "Where most people slip", body: deepCase.commonMistake, tint: tokens.color.signalEnergy }), !!deepCase.mentalModel && /* @__PURE__ */ React.createElement(DebriefBlock, { icon: "compass", title: "Keep this model", body: deepCase.mentalModel, tint: tokens.color.signalData }), /* @__PURE__ */ React.createElement(
       LeoCoach,
       {
-        line: "Another case solved. Your reasoning is getting sharper.",
+        line: caseDebriefLine(daily),
         mood: result.grade === "A" || result.grade === "B" ? "celebrate" : "thinking"
       }
     ), /* @__PURE__ */ React.createElement(

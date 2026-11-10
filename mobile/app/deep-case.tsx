@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
@@ -16,6 +16,7 @@ import { getMarketName } from '../lib/markets';
 import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
 import { trackEvent } from '../lib/analytics';
+import { casesDoneToday, DAILY_CASES } from '../lib/homeSteps';
 
 export default function DeepCaseRoute() {
   const { day } = useLocalSearchParams<{ day?: string }>();
@@ -26,7 +27,15 @@ export default function DeepCaseRoute() {
   const focus = useFocusTopic(marketId, 1);
   const studied = useStudiedLessons(marketId, focus.keywords, preferredDay);
   const { recordCaseRun, loading: rewardsLoading } = usePracticeRewards();
-  const { addXP } = useUserXP(marketId);
+  const { addXP, dailyCompletion, completionReady, loading: xpLoading } = useUserXP(marketId);
+  // Fix today's case number once on open, so banking this case (which bumps the
+  // daily counter) never rebuilds the case under the learner.
+  const [solvedBefore, setSolvedBefore] = useState<number | null>(null);
+  useEffect(() => {
+    if (solvedBefore !== null) return;
+    if (completionReady || !xpLoading) setSolvedBefore(casesDoneToday(dailyCompletion?.games_completed));
+  }, [solvedBefore, completionReady, xpLoading, dailyCompletion?.games_completed]);
+  const caseIndex = solvedBefore ?? 0;
   const { evaluateRewards } = useCollectibles(marketId);
   const learningGoal = useLearningGoal(marketId);
   const marketName = getMarketName(marketId);
@@ -40,15 +49,29 @@ export default function DeepCaseRoute() {
         drills: content.drills,
         stats: content.stats,
         studied: studied.lessons,
+        daily: { index: caseIndex, total: DAILY_CASES },
       }),
-    [marketId, marketName, content.trainer, content.drills, content.stats, studied.lessons],
+    [marketId, marketName, content.trainer, content.drills, content.stats, studied.lessons, caseIndex],
   );
 
-  if (marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading) {
+  if (marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading || solvedBefore === null) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color={COLORS.accent} />
         <Text style={styles.loadingText}>Pulling a live {marketName} case…</Text>
+      </View>
+    );
+  }
+
+  if (solvedBefore >= DAILY_CASES) {
+    return (
+      <View style={styles.loading}>
+        <Image source={require('../assets/mascot/leo-trophy.png')} style={styles.leo} resizeMode="contain" accessibilityLabel="Leo holding a trophy" />
+        <Text style={styles.emptyTitle}>All {DAILY_CASES} cases solved</Text>
+        <Text style={styles.loadingText}>That's today's set. Three new cases open tomorrow.</Text>
+        <TouchableOpacity style={styles.courseButton} onPress={() => router.back()} accessibilityRole="button">
+          <Text style={styles.courseButtonText}>Back</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -78,7 +101,7 @@ export default function DeepCaseRoute() {
   }
 
   const handleFinish = async (result: CaseResult) => {
-    trackEvent('case_finished', { grade: result.grade, caseId: deepCase.id });
+    trackEvent('case_finished', { grade: result.grade, caseId: deepCase.id, dailyNumber: caseIndex + 1 });
     try {
       await recordCaseRun(result.grade);
       await addXP(result.xp, 'deep_case', deepCase.id, `Deep Case graded ${result.grade}`);
@@ -96,6 +119,7 @@ export default function DeepCaseRoute() {
       marketId={marketId}
       marketName={marketName}
       goal={learningGoal}
+      daily={{ number: caseIndex + 1, total: DAILY_CASES }}
       onExit={() => router.back()}
       onFinish={handleFinish}
     />

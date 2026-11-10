@@ -14,7 +14,7 @@ import { LeoCoach } from '../components/LeoCoach';
 import { leoFeedbackLine } from '../../components/mascot/leoAnimationRules';
 import { renderExerciseByKind, isPassiveKind } from '../components/ExerciseRenderer';
 import { ExerciseState } from '../exercises/types';
-import { DeepCase, CaseGrade, gradeCase } from './buildCase';
+import { DeepCase, CaseGrade, caseDebriefLine, gradeCase } from './buildCase';
 import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { BriefingReader } from '../components/BriefingReader';
@@ -60,13 +60,15 @@ interface Props {
   onFinish: (result: CaseResult) => void;
   /** Learner goal; only 'invest' sees position-sizing conviction labels. */
   goal?: string | null;
+  /** Today's case number (from 1) out of the daily total. */
+  daily?: { number: number; total: number };
 }
 
 /**
  * Deep Case — a slow, four-stage case study. No clock, no shields: the reward
  * is a graded verdict and the reasoning behind it.
  */
-export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal }: Props) {
+export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal, daily }: Props) {
   React.useEffect(() => { trackEvent('case_started', { caseId: deepCase.id }); }, [deepCase.id]);
   const CONVICTION = goal === 'invest' ? CONFIDENCE : PLAIN_CONFIDENCE;
   const insets = useSafeAreaInsets();
@@ -175,7 +177,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
           )}
 
           <LeoCoach
-            line="Another case solved. Your reasoning is getting sharper."
+            line={caseDebriefLine(daily)}
             mood={result.grade === 'A' || result.grade === 'B' ? 'celebrate' : 'thinking'}
           />
 
