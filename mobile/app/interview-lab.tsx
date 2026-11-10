@@ -32,7 +32,7 @@ import { INTERVIEW_ARTWORK } from '../lib/interviewArtwork';
 const LEO = require('../assets/mascot/leo-idle.png');
 type Stage = 'brief' | 'framework' | 'pressure' | 'response' | 'verdict';
 type Feedback = {
-  score?: number; industryKnowledgeScore?: number; communicationScore?: number;
+  score?: number; reasoningScore?: number; industryScore?: number; industryKnowledgeScore?: number; communicationScore?: number;
   personaFitScore?: number; whatWentWell?: string; roomForImprovement?: string;
   betterVersion?: string; leoSays?: string; sophiaSays?: string; buzzwordsUsed?: string[]; buzzwordsMissed?: string[];
 };
@@ -188,8 +188,8 @@ export default function InterviewLabScreen() {
       const score = Math.round((result.score || 5) * 10);
       await supabase.from('interview_lab_attempts').insert({
         user_id: user.id, market_id: marketId, path, stage: 4, attempt_type: 'mock', score,
-        structure_score: (result.communicationScore || 0) * 10,
-        content_score: (result.industryKnowledgeScore || 0) * 10,
+        structure_score: (result.reasoningScore ?? result.communicationScore ?? 0) * 10,
+        content_score: (result.industryScore ?? result.industryKnowledgeScore ?? 0) * 10,
         persona_score: (result.personaFitScore || 0) * 10,
         persona, scenario_question: mock.question, user_response: response, feedback: result,
         buzzwords_used: result.buzzwordsUsed || [], buzzwords_missed: result.buzzwordsMissed || [],
@@ -308,6 +308,10 @@ export default function InterviewLabScreen() {
           <LinearGradient colors={[scoreColor(feedback.score), world.colors[1]]} style={styles.verdict}>
             <Text style={styles.verdictLabel}>INTERVIEW VERDICT</Text><Text style={styles.verdictScore}>{Math.round((feedback.score || 5) * 10)}</Text><Text style={styles.verdictGrade}>{gradeLabel(feedback.score)}</Text>
           </LinearGradient>
+          {(feedback.reasoningScore != null || feedback.industryScore != null) && <View style={styles.dimensions}>
+            <Dimension label={reasoningLabel(persona)} hint="How sound your thinking is" score={feedback.reasoningScore} />
+            <Dimension label={`${marketName} knowledge`} hint="Industry terms, rules and practice" score={feedback.industryScore} />
+          </View>}
           <Coach text={feedback.leoSays || feedback.sophiaSays || 'The structure is forming. Make every sentence earn its place.'} onSpeak={() => playCoach(feedback.leoSays || feedback.sophiaSays)} speaking={speaking} />
           <Debrief icon="check-circle" title="Keep" body={feedback.whatWentWell} color={COLORS.success} />
           <Debrief icon="target" title="Fix next" body={feedback.roomForImprovement} color={COLORS.warning} />
@@ -324,6 +328,14 @@ export default function InterviewLabScreen() {
 function Coach({ text, onSpeak, speaking }: { text: string; onSpeak?: () => void; speaking?: boolean }) { return <View style={styles.coach}><Image source={LEO} style={styles.coachAvatar} resizeMode="contain" /><Text style={styles.coachText}>{text}</Text>{onSpeak && <TouchableOpacity onPress={onSpeak}><Feather name={speaking ? 'volume-2' : 'volume-1'} size={18} color={COLORS.accent} /></TouchableOpacity>}</View>; }
 function Action({ label, color, onPress, disabled }: { label: string; color: string; onPress: () => void; disabled?: boolean }) { return <TouchableOpacity disabled={disabled} onPress={onPress} style={[styles.action, { backgroundColor: disabled ? COLORS.accent : color }, disabled && styles.disabled]}><Text style={styles.actionText}>{label}</Text><Feather name="arrow-right" size={18} color={COLORS.bg0} /></TouchableOpacity>; }
 function Debrief({ icon, title, body, color }: { icon: keyof typeof Feather.glyphMap; title: string; body: string; color: string }) { return <View style={styles.debrief}><Feather name={icon} size={19} color={color} /><View style={{ flex: 1 }}><Text style={[styles.debriefTitle, { color }]}>{title}</Text><Text style={styles.debriefBody}>{body || 'No note this round.'}</Text></View></View>; }
+function Dimension({ label, hint, score }: { label: string; hint: string; score?: number }) {
+  const value = Math.round((score || 0) * 10);
+  return <View style={styles.dimension}>
+    <View style={styles.dimensionHead}><View style={{ flex: 1 }}><Text style={styles.dimensionLabel}>{label}</Text><Text style={styles.dimensionHint}>{hint}</Text></View><Text style={styles.dimensionScore}>{value}</Text></View>
+    <View style={styles.dimensionTrack}><View style={[styles.dimensionFill, { width: `${value}%`, backgroundColor: scoreColor(score) }]} /></View>
+  </View>;
+}
+const reasoningLabel = (persona: string) => persona === 'tech_lead' || persona === 'tech_genius' ? 'Engineering reasoning' : persona === 'recruiter' || persona === 'humble_leader' ? 'Judgment & story' : 'Problem-solving';
 const scoreColor = (score = 5) => score >= 8 ? '#16A34A' : score >= 6 ? '#F59E0B' : '#EF4444';
 const gradeLabel = (score = 5) => score >= 9 ? 'Offer-ready' : score >= 7.5 ? 'Strong signal' : score >= 6 ? 'Promising' : 'Needs another rep';
 
@@ -345,5 +357,6 @@ const styles = StyleSheet.create({
   keywordRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 }, keyword: { paddingHorizontal: 9, paddingVertical: 5, borderRadius: 8, backgroundColor: COLORS.accentSoft }, keywordText: { fontSize: 11, color: COLORS.accentDark, fontWeight: '800' }, input: { minHeight: 150, borderRadius: 16, borderWidth: 2, borderColor: COLORS.border, padding: 16, fontSize: 16, lineHeight: 23, color: COLORS.textPrimary, textAlignVertical: 'top' }, responseActions: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }, record: { height: 42, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', gap: 7 }, recording: { backgroundColor: COLORS.error, borderColor: COLORS.error }, recordText: { color: COLORS.textPrimary, fontWeight: '800' }, count: { color: COLORS.textMuted, fontSize: 12 },
   action: { height: 56, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 9, marginTop: 4 }, actionText: { color: COLORS.bg0, fontSize: 16, fontWeight: '900' }, disabled: { opacity: 0.3 },
   verdict: { minHeight: 210, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }, verdictLabel: { color: COLORS.bg0, fontSize: 11, fontWeight: '900', letterSpacing: 1.2 }, verdictScore: { color: COLORS.bg0, fontSize: 72, lineHeight: 78, fontWeight: '900' }, verdictGrade: { color: COLORS.bg0, fontSize: 16, fontWeight: '800' },
+  dimensions: { gap: 12, padding: 15, borderRadius: 15, borderWidth: 1, borderColor: COLORS.border }, dimension: { gap: 7 }, dimensionHead: { flexDirection: 'row', alignItems: 'center', gap: 10 }, dimensionLabel: { fontSize: 14, fontWeight: '900', color: COLORS.textPrimary }, dimensionHint: { fontSize: 12, color: COLORS.textMuted, marginTop: 1 }, dimensionScore: { fontSize: 20, fontWeight: '900', color: COLORS.textPrimary }, dimensionTrack: { height: 8, borderRadius: 4, backgroundColor: COLORS.bg1, overflow: 'hidden' }, dimensionFill: { height: 8, borderRadius: 4 },
   debrief: { flexDirection: 'row', gap: 12, padding: 15, borderRadius: 15, borderWidth: 1, borderColor: COLORS.border }, debriefTitle: { fontSize: 13, fontWeight: '900' }, debriefBody: { fontSize: 14, lineHeight: 19, color: COLORS.textPrimary, marginTop: 3 }, retry: { alignItems: 'center', paddingVertical: 12 }, retryText: { color: COLORS.textSecondary, fontWeight: '800' },
 });

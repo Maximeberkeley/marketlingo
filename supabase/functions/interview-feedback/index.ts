@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { buildGradingPrompt, normalizeFeedback } from "../_shared/interview-grading.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -99,41 +100,14 @@ serve(async (req) => {
     };
 
     const selectedPersona = personaProfiles[persona] || personaProfiles.consultant;
-    const qProgress = questionNumber && totalQuestions ? `\n\nThis is question ${questionNumber} of ${totalQuestions} in a mock interview session.` : '';
-
-    const systemPrompt = `You are Leo, the MarketLingo interview coach: a confident young insider who is sharp, direct and encouraging. You are currently acting as "${selectedPersona.name}" interviewer persona.
-
-PERSONA STYLE: ${selectedPersona.style}
-
-You are reviewing a ${path === 'academic' ? 'scholarship/academic interview' : 'case interview/consulting prep'} response for the ${marketId} industry.${qProgress}
-
-SCENARIO: ${scenario}
-QUESTION: ${question}
-
-INDUSTRY BUZZWORDS TO LOOK FOR: ${buzzwords.join(', ')}
-
-EVALUATE WITH EXTRA FOCUS ON: ${selectedPersona.focus}
-
-GRADING CRITERIA (score each out of 10):
-1. INDUSTRY KNOWLEDGE (40%): Did they demonstrate real understanding of the industry? Did they use relevant technical terms naturally? Did they show awareness of current trends?
-2. COMMUNICATION STYLE (35%): Was their answer structured? Did they use frameworks? Was the tone appropriate for a professional setting?
-3. PERSONA FIT (25%): Does the answer match what "${selectedPersona.name}" would look for?
-
-RESPOND IN THIS EXACT JSON FORMAT:
-{
-  "score": <number 1-10>,
-  "industryKnowledgeScore": <number 1-10>,
-  "communicationScore": <number 1-10>,
-  "personaFitScore": <number 1-10>,
-  "whatWentWell": "One specific, concrete positive point about their answer (1-2 sentences)",
-  "roomForImprovement": "One specific suggestion with an industry-specific way to rephrase (1-2 sentences)",
-  "betterVersion": "A rewritten version of their answer that would score 9-10/10, written in their persona style. Keep it under 120 words.",
-  "buzzwordsUsed": ["list of industry buzzwords they correctly used"],
-  "buzzwordsMissed": ["list of key buzzwords they should have included"],
-  "leoSays": "A 1-2 sentence message in Leo's voice — confident, direct, encouraging"
-}
-
-IMPORTANT: Write for a 15-year-old reader. Be warm, direct, and inspiring. Use active language. Score honestly — most first attempts should be 4-6/10.`;
+    const systemPrompt = buildGradingPrompt({
+      personaName: selectedPersona.name,
+      personaStyle: selectedPersona.style,
+      personaFocus: selectedPersona.focus,
+      path, marketId, scenario, question,
+      buzzwords: Array.isArray(buzzwords) ? buzzwords : [],
+      questionNumber, totalQuestions,
+    });
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -148,7 +122,7 @@ IMPORTANT: Write for a 15-year-old reader. Be warm, direct, and inspiring. Use a
           { role: "user", content: userResponse },
         ],
         max_tokens: 1500,
-        temperature: 0.7,
+        temperature: 0.3,
       }),
     });
 
@@ -186,25 +160,20 @@ IMPORTANT: Write for a 15-year-old reader. Be warm, direct, and inspiring. Use a
       }
     } catch {
       feedback = {
-        score: 5,
-        industryKnowledgeScore: 4,
-        communicationScore: 5,
-        personaFitScore: 5,
+        reasoningScore: 5,
+        industryScore: 5,
         whatWentWell: "You attempted the question — that takes courage and is the first step to mastering interviews!",
-        roomForImprovement: "Try using a clear framework (First, Second, Third) and include industry-specific terms to show domain expertise.",
-        betterVersion: "I couldn't generate a specific rewrite, but try starting with 'I'd approach this in three steps...' and include specific numbers and industry terms.",
+        roomForImprovement: "Try walking through your steps in order: protect the customer first, find the cause, fix it, check the fix worked, then stop it coming back.",
+        betterVersion: "I couldn't generate a specific rewrite, but try starting with 'First I'd contain the problem, then I'd check whether...' and build from there.",
         buzzwordsUsed: [],
-        buzzwordsMissed: buzzwords.slice(0, 3),
+        buzzwordsMissed: (Array.isArray(buzzwords) ? buzzwords : []).slice(0, 3),
         leoSays: "Hey, good start! The fact that you're practicing already puts you ahead. Let's polish this answer together!",
       };
     }
 
-    // Leo is the only coach. Older app builds read sophiaSays, so mirror the line.
-    if (feedback && typeof feedback === "object") {
-      const line = feedback.leoSays || feedback.sophiaSays || "";
-      feedback.leoSays = line;
-      feedback.sophiaSays = line;
-    }
+    // Headline score is computed from the two dimensions; legacy fields are mirrored
+    // for older app builds (including sophiaSays).
+    feedback = normalizeFeedback(feedback && typeof feedback === "object" ? feedback : {});
     return new Response(JSON.stringify(feedback), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
