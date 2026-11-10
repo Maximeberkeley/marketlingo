@@ -274,6 +274,34 @@
       "when": 1794085795868,
       "tag": "0038_aerospace_deep_cases",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1794085855868,
+      "tag": "0039_ai_deep_cases",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1794085915868,
+      "tag": "0040_biotech_deep_cases",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1794085975868,
+      "tag": "0041_fintech_deep_cases",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1794086035868,
+      "tag": "0042_neuroscience_deep_cases",
+      "breakpoints": true
     }
   ]
 }
