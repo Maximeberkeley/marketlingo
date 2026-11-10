@@ -43,15 +43,15 @@ interface CardData {
 const ACTIVITY_CARDS: CardData[] = [
   {
     id: 'arena',
-    title: 'Daily quiz',
-    description: 'Quick questions on what you studied.',
+    title: 'Daily Arena',
+    description: 'Three rounds on what you studied.',
     icon: 'zap',
     path: '/arena',
     hero: INTERVIEW_ARTWORK.quiz,
   },
   {
     id: 'deep-case',
-    title: 'Case',
+    title: 'Deep Case',
     description: 'A real situation. What would you do?',
     icon: 'briefcase',
     path: '/deep-case',
