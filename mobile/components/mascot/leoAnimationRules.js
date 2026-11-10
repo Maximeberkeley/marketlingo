@@ -35,6 +35,11 @@ function leoFeedbackLine(correct, seed) {
   const set = correct ? RIGHT_LINES : WRONG_LINES;
   return set[Math.abs(Math.floor(seed)) % set.length];
 }
+function leoArenaLine(correct, seed, context = {}) {
+  if (context.secondChance) return correct ? "Locked in this time. Nicely done." : "Read the answer below once more.";
+  if (correct && (context.streak ?? 0) >= 3) return `${context.streak} in a row. Keep it rolling.`;
+  return leoFeedbackLine(correct, seed);
+}
 const LEO_TREAT_MILESTONES = [3, 7, 14, 30, 50, 100, 200, 365];
 const WEEK_MS = 7 * 24 * 60 * 60 * 1e3;
 function leoTreatKey(userId) {
@@ -54,6 +59,7 @@ export {
   LEO_MORNING_LOOK_MS,
   LEO_TREAT_MILESTONES,
   leoAnimationDelay,
+  leoArenaLine,
   leoCallClip,
   leoCoachClip,
   leoDoneKey,

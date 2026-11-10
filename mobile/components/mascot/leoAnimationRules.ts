@@ -45,6 +45,16 @@ export function leoFeedbackLine(correct: boolean, seed: number): string {
   return set[Math.abs(Math.floor(seed)) % set.length];
 }
 
+/**
+ * The Daily Arena's reaction: Leo notices a run of right answers and the second
+ * chance; otherwise leoFeedbackLine. Every line matches the grade it follows.
+ */
+export function leoArenaLine(correct: boolean, seed: number, context: { streak?: number; secondChance?: boolean } = {}): string {
+  if (context.secondChance) return correct ? 'Locked in this time. Nicely done.' : 'Read the answer below once more.';
+  if (correct && (context.streak ?? 0) >= 3) return `${context.streak} in a row. Keep it rolling.`;
+  return leoFeedbackLine(correct, seed);
+}
+
 export const LEO_TREAT_MILESTONES = [3, 7, 14, 30, 50, 100, 200, 365];
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
