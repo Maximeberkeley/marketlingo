@@ -19,7 +19,7 @@ import { FeedbackFooter } from "../components/FeedbackFooter";
 import { RevealCorrectProvider, useRevealCorrect } from "../components/RevealCorrect";
 import { feedbackCopy } from "../components/feedbackCopy";
 import { LeoCoach } from "../components/LeoCoach";
-import { leoFeedbackLine } from "../../components/mascot/leoAnimationRules";
+import { leoArenaLine } from "../../components/mascot/leoAnimationRules";
 import { renderExerciseByKind, isPassiveKind } from "../components/ExerciseRenderer";
 import { arenaXp, beatSeconds, rankForAccuracy, RECOVERY_XP, secondChanceWave } from "./buildArena";
 import { reviewAnswer, reviewQuestion } from "./arenaReview";
@@ -346,7 +346,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       LeoCoach,
       {
         key: `${waveIndex}/${beatIndex}`,
-        line: phase === "feedback" && !isPassiveKind(exercise.kind) ? leoFeedbackLine(coachCorrect, waveIndex * 31 + beatIndex) : exercise.leo?.line || ARENA_IDLE_LINES[exercise.kind] || "",
+        line: phase === "feedback" && !isPassiveKind(exercise.kind) ? leoArenaLine(coachCorrect, waveIndex * 31 + beatIndex, { streak: combo, secondChance: inAgain }) : exercise.leo?.line || ARENA_IDLE_LINES[exercise.kind] || "",
         mood: phase === "feedback" && !isPassiveKind(exercise.kind) ? coachCorrect ? "correct" : "incorrect" : exercise.leo?.mood ?? "idle",
         intro: beatIndex === 0
       }
