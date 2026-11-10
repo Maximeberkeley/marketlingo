@@ -267,6 +267,13 @@
       "when": 1794085735868,
       "tag": "0037_web3_handwritten_days_6_30",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1794085795868,
+      "tag": "0038_aerospace_deep_cases",
+      "breakpoints": true
     }
   ]
 }

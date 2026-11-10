@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity } fr
 import { router, useLocalSearchParams } from "expo-router";
 import { CaseScreen } from "../lesson-kit/case/CaseScreen";
 import { buildCase } from "../lesson-kit/case/buildCase";
+import { caseDay, caseFromAuthored } from "../lesson-kit/case/authoredCase";
+import { useAuthoredCase } from "../hooks/useAuthoredCase";
 import { useIndustryContent } from "../hooks/useIndustryContent";
 import { useStudiedLessons } from "../hooks/useStudiedLessons";
 import { useFocusTopic } from "../hooks/useFocusTopic";
@@ -34,8 +36,14 @@ function DeepCaseRoute() {
   const { evaluateRewards } = useCollectibles(marketId);
   const learningGoal = useLearningGoal(marketId);
   const marketName = getMarketName(marketId);
+  const targetDay = useMemo(() => caseDay(studied.lessons.map((lesson) => lesson.day), preferredDay), [studied.lessons, preferredDay]);
+  const authored = useAuthoredCase(
+    marketId,
+    studied.isLoading ? null : targetDay,
+    solvedBefore === null || solvedBefore >= DAILY_CASES ? null : caseIndex + 1
+  );
   const deepCase = useMemo(
-    () => buildCase({
+    () => (authored.row ? caseFromAuthored(authored.row, learningGoal, marketName, DAILY_CASES) : null) ?? buildCase({
       marketId,
       marketName,
       trainer: content.trainer,
@@ -44,9 +52,9 @@ function DeepCaseRoute() {
       studied: studied.lessons,
       daily: { index: caseIndex, total: DAILY_CASES }
     }),
-    [marketId, marketName, content.trainer, content.drills, content.stats, studied.lessons, caseIndex]
+    [authored.row, learningGoal, marketId, marketName, content.trainer, content.drills, content.stats, studied.lessons, caseIndex]
   );
-  if (marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading || solvedBefore === null) {
+  if (marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading || solvedBefore === null || authored.loading) {
     return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "Pulling a live ", marketName, " case\u2026"));
   }
   if (solvedBefore >= DAILY_CASES) {

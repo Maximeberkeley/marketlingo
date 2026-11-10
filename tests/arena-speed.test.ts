@@ -25,7 +25,7 @@ describe('setting up the Arena loads studied lessons once', () => {
 
   it('builds the Arena and Deep Case once the focus topic is known, so a run never reshuffles', () => {
     expect(read('mobile/app/arena.tsx')).toContain('studied.isLoading || focus.loading ||');
-    expect(read('mobile/app/deep-case.tsx')).toContain('studied.isLoading || focus.loading || solvedBefore === null) {');
+    expect(read('mobile/app/deep-case.tsx')).toContain('studied.isLoading || focus.loading || solvedBefore === null || authored.loading) {');
   });
 
   it('has JavaScript copies that match', () => {

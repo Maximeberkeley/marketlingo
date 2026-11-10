@@ -165,6 +165,7 @@ describe('JavaScript copies stay in sync', () => {
     for (const [path, loader] of [
       ['components/course/CourseJourney', 'tsx'], ['app/(tabs)/home', 'tsx'], ['app/deep-case', 'tsx'],
       ['hooks/useUserXP', 'ts'], ['lesson-kit/case/buildCase', 'ts'], ['lesson-kit/case/CaseScreen', 'tsx'], ['lib/homeSteps', 'ts'], ['lib/xpSource', 'ts'],
+      ['lesson-kit/case/authoredCase', 'ts'], ['hooks/useAuthoredCase', 'ts'],
     ]) {
       const js = read(`mobile/${path}.js`);
       expect(js, path).toBe(transform(read(`mobile/${path}.${loader}`), loader));

@@ -4,6 +4,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 
 import { CaseScreen, CaseResult } from '../lesson-kit/case/CaseScreen';
 import { buildCase } from '../lesson-kit/case/buildCase';
+import { caseDay, caseFromAuthored } from '../lesson-kit/case/authoredCase';
+import { useAuthoredCase } from '../hooks/useAuthoredCase';
 import { useIndustryContent } from '../hooks/useIndustryContent';
 import { useStudiedLessons } from '../hooks/useStudiedLessons';
 import { useFocusTopic } from '../hooks/useFocusTopic';
@@ -40,8 +42,17 @@ export default function DeepCaseRoute() {
   const learningGoal = useLearningGoal(marketId);
   const marketName = getMarketName(marketId);
 
+  // Hand-written cases come from the newest studied day at or before the Course day.
+  const targetDay = useMemo(() => caseDay(studied.lessons.map(lesson => lesson.day), preferredDay), [studied.lessons, preferredDay]);
+  const authored = useAuthoredCase(
+    marketId,
+    studied.isLoading ? null : targetDay,
+    solvedBefore === null || solvedBefore >= DAILY_CASES ? null : caseIndex + 1,
+  );
+
   const deepCase = useMemo(
     () =>
+      (authored.row ? caseFromAuthored(authored.row, learningGoal, marketName, DAILY_CASES) : null) ??
       buildCase({
         marketId,
         marketName,
@@ -51,10 +62,10 @@ export default function DeepCaseRoute() {
         studied: studied.lessons,
         daily: { index: caseIndex, total: DAILY_CASES },
       }),
-    [marketId, marketName, content.trainer, content.drills, content.stats, studied.lessons, caseIndex],
+    [authored.row, learningGoal, marketId, marketName, content.trainer, content.drills, content.stats, studied.lessons, caseIndex],
   );
 
-  if (marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading || solvedBefore === null) {
+  if (marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading || solvedBefore === null || authored.loading) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color={COLORS.accent} />
