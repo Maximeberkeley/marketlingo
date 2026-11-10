@@ -302,6 +302,13 @@
       "when": 1794086035868,
       "tag": "0042_neuroscience_deep_cases",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1794332565966,
+      "tag": "0043_create_deep_cases_schema",
+      "breakpoints": true
     }
   ]
 }
