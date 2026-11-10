@@ -523,6 +523,47 @@ export type Database = {
           },
         ]
       }
+      deep_cases: {
+        Row: {
+          content: Json
+          created_at: string
+          day: number
+          id: string
+          market_id: string
+          slot: number
+          tags: string[]
+          updated_at: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          day: number
+          id: string
+          market_id: string
+          slot: number
+          tags?: string[]
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          day?: number
+          id?: string
+          market_id?: string
+          slot?: number
+          tags?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deep_cases_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deliverable_entries: {
         Row: {
           content: string
