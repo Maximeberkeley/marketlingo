@@ -17,7 +17,7 @@ builder that turns them into one migration per industry.
 
 | Market | Migration | Days done | Cases |
 |---|---|---|---|
-| aerospace | `0038_aerospace_deep_cases.sql` | 1-18 | 54 of 90 |
+| aerospace | `0038_aerospace_deep_cases.sql` | 1-30 | 90 of 90 |
 | the other 14 | pre-assigned below | none | 0 of 1,260 |
 
 The goal is days 1-30, three cases a day, for all 15 industries: 1,350 cases in all.
@@ -129,7 +129,7 @@ python3 scripts/cases/build.py <market> scripts/cases/<market>/days_*.py --out d
 
 ## Aerospace days 19-24, research already verified
 
-These are the remaining slot 1 stories (export controls), checked on November 10, 2026. They still need writing.
+These slot 1 stories (export controls) were checked on November 10, 2026, and are now written.
 
 - **Day 19 (information as an export).** J. Reece Roth, a University of Tennessee professor.
   - On a 2004 US Air Force plasma actuator contract for drone wings, he let graduate students from China and
@@ -176,4 +176,5 @@ These are the remaining slot 1 stories (export controls), checked on November 10
   - Source: https://www.euronews.com/my-europe/2025/05/21/everything-you-need-to-know-about-safe-the-eus-150bn-defence-instrument
   - The CASA case also fits here, as a design-out.
 
-Days 25-30 (sole supplier pricing, TransDigm and others; see `lessons/aerospace.md`) have no research yet.
+Days 19-30 are written and shipped. Days 25-30 use TransDigm, the Airbus panel cut, AOG Technics and
+Lufthansa's parked 787s; their sources are in `aerospace/days_25_27.py` and `aerospace/days_28_30.py`.
