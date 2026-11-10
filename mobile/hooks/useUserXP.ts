@@ -225,7 +225,9 @@ export function useUserXP(marketId?: string) {
       log.error('Error fetching daily completion for XP update:', completionFetchError);
     }
 
-    const baseCompletion = existingCompletion || dailyCompletion;
+    // Never inherit a previous day's in-memory row into a new local day.
+    const baseCompletion = existingCompletion
+      || (dailyCompletion?.completion_date === today ? dailyCompletion : null);
     // Current modules: Deep Case verdicts count as "games", Arena runs as "drills".
     const isGameReward = sourceType === 'game' || sourceType === 'deep_case';
     const isDrillReward = sourceType.startsWith('drill') || sourceType === 'arena';

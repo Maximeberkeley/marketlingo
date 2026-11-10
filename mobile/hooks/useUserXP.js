@@ -152,7 +152,9 @@ function useUserXP(marketId) {
     if (completionFetchError && completionFetchError.code !== "PGRST116") {
       log.error("Error fetching daily completion for XP update:", completionFetchError);
     }
-    const baseCompletion = existingCompletion || dailyCompletion;
+    // Never inherit a previous day's in-memory row into a new local day.
+    const baseCompletion = existingCompletion
+      || (dailyCompletion?.completion_date === today ? dailyCompletion : null);
     const isGameReward = sourceType === "game" || sourceType === "deep_case";
     const isDrillReward = sourceType.startsWith("drill") || sourceType === "arena";
     const { data: updatedCompletion, error: completionUpsertError } = await supabase.from("daily_completions").upsert(
