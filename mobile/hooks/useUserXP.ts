@@ -6,6 +6,7 @@ import { log } from '../lib/logger';
 import { localDateString } from '../lib/dayMath';
 import { cancelRollingLeoNudges } from '../lib/leoNudges';
 import { emitXP, onXP } from '../lib/progressEvents';
+import { transactionSource } from '../lib/xpSource';
 
 export const XP_REWARDS = {
   LESSON_COMPLETE: 50,
@@ -184,8 +185,7 @@ export function useUserXP(marketId?: string) {
       market_id: marketId,
       xp_amount: amount,
       source_type: sourceType,
-      source_id: sourceId,
-      description,
+      ...transactionSource(sourceId, description),
     });
 
     if (transactionError) {

@@ -26,7 +26,11 @@ function caseLead(text, fallback) {
 function buildCase(input) {
   const pack = getIndustryPack(input.marketId);
   const scenario = shuffle(input.trainer)[0];
-  const studied = [...input.studied ?? []].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
+  const newestFirst = [...input.studied ?? []].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
+  const dailyIndex = Math.max(0, input.daily?.index ?? 0);
+  const turn = newestFirst.length > 0 ? dailyIndex % newestFirst.length : 0;
+  const studied = [...newestFirst.slice(turn), ...newestFirst.slice(0, turn)];
+  const scenarioTurn = dailyIndex > 0 && dailyIndex >= newestFirst.length && input.trainer.length > 0;
   const firstLesson = (make) => {
     for (const lesson of studied) {
       const exercise = make(lesson);
@@ -37,7 +41,7 @@ function buildCase(input) {
     }
     return null;
   };
-  const lessonCall = firstLesson((lesson) => lesson.questions?.find((q) => q.kind === "multipleChoice") || checkClaim(lesson.slides, "case-call-claim"));
+  const lessonCall = scenarioTurn ? null : firstLesson((lesson) => lesson.questions?.find((q) => q.kind === "multipleChoice") || checkClaim(lesson.slides, "case-call-claim"));
   const trainerExercise = !lessonCall && scenario ? trainerCall(scenario, "case-call") : null;
   const scenarioCall = trainerExercise ? { ...trainerExercise, source: { type: "industry" } } : null;
   const call = lessonCall || scenarioCall;
@@ -57,7 +61,7 @@ function buildCase(input) {
     exercise: {
       kind: "coldOpen",
       id: "case-brief",
-      eyebrow: `${input.marketName.toUpperCase()} CASE`,
+      eyebrow: input.daily ? `${input.marketName.toUpperCase()} \xB7 CASE ${dailyIndex + 1} OF ${input.daily.total}` : `${input.marketName.toUpperCase()} CASE`,
       headline: briefHeadline,
       kicker: lead?.day ? `From your day ${lead.day} lesson. A real situation. What would you do?` : "A real situation. What would you do?",
       fullText: lead?.slides?.[1]?.body || lead?.slides?.[0]?.body || scenario?.scenario,
@@ -91,7 +95,7 @@ function buildCase(input) {
     exercise: { ...call, leo: { line: "Pick the answer you could explain.", mood: "thinking" } }
   });
   return {
-    id: lead ? `lesson-case-${lead.day ?? 1}-${lead.stackId ?? "x"}` : scenario?.id || "market-case",
+    id: `${lead ? `lesson-case-${lead.day ?? 1}-${lead.stackId ?? "x"}` : scenario?.id || "market-case"}${input.daily ? `-c${dailyIndex + 1}` : ""}`,
     title: briefDetail,
     situation: lead?.slides?.[0]?.body || scenario?.scenario || briefHeadline,
     stages,
@@ -122,7 +126,14 @@ function gradeCase(correct, total, callCorrect, confidence) {
   }
   return { grade: "D", note: "A few early answers were off. Try this case again." };
 }
+function caseDebriefLine(daily) {
+  if (!daily) return "Another case solved. Your reasoning is getting sharper.";
+  const left = Math.max(0, daily.total - daily.number);
+  if (left === 0) return `That's all ${daily.total} cases for today. See you tomorrow.`;
+  return `Case ${daily.number} of ${daily.total} solved. ${left === 1 ? "One more" : `${left} more`} today.`;
+}
 export {
   buildCase,
+  caseDebriefLine,
   gradeCase
 };

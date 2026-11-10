@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { runInNewContext } from 'node:vm';
+import { DAILY_CASES, nextHomeStep } from '../mobile/lib/homeSteps';
 
 const file = 'mobile/components/course/CourseJourney.tsx';
 const source = readFileSync(file, 'utf8');
@@ -19,11 +20,12 @@ function render(notes: boolean, otherDone = false) {
     TouchableOpacity: 'TouchableOpacity', Coin: 'Coin', SectionHeader: 'Header',
     MovingLessonTitle: 'Title', LeoCharacter: 'Leo', lessonDayLabel: () => 'Day 1',
     LeoAnimated: 'AnimatedLeo', useHomeLeo: () => ({ clip: 'leo-sleep-loop', onTap: () => {}, onEnd: () => {} }),
+    DAILY_CASES, nextHomeStep,
   };
   runInNewContext(transformed, context);
   return context.SectionCluster({ section: { unlocked: true }, activeSection: true,
     lessonCompletedToday: otherDone, arenaCompletedToday: otherDone,
-    caseCompletedToday: otherDone, intelDone: otherDone, notesCompletedToday: notes,
+    casesCompletedToday: otherDone ? DAILY_CASES : 0, intelDone: otherDone, notesCompletedToday: notes,
     weekTitle: 'Lesson', activityReveal: [0, 0, 0, 0] });
 }
 function nodes(tree: any): any[] {

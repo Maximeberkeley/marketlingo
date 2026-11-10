@@ -51,6 +51,8 @@ export interface CaseInput {
   stats: IndustryStatRow[];
   /** Lessons the learner has already studied, newest first. */
   studied?: StudiedLessonInput[];
+  /** Which of today's cases this is (index from 0) out of the daily total. */
+  daily?: { index: number; total: number };
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -75,7 +77,14 @@ function caseLead(text: string, fallback: string): string {
 export function buildCase(input: CaseInput): DeepCase | null {
   const pack = getIndustryPack(input.marketId);
   const scenario = shuffle(input.trainer)[0];
-  const studied = [...(input.studied ?? [])].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
+  const newestFirst = [...(input.studied ?? [])].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
+  // Today's cases take turns: case n leads with the nth newest studied lesson,
+  // so the three daily cases are built from different lessons.
+  const dailyIndex = Math.max(0, input.daily?.index ?? 0);
+  const turn = newestFirst.length > 0 ? dailyIndex % newestFirst.length : 0;
+  const studied = [...newestFirst.slice(turn), ...newestFirst.slice(0, turn)];
+  // Once every studied lesson has led a case today, a real market scenario takes the call.
+  const scenarioTurn = dailyIndex > 0 && dailyIndex >= newestFirst.length && input.trainer.length > 0;
   const firstLesson = (make: (lesson: StudiedLessonInput) => Exercise | null): Exercise | null => {
     for (const lesson of studied) {
       const exercise = make(lesson);
@@ -89,7 +98,7 @@ export function buildCase(input: CaseInput): DeepCase | null {
 
   // The call tests the lesson first: a claim from what the learner actually read.
   // A real market scenario only stands in when no studied lesson can carry it.
-  const lessonCall = firstLesson(lesson => lesson.questions?.find(q => q.kind === 'multipleChoice') || checkClaim(lesson.slides, 'case-call-claim'));
+  const lessonCall = scenarioTurn ? null : firstLesson(lesson => lesson.questions?.find(q => q.kind === 'multipleChoice') || checkClaim(lesson.slides, 'case-call-claim'));
   const trainerExercise = !lessonCall && scenario ? trainerCall(scenario, 'case-call') : null;
   const scenarioCall = trainerExercise ? { ...trainerExercise, source: { type: 'industry' as const } } : null;
   const call = lessonCall || scenarioCall;
@@ -121,7 +130,9 @@ export function buildCase(input: CaseInput): DeepCase | null {
     exercise: {
       kind: 'coldOpen',
       id: 'case-brief',
-      eyebrow: `${input.marketName.toUpperCase()} CASE`,
+      eyebrow: input.daily
+        ? `${input.marketName.toUpperCase()} · CASE ${dailyIndex + 1} OF ${input.daily.total}`
+        : `${input.marketName.toUpperCase()} CASE`,
       headline: briefHeadline,
       kicker: lead?.day
         ? `From your day ${lead.day} lesson. A real situation. What would you do?`
@@ -171,7 +182,7 @@ export function buildCase(input: CaseInput): DeepCase | null {
   });
 
   return {
-    id: lead ? `lesson-case-${lead.day ?? 1}-${lead.stackId ?? 'x'}` : scenario?.id || 'market-case',
+    id: `${lead ? `lesson-case-${lead.day ?? 1}-${lead.stackId ?? 'x'}` : scenario?.id || 'market-case'}${input.daily ? `-c${dailyIndex + 1}` : ''}`,
     title: briefDetail,
     situation: lead?.slides?.[0]?.body || scenario?.scenario || briefHeadline,
     stages,
@@ -215,4 +226,12 @@ export function gradeCase(
     };
   }
   return { grade: 'D', note: 'A few early answers were off. Try this case again.' };
+}
+
+/** What Leo says after a case, counting down today's cases. */
+export function caseDebriefLine(daily?: { number: number; total: number }): string {
+  if (!daily) return 'Another case solved. Your reasoning is getting sharper.';
+  const left = Math.max(0, daily.total - daily.number);
+  if (left === 0) return `That's all ${daily.total} cases for today. See you tomorrow.`;
+  return `Case ${daily.number} of ${daily.total} solved. ${left === 1 ? 'One more' : `${left} more`} today.`;
 }

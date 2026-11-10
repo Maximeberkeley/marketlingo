@@ -71,6 +71,7 @@ import { localDateString, streakCountdownLabel } from '../../lib/dayMath';
 import { claimLeoNudge, currentLeoNudgeWindow, getLeoNudge } from '../../lib/leoNudges';
 import { contextualLeoLine } from '../../lib/leoLines';
 import { useLessonTabsHidden } from '../../lib/lessonNavigation';
+import { casesDoneToday } from '../../lib/homeSteps';
 
 
 const MARKET_ILLUSTRATIONS: Record<string, any> = {
@@ -625,7 +626,7 @@ function HomeScreenContent() {
             leoCelebrationPending={leoCelebrationScope === leoDayScope}
             onLeoCelebrated={() => setLeoCelebrationScope(null)}
             arenaCompletedToday={(dailyCompletion?.drills_completed || 0) > 0}
-            caseCompletedToday={(dailyCompletion?.games_completed || 0) > 0}
+            casesCompletedToday={casesDoneToday(dailyCompletion?.games_completed)}
             notesCompletedToday={notesCompletedToday}
             intelReadToday={intelHabit.done ? intelHabit.target : intelHabit.readToday}
             intelTarget={intelHabit.target}

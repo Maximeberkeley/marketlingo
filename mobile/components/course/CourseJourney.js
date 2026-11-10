@@ -38,6 +38,7 @@ import { leoDoneKey, leoMorningKey } from "../mascot/leoAnimationRules";
 import { HomeSkeleton } from "../home/HomeSkeleton";
 import { lessonDayLabel, realLessonTitle } from "../../lib/lessonIdentity";
 import { lessonPriority } from "../../lib/handwritten";
+import { caseRingSegments, DAILY_CASES, nextHomeStep } from "../../lib/homeSteps";
 function MovingLessonTitle({ title, long, active }) {
   const sweep = useRef(new Animated.Value(0)).current;
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -128,7 +129,30 @@ function SectionHeader({
 }
 const COIN_LIP = 5;
 const RING_BREATH_MS = 1600;
-function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, recommended = false, ringMotion = false, reveal, muted = false }) {
+const CASE_RING = { size: 112, stroke: 5, gap: 12 };
+function CaseSegments({ done }) {
+  const radius = (CASE_RING.size - CASE_RING.stroke) / 2;
+  const centre = CASE_RING.size / 2;
+  return /* @__PURE__ */ React.createElement(Svg, { width: CASE_RING.size, height: CASE_RING.size }, caseRingSegments(radius, CASE_RING.stroke, CASE_RING.gap, done).map((segment, index) => /* @__PURE__ */ React.createElement(
+    Circle,
+    {
+      key: index,
+      cx: centre,
+      cy: centre,
+      r: radius,
+      fill: "none",
+      stroke: segment.done ? COLORS.accent : COLORS.courseCoinRing,
+      strokeWidth: CASE_RING.stroke,
+      strokeLinecap: "round",
+      strokeDasharray: segment.dashArray,
+      strokeDashoffset: segment.dashOffset,
+      rotation: -90,
+      origin: `${centre}, ${centre}`
+    }
+  )));
+}
+function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, recommended = false, ringMotion = false, reveal, muted = false, segmentsDone, progressLabel }) {
+  const segmented = segmentsDone !== void 0;
   const breath = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     breath.setValue(0);
@@ -146,10 +170,10 @@ function Coin({ label, icon, position, locked, completed, onPress, emphasis = fa
   const iconName = locked ? "lock" : completed ? "check" : icon;
   const iconColor = reveal ? COLORS.courseMutedText : muted || locked ? COLORS.courseMutedText : COLORS.textOnAccent;
   const labelColor = reveal ? reveal.interpolate({ inputRange: [0, 1], outputRange: [COLORS.courseMutedText, COLORS.accent] }) : muted || locked ? COLORS.courseMutedText : COLORS.accent;
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.coinPosition, position] }, /* @__PURE__ */ React.createElement(View, { style: styles.coinSlot }, recommended && /* @__PURE__ */ React.createElement(Animated.View, { pointerEvents: "none", style: [styles.recommendRing, {
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.coinPosition, position] }, /* @__PURE__ */ React.createElement(View, { style: styles.coinSlot }, (recommended || segmented) && /* @__PURE__ */ React.createElement(Animated.View, { pointerEvents: "none", style: [styles.recommendRing, segmented && styles.segmentRing, {
     opacity: breath.interpolate({ inputRange: [0, 1], outputRange: [1, 0.45] }),
     transform: [{ scale: breath.interpolate({ inputRange: [0, 1], outputRange: [1, 1.07] }) }]
-  }] }), /* @__PURE__ */ React.createElement(Pressable, { onPress, accessibilityRole: "button", accessibilityLabel: `${label}${locked ? ", locked" : completed ? ", complete" : ""}`, style: styles.coinTouch }, ({ pressed }) => /* @__PURE__ */ React.createElement(View, { style: [styles.coinBody, emphasis && styles.coinBodyEmphasis] }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.coinLip, { backgroundColor: lip }] }), /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.coinFace, { backgroundColor: fill }, pressed && styles.coinFacePressed] }, /* @__PURE__ */ React.createElement(Feather, { name: iconName, size: 29, color: iconColor }), reveal && /* @__PURE__ */ React.createElement(Animated.View, { pointerEvents: "none", style: [styles.coinIconOverlay, { opacity: reveal }] }, /* @__PURE__ */ React.createElement(Feather, { name: iconName, size: 29, color: COLORS.textOnAccent })))))), /* @__PURE__ */ React.createElement(Animated.Text, { style: [styles.coinLabel, { color: labelColor }], numberOfLines: 1 }, label));
+  }] }, segmented ? /* @__PURE__ */ React.createElement(CaseSegments, { done: segmentsDone ?? 0 }) : null), /* @__PURE__ */ React.createElement(Pressable, { onPress, accessibilityRole: "button", accessibilityLabel: `${label}${locked ? ", locked" : completed ? ", complete" : progressLabel ? `, ${progressLabel}` : ""}`, style: styles.coinTouch }, ({ pressed }) => /* @__PURE__ */ React.createElement(View, { style: [styles.coinBody, emphasis && styles.coinBodyEmphasis] }, /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.coinLip, { backgroundColor: lip }] }), /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.coinFace, { backgroundColor: fill }, pressed && styles.coinFacePressed] }, /* @__PURE__ */ React.createElement(Feather, { name: iconName, size: 29, color: iconColor }), reveal && /* @__PURE__ */ React.createElement(Animated.View, { pointerEvents: "none", style: [styles.coinIconOverlay, { opacity: reveal }] }, /* @__PURE__ */ React.createElement(Feather, { name: iconName, size: 29, color: COLORS.textOnAccent })))))), /* @__PURE__ */ React.createElement(Animated.Text, { style: [styles.coinLabel, { color: labelColor }], numberOfLines: 1 }, label));
 }
 function SectionCluster({
   section,
@@ -160,7 +184,7 @@ function SectionCluster({
   activeSection,
   lessonCompletedToday,
   arenaCompletedToday,
-  caseCompletedToday,
+  casesCompletedToday,
   notesCompletedToday,
   intelDone,
   isFocused,
@@ -196,12 +220,14 @@ function SectionCluster({
     if (!activeSection) return kind === "lesson" && Boolean(lesson?.completed);
     if (kind === "lesson") return lessonCompletedToday || Boolean(lesson?.completed);
     if (kind === "arena") return arenaCompletedToday;
-    if (kind === "case") return caseCompletedToday;
+    if (kind === "case") return casesCompletedToday >= DAILY_CASES;
     if (kind === "intel") return intelDone;
     if (kind === "notes") return notesCompletedToday;
     return false;
   };
-  const coreCompleted = MODULES.filter((module) => moduleComplete(module.kind)).length;
+  const coreCompleted = MODULES.filter((module) => module.kind !== "case" && moduleComplete(module.kind)).length + (activeSection ? Math.min(casesCompletedToday, DAILY_CASES) / DAILY_CASES : 0);
+  const nextStep = activeSection ? nextHomeStep({ lessonDone, arenaDone: arenaCompletedToday, casesDone: casesCompletedToday }) : null;
+  const caseRingShown = activeSection && casesCompletedToday < DAILY_CASES && (nextStep === "case" || casesCompletedToday > 0);
   const orbitRadius = 132.5;
   const orbitCircumference = 2 * Math.PI * orbitRadius;
   const orbitOffset = orbitCircumference * (1 - coreCompleted / MODULES.length);
@@ -232,9 +258,11 @@ function SectionCluster({
         position: module.position,
         locked,
         completed: module.kind === "lesson" ? lessonDone : moduleComplete(module.kind),
-        emphasis: activeSection && module.kind === "lesson" && !lessonDone,
-        recommended: activeSection && module.kind === "lesson" && !lessonDone,
+        emphasis: nextStep === module.kind,
+        recommended: nextStep === module.kind,
         ringMotion: isFocused && !reduceMotion,
+        segmentsDone: module.kind === "case" && caseRingShown ? casesCompletedToday : void 0,
+        progressLabel: module.kind === "case" && activeSection ? `${casesCompletedToday} of ${DAILY_CASES} cases solved today` : void 0,
         muted: activeSection && module.kind !== "lesson" && !lessonDone && !moduleComplete(module.kind),
         reveal: activeSection && module.kind !== "lesson" && !moduleComplete(module.kind) && !(lessonDone && !lessonCompletedToday) ? activityReveal[["notes", "arena", "intel", "case"].indexOf(module.kind)] : void 0,
         onPress: () => onModule(module.kind)
@@ -317,7 +345,7 @@ function CourseJourney({
   onLeoCelebrated = () => {
   },
   arenaCompletedToday = false,
-  caseCompletedToday = false,
+  casesCompletedToday = 0,
   notesCompletedToday = false,
   intelReadToday,
   intelTarget,
@@ -578,7 +606,7 @@ function CourseJourney({
             reduceMotion,
             calendarDay: currentDay,
             arenaCompletedToday,
-            caseCompletedToday,
+            casesCompletedToday,
             notesCompletedToday,
             intelDone: intelReadToday >= intelTarget,
             onHeader: () => setPreviewSection(section),
@@ -809,8 +837,10 @@ const styles = StyleSheet.create({
   // A thin lighter rim along the top edge reads as light catching the coin.
   coinFace: { width: 84, height: 84, borderRadius: 42, alignItems: "center", justifyContent: "center", borderTopWidth: 2, borderTopColor: "rgba(255, 255, 255, 0.22)" },
   coinFacePressed: { transform: [{ translateY: COIN_LIP - 1 }] },
-  // A soft, still ring around the coin to tap next (the lesson until it is done).
+  // A soft ring around the coin to tap next: the lesson, then the Daily Arena, then the Deep Cases.
   recommendRing: { position: "absolute", top: -8, width: 112, height: 112, borderRadius: 56, borderWidth: 4, borderColor: COLORS.courseCoinRing },
+  // The Deep Case ring draws its own arcs, so the plain border steps aside.
+  segmentRing: { borderWidth: 0, alignItems: "center", justifyContent: "center" },
   coinLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border, shadowColor: COLORS.cardShadow, shadowOpacity: 0.1, elevation: 3 },
   coinFaceLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border },
   coinLabel: { ...TYPE.caption, color: COLORS.textPrimary, marginTop: 7, textAlign: "center" },
@@ -838,6 +868,7 @@ const styles = StyleSheet.create({
 });
 export {
   ACTIVITY_CLUSTER_MAX,
+  CASE_RING,
   COIN_LIP,
   CourseJourney,
   HOME_COLUMN_MAX,

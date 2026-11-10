@@ -38,6 +38,7 @@ import { leoDoneKey, leoMorningKey } from '../mascot/leoAnimationRules';
 import { HomeSkeleton } from '../home/HomeSkeleton';
 import { lessonDayLabel, realLessonTitle } from '../../lib/lessonIdentity';
 import { lessonPriority } from '../../lib/handwritten';
+import { caseRingSegments, DAILY_CASES, nextHomeStep } from '../../lib/homeSteps';
 
 function MovingLessonTitle({ title, long, active }: { title: string; long: boolean; active: boolean }) {
   const sweep = useRef(new Animated.Value(0)).current;
@@ -133,7 +134,8 @@ interface CourseJourneyProps {
   onLeoCelebrated?: () => void;
   completedTodayStackId?: string | null;
   arenaCompletedToday?: boolean;
-  caseCompletedToday?: boolean;
+  /** Deep Cases solved today, 0 to DAILY_CASES. */
+  casesCompletedToday?: number;
   notesCompletedToday?: boolean;
   intelReadToday: number;
   intelTarget: number;
@@ -204,11 +206,43 @@ export const COIN_LIP = 5;
 /** One slow breath of the ring around the coin to tap next: out, then back, at a steady pace. */
 export const RING_BREATH_MS = 1600;
 
-function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, recommended = false, ringMotion = false, reveal, muted = false }: {
+/** The Deep Case ring: one arc per daily case, each turning bright once that case is solved. */
+export const CASE_RING = { size: 112, stroke: 5, gap: 12 } as const;
+
+function CaseSegments({ done }: { done: number }) {
+  const radius = (CASE_RING.size - CASE_RING.stroke) / 2;
+  const centre = CASE_RING.size / 2;
+  return (
+    <Svg width={CASE_RING.size} height={CASE_RING.size}>
+      {caseRingSegments(radius, CASE_RING.stroke, CASE_RING.gap, done).map((segment, index) => (
+        <Circle
+          key={index}
+          cx={centre}
+          cy={centre}
+          r={radius}
+          fill="none"
+          stroke={segment.done ? COLORS.accent : COLORS.courseCoinRing}
+          strokeWidth={CASE_RING.stroke}
+          strokeLinecap="round"
+          strokeDasharray={segment.dashArray}
+          strokeDashoffset={segment.dashOffset}
+          rotation={-90}
+          origin={`${centre}, ${centre}`}
+        />
+      ))}
+    </Svg>
+  );
+}
+
+function Coin({ label, icon, position, locked, completed, onPress, emphasis = false, recommended = false, ringMotion = false, reveal, muted = false, segmentsDone, progressLabel }: {
   label: string; icon: keyof typeof Feather.glyphMap; position: object;
   locked: boolean; completed: boolean; onPress: () => void;
   emphasis?: boolean; recommended?: boolean; ringMotion?: boolean; reveal?: Animated.Value; muted?: boolean;
+  /** Set on the Deep Case coin: its ring splits into DAILY_CASES arcs, this many bright. */
+  segmentsDone?: number;
+  progressLabel?: string;
 }) {
+  const segmented = segmentsDone !== undefined;
   // The ring swells a touch and fades a little, then settles back, on a loop.
   // Opacity and scale on a plain view only (never an icon), on the native driver.
   const breath = useRef(new Animated.Value(0)).current;
@@ -233,11 +267,13 @@ function Coin({ label, icon, position, locked, completed, onPress, emphasis = fa
   return (
     <View style={[styles.coinPosition, position]}>
       <View style={styles.coinSlot}>
-        {recommended && <Animated.View pointerEvents="none" style={[styles.recommendRing, {
+        {(recommended || segmented) && <Animated.View pointerEvents="none" style={[styles.recommendRing, segmented && styles.segmentRing, {
           opacity: breath.interpolate({ inputRange: [0, 1], outputRange: [1, 0.45] }),
           transform: [{ scale: breath.interpolate({ inputRange: [0, 1], outputRange: [1, 1.07] }) }],
-        }]} />}
-        <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`${label}${locked ? ', locked' : completed ? ', complete' : ''}`} style={styles.coinTouch}>
+        }]}>
+          {segmented ? <CaseSegments done={segmentsDone ?? 0} /> : null}
+        </Animated.View>}
+        <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`${label}${locked ? ', locked' : completed ? ', complete' : progressLabel ? `, ${progressLabel}` : ''}`} style={styles.coinTouch}>
           {({ pressed }) => (
             <View style={[styles.coinBody, emphasis && styles.coinBodyEmphasis]}>
               <Animated.View style={[styles.coinLip, { backgroundColor: lip }]} />
@@ -265,7 +301,7 @@ function SectionCluster({
   activeSection,
   lessonCompletedToday,
   arenaCompletedToday,
-  caseCompletedToday,
+  casesCompletedToday,
   notesCompletedToday,
   intelDone,
   isFocused,
@@ -289,7 +325,7 @@ function SectionCluster({
   activeSection: boolean;
   lessonCompletedToday: boolean;
   arenaCompletedToday: boolean;
-  caseCompletedToday: boolean;
+  casesCompletedToday: number;
   notesCompletedToday: boolean;
   intelDone: boolean;
   isFocused: boolean;
@@ -318,13 +354,18 @@ function SectionCluster({
     if (!activeSection) return kind === 'lesson' && Boolean(lesson?.completed);
     if (kind === 'lesson') return lessonCompletedToday || Boolean(lesson?.completed);
     if (kind === 'arena') return arenaCompletedToday;
-    if (kind === 'case') return caseCompletedToday;
+    if (kind === 'case') return casesCompletedToday >= DAILY_CASES;
     if (kind === 'intel') return intelDone;
     if (kind === 'notes') return notesCompletedToday;
     return false;
   };
+  // Each solved Deep Case fills its share of the case's fifth of the orbit.
   const coreCompleted = MODULES
-    .filter(module => moduleComplete(module.kind)).length;
+    .filter(module => module.kind !== 'case' && moduleComplete(module.kind)).length
+    + (activeSection ? Math.min(casesCompletedToday, DAILY_CASES) / DAILY_CASES : 0);
+  // The ring moves along the day: today's lesson, then the Daily Arena, then the Deep Cases.
+  const nextStep = activeSection ? nextHomeStep({ lessonDone, arenaDone: arenaCompletedToday, casesDone: casesCompletedToday }) : null;
+  const caseRingShown = activeSection && casesCompletedToday < DAILY_CASES && (nextStep === 'case' || casesCompletedToday > 0);
   const orbitRadius = 132.5;
   const orbitCircumference = 2 * Math.PI * orbitRadius;
   const orbitOffset = orbitCircumference * (1 - coreCompleted / MODULES.length);
@@ -378,9 +419,11 @@ function SectionCluster({
               position={module.position}
               locked={locked}
               completed={module.kind === 'lesson' ? lessonDone : moduleComplete(module.kind)}
-              emphasis={activeSection && module.kind === 'lesson' && !lessonDone}
-              recommended={activeSection && module.kind === 'lesson' && !lessonDone}
+              emphasis={nextStep === module.kind}
+              recommended={nextStep === module.kind}
               ringMotion={isFocused && !reduceMotion}
+              segmentsDone={module.kind === 'case' && caseRingShown ? casesCompletedToday : undefined}
+              progressLabel={module.kind === 'case' && activeSection ? `${casesCompletedToday} of ${DAILY_CASES} cases solved today` : undefined}
               muted={activeSection && module.kind !== 'lesson' && !lessonDone && !moduleComplete(module.kind)}
               reveal={activeSection && module.kind !== 'lesson' && !moduleComplete(module.kind) && !(lessonDone && !lessonCompletedToday) ? activityReveal[['notes', 'arena', 'intel', 'case'].indexOf(module.kind)] : undefined}
               onPress={() => onModule(module.kind)}
@@ -498,7 +541,7 @@ export function CourseJourney({
   leoCelebrationPending = false,
   onLeoCelebrated = () => {},
   arenaCompletedToday = false,
-  caseCompletedToday = false,
+  casesCompletedToday = 0,
   notesCompletedToday = false,
   intelReadToday,
   intelTarget,
@@ -789,7 +832,7 @@ export function CourseJourney({
                reduceMotion={reduceMotion}
                calendarDay={currentDay}
               arenaCompletedToday={arenaCompletedToday}
-              caseCompletedToday={caseCompletedToday}
+              casesCompletedToday={casesCompletedToday}
               notesCompletedToday={notesCompletedToday}
               intelDone={intelReadToday >= intelTarget}
               onHeader={() => setPreviewSection(section)}
@@ -1009,8 +1052,10 @@ const styles = StyleSheet.create({
   // A thin lighter rim along the top edge reads as light catching the coin.
   coinFace: { width: 84, height: 84, borderRadius: 42, alignItems: 'center', justifyContent: 'center', borderTopWidth: 2, borderTopColor: 'rgba(255, 255, 255, 0.22)' },
   coinFacePressed: { transform: [{ translateY: COIN_LIP - 1 }] },
-  // A soft, still ring around the coin to tap next (the lesson until it is done).
+  // A soft ring around the coin to tap next: the lesson, then the Daily Arena, then the Deep Cases.
   recommendRing: { position: 'absolute', top: -8, width: 112, height: 112, borderRadius: 56, borderWidth: 4, borderColor: COLORS.courseCoinRing },
+  // The Deep Case ring draws its own arcs, so the plain border steps aside.
+  segmentRing: { borderWidth: 0, alignItems: 'center', justifyContent: 'center' },
   coinLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border, shadowColor: COLORS.cardShadow, shadowOpacity: 0.1, elevation: 3 },
   coinFaceLocked: { backgroundColor: COLORS.lockedSurface, borderColor: COLORS.border },
   coinLabel: { ...TYPE.caption, color: COLORS.textPrimary, marginTop: 7, textAlign: 'center' },
