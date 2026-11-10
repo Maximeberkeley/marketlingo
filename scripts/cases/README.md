@@ -18,9 +18,16 @@ builder that turns them into one migration per industry.
 | Market | Migration | Days done | Cases |
 |---|---|---|---|
 | aerospace | `0038_aerospace_deep_cases.sql` | 1-30 | 90 of 90 |
-| the other 14 | pre-assigned below | none | 0 of 1,260 |
+| ai | `0039_ai_deep_cases.sql` | 1-30 | 90 of 90 |
+| biotech | `0040_biotech_deep_cases.sql` | 1-30 | 90 of 90 |
+| fintech | `0041_fintech_deep_cases.sql` | 1-30 | 90 of 90 |
+| neuroscience | `0042_neuroscience_deep_cases.sql` | 1-30 | 90 of 90 |
+| the other 10 | pre-assigned below | none | 0 of 900 |
 
-The goal is days 1-30, three cases a day, for all 15 industries: 1,350 cases in all.
+The goal is days 1-30, three cases a day, for all 15 industries: 1,350 cases in all. 450 are done.
+
+Known to go stale: biotech day 13 says the FDA decision on povetacicept is pending (due by November 30,
+2026). Update that case once the FDA rules.
 
 The agreed order:
 1. aerospace
@@ -108,6 +115,8 @@ python3 scripts/cases/build.py <market> scripts/cases/<market>/days_*.py --out d
 - **Warnings:** fix them where reasonable, such as unbalanced option lengths or a flagged word.
 - **No shared files.** Do not edit `drizzle/migrations/meta/_journal.json`; the aerospace session adds the
   journal entries for every market later, so parallel sessions never conflict.
+- **Journal:** entries 0038-0042 exist. A coordinator adds 0043-0052 when those files land.
+- **Dotted names** such as Crypto.com and "Bank, N.A." are safe in case text since PR #84.
 - **Tests find your migration automatically.** `tests/deep-cases.test.ts` checks every
   `00NN_<market>_deep_cases.sql`: three cases per covered day, four goal calls each, that every case plays,
   and that the migration matches its source files. Ship whole days only.
