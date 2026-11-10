@@ -116,9 +116,13 @@ export function splitSentences(text: string): string[] {
     const endsWithAbbrev = ABBREVIATIONS.includes(lastWord.replace(/\.$/, ''));
     const endsWithInitial = /(^|[\s(])[A-Za-z]\.$/.test(trimmed);
     const endsWithDecimal = /\d\.$/.test(trimmed);
+    // "N.A." and "U.K." are names, not sentence ends.
+    const endsWithAcronym = /(^|[\s(])(?:[A-Za-z]\.){2,}$/.test(trimmed);
     const isLast = i === raw.length - 1;
+    // A period with no space after it sits inside a word: "Crypto.com", "Node.js".
+    const insideWord = !isLast && !/\s$/.test(raw[i]) && /^[A-Za-z0-9]/.test(raw[i + 1]);
 
-    if ((endsWithAbbrev || endsWithInitial || endsWithDecimal) && !isLast) continue;
+    if ((endsWithAbbrev || endsWithInitial || endsWithDecimal || endsWithAcronym || insideWord) && !isLast) continue;
 
     if (trimmed) out.push(buffer.trim());
     buffer = '';
