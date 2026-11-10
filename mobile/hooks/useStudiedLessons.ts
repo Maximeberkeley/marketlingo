@@ -25,6 +25,9 @@ export interface StudiedLesson {
   slides: SlideLike[];
   questions: AuthoredQuestion[];
   keyTerms: KeyTerm[];
+  rule?: string;
+  takeaway?: string;
+  headline?: string;
 }
 
 interface SlideRow {

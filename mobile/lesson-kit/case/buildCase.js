@@ -41,7 +41,7 @@ function buildCase(input) {
     }
     return null;
   };
-  const lessonCall = scenarioTurn ? null : firstLesson((lesson) => lesson.questions?.find((q) => q.kind === "multipleChoice") || checkClaim(lesson.slides, "case-call-claim"));
+  const lessonCall = scenarioTurn ? null : firstLesson((lesson) => lesson.questions?.find((q) => q.kind === "theCall") || lesson.questions?.find((q) => q.kind === "multipleChoice") || checkClaim(lesson.slides, "case-call-claim"));
   const trainerExercise = !lessonCall && scenario ? trainerCall(scenario, "case-call") : null;
   const scenarioCall = trainerExercise ? { ...trainerExercise, source: { type: "industry" } } : null;
   const call = lessonCall || scenarioCall;
@@ -105,6 +105,7 @@ function buildCase(input) {
     mentalModel: scenarioCall ? scenario?.feedback_mental_model ?? null : null
   };
 }
+const CASE_XP = { A: 40, B: 30, C: 20, D: 10 };
 function gradeCase(correct, total, callCorrect, confidence) {
   const accuracy = total > 0 ? correct / total : 0;
   const boldRight = callCorrect && confidence === "high";
@@ -133,6 +134,7 @@ function caseDebriefLine(daily) {
   return `Case ${daily.number} of ${daily.total} solved. ${left === 1 ? "One more" : `${left} more`} today.`;
 }
 export {
+  CASE_XP,
   buildCase,
   caseDebriefLine,
   gradeCase

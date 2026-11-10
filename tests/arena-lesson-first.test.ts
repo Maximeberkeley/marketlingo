@@ -22,22 +22,22 @@ const input = { marketId: 'neuroscience', marketName: 'Neuroscience', trainer: t
 const all = (waves: ReturnType<typeof buildArena>) => waves.flatMap(w => w.exercises);
 
 describe('lesson-first Arena', () => {
-  it('uses at least 9 of 11 honest lesson questions without inventing a prose chain', () => {
+  it('plays only the written lesson: its checks and terms, never edited sentences or a prose chain', () => {
     for (let i = 0; i < 100; i++) {
       const waves = buildArena(input);
-      // One studied lesson is a starter run: only lesson questions, so it may end a question early.
-      expect(waves.map(w => w.exercises.length).every((n, i) => n <= [4, 4, 3][i])).toBe(true);
+      expect(waves.map(w => w.exercises.length).every(n => n <= 3)).toBe(true);
       const questions = all(waves);
       const grounded = questions.filter(q => q.source?.type === 'lesson');
       expect(grounded).toHaveLength(questions.length);
-      // This fixture has no authored chain or explicit sequence; the old tenth
-      // lesson question depended on ordering unrelated sentences.
-      expect(grounded.length).toBeGreaterThanOrEqual(9);
+      // Three written checks plus definitions of the terms they do not already test.
+      expect(grounded.length).toBeGreaterThanOrEqual(4);
       expect(grounded.some(q => q.kind === 'buildChain')).toBe(false);
+      expect(grounded.some(q => q.kind === 'multipleChoice' && q.prompt.startsWith('Only one of these matches'))).toBe(false);
       for (const q of grounded) {
         const text = JSON.stringify(q).toLowerCase();
         expect(text).toMatch(/cortex|limbic|hippocampus|brainstem|cerebellum|cerebrum|neurons/);
       }
+      // The written hippocampus question asks that fact; no game repeats it.
       expect(questions.filter(q => q.kind === 'multipleChoice' && q.prompt.includes('defined') && q.options[q.correctIndex] === 'hippocampus')).toHaveLength(0);
       const keys = questions.flatMap(quizQuestionKeys);
       expect(new Set(keys).size).toBe(keys.length);
@@ -61,11 +61,13 @@ describe('lesson-first Arena', () => {
       expect(q.prompt).toBe(question.prompt);
     }
   });
-  it('uses earlier authored questions first from Day 2 and newest terms first', () => {
+  it('reviews earlier written checks first from Day 2 and plays the newest terms first', () => {
     const newer = { ...lesson, stackId: 'day2', day: 2, title: 'Day two', questions: lesson.questions.map(q => ({ ...q, prompt: 'Day two: ' + q.prompt })) };
     const waves = buildArena({ ...input, studied: [newer, lesson] });
-    expect(waves[0].exercises[0].source).toMatchObject({ day: 1 });
-    expect(waves[0].exercises.find(q => q.kind === 'multipleChoice' && q.prompt.includes('defined'))?.source).toMatchObject({ day: 2 });
+    const written = all(waves).filter(q => q.source?.type === 'lesson' && 'prompt' in q && !q.prompt.startsWith('This lesson defined') && /Which|What share/.test(q.prompt));
+    expect(written[0].source).toMatchObject({ day: 1 });
+    const termGame = all(waves).find(q => q.kind === 'matchPairs' || q.kind === 'quickFire' || (q.kind === 'multipleChoice' && q.prompt.includes('defined')));
+    expect(termGame?.source).toMatchObject({ title: expect.stringMatching(/Day two|Days 1 and 2/) });
   });
   it('never re-asks displayed Arena questions inside seven days, including authored questions', () => {
     const now = 1000000000;

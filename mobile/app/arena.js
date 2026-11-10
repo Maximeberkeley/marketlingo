@@ -94,7 +94,12 @@ function ArenaRoute() {
   const focus = useFocusTopic(marketId, 1);
   const studied = useStudiedLessons(marketId, focus.keywords, preferredDay);
   const { rewards, loading: rewardsLoading, recordArenaRun } = usePracticeRewards();
-  const { addXP } = useUserXP(marketId);
+  const { addXP, dailyCompletion, completionReady, loading: xpLoading } = useUserXP(marketId);
+  const [replay, setReplay] = useState(null);
+  useEffect(() => {
+    if (replay !== null) return;
+    if (completionReady || !xpLoading) setReplay((dailyCompletion?.drills_completed || 0) > 0);
+  }, [replay, completionReady, xpLoading, dailyCompletion?.drills_completed]);
   const { evaluateRewards } = useCollectibles(marketId);
   const [runKey, setRunKey] = useState(0);
   const historyKey = user?.id && marketId ? `ml_quiz_seen_v1/${user.id}/${marketId}` : null;
@@ -142,7 +147,7 @@ function ArenaRoute() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [marketId, content.trainer, content.drills, content.stats, studied.lessons, runKey, seenKeys]
   );
-  const busy = marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading || !historyKey || loadedHistoryKey !== historyKey;
+  const busy = marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading || !historyKey || loadedHistoryKey !== historyKey || replay === null;
   if (historyError) return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "Your quiz history could not be saved or loaded. Please reopen the quiz."), /* @__PURE__ */ React.createElement(Text, { style: styles.backLink, onPress: () => router.back() }, "Go back"));
   if (busy) return /* @__PURE__ */ React.createElement(ArenaSetup, null);
   if (studied.lessons.length === 0) {
@@ -154,7 +159,7 @@ function ArenaRoute() {
   const handleFinish = async (result) => {
     try {
       await recordArenaRun(result.score);
-      await addXP(result.xp, "arena", void 0, "Daily Arena run");
+      await addXP(result.xp, "arena", void 0, replay ? "Daily Arena replay" : "Daily Arena run");
       const accuracy = result.total > 0 ? result.correct / result.total : 0;
       await evaluateRewards("arena", `arena:${localDateString()}`, accuracy);
     } catch (error) {
@@ -172,7 +177,8 @@ function ArenaRoute() {
       bestScore: rewards.arenaBestScore,
       onExit: () => router.back(),
       onFinish: handleFinish,
-      onQuestionSeen
+      onQuestionSeen,
+      replay: Boolean(replay)
     }
   );
 }

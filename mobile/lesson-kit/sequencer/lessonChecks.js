@@ -14,9 +14,8 @@ const OPPOSITES = [
   ["increasing", "decreasing"],
   ["surge", "collapse"],
   ["surges", "collapses"],
-  ["expand", "contract"],
-  ["expands", "contracts"],
-  ["expanding", "contracting"],
+  // No expand/contract: "contract" is far more often the legal noun, and
+  // "unless the expand assigns those costs" is not English.
   ["accelerate", "slow"],
   ["accelerating", "slowing"],
   ["cheaper", "more expensive"],
@@ -133,6 +132,25 @@ function checkMechanism(slides, id) {
   };
 }
 const isYear = (value) => Number.isInteger(value) && value >= 1900 && value <= 2099;
+const MONTH = "(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\\.?";
+const LABEL_BEFORE = /\b(?:tier|phase|stage|level|day|gen|generation|class|round|no\.?|number|part|article|section|title|chapter|step|type|grade|series|model|version|block|unit|flight|mission|week|cat|category|rule|annex|act|rev|revision|option|team|lot|line|gate|zone|pillar)\s*$/i;
+function isFixedNumber(sentence, at, token) {
+  const before = sentence.slice(0, at);
+  const after = sentence.slice(at + token.length);
+  if (LABEL_BEFORE.test(before)) return true;
+  if (new RegExp(`\\b${MONTH}\\s*$`, "i").test(before) || new RegExp(`^\\s*${MONTH}\\b`, "i").test(after)) return true;
+  if (/^\s*(?:to|-|–|or|and)\s*\$?\d/i.test(after) || /\d\s*(?:to|-|–)\s*\$?$/i.test(before)) return true;
+  if (/^(?:st|nd|rd|th)\b/i.test(after) || /^[:/]\d/.test(after) || /\d[:/]$/.test(before)) return true;
+  return false;
+}
+const NOT_A_CLAIM_OPENER = /^(?:it|its|this|that|these|those|they|their|them|he|she|his|her|we|our|you|your|here|there|so|but|and|or|then|now|today|tomorrow|yesterday|imagine|consider|picture|suppose|say|think|ask|offer|try|pick|use|start|remember|note|compare|let|if|when|once|after|before)\b/i;
+const CLAIM_SIGNAL = /\d|\b(?:because|so that|which means|means|leads? to|drives?|causes?|when|as|since|while|whereas|than)\b/i;
+function isStandaloneClaim(sentence) {
+  const text = clean(sentence);
+  if (!text || /\?$/.test(text) || NOT_A_CLAIM_OPENER.test(text)) return false;
+  const named = text.split(" ").slice(1).some((word) => /^[A-Z][a-z]/.test(word) || /^[A-Z]{2,}/.test(word));
+  return named || CLAIM_SIGNAL.test(text);
+}
 function phraseAt(text, at, length) {
   const after = text.slice(at + length).match(/^\S*(?:\s+\S+){0,2}/)?.[0] ?? "";
   return (text.slice(at, at + length) + after).replace(/[.,;:!?)"'”’]+$/, "").trim();
@@ -143,7 +161,7 @@ function alter(sentence) {
     const at = match.index ?? 0;
     if (/[A-Za-z-]$/.test(sentence.slice(Math.max(0, at - 1), at))) continue;
     const raw = parseFloat(token.replace(",", "."));
-    if (!isFinite(raw) || raw <= 0 || isYear(raw)) continue;
+    if (!isFinite(raw) || raw <= 0 || isYear(raw) || isFixedNumber(sentence, at, token)) continue;
     const next = raw > 10 ? Math.max(1, Math.round(raw * 0.2)) : Math.round(raw * 7);
     if (next === raw || isYear(next)) continue;
     const text = sentence.slice(0, at) + String(next) + sentence.slice(at + token.length);
@@ -166,7 +184,7 @@ function falsify(sentence) {
 }
 const saysNot = (change) => `The lesson says \u201C${change.said}\u201D, not \u201C${change.changed}\u201D.`;
 function checkClaim(slides, id) {
-  const pool = shuffle(slides.flatMap((s) => sentences(s.body || "", 40, 170)));
+  const pool = shuffle(slides.flatMap((s) => sentences(s.body || "", 40, 170)).filter(isStandaloneClaim));
   for (const truth of pool) {
     const others = pool.filter((s) => norm(s) !== norm(truth));
     const lies = others.map(alter).filter((change) => Boolean(change) && norm(change.text) !== norm(truth)).slice(0, 2);
@@ -189,7 +207,7 @@ function checkClaim(slides, id) {
   return null;
 }
 function checkTamper(slides, id) {
-  const pool = shuffle(slides.flatMap((s) => sentences(s.body || "", 45, 160)));
+  const pool = shuffle(slides.flatMap((s) => sentences(s.body || "", 45, 160)).filter(isStandaloneClaim));
   if (pool.length < 3) return null;
   for (const candidate of pool) {
     const change = alter(candidate);
@@ -286,6 +304,7 @@ export {
   checkMechanism,
   checkTamper,
   isRealTerm,
+  isStandaloneClaim,
   lessonCheckFactories,
   termsFromSlides
 };

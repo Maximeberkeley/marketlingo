@@ -1,11 +1,19 @@
+const isText = (value) => typeof value === "string" && value.trim().length > 0;
+const isTextList = (value, min) => Array.isArray(value) && value.length >= min && value.every(isText);
 function studiedMaterial(value) {
   const questions = [];
   const terms = /* @__PURE__ */ new Map();
+  let rule;
+  let takeaway;
+  let headline;
   if (!value || typeof value !== "object" || !("exercises" in value) || !Array.isArray(value.exercises)) {
     return { questions, keyTerms: [] };
   }
   for (const exercise of value.exercises) {
     if (!exercise || typeof exercise !== "object") continue;
+    if (exercise.id === "rule" && isText(exercise.text)) rule = exercise.text.trim();
+    if (exercise.kind === "sayIt" && isText(exercise.takeaway)) takeaway = exercise.takeaway.trim();
+    if (exercise.kind === "coldOpen" && isText(exercise.headline) && !headline) headline = exercise.headline.trim();
     for (const entry of [...Array.isArray(exercise.keyTerms) ? exercise.keyTerms : [], ...exercise.keyTerm ? [exercise.keyTerm] : []]) {
       if (typeof entry?.term !== "string" || typeof entry?.definition !== "string") continue;
       const term = entry.term.trim();
@@ -20,9 +28,15 @@ function studiedMaterial(value) {
       questions.push(exercise);
     } else if (exercise.kind === "buildChain" && typeof exercise.prompt === "string" && Array.isArray(exercise.steps) && exercise.steps.length >= 2 && exercise.steps.every((s) => typeof s === "string" && s.trim().length > 0)) {
       questions.push(exercise);
+    } else if (exercise.kind === "theCall" && isText(exercise.situation) && isText(exercise.prompt) && isTextList(exercise.options, 2) && Number.isInteger(exercise.correctIndex) && exercise.correctIndex >= 0 && exercise.correctIndex < exercise.options.length) {
+      questions.push(exercise);
+    } else if (exercise.kind === "faceOff" && isText(exercise.prompt) && isText(exercise.left?.name) && isText(exercise.right?.name) && (exercise.correctIndex === 0 || exercise.correctIndex === 1)) {
+      questions.push(exercise);
+    } else if (exercise.kind === "spotFake" && isText(exercise.prompt) && isTextList(exercise.statements, 3) && Number.isInteger(exercise.fakeIndex) && exercise.fakeIndex >= 0 && exercise.fakeIndex < exercise.statements.length) {
+      questions.push(exercise);
     }
   }
-  return { questions, keyTerms: [...terms.values()] };
+  return { questions, keyTerms: [...terms.values()], ...rule ? { rule } : {}, ...takeaway ? { takeaway } : {}, ...headline ? { headline } : {} };
 }
 function lessonSource(lesson) {
   return { type: "lesson", stackId: lesson.stackId, day: lesson.day, title: lesson.title };

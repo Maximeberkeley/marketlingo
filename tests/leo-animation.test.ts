@@ -78,7 +78,8 @@ function practiceHarness(screen: 'Arena' | 'Case') {
     '../practice/studiedMaterial': { practiceSourceLabel: () => '' },
     '../components/ExerciseRenderer': { isPassiveKind: () => false,
       renderExerciseByKind: (_ex: any, _phase: any, setState: any) => ({ type: 'answer', props: { setState } }) },
-    './buildArena': { beatSeconds: (wave: any) => wave?.seconds ?? 20 }, './buildCase': {}, '../../lib/sounds': { playSound: async () => {} },
+    './buildArena': { beatSeconds: (wave: any) => wave?.seconds ?? 20, arenaXp: () => 0 }, './buildCase': {}, '../../lib/sounds': { playSound: async () => {} },
+    '../../components/mascot/leoAnimationRules': { leoFeedbackLine: (correct: boolean) => (correct ? 'Nice.' : 'Not quite.') },
     '../../lib/analytics': { trackEvent: () => {} },
     '../../data/marketWorlds': { getMarketWorld: () => ({ colors: [] }) }, '../components/BriefingReader': {},
   });

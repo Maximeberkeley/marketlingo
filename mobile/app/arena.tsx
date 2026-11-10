@@ -121,7 +121,14 @@ export default function ArenaRoute() {
   const focus = useFocusTopic(marketId, 1);
   const studied = useStudiedLessons(marketId, focus.keywords, preferredDay);
   const { rewards, loading: rewardsLoading, recordArenaRun } = usePracticeRewards();
-  const { addXP } = useUserXP(marketId);
+  const { addXP, dailyCompletion, completionReady, loading: xpLoading } = useUserXP(marketId);
+  // Today's first finished run pays full XP; fix the answer on open so banking
+  // this run never turns it into a replay mid-screen.
+  const [replay, setReplay] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (replay !== null) return;
+    if (completionReady || !xpLoading) setReplay((dailyCompletion?.drills_completed || 0) > 0);
+  }, [replay, completionReady, xpLoading, dailyCompletion?.drills_completed]);
   const { evaluateRewards } = useCollectibles(marketId);
   const [runKey, setRunKey] = useState(0);
   const historyKey = user?.id && marketId ? `ml_quiz_seen_v1/${user.id}/${marketId}` : null;
@@ -167,7 +174,7 @@ export default function ArenaRoute() {
   );
 
   // The focus topic only reorders studied lessons; wait for it so the waves are built once.
-  const busy = marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading || !historyKey || loadedHistoryKey !== historyKey;
+  const busy = marketLoading || content.isLoading || rewardsLoading || studied.isLoading || focus.loading || !historyKey || loadedHistoryKey !== historyKey || replay === null;
 
   if (historyError) return <View style={styles.loading}>
     <Text style={styles.loadingText}>Your quiz history could not be saved or loaded. Please reopen the quiz.</Text>
@@ -193,7 +200,7 @@ export default function ArenaRoute() {
   const handleFinish = async (result: ArenaResult) => {
     try {
       await recordArenaRun(result.score);
-      await addXP(result.xp, 'arena', undefined, 'Daily Arena run');
+      await addXP(result.xp, 'arena', undefined, replay ? 'Daily Arena replay' : 'Daily Arena run');
       const accuracy = result.total > 0 ? result.correct / result.total : 0;
       await evaluateRewards('arena', `arena:${localDateString()}`, accuracy);
     } catch (error) {
@@ -212,6 +219,7 @@ export default function ArenaRoute() {
       onExit={() => router.back()}
       onFinish={handleFinish}
       onQuestionSeen={onQuestionSeen}
+      replay={Boolean(replay)}
     />
   );
 }

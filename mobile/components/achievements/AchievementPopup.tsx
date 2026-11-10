@@ -17,11 +17,13 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 const LEO_CELEBRATING = require('../../assets/mascot/leo-celebrating.png');
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const TIER_STYLES: Record<string, { color: string; bg: string; border: string; label: string }> = {
-  platinum: { color: '#E5E7EB', bg: 'rgba(229,231,235,0.12)', border: 'rgba(229,231,235,0.3)', label: 'PLATINUM' },
-  gold: { color: '#FBBF24', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)', label: 'GOLD' },
-  silver: { color: '#94A3B8', bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.3)', label: 'SILVER' },
-  bronze: { color: '#D97706', bg: 'rgba(217,119,6,0.12)', border: 'rgba(217,119,6,0.3)', label: 'BRONZE' },
+// ink is the tier label's text colour: it must stay readable on the light card,
+// so platinum's pale button colour never doubles as its label colour.
+const TIER_STYLES: Record<string, { color: string; ink: string; bg: string; border: string; label: string }> = {
+  platinum: { color: '#A7B4C8', ink: '#55657D', bg: 'rgba(85,101,125,0.10)', border: 'rgba(85,101,125,0.35)', label: 'PLATINUM' },
+  gold: { color: '#FBBF24', ink: '#B7791F', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)', label: 'GOLD' },
+  silver: { color: '#94A3B8', ink: '#64748B', bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.3)', label: 'SILVER' },
+  bronze: { color: '#D97706', ink: '#B45309', bg: 'rgba(217,119,6,0.12)', border: 'rgba(217,119,6,0.3)', label: 'BRONZE' },
 };
 
 interface AchievementPopupProps {
@@ -119,7 +121,7 @@ export function AchievementPopup({ visible, achievement, onDismiss }: Achievemen
           >
             {/* Tier badge */}
             <View style={[styles.tierBadge, { backgroundColor: tier.bg, borderColor: tier.border }]}>
-              <Text style={[styles.tierText, { color: tier.color }]}>{tier.label}</Text>
+              <Text style={[styles.tierText, { color: tier.ink }]}>{tier.label}</Text>
             </View>
 
             <Text style={styles.title}>Achievement Unlocked!</Text>

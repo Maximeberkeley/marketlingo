@@ -1,16 +1,34 @@
 import type { Exercise, KeyTerm } from '../types';
 
-export type AuthoredQuestion = Extract<Exercise, { kind: 'multipleChoice' | 'numberSense' | 'sortSignal' | 'buildChain' }>;
+export type AuthoredQuestion = Extract<Exercise, { kind: 'multipleChoice' | 'numberSense' | 'sortSignal' | 'buildChain' | 'theCall' | 'faceOff' | 'spotFake' }>;
+
+export interface StudiedMaterial {
+  questions: AuthoredQuestion[];
+  keyTerms: KeyTerm[];
+  /** The lesson's one-line rule, its takeaway and its opening headline, word for word. */
+  rule?: string;
+  takeaway?: string;
+  headline?: string;
+}
+
+const isText = (value: unknown): value is string => typeof value === 'string' && value.trim().length > 0;
+const isTextList = (value: unknown, min: number) => Array.isArray(value) && value.length >= min && value.every(isText);
 
 /** Read the verified lesson, without rewriting its copy or answers. */
-export function studiedMaterial(value: unknown): { questions: AuthoredQuestion[]; keyTerms: KeyTerm[] } {
+export function studiedMaterial(value: unknown): StudiedMaterial {
   const questions: AuthoredQuestion[] = [];
   const terms = new Map<string, KeyTerm>();
+  let rule: string | undefined;
+  let takeaway: string | undefined;
+  let headline: string | undefined;
   if (!value || typeof value !== 'object' || !('exercises' in value) || !Array.isArray(value.exercises)) {
     return { questions, keyTerms: [] };
   }
   for (const exercise of value.exercises) {
     if (!exercise || typeof exercise !== 'object') continue;
+    if (exercise.id === 'rule' && isText(exercise.text)) rule = exercise.text.trim();
+    if (exercise.kind === 'sayIt' && isText(exercise.takeaway)) takeaway = exercise.takeaway.trim();
+    if (exercise.kind === 'coldOpen' && isText(exercise.headline) && !headline) headline = exercise.headline.trim();
     for (const entry of [...(Array.isArray(exercise.keyTerms) ? exercise.keyTerms : []), ...(exercise.keyTerm ? [exercise.keyTerm] : [])]) {
       if (typeof entry?.term !== 'string' || typeof entry?.definition !== 'string') continue;
       const term = entry.term.trim();
@@ -34,9 +52,19 @@ export function studiedMaterial(value: unknown): { questions: AuthoredQuestion[]
       Array.isArray(exercise.steps) && exercise.steps.length >= 2 &&
       exercise.steps.every((s: unknown) => typeof s === 'string' && s.trim().length > 0)) {
       questions.push(exercise as AuthoredQuestion);
+    } else if (exercise.kind === 'theCall' && isText(exercise.situation) && isText(exercise.prompt) &&
+      isTextList(exercise.options, 2) && Number.isInteger(exercise.correctIndex) &&
+      exercise.correctIndex >= 0 && exercise.correctIndex < exercise.options.length) {
+      questions.push(exercise as AuthoredQuestion);
+    } else if (exercise.kind === 'faceOff' && isText(exercise.prompt) && isText(exercise.left?.name) &&
+      isText(exercise.right?.name) && (exercise.correctIndex === 0 || exercise.correctIndex === 1)) {
+      questions.push(exercise as AuthoredQuestion);
+    } else if (exercise.kind === 'spotFake' && isText(exercise.prompt) && isTextList(exercise.statements, 3) &&
+      Number.isInteger(exercise.fakeIndex) && exercise.fakeIndex >= 0 && exercise.fakeIndex < exercise.statements.length) {
+      questions.push(exercise as AuthoredQuestion);
     }
   }
-  return { questions, keyTerms: [...terms.values()] };
+  return { questions, keyTerms: [...terms.values()], ...(rule ? { rule } : {}), ...(takeaway ? { takeaway } : {}), ...(headline ? { headline } : {}) };
 }
 
 export function lessonSource(lesson: { stackId?: string; day?: number | null; title: string }) {

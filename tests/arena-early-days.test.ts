@@ -29,11 +29,15 @@ const all = (waves: ReturnType<typeof buildArena>) => waves.flatMap(w => w.exerc
 const isDefinition = (q: any) => q.kind === 'multipleChoice' && q.prompt.startsWith('This lesson defined');
 
 describe('early-days Arena across industries', () => {
-  it.each(Object.keys(fixtures) as (keyof typeof fixtures)[])('%s day 1 starter round: only lesson questions, at least 4, no fact twice', (marketId) => {
+  // A first lesson with two written checks and two terms is a short starter round:
+  // only its own material, never sentences edited into fakes to pad the run.
+  it.each(Object.keys(fixtures) as (keyof typeof fixtures)[])('%s day 1 starter round: only lesson questions, at least 3, no fact twice', (marketId) => {
     for (let run = 0; run < 25; run++) {
       const waves = arenaFor(marketId);
       const questions = all(waves);
-      expect(questions.length).toBeGreaterThanOrEqual(4);
+      expect(questions.length).toBeGreaterThanOrEqual(3);
+      expect(questions.some(q => q.kind === 'multipleChoice' && q.prompt.startsWith('Only one of these matches'))).toBe(false);
+      expect(questions.some(q => q.kind === 'spotFake' && q.prompt.startsWith('One of these has been altered'))).toBe(false);
       expect(questions.every(q => q.source?.type === 'lesson')).toBe(true);
       expect(waves.every(w => w.covers?.startsWith('Starter round · from '))).toBe(true);
       for (const wave of waves) {
@@ -63,14 +67,17 @@ describe('early-days Arena across industries', () => {
   }, 30000);
 
   it('cleanenergy day 1 uses its multiple-choice, its put-in-order and both key terms', () => {
+    // A term counts once it is asked anywhere: a definition, a filled gap, a pair or a true-or-false card.
+    const asks = (q: any, term: string) =>
+      (q.kind === 'multipleChoice' && q.options[q.correctIndex]?.toLowerCase() === term.toLowerCase()) ||
+      (q.kind === 'matchPairs' && q.pairs.some((p: any) => p.left === term)) ||
+      (q.kind === 'quickFire' && q.cards.some((c: any) => c.text.startsWith(`${term}:`)));
     for (let run = 0; run < 25; run++) {
       const lessonQuestions = all(arenaFor('cleanenergy')).filter(q => q.source?.type === 'lesson');
-      expect(lessonQuestions.length).toBeGreaterThanOrEqual(4);
-      expect(lessonQuestions.some(q => q.kind === 'multipleChoice' && !isDefinition(q))).toBe(true);
+      expect(lessonQuestions.length).toBeGreaterThanOrEqual(3);
+      expect(lessonQuestions.some(q => q.kind === 'multipleChoice' && !isDefinition(q) && !q.prompt.startsWith('Complete the'))).toBe(true);
       expect(lessonQuestions.some(q => q.kind === 'buildChain')).toBe(true);
-      for (const term of ['distribution', 'RTOs']) {
-        expect(lessonQuestions.some(q => isDefinition(q) && q.kind === 'multipleChoice' && q.options[q.correctIndex] === term)).toBe(true);
-      }
+      for (const term of ['distribution', 'RTOs']) expect(lessonQuestions.some(q => asks(q, term)), term).toBe(true);
     }
   }, 30000);
 
@@ -95,12 +102,15 @@ describe('early-days Arena across industries', () => {
   }, 30000);
 
   it('definition decoys come from other studied lessons before the glossary', () => {
+    // Three lessons: the newest terms go to the pairs game, the rest to definitions.
     const a = lessonOf(fintech);
     const b = { ...lessonOf(web3), stackId: 'web3-day1', day: 2 };
-    const waves = buildArena({ marketId: 'fintech', marketName: 'Fintech', trainer: trainers, drills, stats, studied: [b, a] });
-    const otherTerms = (title: string) => new Set((title === a.title ? b : a).keyTerms.map(t => t.term));
+    const c = { ...lessonOf(cleanenergy), stackId: 'cleanenergy-day1', day: 3 };
+    const waves = buildArena({ marketId: 'fintech', marketName: 'Fintech', trainer: trainers, drills, stats, studied: [c, b, a] });
+    const studiedTerms = [a, b, c];
+    const otherTerms = (title: string) => new Set(studiedTerms.filter(l => l.title !== title).flatMap(l => l.keyTerms.map(t => t.term)));
     const defs = all(waves).filter(q => isDefinition(q) && q.source?.type === 'lesson');
-    expect(defs.length).toBeGreaterThanOrEqual(2);
+    expect(defs.length).toBeGreaterThanOrEqual(1);
     for (const q of defs) {
       if (q.kind !== 'multipleChoice' || q.source?.type !== 'lesson') continue;
       const decoys = q.options.filter(o => o !== q.options[q.correctIndex]);

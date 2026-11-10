@@ -125,10 +125,11 @@ function LessonKitReader({
       marketId,
       stackId,
       onExit: onClose,
-      onFinish: ({ timeSpentSeconds, correct, total }) => onComplete(
+      onFinish: ({ timeSpentSeconds, correct, total, xp }) => onComplete(
         isReview,
         timeSpentSeconds,
-        total > 0 ? Math.round(correct / total * 100) : 100
+        total > 0 ? Math.round(correct / total * 100) : 100,
+        xp
       ),
       renderExtraActions: extraActions,
       onSaveLeoAnswer: (text, exerciseIndex, exercise) => onAddNote((exercise?.kind === "microInsight" ? exercise.sourceSlideNumber : void 0) ?? slideNumbers[exerciseIndex] ?? 1, `Leo explained: ${text}`),

@@ -480,8 +480,8 @@ function HomeScreenContent() {
         sources: s.sources
       })),
       onClose: session.closeReader,
-      onComplete: session.activeBiteIndex !== null ? session.handleBiteComplete : async (reviewMode, timeSpentSeconds, accuracy) => {
-        const synced = await session.handleStackComplete(reviewMode, timeSpentSeconds);
+      onComplete: session.activeBiteIndex !== null ? session.handleBiteComplete : async (reviewMode, timeSpentSeconds, accuracy, lessonXp) => {
+        const synced = await session.handleStackComplete(reviewMode, timeSpentSeconds, lessonXp);
         if (!synced || reviewMode || !selectedMarket || !session.activeStack?.id) return;
         const rewards = await evaluateRewards(
           "lesson",

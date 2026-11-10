@@ -40,9 +40,8 @@ const OPPOSITES: Array<[string, string]> = [
   ['increasing', 'decreasing'],
   ['surge', 'collapse'],
   ['surges', 'collapses'],
-  ['expand', 'contract'],
-  ['expands', 'contracts'],
-  ['expanding', 'contracting'],
+  // No expand/contract: "contract" is far more often the legal noun, and
+  // "unless the expand assigns those costs" is not English.
   ['accelerate', 'slow'],
   ['accelerating', 'slowing'],
   ['cheaper', 'more expensive'],
@@ -196,6 +195,34 @@ export function checkMechanism(slides: SlideLike[], id: string): BuildChainExerc
 /** A year, a model designation or an ordinal is never a quantity to alter. */
 const isYear = (value: number) => Number.isInteger(value) && value >= 1900 && value <= 2099;
 
+const MONTH = '(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\\.?';
+/** "Tier 1", "Phase 3", "Day 6", "Article 21": the number names something, it is not an amount. */
+const LABEL_BEFORE = /\b(?:tier|phase|stage|level|day|gen|generation|class|round|no\.?|number|part|article|section|title|chapter|step|type|grade|series|model|version|block|unit|flight|mission|week|cat|category|rule|annex|act|rev|revision|option|team|lot|line|gate|zone|pillar)\s*$/i;
+/** A number that only makes sense as written: a date, a range, an ordinal or a clock time. */
+function isFixedNumber(sentence: string, at: number, token: string): boolean {
+  const before = sentence.slice(0, at);
+  const after = sentence.slice(at + token.length);
+  if (LABEL_BEFORE.test(before)) return true;
+  if (new RegExp(`\\b${MONTH}\\s*$`, 'i').test(before) || new RegExp(`^\\s*${MONTH}\\b`, 'i').test(after)) return true;
+  if (/^\s*(?:to|-|–|or|and)\s*\$?\d/i.test(after) || /\d\s*(?:to|-|–)\s*\$?$/i.test(before)) return true;
+  if (/^(?:st|nd|rd|th)\b/i.test(after) || /^[:/]\d/.test(after) || /\d[:/]$/.test(before)) return true;
+  return false;
+}
+
+/**
+ * A line that stands on its own as a checkable claim. Scene-setting lines
+ * ("Consider a startup…", "It then makes…", "Tomorrow, …"), questions and
+ * instructions are never shown as "what the lesson said".
+ */
+const NOT_A_CLAIM_OPENER = /^(?:it|its|this|that|these|those|they|their|them|he|she|his|her|we|our|you|your|here|there|so|but|and|or|then|now|today|tomorrow|yesterday|imagine|consider|picture|suppose|say|think|ask|offer|try|pick|use|start|remember|note|compare|let|if|when|once|after|before)\b/i;
+const CLAIM_SIGNAL = /\d|\b(?:because|so that|which means|means|leads? to|drives?|causes?|when|as|since|while|whereas|than)\b/i;
+export function isStandaloneClaim(sentence: string): boolean {
+  const text = clean(sentence);
+  if (!text || /\?$/.test(text) || NOT_A_CLAIM_OPENER.test(text)) return false;
+  const named = text.split(' ').slice(1).some(word => /^[A-Z][a-z]/.test(word) || /^[A-Z]{2,}/.test(word));
+  return named || CLAIM_SIGNAL.test(text);
+}
+
 /** What an altered line changed, as short phrases a learner can compare. */
 export interface Alteration { text: string; said: string; changed: string }
 
@@ -215,7 +242,7 @@ export function alter(sentence: string): Alteration | null {
     // Skip designations ("KC-46", "GPT-4") and years ("in 2024").
     if (/[A-Za-z-]$/.test(sentence.slice(Math.max(0, at - 1), at))) continue;
     const raw = parseFloat(token.replace(',', '.'));
-    if (!isFinite(raw) || raw <= 0 || isYear(raw)) continue;
+    if (!isFinite(raw) || raw <= 0 || isYear(raw) || isFixedNumber(sentence, at, token)) continue;
     const next = raw > 10 ? Math.max(1, Math.round(raw * 0.2)) : Math.round(raw * 7);
     if (next === raw || isYear(next)) continue;
     const text = sentence.slice(0, at) + String(next) + sentence.slice(at + token.length);
@@ -243,7 +270,7 @@ function falsify(sentence: string): string | null {
 const saysNot = (change: Alteration) => `The lesson says “${change.said}”, not “${change.changed}”.`;
 
 export function checkClaim(slides: SlideLike[], id: string): MultipleChoiceExercise | null {
-  const pool = shuffle(slides.flatMap(s => sentences(s.body || '', 40, 170)));
+  const pool = shuffle(slides.flatMap(s => sentences(s.body || '', 40, 170)).filter(isStandaloneClaim));
   for (const truth of pool) {
     const others = pool.filter(s => norm(s) !== norm(truth));
     const lies = others
@@ -271,7 +298,7 @@ export function checkClaim(slides: SlideLike[], id: string): MultipleChoiceExerc
 
 // ── 5. Tamper check — spot the altered version of a real line ──────
 export function checkTamper(slides: SlideLike[], id: string): SpotFakeExercise | null {
-  const pool = shuffle(slides.flatMap(s => sentences(s.body || '', 45, 160)));
+  const pool = shuffle(slides.flatMap(s => sentences(s.body || '', 45, 160)).filter(isStandaloneClaim));
   if (pool.length < 3) return null;
   for (const candidate of pool) {
     const change = alter(candidate);

@@ -11,6 +11,7 @@ import {
 } from "../sequencer/lessonChecks";
 import { reviewCardFor } from "../components/feedbackCopy";
 import { glossaryEntriesFor } from "../glossary";
+import { distinctTerms, fillBlankFrom, matchPairsFrom, oddOneOutFrom, quickFireFrom } from "./arenaGames";
 import {
   drillSpotFake,
   drillTrueFalse,
@@ -36,13 +37,25 @@ function readingWords(exercise) {
     }
   };
   for (const key of ["prompt", "situation", "options", "statements", "steps", "items", "left", "right", "nodes", "buckets"]) add(e[key]);
+  if (exercise.kind === "matchPairs") exercise.pairs.forEach((pair) => {
+    add(pair.left);
+    add(pair.right);
+  });
+  if (exercise.kind === "quickFire") exercise.cards.forEach((card) => add(card.text));
   return parts.join(" ").split(/\s+/).filter(Boolean).length;
 }
 function beatSeconds(wave, exercise) {
   const base = wave?.seconds ?? 20;
   if (!exercise) return base;
+  if (exercise.kind === "quickFire") return Math.min(60, exercise.cards.length * 7 + 4);
+  if (exercise.kind === "matchPairs") return Math.min(75, exercise.pairs.length * 14 + 6);
   const reading = Math.min(45, Math.ceil(readingWords(exercise) / 3) + 5);
   return Math.max(base, reading, exercise.kind === "buildChain" ? 25 : 0);
+}
+const ARENA_REPLAY_SHARE = 0.25;
+function arenaXp(correct, total, replay = false) {
+  const full = 10 + Math.max(0, correct) * 8 + (total > 0 && correct === total ? 20 : 0);
+  return replay ? Math.max(5, Math.round(full * ARENA_REPLAY_SHARE)) : full;
 }
 function shuffle(arr) {
   const a = [...arr];
@@ -137,12 +150,13 @@ function buildArena(input) {
     const explanation = "explanation" in exercise ? exercise.explanation ?? "" : "";
     return lineKeys(explanation);
   };
+  const authoredFacts = /* @__PURE__ */ new Set();
   const tag = (lesson, exercise) => exercise ? [{ exercise: withReview({ ...exercise, source: lessonSource(lesson) }, lesson.slides), facts: factKeys(lesson, exercise) }] : [];
   const own = (kind) => review.flatMap((lesson) => (lesson.questions ?? []).filter((q) => q.kind === kind).flatMap((q) => tag(lesson, shuffleAuthored(q))));
   const definitions = () => {
     const glossaryPool = glossaryEntriesFor(input.marketId);
     return lessons.flatMap((lesson) => {
-      const pool = terms(lesson).filter((t) => isRealTerm(t.term) && (t.definition || "").trim().length > 14);
+      const pool = terms(lesson).filter((t) => isRealTerm(t.term) && (t.definition || "").trim().length > 14 && !authoredFacts.has(`${lesson.stackId ?? lesson.title}/term/${norm(t.term)}`));
       const others = lessons.filter((l) => l !== lesson).flatMap((l) => terms(l));
       return pool.flatMap((target) => {
         const targetTerm = norm(target.term);
@@ -169,7 +183,8 @@ function buildArena(input) {
       });
     });
   };
-  const generated = (build, faceOff = false) => lessons.flatMap((lesson) => {
+  const legacyLessons = lessons.filter((lesson) => !lesson.questions?.length);
+  const generated = (build, faceOff = false) => legacyLessons.flatMap((lesson) => {
     const candidates = [];
     for (let attempt = 0; attempt < 80; attempt += 1) {
       const slides = build === checkFigure ? lesson.slides.flatMap((s) => sentences(s.body ?? "", 15, 500).map((body) => ({ ...s, body }))) : lesson.slides;
@@ -204,12 +219,15 @@ function buildArena(input) {
     return candidates;
   });
   let reserved;
+  const ONCE_PER_RUN = /* @__PURE__ */ new Set(["quickFire", "matchPairs"]);
+  const runKinds = /* @__PURE__ */ new Set();
   const fill = (pool, fallback, limit) => {
     const selected = [];
     const kinds = /* @__PURE__ */ new Map();
     const accept = ({ exercise, facts: keys }) => {
       const questionKeys = quizQuestionKeys(exercise);
-      if ((kinds.get(exercise.kind) ?? 0) >= 2 || questionKeys.some((key) => used.has(key)) || keys.some((key) => facts.has(key))) return false;
+      if ((kinds.get(exercise.kind) ?? 0) >= 2 || ONCE_PER_RUN.has(exercise.kind) && runKinds.has(exercise.kind) || questionKeys.some((key) => used.has(key)) || keys.some((key) => facts.has(key))) return false;
+      runKinds.add(exercise.kind);
       questionKeys.forEach((key) => used.add(key));
       keys.forEach((key) => facts.add(key));
       kinds.set(exercise.kind, (kinds.get(exercise.kind) ?? 0) + 1);
@@ -244,50 +262,138 @@ function buildArena(input) {
     const text = (c) => "explanation" in c.exercise ? c.exercise.explanation ?? "" : "";
     return (/\d/.test(text(a)) ? 1 : 0) - (/\d/.test(text(b)) ? 1 : 0);
   });
+  for (const lesson of lessons) for (const q of lesson.questions ?? []) factKeys(lesson, q).forEach((key) => authoredFacts.add(key));
   const defs = definitions();
   const authoredMC = own("multipleChoice");
-  const wave1 = fill([...authoredMC.slice(0, 1), ...defs.slice(0, 1), ...claims, ...defs.slice(1), ...authoredMC.slice(1)], [
+  const scopeOf = (lesson) => lesson.stackId ?? lesson.title;
+  const playable = (lesson) => distinctTerms(terms(lesson)).filter((term) => !authoredFacts.has(`${scopeOf(lesson)}/term/${norm(term.term)}`));
+  const termFact = (lesson, term) => `${scopeOf(lesson)}/term/${norm(term)}`;
+  const glossary = glossaryEntriesFor(input.marketId);
+  const decoysFor = (lesson) => [
+    ...lessons.filter((other) => other !== lesson).flatMap(terms),
+    ...shuffle(glossary)
+  ];
+  const sourceFor = (owners) => {
+    const unique = [...new Set(owners)];
+    if (unique.length === 1) return lessonSource(unique[0]);
+    const days = unique.map((l) => l.day).filter((d) => typeof d === "number").sort((a, b) => a - b);
+    return { type: "lesson", title: days.length ? `Days ${days.slice(0, -1).join(", ")} and ${days[days.length - 1]}` : "Your recent lessons" };
+  };
+  const matchCandidates = [];
+  {
+    const owned = lessons.flatMap((lesson) => playable(lesson).map((term) => ({ lesson, term })));
+    const unique = owned.filter((entry, index) => owned.findIndex((o) => norm(o.term.term) === norm(entry.term.term)) === index);
+    for (let start = 0; start < unique.length; start += 4) {
+      const chunk = unique.slice(start, start + 4);
+      const exercise = matchPairsFrom(chunk.map((entry) => entry.term), nextId());
+      if (!exercise) continue;
+      const owners = chunk.slice(0, exercise.pairs.length);
+      matchCandidates.push({
+        exercise: { ...exercise, source: sourceFor(owners.map((o) => o.lesson)) },
+        facts: owners.map((o) => termFact(o.lesson, o.term.term))
+      });
+    }
+  }
+  const quickCandidates = lessons.flatMap((lesson) => {
+    const fakes = (lesson.questions ?? []).filter((q) => q.kind === "spotFake");
+    const fakeFacts = fakes.flatMap((f) => factKeys(lesson, f));
+    const lessonTerms = playable(lesson);
+    const truths = [lesson.rule, lesson.takeaway].filter((line) => Boolean(line));
+    const variants = [
+      { spotFakes: fakes, terms: lessonTerms, truths },
+      { spotFakes: fakes, terms: [], truths },
+      { spotFakes: [], terms: lessonTerms, truths }
+    ];
+    return variants.flatMap((variant) => {
+      const exercise = quickFireFrom({ ...variant, decoyTerms: decoysFor(lesson) }, nextId());
+      if (!exercise) return [];
+      const usedTerms = variant.terms.filter((t) => exercise.cards.some((card) => card.text.startsWith(`${t.term.trim()}:`)));
+      const usedLines = truths.filter((line) => exercise.cards.some((card) => norm(card.text) === norm(line)));
+      return [{
+        exercise: withReview({ ...exercise, source: lessonSource(lesson) }, lesson.slides),
+        facts: [
+          ...variant.spotFakes.length ? fakeFacts : [],
+          ...usedTerms.map((t) => termFact(lesson, t.term)),
+          ...usedLines.map((line) => `${scopeOf(lesson)}/line/${norm(line)}`)
+        ]
+      }];
+    });
+  });
+  const blankCandidates = lessons.flatMap((lesson) => [["rule", lesson.rule], ["takeaway", lesson.takeaway]].flatMap(([label, line]) => {
+    const exercise = fillBlankFrom(line, playable(lesson), decoysFor(lesson), nextId(), label);
+    if (!exercise) return [];
+    const answer = exercise.options[exercise.correctIndex];
+    return [{
+      exercise: withReview({ ...exercise, source: lessonSource(lesson) }, lesson.slides),
+      facts: [termFact(lesson, answer), `${scopeOf(lesson)}/line/${norm(line ?? "")}`]
+    }];
+  }));
+  const takeawayFigures = lessons.flatMap((lesson) => lesson.questions?.length ? [lesson.headline, lesson.takeaway].flatMap((line) => line ? tag(lesson, checkFigure([{ slideNumber: 0, title: lesson.title, body: line }], nextId())) : []) : []);
+  const oddCandidates = review.flatMap((lesson) => (lesson.questions ?? []).filter((q) => q.kind === "sortSignal").flatMap((sort) => {
+    const exercise = oddOneOutFrom(sort, nextId());
+    return exercise ? [{ exercise: withReview({ ...exercise, source: lessonSource(lesson) }, lesson.slides), facts: factKeys(lesson, sort) }] : [];
+  }));
+  const wave1 = fill([
+    ...quickCandidates,
+    ...matchCandidates,
+    ...blankCandidates,
+    ...defs.slice(0, 1),
+    ...claims,
+    ...defs.slice(1),
+    ...authoredMC.slice(0, 1)
+  ], [
     pack ? packFaceOff(pack, nextId()) : null,
     statFaceOff(stats, nextId()),
     drillTrueFalse(drills, nextId()),
     statTrend(stats, nextId())
-  ], 4);
+  ], 3);
   const figures = generated(checkFigure);
   const authoredNumbers = own("numberSense");
-  const wave2 = fill([...authoredNumbers.slice(0, 1), ...figures.slice(0, 1), ...own("buildChain"), ...own("sortSignal"), ...generated(checkClaim), ...figures, ...authoredNumbers.slice(1)], [
+  const wave2 = fill([
+    ...authoredNumbers.slice(0, 1),
+    ...own("sortSignal"),
+    ...own("buildChain"),
+    ...oddCandidates,
+    ...takeawayFigures,
+    ...own("spotFake"),
+    ...figures.slice(0, 1),
+    ...generated(checkClaim),
+    ...figures,
+    ...authoredNumbers.slice(1)
+  ], [
     pack ? packChain(pack, nextId()) : null,
     statNumberSense(stats, nextId()),
     drillSpotFake(drills, nextId()),
     pack ? packMap(pack, nextId()) : null,
     pack ? packNumber(pack, nextId()) : null
-  ], 4);
-  const finalPool = [...reserved ? [reserved] : [], ...definitions(), ...tampers];
+  ], 3);
+  const finalPool = [...own("theCall"), ...own("faceOff"), ...authoredMC, ...reserved ? [reserved] : [], ...definitions(), ...tampers];
   reserved = void 0;
   const wave3 = fill(finalPool, [
     ...shuffle(trainer).map((scenario) => trainerCall(scenario, nextId()))
   ], 3);
   const waves = [
     {
-      key: "warmup",
-      name: "Round 1",
-      tagline: "Round 1 \xB7 20 seconds per question",
+      key: "quick",
+      name: "Quick fire",
+      tagline: "Warm up on what you learned.",
       seconds: 20,
       multiplier: 1,
       exercises: wave1
     },
     {
-      key: "pressure",
-      name: "Round 2",
-      tagline: "Round 2 \xB7 15 seconds per question",
-      seconds: 15,
+      key: "connect",
+      name: "Connect the dots",
+      tagline: "Numbers, groups and the odd one out.",
+      seconds: 20,
       multiplier: 2,
       exercises: wave2
     },
     {
-      key: "sudden",
-      name: "Round 3",
-      tagline: "Round 3 \xB7 25 seconds per question",
-      seconds: 25,
+      key: "call",
+      name: "Your call",
+      tagline: "The judgment calls from your lessons.",
+      seconds: 30,
       multiplier: 3,
       exercises: wave3
     }
@@ -307,7 +413,9 @@ function rankForScore(score) {
 }
 export {
   ARENA_RANKS,
+  ARENA_REPLAY_SHARE,
   STARTER_LESSON_LIMIT,
+  arenaXp,
   beatSeconds,
   buildArena,
   rankForScore,

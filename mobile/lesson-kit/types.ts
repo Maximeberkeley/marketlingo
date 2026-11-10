@@ -210,6 +210,25 @@ export interface SayItExercise {
   context?: { company?: string; number?: string; industry?: string };
 }
 
+/** Tap a term, then the definition it belongs to, until every pair is matched. */
+export interface MatchPairsExercise {
+  kind: 'matchPairs';
+  id: string;
+  prompt: string;
+  /** left = the term, right = its definition, as the lesson wrote them. */
+  pairs: { left: string; right: string }[];
+  explanation?: string;
+}
+
+/** Quick true-or-false cards; each card shows right or wrong the moment it is answered. */
+export interface QuickFireExercise {
+  kind: 'quickFire';
+  id: string;
+  prompt: string;
+  cards: { text: string; isTrue: boolean; why?: string }[];
+  explanation?: string;
+}
+
 /** A short in-character line from Leo, shown above the beat. */
 export interface LeoBeat {
   /** What Leo says while the learner is working on this beat. */
@@ -233,6 +252,8 @@ type AnyExercise =
   | MapMarketExercise
   | ChartReadExercise
   | TheCallExercise
+  | MatchPairsExercise
+  | QuickFireExercise
   | SayItExercise;
 
 /** Every beat can carry a Leo line, whatever its kind. */
