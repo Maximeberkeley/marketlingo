@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 __pycache__/
+
+# Local checkouts used by background agent sessions
+.claude/worktrees/
