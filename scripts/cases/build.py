@@ -12,7 +12,7 @@ Checks run first and stop the build on errors: case shape, every goal's call, an
 sources, dashes, number-slider traps. Then the lessons' fitcheck.mjs replays the app's text limits on
 every stage, and this file checks the limits of the game modules fitcheck does not cover.
 """
-import importlib.util, json, re, sys, uuid, collections, os, subprocess, tempfile
+import importlib.util, hashlib, json, re, sys, uuid, collections, os, subprocess, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 LESSONS = os.path.join(HERE, '..', 'lessons')
@@ -258,12 +258,29 @@ CREATE INDEX IF NOT EXISTS idx_deep_cases_market_day ON public.deep_cases (marke
 """
 
 
+def fingerprint(content):
+    """A short hash of a case's content, kept in its tags so a loader can skip rows already current."""
+    return 'src:' + hashlib.sha256(json.dumps(content, ensure_ascii=False, sort_keys=True).encode('utf-8')).hexdigest()[:12]
+
+
+def rows_for(src, cases, market):
+    """The deep_cases rows for one market, shared by the SQL migration and the load-deep-cases function."""
+    out = []
+    for c in cases:
+        content = expand(src, c)
+        out.append({
+            'id': str(uuid.uuid5(LB.NS, f"marketlingo:{market}:case:d{c['day']}:s{c['slot']}:handwritten-v1")),
+            'market_id': market, 'day': c['day'], 'slot': c['slot'], 'content': content,
+            'tags': ['handwritten-v1', fingerprint(content)],
+        })
+    return out
+
+
 def sql(src, cases, market):
     rows = []
-    for c in cases:
-        cid = str(uuid.uuid5(LB.NS, f"marketlingo:{market}:case:d{c['day']}:s{c['slot']}:handwritten-v1"))
-        content = expand(src, c)
-        rows.append(f"({q(cid)}::uuid, {q(market)}, {c['day']}, {c['slot']}, {q(json.dumps(content, ensure_ascii=False))}::jsonb, ARRAY['handwritten-v1']::text[])")
+    for r in rows_for(src, cases, market):
+        tags = ', '.join(q(t) for t in r['tags'])
+        rows.append(f"({q(r['id'])}::uuid, {q(market)}, {r['day']}, {r['slot']}, {q(json.dumps(r['content'], ensure_ascii=False))}::jsonb, ARRAY[{tags}]::text[])")
     days = sorted({c['day'] for c in cases})
     head = (f"-- Hand-written {market} Deep Cases, days {days[0]}-{days[-1]} ({len(rows)} cases, three per day).\n"
             "-- Each case shares its brief, evidence and numbers across learner goals and holds a final call\n"
