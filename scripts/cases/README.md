@@ -106,12 +106,13 @@ python3 scripts/cases/build.py <market> scripts/cases/<market>/days_*.py --out d
 - **Errors:** must be zero. The builder replays the app's text limits through `scripts/lessons/fitcheck.mjs`,
   which needs `esbuild`.
 - **Warnings:** fix them where reasonable, such as unbalanced option lengths or a flagged word.
-- **First migration for a market:** also do the following.
-  - Add a journal entry to `drizzle/migrations/meta/_journal.json`:
-    `{"idx": NN, "version": "7", "when": <previous + 60000>, "tag": "00NN_<market>_deep_cases", "breakpoints": true}`.
-  - Add the market to `MARKETS` in `tests/deep-cases.test.ts`. The test checks three cases per covered day,
-    four goal calls each, that every case plays, and that the migration matches its source files. Ship whole
-    days only.
+- **No shared files.** Do not edit `drizzle/migrations/meta/_journal.json`; the aerospace session adds the
+  journal entries for every market later, so parallel sessions never conflict.
+- **Tests find your migration automatically.** `tests/deep-cases.test.ts` checks every
+  `00NN_<market>_deep_cases.sql`: three cases per covered day, four goal calls each, that every case plays,
+  and that the migration matches its source files. Ship whole days only.
+- **Fresh clone setup:** run `(cd scripts/lessons && npm install --no-save esbuild@0.25.12)` so the builder's
+  fitcheck runs. In a scratch folder, also install `vitest@3.2.4` and `@electric-sql/pglite`.
 - **Database check:** `node scripts/cases/pgcheck.mjs drizzle/migrations/00NN_<market>_deep_cases.sql`. It
   needs `@electric-sql/pglite` installed, and applies the migration twice.
 - **Tests:** `vitest run tests/deep-cases.test.ts` with `{ test: { environment: 'node', include:

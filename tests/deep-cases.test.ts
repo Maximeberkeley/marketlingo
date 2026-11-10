@@ -6,10 +6,14 @@ import { join } from 'path';
 import { callForGoal, caseDay, caseFromAuthored, type AuthoredCaseContent } from '../mobile/lesson-kit/case/authoredCase';
 
 // Hand-written Deep Cases: three per course day, built from scripts/cases/<market>/ into one migration each.
-const MARKETS = [
-  { market: 'aerospace', migration: 'drizzle/migrations/0038_aerospace_deep_cases.sql' },
-];
+// Every drizzle/migrations/00NN_<market>_deep_cases.sql is checked, so a new market needs no edit here.
+const MARKETS = readdirSync('drizzle/migrations')
+  .map(f => f.match(/^\d{4}_([a-z0-9]+)_deep_cases\.sql$/))
+  .filter((m): m is RegExpMatchArray => !!m)
+  .map(m => ({ market: m[1], migration: `drizzle/migrations/${m[0]}` }));
 const GOALS = ['career', 'invest', 'build_startup', 'curiosity'];
+const KNOWN = ['aerospace', 'ai', 'biotech', 'fintech', 'neuroscience', 'agtech', 'cleanenergy', 'climatetech',
+  'cybersecurity', 'ev', 'healthtech', 'logistics', 'robotics', 'spacetech', 'web3'];
 let python = true;
 try { execFileSync('python3', ['--version']); } catch { python = false; }
 
@@ -27,6 +31,10 @@ const content = (calls: Record<string, unknown>): AuthoredCaseContent => ({
 });
 
 describe('hand-written Deep Cases in the app', () => {
+  it('finds the deep case migrations', () => {
+    expect(MARKETS.map(m => m.market)).toContain('aerospace');
+  });
+
   it('plays brief, evidence, numbers and the call written for the learner\'s goal', () => {
     const c = caseFromAuthored({ day: 4, slot: 2, content: content({ invest: call('invest'), curiosity: call('curiosity') }) }, 'invest', 'Aerospace', 3)!;
     expect(c.id).toBe('authored-aerospace-d4-c2');
@@ -84,6 +92,10 @@ for (const { market, migration } of MARKETS) {
   const days = [...new Set(cases.map(c => Number(String(c.id).match(/-d(\d+)-/)![1])))].sort((a, b) => a - b);
 
   describe(`${market} hand-written Deep Cases`, () => {
+    it('is a known market', () => {
+      expect(KNOWN).toContain(market);
+    });
+
     it('has three cases for every day it covers, each with a call for all four goals', () => {
       expect(cases.length).toBe(days.length * 3);
       for (const d of days) for (const s of [1, 2, 3]) expect(cases.some(c => c.id === `${market}-d${d}-c${s}`), `d${d} c${s}`).toBe(true);
