@@ -15,6 +15,9 @@ export function quizQuestionKeys(exercise: Exercise): string[] {
   if (exercise.kind === 'theCall') return [normalize(`${exercise.situation} ${exercise.prompt} ${exercise.options[exercise.correctIndex] || ''}`)];
   if (exercise.kind === 'faceOff') return [normalize(`${exercise.prompt} ${[exercise.left.name, exercise.right.name].sort().join(' ')}`)];
   if (exercise.kind === 'mapMarket') return [normalize(`${exercise.prompt} ${exercise.nodes[exercise.correctIndex]?.label || ''}`)];
+  // One key per pair and per card, so a fact seen in one game is not re-asked in another this week.
+  if (exercise.kind === 'matchPairs') return exercise.pairs.map(pair => normalize(`pair ${pair.left} ${pair.right}`));
+  if (exercise.kind === 'quickFire') return exercise.cards.map(card => normalize(`card ${card.text} ${card.isTrue}`));
   const e = exercise as unknown as Record<string, unknown>;
   return [normalize(JSON.stringify(Object.fromEntries(Object.entries(e)
     .filter(([key]) => !['id', 'leo', 'explanation', 'source', 'review', 'whyWrong'].includes(key)).sort(([a], [b]) => a.localeCompare(b)))))];

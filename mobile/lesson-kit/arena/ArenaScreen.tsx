@@ -24,13 +24,24 @@ import { leoFeedbackLine } from '../../components/mascot/leoAnimationRules';
 import { renderExerciseByKind, isPassiveKind } from '../components/ExerciseRenderer';
 import { ExerciseState } from '../exercises/types';
 import { Exercise } from '../types';
-import { ArenaWave, beatSeconds, rankForScore } from './buildArena';
+import { ArenaWave, arenaXp, beatSeconds, rankForScore } from './buildArena';
 import { playSound } from '../../lib/sounds';
 import { trackEvent } from '../../lib/analytics';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { practiceSourceLabel } from '../practice/studiedMaterial';
 
-const START_SHIELDS = 2;
+/** What Leo says while a game is on screen, when the question brings no line of its own. */
+const ARENA_IDLE_LINES: Partial<Record<Exercise['kind'], string>> = {
+  quickFire: 'Go with your gut. You read this.',
+  matchPairs: 'Start with the one you are sure of.',
+  multipleChoice: 'Pick the one you could explain.',
+  numberSense: 'Roughly the right size is enough.',
+  sortSignal: 'Sort the easy ones first.',
+  buildChain: 'What has to happen first?',
+  spotFake: 'One of these is wrong. Which?',
+  faceOff: 'Two options. Trust your read.',
+  theCall: 'Think like you own the decision.',
+};
 
 export interface ArenaResult {
   score: number;
@@ -50,13 +61,16 @@ interface Props {
   onExit: () => void;
   onFinish: (result: ArenaResult) => void;
   onQuestionSeen?: (exercise: Exercise) => void;
+  /** A second run the same day still plays in full, but pays reduced XP. */
+  replay?: boolean;
 }
 
 /**
- * Daily Arena — a timed, escalating run through the market's own material.
- * Speed and combos multiply the score; shields absorb misses until sudden death.
+ * Daily Arena — three rounds of different games on the learner's own lessons.
+ * Speed and combos raise the score; a miss only resets the combo, so every run
+ * reaches the end and full credit comes from getting the questions right.
  */
-export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish, onQuestionSeen }: Props) {
+export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish, onQuestionSeen, replay = false }: Props) {
   useEffect(() => { trackEvent('quiz_started', { marketId: marketId ?? null }); }, []);
   const insets = useSafeAreaInsets();
   const world = getMarketWorld(marketId);
@@ -73,7 +87,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
   const [bestCombo, setBestCombo] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [graded, setGraded] = useState(0);
-  const [shields, setShields] = useState(START_SHIELDS);
+  const [timedOut, setTimedOut] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [lastGain, setLastGain] = useState<number | null>(null);
   const [ended, setEnded] = useState<{ survived: boolean } | null>(null);
@@ -131,8 +145,9 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
   );
 
   const grade = useCallback(
-    (isCorrect: boolean, secondsRemaining: number) => {
+    (isCorrect: boolean, secondsRemaining: number, outOfTime = false) => {
       clearTick();
+      setTimedOut(outOfTime);
       setCoachCorrect(isCorrect);
       setGraded(g => g + 1);
       if (isCorrect) {
@@ -153,21 +168,13 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
         return;
       }
 
+      // A miss resets the combo and nothing else: the run always reaches the end.
       setCombo(0);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
       playSound('wrong').catch(() => {});
-
-      const suddenDeath = wave.key === 'sudden';
-      if (suddenDeath || shields === 0) {
-        setPhase('feedback');
-        setShields(s => Math.max(0, s - 1));
-        setTimeout(() => endRun(false), 900);
-        return;
-      }
-      setShields(s => s - 1);
       setPhase('feedback');
     },
-    [clearTick, combo, endRun, popGain, shields, wave, exercise],
+    [clearTick, combo, popGain, wave, exercise],
   );
 
   // Countdown for the current beat
@@ -189,7 +196,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
       setTimeLeft(t => {
         if (t <= 1) {
           clearTick();
-          grade(false, 0);
+          grade(false, 0, true);
           return 0;
         }
         return t - 1;
@@ -205,6 +212,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
     if (beatIndex < wave.exercises.length - 1) {
       setBeatIndex(i => i + 1);
       setPhase('answering');
+      setTimedOut(false);
       setState({ canCheck: false, isCorrect: false });
       return;
     }
@@ -212,6 +220,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
       setWaveIndex(i => i + 1);
       setBeatIndex(0);
       setPhase('answering');
+      setTimedOut(false);
       setState({ canCheck: false, isCorrect: false });
       setShowWaveIntro(true);
       return;
@@ -238,7 +247,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
   // ── Run summary ───────────────────────────────────────────────
   if (ended) {
     const rank = rankForScore(score);
-    const xp = Math.max(10, Math.round(score / 8) + correct * 4);
+    const xp = arenaXp(correct, graded, replay);
     const newBest = score > bestScore;
     return (
       <View style={[styles.root, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 20 }]}>
@@ -269,12 +278,13 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
 
           <LeoCoach
             line={
-              ended.survived
-                ? `${correct} of ${graded} right. See you tomorrow.`
-                : `${correct} of ${graded} right. Try again tomorrow.`
+              graded > 0 && correct === graded
+                ? `All ${graded} right. That's full credit.`
+                : `${correct} of ${graded} right. See you tomorrow.`
             }
-            mood={ended.survived ? 'celebrate' : 'thinking'}
+            mood={graded > 0 && correct / graded >= 0.7 ? 'celebrate' : 'thinking'}
           />
+          {replay && <Text style={styles.replayNote}>Today's first run paid full XP. Extra runs pay a quarter.</Text>}
 
           <View style={{ height: 12 }} />
           <PrimaryButton
@@ -361,7 +371,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
           </View>
           {!passive && (
             <Text style={[styles.timerLabel, urgent && { color: tokens.color.incorrect }]}>
-              {phase === 'feedback' ? 'Locked' : `${timeLeft}s left`}
+              {phase === 'feedback' ? (timedOut ? "Time's up" : '\u00a0') : `${timeLeft}s left`}
             </Text>
           )}
         </>
@@ -394,9 +404,12 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
         {/* The question stays behind the round-intro card until Start is tapped */}
         {!showWaveIntro ? (
           <RevealCorrectProvider value={revealCorrect.reveal}>
-            {(!!exercise.leo?.line || (phase === 'feedback' && !isPassiveKind(exercise.kind))) && <LeoCoach
+            {/* Leo is on screen from the start of each game, so feedback never pushes the question down. */}
+            {(!!exercise.leo?.line || !!ARENA_IDLE_LINES[exercise.kind] || (phase === 'feedback' && !isPassiveKind(exercise.kind))) && <LeoCoach
               key={`${waveIndex}/${beatIndex}`}
-              line={exercise.leo?.line || leoFeedbackLine(coachCorrect, waveIndex * 31 + beatIndex)}
+              line={phase === 'feedback' && !isPassiveKind(exercise.kind)
+                ? leoFeedbackLine(coachCorrect, waveIndex * 31 + beatIndex)
+                : exercise.leo?.line || ARENA_IDLE_LINES[exercise.kind] || ''}
               mood={phase === 'feedback' && !isPassiveKind(exercise.kind) ? (coachCorrect ? 'correct' : 'incorrect') : (exercise.leo?.mood ?? 'idle')}
               intro={beatIndex === 0}
             />}
@@ -429,6 +442,8 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
             style={styles.waveCard}
           >
             <Text style={styles.waveKicker}>Round {waveIndex + 1} of {waves.length}</Text>
+            {!!wave.name && <Text style={styles.waveName}>{wave.name}</Text>}
+            {!!wave.tagline && <Text style={styles.waveTagline}>{wave.tagline}</Text>}
             {!!wave.covers && <Text style={styles.waveCovers}>{wave.covers}</Text>}
             <View style={styles.waveMetaRow}>
               <View style={styles.waveMeta}>
@@ -553,6 +568,7 @@ const styles = StyleSheet.create({
   },
   waveMetaText: { fontSize: 11, fontWeight: '700', color: '#FFFFFF' },
   waveCovers: { marginTop: 6, fontSize: 14, fontWeight: '700', color: '#FFFFFF', textAlign: 'center' },
+  replayNote: { marginTop: 8, fontSize: 12, fontWeight: '600', color: tokens.color.textMuted, textAlign: 'center' },
   waveBtn: {
     marginTop: 18,
      backgroundColor: tokens.color.bg,

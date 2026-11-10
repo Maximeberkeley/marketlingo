@@ -21,7 +21,7 @@ interface UseSessionFlowParams {
   currentDay: number;
   completeStack: (stackId: string) => Promise<any>;
   updateStreak: () => Promise<any>;
-  completeLessonForToday: (stackId: string) => Promise<void>;
+  completeLessonForToday: (stackId: string, xp?: number) => Promise<void>;
   addXP: (amount: number, type: string, sourceId?: string, description?: string) => Promise<void>;
   xpRewardLessonComplete: number;
   xpRewardStreakBonus: number;
@@ -78,7 +78,7 @@ export function useSessionFlow({
     setShowGoals(true);
   }, [lessonStack]);
 
-  const handleStackComplete = useCallback(async (isReviewMode: boolean, timeSpentSeconds: number): Promise<boolean> => {
+  const handleStackComplete = useCallback(async (isReviewMode: boolean, timeSpentSeconds: number, lessonXp?: number): Promise<boolean> => {
     if (isReviewMode) {
       setShowReader(false);
       setActiveStack(null);
@@ -103,7 +103,8 @@ export function useSessionFlow({
 
 
     triggerHaptic('success');
-    let earnedXP = isExtraPractice ? 15 : xpRewardLessonComplete;
+    // The day's lesson banks exactly what the completion screen itemized, never below the base.
+    let earnedXP = isExtraPractice ? 15 : Math.max(xpRewardLessonComplete, Math.round(lessonXp ?? 0));
 
     let synced = false;
     try {
@@ -115,7 +116,7 @@ export function useSessionFlow({
           synced = true;
         } else {
           await completeStack(activeStack.id);
-          await completeLessonForToday(activeStack.id);
+          await completeLessonForToday(activeStack.id, earnedXP);
           await updateStreak();
           if ((progress.current_streak || 0) > 0) {
             const streakBonus = xpRewardStreakBonus * (progress.current_streak || 1);

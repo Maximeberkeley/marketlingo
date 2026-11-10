@@ -14,7 +14,7 @@ import { LeoCoach } from '../components/LeoCoach';
 import { leoFeedbackLine } from '../../components/mascot/leoAnimationRules';
 import { renderExerciseByKind, isPassiveKind } from '../components/ExerciseRenderer';
 import { ExerciseState } from '../exercises/types';
-import { DeepCase, CaseGrade, caseDebriefLine, gradeCase } from './buildCase';
+import { DeepCase, CaseGrade, CASE_XP, caseDebriefLine, gradeCase } from './buildCase';
 import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
 import { BriefingReader } from '../components/BriefingReader';
@@ -141,7 +141,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
   // ── Debrief ───────────────────────────────────────────────────
   if (debrief) {
     const result = gradeCase(correct, graded, callCorrect, confidence || 'medium');
-    const xp = { A: 90, B: 70, C: 45, D: 25 }[result.grade];
+    const xp = CASE_XP[result.grade];
     return (
       <View style={[styles.root, { paddingTop: insets.top + 12 }]}>
         <ScrollView contentContainerStyle={styles.debriefScroll} showsVerticalScrollIndicator={false}>

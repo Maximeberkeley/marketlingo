@@ -7,7 +7,8 @@ import { cancelRollingLeoNudges } from "../lib/leoNudges";
 import { emitXP, onXP } from "../lib/progressEvents";
 import { transactionSource } from "../lib/xpSource";
 const XP_REWARDS = {
-  LESSON_COMPLETE: 50,
+  /** Floor for the daily lesson; the completion screen's itemized total is banked when higher. */
+  LESSON_COMPLETE: 80,
   GAME_COMPLETE: 25,
   DRILL_CORRECT: 10,
   DRILL_WRONG: 2,
@@ -174,7 +175,7 @@ function useUserXP(marketId) {
     }
     return updatedXP;
   };
-  const completeLessonForToday = async (stackId) => {
+  const completeLessonForToday = async (stackId, xp = XP_REWARDS.LESSON_COMPLETE) => {
     if (!user || !marketId) throw new Error("Sign in and choose a market before saving a lesson.");
     const today = localDateString();
     const { data: existing, error: lookupError } = await supabase.from("daily_completions").select("lesson_completed, completed_stack_id").eq("user_id", user.id).eq("market_id", marketId).eq("completion_date", today).maybeSingle();
@@ -193,7 +194,7 @@ function useUserXP(marketId) {
     if (error || !data) throw error || new Error("Could not save today\u2019s lesson credit.");
     setDailyCompletion(data);
     if (!alreadyDone) {
-      await addXP(XP_REWARDS.LESSON_COMPLETE, "lesson", stackId, "Completed daily lesson");
+      await addXP(Math.max(XP_REWARDS.LESSON_COMPLETE, Math.round(xp)), "lesson", stackId, "Completed daily lesson");
     }
     void cancelRollingLeoNudges().catch((error2) => log.warn("Reminder cleanup failed:", error2));
     return data;

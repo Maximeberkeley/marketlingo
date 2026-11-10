@@ -16,10 +16,10 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 const LEO_CELEBRATING = require("../../assets/mascot/leo-celebrating.png");
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const TIER_STYLES = {
-  platinum: { color: "#E5E7EB", bg: "rgba(229,231,235,0.12)", border: "rgba(229,231,235,0.3)", label: "PLATINUM" },
-  gold: { color: "#FBBF24", bg: "rgba(251,191,36,0.12)", border: "rgba(251,191,36,0.3)", label: "GOLD" },
-  silver: { color: "#94A3B8", bg: "rgba(148,163,184,0.12)", border: "rgba(148,163,184,0.3)", label: "SILVER" },
-  bronze: { color: "#D97706", bg: "rgba(217,119,6,0.12)", border: "rgba(217,119,6,0.3)", label: "BRONZE" }
+  platinum: { color: "#A7B4C8", ink: "#55657D", bg: "rgba(85,101,125,0.10)", border: "rgba(85,101,125,0.35)", label: "PLATINUM" },
+  gold: { color: "#FBBF24", ink: "#B7791F", bg: "rgba(251,191,36,0.12)", border: "rgba(251,191,36,0.3)", label: "GOLD" },
+  silver: { color: "#94A3B8", ink: "#64748B", bg: "rgba(148,163,184,0.12)", border: "rgba(148,163,184,0.3)", label: "SILVER" },
+  bronze: { color: "#D97706", ink: "#B45309", bg: "rgba(217,119,6,0.12)", border: "rgba(217,119,6,0.3)", label: "BRONZE" }
 };
 function AchievementPopup({ visible, achievement, onDismiss }) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
@@ -98,7 +98,7 @@ function AchievementPopup({ visible, achievement, onDismiss }) {
         showsVerticalScrollIndicator: false,
         bounces: false
       },
-      /* @__PURE__ */ React.createElement(View, { style: [styles.tierBadge, { backgroundColor: tier.bg, borderColor: tier.border }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.tierText, { color: tier.color }] }, tier.label)),
+      /* @__PURE__ */ React.createElement(View, { style: [styles.tierBadge, { backgroundColor: tier.bg, borderColor: tier.border }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.tierText, { color: tier.ink }] }, tier.label)),
       /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Achievement Unlocked!"),
       /* @__PURE__ */ React.createElement(Text, { style: styles.achievementName }, achievement.name),
       /* @__PURE__ */ React.createElement(Text, { style: styles.description }, achievement.description),

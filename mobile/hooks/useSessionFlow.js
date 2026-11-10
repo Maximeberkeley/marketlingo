@@ -49,7 +49,7 @@ function useSessionFlow({
     setActiveBiteIndex(biteIndex);
     setShowGoals(true);
   }, [lessonStack]);
-  const handleStackComplete = useCallback(async (isReviewMode, timeSpentSeconds) => {
+  const handleStackComplete = useCallback(async (isReviewMode, timeSpentSeconds, lessonXp) => {
     if (isReviewMode) {
       setShowReader(false);
       setActiveStack(null);
@@ -66,7 +66,7 @@ function useSessionFlow({
     }
     const isExtraPractice = lessonCompletedToday;
     triggerHaptic("success");
-    let earnedXP = isExtraPractice ? 15 : xpRewardLessonComplete;
+    let earnedXP = isExtraPractice ? 15 : Math.max(xpRewardLessonComplete, Math.round(lessonXp ?? 0));
     let synced = false;
     try {
       if (progress && activeStack) {
@@ -77,7 +77,7 @@ function useSessionFlow({
           synced = true;
         } else {
           await completeStack(activeStack.id);
-          await completeLessonForToday(activeStack.id);
+          await completeLessonForToday(activeStack.id, earnedXP);
           await updateStreak();
           if ((progress.current_streak || 0) > 0) {
             const streakBonus = xpRewardStreakBonus * (progress.current_streak || 1);

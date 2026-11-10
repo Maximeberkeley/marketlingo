@@ -1,14 +1,15 @@
 /**
- * Arena builder — three escalating waves built on the lessons this learner has
- * already studied, in EVERY market.
+ * Arena builder — three rounds, each a different kind of game, built on the
+ * lessons this learner has already studied, in EVERY market.
  *
- * Wave 1 "Warm-up": recognition of what the lessons defined and claimed.
- * Wave 2 "Pressure": the mechanisms and figures those lessons taught.
- * Wave 3 "Sudden death": tampered claims and a real call from the market.
+ * Round 1 "Quick fire": match the pairs, true-or-false cards, fill the gap.
+ * Round 2 "Connect the dots": numbers, groups, order and the odd one out.
+ * Round 3 "Your call": the judgment calls the lessons wrote.
  *
- * Studied-lesson material always comes first; authored packs, trainer
- * scenarios, fact-checked drills and sourced statistics fill any gap so a
- * market with thin lesson text still plays.
+ * Hand-written lessons play only their own material: their checks, terms,
+ * rule and takeaway. Sentence-editing games (spot the changed word) run only
+ * for older lessons that have no written checks. Authored packs, trainer
+ * scenarios, fact-checked drills and sourced statistics fill any gap.
  */
 import { Exercise, KeyTerm } from '../types';
 import { AuthoredQuestion, lessonSource } from '../practice/studiedMaterial';
@@ -26,6 +27,7 @@ import {
 } from '../sequencer/lessonChecks';
 import { reviewCardFor } from '../components/feedbackCopy';
 import { glossaryEntriesFor } from '../glossary';
+import { distinctTerms, fillBlankFrom, matchPairsFrom, oddOneOutFrom, quickFireFrom } from './arenaGames';
 import {
   drillSpotFake,
   drillTrueFalse,
@@ -68,6 +70,8 @@ export function readingWords(exercise: Exercise): number {
     }
   };
   for (const key of ['prompt', 'situation', 'options', 'statements', 'steps', 'items', 'left', 'right', 'nodes', 'buckets']) add(e[key]);
+  if (exercise.kind === 'matchPairs') exercise.pairs.forEach(pair => { add(pair.left); add(pair.right); });
+  if (exercise.kind === 'quickFire') exercise.cards.forEach(card => add(card.text));
   return parts.join(' ').split(/\s+/).filter(Boolean).length;
 }
 
@@ -78,8 +82,24 @@ export function readingWords(exercise: Exercise): number {
 export function beatSeconds(wave: { seconds: number } | undefined, exercise: Exercise | undefined | null): number {
   const base = wave?.seconds ?? 20;
   if (!exercise) return base;
+  // Multi-part games get time per part: a card is a few seconds, a pair a little longer.
+  if (exercise.kind === 'quickFire') return Math.min(60, exercise.cards.length * 7 + 4);
+  if (exercise.kind === 'matchPairs') return Math.min(75, exercise.pairs.length * 14 + 6);
   const reading = Math.min(45, Math.ceil(readingWords(exercise) / 3) + 5);
   return Math.max(base, reading, exercise.kind === 'buildChain' ? 25 : 0);
+}
+
+/** Share of Arena XP a second or later run on the same local day pays. */
+export const ARENA_REPLAY_SHARE = 0.25;
+
+/**
+ * Arena XP comes from right answers, plus a bonus for a perfect run, so full
+ * credit means getting every question right, not racing a clock. Later runs
+ * the same day pay a quarter.
+ */
+export function arenaXp(correct: number, total: number, replay = false): number {
+  const full = 10 + Math.max(0, correct) * 8 + (total > 0 && correct === total ? 20 : 0);
+  return replay ? Math.max(5, Math.round(full * ARENA_REPLAY_SHARE)) : full;
 }
 
 /** A lesson the learner has already read, used as practice material. */
@@ -90,6 +110,10 @@ export interface StudiedLessonInput {
   slides: SlideLike[];
   questions?: AuthoredQuestion[];
   keyTerms?: KeyTerm[];
+  /** The lesson's rule line, takeaway and opening headline, from the hand-written lesson. */
+  rule?: string;
+  takeaway?: string;
+  headline?: string;
 }
 
 export interface ArenaInput {
@@ -216,6 +240,9 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     const explanation = 'explanation' in exercise ? exercise.explanation ?? '' : '';
     return lineKeys(explanation);
   };
+  // Facts the written checks test. Term games leave these terms to the checks,
+  // which ask about them more precisely.
+  const authoredFacts = new Set<string>();
   const tag = (lesson: StudiedLessonInput, exercise: Exercise | null): Candidate[] => exercise
     ? [{ exercise: withReview({ ...exercise, source: lessonSource(lesson) }, lesson.slides), facts: factKeys(lesson, exercise) }] : [];
   const own = (kind: AuthoredQuestion['kind']) => review.flatMap(lesson =>
@@ -226,7 +253,8 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   const definitions = () => {
     const glossaryPool = glossaryEntriesFor(input.marketId);
     return lessons.flatMap(lesson => {
-      const pool = terms(lesson).filter(t => isRealTerm(t.term) && (t.definition || '').trim().length > 14);
+      const pool = terms(lesson).filter(t => isRealTerm(t.term) && (t.definition || '').trim().length > 14 &&
+        !authoredFacts.has(`${lesson.stackId ?? lesson.title}/term/${norm(t.term)}`));
       const others = lessons.filter(l => l !== lesson).flatMap(l => terms(l));
       return pool.flatMap(target => {
         const targetTerm = norm(target.term);
@@ -252,7 +280,9 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
       });
     });
   };
-  const generated = (build: (slides: SlideLike[], id: string) => Exercise | null, faceOff = false) => lessons.flatMap(lesson => {
+  // Only lessons without written checks fall back to games made by editing their sentences.
+  const legacyLessons = lessons.filter(lesson => !(lesson.questions?.length));
+  const generated = (build: (slides: SlideLike[], id: string) => Exercise | null, faceOff = false) => legacyLessons.flatMap(lesson => {
     const candidates: Candidate[] = [];
     for (let attempt = 0; attempt < 80; attempt += 1) {
       // Include sentence-sized figure candidates, not just the first number in a long card.
@@ -285,12 +315,17 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     return candidates;
   });
   let reserved: Candidate | undefined;
+  // The big games appear once per run, so every run mixes formats.
+  const ONCE_PER_RUN = new Set<string>(['quickFire', 'matchPairs']);
+  const runKinds = new Set<string>();
   const fill = (pool: Candidate[], fallback: (Exercise | null)[], limit: number) => {
     const selected: Exercise[] = [];
     const kinds = new Map<string, number>();
     const accept = ({ exercise, facts: keys }: Candidate) => {
       const questionKeys = quizQuestionKeys(exercise);
-      if ((kinds.get(exercise.kind) ?? 0) >= 2 || questionKeys.some(key => used.has(key)) || keys.some(key => facts.has(key))) return false;
+      if ((kinds.get(exercise.kind) ?? 0) >= 2 || (ONCE_PER_RUN.has(exercise.kind) && runKinds.has(exercise.kind)) ||
+        questionKeys.some(key => used.has(key)) || keys.some(key => facts.has(key))) return false;
+      runKinds.add(exercise.kind);
       questionKeys.forEach(key => used.add(key));
       keys.forEach(key => facts.add(key));
       kinds.set(exercise.kind, (kinds.get(exercise.kind) ?? 0) + 1);
@@ -332,19 +367,109 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     const text = (c: Candidate) => 'explanation' in c.exercise ? c.exercise.explanation ?? '' : '';
     return (/\d/.test(text(a)) ? 1 : 0) - (/\d/.test(text(b)) ? 1 : 0);
   });
+  for (const lesson of lessons) for (const q of lesson.questions ?? []) factKeys(lesson, q).forEach(key => authoredFacts.add(key));
   const defs = definitions();
   const authoredMC = own('multipleChoice');
-  const wave1 = fill([...authoredMC.slice(0, 1), ...defs.slice(0, 1), ...claims, ...defs.slice(1), ...authoredMC.slice(1)], [
+
+  // ── Games from the hand-written lessons ──
+  const scopeOf = (lesson: StudiedLessonInput) => lesson.stackId ?? lesson.title;
+  const playable = (lesson: StudiedLessonInput) => distinctTerms(terms(lesson)).filter(term => !authoredFacts.has(`${scopeOf(lesson)}/term/${norm(term.term)}`));
+  const termFact = (lesson: StudiedLessonInput, term: string) => `${scopeOf(lesson)}/term/${norm(term)}`;
+  const glossary = glossaryEntriesFor(input.marketId);
+  const decoysFor = (lesson: StudiedLessonInput): KeyTerm[] => [
+    ...lessons.filter(other => other !== lesson).flatMap(terms),
+    ...shuffle(glossary),
+  ];
+  const sourceFor = (owners: StudiedLessonInput[]) => {
+    const unique = [...new Set(owners)];
+    if (unique.length === 1) return lessonSource(unique[0]);
+    const days = unique.map(l => l.day).filter((d): d is number => typeof d === 'number').sort((a, b) => a - b);
+    return { type: 'lesson' as const, title: days.length ? `Days ${days.slice(0, -1).join(', ')} and ${days[days.length - 1]}` : 'Your recent lessons' };
+  };
+  // Match the pairs: newest terms first, up to four, from one or two lessons.
+  const matchCandidates: Candidate[] = [];
+  {
+    const owned = lessons.flatMap(lesson => playable(lesson).map(term => ({ lesson, term })));
+    const unique = owned.filter((entry, index) => owned.findIndex(o => norm(o.term.term) === norm(entry.term.term)) === index);
+    for (let start = 0; start < unique.length; start += 4) {
+      const chunk = unique.slice(start, start + 4);
+      const exercise = matchPairsFrom(chunk.map(entry => entry.term), nextId());
+      if (!exercise) continue;
+      const owners = chunk.slice(0, exercise.pairs.length);
+      matchCandidates.push({
+        exercise: { ...exercise, source: sourceFor(owners.map(o => o.lesson)) },
+        facts: owners.map(o => termFact(o.lesson, o.term.term)),
+      });
+    }
+  }
+  // Quick fire: each lesson's spot-the-fake lines plus its terms, or its lines alone.
+  const quickCandidates: Candidate[] = lessons.flatMap(lesson => {
+    const fakes = (lesson.questions ?? []).filter((q): q is Extract<AuthoredQuestion, { kind: 'spotFake' }> => q.kind === 'spotFake');
+    const fakeFacts = fakes.flatMap(f => factKeys(lesson, f));
+    const lessonTerms = playable(lesson);
+    const truths = [lesson.rule, lesson.takeaway].filter((line): line is string => Boolean(line));
+    const variants = [
+      { spotFakes: fakes, terms: lessonTerms, truths },
+      { spotFakes: fakes, terms: [] as KeyTerm[], truths },
+      { spotFakes: [] as typeof fakes, terms: lessonTerms, truths },
+    ];
+    return variants.flatMap(variant => {
+      const exercise = quickFireFrom({ ...variant, decoyTerms: decoysFor(lesson) }, nextId());
+      if (!exercise) return [];
+      const usedTerms = variant.terms.filter(t => exercise.cards.some(card => card.text.startsWith(`${t.term.trim()}:`)));
+      const usedLines = truths.filter(line => exercise.cards.some(card => norm(card.text) === norm(line)));
+      return [{
+        exercise: withReview({ ...exercise, source: lessonSource(lesson) }, lesson.slides),
+        facts: [
+          ...(variant.spotFakes.length ? fakeFacts : []),
+          ...usedTerms.map(t => termFact(lesson, t.term)),
+          ...usedLines.map(line => `${scopeOf(lesson)}/line/${norm(line)}`),
+        ],
+      }];
+    });
+  });
+  // Fill the gap in the lesson's own rule or takeaway.
+  const blankCandidates: Candidate[] = lessons.flatMap(lesson => (
+    [['rule', lesson.rule], ['takeaway', lesson.takeaway]] as const
+  ).flatMap(([label, line]) => {
+    const exercise = fillBlankFrom(line, playable(lesson), decoysFor(lesson), nextId(), label);
+    if (!exercise) return [];
+    const answer = exercise.options[exercise.correctIndex];
+    return [{
+      exercise: withReview({ ...exercise, source: lessonSource(lesson) }, lesson.slides),
+      facts: [termFact(lesson, answer), `${scopeOf(lesson)}/line/${norm(line ?? '')}`],
+    }];
+  }));
+  // The headline's and takeaway's own figures, with decoys a clear size apart.
+  const takeawayFigures: Candidate[] = lessons.flatMap(lesson => lesson.questions?.length
+    ? [lesson.headline, lesson.takeaway].flatMap(line => line
+      ? tag(lesson, checkFigure([{ slideNumber: 0, title: lesson.title, body: line }], nextId())) : [])
+    : []);
+  // Odd one out, from the sorts the lessons wrote.
+  const oddCandidates: Candidate[] = review.flatMap(lesson => (lesson.questions ?? [])
+    .filter((q): q is Extract<AuthoredQuestion, { kind: 'sortSignal' }> => q.kind === 'sortSignal')
+    .flatMap(sort => {
+      const exercise = oddOneOutFrom(sort, nextId());
+      return exercise ? [{ exercise: withReview({ ...exercise, source: lessonSource(lesson) }, lesson.slides), facts: factKeys(lesson, sort) }] : [];
+    }));
+
+  const wave1 = fill([
+    ...quickCandidates, ...matchCandidates, ...blankCandidates,
+    ...defs.slice(0, 1), ...claims, ...defs.slice(1), ...authoredMC.slice(0, 1),
+  ], [
     pack ? packFaceOff(pack, nextId()) : null, statFaceOff(stats, nextId()),
     drillTrueFalse(drills, nextId()), statTrend(stats, nextId()),
-  ], 4);
+  ], 3);
   const figures = generated(checkFigure);
   const authoredNumbers = own('numberSense');
-  const wave2 = fill([...authoredNumbers.slice(0, 1), ...figures.slice(0, 1), ...own('buildChain'), ...own('sortSignal'), ...generated(checkClaim), ...figures, ...authoredNumbers.slice(1)], [
+  const wave2 = fill([
+    ...authoredNumbers.slice(0, 1), ...own('sortSignal'), ...own('buildChain'), ...oddCandidates,
+    ...takeawayFigures, ...own('spotFake'), ...figures.slice(0, 1), ...generated(checkClaim), ...figures, ...authoredNumbers.slice(1),
+  ], [
     pack ? packChain(pack, nextId()) : null, statNumberSense(stats, nextId()),
     drillSpotFake(drills, nextId()), pack ? packMap(pack, nextId()) : null, pack ? packNumber(pack, nextId()) : null,
-  ], 4);
-  const finalPool = [...(reserved ? [reserved] : []), ...definitions(), ...tampers];
+  ], 3);
+  const finalPool = [...own('theCall'), ...own('faceOff'), ...authoredMC, ...(reserved ? [reserved] : []), ...definitions(), ...tampers];
   reserved = undefined;
   const wave3 = fill(finalPool, [
     ...shuffle(trainer).map(scenario => trainerCall(scenario, nextId())),
@@ -352,26 +477,26 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
 
   const waves: ArenaWave[] = [
     {
-      key: 'warmup',
-      name: 'Round 1',
-      tagline: 'Round 1 · 20 seconds per question',
+      key: 'quick',
+      name: 'Quick fire',
+      tagline: 'Warm up on what you learned.',
       seconds: 20,
       multiplier: 1,
       exercises: wave1,
     },
     {
-      key: 'pressure',
-      name: 'Round 2',
-      tagline: 'Round 2 · 15 seconds per question',
-      seconds: 15,
+      key: 'connect',
+      name: 'Connect the dots',
+      tagline: 'Numbers, groups and the odd one out.',
+      seconds: 20,
       multiplier: 2,
       exercises: wave2,
     },
     {
-      key: 'sudden',
-      name: 'Round 3',
-      tagline: 'Round 3 · 25 seconds per question',
-      seconds: 25,
+      key: 'call',
+      name: 'Your call',
+      tagline: 'The judgment calls from your lessons.',
+      seconds: 30,
       multiplier: 3,
       exercises: wave3,
     },

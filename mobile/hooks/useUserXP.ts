@@ -9,7 +9,8 @@ import { emitXP, onXP } from '../lib/progressEvents';
 import { transactionSource } from '../lib/xpSource';
 
 export const XP_REWARDS = {
-  LESSON_COMPLETE: 50,
+  /** Floor for the daily lesson; the completion screen's itemized total is banked when higher. */
+  LESSON_COMPLETE: 80,
   GAME_COMPLETE: 25,
   DRILL_CORRECT: 10,
   DRILL_WRONG: 2,
@@ -261,7 +262,7 @@ export function useUserXP(marketId?: string) {
    * per local day. A second lesson on the same day is extra practice — it is
    * recorded, but it does not re-pay the lesson XP or re-mark the day.
    */
-  const completeLessonForToday = async (stackId: string) => {
+  const completeLessonForToday = async (stackId: string, xp: number = XP_REWARDS.LESSON_COMPLETE) => {
     if (!user || !marketId) throw new Error('Sign in and choose a market before saving a lesson.');
 
     const today = localDateString();
@@ -296,7 +297,7 @@ export function useUserXP(marketId?: string) {
     setDailyCompletion(data);
 
     if (!alreadyDone) {
-      await addXP(XP_REWARDS.LESSON_COMPLETE, 'lesson', stackId, 'Completed daily lesson');
+      await addXP(Math.max(XP_REWARDS.LESSON_COMPLETE, Math.round(xp)), 'lesson', stackId, 'Completed daily lesson');
     }
 
     // The session syncs the local-day streak once after this credit is saved.

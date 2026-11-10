@@ -45,7 +45,8 @@ export interface LessonKitReaderProps {
   stackType: 'NEWS' | 'HISTORY' | 'LESSON';
   slides: SlideData[];
   onClose: () => void;
-  onComplete: (isReview: boolean, timeSpentSeconds: number, accuracy?: number) => void | Promise<void | boolean>;
+  /** xp is the total the completion screen itemized, so the bank matches what the learner saw. */
+  onComplete: (isReview: boolean, timeSpentSeconds: number, accuracy?: number, xp?: number) => void | Promise<void | boolean>;
   onSaveInsight: (slideNumber: number) => void;
   onAddNote: (slideNumber: number, customContent?: string) => void;
   marketId?: string;
@@ -210,10 +211,11 @@ export function LessonKitReader({
         marketId={marketId}
         stackId={stackId}
         onExit={onClose}
-        onFinish={({ timeSpentSeconds, correct, total }) => onComplete(
+        onFinish={({ timeSpentSeconds, correct, total, xp }) => onComplete(
           isReview,
           timeSpentSeconds,
           total > 0 ? Math.round((correct / total) * 100) : 100,
+          xp,
         )}
         renderExtraActions={extraActions}
         onSaveLeoAnswer={(text, exerciseIndex, exercise) =>

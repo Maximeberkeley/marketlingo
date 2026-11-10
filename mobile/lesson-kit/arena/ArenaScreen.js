@@ -21,13 +21,23 @@ import { feedbackCopy } from "../components/feedbackCopy";
 import { LeoCoach } from "../components/LeoCoach";
 import { leoFeedbackLine } from "../../components/mascot/leoAnimationRules";
 import { renderExerciseByKind, isPassiveKind } from "../components/ExerciseRenderer";
-import { beatSeconds, rankForScore } from "./buildArena";
+import { arenaXp, beatSeconds, rankForScore } from "./buildArena";
 import { playSound } from "../../lib/sounds";
 import { trackEvent } from "../../lib/analytics";
 import { getMarketWorld } from "../../data/marketWorlds";
 import { practiceSourceLabel } from "../practice/studiedMaterial";
-const START_SHIELDS = 2;
-function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish, onQuestionSeen }) {
+const ARENA_IDLE_LINES = {
+  quickFire: "Go with your gut. You read this.",
+  matchPairs: "Start with the one you are sure of.",
+  multipleChoice: "Pick the one you could explain.",
+  numberSense: "Roughly the right size is enough.",
+  sortSignal: "Sort the easy ones first.",
+  buildChain: "What has to happen first?",
+  spotFake: "One of these is wrong. Which?",
+  faceOff: "Two options. Trust your read.",
+  theCall: "Think like you own the decision."
+};
+function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish, onQuestionSeen, replay = false }) {
   useEffect(() => {
     trackEvent("quiz_started", { marketId: marketId ?? null });
   }, []);
@@ -44,7 +54,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
   const [bestCombo, setBestCombo] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [graded, setGraded] = useState(0);
-  const [shields, setShields] = useState(START_SHIELDS);
+  const [timedOut, setTimedOut] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [lastGain, setLastGain] = useState(null);
   const [ended, setEnded] = useState(null);
@@ -96,8 +106,9 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
     [clearTick]
   );
   const grade = useCallback(
-    (isCorrect, secondsRemaining) => {
+    (isCorrect, secondsRemaining, outOfTime = false) => {
       clearTick();
+      setTimedOut(outOfTime);
       setCoachCorrect(isCorrect);
       setGraded((g) => g + 1);
       if (isCorrect) {
@@ -124,17 +135,9 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       });
       playSound("wrong").catch(() => {
       });
-      const suddenDeath = wave.key === "sudden";
-      if (suddenDeath || shields === 0) {
-        setPhase("feedback");
-        setShields((s) => Math.max(0, s - 1));
-        setTimeout(() => endRun(false), 900);
-        return;
-      }
-      setShields((s) => s - 1);
       setPhase("feedback");
     },
-    [clearTick, combo, endRun, popGain, shields, wave, exercise]
+    [clearTick, combo, popGain, wave, exercise]
   );
   useEffect(() => {
     if (!wave || !exercise || showWaveIntro || phase === "feedback" || ended) return;
@@ -152,7 +155,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       setTimeLeft((t) => {
         if (t <= 1) {
           clearTick();
-          grade(false, 0);
+          grade(false, 0, true);
           return 0;
         }
         return t - 1;
@@ -165,6 +168,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
     if (beatIndex < wave.exercises.length - 1) {
       setBeatIndex((i) => i + 1);
       setPhase("answering");
+      setTimedOut(false);
       setState({ canCheck: false, isCorrect: false });
       return;
     }
@@ -172,6 +176,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       setWaveIndex((i) => i + 1);
       setBeatIndex(0);
       setPhase("answering");
+      setTimedOut(false);
       setState({ canCheck: false, isCorrect: false });
       setShowWaveIntro(true);
       return;
@@ -193,7 +198,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
   const feedback = exercise ? feedbackCopy(exercise, state.isCorrect, state.selectedIndex) : null;
   if (ended) {
     const rank = rankForScore(score);
-    const xp = Math.max(10, Math.round(score / 8) + correct * 4);
+    const xp = arenaXp(correct, graded, replay);
     const newBest = score > bestScore;
     return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 20 }] }, /* @__PURE__ */ React.createElement(ScrollView, { contentContainerStyle: styles.summaryScroll, showsVerticalScrollIndicator: false }, /* @__PURE__ */ React.createElement(
       LinearGradient,
@@ -210,10 +215,10 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
     ), /* @__PURE__ */ React.createElement(View, { style: styles.statGrid }, /* @__PURE__ */ React.createElement(SummaryStat, { icon: "check-circle", label: "Correct", value: `${correct}/${graded}` }), /* @__PURE__ */ React.createElement(SummaryStat, { icon: "star", label: "Score", value: `${score}` }), /* @__PURE__ */ React.createElement(SummaryStat, { icon: "layers", label: "Round", value: `${waveIndex + 1}/${waves.length}` }), /* @__PURE__ */ React.createElement(SummaryStat, { icon: "award", label: "XP earned", value: `+${xp}` })), /* @__PURE__ */ React.createElement(
       LeoCoach,
       {
-        line: ended.survived ? `${correct} of ${graded} right. See you tomorrow.` : `${correct} of ${graded} right. Try again tomorrow.`,
-        mood: ended.survived ? "celebrate" : "thinking"
+        line: graded > 0 && correct === graded ? `All ${graded} right. That's full credit.` : `${correct} of ${graded} right. See you tomorrow.`,
+        mood: graded > 0 && correct / graded >= 0.7 ? "celebrate" : "thinking"
       }
-    ), /* @__PURE__ */ React.createElement(View, { style: { height: 12 } }), /* @__PURE__ */ React.createElement(
+    ), replay && /* @__PURE__ */ React.createElement(Text, { style: styles.replayNote }, "Today's first run paid full XP. Extra runs pay a quarter."), /* @__PURE__ */ React.createElement(View, { style: { height: 12 } }), /* @__PURE__ */ React.createElement(
       PrimaryButton,
       {
         label: banking ? "Saving\u2026" : `Collect +${xp} XP`,
@@ -250,7 +255,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
         { width: timerWidth, backgroundColor: urgent ? tokens.color.incorrect : tokens.color.accent }
       ]
     }
-  )), !passive && /* @__PURE__ */ React.createElement(Text, { style: [styles.timerLabel, urgent && { color: tokens.color.incorrect }] }, phase === "feedback" ? "Locked" : `${timeLeft}s left`)), lastGain !== null && /* @__PURE__ */ React.createElement(
+  )), !passive && /* @__PURE__ */ React.createElement(Text, { style: [styles.timerLabel, urgent && { color: tokens.color.incorrect }] }, phase === "feedback" ? timedOut ? "Time's up" : "\xA0" : `${timeLeft}s left`)), lastGain !== null && /* @__PURE__ */ React.createElement(
     Animated.View,
     {
       style: [
@@ -274,11 +279,11 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       showsVerticalScrollIndicator: false,
       keyboardShouldPersistTaps: "handled"
     },
-    !showWaveIntro ? /* @__PURE__ */ React.createElement(RevealCorrectProvider, { value: revealCorrect.reveal }, (!!exercise.leo?.line || phase === "feedback" && !isPassiveKind(exercise.kind)) && /* @__PURE__ */ React.createElement(
+    !showWaveIntro ? /* @__PURE__ */ React.createElement(RevealCorrectProvider, { value: revealCorrect.reveal }, (!!exercise.leo?.line || !!ARENA_IDLE_LINES[exercise.kind] || phase === "feedback" && !isPassiveKind(exercise.kind)) && /* @__PURE__ */ React.createElement(
       LeoCoach,
       {
         key: `${waveIndex}/${beatIndex}`,
-        line: exercise.leo?.line || leoFeedbackLine(coachCorrect, waveIndex * 31 + beatIndex),
+        line: phase === "feedback" && !isPassiveKind(exercise.kind) ? leoFeedbackLine(coachCorrect, waveIndex * 31 + beatIndex) : exercise.leo?.line || ARENA_IDLE_LINES[exercise.kind] || "",
         mood: phase === "feedback" && !isPassiveKind(exercise.kind) ? coachCorrect ? "correct" : "incorrect" : exercise.leo?.mood ?? "idle",
         intro: beatIndex === 0
       }
@@ -301,6 +306,8 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       style: styles.waveCard
     },
     /* @__PURE__ */ React.createElement(Text, { style: styles.waveKicker }, "Round ", waveIndex + 1, " of ", waves.length),
+    !!wave.name && /* @__PURE__ */ React.createElement(Text, { style: styles.waveName }, wave.name),
+    !!wave.tagline && /* @__PURE__ */ React.createElement(Text, { style: styles.waveTagline }, wave.tagline),
     !!wave.covers && /* @__PURE__ */ React.createElement(Text, { style: styles.waveCovers }, wave.covers),
     /* @__PURE__ */ React.createElement(View, { style: styles.waveMetaRow }, /* @__PURE__ */ React.createElement(View, { style: styles.waveMeta }, /* @__PURE__ */ React.createElement(Feather, { name: "clock", size: 12, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.waveMetaText }, wave.seconds, " seconds per question \xB7 more for long ones"))),
     /* @__PURE__ */ React.createElement(
@@ -388,6 +395,7 @@ const styles = StyleSheet.create({
   },
   waveMetaText: { fontSize: 11, fontWeight: "700", color: "#FFFFFF" },
   waveCovers: { marginTop: 6, fontSize: 14, fontWeight: "700", color: "#FFFFFF", textAlign: "center" },
+  replayNote: { marginTop: 8, fontSize: 12, fontWeight: "600", color: tokens.color.textMuted, textAlign: "center" },
   waveBtn: {
     marginTop: 18,
     backgroundColor: tokens.color.bg,

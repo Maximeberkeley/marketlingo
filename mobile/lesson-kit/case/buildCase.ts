@@ -98,7 +98,9 @@ export function buildCase(input: CaseInput): DeepCase | null {
 
   // The call tests the lesson first: a claim from what the learner actually read.
   // A real market scenario only stands in when no studied lesson can carry it.
-  const lessonCall = scenarioTurn ? null : firstLesson(lesson => lesson.questions?.find(q => q.kind === 'multipleChoice') || checkClaim(lesson.slides, 'case-call-claim'));
+  // A written judgment call (theCall) is the natural final stage; a written question comes next.
+  const lessonCall = scenarioTurn ? null : firstLesson(lesson => lesson.questions?.find(q => q.kind === 'theCall') ||
+    lesson.questions?.find(q => q.kind === 'multipleChoice') || checkClaim(lesson.slides, 'case-call-claim'));
   const trainerExercise = !lessonCall && scenario ? trainerCall(scenario, 'case-call') : null;
   const scenarioCall = trainerExercise ? { ...trainerExercise, source: { type: 'industry' as const } } : null;
   const call = lessonCall || scenarioCall;
@@ -194,6 +196,9 @@ export function buildCase(input: CaseInput): DeepCase | null {
 }
 
 export type CaseGrade = 'A' | 'B' | 'C' | 'D';
+
+/** XP per Deep Case grade. A top case is at most half the daily lesson's base (LESSON_BASE_XP). */
+export const CASE_XP: Record<CaseGrade, number> = { A: 40, B: 30, C: 20, D: 10 };
 
 /** Grade combines accuracy with how well confidence was calibrated. */
 export function gradeCase(

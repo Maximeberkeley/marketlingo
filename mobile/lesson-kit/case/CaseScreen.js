@@ -12,7 +12,7 @@ import { feedbackCopy } from "../components/feedbackCopy";
 import { LeoCoach } from "../components/LeoCoach";
 import { leoFeedbackLine } from "../../components/mascot/leoAnimationRules";
 import { renderExerciseByKind, isPassiveKind } from "../components/ExerciseRenderer";
-import { caseDebriefLine, gradeCase } from "./buildCase";
+import { CASE_XP, caseDebriefLine, gradeCase } from "./buildCase";
 import { playSound } from "../../lib/sounds";
 import { getMarketWorld } from "../../data/marketWorlds";
 import { BriefingReader } from "../components/BriefingReader";
@@ -104,7 +104,7 @@ function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal, da
   const feedback = stage?.exercise ? feedbackCopy(stage?.exercise, state.isCorrect, state.selectedIndex) : null;
   if (debrief) {
     const result = gradeCase(correct, graded, callCorrect, confidence || "medium");
-    const xp = { A: 90, B: 70, C: 45, D: 25 }[result.grade];
+    const xp = CASE_XP[result.grade];
     return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 12 }] }, /* @__PURE__ */ React.createElement(ScrollView, { contentContainerStyle: styles.debriefScroll, showsVerticalScrollIndicator: false }, /* @__PURE__ */ React.createElement(
       LinearGradient,
       {

@@ -13,6 +13,8 @@ import { SpotTheFake } from '../modules/SpotTheFake';
 import { MapMarket } from '../modules/MapMarket';
 import { ChartRead } from '../modules/ChartRead';
 import { TheCall } from '../modules/TheCall';
+import { MatchPairs } from '../modules/MatchPairs';
+import { QuickFire } from '../modules/QuickFire';
 import { ExerciseState } from '../exercises/types';
 import { Exercise } from '../types';
 
@@ -56,6 +58,10 @@ export function renderExerciseByKind(
       return <ChartRead exercise={exercise} phase={phase} onChange={onChange} />;
     case 'theCall':
       return <TheCall exercise={exercise} phase={phase} onChange={onChange} />;
+    case 'matchPairs':
+      return <MatchPairs exercise={exercise} phase={phase} onChange={onChange} />;
+    case 'quickFire':
+      return <QuickFire exercise={exercise} phase={phase} onChange={onChange} />;
     default:
       return null;
   }
